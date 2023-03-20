@@ -1,5 +1,4 @@
 import { Close, CopyAllOutlined } from '@mui/icons-material'
-import CircleIcon from '@mui/icons-material/Circle'
 import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
 import { useState } from 'react'
@@ -18,7 +17,6 @@ import { NewProposalForm } from '@dao-dao/stateful/proposal-module-adapter/adapt
 import {
   ActionCardLoader,
   ActionSelector,
-  Button,
   DropdownIconButton,
   IconButton,
   InputErrorMessage,
@@ -84,131 +82,115 @@ export const MultipleChoiceOption = <
   })
 
   return (
-    <div className="flex flex-col gap-4 p-6 pt-5">
-      <div className="rounded-lg bg-background-tertiary">
-        <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-4 px-6">
-          <div className="flex grow flex-col">
-            <div className="flex flex-row items-center gap-3">
-              <div className="relative ml-[-0.5rem] h-auto w-12 pt-2">
-                <CircleIcon
-                  className="absolute right-0 bottom-0 left-0 top-0 align-middle"
-                  style={{
-                    color:
-                      MULTIPLE_CHOICE_OPTION_COLORS[
-                        optionIndex % MULTIPLE_CHOICE_OPTION_COLORS.length
-                      ],
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                  }}
-                />
-                <DropdownIconButton
-                  className="absolute right-0 bottom-0 left-0 top-0 align-middle"
-                  open={expanded}
-                  size="xl"
-                  style={{
-                    zIndex: 1,
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                  }}
-                  toggle={toggleExpanded}
-                />
-              </div>
-              <TextInput
-                error={errorsOption?.title}
-                fieldName={titleFieldName}
-                placeholder={t('form.multipleChoiceOptionTitlePlaceholder')}
-                register={registerOption}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errorsOption?.title} />
-              <div className="ml-auto">
-                <IconButton
-                  Icon={CopyAllOutlined}
-                  onClick={() =>
-                    addOption(cloneDeep(getValues(`choices.${optionIndex}`)))
-                  }
-                  variant="ghost"
-                />
-              </div>
-              <Button onClick={removeOption} type="button" variant="ghost">
-                <Close className="!h-5 !w-5" />
-              </Button>
-            </div>
-          </div>
+    <div className="flex flex-col rounded-lg bg-background-tertiary">
+      <div className="flex flex-row items-center gap-3 p-4">
+        <DropdownIconButton
+          circular
+          className="mr-2 transition-opacity hover:opacity-80 active:opacity-70"
+          open={expanded}
+          size="sm"
+          style={{
+            backgroundColor:
+              MULTIPLE_CHOICE_OPTION_COLORS[
+                optionIndex % MULTIPLE_CHOICE_OPTION_COLORS.length
+              ],
+          }}
+          toggle={toggleExpanded}
+        />
+
+        <div className="flex grow flex-col gap-1">
+          <TextInput
+            error={errorsOption?.title}
+            fieldName={titleFieldName}
+            placeholder={t('form.multipleChoiceOptionTitlePlaceholder')}
+            register={registerOption}
+            validation={[validateRequired]}
+          />
+          <InputErrorMessage error={errorsOption?.title} />
         </div>
 
-        <div className={clsx(!expanded && 'hidden')}>
-          <div className="flex flex-col gap-4 p-6 pt-5">
-            <p className="primary-text text-text-body">
-              {t('form.description')}
-              <span className="text-text-tertiary">
-                {/* eslint-disable-next-line i18next/no-literal-string */}
-                {' – '}
-                {t('info.supportsMarkdownFormat')}
-              </span>
-            </p>
+        <div className="ml-2 flex flex-row items-center gap-1">
+          <IconButton
+            Icon={CopyAllOutlined}
+            onClick={() =>
+              addOption(cloneDeep(getValues(`choices.${optionIndex}`)))
+            }
+            variant="ghost"
+          />
+          <IconButton Icon={Close} onClick={removeOption} variant="ghost" />
+        </div>
+      </div>
 
-            <div className="flex flex-col">
-              <TextAreaInput
-                error={errorsOption?.description}
-                fieldName={descriptionFieldName}
-                placeholder={t(
-                  'form.multipleChoiceOptionDescriptionPlaceholder'
-                )}
-                register={registerOption}
-                rows={5}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errorsOption?.description} />
-            </div>
+      <div
+        className={clsx(
+          'flex flex-col gap-4 border-t border-border-secondary p-6',
+          !expanded && 'hidden'
+        )}
+      >
+        <p className="primary-text text-text-body">
+          {t('form.description')}
+          <span className="text-text-tertiary">
+            {/* eslint-disable-next-line i18next/no-literal-string */}
+            {' – '}
+            {t('info.supportsMarkdownFormat')}
+          </span>
+        </p>
 
-            <p className="title-text my-6 text-text-body">
-              {t('title.actions', { count: optionActionData?.length })}
-            </p>
+        <div className="flex flex-col">
+          <TextAreaInput
+            error={errorsOption?.description}
+            fieldName={descriptionFieldName}
+            placeholder={t('form.multipleChoiceOptionDescriptionPlaceholder')}
+            register={registerOption}
+            rows={5}
+            validation={[validateRequired]}
+          />
+          <InputErrorMessage error={errorsOption?.description} />
+        </div>
 
-            {optionActionData?.length > 0 && (
-              <div className="mb-4 flex flex-col gap-1">
-                {optionActionData.map(({ key, data }, actionIndex) => {
-                  const Component = loadedActions[key]?.action?.Component
-                  if (!Component) {
-                    return null
-                  }
+        <p className="title-text mt-2 text-text-body">
+          {t('title.actions', { count: optionActionData?.length })}
+        </p>
 
-                  return (
-                    <SuspenseLoader
-                      key={`${optionIndex}-${actionIndex}-${key}`}
-                      fallback={<ActionCardLoader />}
-                    >
-                      <Component
-                        addAction={appendAction}
-                        allActionsWithData={optionActionData}
-                        data={data}
-                        errors={
-                          errorsOption?.actionData?.[actionIndex]?.data || {}
-                        }
-                        fieldNamePrefix={`choices.${optionIndex}.actionData.${actionIndex}.data.`}
-                        index={actionIndex}
-                        isCreating
-                        onRemove={() => removeAction(actionIndex)}
-                      />
-                    </SuspenseLoader>
-                  )
-                })}
-              </div>
-            )}
+        {optionActionData?.length > 0 && (
+          <div className="flex flex-col gap-1">
+            {optionActionData.map(({ key, data }, actionIndex) => {
+              const Component = loadedActions[key]?.action?.Component
+              if (!Component) {
+                return null
+              }
 
-            <ActionSelector
-              actions={actions}
-              onSelectAction={({ key }) => {
-                appendAction({
-                  key,
-                  data: loadedActions[key]?.defaults ?? {},
-                })
-              }}
-            />
+              return (
+                <SuspenseLoader
+                  key={`${optionIndex}-${actionIndex}-${key}`}
+                  fallback={<ActionCardLoader />}
+                >
+                  <Component
+                    addAction={appendAction}
+                    allActionsWithData={optionActionData}
+                    data={data}
+                    errors={errorsOption?.actionData?.[actionIndex]?.data || {}}
+                    fieldNamePrefix={`choices.${optionIndex}.actionData.${actionIndex}.data.`}
+                    index={actionIndex}
+                    isCreating
+                    onRemove={() => removeAction(actionIndex)}
+                  />
+                </SuspenseLoader>
+              )
+            })}
           </div>
+        )}
+
+        <div className="self-start">
+          <ActionSelector
+            actions={actions}
+            onSelectAction={({ key }) => {
+              appendAction({
+                key,
+                data: loadedActions[key]?.defaults ?? {},
+              })
+            }}
+          />
         </div>
       </div>
     </div>

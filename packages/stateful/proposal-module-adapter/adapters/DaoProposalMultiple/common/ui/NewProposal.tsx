@@ -132,6 +132,7 @@ export const NewProposal = ({
     name: 'choices',
     shouldUnregister: true,
   })
+  const choices = watch('choices') ?? []
 
   const onSubmitForm: SubmitHandler<NewProposalForm> = useCallback(
     ({ ...proposalFormData }, event) => {
@@ -141,8 +142,8 @@ export const NewProposal = ({
       const nativeEvent = event?.nativeEvent as SubmitEvent
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
+      // Preview toggled in onClick handler.
       if (submitterValue === ProposeSubmitValue.Preview) {
-        setShowPreview((p) => !p)
         return
       }
 
@@ -176,7 +177,10 @@ export const NewProposal = ({
   )
 
   const onSubmitError: SubmitErrorHandler<NewProposalForm> = useCallback(
-    () => setShowSubmitErrorNote(true),
+    (error) => {
+      console.log(error)
+      setShowSubmitErrorNote(true)
+    },
     [setShowSubmitErrorNote]
   )
 
@@ -227,27 +231,29 @@ export const NewProposal = ({
 
       <p className="title-text my-6 text-text-body">{t('title.choices')}</p>
 
-      <div className="mb-4 flex flex-col items-stretch gap-2">
-        {multipleChoiceFields.map(({ id }, index) => (
-          <MultipleChoiceOption
-            key={id}
-            actions={actions}
-            addOption={addOption}
-            control={control}
-            descriptionFieldName={`choices.${index}.description`}
-            errorsOption={errors?.choices?.[index]}
-            loadedActions={loadedActions}
-            optionIndex={index}
-            registerOption={register}
-            removeOption={() => removeOption(index)}
-            titleFieldName={`choices.${index}.title`}
-          />
-        ))}
-      </div>
+      {choices.length > 0 && (
+        <div className="mb-4 flex flex-col items-stretch gap-2">
+          {multipleChoiceFields.map(({ id }, index) => (
+            <MultipleChoiceOption
+              key={id}
+              actions={actions}
+              addOption={addOption}
+              control={control}
+              descriptionFieldName={`choices.${index}.description`}
+              errorsOption={errors?.choices?.[index]}
+              loadedActions={loadedActions}
+              optionIndex={index}
+              registerOption={register}
+              removeOption={() => removeOption(index)}
+              titleFieldName={`choices.${index}.title`}
+            />
+          ))}
+        </div>
+      )}
 
       <Button onClick={() => addOption({})} variant="secondary">
         <Add />
-        <p className="title-text text-text-body">{t('button.addNewOption')}</p>
+        {t('button.addNewOption')}
       </Button>
 
       <div className="mt-6 flex flex-col gap-2 border-y border-border-secondary py-6">
@@ -259,6 +265,7 @@ export const NewProposal = ({
           <div className="flex flex-row items-center justify-end gap-2">
             <Button
               disabled={loading}
+              onClick={() => setShowPreview((p) => !p)}
               type="submit"
               value={ProposeSubmitValue.Preview}
               variant="secondary"
@@ -284,9 +291,9 @@ export const NewProposal = ({
                   ? t('error.notEnoughForDeposit')
                   : isPaused
                   ? t('error.daoIsPaused')
-                  : multipleChoiceFields.length < 2
+                  : choices.length < 2
                   ? t('error.tooFewChoices')
-                  : multipleChoiceFields.length > MAX_NUM_PROPOSAL_CHOICES
+                  : choices.length > MAX_NUM_PROPOSAL_CHOICES
                   ? t('error.tooManyChoices', {
                       count: MAX_NUM_PROPOSAL_CHOICES,
                     })
@@ -299,8 +306,8 @@ export const NewProposal = ({
                   (!anyoneCanPropose && !isMember) ||
                   depositUnsatisfied ||
                   isPaused ||
-                  multipleChoiceFields.length < 2 ||
-                  multipleChoiceFields.length > MAX_NUM_PROPOSAL_CHOICES
+                  choices.length < 2 ||
+                  choices.length > MAX_NUM_PROPOSAL_CHOICES
                 }
                 loading={loading}
                 type="submit"
@@ -350,7 +357,7 @@ export const NewProposal = ({
 
         {showSubmitErrorNote && (
           <p className="secondary-text text-right text-text-interactive-error">
-            {t('error.createProposalSubmitInvalid')}
+            {t('error.correctErrorsAbove')}
           </p>
         )}
 
@@ -376,54 +383,51 @@ export const NewProposal = ({
                   <p className="primary-text pb-5 text-text-body">
                     {t('title.voteOptions')}
                   </p>
-                  {multipleChoiceFields.map(
-                    ({ id, ...multipleChoiceOption }, index) => {
-                      const actionData = multipleChoiceOption.actionData
-                      return (
-                        <div
-                          key={id}
-                          className="flex flex-col justify-between gap-6 border-b border-border-secondary py-4 px-6"
-                        >
-                          <div className="flex flex-row items-center">
-                            <div>
-                              <CircleIcon
-                                className="h-3 w-3 align-middle"
-                                style={{
-                                  color:
-                                    MULTIPLE_CHOICE_OPTION_COLORS[
-                                      index %
-                                        MULTIPLE_CHOICE_OPTION_COLORS.length
-                                    ],
-                                }}
-                              />
-                            </div>
-                            <p className="primary-text px-2 text-text-body">
-                              {multipleChoiceOption.title}
-                            </p>
-                          </div>
-                          <p className="secondary-text">
-                            {multipleChoiceOption.description}
-                          </p>
-                          {actionData && actionData.length ? (
-                            <CosmosMessageDisplay
-                              value={decodedMessagesString(
-                                actionData
-                                  .map(({ key, data }) => {
-                                    try {
-                                      return loadedActions[key]?.transform(data)
-                                    } catch (err) {
-                                      console.error(err)
-                                    }
-                                  })
-                                  // Filter out undefined messages.
-                                  .filter(Boolean) as CosmosMsgFor_Empty[]
-                              )}
+                  {choices.map((multipleChoiceOption, index) => {
+                    const actionData = multipleChoiceOption.actionData
+                    return (
+                      <div
+                        key={index}
+                        className="flex flex-col justify-between gap-6 border-b border-border-secondary py-4 px-6"
+                      >
+                        <div className="flex flex-row items-center">
+                          <div>
+                            <CircleIcon
+                              className="h-3 w-3 align-middle"
+                              style={{
+                                color:
+                                  MULTIPLE_CHOICE_OPTION_COLORS[
+                                    index % MULTIPLE_CHOICE_OPTION_COLORS.length
+                                  ],
+                              }}
                             />
-                          ) : undefined}
+                          </div>
+                          <p className="primary-text px-2 text-text-body">
+                            {multipleChoiceOption.title}
+                          </p>
                         </div>
-                      )
-                    }
-                  )}
+                        <p className="secondary-text">
+                          {multipleChoiceOption.description}
+                        </p>
+                        {actionData && actionData.length ? (
+                          <CosmosMessageDisplay
+                            value={decodedMessagesString(
+                              actionData
+                                .map(({ key, data }) => {
+                                  try {
+                                    return loadedActions[key]?.transform(data)
+                                  } catch (err) {
+                                    console.error(err)
+                                  }
+                                })
+                                // Filter out undefined messages.
+                                .filter(Boolean) as CosmosMsgFor_Empty[]
+                            )}
+                          />
+                        ) : undefined}
+                      </div>
+                    )
+                  })}
                 </div>
               }
               title={proposalTitle}

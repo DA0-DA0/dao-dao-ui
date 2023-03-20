@@ -133,8 +133,8 @@ export const NewProposal = ({
       const nativeEvent = event?.nativeEvent as SubmitEvent
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
+      // Preview toggled in onClick handler.
       if (submitterValue === ProposeSubmitValue.Preview) {
-        setShowPreview((p) => !p)
         return
       }
 
@@ -262,6 +262,7 @@ export const NewProposal = ({
           <div className="flex flex-row items-center justify-end gap-2">
             <Button
               disabled={loading}
+              onClick={() => setShowPreview((p) => !p)}
               type="submit"
               value={ProposeSubmitValue.Preview}
               variant="secondary"

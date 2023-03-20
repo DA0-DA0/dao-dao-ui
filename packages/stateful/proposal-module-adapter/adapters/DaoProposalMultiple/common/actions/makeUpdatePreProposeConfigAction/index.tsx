@@ -353,7 +353,7 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
   }
 
   return {
-    key: AdapterActionKey.UpdatePreProposeConfig,
+    key: AdapterActionKey.UpdatePreProposeMultipleConfig,
     Icon: GearEmoji,
     label: t('form.updateProposalSubmissionConfigTitle'),
     description: t('info.updateProposalSubmissionConfigActionDescription'),

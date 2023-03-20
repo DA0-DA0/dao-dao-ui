@@ -219,7 +219,7 @@ export const makeUpdateProposalConfigAction: ActionMaker<
   }
 
   return {
-    key: AdapterActionKey.UpdateProposalConfig,
+    key: AdapterActionKey.UpdateProposalMultipleConfig,
     Icon: GearEmoji,
     label: t('form.updateVotingConfigTitle'),
     description: t('info.updateVotingConfigActionDescription'),
