@@ -52,7 +52,7 @@ export const ProposalVoteTally = ({
 
   // Convert various threshold types to a relevant percent to use in UI
   // elements.
-  const effectiveThresholdValue =
+  const effectivePercentOrMajorityValue =
     threshold.type === ProcessedTQType.Majority
       ? // If there are no abstain votes, this should be 50.
         // If there are 4% abstain votes, this should be 48, since 48%+1 of the 96% non-abstain votes need to be in favor.
@@ -112,7 +112,7 @@ export const ProposalVoteTally = ({
             // If using an absolute threshold (i.e. no quorum) and there are
             // only abstain votes cast so far, align to the right.
             alignEnd={!quorum && onlyAbstain}
-            caretPosition={effectiveThresholdValue}
+            caretPosition={effectivePercentOrMajorityValue}
             rows={[
               {
                 thickness: 10,
@@ -220,10 +220,10 @@ export const ProposalVoteTally = ({
 
       {/* Provide clarification for what happens in the event of a tie when the threshold is exactly 50%. */}
       {
-        // effectiveThresholdValue is set to 50 when the type is majority, but
+        // effectivePercentOrMajorityValue is set to 50 when the type is majority, but
         // there are no ties in the majority case, so we can ignore it.
         threshold.type !== ProcessedTQType.Majority &&
-          effectiveThresholdValue === 50 &&
+          effectivePercentOrMajorityValue === 50 &&
           turnoutTotal > 0 &&
           yesVotes === noVotes && (
             <div className="space-y-2 border-t border-border-secondary py-4 px-6">

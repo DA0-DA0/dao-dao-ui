@@ -95,15 +95,14 @@ export const NewProposal = ({
 }: NewProposalProps) => {
   const { t } = useTranslation()
 
-  // Unpack here because we use these at the top level as well as
-  // inside of nested components.
+  // Unpack here because we use these at the top level as well as inside of
+  // nested components.
   const {
     register,
     control,
     handleSubmit,
     watch,
     formState: { errors },
-    resetField,
   } = useFormContext<NewProposalForm>()
 
   const [showPreview, setShowPreview] = useState(false)
@@ -235,18 +234,7 @@ export const NewProposal = ({
                   fieldNamePrefix={`actionData.${index}.data.`}
                   index={index}
                   isCreating
-                  onRemove={() => {
-                    // Reset the data field to avoid stale data. Honestly not
-                    // sure why this has to happen; I figured the `remove` call
-                    // would do this automatically. Some actions, like Execute
-                    // Smart Contract, don't seem to need this, while others,
-                    // like the Token Swap actions, do.
-                    resetField(`actionData.${index}.data`, {
-                      defaultValue: {},
-                    })
-                    // Remove the action.
-                    removeAction(index)
-                  }}
+                  onRemove={() => removeAction(index)}
                 />
               </SuspenseLoader>
             )

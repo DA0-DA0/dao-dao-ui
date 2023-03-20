@@ -44,6 +44,7 @@ export const ProposalInnerContentDisplay = (
 
 export const InnerProposalInnerContentDisplay = ({
   onDuplicate,
+  duplicateLoading,
   availableActions,
   proposal,
 }: BaseProposalInnerContentDisplayProps<NewProposalForm> & {
@@ -110,55 +111,53 @@ export const InnerProposalInnerContentDisplay = ({
     })
   }
 
-  const choiceDisplay = mappedChoicesToActions.map((choice) => {
-    return (
-      <div
-        key={choice.title}
-        className="flex flex-col justify-between gap-6 border-b border-border-secondary py-4 px-6"
-      >
-        <div className="flex flex-row items-center">
-          <div>
-            <CircleIcon
-              className="h-3 w-3 align-middle"
-              style={{
-                color:
-                  MULTIPLE_CHOICE_OPTION_COLORS[
-                    choice.index % MULTIPLE_CHOICE_OPTION_COLORS.length
-                  ],
-              }}
-            />
-          </div>
-          <p className="primary-text px-2 text-text-body">{choice.title}</p>
-        </div>
-        <p className="secondary-text">{choice.description}</p>
-
-        {showRaw ? (
-          <CosmosMessageDisplay
-            value={JSON.stringify(choice.decodedMessages, undefined, 2)}
-          />
-        ) : (
-          <ActionsRenderer
-            actionData={choice.actionData}
-            availableActions={availableActions}
-            onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
-          />
-        )}
-      </div>
-    )
-  })
-
   const innerContentDisplay = (
     <div>
       <p className="primary-text pb-5 text-text-body">
         {t('title.voteOptions')}
       </p>
-      {choiceDisplay}
+
+      {mappedChoicesToActions.map((choice) => (
+        <div
+          key={choice.index}
+          className="flex flex-col justify-between gap-6 border-b border-border-secondary py-4 px-6"
+        >
+          <div className="flex flex-row items-center">
+            <div>
+              <CircleIcon
+                className="h-3 w-3 align-middle"
+                style={{
+                  color:
+                    MULTIPLE_CHOICE_OPTION_COLORS[
+                      choice.index % MULTIPLE_CHOICE_OPTION_COLORS.length
+                    ],
+                }}
+              />
+            </div>
+            <p className="primary-text px-2 text-text-body">{choice.title}</p>
+          </div>
+          <p className="secondary-text">{choice.description}</p>
+
+          {showRaw ? (
+            <CosmosMessageDisplay
+              value={JSON.stringify(choice.decodedMessages, undefined, 2)}
+            />
+          ) : (
+            <ActionsRenderer
+              actionData={choice.actionData}
+              availableActions={availableActions}
+              onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
+            />
+          )}
+        </div>
+      ))}
     </div>
   )
 
   return (
     <StatelessProposalInnerContentDisplay
       duplicate={duplicate}
+      duplicateLoading={duplicateLoading}
       innerContentDisplay={innerContentDisplay}
       setShowRaw={setShowRaw}
       showRaw={showRaw}

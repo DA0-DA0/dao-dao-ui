@@ -5,7 +5,7 @@ import { RecoilValueReadOnly } from 'recoil'
 import { Action, ActionOptions } from './actions'
 import { ContractVersion } from './chain'
 import { Expiration } from './contracts'
-import { CheckedDepositInfo, CosmosMsgFor_Empty } from './contracts/common'
+import { CheckedDepositInfo } from './contracts/common'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,
@@ -197,7 +197,6 @@ export interface BaseProposalLineProps {
 
 export interface BaseNewProposalProps<FormData extends FieldValues = any> {
   onCreateSuccess: (props: ProposalCreatedCardProps) => void
-  simulateMsgs?: (msgs: CosmosMsgFor_Empty[]) => Promise<void>
   draft?: ProposalDraft<FormData>
   saveDraft: () => void
   drafts: ProposalDraft[]
@@ -233,4 +232,10 @@ export interface ProfileNewProposalCardInfoLine {
   label: string
   value: string
   valueClassName?: string
+}
+
+export type PercentOrMajorityValue = {
+  majority: boolean
+  // Will be used when `majority` is false.
+  value: number
 }

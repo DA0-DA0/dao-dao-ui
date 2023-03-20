@@ -4,12 +4,21 @@ import {
   ProposalModuleAdapter,
 } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
+import { NATIVE_TOKEN } from '@dao-dao/utils'
 
+import {
+  AllowRevotingVotingConfigItem,
+  ProposalDepositVotingConfigItem,
+  ProposalSubmissionPolicyVotingConfigItem,
+  VotingDurationVotingConfigItem,
+  makeQuorumVotingConfigItem,
+} from '../common'
 import {
   NewProposal,
   makeDepositInfoSelector,
   makeUseActions,
   makeUseProfileNewProposalCardInfoLines,
+  makeUsePublishProposal,
   reverseProposalInfosSelector,
 } from './common'
 import {
@@ -20,6 +29,7 @@ import {
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
+import { getInstantiateInfo } from './daoCreation'
 import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
 import {
   useCastVote,
@@ -47,6 +57,11 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       proposalModuleAddress: options.proposalModule.address,
       version: options.proposalModule.version,
       preProposeAddress: options.proposalModule.preProposeAddress,
+    })
+
+    const usePublishProposal = makeUsePublishProposal({
+      options,
+      depositInfoSelector,
     })
 
     return {
@@ -86,8 +101,8 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       components: {
         NewProposal: (props) => (
           <NewProposal
-            depositInfoSelector={depositInfoSelector}
             options={options}
+            usePublishProposal={usePublishProposal}
             {...props}
           />
         ),
@@ -136,11 +151,6 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
 
   daoCreation: {
     defaultConfig: {
-      threshold: {
-        majority: true,
-        value: 75,
-      },
-      quorumEnabled: true,
       quorum: {
         majority: false,
         value: 20,
@@ -153,19 +163,28 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
         enabled: false,
         amount: 10,
         type: 'native',
-        cw20Address: '',
-        cw20TokenInfo: undefined,
+        denomOrAddress: NATIVE_TOKEN.denomOrAddress,
+        token: undefined,
         refundPolicy: DepositRefundPolicy.OnlyPassed,
       },
+      anyoneCanPropose: false,
       allowRevoting: false,
     },
 
-    // TODO: reconcile daoCreation for both adapters
     votingConfig: {
-      items: [],
-      advancedItems: [],
-      advancedWarningI18nKeys: [],
+      items: [VotingDurationVotingConfigItem, ProposalDepositVotingConfigItem],
+      advancedItems: [
+        AllowRevotingVotingConfigItem,
+        makeQuorumVotingConfigItem({
+          canBeDisabled: false,
+        }),
+        ProposalSubmissionPolicyVotingConfigItem,
+      ],
+      advancedWarningI18nKeys: [
+        'daoCreationAdapter.DaoProposalMultiple.advancedWarning',
+      ],
     },
+
     getInstantiateInfo,
   },
 }

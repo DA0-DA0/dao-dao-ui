@@ -3,10 +3,8 @@ import { useRecoilValue } from 'recoil'
 
 import { GearEmoji } from '@dao-dao/stateless'
 import {
-  ActionComponent,
   ActionMaker,
   AdapterActionKey,
-  ContractVersion,
   ProposalModule,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -17,15 +15,14 @@ import {
   PercentageThreshold,
   VotingStrategy,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
-import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
 import { configSelector } from '../../../contracts/DaoProposalMultiple.recoil'
-import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
+import { UpdateProposalConfigComponent as Component } from './UpdateProposalConfigComponent'
 
 export interface UpdateProposalConfigData {
   onlyMembersExecute: boolean
-  voting_strategy: VotingStrategy
+
   quorumType: '%' | 'majority'
   quorumPercentage?: number
 
@@ -36,23 +33,40 @@ export interface UpdateProposalConfigData {
 }
 
 const votingStrategyToProcessedQuorum = (
-  voting_strategy: VotingStrategy
+  votingStrategy: VotingStrategy
 ): Pick<UpdateProposalConfigData, 'quorumType' | 'quorumPercentage'> => {
-  if (!('single_choice' in voting_strategy)) {
-    console.error('unrecognized voting_strategy')
+  if (!('single_choice' in votingStrategy)) {
+    throw new Error('unrecognized voting_strategy')
   }
 
-  let quorum: PercentageThreshold = voting_strategy.single_choice.quorum
-  let quorumType: UpdateProposalConfigData['quorumType'] = '%'
-  let quorumPercentage: UpdateProposalConfigData['quorumPercentage'] = 20
+  const quorum: PercentageThreshold = votingStrategy.single_choice.quorum
 
-  quorumType = 'majority' in quorum ? 'majority' : '%'
-  quorumPercentage =
+  const quorumType: UpdateProposalConfigData['quorumType'] =
+    'majority' in quorum ? 'majority' : '%'
+  const quorumPercentage: UpdateProposalConfigData['quorumPercentage'] =
     'majority' in quorum ? undefined : Number(quorum.percent) * 100
 
   return {
     quorumType,
     quorumPercentage,
+  }
+}
+
+const typePercentageToPercentageThreshold = (
+  t: 'majority' | '%',
+  p: number | undefined
+) => {
+  if (t === 'majority') {
+    return { majority: {} }
+  } else {
+    if (p === undefined) {
+      throw new Error(
+        'internal erorr: an undefined percent was configured with a non-majority threshold.'
+      )
+    }
+    return {
+      percent: (p / 100).toString(),
+    }
   }
 }
 
@@ -73,56 +87,47 @@ const maxVotingInfoToCosmos = (
   }
 }
 
-const Component: ActionComponent = (props) => {
-  const {
-    hooks: { useCommonGovernanceTokenInfo },
-  } = useVotingModuleAdapter()
-  const governanceTokenSymbol = useCommonGovernanceTokenInfo?.().symbol
-
-  return (
-    <UpdateProposalConfigComponent
-      {...props}
-      options={{ governanceTokenSymbol }}
-    />
-  )
-}
-
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
   msg: Record<string, any>
 ) =>
   useMemo(() => {
     if (
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'update_config' in msg.wasm.execute.msg &&
-      'quorum' in msg.wasm.execute.msg.update_config &&
-      ('majority' in msg.wasm.execute.msg.update_config.quorum ||
-        'percent' in msg.wasm.execute.msg.update_config.quorum) &&
-      'max_voting_period' in msg.wasm.execute.msg.update_config &&
-      'only_members_execute' in msg.wasm.execute.msg.update_config &&
-      'allow_revoting' in msg.wasm.execute.msg.update_config &&
-      'dao' in msg.wasm.execute.msg.update_config
+      objectMatchesStructure(msg, {
+        wasm: {
+          execute: {
+            update_config: {
+              allow_revoting: {},
+              close_proposal_on_execution_failure: {},
+              dao: {},
+              max_voting_period: {
+                time: {},
+              },
+              min_voting_period: {},
+              only_members_execute: {},
+              voting_strategy: {
+                single_choice: {
+                  quorum: {},
+                },
+              },
+            },
+          },
+        },
+      })
     ) {
-      const config = msg.wasm.execute.msg.update_config
-      const onlyMembersExecute = config.only_members_execute
-
-      if (!('time' in config.max_voting_period)) {
-        return { match: false }
-      }
-
-      const proposalDuration = config.max_voting_period.time
-      const proposalDurationUnits = 'seconds'
-      const voting_strategy = config.voting_strategy
-      const allowRevoting = !!config.allow_revoting
+      const {
+        allow_revoting: allowRevoting,
+        only_members_execute: onlyMembersExecute,
+        max_voting_period: { time: proposalDuration },
+        voting_strategy: votingStrategy,
+      } = msg.wasm.execute.msg.update_config
 
       return {
         data: {
+          allowRevoting,
           onlyMembersExecute,
           proposalDuration,
-          proposalDurationUnits,
-          allowRevoting,
-          voting_strategy,
-          ...votingStrategyToProcessedQuorum(voting_strategy),
+          proposalDurationUnits: 'seconds',
+          ...votingStrategyToProcessedQuorum(votingStrategy),
         },
         match: true,
       }
@@ -133,12 +138,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
 export const makeUpdateProposalConfigAction: ActionMaker<
   UpdateProposalConfigData,
   { proposalModule: ProposalModule }
-> = ({ t, proposalModule: { version, address: proposalModuleAddress } }) => {
-  // Only v2.
-  if (version === ContractVersion.V1) {
-    return null
-  }
-
+> = ({ t, proposalModule: { address: proposalModuleAddress } }) => {
   const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
     const proposalModuleConfig = useRecoilValue(
       configSelector({
@@ -154,15 +154,14 @@ export const makeUpdateProposalConfigAction: ActionMaker<
     const proposalDurationUnits = 'seconds'
 
     const allowRevoting = proposalModuleConfig.allow_revoting
-    const voting_strategy = proposalModuleConfig.voting_strategy
+    const votingStrategy = proposalModuleConfig.voting_strategy
 
     return {
       onlyMembersExecute,
       proposalDuration,
       proposalDurationUnits,
       allowRevoting,
-      voting_strategy,
-      ...votingStrategyToProcessedQuorum(proposalModuleConfig.voting_strategy),
+      ...votingStrategyToProcessedQuorum(votingStrategy),
     }
   }
 
@@ -179,7 +178,14 @@ export const makeUpdateProposalConfigAction: ActionMaker<
       (data: UpdateProposalConfigData) => {
         const updateConfigMessage: ExecuteMsg = {
           update_config: {
-            voting_strategy: data.voting_strategy,
+            voting_strategy: {
+              single_choice: {
+                quorum: typePercentageToPercentageThreshold(
+                  data.quorumType,
+                  data.quorumPercentage
+                ),
+              },
+            },
             max_voting_period: maxVotingInfoToCosmos(
               data.proposalDurationUnits,
               data.proposalDuration

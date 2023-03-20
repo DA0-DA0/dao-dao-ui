@@ -2,20 +2,23 @@ import { ReactNode } from 'react'
 
 import {
   DepositInfoSelector,
-  DurationWithUnits,
   IProposalModuleAdapterCommonOptions,
   ProcessedTQ,
 } from '@dao-dao/types'
-import { DepositRefundPolicy } from '@dao-dao/types/contracts/common'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   CosmosMsgForEmpty,
   MultipleChoiceOptionType,
   MultipleChoiceOptions,
   MultipleChoiceProposal,
-  Uint128,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
+import {
+  DaoCreationConfigWithAllowRevoting,
+  DaoCreationConfigWithProposalDeposit,
+  DaoCreationConfigWithProposalSubmissionPolicy,
+  DaoCreationConfigWithQuorum,
+  DaoCreationConfigWithVotingDuration,
+} from '../common'
 import { MultipleChoiceOptionData } from './components/ui/MultipleChoiceOption'
 
 export interface NewProposalForm {
@@ -30,44 +33,36 @@ export interface NewProposalData {
   title: string
 }
 
-export interface ThresholdValue {
+export interface PercentOrMajorityValue {
   majority: boolean
   // Will be used when `majority` is false.
   value: number
 }
 
-export interface DaoCreationConfig {
-  threshold: ThresholdValue
-  quorumEnabled: boolean
-  quorum: ThresholdValue
-  votingDuration: DurationWithUnits
-  proposalDeposit: {
-    enabled: boolean
-    amount: number
-    type: 'native' | 'cw20' | 'voting_module_token'
-    cw20Address: string
-    cw20TokenInfo?: TokenInfoResponse
-    refundPolicy: DepositRefundPolicy
-  }
-  allowRevoting: boolean
-}
+export type DaoCreationConfig = DaoCreationConfigWithAllowRevoting &
+  DaoCreationConfigWithProposalDeposit &
+  DaoCreationConfigWithProposalSubmissionPolicy &
+  DaoCreationConfigWithQuorum &
+  DaoCreationConfigWithVotingDuration
 
 // Has vote percentages as well as choice info.
 export type ProcessedMultipleChoiceOption = {
   description: string
   index: number
   msgs: CosmosMsgForEmpty[]
-  option_type: MultipleChoiceOptionType
+  optionType: MultipleChoiceOptionType
   title: string
-  vote_count: Uint128
+  voteCount: string
   turnoutVotePercentage: number
   color: string
 }
 
 export interface VotesInfo {
-  quorum?: ProcessedTQ
+  quorum: ProcessedTQ
   isTie: boolean
   processedChoices: ProcessedMultipleChoiceOption[]
+  // Undefined if a tie, including when no votes have been cast.
+  winningChoice: ProcessedMultipleChoiceOption | undefined
   totalVotingPower: number
   turnoutTotal: number
   turnoutPercent: number
@@ -98,6 +93,7 @@ export interface MakeUsePublishProposalOptions {
 
 export type UsePublishProposal = () => {
   publishProposal: PublishProposal
+  anyoneCanPropose: boolean
   depositUnsatisfied: boolean
   simulationBypassExpiration: Date | undefined
 }
@@ -105,6 +101,7 @@ export type UsePublishProposal = () => {
 export interface TimestampInfo {
   display?: {
     label: string
+    tooltip?: string
     content: ReactNode
   }
   expirationDate: Date

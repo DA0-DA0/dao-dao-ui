@@ -7,12 +7,12 @@ import {
   DaoCreationVotingConfigItemReviewProps,
 } from '@dao-dao/types'
 
-import { DaoCreationConfig } from '../types'
+import { DaoCreationConfigWithAllowRevoting } from './types'
 
-export const AllowRevotingInput = ({
+const AllowRevotingInput = ({
   data: { allowRevoting },
   setValue,
-}: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationConfigWithAllowRevoting>) => {
   const { t } = useTranslation()
 
   return (
@@ -28,14 +28,14 @@ export const AllowRevotingInput = ({
   )
 }
 
-export const AllowRevotingReview = ({
+const AllowRevotingReview = ({
   data: { allowRevoting },
-}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfigWithAllowRevoting>) => {
   const { t } = useTranslation()
   return <>{allowRevoting ? t('info.yes') : t('info.no')}</>
 }
 
-export const AllowRevotingVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
+export const AllowRevotingVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfigWithAllowRevoting> =
   {
     Icon: RecycleEmoji,
     nameI18nKey: 'form.allowRevotingTitle',

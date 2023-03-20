@@ -20,6 +20,8 @@ Default.args = {
     </p>
   ),
   showRaw: false,
+  duplicate: () => alert('duplicate'),
+  duplicateLoading: false,
 }
 Default.parameters = {
   design: {

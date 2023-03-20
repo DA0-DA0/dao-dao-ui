@@ -377,6 +377,7 @@ export interface VoteInfo {
   power: Uint128
   vote: MultipleChoiceVote
   voter: Addr
+  rationale?: string | null
   votedAt?: string
 }
 export interface InfoResponse {

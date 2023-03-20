@@ -7,6 +7,14 @@ import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { NATIVE_TOKEN } from '@dao-dao/utils'
 
 import {
+  AllowRevotingVotingConfigItem,
+  ProposalDepositVotingConfigItem,
+  ProposalSubmissionPolicyVotingConfigItem,
+  ThresholdVotingConfigItem,
+  VotingDurationVotingConfigItem,
+  makeQuorumVotingConfigItem,
+} from '../common'
+import {
   NewProposal,
   makeDepositInfoSelector,
   makeUseActions,
@@ -22,22 +30,14 @@ import {
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
-import {
-  AllowRevotingVotingConfigItem,
-  ProposalDepositVotingConfigItem,
-  ProposalSubmissionPolicyVotingConfigItem,
-  QuorumVotingConfigItem,
-  ThresholdVotingConfigItem,
-  VotingDurationVotingConfigItem,
-  getInstantiateInfo,
-} from './daoCreation'
+import { getInstantiateInfo } from './daoCreation'
 import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
 import {
   useCastVote,
   useLoadingProposalExecutionTxHash,
+  useLoadingVoteOptions,
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
-  useLoadingVoteOptions,
 } from './hooks'
 import { DaoCreationConfig, NewProposalForm } from './types'
 
@@ -187,7 +187,9 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       advancedItems: [
         AllowRevotingVotingConfigItem,
         ThresholdVotingConfigItem,
-        QuorumVotingConfigItem,
+        makeQuorumVotingConfigItem({
+          canBeDisabled: true,
+        }),
         ProposalSubmissionPolicyVotingConfigItem,
       ],
       advancedWarningI18nKeys: [

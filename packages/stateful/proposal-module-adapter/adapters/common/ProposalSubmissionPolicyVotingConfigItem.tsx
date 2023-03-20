@@ -7,12 +7,12 @@ import {
   DaoCreationVotingConfigItemReviewProps,
 } from '@dao-dao/types'
 
-import { DaoCreationConfig } from '../types'
+import { DaoCreationConfigWithProposalSubmissionPolicy } from './types'
 
-export const ProposalSubmissionPolicyVotingConfigItemInput = ({
+const ProposalSubmissionPolicyVotingConfigItemInput = ({
   data: { anyoneCanPropose },
   setValue,
-}: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationConfigWithProposalSubmissionPolicy>) => {
   const { t } = useTranslation()
 
   return (
@@ -33,14 +33,14 @@ export const ProposalSubmissionPolicyVotingConfigItemInput = ({
   )
 }
 
-export const ProposalSubmissionPolicyVotingConfigItemReview = ({
+const ProposalSubmissionPolicyVotingConfigItemReview = ({
   data: { anyoneCanPropose },
-}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfigWithProposalSubmissionPolicy>) => {
   const { t } = useTranslation()
   return <>{anyoneCanPropose ? t('info.anyone') : t('info.onlyMembers')}</>
 }
 
-export const ProposalSubmissionPolicyVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
+export const ProposalSubmissionPolicyVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfigWithProposalSubmissionPolicy> =
   {
     Icon: LockWithPenEmoji,
     nameI18nKey: 'form.proposalSubmissionPolicyTitle',

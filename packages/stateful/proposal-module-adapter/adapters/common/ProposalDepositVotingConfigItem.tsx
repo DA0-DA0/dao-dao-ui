@@ -33,16 +33,16 @@ import {
   validateContractAddress,
 } from '@dao-dao/utils'
 
-import { DaoVotingCw20StakedAdapter } from '../../../../voting-module-adapter'
+import { DaoVotingCw20StakedAdapter } from '../../../voting-module-adapter'
 import {
   DaoCreationConfig as DaoVotingCw20StakedConfig,
   GovernanceTokenType,
-} from '../../../../voting-module-adapter/adapters/DaoVotingCw20Staked/types'
-import { DaoCreationConfig } from '../types'
+} from '../../../voting-module-adapter/adapters/DaoVotingCw20Staked/types'
+import { DaoCreationConfigWithProposalDeposit } from './types'
 
 const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
 
-export const ProposalDepositInput = ({
+const ProposalDepositInput = ({
   newDao: { votingModuleAdapter },
   data: {
     proposalDeposit: { enabled, type, denomOrAddress, token },
@@ -51,7 +51,7 @@ export const ProposalDepositInput = ({
   setValue,
   watch,
   errors,
-}: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationConfigWithProposalDeposit>) => {
   const { t } = useTranslation()
 
   const isDaoVotingCw20StakedAdapter =
@@ -238,7 +238,9 @@ export const ProposalDepositInput = ({
                   : undefined
               }
               tokens={{ loading: false, data: availableTokens }}
-              watch={watch as UseFormWatch<DaoCreationConfig>}
+              watch={
+                watch as UseFormWatch<DaoCreationConfigWithProposalDeposit>
+              }
             />
 
             <InputErrorMessage error={errors?.proposalDeposit?.amount} />
@@ -286,11 +288,11 @@ export const ProposalDepositInput = ({
   )
 }
 
-export const ProposalDepositReview = ({
+const ProposalDepositReview = ({
   data: {
     proposalDeposit: { enabled, amount, token },
   },
-}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfigWithProposalDeposit>) => {
   const { t } = useTranslation()
 
   const decimals = token?.decimals ?? 0
@@ -310,7 +312,7 @@ export const ProposalDepositReview = ({
   )
 }
 
-export const ProposalDepositVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
+export const ProposalDepositVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfigWithProposalDeposit> =
   {
     Icon: MoneyEmoji,
     nameI18nKey: 'form.proposalDepositTitle',

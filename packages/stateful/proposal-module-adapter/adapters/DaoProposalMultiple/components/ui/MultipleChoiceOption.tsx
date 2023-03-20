@@ -5,7 +5,6 @@ import cloneDeep from 'lodash.clonedeep'
 import { useState } from 'react'
 import {
   Control,
-  FieldArrayMethodProps,
   FieldErrors,
   FieldValues,
   Path,
@@ -21,6 +20,7 @@ import {
   ActionSelector,
   Button,
   DropdownIconButton,
+  IconButton,
   InputErrorMessage,
   TextAreaInput,
   TextInput,
@@ -40,20 +40,15 @@ export interface MultipleChoiceOptionProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
 > {
-  errorsOption: FieldErrors
-  title: FieldName
-  description: FieldName
+  titleFieldName: FieldName
+  descriptionFieldName: FieldName
+  errorsOption?: FieldErrors<MultipleChoiceOptionData>
   registerOption: UseFormRegister<FV>
   optionIndex: number
   control: Control<FV>
   actions: Action[]
   removeOption: () => void
-  addOption: (
-    value:
-      | Partial<MultipleChoiceOptionData>
-      | Partial<MultipleChoiceOptionData>[],
-    options?: FieldArrayMethodProps | undefined
-  ) => void
+  addOption: (value: Partial<MultipleChoiceOptionData>) => void
   loadedActions: LoadedActions
 }
 
@@ -61,8 +56,9 @@ export const MultipleChoiceOption = <
   FV extends FieldValues,
   FieldName extends Path<FV>
 >({
-  title,
-  description,
+  titleFieldName,
+  descriptionFieldName,
+  errorsOption,
   registerOption,
   optionIndex,
   actions,
@@ -72,12 +68,7 @@ export const MultipleChoiceOption = <
 }: MultipleChoiceOptionProps<FV, FieldName>) => {
   const { t } = useTranslation()
 
-  const {
-    control,
-    watch,
-    formState: { errors },
-    resetField,
-  } = useFormContext<NewProposalForm>()
+  const { control, watch, getValues } = useFormContext<NewProposalForm>()
 
   const [expanded, setExpanded] = useState(true)
   const toggleExpanded = () => {
@@ -85,7 +76,7 @@ export const MultipleChoiceOption = <
     setExpanded(newExpanded)
   }
 
-  const optionActionData = watch(`choices.${optionIndex}.actionData`)
+  const optionActionData = watch(`choices.${optionIndex}.actionData`) ?? []
   const { append: appendAction, remove: removeAction } = useFieldArray({
     name: `choices.${optionIndex}.actionData`,
     control,
@@ -94,7 +85,7 @@ export const MultipleChoiceOption = <
 
   return (
     <div className="flex flex-col gap-4 p-6 pt-5">
-      <div className="rounded-lg bg-background-tertiary ">
+      <div className="rounded-lg bg-background-tertiary">
         <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-4 px-6">
           <div className="flex grow flex-col">
             <div className="flex flex-row items-center gap-3">
@@ -125,22 +116,21 @@ export const MultipleChoiceOption = <
                 />
               </div>
               <TextInput
-                error={errors.choices?.[optionIndex]?.title}
-                fieldName={title}
+                error={errorsOption?.title}
+                fieldName={titleFieldName}
                 placeholder={t('form.multipleChoiceOptionTitlePlaceholder')}
                 register={registerOption}
                 validation={[validateRequired]}
               />
-              <InputErrorMessage error={errors.choices?.[optionIndex]?.title} />
+              <InputErrorMessage error={errorsOption?.title} />
               <div className="ml-auto">
-                <Button
+                <IconButton
+                  Icon={CopyAllOutlined}
                   onClick={() =>
-                    addOption(cloneDeep(watch(`choices.${optionIndex}`)))
+                    addOption(cloneDeep(getValues(`choices.${optionIndex}`)))
                   }
                   variant="ghost"
-                >
-                  <CopyAllOutlined className="text-icon-secondary" />
-                </Button>
+                />
               </div>
               <Button onClick={removeOption} type="button" variant="ghost">
                 <Close className="!h-5 !w-5" />
@@ -148,6 +138,7 @@ export const MultipleChoiceOption = <
             </div>
           </div>
         </div>
+
         <div className={clsx(!expanded && 'hidden')}>
           <div className="flex flex-col gap-4 p-6 pt-5">
             <p className="primary-text text-text-body">
@@ -161,8 +152,8 @@ export const MultipleChoiceOption = <
 
             <div className="flex flex-col">
               <TextAreaInput
-                error={errors.choices?.[optionIndex]?.description}
-                fieldName={description}
+                error={errorsOption?.description}
+                fieldName={descriptionFieldName}
                 placeholder={t(
                   'form.multipleChoiceOptionDescriptionPlaceholder'
                 )}
@@ -170,9 +161,7 @@ export const MultipleChoiceOption = <
                 rows={5}
                 validation={[validateRequired]}
               />
-              <InputErrorMessage
-                error={errors.choices?.[optionIndex]?.description}
-              />
+              <InputErrorMessage error={errorsOption?.description} />
             </div>
 
             <p className="title-text my-6 text-text-body">
@@ -181,61 +170,44 @@ export const MultipleChoiceOption = <
 
             {optionActionData?.length > 0 && (
               <div className="mb-4 flex flex-col gap-1">
-                {optionActionData.map((actionData, actionIndex) => {
-                  const Component =
-                    loadedActions[actionData.key]?.action?.Component
-
+                {optionActionData.map(({ key, data }, actionIndex) => {
+                  const Component = loadedActions[key]?.action?.Component
                   if (!Component) {
-                    throw new Error(
-                      `Error detecting action type "${actionData.key}".`
-                    )
+                    return null
                   }
 
                   return (
                     <SuspenseLoader
-                      key={actionIndex}
+                      key={`${optionIndex}-${actionIndex}-${key}`}
                       fallback={<ActionCardLoader />}
                     >
                       <Component
                         addAction={appendAction}
                         allActionsWithData={optionActionData}
-                        data={actionData.data}
+                        data={data}
                         errors={
-                          errors.choices?.[optionIndex]?.actionData?.[
-                            actionIndex
-                          ]?.data || {}
+                          errorsOption?.actionData?.[actionIndex]?.data || {}
                         }
                         fieldNamePrefix={`choices.${optionIndex}.actionData.${actionIndex}.data.`}
                         index={actionIndex}
                         isCreating
-                        onRemove={() => {
-                          resetField(
-                            `choices.${optionIndex}.actionData.${actionIndex}.data.`,
-                            {
-                              defaultValue: {},
-                            }
-                          )
-                          removeAction(actionIndex)
-                        }}
+                        onRemove={() => removeAction(actionIndex)}
                       />
                     </SuspenseLoader>
                   )
                 })}
               </div>
             )}
-            <div className="flex flex-row items-center gap-3">
-              <div className="flex shrink-0">
-                <ActionSelector
-                  actions={actions}
-                  onSelectAction={({ key }) => {
-                    appendAction({
-                      key,
-                      data: loadedActions[key]?.defaults ?? {},
-                    })
-                  }}
-                />
-              </div>
-            </div>
+
+            <ActionSelector
+              actions={actions}
+              onSelectAction={({ key }) => {
+                appendAction({
+                  key,
+                  data: loadedActions[key]?.defaults ?? {},
+                })
+              }}
+            />
           </div>
         </div>
       </div>

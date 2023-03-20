@@ -35,14 +35,8 @@ export const useLoadingDepositInfo = (): LoadingData<
     return { loading: true }
   }
 
-  // Type-checked below.
-
-  const depositInfoResponse = selectorValue.contents as
-    | DepositInfoPreProposeResponse
-    | undefined
-
   const depositInfo: CheckedDepositInfo | undefined =
-    depositInfoResponse?.deposit_info ?? undefined
+    selectorValue.contents?.deposit_info ?? undefined
 
   return {
     loading: false,

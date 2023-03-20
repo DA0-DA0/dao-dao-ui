@@ -1,9 +1,9 @@
 import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
-import { ThresholdValue } from './types'
+import { PercentOrMajorityValue } from './types'
 
-export const convertThresholdValueToPercentageThreshold = ({
+export const convertPercentOrMajorityValueToPercentageThreshold = ({
   majority,
   value,
-}: ThresholdValue): PercentageThreshold =>
+}: PercentOrMajorityValue): PercentageThreshold =>
   majority ? { majority: {} } : { percent: (value / 100).toFixed(2) }

@@ -6,6 +6,7 @@ import {
   VisibilityOff,
 } from '@mui/icons-material'
 import CircleIcon from '@mui/icons-material/Circle'
+import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import { useCallback, useState } from 'react'
@@ -42,6 +43,7 @@ import {
   decodedMessagesString,
   formatDateTime,
   formatTime,
+  processError,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -72,6 +74,7 @@ export interface NewProposalProps
   loading: boolean
   isPaused: boolean
   isMember: boolean
+  anyoneCanPropose: boolean
   depositUnsatisfied: boolean
   connected: boolean
   actions: Action[]
@@ -84,6 +87,7 @@ export const NewProposal = ({
   loading,
   isPaused,
   isMember,
+  anyoneCanPropose,
   depositUnsatisfied,
   connected,
   actions,
@@ -99,8 +103,8 @@ export const NewProposal = ({
 }: NewProposalProps) => {
   const { t } = useTranslation()
 
-  // Unpack here because we use these at the top level as well as
-  // inside of nested components.
+  // Unpack here because we use these at the top level as well as inside of
+  // nested components.
   const {
     register,
     control,
@@ -111,8 +115,11 @@ export const NewProposal = ({
 
   const [showPreview, setShowPreview] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
+  const { status: walletStatus } = useWallet()
   const { walletAddress = '', walletProfileData } = useWalletInfo()
+
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
 
@@ -123,11 +130,13 @@ export const NewProposal = ({
   } = useFieldArray({
     control,
     name: 'choices',
+    shouldUnregister: true,
   })
 
   const onSubmitForm: SubmitHandler<NewProposalForm> = useCallback(
     ({ ...proposalFormData }, event) => {
       setShowSubmitErrorNote(false)
+      setSubmitError('')
 
       const nativeEvent = event?.nativeEvent as SubmitEvent
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
@@ -137,23 +146,31 @@ export const NewProposal = ({
         return
       }
 
-      const proposalData: NewProposalData = {
-        choices: { options: [] },
-        title: proposalFormData.title,
-        description: proposalFormData.description,
-      }
-
-      proposalData.choices.options = proposalFormData.choices.map((option) => {
-        return {
+      let options
+      try {
+        options = proposalFormData.choices.map((option) => ({
+          title: option.title,
           description: option.description,
           msgs: option.actionData
             .map(({ key, data }) => loadedActions[key]?.transform(data))
+            // Filter out undefined messages.
             .filter(Boolean) as CosmosMsgForEmpty[],
-          title: option.title,
-        }
-      })
+        }))
+      } catch (err) {
+        console.error(err)
+        setSubmitError(
+          processError(err, {
+            forceCapture: false,
+          })
+        )
+        return
+      }
 
-      createProposal(proposalData)
+      createProposal({
+        title: proposalFormData.title,
+        description: proposalFormData.description,
+        choices: { options },
+      })
     },
     [createProposal, loadedActions]
   )
@@ -208,34 +225,32 @@ export const NewProposal = ({
           </div>
         </div>
       </div>
-      <div className="flex flex-row items-center justify-between gap-4 p-2 pt-5"></div>
-      <p className="title-text text-text-body">{t('title.choices')}</p>
 
-      <div className="flex flex-col items-stretch gap-2">
+      <p className="title-text my-6 text-text-body">{t('title.choices')}</p>
+
+      <div className="mb-4 flex flex-col items-stretch gap-2">
         {multipleChoiceFields.map(({ id }, index) => (
-          <div key={id}>
-            <MultipleChoiceOption
-              actions={actions}
-              addOption={addOption}
-              control={control}
-              description={`choices.${index}.description`}
-              errorsOption={errors}
-              loadedActions={loadedActions}
-              optionIndex={index}
-              registerOption={register}
-              removeOption={removeOption}
-              title={`choices.${index}.title`}
-            ></MultipleChoiceOption>
-          </div>
+          <MultipleChoiceOption
+            key={id}
+            actions={actions}
+            addOption={addOption}
+            control={control}
+            descriptionFieldName={`choices.${index}.description`}
+            errorsOption={errors?.choices?.[index]}
+            loadedActions={loadedActions}
+            optionIndex={index}
+            registerOption={register}
+            removeOption={() => removeOption(index)}
+            titleFieldName={`choices.${index}.title`}
+          />
         ))}
       </div>
 
-      <div className="flex flex-row items-center justify-between gap-4 p-2 pt-5"></div>
-
       <Button onClick={() => addOption({})} variant="secondary">
-        <Add />{' '}
+        <Add />
         <p className="title-text text-text-body">{t('button.addNewOption')}</p>
       </Button>
+
       <div className="mt-6 flex flex-col gap-2 border-y border-border-secondary py-6">
         <div className="flex flex-row items-center justify-between gap-6">
           <p className="title-text text-text-body">
@@ -266,8 +281,6 @@ export const NewProposal = ({
               title={
                 !connected
                   ? t('error.connectWalletToContinue')
-                  : !isMember
-                  ? t('error.mustBeMemberToCreateProposal')
                   : depositUnsatisfied
                   ? t('error.notEnoughForDeposit')
                   : isPaused
@@ -284,7 +297,7 @@ export const NewProposal = ({
               <Button
                 disabled={
                   !connected ||
-                  !isMember ||
+                  (!anyoneCanPropose && !isMember) ||
                   depositUnsatisfied ||
                   isPaused ||
                   choices.length < 2 ||
@@ -320,9 +333,31 @@ export const NewProposal = ({
           </div>
         </div>
 
+        {!anyoneCanPropose &&
+          !isMember &&
+          walletStatus !== WalletConnectionStatus.Initializing &&
+          walletStatus !== WalletConnectionStatus.AttemptingAutoConnection &&
+          walletStatus !== WalletConnectionStatus.Connecting && (
+            <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
+              {t('error.mustBeMemberToCreateProposal')}
+            </p>
+          )}
+
+        {simulationBypassExpiration && (
+          <p className="secondary-text max-w-prose self-end text-right text-text-interactive-warning-body">
+            {t('info.bypassSimulationExplanation')}
+          </p>
+        )}
+
         {showSubmitErrorNote && (
           <p className="secondary-text text-right text-text-interactive-error">
             {t('error.createProposalSubmitInvalid')}
+          </p>
+        )}
+
+        {!!submitError && (
+          <p className="secondary-text self-end text-right text-text-interactive-error">
+            {submitError}
           </p>
         )}
 
@@ -397,6 +432,7 @@ export const NewProposal = ({
           </div>
         )}
       </div>
+
       <div className="mt-4 flex flex-row items-center justify-end gap-2">
         {draft ? (
           <>

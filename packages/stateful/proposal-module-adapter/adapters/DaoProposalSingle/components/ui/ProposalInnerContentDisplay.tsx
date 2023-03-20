@@ -6,14 +6,14 @@ import { Button } from '@dao-dao/stateless'
 
 export type ProposalInnerContentDisplayProps = {
   duplicate: () => void
-  actionsDisplay: ReactNode
+  innerContentDisplay: ReactNode
   showRaw: boolean
   setShowRaw: (showRaw: boolean) => void
 }
 
 export const ProposalInnerContentDisplay = ({
   duplicate,
-  actionsDisplay,
+  innerContentDisplay,
   showRaw,
   setShowRaw,
 }: ProposalInnerContentDisplayProps) => {
@@ -21,7 +21,8 @@ export const ProposalInnerContentDisplay = ({
 
   return (
     <div className="space-y-3">
-      {actionsDisplay}
+      {innerContentDisplay}
+
       <div className="flex flex-row items-center gap-7">
         <Button onClick={() => setShowRaw(!showRaw)} variant="ghost">
           <AnalyticsOutlined className="text-icon-secondary" />

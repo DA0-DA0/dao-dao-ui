@@ -22,9 +22,9 @@ const choices = [
     description: 'description',
     index: 0,
     msgs: [],
-    option_type: MultipleChoiceOptionType.Standard,
+    optionType: MultipleChoiceOptionType.Standard,
     title: 'OPTION 1',
-    vote_count: '100',
+    voteCount: '100',
     turnoutVotePercentage: 100,
     color: '#8B2EFF',
   },
@@ -32,9 +32,9 @@ const choices = [
     description: 'description',
     index: 0,
     msgs: [],
-    option_type: MultipleChoiceOptionType.Standard,
+    optionType: MultipleChoiceOptionType.Standard,
     title: 'OPTION 3',
-    vote_count: '0',
+    voteCount: '0',
     turnoutVotePercentage: 0,
     color: '#004EFF',
   },
@@ -42,9 +42,9 @@ const choices = [
     description: 'description',
     index: 0,
     msgs: [],
-    option_type: MultipleChoiceOptionType.Standard,
+    optionType: MultipleChoiceOptionType.Standard,
     title: 'OPTION 2',
-    vote_count: '0',
+    voteCount: '0',
     turnoutVotePercentage: 0,
     color: '#4F00FF',
   },
@@ -52,22 +52,22 @@ const choices = [
     description: 'description',
     index: 1,
     msgs: [],
-    option_type: MultipleChoiceOptionType.None,
+    optionType: MultipleChoiceOptionType.None,
     title: 'titular_none_option',
-    vote_count: '0',
+    voteCount: '0',
     turnoutVotePercentage: 0,
     color: '#00B3FF',
   },
 ]
 
-const choices_tied = [
+const choicesTied = [
   {
     description: 'description',
     index: 0,
     msgs: [],
-    option_type: MultipleChoiceOptionType.Standard,
+    optionType: MultipleChoiceOptionType.Standard,
     title: 'OPTION 1',
-    vote_count: '25',
+    voteCount: '25',
     turnoutVotePercentage: 25,
     color: '#00B3FF',
   },
@@ -75,9 +75,9 @@ const choices_tied = [
     description: 'description',
     index: 0,
     msgs: [],
-    option_type: MultipleChoiceOptionType.Standard,
+    optionType: MultipleChoiceOptionType.Standard,
     title: 'OPTION 3',
-    vote_count: '25',
+    voteCount: '25',
     turnoutVotePercentage: 25,
     color: '#4F00FF',
   },
@@ -85,9 +85,9 @@ const choices_tied = [
     description: 'description',
     index: 0,
     msgs: [],
-    option_type: MultipleChoiceOptionType.Standard,
+    optionType: MultipleChoiceOptionType.Standard,
     title: 'OPTION 2',
-    vote_count: '25',
+    voteCount: '25',
     turnoutVotePercentage: 25,
     color: '#8B2EFF',
   },
@@ -95,9 +95,9 @@ const choices_tied = [
     description: 'description',
     index: 1,
     msgs: [],
-    option_type: MultipleChoiceOptionType.None,
+    optionType: MultipleChoiceOptionType.None,
     title: 'titular_none_option',
-    vote_count: '25',
+    voteCount: '25',
     turnoutVotePercentage: 25,
     color: '#004EFF',
   },
@@ -117,6 +117,7 @@ Default.args = {
     turnoutPercent: 100,
     quorumReached: false,
     processedChoices: choices,
+    winningChoice: choices[0],
   },
   open: true,
 }
@@ -128,23 +129,14 @@ Default.parameters = {
   },
 }
 
-export const NoQuorum = Template.bind({})
-NoQuorum.args = {
-  ...Default.args,
-  votesInfo: {
-    ...Default.args!.votesInfo!,
-    quorum: undefined,
-  },
-}
-NoQuorum.parameters = Default.parameters
-
 export const Tie = Template.bind({})
 Tie.args = {
   ...Default.args,
   votesInfo: {
     ...Default.args!.votesInfo!,
-    processedChoices: choices_tied,
+    processedChoices: choicesTied,
     isTie: true,
+    winningChoice: undefined,
   },
 }
 Tie.parameters = Default.parameters

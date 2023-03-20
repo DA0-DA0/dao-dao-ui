@@ -131,6 +131,9 @@
     "withdrawFiat": "Withdraw fiat"
   },
   "daoCreationAdapter": {
+    "DaoProposalMultiple": {
+      "advancedWarning": "These are advanced features. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass."
+    },
     "DaoProposalSingle": {
       "advancedWarning": "These are advanced features. Threshold and quorum can interact in counterintuitive ways. If you configure them without fully understanding how they work, you can lock your DAO, making it impossible for proposals to pass."
     },
@@ -1087,9 +1090,9 @@
     "watchOut": "Watch out!",
     "when": "When",
     "whoControlsDaoQuestion": "Who controls this DAO?",
+    "winningChoice": "Winning choice",
     "withdrawTokenSwap": "Withdraw Token Swap",
     "withdrawValidatorCommission": "Claim validator commission",
-    "winningChoice": "Winning choice",
     "yourMembership": "Your membership",
     "yourNotifiers": "Your notifiers",
     "yourSubmission": "Your submission"

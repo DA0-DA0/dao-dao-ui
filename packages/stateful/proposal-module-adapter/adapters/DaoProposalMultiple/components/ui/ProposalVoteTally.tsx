@@ -14,6 +14,7 @@ export interface ProposalVoteTallyProps {
 
 export const ProposalVoteTally = ({
   votesInfo: {
+    winningChoice,
     quorum,
     isTie,
     processedChoices,
@@ -24,15 +25,6 @@ export const ProposalVoteTally = ({
 }: ProposalVoteTallyProps) => {
   const { t } = useTranslation()
 
-  const winningChoice = processedChoices.reduce((prev, current) => {
-    return Number(prev.vote_count) > Number(current.vote_count) ? prev : current
-  })
-
-  const effectiveQuorum = quorum && {
-    display: quorum.display,
-    value: quorum.type === ProcessedTQType.Majority ? 50 : quorum.value,
-  }
-
   return (
     <div className="flex flex-col">
       <p className="primary-text gap-4 py-4 pt-5 text-text-body">
@@ -41,9 +33,7 @@ export const ProposalVoteTally = ({
       <div className="rounded-lg border border-border-secondary bg-component-widget">
         <div className="space-y-4 py-4 px-6">
           {/* Threshold title */}
-          <p className="link-text text-text-body">
-            {quorum ? t('title.ratioOfVotes') : t('title.turnout')}
-          </p>
+          <p className="link-text text-text-body">{t('title.ratioOfVotes')}</p>
 
           {/* Votes progress bar */}
           <div className="my-2">
@@ -51,19 +41,18 @@ export const ProposalVoteTally = ({
               rows={[
                 {
                   thickness: 10,
-                  data: [
-                    ...processedChoices.map((choice) => {
-                      const tooltipTitle =
-                        formatPercentOf100(choice.turnoutVotePercentage) +
-                        ' ' +
-                        choice.title
-                      return {
-                        value: Number(choice.turnoutVotePercentage),
-                        color: choice.color,
-                        tooltipTitle: tooltipTitle,
-                      }
-                    }),
-                  ],
+                  data: processedChoices.map((choice) => {
+                    const tooltipTitle =
+                      formatPercentOf100(choice.turnoutVotePercentage) +
+                      ' ' +
+                      choice.title
+
+                    return {
+                      value: Number(choice.turnoutVotePercentage),
+                      color: choice.color,
+                      tooltipTitle: tooltipTitle,
+                    }
+                  }),
                 },
               ]}
             />
@@ -78,70 +67,72 @@ export const ProposalVoteTally = ({
               {/* Winning option display */}
               <p className="flex flex-row items-center gap-1">
                 <p className="text-text-body">
-                  {isTie ? t('title.Tied') : winningChoice.title}
+                  {isTie || !winningChoice
+                    ? t('title.tied')
+                    : winningChoice.title}
                 </p>
               </p>
             </div>
           )}
         </div>
 
-        {/* Quorum, if present */}
-        {effectiveQuorum && (
-          <div className="space-y-4 border-t border-border-secondary py-4 px-6">
-            {/* Quorum title */}
-            <p className="link-text text-text-body">
-              {t('title.percentTurnout', {
-                value: formatPercentOf100(turnoutPercent),
-              })}
-            </p>
+        {/* Quorum */}
+        <div className="space-y-4 border-t border-border-secondary py-4 px-6">
+          {/* Quorum title */}
+          <p className="link-text text-text-body">
+            {t('title.percentTurnout', {
+              value: formatPercentOf100(turnoutPercent),
+            })}
+          </p>
 
-            {/* Quorum progress bar */}
-            <div className="my-2">
-              <ProgressBar
-                caretPosition={effectiveQuorum.value}
-                rows={[
-                  {
-                    thickness: 10,
-                    data: [
-                      {
-                        value: Number(turnoutPercent),
-                        color: 'var(--icon-secondary)',
-                      },
-                    ],
-                  },
-                ]}
+          {/* Quorum progress bar */}
+          <div className="my-2">
+            <ProgressBar
+              caretPosition={
+                quorum.type === ProcessedTQType.Majority ? 50 : quorum.value
+              }
+              rows={[
+                {
+                  thickness: 10,
+                  data: [
+                    {
+                      value: Number(turnoutPercent),
+                      color: 'var(--icon-secondary)',
+                    },
+                  ],
+                },
+              ]}
+            />
+          </div>
+
+          {/* Quorum config display */}
+          <div className="secondary-text flex flex-row items-center justify-between gap-2">
+            <div className="flex flex-row items-center gap-1">
+              <p className="text-text-tertiary">{t('title.quorum')}</p>
+              <TooltipInfoIcon
+                iconClassName="text-icon-tertiary"
+                size="sm"
+                title={t('info.proposalQuorumTooltip')}
               />
             </div>
 
-            {/* Quorum config display */}
-            <div className="secondary-text flex flex-row items-center justify-between gap-2">
-              <div className="flex flex-row items-center gap-1">
-                <p className="text-text-tertiary">{t('title.quorum')}</p>
-                <TooltipInfoIcon
-                  iconClassName="text-icon-tertiary"
-                  size="sm"
-                  title={t('info.proposalQuorumTooltip')}
-                />
-              </div>
+            <p className="flex flex-row items-center gap-1">
+              <Tooltip title={t('info.proposalQuorumTooltip')}>
+                <p className="text-text-body">{quorum.display}</p>
+              </Tooltip>
 
-              <p className="flex flex-row items-center gap-1">
-                <Tooltip title={t('info.proposalQuorumTooltip')}>
-                  <p className="text-text-body">{effectiveQuorum.display}</p>
+              {quorumReached ? (
+                <Tooltip title={t('info.reached')}>
+                  <Check className="!h-5 !w-5 text-icon-primary" />
                 </Tooltip>
-
-                {quorumReached ? (
-                  <Tooltip title={t('info.reached')}>
-                    <Check className="!h-5 !w-5 text-icon-primary" />
-                  </Tooltip>
-                ) : (
-                  <Tooltip title={t('info.notMet')}>
-                    <Close className="!h-5 !w-5 text-icon-primary" />
-                  </Tooltip>
-                )}
-              </p>
-            </div>
+              ) : (
+                <Tooltip title={t('info.notMet')}>
+                  <Close className="!h-5 !w-5 text-icon-primary" />
+                </Tooltip>
+              )}
+            </p>
           </div>
-        )}
+        </div>
       </div>
     </div>
   )
@@ -152,7 +143,7 @@ export const ProposalVoteTallyLoader = () => {
 
   return (
     <div className="animate-pulse rounded-lg border border-border-secondary bg-component-widget">
-      {/* Quorum, if present */}
+      {/* Quorum */}
       <div className="space-y-4 border-t border-border-secondary py-4 px-6">
         {/* Quorum title */}
         <p className="link-text text-text-body">{t('title.turnout')}</p>

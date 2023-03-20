@@ -17,30 +17,38 @@ export const useLoadingVotesInfo = (): LoadingData<VotesInfo> => {
   const proposal = loadingProposal.data
   const { quorum } = processQ(proposal.voting_strategy)
 
-  const vote_weights = [...proposal.votes.vote_weights]
+  const voteWeights = proposal.votes.vote_weights
 
-  const turnoutTotal = vote_weights.reduce((acc, weight) => {
-    return acc + Number(weight)
-  }, 0)
+  const turnoutTotal = voteWeights.reduce(
+    (acc, weight) => acc + Number(weight),
+    0
+  )
 
   const totalVotingPower = Number(proposal.total_power)
   const turnoutPercent = (turnoutTotal / totalVotingPower) * 100
   const isTie =
-    vote_weights.every((c) => c === vote_weights[0]) && vote_weights[0] !== '0'
+    voteWeights.every((c) => c === voteWeights[0]) && voteWeights[0] !== '0'
 
   // Calculate the vote percentage for each vote, out of all votes cast.
-  const processedChoices = vote_weights
+  const processedChoices = voteWeights
     .map((weight, index) => {
       const percentage = turnoutTotal
         ? (Number(weight) / turnoutTotal) * 100
         : 0
-      const choice = proposal.choices[index]
+      const {
+        option_type: optionType,
+        vote_count: voteCount,
+        ...choice
+      } = proposal.choices[index]
+
       return {
+        optionType,
+        voteCount,
         ...choice,
         turnoutVotePercentage: percentage,
         // Retrieve vote color before sorting choices.
         color:
-          choice.option_type === MultipleChoiceOptionType.None
+          optionType === MultipleChoiceOptionType.None
             ? 'var(--icon-tertiary)'
             : MULTIPLE_CHOICE_OPTION_COLORS[
                 index % MULTIPLE_CHOICE_OPTION_COLORS.length
@@ -50,12 +58,15 @@ export const useLoadingVotesInfo = (): LoadingData<VotesInfo> => {
     .sort((a, b) => a.turnoutVotePercentage - b.turnoutVotePercentage)
 
   const quorumReached =
-    !!quorum &&
-    (quorum.type === ProcessedTQType.Majority
+    quorum.type === ProcessedTQType.Majority
       ? // Majority
         turnoutTotal > totalVotingPower / 2
       : // Percent
-        turnoutPercent >= quorum.value)
+        turnoutPercent >= quorum.value
+
+  const winningChoice = processedChoices.reduce((prev, current) =>
+    Number(prev.voteCount) > Number(current.voteCount) ? prev : current
+  )
 
   return {
     loading: false,
@@ -67,6 +78,7 @@ export const useLoadingVotesInfo = (): LoadingData<VotesInfo> => {
       turnoutTotal,
       turnoutPercent,
       quorumReached,
+      winningChoice: turnoutTotal === 0 || isTie ? undefined : winningChoice,
     },
   }
 }

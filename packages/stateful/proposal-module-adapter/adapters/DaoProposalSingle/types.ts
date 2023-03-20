@@ -3,17 +3,21 @@ import { ReactNode } from 'react'
 import {
   ActionKeyAndData,
   DepositInfoSelector,
-  DurationWithUnits,
-  GenericToken,
   IProposalModuleAdapterCommonOptions,
   ProcessedTQ,
 } from '@dao-dao/types'
-import {
-  CosmosMsgFor_Empty,
-  DepositRefundPolicy,
-} from '@dao-dao/types/contracts/common'
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
+
+import {
+  DaoCreationConfigWithAllowRevoting,
+  DaoCreationConfigWithProposalDeposit,
+  DaoCreationConfigWithProposalSubmissionPolicy,
+  DaoCreationConfigWithQuorum,
+  DaoCreationConfigWithThreshold,
+  DaoCreationConfigWithVotingDuration,
+} from '../common/types'
 
 export interface NewProposalForm {
   title: string
@@ -26,30 +30,12 @@ export interface NewProposalData extends Omit<NewProposalForm, 'actionData'> {
   msgs: CosmosMsgFor_Empty[]
 }
 
-export interface ThresholdValue {
-  majority: boolean
-  // Will be used when `majority` is false.
-  value: number
-}
-
-export interface DaoCreationConfig {
-  threshold: ThresholdValue
-  quorumEnabled: boolean
-  quorum: ThresholdValue
-  votingDuration: DurationWithUnits
-  proposalDeposit: {
-    enabled: boolean
-    amount: number
-    // Token input fields.
-    type: 'native' | 'cw20' | 'voting_module_token'
-    denomOrAddress: string
-    // Loaded from token input fields to access metadata.
-    token?: GenericToken
-    refundPolicy: DepositRefundPolicy
-  }
-  anyoneCanPropose: boolean
-  allowRevoting: boolean
-}
+export type DaoCreationConfig = DaoCreationConfigWithAllowRevoting &
+  DaoCreationConfigWithProposalDeposit &
+  DaoCreationConfigWithProposalSubmissionPolicy &
+  DaoCreationConfigWithThreshold &
+  DaoCreationConfigWithQuorum &
+  DaoCreationConfigWithVotingDuration
 
 export interface VotesInfo {
   threshold: ProcessedTQ

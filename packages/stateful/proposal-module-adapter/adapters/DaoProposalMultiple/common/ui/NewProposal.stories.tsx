@@ -5,8 +5,9 @@ import {
   DaoPageWrapperDecorator,
   WalletProviderDecorator,
 } from '@dao-dao/storybook/decorators'
+import { LoadedActions } from '@dao-dao/types'
 
-import { useActions, useLoadActions } from '../../../../../actions'
+import { useActions } from '../../../../../actions'
 import { NewProposalForm } from '../../types'
 import { NewProposal } from './NewProposal'
 
@@ -19,7 +20,24 @@ export default {
 
 const Template: ComponentStory<typeof NewProposal> = (args) => {
   const actions = useActions()
-  const loadedActions = useLoadActions(actions)
+
+  // Call relevant action hooks in the same order every time.
+  const loadedActions: LoadedActions = actions.reduce(
+    (acc, action) => ({
+      ...acc,
+      [action.key]: {
+        action,
+        transform: (data: unknown) => {
+          console.log('transform', action, data)
+          return {
+            placeholder: action.key,
+          }
+        },
+        defaults: {},
+      },
+    }),
+    {}
+  )
 
   const formMethods = useForm<NewProposalForm>({
     mode: 'onChange',

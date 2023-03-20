@@ -1,19 +1,13 @@
 import { queryIndexer } from '@dao-dao/state/indexer'
-import { ContractVersion, FetchPreProposeAddressFunction } from '@dao-dao/types'
+import { FetchPreProposeAddressFunction } from '@dao-dao/types'
 import { cosmWasmClientRouter, getRpcForChainId } from '@dao-dao/utils'
 
 import { DaoProposalMultipleQueryClient } from '../contracts/DaoProposalMultiple.client'
 
 export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
   chainId,
-  proposalModuleAddress,
-  version
+  proposalModuleAddress
 ) => {
-  // v1 does not support pre-propose.
-  if (version === ContractVersion.V1) {
-    return null
-  }
-
   // Try indexer first.
   let creationPolicy
   try {

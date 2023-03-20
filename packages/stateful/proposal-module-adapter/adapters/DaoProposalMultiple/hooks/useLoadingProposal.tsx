@@ -5,14 +5,11 @@ import TimeAgo from 'react-timeago'
 import { blockHeightSelector, blocksPerYearSelector } from '@dao-dao/state'
 import {
   useCachedLoadable,
+  useCachedLoading,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
-import { ContractVersion, LoadingData, ProposalStatus } from '@dao-dao/types'
-import {
-  convertExpirationToDate,
-  formatDate,
-  loadableToLoadingData,
-} from '@dao-dao/utils'
+import { LoadingData, ProposalStatus } from '@dao-dao/types'
+import { convertExpirationToDate, formatDate } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { proposalSelector } from '../contracts/DaoProposalMultiple.recoil'
@@ -23,12 +20,12 @@ import { ProposalWithMetadata } from '../types'
 export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const { t } = useTranslation()
   const {
-    proposalModule: { address: proposalModuleAddress, version },
+    proposalModule: { address: proposalModuleAddress },
     proposalNumber,
     chainId,
   } = useProposalModuleAdapterOptions()
 
-  const proposalCachedLoadable = useCachedLoadable(
+  const loadingProposalResponse = useCachedLoading(
     proposalSelector({
       contractAddress: proposalModuleAddress,
       chainId,
@@ -37,10 +34,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
           proposalId: proposalNumber,
         },
       ],
-    })
-  )
-  const loadingProposalResponse = loadableToLoadingData(
-    proposalCachedLoadable,
+    }),
     undefined,
     // If proposal undefined (due to a selector error), an error will be thrown.
     () => {
@@ -81,12 +75,12 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     blockHeightLoadable.contents
   )
 
-  // V2 allows voting up to the expiration date, even if the decision has
+  // Votes can be cast up to the expiration date, even if the decision has
   // finalized due to sufficient votes cast.
   const votingOpen =
     // `expirationDate` will be undefined if expiration is set to never, which
     // the contract does not allow, so this is just a typecheck.
-    expirationDate && version !== ContractVersion.V1
+    expirationDate
       ? expirationDate.getTime() > Date.now()
       : proposal.status === ProposalStatus.Open
 
@@ -139,8 +133,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   return {
     loading: false,
     updating:
-      proposalCachedLoadable.state === 'hasValue' &&
-      proposalCachedLoadable.updating,
+      !loadingProposalResponse.loading && loadingProposalResponse.updating,
     data: {
       ...proposal,
       timestampInfo,

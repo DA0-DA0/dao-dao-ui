@@ -14,7 +14,7 @@ const Template: ComponentStory<typeof ProposalInnerContentDisplay> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  actionsDisplay: (
+  innerContentDisplay: (
     <p className="rounded-md border border-border-primary p-4 text-center">
       Action display placeholder
     </p>

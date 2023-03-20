@@ -26,11 +26,13 @@ import {
   useSimulateCosmosMsgs,
 } from '../../../../../hooks'
 import { usePropose as useProposePrePropose } from '../../contracts/DaoPreProposeMultiple.hooks'
+import { usePropose } from '../../contracts/DaoProposalMultiple.hooks'
 import {
   MakeUsePublishProposalOptions,
   PublishProposal,
   UsePublishProposal,
 } from '../../types'
+import { anyoneCanProposeSelector } from '../selectors'
 
 export const makeUsePublishProposal =
   ({
@@ -44,6 +46,13 @@ export const makeUsePublishProposal =
       coreAddress,
       chainId,
     })
+
+    const anyoneCanPropose = useRecoilValue(
+      anyoneCanProposeSelector({
+        chainId: chainId,
+        preProposeAddress: proposalModule.preProposeAddress,
+      })
+    )
 
     const depositInfo = useRecoilValue(depositInfoSelector)
     const depositInfoCw20TokenAddress =
@@ -138,6 +147,10 @@ export const makeUsePublishProposal =
       sender: walletAddress ?? '',
     })
 
+    const doPropose = usePropose({
+      contractAddress: proposalModule.address,
+      sender: walletAddress ?? '',
+    })
     const doProposePrePropose = useProposePrePropose({
       contractAddress: proposalModule.preProposeAddress ?? '',
       sender: walletAddress ?? '',
@@ -174,7 +187,7 @@ export const makeUsePublishProposal =
         if (blockHeight === undefined) {
           throw new Error(t('error.loadingData'))
         }
-        if (!isMember) {
+        if (!anyoneCanPropose && !isMember) {
           throw new Error(t('error.mustBeMemberToCreateProposal'))
         }
         if (depositUnsatisfied) {
@@ -257,7 +270,7 @@ export const makeUsePublishProposal =
                 `Failed to increase allowance to pay proposal deposit: (${processError(
                   err,
                   // Don't send to Sentry, but still format SDK errors nicely.
-                  { forceCapture: true }
+                  { forceCapture: false }
                 )})`
               )
             }
@@ -270,16 +283,18 @@ export const makeUsePublishProposal =
             ? coins(requiredProposalDeposit, depositInfoNativeTokenDenom)
             : undefined
 
-        let response: ExecuteResult = await doProposePrePropose(
-          {
-            msg: {
-              propose: newProposalData,
-            },
-          },
-          'auto',
-          undefined,
-          proposeFunds
-        )
+        let response: ExecuteResult = proposalModule.preProposeAddress
+          ? await doProposePrePropose(
+              {
+                msg: {
+                  propose: newProposalData,
+                },
+              },
+              'auto',
+              undefined,
+              proposeFunds
+            )
+          : await doPropose(newProposalData, 'auto', undefined, proposeFunds)
 
         if (proposeFunds?.length) {
           refreshBalances()
@@ -298,6 +313,7 @@ export const makeUsePublishProposal =
       [
         connected,
         blockHeight,
+        anyoneCanPropose,
         isMember,
         depositUnsatisfied,
         simulationBypassExpiration,
@@ -311,11 +327,13 @@ export const makeUsePublishProposal =
         awaitNextBlock,
         refreshBalances,
         doProposePrePropose,
+        doPropose,
       ]
     )
 
     return {
       publishProposal,
+      anyoneCanPropose,
       depositUnsatisfied,
       simulationBypassExpiration,
     }

@@ -1,16 +1,19 @@
 import { useMemo } from 'react'
 
-import { Action, IProposalModuleAdapterCommonOptions } from '@dao-dao/types'
+import {
+  Action,
+  ActionOptions,
+  IProposalModuleAdapterCommonOptions,
+} from '@dao-dao/types'
 
-import { useActionOptions } from '../../../../../actions'
-import { makeUpdatePreProposeConfigAction } from '../actions'
-import { makeUpdateProposalConfigAction } from '../actions/makeUpdateProposalConfigAction'
+import {
+  makeUpdatePreProposeConfigAction,
+  makeUpdateProposalConfigAction,
+} from '../actions'
 
 export const makeUseActions =
   ({ proposalModule }: IProposalModuleAdapterCommonOptions) =>
-  (): Action[] => {
-    const _options = useActionOptions()
-
+  (_options: ActionOptions): Action[] => {
     return useMemo(() => {
       const options = {
         ..._options,

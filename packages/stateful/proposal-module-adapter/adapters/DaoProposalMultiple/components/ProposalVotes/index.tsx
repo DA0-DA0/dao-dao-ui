@@ -4,7 +4,7 @@ import {
   useCachedLoadable,
 } from '@dao-dao/stateless'
 
-import { EntityDisplay } from '../../../../../components'
+import { EntityDisplay } from '../../../../../components/EntityDisplay'
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
 import { listAllVotesSelector } from '../../contracts/DaoProposalMultiple.recoil'
 import { useLoadingProposal } from '../../hooks'
@@ -40,11 +40,12 @@ export const ProposalVotes = () => {
           : {
               loading: false,
               data: votesLoadable.contents.map(
-                ({ vote, voter, power, votedAt }): ProposalVote => ({
+                ({ vote, voter, power, rationale, votedAt }): ProposalVote => ({
                   voterAddress: voter,
                   vote,
                   votingPowerPercent:
                     totalPower === 0 ? 0 : (Number(power) / totalPower) * 100,
+                  rationale,
                   votedAt: votedAt ? new Date(votedAt) : undefined,
                 })
               ),
