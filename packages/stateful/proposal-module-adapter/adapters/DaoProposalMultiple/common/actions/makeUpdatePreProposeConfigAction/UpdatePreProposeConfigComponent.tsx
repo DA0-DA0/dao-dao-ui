@@ -18,6 +18,7 @@ import { ActionComponent, DepositRefundPolicy } from '@dao-dao/types'
 import {
   NATIVE_DECIMALS,
   NATIVE_DENOM,
+  convertMicroDenomToDenomWithDecimals,
   nativeTokenLabel,
   validateContractAddress,
   validatePositive,
@@ -59,6 +60,11 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
   )
   const depositInfo: UpdatePreProposeConfigData['depositInfo'] = watch(
     fieldNamePrefix + 'depositInfo'
+  )
+
+  const depositAmountMin = convertMicroDenomToDenomWithDecimals(
+    1,
+    depositInfo.type === 'cw20' ? depositInfo.cw20Decimals : NATIVE_DECIMALS
   )
 
   return (
@@ -112,26 +118,12 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                 disabled={!isCreating}
                 error={errors?.depositInfo?.amount}
                 fieldName={fieldNamePrefix + 'depositInfo.amount'}
-                onMinus={() =>
-                  setValue(
-                    fieldNamePrefix + 'depositInfo.amount',
-                    Math.max(depositInfo.amount - 1, 0)
-                  )
-                }
-                onPlus={() =>
-                  setValue(
-                    fieldNamePrefix + 'depositInfo.amount',
-                    Math.max(depositInfo.amount + 1, 0)
-                  )
-                }
+                min={depositAmountMin}
                 register={register}
-                step={Math.pow(
-                  10,
-                  depositInfo.type === 'cw20'
-                    ? -depositInfo.cw20Decimals
-                    : -NATIVE_DECIMALS
-                )}
+                setValue={setValue}
+                step={depositAmountMin}
                 validation={[validateRequired, validatePositive]}
+                watch={watch}
               />
 
               <SelectInput

@@ -2,7 +2,7 @@ import { coins } from '@cosmjs/stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { FlagOutlined, Timelapse } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -24,13 +24,9 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
-  Action,
-  ActionKey,
   BaseNewProposalProps,
   DepositInfoSelector,
   IProposalModuleAdapterCommonOptions,
-  UseDefaults,
-  UseTransformToCosmos,
 } from '@dao-dao/types'
 import {
   convertExpirationToDate,
@@ -39,22 +35,18 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useCoreActions } from '../../../../../actions'
+import { useActions, useLoadActions } from '../../../../../actions'
 import {
   Cw20BaseHooks,
   useAwaitNextBlock,
   useMembership,
 } from '../../../../../hooks'
-import { useVotingModuleAdapter } from '../../../../../voting-module-adapter'
 import { usePropose as useProposePrePropose } from '../../contracts/DaoPreProposeMultiple.hooks'
 import { usePropose } from '../../contracts/DaoProposalMultiple.hooks'
 import { proposalSelector } from '../../contracts/DaoProposalMultiple.recoil'
 import { makeGetProposalInfo } from '../../functions'
 import { NewProposalData, NewProposalForm } from '../../types'
-import {
-  makeUseActions as makeUseProposalModuleActions,
-  useProcessQ,
-} from '../hooks'
+import { useProcessQ } from '../hooks'
 import { NewProposal as StatelessNewProposal } from '../ui/NewProposal'
 
 export type NewProposalProps = BaseNewProposalProps<NewProposalForm> & {
@@ -92,39 +84,8 @@ export const NewProposal = ({
     pauseInfo.state === 'hasValue' &&
     ('paused' in pauseInfo.contents || 'Paused' in pauseInfo.contents)
 
-  const {
-    hooks: { useActions: useVotingModuleActions },
-  } = useVotingModuleAdapter()
-  const votingModuleActions = useVotingModuleActions()
-  const proposalModuleActions = makeUseProposalModuleActions(options)()
-  const actions = useCoreActions(
-    useMemo(
-      () => [...votingModuleActions, ...proposalModuleActions],
-      [proposalModuleActions, votingModuleActions]
-    )
-  )
-
-  // Call relevant action hooks in the same order every time.
-  const actionsWithData: Partial<
-    Record<
-      ActionKey,
-      {
-        action: Action
-        transform: ReturnType<UseTransformToCosmos>
-        defaults: ReturnType<UseDefaults>
-      }
-    >
-  > = actions.reduce(
-    (acc, action) => ({
-      ...acc,
-      [action.key]: {
-        action,
-        transform: action.useTransformToCosmos(),
-        defaults: action.useDefaults(),
-      },
-    }),
-    {}
-  )
+  const actions = useActions()
+  const loadedActions = useLoadActions(actions)
 
   const formMethods = useFormContext<NewProposalForm>()
 
@@ -442,12 +403,12 @@ export const NewProposal = ({
   return (
     <StatelessNewProposal
       actions={actions}
-      actionsWithData={actionsWithData}
       connected={connected}
       createProposal={createProposal}
       depositUnsatisfied={!depositSatisfied}
       isMember={isMember}
       isPaused={isPaused}
+      loadedActions={loadedActions}
       loading={loading}
       {...props}
     />

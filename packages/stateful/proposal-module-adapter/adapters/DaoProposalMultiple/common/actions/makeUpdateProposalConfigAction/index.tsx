@@ -75,10 +75,9 @@ const maxVotingInfoToCosmos = (
 
 const Component: ActionComponent = (props) => {
   const {
-    hooks: { useGovernanceTokenInfo },
+    hooks: { useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
-  const governanceTokenSymbol =
-    useGovernanceTokenInfo?.().governanceTokenInfo.symbol
+  const governanceTokenSymbol = useCommonGovernanceTokenInfo?.().symbol
 
   return (
     <UpdateProposalConfigComponent

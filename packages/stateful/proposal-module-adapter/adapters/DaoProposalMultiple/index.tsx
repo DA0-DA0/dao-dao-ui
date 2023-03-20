@@ -5,7 +5,6 @@ import {
 } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
-import { getInstantiateInfo } from '../DaoProposalSingle/daoCreation/getInstantiateInfo'
 import {
   NewProposal,
   makeDepositInfoSelector,

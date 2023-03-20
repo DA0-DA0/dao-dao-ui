@@ -28,7 +28,7 @@ import {
   makeWasmMessage,
 } from '@dao-dao/utils'
 
-import { useCw20GovernanceTokenInfoResponseIfExists } from '../../../../../../voting-module-adapter/react/hooks/useCw20GovernanceTokenInfoResponseIfExists'
+import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
 import { configSelector } from '../../../contracts/DaoPreProposeMultiple.recoil'
 import {
   UpdatePreProposeConfigComponent,
@@ -38,8 +38,7 @@ import {
 export const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
   const { bech32Prefix } = useDaoInfoContext()
-  const cw20GovernanceTokenInfo =
-    useCw20GovernanceTokenInfoResponseIfExists()?.governanceTokenInfo
+  const cw20GovernanceTokenInfo = useCw20CommonGovernanceTokenInfoIfExists()
 
   const { fieldNamePrefix } = props
 
@@ -91,6 +90,7 @@ export const Component: ActionComponent = (props) => {
           governanceTokenSymbol: cw20GovernanceTokenInfo?.symbol,
           additionalAddressError,
           formattedJsonDisplayProps: {
+            title: t('form.tokenInfo'),
             jsonLoadable: tokenInfoLoadable,
           },
         },
@@ -114,10 +114,7 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
       throw new Error(t('error.loadingData'))
     }
 
-    const {
-      governanceTokenAddress: cw20GovernanceTokenAddress,
-      governanceTokenInfo: cw20GovernanceTokenInfo,
-    } = useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+    const cw20GovernanceToken = useCw20CommonGovernanceTokenInfoIfExists()
 
     const configDepositInfo = useRecoilValue(
       configSelector({
@@ -153,22 +150,23 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
             type:
               'native' in configDepositInfo.denom
                 ? 'native'
-                : cw20GovernanceTokenAddress &&
-                  configDepositInfo.denom.cw20 === cw20GovernanceTokenAddress
+                : cw20GovernanceToken &&
+                  configDepositInfo.denom.cw20 ===
+                    cw20GovernanceToken.denomOrAddress
                 ? 'voting_module_token'
                 : 'cw20',
             cw20Address:
               'cw20' in configDepositInfo.denom
                 ? configDepositInfo.denom.cw20
-                : cw20GovernanceTokenAddress ?? '',
+                : cw20GovernanceToken?.denomOrAddress ?? '',
             cw20Decimals,
             refundPolicy: configDepositInfo.refund_policy,
           }
         : {
             amount: Math.pow(10, NATIVE_DECIMALS),
             type: 'native',
-            cw20Address: cw20GovernanceTokenAddress ?? '',
-            cw20Decimals: cw20GovernanceTokenInfo?.decimals ?? 0,
+            cw20Address: cw20GovernanceToken?.denomOrAddress ?? '',
+            cw20Decimals: cw20GovernanceToken?.decimals ?? 0,
             refundPolicy: DepositRefundPolicy.OnlyPassed,
           }
 
@@ -186,8 +184,7 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
       throw new Error(t('error.loadingData'))
     }
 
-    const { governanceTokenInfo: cw20GovernanceTokenInfo } =
-      useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+    const cw20GovernanceToken = useCw20CommonGovernanceTokenInfoIfExists()
 
     const { open_proposal_submission } = useRecoilValue(
       configSelector({
@@ -207,7 +204,7 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
                     depositInfo.type === 'native'
                       ? NATIVE_DECIMALS
                       : depositInfo.type === 'voting_module_token'
-                      ? cw20GovernanceTokenInfo?.decimals ?? 0
+                      ? cw20GovernanceToken?.decimals ?? 0
                       : depositInfo.cw20Decimals
                   ).toString(),
                   denom:
@@ -246,17 +243,14 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
           },
         })
       },
-      [cw20GovernanceTokenInfo?.decimals, open_proposal_submission]
+      [cw20GovernanceToken?.decimals, open_proposal_submission]
     )
   }
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdatePreProposeConfigData> = (
     msg: Record<string, any>
   ) => {
-    const {
-      governanceTokenAddress: cw20GovernanceTokenAddress,
-      governanceTokenInfo: cw20GovernanceTokenInfo,
-    } = useCw20GovernanceTokenInfoResponseIfExists() ?? {}
+    const cw20GovernanceToken = useCw20CommonGovernanceTokenInfoIfExists()
 
     const configDepositInfo = msg.wasm?.execute?.msg?.update_config
       ?.deposit_info as UncheckedDepositInfo | null | undefined
@@ -301,8 +295,8 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
             depositInfo: {
               amount: Math.pow(10, NATIVE_DECIMALS),
               type: 'native',
-              cw20Address: cw20GovernanceTokenAddress ?? '',
-              cw20Decimals: cw20GovernanceTokenInfo?.decimals ?? 0,
+              cw20Address: cw20GovernanceToken?.denomOrAddress ?? '',
+              cw20Decimals: cw20GovernanceToken?.decimals ?? 0,
               refundPolicy: DepositRefundPolicy.OnlyPassed,
             },
           },
@@ -319,11 +313,11 @@ export const makeUpdatePreProposeConfigAction: ActionMaker<
 
       const cw20Address =
         type === 'voting_module_token'
-          ? cw20GovernanceTokenAddress ?? ''
+          ? cw20GovernanceToken?.denomOrAddress ?? ''
           : cw20TokenAddress ?? ''
       const cw20Decimals =
         type === 'voting_module_token'
-          ? cw20GovernanceTokenInfo?.decimals ?? 0
+          ? cw20GovernanceToken?.decimals ?? 0
           : cw20TokenInfo?.decimals ?? 0
 
       const depositInfo: UpdatePreProposeConfigData['depositInfo'] = {

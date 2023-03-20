@@ -139,6 +139,7 @@ export const InnerProposalInnerContentDisplay = ({
         ) : (
           <ActionsRenderer
             actionData={choice.actionData}
+            availableActions={availableActions}
             onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
           />
         )}

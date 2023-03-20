@@ -26,8 +26,7 @@ import {
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { CommonProposalInfo } from '@dao-dao/types'
-import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { CommonProposalInfo, ProposalStatus } from '@dao-dao/types'
 
 interface InnerDaoProposalProps {
   proposalInfo: CommonProposalInfo
@@ -43,7 +42,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     adapter: {
       components: {
         ProposalStatusAndInfo,
-        ProposalActionDisplay,
+        ProposalInnerContentDisplay,
         ProposalVoteTally,
         ProposalVotes,
       },
@@ -93,7 +92,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
       refreshProposalAndAll()
 
       // On execute, revalidate and refresh page.
-      if (status === Status.Executed) {
+      if (status === ProposalStatus.Executed) {
         // Show loading since page will reload shortly.
         toast.loading(t('success.proposalExecuted'))
 
@@ -106,7 +105,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         window.location.reload()
       }
       // On close, show success toast.
-      else if (status === Status.Closed) {
+      else if (status === ProposalStatus.Closed) {
         toast.success(t('success.proposalClosed'))
       }
     }
@@ -116,7 +115,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const onExecuteSuccess = useCallback(
     () =>
       onProposalUpdateFallback({
-        status: Status.Executed,
+        status: ProposalStatus.Executed,
         proposalId: proposalInfo.id,
       }),
     [onProposalUpdateFallback, proposalInfo.id]
@@ -126,7 +125,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const onCloseSuccess = useCallback(
     () =>
       onProposalUpdateFallback({
-        status: Status.Closed,
+        status: ProposalStatus.Closed,
         proposalId: proposalInfo.id,
       }),
     [onProposalUpdateFallback, proposalInfo.id]
@@ -167,9 +166,20 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   return (
     <Proposal
       ProposalStatusAndInfo={CachedProposalStatusAndInfo}
-      actionDisplay={
+      creator={{
+        name: creatorProfileLoading
+          ? { loading: true }
+          : {
+              loading: false,
+              data: creatorProfile.name,
+            },
+        address: proposalInfo.createdByAddress,
+      }}
+      onRefresh={refreshProposal}
+      proposalInfo={proposalInfo}
+      proposalInnerContentDisplay={
         <SuspenseLoader fallback={<Loader />}>
-          <ProposalActionDisplay
+          <ProposalInnerContentDisplay
             availableActions={orderedActions}
             duplicateLoading={
               !!navigatingToHref?.startsWith(duplicateUrlPrefix)
@@ -184,17 +194,6 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
           />
         </SuspenseLoader>
       }
-      creator={{
-        name: creatorProfileLoading
-          ? { loading: true }
-          : {
-              loading: false,
-              data: creatorProfile.name,
-            },
-        address: proposalInfo.createdByAddress,
-      }}
-      onRefresh={refreshProposal}
-      proposalInfo={proposalInfo}
       refreshing={refreshing}
       rightSidebarContent={
         connected ? (

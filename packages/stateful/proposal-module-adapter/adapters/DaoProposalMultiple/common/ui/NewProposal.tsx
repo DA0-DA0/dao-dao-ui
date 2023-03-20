@@ -32,9 +32,9 @@ import {
 } from '@dao-dao/stateless'
 import {
   Action,
-  ActionsWithData,
   BaseNewProposalProps,
   CosmosMsgFor_Empty,
+  LoadedActions,
 } from '@dao-dao/types'
 import { CosmosMsgForEmpty } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
@@ -75,7 +75,7 @@ export interface NewProposalProps
   depositUnsatisfied: boolean
   connected: boolean
   actions: Action[]
-  actionsWithData: ActionsWithData
+  loadedActions: LoadedActions
   simulationBypassExpiration?: Date
 }
 
@@ -87,7 +87,7 @@ export const NewProposal = ({
   depositUnsatisfied,
   connected,
   actions,
-  actionsWithData,
+  loadedActions,
   draft,
   saveDraft,
   drafts,
@@ -112,7 +112,7 @@ export const NewProposal = ({
   const [showPreview, setShowPreview] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
 
-  const { walletAddress = '', walletProfile } = useWalletInfo()
+  const { walletAddress = '', walletProfileData } = useWalletInfo()
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
 
@@ -147,7 +147,7 @@ export const NewProposal = ({
         return {
           description: option.description,
           msgs: option.actionData
-            .map(({ key, data }) => actionsWithData[key]?.transform(data))
+            .map(({ key, data }) => loadedActions[key]?.transform(data))
             .filter(Boolean) as CosmosMsgForEmpty[],
           title: option.title,
         }
@@ -155,7 +155,7 @@ export const NewProposal = ({
 
       createProposal(proposalData)
     },
-    [createProposal, actionsWithData]
+    [createProposal, loadedActions]
   )
 
   const onSubmitError: SubmitErrorHandler<NewProposalForm> = useCallback(
@@ -216,11 +216,11 @@ export const NewProposal = ({
           <div key={id}>
             <MultipleChoiceOption
               actions={actions}
-              actionsWithData={actionsWithData}
               addOption={addOption}
               control={control}
               description={`choices.${index}.description`}
               errorsOption={errors}
+              loadedActions={loadedActions}
               optionIndex={index}
               registerOption={register}
               removeOption={removeOption}
@@ -332,9 +332,9 @@ export const NewProposal = ({
               createdAt={new Date()}
               creator={{
                 address: walletAddress,
-                name: walletProfile.loading
-                  ? walletProfile
-                  : { loading: false, data: walletProfile.data.name },
+                name: walletProfileData.loading
+                  ? { loading: true }
+                  : { loading: false, data: walletProfileData.profile.name },
               }}
               description={proposalDescription}
               proposalInnerContentDisplay={
@@ -376,9 +376,7 @@ export const NewProposal = ({
                                 actionData
                                   .map(({ key, data }) => {
                                     try {
-                                      return actionsWithData[key]?.transform(
-                                        data
-                                      )
+                                      return loadedActions[key]?.transform(data)
                                     } catch (err) {
                                       console.error(err)
                                     }
@@ -432,11 +430,6 @@ export const NewProposal = ({
           <>
             {drafts.length > 0 && (
               <FilterableItemPopup
-                Trigger={({ open, ...props }) => (
-                  <Button pressed={open} variant="secondary" {...props}>
-                    {t('button.loadDraft')}
-                  </Button>
-                )}
                 filterableItemKeys={FILTERABLE_KEYS}
                 items={drafts.map(
                   ({ name, createdAt, lastUpdatedAt }, index) => ({
@@ -468,6 +461,13 @@ export const NewProposal = ({
                 )}
                 onSelect={(_, index) => loadDraft(index)}
                 searchPlaceholder={t('info.searchDraftPlaceholder')}
+                trigger={{
+                  type: 'button',
+                  props: {
+                    variant: 'secondary',
+                    children: t('button.loadDraft'),
+                  },
+                }}
               />
             )}
 

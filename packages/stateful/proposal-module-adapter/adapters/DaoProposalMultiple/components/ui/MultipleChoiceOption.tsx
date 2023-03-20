@@ -1,8 +1,4 @@
-import {
-  ArrowDropDownRounded,
-  Close,
-  CopyAllOutlined,
-} from '@mui/icons-material'
+import { Close, CopyAllOutlined } from '@mui/icons-material'
 import CircleIcon from '@mui/icons-material/Circle'
 import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
@@ -29,13 +25,7 @@ import {
   TextAreaInput,
   TextInput,
 } from '@dao-dao/stateless'
-import {
-  Action,
-  ActionKey,
-  ActionKeyAndData,
-  UseDefaults,
-  UseTransformToCosmos,
-} from '@dao-dao/types'
+import { Action, ActionKeyAndData, LoadedActions } from '@dao-dao/types'
 import { validateRequired } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components'
@@ -64,16 +54,7 @@ export interface MultipleChoiceOptionProps<
       | Partial<MultipleChoiceOptionData>[],
     options?: FieldArrayMethodProps | undefined
   ) => void
-  actionsWithData: Partial<
-    Record<
-      ActionKey,
-      {
-        action: Action
-        transform: ReturnType<UseTransformToCosmos>
-        defaults: ReturnType<UseDefaults>
-      }
-    >
-  >
+  loadedActions: LoadedActions
 }
 
 export const MultipleChoiceOption = <
@@ -87,7 +68,7 @@ export const MultipleChoiceOption = <
   actions,
   removeOption,
   addOption,
-  actionsWithData,
+  loadedActions,
 }: MultipleChoiceOptionProps<FV, FieldName>) => {
   const { t } = useTranslation()
 
@@ -131,8 +112,6 @@ export const MultipleChoiceOption = <
                   }}
                 />
                 <DropdownIconButton
-                  //  top-0 right-0 bottom-0 left-5 align-middle text-icon-primary
-                  Icon={ArrowDropDownRounded}
                   className="absolute right-0 bottom-0 left-0 top-0 align-middle"
                   open={expanded}
                   size="xl"
@@ -204,7 +183,7 @@ export const MultipleChoiceOption = <
               <div className="mb-4 flex flex-col gap-1">
                 {optionActionData.map((actionData, actionIndex) => {
                   const Component =
-                    actionsWithData[actionData.key]?.action?.Component
+                    loadedActions[actionData.key]?.action?.Component
 
                   if (!Component) {
                     throw new Error(
@@ -251,7 +230,7 @@ export const MultipleChoiceOption = <
                   onSelectAction={({ key }) => {
                     appendAction({
                       key,
-                      data: actionsWithData[key]?.defaults ?? {},
+                      data: loadedActions[key]?.defaults ?? {},
                     })
                   }}
                 />

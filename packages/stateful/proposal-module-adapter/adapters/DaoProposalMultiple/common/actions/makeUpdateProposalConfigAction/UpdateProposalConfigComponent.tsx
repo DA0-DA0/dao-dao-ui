@@ -39,12 +39,10 @@ export const UpdateProposalConfigComponent: ActionComponent<
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext()
 
-  const deposit = watch(fieldNamePrefix + 'depositInfo.deposit')
   const depositRequired = watch(fieldNamePrefix + 'depositRequired')
   const quorumType = watch(fieldNamePrefix + 'quorumType')
   const proposalDuration = watch(fieldNamePrefix + 'proposalDuration')
   const proposalDurationUnits = watch(fieldNamePrefix + 'proposalDurationUnits')
-  const quorumPercentage = watch(fieldNamePrefix + 'quorumPercentage')
 
   const percentageQuorumSelected = quorumType === '%'
 
@@ -114,22 +112,13 @@ export const UpdateProposalConfigComponent: ActionComponent<
                 disabled={!isCreating}
                 error={errors?.depositInfo?.deposit}
                 fieldName={fieldNamePrefix + 'depositInfo.deposit'}
-                onMinus={() =>
-                  setValue(
-                    fieldNamePrefix + 'depositInfo.deposit',
-                    Math.max(deposit - 1, 0.000001)
-                  )
-                }
-                onPlus={() =>
-                  setValue(
-                    fieldNamePrefix + 'depositInfo.deposit',
-                    Math.max(deposit + 1, 0.000001)
-                  )
-                }
+                min={0.000001}
                 register={register}
+                setValue={setValue}
                 step={0.000001}
                 unit={`$${governanceTokenSymbol}`}
                 validation={[validateRequired, validatePositive]}
+                watch={watch}
               />
               <InputErrorMessage error={errors?.depositInfo?.deposit} />
             </div>
@@ -167,21 +156,12 @@ export const UpdateProposalConfigComponent: ActionComponent<
                 disabled={!isCreating}
                 error={errors?.quorumPercentage}
                 fieldName={fieldNamePrefix + 'quorumPercentage'}
-                onMinus={() =>
-                  setValue(
-                    fieldNamePrefix + 'quorumPercentage',
-                    Math.max(quorumPercentage - 1, 1)
-                  )
-                }
-                onPlus={() =>
-                  setValue(
-                    fieldNamePrefix + 'quorumPercentage',
-                    Math.max(quorumPercentage + 1, 1)
-                  )
-                }
+                min={1}
                 register={register}
+                setValue={setValue}
                 sizing="sm"
                 validation={[validateRequired, validatePercent]}
+                watch={watch}
               />
               <InputErrorMessage error={errors?.quorumPercentage} />
             </div>
@@ -211,19 +191,9 @@ export const UpdateProposalConfigComponent: ActionComponent<
               disabled={!isCreating}
               error={errors?.proposalDuration}
               fieldName={fieldNamePrefix + 'proposalDuration'}
-              onMinus={() =>
-                setValue(
-                  fieldNamePrefix + 'proposalDuration',
-                  Math.max(proposalDuration - 1, 1)
-                )
-              }
-              onPlus={() =>
-                setValue(
-                  fieldNamePrefix + 'proposalDuration',
-                  Math.max(proposalDuration + 1, 1)
-                )
-              }
+              min={1}
               register={register}
+              setValue={setValue}
               sizing="sm"
               step={1}
               validation={[
@@ -236,6 +206,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
                   value >= 60 ||
                   'Cannot be shorter than 60 seconds.',
               ]}
+              watch={watch}
             />
             <InputErrorMessage error={errors?.proposalDuration} />
           </div>
