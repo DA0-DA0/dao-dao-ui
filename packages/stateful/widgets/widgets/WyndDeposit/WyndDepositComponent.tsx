@@ -2,7 +2,7 @@ import { coins } from '@cosmjs/amino'
 import { ArrowDropDown, ArrowOutwardRounded } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import { useCallback, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import {
@@ -24,7 +24,6 @@ import {
   ButtonLink,
   CopyToClipboard,
   FilterableItemPopup,
-  FilterableItemPopupProps,
   MarkdownRenderer,
   TokenAmountDisplay,
   useCachedLoadable,
@@ -225,55 +224,6 @@ export const WyndDepositComponent = ({
     ? Number(outputAmount)
     : swapSimulationInput
 
-  const TokenTrigger: FilterableItemPopupProps['Trigger'] = useCallback(
-    ({ open, ...props }) => (
-      <Button
-        className={clsx(
-          (loadingWyndTokens.loading || walletBalances.loading) &&
-            'animate-pulse'
-        )}
-        disabled={
-          loadingWyndTokens.loading || walletBalances.loading || !connected
-        }
-        pressed={open}
-        variant="ghost"
-        {...props}
-      >
-        <div
-          className="mr-1 h-10 w-10 shrink-0 rounded-full bg-cover bg-center"
-          style={{ backgroundImage: `url(${token.imageUrl})` }}
-        />
-        <div className="flex max-w-[10rem] flex-col items-start gap-1 overflow-hidden text-left">
-          <p className="title-text max-w-full truncate">{token.symbol}</p>
-          <p className="caption-text">
-            {t('title.balance')}:{' '}
-            <span className={clsx(walletBalances.loading && 'animate-pulse')}>
-              {walletBalances.loading
-                ? '...'
-                : convertMicroDenomToDenomWithDecimals(
-                    tokenBalance,
-                    token.decimals
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: token.decimals,
-                  })}
-            </span>
-          </p>
-        </div>
-        <ArrowDropDown className="ml-2 !h-6 !w-6" />
-      </Button>
-    ),
-    [
-      connected,
-      loadingWyndTokens.loading,
-      t,
-      token.decimals,
-      token.imageUrl,
-      token.symbol,
-      tokenBalance,
-      walletBalances.loading,
-    ]
-  )
-
   const [depositing, setDepositing] = useState(false)
   const [error, setError] = useState('')
   const [txHash, setTxHash] = useState('')
@@ -400,7 +350,6 @@ export const WyndDepositComponent = ({
       <p className="caption-text -mb-6">{t('info.chooseTokenToPayWith')}:</p>
       <div className="flex flex-row items-center justify-between gap-2">
         <FilterableItemPopup
-          Trigger={TokenTrigger}
           filterableItemKeys={FILTERABLE_KEYS}
           items={availableTokenItems}
           onSelect={(_, index) => {
@@ -411,6 +360,51 @@ export const WyndDepositComponent = ({
             setToken(loadingWyndTokens.data[index])
           }}
           searchPlaceholder={t('info.searchForToken')}
+          trigger={{
+            type: 'button',
+            props: {
+              className: clsx(
+                (loadingWyndTokens.loading || walletBalances.loading) &&
+                  'animate-pulse'
+              ),
+              disabled:
+                loadingWyndTokens.loading ||
+                walletBalances.loading ||
+                !connected,
+              variant: 'ghost',
+              children: (
+                <>
+                  <div
+                    className="mr-1 h-10 w-10 shrink-0 rounded-full bg-cover bg-center"
+                    style={{ backgroundImage: `url(${token.imageUrl})` }}
+                  />
+                  <div className="flex max-w-[10rem] flex-col items-start gap-1 overflow-hidden text-left">
+                    <p className="title-text max-w-full truncate">
+                      {token.symbol}
+                    </p>
+                    <p className="caption-text">
+                      {t('title.balance')}:{' '}
+                      <span
+                        className={clsx(
+                          walletBalances.loading && 'animate-pulse'
+                        )}
+                      >
+                        {walletBalances.loading
+                          ? '...'
+                          : convertMicroDenomToDenomWithDecimals(
+                              tokenBalance,
+                              token.decimals
+                            ).toLocaleString(undefined, {
+                              maximumFractionDigits: token.decimals,
+                            })}
+                      </span>
+                    </p>
+                  </div>
+                  <ArrowDropDown className="ml-2 !h-6 !w-6" />
+                </>
+              ),
+            },
+          }}
         />
 
         <Button
