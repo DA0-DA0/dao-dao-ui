@@ -5,6 +5,8 @@ import { nativeTokenLabel, nativeTokenLogoURI } from '../ibc'
 import { ChainPrefixIdMaps } from './chainPrefixIdMaps'
 import { CodeIdConfigs } from './codeIdConfigs'
 
+export * from './adapters'
+
 export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV
 
 export const SITE_URL =

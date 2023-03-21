@@ -78,7 +78,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
 }
 
 export type ProposalModuleAdapter<
-  DaoCreationConfig extends FieldValues = any,
+  DaoCreationExtraVotingConfig extends FieldValues = any,
   Vote extends unknown = any,
   FormData extends FieldValues = any
 > = {
@@ -103,15 +103,15 @@ export type ProposalModuleAdapter<
   }
 
   daoCreation: {
-    defaultConfig: DaoCreationConfig
-
-    votingConfig: {
-      items: DaoCreationVotingConfigItem[]
+    // Voting config added to the common voting config.
+    extraVotingConfig?: {
+      default: DaoCreationExtraVotingConfig
+      items?: DaoCreationVotingConfigItem[]
       advancedItems?: DaoCreationVotingConfigItem[]
       advancedWarningI18nKeys?: string[]
     }
 
-    getInstantiateInfo: DaoCreationGetInstantiateInfo<DaoCreationConfig>
+    getInstantiateInfo: DaoCreationGetInstantiateInfo<DaoCreationExtraVotingConfig>
   }
 }
 

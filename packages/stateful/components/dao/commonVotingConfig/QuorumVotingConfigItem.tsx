@@ -1,14 +1,11 @@
 import { useTranslation } from 'react-i18next'
 
-import {
-  BallotDepositEmoji,
-  NumberInput,
-  SelectInput,
-} from '@dao-dao/stateless'
+import { MegaphoneEmoji, NumberInput, SelectInput } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
+  DaoCreationVotingConfigWithQuorum,
 } from '@dao-dao/types'
 import {
   formatPercentOf100,
@@ -16,17 +13,15 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { DaoCreationConfigWithThreshold } from './types'
-
-const ThresholdInput = ({
+const QuorumInput = ({
   data: {
-    threshold: { majority },
+    quorum: { majority },
   },
   register,
   setValue,
   watch,
   errors,
-}: DaoCreationVotingConfigItemInputProps<DaoCreationConfigWithThreshold>) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithQuorum>) => {
   const { t } = useTranslation()
 
   return (
@@ -34,8 +29,8 @@ const ThresholdInput = ({
       {!majority && (
         <NumberInput
           containerClassName="grow"
-          error={errors?.threshold?.value}
-          fieldName="threshold.value"
+          error={errors?.quorum?.value}
+          fieldName="quorum.value"
           min={1}
           register={register}
           setValue={setValue}
@@ -48,7 +43,7 @@ const ThresholdInput = ({
 
       <SelectInput
         containerClassName={majority ? 'grow' : undefined}
-        onChange={(value) => setValue('threshold.majority', value === '1')}
+        onChange={(value) => setValue('quorum.majority', value === '1')}
         validation={[validateRequired]}
         value={majority ? '1' : '0'}
       >
@@ -59,22 +54,21 @@ const ThresholdInput = ({
   )
 }
 
-const ThresholdReview = ({
+const QuorumReview = ({
   data: {
-    threshold: { majority, value },
+    quorum: { majority, value },
   },
-}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfigWithThreshold>) => {
+}: DaoCreationVotingConfigItemReviewProps<DaoCreationVotingConfigWithQuorum>) => {
   const { t } = useTranslation()
   return <>{majority ? t('info.majority') : formatPercentOf100(value)}</>
 }
 
-export const ThresholdVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfigWithThreshold> =
-  {
-    Icon: BallotDepositEmoji,
-    nameI18nKey: 'form.passingThresholdTitle',
-    descriptionI18nKey: 'form.passingThresholdDescription',
-    Input: ThresholdInput,
-    getInputError: ({ threshold } = {}) =>
-      threshold?.majority || threshold?.value,
-    Review: ThresholdReview,
-  }
+export const makeQuorumVotingConfigItem =
+  (): DaoCreationVotingConfigItem<DaoCreationVotingConfigWithQuorum> => ({
+    Icon: MegaphoneEmoji,
+    nameI18nKey: 'form.quorumTitle',
+    descriptionI18nKey: 'form.quorumDescription',
+    Input: QuorumInput,
+    getInputError: ({ quorum } = {}) => quorum?.majority || quorum?.value,
+    Review: QuorumReview,
+  })

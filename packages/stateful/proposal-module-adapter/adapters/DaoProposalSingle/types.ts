@@ -4,20 +4,12 @@ import {
   ActionKeyAndData,
   DepositInfoSelector,
   IProposalModuleAdapterCommonOptions,
+  PercentOrMajorityValue,
   ProcessedTQ,
 } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-
-import {
-  DaoCreationConfigWithAllowRevoting,
-  DaoCreationConfigWithProposalDeposit,
-  DaoCreationConfigWithProposalSubmissionPolicy,
-  DaoCreationConfigWithQuorum,
-  DaoCreationConfigWithThreshold,
-  DaoCreationConfigWithVotingDuration,
-} from '../common/types'
 
 export interface NewProposalForm {
   title: string
@@ -30,12 +22,9 @@ export interface NewProposalData extends Omit<NewProposalForm, 'actionData'> {
   msgs: CosmosMsgFor_Empty[]
 }
 
-export type DaoCreationConfig = DaoCreationConfigWithAllowRevoting &
-  DaoCreationConfigWithProposalDeposit &
-  DaoCreationConfigWithProposalSubmissionPolicy &
-  DaoCreationConfigWithThreshold &
-  DaoCreationConfigWithQuorum &
-  DaoCreationConfigWithVotingDuration
+export type DaoCreationExtraVotingConfig = {
+  threshold: PercentOrMajorityValue
+}
 
 export interface VotesInfo {
   threshold: ProcessedTQ

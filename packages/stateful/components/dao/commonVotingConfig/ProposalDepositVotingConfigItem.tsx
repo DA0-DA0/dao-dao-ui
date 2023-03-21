@@ -3,7 +3,11 @@ import { UseFormWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { genericTokenSelector } from '@dao-dao/state'
+import { genericTokenSelector } from '@dao-dao/state/recoil'
+import {
+  DaoCreationConfig as DaoVotingCw20StakedConfig,
+  GovernanceTokenType,
+} from '@dao-dao/stateful/voting-module-adapter/adapters/DaoVotingCw20Staked/types'
 import {
   AddressInput,
   FormSwitchCard,
@@ -19,12 +23,14 @@ import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
+  DaoCreationVotingConfigWithProposalDeposit,
   DepositRefundPolicy,
   GenericToken,
   TokenType,
 } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
+  DaoVotingCw20StakedAdapterId,
   NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
   convertMicroDenomToDenomWithDecimals,
@@ -32,13 +38,6 @@ import {
   isValidContractAddress,
   validateContractAddress,
 } from '@dao-dao/utils'
-
-import { DaoVotingCw20StakedAdapter } from '../../../voting-module-adapter'
-import {
-  DaoCreationConfig as DaoVotingCw20StakedConfig,
-  GovernanceTokenType,
-} from '../../../voting-module-adapter/adapters/DaoVotingCw20Staked/types'
-import { DaoCreationConfigWithProposalDeposit } from './types'
 
 const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
 
@@ -51,11 +50,11 @@ const ProposalDepositInput = ({
   setValue,
   watch,
   errors,
-}: DaoCreationVotingConfigItemInputProps<DaoCreationConfigWithProposalDeposit>) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithProposalDeposit>) => {
   const { t } = useTranslation()
 
   const isDaoVotingCw20StakedAdapter =
-    votingModuleAdapter.id === DaoVotingCw20StakedAdapter.id
+    votingModuleAdapter.id === DaoVotingCw20StakedAdapterId
   const cw20StakedBalanceVotingAdapterData =
     votingModuleAdapter.data as DaoVotingCw20StakedConfig
 
@@ -239,7 +238,7 @@ const ProposalDepositInput = ({
               }
               tokens={{ loading: false, data: availableTokens }}
               watch={
-                watch as UseFormWatch<DaoCreationConfigWithProposalDeposit>
+                watch as UseFormWatch<DaoCreationVotingConfigWithProposalDeposit>
               }
             />
 
@@ -292,7 +291,7 @@ const ProposalDepositReview = ({
   data: {
     proposalDeposit: { enabled, amount, token },
   },
-}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfigWithProposalDeposit>) => {
+}: DaoCreationVotingConfigItemReviewProps<DaoCreationVotingConfigWithProposalDeposit>) => {
   const { t } = useTranslation()
 
   const decimals = token?.decimals ?? 0
@@ -312,12 +311,12 @@ const ProposalDepositReview = ({
   )
 }
 
-export const ProposalDepositVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfigWithProposalDeposit> =
-  {
+export const makeProposalDepositVotingConfigItem =
+  (): DaoCreationVotingConfigItem<DaoCreationVotingConfigWithProposalDeposit> => ({
     Icon: MoneyEmoji,
     nameI18nKey: 'form.proposalDepositTitle',
     descriptionI18nKey: 'form.proposalDepositDescription',
     Input: ProposalDepositInput,
     getInputError: () => undefined,
     Review: ProposalDepositReview,
-  }
+  })

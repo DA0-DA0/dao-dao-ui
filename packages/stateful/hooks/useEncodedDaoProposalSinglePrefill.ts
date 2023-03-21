@@ -1,10 +1,8 @@
 import { useDaoInfoContext } from '@dao-dao/stateless'
 import { Action, ProposalPrefill } from '@dao-dao/types'
+import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
-import {
-  DaoProposalSingleAdapter,
-  matchAdapter as matchProposalModuleAdapter,
-} from '../proposal-module-adapter'
+import { matchAdapter as matchProposalModuleAdapter } from '../proposal-module-adapter'
 import { NewProposalForm } from '../proposal-module-adapter/adapters/DaoProposalSingle/types'
 
 interface ActionAndData<Data extends {} = any> {
@@ -23,7 +21,7 @@ export const useEncodedDaoProposalSinglePrefill = ({
   title = '',
   description = '',
   actions,
-  proposalModuleId = DaoProposalSingleAdapter.id,
+  proposalModuleId = DaoProposalSingleAdapterId,
 }: UseEncodedProposalPrefillUrlOptions): string | undefined => {
   const { proposalModules } = useDaoInfoContext()
 

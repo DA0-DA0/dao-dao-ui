@@ -1,19 +1,7 @@
-import {
-  DepositRefundPolicy,
-  DurationUnits,
-  ProposalModuleAdapter,
-} from '@dao-dao/types'
+import { ProposalModuleAdapter } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { NATIVE_TOKEN } from '@dao-dao/utils'
+import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
-import {
-  AllowRevotingVotingConfigItem,
-  ProposalDepositVotingConfigItem,
-  ProposalSubmissionPolicyVotingConfigItem,
-  ThresholdVotingConfigItem,
-  VotingDurationVotingConfigItem,
-  makeQuorumVotingConfigItem,
-} from '../common'
 import {
   NewProposal,
   makeDepositInfoSelector,
@@ -30,7 +18,7 @@ import {
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
-import { getInstantiateInfo } from './daoCreation'
+import { ThresholdVotingConfigItem, getInstantiateInfo } from './daoCreation'
 import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
 import {
   useCastVote,
@@ -39,14 +27,14 @@ import {
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
 } from './hooks'
-import { DaoCreationConfig, NewProposalForm } from './types'
+import { DaoCreationExtraVotingConfig, NewProposalForm } from './types'
 
 export const DaoProposalSingleAdapter: ProposalModuleAdapter<
-  DaoCreationConfig,
+  DaoCreationExtraVotingConfig,
   Vote,
   NewProposalForm
 > = {
-  id: 'DaoProposalSingle',
+  id: DaoProposalSingleAdapterId,
   contractNames: [
     // V1
     'cw-govmod-single',
@@ -156,45 +144,15 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
   },
 
   daoCreation: {
-    defaultConfig: {
-      threshold: {
-        majority: true,
-        value: 75,
+    extraVotingConfig: {
+      default: {
+        threshold: {
+          majority: true,
+          value: 67,
+        },
       },
-      quorumEnabled: true,
-      quorum: {
-        majority: false,
-        value: 20,
-      },
-      votingDuration: {
-        value: 1,
-        units: DurationUnits.Weeks,
-      },
-      proposalDeposit: {
-        enabled: false,
-        amount: 10,
-        type: 'native',
-        denomOrAddress: NATIVE_TOKEN.denomOrAddress,
-        token: undefined,
-        refundPolicy: DepositRefundPolicy.OnlyPassed,
-      },
-      anyoneCanPropose: false,
-      allowRevoting: false,
-    },
 
-    votingConfig: {
-      items: [VotingDurationVotingConfigItem, ProposalDepositVotingConfigItem],
-      advancedItems: [
-        AllowRevotingVotingConfigItem,
-        ThresholdVotingConfigItem,
-        makeQuorumVotingConfigItem({
-          canBeDisabled: true,
-        }),
-        ProposalSubmissionPolicyVotingConfigItem,
-      ],
-      advancedWarningI18nKeys: [
-        'daoCreationAdapter.DaoProposalSingle.advancedWarning',
-      ],
+      advancedItems: [ThresholdVotingConfigItem],
     },
 
     getInstantiateInfo,

@@ -1,7 +1,0 @@
-export * from './AllowRevotingVotingConfigItem'
-export * from './ProposalDepositVotingConfigItem'
-export * from './ProposalSubmissionPolicyVotingConfigItem'
-export * from './QuorumVotingConfigItem'
-export * from './ThresholdVotingConfigItem'
-export * from './types'
-export * from './VotingDurationVotingConfigItem'

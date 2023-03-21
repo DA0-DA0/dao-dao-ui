@@ -1,4 +1,5 @@
-import { DaoVotingCw721StakedAdapter } from '../../adapters/DaoVotingCw721Staked'
+import { DaoVotingCw721StakedAdapterId } from '@dao-dao/utils'
+
 import { useVotingModuleAdapterContextIfAvailable } from '../context'
 
 // Returns the useGovernanceTokenInfo hook response if using the cw721-staked
@@ -17,5 +18,5 @@ export const useCw721CommonGovernanceTokenInfoIfExists = () => {
 
   const info = useCommonGovernanceTokenInfo?.()
 
-  return id === DaoVotingCw721StakedAdapter.id ? info : undefined
+  return id === DaoVotingCw721StakedAdapterId ? info : undefined
 }

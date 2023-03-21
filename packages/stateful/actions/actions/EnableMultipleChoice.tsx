@@ -19,6 +19,7 @@ import {
 } from '@dao-dao/types/actions'
 import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
+  DaoProposalMultipleAdapterId,
   NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
@@ -68,7 +69,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<EnableMultipleChoiceData> = (
     }
   ) &&
   msg.wasm.execute.msg.update_proposal_modules.to_add[0].label.endsWith(
-    DaoProposalMultipleAdapter.id
+    DaoProposalMultipleAdapterId
   )
     ? {
         match: true,

@@ -12,13 +12,6 @@ import {
   MultipleChoiceProposal,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
-import {
-  DaoCreationConfigWithAllowRevoting,
-  DaoCreationConfigWithProposalDeposit,
-  DaoCreationConfigWithProposalSubmissionPolicy,
-  DaoCreationConfigWithQuorum,
-  DaoCreationConfigWithVotingDuration,
-} from '../common'
 import { MultipleChoiceOptionData } from './components/ui/MultipleChoiceOptionEditor'
 
 export interface NewProposalForm {
@@ -38,12 +31,6 @@ export interface PercentOrMajorityValue {
   // Will be used when `majority` is false.
   value: number
 }
-
-export type DaoCreationConfig = DaoCreationConfigWithAllowRevoting &
-  DaoCreationConfigWithProposalDeposit &
-  DaoCreationConfigWithProposalSubmissionPolicy &
-  DaoCreationConfigWithQuorum &
-  DaoCreationConfigWithVotingDuration
 
 // Has vote percentages as well as choice info.
 export type ProcessedMultipleChoiceOption = {

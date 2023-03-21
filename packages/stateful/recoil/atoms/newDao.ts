@@ -1,7 +1,18 @@
 import { atom, atomFamily } from 'recoil'
 
 import { localStorageEffectJSON } from '@dao-dao/state/recoil/effects'
-import { DaoCreatedCardProps, NewDao } from '@dao-dao/types'
+import {
+  DaoCreatedCardProps,
+  DepositRefundPolicy,
+  DurationUnits,
+  NewDao,
+} from '@dao-dao/types'
+import {
+  DaoProposalMultipleAdapterId,
+  DaoProposalSingleAdapterId,
+  DaoVotingCw4AdapterId,
+  NATIVE_TOKEN,
+} from '@dao-dao/utils'
 
 import {
   DaoProposalMultipleAdapter,
@@ -16,20 +27,42 @@ export const makeDefaultNewDao = (): NewDao => ({
   description: '',
   imageUrl: undefined,
   votingModuleAdapter: {
-    id: DaoVotingCw4Adapter.id,
+    id: DaoVotingCw4AdapterId,
     data: DaoVotingCw4Adapter.daoCreation!.defaultConfig,
   },
   // Default to single and multiple choice proposal configuration.
   proposalModuleAdapters: [
     {
-      id: DaoProposalSingleAdapter.id,
-      data: DaoProposalSingleAdapter.daoCreation.defaultConfig,
+      id: DaoProposalSingleAdapterId,
+      data:
+        DaoProposalSingleAdapter.daoCreation.extraVotingConfig?.default ?? {},
     },
     {
-      id: DaoProposalMultipleAdapter.id,
-      data: DaoProposalMultipleAdapter.daoCreation.defaultConfig,
+      id: DaoProposalMultipleAdapterId,
+      data:
+        DaoProposalMultipleAdapter.daoCreation.extraVotingConfig?.default ?? {},
     },
   ],
+  votingConfig: {
+    quorum: {
+      majority: false,
+      value: 20,
+    },
+    votingDuration: {
+      value: 1,
+      units: DurationUnits.Weeks,
+    },
+    proposalDeposit: {
+      enabled: false,
+      amount: 10,
+      type: 'native',
+      denomOrAddress: NATIVE_TOKEN.denomOrAddress,
+      token: undefined,
+      refundPolicy: DepositRefundPolicy.OnlyPassed,
+    },
+    anyoneCanPropose: false,
+    allowRevoting: false,
+  },
   advancedVotingConfigEnabled: false,
 })
 

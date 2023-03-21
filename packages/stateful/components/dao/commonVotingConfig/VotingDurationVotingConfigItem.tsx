@@ -5,6 +5,7 @@ import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
+  DaoCreationVotingConfigWithVotingDuration,
   DurationUnits,
   DurationUnitsValues,
 } from '@dao-dao/types'
@@ -14,15 +15,13 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { DaoCreationConfigWithVotingDuration } from './types'
-
 export const VotingDurationInput = ({
   data: { votingDuration },
   register,
   setValue,
   watch,
   errors,
-}: DaoCreationVotingConfigItemInputProps<DaoCreationConfigWithVotingDuration>) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithVotingDuration>) => {
   const { t } = useTranslation()
 
   return (
@@ -69,13 +68,13 @@ export const VotingDurationInput = ({
 
 export const VotingDurationReview = ({
   data: { votingDuration },
-}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfigWithVotingDuration>) => {
+}: DaoCreationVotingConfigItemReviewProps<DaoCreationVotingConfigWithVotingDuration>) => {
   const { t } = useTranslation()
   return <>{convertDurationWithUnitsToHumanReadableString(t, votingDuration)}</>
 }
 
-export const VotingDurationVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfigWithVotingDuration> =
-  {
+export const makeVotingDurationVotingConfigItem =
+  (): DaoCreationVotingConfigItem<DaoCreationVotingConfigWithVotingDuration> => ({
     Icon: HourglassEmoji,
     nameI18nKey: 'form.votingDurationTitle',
     descriptionI18nKey: 'form.votingDurationDescription',
@@ -83,4 +82,4 @@ export const VotingDurationVotingConfigItem: DaoCreationVotingConfigItem<DaoCrea
     getInputError: ({ votingDuration } = {}) =>
       votingDuration?.value || votingDuration?.units,
     Review: VotingDurationReview,
-  }
+  })

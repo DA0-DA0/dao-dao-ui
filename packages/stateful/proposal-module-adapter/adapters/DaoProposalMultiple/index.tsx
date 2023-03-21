@@ -1,18 +1,7 @@
-import {
-  DepositRefundPolicy,
-  DurationUnits,
-  ProposalModuleAdapter,
-} from '@dao-dao/types'
+import { ProposalModuleAdapter } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { NATIVE_TOKEN } from '@dao-dao/utils'
+import { DaoProposalMultipleAdapterId } from '@dao-dao/utils'
 
-import {
-  AllowRevotingVotingConfigItem,
-  ProposalDepositVotingConfigItem,
-  ProposalSubmissionPolicyVotingConfigItem,
-  VotingDurationVotingConfigItem,
-  makeQuorumVotingConfigItem,
-} from '../common'
 import {
   NewProposal,
   makeDepositInfoSelector,
@@ -38,14 +27,14 @@ import {
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
 } from './hooks'
-import { DaoCreationConfig, NewProposalForm } from './types'
+import { NewProposalForm } from './types'
 
 export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
-  DaoCreationConfig,
+  {},
   MultipleChoiceVote,
   NewProposalForm
 > = {
-  id: 'DaoProposalMultiple',
+  id: DaoProposalMultipleAdapterId,
   contractNames: ['dao-proposal-multiple'],
 
   // TODO: Make common accessible somehow inside components and hooks via hooks?
@@ -150,41 +139,6 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
   },
 
   daoCreation: {
-    defaultConfig: {
-      quorum: {
-        majority: false,
-        value: 20,
-      },
-      votingDuration: {
-        value: 1,
-        units: DurationUnits.Weeks,
-      },
-      proposalDeposit: {
-        enabled: false,
-        amount: 10,
-        type: 'native',
-        denomOrAddress: NATIVE_TOKEN.denomOrAddress,
-        token: undefined,
-        refundPolicy: DepositRefundPolicy.OnlyPassed,
-      },
-      anyoneCanPropose: false,
-      allowRevoting: false,
-    },
-
-    votingConfig: {
-      items: [VotingDurationVotingConfigItem, ProposalDepositVotingConfigItem],
-      advancedItems: [
-        AllowRevotingVotingConfigItem,
-        makeQuorumVotingConfigItem({
-          canBeDisabled: false,
-        }),
-        ProposalSubmissionPolicyVotingConfigItem,
-      ],
-      advancedWarningI18nKeys: [
-        'daoCreationAdapter.DaoProposalMultiple.advancedWarning',
-      ],
-    },
-
     getInstantiateInfo,
   },
 }

@@ -11,21 +11,26 @@ import {
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   CODE_ID_CONFIG,
+  DaoProposalMultipleAdapterId,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
-import { DaoProposalMultipleAdapter } from '../../index'
-import { DaoCreationConfig } from '../types'
 import instantiateSchema from './instantiate_schema.json'
 import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 
-export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
-  DaoCreationConfig
-> = (
-  { name },
-  { quorum, votingDuration, proposalDeposit, anyoneCanPropose, allowRevoting },
+export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
+  {
+    name,
+    votingConfig: {
+      quorum,
+      votingDuration,
+      proposalDeposit,
+      anyoneCanPropose,
+      allowRevoting,
+    },
+  },
   t
 ) => {
   const decimals = proposalDeposit.token?.decimals ?? 0
@@ -79,7 +84,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         info: {
           admin: { core_module: {} },
           code_id: CODE_ID_CONFIG.DaoPreProposeMultiple,
-          label: `DAO_${name}_pre-propose-${DaoProposalMultipleAdapter.id}`,
+          label: `DAO_${name}_pre-propose-${DaoProposalMultipleAdapterId}`,
           msg: Buffer.from(
             JSON.stringify(preProposeMultipleInstantiateMsg),
             'utf8'
@@ -100,7 +105,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   return {
     admin: { core_module: {} },
     code_id: CODE_ID_CONFIG.DaoProposalMultiple,
-    label: `DAO_${name}_${DaoProposalMultipleAdapter.id}`,
+    label: `DAO_${name}_${DaoProposalMultipleAdapterId}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }
 }

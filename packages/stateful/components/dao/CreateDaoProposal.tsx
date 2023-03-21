@@ -23,9 +23,9 @@ import {
   ProposalDraft,
   ProposalPrefill,
 } from '@dao-dao/types'
+import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
 import {
-  DaoProposalSingleAdapter,
   matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
 } from '../../proposal-module-adapter'
@@ -43,7 +43,7 @@ export const CreateDaoProposal = () => {
     daoInfo.proposalModules.find(
       ({ contractName }) =>
         matchProposalModuleAdapter(contractName)?.id ===
-        DaoProposalSingleAdapter.id
+        DaoProposalSingleAdapterId
     ) ?? daoInfo.proposalModules[0]
   )
   // Set once prefill has been assessed, indicating NewProposal can load now.

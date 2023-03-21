@@ -39,6 +39,7 @@ import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_s
 import {
   CHAIN_ID,
   CODE_ID_CONFIG,
+  DaoVotingCw20StakedAdapterId,
   FACTORY_CONTRACT_ADDRESS,
   NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
@@ -61,7 +62,6 @@ import {
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
 import {
-  DaoVotingCw20StakedAdapter,
   getAdapterById as getVotingModuleAdapterById,
   getAdapters as getVotingModuleAdapters,
 } from '../../voting-module-adapter'
@@ -72,6 +72,7 @@ import {
 import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { Trans } from '../Trans'
+import { loadCommonVotingConfigItems } from './commonVotingConfig'
 
 // i18n keys
 export enum CreateDaoSubmitValue {
@@ -157,7 +158,7 @@ export const CreateDaoForm = ({
         // Merges into this object.
         adapter.data,
         // Start with defaults.
-        proposalModuleAdapter?.daoCreation?.defaultConfig,
+        proposalModuleAdapter?.daoCreation?.extraVotingConfig?.default,
         // Overwrite with existing values.
         adapter.data
       )
@@ -367,7 +368,7 @@ export const CreateDaoForm = ({
     useState<CreateDaoCustomValidator>()
 
   const cw20StakedBalanceVotingData =
-    votingModuleAdapter.id === DaoVotingCw20StakedAdapter.id
+    votingModuleAdapter.id === DaoVotingCw20StakedAdapterId
       ? (votingModuleAdapter.data as DaoVotingCw20StakedCreationConfig)
       : undefined
 
@@ -403,7 +404,7 @@ export const CreateDaoForm = ({
 
             // Get tokenSymbol and tokenBalance for DAO card.
             const { tokenSymbol, tokenBalance, tokenDecimals } =
-              votingModuleAdapter.id === DaoVotingCw20StakedAdapter.id &&
+              votingModuleAdapter.id === DaoVotingCw20StakedAdapterId &&
               cw20StakedBalanceVotingData
                 ? //! Display governance token supply if using governance tokens.
                   {
@@ -581,6 +582,7 @@ export const CreateDaoForm = ({
       availableVotingModuleAdapters,
       generateInstantiateMsg,
       setCustomValidator: (fn) => setCustomValidator(() => fn),
+      commonVotingConfig: loadCommonVotingConfigItems(),
       votingModuleDaoCreationAdapter,
       proposalModuleDaoCreationAdapters,
       SuspenseLoader,

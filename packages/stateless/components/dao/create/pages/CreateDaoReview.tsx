@@ -4,14 +4,13 @@ import { useTranslation } from 'react-i18next'
 import { CreateDaoContext } from '@dao-dao/types'
 import { parseEncodedMessage, processError } from '@dao-dao/utils'
 
-import {
-  Checkbox,
-  CosmosMessageDisplay,
-  DaoCreateConfigReviewCard,
-} from '../../..'
+import { CosmosMessageDisplay } from '../../../CosmosMessageDisplay'
+import { Checkbox } from '../../../inputs/Checkbox'
+import { DaoCreateConfigReviewCard } from '../DaoCreateConfigReviewCard'
 
 export const CreateDaoReview = ({
   form: { watch },
+  commonVotingConfig,
   votingModuleDaoCreationAdapter,
   proposalModuleDaoCreationAdapters,
   generateInstantiateMsg,
@@ -19,7 +18,7 @@ export const CreateDaoReview = ({
   const { t } = useTranslation()
 
   const newDao = watch()
-  const { votingModuleAdapter, proposalModuleAdapters } = newDao
+  const { votingModuleAdapter, proposalModuleAdapters, votingConfig } = newDao
 
   const [decodeModuleMessages, setDecodeModuleMessages] = useState(true)
   const togglePreviewRef = useRef<HTMLDivElement>(null)
@@ -123,6 +122,30 @@ export const CreateDaoReview = ({
       </p>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3">
+        {[...commonVotingConfig.items, ...commonVotingConfig.advancedItems].map(
+          (
+            {
+              onlyDisplayCondition,
+              Icon,
+              nameI18nKey,
+              tooltipI18nKey,
+              Review,
+              getReviewClassName,
+            },
+            index
+          ) =>
+            // If has display condition, check it. Otherwise display.
+            (onlyDisplayCondition?.(newDao) ?? true) && (
+              <DaoCreateConfigReviewCard
+                key={index}
+                Icon={Icon}
+                name={t(nameI18nKey)}
+                review={<Review data={votingConfig} newDao={newDao} />}
+                reviewClassName={getReviewClassName?.(votingConfig)}
+                tooltip={tooltipI18nKey && t(tooltipI18nKey)}
+              />
+            )
+        )}
         {votingModuleDaoCreationAdapter.votingConfig.items
           .concat(
             votingModuleDaoCreationAdapter.votingConfig.advancedItems ?? []
@@ -156,7 +179,10 @@ export const CreateDaoReview = ({
               )
           )}
         {proposalModuleDaoCreationAdapters.flatMap(
-          ({ votingConfig: { items, advancedItems } }, index) =>
+          (
+            { extraVotingConfig: { items = [], advancedItems = [] } = {} },
+            index
+          ) =>
             items.concat(advancedItems ?? []).map(
               (
                 {

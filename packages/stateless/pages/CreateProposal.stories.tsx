@@ -1,16 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import {
-  DaoProposalSingleAdapter,
-  matchAdapter as matchProposalModuleAdapter,
-} from '@dao-dao/stateful/proposal-module-adapter'
+import { matchAdapter as matchProposalModuleAdapter } from '@dao-dao/stateful/proposal-module-adapter'
 import { NewProposalProps } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/common/ui/NewProposal'
 import { Default as NewProposalStory } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/common/ui/NewProposal.stories'
 import {
   DaoPageWrapperDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
+import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
 import {
   ProfileNewProposalCard,
@@ -38,7 +36,7 @@ const Template: ComponentStory<typeof CreateProposal> = (args) => {
     daoInfo.proposalModules.find(
       ({ contractName }) =>
         matchProposalModuleAdapter(contractName)?.id ===
-        DaoProposalSingleAdapter.id
+        DaoProposalSingleAdapterId
     )!
   )
 
