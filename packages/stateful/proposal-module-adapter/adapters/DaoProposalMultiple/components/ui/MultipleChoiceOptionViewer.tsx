@@ -34,6 +34,8 @@ export type MultipleChoiceOptionViewerProps = {
   availableActions: Action[]
   // If undefined, no winner picked yet.
   winner?: boolean
+  // Used when previewing to force raw JSON display.
+  forceRaw?: boolean
 }
 
 export const MultipleChoiceOptionViewer = ({
@@ -41,6 +43,7 @@ export const MultipleChoiceOptionViewer = ({
   lastOption,
   availableActions,
   winner,
+  forceRaw,
 }: MultipleChoiceOptionViewerProps) => {
   const { t } = useTranslation()
 
@@ -93,7 +96,9 @@ export const MultipleChoiceOptionViewer = ({
             }}
           />
 
-          <p className="title-text">{choice.title}</p>
+          <p className="title-text">
+            {isNoneOption ? t('title.noneOfTheAbove') : choice.title}
+          </p>
         </div>
 
         {winner && (
@@ -113,28 +118,34 @@ export const MultipleChoiceOptionViewer = ({
           <p className="body-text">{choice.description}</p>
         )}
 
-        {showRaw ? (
-          <CosmosMessageDisplay
-            value={JSON.stringify(decodedMessages, undefined, 2)}
-          />
-        ) : (
-          <ActionsRenderer
-            actionData={actionData}
-            availableActions={availableActions}
-            onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
-          />
-        )}
+        {(forceRaw === undefined && showRaw) || forceRaw
+          ? decodedMessages.length > 0 && (
+              <CosmosMessageDisplay
+                value={JSON.stringify(decodedMessages, undefined, 2)}
+              />
+            )
+          : actionData.length > 0 && (
+              <ActionsRenderer
+                actionData={actionData}
+                availableActions={availableActions}
+                onCopyLink={() =>
+                  toast.success(t('info.copiedLinkToClipboard'))
+                }
+              />
+            )}
 
-        <Button
-          className="-mt-4 self-end"
-          onClick={() => setShowRaw(!showRaw)}
-          variant="ghost"
-        >
-          <AnalyticsOutlined className="text-icon-secondary" />
-          <p className="secondary-text">
-            {showRaw ? t('button.hideRawData') : t('button.showRawData')}
-          </p>
-        </Button>
+        {forceRaw === undefined && (
+          <Button
+            className="-mt-4 self-end"
+            onClick={() => setShowRaw(!showRaw)}
+            variant="ghost"
+          >
+            <AnalyticsOutlined className="text-icon-secondary" />
+            <p className="secondary-text">
+              {showRaw ? t('button.hideRawData') : t('button.showRawData')}
+            </p>
+          </Button>
+        )}
       </div>
     </div>
   )

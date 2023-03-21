@@ -138,6 +138,7 @@ export const MultipleChoiceOptionEditor = <
 
               <div className="flex flex-col">
                 <TextAreaInput
+                  autoFocus
                   error={errorsOption?.description}
                   fieldName={descriptionFieldName}
                   placeholder={t(

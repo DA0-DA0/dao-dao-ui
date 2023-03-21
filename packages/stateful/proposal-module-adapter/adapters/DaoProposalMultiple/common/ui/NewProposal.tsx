@@ -22,7 +22,6 @@ import TimeAgo from 'react-timeago'
 
 import {
   Button,
-  CosmosMessageDisplay,
   FilterableItem,
   FilterableItemPopup,
   IconButton,
@@ -32,16 +31,13 @@ import {
   TextInput,
   Tooltip,
 } from '@dao-dao/stateless'
+import { Action, BaseNewProposalProps, LoadedActions } from '@dao-dao/types'
 import {
-  Action,
-  BaseNewProposalProps,
-  CosmosMsgFor_Empty,
-  LoadedActions,
-} from '@dao-dao/types'
-import { CosmosMsgForEmpty } from '@dao-dao/types/contracts/DaoProposalMultiple'
+  CosmosMsgForEmpty,
+  MultipleChoiceOptionType,
+} from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   MAX_NUM_PROPOSAL_CHOICES,
-  decodedMessagesString,
   formatDateTime,
   formatTime,
   processError,
@@ -53,6 +49,7 @@ import {
   MULTIPLE_CHOICE_OPTION_COLORS,
   MultipleChoiceOptionEditor,
 } from '../../components/ui/MultipleChoiceOptionEditor'
+import { MultipleChoiceOptionViewer } from '../../components/ui/MultipleChoiceOptionViewer'
 import { NewProposalData, NewProposalForm } from '../../types'
 
 enum ProposeSubmitValue {
@@ -408,59 +405,70 @@ export const NewProposal = ({
               description={proposalDescription}
               innerContentDisplay={
                 <div>
-                  <p className="primary-text mb-5 text-text-body">
-                    {t('title.voteOptions')}
-                  </p>
+                  <p className="title-text mb-4">{t('title.voteOptions')}</p>
 
-                  {choices.map((multipleChoiceOption, index) => {
-                    const actionData = multipleChoiceOption.actionData ?? []
+                  {choices.map(({ title, description, actionData }, index) => (
+                    <MultipleChoiceOptionViewer
+                      key={index}
+                      availableActions={[]}
+                      data={{
+                        choice: {
+                          description,
+                          index,
+                          msgs: [],
+                          title,
+                          option_type: MultipleChoiceOptionType.Standard,
+                          vote_count: '0',
+                        },
+                        actionData: [],
+                        decodedMessages: (actionData ?? [])
+                          .map(({ key, data }) => {
+                            try {
+                              return loadedActions[key]?.transform(data)
+                            } catch (err) {
+                              console.error(err)
+                            }
+                          })
+                          // Filter out undefined messages.
+                          .filter(Boolean) as CosmosMsgForEmpty[],
+                        voteOption: {
+                          Icon: Circle,
+                          label: title,
+                          value: { option_id: index },
+                          color:
+                            MULTIPLE_CHOICE_OPTION_COLORS[
+                              index % MULTIPLE_CHOICE_OPTION_COLORS.length
+                            ],
+                        },
+                      }}
+                      forceRaw
+                      lastOption={false}
+                    />
+                  ))}
 
-                    return (
-                      <div
-                        key={index}
-                        className="flex flex-col justify-between gap-6 border-b border-border-secondary py-4 px-6"
-                      >
-                        <div className="flex flex-row items-center gap-2">
-                          <Circle
-                            className="!h-4 !w-4"
-                            style={{
-                              color:
-                                MULTIPLE_CHOICE_OPTION_COLORS[
-                                  index % MULTIPLE_CHOICE_OPTION_COLORS.length
-                                ],
-                            }}
-                          />
-
-                          <p className="primary-text text-text-body">
-                            {multipleChoiceOption.title}
-                          </p>
-                        </div>
-
-                        {!!multipleChoiceOption.description && (
-                          <p className="secondary-text">
-                            {multipleChoiceOption.description}
-                          </p>
-                        )}
-
-                        {actionData.length > 0 && (
-                          <CosmosMessageDisplay
-                            value={decodedMessagesString(
-                              actionData
-                                .map(({ key, data }) => {
-                                  try {
-                                    return loadedActions[key]?.transform(data)
-                                  } catch (err) {
-                                    console.error(err)
-                                  }
-                                })
-                                // Filter out undefined messages.
-                                .filter(Boolean) as CosmosMsgFor_Empty[]
-                            )}
-                          />
-                        )}
-                      </div>
-                    )
-                  })}
+                  {/* None of the above */}
+                  <MultipleChoiceOptionViewer
+                    availableActions={[]}
+                    data={{
+                      choice: {
+                        description: '',
+                        index: choices.length,
+                        msgs: [],
+                        title: '',
+                        option_type: MultipleChoiceOptionType.None,
+                        vote_count: '0',
+                      },
+                      actionData: [],
+                      decodedMessages: [],
+                      voteOption: {
+                        Icon: Block,
+                        label: '',
+                        value: { option_id: choices.length },
+                      },
+                    }}
+                    forceRaw
+                    lastOption
+                  />
                 </div>
               }
               title={proposalTitle}

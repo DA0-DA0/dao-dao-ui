@@ -139,8 +139,9 @@ export const InnerProposalInnerContentDisplay = ({
       duplicate={duplicate}
       duplicateLoading={duplicateLoading}
       innerContentDisplay={
-        <div className="">
+        <div>
           <p className="title-text mb-4">{t('title.voteOptions')}</p>
+
           {optionsData.map((data, index) => (
             <MultipleChoiceOptionViewer
               key={index}
