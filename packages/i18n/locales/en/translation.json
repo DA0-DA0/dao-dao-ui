@@ -2,6 +2,7 @@
   "button": {
     "acceptTerms": "I accept the terms",
     "add": "Add",
+    "addADescriptionOptional": "Add a description (optional)",
     "addAction": "Add action",
     "addAnAction": "Add an action",
     "addAttribute": "Add attribute",
@@ -377,7 +378,7 @@
     "messageType": "Message type",
     "migrateDescription": "This will <1>migrate</1> the selected contract to a new code ID.",
     "migrateMessage": "Migrate message",
-    "multipleChoiceOptionDescriptionPlaceholder": "Give your choice a description",
+    "multipleChoiceOptionDescriptionPlaceholder": "Give your choice a description... (supports Markdown format)",
     "multipleChoiceOptionTitlePlaceholder": "Give your choice a title",
     "name": "Name",
     "nftCollectionAddress": "NFT collection address",

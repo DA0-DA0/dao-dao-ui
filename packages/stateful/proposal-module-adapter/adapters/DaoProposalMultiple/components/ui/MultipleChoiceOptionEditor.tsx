@@ -1,4 +1,4 @@
-import { Circle, Close, CopyAllOutlined } from '@mui/icons-material'
+import { Add, Circle, Close, CopyAllOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
 import { useState } from 'react'
@@ -17,6 +17,7 @@ import { NewProposalForm } from '@dao-dao/stateful/proposal-module-adapter/adapt
 import {
   ActionCardLoader,
   ActionSelector,
+  Button,
   DropdownIconButton,
   IconButton,
   InputErrorMessage,
@@ -81,6 +82,8 @@ export const MultipleChoiceOptionEditor = <
     shouldUnregister: true,
   })
 
+  const [showingDescription, setShowingDescription] = useState(false)
+
   return (
     <div className="flex flex-col">
       <div className="flex flex-row items-center gap-6">
@@ -127,26 +130,35 @@ export const MultipleChoiceOptionEditor = <
         className={clsx('ml-[calc(0.75rem-1.5px)] mt-4', !expanded && 'hidden')}
       >
         <div className="flex flex-col gap-4 border-l-[3px] border-border-interactive-focus pt-1 pl-5">
-          <p className="primary-text text-text-body">
-            {t('form.description')}
-            <span className="text-text-tertiary">
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              {' – '}
-              {t('info.supportsMarkdownFormat')}
-            </span>
-          </p>
+          {showingDescription ? (
+            <>
+              <p className="primary-text text-text-body">
+                {t('form.description')}
+              </p>
 
-          <div className="flex flex-col">
-            <TextAreaInput
-              error={errorsOption?.description}
-              fieldName={descriptionFieldName}
-              placeholder={t('form.multipleChoiceOptionDescriptionPlaceholder')}
-              register={registerOption}
-              rows={5}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage error={errorsOption?.description} />
-          </div>
+              <div className="flex flex-col">
+                <TextAreaInput
+                  error={errorsOption?.description}
+                  fieldName={descriptionFieldName}
+                  placeholder={t(
+                    'form.multipleChoiceOptionDescriptionPlaceholder'
+                  )}
+                  register={registerOption}
+                  rows={5}
+                />
+                <InputErrorMessage error={errorsOption?.description} />
+              </div>
+            </>
+          ) : (
+            <Button
+              className="self-start"
+              onClick={() => setShowingDescription(true)}
+              variant="ghost"
+            >
+              <Add className="text-icon-secondary" />
+              {t('button.addADescriptionOptional')}
+            </Button>
+          )}
 
           {optionActionData?.length > 0 && (
             <div className="flex flex-col gap-1">

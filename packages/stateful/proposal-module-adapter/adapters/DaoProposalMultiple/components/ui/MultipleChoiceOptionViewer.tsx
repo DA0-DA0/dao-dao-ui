@@ -109,7 +109,9 @@ export const MultipleChoiceOptionViewer = ({
           !expanded && 'hidden'
         )}
       >
-        {!isNoneOption && <p className="body-text">{choice.description}</p>}
+        {!isNoneOption && !!choice.description && (
+          <p className="body-text">{choice.description}</p>
+        )}
 
         {showRaw ? (
           <CosmosMessageDisplay

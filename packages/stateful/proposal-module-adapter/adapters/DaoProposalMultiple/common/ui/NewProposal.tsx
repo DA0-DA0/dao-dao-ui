@@ -7,7 +7,6 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
-import CircleIcon from '@mui/icons-material/Circle'
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
@@ -252,7 +251,11 @@ export const NewProposal = ({
 
       <div
         className="flex cursor-pointer flex-row items-center gap-2 border-t border-border-secondary py-10"
-        onClick={() => addOption({})}
+        onClick={() =>
+          addOption({
+            description: '',
+          })
+        }
       >
         <Add className="!h-6 !w-6 text-icon-primary" />
 
@@ -405,36 +408,41 @@ export const NewProposal = ({
               description={proposalDescription}
               innerContentDisplay={
                 <div>
-                  <p className="primary-text pb-5 text-text-body">
+                  <p className="primary-text mb-5 text-text-body">
                     {t('title.voteOptions')}
                   </p>
+
                   {choices.map((multipleChoiceOption, index) => {
-                    const actionData = multipleChoiceOption.actionData
+                    const actionData = multipleChoiceOption.actionData ?? []
+
                     return (
                       <div
                         key={index}
                         className="flex flex-col justify-between gap-6 border-b border-border-secondary py-4 px-6"
                       >
-                        <div className="flex flex-row items-center">
-                          <div>
-                            <CircleIcon
-                              className="h-3 w-3 align-middle"
-                              style={{
-                                color:
-                                  MULTIPLE_CHOICE_OPTION_COLORS[
-                                    index % MULTIPLE_CHOICE_OPTION_COLORS.length
-                                  ],
-                              }}
-                            />
-                          </div>
-                          <p className="primary-text px-2 text-text-body">
+                        <div className="flex flex-row items-center gap-2">
+                          <Circle
+                            className="!h-4 !w-4"
+                            style={{
+                              color:
+                                MULTIPLE_CHOICE_OPTION_COLORS[
+                                  index % MULTIPLE_CHOICE_OPTION_COLORS.length
+                                ],
+                            }}
+                          />
+
+                          <p className="primary-text text-text-body">
                             {multipleChoiceOption.title}
                           </p>
                         </div>
-                        <p className="secondary-text">
-                          {multipleChoiceOption.description}
-                        </p>
-                        {actionData && actionData.length ? (
+
+                        {!!multipleChoiceOption.description && (
+                          <p className="secondary-text">
+                            {multipleChoiceOption.description}
+                          </p>
+                        )}
+
+                        {actionData.length > 0 && (
                           <CosmosMessageDisplay
                             value={decodedMessagesString(
                               actionData
@@ -449,7 +457,7 @@ export const NewProposal = ({
                                 .filter(Boolean) as CosmosMsgFor_Empty[]
                             )}
                           />
-                        ) : undefined}
+                        )}
                       </div>
                     )
                   })}
