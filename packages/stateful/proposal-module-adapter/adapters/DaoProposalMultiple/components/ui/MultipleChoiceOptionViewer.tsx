@@ -56,7 +56,8 @@ export const MultipleChoiceOptionViewer = ({
   return (
     <div
       className={clsx(
-        'flex flex-col justify-between gap-6 py-4',
+        'flex flex-col justify-between gap-6 pt-6',
+        !expanded && 'pb-6',
         // No bottom border on last item.
         !lastOption && 'border-b border-border-secondary'
       )}
@@ -101,13 +102,11 @@ export const MultipleChoiceOptionViewer = ({
 
       <div
         className={clsx(
-          'ml-[calc(0.75rem-1.5px)] -mb-4 flex flex-col gap-6 border-l-[3px] border-border-interactive-focus pl-5 pb-5',
+          'ml-[calc(0.75rem-1.5px)] flex flex-col gap-6 border-l-[3px] border-border-interactive-focus pl-5 pb-5 pt-1',
           !expanded && 'hidden'
         )}
       >
-        {!isNoneOption && (
-          <p className="secondary-text">{choice.description}</p>
-        )}
+        {!isNoneOption && <p className="body-text">{choice.description}</p>}
 
         {showRaw ? (
           <CosmosMessageDisplay
