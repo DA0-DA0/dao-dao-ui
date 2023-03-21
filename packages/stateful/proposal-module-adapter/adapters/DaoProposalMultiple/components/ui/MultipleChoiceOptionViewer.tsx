@@ -63,12 +63,12 @@ export const MultipleChoiceOptionViewer = ({
     >
       <div
         className={clsx(
-          'flex flex-row items-center gap-2',
+          'flex flex-row items-center gap-6',
           !isNoneOption && 'cursor-pointer'
         )}
         onClick={!isNoneOption ? toggleExpanded : undefined}
       >
-        <div className="flex grow flex-row items-center gap-6">
+        <div className="flex grow flex-row items-center gap-2">
           <DropdownIconButton
             className={clsx(
               // Disable instead of hiding if none option to preserve the space
