@@ -88,7 +88,8 @@ export const MultipleChoiceOptionViewer = ({
               color: voteOption.color,
             }}
           />
-          <p className="primary-text text-text-body">{choice.title}</p>
+
+          <p className="title-text">{choice.title}</p>
         </div>
 
         {winner && (
