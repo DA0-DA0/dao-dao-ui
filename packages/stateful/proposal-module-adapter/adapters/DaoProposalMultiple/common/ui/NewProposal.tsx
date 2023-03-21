@@ -1,5 +1,6 @@
 import {
   Add,
+  Circle,
   Close,
   GavelRounded,
   Visibility,
@@ -229,7 +230,7 @@ export const NewProposal = ({
       <p className="title-text my-6 text-text-body">{t('title.choices')}</p>
 
       {choices.length > 0 && (
-        <div className="mb-4 flex flex-col items-stretch gap-2">
+        <div className="mb-8 flex flex-col items-stretch gap-6">
           {multipleChoiceFields.map(({ id }, index) => (
             <MultipleChoiceOptionEditor
               key={id}
@@ -248,10 +249,24 @@ export const NewProposal = ({
         </div>
       )}
 
-      <Button onClick={() => addOption({})} variant="secondary">
-        <Add />
-        {t('button.addNewOption')}
-      </Button>
+      <div
+        className="flex cursor-pointer flex-row items-center gap-2 border-t border-border-secondary pt-10 pb-4"
+        onClick={() => addOption({})}
+      >
+        <Add className="!h-6 !w-6 text-icon-primary" />
+
+        <Circle
+          className="!h-4 !w-4"
+          style={{
+            color:
+              MULTIPLE_CHOICE_OPTION_COLORS[
+                choices.length % MULTIPLE_CHOICE_OPTION_COLORS.length
+              ],
+          }}
+        />
+
+        <p className="title-text">{t('button.addNewOption')}</p>
+      </div>
 
       <div className="mt-6 flex flex-col gap-2 border-y border-border-secondary py-6">
         <div className="flex flex-row items-center justify-between gap-6">

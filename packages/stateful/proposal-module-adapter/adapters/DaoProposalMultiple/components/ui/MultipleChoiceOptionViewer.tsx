@@ -100,7 +100,7 @@ export const MultipleChoiceOptionViewer = ({
 
       <div
         className={clsx(
-          'ml-3 -mb-4 flex flex-col gap-6 border-l-[3px] border-border-interactive-focus pl-5 pb-5',
+          'ml-[calc(0.75rem-1.5px)] -mb-4 flex flex-col gap-6 border-l-[3px] border-border-interactive-focus pl-5 pb-5',
           !expanded && 'hidden'
         )}
       >
