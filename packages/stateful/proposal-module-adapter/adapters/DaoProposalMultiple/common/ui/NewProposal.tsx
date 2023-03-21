@@ -177,10 +177,7 @@ export const NewProposal = ({
   )
 
   const onSubmitError: SubmitErrorHandler<NewProposalForm> = useCallback(
-    (error) => {
-      console.log(error)
-      setShowSubmitErrorNote(true)
-    },
+    () => setShowSubmitErrorNote(true),
     [setShowSubmitErrorNote]
   )
 

@@ -184,6 +184,9 @@ export const MultipleChoiceOption = <
         <div className="self-start">
           <ActionSelector
             actions={actions}
+            // There will be many action selector buttons on-screen, so the
+            // keybind wouldn't know which one to open.
+            disableKeybind
             onSelectAction={({ key }) => {
               appendAction({
                 key,

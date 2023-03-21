@@ -13,11 +13,13 @@ import { FilterableItemPopup, FilterableItemPopupProps } from '../popup'
 export interface ActionSelectorProps {
   actions: Action[]
   onSelectAction: (action: Action) => void
+  disableKeybind?: boolean
 }
 
 export const ActionSelector = ({
   actions,
   onSelectAction,
+  disableKeybind = false,
 }: ActionSelectorProps) => {
   const { t } = useTranslation()
 
@@ -54,7 +56,9 @@ export const ActionSelector = ({
   return (
     <FilterableItemPopup
       filterableItemKeys={FILTERABLE_KEYS}
-      getKeydownEventListener={getKeydownEventListener}
+      getKeydownEventListener={
+        disableKeybind ? undefined : getKeydownEventListener
+      }
       items={actions}
       onSelect={onSelectAction}
       searchPlaceholder={t('info.searchActionPlaceholder')}
@@ -71,7 +75,7 @@ export const ActionSelector = ({
                 )}
               />{' '}
               {t('button.addAnAction')}
-              {!isMobile() && (
+              {!disableKeybind && !isMobile() && (
                 <>
                   {' '}
                   <p className="text-text-tertiary">{isMac ? '⌘' : '⌃'}A</p>

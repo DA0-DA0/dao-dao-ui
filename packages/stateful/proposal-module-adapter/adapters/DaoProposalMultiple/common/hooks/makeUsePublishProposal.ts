@@ -213,8 +213,18 @@ export const makeUsePublishProposal =
         ) {
           try {
             // Throws error if simulation fails, indicating invalid message.
-            await simulateMsgs(
-              newProposalData.choices.options.flatMap((c) => c.msgs)
+            //
+            // Simulate each option's message set separately. If the DAO only
+            // has 1 $JUNO, and two options both contain spending all 1 $JUNO,
+            // the simulation will fail because the DAO does not have sufficient
+            // funds. Combining all the messages into one simulation will
+            // function like all messages are executed together, but in reality,
+            // only one choice will be executed. Thus, just make sure each
+            // individual set of messages is valid together.
+            await Promise.all(
+              newProposalData.choices.options.map(({ msgs }) =>
+                simulateMsgs(msgs)
+              )
             )
           } catch (err) {
             // If failed simulation bypass duration is set, allow bypassing
