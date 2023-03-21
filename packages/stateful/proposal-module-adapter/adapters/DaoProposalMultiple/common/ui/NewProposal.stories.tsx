@@ -1,6 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { FormProvider, useForm } from 'react-hook-form'
 
+import { ProposalModuleSelectorProps } from '@dao-dao/stateless'
+import { Default as ProposalModuleSelectorStory } from '@dao-dao/stateless/components/proposal/ProposalModuleSelector.stories'
 import {
   DaoPageWrapperDecorator,
   WalletProviderDecorator,
@@ -66,6 +68,11 @@ Default.args = {
   depositUnsatisfied: false,
   connected: true,
   drafts: [],
+  proposalModuleSelector: (
+    <ProposalModuleSelectorStory
+      {...(ProposalModuleSelectorStory.args as ProposalModuleSelectorProps)}
+    />
+  ),
 }
 Default.parameters = {
   design: {

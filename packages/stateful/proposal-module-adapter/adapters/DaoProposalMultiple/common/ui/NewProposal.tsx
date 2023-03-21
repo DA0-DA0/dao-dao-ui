@@ -67,6 +67,7 @@ export interface NewProposalProps
     | 'unloadDraft'
     | 'draftSaving'
     | 'deleteDraft'
+    | 'proposalModuleSelector'
   > {
   createProposal: (newProposalData: NewProposalData) => Promise<void>
   loading: boolean
@@ -98,6 +99,7 @@ export const NewProposal = ({
   draftSaving,
   deleteDraft,
   simulationBypassExpiration,
+  proposalModuleSelector,
 }: NewProposalProps) => {
   const { t } = useTranslation()
 
@@ -182,7 +184,10 @@ export const NewProposal = ({
   const proposalName = watch('title')
 
   return (
-    <form onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
+    <form
+      className="flex flex-col gap-6"
+      onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
+    >
       <div className="rounded-lg bg-background-tertiary">
         <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-4 px-6">
           <p className="primary-text text-text-body">
@@ -224,10 +229,10 @@ export const NewProposal = ({
         </div>
       </div>
 
-      <p className="title-text my-6 text-text-body">{t('title.choices')}</p>
+      {proposalModuleSelector}
 
       {choices.length > 0 && (
-        <div className="mb-8 flex flex-col items-stretch gap-6">
+        <div className="flex flex-col items-stretch gap-6">
           {multipleChoiceFields.map(({ id }, index) => (
             <MultipleChoiceOptionEditor
               key={id}
@@ -246,42 +251,46 @@ export const NewProposal = ({
         </div>
       )}
 
-      <div
-        className="flex cursor-pointer flex-row items-center gap-2 border-t border-border-secondary py-10"
-        onClick={() =>
-          addOption({
-            description: '',
-          })
-        }
-      >
-        <Add className="!h-6 !w-6 text-icon-primary" />
+      <div>
+        <div
+          className="flex cursor-pointer flex-row items-center gap-2 border-t border-border-secondary py-10"
+          onClick={() =>
+            addOption({
+              description: '',
+            })
+          }
+        >
+          <Add className="!h-6 !w-6 text-icon-primary" />
 
-        <Circle
-          className="!h-4 !w-4"
-          style={{
-            color:
-              MULTIPLE_CHOICE_OPTION_COLORS[
-                choices.length % MULTIPLE_CHOICE_OPTION_COLORS.length
-              ],
-          }}
-        />
+          <Circle
+            className="!h-4 !w-4"
+            style={{
+              color:
+                MULTIPLE_CHOICE_OPTION_COLORS[
+                  choices.length % MULTIPLE_CHOICE_OPTION_COLORS.length
+                ],
+            }}
+          />
 
-        <p className="title-text">{t('button.addNewOption')}</p>
-      </div>
-
-      <div className="flex flex-col gap-3 border-t border-border-secondary pt-10 pb-4">
-        <div className="flex flex-row items-center gap-2">
-          <div className="h-6 w-6"></div>
-
-          <Block className="!h-4 !w-4 text-icon-primary" />
-
-          <p className="title-text">{t('title.noneOfTheAbove')}</p>
+          <p className="title-text">{t('button.addNewOption')}</p>
         </div>
 
-        <p className="caption-text ml-14">{t('info.cannotRemoveNoneOption')}</p>
+        <div className="flex flex-col gap-3 border-t border-border-secondary pt-10 pb-4">
+          <div className="flex flex-row items-center gap-2">
+            <div className="h-6 w-6"></div>
+
+            <Block className="!h-4 !w-4 text-icon-primary" />
+
+            <p className="title-text">{t('title.noneOfTheAbove')}</p>
+          </div>
+
+          <p className="caption-text ml-14">
+            {t('info.cannotRemoveNoneOption')}
+          </p>
+        </div>
       </div>
 
-      <div className="mt-6 flex flex-col gap-2 border-y border-border-secondary py-6">
+      <div className="flex flex-col gap-2 border-y border-border-secondary py-6">
         <div className="flex flex-row items-center justify-between gap-6">
           <p className="title-text text-text-body">
             {t('info.reviewYourProposal')}
@@ -477,7 +486,7 @@ export const NewProposal = ({
         )}
       </div>
 
-      <div className="mt-4 flex flex-row items-center justify-end gap-2">
+      <div className="flex flex-row items-center justify-end gap-2">
         {draft ? (
           <>
             <p

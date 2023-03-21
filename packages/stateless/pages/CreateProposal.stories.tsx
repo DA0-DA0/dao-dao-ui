@@ -1,21 +1,17 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { useState } from 'react'
 
-import { matchAdapter as matchProposalModuleAdapter } from '@dao-dao/stateful/proposal-module-adapter'
 import { NewProposalProps } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/common/ui/NewProposal'
 import { Default as NewProposalStory } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/common/ui/NewProposal.stories'
 import {
   DaoPageWrapperDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
 import {
   ProfileNewProposalCard,
   ProfileNewProposalCardProps,
 } from '../components/profile/ProfileNewProposalCard'
 import { Default as ProfileNewProposalCardStory } from '../components/profile/ProfileNewProposalCard.stories'
-import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
 import { CreateProposal } from './CreateProposal'
 
 export default {
@@ -28,30 +24,14 @@ export default {
   ],
 } as ComponentMeta<typeof CreateProposal>
 
-const Template: ComponentStory<typeof CreateProposal> = (args) => {
-  const daoInfo = useDaoInfoContext()
-
-  const [selectedProposalModule, setSelectedProposalModule] = useState(
-    // Default to single choice proposal module.
-    daoInfo.proposalModules.find(
-      ({ contractName }) =>
-        matchProposalModuleAdapter(contractName)?.id ===
-        DaoProposalSingleAdapterId
-    )!
-  )
-
-  return (
-    <CreateProposal
-      {...args}
-      daoInfo={daoInfo}
-      newProposal={
-        <NewProposalStory {...(NewProposalStory.args as NewProposalProps)} />
-      }
-      proposalModule={selectedProposalModule}
-      setProposalModule={setSelectedProposalModule}
-    />
-  )
-}
+const Template: ComponentStory<typeof CreateProposal> = (args) => (
+  <CreateProposal
+    {...args}
+    newProposal={
+      <NewProposalStory {...(NewProposalStory.args as NewProposalProps)} />
+    }
+  />
+)
 
 export const Default = Template.bind({})
 Default.args = {
@@ -60,7 +40,6 @@ Default.args = {
       {...(ProfileNewProposalCardStory.args as ProfileNewProposalCardProps)}
     />
   ),
-  matchAdapter: matchProposalModuleAdapter,
 }
 Default.parameters = {
   design: {

@@ -15,6 +15,7 @@ import {
 import {
   CreateProposal,
   PageLoader,
+  ProposalModuleSelector,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -286,11 +287,28 @@ export const CreateDaoProposal = () => {
     ]
   )
 
+  // Pre-load all proposal card info lines for all proposal module adapters so
+  // the page doesn't suspend when we switch proposal modules.
+  const proposalModuleHooks = useMemo(
+    () =>
+      daoInfo.proposalModules.map(
+        (proposalModule) =>
+          matchAndLoadCommon(proposalModule, {
+            chainId: daoInfo.chainId,
+            coreAddress: daoInfo.coreAddress,
+          }).hooks.useProfileNewProposalCardInfoLines
+      ),
+    [daoInfo]
+  )
+  // Proposal modules stay constant, so we can safely ignore the warning.
+  proposalModuleHooks.forEach((useProfileNewProposalCardInfoLines) =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useProfileNewProposalCardInfoLines()
+  )
+
   return (
     <FormProvider {...formMethods}>
       <CreateProposal
-        daoInfo={daoInfo}
-        matchAdapter={matchProposalModuleAdapter}
         newProposal={
           <SuspenseLoader
             fallback={<PageLoader />}
@@ -303,12 +321,17 @@ export const CreateDaoProposal = () => {
               drafts={drafts}
               loadDraft={loadDraft}
               onCreateSuccess={onCreateSuccess}
+              proposalModuleSelector={
+                <ProposalModuleSelector
+                  selected={selectedProposalModule}
+                  setSelected={setSelectedProposalModule}
+                />
+              }
               saveDraft={saveDraft}
               unloadDraft={unloadDraft}
             />
           </SuspenseLoader>
         }
-        proposalModule={selectedProposalModule}
         rightSidebarContent={
           connected ? (
             <ProfileNewProposalCard
@@ -318,7 +341,6 @@ export const CreateDaoProposal = () => {
             <ProfileDisconnectedCard />
           )
         }
-        setProposalModule={setSelectedProposalModule}
       />
     </FormProvider>
   )

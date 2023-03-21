@@ -1,4 +1,4 @@
-import { CSSProperties, ComponentType } from 'react'
+import { CSSProperties, ComponentType, ReactNode } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
@@ -204,6 +204,7 @@ export interface BaseNewProposalProps<FormData extends FieldValues = any> {
   unloadDraft: () => void
   draftSaving: boolean
   deleteDraft: (index: number) => void
+  proposalModuleSelector: ReactNode
 }
 
 export interface WalletVoteInfo<T> {
