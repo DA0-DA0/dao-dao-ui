@@ -1,5 +1,6 @@
 import {
   Add,
+  Block,
   Circle,
   Close,
   GavelRounded,
@@ -250,7 +251,7 @@ export const NewProposal = ({
       )}
 
       <div
-        className="flex cursor-pointer flex-row items-center gap-2 border-t border-border-secondary pt-10 pb-4"
+        className="flex cursor-pointer flex-row items-center gap-2 border-t border-border-secondary py-10"
         onClick={() => addOption({})}
       >
         <Add className="!h-6 !w-6 text-icon-primary" />
@@ -266,6 +267,18 @@ export const NewProposal = ({
         />
 
         <p className="title-text">{t('button.addNewOption')}</p>
+      </div>
+
+      <div className="flex flex-col gap-3 border-t border-border-secondary pt-10 pb-4">
+        <div className="flex flex-row items-center gap-2">
+          <div className="h-6 w-6"></div>
+
+          <Block className="!h-4 !w-4 text-icon-primary" />
+
+          <p className="title-text">{t('title.noneOfTheAbove')}</p>
+        </div>
+
+        <p className="caption-text ml-14">{t('info.cannotRemoveNoneOption')}</p>
       </div>
 
       <div className="mt-6 flex flex-col gap-2 border-y border-border-secondary py-6">
