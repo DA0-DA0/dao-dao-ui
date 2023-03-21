@@ -1,3 +1,5 @@
+import { toUtf8 } from '@cosmjs/encoding'
+import Long from 'long'
 import { useCallback, useMemo } from 'react'
 
 import { ActionCardLoader, KeyEmoji } from '@dao-dao/stateless'
@@ -36,6 +38,12 @@ export enum FilterTypes {
   Msg = '/cosmwasm.wasm.v1.AcceptedMessagesFilter',
 }
 
+export enum LimitTypes {
+  Combined = '/cosmwasm.wasm.v1.CombinedLimit',
+  Calls = '/cosmwasm.wasm.v1.MaxCallsLimit',
+  Funds = '/cosmwasm.wasm.v1.MaxFundsLimit',
+}
+
 export interface AuthzData {
   authorizationTypeUrl?: AuthorizationTypeUrl
   customTypeUrl?: boolean
@@ -45,8 +53,10 @@ export interface AuthzData {
   funds?: { denom: string; amount: number }[]
   msgTypeUrl?: string
   filterType?: FilterTypes
-  filterKeys?: string[]
+  filterKeys?: string
   filterMsg?: string
+  limitType?: LimitTypes
+  calls?: number
 }
 
 const useDefaults: UseDefaults<AuthzData> = () => ({
@@ -55,10 +65,12 @@ const useDefaults: UseDefaults<AuthzData> = () => ({
   typeUrl: TYPE_URL_MSG_GRANT,
   grantee: '',
   filterType: FilterTypes.All,
-  filterKeys: [],
-  filterMsg: '[]',
+  filterKeys: '',
+  filterMsg: '{}',
   funds: [],
   contract: '',
+  calls: 10,
+  limitType: LimitTypes.Calls,
   msgTypeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
 })
 
@@ -218,6 +230,8 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
         filterType,
         funds,
         contract,
+        limitType,
+        calls,
       }: AuthzData) => {
         let filter
         switch (filterType) {
@@ -231,7 +245,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
             filter = {
               typeUrl: filterType as string,
               value: {
-                keys: filterKeys,
+                keys: filterKeys?.split(','),
               },
             }
             break
@@ -239,7 +253,46 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
             filter = {
               typeUrl: filterType as string,
               value: {
-                msg: filterMsg,
+                messages: [toUtf8(filterMsg as string)],
+              },
+            }
+            break
+        }
+
+        let limit
+        switch (limitType) {
+          case LimitTypes.Combined:
+            limit = {
+              typeUrl: limitType as string,
+              value: {
+                callsRemaining: Long.fromInt(calls as number),
+                amounts: funds?.map((c) => {
+                  return {
+                    amount: c.amount.toString(),
+                    denom: c.denom,
+                  }
+                }),
+              },
+            }
+            break
+          case LimitTypes.Calls:
+            limit = {
+              typeUrl: limitType as string,
+              value: {
+                remaining: Long.fromInt(calls as number),
+              },
+            }
+            break
+          case LimitTypes.Funds:
+            limit = {
+              typeUrl: limitType as string,
+              value: {
+                amounts: funds?.map((c) => {
+                  return {
+                    amount: c.amount.toString(),
+                    denom: c.denom,
+                  }
+                }),
               },
             }
             break
@@ -277,17 +330,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                     {
                       contract,
                       filter: encodeRawProtobufMsg(filter as any),
-                      limit: encodeRawProtobufMsg({
-                        typeUrl: '/cosmwasm.wasm.v1.MaxFundsLimit',
-                        value: {
-                          amounts: funds?.map((c) => {
-                            return {
-                              amount: c.amount.toString(),
-                              denom: c.denom,
-                            }
-                          }),
-                        },
-                      }),
+                      limit: encodeRawProtobufMsg(limit as any),
                     },
                   ],
                 },
@@ -301,17 +344,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                     {
                       contract,
                       filter: encodeRawProtobufMsg(filter as any),
-                      limit: encodeRawProtobufMsg({
-                        typeUrl: '/cosmwasm.wasm.v1.MaxFundsLimit',
-                        value: {
-                          amounts: funds?.map((c) => {
-                            return {
-                              amount: c.amount.toString(),
-                              denom: c.denom,
-                            }
-                          }),
-                        },
-                      }),
+                      limit: encodeRawProtobufMsg(limit as any),
                     },
                   ],
                 },

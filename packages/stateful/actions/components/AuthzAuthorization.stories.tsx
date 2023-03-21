@@ -13,6 +13,7 @@ import {
   AuthorizationTypeUrl,
   AuthzData,
   FilterTypes,
+  LimitTypes,
 } from '../actions/AuthzAuthorization'
 import { AuthzAuthorizationComponent } from './AuthzAuthorization'
 
@@ -29,9 +30,11 @@ export default {
       msgTypeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
       contract: '',
       filterType: FilterTypes.All,
-      filterKeys: [],
-      filterMsg: '[]',
+      filterKeys: '',
+      filterMsg: '{}',
       funds: [],
+      limitType: LimitTypes.Calls,
+      calls: 10,
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),
   ],

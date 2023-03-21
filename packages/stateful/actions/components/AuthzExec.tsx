@@ -10,11 +10,7 @@ import {
   Loader,
   LockWithKeyEmoji,
 } from '@dao-dao/stateless'
-import {
-  AddressInputProps,
-  CosmosMsgFor_Empty,
-  StatefulEntityDisplayProps,
-} from '@dao-dao/types'
+import { AddressInputProps, CosmosMsgFor_Empty } from '@dao-dao/types'
 import {
   Action,
   ActionAndData,
@@ -37,9 +33,7 @@ export interface AuthzExecOptions {
   actions: Action[]
   loadedActions: LoadedActions
   orderedActions: Action[]
-  // TODO Authz authorzations? Maybe just an info notice.
   AddressInput: ComponentType<AddressInputProps<AuthzExecData>>
-  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
 export type AuthzExecData = {
@@ -144,8 +138,6 @@ export const AuthzExecActionEditor: ActionComponent<AuthzExecOptions> = ({
       setValue((fieldNamePrefix + 'msgs') as 'msgs', msgs)
     }
   }, [msgs])
-
-  // TODO limit to one actions
 
   return (
     <>

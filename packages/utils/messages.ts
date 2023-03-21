@@ -14,9 +14,11 @@ import {
   AcceptedMessageKeysFilter,
   AcceptedMessagesFilter,
   AllowAllMessagesFilter,
+  CombinedLimit,
   ContractExecutionAuthorization,
   ContractGrant,
   ContractMigrationAuthorization,
+  MaxCallsLimit,
   MaxFundsLimit,
 } from 'cosmjs-types/cosmwasm/wasm/v1/authz'
 import { Any } from 'cosmjs-types/google/protobuf/any'
@@ -201,13 +203,15 @@ export const typesRegistry = new Registry([
     ['/cosmos.bank.v1beta1.SendAuthorization', SendAuthorization],
     ['/cosmwasm.wasm.v1.AcceptedMessageKeysFilter', AcceptedMessageKeysFilter],
     ['/cosmwasm.wasm.v1.AcceptedMessagesFilter', AcceptedMessagesFilter],
-    ['/cosmwasm.wasm.v1.MaxFundsLimit', MaxFundsLimit],
     ['/cosmwasm.wasm.v1.AllowAllMessagesFilter', AllowAllMessagesFilter],
-    ['/cosmwasm.wasm.v1.ContractGrant', ContractGrant],
+    ['/cosmwasm.wasm.v1.CombinedLimit', CombinedLimit],
+    ['/cosmwasm.wasm.v1.MaxCallsLimit', MaxCallsLimit],
+    ['/cosmwasm.wasm.v1.MaxFundsLimit', MaxFundsLimit],
     [
       '/cosmwasm.wasm.v1.ContractExecutionAuthorization',
       ContractExecutionAuthorization,
     ],
+    ['/cosmwasm.wasm.v1.ContractGrant', ContractGrant],
     [
       '/cosmwasm.wasm.v1.ContractMigrationAuthorization',
       ContractMigrationAuthorization,

@@ -1,6 +1,5 @@
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { LockWithKeyEmoji } from '@dao-dao/stateless'
 import {
@@ -18,13 +17,7 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import {
-  AddressInput,
-  DaoProviders,
-  EntityDisplay,
-  SuspenseLoader,
-} from '../../components'
-import { daoInfoSelector } from '../../recoil'
+import { AddressInput } from '../../components'
 import {
   AuthzExecData,
   AuthzExecComponent as StatelessAuthzExecComponent,
@@ -80,58 +73,16 @@ const Component: ActionComponent = (props) => {
     setValue,
   ])
 
-  // TODO don't need?
-  const daoInfoLoadable = useRecoilValueLoadable(
-    context.type === ActionContextType.Dao
-      ? daoInfoSelector({
-          coreAddress,
-        })
-      : constSelector(undefined)
-  )
-
-  // TODO query authz authorzations for this address?
-
   return context.type === ActionContextType.Dao ? (
-    daoInfoLoadable.state === 'hasValue' ? (
-      <SuspenseLoader
-        fallback={
-          <StatelessAuthzExecComponent
-            {...props}
-            options={{
-              actions: [],
-              loadedActions: {},
-              orderedActions: [],
-              AddressInput,
-              EntityDisplay,
-            }}
-          />
-        }
-      >
-        <DaoProviders info={daoInfoLoadable.contents!}>
-          <StatelessAuthzExecComponent
-            {...props}
-            options={{
-              actions,
-              loadedActions,
-              orderedActions,
-              AddressInput,
-              EntityDisplay,
-            }}
-          />
-        </DaoProviders>
-      </SuspenseLoader>
-    ) : (
-      <StatelessAuthzExecComponent
-        {...props}
-        options={{
-          actions: [],
-          loadedActions: {},
-          orderedActions: [],
-          AddressInput,
-          EntityDisplay,
-        }}
-      />
-    )
+    <StatelessAuthzExecComponent
+      {...props}
+      options={{
+        actions: [],
+        loadedActions: {},
+        orderedActions: [],
+        AddressInput,
+      }}
+    />
   ) : (
     <WalletActionsProvider>
       <StatelessAuthzExecComponent
@@ -141,7 +92,6 @@ const Component: ActionComponent = (props) => {
           loadedActions,
           orderedActions,
           AddressInput,
-          EntityDisplay,
         }}
       />
     </WalletActionsProvider>
