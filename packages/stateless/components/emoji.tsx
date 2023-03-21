@@ -168,3 +168,7 @@ export const CycleEmoji = () => (
 export const JoystickEmoji = () => (
   <EmojiWrapper emoji="🕹️" labelI18nKey="emoji.joystick" />
 )
+
+export const NumbersEmoji = () => (
+  <EmojiWrapper emoji="🔢" labelI18nKey="emoji.numbers" />
+)

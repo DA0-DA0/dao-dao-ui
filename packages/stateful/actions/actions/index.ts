@@ -5,6 +5,7 @@ import { makeAuthzAuthorizationAction } from './AuthzAuthorization'
 import { makeAuthzExecAction } from './AuthzExec'
 import { makeCustomAction } from './Custom'
 import { makeDaoAdminExecAction } from './DaoAdminExec'
+import { makeEnableMultipleChoiceAction } from './EnableMultipleChoice'
 import { makeExecuteAction } from './Execute'
 import { makeGovernanceVoteAction } from './GovernanceVote'
 import { makeInstantiateAction } from './Instantiate'
@@ -55,6 +56,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeGovernanceVoteAction,
     makeWyndSwapAction,
     makeDaoAdminExecAction,
+    makeEnableMultipleChoiceAction,
   ]
 
   return actionMakers
