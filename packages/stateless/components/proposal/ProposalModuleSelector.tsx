@@ -1,8 +1,11 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { matchAdapter as matchProposalModuleAdapter } from '@dao-dao/stateful/proposal-module-adapter'
-import { ProposalModule, TypedOption } from '@dao-dao/types'
+import {
+  ProposalModule,
+  ProposalModuleAdapter,
+  TypedOption,
+} from '@dao-dao/types'
 
 import { useDaoInfoContext } from '../../hooks'
 import { SegmentedControls } from '../inputs/SegmentedControls'
@@ -10,11 +13,15 @@ import { SegmentedControls } from '../inputs/SegmentedControls'
 export type ProposalModuleSelectorProps = {
   selected: ProposalModule
   setSelected: (proposalModule: ProposalModule) => void
+  matchAdapter: (
+    contractNameToMatch: string
+  ) => ProposalModuleAdapter | undefined
 }
 
 export const ProposalModuleSelector = ({
   selected,
   setSelected,
+  matchAdapter,
 }: ProposalModuleSelectorProps) => {
   const { t } = useTranslation()
   const { proposalModules } = useDaoInfoContext()
@@ -25,9 +32,7 @@ export const ProposalModuleSelector = ({
     () =>
       proposalModules
         .map((proposalModule): TypedOption<ProposalModule> | undefined => {
-          const adapter = matchProposalModuleAdapter(
-            proposalModule.contractName
-          )
+          const adapter = matchAdapter(proposalModule.contractName)
 
           return (
             adapter && {
@@ -37,7 +42,7 @@ export const ProposalModuleSelector = ({
           )
         })
         .filter((item): item is TypedOption<ProposalModule> => !!item),
-    [proposalModules, t]
+    [matchAdapter, proposalModules, t]
   )
 
   return (

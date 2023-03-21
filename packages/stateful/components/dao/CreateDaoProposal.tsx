@@ -323,6 +323,7 @@ export const CreateDaoProposal = () => {
               onCreateSuccess={onCreateSuccess}
               proposalModuleSelector={
                 <ProposalModuleSelector
+                  matchAdapter={matchProposalModuleAdapter}
                   selected={selectedProposalModule}
                   setSelected={setSelectedProposalModule}
                 />

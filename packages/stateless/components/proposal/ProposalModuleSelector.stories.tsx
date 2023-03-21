@@ -29,6 +29,7 @@ const Template: ComponentStory<typeof ProposalModuleSelector> = (args) => {
   return (
     <ProposalModuleSelector
       {...args}
+      matchAdapter={matchAdapter}
       selected={selectedProposalModule}
       setSelected={setSelectedProposalModule}
     />
