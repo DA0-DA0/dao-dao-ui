@@ -164,12 +164,21 @@ export const CreateDaoForm = ({
       )
     })
 
+    // Ensure voting config object exists.
+    if (!cached.votingConfig) {
+      cached.votingConfig = defaultNewDao.votingConfig
+    }
+    merge(
+      // Merge into this object.
+      cached.votingConfig,
+      // Start with defaults.
+      defaultNewDao.votingConfig,
+      // Overwrite with existing values.
+      cached.votingConfig
+    )
+
     return merge(
       // Merges into this object.
-      cached,
-      // Start with defaults to fill in missing values.
-      defaultNewDao,
-      // Overwrite with existing values.
       cached,
       // Use overrides passed into component.
       override
