@@ -7,8 +7,8 @@ import useDeepCompareEffect from 'use-deep-compare-effect'
 import {
   ActionCardLoader,
   ActionSelector,
-  JoystickEmoji,
   Loader,
+  LockWithKeyEmoji,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
@@ -54,24 +54,23 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
   props
 ) => {
   const { t } = useTranslation()
-  const { watch, setValue, register } = useFormContext<AuthzExecData>()
+  const { watch, register } = useFormContext<AuthzExecData>()
   const {
     fieldNamePrefix,
     onRemove,
     errors,
     isCreating,
-    options: { AddressInput, EntityDisplay },
+    options: { AddressInput },
   } = props
 
   const coreAddress = watch((fieldNamePrefix + 'coreAddress') as 'coreAddress')
 
   return (
     <ActionCard
-      Icon={JoystickEmoji}
+      Icon={LockWithKeyEmoji}
       onRemove={onRemove}
       title={t('title.authzExec')}
     >
-      {/* <p className="title-text">{t('title.dao')}</p> */}
       <div className="mb-2">
         {false ? (
           <Loader />

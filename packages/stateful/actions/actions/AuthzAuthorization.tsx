@@ -36,9 +36,6 @@ export enum FilterTypes {
   Msg = '/cosmwasm.wasm.v1.AcceptedMessagesFilter',
 }
 
-// TODO?
-/* export enum LimitOptions {} */
-
 export interface AuthzData {
   authorizationTypeUrl?: AuthorizationTypeUrl
   customTypeUrl?: boolean

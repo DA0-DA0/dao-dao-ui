@@ -55,7 +55,7 @@ export enum AuthzExecActionTypes {
 }
 
 const Component: ActionComponent = (props) => {
-  const { context, address } = useActionOptions()
+  const { context } = useActionOptions()
   const actions = useActions()
   const loadedActions = useLoadActions(actions)
   const orderedActions = useOrderedActionsToMatch(actions)
@@ -150,24 +150,12 @@ const Component: ActionComponent = (props) => {
 
 const useTransformToCosmos: UseTransformToCosmos<AuthzExecData> = () =>
   useCallback(({ coreAddress, msgs }) => {
-    // TODO wrap msgs in AuthzExec
-    console.log(coreAddress, msgs)
-
-    // TODO encode messages
-    // There has to be a better way to do this...
-    let msg = msgs[0]
-    let encoded = cosmwasmToProtobuf(msg, coreAddress)
-
-    console.log(encoded)
-
-    // TODO check address is as expected
     return makeStargateMessage({
       stargate: {
         typeUrl: '/cosmos.authz.v1beta1.MsgExec',
         value: {
           grantee: coreAddress,
-          // TODO need to encode
-          msgs: [encoded],
+          msgs: msgs.map((msg) => cosmwasmToProtobuf(msg, coreAddress)),
         },
       },
     })

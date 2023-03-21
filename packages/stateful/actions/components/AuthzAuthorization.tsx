@@ -50,6 +50,7 @@ export interface AuthzOptions {
 
 /*
    TODO later:
+   - [] Warnings
    - [] Max calls limits?
    - [] Expires time?
  */
@@ -106,10 +107,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
         />
 
         {typeUrl === '/cosmos.authz.v1beta1.MsgGrant' && (
-          <Warning>
-            USE WITH CAUTION! Granting an Authorization allows another account
-            to perform actions on behalf of your account.
-          </Warning>
+          <Warning>{t('info.authzWarning')}</Warning>
         )}
       </div>
 
@@ -135,8 +133,8 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
       {typeUrl === '/cosmos.authz.v1beta1.MsgGrant' && (
         <div className="flex flex-col items-stretch gap-1">
           <InputLabel
-            name={'Authorization Type'}
-            tooltip={'The type of authorization to grant or revoke'}
+            name={t('form.authzType')}
+            tooltip={'form.authzTypeDescription'}
           />
           <SelectInput
             disabled={!isCreating}
@@ -144,14 +142,16 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
             register={register}
           >
             <option value={AuthorizationTypeUrl.Generic}>
-              Generic Authorization
+              {t('form.generic')}
             </option>
-            <option value={AuthorizationTypeUrl.Spend}>Spend</option>
+            <option value={AuthorizationTypeUrl.Spend}>
+              {t('title.spend')}
+            </option>
             <option value={AuthorizationTypeUrl.ContractExecution}>
-              Contract Execution
+              {t('title.executeSmartContract')}
             </option>
             <option value={AuthorizationTypeUrl.ContractMigration}>
-              Contract Migration
+              {t('title.migrateSmartContract')}
             </option>
           </SelectInput>
         </div>
@@ -164,9 +164,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
             <div className="flex flex-col items-stretch gap-1">
               <InputLabel
                 name={t('form.messageType')}
-                tooltip={
-                  'The type of Cosmos Message to grant / revoke an authorization for.'
-                }
+                tooltip={t('form.authzMessageType')}
               />
               <SelectInput
                 disabled={!isCreating}
@@ -185,15 +183,19 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
                 <option value={AuthzExecActionTypes.ClaimRewards}>
                   {t('info.withdrawStakingRewards')}
                 </option>
-                <option value={AuthzExecActionTypes.Vote}>Vote</option>
+                <option value={AuthzExecActionTypes.Vote}>
+                  {t('title.vote')}
+                </option>
                 {typeUrl !== '/cosmos.authz.v1beta1.MsgGrant' && (
                   <>
-                    <option value={AuthzExecActionTypes.Spend}>Spend</option>
+                    <option value={AuthzExecActionTypes.Spend}>
+                      {t('title.spend')}
+                    </option>
                     <option value={AuthorizationTypeUrl.ContractExecution}>
-                      Contract Execution
+                      {t('title.executeSmartContract')}
                     </option>
                     <option value={AuthorizationTypeUrl.ContractMigration}>
-                      Contract Migration
+                      {t('title.migrateSmartContract')}
                     </option>
                   </>
                 )}
@@ -244,7 +246,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
       {authorizationTypeUrl === AuthorizationTypeUrl.Spend &&
         typeUrl === '/cosmos.authz.v1beta1.MsgGrant' && (
           <div className="flex flex-col gap-1">
-            <InputLabel name={'Spend Authorization'} />
+            <InputLabel name={t('form.spendAuthorization')} />
             <div className="flex flex-col items-stretch gap-2">
               {coins.map(({ id }, index) => (
                 <NativeCoinSelector
@@ -290,8 +292,8 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
         typeUrl === '/cosmos.authz.v1beta1.MsgGrant' && (
           <>
             <div className="flex flex-col items-stretch gap-1">
-              <InputLabel name={'Contract Address'} />
-              <AddressInput
+              <InputLabel name={t('form.smartContractAddress')} />
+              <TextInput
                 disabled={!isCreating}
                 error={errors?.contract}
                 fieldName={fieldNamePrefix + 'contract'}
@@ -302,22 +304,23 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
                     validateAddress(v) || validateContractAddress(v, false),
                 ]}
               />
-              <InputErrorMessage error={errors?.value?.grantee} />
+              <InputErrorMessage error={errors?.contract} />
             </div>
 
             <div className="flex flex-col items-stretch gap-1">
               <InputLabel
-                name={'Permissions'}
-                tooltip={
-                  'The contract permissions this authorization grants the grantee.'
-                }
+                name={t('form.permissions')}
+                tooltip={t('form.permissionsDescription')}
               />
               <RadioInput
                 fieldName={fieldNamePrefix + 'filterType'}
                 options={[
-                  { label: 'All', value: FilterTypes.All },
-                  { label: 'Keys', value: FilterTypes.Keys },
-                  { label: 'Only Message', value: FilterTypes.Msg },
+                  { label: t('title.all'), value: FilterTypes.All },
+                  { label: t('form.allowedMethods'), value: FilterTypes.Keys },
+                  {
+                    label: t('form.message'),
+                    value: FilterTypes.Msg,
+                  },
                 ]}
                 setValue={setValue}
                 watch={watch}
@@ -326,7 +329,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
 
             {filterType === FilterTypes.Keys && (
               <div className="flex flex-col items-stretch gap-1">
-                <InputLabel name={'Msg Keys'} />
+                <InputLabel name={t('form.allowedMethods')} />
 
                 <TextInput
                   disabled={!isCreating}
@@ -342,7 +345,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
             {filterType === FilterTypes.Msg && (
               <div className="flex flex-col items-stretch gap-1">
                 <InputLabel
-                  name={'Message'}
+                  name={t('form.smartContractMessage')}
                   tooltip={'The message to execute'}
                 />
 
@@ -379,10 +382,8 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
             )}
 
             <InputLabel
-              name={'Spending limit'}
-              tooltip={
-                'The amount of funds to be spendable with smart contract calls'
-              }
+              name={t('form.spendingLimit')}
+              tooltip={t('form.spendingLimitDescription')}
             />
             <div className="flex flex-col items-stretch gap-2">
               {coins.map(({ id }, index) => (

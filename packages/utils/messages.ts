@@ -291,7 +291,6 @@ export const cosmwasmToProtobuf = (
   msg: CosmosMsgFor_Empty,
   address?: string
 ): { typeUrl: string; value: Uint8Array } | undefined => {
-  console.log(msg)
   let encoded
   if ('staking' in msg) {
     if ('delegate' in msg.staking) {
@@ -322,8 +321,6 @@ export const cosmwasmToProtobuf = (
           amount: msg.staking.undelegate.amount,
         },
       })
-    } else {
-      console.error('Unsupported staking message')
     }
   } else if ('distribution' in msg) {
     if ('withdraw_delegator_reward' in msg.distribution) {
@@ -335,8 +332,6 @@ export const cosmwasmToProtobuf = (
             msg.distribution.withdraw_delegator_reward.validator,
         },
       })
-    } else {
-      console.error('Unsupported distribution message')
     }
   } else if ('bank' in msg) {
     if ('send' in msg.bank) {
@@ -348,8 +343,6 @@ export const cosmwasmToProtobuf = (
           amount: msg.bank.send.amount,
         },
       })
-    } else {
-      console.error('Unsupported bank message')
     }
   } else if ('wasm' in msg) {
     if ('execute' in msg.wasm) {
@@ -372,15 +365,12 @@ export const cosmwasmToProtobuf = (
           msg: msg.wasm.migrate.msg,
         },
       })
-    } else {
-      console.error('Unsupported wasm message')
     }
-    // // TODO Stargate msg
-    // } else if ('stargate' in msg) {
-    //   encoded = {
-    //     typeUrl: msg.stargate.type_url,
-    //     value: msg.stargate.value,
-    //   }
+  } else if ('stargate' in msg) {
+    encoded = {
+      typeUrl: msg.stargate.type_url,
+      value: fromBase64(msg.stargate.value),
+    }
   } else {
     console.error('Msg type not supported')
   }
