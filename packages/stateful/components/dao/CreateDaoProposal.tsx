@@ -322,13 +322,15 @@ export const CreateDaoProposal = () => {
               loadDraft={loadDraft}
               onCreateSuccess={onCreateSuccess}
               proposalModuleSelector={
-                <div className="my-2">
-                  <ProposalModuleSelector
-                    matchAdapter={matchProposalModuleAdapter}
-                    selected={selectedProposalModule}
-                    setSelected={setSelectedProposalModule}
-                  />
-                </div>
+                daoInfo.proposalModules.length > 1 && (
+                  <div className="my-2">
+                    <ProposalModuleSelector
+                      matchAdapter={matchProposalModuleAdapter}
+                      selected={selectedProposalModule}
+                      setSelected={setSelectedProposalModule}
+                    />
+                  </div>
+                )
               }
               saveDraft={saveDraft}
               unloadDraft={unloadDraft}
