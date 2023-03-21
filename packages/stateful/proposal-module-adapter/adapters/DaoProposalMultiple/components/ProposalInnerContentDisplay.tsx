@@ -1,4 +1,4 @@
-import CircleIcon from '@mui/icons-material/Circle'
+import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -7,35 +7,38 @@ import { CosmosMessageDisplay, Loader } from '@dao-dao/stateless'
 import {
   ActionAndData,
   BaseProposalInnerContentDisplayProps,
+  ProposalVoteOption,
 } from '@dao-dao/types'
 import {
   MultipleChoiceOptionType,
   MultipleChoiceProposal,
+  MultipleChoiceVote,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { decodeMessages } from '@dao-dao/utils'
 
 import { ActionsRenderer } from '../../../../actions'
 import { SuspenseLoader } from '../../../../components'
 import { useProposalModuleAdapterContext } from '../../../react'
-import { useLoadingProposal } from '../hooks'
+import { useLoadingProposal, useLoadingVoteOptions } from '../hooks'
 import { NewProposalForm } from '../types'
-import { MULTIPLE_CHOICE_OPTION_COLORS } from './ui/MultipleChoiceOption'
 import { ProposalInnerContentDisplay as StatelessProposalInnerContentDisplay } from './ui/ProposalInnerContentDisplay'
 
 export const ProposalInnerContentDisplay = (
   props: BaseProposalInnerContentDisplayProps<NewProposalForm>
 ) => {
   const loadingProposal = useLoadingProposal()
+  const loadingVoteOptions = useLoadingVoteOptions()
 
   return (
     <SuspenseLoader
       fallback={<Loader />}
-      forceFallback={loadingProposal.loading}
+      forceFallback={loadingProposal.loading || loadingVoteOptions.loading}
     >
-      {!loadingProposal.loading && (
+      {!loadingProposal.loading && !loadingVoteOptions.loading && (
         <InnerProposalInnerContentDisplay
           {...props}
           proposal={loadingProposal.data}
+          voteOptions={loadingVoteOptions.data}
         />
       )}
     </SuspenseLoader>
@@ -47,8 +50,10 @@ export const InnerProposalInnerContentDisplay = ({
   duplicateLoading,
   availableActions,
   proposal,
+  voteOptions,
 }: BaseProposalInnerContentDisplayProps<NewProposalForm> & {
   proposal: MultipleChoiceProposal
+  voteOptions: ProposalVoteOption<MultipleChoiceVote>[]
 }) => {
   const { t } = useTranslation()
   const [showRaw, setShowRaw] = useState(false)
@@ -61,6 +66,7 @@ export const InnerProposalInnerContentDisplay = ({
 
   // Map action data to each proposal choice.
   const mappedChoicesToActions = proposal.choices.map((choice, index) => {
+    const voteOption = voteOptions[index]
     const decodedMessages = mappedDecodedMessages[index]
     const actionData: ActionAndData[] = decodedMessages.map((message) => {
       const actionMatch = availableActions
@@ -80,6 +86,7 @@ export const InnerProposalInnerContentDisplay = ({
         data: actionMatch.data,
       }
     })
+
     return {
       title: choice.title,
       description: choice.description,
@@ -87,6 +94,7 @@ export const InnerProposalInnerContentDisplay = ({
       actionData,
       decodedMessages,
       optionType: choice.option_type,
+      voteOption,
     }
   })
 
@@ -117,26 +125,29 @@ export const InnerProposalInnerContentDisplay = ({
         {t('title.voteOptions')}
       </p>
 
-      {mappedChoicesToActions.map((choice) => (
+      {mappedChoicesToActions.map((choice, index) => (
         <div
           key={choice.index}
-          className="flex flex-col justify-between gap-6 border-b border-border-secondary py-4 px-6"
+          className={clsx(
+            'flex flex-col justify-between gap-6 py-4 px-6',
+            // No bottom border on last item.
+            index < mappedChoicesToActions.length - 1 &&
+              'border-b border-border-secondary'
+          )}
         >
           <div className="flex flex-row items-center">
-            <div>
-              <CircleIcon
-                className="h-3 w-3 align-middle"
-                style={{
-                  color:
-                    MULTIPLE_CHOICE_OPTION_COLORS[
-                      choice.index % MULTIPLE_CHOICE_OPTION_COLORS.length
-                    ],
-                }}
-              />
-            </div>
+            <choice.voteOption.Icon
+              className="!h-4 !w-4"
+              style={{
+                color: choice.voteOption.color,
+              }}
+            />
             <p className="primary-text px-2 text-text-body">{choice.title}</p>
           </div>
-          <p className="secondary-text">{choice.description}</p>
+
+          {choice.optionType !== MultipleChoiceOptionType.None && (
+            <p className="secondary-text">{choice.description}</p>
+          )}
 
           {showRaw ? (
             <CosmosMessageDisplay

@@ -1,6 +1,4 @@
-// import Circle from '@uiw/react-color-circle'
-import { PanToolOutlined } from '@mui/icons-material'
-import CircleIcon from '@mui/icons-material/Circle'
+import { Block, Circle } from '@mui/icons-material'
 
 import { LoadingData, ProposalVoteOption } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
@@ -23,7 +21,7 @@ export const useLoadingVoteOptions = (): LoadingData<
 
           return {
             // For 'None of the Above' we use a different icon.
-            Icon: isNoneOption ? PanToolOutlined : CircleIcon,
+            Icon: isNoneOption ? Block : Circle,
             label: option.title,
             value: { option_id: index },
             color: isNoneOption

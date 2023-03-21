@@ -86,9 +86,9 @@ export const MultipleChoiceOption = <
       <div className="flex flex-row items-center gap-3 p-4">
         <DropdownIconButton
           circular
-          className="mr-2 transition-opacity hover:opacity-80 active:opacity-70"
+          className="transition-opacity hover:opacity-80 active:opacity-70"
           open={expanded}
-          size="sm"
+          size="xs"
           style={{
             backgroundColor:
               MULTIPLE_CHOICE_OPTION_COLORS[
