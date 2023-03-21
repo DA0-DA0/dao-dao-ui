@@ -2,19 +2,21 @@ import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { DaoCoreV2Selectors, walletAdminOfDaosSelector } from '@dao-dao/state'
-import { JoystickEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import { LockWithKeyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
   ActionMaker,
-  Coin,
   CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  cosmwasmToProtobuf,
+  makeStargateMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
 import {
   AddressInput,
@@ -25,7 +27,6 @@ import {
 import { daoInfoSelector } from '../../recoil'
 import {
   AuthzExecData,
-  AuthzExecOptions,
   AuthzExecComponent as StatelessAuthzExecComponent,
 } from '../components/AuthzExec'
 import {
@@ -35,42 +36,12 @@ import {
   useLoadActions,
   useOrderedActionsToMatch,
 } from '../react'
-/* import {
- *   MsgBeginRedelegate,
- *   MsgDelegate,
- *   MsgUndelegate,
- * } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/tx'
- * import { MsgWithdrawDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/tx'
- *  */
+
 const useDefaults: UseDefaults<AuthzExecData> = () => ({
   coreAddress: '',
   msgs: [],
 })
 
-/* type InnerOptions = Pick<AuthzExecOptions, 'childDaos'> */
-
-/* interface AuthzExecData {
- *   authzExecActionType: AuthzExecActionTypes
- *   delegate: MsgDelegate
- *   undelegate: MsgUndelegate
- *   redelegate: MsgBeginRedelegate
- *   claimRewards: MsgWithdrawDelegatorReward
- *   vote: MsgVote
- *   execute: {
- *     sender: string
- *     contract: string
- *     msg: string
- *     funds: Coin[]
- *   }
- *   migrate: {
- *     sender: string
- *     contract: string
- *     codeId: string
- *     msg: string
- *   }
- *   custom: string
- * }
- *  */
 export enum AuthzExecActionTypes {
   Delegate = '/cosmos.staking.v1beta1.MsgDelegate',
   Undelegate = '/cosmos.staking.v1beta1.MsgUndelegate',
@@ -83,40 +54,11 @@ export enum AuthzExecActionTypes {
   Custom = 'custom',
 }
 
-const InnerComponentLoading: ActionComponent<AuthzExecOptions> = (props) => (
-  <StatelessAuthzExecComponent
-    {...props}
-    options={{
-      actions: [],
-      loadedActions: {},
-      orderedActions: [],
-      AddressInput,
-      EntityDisplay,
-    }}
-  />
-)
-
-const InnerComponent: ActionComponent<AuthzExecOptions> = (props) => {
+const Component: ActionComponent = (props) => {
+  const { context, address } = useActionOptions()
   const actions = useActions()
   const loadedActions = useLoadActions(actions)
   const orderedActions = useOrderedActionsToMatch(actions)
-
-  return (
-    <StatelessAuthzExecComponent
-      {...props}
-      options={{
-        actions,
-        loadedActions,
-        orderedActions,
-        AddressInput,
-        EntityDisplay,
-      }}
-    />
-  )
-}
-
-const Component: ActionComponent = (props) => {
-  const { context, address } = useActionOptions()
 
   // Load DAO info for chosen DAO.
   const { watch, setValue, clearErrors } = useFormContext()
@@ -149,46 +91,87 @@ const Component: ActionComponent = (props) => {
 
   // TODO query authz authorzations for this address?
 
-  const options = {}
-
   return context.type === ActionContextType.Dao ? (
     daoInfoLoadable.state === 'hasValue' ? (
       <SuspenseLoader
-        fallback={<InnerComponentLoading {...props} />}
+        fallback={
+          <StatelessAuthzExecComponent
+            {...props}
+            options={{
+              actions: [],
+              loadedActions: {},
+              orderedActions: [],
+              AddressInput,
+              EntityDisplay,
+            }}
+          />
+        }
       >
         <DaoProviders info={daoInfoLoadable.contents!}>
-          <InnerComponent {...props} />
+          <StatelessAuthzExecComponent
+            {...props}
+            options={{
+              actions,
+              loadedActions,
+              orderedActions,
+              AddressInput,
+              EntityDisplay,
+            }}
+          />
         </DaoProviders>
       </SuspenseLoader>
     ) : (
-      <InnerComponentLoading {...props} />
+      <StatelessAuthzExecComponent
+        {...props}
+        options={{
+          actions: [],
+          loadedActions: {},
+          orderedActions: [],
+          AddressInput,
+          EntityDisplay,
+        }}
+      />
     )
   ) : (
-    <WalletActionsProvider   <InnerComponent {...props} options={options} />
+    <WalletActionsProvider>
+      <StatelessAuthzExecComponent
+        {...props}
+        options={{
+          actions,
+          loadedActions,
+          orderedActions,
+          AddressInput,
+          EntityDisplay,
+        }}
+      />
     </WalletActionsProvider>
   )
 }
 
 const useTransformToCosmos: UseTransformToCosmos<AuthzExecData> = () =>
-  // TODO wrap msgs in AuthzExec
+  useCallback(({ coreAddress, msgs }) => {
+    // TODO wrap msgs in AuthzExec
+    console.log(coreAddress, msgs)
 
-  useCallback(
-    ({ coreAddress, msgs }) =>
-      makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: coreAddress,
-            funds: [],
-            msg: {
-              execute_admin_msgs: {
-                msgs,
-              },
-            },
-          },
+    // TODO encode messages
+    // There has to be a better way to do this...
+    let msg = msgs[0]
+    let encoded = cosmwasmToProtobuf(msg, coreAddress)
+
+    console.log(encoded)
+
+    // TODO check address is as expected
+    return makeStargateMessage({
+      stargate: {
+        typeUrl: '/cosmos.authz.v1beta1.MsgExec',
+        value: {
+          grantee: coreAddress,
+          // TODO need to encode
+          msgs: [encoded],
         },
-      }),
-    []
-  )
+      },
+    })
+  }, [])
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
   msg: Record<string, any>
@@ -219,9 +202,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
 
 export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({ t }) => ({
   key: CoreActionKey.AuthzExec,
-  Icon: JoystickEmoji,
-  label: t('title.daoAdminExec'),
-  description: t('info.daoAdminExecDescription'),
+  Icon: LockWithKeyEmoji,
+  label: t('title.authzExec'),
+  description: t('info.authzExecDescription'),
   Component,
   useDefaults,
   useTransformToCosmos,

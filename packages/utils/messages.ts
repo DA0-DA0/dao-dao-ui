@@ -6,7 +6,7 @@ import {
   GenericAuthorization,
   Grant,
 } from 'cosmjs-types/cosmos/authz/v1beta1/authz'
-import { MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
+import { MsgExec, MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { SendAuthorization } from 'cosmjs-types/cosmos/bank/v1beta1/authz'
 import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
 import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
@@ -194,6 +194,7 @@ export const typesRegistry = new Registry([
   ...([
     ['/cosmos.slashing.v1beta1.MsgUnjail', MsgUnjail],
     ['/cosmos.authz.v1beta1.MsgGrant', MsgGrant],
+    ['/cosmos.authz.v1beta1.MsgExec', MsgExec],
     ['/cosmos.authz.v1beta1.GenericAuthorization', GenericAuthorization],
     ['/cosmos.authz.v1beta1.Grant', Grant],
     ['/cosmos.crypto.ed25519.PubKey', PubKey],
@@ -284,6 +285,107 @@ export const decodeStargateMessage = ({
     value: decodeProtobufValue(type_url, value),
   },
 })
+
+// Take a CosmWasm msg and return the protobuf encoded version
+export const cosmwasmToProtobuf = (
+  msg: CosmosMsgFor_Empty,
+  address?: string
+): { typeUrl: string; value: Uint8Array } | undefined => {
+  console.log(msg)
+  let encoded
+  if ('staking' in msg) {
+    if ('delegate' in msg.staking) {
+      encoded = encodeRawProtobufMsg({
+        typeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
+        value: {
+          amount: msg.staking.delegate.amount,
+          delegatorAddress: address,
+          validatorAddress: msg.staking.delegate.validator,
+        },
+      })
+    } else if ('redelegate' in msg.staking) {
+      encoded = encodeRawProtobufMsg({
+        typeUrl: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
+        value: {
+          delegatorAddress: address,
+          validatorSrcAddress: msg.staking.redelegate.dst_validator,
+          validatorDestAddress: msg.staking.redelegate.src_validator,
+          amount: msg.staking.redelegate.amount,
+        },
+      })
+    } else if ('undelegate' in msg.staking) {
+      encoded = encodeRawProtobufMsg({
+        typeUrl: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
+        value: {
+          delegatorAddress: address,
+          validatorAddress: msg.staking.undelegate.validator,
+          amount: msg.staking.undelegate.amount,
+        },
+      })
+    } else {
+      console.error('Unsupported staking message')
+    }
+  } else if ('distribution' in msg) {
+    if ('withdraw_delegator_reward' in msg.distribution) {
+      encoded = encodeRawProtobufMsg({
+        typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+        value: {
+          delegatorAddress: address,
+          validatorAddress:
+            msg.distribution.withdraw_delegator_reward.validator,
+        },
+      })
+    } else {
+      console.error('Unsupported distribution message')
+    }
+  } else if ('bank' in msg) {
+    if ('send' in msg.bank) {
+      encoded = encodeRawProtobufMsg({
+        typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+        value: {
+          fromAddress: address,
+          toAddress: msg.bank.send.to_address,
+          amount: msg.bank.send.amount,
+        },
+      })
+    } else {
+      console.error('Unsupported bank message')
+    }
+  } else if ('wasm' in msg) {
+    if ('execute' in msg.wasm) {
+      encoded = encodeRawProtobufMsg({
+        typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+        value: {
+          sender: address,
+          contract: msg.wasm.execute.contract_addr,
+          funds: msg.wasm.execute.funds,
+          msg: msg.wasm.execute.msg,
+        },
+      })
+    } else if ('migrate' in msg.wasm) {
+      encoded = encodeRawProtobufMsg({
+        typeUrl: '/cosmwasm.wasm.v1.MsgMigrateContract',
+        value: {
+          sender: address,
+          contract: msg.wasm.migrate.contract_addr,
+          codeId: msg.wasm.migrate.new_code_id,
+          msg: msg.wasm.migrate.msg,
+        },
+      })
+    } else {
+      console.error('Unsupported wasm message')
+    }
+    // // TODO Stargate msg
+    // } else if ('stargate' in msg) {
+    //   encoded = {
+    //     typeUrl: msg.stargate.type_url,
+    //     value: msg.stargate.value,
+    //   }
+  } else {
+    console.error('Msg type not supported')
+  }
+  return encoded
+}
 
 export const makeExecutableMintMessage = (
   msg: MintMsg,

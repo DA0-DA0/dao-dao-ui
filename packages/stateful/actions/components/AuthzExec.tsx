@@ -9,12 +9,10 @@ import {
   ActionSelector,
   JoystickEmoji,
   Loader,
-  RadioInput,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
   CosmosMsgFor_Empty,
-  LoadingData,
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 import {
@@ -28,6 +26,7 @@ import {
   CHAIN_BECH32_PREFIX,
   decodeMessages,
   isValidAddress,
+  validateAddress,
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../components'
@@ -70,36 +69,22 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
     <ActionCard
       Icon={JoystickEmoji}
       onRemove={onRemove}
-      title={t('title.daoAdminExec')}
+      title={t('title.authzExec')}
     >
-      <p className="title-text">{t('title.dao')}</p>
-      {/* <div className="mb-2">
-          {childDaos.loading ? (
+      {/* <p className="title-text">{t('title.dao')}</p> */}
+      <div className="mb-2">
+        {false ? (
           <Loader />
-          ) : isCreating ? (
-          childDaos.data.length > 0 ? (
-          <RadioInput
-          fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
-          options={childDaos.data.map((childDao) => ({
-          display: <EntityDisplay address={childDao} hideImage noCopy />,
-          value: childDao,
-          }))}
-          setValue={setValue}
-          watch={watch}
-          />
-          ) : (
+        ) : (
           <AddressInput
-          error={errors?.coreAddress}
-          fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
-          register={register}
-          type="contract"
-          validation={[validateContractAddress]}
+            error={errors?.coreAddress}
+            fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
+            register={register}
+            type="contract"
+            validation={[validateAddress]}
           />
-          )
-          ) : (
-          <EntityDisplay address={coreAddress} />
-          )}
-          </div> */}
+        )}
+      </div>
       {isValidAddress(coreAddress, CHAIN_BECH32_PREFIX) && (
         <>
           <p className="title-text">{t('title.actions')}</p>

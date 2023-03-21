@@ -116,7 +116,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
         }
 
         switch (authorizationTypeUrl) {
-          case AuthorizationTypeUrl.Generic:
+          case AuthorizationTypeUrl.Generic: {
             return {
               match: true,
               data: {
@@ -129,7 +129,9 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 grantee: msg.stargate.value.grantee,
               },
             }
-          case AuthorizationTypeUrl.Spend:
+          }
+
+          case AuthorizationTypeUrl.Spend: {
             let { spendLimit } = decodeRawProtobufMsg(
               msg.stargate.value.grant!.authorization!
             ).value
@@ -143,7 +145,9 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 funds: spendLimit,
               },
             }
-          case AuthorizationTypeUrl.ContractExecution:
+          }
+
+          case AuthorizationTypeUrl.ContractExecution: {
             let { contract, filter, limit } = decodeRawProtobufMsg(
               msg.stargate.value.grant!.authorization!
             ).value.grants[0]
@@ -163,9 +167,30 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 filterType: decodedFilter.typeUrl as FilterTypes,
               },
             }
-          /* case AuthorizationTypeUrl.ContractMigration:
-           *   // TODO
-           *   return { match: false } */
+          }
+
+          case AuthorizationTypeUrl.ContractMigration: {
+            let { contract, filter, limit } = decodeRawProtobufMsg(
+              msg.stargate.value.grant!.authorization!
+            ).value.grants[0]
+            let decodedLimit = decodeRawProtobufMsg(limit)
+            console.log(decodedLimit)
+            let decodedFilter = decodeRawProtobufMsg(filter)
+            console.log(decodedFilter)
+            return {
+              match: true,
+              data: {
+                authorizationTypeUrl,
+                customTypeUrl: false,
+                typeUrl: msg.stargate.typeUrl,
+                grantee: msg.stargate.value.grantee,
+                funds: decodedLimit.value.amounts,
+                contract,
+                filterType: decodedFilter.typeUrl as FilterTypes,
+              },
+            }
+          }
+
           default:
             return { match: false }
         }
