@@ -1,4 +1,4 @@
-import { AnalyticsOutlined } from '@mui/icons-material'
+import { AnalyticsOutlined, Check } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
@@ -8,6 +8,7 @@ import {
   Button,
   CosmosMessageDisplay,
   DropdownIconButton,
+  Tooltip,
 } from '@dao-dao/stateless'
 import { Action, ActionAndData, ProposalVoteOption } from '@dao-dao/types'
 import {
@@ -31,12 +32,14 @@ export type MultipleChoiceOptionViewerProps = {
   data: MultipleChoiceOptionData
   lastOption: boolean
   availableActions: Action[]
+  winner: boolean
 }
 
 export const MultipleChoiceOptionViewer = ({
   data: { choice, actionData, decodedMessages, voteOption },
   lastOption,
   availableActions,
+  winner,
 }: MultipleChoiceOptionViewerProps) => {
   const { t } = useTranslation()
 
@@ -65,26 +68,34 @@ export const MultipleChoiceOptionViewer = ({
         )}
         onClick={!isNoneOption ? toggleExpanded : undefined}
       >
-        <DropdownIconButton
-          className={clsx(
-            // Disable instead of hiding if none option to preserve the space
-            // layout but disallow expanding.
-            isNoneOption && 'pointer-events-none opacity-0'
-          )}
-          open={expanded}
-          toggle={
-            // Container has toggle handler.
-            () => {}
-          }
-        />
+        <div className="flex grow flex-row items-center gap-6">
+          <DropdownIconButton
+            className={clsx(
+              // Disable instead of hiding if none option to preserve the space
+              // layout but disallow expanding.
+              isNoneOption && 'pointer-events-none opacity-0'
+            )}
+            open={expanded}
+            toggle={
+              // Container has toggle handler.
+              () => {}
+            }
+          />
 
-        <voteOption.Icon
-          className="!h-4 !w-4"
-          style={{
-            color: voteOption.color,
-          }}
-        />
-        <p className="primary-text text-text-body">{choice.title}</p>
+          <voteOption.Icon
+            className="!h-4 !w-4"
+            style={{
+              color: voteOption.color,
+            }}
+          />
+          <p className="primary-text text-text-body">{choice.title}</p>
+        </div>
+
+        {winner && (
+          <Tooltip title={t('info.winningOptionTooltip')}>
+            <Check className="!h-6 !w-6 !text-icon-interactive-valid" />
+          </Tooltip>
+        )}
       </div>
 
       <div

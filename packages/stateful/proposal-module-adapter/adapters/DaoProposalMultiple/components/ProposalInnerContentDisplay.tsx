@@ -5,6 +5,7 @@ import { Loader } from '@dao-dao/stateless'
 import {
   ActionAndData,
   BaseProposalInnerContentDisplayProps,
+  ProposalStatus,
   ProposalVoteOption,
 } from '@dao-dao/types'
 import {
@@ -16,8 +17,12 @@ import { decodeMessages } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import { useProposalModuleAdapterContext } from '../../../react'
-import { useLoadingProposal, useLoadingVoteOptions } from '../hooks'
-import { NewProposalForm } from '../types'
+import {
+  useLoadingProposal,
+  useLoadingVoteOptions,
+  useLoadingVotesInfo,
+} from '../hooks'
+import { NewProposalForm, VotesInfo } from '../types'
 import {
   MultipleChoiceOptionData,
   MultipleChoiceOptionViewer,
@@ -29,19 +34,27 @@ export const ProposalInnerContentDisplay = (
 ) => {
   const loadingProposal = useLoadingProposal()
   const loadingVoteOptions = useLoadingVoteOptions()
+  const loadingVotesInfo = useLoadingVotesInfo()
 
   return (
     <SuspenseLoader
       fallback={<Loader />}
-      forceFallback={loadingProposal.loading || loadingVoteOptions.loading}
+      forceFallback={
+        loadingProposal.loading ||
+        loadingVoteOptions.loading ||
+        loadingVotesInfo.loading
+      }
     >
-      {!loadingProposal.loading && !loadingVoteOptions.loading && (
-        <InnerProposalInnerContentDisplay
-          {...props}
-          proposal={loadingProposal.data}
-          voteOptions={loadingVoteOptions.data}
-        />
-      )}
+      {!loadingProposal.loading &&
+        !loadingVoteOptions.loading &&
+        !loadingVotesInfo.loading && (
+          <InnerProposalInnerContentDisplay
+            {...props}
+            proposal={loadingProposal.data}
+            voteOptions={loadingVoteOptions.data}
+            votesInfo={loadingVotesInfo.data}
+          />
+        )}
     </SuspenseLoader>
   )
 }
@@ -52,9 +65,11 @@ export const InnerProposalInnerContentDisplay = ({
   availableActions,
   proposal,
   voteOptions,
+  votesInfo: { winningChoice },
 }: BaseProposalInnerContentDisplayProps<NewProposalForm> & {
   proposal: MultipleChoiceProposal
   voteOptions: ProposalVoteOption<MultipleChoiceVote>[]
+  votesInfo: VotesInfo
 }) => {
   const { t } = useTranslation()
   const { id: proposalModuleAdapterId } = useProposalModuleAdapterContext()
@@ -132,6 +147,13 @@ export const InnerProposalInnerContentDisplay = ({
               availableActions={availableActions}
               data={data}
               lastOption={index === optionsData.length - 1}
+              winner={
+                (proposal.status === ProposalStatus.Passed ||
+                  proposal.status === ProposalStatus.Executed ||
+                  proposal.status === ProposalStatus.ExecutionFailed) &&
+                !!winningChoice &&
+                winningChoice.index === data.choice.index
+              }
             />
           ))}
         </div>
