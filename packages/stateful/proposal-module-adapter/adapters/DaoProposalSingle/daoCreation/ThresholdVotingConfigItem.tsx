@@ -33,7 +33,7 @@ const ThresholdInput = ({
     <div className="flex flex-row gap-2">
       {!majority && (
         <NumberInput
-          containerClassName="grow min-w-[9rem]"
+          containerClassName="grow min-w-[8rem]"
           error={errors?.threshold?.value}
           fieldName="threshold.value"
           min={1}

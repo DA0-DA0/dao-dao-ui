@@ -28,7 +28,7 @@ const QuorumInput = ({
     <div className="flex flex-row gap-2">
       {!majority && (
         <NumberInput
-          containerClassName="grow min-w-[9rem]"
+          containerClassName="grow min-w-[8rem]"
           error={errors?.quorum?.value}
           fieldName="quorum.value"
           min={1}
