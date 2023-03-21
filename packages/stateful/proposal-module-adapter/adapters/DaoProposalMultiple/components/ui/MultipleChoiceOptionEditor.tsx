@@ -180,7 +180,7 @@ export const MultipleChoiceOptionEditor = <
           )}
         </div>
 
-        <div className="border-l-[3px] border-dashed border-border-interactive-focus py-4 pl-5">
+        <div className="border-l-[3px] border-dashed border-border-interactive-focus pt-4 pb-2 pl-5">
           <ActionSelector
             actions={actions}
             // There will be many action selector buttons on-screen, so the
