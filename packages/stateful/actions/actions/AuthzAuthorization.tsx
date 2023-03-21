@@ -1,4 +1,4 @@
-import { toUtf8 } from '@cosmjs/encoding'
+import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import Long from 'long'
 import { useCallback, useMemo } from 'react'
 
@@ -161,9 +161,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
               msg.stargate.value.grant!.authorization!
             ).value.grants[0]
             let decodedLimit = decodeRawProtobufMsg(limit)
-            console.log(decodedLimit)
             let decodedFilter = decodeRawProtobufMsg(filter)
-            console.log(decodedFilter)
             return {
               match: true,
               data: {
@@ -173,7 +171,14 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 grantee: msg.stargate.value.grantee,
                 funds: decodedLimit.value.amounts,
                 contract,
-                filterType: decodedFilter.typeUrl as FilterTypes,
+                filterType: decodedFilter?.typeUrl as FilterTypes,
+                filterKeys: decodedFilter.value?.keys?.join() || '',
+                filterMsg: fromUtf8(decodedFilter?.value?.messages) || '{}',
+                limitType: decodedLimit?.typeUrl as LimitTypes,
+                calls:
+                  decodedLimit?.value?.remaining ||
+                  decodedLimit?.value?.callsRemaining ||
+                  0,
               },
             }
           }
@@ -183,9 +188,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
               msg.stargate.value.grant!.authorization!
             ).value.grants[0]
             let decodedLimit = decodeRawProtobufMsg(limit)
-            console.log(decodedLimit)
             let decodedFilter = decodeRawProtobufMsg(filter)
-            console.log(decodedFilter)
             return {
               match: true,
               data: {
@@ -195,7 +198,14 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 grantee: msg.stargate.value.grantee,
                 funds: decodedLimit.value.amounts,
                 contract,
-                filterType: decodedFilter.typeUrl as FilterTypes,
+                filterType: decodedFilter?.typeUrl as FilterTypes,
+                filterKeys: decodedFilter.value?.keys?.join() || '',
+                filterMsg: fromUtf8(decodedFilter?.value?.messages) || '{}',
+                limitType: decodedLimit?.typeUrl as LimitTypes,
+                calls:
+                  decodedLimit?.value?.remaining ||
+                  decodedLimit?.value?.callsRemaining ||
+                  0,
               },
             }
           }

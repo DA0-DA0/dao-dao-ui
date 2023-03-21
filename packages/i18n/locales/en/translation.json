@@ -412,7 +412,7 @@
     "payment": "Payment",
     "percentOfTotalSupply": "Percent of total token supply",
     "percentOfTotalSupplyTooltip": "{{weight}} of the total token supply will be split evenly among all of the members in this tier. Want to add members with different voting power? Add another tier.",
-    "permissions": "Permissions",
+    "permissions": "Contract Permissions",
     "permissionsDescription": "The contract permissions this authorization grants the grantee.",
     "proposalDepositDescription": "The number of tokens that must be deposited to create a proposal. Setting this may deter spam, but setting it too high may limit broad participation.",
     "proposalDepositTitle": "Proposal deposit",
