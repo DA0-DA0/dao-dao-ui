@@ -335,6 +335,8 @@
     "dropImageHere": "Drop image here to select it.",
     "editValidatorMessage": "Edit validator message",
     "editValidatorMessageTooltip": "Update the information of a validator controlled by your DAO.",
+    "enableMultipleChoiceDescription": "This will allow proposals to contain multiple choices instead of just `Yes` and `No`.\n\n**CAUTION:** More features increases the risk to a DAO because there are more things that can go wrong. You can always enable this later.",
+    "enableMultipleChoiceTitle": "Enable multiple choice proposals",
     "encodedMessages": "List of encoded messages",
     "encodedMessagesTooltip": "Provide a list of protobuf encoded messages with the values in base64.",
     "enterImageUrl": "Enter image URL",

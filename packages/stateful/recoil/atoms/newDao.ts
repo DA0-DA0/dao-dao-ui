@@ -62,6 +62,7 @@ export const makeDefaultNewDao = (): NewDao => ({
     },
     anyoneCanPropose: false,
     allowRevoting: false,
+    enableMultipleChoice: false,
   },
   advancedVotingConfigEnabled: false,
 })

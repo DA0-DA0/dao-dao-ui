@@ -39,6 +39,7 @@ import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_s
 import {
   CHAIN_ID,
   CODE_ID_CONFIG,
+  DaoProposalMultipleAdapterId,
   DaoVotingCw20StakedAdapterId,
   FACTORY_CONTRACT_ADDRESS,
   NATIVE_TOKEN,
@@ -197,6 +198,7 @@ export const CreateDaoForm = ({
     imageUrl,
     votingModuleAdapter,
     proposalModuleAdapters,
+    votingConfig,
   } = newDao
 
   const makingSubDao = !!parentDao
@@ -273,14 +275,20 @@ export const CreateDaoForm = ({
     throw new Error(t('error.loadingData'))
   }
 
-  // Get all proposal module adapters.
+  // Get enabled proposal module adapters.
   const proposalModuleDaoCreationAdapters = useMemo(
     () =>
       proposalModuleAdapters
+        // Filter out multiple choice adapter if not enabled.
+        .filter(
+          ({ id }) =>
+            id !== DaoProposalMultipleAdapterId ||
+            votingConfig.enableMultipleChoice
+        )
         .map(({ id }) => getProposalModuleAdapterById(id)?.daoCreation)
         // Remove undefined adapters.
         .filter(Boolean) as Required<ProposalModuleAdapter>['daoCreation'][],
-    [proposalModuleAdapters]
+    [proposalModuleAdapters, votingConfig.enableMultipleChoice]
   )
 
   const validateInstantiateMsg = useMemo(
@@ -298,7 +306,7 @@ export const CreateDaoForm = ({
         t
       )
 
-    // Generate proposal module adapters instantiation messages.
+    // Generate proposal module adapters' instantiation messages.
     const proposalModuleInstantiateInfos =
       proposalModuleDaoCreationAdapters.map(({ getInstantiateInfo }, index) =>
         getInstantiateInfo(newDao, proposalModuleAdapters[index].data, t)

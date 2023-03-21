@@ -266,11 +266,16 @@ export type DaoCreationVotingConfigWithVotingDuration = {
   votingDuration: DurationWithUnits
 }
 
+export type DaoCreationVotingConfigWithEnableMultipleChoice = {
+  enableMultipleChoice: boolean
+}
+
 export type DaoCreationVotingConfig = DaoCreationVotingConfigWithAllowRevoting &
   DaoCreationVotingConfigWithProposalDeposit &
   DaoCreationVotingConfigWithProposalSubmissionPolicy &
   DaoCreationVotingConfigWithQuorum &
-  DaoCreationVotingConfigWithVotingDuration
+  DaoCreationVotingConfigWithVotingDuration &
+  DaoCreationVotingConfigWithEnableMultipleChoice
 
 //! Other
 
