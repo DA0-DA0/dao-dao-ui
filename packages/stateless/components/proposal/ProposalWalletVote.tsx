@@ -13,7 +13,7 @@ export const ProposalWalletVote = ({
 }: ProposalWalletVoteProps) => (
   <div
     className={clsx(
-      'button-text-sm relative flex w-16 shrink-0 items-center justify-center rounded-full py-1 px-4',
+      'button-text-sm relative flex min-w-[5rem] shrink-0 items-center justify-center rounded-full py-1 px-4 text-center',
       className
     )}
   >
