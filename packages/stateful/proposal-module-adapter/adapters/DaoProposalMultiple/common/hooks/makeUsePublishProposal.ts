@@ -29,6 +29,7 @@ import { usePropose as useProposePrePropose } from '../../contracts/DaoPrePropos
 import { usePropose } from '../../contracts/DaoProposalMultiple.hooks'
 import {
   MakeUsePublishProposalOptions,
+  NewProposalData,
   PublishProposal,
   UsePublishProposal,
 } from '../../types'
@@ -180,7 +181,10 @@ export const makeUsePublishProposal =
     }, [simulationBypassExpiration])
 
     const publishProposal: PublishProposal = useCallback(
-      async (newProposalData, { failedSimulationBypassSeconds = 0 } = {}) => {
+      async (
+        { title, description, choices },
+        { failedSimulationBypassSeconds = 0 } = {}
+      ) => {
         if (!connected) {
           throw new Error(t('error.connectWalletToContinue'))
         }
@@ -194,11 +198,11 @@ export const makeUsePublishProposal =
           throw new Error(t('error.notEnoughForDeposit'))
         }
 
-        if (newProposalData.choices.options.length < 2) {
+        if (choices.options.length < 2) {
           throw new Error(t('error.tooFewChoices'))
         }
 
-        if (newProposalData.choices.options.length > MAX_NUM_PROPOSAL_CHOICES) {
+        if (choices.options.length > MAX_NUM_PROPOSAL_CHOICES) {
           throw new Error(
             t('error.tooManyChoices', { count: MAX_NUM_PROPOSAL_CHOICES })
           )
@@ -207,7 +211,7 @@ export const makeUsePublishProposal =
         // Only simulate messages if any exist. Allow proposals without
         // messages. Also allow bypassing simulation check for a period of time.
         if (
-          newProposalData.choices.options.filter((c) => c.msgs.length > 0) &&
+          choices.options.filter((c) => c.msgs.length > 0) &&
           (!simulationBypassExpiration ||
             simulationBypassExpiration < new Date())
         ) {
@@ -222,9 +226,7 @@ export const makeUsePublishProposal =
             // only one choice will be executed. Thus, just make sure each
             // individual set of messages is valid together.
             await Promise.all(
-              newProposalData.choices.options.map(({ msgs }) =>
-                simulateMsgs(msgs)
-              )
+              choices.options.map(({ msgs }) => simulateMsgs(msgs))
             )
           } catch (err) {
             // If failed simulation bypass duration is set, allow bypassing
@@ -293,18 +295,26 @@ export const makeUsePublishProposal =
             ? coins(requiredProposalDeposit, depositInfoNativeTokenDenom)
             : undefined
 
+        // Recreate form data with just the expected fields to remove any fields
+        // added by other proposal module forms.
+        const proposalData: NewProposalData = {
+          title,
+          description,
+          choices,
+        }
+
         let response: ExecuteResult = proposalModule.preProposeAddress
           ? await doProposePrePropose(
               {
                 msg: {
-                  propose: newProposalData,
+                  propose: proposalData,
                 },
               },
               'auto',
               undefined,
               proposeFunds
             )
-          : await doPropose(newProposalData, 'auto', undefined, proposeFunds)
+          : await doPropose(proposalData, 'auto', undefined, proposeFunds)
 
         if (proposeFunds?.length) {
           refreshBalances()
