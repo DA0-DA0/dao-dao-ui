@@ -86,13 +86,13 @@ export interface CreateDaoFormProps {
   parentDao?: DaoParentInfo
 
   // Primarily for testing in storybook.
-  defaults?: Partial<NewDao>
+  override?: Partial<NewDao>
   initialPageIndex?: number
 }
 
 export const CreateDaoForm = ({
   parentDao,
-  defaults,
+  override,
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
@@ -164,9 +164,17 @@ export const CreateDaoForm = ({
       )
     })
 
-    // Merge defaults passed into component, if any.
-    return merge(cached, defaults)
-  }, [_newDaoAtom, defaults])
+    return merge(
+      // Merges into this object.
+      cached,
+      // Start with defaults to fill in missing values.
+      defaultNewDao,
+      // Overwrite with existing values.
+      cached,
+      // Use overrides passed into component.
+      override
+    )
+  }, [_newDaoAtom, override])
 
   const form = useForm<NewDao>({
     defaultValues: defaultForm,
