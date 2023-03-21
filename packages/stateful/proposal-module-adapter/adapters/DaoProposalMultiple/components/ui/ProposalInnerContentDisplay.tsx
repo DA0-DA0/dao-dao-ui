@@ -1,4 +1,4 @@
-import { AnalyticsOutlined, CopyAllOutlined } from '@mui/icons-material'
+import { CopyAllOutlined } from '@mui/icons-material'
 import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -8,36 +8,28 @@ export type ProposalInnerContentDisplayProps = {
   duplicate: () => void
   duplicateLoading: boolean
   innerContentDisplay: ReactNode
-  showRaw: boolean
-  setShowRaw: (showRaw: boolean) => void
 }
 
 export const ProposalInnerContentDisplay = ({
   duplicate,
   duplicateLoading,
   innerContentDisplay,
-  showRaw,
-  setShowRaw,
 }: ProposalInnerContentDisplayProps) => {
   const { t } = useTranslation()
 
   return (
-    <div className="space-y-3">
+    <div className="flex flex-col gap-3">
       {innerContentDisplay}
 
-      <div className="flex flex-row items-center gap-7">
-        <Button onClick={() => setShowRaw(!showRaw)} variant="ghost">
-          <AnalyticsOutlined className="text-icon-secondary" />
-          <p className="secondary-text">
-            {showRaw ? t('button.hideRawData') : t('button.showRawData')}
-          </p>
-        </Button>
-
-        <Button loading={duplicateLoading} onClick={duplicate} variant="ghost">
-          <CopyAllOutlined className="text-icon-secondary" />
-          <p className="secondary-text">{t('button.duplicate')}</p>
-        </Button>
-      </div>
+      <Button
+        className="self-end"
+        loading={duplicateLoading}
+        onClick={duplicate}
+        variant="ghost"
+      >
+        <CopyAllOutlined className="text-icon-secondary" />
+        <p className="secondary-text">{t('button.duplicate')}</p>
+      </Button>
     </div>
   )
 }

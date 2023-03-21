@@ -34,7 +34,7 @@ export interface MultipleChoiceOptionData {
   actionData: ActionKeyAndData[]
 }
 
-export interface MultipleChoiceOptionProps<
+export interface MultipleChoiceOptionEditorProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
 > {
@@ -50,7 +50,7 @@ export interface MultipleChoiceOptionProps<
   loadedActions: LoadedActions
 }
 
-export const MultipleChoiceOption = <
+export const MultipleChoiceOptionEditor = <
   FV extends FieldValues,
   FieldName extends Path<FV>
 >({
@@ -63,7 +63,7 @@ export const MultipleChoiceOption = <
   removeOption,
   addOption,
   loadedActions,
-}: MultipleChoiceOptionProps<FV, FieldName>) => {
+}: MultipleChoiceOptionEditorProps<FV, FieldName>) => {
   const { t } = useTranslation()
 
   const { control, watch, getValues } = useFormContext<NewProposalForm>()

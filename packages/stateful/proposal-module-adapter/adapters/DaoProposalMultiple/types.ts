@@ -19,7 +19,7 @@ import {
   DaoCreationConfigWithQuorum,
   DaoCreationConfigWithVotingDuration,
 } from '../common'
-import { MultipleChoiceOptionData } from './components/ui/MultipleChoiceOption'
+import { MultipleChoiceOptionData } from './components/ui/MultipleChoiceOptionEditor'
 
 export interface NewProposalForm {
   title: string

@@ -19,7 +19,6 @@ Default.args = {
       Action display placeholder
     </p>
   ),
-  showRaw: false,
   duplicate: () => alert('duplicate'),
   duplicateLoading: false,
 }

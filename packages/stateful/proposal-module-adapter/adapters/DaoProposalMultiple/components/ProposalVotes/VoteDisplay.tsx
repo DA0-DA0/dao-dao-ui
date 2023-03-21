@@ -5,7 +5,7 @@ import { Loader } from '@dao-dao/stateless'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
 import { useLoadingVoteOptions } from '../../hooks/useLoadingVoteOptions'
-import { MULTIPLE_CHOICE_OPTION_COLORS } from '../ui/MultipleChoiceOption'
+import { MULTIPLE_CHOICE_OPTION_COLORS } from '../ui/MultipleChoiceOptionEditor'
 
 interface VoteDisplayProps {
   vote: MultipleChoiceVote

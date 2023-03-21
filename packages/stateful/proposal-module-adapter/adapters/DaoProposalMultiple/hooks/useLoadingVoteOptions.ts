@@ -3,7 +3,7 @@ import { Block, Circle } from '@mui/icons-material'
 import { LoadingData, ProposalVoteOption } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
-import { MULTIPLE_CHOICE_OPTION_COLORS } from '../components/ui/MultipleChoiceOption'
+import { MULTIPLE_CHOICE_OPTION_COLORS } from '../components/ui/MultipleChoiceOptionEditor'
 import { useLoadingProposal } from './useLoadingProposal'
 
 export const useLoadingVoteOptions = (): LoadingData<

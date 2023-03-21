@@ -2,7 +2,7 @@ import { LoadingData, ProcessedTQType } from '@dao-dao/types'
 import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
 import { useProcessQ } from '../common/hooks/useProcessQ'
-import { MULTIPLE_CHOICE_OPTION_COLORS } from '../components/ui/MultipleChoiceOption'
+import { MULTIPLE_CHOICE_OPTION_COLORS } from '../components/ui/MultipleChoiceOptionEditor'
 import { VotesInfo } from '../types'
 import { useLoadingProposal } from './useLoadingProposal'
 

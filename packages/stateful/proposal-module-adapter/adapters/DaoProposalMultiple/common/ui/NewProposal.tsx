@@ -50,8 +50,8 @@ import {
 import { useWalletInfo } from '../../../../../hooks'
 import {
   MULTIPLE_CHOICE_OPTION_COLORS,
-  MultipleChoiceOption,
-} from '../../components/ui/MultipleChoiceOption'
+  MultipleChoiceOptionEditor,
+} from '../../components/ui/MultipleChoiceOptionEditor'
 import { NewProposalData, NewProposalForm } from '../../types'
 
 enum ProposeSubmitValue {
@@ -231,7 +231,7 @@ export const NewProposal = ({
       {choices.length > 0 && (
         <div className="mb-4 flex flex-col items-stretch gap-2">
           {multipleChoiceFields.map(({ id }, index) => (
-            <MultipleChoiceOption
+            <MultipleChoiceOptionEditor
               key={id}
               actions={actions}
               addOption={addOption}
