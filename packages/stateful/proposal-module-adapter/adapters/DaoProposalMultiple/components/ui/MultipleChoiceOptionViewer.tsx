@@ -32,7 +32,8 @@ export type MultipleChoiceOptionViewerProps = {
   data: MultipleChoiceOptionData
   lastOption: boolean
   availableActions: Action[]
-  winner: boolean
+  // If undefined, no winner picked yet.
+  winner?: boolean
 }
 
 export const MultipleChoiceOptionViewer = ({
@@ -47,7 +48,9 @@ export const MultipleChoiceOptionViewer = ({
 
   // Close none of the above and disallow expanding.
   const [expanded, setExpanded] = useState(
-    choice.option_type !== MultipleChoiceOptionType.None
+    choice.option_type !== MultipleChoiceOptionType.None &&
+      // Default collapsed if there is a winner and it is not this one.
+      (winner === undefined || winner)
   )
   const toggleExpanded = () => setExpanded((e) => !e)
 
@@ -95,7 +98,7 @@ export const MultipleChoiceOptionViewer = ({
 
         {winner && (
           <Tooltip title={t('info.winningOptionTooltip')}>
-            <Check className="!h-6 !w-6 !text-icon-interactive-valid" />
+            <Check className="!h-6 !w-6" />
           </Tooltip>
         )}
       </div>

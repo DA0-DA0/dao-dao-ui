@@ -151,8 +151,9 @@ export const InnerProposalInnerContentDisplay = ({
                 (proposal.status === ProposalStatus.Passed ||
                   proposal.status === ProposalStatus.Executed ||
                   proposal.status === ProposalStatus.ExecutionFailed) &&
-                !!winningChoice &&
-                winningChoice.index === data.choice.index
+                !!winningChoice
+                  ? winningChoice.index === data.choice.index
+                  : undefined
               }
             />
           ))}
