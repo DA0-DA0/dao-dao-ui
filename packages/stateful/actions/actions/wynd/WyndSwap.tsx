@@ -2,7 +2,6 @@ import { coins } from '@cosmjs/amino'
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
 import {
   constSelector,
   useRecoilValue,
@@ -11,7 +10,6 @@ import {
 } from 'recoil'
 
 import {
-  WyndexFactorySelectors,
   WyndexMultiHopSelectors,
   genericTokenSelector,
   wyndPoolsSelector,
@@ -39,68 +37,33 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import {
-  AssetInfo,
-  ExecuteSwapOperationsMsg,
-} from '@dao-dao/types/contracts/WyndexMultiHop'
+import { ExecuteSwapOperationsMsg } from '@dao-dao/types/contracts/WyndexMultiHop'
 import {
   DAO_DAO_DAO_ADDRESS,
   NATIVE_TOKEN,
   WYND_MULTI_HOP_CONTRACT,
-  WYND_REFERRAL_COMMISSION,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   encodeMessageAsBase64,
+  genericTokenToAssetInfo,
   getJunoIbcUsdc,
   makeWasmMessage,
   objectMatchesStructure,
   parseEncodedMessage,
+  tokenDenomOrAddressFromAssetInfo,
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../components'
-import { useExecutedProposalTxLoadable } from '../../../hooks'
+import {
+  useExecutedProposalTxLoadable,
+  useLoadingWyndReferralCommission,
+} from '../../../hooks'
 import {
   WyndSwapComponent as StatelessWyndSwapComponent,
   WyndSwapData,
 } from '../../components/wynd/WyndSwap'
 import { useTokenBalances } from '../../hooks/useTokenBalances'
 import { useActionOptions } from '../../react'
-
-// Set max referral commission to the min of the max referral allowed and the
-// DAO DAO referral set.
-const useLoadingWyndReferralCommission = (): LoadingData<string> => {
-  const { t } = useTranslation()
-
-  // Get max referral commission from factory config.
-  const wyndexMultiHopConfig = useCachedLoadable(
-    WyndexMultiHopSelectors.configSelector({
-      contractAddress: WYND_MULTI_HOP_CONTRACT,
-      params: [],
-    })
-  )
-  const wyndexFactoryConfig = useCachedLoadable(
-    wyndexMultiHopConfig.state !== 'hasValue'
-      ? undefined
-      : WyndexFactorySelectors.configSelector({
-          contractAddress: wyndexMultiHopConfig.contents.wyndex_factory,
-          params: [],
-        })
-  )
-
-  if (wyndexFactoryConfig.state === 'hasError') {
-    throw new Error(t('error.loadingData'))
-  }
-
-  return wyndexFactoryConfig.state === 'loading'
-    ? { loading: true }
-    : {
-        loading: false,
-        data: Math.min(
-          WYND_REFERRAL_COMMISSION,
-          Number(wyndexFactoryConfig.contents.max_referral_commission)
-        ).toString(),
-      }
-}
 
 const useDefaults: UseDefaults<WyndSwapData> = () => {
   const usdc = getJunoIbcUsdc()
@@ -125,18 +88,6 @@ const useDefaults: UseDefaults<WyndSwapData> = () => {
     receiver: address,
   }
 }
-
-const genericTokenToAssetInfo = (token: GenericToken): AssetInfo =>
-  token.type === TokenType.Native
-    ? {
-        native: token.denomOrAddress,
-      }
-    : {
-        token: token.denomOrAddress,
-      }
-
-const tokenDenomOrAddressFromAssetInfo = (assetInfo: AssetInfo): string =>
-  'native' in assetInfo ? assetInfo.native : assetInfo.token
 
 const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
   const { watch, setValue, clearErrors, setError } = useFormContext()

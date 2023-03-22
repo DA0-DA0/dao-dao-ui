@@ -13,6 +13,7 @@ import { makeManageCw721Action } from './ManageCw721'
 import { makeManagePayrollAction } from './ManagePayroll'
 import { makeManageStorageItemsAction } from './ManageStorageItems'
 import { makeManageSubDaosAction } from './ManageSubDaos'
+import { makeManageWidgetsAction } from './ManageWidgets'
 import { makeMigrateAction } from './MigrateContract'
 import {
   makeBurnNftAction,
@@ -57,6 +58,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeGovernanceVoteAction,
     makeWyndSwapAction,
     makeDaoAdminExecAction,
+    makeManageWidgetsAction,
   ]
 
   return actionMakers

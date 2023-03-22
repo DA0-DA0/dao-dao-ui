@@ -16,6 +16,7 @@ import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 import { SuspenseLoader } from '../../../components'
 import { ActionCard } from '../../components/ActionCard'
 import { WithdrawTokenSwapData } from '../../components/token_swap'
+import { useMsgExecutesContract } from '../../hooks'
 import { ChooseExistingTokenSwap } from './ChooseExistingTokenSwap'
 import { WithdrawTokenSwap } from './WithdrawTokenSwap'
 
@@ -103,17 +104,12 @@ export const makeWithdrawTokenSwapAction: ActionMaker<
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<WithdrawTokenSwapData> = (
     msg: Record<string, any>
   ) => {
+    const isTokenSwapExecute = useMsgExecutesContract(msg, 'cw-token-swap')
+
     if (
-      objectMatchesStructure(msg, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              withdraw: {},
-            },
-          },
-        },
+      isTokenSwapExecute &&
+      objectMatchesStructure(msg.wasm.execute.msg, {
+        withdraw: {},
       })
     ) {
       return {
