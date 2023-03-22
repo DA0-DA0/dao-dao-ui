@@ -312,13 +312,13 @@ export const cosmwasmToProtobuf = (
         value: {
           delegatorAddress: address,
           validatorSrcAddress: msg.staking.redelegate.dst_validator,
-          validatorDestAddress: msg.staking.redelegate.src_validator,
+          validatorDstAddress: msg.staking.redelegate.src_validator,
           amount: msg.staking.redelegate.amount,
         },
       })
     } else if ('undelegate' in msg.staking) {
       encoded = encodeRawProtobufMsg({
-        typeUrl: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
+        typeUrl: '/cosmos.staking.v1beta1.MsgUndelegate',
         value: {
           delegatorAddress: address,
           validatorAddress: msg.staking.undelegate.validator,
