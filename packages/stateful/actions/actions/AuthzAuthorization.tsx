@@ -3,6 +3,7 @@ import Long from 'long'
 import { useCallback, useMemo } from 'react'
 
 import { ActionCardLoader, KeyEmoji } from '@dao-dao/stateless'
+import { Coin } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionMaker,
@@ -11,16 +12,15 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { Coin } from '@dao-dao/types'
 import {
   NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
   decodeRawProtobufMsg,
   encodeRawProtobufMsg,
   isDecodedStargateMsg,
   makeStargateMessage,
   nativeTokenDecimals,
-  convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
 import { AddressInput, SuspenseLoader } from '../../components'

@@ -114,19 +114,6 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-const useTransformToCosmos: UseTransformToCosmos<AuthzExecData> = () =>
-  useCallback(({ coreAddress, msgs }) => {
-    return makeStargateMessage({
-      stargate: {
-        typeUrl: '/cosmos.authz.v1beta1.MsgExec',
-        value: {
-          grantee: coreAddress,
-          msgs: msgs.map((msg) => cosmwasmToProtobuf(msg, coreAddress)),
-        },
-      },
-    })
-  }, [])
-
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
   msg: Record<string, any>
 ) =>
@@ -151,13 +138,31 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
     }
   }, [msg])
 
-export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({ t }) => ({
-  key: CoreActionKey.AuthzExec,
-  Icon: LockWithKeyEmoji,
-  label: t('title.authzExec'),
-  description: t('info.authzExecDescription'),
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
-})
+export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
+  t,
+  address,
+}) => {
+  const useTransformToCosmos: UseTransformToCosmos<AuthzExecData> = () =>
+    useCallback(({ coreAddress, msgs }) => {
+      return makeStargateMessage({
+        stargate: {
+          typeUrl: '/cosmos.authz.v1beta1.MsgExec',
+          value: {
+            grantee: address,
+            msgs: msgs.map((msg) => cosmwasmToProtobuf(msg, coreAddress)),
+          },
+        },
+      })
+    }, [])
+
+  return {
+    key: CoreActionKey.AuthzExec,
+    Icon: LockWithKeyEmoji,
+    label: t('title.authzExec'),
+    description: t('info.authzExecDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
+}
