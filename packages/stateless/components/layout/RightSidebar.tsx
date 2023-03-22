@@ -26,7 +26,7 @@ export const RightSidebar = ({ wallet }: RightSidebarProps) => {
       {/* Layer underneath that allows closing the responsive sidebar by tapping on visible parts of the page. */}
       {responsiveEnabled && (
         <div
-          className="absolute top-0 right-0 bottom-0 left-0 z-[29] cursor-pointer xl:hidden"
+          className="absolute top-0 right-0 bottom-0 left-0 z-[29] cursor-pointer 2xl:hidden"
           onClick={() => responsiveEnabled && toggleResponsive()}
         ></div>
       )}
@@ -41,11 +41,11 @@ export const RightSidebar = ({ wallet }: RightSidebarProps) => {
             ? 'right-0 opacity-100'
             : 'pointer-events-none -right-full opacity-0 sm:-right-96',
           // Large
-          'xl:pointer-events-auto xl:relative xl:left-0 xl:shrink-0 xl:opacity-100 xl:shadow-none'
+          '2xl:pointer-events-auto 2xl:relative 2xl:left-0 2xl:shrink-0 2xl:opacity-100 2xl:shadow-none'
         )}
       >
         {/* Show responsive close button. */}
-        <div className="fixed right-4 bottom-4 z-40 cursor-pointer rounded-full bg-background-base shadow-dp8 transition sm:right-6 sm:bottom-6 xl:hidden">
+        <div className="fixed right-4 bottom-4 z-40 cursor-pointer rounded-full bg-background-base shadow-dp8 transition sm:right-6 sm:bottom-6 2xl:hidden">
           <IconButton
             Icon={KeyboardDoubleArrowRight}
             // Match ProfileImage rounding.
