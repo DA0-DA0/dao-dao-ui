@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { Loader } from '@dao-dao/stateless'
+import { Loader, TooltipTruncatedText } from '@dao-dao/stateless'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
 import { useLoadingVoteOptions } from '../../hooks/useLoadingVoteOptions'
@@ -28,13 +28,12 @@ export const VoteDisplay = ({ vote }: VoteDisplayProps) => {
 
   return (
     <div className="inline-flex w-full flex-row items-center font-sans text-xs font-medium">
-      <p
+      <TooltipTruncatedText
         style={{
           color: voteOption.color,
         }}
-      >
-        {label}
-      </p>
+        text={label}
+      />
     </div>
   )
 }

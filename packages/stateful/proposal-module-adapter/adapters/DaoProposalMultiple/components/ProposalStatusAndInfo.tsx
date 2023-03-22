@@ -22,6 +22,7 @@ import {
   Logo,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
+  TooltipTruncatedText,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -211,7 +212,9 @@ const InnerProposalStatusAndInfo = ({
           {
             Icon: PollOutlined,
             label: t('title.winningChoice'),
-            Value: (props) => <p {...props}>{winningChoice.title}</p>,
+            Value: (props) => (
+              <TooltipTruncatedText {...props} text={winningChoice.title} />
+            ),
           },
         ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
       : []),

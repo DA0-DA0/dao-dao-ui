@@ -1,5 +1,7 @@
 import clsx from 'clsx'
 
+import { TooltipTruncatedText } from '../tooltip'
+
 export interface ProposalWalletVoteProps {
   label: string
   showBadge: boolean
@@ -17,7 +19,8 @@ export const ProposalWalletVote = ({
       className
     )}
   >
-    <p>{label}</p>
+    <TooltipTruncatedText text={label} />
+
     {showBadge && (
       <div className="absolute top-[1.5px] right-[1.5px] h-[0.375rem] w-[0.375rem] rounded-full bg-icon-interactive-active"></div>
     )}

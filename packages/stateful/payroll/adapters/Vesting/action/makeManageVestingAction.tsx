@@ -11,11 +11,14 @@ import {
   ActionCardLoader,
   MoneyWingsEmoji,
   SegmentedControls,
-  SegmentedControlsProps,
   useCachedLoadable,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import { DurationUnits, TokenType } from '@dao-dao/types'
+import {
+  DurationUnits,
+  SegmentedControlsProps,
+  TokenType,
+} from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,

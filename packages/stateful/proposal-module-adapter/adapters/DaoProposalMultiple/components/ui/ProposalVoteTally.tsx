@@ -1,7 +1,12 @@
 import { Check, Close } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { ProgressBar, Tooltip, TooltipInfoIcon } from '@dao-dao/stateless'
+import {
+  ProgressBar,
+  Tooltip,
+  TooltipInfoIcon,
+  TooltipTruncatedText,
+} from '@dao-dao/stateless'
 import { ProcessedTQType, ProposalStatus } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
@@ -73,14 +78,17 @@ export const ProposalVoteTally = ({
 
               {/* Winning option display */}
               <p className="flex flex-row items-center gap-1">
-                <p className="text-text-body">
-                  {isTie
-                    ? t('title.tied')
-                    : status === ProposalStatus.Rejected
-                    ? t('proposalStatusTitle.rejected')
-                    : // If not rejected nor tied, winningChoice should always be defined.
-                      winningChoice?.title ?? t('info.unknown')}
-                </p>
+                <TooltipTruncatedText
+                  className="text-text-body"
+                  text={
+                    isTie
+                      ? t('title.tied')
+                      : status === ProposalStatus.Rejected
+                      ? t('proposalStatusTitle.rejected')
+                      : // If not rejected nor tied, winningChoice should always be defined.
+                        winningChoice?.title ?? t('info.unknown')
+                  }
+                />
               </p>
             </div>
           )}

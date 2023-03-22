@@ -103,6 +103,7 @@ export const MultipleChoiceOptionEditor = <
               error={errorsOption?.title}
               fieldName={titleFieldName}
               ghost
+              maxLength={64}
               placeholder={t('form.multipleChoiceOptionTitlePlaceholder')}
               register={registerOption}
               validation={[validateRequired]}
