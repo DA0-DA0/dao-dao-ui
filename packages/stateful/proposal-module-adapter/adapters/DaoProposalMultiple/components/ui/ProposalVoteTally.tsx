@@ -2,14 +2,14 @@ import { Check, Close } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import { ProgressBar, Tooltip, TooltipInfoIcon } from '@dao-dao/stateless'
-import { ProcessedTQType } from '@dao-dao/types'
+import { ProcessedTQType, ProposalStatus } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { VotesInfo } from '../../types'
 
 export interface ProposalVoteTallyProps {
   votesInfo: VotesInfo
-  open: boolean
+  status: ProposalStatus
 }
 
 export const ProposalVoteTally = ({
@@ -22,6 +22,7 @@ export const ProposalVoteTally = ({
     turnoutTotal,
     quorumReached,
   },
+  status,
 }: ProposalVoteTallyProps) => {
   const { t } = useTranslation()
 
@@ -61,15 +62,24 @@ export const ProposalVoteTally = ({
           {turnoutTotal > 0 && (
             <div className="secondary-text flex flex-row items-center justify-between gap-2">
               <div className="flex flex-row items-center gap-1">
-                <p className="text-text-tertiary">{t('title.currentWinner')}</p>
+                <p className="text-text-tertiary">
+                  {status === ProposalStatus.Open
+                    ? t('title.currentWinner')
+                    : status === ProposalStatus.Rejected
+                    ? t('title.noWinner')
+                    : t('title.winner')}
+                </p>
               </div>
 
               {/* Winning option display */}
               <p className="flex flex-row items-center gap-1">
                 <p className="text-text-body">
-                  {isTie || !winningChoice
+                  {isTie
                     ? t('title.tied')
-                    : winningChoice.title}
+                    : status === ProposalStatus.Rejected
+                    ? t('proposalStatusTitle.rejected')
+                    : // If not rejected nor tied, winningChoice should always be defined.
+                      winningChoice?.title ?? t('info.unknown')}
                 </p>
               </p>
             </div>

@@ -69,6 +69,8 @@ export const MultipleChoiceOptionEditor = <
     setExpanded(newExpanded)
   }
 
+  const description = watch(`choices.${optionIndex}.description`)
+
   const optionActionData = watch(`choices.${optionIndex}.actionData`) ?? []
   const { append: appendAction, remove: removeAction } = useFieldArray({
     name: `choices.${optionIndex}.actionData`,
@@ -76,7 +78,8 @@ export const MultipleChoiceOptionEditor = <
     shouldUnregister: true,
   })
 
-  const [showingDescription, setShowingDescription] = useState(false)
+  // Default to if description exists, in case of duplication.
+  const [showingDescription, setShowingDescription] = useState(!!description)
 
   return (
     <div className="flex flex-col">
