@@ -9,13 +9,11 @@ export const WyndDepositWidget: Widget<WyndDepositData> = {
   visibilityContext: WidgetVisibilityContext.Always,
   defaultValues: {
     markdown: '',
-    outputAddress: '',
     outputToken: {
       type: TokenType.Native,
       denomOrAddress: NATIVE_TOKEN.denomOrAddress,
     },
     outputAmount: '1000000',
-    buttonLabel: 'Deposit',
   },
   Component: WyndDepositComponent,
 }

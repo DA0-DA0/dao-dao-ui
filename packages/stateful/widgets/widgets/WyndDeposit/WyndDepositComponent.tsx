@@ -55,10 +55,11 @@ import { WyndDepositData } from './types'
 export const WyndDepositComponent = ({
   variables: {
     markdown,
-    outputAddress,
     outputToken: _outputToken,
     outputAmount,
+    outputAddress: _outputAddress,
     buttonLabel,
+    tokenInstructions,
   },
 }: WidgetComponentProps<WyndDepositData>) => {
   const { t } = useTranslation()
@@ -70,7 +71,7 @@ export const WyndDepositComponent = ({
   const { coreAddress, chainId } = useDaoInfoContext()
 
   // Default to the DAO's treasury if no output specified.
-  outputAddress ||= coreAddress
+  const outputAddress = _outputAddress || coreAddress
 
   const setRefreshWalletBalances = useSetRecoilState(
     refreshWalletBalancesIdAtom(walletAddress)
@@ -341,13 +342,21 @@ export const WyndDepositComponent = ({
       swapSimulation.state === 'loading' ||
       swapSimulationInput === 0)
 
+  // If undefined, use default. If set to empty string or null, don't show.
+  const displayTokenInstructions =
+    tokenInstructions === undefined
+      ? t('info.chooseTokenToPayWith') + '...'
+      : tokenInstructions
+
   return (
     <div className="mx-auto flex max-w-lg flex-col gap-8 rounded-md bg-background-tertiary p-6">
       {markdown && (
         <MarkdownRenderer className="text-base" markdown={markdown} />
       )}
 
-      <p className="caption-text -mb-6">{t('info.chooseTokenToPayWith')}:</p>
+      {!!displayTokenInstructions && (
+        <p className="caption-text -mb-6">{displayTokenInstructions}</p>
+      )}
       <div className="flex flex-row items-center justify-between gap-2">
         <FilterableItemPopup
           filterableItemKeys={FILTERABLE_KEYS}
