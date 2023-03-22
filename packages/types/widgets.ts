@@ -32,9 +32,3 @@ export type DaoWidget = {
   id: string
   values?: Record<string, unknown>
 }
-
-// DaoWidgets is the entire structure of the JSON-encoded object stored in the
-// DAO's core item map. It is an array of DaoWidget objects.
-export type DaoWidgets = {
-  widgets: DaoWidget[]
-}

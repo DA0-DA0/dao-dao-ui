@@ -8,10 +8,10 @@ export const DaoWidgets = () => {
 
   return !loadingWidgets.loading && loadingWidgets.data.length > 0 ? (
     <div className="flex flex-col gap-2">
-      {loadingWidgets.data.map((Widget, index) => (
+      {loadingWidgets.data.map(({ WidgetComponent }, index) => (
         <div key={index}>
           <SuspenseLoader fallback={<Loader />}>
-            <Widget />
+            <WidgetComponent />
           </SuspenseLoader>
         </div>
       ))}

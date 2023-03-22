@@ -12,6 +12,7 @@
     "addTier": "Add a tier",
     "addToKeplr": "Add token to Keplr",
     "addToken": "Add token",
+    "addUpdateWidget": "Add/update widget",
     "burn": "Burn",
     "cancel": "Cancel",
     "castYourVote": "Cast your vote",
@@ -85,6 +86,7 @@
     "rateContributions": "Rate contributions",
     "readLess": "Read less",
     "readMore": "Read more",
+    "removeWidget": "Remove widget",
     "resetQuestion": "Reset?",
     "returnHome": "Return home",
     "review": "Review",
@@ -96,6 +98,7 @@
     "selectNft": "Select NFT",
     "selectToken": "Select token",
     "selectValidator": "Select validator",
+    "selectWidget": "Select widget",
     "setAsProfilePhoto": "Set as profile photo",
     "setDisplayName": "set display name",
     "setUpDiscordNotifier": "Set up Discord Notifier",
@@ -172,6 +175,7 @@
     "family": "Family",
     "fire": "Fire",
     "gear": "Gear",
+    "hammerAndWrench": "Hammer and wrench",
     "handshake": "Handshake",
     "herb": "Herb",
     "image": "Image",
@@ -379,6 +383,7 @@
     "onlyMembersExecuteTooltip": "If enabled, only members may execute passed proposals.",
     "openDate": "Open date",
     "optional": "optional",
+    "options": "Options",
     "orUploadOne": "...or upload one below.",
     "passingThresholdDescription": "Passing threshold works differently depending on whether your DAO has a quorum.\n- If your DAO has *no quorum*, this is the percentage of the DAO's voting power that must vote 'yes' for a proposal to pass.\n- If your DAO *has a quorum*, the passing threshold is only calculated from those who voted.",
     "passingThresholdTitle": "Passing threshold",
@@ -457,7 +462,8 @@
     "whoAreYouQuestion": "Who are you?",
     "whoCanMint": "Who can mint an NFT?",
     "whoIsCounterparty": "Who is the counterparty?",
-    "whoTransferNftQuestion": "Where would you like to transfer the NFT?"
+    "whoTransferNftQuestion": "Where would you like to transfer the NFT?",
+    "widget": "Widget"
   },
   "format": {
     "estUsdValue": "${{amount}} est. USD value",
@@ -584,6 +590,7 @@
     "manageTreasuryNftsDescription": "Manage NFT Collections displayed on your DAO's treasury page.",
     "manageTreasuryTokensDescription": "Manage Tokens displayed on your DAO's treasury page.",
     "manageVestingDescription": "Create a vesting contract that will release tokens to a recipient over time, or cancel an existing one.",
+    "manageWidgetsDescription": "Add, update, or remove widgets from the DAO's home page.",
     "maxSlippageDescription": "As the transaction is executing, the swap price will fluctuate. If the price slips beyond this maximum slippage, the swap will not occur.",
     "meBalancesNftsDescription_all": "These are the NFTs you own on Juno and Stargaze.",
     "meBalancesNftsDescription_juno": "These are the NFTs you own on Juno.",
@@ -674,6 +681,7 @@
     "searchActionPlaceholder": "Find an action...",
     "searchDraftPlaceholder": "Find a draft...",
     "searchForToken": "Search for a token...",
+    "searchForWidget": "Search for a widget...",
     "searchNftsPlaceholder": "Find an NFT...",
     "searchValidatorsPlaceholder": "Find a validator...",
     "setUpDiscordNotificationsTooltip": "Set up Discord notifications",
@@ -933,6 +941,7 @@
     "manageTreasuryNfts": "Manage Treasury NFTs",
     "manageTreasuryTokens": "Manage Treasury Tokens",
     "manageVesting": "Manage vesting",
+    "manageWidgets": "Manage widgets",
     "maxSlippage": "Maximum slippage",
     "me": "Me",
     "memberOfDao": "Member of {{daoName}}",
@@ -1107,5 +1116,13 @@
     "years": "Years",
     "years_one": "Year",
     "years_other": "Years"
+  },
+  "widgetDescription": {
+    "mint_nft": "Display an NFT collection with a button to mint new NFTs.",
+    "wynd_deposit": "Deposit any token on WYND DEX into your DAO."
+  },
+  "widgetTitle": {
+    "mint_nft": "Mint NFT",
+    "wynd_deposit": "WYND Deposit"
   }
 }

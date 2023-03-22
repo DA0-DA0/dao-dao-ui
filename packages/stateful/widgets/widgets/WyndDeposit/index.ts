@@ -13,6 +13,9 @@ export const WyndDepositWidget: Widget<WyndDepositData> = {
       denomOrAddress: NATIVE_TOKEN.denomOrAddress,
     },
     outputAmount: '1000000',
+    markdown: '',
+    buttonLabel: 'Deposit',
+    tokenInstructions: 'Choose token to pay with...',
   },
   Component: WyndDepositComponent,
 }

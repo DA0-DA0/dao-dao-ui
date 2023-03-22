@@ -342,9 +342,10 @@ export const WyndDepositComponent = ({
       swapSimulation.state === 'loading' ||
       swapSimulationInput === 0)
 
-  // If undefined, use default. If set to empty string or null, don't show.
+  // If undefined or empty string, use default. If set to null, hide completely.
   const displayTokenInstructions =
-    tokenInstructions === undefined
+    tokenInstructions === undefined ||
+    (typeof tokenInstructions === 'string' && !tokenInstructions.trim())
       ? t('info.chooseTokenToPayWith') + '...'
       : tokenInstructions
 
