@@ -44,7 +44,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
 ) =>
   objectMatchesStructure(msg, {
     wasm: {
-      update_admin: {},
+      update_admin: {
+        contract_addr: {},
+        admin: {},
+      },
     },
   })
     ? {
