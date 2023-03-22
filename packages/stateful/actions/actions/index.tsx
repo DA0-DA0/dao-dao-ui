@@ -28,6 +28,7 @@ import {
 } from './token_swap'
 import { makeUpdateAdminAction } from './UpdateAdmin'
 import { makeUpdateInfoAction } from './UpdateInfo'
+import { makeUpgradeV1ToV2 } from './UpgradeV1ToV2'
 import { makeValidatorActions } from './ValidatorActions'
 import { makeWyndSwapAction } from './wynd/WyndSwap'
 
@@ -56,6 +57,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeAuthzExecAction,
     makeValidatorActions,
     makeGovernanceVoteAction,
+    makeUpgradeV1ToV2,
     makeWyndSwapAction,
     makeDaoAdminExecAction,
     makeManageWidgetsAction,

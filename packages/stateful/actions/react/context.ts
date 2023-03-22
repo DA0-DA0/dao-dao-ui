@@ -6,6 +6,7 @@ import {
   CoreActionKey,
   IActionsContext,
   LoadedActions,
+  UseActionsOptions,
 } from '@dao-dao/types/actions'
 
 //! External
@@ -24,9 +25,15 @@ const useActionsContext = (): IActionsContext => {
   return context
 }
 
-export const useActions = (additionalActions?: Action[]): Action[] =>
+export const useActions = (
+  additionalActions?: Action[],
+  { isCreating = false }: UseActionsOptions = {}
+): Action[] =>
   useActionsContext()
     .actions.concat(additionalActions ?? [])
+    // Filter out actions which are not allowed to be created. This is used to
+    // hide the upgrade actions from the list of actions to create.
+    .filter((action) => !isCreating || !action.disallowCreation)
     // Sort alphabetically.
     .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
 
@@ -38,23 +45,25 @@ export const useActionForKey = (actionKey: ActionKey) =>
 // Access options passed to actions.
 export const useActionOptions = () => useActionsContext().options
 
-// This hook returns actions ordered for matching. It ensures the catch-all
-// actions are checked last, since for example many actions are smart contract
-// executions, and custom is a catch-all that will display any message. Do this
-// by assigning values and sorting the actions in ascending order.
-const keyToValue = (key: ActionKey) =>
-  key === CoreActionKey.ManageStorageItems
-    ? 1
-    : key === CoreActionKey.Execute
-    ? 2
-    : key === CoreActionKey.Custom
-    ? 3
-    : 0
+// This returns the order value of an action for matching. It ensures the last
+// four actions are set items, migrate smart contract, execute smart contract,
+// and custom, since these are all catch-alls for other actions, custom being
+// the broadest catch-all for all messages. Do this by assigning values and
+// sorting the actions in ascending order.
+const actionKeyToMatchOrder = (key: ActionKey) =>
+  (
+    [
+      CoreActionKey.ManageStorageItems,
+      CoreActionKey.Migrate,
+      CoreActionKey.Execute,
+      CoreActionKey.Custom,
+    ] as ActionKey[]
+  ).indexOf(key)
 
 export const useOrderedActionsToMatch = (actions: Action[]): Action[] => {
   const orderedActions = actions.sort((a, b) => {
-    const aValue = keyToValue(a.key)
-    const bValue = keyToValue(b.key)
+    const aValue = actionKeyToMatchOrder(a.key)
+    const bValue = actionKeyToMatchOrder(b.key)
     return aValue - bValue
   })
 

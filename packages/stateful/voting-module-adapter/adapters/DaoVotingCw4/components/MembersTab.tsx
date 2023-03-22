@@ -32,7 +32,7 @@ export const MembersTab = () => {
   const manageMembersAction = makeManageMembersAction(options)
   // Prefill URL only valid if action exists.
   const prefillValid = !!manageMembersAction
-  const proposalPrefill = useDaoProposalSinglePrefill({
+  const addMemberProposalPrefill = useDaoProposalSinglePrefill({
     actions: manageMembersAction
       ? [
           {
@@ -60,9 +60,9 @@ export const MembersTab = () => {
       ButtonLink={ButtonLink}
       DaoMemberCard={DaoMemberCard}
       addMemberHref={
-        prefillValid && proposalPrefill
+        prefillValid && addMemberProposalPrefill
           ? getDaoProposalPath(coreAddress, 'create', {
-              prefill: proposalPrefill,
+              prefill: addMemberProposalPrefill,
             })
           : undefined
       }
