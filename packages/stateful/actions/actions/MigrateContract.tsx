@@ -1,5 +1,5 @@
 import JSON5 from 'json5'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
@@ -12,7 +12,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
 import { MigrateContractComponent as StatelessMigrateContractComponent } from '../components/MigrateContract'
 
@@ -59,20 +59,27 @@ const useTransformToCosmos: UseTransformToCosmos<MigrateData> = () =>
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
   msg: Record<string, any>
 ) =>
-  useMemo(
-    () =>
-      'wasm' in msg && 'migrate' in msg.wasm
-        ? {
-            match: true,
-            data: {
-              contract: msg.wasm.migrate.contract_addr,
-              codeId: msg.wasm.migrate.new_code_id,
-              msg: JSON.stringify(msg.wasm.migrate.msg, undefined, 2),
-            },
-          }
-        : { match: false },
-    [msg]
-  )
+  objectMatchesStructure(msg, {
+    wasm: {
+      migrate: {
+        contract_addr: {},
+        new_code_id: {},
+        msg: {},
+      },
+    },
+  })
+    ? {
+        match: true,
+        data: {
+          contract: msg.wasm.migrate.contract_addr,
+          codeId: msg.wasm.migrate.new_code_id,
+          msg: JSON.stringify(msg.wasm.migrate.msg, undefined, 2),
+        },
+      }
+    : {
+        match: false,
+      }
+
 const Component: ActionComponent = (props) => {
   const [contract, setContract] = useState('')
 
