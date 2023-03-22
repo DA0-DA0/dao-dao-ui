@@ -35,15 +35,21 @@ export enum CoreActionKey {
   ManageVesting = 'manageVesting',
   WyndSwap = 'wyndSwap',
   DaoAdminExec = 'daoAdminExec',
+  EnableMultipleChoice = 'enableMultipleChoice',
   ManageWidgets = 'manageWidgets',
 }
 
+// TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
 // Actions defined in voting or proposal module adapters.
 export enum AdapterActionKey {
   ManageMembers = 'manageMembers',
   Mint = 'mint',
-  UpdatePreProposeConfig = 'updatePreProposeConfig',
-  UpdateProposalConfig = 'updateProposalConfig',
+  // DaoProposalSingle
+  UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
+  UpdateProposalSingleConfig = 'updateProposalSingleConfig',
+  // DaoProposalMultiple
+  UpdatePreProposeMultipleConfig = 'updatePreProposeMultipleConfig',
+  UpdateProposalMultipleConfig = 'updateProposalMultipleConfig',
 }
 
 export type ActionKey = CoreActionKey | AdapterActionKey

@@ -9,7 +9,6 @@ import {
   DaoCoreV2Selectors,
   blockHeightSelector,
   blocksPerYearSelector,
-  cosmWasmClientForChainSelector,
 } from '@dao-dao/state'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
@@ -86,7 +85,6 @@ export const NewProposal = ({
   const processTQ = useProcessTQ()
 
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
-  const cosmWasmClient = useRecoilValue(cosmWasmClientForChainSelector(chainId))
 
   const {
     publishProposal,
@@ -200,14 +198,13 @@ export const NewProposal = ({
       blockHeight,
       blocksPerYear,
       coreAddress,
-      cosmWasmClient,
       daoImageUrl,
       onCreateSuccess,
       options,
       processTQ,
-      options.proposalModule.address,
       publishProposal,
       t,
+      daoName,
     ]
   )
 

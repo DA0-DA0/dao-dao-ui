@@ -1,17 +1,14 @@
 import { ReactNode } from 'react'
 
 import {
+  ActionAndData,
   ActionKeyAndData,
   DepositInfoSelector,
-  DurationWithUnits,
-  GenericToken,
   IProposalModuleAdapterCommonOptions,
+  PercentOrMajorityValue,
   ProcessedTQ,
 } from '@dao-dao/types'
-import {
-  CosmosMsgFor_Empty,
-  DepositRefundPolicy,
-} from '@dao-dao/types/contracts/common'
+import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 
@@ -26,29 +23,8 @@ export interface NewProposalData extends Omit<NewProposalForm, 'actionData'> {
   msgs: CosmosMsgFor_Empty[]
 }
 
-export interface ThresholdValue {
-  majority: boolean
-  // Will be used when `majority` is false.
-  value: number
-}
-
-export interface DaoCreationConfig {
-  threshold: ThresholdValue
-  quorumEnabled: boolean
-  quorum: ThresholdValue
-  votingDuration: DurationWithUnits
-  proposalDeposit: {
-    enabled: boolean
-    amount: number
-    // Token input fields.
-    type: 'native' | 'cw20' | 'voting_module_token'
-    denomOrAddress: string
-    // Loaded from token input fields to access metadata.
-    token?: GenericToken
-    refundPolicy: DepositRefundPolicy
-  }
-  anyoneCanPropose: boolean
-  allowRevoting: boolean
+export type DaoCreationExtraVotingConfig = {
+  threshold: PercentOrMajorityValue
 }
 
 export interface VotesInfo {
@@ -115,4 +91,9 @@ export interface TimestampInfo {
 export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
   timestampInfo: TimestampInfo | undefined
   votingOpen: boolean
+}
+
+export type MessagesWithActionData = {
+  decodedMessages: any[]
+  actionData: ActionAndData[]
 }

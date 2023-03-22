@@ -2,6 +2,7 @@ import { PeopleAltOutlined } from '@mui/icons-material'
 
 import { DaoEmoji } from '@dao-dao/stateless'
 import { DaoTabId, DurationUnits, VotingModuleAdapter } from '@dao-dao/types'
+import { DaoVotingCw20StakedAdapterId } from '@dao-dao/utils'
 
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
 import {
@@ -20,7 +21,7 @@ import { DaoCreationConfig, GovernanceTokenType } from './types'
 
 export const DaoVotingCw20StakedAdapter: VotingModuleAdapter<DaoCreationConfig> =
   {
-    id: 'DaoVotingCw20Staked',
+    id: DaoVotingCw20StakedAdapterId,
     contractNames: [
       // V1
       'cw20-staked-balance-voting',

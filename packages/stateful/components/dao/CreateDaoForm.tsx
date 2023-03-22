@@ -39,6 +39,8 @@ import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_s
 import {
   CHAIN_ID,
   CODE_ID_CONFIG,
+  DaoProposalMultipleAdapterId,
+  DaoVotingCw20StakedAdapterId,
   FACTORY_CONTRACT_ADDRESS,
   NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
@@ -61,7 +63,6 @@ import {
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
 import {
-  DaoVotingCw20StakedAdapter,
   getAdapterById as getVotingModuleAdapterById,
   getAdapters as getVotingModuleAdapters,
 } from '../../voting-module-adapter'
@@ -72,6 +73,7 @@ import {
 import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { Trans } from '../Trans'
+import { loadCommonVotingConfigItems } from './commonVotingConfig'
 
 // i18n keys
 export enum CreateDaoSubmitValue {
@@ -85,13 +87,13 @@ export interface CreateDaoFormProps {
   parentDao?: DaoParentInfo
 
   // Primarily for testing in storybook.
-  defaults?: Partial<NewDao>
+  override?: Partial<NewDao>
   initialPageIndex?: number
 }
 
 export const CreateDaoForm = ({
   parentDao,
-  defaults,
+  override,
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
@@ -157,15 +159,32 @@ export const CreateDaoForm = ({
         // Merges into this object.
         adapter.data,
         // Start with defaults.
-        proposalModuleAdapter?.daoCreation?.defaultConfig,
+        proposalModuleAdapter?.daoCreation?.extraVotingConfig?.default,
         // Overwrite with existing values.
         adapter.data
       )
     })
 
-    // Merge defaults passed into component, if any.
-    return merge(cached, defaults)
-  }, [_newDaoAtom, defaults])
+    // Ensure voting config object exists.
+    if (!cached.votingConfig) {
+      cached.votingConfig = defaultNewDao.votingConfig
+    }
+    merge(
+      // Merge into this object.
+      cached.votingConfig,
+      // Start with defaults.
+      defaultNewDao.votingConfig,
+      // Overwrite with existing values.
+      cached.votingConfig
+    )
+
+    return merge(
+      // Merges into this object.
+      cached,
+      // Use overrides passed into component.
+      override
+    )
+  }, [_newDaoAtom, override])
 
   const form = useForm<NewDao>({
     defaultValues: defaultForm,
@@ -179,6 +198,7 @@ export const CreateDaoForm = ({
     imageUrl,
     votingModuleAdapter,
     proposalModuleAdapters,
+    votingConfig,
   } = newDao
 
   const makingSubDao = !!parentDao
@@ -255,14 +275,20 @@ export const CreateDaoForm = ({
     throw new Error(t('error.loadingData'))
   }
 
-  // Get all proposal module adapters.
+  // Get enabled proposal module adapters.
   const proposalModuleDaoCreationAdapters = useMemo(
     () =>
       proposalModuleAdapters
+        // Filter out multiple choice adapter if not enabled.
+        .filter(
+          ({ id }) =>
+            id !== DaoProposalMultipleAdapterId ||
+            votingConfig.enableMultipleChoice
+        )
         .map(({ id }) => getProposalModuleAdapterById(id)?.daoCreation)
         // Remove undefined adapters.
         .filter(Boolean) as Required<ProposalModuleAdapter>['daoCreation'][],
-    [proposalModuleAdapters]
+    [proposalModuleAdapters, votingConfig.enableMultipleChoice]
   )
 
   const validateInstantiateMsg = useMemo(
@@ -280,7 +306,7 @@ export const CreateDaoForm = ({
         t
       )
 
-    // Generate proposal module adapters instantiation messages.
+    // Generate proposal module adapters' instantiation messages.
     const proposalModuleInstantiateInfos =
       proposalModuleDaoCreationAdapters.map(({ getInstantiateInfo }, index) =>
         getInstantiateInfo(newDao, proposalModuleAdapters[index].data, t)
@@ -367,7 +393,7 @@ export const CreateDaoForm = ({
     useState<CreateDaoCustomValidator>()
 
   const cw20StakedBalanceVotingData =
-    votingModuleAdapter.id === DaoVotingCw20StakedAdapter.id
+    votingModuleAdapter.id === DaoVotingCw20StakedAdapterId
       ? (votingModuleAdapter.data as DaoVotingCw20StakedCreationConfig)
       : undefined
 
@@ -403,7 +429,7 @@ export const CreateDaoForm = ({
 
             // Get tokenSymbol and tokenBalance for DAO card.
             const { tokenSymbol, tokenBalance, tokenDecimals } =
-              votingModuleAdapter.id === DaoVotingCw20StakedAdapter.id &&
+              votingModuleAdapter.id === DaoVotingCw20StakedAdapterId &&
               cw20StakedBalanceVotingData
                 ? //! Display governance token supply if using governance tokens.
                   {
@@ -581,6 +607,7 @@ export const CreateDaoForm = ({
       availableVotingModuleAdapters,
       generateInstantiateMsg,
       setCustomValidator: (fn) => setCustomValidator(() => fn),
+      commonVotingConfig: loadCommonVotingConfigItems(),
       votingModuleDaoCreationAdapter,
       proposalModuleDaoCreationAdapters,
       SuspenseLoader,

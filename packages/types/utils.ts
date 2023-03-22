@@ -14,6 +14,10 @@ export type ProcessedThresholdQuorum = {
   quorum?: ProcessedTQ
 }
 
+export type ProcessedQuorum = {
+  quorum: ProcessedTQ
+}
+
 export interface CodeIdConfig {
   // https://github.com/CosmWasm/cw-plus
   Cw20Base: number

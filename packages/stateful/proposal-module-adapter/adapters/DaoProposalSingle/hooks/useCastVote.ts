@@ -15,7 +15,7 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { connected, address: walletAddress = '' } = useWallet()
 
-  const castVote = (
+  const _castVote = (
     proposalModule.version === ContractVersion.V1 ? useVoteV1 : useVoteV2
   )({
     contractAddress: proposalModule.address,
@@ -35,32 +35,34 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
     setCastingVote(false)
   }, [vote])
 
+  const castVote = useCallback(
+    async (vote: Vote) => {
+      if (!connected) return
+
+      setCastingVote(true)
+
+      try {
+        await _castVote({
+          proposalId: proposalNumber,
+          vote,
+        })
+
+        await onSuccess?.()
+      } catch (err) {
+        console.error(err)
+        toast.error(processError(err))
+
+        // Stop loading if errored.
+        setCastingVote(false)
+      }
+
+      // Loading will stop on success when vote data refreshes.
+    },
+    [connected, setCastingVote, _castVote, proposalNumber, onSuccess]
+  )
+
   return {
-    castVote: useCallback(
-      async (vote: Vote) => {
-        if (!connected) return
-
-        setCastingVote(true)
-
-        try {
-          await castVote({
-            proposalId: proposalNumber,
-            vote,
-          })
-
-          await onSuccess?.()
-        } catch (err) {
-          console.error(err)
-          toast.error(processError(err))
-
-          // Stop loading if errored.
-          setCastingVote(false)
-        }
-
-        // Loading will stop on success when vote data refreshes.
-      },
-      [connected, setCastingVote, castVote, proposalNumber, onSuccess]
-    ),
+    castVote,
     castingVote,
   }
 }

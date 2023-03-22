@@ -18,12 +18,12 @@ import {
 import {
   CHAIN_ID,
   CHAIN_PREFIX_ID_MAP,
+  DaoVotingCw20StakedAdapterId,
   isValidContractAddress,
 } from '@dao-dao/utils'
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
-import { DaoVotingCw20StakedAdapter } from '../../../voting-module-adapter/adapters/DaoVotingCw20Staked'
 
 export const daoCoreProposalModulesSelector = selectorFamily<
   ProposalModule[],
@@ -83,7 +83,7 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
         usesCw20VotingModule =
           !!votingModuleInfo &&
           matchVotingModuleAdapter(votingModuleInfo.info.contract)?.id ===
-            DaoVotingCw20StakedAdapter.id
+            DaoVotingCw20StakedAdapterId
       } catch {
         usesCw20VotingModule = false
       }

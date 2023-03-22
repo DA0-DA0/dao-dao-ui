@@ -173,6 +173,10 @@ export const JoystickEmoji = () => (
   <EmojiWrapper emoji="🕹️" labelI18nKey="emoji.joystick" />
 )
 
+export const NumbersEmoji = () => (
+  <EmojiWrapper emoji="🔢" labelI18nKey="emoji.numbers" />
+)
+
 export const HammerAndWrenchEmoji = () => (
   <EmojiWrapper emoji="🛠️" labelI18nKey="emoji.hammerAndWrench" />
 )

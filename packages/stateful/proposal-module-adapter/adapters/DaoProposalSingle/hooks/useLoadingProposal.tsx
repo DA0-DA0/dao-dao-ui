@@ -7,8 +7,7 @@ import {
   useCachedLoading,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
-import { ContractVersion, LoadingData } from '@dao-dao/types'
-import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { ContractVersion, LoadingData, ProposalStatus } from '@dao-dao/types'
 import {
   convertExpirationToDate,
   formatDate,
@@ -87,7 +86,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     // the contract does not allow, so this is just a typecheck.
     expirationDate && version !== ContractVersion.V1
       ? expirationDate.getTime() > Date.now()
-      : proposal.status === Status.Open
+      : proposal.status === ProposalStatus.Open
 
   const completionDate =
     typeof completedAt === 'string' && new Date(completedAt)

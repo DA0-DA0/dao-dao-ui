@@ -5,6 +5,7 @@ import {
   BaseProposalStatusAndInfoProps,
   CommonProposalInfo,
   DaoTabId,
+  IconButtonLinkProps,
   LoadingData,
 } from '@dao-dao/types'
 
@@ -21,7 +22,7 @@ export interface ProposalProps {
   ProposalStatusAndInfo: ComponentType<
     Pick<BaseProposalStatusAndInfoProps, 'inline'>
   >
-  actionDisplay: ReactNode
+  proposalInnerContentDisplay: ReactNode
   creator: {
     address: string
     name: LoadingData<string | null>
@@ -29,6 +30,8 @@ export interface ProposalProps {
   rightSidebarContent: ReactNode
   onRefresh: () => void
   refreshing: boolean
+  duplicateUrl: string | undefined
+  IconButtonLink: ComponentType<IconButtonLinkProps>
 }
 
 export const Proposal = ({
@@ -36,11 +39,13 @@ export const Proposal = ({
   voteTally,
   votesCast,
   ProposalStatusAndInfo,
-  actionDisplay,
+  proposalInnerContentDisplay,
   creator,
   rightSidebarContent,
   onRefresh,
   refreshing,
+  duplicateUrl,
+  IconButtonLink,
 }: ProposalProps) => {
   const { t } = useTranslation()
 
@@ -87,12 +92,14 @@ export const Proposal = ({
         <div className="no-scrollbar absolute top-0 right-0 bottom-0 left-0 z-[1] h-full overflow-y-auto pt-10 pb-6 mdlg:pl-[21rem]">
           <div className="mb-3">
             <ProposalContentDisplay
-              actionDisplay={actionDisplay}
+              IconButtonLink={IconButtonLink}
               createdAt={
                 createdAtEpoch !== null ? new Date(createdAtEpoch) : undefined
               }
               creator={creator}
               description={description}
+              duplicateUrl={duplicateUrl}
+              innerContentDisplay={proposalInnerContentDisplay}
               onRefresh={onRefresh}
               refreshing={refreshing}
               title={title}

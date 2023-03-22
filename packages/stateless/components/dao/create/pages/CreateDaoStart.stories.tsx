@@ -7,6 +7,10 @@ import {
   makeCreateDaoFormDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
+import {
+  DaoProposalSingleAdapterId,
+  DaoVotingCw20StakedAdapterId,
+} from '@dao-dao/utils'
 
 import { CreateDaoStart } from './CreateDaoStart'
 
@@ -18,7 +22,7 @@ export default {
     // Direct ancestor of rendered story.
     makeCreateDaoFormDecorator(0, {
       votingModuleAdapter: {
-        id: DaoVotingCw20StakedAdapter.id,
+        id: DaoVotingCw20StakedAdapterId,
         data: {
           ...DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig,
           newInfo: {
@@ -30,9 +34,9 @@ export default {
       },
       proposalModuleAdapters: [
         {
-          id: DaoProposalSingleAdapter.id,
+          id: DaoProposalSingleAdapterId,
           data: {
-            ...DaoProposalSingleAdapter.daoCreation.defaultConfig,
+            ...DaoProposalSingleAdapter.daoCreation.extraVotingConfig?.default,
             proposalDeposit: {
               amount: 5.2,
               refundFailed: false,

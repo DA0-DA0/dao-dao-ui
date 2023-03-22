@@ -16,9 +16,9 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { DaoCreationConfig } from '../types'
+import { DaoCreationExtraVotingConfig } from '../types'
 
-export const ThresholdInput = ({
+const ThresholdInput = ({
   data: {
     threshold: { majority },
   },
@@ -26,14 +26,14 @@ export const ThresholdInput = ({
   setValue,
   watch,
   errors,
-}: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemInputProps<DaoCreationExtraVotingConfig>) => {
   const { t } = useTranslation()
 
   return (
     <div className="flex flex-row gap-2">
       {!majority && (
         <NumberInput
-          containerClassName="grow"
+          containerClassName="grow min-w-[8rem]"
           error={errors?.threshold?.value}
           fieldName="threshold.value"
           min={1}
@@ -59,20 +59,20 @@ export const ThresholdInput = ({
   )
 }
 
-export const ThresholdReview = ({
+const ThresholdReview = ({
   data: {
     threshold: { majority, value },
   },
-}: DaoCreationVotingConfigItemReviewProps<DaoCreationConfig>) => {
+}: DaoCreationVotingConfigItemReviewProps<DaoCreationExtraVotingConfig>) => {
   const { t } = useTranslation()
   return <>{majority ? t('info.majority') : formatPercentOf100(value)}</>
 }
 
-export const ThresholdVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationConfig> =
+export const ThresholdVotingConfigItem: DaoCreationVotingConfigItem<DaoCreationExtraVotingConfig> =
   {
     Icon: BallotDepositEmoji,
     nameI18nKey: 'form.passingThresholdTitle',
-    descriptionI18nKey: 'form.passingThresholdDescription',
+    descriptionI18nKey: 'form.passingThresholdWithQuorumDescription',
     Input: ThresholdInput,
     getInputError: ({ threshold } = {}) =>
       threshold?.majority || threshold?.value,

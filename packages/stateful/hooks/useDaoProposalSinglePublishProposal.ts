@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 
 import { useDaoInfoContext } from '@dao-dao/stateless'
+import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
 import {
-  DaoProposalSingleAdapter,
   matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
 } from '../proposal-module-adapter'
@@ -25,7 +25,7 @@ export const useDaoProposalSinglePublishProposal = ():
     const daoProposalSingleModule = proposalModules.find(
       ({ contractName }) =>
         matchProposalModuleAdapter(contractName)?.id ===
-        DaoProposalSingleAdapter.id
+        DaoProposalSingleAdapterId
     )
     if (!daoProposalSingleModule) {
       return undefined

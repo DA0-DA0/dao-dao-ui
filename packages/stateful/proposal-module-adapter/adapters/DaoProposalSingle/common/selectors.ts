@@ -10,9 +10,9 @@ import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
+  ProposalStatus,
   WithChainId,
 } from '@dao-dao/types'
-import { Status } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   CommonProposalListInfo,
   DepositInfoSelector,
@@ -73,7 +73,7 @@ export const reverseProposalInfosSelector: (
           id: `${proposalModulePrefix}${id}`,
           proposalNumber: id,
           timestamp: timestamps[index],
-          isOpen: status === Status.Open,
+          isOpen: status === ProposalStatus.Open,
         })
       )
 

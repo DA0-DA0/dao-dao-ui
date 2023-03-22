@@ -1,34 +1,38 @@
 import { Buffer } from 'buffer'
 
-import { DaoCreationGetInstantiateInfo } from '@dao-dao/types'
+import {
+  DaoCreationGetInstantiateInfo,
+  PercentOrMajorityValue,
+} from '@dao-dao/types'
 import { InstantiateMsg as CwPreProposeSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeSingle'
 import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   CODE_ID_CONFIG,
+  DaoProposalSingleAdapterId,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
-import { DaoProposalSingleAdapter } from '../../index'
-import { DaoCreationConfig, ThresholdValue } from '../types'
+import { DaoCreationExtraVotingConfig } from '../types'
 import instantiateSchema from './instantiate_schema.json'
 import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
-  DaoCreationConfig
+  DaoCreationExtraVotingConfig
 > = (
-  { name },
   {
-    threshold,
-    quorumEnabled,
-    quorum,
-    votingDuration,
-    proposalDeposit,
-    anyoneCanPropose,
-    allowRevoting,
+    name,
+    votingConfig: {
+      quorum,
+      votingDuration,
+      proposalDeposit,
+      anyoneCanPropose,
+      allowRevoting,
+    },
   },
+  { threshold },
   t
 ) => {
   const decimals = proposalDeposit.token?.decimals ?? 0
@@ -82,7 +86,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         info: {
           admin: { core_module: {} },
           code_id: CODE_ID_CONFIG.DaoPreProposeSingle,
-          label: `DAO_${name}_pre-propose-${DaoProposalSingleAdapter.id}`,
+          label: `DAO_${name}_pre-propose-${DaoProposalSingleAdapterId}`,
           msg: Buffer.from(
             JSON.stringify(preProposeSingleInstantiateMsg),
             'utf8'
@@ -90,18 +94,13 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         },
       },
     },
-    threshold: quorumEnabled
-      ? {
-          threshold_quorum: {
-            quorum: convertThresholdValueToPercentageThreshold(quorum),
-            threshold: convertThresholdValueToPercentageThreshold(threshold),
-          },
-        }
-      : {
-          absolute_percentage: {
-            percentage: convertThresholdValueToPercentageThreshold(threshold),
-          },
-        },
+    threshold: {
+      threshold_quorum: {
+        quorum: convertPercentOrMajorityValueToPercentageThreshold(quorum),
+        threshold:
+          convertPercentOrMajorityValueToPercentageThreshold(threshold),
+      },
+    },
   }
 
   // Validate and throw error if invalid according to JSON schema.
@@ -110,13 +109,13 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   return {
     admin: { core_module: {} },
     code_id: CODE_ID_CONFIG.DaoProposalSingle,
-    label: `DAO_${name}_${DaoProposalSingleAdapter.id}`,
+    label: `DAO_${name}_${DaoProposalSingleAdapterId}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }
 }
 
-const convertThresholdValueToPercentageThreshold = ({
+const convertPercentOrMajorityValueToPercentageThreshold = ({
   majority,
   value,
-}: ThresholdValue): PercentageThreshold =>
+}: PercentOrMajorityValue): PercentageThreshold =>
   majority ? { majority: {} } : { percent: (value / 100).toFixed(2) }

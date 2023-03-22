@@ -6,6 +6,7 @@ import {
   makeCreateDaoFormDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
+import { DaoVotingCw20StakedAdapterId } from '@dao-dao/utils'
 
 import { CreateDaoGovernance } from './CreateDaoGovernance'
 
@@ -21,7 +22,7 @@ export default {
       imageUrl:
         'https://ipfs.stargaze.zone/ipfs/QmbGvE3wmxex8KiBbbvMjR8f9adR28s3XkiZSTuGmHoMHV/33.jpg',
       votingModuleAdapter: {
-        id: DaoVotingCw20StakedAdapter.id,
+        id: DaoVotingCw20StakedAdapterId,
         data: DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig,
       },
     }),
