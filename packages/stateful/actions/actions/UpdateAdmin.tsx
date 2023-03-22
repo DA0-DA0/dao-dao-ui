@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
@@ -11,7 +11,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { isValidContractAddress } from '@dao-dao/utils'
+import { isValidContractAddress, objectMatchesStructure } from '@dao-dao/utils'
 
 import { UpdateAdminComponent as StatelessUpdateAdminComponent } from '../components/UpdateAdmin'
 import { useActionOptions } from '../react'
@@ -42,19 +42,19 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateAdminData> = () =>
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
   msg: Record<string, any>
 ) =>
-  useMemo(
-    () =>
-      'wasm' in msg && 'update_admin' in msg.wasm
-        ? {
-            match: true,
-            data: {
-              contract: msg.wasm.update_admin.contract_addr,
-              newAdmin: msg.wasm.update_admin.admin,
-            },
-          }
-        : { match: false },
-    [msg]
-  )
+  objectMatchesStructure(msg, {
+    wasm: {
+      update_admin: {},
+    },
+  })
+    ? {
+        match: true,
+        data: {
+          contract: msg.wasm.update_admin.contract_addr,
+          newAdmin: msg.wasm.update_admin.admin,
+        },
+      }
+    : { match: false }
 
 const Component: ActionComponent = (props) => {
   const { chainId, bech32Prefix } = useActionOptions()
