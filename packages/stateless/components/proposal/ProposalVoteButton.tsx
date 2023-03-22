@@ -36,7 +36,7 @@ export const ProposalVoteButton = <Vote extends unknown>({
     size="lg"
     variant="secondary"
   >
-    <p>{label}</p>
+    <p className="text-left">{label}</p>
     <Icon className="!h-6 !w-6" style={{ color }} />
   </Button>
 )
