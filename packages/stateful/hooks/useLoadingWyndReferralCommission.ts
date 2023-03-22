@@ -13,7 +13,10 @@ import {
   WYND_REFERRAL_COMMISSION,
 } from '@dao-dao/utils'
 
-// DAO DAO referral set.
+// As of writing this, DAO DAO referral is configured to 1%, and the max allowed
+// referral commission is 0.1%. This hook will return the min of the two
+// values, so that if it increases later due to governance, the app will
+// automatically use the new value.
 export const useLoadingWyndReferralCommission = (): LoadingData<string> => {
   const { t } = useTranslation()
 

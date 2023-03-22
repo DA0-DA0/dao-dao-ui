@@ -5,8 +5,8 @@ specific token.
 
 ## Layout
 
-| Location                   | Summary                        |
-| -------------------------- | ------------------------------ |
-| [components](./components) | React components.              |
-| [index.ts](./index.ts)     | Widget definition.             |
-| [types.ts](./types.ts)     | Local widget type definitions. |
+| Location                                               | Summary                        |
+| ------------------------------------------------------ | ------------------------------ |
+| [WyndDepositComponent.tsx](./WyndDepositComponent.tsx) | React component.               |
+| [index.ts](./index.ts)                                 | Widget definition.             |
+| [types.ts](./types.ts)                                 | Local widget type definitions. |
