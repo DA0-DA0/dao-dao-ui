@@ -11,11 +11,16 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { Coin } from '@dao-dao/types'
 import {
+  NATIVE_TOKEN,
+  convertDenomToMicroDenomWithDecimals,
   decodeRawProtobufMsg,
   encodeRawProtobufMsg,
   isDecodedStargateMsg,
   makeStargateMessage,
+  nativeTokenDecimals,
+  convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
 
 import { AddressInput, SuspenseLoader } from '../../components'
@@ -151,7 +156,15 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 customTypeUrl: false,
                 typeUrl: msg.stargate.typeUrl,
                 grantee: msg.stargate.value.grantee,
-                funds: spendLimit,
+                funds: spendLimit.map((c: Coin) => {
+                  return {
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      c.amount,
+                      nativeTokenDecimals(c.denom) ?? NATIVE_TOKEN.decimals
+                    ),
+                    denom: c.denom,
+                  }
+                }),
               },
             }
           }
@@ -169,7 +182,15 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 customTypeUrl: false,
                 typeUrl: msg.stargate.typeUrl,
                 grantee: msg.stargate.value.grantee,
-                funds: decodedLimit.value.amounts,
+                funds: decodedLimit.value.amounts.map((c: Coin) => {
+                  return {
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      c.amount,
+                      nativeTokenDecimals(c.denom) ?? NATIVE_TOKEN.decimals
+                    ),
+                    denom: c.denom,
+                  }
+                }),
                 contract,
                 filterType: decodedFilter?.typeUrl as FilterTypes,
                 filterKeys: decodedFilter.value?.keys?.join() || '',
@@ -196,7 +217,15 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 customTypeUrl: false,
                 typeUrl: msg.stargate.typeUrl,
                 grantee: msg.stargate.value.grantee,
-                funds: decodedLimit.value.amounts,
+                funds: decodedLimit.value.amounts.map((c: Coin) => {
+                  return {
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      c.amount,
+                      nativeTokenDecimals(c.denom) ?? NATIVE_TOKEN.decimals
+                    ),
+                    denom: c.denom,
+                  }
+                }),
                 contract,
                 filterType: decodedFilter?.typeUrl as FilterTypes,
                 filterKeys: decodedFilter.value?.keys?.join() || '',
@@ -278,7 +307,10 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 callsRemaining: Long.fromInt(calls as number),
                 amounts: funds?.map((c) => {
                   return {
-                    amount: c.amount.toString(),
+                    amount: convertDenomToMicroDenomWithDecimals(
+                      c.amount,
+                      nativeTokenDecimals(c.denom) ?? NATIVE_TOKEN.decimals
+                    ).toString(),
                     denom: c.denom,
                   }
                 }),
@@ -299,7 +331,10 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
               value: {
                 amounts: funds?.map((c) => {
                   return {
-                    amount: c.amount.toString(),
+                    amount: convertDenomToMicroDenomWithDecimals(
+                      c.amount,
+                      nativeTokenDecimals(c.denom) ?? NATIVE_TOKEN.decimals
+                    ).toString(),
                     denom: c.denom,
                   }
                 }),
@@ -325,7 +360,10 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 value: {
                   spendLimit: funds?.map((c) => {
                     return {
-                      amount: c.amount.toString(),
+                      amount: convertDenomToMicroDenomWithDecimals(
+                        c.amount,
+                        nativeTokenDecimals(c.denom) ?? NATIVE_TOKEN.decimals
+                      ).toString(),
                       denom: c.denom,
                     }
                   }),
