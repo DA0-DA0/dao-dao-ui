@@ -1,7 +1,8 @@
-import { AnalyticsOutlined, CopyAllOutlined } from '@mui/icons-material'
+import { AnalyticsOutlined } from '@mui/icons-material'
 import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { Button, CosmosMessageDisplay, Loader } from '@dao-dao/stateless'
 import {
@@ -14,7 +15,6 @@ import { decodeMessages } from '@dao-dao/utils'
 
 import { ActionsRenderer } from '../../../../actions'
 import { SuspenseLoader } from '../../../../components'
-import { useProposalModuleAdapterContext } from '../../../react'
 import { useLoadingProposal } from '../hooks'
 import { NewProposalForm } from '../types'
 
@@ -39,8 +39,7 @@ export const ProposalInnerContentDisplay = (
 }
 
 const InnerProposalInnerContentDisplay = ({
-  onDuplicate,
-  duplicateLoading,
+  setDuplicateFormData,
   availableActions,
   proposal,
 }: BaseProposalInnerContentDisplayProps<NewProposalForm> & {
@@ -48,7 +47,6 @@ const InnerProposalInnerContentDisplay = ({
 }) => {
   const { t } = useTranslation()
   const [showRaw, setShowRaw] = useState(false)
-  const { id: proposalModuleAdapterId } = useProposalModuleAdapterContext()
 
   const decodedMessages = useMemo(
     () => decodeMessages(proposal.msgs),
@@ -76,6 +74,17 @@ const InnerProposalInnerContentDisplay = ({
     }
   })
 
+  useDeepCompareEffect(() => {
+    setDuplicateFormData({
+      title: proposal.title,
+      description: proposal.description,
+      actionData: actionData.map(({ action: { key }, data }) => ({
+        key,
+        data,
+      })),
+    })
+  }, [actionData, proposal, setDuplicateFormData])
+
   return decodedMessages?.length ? (
     <div className="space-y-3">
       <ActionsRenderer
@@ -84,35 +93,12 @@ const InnerProposalInnerContentDisplay = ({
         onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
       />
 
-      <div className="flex flex-row items-center gap-7">
-        <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
-          <AnalyticsOutlined className="text-icon-secondary" />
-          <p className="secondary-text">
-            {showRaw ? t('button.hideRawData') : t('button.showRawData')}
-          </p>
-        </Button>
-
-        <Button
-          loading={duplicateLoading}
-          onClick={() =>
-            onDuplicate({
-              id: proposalModuleAdapterId,
-              data: {
-                title: proposal.title,
-                description: proposal.description,
-                actionData: actionData.map(({ action: { key }, data }) => ({
-                  key,
-                  data,
-                })),
-              },
-            })
-          }
-          variant="ghost"
-        >
-          <CopyAllOutlined className="text-icon-secondary" />
-          <p className="secondary-text">{t('button.duplicate')}</p>
-        </Button>
-      </div>
+      <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
+        <AnalyticsOutlined className="text-icon-secondary" />
+        <p className="secondary-text">
+          {showRaw ? t('button.hideRawData') : t('button.showRawData')}
+        </p>
+      </Button>
 
       {showRaw && (
         <CosmosMessageDisplay

@@ -1,23 +1,32 @@
 import { ReactNode } from 'react'
 
 import {
+  ActionAndData,
+  ActionKeyAndData,
   DepositInfoSelector,
   IProposalModuleAdapterCommonOptions,
   ProcessedTQ,
+  ProposalVoteOption,
 } from '@dao-dao/types'
 import {
+  CheckedMultipleChoiceOption,
   CosmosMsgForEmpty,
   MultipleChoiceOptionType,
   MultipleChoiceOptions,
   MultipleChoiceProposal,
+  MultipleChoiceVote,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
-import { MultipleChoiceOptionData } from './components/ui/MultipleChoiceOptionEditor'
+export interface MultipleChoiceOptionFormData {
+  title: string
+  description: string
+  actionData: ActionKeyAndData[]
+}
 
 export interface NewProposalForm {
   title: string
   description: string
-  choices: MultipleChoiceOptionData[]
+  choices: MultipleChoiceOptionFormData[]
 }
 
 export interface NewProposalData {
@@ -97,4 +106,13 @@ export interface TimestampInfo {
 export type ProposalWithMetadata = MultipleChoiceProposal & {
   timestampInfo: TimestampInfo | undefined
   votingOpen: boolean
+}
+
+export type MultipleChoiceOptionData = {
+  choice: CheckedMultipleChoiceOption
+  actionData: ActionAndData[]
+  decodedMessages: {
+    [key: string]: any
+  }[]
+  voteOption: ProposalVoteOption<MultipleChoiceVote>
 }

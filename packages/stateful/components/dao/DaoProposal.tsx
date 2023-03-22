@@ -1,12 +1,12 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { ComponentProps, useCallback, useEffect } from 'react'
+import { ComponentProps, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
-import { navigatingToHrefAtom } from '@dao-dao/state'
 import {
   DaoProposalPageWrapperProps,
+  IconButtonLink,
   ProfileDisconnectedCard,
   ProfileProposalCard,
   SuspenseLoader,
@@ -26,7 +26,11 @@ import {
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { CommonProposalInfo, ProposalStatus } from '@dao-dao/types'
+import {
+  CommonProposalInfo,
+  ProposalPrefill,
+  ProposalStatus,
+} from '@dao-dao/types'
 
 interface InnerDaoProposalProps {
   proposalInfo: CommonProposalInfo
@@ -36,9 +40,10 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
   const daoInfo = useDaoInfoContext()
   const orderedActions = useOrderedActionsToMatch(useActions())
-  const { getDaoProposalPath, router } = useNavHelpers()
+  const { getDaoProposalPath } = useNavHelpers()
   const { connected, address } = useWallet()
   const {
+    id,
     adapter: {
       components: {
         ProposalStatusAndInfo,
@@ -157,14 +162,26 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     [ProposalStatusAndInfo, onCloseSuccess, onExecuteSuccess, onVoteSuccess]
   )
 
-  const duplicateUrlPrefix = getDaoProposalPath(daoInfo.coreAddress, 'create', {
-    prefill: '',
-  })
-  const [navigatingToHref, setNavigatingToHref] =
-    useRecoilState(navigatingToHrefAtom)
+  // This gets passed down to the proposal module adapter's
+  // ProposalInnerContentDisplay which is responsible for setting the duplicate
+  // form data once it's loaded.
+  const [duplicateFormData, setDuplicateFormData] =
+    useState<ProposalPrefill<any>>()
+  const prefill: ProposalPrefill<any> = {
+    id,
+    data: duplicateFormData,
+  }
+  // Don't set duplicate URL until form data is present. This ensures the
+  // duplicate button remains hidden until the form data is loaded.
+  const duplicateUrl = duplicateFormData
+    ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
+        prefill: JSON.stringify(prefill),
+      })
+    : undefined
 
   return (
     <Proposal
+      IconButtonLink={IconButtonLink}
       ProposalStatusAndInfo={CachedProposalStatusAndInfo}
       creator={{
         name: creatorProfileLoading
@@ -175,22 +192,14 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
             },
         address: proposalInfo.createdByAddress,
       }}
+      duplicateUrl={duplicateUrl}
       onRefresh={refreshProposal}
       proposalInfo={proposalInfo}
       proposalInnerContentDisplay={
         <SuspenseLoader fallback={<Loader />}>
           <ProposalInnerContentDisplay
             availableActions={orderedActions}
-            duplicateLoading={
-              !!navigatingToHref?.startsWith(duplicateUrlPrefix)
-            }
-            onDuplicate={(data) => {
-              const url =
-                duplicateUrlPrefix + encodeURIComponent(JSON.stringify(data))
-              router.push(url)
-              // Show loading on duplicate button.
-              setNavigatingToHref(url)
-            }}
+            setDuplicateFormData={setDuplicateFormData}
           />
         </SuspenseLoader>
       }

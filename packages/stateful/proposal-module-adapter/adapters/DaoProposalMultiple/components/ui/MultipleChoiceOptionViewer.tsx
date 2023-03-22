@@ -10,23 +10,11 @@ import {
   DropdownIconButton,
   Tooltip,
 } from '@dao-dao/stateless'
-import { Action, ActionAndData, ProposalVoteOption } from '@dao-dao/types'
-import {
-  CheckedMultipleChoiceOption,
-  MultipleChoiceOptionType,
-  MultipleChoiceVote,
-} from '@dao-dao/types/contracts/DaoProposalMultiple'
+import { Action } from '@dao-dao/types'
+import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
 import { ActionsRenderer } from '../../../../../actions'
-
-export type MultipleChoiceOptionData = {
-  choice: CheckedMultipleChoiceOption
-  actionData: ActionAndData[]
-  decodedMessages: {
-    [key: string]: any
-  }[]
-  voteOption: ProposalVoteOption<MultipleChoiceVote>
-}
+import { MultipleChoiceOptionData } from '../../types'
 
 export type MultipleChoiceOptionViewerProps = {
   data: MultipleChoiceOptionData

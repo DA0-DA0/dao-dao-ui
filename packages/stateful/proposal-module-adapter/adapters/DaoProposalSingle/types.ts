@@ -1,6 +1,7 @@
 import { ReactNode } from 'react'
 
 import {
+  ActionAndData,
   ActionKeyAndData,
   DepositInfoSelector,
   IProposalModuleAdapterCommonOptions,
@@ -90,4 +91,9 @@ export interface TimestampInfo {
 export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
   timestampInfo: TimestampInfo | undefined
   votingOpen: boolean
+}
+
+export type MessagesWithActionData = {
+  decodedMessages: any[]
+  actionData: ActionAndData[]
 }

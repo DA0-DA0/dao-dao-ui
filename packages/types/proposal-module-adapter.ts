@@ -11,7 +11,6 @@ import {
   DaoCreationVotingConfigItem,
   ProposalDraft,
   ProposalModule,
-  ProposalPrefill,
 } from './dao'
 import { ProposalCreatedCardProps } from './proposal'
 import { LinkWrapperProps, LoadingData } from './stateless'
@@ -179,9 +178,10 @@ export interface BaseProposalStatusAndInfoProps {
   onCloseSuccess: () => void | Promise<void>
 }
 
-export interface BaseProposalInnerContentDisplayProps<D extends any = any> {
-  onDuplicate: (data: ProposalPrefill<D>) => void
-  duplicateLoading: boolean
+export interface BaseProposalInnerContentDisplayProps<
+  FormData extends FieldValues = any
+> {
+  setDuplicateFormData: (data: FormData) => void
   availableActions: Action[]
 }
 

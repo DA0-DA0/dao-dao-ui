@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { Loader } from '@dao-dao/stateless'
 import {
@@ -16,18 +17,13 @@ import {
 import { decodeMessages } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
-import { useProposalModuleAdapterContext } from '../../../react'
 import {
   useLoadingProposal,
   useLoadingVoteOptions,
   useLoadingVotesInfo,
 } from '../hooks'
-import { NewProposalForm, VotesInfo } from '../types'
-import {
-  MultipleChoiceOptionData,
-  MultipleChoiceOptionViewer,
-} from './ui/MultipleChoiceOptionViewer'
-import { ProposalInnerContentDisplay as StatelessProposalInnerContentDisplay } from './ui/ProposalInnerContentDisplay'
+import { MultipleChoiceOptionData, NewProposalForm, VotesInfo } from '../types'
+import { MultipleChoiceOptionViewer } from './ui/MultipleChoiceOptionViewer'
 
 export const ProposalInnerContentDisplay = (
   props: BaseProposalInnerContentDisplayProps<NewProposalForm>
@@ -60,8 +56,7 @@ export const ProposalInnerContentDisplay = (
 }
 
 export const InnerProposalInnerContentDisplay = ({
-  onDuplicate,
-  duplicateLoading,
+  setDuplicateFormData,
   availableActions,
   proposal,
   voteOptions,
@@ -72,7 +67,6 @@ export const InnerProposalInnerContentDisplay = ({
   votesInfo: VotesInfo
 }) => {
   const { t } = useTranslation()
-  const { id: proposalModuleAdapterId } = useProposalModuleAdapterContext()
 
   const mappedDecodedMessages = useMemo(
     () => proposal.choices.map((choice) => decodeMessages(choice.msgs)),
@@ -112,54 +106,45 @@ export const InnerProposalInnerContentDisplay = ({
     }
   )
 
-  const duplicate = () => {
-    onDuplicate({
-      id: proposalModuleAdapterId,
-      data: {
-        title: proposal.title,
-        description: proposal.description,
-        choices: optionsData
-          .filter(
-            ({ choice }) => choice.option_type !== MultipleChoiceOptionType.None
-          )
-          .map(({ choice, actionData }) => ({
-            title: choice.title,
-            description: choice.description,
-            actionData: actionData.map(({ action: { key }, data }) => ({
-              key,
-              data,
-            })),
+  useDeepCompareEffect(() => {
+    setDuplicateFormData({
+      title: proposal.title,
+      description: proposal.description,
+      choices: optionsData
+        .filter(
+          ({ choice }) => choice.option_type !== MultipleChoiceOptionType.None
+        )
+        .map(({ choice, actionData }) => ({
+          title: choice.title,
+          description: choice.description,
+          actionData: actionData.map(({ action: { key }, data }) => ({
+            key,
+            data,
           })),
-      },
+        })),
     })
-  }
+  }, [optionsData, proposal, setDuplicateFormData])
 
   return (
-    <StatelessProposalInnerContentDisplay
-      duplicate={duplicate}
-      duplicateLoading={duplicateLoading}
-      innerContentDisplay={
-        <div>
-          <p className="title-text mb-4">{t('title.voteOptions')}</p>
+    <div>
+      <p className="title-text mb-4">{t('title.voteOptions')}</p>
 
-          {optionsData.map((data, index) => (
-            <MultipleChoiceOptionViewer
-              key={index}
-              availableActions={availableActions}
-              data={data}
-              lastOption={index === optionsData.length - 1}
-              winner={
-                (proposal.status === ProposalStatus.Passed ||
-                  proposal.status === ProposalStatus.Executed ||
-                  proposal.status === ProposalStatus.ExecutionFailed) &&
-                !!winningChoice
-                  ? winningChoice.index === data.choice.index
-                  : undefined
-              }
-            />
-          ))}
-        </div>
-      }
-    />
+      {optionsData.map((data, index) => (
+        <MultipleChoiceOptionViewer
+          key={index}
+          availableActions={availableActions}
+          data={data}
+          lastOption={index === optionsData.length - 1}
+          winner={
+            (proposal.status === ProposalStatus.Passed ||
+              proposal.status === ProposalStatus.Executed ||
+              proposal.status === ProposalStatus.ExecutionFailed) &&
+            !!winningChoice
+              ? winningChoice.index === data.choice.index
+              : undefined
+          }
+        />
+      ))}
+    </div>
   )
 }

@@ -13,6 +13,7 @@ import {
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import {
+  IconButtonLink,
   ProfileVoteCard,
   ProfileVoteCardProps,
   ProposalStatusAndInfo,
@@ -88,6 +89,8 @@ Default.args = {
   ),
   onRefresh: () => alert('refresh'),
   refreshing: false,
+  IconButtonLink,
+  duplicateUrl: '#',
 }
 Default.parameters = {
   design: {

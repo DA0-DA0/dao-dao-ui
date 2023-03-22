@@ -13,7 +13,6 @@ import {
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { NewProposalForm } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalMultiple/types'
 import {
   ActionCardLoader,
   ActionSelector,
@@ -24,16 +23,11 @@ import {
   TextAreaInput,
   TextInput,
 } from '@dao-dao/stateless'
-import { Action, ActionKeyAndData, LoadedActions } from '@dao-dao/types'
+import { Action, LoadedActions } from '@dao-dao/types'
 import { validateRequired } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components'
-
-export interface MultipleChoiceOptionData {
-  title: string
-  description: string
-  actionData: ActionKeyAndData[]
-}
+import { MultipleChoiceOptionFormData, NewProposalForm } from '../../types'
 
 export interface MultipleChoiceOptionEditorProps<
   FV extends FieldValues,
@@ -41,13 +35,13 @@ export interface MultipleChoiceOptionEditorProps<
 > {
   titleFieldName: FieldName
   descriptionFieldName: FieldName
-  errorsOption?: FieldErrors<MultipleChoiceOptionData>
+  errorsOption?: FieldErrors<MultipleChoiceOptionFormData>
   registerOption: UseFormRegister<FV>
   optionIndex: number
   control: Control<FV>
   actions: Action[]
   removeOption: () => void
-  addOption: (value: Partial<MultipleChoiceOptionData>) => void
+  addOption: (value: Partial<MultipleChoiceOptionFormData>) => void
   loadedActions: LoadedActions
 }
 
