@@ -57,7 +57,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
           newAdmin: msg.wasm.update_admin.admin,
         },
       }
-    : { match: false }
+    : {
+        match: false,
+      }
 
 const Component: ActionComponent = (props) => {
   const { chainId, bech32Prefix } = useActionOptions()
