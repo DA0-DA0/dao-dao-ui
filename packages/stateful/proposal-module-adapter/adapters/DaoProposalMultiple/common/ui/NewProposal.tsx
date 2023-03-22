@@ -256,7 +256,9 @@ export const NewProposal = ({
           className="flex cursor-pointer flex-row items-center gap-2 border-t border-border-secondary py-10"
           onClick={() =>
             addOption({
+              title: '',
               description: '',
+              actionData: [],
             })
           }
         >
