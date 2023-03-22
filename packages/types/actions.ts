@@ -33,6 +33,7 @@ export enum CoreActionKey {
   WyndSwap = 'wyndSwap',
   DaoAdminExec = 'daoAdminExec',
   EnableMultipleChoice = 'enableMultipleChoice',
+  ManageWidgets = 'manageWidgets',
 }
 
 // TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.

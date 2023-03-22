@@ -1022,6 +1022,19 @@ export const listAllItemsSelector = selectorFamily<
     },
 })
 
+export const listAllItemsWithPrefixSelector = selectorFamily<
+  ListItemsResponse,
+  QueryClientParams & { prefix: string }
+>({
+  key: 'daoCoreV2ListAllItemsWithPrefix',
+  get:
+    ({ prefix, ...queryClientParams }) =>
+    async ({ get }) => {
+      const items = get(listAllItemsSelector(queryClientParams))
+      return items.filter(([key]) => key.startsWith(prefix))
+    },
+})
+
 export const payrollConfigSelector = selectorFamily<
   DaoPayrollConfig | undefined,
   WithChainId<{ coreAddress: string }>

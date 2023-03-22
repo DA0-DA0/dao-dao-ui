@@ -6,14 +6,15 @@ import { constSelector, useRecoilValue } from 'recoil'
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
-  DaoWidgets,
+  DaoWidget,
   LoadingData,
+  Widget,
   WidgetVisibilityContext,
 } from '@dao-dao/types'
-import { objectMatchesStructure } from '@dao-dao/utils'
+import { DAO_WIDGET_ITEM_NAMESPACE } from '@dao-dao/utils'
 
 import { useMembership } from '../../hooks'
-import { DAO_WIDGETS_ITEM_KEY, getWidgetById } from '../core'
+import { getWidgetById } from '../core'
 
 type UseWidgetsOptions = {
   // If true, will suspend while loading. Otherwise, will start off as loading
@@ -21,88 +22,105 @@ type UseWidgetsOptions = {
   suspendWhileLoading?: boolean
 }
 
+type LoadedWidget = {
+  widget: Widget
+  daoWidget: DaoWidget
+  WidgetComponent: ComponentType
+}
+
+type UseWidgetsResult = LoadingData<LoadedWidget[]>
+
 // Get widgets for the DAO. If nothing configured or no system found, returns
 // undefined.
 export const useWidgets = ({
   suspendWhileLoading = false,
-}: UseWidgetsOptions = {}): LoadingData<ComponentType[]> => {
+}: UseWidgetsOptions = {}): UseWidgetsResult => {
   const { coreAddress, chainId } = useDaoInfoContext()
   const { isMember = false } = useMembership({
     coreAddress,
     chainId,
   })
 
-  const itemSelector = DaoCoreV2Selectors.getItemSelector({
-    chainId,
-    contractAddress: coreAddress,
-    params: [
-      {
-        key: DAO_WIDGETS_ITEM_KEY,
-      },
-    ],
-  })
+  const widgetItemsSelector = DaoCoreV2Selectors.listAllItemsWithPrefixSelector(
+    {
+      chainId,
+      contractAddress: coreAddress,
+      prefix: DAO_WIDGET_ITEM_NAMESPACE,
+    }
+  )
 
-  // If suspend while loading, load the item here. Otherwise, don't block by
+  // If suspend while loading, load the items here. Otherwise, don't block by
   // loading a constant value immediately.
-  useRecoilValue(suspendWhileLoading ? itemSelector : constSelector(undefined))
+  useRecoilValue(
+    suspendWhileLoading ? widgetItemsSelector : constSelector(undefined)
+  )
 
-  const widgetsItemLoadable = useCachedLoadable(itemSelector)
+  const widgetItemsLoadable = useCachedLoadable(widgetItemsSelector)
 
-  const widgetComponents = useMemo((): ComponentType[] | undefined => {
-    if (
-      widgetsItemLoadable.state !== 'hasValue' ||
-      !widgetsItemLoadable.contents.item
-    ) {
+  const loadedWidgets = useMemo((): LoadedWidget[] | undefined => {
+    if (widgetItemsLoadable.state !== 'hasValue') {
       return
     }
 
-    try {
-      const value = JSON.parse(widgetsItemLoadable.contents.item)
-      if (
-        objectMatchesStructure(value, {
-          widgets: {},
-        }) &&
-        value.widgets &&
-        Array.isArray(value.widgets) &&
-        value.widgets.every((widget: unknown) =>
-          objectMatchesStructure(widget, {
-            id: {},
-          })
-        )
-      ) {
-        const { widgets } = value as DaoWidgets
+    const parsedWidgets = widgetItemsLoadable.contents
+      .map(([key, widgetJson]): DaoWidget | undefined => {
+        try {
+          return {
+            id: key.replace(new RegExp(`^${DAO_WIDGET_ITEM_NAMESPACE}`), ''),
+            values: (widgetJson && JSON.parse(widgetJson)) || {},
+          }
+        } catch (err) {
+          // Ignore widget format error but log to console for debugging.
+          console.error(`Invalid widget JSON: ${widgetJson}`, err)
+          return
+        }
+      })
+      // Validate widget structure.
+      .filter((widget): widget is DaoWidget => !!widget)
 
-        return widgets
-          .map(({ id, values }): ComponentType | undefined => {
-            const widget = getWidgetById(id)
-            if (widget) {
-              // Enforce visibility context.
-              switch (widget.visibilityContext) {
-                case WidgetVisibilityContext.OnlyMembers:
-                  if (!isMember) {
-                    return
-                  }
-                  break
-                case WidgetVisibilityContext.OnlyNonMembers:
-                  if (isMember) {
-                    return
-                  }
-                  break
+    return (
+      parsedWidgets
+        .map((daoWidget): LoadedWidget | undefined => {
+          const widget = getWidgetById(daoWidget.id)
+          if (!widget) {
+            return
+          }
+
+          // Enforce visibility context.
+          switch (widget.visibilityContext) {
+            case WidgetVisibilityContext.OnlyMembers:
+              if (!isMember) {
+                return
               }
+              break
+            case WidgetVisibilityContext.OnlyNonMembers:
+              if (isMember) {
+                return
+              }
+              break
+          }
 
-              const WidgetComponent = () => (
-                <widget.Component variables={(values || {}) as any} />
-              )
-              return WidgetComponent
-            }
-          })
-          .filter((component): component is ComponentType => !!component)
+          // Fill component with loaded values.
+          const WidgetComponent = () => (
+            <widget.Component variables={(daoWidget.values || {}) as any} />
+          )
+
+          return {
+            widget,
+            daoWidget,
+            WidgetComponent,
+          }
+        })
+        // Filter out any undefined widgets.
+        .filter((widget): widget is LoadedWidget => !!widget)
+    )
+  }, [widgetItemsLoadable, isMember])
+
+  return loadedWidgets
+    ? {
+        loading: false,
+        data: loadedWidgets,
       }
-    } catch {}
-  }, [widgetsItemLoadable.state, widgetsItemLoadable.contents, isMember])
-
-  return widgetComponents
-    ? { loading: false, data: widgetComponents }
     : {
         loading: true,
       }
