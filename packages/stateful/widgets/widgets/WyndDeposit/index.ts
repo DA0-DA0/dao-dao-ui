@@ -8,7 +8,6 @@ export const WyndDepositWidget: Widget<WyndDepositData> = {
   id: 'wynd_deposit',
   visibilityContext: WidgetVisibilityContext.Always,
   defaultValues: {
-    markdown: '',
     outputToken: {
       type: TokenType.Native,
       denomOrAddress: NATIVE_TOKEN.denomOrAddress,

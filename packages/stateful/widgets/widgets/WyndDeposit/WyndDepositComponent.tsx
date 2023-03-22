@@ -350,7 +350,7 @@ export const WyndDepositComponent = ({
 
   return (
     <div className="mx-auto flex max-w-lg flex-col gap-8 rounded-md bg-background-tertiary p-6">
-      {markdown && (
+      {!!markdown && (
         <MarkdownRenderer className="text-base" markdown={markdown} />
       )}
 
