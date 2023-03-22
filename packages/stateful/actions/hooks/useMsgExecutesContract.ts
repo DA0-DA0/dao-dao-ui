@@ -17,9 +17,7 @@ export const useMsgExecutesContract = (
       execute: {
         contract_addr: {},
         funds: {},
-        msg: {
-          fund: {},
-        },
+        msg: {},
       },
     },
   })
