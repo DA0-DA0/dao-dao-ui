@@ -22,7 +22,7 @@ export const contractInstantiateTimeSelector = selectorFamily<
         queryContractIndexerSelector({
           contractAddress: address,
           chainId,
-          formulaName: 'instantiatedAt',
+          formula: 'instantiatedAt',
         })
       )
       // Null when indexer fails.

@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
@@ -13,7 +13,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
 import { AddressInput } from '../../components'
 import {
@@ -90,17 +90,21 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageSubDaosData> = (
     msg: Record<string, any>
   ) =>
-    useMemo(() => {
-      if (
-        'wasm' in msg &&
-        'execute' in msg.wasm &&
-        'contract_addr' in msg.wasm.execute &&
-        msg.wasm.execute.contract_addr === address &&
-        'update_sub_daos' in msg.wasm.execute.msg &&
-        'to_add' in msg.wasm.execute.msg.update_sub_daos &&
-        'to_remove' in msg.wasm.execute.msg.update_sub_daos
-      ) {
-        return {
+    objectMatchesStructure(msg, {
+      wasm: {
+        execute: {
+          contract_addr: {},
+          funds: {},
+          msg: {
+            update_sub_daos: {
+              to_add: {},
+              to_remove: {},
+            },
+          },
+        },
+      },
+    }) && msg.wasm.execute.contract_addr === address
+      ? {
           match: true,
           data: {
             toAdd: msg.wasm.execute.msg.update_sub_daos.to_add,
@@ -111,10 +115,9 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
             ),
           },
         }
-      }
-
-      return { match: false }
-    }, [msg])
+      : {
+          match: false,
+        }
 
   return {
     key: CoreActionKey.ManageSubDaos,

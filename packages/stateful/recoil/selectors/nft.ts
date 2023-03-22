@@ -223,7 +223,7 @@ export const walletNftCardInfos = selectorFamily<
         queryWalletIndexerSelector({
           chainId,
           walletAddress,
-          formulaName: 'nft/collections',
+          formula: 'nft/collections',
           id,
         })
       )
@@ -267,7 +267,7 @@ export const walletStakedNftCardInfosSelector = selectorFamily<
         queryWalletIndexerSelector({
           chainId,
           walletAddress,
-          formulaName: 'nft/stakedWithDaos',
+          formula: 'nft/stakedWithDaos',
           id,
         })
       )

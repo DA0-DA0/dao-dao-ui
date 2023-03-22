@@ -48,8 +48,11 @@ export const validateUrlWithIpfs = (v: string | undefined) =>
   (v && isValidUrl(v, true)) ||
   'Invalid image URL: must start with https or ipfs.'
 
-export const makeValidateDate = (t: TFunction) => (v: string | undefined) =>
-  (v && !isNaN(Date.parse(v))) || t('error.invalidDate')
+export const makeValidateDate =
+  (t: TFunction, time = false) =>
+  (v: string | undefined) =>
+    (v && !isNaN(Date.parse(v))) ||
+    t(time ? 'error.invalidDateTime' : 'error.invalidDate')
 
 export const validateContractAddress = (
   v: string | undefined,

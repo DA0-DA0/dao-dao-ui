@@ -121,7 +121,7 @@ export const daoPotentialSubDaosSelector = selectorFamily<
         queryContractIndexerSelector({
           chainId,
           contractAddress: coreAddress,
-          formulaName: 'daoCore/potentialSubDaos',
+          formula: 'daoCore/potentialSubDaos',
         })
       )
 

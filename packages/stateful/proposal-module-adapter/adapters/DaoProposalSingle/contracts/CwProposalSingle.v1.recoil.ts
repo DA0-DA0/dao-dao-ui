@@ -76,7 +76,7 @@ export const configSelector = selectorFamily<ConfigResponse, QueryClientParams>(
         const config = get(
           queryContractIndexerSelector({
             ...queryClientParams,
-            formulaName: 'daoProposalSingle/config',
+            formula: 'daoProposalSingle/config',
           })
         )
         if (config) {
@@ -111,7 +111,7 @@ export const proposalSelector = selectorFamily<
       const proposalResponse = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoProposalSingle/proposal',
+          formula: 'daoProposalSingle/proposal',
           args: {
             id: params[0].proposalId,
           },
@@ -142,7 +142,7 @@ export const listProposalsSelector = selectorFamily<
       const proposals = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoProposalSingle/listProposals',
+          formula: 'daoProposalSingle/listProposals',
           args: params[0],
           id,
         })
@@ -171,7 +171,7 @@ export const reverseProposalsSelector = selectorFamily<
       const proposals = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoProposalSingle/reverseProposals',
+          formula: 'daoProposalSingle/reverseProposals',
           args: params[0],
           id,
         })
@@ -198,7 +198,7 @@ export const proposalCountSelector = selectorFamily<
       const count = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoProposalSingle/proposalCount',
+          formula: 'daoProposalSingle/proposalCount',
           id,
         })
       )
@@ -239,7 +239,7 @@ export const getVoteSelector = selectorFamily<
       const vote = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoProposalSingle/vote',
+          formula: 'daoProposalSingle/vote',
           args: params[0],
           id,
         })
@@ -276,7 +276,7 @@ export const listVotesSelector = selectorFamily<
       const votes = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoProposalSingle/listVotes',
+          formula: 'daoProposalSingle/listVotes',
           args: params[0],
           id,
         })
@@ -322,7 +322,7 @@ export const infoSelector = selectorFamily<InfoResponse, QueryClientParams>({
       const info = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'info',
+          formula: 'info',
         })
       )
       if (info) {

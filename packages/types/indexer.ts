@@ -5,6 +5,13 @@ import {
   ProposalModuleWithInfo,
 } from './contracts/DaoCore.v2'
 
+export enum IndexerFormulaType {
+  Contract = 'contract',
+  Generic = 'generic',
+  Validator = 'validator',
+  Wallet = 'wallet',
+}
+
 export interface IndexerDumpState
   extends Omit<DumpStateResponse, 'proposal_modules'> {
   proposal_modules: ProposalModuleWithInfo[]

@@ -153,7 +153,7 @@ export const stakerForNftSelector = selectorFamily<
         queryContractIndexerSelector({
           chainId,
           contractAddress,
-          formulaName: 'daoVotingCw721Staked/staker',
+          formula: 'daoVotingCw721Staked/staker',
           args: {
             tokenId,
           },
@@ -179,7 +179,7 @@ export const topStakersSelector = selectorFamily<
       get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingCw721Staked/topStakers',
+          formula: 'daoVotingCw721Staked/topStakers',
           args: {
             limit,
           },

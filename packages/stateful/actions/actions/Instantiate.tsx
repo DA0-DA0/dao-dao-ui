@@ -18,6 +18,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
+  objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { useExecutedProposalTxLoadable } from '../../hooks/useExecutedProposalTxLoadable'
@@ -64,32 +65,39 @@ const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () =>
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
   msg: Record<string, any>
 ) =>
-  useMemo(
-    () =>
-      'wasm' in msg && 'instantiate' in msg.wasm
-        ? {
-            match: true,
-            data: {
-              admin: msg.wasm.instantiate.admin ?? '',
-              codeId: msg.wasm.instantiate.code_id,
-              label: msg.wasm.instantiate.label,
-              message: JSON.stringify(msg.wasm.instantiate.msg, undefined, 2),
-              funds: (msg.wasm.instantiate.funds as Coin[]).map(
-                ({ denom, amount }) => ({
-                  denom,
-                  amount: Number(
-                    convertMicroDenomToDenomWithDecimals(
-                      amount,
-                      NATIVE_TOKEN.decimals
-                    )
-                  ),
-                })
+  objectMatchesStructure(msg, {
+    wasm: {
+      instantiate: {
+        code_id: {},
+        label: {},
+        msg: {},
+        funds: {},
+      },
+    },
+  })
+    ? {
+        match: true,
+        data: {
+          admin: msg.wasm.instantiate.admin ?? '',
+          codeId: msg.wasm.instantiate.code_id,
+          label: msg.wasm.instantiate.label,
+          message: JSON.stringify(msg.wasm.instantiate.msg, undefined, 2),
+          funds: (msg.wasm.instantiate.funds as Coin[]).map(
+            ({ denom, amount }) => ({
+              denom,
+              amount: Number(
+                convertMicroDenomToDenomWithDecimals(
+                  amount,
+                  NATIVE_TOKEN.decimals
+                )
               ),
-            },
-          }
-        : { match: false },
-    [msg]
-  )
+            })
+          ),
+        },
+      }
+    : {
+        match: false,
+      }
 
 const Component: ActionComponent = (props) => {
   // Get the selected tokens if not creating.

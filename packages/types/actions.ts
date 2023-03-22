@@ -31,8 +31,11 @@ export enum CoreActionKey {
   ManageStorageItems = 'manageStorageItems',
   GovernanceVote = 'governanceVote',
   UpgradeV1ToV2 = 'upgradeV1ToV2',
+  ManagePayroll = 'managePayroll',
+  ManageVesting = 'manageVesting',
   WyndSwap = 'wyndSwap',
   DaoAdminExec = 'daoAdminExec',
+  ManageWidgets = 'manageWidgets',
 }
 
 // Actions defined in voting or proposal module adapters.

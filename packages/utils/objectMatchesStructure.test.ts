@@ -126,7 +126,7 @@ test('objectMatchesStructure', () => {
         and_an_undefined_value: {},
       },
     })
-  ).toBe(false)
+  ).toBe(true)
   expect(
     objectMatchesStructure(
       object,
@@ -136,8 +136,8 @@ test('objectMatchesStructure', () => {
         },
       },
       {
-        ignoreNullUndefined: true,
+        ignoreNullUndefined: false,
       }
     )
-  ).toBe(true)
+  ).toBe(false)
 })
