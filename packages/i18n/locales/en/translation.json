@@ -12,6 +12,7 @@
     "addTier": "Add a tier",
     "addToKeplr": "Add token to Keplr",
     "addToken": "Add token",
+    "addUpdateWidget": "Add/update widget",
     "burn": "Burn",
     "cancel": "Cancel",
     "castYourVote": "Cast your vote",
@@ -86,6 +87,7 @@
     "rateContributions": "Rate contributions",
     "readLess": "Read less",
     "readMore": "Read more",
+    "removeWidget": "Remove widget",
     "resetQuestion": "Reset?",
     "returnHome": "Return home",
     "review": "Review",
@@ -97,6 +99,7 @@
     "selectNft": "Select NFT",
     "selectToken": "Select token",
     "selectValidator": "Select validator",
+    "selectWidget": "Select widget",
     "setAsProfilePhoto": "Set as profile photo",
     "setDisplayName": "set display name",
     "setUpDiscordNotifier": "Set up Discord Notifier",
@@ -173,6 +176,7 @@
     "family": "Family",
     "fire": "Fire",
     "gear": "Gear",
+    "hammerAndWrench": "Hammer and wrench",
     "handshake": "Handshake",
     "herb": "Herb",
     "image": "Image",
@@ -229,6 +233,7 @@
     "failedToLoadMembersTitle": "Failed to load members.",
     "finishDateMustBeAfterStartDate": "Finish date must be after start date.",
     "govTokenBalancesDoNotSumTo100": "Total token distribution percentage must equal 100%, but it currently sums to {{totalPercent}}.",
+    "insufficientForDeposit": "You do not have enough funds to cover a deposit of {{amount}} ${{tokenSymbol}}.",
     "insufficientWalletBalance": "Insufficient wallet balance (total: {{amount}} ${{tokenSymbol}}).",
     "invalidCosmosMessage": "Invalid <2>Cosmos message</2>",
     "invalidDate": "Invalid date format. Please use YYYY-MM-DD.",
@@ -379,6 +384,7 @@
     "onlyMembersExecuteTooltip": "If enabled, only members may execute passed proposals.",
     "openDate": "Open date",
     "optional": "optional",
+    "options": "Options",
     "orUploadOne": "...or upload one below.",
     "passingThresholdDescription": "Passing threshold works differently depending on whether your DAO has a quorum.\n- If your DAO has *no quorum*, this is the percentage of the DAO's voting power that must vote 'yes' for a proposal to pass.\n- If your DAO *has a quorum*, the passing threshold is only calculated from those who voted.",
     "passingThresholdTitle": "Passing threshold",
@@ -457,7 +463,8 @@
     "whoAreYouQuestion": "Who are you?",
     "whoCanMint": "Who can mint an NFT?",
     "whoIsCounterparty": "Who is the counterparty?",
-    "whoTransferNftQuestion": "Where would you like to transfer the NFT?"
+    "whoTransferNftQuestion": "Where would you like to transfer the NFT?",
+    "widget": "Widget"
   },
   "format": {
     "estUsdValue": "${{amount}} est. USD value",
@@ -497,6 +504,7 @@
     "burnNftDescription": "Burn an NFT.",
     "bypassSimulationExplanation": "Simulating the proposal failed. If you don't know what this means, one of the actions above is probably misconfigured. If you are sure you want to publish it anyway, click the button again.",
     "chooseNftProfilePictureSubtitle": "Use one of your Juno or Stargaze NFTs to represent your identity on DAO DAO. Your Keplr profile image will be used as a backup if available.",
+    "chooseTokenToPayWith": "Choose token to pay with",
     "claimToReceiveUnstaked": "Claim them to receive your unstaked tokens.",
     "claimedRewards": "Claimed rewards",
     "closedAtDate": "Closed at {{date}}",
@@ -583,6 +591,7 @@
     "manageTreasuryNftsDescription": "Manage NFT Collections displayed on your DAO's treasury page.",
     "manageTreasuryTokensDescription": "Manage Tokens displayed on your DAO's treasury page.",
     "manageVestingDescription": "Create a vesting contract that will release tokens to a recipient over time, or cancel an existing one.",
+    "manageWidgetsDescription": "Add, update, or remove widgets from the DAO's home page.",
     "maxSlippageDescription": "As the transaction is executing, the swap price will fluctuate. If the price slips beyond this maximum slippage, the swap will not occur.",
     "meBalancesNftsDescription_all": "These are the NFTs you own on Juno and Stargaze.",
     "meBalancesNftsDescription_juno": "These are the NFTs you own on Juno.",
@@ -673,6 +682,7 @@
     "searchActionPlaceholder": "Find an action...",
     "searchDraftPlaceholder": "Find a draft...",
     "searchForToken": "Search for a token...",
+    "searchForWidget": "Search for a widget...",
     "searchNftsPlaceholder": "Find an NFT...",
     "searchValidatorsPlaceholder": "Find a validator...",
     "setUpDiscordNotificationsTooltip": "Set up Discord notifications",
@@ -702,6 +712,7 @@
     "syncFollowingDescription": "Followed DAOs now sync across browsers and devices. Would you rather sync your following list or stop following these DAOs?",
     "testnet": "Testnet",
     "tierMemberGovTokenAllocationTooltip": "This member will receive {{tokens}} ${{tokenSymbol}} when the DAO is created.",
+    "to": "to",
     "today": "today",
     "token": "token",
     "tokenBurned": "NFT with ID {{tokenId}} has been burned.",
@@ -754,6 +765,7 @@
     "waitingForRateAndPropose": "Waiting for DAO members to rate and propose...",
     "walletConnectMobileLimitations": "Feel free to explore the UI. Due to current limitations in WalletConnect, you will not be able to connect your mobile wallet to the {{chain}} chain.",
     "whatAreYouLookingForPrompt": "What are you looking for?",
+    "widgetActive": "This widget is visible on the home page.",
     "withdrawStakingRewards": "Withdraw staking rewards",
     "withdrawTokenSwapDescription": "Withdraw funds from a token swap that has not yet completed.",
     "wouldYouLikeToSearchQuestion": "Would you like to search for a DAO?",
@@ -891,6 +903,7 @@
     "depositNfts": "Import NFTs",
     "depositRefunds": "Deposit refunds",
     "depositToken": "Deposit ${{tokenSymbol}}",
+    "deposits": "Deposits",
     "description": "Description",
     "disconnected": "Disconnected",
     "discord": "Discord",
@@ -930,6 +943,7 @@
     "manageTreasuryNfts": "Manage Treasury NFTs",
     "manageTreasuryTokens": "Manage Treasury Tokens",
     "manageVesting": "Manage vesting",
+    "manageWidgets": "Manage widgets",
     "maxSlippage": "Maximum slippage",
     "me": "Me",
     "memberOfDao": "Member of {{daoName}}",
@@ -1104,5 +1118,13 @@
     "years": "Years",
     "years_one": "Year",
     "years_other": "Years"
+  },
+  "widgetDescription": {
+    "mint_nft": "Display an NFT collection with a button to mint new NFTs.",
+    "wynd_deposit": "Deposit any token on WYND DEX into your DAO."
+  },
+  "widgetTitle": {
+    "mint_nft": "Mint NFT",
+    "wynd_deposit": "WYND Deposit"
   }
 }

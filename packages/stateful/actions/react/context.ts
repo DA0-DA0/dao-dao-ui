@@ -38,13 +38,18 @@ export const useActionForKey = (actionKey: ActionKey) =>
 // Access options passed to actions.
 export const useActionOptions = () => useActionsContext().options
 
-// This hook returns actions ordered for matching. It ensures the last two
-// actions are execute smart contract followed by custom, since a lot of actions
-// are smart contract executions, and custom is a catch-all that will display
-// any message. Do this by assigning values and sorting the actions in ascending
-// order.
+// This hook returns actions ordered for matching. It ensures the catch-all
+// actions are checked last, since for example many actions are smart contract
+// executions, and custom is a catch-all that will display any message. Do this
+// by assigning values and sorting the actions in ascending order.
 const keyToValue = (key: ActionKey) =>
-  key === CoreActionKey.Execute ? 1 : key === CoreActionKey.Custom ? 2 : 0
+  key === CoreActionKey.ManageStorageItems
+    ? 1
+    : key === CoreActionKey.Execute
+    ? 2
+    : key === CoreActionKey.Custom
+    ? 3
+    : 0
 
 export const useOrderedActionsToMatch = (actions: Action[]): Action[] => {
   const orderedActions = actions.sort((a, b) => {
