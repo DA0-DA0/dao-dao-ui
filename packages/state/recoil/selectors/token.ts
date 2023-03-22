@@ -55,6 +55,7 @@ export const genericTokenSelector = selectorFamily<
 export const cw20TokenDaosWithStakedBalanceSelector = selectorFamily<
   {
     coreAddress: string
+    stakingContractAddress: string
     stakedBalance: number
   }[],
   WithChainId<{
@@ -89,8 +90,9 @@ export const cw20TokenDaosWithStakedBalanceSelector = selectorFamily<
       )
 
       const daosWithBalances = daos
-        .map(({ coreAddress }, index) => ({
+        .map(({ coreAddress, stakingContractAddress }, index) => ({
           coreAddress,
+          stakingContractAddress,
           stakedBalance: Number(daosWalletStakedTokens[index].value),
         }))
         // Sort descending by staked tokens.
