@@ -8,10 +8,7 @@ import {
 
 import { useActionOptions } from '../../../../actions'
 import { ButtonLink, DaoMemberCard } from '../../../../components'
-import {
-  useEncodedDaoProposalSinglePrefill,
-  useMembership,
-} from '../../../../hooks'
+import { useDaoProposalSinglePrefill, useMembership } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { makeManageMembersAction } from '../actions'
 import { useVotingModule as useCw4VotingModule } from '../hooks/useVotingModule'
@@ -35,7 +32,7 @@ export const MembersTab = () => {
   const manageMembersAction = makeManageMembersAction(options)
   // Prefill URL only valid if action exists.
   const prefillValid = !!manageMembersAction
-  const encodedProposalPrefill = useEncodedDaoProposalSinglePrefill({
+  const proposalPrefill = useDaoProposalSinglePrefill({
     actions: manageMembersAction
       ? [
           {
@@ -63,9 +60,9 @@ export const MembersTab = () => {
       ButtonLink={ButtonLink}
       DaoMemberCard={DaoMemberCard}
       addMemberHref={
-        prefillValid && encodedProposalPrefill
+        prefillValid && proposalPrefill
           ? getDaoProposalPath(coreAddress, 'create', {
-              prefill: encodedProposalPrefill,
+              prefill: proposalPrefill,
             })
           : undefined
       }

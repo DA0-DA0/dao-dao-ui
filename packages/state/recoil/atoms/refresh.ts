@@ -89,6 +89,12 @@ export const refreshFollowingDaosAtom = atom({
   default: 0,
 })
 
+// Change this to refresh a vesting contract's data.
+export const refreshVestingAtom = atomFamily<number, string>({
+  key: 'refreshVesting',
+  default: 0,
+})
+
 // Change this to refresh saved TXs.
 export const refreshSavedTxsAtom = atom({
   key: 'refreshSavedTxs',

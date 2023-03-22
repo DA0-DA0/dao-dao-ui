@@ -73,31 +73,76 @@ export const zeroPad = (num: number, target: number) => {
 export const spacePad = (number: string, target: number) =>
   number.length >= length ? number : ' '.repeat(target - number.length) + number
 
-export const convertDurationWithUnitsToDuration = ({
+export const convertDurationWithUnitsToSeconds = ({
   units,
   value,
-}: DurationWithUnits): { time: number } => {
-  let time
+}: DurationWithUnits): number => {
   switch (units) {
     case DurationUnits.Seconds:
-      time = value
-      break
+      return value
     case DurationUnits.Minutes:
-      time = value * 60
-      break
+      return value * 60
     case DurationUnits.Hours:
-      time = value * 60 * 60
-      break
+      return value * 60 * 60
     case DurationUnits.Days:
-      time = value * 60 * 60 * 24
-      break
+      return value * 60 * 60 * 24
     case DurationUnits.Weeks:
-      time = value * 60 * 60 * 24 * 7
-      break
+      return value * 60 * 60 * 24 * 7
+    case DurationUnits.Months:
+      return value * 60 * 60 * 24 * 30
+    case DurationUnits.Years:
+      return value * 60 * 60 * 24 * 365
     default:
       throw new Error(`Unsupported duration unit: ${units}`)
   }
-  return { time }
+}
+
+export const convertDurationWithUnitsToDuration = (
+  durationWithUnits: DurationWithUnits
+): { time: number } => ({
+  time: convertDurationWithUnitsToSeconds(durationWithUnits),
+})
+
+// Use largest whole-number unit possible.
+export const convertSecondsToDurationWithUnits = (
+  seconds: number
+): DurationWithUnits => {
+  if (seconds % (60 * 60 * 24 * 365) === 0) {
+    return {
+      value: seconds / (60 * 60 * 24 * 365),
+      units: DurationUnits.Years,
+    }
+  } else if (seconds % (60 * 60 * 24 * 30) === 0) {
+    return {
+      value: seconds / (60 * 60 * 24 * 30),
+      units: DurationUnits.Months,
+    }
+  } else if (seconds % (60 * 60 * 24 * 7) === 0) {
+    return {
+      value: seconds / (60 * 60 * 24 * 7),
+      units: DurationUnits.Weeks,
+    }
+  } else if (seconds % (60 * 60 * 24) === 0) {
+    return {
+      value: seconds / (60 * 60 * 24),
+      units: DurationUnits.Days,
+    }
+  } else if (seconds % (60 * 60) === 0) {
+    return {
+      value: seconds / (60 * 60),
+      units: DurationUnits.Hours,
+    }
+  } else if (seconds % 60 === 0) {
+    return {
+      value: seconds / 60,
+      units: DurationUnits.Minutes,
+    }
+  } else {
+    return {
+      value: seconds,
+      units: DurationUnits.Seconds,
+    }
+  }
 }
 
 export const convertDurationWithUnitsToHumanReadableString = (

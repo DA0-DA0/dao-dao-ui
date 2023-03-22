@@ -53,6 +53,7 @@ import {
   refreshNativeTokenStakingInfoAtom,
   refreshWalletBalancesIdAtom,
 } from '../atoms/refresh'
+import { queryValidatorIndexerSelector } from './indexer'
 import { genericTokenSelector } from './token'
 
 export const stargateClientForChainSelector = selectorFamily<
@@ -340,6 +341,9 @@ export const validatorSelector = selectorFamily<
   get:
     ({ address: validatorAddr, chainId }) =>
     async ({ get }) => {
+      get(refreshWalletBalancesIdAtom(''))
+      get(refreshWalletBalancesIdAtom(validatorAddr))
+
       const client = get(cosmosRpcClientForChainSelector(chainId))
 
       const { validator } = await client.staking.v1beta1.validator({
@@ -444,6 +448,8 @@ export const validatorsSelector = selectorFamily<Validator[], WithChainId<{}>>({
   get:
     ({ chainId }) =>
     async ({ get }) => {
+      get(refreshWalletBalancesIdAtom(''))
+
       const client = get(cosmosRpcClientForChainSelector(chainId))
 
       let validators: RpcValidator[]
@@ -620,4 +626,37 @@ export const walletHexPublicKeySelector = selectorFamily<
       }
       return toHex(fromBase64(account.pubkey.value))
     },
+})
+
+export type ValidatorSlash = {
+  registeredBlockHeight: string
+  registeredBlockTimeUnixMs: string
+  infractionBlockHeight: string
+  // Slash fraction applied to validator's undelegating and redelegating tokens.
+  slashFactor: string
+  amountSlashed: string
+  // Slash fraction applied to validator's current delegations. It may be less
+  // than `slashFactor`.
+  effectiveFraction: string
+  // Amount of tokens slashed from delegations. This should be `amountSlashed`
+  // minus the amount slashed from the validator's undelegating and redelegating
+  // tokens.
+  stakedTokensBurned: string
+}
+
+export const validatorSlashesSelector = selectorFamily<
+  ValidatorSlash[],
+  WithChainId<{ validatorOperatorAddress: string }>
+>({
+  key: 'validatorSlashes',
+  get:
+    ({ validatorOperatorAddress, chainId }) =>
+    async ({ get }) =>
+      (await get(
+        queryValidatorIndexerSelector({
+          validatorOperatorAddress,
+          chainId,
+          formula: 'staking/slashes',
+        })
+      )) ?? [],
 })

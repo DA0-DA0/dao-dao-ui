@@ -35,7 +35,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
 }: ProposalVotesProps<Vote>) => {
   const { t } = useTranslation()
 
-  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: true })
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: true })
 
   const votesWithDate = votes.loading
     ? []

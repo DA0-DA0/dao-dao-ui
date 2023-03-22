@@ -1,19 +1,19 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 
-import { WithChainId } from '@dao-dao/types'
+import { IndexerFormulaType, WithChainId } from '@dao-dao/types'
 import { CHAIN_ID, INDEXER_URL, fetchWithTimeout } from '@dao-dao/utils'
 
 export type QueryIndexerOptions = WithChainId<{
   args?: Record<string, any>
   block?: {
-    height: number
+    height: number | string
     // Most formulas do not need the time, so make it optional.
-    timeUnixMs?: number
+    timeUnixMs?: number | string
   }
 }>
 
 export const queryIndexer = async <T = any>(
-  type: 'contract' | 'wallet' | 'generic',
+  type: `${IndexerFormulaType}`,
   address: string,
   formula: string,
   { args, block, chainId = CHAIN_ID }: QueryIndexerOptions = {}
@@ -54,6 +54,6 @@ export const queryIndexer = async <T = any>(
 }
 
 export const queryFeaturedDaoDumpStatesFromIndexer = () =>
-  queryIndexer('generic', '_', 'featuredDaos', {
+  queryIndexer(IndexerFormulaType.Generic, '_', 'featuredDaos', {
     chainId: ChainInfoID.Juno1,
   })
