@@ -1,23 +1,23 @@
 import { walletProposalStatsSelector } from '@dao-dao/state/recoil'
 import {
   ProfileHomeCard as StatelessProfileHomeCard,
-  useAppLayoutContext,
+  useAppContext,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { NATIVE_DECIMALS, NATIVE_DENOM, nativeTokenLabel } from '@dao-dao/utils'
+import { NATIVE_TOKEN } from '@dao-dao/utils'
 
 import { useWalletInfo } from '../../hooks'
 
 export const ProfileHomeCard = () => {
   const {
     walletAddress = '',
-    walletProfile,
+    walletProfileData,
     walletBalance,
     walletStakedBalance,
     dateBalancesFetched,
     updateProfileName,
   } = useWalletInfo()
-  const { updateProfileNft, inbox } = useAppLayoutContext()
+  const { updateProfileNft, inbox } = useAppContext()
 
   const walletProposalStatsLoadable = useCachedLoadable(
     walletAddress
@@ -29,7 +29,7 @@ export const ProfileHomeCard = () => {
 
   return (
     <StatelessProfileHomeCard
-      inboxProposalCount={inbox.itemCount}
+      inboxPendingCount={inbox?.pendingItemCount ?? 0}
       lazyData={
         walletBalance === undefined ||
         walletStakedBalance === undefined ||
@@ -61,10 +61,10 @@ export const ProfileHomeCard = () => {
             }
       }
       showUpdateProfileNft={updateProfileNft.toggle}
-      tokenDecimals={NATIVE_DECIMALS}
-      tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
+      tokenDecimals={NATIVE_TOKEN.decimals}
+      tokenSymbol={NATIVE_TOKEN.symbol}
       updateProfileName={updateProfileName}
-      walletProfile={walletProfile}
+      walletProfileData={walletProfileData}
     />
   )
 }

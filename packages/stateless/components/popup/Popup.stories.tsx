@@ -1,7 +1,6 @@
 import { ExpandCircleDownOutlined } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { IconButton } from '../icon_buttons'
 import { Popup } from './Popup'
 
 export default {
@@ -13,15 +12,14 @@ const Template: ComponentStory<typeof Popup> = (args) => <Popup {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
-  Trigger: ({ open, ...props }) => (
-    <IconButton
-      Icon={ExpandCircleDownOutlined}
-      className="!text-icon-secondary"
-      focused={open}
-      variant="ghost"
-      {...props}
-    />
-  ),
+  trigger: {
+    type: 'icon_button',
+    props: {
+      Icon: ExpandCircleDownOutlined,
+      className: '!text-icon-secondary',
+      variant: 'ghost',
+    },
+  },
   position: 'right',
   children: (
     <>

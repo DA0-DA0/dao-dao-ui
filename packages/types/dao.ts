@@ -67,6 +67,8 @@ export interface NftCardInfo {
     name: string
   }
   imageUrl?: string
+  // Metadata loaded from the token URI.
+  metadata?: Record<string, any>
   floorPrice?: {
     amount: number
     denom: string
@@ -74,6 +76,10 @@ export interface NftCardInfo {
   name: string
   description: string | undefined
   chainId: string
+
+  // This indicates whether or not the NFT is staked in a DAO. It is manually
+  // set in `walletStakedNftCardInfosSelector`.
+  staked?: boolean
 }
 
 export interface ProposalModule {
@@ -219,6 +225,11 @@ export type DaoCreatedCardProps = Omit<
   'follow' | 'LinkWrapper' | 'IconButtonLink'
 >
 
+export type DaoPayrollConfig = {
+  type: string
+  data?: Record<string, unknown>
+}
+
 export enum DaoTabId {
   Home = '',
   Proposals = 'proposals',
@@ -227,6 +238,7 @@ export enum DaoTabId {
   Members = 'members',
   Payroll = 'payroll',
   Staked = 'staked',
+  Collection = 'collection',
 }
 
 export type DaoTab = {
@@ -243,4 +255,9 @@ export type DaoTabWithComponent = DaoTab & {
 export enum DaoPageMode {
   Dapp = 'dapp',
   Sda = 'sda',
+}
+
+export type DaoWebSocketChannelInfo = {
+  chainId: string
+  coreAddress: string
 }

@@ -37,6 +37,7 @@ const queryClient = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new DaoVotingCw721StakedQueryClient(client, contractAddress)
     },
+  dangerouslyAllowMutability: true,
 })
 
 export type ExecuteClientParams = {
@@ -158,4 +159,30 @@ export const stakerForNftSelector = selectorFamily<
           },
         })
       ),
+})
+
+///! Custom selectors
+
+export const topStakersSelector = selectorFamily<
+  | {
+      address: string
+      count: number
+      votingPowerPercent: number
+    }[]
+  | undefined,
+  QueryClientParams & { limit?: number }
+>({
+  key: 'daoVotingCw721StakedTopStakers',
+  get:
+    ({ limit, ...queryClientParams }) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formulaName: 'daoVotingCw721Staked/topStakers',
+          args: {
+            limit,
+          },
+        })
+      ) ?? undefined,
 })

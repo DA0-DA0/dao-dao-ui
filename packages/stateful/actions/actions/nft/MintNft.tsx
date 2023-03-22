@@ -3,14 +3,13 @@ import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
-import { Loader, useCachedLoadable } from '@dao-dao/stateless'
+import { Loader, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionOptionsContextType,
+  ActionContextType,
   CoreActionKey,
   NftCardInfo,
 } from '@dao-dao/types'
-import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../components'
 import { nftCardInfoWithUriSelector } from '../../../recoil'
@@ -24,40 +23,49 @@ export const MintNft: ActionComponent = (props) => {
   const data: MintNftData = watch(props.fieldNamePrefix)
   const collectionAddress = data.collectionAddress ?? ''
 
-  const nftInfo = loadableToLoadingData(
-    useCachedLoadable<NftCardInfo>(
-      //  If creating, get info from form data.
-      props.isCreating
-        ? constSelector({
-            collection: {
-              address: collectionAddress,
-              name: data.instantiateMsg?.name ?? '',
-            },
-            tokenId: data.mintMsg.token_id,
-            imageUrl: data.imageUrl,
-            name: data.metadata?.name ?? '',
-            description: data.metadata?.description ?? '',
-            chainId,
-          })
-        : // If viewing, get info from token URI.
-          nftCardInfoWithUriSelector({
-            collection: collectionAddress,
-            tokenId: data.mintMsg.token_id,
-            tokenUri: data.mintMsg.token_uri,
-            chainId,
-          })
-    ),
+  const nftInfoLoading = useCachedLoading<NftCardInfo | undefined>(
+    // Nothing to load if creating.
+    props.isCreating
+      ? undefined
+      : // If viewing, get info from token URI.
+        nftCardInfoWithUriSelector({
+          collection: collectionAddress,
+          tokenId: data.mintMsg.token_id,
+          tokenUri: data.mintMsg.token_uri,
+          chainId,
+        }),
     undefined
   )
+  // If creating, use the data from the form. Otherwise, use the data loading.
+  // Undefined when loading.
+  const nftInfo: NftCardInfo | undefined = props.isCreating
+    ? {
+        collection: {
+          address: collectionAddress,
+          name: data.instantiateMsg?.name ?? '',
+        },
+        tokenId: data.mintMsg.token_id,
+        imageUrl: data.imageUrl,
+        name: data.metadata?.name ?? '',
+        description: data.metadata?.description ?? '',
+        // Show audio/video in preview when creating.
+        metadata: {
+          properties: data.metadata?.properties,
+        },
+        chainId,
+      }
+    : nftInfoLoading.loading || !nftInfoLoading.data
+    ? undefined
+    : nftInfoLoading.data
 
   // Get all collections in DAO.
   const daoCollections = useRecoilValueLoadable(
-    props.isCreating && context.type === ActionOptionsContextType.Dao
+    props.isCreating && context.type === ActionContextType.Dao
       ? DaoCoreV2Selectors.allCw721TokenListSelector({
           contractAddress: address,
           chainId,
         })
-      : constSelector([])
+      : constSelector(undefined)
   )
 
   // Add action to add collection to DAO treasury if it is not already there.
@@ -71,9 +79,10 @@ export const MintNft: ActionComponent = (props) => {
     if (
       // Ensure we are creating a proposal in the context of a DAO.
       props.isCreating &&
-      context.type === ActionOptionsContextType.Dao &&
+      context.type === ActionContextType.Dao &&
       // Ensure the collection is not already in the DAO.
       daoCollections.state === 'hasValue' &&
+      daoCollections.contents &&
       !daoCollections.contents.includes(collectionAddress) &&
       // Ensure no action already exists to add this collection.
       !props.allActionsWithData.some(
@@ -101,13 +110,14 @@ export const MintNft: ActionComponent = (props) => {
     props,
   ])
 
-  return nftInfo.loading || !nftInfo.data ? (
+  // `nftInfo` is undefined when loading or if there is no NFT info.
+  return !nftInfo ? (
     <Loader />
   ) : (
     <StatelessMintNft
       {...props}
       options={{
-        nftInfo: nftInfo.data,
+        nftInfo,
         AddressInput,
       }}
     />

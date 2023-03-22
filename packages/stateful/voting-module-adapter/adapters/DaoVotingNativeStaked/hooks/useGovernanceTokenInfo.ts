@@ -6,14 +6,13 @@ import {
   DaoVotingNativeStakedSelectors,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
-  usdcPerMacroTokenSelector,
+  wyndUsdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoading } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   getFallbackImage,
-  loadableToLoadingData,
   nativeTokenDecimals,
   nativeTokenLabel,
   nativeTokenLogoURI,
@@ -57,41 +56,32 @@ export const useGovernanceTokenInfo = ({
   /// Optional
 
   // Wallet balance
-  const loadingWalletBalance = loadableToLoadingData(
-    useCachedLoadable(
-      fetchWalletBalance && walletAddress
-        ? nativeDenomBalanceSelector({
-            walletAddress,
-            denom,
-          })
-        : constSelector(undefined)
-    ),
+  const loadingWalletBalance = useCachedLoading(
+    fetchWalletBalance && walletAddress
+      ? nativeDenomBalanceSelector({
+          walletAddress,
+          denom,
+        })
+      : constSelector(undefined),
     undefined
   )
 
   // Treasury balance
-  const loadingTreasuryBalance = loadableToLoadingData(
-    useCachedLoadable(
-      fetchTreasuryBalance
-        ? nativeDenomBalanceSelector({
-            walletAddress: coreAddress,
-            denom,
-          })
-        : constSelector(undefined)
-    ),
+  const loadingTreasuryBalance = useCachedLoading(
+    fetchTreasuryBalance
+      ? nativeDenomBalanceSelector({
+          walletAddress: coreAddress,
+          denom,
+        })
+      : constSelector(undefined),
     undefined
   )
 
   // Price info
-  const loadingPrice = loadableToLoadingData(
-    useCachedLoadable(
-      fetchUsdcPrice && governanceTokenInfo
-        ? usdcPerMacroTokenSelector({
-            denom,
-            decimals: governanceTokenInfo.decimals,
-          })
-        : constSelector(undefined)
-    ),
+  const loadingPrice = useCachedLoading(
+    fetchUsdcPrice && governanceTokenInfo
+      ? wyndUsdPriceSelector(denom)
+      : constSelector(undefined),
     undefined
   )
 

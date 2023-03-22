@@ -7,7 +7,7 @@ import {
   NotificationsDecorator,
   RecoilDecorator,
   ThemeDecorator,
-  makeAppLayoutContextDecorator,
+  makeAppContextDecorator,
 } from '../decorators'
 
 export const parameters = {
@@ -55,5 +55,5 @@ export const decorators = [
   ThemeDecorator,
   RecoilDecorator,
   NotificationsDecorator,
-  makeAppLayoutContextDecorator(),
+  makeAppContextDecorator(),
 ]

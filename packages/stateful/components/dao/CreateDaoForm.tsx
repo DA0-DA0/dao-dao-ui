@@ -18,7 +18,9 @@ import {
   DaoCreateSidebarCard,
   DaoHeader,
   ImageSelector,
-  useAppLayoutContext,
+  PageHeaderContent,
+  RightSidebarContent,
+  useAppContext,
   useCachedLoadable,
   useNavHelpers,
   useThemeContext,
@@ -38,13 +40,11 @@ import {
   CHAIN_ID,
   CODE_ID_CONFIG,
   FACTORY_CONTRACT_ADDRESS,
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   makeValidateMsg,
-  nativeTokenLabel,
   processError,
 } from '@dao-dao/utils'
 
@@ -98,7 +98,7 @@ export const CreateDaoForm = ({
   const { goToDao } = useNavHelpers()
   const { setFollowing } = useFollowingDaos()
 
-  const { mode, RightSidebarContent, PageHeader } = useAppLayoutContext()
+  const { mode } = useAppContext()
 
   const [daoCreatedCardProps, setDaoCreatedCardProps] = useRecoilState(
     daoCreatedCardPropsAtom
@@ -385,24 +385,19 @@ export const CreateDaoForm = ({
         if (connected) {
           setCreating(true)
           try {
-            const coreAddress = await toast.promise(
-              createDaoWithFactory().then(
-                // New wallet balances will not appear until the next block.
-                (address) => awaitNextBlock().then(() => address)
-              ),
-              {
-                loading: t('info.creatingDao'),
-                success: t('success.daoCreatedPleaseWait'),
-                error: (err) => processError(err),
-              }
-            )
+            const coreAddress = await toast.promise(createDaoWithFactory(), {
+              loading: t('info.creatingDao'),
+              success: t('success.daoCreatedPleaseWait'),
+              error: (err) => processError(err),
+            })
 
             // Don't set following on SDA. Only dApp.
             if (mode !== DaoPageMode.Sda) {
               setFollowing(coreAddress)
             }
 
-            refreshBalances()
+            // New wallet balances will not appear until the next block.
+            awaitNextBlock().then(refreshBalances)
 
             //! Show DAO created modal.
 
@@ -433,10 +428,10 @@ export const CreateDaoForm = ({
                         ? cw20StakedBalanceVotingData.newInfo.symbol
                         : // If using existing token but no token info loaded (should
                         // be impossible), the tokenBalance above will be set to
-                        // 0, so use NATIVE_DENOM here so this value is
+                        // 0, so use the native token here so this value is
                         // accurate.
                         !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
-                        ? nativeTokenLabel(NATIVE_DENOM)
+                        ? NATIVE_TOKEN.symbol
                         : cw20StakedBalanceVotingData
                             .existingGovernanceTokenInfo?.symbol ||
                           t('info.token').toLocaleUpperCase(),
@@ -454,8 +449,8 @@ export const CreateDaoForm = ({
                 : //! Otherwise display native token, which has a balance of 0 initially.
                   {
                     tokenBalance: 0,
-                    tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
-                    tokenDecimals: NATIVE_DECIMALS,
+                    tokenSymbol: NATIVE_TOKEN.symbol,
+                    tokenDecimals: NATIVE_TOKEN.decimals,
                   }
 
             // Set card props to show modal.
@@ -609,13 +604,15 @@ export const CreateDaoForm = ({
           pageIndex={daoCreatedCardProps ? 4 : pageIndex}
         />
       </RightSidebarContent>
-      <PageHeader
+      <PageHeaderContent
         breadcrumbs={{
-          // On SDA, use the SubDAOs tab as the home breadcrumb.
-          sdaHomeTab: {
-            id: DaoTabId.Subdaos,
-            label: t('title.subDaos'),
-          },
+          // Use the SubDAOs tab as the home breadcrumb if making a SubDAO.
+          homeTab: makingSubDao
+            ? {
+                id: DaoTabId.Subdaos,
+                sdaLabel: t('title.subDaos'),
+              }
+            : undefined,
           current:
             name.trim() ||
             (makingSubDao ? t('title.newSubDao') : t('title.newDao')),

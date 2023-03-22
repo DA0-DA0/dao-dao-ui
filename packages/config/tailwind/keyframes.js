@@ -70,6 +70,11 @@ const keyframes = {
     '0%': { opacity: 1 },
     '100%': { opacity: 0 },
   },
+  breathe: {
+    '0%': { transform: 'scale(1)' },
+    '50%': { transform: 'scale(1.05)' },
+    '100%': { transform: 'scale(1)' },
+  },
   // Toast
   'toast-hide': {
     '0%': { opacity: 1 },

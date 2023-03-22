@@ -21,7 +21,7 @@ export const useMembership = ({
   chainId,
   blockHeight,
 }: UseMembershipOptions): UseMembershipResponse => {
-  const { address: walletAddress } = useWallet(chainId)
+  const { address: walletAddress } = useWallet()
 
   // Use loadable to prevent flickering loading states when wallet address
   // changes and on initial load if wallet is connecting.

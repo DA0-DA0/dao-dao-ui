@@ -1,35 +1,16 @@
 import clsx from 'clsx'
-import {
-  ComponentType,
-  Dispatch,
-  MutableRefObject,
-  ReactNode,
-  SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from 'react'
+import { useRouter } from 'next/router'
+import { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
-export interface PopupProps {
-  Trigger: ComponentType<{ onClick: () => void; open: boolean }>
-  position: 'left' | 'right'
-  children: ReactNode | ReactNode[]
-  wrapperClassName?: string
-  popupClassName?: string
-  getKeydownEventListener?: (
-    open: boolean,
-    setOpen: Dispatch<SetStateAction<boolean>>
-  ) => (event: KeyboardEvent) => any
-  headerContent?: ReactNode
-  onOpen?: () => void
-  onClose?: () => void
-  // Give parent a way to access and control open and setOpen.
-  openRef?: MutableRefObject<boolean | null>
-  setOpenRef?: MutableRefObject<Dispatch<SetStateAction<boolean>> | null>
-}
+import { PopupProps, PopupTrigger, PopupTriggerOptions } from '@dao-dao/types'
+
+import { useTrackDropdown } from '../../hooks/useTrackDropdown'
+import { Button } from '../buttons'
+import { IconButton } from '../icon_buttons'
 
 export const Popup = ({
-  Trigger,
+  trigger,
   position,
   children,
   wrapperClassName,
@@ -41,8 +22,14 @@ export const Popup = ({
   openRef,
   setOpenRef,
 }: PopupProps) => {
-  const wrapperRef = useRef<HTMLDivElement>(null)
+  const wrapperRef = useRef<HTMLDivElement | null>(null)
   const [open, setOpen] = useState(false)
+
+  // On route change, close the popup.
+  const { asPath } = useRouter()
+  useEffect(() => {
+    setOpen(false)
+  }, [asPath])
 
   // Store open and setOpen in ref so parent can access them.
   useEffect(() => {
@@ -87,6 +74,8 @@ export const Popup = ({
     return () => document.removeEventListener('keydown', handleKeyPress)
   }, [open])
 
+  const dropdownRef = useRef<HTMLDivElement | null>(null)
+
   // Listen for click not in bounds, and close if so. Adds listener only when
   // the dropdown is open.
   useEffect(() => {
@@ -99,10 +88,11 @@ export const Popup = ({
 
     const closeIfClickOutside = (event: MouseEvent) => {
       // If clicked on an element that is not a descendant of the popup
-      // wrapper, close it.
+      // wrapper or the dropdown, close it.
       if (
         event.target instanceof Node &&
-        !wrapperRef.current?.contains(event.target)
+        !wrapperRef.current?.contains(event.target) &&
+        !dropdownRef.current?.contains(event.target)
       ) {
         setOpen(false)
       }
@@ -125,39 +115,87 @@ export const Popup = ({
     return () => document.removeEventListener('keydown', listener)
   }, [getKeydownEventListener, open])
 
+  // Track button to position the dropdown.
+  const { onDropdownRef, onTrackRef } = useTrackDropdown({
+    // Offset for outline of Trigger.
+    top: (rect) => rect.bottom + 4,
+    left: position === 'right' ? (rect) => rect.left - 2 : null,
+    right:
+      position === 'left' ? (rect) => window.innerWidth - rect.right : null,
+    width: null,
+  })
+
   return (
-    <div
-      className={clsx('relative inline-block', wrapperClassName)}
-      ref={wrapperRef}
-    >
-      <Trigger onClick={() => setOpen((o) => !o)} open={open} />
+    <>
+      <div
+        className={clsx('inline-block', wrapperClassName)}
+        ref={(ref) => {
+          wrapperRef.current = ref
+          onTrackRef(ref)
+        }}
+      >
+        <TriggerRenderer
+          options={{ open, onClick: () => setOpen((o) => !o) }}
+          trigger={trigger}
+        />
+      </div>
 
       {/* Popup */}
-      <div
-        className={clsx(
-          'absolute top-full z-10 mt-1 flex flex-col rounded-lg border border-border-primary bg-component-dropdown shadow-dp8 transition-all',
-          // Position.
-          {
-            // Offset for outline of Trigger.
-            '-right-[2px]': position === 'left',
-            '-left-[2px]': position === 'right',
-          },
-          // Open.
-          {
-            'pointer-events-none scale-95 opacity-0': !open,
-            'scale-100 opacity-100': open,
-          },
-          popupClassName
-        )}
-      >
-        {headerContent && (
-          <div className="mb-4 border-b border-border-base">
-            <div className="p-4">{headerContent}</div>
-          </div>
-        )}
+      {createPortal(
+        <div
+          className={clsx(
+            'fixed z-50 flex flex-col rounded-lg border border-border-primary bg-component-dropdown shadow-dp8 transition-all',
+            // Open.
+            {
+              'pointer-events-none scale-95 opacity-0': !open,
+              'scale-100 opacity-100': open,
+            },
+            popupClassName
+          )}
+          ref={(ref) => {
+            dropdownRef.current = ref
+            onDropdownRef(ref)
+          }}
+        >
+          {headerContent && (
+            <div className="mb-4 border-b border-border-base">
+              <div className="p-4">{headerContent}</div>
+            </div>
+          )}
 
-        {children}
-      </div>
-    </div>
+          {children}
+        </div>,
+        document.body
+      )}
+    </>
   )
 }
+
+export type TriggerRendererProps = {
+  trigger: PopupTrigger
+  options: PopupTriggerOptions
+}
+
+export const TriggerRenderer = ({ trigger, options }: TriggerRendererProps) => (
+  <>
+    {trigger.type === 'button' ? (
+      <Button
+        {...(typeof trigger.props === 'function'
+          ? trigger.props(options)
+          : trigger.props)}
+        onClick={options.onClick}
+        pressed={options.open}
+      />
+    ) : trigger.type === 'icon_button' ? (
+      <IconButton
+        {...(typeof trigger.props === 'function'
+          ? trigger.props(options)
+          : trigger.props)}
+        focused={options.open}
+        onClick={options.onClick}
+      />
+    ) : trigger.type === 'custom' ? (
+      <trigger.Renderer {...options} />
+    ) : null}
+  </>
+)

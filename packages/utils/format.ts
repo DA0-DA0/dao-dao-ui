@@ -24,13 +24,21 @@ export const dateFormatterNoYear = new Intl.DateTimeFormat('default', {
   day: 'numeric',
   year: undefined,
 })
+export const dateFormatterDayAndYear = new Intl.DateTimeFormat('default', {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+})
 
-// If this year, add date in month and ignore year.
-// Otherwise, add year and ignore date in month.
-export const formatDate = (date: Date) =>
-  date.getFullYear() === new Date().getFullYear()
-    ? dateFormatterNoYear.format(date)
-    : dateFormatterNoDay.format(date)
+// If this year, add date in month and ignore year. Otherwise, add year and
+// ignore date in month. If both is true, add both day and year.
+export const formatDate = (date: Date, both = false) =>
+  (both
+    ? dateFormatterDayAndYear
+    : date.getFullYear() === new Date().getFullYear()
+    ? dateFormatterNoYear
+    : dateFormatterNoDay
+  ).format(date)
 
 export const dateTimeFormatter = new Intl.DateTimeFormat('default', {
   dateStyle: 'short',

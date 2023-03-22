@@ -5,24 +5,26 @@ import {
   InboxOutlined,
   KeyboardDoubleArrowLeft,
   KeyboardDoubleArrowRight,
+  PersonOutline,
   Search,
 } from '@mui/icons-material'
 import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
 import Link from 'next/link'
+import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DappNavigationProps } from '@dao-dao/types/stateless/DappNavigation'
-import { usePlatform } from '@dao-dao/utils'
 
+import { usePlatform } from '../../hooks'
 import { DaoDropdown } from '../dao'
 import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { Logo } from '../logo/Logo'
 import { PricePercentChange } from '../token/PricePercentChange'
 import { Tooltip } from '../tooltip/Tooltip'
-import { useAppLayoutContext } from './AppLayoutContext'
+import { useAppContext } from './AppContext'
 import { Footer } from './Footer'
 import { PageHeader } from './PageHeader'
 import { Row } from './Row'
@@ -69,7 +71,8 @@ export const DappNavigation = ({
       toggle: toggleResponsive,
     },
     responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
-  } = useAppLayoutContext()
+  } = useAppContext()
+  const { asPath } = useRouter()
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
@@ -144,8 +147,8 @@ export const DappNavigation = ({
         className={clsx(
           // General
           'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto bg-background-base py-6 pt-0 text-lg',
-          // If compact, items will manager their own padding so that
-          // highlighted rows fill the whole width.
+          // If compact, items will manage their own padding so that highlighted
+          // rows fill the whole width.
           !compact && 'px-6',
           // Responsive
           'absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8 transition-all',
@@ -154,9 +157,9 @@ export const DappNavigation = ({
           'sm:relative sm:left-0 sm:shadow-none sm:transition-[padding-left]',
           compact ? 'sm:w-min' : 'sm:w-[264px]',
 
-          // Dim if responsive right sidebar is open. Right sidebar can be responsive up to xl size. After that, it automatically displays.
+          // Dim if responsive right sidebar is open. Right sidebar can be responsive up to 2xl size. After that, it automatically displays.
           responsiveRightSidebarEnabled
-            ? 'opacity-30 xl:opacity-100'
+            ? 'opacity-30 2xl:opacity-100'
             : 'opacity-100'
         )}
       >
@@ -202,9 +205,18 @@ export const DappNavigation = ({
             }
           />
 
-          {/* Only show inbox and following when connected. */}
+          {/* Only show me, inbox, and following when connected. */}
           {walletConnected && (
             <>
+              <Row
+                Icon={PersonOutline}
+                LinkWrapper={LinkWrapper}
+                compact={compact}
+                href="/me"
+                label={t('title.me')}
+                selected={asPath.startsWith('/me')}
+              />
+
               <Row
                 Icon={InboxOutlined}
                 LinkWrapper={LinkWrapper}
@@ -225,12 +237,16 @@ export const DappNavigation = ({
                 compact={compact}
                 defaultExpanded
                 label={t('title.following')}
-                loading={followingDaos.loading}
+                loading={followingDaos.loading || followingDaos.updating}
               >
                 {!followingDaos.loading && (
                   <div
                     className={clsx(
-                      'relative sm:max-h-[50vh]',
+                      // 42rem is about the absolute height of all other
+                      // elements in the sidebar, so the remaining space is
+                      // used for the following DAOs. This number will need
+                      // tweaking if the sidebar changes.
+                      'relative sm:max-h-[calc(100vh-42rem)]',
                       !followingDaos.loading && 'no-scrollbar overflow-y-auto',
                       compact && 'mt-1 w-min'
                     )}

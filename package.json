@@ -1,6 +1,6 @@
 {
   "name": "dao-dao-ui",
-  "version": "2.1.0-rc.1",
+  "version": "2.2.0",
   "workspaces": [
     "apps/*",
     "packages/*"
@@ -22,7 +22,7 @@
     "storybook": "yarn workspace @dao-dao/storybook",
     "types": "yarn workspace @dao-dao/types",
     "utils": "yarn workspace @dao-dao/utils",
-    "publish-all": "lerna publish --no-private"
+    "publish-all": "lerna publish --no-private from-package"
   },
   "devDependencies": {
     "lerna": "^6.4.1",

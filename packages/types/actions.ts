@@ -31,6 +31,8 @@ export enum CoreActionKey {
   ManageStorageItems = 'manageStorageItems',
   GovernanceVote = 'governanceVote',
   UpgradeV1ToV2 = 'upgradeV1ToV2',
+  WyndSwap = 'wyndSwap',
+  DaoAdminExec = 'daoAdminExec',
 }
 
 // Actions defined in voting or proposal module adapters.
@@ -118,18 +120,18 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   useDecodedCosmosMsg: UseDecodedCosmosMsg<Data>
 }
 
-export enum ActionOptionsContextType {
+export enum ActionContextType {
   Dao = 'dao',
   Wallet = 'wallet',
 }
 
-export type ActionOptionsContext =
+export type ActionContext =
   | {
-      type: ActionOptionsContextType.Dao
+      type: ActionContextType.Dao
       info: DaoInfo
     }
   | {
-      type: ActionOptionsContextType.Wallet
+      type: ActionContextType.Wallet
     }
 
 export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
@@ -139,7 +141,7 @@ export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
   // coreAddress if context.type === Dao
   // walletAddress if context.type === Wallet
   address: string
-  context: ActionOptionsContext
+  context: ActionContext
 }
 
 export type ActionMaker<Data extends {} = any, ExtraOptions extends {} = {}> = (
@@ -153,20 +155,16 @@ export interface IActionsContext {
   actions: Action[]
 }
 
-export type ActionsWithData = Partial<
-  Record<
-    ActionKey,
-    {
-      action: Action
-      transform: ReturnType<UseTransformToCosmos>
-      defaults: ReturnType<UseDefaults>
-    }
-  >
->
-
-export type UseCoreActionsOptions = {
+export type UseActionsOptions = {
   // If true, the actions will be filtered to only include those which are
   // allowed to be created. This is used to hide the upgrade actions from the
   // list of actions to create.
   isCreating?: boolean
 }
+
+export type LoadedAction = {
+  action: Action
+  transform: ReturnType<UseTransformToCosmos>
+  defaults: ReturnType<UseDefaults>
+}
+export type LoadedActions = Partial<Record<ActionKey, LoadedAction>>

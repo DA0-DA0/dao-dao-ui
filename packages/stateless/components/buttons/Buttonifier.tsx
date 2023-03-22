@@ -1,33 +1,14 @@
 import clsx from 'clsx'
-import { ReactNode } from 'react'
 
-import { Logo } from '../logo/Logo'
+import { ButtonifierProps } from '@dao-dao/types'
+
+import { Loader } from '../logo'
 
 const defaultVariant = 'primary'
 const defaultSize = 'default'
 
 // Pulse for these variants instead of displaying loader.
 const PULSE_LOADING_VARIANTS = 'underline' || 'none'
-
-export interface ButtonifierProps {
-  variant?:
-    | 'primary'
-    | 'primary_outline'
-    | 'secondary'
-    | 'ghost'
-    | 'underline'
-    | 'none'
-  size?: 'sm' | 'lg' | 'default' | 'none'
-  loading?: boolean
-  contentContainerClassName?: string
-  pressed?: boolean
-  hovering?: boolean
-  disabled?: boolean
-  showBadge?: boolean
-  className?: string
-  children?: ReactNode | ReactNode[]
-  center?: boolean
-}
 
 // Get props that should pass through the Buttonifier, such as native button
 // props. Disable button if disabled or loading.
@@ -41,6 +22,8 @@ export const getPassthroughProps = <P extends ButtonifierProps>({
   className: _className,
   children: _children,
   center: _center,
+  circular: _circular,
+  focused: _focused,
   disabled,
   loading,
   ...props
@@ -55,15 +38,22 @@ export const getButtonifiedClassNames = ({
   pressed,
   disabled,
   loading,
+  circular,
+  focused,
   className,
 }: ButtonifierProps) => {
   const disabledOrLoading = disabled || loading
 
   return clsx(
-    'relative block rounded-md transition-all focus:outline-2 focus:outline-background-button-disabled',
+    'relative block transition-all focus:outline-2 focus:outline-background-button-disabled',
 
     // No cursor pointer if disabled or loading.
     disabledOrLoading && 'cursor-default',
+
+    focused && 'ring-2 ring-inset ring-border-interactive-focus',
+
+    // Rounded if circular.
+    circular ? 'rounded-full' : 'rounded-md',
 
     // Pulse if loading for a variant that we don't display the loader.
     loading && variant === PULSE_LOADING_VARIANTS && 'animate-pulse',
@@ -111,10 +101,14 @@ export const getButtonifiedClassNames = ({
       'bg-background-interactive-active text-text-interactive-active': pressed,
     },
     // Ghost variant
-    variant === 'ghost' && {
+    (variant === 'ghost' || variant === 'ghost_outline') && {
       // Default
       'hover:bg-background-interactive-hover active:bg-background-interactive-pressed':
         !disabledOrLoading,
+      // Outline
+      'ring-1 ring-inset ring-border-primary':
+        variant === 'ghost_outline' || loading,
+      'hover:ring-0': variant === 'ghost_outline' && !disabledOrLoading,
       // Default, not pressed
       'bg-transparent text-text-secondary': !disabledOrLoading && !pressed,
       // Disabled, not pressed
@@ -129,8 +123,7 @@ export const getButtonifiedClassNames = ({
       '!p-0': true,
       underline: variant === 'underline',
       // Default
-      'transition-opacity hover:opacity-80 active:opacity-70':
-        !disabledOrLoading,
+      'hover:opacity-80 active:opacity-70': !disabledOrLoading,
       // Disabled
       'text-text-button-disabled': disabledOrLoading,
     },
@@ -162,9 +155,7 @@ export const ButtonifiedChildren = ({
       )}
     >
       {loading && variant !== PULSE_LOADING_VARIANTS && (
-        <div className="mx-auto inline-block aspect-square h-full animate-spin-medium">
-          <Logo invert={variant === 'primary'} size="100%" />
-        </div>
+        <Loader invert={variant === 'primary'} size={24} />
       )}
     </div>
     <div

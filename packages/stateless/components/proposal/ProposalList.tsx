@@ -8,7 +8,7 @@ import { DropdownIconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
 
-export interface ProposalListProps<T> {
+export interface ProposalListProps<T extends { proposalId: string }> {
   ProposalLine: ComponentType<T>
   openProposals: T[]
   historyProposals: T[]
@@ -20,7 +20,7 @@ export interface ProposalListProps<T> {
   DiscordNotifierConfigureModal: ComponentType
 }
 
-export const ProposalList = <T extends {}>({
+export const ProposalList = <T extends { proposalId: string }>({
   ProposalLine,
   openProposals,
   historyProposals,
@@ -36,7 +36,7 @@ export const ProposalList = <T extends {}>({
   const [historyExpanded, setHistoryExpanded] = useState(true)
 
   return openProposals.length > 0 || historyProposals.length > 0 ? (
-    <div className="border-t border-border-secondary pt-6">
+    <div className="border-t border-border-secondary py-6">
       <div className="mb-6 flex flex-row items-center justify-between gap-6">
         <p className="title-text text-text-body">{t('title.proposals')}</p>
 
@@ -45,8 +45,8 @@ export const ProposalList = <T extends {}>({
 
       {!!openProposals.length && (
         <div className="mb-9 space-y-1">
-          {openProposals.map((props, index) => (
-            <ProposalLine {...props} key={index} />
+          {openProposals.map((props) => (
+            <ProposalLine {...props} key={props.proposalId} />
           ))}
         </div>
       )}
@@ -67,8 +67,8 @@ export const ProposalList = <T extends {}>({
 
       <div className={clsx(!historyExpanded && 'hidden')}>
         <div className="mt-6 space-y-1">
-          {historyProposals.map((props, index) => (
-            <ProposalLine {...props} key={index} />
+          {historyProposals.map((props) => (
+            <ProposalLine {...props} key={props.proposalId} />
           ))}
         </div>
 

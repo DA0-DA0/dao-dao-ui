@@ -10,7 +10,8 @@ import {
   IconButton,
   Loader,
   NoContent,
-  useAppLayoutContext,
+  PageHeaderContent,
+  RightSidebarContent,
 } from '../components'
 import { useNavHelpers } from '../hooks'
 
@@ -21,13 +22,12 @@ export interface InboxProps {
 }
 
 export const Inbox = ({
-  state: { loading, refreshing, refresh, daosWithItems, itemCount },
+  state: { loading, refreshing, refresh, daosWithItems, pendingItemCount },
   rightSidebarContent,
   LinkWrapper,
 }: InboxProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useNavHelpers()
-  const { RightSidebarContent, PageHeader } = useAppLayoutContext()
 
   const [refreshSpinning, setRefreshSpinning] = useState(false)
   // Start spinning refresh icon if refreshing sets to true. Turn off once the
@@ -39,7 +39,7 @@ export const Inbox = ({
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
-      <PageHeader
+      <PageHeaderContent
         className="mx-auto max-w-5xl"
         rightNode={
           <IconButton
@@ -71,7 +71,7 @@ export const Inbox = ({
       <div className="mx-auto flex max-w-5xl flex-col items-stretch">
         {loading ? (
           <Loader fill={false} />
-        ) : itemCount === 0 ? (
+        ) : daosWithItems.length === 0 ? (
           <NoContent
             Icon={WhereToVoteOutlined}
             body={t('info.emptyInboxCaughtUp')}
@@ -79,7 +79,7 @@ export const Inbox = ({
         ) : (
           <>
             <p className="title-text">
-              {t('title.numItems', { count: itemCount })}
+              {t('title.numPendingItems', { count: pendingItemCount })}
             </p>
 
             <div className="mt-6 grow space-y-4">

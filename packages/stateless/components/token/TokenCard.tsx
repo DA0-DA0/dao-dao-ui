@@ -1,16 +1,15 @@
 import {
-  AccountBalance,
   Add,
   Check,
   CopyAll,
   ExpandCircleDownOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { TokenCardInfo } from '@dao-dao/types'
+import { ButtonPopupSection, TokenCardProps, TokenType } from '@dao-dao/types'
 import {
   getFallbackImage,
   isJunoIbcUsdc,
@@ -19,29 +18,15 @@ import {
   transformIbcSymbol,
 } from '@dao-dao/utils'
 
-import { ButtonLinkProps } from '../buttons'
+import { useAddToken, useDaoInfoContextIfAvailable } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { CopyToClipboard } from '../CopyToClipboard'
-import { DepositEmoji, MoneyEmoji } from '../emoji'
-import { IconButton } from '../icon_buttons/IconButton'
 import { CrownIcon } from '../icons/CrownIcon'
-import { ButtonPopup, ButtonPopupSection } from '../popup'
+import { ButtonPopup } from '../popup'
 import { TooltipInfoIcon } from '../tooltip'
 import { Tooltip } from '../tooltip/Tooltip'
 import { TokenAmountDisplay } from './TokenAmountDisplay'
 import { UnstakingModal } from './UnstakingModal'
-import { UnstakingTaskStatus } from './UnstakingStatus'
-
-export interface TokenCardProps extends TokenCardInfo {
-  onAddToken?: () => void
-  proposeStakeUnstakeHref?: string
-  proposeClaimHref?: string
-  refreshUnstakingTasks?: () => void
-  onClaim?: () => void
-  showDeposit?: () => void
-  manageCw20Stake?: () => void
-  ButtonLink: ComponentType<ButtonLinkProps>
-}
 
 export const TokenCard = ({
   token,
@@ -50,39 +35,35 @@ export const TokenCard = ({
   unstakedBalance,
   hasStakingInfo,
   lazyInfo,
-  onAddToken,
-  proposeStakeUnstakeHref,
-  proposeClaimHref,
   refreshUnstakingTasks,
   onClaim,
-  showDeposit,
-  manageCw20Stake,
   ButtonLink,
+  actions,
+  EntityDisplay,
 }: TokenCardProps) => {
   const { t } = useTranslation()
+  // If in a DAO context, don't show the DAOs governed section if the only DAO
+  // this token governs is the current DAO. See the comment where this is used
+  // for more details.
+  const { coreAddress } = useDaoInfoContextIfAvailable() ?? {}
 
   const lazyStakes =
     lazyInfo.loading || !lazyInfo.data.stakingInfo
       ? []
       : lazyInfo.data.stakingInfo.stakes
-  const lazyUnstakingTasks =
-    lazyInfo.loading || !lazyInfo.data.stakingInfo
-      ? []
-      : lazyInfo.data.stakingInfo.unstakingTasks
 
   const totalStaked =
-    lazyStakes.reduce((acc, stake) => acc + stake.amount, 0) ?? 0
-  const totalBalance = unstakedBalance + totalStaked
-  const pendingRewards =
-    lazyStakes?.reduce((acc, stake) => acc + stake.rewards, 0) ?? 0
-  const unstakingBalance =
-    lazyUnstakingTasks.reduce(
-      (acc, task) =>
-        acc +
-        // Only include balance of unstaking tasks.
-        (task.status === UnstakingTaskStatus.Unstaking ? task.amount : 0),
-      0
-    ) ?? 0
+    lazyInfo.loading || !lazyInfo.data.stakingInfo
+      ? 0
+      : lazyInfo.data.stakingInfo.totalStaked
+  const totalPendingRewards =
+    lazyInfo.loading || !lazyInfo.data.stakingInfo
+      ? 0
+      : lazyInfo.data.stakingInfo.totalPendingRewards
+  const totalUnstaking =
+    lazyInfo.loading || !lazyInfo.data.stakingInfo
+      ? 0
+      : lazyInfo.data.stakingInfo.totalUnstaking
 
   const [showUnstakingTokens, setShowUnstakingTokens] = useState(false)
 
@@ -97,98 +78,50 @@ export const TokenCard = ({
     token.symbol
   )
 
-  const buttonPopupSections: ButtonPopupSection[] = useMemo(
-    () => [
-      ...(token.type === 'cw20' || onAddToken || showDeposit || manageCw20Stake
-        ? [
-            {
-              label: t('title.token'),
-              buttons: [
-                ...(token.type === 'cw20'
-                  ? [
-                      {
-                        Icon: copied ? Check : CopyAll,
-                        label: t('button.copyAddressToClipboard'),
-                        onClick: () => {
-                          navigator.clipboard.writeText(token.denomOrAddress)
-                          toast.success(t('info.copiedToClipboard'))
-                          setCopied(true)
-                        },
+  const addToken = useAddToken()
+  const addCw20Token =
+    addToken && token.type === TokenType.Cw20
+      ? () => addToken(token.denomOrAddress)
+      : undefined
+
+  // Setup actions for popup. Prefill with cw20 related actions.
+  const buttonPopupSections: ButtonPopupSection[] = [
+    ...(token.type === TokenType.Cw20 || !!actions?.token?.length
+      ? [
+          {
+            label: t('title.token'),
+            buttons: [
+              ...(token.type === TokenType.Cw20
+                ? [
+                    {
+                      Icon: copied ? Check : CopyAll,
+                      label: t('button.copyAddressToClipboard'),
+                      closeOnClick: false,
+                      onClick: () => {
+                        navigator.clipboard.writeText(token.denomOrAddress)
+                        toast.success(t('info.copiedToClipboard'))
+                        setCopied(true)
                       },
-                    ]
-                  : []),
-                ...(onAddToken
-                  ? [
-                      {
-                        Icon: Add,
-                        label: t('button.addToKeplr'),
-                        onClick: onAddToken,
-                      },
-                    ]
-                  : []),
-                ...(showDeposit
-                  ? [
-                      {
-                        Icon: AccountBalance,
-                        label: t('button.deposit'),
-                        onClick: showDeposit,
-                      },
-                    ]
-                  : []),
-                ...(manageCw20Stake
-                  ? [
-                      {
-                        Icon: AccountBalance,
-                        label: t('button.manageStake', { tokenSymbol }),
-                        onClick: manageCw20Stake,
-                      },
-                    ]
-                  : []),
-              ],
-            },
-          ]
-        : []),
-      ...(proposeStakeUnstakeHref || proposeClaimHref
-        ? [
-            {
-              label: t('title.newProposalTo'),
-              buttons: [
-                ...(proposeStakeUnstakeHref
-                  ? [
-                      {
-                        Icon: DepositEmoji,
-                        label: t('button.stakeOrUnstake'),
-                        href: proposeStakeUnstakeHref,
-                      },
-                    ]
-                  : []),
-                ...(proposeClaimHref
-                  ? [
-                      {
-                        Icon: MoneyEmoji,
-                        label: t('button.claim'),
-                        href: proposeClaimHref,
-                      },
-                    ]
-                  : []),
-              ],
-            },
-          ]
-        : []),
-    ],
-    [
-      token.type,
-      token.denomOrAddress,
-      onAddToken,
-      showDeposit,
-      manageCw20Stake,
-      t,
-      copied,
-      tokenSymbol,
-      proposeStakeUnstakeHref,
-      proposeClaimHref,
-    ]
-  )
+                    },
+                  ]
+                : []),
+              ...(addCw20Token
+                ? [
+                    {
+                      Icon: Add,
+                      label: t('button.addToKeplr'),
+                      closeOnClick: false,
+                      onClick: addCw20Token,
+                    },
+                  ]
+                : []),
+              ...(actions?.token ?? []),
+            ],
+          },
+        ]
+      : []),
+    ...(actions?.extraSections ?? []),
+  ]
 
   const waitingForStakingInfo = hasStakingInfo && lazyInfo.loading
 
@@ -229,7 +162,8 @@ export const TokenCard = ({
               ) : (
                 <p className="title-text">${tokenSymbol}</p>
               )}
-              <p className="caption-text">{subtitle}</p>
+
+              {!!subtitle && <p className="caption-text">{subtitle}</p>}
             </div>
           </div>
 
@@ -237,76 +171,66 @@ export const TokenCard = ({
             <div className="absolute top-3 right-3">
               <ButtonPopup
                 ButtonLink={ButtonLink}
-                Trigger={({ open, ...props }) => (
-                  <IconButton
-                    Icon={ExpandCircleDownOutlined}
-                    className={
-                      !waitingForStakingInfo
-                        ? '!text-icon-secondary'
-                        : undefined
-                    }
-                    disabled={waitingForStakingInfo}
-                    focused={open}
-                    variant="ghost"
-                    {...props}
-                  />
-                )}
                 popupClassName="w-[16rem]"
                 position="left"
                 sections={buttonPopupSections}
+                trigger={{
+                  type: 'icon_button',
+                  props: {
+                    Icon: ExpandCircleDownOutlined,
+                    className: !waitingForStakingInfo
+                      ? '!text-icon-secondary'
+                      : undefined,
+                    disabled: waitingForStakingInfo,
+                    variant: 'ghost',
+                  },
+                }}
               />
             </div>
           )}
         </div>
 
         <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
-          <div className="flex flex-row items-start justify-between gap-8">
-            <p className="link-text">{t('info.totalHoldings')}</p>
+          {/* Don't show if loading, because `unstakedBalance` will show below while loading instead. It will hide if the total loads and is the same. This prevents weird looking relayouts while also showing some balance while the total is loading. */}
+          {!lazyInfo.loading && (
+            <div className="flex flex-row items-start justify-between gap-8">
+              <p className="link-text">{t('info.totalHoldings')}</p>
 
-            {/* leading-5 to match link-text's line-height. */}
-            <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
               {/* leading-5 to match link-text's line-height. */}
-              <TokenAmountDisplay
-                amount={
-                  // If staking info has not finished loading, don't show until
-                  // it is loaded so this is accurate.
-                  waitingForStakingInfo ? { loading: true } : totalBalance
-                }
-                className="leading-5 text-text-body"
-                decimals={token.decimals}
-                symbol={tokenSymbol}
-              />
+              <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
+                {/* leading-5 to match link-text's line-height. */}
+                <TokenAmountDisplay
+                  amount={lazyInfo.data.totalBalance}
+                  className="leading-5 text-text-body"
+                  decimals={token.decimals}
+                  symbol={tokenSymbol}
+                />
 
-              {!isJunoIbcUsdc(token.denomOrAddress) &&
-                (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
-                  <div className="flex flex-row items-center gap-1">
-                    <TokenAmountDisplay
-                      amount={
-                        // If staking info has not finished loading, don't show
-                        // until it is loaded so this is accurate.
-                        waitingForStakingInfo || lazyInfo.loading
-                          ? { loading: true }
-                          : totalBalance * lazyInfo.data.usdcUnitPrice!.amount
-                      }
-                      dateFetched={
-                        lazyInfo.loading
-                          ? undefined
-                          : lazyInfo.data.usdcUnitPrice!.timestamp
-                      }
-                      estimatedUsdValue
-                    />
+                {!isJunoIbcUsdc(token.denomOrAddress) &&
+                  lazyInfo.data.usdUnitPrice && (
+                    <div className="flex flex-row items-center gap-1">
+                      <TokenAmountDisplay
+                        amount={
+                          lazyInfo.data.totalBalance *
+                          lazyInfo.data.usdUnitPrice.amount
+                        }
+                        dateFetched={lazyInfo.data.usdUnitPrice!.timestamp}
+                        estimatedUsdValue
+                      />
 
-                    <TooltipInfoIcon
-                      size="xs"
-                      title={t('info.estimatedUsdValueTooltip')}
-                    />
-                  </div>
-                )}
+                      <TooltipInfoIcon
+                        size="xs"
+                        title={t('info.estimatedUsdValueTooltip')}
+                      />
+                    </div>
+                  )}
+              </div>
             </div>
-          </div>
+          )}
 
-          {/* Only display `unstakedBalance` if something is staked, because that means this will differ from `totalBalance` above. */}
-          {hasStakingInfo && (
+          {/* Only display `unstakedBalance` if total is loading or if different from total. While loading, the total above will hide.  */}
+          {(lazyInfo.loading ||
+            lazyInfo.data.totalBalance !== unstakedBalance) && (
             <div className="flex flex-row items-start justify-between gap-8">
               <p className="link-text">{t('info.availableBalance')}</p>
               <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
@@ -319,19 +243,19 @@ export const TokenCard = ({
                 />
 
                 {!isJunoIbcUsdc(token.denomOrAddress) &&
-                  (lazyInfo.loading || lazyInfo.data.usdcUnitPrice) && (
+                  (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
                         amount={
                           lazyInfo.loading
                             ? { loading: true }
                             : unstakedBalance *
-                              lazyInfo.data.usdcUnitPrice!.amount
+                              lazyInfo.data.usdUnitPrice!.amount
                         }
                         dateFetched={
                           lazyInfo.loading
                             ? undefined
-                            : lazyInfo.data.usdcUnitPrice!.timestamp
+                            : lazyInfo.data.usdUnitPrice!.timestamp
                         }
                         estimatedUsdValue
                       />
@@ -404,26 +328,24 @@ export const TokenCard = ({
             </div>
 
             <div className="flex flex-row items-center justify-between gap-8">
-              <p className="secondary-text">{t('title.unstakingTokens')}</p>
+              <p className="secondary-text">{t('title.unstaking')}</p>
 
               <Button
                 className={clsx(
                   'caption-text text-right font-mono underline-offset-2',
-                  unstakingBalance > 0 && 'text-text-body',
+                  totalUnstaking > 0 && 'text-text-body',
                   lazyInfo.loading && 'animate-pulse !text-text-body'
                 )}
                 disabled={lazyInfo.loading}
                 onClick={() => setShowUnstakingTokens(true)}
                 variant={
-                  lazyInfo.loading || unstakingBalance === 0
+                  lazyInfo.loading || totalUnstaking === 0
                     ? 'none'
                     : 'underline'
                 }
               >
                 <TokenAmountDisplay
-                  amount={
-                    lazyInfo.loading ? { loading: true } : unstakingBalance
-                  }
+                  amount={lazyInfo.loading ? { loading: true } : totalUnstaking}
                   decimals={token.decimals}
                   symbol={tokenSymbol}
                 />
@@ -434,7 +356,9 @@ export const TokenCard = ({
               <p className="secondary-text">{t('info.pendingRewards')}</p>
 
               <TokenAmountDisplay
-                amount={lazyInfo.loading ? { loading: true } : pendingRewards}
+                amount={
+                  lazyInfo.loading ? { loading: true } : totalPendingRewards
+                }
                 className="caption-text text-right font-mono text-text-body"
                 decimals={token.decimals}
                 symbol={tokenSymbol}
@@ -442,6 +366,55 @@ export const TokenCard = ({
             </div>
           </div>
         )}
+
+        {!lazyInfo.loading &&
+          !!lazyInfo.data.daosGoverned?.length &&
+          // Only show DAOs if there are more than 1 or if the only DAO in the
+          // list is the current DAO. This prevents the DAO's governance token
+          // from listing only the DAO we're currently viewing as a DAO it
+          // governs, since that would be unhelpful. When there are multiple
+          // DAOs, we show them all, because it would be confusing to not show
+          // the current DAO and it helps provide context.
+          (!coreAddress ||
+            lazyInfo.data.daosGoverned.length > 1 ||
+            lazyInfo.data.daosGoverned[0].coreAddress !== coreAddress) && (
+            <div className="space-y-3 border-t border-border-secondary py-4 px-6">
+              <div className="flex flex-row items-center gap-1">
+                <p className="link-text">{t('title.daosGoverned')}</p>
+
+                <TooltipInfoIcon
+                  size="xs"
+                  title={t('info.daosGovernedTooltip', {
+                    tokenSymbol,
+                  })}
+                />
+              </div>
+
+              <div className="space-y-1">
+                {lazyInfo.data.daosGoverned.map(
+                  ({ coreAddress, stakedBalance }) => (
+                    <div
+                      key={coreAddress}
+                      className="flex flex-row items-center justify-between"
+                    >
+                      <EntityDisplay address={coreAddress} />
+
+                      {/* Only show staked balance if defined and nonzero. */}
+                      {!!stakedBalance && (
+                        <TokenAmountDisplay
+                          amount={stakedBalance}
+                          className="caption-text text-right font-mono"
+                          decimals={token.decimals}
+                          hideSymbol
+                          suffix={' ' + t('info.staked')}
+                        />
+                      )}
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          )}
       </div>
 
       {!lazyInfo.loading && lazyInfo.data.stakingInfo && (

@@ -2,7 +2,7 @@ import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { fromBase64, toHex } from '@cosmjs/encoding'
 import {
   Coin,
-  Event,
+  IndexedTx,
   StargateClient,
   decodeCosmosSdkDecFromProto,
 } from '@cosmjs/stargate'
@@ -20,13 +20,15 @@ import {
   Validator as RpcValidator,
 } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import Long from 'long'
-import { atom, selector, selectorFamily } from 'recoil'
+import { selector, selectorFamily, waitForAll } from 'recoil'
 
 import {
   AmountWithTimestamp,
   Delegation,
+  GenericTokenBalance,
   GovProposalWithDecodedContent,
   NativeDelegationInfo,
+  TokenType,
   UnbondingDelegation,
   Validator,
   WithChainId,
@@ -34,16 +36,15 @@ import {
 import {
   CHAIN_BECH32_PREFIX,
   CHAIN_ID,
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
+  JUNO_USDC_DENOM,
+  MAINNET,
+  NATIVE_TOKEN,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
   decodeGovProposalContent,
   getAllRpcResponse,
   getRpcForChainId,
-  nativeTokenDecimals,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
+  isJunoIbcUsdc,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -52,6 +53,7 @@ import {
   refreshNativeTokenStakingInfoAtom,
   refreshWalletBalancesIdAtom,
 } from '../atoms/refresh'
+import { genericTokenSelector } from './token'
 
 export const stargateClientForChainSelector = selectorFamily<
   StargateClient,
@@ -62,6 +64,7 @@ export const stargateClientForChainSelector = selectorFamily<
     await stargateClientRouter.connect(
       chainId ? getRpcForChainId(chainId) : getRpcForChainId(CHAIN_ID)
     ),
+  dangerouslyAllowMutability: true,
 })
 
 export const cosmWasmClientForChainSelector = selectorFamily<
@@ -73,6 +76,7 @@ export const cosmWasmClientForChainSelector = selectorFamily<
     await cosmWasmClientRouter.connect(
       chainId ? getRpcForChainId(chainId) : getRpcForChainId(CHAIN_ID)
     ),
+  dangerouslyAllowMutability: true,
 })
 
 export const cosmosRpcClientForChainSelector = selectorFamily({
@@ -85,6 +89,7 @@ export const cosmosRpcClientForChainSelector = selectorFamily({
           : getRpcForChainId(CHAIN_ID),
       })
     ).cosmos,
+  dangerouslyAllowMutability: true,
 })
 
 export const junoRpcClientSelector = selector({
@@ -95,6 +100,7 @@ export const junoRpcClientSelector = selector({
         rpcEndpoint: getRpcForChainId(ChainInfoID.Juno1),
       })
     ).juno,
+  dangerouslyAllowMutability: true,
 })
 
 export const blockHeightSelector = selectorFamily<number, WithChainId<{}>>({
@@ -141,13 +147,7 @@ export const blockHeightTimestampSafeSelector = selectorFamily<
 })
 
 export const nativeBalancesSelector = selectorFamily<
-  {
-    denom: string
-    amount: string
-    decimals: number
-    label: string
-    imageUrl: string | undefined
-  }[],
+  GenericTokenBalance[],
   WithChainId<{ address: string }>
 >({
   key: 'nativeBalances',
@@ -160,19 +160,37 @@ export const nativeBalancesSelector = selectorFamily<
 
       const balances = [...(await client.getAllBalances(address))]
       // Add native denom if not present.
-      if (!balances.some(({ denom }) => denom === NATIVE_DENOM)) {
+      if (
+        !balances.some(({ denom }) => denom === NATIVE_TOKEN.denomOrAddress)
+      ) {
         balances.push({
           amount: '0',
-          denom: NATIVE_DENOM,
+          denom: NATIVE_TOKEN.denomOrAddress,
+        })
+      }
+      // Add USDC if not present and on mainnet.
+      if (MAINNET && !balances.some(({ denom }) => isJunoIbcUsdc(denom))) {
+        balances.push({
+          amount: '0',
+          denom: JUNO_USDC_DENOM,
         })
       }
 
-      return balances.map(({ amount, denom }) => ({
-        amount,
-        denom,
-        decimals: nativeTokenDecimals(denom) || NATIVE_DECIMALS,
-        label: nativeTokenLabel(denom),
-        imageUrl: nativeTokenLogoURI(denom),
+      const tokens = get(
+        waitForAll(
+          balances.map(({ denom }) =>
+            genericTokenSelector({
+              type: TokenType.Native,
+              denomOrAddress: denom,
+              chainId,
+            })
+          )
+        )
+      )
+
+      return tokens.map((token, index) => ({
+        token,
+        balance: balances[index].amount,
       }))
     },
 })
@@ -203,7 +221,7 @@ export const nativeBalanceSelector = selectorFamily<
 
       get(refreshWalletBalancesIdAtom(address))
 
-      return await client.getBalance(address, NATIVE_DENOM)
+      return await client.getBalance(address, NATIVE_TOKEN.denomOrAddress)
     },
 })
 
@@ -259,10 +277,10 @@ export const nativeDelegatedBalanceSelector = selectorFamily<
       const balance = await client.getBalanceStaked(address)
 
       // Only allow native denom
-      if (!balance || balance.denom !== NATIVE_DENOM) {
+      if (!balance || balance.denom !== NATIVE_TOKEN.denomOrAddress) {
         return {
           amount: '0',
-          denom: NATIVE_DENOM,
+          denom: NATIVE_TOKEN.denomOrAddress,
         }
       }
 
@@ -503,8 +521,8 @@ export const nativeDelegationInfoSelector = selectorFamily<
               delegation: { validatorAddress: address },
               balance: delegationBalance,
             }): Delegation | undefined => {
-              // Only allow NATIVE_DENOM.
-              if (delegationBalance.denom !== NATIVE_DENOM) {
+              // Only allow NATIVE_TOKEN.denomOrAddress.
+              if (delegationBalance.denom !== NATIVE_TOKEN.denomOrAddress) {
                 return
               }
 
@@ -513,7 +531,9 @@ export const nativeDelegationInfoSelector = selectorFamily<
               )
               let pendingReward = rewards
                 .find(({ validatorAddress }) => validatorAddress === address)
-                ?.reward.find(({ denom }) => denom === NATIVE_DENOM)
+                ?.reward.find(
+                  ({ denom }) => denom === NATIVE_TOKEN.denomOrAddress
+                )
 
               if (!validator || !pendingReward) {
                 return
@@ -558,7 +578,7 @@ export const nativeDelegationInfoSelector = selectorFamily<
                 validator,
                 balance: {
                   amount: balance,
-                  denom: NATIVE_DENOM,
+                  denom: NATIVE_TOKEN.denomOrAddress,
                 },
                 startedAtHeight: creationHeight.toNumber(),
                 finishesAt: completionTime,
@@ -570,8 +590,8 @@ export const nativeDelegationInfoSelector = selectorFamily<
     },
 })
 
-export const transactionEventsSelector = selectorFamily<
-  readonly Event[] | undefined,
+export const transactionSelector = selectorFamily<
+  IndexedTx | undefined,
   WithChainId<{ txHash: string }>
 >({
   key: 'transactionEvents',
@@ -581,16 +601,8 @@ export const transactionEventsSelector = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
 
       const tx = await client.getTx(txHash)
-      return tx ? tx.events : undefined
+      return tx ?? undefined
     },
-})
-
-// See usage in stateful `AddressInput` component.
-export const walletHexPublicKeyOverridesAtom = atom<
-  Record<string, string | undefined>
->({
-  key: 'walletHexPublicKeyOverrides',
-  default: {},
 })
 
 export const walletHexPublicKeySelector = selectorFamily<
@@ -601,11 +613,6 @@ export const walletHexPublicKeySelector = selectorFamily<
   get:
     ({ walletAddress, chainId }) =>
     async ({ get }) => {
-      const override = get(walletHexPublicKeyOverridesAtom)[walletAddress]
-      if (override) {
-        return override
-      }
-
       const client = get(cosmWasmClientForChainSelector(chainId))
       const account = await client.getAccount(walletAddress)
       if (!account?.pubkey?.value) {

@@ -1,6 +1,6 @@
 import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
-import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
@@ -23,18 +23,13 @@ import {
   NoKeplrAccountModal,
   ProposalCreatedModal,
   DappLayout as StatelessDappLayout,
-  useCachedLoadable,
+  useAppContext,
+  useCachedLoading,
+  usePlatform,
 } from '@dao-dao/stateless'
-import {
-  CommandModalContextMaker,
-  DaoPageMode,
-  IAppLayoutContext,
-} from '@dao-dao/types'
-import { loadableToLoadingData, usePlatform } from '@dao-dao/utils'
 
-import { CommandModal, makeGenericContext } from '../command'
+import { CommandModal } from '../command'
 import { useFollowingDaos, useWalletInfo } from '../hooks'
-import { useInbox } from '../inbox'
 import {
   daoCreatedCardPropsAtom,
   followingDaoDropdownInfosSelector,
@@ -45,7 +40,6 @@ import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
 import { SyncFollowingModal } from './SyncFollowingModal'
-import { WalletFiatRampModal } from './WalletFiatRampModal'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
@@ -72,11 +66,17 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   const [proposalCreatedCardProps, setProposalCreatedCardProps] =
     useRecoilState(proposalCreatedCardPropsAtom)
 
+  const { rootCommandContextMaker, updateProfileNft, inbox } = useAppContext()
+  // Type-check, should always be loaded for dapp.
+  if (!inbox) {
+    throw new Error(t('error.loadingData'))
+  }
+
   //! WALLET CONNECTION ERROR MODALS
   const { connect, connected, error, status } = useWalletManager()
   const {
     walletAddress,
-    walletProfile,
+    walletProfileData,
     refreshBalances: refreshWalletBalances,
   } = useWalletInfo()
   useEffect(() => {
@@ -90,14 +90,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   }, [error, setInstallWarningVisible, setNoKeplrAccount])
 
   //! COMMAND MODAL
-  const [rootCommandContextMaker, _setRootCommandContextMaker] =
-    useState<CommandModalContextMaker>(
-      // makeGenericContext is a function, and useState allows passing a
-      // function that executes immediately and returns the initial value for
-      // the state. Thus, pass a function that is called immediately, which
-      // returns the function we want to set.
-      () => makeGenericContext
-    )
   // Hide modal when we nav away.
   useEffect(() => {
     setCommandModalVisible(false)
@@ -122,62 +114,25 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   }, [handleKeyPress])
 
   //! Inbox
-  const inbox = useInbox()
   // Inbox notifications
-  const [lastProposalCount, setLastProposalCount] = useState(inbox.itemCount)
+  const [lastProposalCount, setLastProposalCount] = useState(
+    inbox.pendingItemCount
+  )
   useEffect(() => {
-    if (inbox.itemCount > lastProposalCount) {
+    if (inbox.pendingItemCount > lastProposalCount) {
       setTimeout(
         () =>
           toast.success(
             t('info.itemsInInboxNotification', {
-              count: inbox.itemCount,
+              count: inbox.pendingItemCount,
             })
           ),
         // 3 second delay.
         3 * 1000
       )
     }
-    setLastProposalCount(inbox.itemCount)
-  }, [inbox.itemCount, lastProposalCount, t])
-
-  //! AppLayoutContext
-  const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
-    useState(false)
-  const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
-    useState(false)
-  const [updateProfileNftVisible, setUpdateProfileNftVisible] = useState(false)
-  const appLayoutContext: Omit<
-    IAppLayoutContext,
-    'RightSidebarContent' | 'PageHeader'
-  > = useMemo(
-    () => ({
-      mode: DaoPageMode.Dapp,
-      responsiveNavigation: {
-        enabled: responsiveNavigationEnabled,
-        toggle: () => setResponsiveNavigationEnabled((v) => !v),
-      },
-      responsiveRightSidebar: {
-        enabled: responsiveRightSidebarEnabled,
-        toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
-      },
-      updateProfileNft: {
-        visible: updateProfileNftVisible,
-        toggle: () => setUpdateProfileNftVisible((v) => !v),
-      },
-      setRootCommandContextMaker: (maker) =>
-        // See comment in `_setRootCommandContextMaker` for an explanation on
-        // why we pass a function here.
-        _setRootCommandContextMaker(() => maker),
-      inbox,
-    }),
-    [
-      inbox,
-      responsiveNavigationEnabled,
-      responsiveRightSidebarEnabled,
-      updateProfileNftVisible,
-    ]
-  )
+    setLastProposalCount(inbox.pendingItemCount)
+  }, [inbox.pendingItemCount, lastProposalCount, t])
 
   //! Refresh every minute. Block height, USDC conversions, and wallet balances.
   const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
@@ -200,26 +155,20 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   ])
 
   //! Following DAOs
-  const followingDaoDropdownInfosLoadable = useCachedLoadable(
-    followingDaoDropdownInfosSelector
+  const followingDaoDropdownInfos = useCachedLoading(
+    walletAddress
+      ? followingDaoDropdownInfosSelector({
+          walletAddress,
+        })
+      : undefined,
+    []
   )
-
-  //! Loadable errors.
-  useEffect(() => {
-    if (followingDaoDropdownInfosLoadable.state === 'hasError') {
-      console.error(followingDaoDropdownInfosLoadable.contents)
-    }
-  }, [
-    followingDaoDropdownInfosLoadable.contents,
-    followingDaoDropdownInfosLoadable.state,
-  ])
 
   return (
     <StatelessDappLayout
       connect={connect}
       connectWalletButton={<ConnectWallet variant="secondary" />}
       connected={connected}
-      context={appLayoutContext}
       navigationProps={{
         walletConnected: connected,
         LinkWrapper,
@@ -232,12 +181,12 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
               }
             : {
                 loading: false,
-                data: inbox.itemCount,
+                data: inbox.pendingItemCount,
               },
         setCommandModalVisible: () => setCommandModalVisible(true),
         version: '2.0',
         followingDaos: mountedInBrowser
-          ? loadableToLoadingData(followingDaoDropdownInfosLoadable, [])
+          ? followingDaoDropdownInfos
           : // Prevent hydration errors by loading until mounted.
             { loading: true },
         compact,
@@ -246,10 +195,11 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
       }}
       rightSidebarProps={{
         wallet: <SidebarWallet />,
-        WalletFiatRampModal: connected ? WalletFiatRampModal : undefined,
       }}
-      walletProfile={
-        status === WalletConnectionStatus.Connected ? walletProfile : undefined
+      walletProfileData={
+        status === WalletConnectionStatus.Connected
+          ? walletProfileData
+          : undefined
       }
     >
       {children}
@@ -268,17 +218,17 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         onClose={() => setBetaWarningAccepted(true)}
         visible={mountedInBrowser && !betaWarningAccepted}
       />
-      <CommandModal
-        makeRootContext={rootCommandContextMaker}
-        setVisible={setCommandModalVisible}
-        visible={commandModalVisible}
-      />
+      {rootCommandContextMaker && (
+        <CommandModal
+          makeRootContext={rootCommandContextMaker}
+          setVisible={setCommandModalVisible}
+          visible={commandModalVisible}
+        />
+      )}
       <SyncFollowingModal />
 
-      {updateProfileNftVisible && (
-        <PfpkNftSelectionModal
-          onClose={() => setUpdateProfileNftVisible(false)}
-        />
+      {updateProfileNft.visible && (
+        <PfpkNftSelectionModal onClose={updateProfileNft.toggle} />
       )}
 
       {daoCreatedCardProps && (

@@ -1,6 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
+import { TokenType } from '@dao-dao/types'
+import { NATIVE_TOKEN, getFallbackImage } from '@dao-dao/utils'
 
 import { NewAttribute, NewAttributeProps } from './NewAttribute'
 
@@ -22,27 +24,31 @@ const Template: ComponentStory<typeof NewAttribute> = (args) => (
 
 export const makeTokenProps = (): Pick<
   NewAttributeProps,
-  'nativeDenoms' | 'cw20TokenInfos'
+  'availableTokens'
 > => ({
-  nativeDenoms: ['ujuno', 'uatom'],
-  cw20TokenInfos: [
+  availableTokens: [
+    NATIVE_TOKEN,
     {
-      address: 'junoDAO',
-      info: {
-        name: 'DAO',
-        symbol: 'DAO',
-        decimals: 6,
-        total_supply: '100000000000',
-      },
+      type: TokenType.Native,
+      denomOrAddress: 'uatom',
+      decimals: 6,
+      symbol: 'ATOM',
+      imageUrl:
+        'https://raw.githubusercontent.com/CosmosContracts/junoswap-asset-list/main/images/atom.png',
     },
     {
-      address: 'junoUSDC',
-      info: {
-        name: 'USDC',
-        symbol: 'USDC',
-        decimals: 6,
-        total_supply: '100000000000',
-      },
+      type: TokenType.Cw20,
+      denomOrAddress: 'junoCw20DaoAddress',
+      decimals: 6,
+      symbol: 'DAO',
+      imageUrl: '/daodao.png',
+    },
+    {
+      type: TokenType.Cw20,
+      denomOrAddress: 'junoAnotherCw20',
+      decimals: 6,
+      symbol: 'SOME-CW20',
+      imageUrl: getFallbackImage(),
     },
   ],
 })

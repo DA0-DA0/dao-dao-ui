@@ -1,5 +1,5 @@
 import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
-import { ReactNode, useEffect, useMemo, useState } from 'react'
+import { ReactNode, useEffect } from 'react'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
@@ -17,10 +17,11 @@ import {
   DaoCreatedModal,
   InstallKeplrModal,
   NoKeplrAccountModal,
+  PageLoader,
   ProposalCreatedModal,
   SdaLayout as StatelessSdaLayout,
+  useAppContext,
 } from '@dao-dao/stateless'
-import { DaoPageMode, IAppLayoutContext } from '@dao-dao/types'
 
 import { useDaoTabs, useWalletInfo } from '../hooks'
 import { daoCreatedCardPropsAtom } from '../recoil/atoms/newDao'
@@ -30,7 +31,7 @@ import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
-import { WalletFiatRampModal } from './WalletFiatRampModal'
+import { SuspenseLoader } from './SuspenseLoader'
 
 export const SdaLayout = ({ children }: { children: ReactNode }) => {
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
@@ -49,7 +50,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
   const { connect, connected, error, status } = useWalletManager()
   const {
     walletAddress,
-    walletProfile,
+    walletProfileData,
     refreshBalances: refreshWalletBalances,
   } = useWalletInfo()
   useEffect(() => {
@@ -61,46 +62,6 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
       error instanceof Error && error.message === "key doesn't exist"
     )
   }, [error, setInstallWarningVisible, setNoKeplrAccount])
-
-  //! AppLayoutContext
-  const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
-    useState(false)
-  const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
-    useState(false)
-  const [updateProfileNftVisible, setUpdateProfileNftVisible] = useState(false)
-  const appLayoutContext: Omit<
-    IAppLayoutContext,
-    'RightSidebarContent' | 'PageHeader'
-  > = useMemo(
-    () => ({
-      mode: DaoPageMode.Sda,
-      responsiveNavigation: {
-        enabled: responsiveNavigationEnabled,
-        toggle: () => setResponsiveNavigationEnabled((v) => !v),
-      },
-      responsiveRightSidebar: {
-        enabled: responsiveRightSidebarEnabled,
-        toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
-      },
-      updateProfileNft: {
-        visible: updateProfileNftVisible,
-        toggle: () => setUpdateProfileNftVisible((v) => !v),
-      },
-      setRootCommandContextMaker: () => {},
-      inbox: {
-        loading: false,
-        refreshing: false,
-        daosWithItems: [],
-        itemCount: 0,
-        refresh: () => {},
-      },
-    }),
-    [
-      responsiveNavigationEnabled,
-      responsiveRightSidebarEnabled,
-      updateProfileNftVisible,
-    ]
-  )
 
   //! Refresh every minute. Block height, USDC conversions, and wallet balances.
   const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
@@ -128,12 +89,13 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
 
   const tabs = useDaoTabs({ includeHome: SdaDaoHome })
 
+  const { updateProfileNft } = useAppContext()
+
   return (
     <StatelessSdaLayout
       connect={connect}
       connectWalletButton={<ConnectWallet variant="secondary" />}
       connected={connected}
-      context={appLayoutContext}
       navigationProps={{
         tabs,
         LinkWrapper,
@@ -144,13 +106,14 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
       }}
       rightSidebarProps={{
         wallet: <SidebarWallet />,
-        WalletFiatRampModal: connected ? WalletFiatRampModal : undefined,
       }}
-      walletProfile={
-        status === WalletConnectionStatus.Connected ? walletProfile : undefined
+      walletProfileData={
+        status === WalletConnectionStatus.Connected
+          ? walletProfileData
+          : undefined
       }
     >
-      {children}
+      <SuspenseLoader fallback={<PageLoader />}>{children}</SuspenseLoader>
 
       {/* Modals */}
 
@@ -167,10 +130,8 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
         visible={mountedInBrowser && !betaWarningAccepted}
       />
 
-      {updateProfileNftVisible && (
-        <PfpkNftSelectionModal
-          onClose={() => setUpdateProfileNftVisible(false)}
-        />
+      {updateProfileNft.visible && (
+        <PfpkNftSelectionModal onClose={updateProfileNft.toggle} />
       )}
 
       {daoCreatedCardProps && (

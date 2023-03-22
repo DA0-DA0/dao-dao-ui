@@ -1,6 +1,14 @@
+import { ComponentType } from 'react'
+
 import { Validator } from './chain'
 import { AmountWithTimestamp } from './state'
-import { LoadingData } from './stateless'
+import {
+  ButtonLinkProps,
+  ButtonPopupSection,
+  ButtonPopupSectionButton,
+  LoadingData,
+  StatefulEntityDisplayProps,
+} from './stateless'
 
 export enum TokenType {
   Native = 'native',
@@ -15,6 +23,12 @@ export type GenericToken = {
   symbol: string
   decimals: number
   imageUrl: string | undefined
+}
+
+export type GenericTokenBalance = {
+  token: GenericToken
+  balance: string
+  isGovernanceToken?: boolean
 }
 
 export enum UnstakingTaskStatus {
@@ -40,14 +54,27 @@ export type TokenStake = {
 }
 
 export type TokenCardLazyInfo = {
-  usdcUnitPrice: AmountWithTimestamp | undefined
+  usdUnitPrice: AmountWithTimestamp | undefined
   stakingInfo:
     | {
         unstakingTasks: UnstakingTask[]
         unstakingDurationSeconds: number | undefined
         stakes: TokenStake[]
+        totalStaked: number
+        totalPendingRewards: number
+        totalUnstaking: number
       }
     | undefined
+  // unstakedBalance + totalStaked + totalUnstaking
+  totalBalance: number
+  // Display DAOs that the token is used as governance in, and optionally an
+  // amount of staked tokens. This is used to display how much a wallet has
+  // staked.
+  daosGoverned?: {
+    coreAddress: string
+    stakingContractAddress: string
+    stakedBalance?: number
+  }[]
 }
 
 export type TokenCardInfo = {
@@ -58,4 +85,24 @@ export type TokenCardInfo = {
   // Only native tokens load staking info for now, so let's show a nice loader.
   hasStakingInfo: boolean
   lazyInfo: LoadingData<TokenCardLazyInfo>
+}
+
+export type TokenCardProps = TokenCardInfo & {
+  refreshUnstakingTasks?: () => void
+  onClaim?: () => void
+  ButtonLink: ComponentType<ButtonLinkProps>
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
+  // Actions to display in the button popup.
+  actions?: {
+    // Actions to add in the token section. By default, this will include copy
+    // address and add to wallet, if a cw20 token.
+    token?: ButtonPopupSectionButton[]
+    // Extra sections to add to the action popup.
+    extraSections?: ButtonPopupSection[]
+  }
+}
+
+export type TokenLineProps<T extends TokenCardInfo = TokenCardInfo> = T & {
+  transparentBackground?: boolean
+  TokenCard: ComponentType<T>
 }

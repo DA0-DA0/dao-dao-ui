@@ -4,7 +4,11 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { EntityDisplayProps, EntityType } from '@dao-dao/types'
-import { getFallbackImage, toAccessibleImageUrl } from '@dao-dao/utils'
+import {
+  getFallbackImage,
+  toAccessibleImageUrl,
+  toBech32Hash,
+} from '@dao-dao/utils'
 
 import { useNavHelpers } from '../hooks'
 import { CopyToClipboardUnderline } from './CopyToClipboard'
@@ -46,7 +50,7 @@ export const EntityDisplay = ({
             style={{
               backgroundImage: `url(${
                 loadingEntity.loading
-                  ? getFallbackImage(address)
+                  ? getFallbackImage(toBech32Hash(address))
                   : toAccessibleImageUrl(loadingEntity.data.imageUrl)
               })`,
               width: imageSize,
@@ -64,7 +68,7 @@ export const EntityDisplay = ({
         }}
         tooltip={
           // If displaying name, show tooltip to copy address.
-          !loadingEntity.loading && loadingEntity.data.name
+          !loadingEntity.loading && loadingEntity.data.name && !noCopy
             ? t('button.clickToCopyAddress')
             : undefined
         }

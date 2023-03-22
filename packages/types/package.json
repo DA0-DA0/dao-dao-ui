@@ -1,6 +1,6 @@
 {
   "name": "@dao-dao/types",
-  "version": "2.1.0-rc.1",
+  "version": "2.2.0",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
     "format": "eslint . --fix",
@@ -8,16 +8,18 @@
   },
   "devDependencies": {
     "@cosmjs/cosmwasm-stargate": "0.29.3",
-    "@dao-dao/config": "^2.1.0-rc.1",
+    "@dao-dao/config": "2.2.0",
     "next-i18next": "^11.0.0",
-    "react": "18.1.0",
+    "pusher-js": "^7.6.0",
+    "react": "^18.2.0",
     "react-hook-form": "7.20.4",
     "react-i18next": "^11.0.0",
     "recoil": "^0.7.2",
     "typescript": "^4.8.3"
   },
   "peerDependencies": {
-    "next": "^12 || ^13"
+    "next": "^12 || ^13",
+    "react": "^17 || ^18"
   },
   "prettier": "@dao-dao/config/prettier",
   "dependencies": {

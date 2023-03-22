@@ -1,7 +1,13 @@
+import Pusher from 'pusher-js'
 import { atom, selector, selectorFamily } from 'recoil'
 
 import { Expiration, WithChainId } from '@dao-dao/types'
 import { DumpStateResponse } from '@dao-dao/types/contracts/DaoCore.v2'
+import {
+  WEB_SOCKET_PUSHER_APP_KEY,
+  WEB_SOCKET_PUSHER_HOST,
+  WEB_SOCKET_PUSHER_PORT,
+} from '@dao-dao/utils'
 
 import {
   DaoSearchResult,
@@ -12,7 +18,6 @@ import {
 import {
   refreshOpenProposalsAtom,
   refreshWalletProposalStatsAtom,
-  walletAddressAtom,
 } from '../atoms'
 
 export const queryContractIndexerSelector = selectorFamily<
@@ -164,23 +169,43 @@ export const featuredDaoDumpStatesAtom = atom<
   default: null,
 })
 
-export const walletMemberOfDaosSelector = selector<string[]>({
-  key: 'walletMemberOfDaos',
-  get: ({ get }) => {
-    const walletAddress = get(walletAddressAtom)
-    if (!walletAddress) {
-      return []
-    }
+export const walletAdminOfDaosSelector = selectorFamily<string[], string>({
+  key: 'walletAdminOfDaos',
+  get:
+    (walletAddress) =>
+    ({ get }) => {
+      const walletAdminOfDaos: string[] = get(
+        queryWalletIndexerSelector({
+          walletAddress,
+          formulaName: 'daos/adminOf',
+        })
+      )
 
-    const walletMemberOfDaos: string[] = get(
-      queryWalletIndexerSelector({
-        walletAddress,
-        formulaName: 'daos/memberOf',
-      })
-    )
+      return walletAdminOfDaos && Array.isArray(walletAdminOfDaos)
+        ? walletAdminOfDaos
+        : []
+    },
+})
 
-    return walletMemberOfDaos && Array.isArray(walletMemberOfDaos)
-      ? walletMemberOfDaos
-      : []
-  },
+export const indexerWebSocketChannelSubscriptionsAtom = atom<
+  Partial<Record<string, number>>
+>({
+  key: 'indexerWebSocketChannelSubscriptions',
+  default: {},
+})
+
+export const indexerWebSocketSelector = selector({
+  key: 'indexerWebSocket',
+  get: () =>
+    new Pusher(WEB_SOCKET_PUSHER_APP_KEY, {
+      wsHost: WEB_SOCKET_PUSHER_HOST,
+      wsPort: WEB_SOCKET_PUSHER_PORT,
+      wssPort: WEB_SOCKET_PUSHER_PORT,
+      forceTLS: true,
+      disableStats: true,
+      enabledTransports: ['ws', 'wss'],
+      disabledTransports: ['sockjs', 'xhr_streaming', 'xhr_polling'],
+    }),
+  // Client must be internally mutable.
+  dangerouslyAllowMutability: true,
 })

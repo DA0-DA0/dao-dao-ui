@@ -1,13 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 
-import { EMPTY_INBOX } from '@dao-dao/storybook/decorators'
-import {
-  DaoPageMode,
-  DappLayoutProps,
-  IAppLayoutContext,
-  PageHeaderProps,
-} from '@dao-dao/types'
+import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
+import { DappLayoutProps, PageHeaderProps } from '@dao-dao/types'
 
 import { ConnectWallet, ConnectWalletProps } from '../wallet'
 import { Default as ConnectWalletStory } from '../wallet/ConnectWallet.stories'
@@ -36,32 +31,7 @@ export const DefaultArgs: DappLayoutProps = {
     </div>
   ),
   rightSidebarProps: RightSidebarStoryArgs,
-  walletProfile: {
-    loading: false,
-    data: {
-      nonce: 0,
-      imageUrl: '/noah.jpg',
-      name: 'wallet_name',
-      nft: null,
-    },
-  },
-  context: {
-    mode: DaoPageMode.Dapp,
-    responsiveNavigation: {
-      enabled: true,
-      toggle: () => alert('toggle nav'),
-    },
-    responsiveRightSidebar: {
-      enabled: false,
-      toggle: () => alert('toggle right'),
-    },
-    updateProfileNft: {
-      visible: false,
-      toggle: () => alert('toggle update'),
-    },
-    setRootCommandContextMaker: () => {},
-    inbox: EMPTY_INBOX,
-  },
+  walletProfileData: WALLET_PROFILE_DATA,
   connect: () => alert('connect'),
   connected: true,
   connectWalletButton: (
@@ -71,44 +41,10 @@ export const DefaultArgs: DappLayoutProps = {
 
 const Template: ComponentStory<typeof DappLayout> = (args) => {
   const [compact, setCompact] = useState(false)
-  const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
-    useState(false)
-  const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
-    useState(false)
-  const [updateProfileVisible, setUpdateProfileVisible] = useState(false)
-
-  const appLayoutContext: Omit<
-    IAppLayoutContext,
-    'RightSidebarContent' | 'PageHeader'
-  > = useMemo(
-    () => ({
-      mode: DaoPageMode.Dapp,
-      responsiveNavigation: {
-        enabled: responsiveNavigationEnabled,
-        toggle: () => setResponsiveNavigationEnabled((v) => !v),
-      },
-      responsiveRightSidebar: {
-        enabled: responsiveRightSidebarEnabled,
-        toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
-      },
-      updateProfileNft: {
-        visible: updateProfileVisible,
-        toggle: () => setUpdateProfileVisible((v) => !v),
-      },
-      setRootCommandContextMaker: () => {},
-      inbox: EMPTY_INBOX,
-    }),
-    [
-      responsiveNavigationEnabled,
-      responsiveRightSidebarEnabled,
-      updateProfileVisible,
-    ]
-  )
 
   return (
     <DappLayout
       {...args}
-      context={appLayoutContext}
       navigationProps={{
         ...args.navigationProps,
         compact,

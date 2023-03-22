@@ -1,32 +1,29 @@
-import { Coin } from '@cosmjs/stargate'
 import {
   ArrowRightAltRounded,
   SubdirectoryArrowRightRounded,
 } from '@mui/icons-material'
-import { ComponentType, useCallback, useEffect, useMemo } from 'react'
+import clsx from 'clsx'
+import { ComponentType, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
   InputErrorMessage,
   MoneyEmoji,
-  NumberInput,
-  SelectInput,
+  TokenInput,
+  useDetectWrap,
 } from '@dao-dao/stateless'
-import { AddressInputProps } from '@dao-dao/types'
 import {
-  ActionComponent,
-  ActionOptionsContextType,
-} from '@dao-dao/types/actions'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
+  AddressInputProps,
+  GenericTokenBalance,
+  LoadingData,
+} from '@dao-dao/types'
+import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  nativeTokenLabel,
   validateAddress,
-  validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -40,12 +37,7 @@ export interface SpendData {
 }
 
 export interface SpendOptions {
-  nativeBalances: readonly Coin[]
-  cw20Balances: {
-    address: string
-    balance: string
-    info: TokenInfoResponse
-  }[]
+  tokens: LoadingData<GenericTokenBalance[]>
   // Used to render pfpk or DAO profiles when selecting addresses.
   AddressInput: ComponentType<AddressInputProps>
 }
@@ -55,7 +47,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   onRemove,
   errors,
   isCreating,
-  options: { nativeBalances, cw20Balances, AddressInput },
+  options: { tokens, AddressInput },
 }) => {
   const { t } = useTranslation()
   const { register, watch, setValue, setError, clearErrors } = useFormContext()
@@ -66,60 +58,48 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   const validatePossibleSpend = useCallback(
     (id: string, amount: string): string | boolean => {
+      if (tokens.loading) {
+        return true
+      }
+
       const insufficientBalanceI18nKey =
-        context.type === ActionOptionsContextType.Dao
+        context.type === ActionContextType.Dao
           ? 'error.cantSpendMoreThanTreasury'
           : 'error.insufficientWalletBalance'
 
-      const native = nativeBalances.find(({ denom }) => denom === id)
-      if (native) {
+      const tokenBalance = tokens.data.find(
+        ({ token: { denomOrAddress } }) => denomOrAddress === id
+      )
+      if (tokenBalance) {
         const microAmount = convertDenomToMicroDenomWithDecimals(
           amount,
-          NATIVE_DECIMALS
+          tokenBalance.token.decimals
         )
         return (
-          microAmount <= Number(native.amount) ||
+          microAmount <= Number(tokenBalance.balance) ||
           t(insufficientBalanceI18nKey, {
             amount: convertMicroDenomToDenomWithDecimals(
-              native.amount,
-              NATIVE_DECIMALS
+              tokenBalance.balance,
+              tokenBalance.token.decimals
             ).toLocaleString(undefined, {
-              maximumFractionDigits: NATIVE_DECIMALS,
+              maximumFractionDigits: tokenBalance.token.decimals,
             }),
-            tokenSymbol: nativeTokenLabel(id),
+            tokenSymbol: tokenBalance.token.symbol,
           })
         )
       }
-      const cw20 = cw20Balances.find(({ address }) => address === id)
-      if (cw20) {
-        const microAmount = convertDenomToMicroDenomWithDecimals(
-          amount,
-          cw20.info.decimals
-        )
-        return (
-          microAmount <= Number(cw20.balance) ||
-          t(insufficientBalanceI18nKey, {
-            amount: convertMicroDenomToDenomWithDecimals(
-              cw20.balance,
-              cw20.info.decimals
-            ).toLocaleString(undefined, {
-              maximumFractionDigits: cw20.info.decimals,
-            }),
-            tokenSymbol: cw20.info.symbol,
-          })
-        )
-      }
-      // If there are no native tokens in the treasury the native balances
-      // query will return an empty list.
-      if (id === NATIVE_DENOM) {
+
+      // Just in case native denom not in list.
+      if (id === NATIVE_TOKEN.denomOrAddress) {
         return t(insufficientBalanceI18nKey, {
           amount: 0,
-          tokenSymbol: nativeTokenLabel(NATIVE_DENOM),
+          tokenSymbol: NATIVE_TOKEN.symbol,
         })
       }
-      return 'Unrecognized denom.'
+
+      return t('error.unknownDenom', { denom: id })
     },
-    [context.type, cw20Balances, nativeBalances, t]
+    [context.type, t, tokens]
   )
 
   // Update amount+denom combo error each time either field is updated
@@ -162,56 +142,60 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     errors?._error,
   ])
 
-  const amountDecimals = useMemo(
-    () =>
-      cw20Balances.find(({ info }) => info.symbol === spendDenom)?.info
-        ?.decimals ?? NATIVE_DECIMALS,
-    [spendDenom, cw20Balances]
-  )
+  const selectedToken = tokens.loading
+    ? undefined
+    : tokens.data.find(({ token }) => token.denomOrAddress === spendDenom)
+
+  const { containerRef, childRef, wrapped } = useDetectWrap()
+  const Icon = wrapped ? SubdirectoryArrowRightRounded : ArrowRightAltRounded
 
   return (
     <ActionCard Icon={MoneyEmoji} onRemove={onRemove} title={t('title.spend')}>
-      <div className="flex min-w-0 flex-col flex-wrap gap-x-3 gap-y-2 sm:flex-row sm:items-stretch">
-        <div className="flex grow flex-row items-stretch gap-2">
-          <NumberInput
-            containerClassName="grow"
-            disabled={!isCreating}
-            error={errors?.amount}
-            fieldName={fieldNamePrefix + 'amount'}
-            min={1 / 10 ** amountDecimals}
-            register={register}
-            setValue={setValue}
-            sizing="auto"
-            step={1 / 10 ** amountDecimals}
-            validation={[validateRequired, validatePositive]}
-            watch={watch}
-          />
+      <div
+        className="flex min-w-0 flex-row flex-wrap items-stretch justify-between gap-x-3 gap-y-2"
+        ref={containerRef}
+      >
+        <TokenInput
+          amountError={errors?.amount}
+          amountFieldName={fieldNamePrefix + 'amount'}
+          amountMax={convertMicroDenomToDenomWithDecimals(
+            selectedToken?.balance ?? 0,
+            selectedToken?.token.decimals ?? 0
+          )}
+          amountMin={convertMicroDenomToDenomWithDecimals(
+            1,
+            selectedToken?.token.decimals ?? 0
+          )}
+          amountStep={convertMicroDenomToDenomWithDecimals(
+            1,
+            selectedToken?.token.decimals ?? 0
+          )}
+          onSelectToken={({ denomOrAddress }) =>
+            setValue(fieldNamePrefix + 'denom', denomOrAddress)
+          }
+          readOnly={!isCreating}
+          register={register}
+          selectedToken={selectedToken?.token}
+          setValue={setValue}
+          tokens={
+            tokens.loading
+              ? { loading: true }
+              : {
+                  loading: false,
+                  data: tokens.data.map(({ token }) => token),
+                }
+          }
+          watch={watch}
+        />
 
-          <SelectInput
-            defaultValue={NATIVE_DENOM}
-            disabled={!isCreating}
-            error={errors?.denom}
-            fieldName={fieldNamePrefix + 'denom'}
-            register={register}
-            style={{ maxWidth: '8.2rem' }}
+        <div
+          className="flex min-w-0 grow flex-row items-stretch gap-2 sm:gap-3"
+          ref={childRef}
+        >
+          <div
+            className={clsx('flex flex-row items-center', wrapped && 'pl-1')}
           >
-            {nativeBalances.map(({ denom }) => (
-              <option key={denom} value={denom}>
-                ${nativeTokenLabel(denom)}
-              </option>
-            ))}
-            {cw20Balances.map(({ address, info: { symbol } }) => (
-              <option key={address} value={address}>
-                ${symbol}
-              </option>
-            ))}
-          </SelectInput>
-        </div>
-
-        <div className="flex min-w-0 grow flex-row items-stretch gap-2 sm:gap-3">
-          <div className="flex flex-row items-center pl-1 sm:pl-0">
-            <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
-            <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />
+            <Icon className="!h-6 !w-6 text-text-secondary" />
           </div>
 
           <AddressInput

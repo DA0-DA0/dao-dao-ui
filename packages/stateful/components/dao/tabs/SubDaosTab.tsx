@@ -1,15 +1,12 @@
-import { useEffect } from 'react'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
-
 import {
   SubDaosTab as StatelessSubDaosTab,
+  useCachedLoading,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { ContractVersion, CoreActionKey } from '@dao-dao/types'
-import { loadableToLoadingData } from '@dao-dao/utils'
 
-import { useCoreActionForKey } from '../../../actions'
+import { useActionForKey } from '../../../actions'
 import { useDaoProposalSinglePrefill, useMembership } from '../../../hooks'
 import { subDaoCardInfosSelector } from '../../../recoil'
 import { ButtonLink } from '../../ButtonLink'
@@ -21,20 +18,15 @@ export const SubDaosTab = () => {
 
   const { isMember = false } = useMembership(daoInfo)
 
-  const subDaoCardInfosLoadable = useRecoilValueLoadable(
+  const subDaos = useCachedLoading(
     daoInfo.coreVersion === ContractVersion.V1
-      ? constSelector([])
-      : subDaoCardInfosSelector({ coreAddress: daoInfo.coreAddress })
+      ? // Only v2 DAOs have SubDAOs. Passing undefined here returns an infinite loading state, which is fine because it's never used.
+        undefined
+      : subDaoCardInfosSelector({ coreAddress: daoInfo.coreAddress }),
+    []
   )
 
-  //! Loadable errors.
-  useEffect(() => {
-    if (subDaoCardInfosLoadable.state === 'hasError') {
-      console.error(subDaoCardInfosLoadable.contents)
-    }
-  }, [subDaoCardInfosLoadable.contents, subDaoCardInfosLoadable.state])
-
-  const upgradeToV2Action = useCoreActionForKey(CoreActionKey.UpgradeV1ToV2)
+  const upgradeToV2Action = useActionForKey(CoreActionKey.UpgradeV1ToV2)
   const upgradeToV2ActionDefaults = upgradeToV2Action?.useDefaults()
   const proposalPrefillUpgrade = useDaoProposalSinglePrefill({
     actions: upgradeToV2Action
@@ -54,7 +46,7 @@ export const SubDaosTab = () => {
       createSubDaoHref={getDaoPath(daoInfo.coreAddress) + '/create'}
       daoInfo={daoInfo}
       isMember={isMember}
-      subDaos={loadableToLoadingData(subDaoCardInfosLoadable, [])}
+      subDaos={subDaos}
       upgradeToV2Href={getDaoProposalPath(daoInfo.coreAddress, 'create', {
         prefill: proposalPrefillUpgrade,
       })}

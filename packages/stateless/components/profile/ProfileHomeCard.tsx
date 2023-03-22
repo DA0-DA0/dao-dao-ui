@@ -18,7 +18,7 @@ export interface ProfileHomeCardProps
   > {
   tokenSymbol: string
   tokenDecimals: number
-  inboxProposalCount: number
+  inboxPendingCount: number
   lazyData: LoadingData<{
     unstakedBalance: number
     stakedBalance: number
@@ -36,7 +36,7 @@ export interface ProfileHomeCardProps
 export const ProfileHomeCard = ({
   tokenSymbol,
   tokenDecimals,
-  inboxProposalCount,
+  inboxPendingCount,
   lazyData,
   loadingStats,
   ...wrapperProps
@@ -127,11 +127,11 @@ export const ProfileHomeCard = ({
           className="w-full"
           contentContainerClassName="justify-center"
           href="/inbox"
-          showBadge={inboxProposalCount > 0}
+          showBadge={inboxPendingCount > 0}
           size="lg"
           variant="secondary"
         >
-          {t('button.inboxWithNumItems', { count: inboxProposalCount })}
+          {t('button.inboxWithNumItems', { count: inboxPendingCount })}
         </ButtonLink>
       </div>
     </ProfileCardWrapper>

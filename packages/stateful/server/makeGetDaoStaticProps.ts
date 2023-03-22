@@ -37,10 +37,7 @@ import {
   toAccessibleImageUrl,
   validateContractAddress,
 } from '@dao-dao/utils'
-import {
-  FAST_AVERAGE_COLOR_API_TEMPLATE,
-  SITE_URL,
-} from '@dao-dao/utils/constants'
+import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
 
 import { DaoPageWrapperProps } from '../components'
 import {
@@ -490,11 +487,7 @@ const daoCoreDumpState = async (
     const indexerDumpedState = await queryIndexer<IndexerDumpState>(
       'contract',
       coreAddress,
-      'daoCore/dumpState',
-      {
-        // Needed for server-side queries.
-        baseUrl: SITE_URL,
-      }
+      'daoCore/dumpState'
     )
 
     // Use data from indexer if present.
@@ -545,6 +538,11 @@ const daoCoreDumpState = async (
       }
     }
   } catch (error) {
+    // Rethrow if legacy DAO.
+    if (error instanceof LegacyDaoError) {
+      throw error
+    }
+
     // Ignore error. Fallback to querying chain below.
     console.error(error, processError(error))
   }
@@ -553,6 +551,9 @@ const daoCoreDumpState = async (
   const daoCoreClient = new DaoCoreV2QueryClient(cwClient, coreAddress)
 
   const dumpedState = await daoCoreClient.dumpState()
+  if (LEGACY_DAO_CONTRACT_NAMES.includes(dumpedState.version.contract)) {
+    throw new LegacyDaoError()
+  }
 
   const coreVersion = parseContractVersion(dumpedState.version.version)
   if (!coreVersion) {

@@ -22,10 +22,9 @@ export const ContributionForm = () => {
   const { t } = useTranslation()
   const { coreAddress, chainId } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
-    useWallet(chainId)
+    useWallet()
   const walletEntity = useEntity({
     address: walletAddress,
-    walletHexPublicKey: walletPublicKey?.hex,
     chainId,
   })
 

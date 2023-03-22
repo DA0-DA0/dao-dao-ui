@@ -4,9 +4,10 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { BoxEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import { BoxEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
   CoreActionKey,
   UseDecodedCosmosMsg,
@@ -14,7 +15,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import {
-  loadableToLoadingDataWithError,
   makeWasmMessage,
   objectMatchesStructure,
   parseEncodedMessage,
@@ -24,6 +24,7 @@ import { AddressInput } from '../../../components'
 import {
   nftCardInfoSelector,
   nftCardInfosForDaoSelector,
+  walletNftCardInfos,
 } from '../../../recoil/selectors/nft'
 import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../voting-module-adapter'
 import { TransferNftComponent, TransferNftData } from '../../components/nft'
@@ -135,7 +136,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
     : { match: false }
 
 const Component: ActionComponent = (props) => {
-  const { address, chainId } = useActionOptions()
+  const { context, address, chainId } = useActionOptions()
   const { watch } = useFormContext()
   const { denomOrAddress: governanceCollectionAddress } =
     useCw721CommonGovernanceTokenInfoIfExists() ?? {}
@@ -143,16 +144,19 @@ const Component: ActionComponent = (props) => {
   const tokenId = watch(props.fieldNamePrefix + 'tokenId')
   const collection = watch(props.fieldNamePrefix + 'collection')
 
-  const options = loadableToLoadingDataWithError(
-    useCachedLoadable(
-      props.isCreating
+  const options = useCachedLoadingWithError(
+    props.isCreating
+      ? context.type === ActionContextType.Dao
         ? nftCardInfosForDaoSelector({
             coreAddress: address,
             chainId,
             governanceCollectionAddress,
           })
-        : constSelector([])
-    )
+        : walletNftCardInfos({
+            walletAddress: address,
+            chainId,
+          })
+      : undefined
   )
   const nftInfo = useRecoilValue(
     !!tokenId && !!collection
@@ -168,11 +172,14 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeTransferNftAction: ActionMaker<TransferNftData> = ({ t }) => ({
+export const makeTransferNftAction: ActionMaker<TransferNftData> = ({
+  t,
+  context: { type },
+}) => ({
   key: CoreActionKey.TransferNft,
   Icon: BoxEmoji,
   label: t('title.transferNft'),
-  description: t('info.transferNftDescription'),
+  description: t('info.transferNftDescription', { context: type }),
   Component,
   useDefaults,
   useTransformToCosmos,

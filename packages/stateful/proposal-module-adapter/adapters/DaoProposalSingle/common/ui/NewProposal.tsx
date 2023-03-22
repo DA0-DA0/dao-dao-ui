@@ -32,7 +32,7 @@ import {
   TextInput,
   Tooltip,
 } from '@dao-dao/stateless'
-import { Action, ActionsWithData, BaseNewProposalProps } from '@dao-dao/types'
+import { Action, BaseNewProposalProps, LoadedActions } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import {
   decodedMessagesString,
@@ -70,7 +70,7 @@ export interface NewProposalProps
   depositUnsatisfied: boolean
   connected: boolean
   actions: Action[]
-  actionsWithData: ActionsWithData
+  loadedActions: LoadedActions
   simulationBypassExpiration?: Date
 }
 
@@ -83,7 +83,7 @@ export const NewProposal = ({
   depositUnsatisfied,
   connected,
   actions,
-  actionsWithData,
+  loadedActions,
   draft,
   saveDraft,
   drafts,
@@ -111,7 +111,7 @@ export const NewProposal = ({
   const [submitError, setSubmitError] = useState('')
 
   const { status: walletStatus } = useWallet()
-  const { walletAddress = '', walletProfile } = useWalletInfo()
+  const { walletAddress = '', walletProfileData } = useWalletInfo()
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -142,7 +142,7 @@ export const NewProposal = ({
       let msgs
       try {
         msgs = actionData
-          .map(({ key, data }) => actionsWithData[key]?.transform(data))
+          .map(({ key, data }) => loadedActions[key]?.transform(data))
           // Filter out undefined messages.
           .filter(Boolean) as CosmosMsgFor_Empty[]
       } catch (err) {
@@ -160,7 +160,7 @@ export const NewProposal = ({
         msgs,
       })
     },
-    [createProposal, actionsWithData]
+    [createProposal, loadedActions]
   )
 
   const onSubmitError: SubmitErrorHandler<NewProposalForm> = useCallback(
@@ -219,8 +219,8 @@ export const NewProposal = ({
 
       {actionDataFields.length > 0 && (
         <div className="mb-4 flex flex-col gap-2">
-          {actionDataFields.map(({ id, ...actionData }, index) => {
-            const Component = actionsWithData[actionData.key]?.action?.Component
+          {actionDataFields.map(({ id, key, data }, index) => {
+            const Component = loadedActions[key]?.action?.Component
             if (!Component) {
               return null
             }
@@ -230,7 +230,7 @@ export const NewProposal = ({
                 <Component
                   addAction={appendAction}
                   allActionsWithData={actionDataFields}
-                  data={actionData.data}
+                  data={data}
                   errors={errors.actionData?.[index]?.data || {}}
                   fieldNamePrefix={`actionData.${index}.data.`}
                   index={index}
@@ -260,7 +260,7 @@ export const NewProposal = ({
           appendAction({
             key,
             // Clone to prevent the form from mutating the original object.
-            data: cloneDeep(actionsWithData[key]?.defaults ?? {}),
+            data: cloneDeep(loadedActions[key]?.defaults ?? {}),
           })
         }}
       />
@@ -357,7 +357,7 @@ export const NewProposal = ({
 
         {showSubmitErrorNote && (
           <p className="secondary-text self-end text-right text-text-interactive-error">
-            {t('error.createProposalSubmitInvalid')}
+            {t('error.correctErrorsAbove')}
           </p>
         )}
 
@@ -377,7 +377,7 @@ export const NewProposal = ({
                       actionDataFields
                         .map(({ key, data }) => {
                           try {
-                            return actionsWithData[key]?.transform(data)
+                            return loadedActions[key]?.transform(data)
                           } catch (err) {
                             console.error(err)
                           }
@@ -391,9 +391,9 @@ export const NewProposal = ({
               createdAt={new Date()}
               creator={{
                 address: walletAddress,
-                name: walletProfile.loading
-                  ? walletProfile
-                  : { loading: false, data: walletProfile.data.name },
+                name: walletProfileData.loading
+                  ? { loading: true }
+                  : { loading: false, data: walletProfileData.profile.name },
               }}
               description={proposalDescription}
               title={proposalTitle}
@@ -435,11 +435,6 @@ export const NewProposal = ({
           <>
             {drafts.length > 0 && (
               <FilterableItemPopup
-                Trigger={({ open, ...props }) => (
-                  <Button pressed={open} variant="secondary" {...props}>
-                    {t('button.loadDraft')}
-                  </Button>
-                )}
                 filterableItemKeys={FILTERABLE_KEYS}
                 items={drafts.map(
                   ({ name, createdAt, lastUpdatedAt }, index) => ({
@@ -471,6 +466,13 @@ export const NewProposal = ({
                 )}
                 onSelect={(_, index) => loadDraft(index)}
                 searchPlaceholder={t('info.searchDraftPlaceholder')}
+                trigger={{
+                  type: 'button',
+                  props: {
+                    variant: 'secondary',
+                    children: t('button.loadDraft'),
+                  },
+                }}
               />
             )}
 

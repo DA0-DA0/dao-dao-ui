@@ -39,3 +39,11 @@ export interface NativeStargazeCollectionInfo {
     info: ContractInfoResponse
   }
 }
+
+export type NftUriData = {
+  name: string | undefined
+  description: string | undefined
+  imageUrl: string | undefined
+  externalLink: { href: string; name: string } | undefined
+  [key: string]: any
+}

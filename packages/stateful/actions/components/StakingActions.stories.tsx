@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { token } from '@dao-dao/stateless/components/token/TokenCard.stories'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { TokenStake } from '@dao-dao/types'
-import { NATIVE_DENOM, StakeType } from '@dao-dao/utils'
+import { StakeType } from '@dao-dao/utils'
 
 import { StakeComponent, StakeData } from './StakingActions'
 
@@ -16,7 +16,6 @@ export default {
       validator: '',
       toValidator: '',
       amount: 1,
-      denom: NATIVE_DENOM,
     }),
   ],
 } as ComponentMeta<typeof StakeComponent>
@@ -79,12 +78,7 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   options: {
-    nativeBalances: [
-      {
-        denom: NATIVE_DENOM,
-        amount: '1234567890',
-      },
-    ],
+    nativeBalance: '46252349169321',
     stakes,
     validators: [
       ...stakes.map(({ validator }) => validator),

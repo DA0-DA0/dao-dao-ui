@@ -1,12 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
-  DaoPageWrapperDecorator,
-  makeActionsProviderDecorator,
   makeDaoInfo,
+  makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { ActionOptionsContextType } from '@dao-dao/types'
 
 import { AddressInput } from '../../components'
 import { UpgradeV1ToV2Component } from './UpgradeV1ToV2'
@@ -18,16 +16,7 @@ export default {
     makeReactHookFormDecorator({
       subDaos: ['junoSubDao1', 'junoSubDao2', 'junoSubDao3'],
     }),
-    makeActionsProviderDecorator({
-      address: 'junoWalletAddress',
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
-      context: {
-        type: ActionOptionsContextType.Dao,
-        info: makeDaoInfo(),
-      },
-    }),
-    DaoPageWrapperDecorator,
+    makeDaoProvidersDecorator(makeDaoInfo()),
   ],
 } as ComponentMeta<typeof UpgradeV1ToV2Component>
 

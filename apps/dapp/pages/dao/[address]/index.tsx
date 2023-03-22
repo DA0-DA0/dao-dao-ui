@@ -21,7 +21,7 @@ import {
   useFollowingDaos,
   useMembership,
 } from '@dao-dao/stateful'
-import { useCoreActionForKey } from '@dao-dao/stateful/actions'
+import { useActionForKey } from '@dao-dao/stateful/actions'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { useWidgets } from '@dao-dao/stateful/widgets'
 import {
@@ -51,7 +51,7 @@ const InnerDaoHome = () => {
         })
       : constSelector(undefined)
   )
-  const manageSubDaosAction = useCoreActionForKey(CoreActionKey.ManageSubDaos)
+  const manageSubDaosAction = useActionForKey(CoreActionKey.ManageSubDaos)
   // Prefill URL only valid if action exists.
   const prefillValid = !!manageSubDaosAction
   const addSubDaoProposalPrefill = useDaoProposalSinglePrefill(

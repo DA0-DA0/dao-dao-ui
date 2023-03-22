@@ -1,14 +1,14 @@
 import { useRecoilValue } from 'recoil'
 
 import {
-  Cw20BaseSelectors,
   DaoVotingCw20StakedSelectors,
+  genericTokenSelector,
 } from '@dao-dao/state/recoil'
-import { CommonGovernanceTokenInfo } from '@dao-dao/types'
+import { GenericToken, TokenType } from '@dao-dao/types'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 
-export const useCommonGovernanceTokenInfo = (): CommonGovernanceTokenInfo => {
+export const useCommonGovernanceTokenInfo = (): GenericToken => {
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const governanceTokenAddress = useRecoilValue(
@@ -18,16 +18,12 @@ export const useCommonGovernanceTokenInfo = (): CommonGovernanceTokenInfo => {
     })
   )
 
-  const governanceTokenInfo = useRecoilValue(
-    Cw20BaseSelectors.tokenInfoSelector({
-      contractAddress: governanceTokenAddress,
-      params: [],
+  const eitherTokenInfo = useRecoilValue(
+    genericTokenSelector({
+      type: TokenType.Cw20,
+      denomOrAddress: governanceTokenAddress,
     })
   )
 
-  return {
-    denomOrAddress: governanceTokenAddress,
-    symbol: governanceTokenInfo.symbol,
-    decimals: governanceTokenInfo.decimals,
-  }
+  return eitherTokenInfo
 }

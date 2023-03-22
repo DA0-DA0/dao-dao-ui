@@ -4,8 +4,8 @@ import { useRecoilValueLoadable, waitForAll } from 'recoil'
 import { UnicornEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
-  ActionOptionsContextType,
   ContractVersion,
   CoreActionKey,
   UseDecodedCosmosMsg,
@@ -45,7 +45,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
   address,
   chainId,
 }) => {
-  if (context.type !== ActionOptionsContextType.Dao) {
+  if (context.type !== ActionContextType.Dao) {
     return null
   }
 

@@ -3,12 +3,8 @@ import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { nativeBalancesSelector } from '@dao-dao/state'
-import {
-  ActionCardLoader,
-  BabyEmoji,
-  useCachedLoadable,
-} from '@dao-dao/stateless'
+import { BabyEmoji } from '@dao-dao/stateless'
+import { TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionMaker,
@@ -18,17 +14,15 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_DECIMALS,
+  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  loadableToLoadingData,
   makeWasmMessage,
 } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../components/SuspenseLoader'
-import { useExecutedProposalTxEventsLoadable } from '../../hooks/useExecutedProposalTxEvents'
+import { useExecutedProposalTxLoadable } from '../../hooks/useExecutedProposalTxLoadable'
 import { InstantiateComponent as StatelessInstantiateComponent } from '../components/Instantiate'
-import { useActionOptions } from '../react'
+import { useTokenBalances } from '../hooks'
 
 interface InstantiateData {
   admin: string
@@ -57,7 +51,7 @@ const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () =>
             denom,
             amount: convertDenomToMicroDenomWithDecimals(
               amount,
-              NATIVE_DECIMALS
+              NATIVE_TOKEN.decimals
             ).toString(),
           })),
           label,
@@ -86,7 +80,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
                   amount: Number(
                     convertMicroDenomToDenomWithDecimals(
                       amount,
-                      NATIVE_DECIMALS
+                      NATIVE_TOKEN.decimals
                     )
                   ),
                 })
@@ -98,30 +92,28 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
   )
 
 const Component: ActionComponent = (props) => {
-  const { address, chainId } = useActionOptions()
+  // Get the selected tokens if not creating.
+  const { watch } = useFormContext<InstantiateData>()
+  const funds = watch((props.fieldNamePrefix + 'funds') as 'funds')
 
-  // This needs to be loaded via a cached loadable to avoid displaying a loader
-  // when this data updates on a schedule. Manually trigger a suspense loader
-  // the first time when the initial data is still loading.
-  const nativeBalancesLoadable = loadableToLoadingData(
-    useCachedLoadable(
-      address
-        ? nativeBalancesSelector({
-            address,
-            chainId,
-          })
-        : undefined
-    ),
-    []
-  )
+  const nativeBalances = useTokenBalances({
+    filter: TokenType.Native,
+    // Load selected tokens when not creating in case they are no longer
+    // returned in the list of all tokens for the given DAO/wallet after the
+    // proposal is made.
+    additionalTokens: props.isCreating
+      ? undefined
+      : funds.map(({ denom }) => ({
+          type: TokenType.Native,
+          denomOrAddress: denom,
+        })),
+  })
 
   // If in DAO context, use executed proposal TX events to find instantiated
-  // address if already instantiated. If in wallet context, there will be no
-  // events.
-  const executedTxEventsLoadable = useExecutedProposalTxEventsLoadable()
+  // address if already instantiated. If in wallet context, there will be no tx.
+  const executedTxLoadable = useExecutedProposalTxLoadable()
 
-  const { watch } = useFormContext()
-  const codeId: number = watch(props.fieldNamePrefix + 'codeId')
+  const codeId: number = watch((props.fieldNamePrefix + 'codeId') as 'codeId')
   // This gets all instantiation actions that instantiate the same codeId
   // and all addresses actually instantiated in the transaction on-chain.
   // If these two lists are not the same length, then another instantiation
@@ -133,8 +125,8 @@ const Component: ActionComponent = (props) => {
   // select the correct address.
   const instantiatedAddress = useMemo(() => {
     if (
-      executedTxEventsLoadable.state !== 'hasValue' ||
-      !executedTxEventsLoadable.contents
+      executedTxLoadable.state !== 'hasValue' ||
+      !executedTxLoadable.contents
     ) {
       return
     }
@@ -148,7 +140,8 @@ const Component: ActionComponent = (props) => {
           data.codeId === codeId
       )
       .map(({ data }) => data) as InstantiateData[]
-    // Index of this action in the list of all instantiation actions.
+    // Index of this action in the list of all instantiation actions for this
+    // code ID.
     const innerIndex = instantiateActionsData.indexOf(
       props.allActionsWithData[props.index].data
     )
@@ -159,58 +152,37 @@ const Component: ActionComponent = (props) => {
       )
     }
 
-    // Instantiation events from the transaction data.
-    const instantiationAttributes =
-      executedTxEventsLoadable.contents.find(
-        ({ type }) => type === 'instantiate'
-      )?.attributes ?? []
-    // Instantiated addresses for the code ID this action instantiated.
-    const codeIdInstantiations = instantiationAttributes.reduce(
-      (acc, { key, value }, index) => [
-        ...acc,
-        ...(key === '_contract_address' &&
-        instantiationAttributes[index + 1].key === 'code_id' &&
-        Number(instantiationAttributes[index + 1].value) === codeId
-          ? [value]
-          : []),
-      ],
-      [] as string[]
-    )
+    // Instantiated contracts from the transaction data for this code ID.
+    const instantiatedContracts = executedTxLoadable.contents.events
+      .map(({ type, attributes }) =>
+        type === 'instantiate' &&
+        attributes.some(
+          ({ key, value }) => key === 'code_id' && value === codeId.toString()
+        )
+          ? attributes.find(({ key }) => key === '_contract_address')?.value
+          : null
+      )
+      .filter((attr): attr is string => !!attr)
 
-    // If the instantiation action length does not match the actual
+    // If the instantiated contracts length does not match the actual
     // instantiation events from the chain, then another message must've
-    // instantiated the contract, so we cannot definitively locate the
+    // instantiated the same contract, so we cannot definitively locate the
     // address.
-    if (instantiateActionsData.length !== codeIdInstantiations.length) {
+    if (instantiateActionsData.length !== instantiatedContracts.length) {
       return
     }
 
-    return codeIdInstantiations[innerIndex]
-  }, [
-    executedTxEventsLoadable.state,
-    executedTxEventsLoadable.contents,
-    props,
-    codeId,
-  ])
+    return instantiatedContracts[innerIndex]
+  }, [executedTxLoadable, props, codeId])
 
   return (
-    <SuspenseLoader
-      fallback={<ActionCardLoader />}
-      forceFallback={
-        // Manually trigger loader.
-        nativeBalancesLoadable.loading
-      }
-    >
-      <StatelessInstantiateComponent
-        {...props}
-        options={{
-          nativeBalances: nativeBalancesLoadable.loading
-            ? []
-            : nativeBalancesLoadable.data,
-          instantiatedAddress,
-        }}
-      />
-    </SuspenseLoader>
+    <StatelessInstantiateComponent
+      {...props}
+      options={{
+        nativeBalances,
+        instantiatedAddress,
+      }}
+    />
   )
 }
 

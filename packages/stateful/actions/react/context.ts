@@ -1,10 +1,12 @@
-import { createContext, useContext, useMemo } from 'react'
+import { createContext, useContext } from 'react'
 
 import {
   Action,
+  ActionKey,
   CoreActionKey,
   IActionsContext,
-  UseCoreActionsOptions,
+  LoadedActions,
+  UseActionsOptions,
 } from '@dao-dao/types/actions'
 
 //! External
@@ -23,33 +25,61 @@ const useActionsContext = (): IActionsContext => {
   return context
 }
 
-export const useCoreActions = (
+export const useActions = (
   additionalActions?: Action[],
-  { isCreating = false }: UseCoreActionsOptions = {}
-): Action[] => {
-  const baseActions = useActionsContext().actions
+  { isCreating = false }: UseActionsOptions = {}
+): Action[] =>
+  useActionsContext()
+    .actions.concat(additionalActions ?? [])
+    // Filter out actions which are not allowed to be created. This is used to
+    // hide the upgrade actions from the list of actions to create.
+    .filter((action) => !isCreating || !action.disallowCreation)
+    // Sort alphabetically.
+    .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
 
-  return useMemo(
-    () =>
-      baseActions
-        .concat(additionalActions ?? [])
-        // Sort alphabetically.
-        .sort((a, b) =>
-          a.label.toLowerCase().localeCompare(b.label.toLowerCase())
-        )
-        // Filter out actions which are not allowed to be created. This is used
-        // to hide the upgrade actions from the list of actions to create.
-        .filter((action) => !isCreating || !action.disallowCreation),
-    [additionalActions, baseActions, isCreating]
-  )
+// Only core actions are always provided by the top-level context.
+// Adapter-specific actions may be available but are not guaranteed.
+export const useActionForKey = (actionKey: ActionKey) =>
+  useActions().find(({ key }) => key === actionKey)
+
+// Access options passed to actions.
+export const useActionOptions = () => useActionsContext().options
+
+// This returns actions ordered for matching. It ensures the last three actions
+// are migrate smart contract, execute smart contract, and custom, since some
+// actions are smart contract migrations and executions, and custom is a
+// catch-all that will display any message. Do this by assigning values and
+// sorting the actions in ascending order.
+const keyToValue = (key: ActionKey) =>
+  key === CoreActionKey.Migrate
+    ? 1
+    : key === CoreActionKey.Execute
+    ? 2
+    : key === CoreActionKey.Custom
+    ? 3
+    : 0
+
+export const useOrderedActionsToMatch = (actions: Action[]): Action[] => {
+  const orderedActions = actions.sort((a, b) => {
+    const aValue = keyToValue(a.key)
+    const bValue = keyToValue(b.key)
+    return aValue - bValue
+  })
+
+  return orderedActions
 }
 
-// Only core actions are provided by the top-level context. Adapter-specific
-// actions are only available in the adapter.
-export const useCoreActionForKey = (actionKey: CoreActionKey) =>
-  useCoreActions().find(({ key }) => key === actionKey)
-
-//! Internal
-
-// For internal use to pass around options.
-export const useActionOptions = () => useActionsContext().options
+// Call relevant action hooks in the same order every time. This would likely be
+// called on the output of useActions.
+export const useLoadActions = (actions: Action[]): LoadedActions =>
+  actions.reduce(
+    (acc, action) => ({
+      ...acc,
+      [action.key]: {
+        action,
+        transform: action.useTransformToCosmos(),
+        defaults: action.useDefaults(),
+      },
+    }),
+    {}
+  )

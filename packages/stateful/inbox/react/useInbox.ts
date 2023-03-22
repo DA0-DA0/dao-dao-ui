@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { waitForAll } from 'recoil'
 
 import { configSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoCore.v2'
@@ -18,60 +18,65 @@ export const useInbox = (): InboxState => {
   }))
 
   // Refresh all input sources.
-  const refresh = useCallback(
-    () => sources.map(({ data: { refresh } }) => refresh()),
-    [sources]
-  )
+  const refresh = () => sources.map(({ data: { refresh } }) => refresh())
 
-  // Automatically update all sources once per minute.
+  // Update all sources once per minute. Memoize refresh function so that it
+  // doesn't restart the interval when the ref changes.
+  const refreshRef = useRef(refresh)
+  refreshRef.current = refresh
   useEffect(() => {
-    const interval = setInterval(refresh, 60 * 1000)
+    const interval = setInterval(() => refreshRef.current(), 60 * 1000)
     return () => clearInterval(interval)
-  }, [refresh])
+  }, [])
 
   // Sort and combine items from all sources.
-  const { itemCount, sourceDaosWithItems } = useMemo(() => {
-    // Flatten items so we can sort them with respect to each other.
-    const itemsWithDao = sources
-      .flatMap(({ Renderer, data: { daosWithItems } }) =>
-        daosWithItems.flatMap(({ coreAddress, items }) =>
-          items.map((item) => ({
-            Renderer,
-            coreAddress,
-            item,
-          }))
+  const { pendingItemCount, totalItemCount, sourceDaosWithItems } =
+    useMemo(() => {
+      // Flatten items so we can sort them with respect to each other. This also
+      // serves to filter out any DAOs with no items.
+      const itemsWithDao = sources
+        .flatMap(({ Renderer, data: { daosWithItems } }) =>
+          daosWithItems.flatMap(({ coreAddress, items }) =>
+            items.map((item) => ({
+              Renderer,
+              coreAddress,
+              item,
+            }))
+          )
         )
+        .sort((a, b) => (a.item.order ?? Infinity) - (b.item.order ?? Infinity))
+
+      // Order DAOs by the order that one of their items first appears in list of
+      // all items.
+      const orderedDaos = itemsWithDao.reduce(
+        (acc, { coreAddress }) =>
+          acc.includes(coreAddress) ? acc : [...acc, coreAddress],
+        [] as string[]
       )
-      .sort((a, b) => (a.item.order ?? Infinity) - (b.item.order ?? Infinity))
 
-    // Order DAOs by the order that one of their items first appears in list of
-    // all items.
-    const orderedDaos = itemsWithDao.reduce(
-      (acc, { coreAddress }) =>
-        acc.includes(coreAddress) ? acc : [...acc, coreAddress],
-      [] as string[]
-    )
+      // For each DAO, select from the sorted items (preserving order) only the
+      // items that belong to that DAO. This also serves to combine/group items
+      // from the various sources by DAO.
+      const sortedCombinedDaosWithItems = orderedDaos.map((coreAddress) => {
+        return {
+          coreAddress,
+          items: itemsWithDao
+            .filter((itemWithDao) => itemWithDao.coreAddress === coreAddress)
+            .map(({ Renderer, item }) => ({
+              Renderer,
+              ...item,
+            })),
+        }
+      })
 
-    // For each DAO, select from the sorted items (preserving order) only the
-    // items that belong to that DAO. This also serves to combine/group items
-    // from the various sources by DAO.
-    const sortedCombinedDaosWithItems = orderedDaos.map((coreAddress) => {
       return {
-        coreAddress,
-        items: itemsWithDao
-          .filter((itemWithDao) => itemWithDao.coreAddress === coreAddress)
-          .map(({ Renderer, item }) => ({
-            Renderer,
-            ...item,
-          })),
+        pendingItemCount: itemsWithDao.filter(
+          ({ item: { pending } }) => pending
+        ).length,
+        totalItemCount: itemsWithDao.length,
+        sourceDaosWithItems: sortedCombinedDaosWithItems,
       }
-    })
-
-    return {
-      itemCount: itemsWithDao.length,
-      sourceDaosWithItems: sortedCombinedDaosWithItems,
-    }
-  }, [sources])
+    }, [sources])
 
   // Get DAO configs for all DAOs found.
   const daoConfigs = useCachedLoadable(
@@ -114,7 +119,8 @@ export const useInbox = (): InboxState => {
     loading: sources.some(({ data: { loading } }) => loading),
     refreshing: sources.some(({ data: { refreshing } }) => refreshing),
     daosWithItems,
-    itemCount,
+    pendingItemCount,
+    totalItemCount,
     refresh,
   }
 }

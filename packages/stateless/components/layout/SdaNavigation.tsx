@@ -18,7 +18,7 @@ import { useDaoInfoContext, useNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
 import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Tooltip } from '../tooltip/Tooltip'
-import { useAppLayoutContext } from './AppLayoutContext'
+import { useAppContext } from './AppContext'
 import { Footer } from './Footer'
 import { PageHeader } from './PageHeader'
 import { Row } from './Row'
@@ -65,7 +65,7 @@ export const SdaNavigation = ({
       toggle: toggleResponsive,
     },
     responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
-  } = useAppLayoutContext()
+  } = useAppContext()
 
   // Get the path to the DAO page on main DAO DAO.
   const daoDaoPath = asPath.startsWith(getDaoPath(''))
@@ -135,9 +135,9 @@ export const SdaNavigation = ({
           'sm:relative sm:left-0 sm:shadow-none sm:transition-[padding-left]',
           compact ? 'sm:w-min' : 'sm:w-[264px]',
 
-          // Dim if responsive right sidebar is open. Right sidebar can be responsive up to xl size. After that, it automatically displays.
+          // Dim if responsive right sidebar is open. Right sidebar can be responsive up to 2xl size. After that, it automatically displays.
           responsiveRightSidebarEnabled
-            ? 'opacity-30 xl:opacity-100'
+            ? 'opacity-30 2xl:opacity-100'
             : 'opacity-100'
         )}
       >

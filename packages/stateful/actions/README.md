@@ -17,7 +17,7 @@ address and version of the DAO's core contract.
 
 ```tsx
 import { ActionsProvider } from '@dao-dao/stateful/actions'
-import { ActionOptionsContextType } from '@dao-dao/types'
+import { ActionContextType } from '@dao-dao/types'
 
 const App = () => (
   <ActionsProvider
@@ -26,7 +26,7 @@ const App = () => (
       bech32Prefix: 'juno',
       address: 'daoCoreAddressGoesHere',
       context: {
-        type: ActionOptionsContextType.Dao,
+        type: ActionContextType.Dao,
         coreVersion: '0.2.0',
       },
     }}
@@ -42,10 +42,10 @@ Now that the library has been setup, you can use the hook anywhere as a
 descendant of the Provider to access the actions.
 
 ```tsx
-import { useCoreActions } from '@dao-dao/stateful/actions'
+import { useActions } from '@dao-dao/stateful/actions'
 
 const ActionPicker = () => {
-  const actions = useCoreActions()
+  const actions = useActions()
 
   return actions.map((action) => (
     <ActionPickerOption action={action} key={action.key} />
