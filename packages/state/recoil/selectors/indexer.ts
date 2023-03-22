@@ -1,7 +1,7 @@
 import Pusher from 'pusher-js'
 import { atom, selector, selectorFamily } from 'recoil'
 
-import { Expiration, WithChainId } from '@dao-dao/types'
+import { Expiration, IndexerFormulaType, WithChainId } from '@dao-dao/types'
 import { DumpStateResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   WEB_SOCKET_PUSHER_APP_KEY,
@@ -20,26 +20,21 @@ import {
   refreshWalletProposalStatsAtom,
 } from '../atoms'
 
-export const queryContractIndexerSelector = selectorFamily<
-  any,
-  {
-    contractAddress: string
-    formulaName: string
-    // Refresh by changing this value.
-    id?: number
-  } & QueryIndexerOptions
->({
-  key: 'queryContractIndexer',
+export type QueryIndexerParams = {
+  type: `${IndexerFormulaType}`
+  address: string
+  formula: string
+  // Refresh by changing this value.
+  id?: number
+} & QueryIndexerOptions
+
+export const queryIndexerSelector = selectorFamily<any, QueryIndexerParams>({
+  key: 'queryIndexer',
   get:
-    ({ contractAddress, formulaName, ...options }) =>
+    ({ type, address, formula, ...options }) =>
     async () => {
       try {
-        return await queryIndexer(
-          'contract',
-          contractAddress,
-          formulaName,
-          options
-        )
+        return await queryIndexer(type, address, formula, options)
       } catch (err) {
         // If the indexer fails, return null.
         console.error(err)
@@ -48,49 +43,76 @@ export const queryContractIndexerSelector = selectorFamily<
     },
 })
 
-export const queryWalletIndexerSelector = selectorFamily<
+export const queryContractIndexerSelector = selectorFamily<
   any,
-  {
-    walletAddress: string
-    formulaName: string
-    // Refresh by changing this value.
-    id?: number
-  } & QueryIndexerOptions
+  Omit<QueryIndexerParams, 'type' | 'address'> & {
+    contractAddress: string
+  }
 >({
-  key: 'queryWalletIndexer',
+  key: 'queryContractIndexer',
   get:
-    ({ walletAddress, formulaName, ...options }) =>
-    async () => {
-      try {
-        return await queryIndexer('wallet', walletAddress, formulaName, options)
-      } catch (err) {
-        // If the indexer fails, return null.
-        console.error(err)
-        return null
-      }
-    },
+    ({ contractAddress: address, ...params }) =>
+    ({ get }) =>
+      get(
+        queryIndexerSelector({
+          type: IndexerFormulaType.Contract,
+          address,
+          ...params,
+        })
+      ),
 })
 
 export const queryGenericIndexerSelector = selectorFamily<
   any,
-  {
-    formulaName: string
-    // Refresh by changing this value.
-    id?: number
-  } & QueryIndexerOptions
+  Omit<QueryIndexerParams, 'type'>
 >({
   key: 'queryGenericIndexer',
   get:
-    ({ formulaName, ...options }) =>
-    async () => {
-      try {
-        return await queryIndexer('generic', '_', formulaName, options)
-      } catch (err) {
-        // If the indexer fails, return null.
-        console.error(err)
-        return null
-      }
-    },
+    (params) =>
+    ({ get }) =>
+      get(
+        queryIndexerSelector({
+          type: IndexerFormulaType.Generic,
+          ...params,
+        })
+      ),
+})
+
+export const queryValidatorIndexerSelector = selectorFamily<
+  any,
+  Omit<QueryIndexerParams, 'type' | 'address'> & {
+    validatorOperatorAddress: string
+  }
+>({
+  key: 'queryValidatorIndexer',
+  get:
+    ({ validatorOperatorAddress: address, ...params }) =>
+    ({ get }) =>
+      get(
+        queryIndexerSelector({
+          type: IndexerFormulaType.Validator,
+          address,
+          ...params,
+        })
+      ),
+})
+export const queryWalletIndexerSelector = selectorFamily<
+  any,
+  Omit<QueryIndexerParams, 'type' | 'address'> & {
+    walletAddress: string
+  }
+>({
+  key: 'queryWalletIndexer',
+  get:
+    ({ walletAddress: address, ...params }) =>
+    ({ get }) =>
+      get(
+        queryIndexerSelector({
+          type: IndexerFormulaType.Wallet,
+          address,
+          ...params,
+        })
+      ),
 })
 
 export const searchDaosSelector = selectorFamily<
@@ -127,7 +149,7 @@ export const openProposalsSelector = selectorFamily<
       const openProposals = get(
         queryContractIndexerSelector({
           contractAddress: coreAddress,
-          formulaName: 'daoCore/openProposals',
+          formula: 'daoCore/openProposals',
           chainId,
           id,
           args: { address },
@@ -153,7 +175,7 @@ export const walletProposalStatsSelector = selectorFamily<
       const stats = get(
         queryWalletIndexerSelector({
           walletAddress: address,
-          formulaName: 'proposals/stats',
+          formula: 'proposals/stats',
           chainId,
           id,
         })
@@ -177,7 +199,7 @@ export const walletAdminOfDaosSelector = selectorFamily<string[], string>({
       const walletAdminOfDaos: string[] = get(
         queryWalletIndexerSelector({
           walletAddress,
-          formulaName: 'daos/adminOf',
+          formula: 'daos/adminOf',
         })
       )
 

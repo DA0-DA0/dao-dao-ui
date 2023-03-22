@@ -68,7 +68,7 @@ export const groupContractSelector = selectorFamily<
       const groupContract = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingCw4/groupContract',
+          formula: 'daoVotingCw4/groupContract',
         })
       )
       if (groupContract) {
@@ -93,7 +93,7 @@ export const daoSelector = selectorFamily<
       const dao = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingCw4/dao',
+          formula: 'daoVotingCw4/dao',
         })
       )
       if (dao) {
@@ -118,7 +118,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
       const votingPower = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingCw4/votingPower',
+          formula: 'daoVotingCw4/votingPower',
           args: {
             address: params[0].address,
           },
@@ -150,7 +150,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
       const totalPower = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingCw4/totalPower',
+          formula: 'daoVotingCw4/totalPower',
           block: params[0].height ? { height: params[0].height } : undefined,
         })
       )
@@ -179,7 +179,7 @@ export const infoSelector = selectorFamily<
       const info = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'info',
+          formula: 'info',
         })
       )
       if (info) {

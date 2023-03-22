@@ -3,10 +3,12 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { useSetRecoilState } from 'recoil'
 
 import {
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
+  refreshWalletBalancesIdAtom,
   validatorsSelector,
 } from '@dao-dao/state/recoil'
 import {
@@ -39,6 +41,10 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
   } = useWallet()
 
   const { walletBalance, refreshBalances } = useWalletInfo()
+  // Refreshes validator balances.
+  const setRefreshValidatorBalances = useSetRecoilState(
+    refreshWalletBalancesIdAtom('')
+  )
 
   const awaitNextBlock = useAwaitNextBlock()
 
@@ -142,6 +148,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
 
       // Wait a block for balances to update.
       await awaitNextBlock()
+      setRefreshValidatorBalances((id) => id + 1)
       refreshBalances()
 
       toast.success(

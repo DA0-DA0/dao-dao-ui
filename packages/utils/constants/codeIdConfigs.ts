@@ -1,14 +1,22 @@
 import { CodeIdConfig } from '@dao-dao/types'
 
-// ContractVersion.V203: 2.0.3
+// ContractVersion.V203
 // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.3
 const junoTestnet: CodeIdConfig = {
+  // https://github.com/CosmWasm/cw-plus
   Cw20Base: 177,
-  Cw20Stake: 155,
   Cw4Group: 178,
+  // https://github.com/CosmWasm/cw-nfts
   Cw721Base: 179,
+  // https://github.com/DA0-DA0/dao-contracts
+  Cw20Stake: 155,
   CwAdminFactory: 158,
+  CwPayrollFactory: 526,
+  CwTokenSwap: 161,
+  CwVesting: 633,
   DaoCore: 163,
+  // TODO: Add DaoMigrator.
+  DaoMigrator: -1,
   DaoPreProposeMultiple: 167,
   DaoPreProposeSingle: 168,
   DaoProposalMultiple: 170,
@@ -17,26 +25,33 @@ const junoTestnet: CodeIdConfig = {
   DaoVotingCw4: 173,
   DaoVotingCw721Staked: 174,
   DaoVotingNativeStaked: 175,
-  CwTokenSwap: 161,
 }
 
-// ContractVersion.V2: 2.0.1
+// ContractVersion.V203
+// https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.3
 const junoMainnet: CodeIdConfig = {
-  Cw20Base: 1664, // v0.16
-  Cw20Stake: 1683,
-  Cw4Group: 1668, // v0.16
-  Cw721Base: 1671,
-  CwAdminFactory: 1686,
-  DaoCore: 1688,
-  DaoPreProposeMultiple: 1691,
-  DaoPreProposeSingle: 1692,
-  DaoProposalMultiple: 1693,
-  DaoProposalSingle: 1694,
-  DaoVotingCw20Staked: 1695,
-  DaoVotingCw4: 1696,
-  DaoVotingCw721Staked: 1697,
-  DaoVotingNativeStaked: 1698,
-  CwTokenSwap: 1687,
+  // https://github.com/CosmWasm/cw-plus
+  Cw20Base: 1993, // v0.16
+  Cw4Group: 1992, // v0.16
+  // https://github.com/CosmWasm/cw-nfts
+  Cw721Base: 1994, // v0.16
+  // https://github.com/DA0-DA0/dao-contracts
+  Cw20Stake: 1995,
+  CwAdminFactory: 2013,
+  CwPayrollFactory: -1,
+  CwTokenSwap: 2000,
+  CwVesting: -1,
+  DaoCore: 2024,
+  // TODO: Add DaoMigrator.
+  DaoMigrator: -1,
+  DaoPreProposeMultiple: 2028,
+  DaoPreProposeSingle: 2029,
+  DaoProposalMultiple: 2031,
+  DaoProposalSingle: 2032,
+  DaoVotingCw20Staked: 2033,
+  DaoVotingCw4: 2034,
+  DaoVotingCw721Staked: 2035,
+  DaoVotingNativeStaked: 2036,
 }
 
 export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {

@@ -16,8 +16,8 @@ import {
   LinkWrapper,
   ProfileDaoHomeCard,
   SuspenseLoader,
+  useDaoProposalSinglePrefill,
   useDaoTabs,
-  useEncodedDaoProposalSinglePrefill,
   useFollowingDaos,
   useMembership,
 } from '@dao-dao/stateful'
@@ -54,7 +54,7 @@ const InnerDaoHome = () => {
   const manageSubDaosAction = useActionForKey(CoreActionKey.ManageSubDaos)
   // Prefill URL only valid if action exists.
   const prefillValid = !!manageSubDaosAction
-  const encodedAddSubDaoProposalPrefill = useEncodedDaoProposalSinglePrefill(
+  const addSubDaoProposalPrefill = useDaoProposalSinglePrefill(
     manageSubDaosAction
       ? {
           title: t('title.recognizeSubDao', {
@@ -80,9 +80,9 @@ const InnerDaoHome = () => {
       : { actions: [] }
   )
   const addSubDaoProposalPrefillHref =
-    prefillValid && daoInfo.parentDao && encodedAddSubDaoProposalPrefill
+    prefillValid && daoInfo.parentDao && addSubDaoProposalPrefill
       ? getDaoProposalPath(daoInfo.parentDao.coreAddress, 'create', {
-          prefill: encodedAddSubDaoProposalPrefill,
+          prefill: addSubDaoProposalPrefill,
         })
       : undefined
   useEffect(() => {
@@ -130,7 +130,7 @@ const InnerDaoHome = () => {
     daoInfo.coreAddress,
     daoInfo.name,
     daoInfo.parentDao,
-    encodedAddSubDaoProposalPrefill,
+    addSubDaoProposalPrefill,
     isMemberOfParent,
     parentDaosSubDaosLoadable.contents,
     parentDaosSubDaosLoadable.state,

@@ -17,7 +17,7 @@ export interface UseEncodedProposalPrefillUrlOptions {
   proposalModuleId?: string
 }
 
-export const useEncodedDaoProposalSinglePrefill = ({
+export const useDaoProposalSinglePrefill = ({
   title = '',
   description = '',
   actions,
@@ -45,5 +45,5 @@ export const useEncodedDaoProposalSinglePrefill = ({
     },
   }
 
-  return encodeURIComponent(JSON.stringify(prefill))
+  return JSON.stringify(prefill)
 }

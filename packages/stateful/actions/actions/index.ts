@@ -11,6 +11,7 @@ import { makeGovernanceVoteAction } from './GovernanceVote'
 import { makeInstantiateAction } from './Instantiate'
 import { makeManageCw20Action } from './ManageCw20'
 import { makeManageCw721Action } from './ManageCw721'
+import { makeManagePayrollAction } from './ManagePayroll'
 import { makeManageStorageItemsAction } from './ManageStorageItems'
 import { makeManageSubDaosAction } from './ManageSubDaos'
 import { makeManageWidgetsAction } from './ManageWidgets'
@@ -28,6 +29,7 @@ import {
 } from './token_swap'
 import { makeUpdateAdminAction } from './UpdateAdmin'
 import { makeUpdateInfoAction } from './UpdateInfo'
+import { makeUpgradeV1ToV2 } from './UpgradeV1ToV2'
 import { makeValidatorActions } from './ValidatorActions'
 import { makeWyndSwapAction } from './wynd/WyndSwap'
 
@@ -49,12 +51,14 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeCustomAction,
     makeManageSubDaosAction,
     makePerformTokenSwapAction,
+    makeManagePayrollAction,
     makeManageStorageItemsAction,
     makeWithdrawTokenSwapAction,
     makeAuthzAuthorizationAction,
     makeAuthzExecAction,
     makeValidatorActions,
     makeGovernanceVoteAction,
+    makeUpgradeV1ToV2,
     makeWyndSwapAction,
     makeDaoAdminExecAction,
     makeEnableMultipleChoiceAction,

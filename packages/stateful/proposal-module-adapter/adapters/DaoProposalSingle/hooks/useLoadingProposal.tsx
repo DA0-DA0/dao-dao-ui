@@ -45,7 +45,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     }
   )
 
-  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: false })
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
 
   const blocksPerYearLoadable = useCachedLoadable(
     blocksPerYearSelector({
