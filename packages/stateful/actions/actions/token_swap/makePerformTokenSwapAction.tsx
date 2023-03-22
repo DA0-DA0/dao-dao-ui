@@ -28,6 +28,7 @@ import {
 import { SuspenseLoader } from '../../../components'
 import { ActionCard } from '../../components/ActionCard'
 import { PerformTokenSwapData } from '../../components/token_swap'
+import { useMsgExecutesContract } from '../../hooks'
 import { ChooseExistingTokenSwap } from './ChooseExistingTokenSwap'
 import { FundTokenSwap } from './FundTokenSwap'
 import { InstantiateTokenSwap } from './InstantiateTokenSwap'
@@ -190,18 +191,13 @@ const useTransformToCosmos: UseTransformToCosmos<PerformTokenSwapData> = () => {
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<PerformTokenSwapData> = (
   msg: Record<string, any>
 ) => {
+  const isTokenSwapExecute = useMsgExecutesContract(msg, 'cw-token-swap')
+
   // Native
   if (
-    objectMatchesStructure(msg, {
-      wasm: {
-        execute: {
-          contract_addr: {},
-          funds: {},
-          msg: {
-            fund: {},
-          },
-        },
-      },
+    isTokenSwapExecute &&
+    objectMatchesStructure(msg.wasm.execute.msg, {
+      fund: {},
     }) &&
     Array.isArray(msg.wasm.execute.funds) &&
     msg.wasm.execute.funds.length === 1
