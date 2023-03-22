@@ -44,6 +44,7 @@
     "depositFiat": "Deposit fiat",
     "deselectAllNfts": "Deselect all {{count}} NFTs",
     "done": "Done",
+    "downloadMembersCsv": "Download member data (.csv)",
     "downloadVotesCsv": "Download voting data (.csv)",
     "duplicate": "Duplicate",
     "execute": "Execute",
