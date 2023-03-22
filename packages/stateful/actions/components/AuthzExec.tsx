@@ -66,17 +66,13 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
       title={t('title.authzExec')}
     >
       <div className="mb-2">
-        {false ? (
-          <Loader />
-        ) : (
-          <AddressInput
-            error={errors?.coreAddress}
-            fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
-            register={register}
-            type="contract"
-            validation={[validateAddress]}
-          />
-        )}
+        <AddressInput
+          error={errors?.coreAddress}
+          fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
+          register={register}
+          type="contract"
+          validation={[validateAddress]}
+        />
       </div>
       {isValidAddress(coreAddress, CHAIN_BECH32_PREFIX) && (
         <>
