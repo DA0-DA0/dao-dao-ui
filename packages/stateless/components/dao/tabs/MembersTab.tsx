@@ -5,7 +5,8 @@ import {
   Remove,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, Fragment, useState } from 'react'
+import { ComponentType, Fragment, useRef, useState } from 'react'
+import { CSVLink } from 'react-csv'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -63,6 +64,8 @@ export const MembersTab = ({
   topVoters,
 }: MembersTabProps) => {
   const { t } = useTranslation()
+
+  const csvLinkRef = useRef<HTMLAnchorElement>()
 
   const [membersPage, setMembersPage] = useState(MIN_MEMBERS_PAGE)
   const maxMembersPage = Math.ceil(members.length / MEMBERS_PER_PAGE)
@@ -263,7 +266,6 @@ export const MembersTab = ({
             : t('title.numMembers', { count: members.length })}
         </p>
       </div>
-
       {membersFailedToLoad ? (
         <p className="secondary-text">
           {t('error.failedToLoadMembersDescription')}
@@ -337,6 +339,26 @@ export const MembersTab = ({
       ) : (
         <p className="secondary-text">{t('error.noMembers')}</p>
       )}
+      <Button
+        className="caption-text mt-6 italic"
+        disabled={false}
+        onClick={() => csvLinkRef.current?.click()}
+        variant="none"
+      >
+        {t('button.downloadMembersCsv')}
+      </Button>
+      <CSVLink
+        className="hidden"
+        data={[
+          ['Member', 'Voting Power'],
+          ...members.map(({ address, votingPowerPercent }) => [
+            address,
+            votingPowerPercent.loading === false && votingPowerPercent.data,
+          ]),
+        ]}
+        filename="members.csv"
+        ref={(ref: any) => (csvLinkRef.current = ref?.link ?? undefined)}
+      />
     </>
   )
 }
