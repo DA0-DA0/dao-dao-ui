@@ -646,6 +646,7 @@
     "onlyMembers": "Only members",
     "openProfileSidebarTooltip": "Click to open profile sidebar.",
     "opensAtDate": "Opens at {{date}}",
+    "optionInert": "This option will not perform any actions if it wins.",
     "otherNotifiersNotShown": "Notifiers setup by others are not shown.",
     "overwritingSave": "This save will overwrite the existing one with the same name.",
     "paid": "Paid",

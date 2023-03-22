@@ -1,16 +1,16 @@
 import { LoadingData, ProcessedTQType } from '@dao-dao/types'
-import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
 import { useProcessQ } from '../common/hooks/useProcessQ'
-import { MULTIPLE_CHOICE_OPTION_COLORS } from '../components/ui/MultipleChoiceOptionEditor'
 import { VotesInfo } from '../types'
 import { useLoadingProposal } from './useLoadingProposal'
+import { useLoadingVoteOptions } from './useLoadingVoteOptions'
 
 export const useLoadingVotesInfo = (): LoadingData<VotesInfo> => {
   const loadingProposal = useLoadingProposal()
+  const loadingVoteOptions = useLoadingVoteOptions()
   const processQ = useProcessQ()
 
-  if (loadingProposal.loading) {
+  if (loadingProposal.loading || loadingVoteOptions.loading) {
     return { loading: true }
   }
 
@@ -26,36 +26,25 @@ export const useLoadingVotesInfo = (): LoadingData<VotesInfo> => {
 
   const totalVotingPower = Number(proposal.total_power)
   const turnoutPercent = (turnoutTotal / totalVotingPower) * 100
-  const isTie =
-    voteWeights.every((c) => c === voteWeights[0]) && voteWeights[0] !== '0'
 
   // Calculate the vote percentage for each vote, out of all votes cast.
-  const processedChoices = voteWeights
-    .map((weight, index) => {
+  const processedChoices = loadingVoteOptions.data
+    .map(({ color }, index) => {
+      const weight = voteWeights[index]
       const percentage = turnoutTotal
         ? (Number(weight) / turnoutTotal) * 100
         : 0
-      const {
-        option_type: optionType,
-        vote_count: voteCount,
-        ...choice
-      } = proposal.choices[index]
+      const { option_type: optionType, ...choice } = proposal.choices[index]
 
       return {
         optionType,
-        voteCount,
         ...choice,
         turnoutVotePercentage: percentage,
-        // Retrieve vote color before sorting choices.
-        color:
-          optionType === MultipleChoiceOptionType.None
-            ? 'var(--icon-tertiary)'
-            : MULTIPLE_CHOICE_OPTION_COLORS[
-                index % MULTIPLE_CHOICE_OPTION_COLORS.length
-              ],
+        color,
       }
     })
-    .sort((a, b) => a.turnoutVotePercentage - b.turnoutVotePercentage)
+    // Sort with the highest vote percentage first.
+    .sort((a, b) => b.turnoutVotePercentage - a.turnoutVotePercentage)
 
   const quorumReached =
     quorum.type === ProcessedTQType.Majority
@@ -64,9 +53,15 @@ export const useLoadingVotesInfo = (): LoadingData<VotesInfo> => {
       : // Percent
         turnoutPercent >= quorum.value
 
-  const winningChoice = processedChoices.reduce((prev, current) =>
-    Number(prev.voteCount) > Number(current.voteCount) ? prev : current
-  )
+  // The first choice has the highest turnout. If there is a tie, this will not
+  // be the actual winner.
+  const winningChoice = turnoutTotal === 0 ? undefined : processedChoices[0]
+
+  // Tie if the first two highest vote percentages are equal.
+  const isTie =
+    !winningChoice ||
+    processedChoices[1].turnoutVotePercentage ===
+      winningChoice.turnoutVotePercentage
 
   return {
     loading: false,
@@ -78,7 +73,7 @@ export const useLoadingVotesInfo = (): LoadingData<VotesInfo> => {
       turnoutTotal,
       turnoutPercent,
       quorumReached,
-      winningChoice: turnoutTotal === 0 || isTie ? undefined : winningChoice,
+      winningChoice: isTie ? undefined : winningChoice,
     },
   }
 }

@@ -25,7 +25,7 @@ export const useLoadingVoteOptions = (): LoadingData<
             label: option.title,
             value: { option_id: index },
             color: isNoneOption
-              ? undefined
+              ? 'var(--icon-tertiary)'
               : MULTIPLE_CHOICE_OPTION_COLORS[
                   index % MULTIPLE_CHOICE_OPTION_COLORS.length
                 ],

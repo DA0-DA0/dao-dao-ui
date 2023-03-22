@@ -1,11 +1,9 @@
-import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { Loader } from '@dao-dao/stateless'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
 import { useLoadingVoteOptions } from '../../hooks/useLoadingVoteOptions'
-import { MULTIPLE_CHOICE_OPTION_COLORS } from '../ui/MultipleChoiceOptionEditor'
 
 interface VoteDisplayProps {
   vote: MultipleChoiceVote
@@ -31,12 +29,8 @@ export const VoteDisplay = ({ vote }: VoteDisplayProps) => {
   return (
     <div className="inline-flex w-full flex-row items-center font-sans text-xs font-medium">
       <p
-        className={clsx(!voteOption.color && 'text-icon-secondary')}
         style={{
-          color:
-            MULTIPLE_CHOICE_OPTION_COLORS[
-              vote.option_id % MULTIPLE_CHOICE_OPTION_COLORS.length
-            ],
+          color: voteOption.color,
         }}
       >
         {label}

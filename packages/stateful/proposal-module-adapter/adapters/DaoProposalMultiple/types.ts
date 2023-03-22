@@ -48,9 +48,8 @@ export type ProcessedMultipleChoiceOption = {
   msgs: CosmosMsgForEmpty[]
   optionType: MultipleChoiceOptionType
   title: string
-  voteCount: string
   turnoutVotePercentage: number
-  color: string
+  color?: string
 }
 
 export interface VotesInfo {

@@ -48,8 +48,8 @@ export const ProposalVoteTally = ({
                       choice.title
 
                     return {
-                      value: Number(choice.turnoutVotePercentage),
-                      color: choice.color,
+                      value: choice.turnoutVotePercentage,
+                      color: choice.color || '',
                       tooltipTitle: tooltipTitle,
                     }
                   }),

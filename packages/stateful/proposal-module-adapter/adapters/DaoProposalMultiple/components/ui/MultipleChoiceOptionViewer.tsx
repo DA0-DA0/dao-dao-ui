@@ -8,6 +8,7 @@ import {
   Button,
   CosmosMessageDisplay,
   DropdownIconButton,
+  MarkdownRenderer,
   Tooltip,
 } from '@dao-dao/stateless'
 import { Action } from '@dao-dao/types'
@@ -37,15 +38,19 @@ export const MultipleChoiceOptionViewer = ({
 
   const [showRaw, setShowRaw] = useState(false)
 
+  const isNoneOption = choice.option_type === MultipleChoiceOptionType.None
+  const noMessages = decodedMessages.length === 0
+  const noContent = noMessages && !choice.description
+
   // Close none of the above and disallow expanding.
   const [expanded, setExpanded] = useState(
     choice.option_type !== MultipleChoiceOptionType.None &&
       // Default collapsed if there is a winner and it is not this one.
-      (winner === undefined || winner)
+      (winner === undefined || winner) &&
+      // Default collapsed if there are no messages and no description.
+      !noContent
   )
   const toggleExpanded = () => setExpanded((e) => !e)
-
-  const isNoneOption = choice.option_type === MultipleChoiceOptionType.None
 
   return (
     <div
@@ -103,26 +108,24 @@ export const MultipleChoiceOptionViewer = ({
         )}
       >
         {!isNoneOption && !!choice.description && (
-          <p className="body-text">{choice.description}</p>
+          <MarkdownRenderer markdown={choice.description} />
         )}
 
-        {(forceRaw === undefined && showRaw) || forceRaw
-          ? decodedMessages.length > 0 && (
-              <CosmosMessageDisplay
-                value={JSON.stringify(decodedMessages, undefined, 2)}
-              />
-            )
-          : actionData.length > 0 && (
-              <ActionsRenderer
-                actionData={actionData}
-                availableActions={availableActions}
-                onCopyLink={() =>
-                  toast.success(t('info.copiedLinkToClipboard'))
-                }
-              />
-            )}
+        {noMessages ? (
+          <p className="caption-text italic">{t('info.optionInert')}</p>
+        ) : (forceRaw === undefined && showRaw) || forceRaw ? (
+          <CosmosMessageDisplay
+            value={JSON.stringify(decodedMessages, undefined, 2)}
+          />
+        ) : (
+          <ActionsRenderer
+            actionData={actionData}
+            availableActions={availableActions}
+            onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
+          />
+        )}
 
-        {forceRaw === undefined && (
+        {forceRaw === undefined && decodedMessages.length > 0 && (
           <Button
             className="-mt-4 self-end"
             onClick={() => setShowRaw(!showRaw)}
