@@ -15,8 +15,8 @@ export const loadCommonVotingConfigItems =
     ],
     advancedItems: [
       makeQuorumVotingConfigItem(),
+      makeMultipleChoiceVotingConfigItem(),
       makeAllowRevotingVotingConfigItem(),
       makeProposalSubmissionPolicyVotingConfigItem(),
-      makeMultipleChoiceVotingConfigItem(),
     ],
   })

@@ -70,52 +70,6 @@ export const CreateDaoVoting = ({
         </p>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {commonVotingConfigItems.map(
-            (
-              {
-                onlyDisplayCondition,
-                Icon,
-                nameI18nKey,
-                descriptionI18nKey,
-                tooltipI18nKey,
-                Input,
-                getInputError,
-              },
-              index
-            ) =>
-              // If has display condition, check it. Otherwise display.
-              (onlyDisplayCondition?.(newDao) ?? true) && (
-                <DaoCreateConfigInputCard
-                  key={index}
-                  Icon={Icon}
-                  SuspenseLoader={SuspenseLoader}
-                  description={t(descriptionI18nKey)}
-                  error={getInputError(errors.votingConfig)}
-                  input={
-                    <Input
-                      data={votingConfig}
-                      errors={errors.votingConfig}
-                      newDao={newDao}
-                      register={(fieldName, options) =>
-                        register(('votingConfig.' + fieldName) as any, options)
-                      }
-                      setValue={(fieldName, value, options) =>
-                        setValue(('votingConfig.' + fieldName) as any, value, {
-                          // Validate by default.
-                          shouldValidate: true,
-                          ...options,
-                        })
-                      }
-                      watch={(fieldName) =>
-                        watch(('votingConfig.' + fieldName) as any)
-                      }
-                    />
-                  }
-                  name={t(nameI18nKey)}
-                  tooltip={tooltipI18nKey && t(tooltipI18nKey)}
-                />
-              )
-          )}
           {votingModuleDaoCreationAdapter.votingConfig.items.map(
             (
               {
@@ -237,6 +191,52 @@ export const CreateDaoVoting = ({
                   )
               )
           )}
+          {commonVotingConfigItems.map(
+            (
+              {
+                onlyDisplayCondition,
+                Icon,
+                nameI18nKey,
+                descriptionI18nKey,
+                tooltipI18nKey,
+                Input,
+                getInputError,
+              },
+              index
+            ) =>
+              // If has display condition, check it. Otherwise display.
+              (onlyDisplayCondition?.(newDao) ?? true) && (
+                <DaoCreateConfigInputCard
+                  key={index}
+                  Icon={Icon}
+                  SuspenseLoader={SuspenseLoader}
+                  description={t(descriptionI18nKey)}
+                  error={getInputError(errors.votingConfig)}
+                  input={
+                    <Input
+                      data={votingConfig}
+                      errors={errors.votingConfig}
+                      newDao={newDao}
+                      register={(fieldName, options) =>
+                        register(('votingConfig.' + fieldName) as any, options)
+                      }
+                      setValue={(fieldName, value, options) =>
+                        setValue(('votingConfig.' + fieldName) as any, value, {
+                          // Validate by default.
+                          shouldValidate: true,
+                          ...options,
+                        })
+                      }
+                      watch={(fieldName) =>
+                        watch(('votingConfig.' + fieldName) as any)
+                      }
+                    />
+                  }
+                  name={t(nameI18nKey)}
+                  tooltip={tooltipI18nKey && t(tooltipI18nKey)}
+                />
+              )
+          )}
         </div>
       </div>
 
@@ -296,59 +296,6 @@ export const CreateDaoVoting = ({
           )}
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {commonVotingConfigAdvancedItems.map(
-              (
-                {
-                  onlyDisplayCondition,
-                  Icon,
-                  nameI18nKey,
-                  descriptionI18nKey,
-                  tooltipI18nKey,
-                  Input,
-                  getInputError,
-                },
-                index
-              ) =>
-                // If has display condition, check it. Otherwise display.
-                (onlyDisplayCondition?.(newDao) ?? true) && (
-                  <DaoCreateConfigInputCard
-                    key={index}
-                    Icon={Icon}
-                    SuspenseLoader={SuspenseLoader}
-                    description={t(descriptionI18nKey)}
-                    error={getInputError(errors.votingConfig)}
-                    input={
-                      <Input
-                        data={votingConfig}
-                        errors={errors.votingConfig}
-                        newDao={newDao}
-                        register={(fieldName, options) =>
-                          register(
-                            ('votingConfig.' + fieldName) as any,
-                            options
-                          )
-                        }
-                        setValue={(fieldName, value, options) =>
-                          setValue(
-                            ('votingConfig.' + fieldName) as any,
-                            value,
-                            {
-                              // Validate by default.
-                              shouldValidate: true,
-                              ...options,
-                            }
-                          )
-                        }
-                        watch={(fieldName) =>
-                          watch(('votingConfig.' + fieldName) as any)
-                        }
-                      />
-                    }
-                    name={t(nameI18nKey)}
-                    tooltip={tooltipI18nKey && t(tooltipI18nKey)}
-                  />
-                )
-            )}
             {votingModuleDaoCreationAdapter.votingConfig.advancedItems?.map(
               (
                 {
@@ -470,6 +417,59 @@ export const CreateDaoVoting = ({
                         tooltip={tooltipI18nKey && t(tooltipI18nKey)}
                       />
                     )
+                )
+            )}
+            {commonVotingConfigAdvancedItems.map(
+              (
+                {
+                  onlyDisplayCondition,
+                  Icon,
+                  nameI18nKey,
+                  descriptionI18nKey,
+                  tooltipI18nKey,
+                  Input,
+                  getInputError,
+                },
+                index
+              ) =>
+                // If has display condition, check it. Otherwise display.
+                (onlyDisplayCondition?.(newDao) ?? true) && (
+                  <DaoCreateConfigInputCard
+                    key={index}
+                    Icon={Icon}
+                    SuspenseLoader={SuspenseLoader}
+                    description={t(descriptionI18nKey)}
+                    error={getInputError(errors.votingConfig)}
+                    input={
+                      <Input
+                        data={votingConfig}
+                        errors={errors.votingConfig}
+                        newDao={newDao}
+                        register={(fieldName, options) =>
+                          register(
+                            ('votingConfig.' + fieldName) as any,
+                            options
+                          )
+                        }
+                        setValue={(fieldName, value, options) =>
+                          setValue(
+                            ('votingConfig.' + fieldName) as any,
+                            value,
+                            {
+                              // Validate by default.
+                              shouldValidate: true,
+                              ...options,
+                            }
+                          )
+                        }
+                        watch={(fieldName) =>
+                          watch(('votingConfig.' + fieldName) as any)
+                        }
+                      />
+                    }
+                    name={t(nameI18nKey)}
+                    tooltip={tooltipI18nKey && t(tooltipI18nKey)}
+                  />
                 )
             )}
           </div>
