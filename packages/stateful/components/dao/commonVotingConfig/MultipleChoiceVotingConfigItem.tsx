@@ -8,7 +8,7 @@ import {
   DaoCreationVotingConfigWithEnableMultipleChoice,
 } from '@dao-dao/types'
 
-const EnableMultipleChoiceInput = ({
+const MultipleChoiceInput = ({
   data: { enableMultipleChoice },
   setValue,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithEnableMultipleChoice>) => (
@@ -21,21 +21,21 @@ const EnableMultipleChoiceInput = ({
   />
 )
 
-const EnableMultipleChoiceReview = ({
+const MultipleChoiceReview = ({
   data: { enableMultipleChoice },
 }: DaoCreationVotingConfigItemReviewProps<DaoCreationVotingConfigWithEnableMultipleChoice>) => {
   const { t } = useTranslation()
   return <>{enableMultipleChoice ? t('info.enabled') : t('info.disabled')}</>
 }
 
-export const makeEnableMultipleChoiceVotingConfigItem =
+export const makeMultipleChoiceVotingConfigItem =
   (): DaoCreationVotingConfigItem<DaoCreationVotingConfigWithEnableMultipleChoice> => ({
     Icon: NumbersEmoji,
-    nameI18nKey: 'form.enableMultipleChoiceTitle',
-    descriptionI18nKey: 'form.enableMultipleChoiceDescription',
-    Input: EnableMultipleChoiceInput,
+    nameI18nKey: 'form.multipleChoiceTitle',
+    descriptionI18nKey: 'form.multipleChoiceDescription',
+    Input: MultipleChoiceInput,
     getInputError: ({ enableMultipleChoice } = {}) => enableMultipleChoice,
-    Review: EnableMultipleChoiceReview,
+    Review: MultipleChoiceReview,
     getReviewClassName: ({ enableMultipleChoice }) =>
       enableMultipleChoice
         ? 'bg-component-badge-valid'

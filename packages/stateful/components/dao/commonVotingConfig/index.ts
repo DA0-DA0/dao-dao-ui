@@ -1,7 +1,7 @@
 import { DaoCreationCommonVotingConfigItems } from '@dao-dao/types'
 
 import { makeAllowRevotingVotingConfigItem } from './AllowRevotingVotingConfigItem'
-import { makeEnableMultipleChoiceVotingConfigItem } from './EnableMultipleChoiceVotingConfigItem'
+import { makeMultipleChoiceVotingConfigItem } from './MultipleChoiceVotingConfigItem'
 import { makeProposalDepositVotingConfigItem } from './ProposalDepositVotingConfigItem'
 import { makeProposalSubmissionPolicyVotingConfigItem } from './ProposalSubmissionPolicyVotingConfigItem'
 import { makeQuorumVotingConfigItem } from './QuorumVotingConfigItem'
@@ -17,6 +17,6 @@ export const loadCommonVotingConfigItems =
       makeQuorumVotingConfigItem(),
       makeAllowRevotingVotingConfigItem(),
       makeProposalSubmissionPolicyVotingConfigItem(),
-      makeEnableMultipleChoiceVotingConfigItem(),
+      makeMultipleChoiceVotingConfigItem(),
     ],
   })
