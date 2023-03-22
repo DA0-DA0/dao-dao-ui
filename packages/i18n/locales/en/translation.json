@@ -764,6 +764,7 @@
     "waitingForRateAndPropose": "Waiting for DAO members to rate and propose...",
     "walletConnectMobileLimitations": "Feel free to explore the UI. Due to current limitations in WalletConnect, you will not be able to connect your mobile wallet to the {{chain}} chain.",
     "whatAreYouLookingForPrompt": "What are you looking for?",
+    "widgetActive": "This widget is visible on the home page.",
     "withdrawStakingRewards": "Withdraw staking rewards",
     "withdrawTokenSwapDescription": "Withdraw funds from a token swap that has not yet completed.",
     "wouldYouLikeToSearchQuestion": "Would you like to search for a DAO?",

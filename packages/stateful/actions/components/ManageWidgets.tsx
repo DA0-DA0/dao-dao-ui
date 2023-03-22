@@ -9,6 +9,7 @@ import {
   HammerAndWrenchEmoji,
   InputLabel,
   InputThemedText,
+  Tooltip,
 } from '@dao-dao/stateless'
 import { DaoWidget, Widget } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -128,6 +129,16 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = ({
                 label: t('widgetTitle.' + widget.id),
                 description: t('widgetDescription.' + widget.id),
                 widget,
+                // Show checkmark if widget exists when adding/updating widgets.
+                rightNode:
+                  mode === 'set' &&
+                  existingWidgets.some(
+                    (existing) => existing.id === widget.id
+                  ) ? (
+                    <Tooltip title={t('info.widgetActive')}>
+                      <Check className="!h-6 !w-6" />
+                    </Tooltip>
+                  ) : undefined,
               }))}
             onSelect={({ widget }) => selectWidget(widget)}
             searchPlaceholder={t('info.searchForWidget')}
