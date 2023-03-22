@@ -5,6 +5,7 @@ import useDeepCompareEffect from 'use-deep-compare-effect'
 import { Loader } from '@dao-dao/stateless'
 import {
   ActionAndData,
+  ActionKeyAndData,
   BaseProposalInnerContentDisplayProps,
   ProposalStatus,
   ProposalVoteOption,
@@ -117,13 +118,15 @@ export const InnerProposalInnerContentDisplay = ({
         .map(({ choice, actionData }) => ({
           title: choice.title,
           description: choice.description,
-          actionData: actionData.map(({ action: { key }, data }) => ({
-            key,
-            data,
-          })),
+          actionData: actionData.map(
+            ({ action: { key }, data }): ActionKeyAndData => ({
+              key,
+              data,
+            })
+          ),
         })),
     })
-  }, [optionsData, proposal, setDuplicateFormData])
+  }, [optionsData, proposal.title, proposal.description, setDuplicateFormData])
 
   return (
     <div>

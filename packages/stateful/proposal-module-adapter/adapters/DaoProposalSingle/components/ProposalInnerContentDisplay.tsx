@@ -7,6 +7,7 @@ import useDeepCompareEffect from 'use-deep-compare-effect'
 import { Button, CosmosMessageDisplay, Loader } from '@dao-dao/stateless'
 import {
   ActionAndData,
+  ActionKeyAndData,
   BaseProposalInnerContentDisplayProps,
 } from '@dao-dao/types'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
@@ -74,16 +75,24 @@ const InnerProposalInnerContentDisplay = ({
     }
   })
 
+  const actionKeyAndData = actionData.map(
+    ({ action: { key }, data }): ActionKeyAndData => ({
+      key,
+      data,
+    })
+  )
   useDeepCompareEffect(() => {
     setDuplicateFormData({
       title: proposal.title,
       description: proposal.description,
-      actionData: actionData.map(({ action: { key }, data }) => ({
-        key,
-        data,
-      })),
+      actionData: actionKeyAndData,
     })
-  }, [actionData, proposal, setDuplicateFormData])
+  }, [
+    actionKeyAndData,
+    proposal.title,
+    proposal.description,
+    setDuplicateFormData,
+  ])
 
   return decodedMessages?.length ? (
     <div className="space-y-3">
