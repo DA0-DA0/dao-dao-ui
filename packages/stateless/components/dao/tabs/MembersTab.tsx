@@ -266,28 +266,6 @@ export const MembersTab = ({
             : t('title.numMembers', { count: members.length })}
         </p>
       </div>
-
-      <Button
-        className="caption-text mb-6 italic"
-        disabled={false}
-        onClick={() => csvLinkRef.current?.click()}
-        variant="none"
-      >
-        {t('button.downloadMembersCsv')}
-      </Button>
-      <CSVLink
-        className="hidden"
-        data={[
-          ['Member', 'Voting Power'],
-          ...members.map(({ address, votingPowerPercent }) => [
-            address,
-            votingPowerPercent.loading === false && votingPowerPercent.data,
-          ]),
-        ]}
-        filename="members.csv"
-        ref={(ref: any) => (csvLinkRef.current = ref?.link ?? undefined)}
-      />
-
       {membersFailedToLoad ? (
         <p className="secondary-text">
           {t('error.failedToLoadMembersDescription')}
@@ -361,6 +339,26 @@ export const MembersTab = ({
       ) : (
         <p className="secondary-text">{t('error.noMembers')}</p>
       )}
+      <Button
+        className="caption-text mt-6 italic"
+        disabled={false}
+        onClick={() => csvLinkRef.current?.click()}
+        variant="none"
+      >
+        {t('button.downloadMembersCsv')}
+      </Button>
+      <CSVLink
+        className="hidden"
+        data={[
+          ['Member', 'Voting Power'],
+          ...members.map(({ address, votingPowerPercent }) => [
+            address,
+            votingPowerPercent.loading === false && votingPowerPercent.data,
+          ]),
+        ]}
+        filename="members.csv"
+        ref={(ref: any) => (csvLinkRef.current = ref?.link ?? undefined)}
+      />
     </>
   )
 }
