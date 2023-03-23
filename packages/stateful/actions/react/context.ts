@@ -25,15 +25,13 @@ const useActionsContext = (): IActionsContext => {
   return context
 }
 
-export const useActions = (
-  additionalActions?: Action[],
-  { isCreating = false }: UseActionsOptions = {}
-): Action[] =>
+export const useActions = ({
+  isCreating = true,
+}: UseActionsOptions = {}): Action[] =>
   useActionsContext()
-    .actions.concat(additionalActions ?? [])
     // Filter out actions which are not allowed to be created. This is used to
     // hide the upgrade actions from the list of actions to create.
-    .filter((action) => !isCreating || !action.disallowCreation)
+    .actions.filter((action) => !isCreating || !action.disallowCreation)
     // Sort alphabetically.
     .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
 
