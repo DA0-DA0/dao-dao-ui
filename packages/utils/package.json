@@ -8,11 +8,11 @@
     "test": "jest"
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "0.29.4",
-    "@cosmjs/tendermint-rpc": "0.29.4",
-    "@cosmjs/encoding": "0.29.4",
-    "@cosmjs/stargate": "0.29.4",
-    "@keplr-wallet/stores": "^0.10.5",
+    "@cosmjs/cosmwasm-stargate": "^0.30.1",
+    "@cosmjs/tendermint-rpc": "^0.30.1",
+    "@cosmjs/encoding": "^0.30.1",
+    "@cosmjs/stargate": "^0.30.1",
+    "@keplr-wallet/stores": "^0.11.49",
     "@sentry/nextjs": "^7.7.0",
     "ajv": "^8.11.0",
     "cosmjs-types": "^0.5.2",
@@ -25,11 +25,11 @@
     "ripemd160": "^2.0.2"
   },
   "devDependencies": {
-    "@cosmjs/proto-signing": "0.29.3",
+    "@cosmjs/proto-signing": "^0.30.1",
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",
-    "@keplr-wallet/types": "^0.10.2",
-    "@noahsaso/cosmodal": "^0.8.3",
+    "@keplr-wallet/types": "^0.11.49",
+    "@noahsaso/cosmodal": "^0.8.8",
     "@types/ripemd160": "^2.0.0",
     "interchain-rpc": "1.5.0",
     "next": "12.2.6",

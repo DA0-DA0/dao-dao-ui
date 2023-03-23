@@ -1,16 +1,4 @@
-import { createWasmAminoConverters } from '@cosmjs/cosmwasm-stargate'
-import {
-  AminoTypes,
-  GasPrice,
-  createAuthzAminoConverters,
-  createBankAminoConverters,
-  createDistributionAminoConverters,
-  createFeegrantAminoConverters,
-  createGovAminoConverters,
-  createIbcAminoConverters,
-  createStakingAminoConverters,
-  createVestingAminoConverters,
-} from '@cosmjs/stargate'
+import { GasPrice } from '@cosmjs/stargate'
 import {
   ChainInfoID,
   ChainInfoMap,
@@ -101,22 +89,6 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         gasPrice: GasPrice.fromString(
           '0.0025' + chainInfo.feeCurrencies[0].coinMinimalDenom
         ),
-        // @cosmjs/stargate/SigningStargateClient.ts amino types and wasm. For
-        // some reason, the default SigningCosmWasmClient only supports wasm and
-        // bank amino types.
-        aminoTypes: new AminoTypes({
-          ...createWasmAminoConverters(),
-          ...createAuthzAminoConverters(),
-          ...createBankAminoConverters(),
-          ...createDistributionAminoConverters(),
-          ...createGovAminoConverters(),
-          ...createStakingAminoConverters(
-            chainInfo.bech32Config.bech32PrefixAccAddr
-          ),
-          ...createIbcAminoConverters(),
-          ...createFeegrantAminoConverters(),
-          ...createVestingAminoConverters(),
-        }),
       })}
       getSigningStargateClientOptions={(chainInfo) => ({
         gasPrice: GasPrice.fromString(
