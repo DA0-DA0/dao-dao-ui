@@ -22,6 +22,7 @@ import {
   MaxFundsLimit,
 } from 'cosmjs-types/cosmwasm/wasm/v1/authz'
 import { Any } from 'cosmjs-types/google/protobuf/any'
+import { Timestamp } from 'cosmjs-types/google/protobuf/timestamp'
 import { cosmos } from 'interchain-rpc'
 
 import { GovProposal, GovProposalWithDecodedContent } from '@dao-dao/types'
@@ -207,6 +208,7 @@ export const typesRegistry = new Registry([
     ['/cosmwasm.wasm.v1.CombinedLimit', CombinedLimit],
     ['/cosmwasm.wasm.v1.MaxCallsLimit', MaxCallsLimit],
     ['/cosmwasm.wasm.v1.MaxFundsLimit', MaxFundsLimit],
+    ['/google.protobuf.Timestamp', Timestamp],
     [
       '/cosmwasm.wasm.v1.ContractExecutionAuthorization',
       ContractExecutionAuthorization,

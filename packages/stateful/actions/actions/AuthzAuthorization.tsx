@@ -404,6 +404,11 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
           }
         }
 
+        // Expiration set to 10 years
+        let date = new Date()
+        date.setFullYear(date.getFullYear() + 10)
+        let seconds = Long.fromInt(Math.round(date.getTime() / 1000))
+
         return makeStargateMessage({
           stargate: {
             typeUrl,
@@ -412,6 +417,9 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                 ? {
                     grant: {
                       authorization: encodeRawProtobufMsg(authorization as any),
+                      expiration: {
+                        seconds,
+                      },
                     },
                   }
                 : {
