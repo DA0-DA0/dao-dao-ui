@@ -416,7 +416,7 @@ export const NewProposal = ({
               description={proposalDescription}
               innerContentDisplay={
                 <div>
-                  <p className="title-text mb-4">{t('title.voteOptions')}</p>
+                  <p className="title-text mb-2">{t('title.voteOptions')}</p>
 
                   {choices.map(({ title, description, actionData }, index) => (
                     <MultipleChoiceOptionViewer
