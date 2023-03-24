@@ -80,6 +80,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
       defaultChainId={CHAIN_ID}
       enabledWalletTypes={[
         WalletType.Keplr,
+        WalletType.Leap,
         // Only allow WalletConnect on mainnet.
         ...(CHAIN_ID === ChainInfoID.Juno1
           ? [WalletType.WalletConnectKeplr]
