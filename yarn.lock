@@ -3889,10 +3889,10 @@
     jsbi "^3.1.5"
     sha.js "^2.4.11"
 
-"@noahsaso/cosmodal@^0.8.8":
-  version "0.8.8"
-  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.8.8.tgz#5e7bec17a822661149dca809fe5c36036da61063"
-  integrity sha512-oq9iZhjSa/wtJ7/QIkXZf/xKcINPJRk4gGqS/7RoAZvk+/wl2ozQTaGQ2Ie4mkjs2gO2XofxE6cYYDna/Xr7ug==
+"@noahsaso/cosmodal@^0.8.9":
+  version "0.8.9"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.8.9.tgz#d307986596f0995b359a58697886538c02e89a03"
+  integrity sha512-xURlWVc5zuiyFMs0SIGeSr+REgUXt8jAYjdIp33Jf0y3ikcd72uvmyNip4DJD3FL4Sgms2e7FEXO9jXd4hIWKQ==
   dependencies:
     "@walletconnect/client" "^1.7.8"
     "@walletconnect/utils" "^1.7.8"
