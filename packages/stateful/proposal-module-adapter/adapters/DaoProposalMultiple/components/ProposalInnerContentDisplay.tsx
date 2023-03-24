@@ -130,7 +130,7 @@ export const InnerProposalInnerContentDisplay = ({
 
   return (
     <div>
-      <p className="title-text mb-4">{t('title.voteOptions')}</p>
+      <p className="title-text mb-2">{t('title.voteOptions')}</p>
 
       {optionsData.map((data, index) => (
         <MultipleChoiceOptionViewer

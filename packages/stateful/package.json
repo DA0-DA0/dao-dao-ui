@@ -9,10 +9,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "@cosmjs/cosmwasm-stargate": "0.29.3",
-    "@cosmjs/encoding": "0.29.3",
-    "@cosmjs/proto-signing": "0.29.3",
-    "@cosmjs/stargate": "0.29.3",
+    "@cosmjs/cosmwasm-stargate": "^0.30.1",
+    "@cosmjs/encoding": "^0.30.1",
+    "@cosmjs/proto-signing": "^0.30.1",
+    "@cosmjs/stargate": "^0.30.1",
     "@dao-dao/i18n": "2.2.0",
     "@dao-dao/state": "2.2.0",
     "@dao-dao/stateless": "2.2.0",
@@ -46,10 +46,10 @@
     "use-deep-compare-effect": "^1.8.1"
   },
   "devDependencies": {
-    "@cosmjs/amino": "0.29.3",
+    "@cosmjs/amino": "^0.30.1",
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",
-    "@noahsaso/cosmodal": "^0.8.3",
+    "@noahsaso/cosmodal": "^0.8.8",
     "@storybook/react": "^6.5.10",
     "@types/file-saver": "^2.0.5",
     "@types/json2csv": "^5.0.3",
