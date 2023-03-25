@@ -10,7 +10,12 @@ import {
 import { durationIsNonZero, humanReadableDuration } from '@dao-dao/utils'
 
 import { Button } from '../buttons/Button'
-import { NumberInput, PercentButton, SegmentedControls } from '../inputs'
+import {
+  InputLabel,
+  NumberInput,
+  PercentButton,
+  SegmentedControls,
+} from '../inputs'
 import { Modal } from '../modals/Modal'
 import { Tooltip } from '../tooltip/Tooltip'
 import { ValidatorPicker } from '../ValidatorPicker'
@@ -40,11 +45,13 @@ export const StakingModal = ({
   onAction,
   validatorPicker,
   visible = true,
+  enableRestaking: restakingEnabled,
 }: StakingModalProps) => {
   const { t } = useTranslation()
 
   const [mode, setMode] = useState(initialMode)
   const [validator, setValidator] = useState<string>()
+  const [fromValidator, setFromValidator] = useState<string>()
 
   // If choosing a validator, unstakable amount depends on chosen validator.
   if (validatorPicker) {
@@ -69,7 +76,8 @@ export const StakingModal = ({
       ? loadingStakableTokens.loading
         ? undefined
         : loadingStakableTokens.data
-      : !loadingUnstakableTokens || loadingUnstakableTokens.loading
+      : // Unstaking or restaking.
+      !loadingUnstakableTokens || loadingUnstakableTokens.loading
       ? undefined
       : loadingUnstakableTokens.data
 
@@ -100,7 +108,8 @@ export const StakingModal = ({
               onAction(
                 mode,
                 mode === StakingMode.Claim ? claimableTokens : amount,
-                validator
+                validator,
+                fromValidator
               )
             }
           >
@@ -116,42 +125,84 @@ export const StakingModal = ({
       }}
       headerContent={
         mode !== StakingMode.Claim || validatorPicker ? (
-          <div className="mt-5 flex w-full flex-col gap-2">
+          <div className="mt-5 flex w-full flex-col gap-4">
             {mode !== StakingMode.Claim && (
               <SegmentedControls
                 onSelect={setMode}
                 selected={mode}
                 tabs={[
                   {
-                    label: t(`button.stakingMode.stake`),
+                    label: t('button.stakingMode.stake'),
                     value: StakingMode.Stake,
                   },
                   {
-                    label: t(`button.stakingMode.unstake`),
+                    label: t('button.stakingMode.unstake'),
                     value: StakingMode.Unstake,
                   },
+                  ...(restakingEnabled && validatorPicker
+                    ? [
+                        {
+                          label: t('button.stakingMode.restake'),
+                          value: StakingMode.Restake,
+                        },
+                      ]
+                    : []),
                 ]}
               />
             )}
 
             {validatorPicker && (
-              <ValidatorPicker
-                {...validatorPicker}
-                nativeDecimals={tokenDecimals}
-                nativeDenom={tokenDenom}
-                onSelect={({ address }) => setValidator(address)}
-                selectedAddress={validator}
-                validators={
-                  mode === StakingMode.Stake
-                    ? validatorPicker.validators
-                    : validatorPicker.validators.filter((v) =>
-                        validatorPicker.stakes?.some(
-                          (s) =>
-                            s.validator.address === v.address && s.amount > 0
+              <>
+                {/* Show from validator. */}
+                {mode === StakingMode.Restake && (
+                  <div className="space-y-1">
+                    <InputLabel name={t('form.fromValidator')} />
+
+                    <ValidatorPicker
+                      {...validatorPicker}
+                      nativeDecimals={tokenDecimals}
+                      nativeDenom={tokenDenom}
+                      onSelect={({ address }) => setFromValidator(address)}
+                      selectedAddress={fromValidator}
+                      validators={
+                        // Can only restake from validators with stakes.
+                        validatorPicker.validators.filter((v) =>
+                          validatorPicker.stakes?.some(
+                            (s) =>
+                              s.validator.address === v.address && s.amount > 0
+                          )
                         )
-                      )
-                }
-              />
+                      }
+                    />
+                  </div>
+                )}
+
+                <div className="space-y-1">
+                  {mode === StakingMode.Restake && (
+                    <InputLabel name={t('form.toValidator')} />
+                  )}
+
+                  <ValidatorPicker
+                    {...validatorPicker}
+                    nativeDecimals={tokenDecimals}
+                    nativeDenom={tokenDenom}
+                    onSelect={({ address }) => setValidator(address)}
+                    selectedAddress={validator}
+                    validators={
+                      // If restaking, show all validators for destination.
+                      mode === StakingMode.Stake || mode === StakingMode.Restake
+                        ? validatorPicker.validators
+                        : validatorPicker.validators.filter((v) =>
+                            validatorPicker.stakes?.some(
+                              (s) =>
+                                s.validator.address === v.address &&
+                                s.amount > 0
+                            )
+                          )
+                    }
+                  />
+                </div>
+              </>
             )}
           </div>
         ) : undefined
@@ -159,34 +210,27 @@ export const StakingModal = ({
       onClose={onClose}
       visible={visible}
     >
-      {mode === StakingMode.Stake && (
+      {mode === StakingMode.Claim ? (
+        <ClaimModeBody
+          amount={claimableTokens}
+          tokenDecimals={tokenDecimals}
+          tokenSymbol={tokenSymbol}
+        />
+      ) : (
         <StakeUnstakeModesBody
           amount={amount}
-          loadingMax={loadingStakableTokens}
+          loadingMax={
+            mode === StakingMode.Stake
+              ? loadingStakableTokens
+              : // Unstake and restake.
+                loadingUnstakableTokens
+          }
           mode={mode}
           proposalDeposit={proposalDeposit}
           setAmount={(amount: number) => setAmount(amount)}
           tokenDecimals={tokenDecimals}
           tokenSymbol={tokenSymbol}
           unstakingDuration={unstakingDuration}
-        />
-      )}
-      {mode === StakingMode.Unstake && (
-        <StakeUnstakeModesBody
-          amount={amount}
-          loadingMax={loadingUnstakableTokens}
-          mode={mode}
-          setAmount={(amount: number) => setAmount(amount)}
-          tokenDecimals={tokenDecimals}
-          tokenSymbol={tokenSymbol}
-          unstakingDuration={unstakingDuration}
-        />
-      )}
-      {mode === StakingMode.Claim && (
-        <ClaimModeBody
-          amount={claimableTokens}
-          tokenDecimals={tokenDecimals}
-          tokenSymbol={tokenSymbol}
         />
       )}
     </Modal>
@@ -283,7 +327,9 @@ const StakeUnstakeModesBody = ({
           )}
       </div>
 
-      {(mode === StakingMode.Stake || mode === StakingMode.Unstake) &&
+      {(mode === StakingMode.Stake ||
+        mode === StakingMode.Unstake ||
+        mode === StakingMode.Restake) &&
         unstakingDuration &&
         durationIsNonZero(unstakingDuration) && (
           <div className="mt-7 space-y-5 border-t border-border-secondary pt-7">

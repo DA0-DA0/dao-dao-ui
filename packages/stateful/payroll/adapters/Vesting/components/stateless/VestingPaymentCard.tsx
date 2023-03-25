@@ -66,6 +66,7 @@ export interface VestingPaymentCardProps {
   onWithdraw: () => void
   withdrawing: boolean
 
+  canClaimStakingRewards?: boolean
   onClaim?: () => void
   claiming?: boolean
 
@@ -92,6 +93,7 @@ export const VestingPaymentCard = ({
   cw20Address,
   onWithdraw,
   withdrawing,
+  canClaimStakingRewards,
   onClaim,
   claiming,
   onManageStake,
@@ -151,13 +153,13 @@ export const VestingPaymentCard = ({
                   ? [
                       {
                         Icon: ChartEmoji,
-                        label: t('button.stakeOrUnstake'),
+                        label: t('title.manageStaking'),
                         closeOnClick: true,
                         onClick: onManageStake,
                       },
                     ]
                   : []),
-                ...(onClaim
+                ...(onClaim && canClaimStakingRewards
                   ? [
                       {
                         Icon: DepositEmoji,
@@ -217,6 +219,7 @@ export const VestingPaymentCard = ({
       withdrawing,
       onManageStake,
       onClaim,
+      canClaimStakingRewards,
       claiming,
       cw20Address,
       onAddToken,

@@ -114,9 +114,10 @@
     "stakeOrUnstake": "Stake or unstake",
     "stakeTokenSymbol": "Stake ${{tokenSymbol}}",
     "stakingMode": {
-      "claim": "Claim tokens",
-      "stake": "Stake tokens",
-      "unstake": "Unstake tokens"
+      "claim": "Claim",
+      "restake": "Restake",
+      "stake": "Stake",
+      "unstake": "Unstake"
     },
     "stopFollowing": "Stop following",
     "submit": "Submit",
@@ -254,6 +255,7 @@
     "noCancellableVestingContracts": "There are no vesting contracts that can be cancelled.",
     "noClaimsAvailable": "No claims available.",
     "noCw20Tokens": "There are no CW20 tokens displayed in the treasury.",
+    "noFromValidatorSelected": "No from validator selected.",
     "noImageSelected": "No image selected.",
     "noItemsSetUnusableAction": "There are no items set, so this action cannot be used.",
     "noMembers": "This DAO has no members.",
@@ -439,7 +441,7 @@
     "tierNameTitle": "Tier name",
     "tierNameTooltip": "The \"class\" of member. For example: \"Core developers\" or \"friends and family.\" These names are only for your reference.",
     "title": "Title",
-    "toValidator": "To validator",
+    "toValidator": "To Validator",
     "tokenAddress": "Token address",
     "tokenContractAddressTitle": "Token contract address",
     "tokenDefinition": "Token definition",
@@ -853,6 +855,7 @@
     "proposalCreatedCompleteCompensationCycle": "Proposal published. Complete the compensation cycle by saving the proposal ID.",
     "proposalExecuted": "Executed. Refreshing page...",
     "ratingsSubmitted": "Ratings submitted.",
+    "restaked": "Restaked successfully.",
     "staked": "Staked successfully.",
     "tokenSwapContractInstantiated": "Token swap created successfully.",
     "transactionExecuted": "Transaction executed successfully.",

@@ -157,6 +157,10 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     <>
       <StatelessVestingPaymentCard
         ButtonLink={ButtonLink}
+        canClaimStakingRewards={
+          !lazyInfoLoading.loading &&
+          !!lazyInfoLoading.data.stakingInfo?.totalPendingRewards
+        }
         claimedAmount={convertMicroDenomToDenomWithDecimals(
           vest.claimed,
           token.decimals

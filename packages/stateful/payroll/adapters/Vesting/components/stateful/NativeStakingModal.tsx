@@ -32,6 +32,7 @@ import {
 import { useAwaitNextBlock } from '../../../../../hooks'
 import {
   useDelegate,
+  useRedelegate,
   useUndelegate,
 } from '../../../../../hooks/contracts/CwVesting'
 import { VestingInfo } from '../../types'
@@ -96,6 +97,10 @@ export const NativeStakingModal = ({
     contractAddress: vestingContractAddress,
     sender: walletAddress,
   })
+  const redelegate = useRedelegate({
+    contractAddress: vestingContractAddress,
+    sender: walletAddress,
+  })
 
   if (
     vestLoadable.state !== 'hasValue' ||
@@ -107,7 +112,8 @@ export const NativeStakingModal = ({
   const onAction = async (
     mode: StakingMode,
     amount: number,
-    validator?: string | undefined
+    validator?: string,
+    fromValidator?: string
   ) => {
     // Should never happen.
     if (!validator) {
@@ -133,6 +139,20 @@ export const NativeStakingModal = ({
           ).toString(),
           validator,
         })
+      } else if (mode === StakingMode.Restake) {
+        if (!fromValidator) {
+          toast.error(t('error.noFromValidatorSelected'))
+          return
+        }
+
+        await redelegate({
+          amount: convertDenomToMicroDenomWithDecimals(
+            amount,
+            NATIVE_DECIMALS
+          ).toString(),
+          dstValidator: validator,
+          srcValidator: fromValidator,
+        })
       }
 
       // Wait a block for balances to update.
@@ -142,7 +162,14 @@ export const NativeStakingModal = ({
       setRefreshStaking((id) => id + 1)
 
       toast.success(
-        mode === StakingMode.Stake ? t('success.staked') : t('success.unstaked')
+        mode === StakingMode.Stake
+          ? t('success.staked')
+          : mode === StakingMode.Restake
+          ? t('success.restaked')
+          : mode === StakingMode.Unstake
+          ? t('success.unstaked')
+          : // Should never happen.
+            t('error.loadingData')
       )
       props.onClose()
     } catch (err) {
@@ -160,6 +187,7 @@ export const NativeStakingModal = ({
         // Tokens are claimable somewhere else.
         0
       }
+      enableRestaking
       initialMode={StakingMode.Stake}
       loading={loading}
       loadingStakableTokens={{
