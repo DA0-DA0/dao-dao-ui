@@ -350,10 +350,18 @@ export const MembersTab = ({
       <CSVLink
         className="hidden"
         data={[
-          ['Member', 'Voting Power'],
-          ...members.map(({ address, votingPowerPercent }) => [
+          [
+            'Member',
+            members.length
+              ? members[0].balance.label +
+                (members[0].balance.unit ? ` (${members[0].balance.unit})` : '')
+              : 'Balance',
+            'Voting power',
+          ],
+          ...members.map(({ address, balance, votingPowerPercent }) => [
             address,
-            votingPowerPercent.loading === false && votingPowerPercent.data,
+            balance.value.loading ? '...' : balance.value.data,
+            votingPowerPercent.loading ? '...' : votingPowerPercent.data,
           ]),
         ]}
         filename="members.csv"
