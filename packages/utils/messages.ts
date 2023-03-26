@@ -6,7 +6,6 @@ import {
   GenericAuthorization,
   Grant,
 } from 'cosmjs-types/cosmos/authz/v1beta1/authz'
-import { MsgExec, MsgGrant } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import { SendAuthorization } from 'cosmjs-types/cosmos/bank/v1beta1/authz'
 import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
 import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
@@ -196,8 +195,6 @@ export const typesRegistry = new Registry([
   // Custom types not in @cosmjs/stargate default registry.
   ...([
     ['/cosmos.slashing.v1beta1.MsgUnjail', MsgUnjail],
-    ['/cosmos.authz.v1beta1.MsgGrant', MsgGrant],
-    ['/cosmos.authz.v1beta1.MsgExec', MsgExec],
     ['/cosmos.authz.v1beta1.GenericAuthorization', GenericAuthorization],
     ['/cosmos.authz.v1beta1.Grant', Grant],
     ['/cosmos.crypto.ed25519.PubKey', PubKey],
