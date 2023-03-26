@@ -7,6 +7,7 @@ import { makeCustomAction } from './Custom'
 import { makeDaoAdminExecAction } from './DaoAdminExec'
 import { makeEnableMultipleChoiceAction } from './EnableMultipleChoice'
 import { makeExecuteAction } from './Execute'
+import { makeFeeShareAction } from './FeeShare'
 import { makeGovernanceVoteAction } from './GovernanceVote'
 import { makeInstantiateAction } from './Instantiate'
 import { makeManageCw20Action } from './ManageCw20'
@@ -63,6 +64,7 @@ export const getActions = (options: ActionOptions): Action[] => {
     makeDaoAdminExecAction,
     makeEnableMultipleChoiceAction,
     makeManageWidgetsAction,
+    makeFeeShareAction,
   ]
 
   return actionMakers
