@@ -49,10 +49,20 @@ export const MembersTab = () => {
   const memberCards: ComponentPropsWithoutRef<typeof DaoMemberCard>[] =
     members.map(({ addr, weight }) => ({
       address: addr,
+      balance: {
+        label: t('title.votingWeight'),
+        value: {
+          loading: false,
+          data: weight.toLocaleString(),
+        },
+      },
       votingPowerPercent:
         totalVotingWeight === undefined
           ? { loading: true }
-          : { loading: false, data: (weight / totalVotingWeight) * 100 },
+          : {
+              loading: false,
+              data: (weight / totalVotingWeight) * 100,
+            },
     }))
 
   return (
