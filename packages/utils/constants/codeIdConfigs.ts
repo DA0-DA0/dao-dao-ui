@@ -1,57 +1,55 @@
 import { CodeIdConfig } from '@dao-dao/types'
 
-// ContractVersion.V203
-// https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.3
 const junoTestnet: CodeIdConfig = {
   // https://github.com/CosmWasm/cw-plus
   Cw20Base: 177,
   Cw4Group: 178,
   // https://github.com/CosmWasm/cw-nfts
   Cw721Base: 179,
-  // https://github.com/DA0-DA0/dao-contracts
-  Cw20Stake: 155,
-  CwAdminFactory: 158,
-  CwPayrollFactory: 526,
-  CwTokenSwap: 161,
-  CwVesting: 633,
-  DaoCore: 163,
-  // TODO: Add DaoMigrator.
-  DaoMigrator: -1,
-  DaoPreProposeMultiple: 167,
-  DaoPreProposeSingle: 168,
-  DaoProposalMultiple: 170,
-  DaoProposalSingle: 171,
-  DaoVotingCw20Staked: 172,
-  DaoVotingCw4: 173,
-  DaoVotingCw721Staked: 174,
-  DaoVotingNativeStaked: 175,
+
+  // ContractVersion.V210
+  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
+  Cw20Stake: 1247,
+  CwAdminFactory: 1250,
+  CwPayrollFactory: 1252,
+  CwTokenSwap: 1253,
+  CwVesting: 1254,
+  DaoCore: 1255,
+  DaoMigrator: 1256,
+  DaoPreProposeMultiple: 1258,
+  DaoPreProposeSingle: 1259,
+  DaoProposalMultiple: 1261,
+  DaoProposalSingle: 1262,
+  DaoVotingCw20Staked: 1263,
+  DaoVotingCw4: 1264,
+  DaoVotingCw721Staked: 1265,
+  DaoVotingNativeStaked: 1266,
 }
 
-// ContractVersion.V203
-// https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.3
 const junoMainnet: CodeIdConfig = {
   // https://github.com/CosmWasm/cw-plus
   Cw20Base: 1993, // v0.16
   Cw4Group: 1992, // v0.16
   // https://github.com/CosmWasm/cw-nfts
   Cw721Base: 1994, // v0.16
-  // https://github.com/DA0-DA0/dao-contracts
-  Cw20Stake: 1995,
-  CwAdminFactory: 2013,
-  CwPayrollFactory: -1,
-  CwTokenSwap: 2000,
-  CwVesting: -1,
-  DaoCore: 2024,
-  // TODO: Add DaoMigrator.
-  DaoMigrator: -1,
-  DaoPreProposeMultiple: 2028,
-  DaoPreProposeSingle: 2029,
-  DaoProposalMultiple: 2031,
-  DaoProposalSingle: 2032,
-  DaoVotingCw20Staked: 2033,
-  DaoVotingCw4: 2034,
-  DaoVotingCw721Staked: 2035,
-  DaoVotingNativeStaked: 2036,
+
+  // ContractVersion.V210
+  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
+  Cw20Stake: 2444,
+  CwAdminFactory: 2449,
+  CwPayrollFactory: 2451,
+  CwTokenSwap: 2452,
+  CwVesting: 2453,
+  DaoCore: 2454,
+  DaoMigrator: 2455,
+  DaoPreProposeMultiple: 2458,
+  DaoPreProposeSingle: 2459,
+  DaoProposalMultiple: 2461,
+  DaoProposalSingle: 2462,
+  DaoVotingCw20Staked: 2463,
+  DaoVotingCw4: 2464,
+  DaoVotingCw721Staked: 2465,
+  DaoVotingNativeStaked: 2466,
 }
 
 export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {
