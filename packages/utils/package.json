@@ -17,6 +17,7 @@
     "ajv": "^8.11.0",
     "cosmjs-types": "^0.5.2",
     "json5": "^2.2.0",
+    "juno-network": "^0.14.0",
     "long": "^5.2.1",
     "next-i18next": "^11.0.0",
     "query-string": "^7.1.3",

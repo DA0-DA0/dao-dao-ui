@@ -6,6 +6,7 @@ import { GenericAuthorization } from 'cosmjs-types/cosmos/authz/v1beta1/authz'
 import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
 import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
 import { Any } from 'cosmjs-types/google/protobuf/any'
+import { juno } from 'juno-network'
 import { cosmos } from 'interchain-rpc'
 
 import { GovProposal, GovProposalWithDecodedContent } from '@dao-dao/types'
@@ -181,6 +182,11 @@ export const typesRegistry = new Registry([
     ['/cosmos.slashing.v1beta1.MsgUnjail', MsgUnjail],
     ['/cosmos.authz.v1beta1.GenericAuthorization', GenericAuthorization],
     ['/cosmos.crypto.ed25519.PubKey', PubKey],
+    [
+      '/juno.feeshare.v1.MsgRegisterFeeShare',
+      juno.feeshare.v1.MsgRegisterFeeShare,
+    ],
+    ['/juno.feeshare.v1.MsgUpdateFeeShare', juno.feeshare.v1.MsgUpdateFeeShare],
   ] as ReadonlyArray<[string, GeneratedType]>),
 ])
 

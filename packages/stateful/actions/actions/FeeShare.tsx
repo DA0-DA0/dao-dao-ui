@@ -1,5 +1,3 @@
-import { toBase64 } from '@cosmjs/encoding'
-import { juno } from 'juno-network'
 import { useCallback, useMemo } from 'react'
 
 import { GasEmoji } from '@dao-dao/stateless'
@@ -10,7 +8,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { isDecodedStargateMsg } from '@dao-dao/utils'
+import { isDecodedStargateMsg, makeStargateMessage } from '@dao-dao/utils'
 
 import { FeeShareComponent as Component } from '../components/FeeShare'
 
@@ -69,36 +67,17 @@ export const makeFeeShareAction: ActionMaker<FeeShareData> = ({
     useCallback((data: FeeShareData) => {
       const { contract, showWithdrawer, typeUrl, withdrawer } = data
 
-      let value
-      switch (typeUrl) {
-        case FeeShareType.Register:
-          const { MsgRegisterFeeShare } = juno.feeshare.v1
-          value = MsgRegisterFeeShare.encode({
-            contractAddress: contract,
-            deployerAddress: address,
-            withdrawerAddress:
-              showWithdrawer && withdrawer ? withdrawer : address,
-          }).finish()
-          break
-        case FeeShareType.Update:
-          const { MsgUpdateFeeShare } = juno.feeshare.v1
-          value = MsgUpdateFeeShare.encode({
-            contractAddress: contract,
-            deployerAddress: address,
-            withdrawerAddress:
-              showWithdrawer && withdrawer ? withdrawer : address,
-          }).finish()
-          break
-        default:
-          throw new Error('Unknown typeUrl')
-      }
-
-      return {
+      return makeStargateMessage({
         stargate: {
-          type_url: typeUrl,
-          value: toBase64(value),
+          typeUrl,
+          value: {
+            contractAddress: contract,
+            deployerAddress: address,
+            withdrawerAddress:
+              showWithdrawer && withdrawer ? withdrawer : address,
+          },
         },
-      }
+      })
     }, [])
 
   return {
