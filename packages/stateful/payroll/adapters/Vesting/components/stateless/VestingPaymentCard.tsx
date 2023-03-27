@@ -133,22 +133,30 @@ export const VestingPaymentCard = ({
     return () => clearTimeout(timeout)
   }, [copied])
 
+  // Can only withdraw if there is a distributable amount.
+  const canWithdraw = distributableAmount > 0
+
   const buttonPopupSections: ButtonPopupSection[] = useMemo(
     () => [
       // Only show payout actions if recipient is the currently connected
       // wallet.
-      ...(recipientIsWallet
+      ...(recipientIsWallet &&
+      (canWithdraw || onManageStake || (onClaim && canClaimStakingRewards))
         ? [
             {
               label: t('title.manage'),
               buttons: [
-                {
-                  Icon: MoneyEmoji,
-                  label: t('button.withdrawAvailableBalance'),
-                  closeOnClick: false,
-                  onClick: onWithdraw,
-                  loading: withdrawing,
-                },
+                ...(canWithdraw
+                  ? [
+                      {
+                        Icon: MoneyEmoji,
+                        label: t('button.withdrawAvailableBalance'),
+                        closeOnClick: false,
+                        onClick: onWithdraw,
+                        loading: withdrawing,
+                      },
+                    ]
+                  : []),
                 ...(onManageStake
                   ? [
                       {
@@ -215,6 +223,7 @@ export const VestingPaymentCard = ({
     [
       recipientIsWallet,
       t,
+      canWithdraw,
       onWithdraw,
       withdrawing,
       onManageStake,
@@ -382,7 +391,8 @@ export const VestingPaymentCard = ({
         </div>
 
         <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
-          {distributableAmount > 0 && (
+          {/* Show available balance to withdraw if it is nonzero OR if there is still a balance vesting. This ensures that it explicitly displays that there is no balance to withdraw when the vest is not yet over. There may not be any balance if all vested tokens are staked or still unstaking, and it might be confusing if this line remains hidden in that case. */}
+          {(distributableAmount > 0 || remainingBalanceVesting > 0) && (
             <div className="flex flex-row items-start justify-between gap-8">
               <p className="link-text">{t('info.availableBalance')}</p>
 
