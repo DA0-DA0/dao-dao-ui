@@ -27,7 +27,6 @@ import {
 import { AudioPlayer } from './AudioPlayer'
 import { Button } from './buttons'
 import { CopyToClipboardUnderline } from './CopyToClipboard'
-import { IconButton } from './icon_buttons'
 import { Checkbox } from './inputs'
 import { MarkdownRenderer } from './MarkdownRenderer'
 import { ButtonPopup } from './popup/ButtonPopup'
@@ -195,21 +194,20 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
             <div className="absolute top-2 right-2">
               <ButtonPopup
                 ButtonLink={buttonPopup.ButtonLink}
-                Trigger={({ open, ...props }) => (
-                  <IconButton
-                    Icon={ExpandCircleDownOutlined}
-                    className={clsx(
-                      'shadow-dp4 group-hover:opacity-100',
-                      !open && 'opacity-0'
-                    )}
-                    focused={open}
-                    variant="primary_inverted"
-                    {...props}
-                  />
-                )}
                 popupClassName="w-[16rem]"
                 position="left"
                 sections={buttonPopup.sections}
+                trigger={{
+                  type: 'icon_button',
+                  props: ({ open }) => ({
+                    Icon: ExpandCircleDownOutlined,
+                    className: clsx(
+                      'shadow-dp4 group-hover:opacity-100',
+                      !open && 'opacity-0'
+                    ),
+                    variant: 'primary_inverted',
+                  }),
+                }}
               />
             </div>
           )}

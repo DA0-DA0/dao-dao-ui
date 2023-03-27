@@ -33,7 +33,7 @@ export type UseFollowingDaosReturn = {
 
 export const useFollowingDaos = (): UseFollowingDaosReturn => {
   const { t } = useTranslation()
-  const { status, address: walletAddress } = useWallet()
+  const { status, connected, address: walletAddress } = useWallet()
 
   // Following API doesn't update right away, so this serves to keep track of
   // all successful updates for the current session. This will be reset on page
@@ -160,9 +160,9 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
       status === WalletConnectionStatus.Initializing ||
       status === WalletConnectionStatus.AttemptingAutoConnection ||
       status === WalletConnectionStatus.Connecting ||
-      // Updating if following is loading or update is in progress.
-      followingDaosLoading.loading ||
-      updating,
+      // Updating if wallet connected and following is loading or update is in
+      // progress.
+      (connected && (followingDaosLoading.loading || updating)),
     ready,
   }
 }

@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/state'
 import { TokenCardInfo, WithChainId } from '@dao-dao/types'
 import {
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,
   nativeTokenLabel,
@@ -57,7 +57,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
 
           // For now, stakingInfo only exists for native token, until ICA.
           const hasStakingInfo =
-            token.denomOrAddress === NATIVE_DENOM &&
+            token.denomOrAddress === NATIVE_TOKEN.denomOrAddress &&
             // Check if anything staked.
             Number(
               get(

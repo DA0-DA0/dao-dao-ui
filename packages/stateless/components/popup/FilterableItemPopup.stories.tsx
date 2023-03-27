@@ -7,7 +7,6 @@ import {
 } from '@mui/icons-material'
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Button } from '../buttons'
 import { FilterableItemPopup } from './FilterableItemPopup'
 
 export default {
@@ -22,11 +21,13 @@ const Template: ComponentStory<typeof FilterableItemPopup> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  Trigger: ({ open, ...props }) => (
-    <Button pressed={open} variant="secondary" {...props}>
-      Click me!
-    </Button>
-  ),
+  trigger: {
+    type: 'button',
+    props: {
+      variant: 'secondary',
+      children: 'Click me!',
+    },
+  },
   searchPlaceholder: 'Filter...',
   items: [
     {

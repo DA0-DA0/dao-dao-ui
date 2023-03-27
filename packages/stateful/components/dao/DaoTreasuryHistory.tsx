@@ -20,10 +20,8 @@ import {
 } from '@dao-dao/stateless'
 import {
   CHAIN_TXN_URL_PREFIX,
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
-  nativeTokenLabel,
   processError,
 } from '@dao-dao/utils'
 
@@ -52,7 +50,6 @@ export const DaoTreasuryHistory = (props: DaoTreasuryHistoryProps) => {
   )
 }
 
-const NATIVE_DENOM_LABEL = nativeTokenLabel(NATIVE_DENOM)
 // Load roughly 3 days at a time (assuming 1 block per 6 seconds, which is not
 // accurate but close enough).
 const BLOCK_HEIGHT_INTERVAL = (60 * 60 * 24 * 3) / 6
@@ -149,12 +146,12 @@ export const InnerDaoTreasuryHistory = ({
   const lineGraphValues = useMemo(() => {
     let runningTotal = convertMicroDenomToDenomWithDecimals(
       nativeBalance.amount,
-      NATIVE_DECIMALS
+      NATIVE_TOKEN.decimals
     )
 
     return (
       transactions
-        .filter(({ denomLabel }) => denomLabel === NATIVE_DENOM_LABEL)
+        .filter(({ denomLabel }) => denomLabel === NATIVE_TOKEN.symbol)
         .map(({ amount, outgoing }) => {
           let currentTotal = runningTotal
           runningTotal -= (outgoing ? -1 : 1) * amount
@@ -177,9 +174,9 @@ export const InnerDaoTreasuryHistory = ({
           <div className="max-w-lg">
             <LineGraph
               title={t('title.nativeBalanceOverTime', {
-                denomLabel: NATIVE_DENOM_LABEL,
+                denomLabel: NATIVE_TOKEN.symbol,
               }).toLocaleUpperCase()}
-              yTitle={NATIVE_DENOM_LABEL}
+              yTitle={NATIVE_TOKEN.symbol}
               yValues={lineGraphValues}
             />
           </div>

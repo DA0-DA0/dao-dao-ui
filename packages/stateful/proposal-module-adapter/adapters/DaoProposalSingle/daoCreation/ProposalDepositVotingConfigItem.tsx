@@ -1,20 +1,19 @@
-import { ArrowDropDown } from '@mui/icons-material'
-import { ComponentType, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { UseFormWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state'
 import {
   AddressInput,
-  Button,
-  FilterableItemPopup,
   FormSwitchCard,
   InputErrorMessage,
   InputLabel,
   Loader,
   MoneyEmoji,
-  NumberInput,
   SelectInput,
+  TokenInput,
+  TokenInputOption,
 } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
@@ -26,17 +25,12 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
   convertMicroDenomToDenomWithDecimals,
-  getFallbackImage,
   ibcAssets,
   isValidContractAddress,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
-  toAccessibleImageUrl,
   validateContractAddress,
-  validatePositive,
 } from '@dao-dao/utils'
 
 import { DaoVotingCw20StakedAdapter } from '../../../../voting-module-adapter'
@@ -55,6 +49,7 @@ export const ProposalDepositInput = ({
   },
   register,
   setValue,
+  watch,
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
@@ -153,56 +148,47 @@ export const ProposalDepositInput = ({
   const decimals = tokenLoaded?.decimals ?? 0
   const minimum = convertMicroDenomToDenomWithDecimals(1, decimals)
 
-  const availableTokens: {
-    key: string
-    type: 'native' | 'cw20' | 'voting_module_token'
-    label: string
-    description?: string
-    Icon?: ComponentType
-  }[] = [
+  const availableTokens: TokenInputOption[] = [
     // Governance token first.
     ...(cw20GovernanceTokenSymbol
       ? [
           {
-            key: 'voting_module_token',
-            type: 'voting_module_token' as const,
-            label: '$' + cw20GovernanceTokenSymbol,
+            type: 'voting_module_token',
+            denomOrAddress: 'voting_module_token',
+            symbol: cw20GovernanceTokenSymbol,
+            description: t('title.governanceToken'),
             imageUrl: cw20GovernanceTokenImageUrl,
           },
         ]
       : []),
     // Then native.
     {
-      key: NATIVE_DENOM,
-      type: 'native' as const,
-      label: nativeTokenLabel(NATIVE_DENOM),
-      imageUrl: nativeTokenLogoURI(NATIVE_DENOM),
+      ...NATIVE_TOKEN,
     },
     // Then the IBC assets.
     ...ibcAssets.tokens.map(({ juno_denom, symbol, name, logoURI }) => ({
-      key: juno_denom,
-      type: 'native' as const,
-      label: symbol,
+      type: TokenType.Native,
+      denomOrAddress: juno_denom,
+      symbol,
       description: symbol === name ? undefined : name,
       imageUrl: logoURI,
     })),
     // Then other CW20.
     {
-      key: 'other_cw20',
-      type: 'cw20' as const,
-      label: t('form.cw20Token'),
+      type: TokenType.Cw20,
+      denomOrAddress: 'other_cw20',
+      symbol:
+        (type === TokenType.Cw20 && tokenLoaded?.symbol) || t('form.cw20Token'),
+      imageUrl: (type === TokenType.Cw20 && tokenLoaded?.imageUrl) || undefined,
     },
-  ].map(({ imageUrl, ...rest }) => ({
-    ...rest,
-    Icon: imageUrl
-      ? () => (
-          <div
-            className="h-8 w-8 rounded-full bg-cover bg-center"
-            style={{ backgroundImage: `url(${imageUrl})` }}
-          />
-        )
-      : undefined,
-  }))
+  ]
+  const selectedToken = availableTokens.find(
+    (token) =>
+      // `voting_module_token` and `cw20` only correspond to one token above.
+      // `native` can be multiple, so match on denom.
+      token.type === type &&
+      (type !== TokenType.Native || token.denomOrAddress === denomOrAddress)
+  )
 
   return (
     <div className="flex flex-col gap-2">
@@ -216,69 +202,44 @@ export const ProposalDepositInput = ({
       {enabled && (
         <>
           <div className="space-y-1">
-            <div className="flex flex-row items-stretch gap-2">
-              <NumberInput
-                containerClassName="grow"
-                error={errors?.proposalDeposit?.amount}
-                fieldName="proposalDeposit.amount"
-                register={register}
-                sizing="sm"
-                step={minimum}
-                validation={[validatePositive]}
-              />
+            <TokenInput
+              amountError={errors?.proposalDeposit?.amount}
+              amountFieldName="proposalDeposit.amount"
+              amountStep={minimum}
+              onSelectToken={({ type, denomOrAddress }) => {
+                // Type-check, should never happen.
+                if (
+                  type !== 'voting_module_token' &&
+                  type !== TokenType.Native &&
+                  type !== TokenType.Cw20
+                ) {
+                  return
+                }
 
-              <FilterableItemPopup
-                Trigger={({ open, ...props }) => (
-                  <Button
-                    contentContainerClassName="justify-between"
-                    pressed={open}
-                    variant="secondary"
-                    {...props}
-                  >
-                    {tokenLoaded ? (
-                      <div className="flex flex-row items-center gap-2">
-                        <div
-                          className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
-                          style={{
-                            backgroundImage: `url(${toAccessibleImageUrl(
-                              tokenLoaded.imageUrl ||
-                                getFallbackImage(tokenLoaded.denomOrAddress)
-                            )})`,
-                          }}
-                        />
+                setValue('proposalDeposit.type', type)
 
-                        <p>${tokenLoaded.symbol}</p>
-                      </div>
-                    ) : type === 'cw20' &&
-                      !isValidContractAddress(
-                        denomOrAddress,
-                        CHAIN_BECH32_PREFIX
-                      ) ? (
-                      t('form.cw20Token')
-                    ) : (
-                      tokenLoadable.state === 'loading' && <Loader size={24} />
-                    )}
-
-                    <ArrowDropDown className="ml-2 !h-6 !w-6" />
-                  </Button>
-                )}
-                filterableItemKeys={FILTERABLE_KEYS}
-                items={availableTokens}
-                onSelect={({ key, type }) => {
-                  setValue('proposalDeposit.type', type)
-
-                  // `key` for native tokens is the denom.
-                  if (type === 'native') {
-                    setValue('proposalDeposit.denomOrAddress', key)
-                  } else {
-                    // `voting_module_token` doesn't need one set, and `cw20`
-                    // shows an address input, so clear for both.
-                    setValue('proposalDeposit.denomOrAddress', '')
-                  }
-                }}
-                searchPlaceholder={t('info.searchForToken')}
-              />
-            </div>
+                if (type === TokenType.Native) {
+                  setValue('proposalDeposit.denomOrAddress', denomOrAddress)
+                } else {
+                  // `voting_module_token` doesn't need one set, and cw20 shows
+                  // an address input, so clear for both.
+                  setValue('proposalDeposit.denomOrAddress', '')
+                }
+              }}
+              register={register}
+              required={false}
+              selectedToken={selectedToken}
+              setValue={setValue}
+              tokenFallback={
+                type === 'cw20'
+                  ? !isValidContractAddress(denomOrAddress, CHAIN_BECH32_PREFIX)
+                    ? t('form.cw20Token')
+                    : tokenLoadable.state === 'loading' && <Loader size={24} />
+                  : undefined
+              }
+              tokens={{ loading: false, data: availableTokens }}
+              watch={watch as UseFormWatch<DaoCreationConfig>}
+            />
 
             <InputErrorMessage error={errors?.proposalDeposit?.amount} />
           </div>
@@ -358,5 +319,3 @@ export const ProposalDepositVotingConfigItem: DaoCreationVotingConfigItem<DaoCre
     getInputError: () => undefined,
     Review: ProposalDepositReview,
   }
-
-const FILTERABLE_KEYS = ['key', 'label', 'description']

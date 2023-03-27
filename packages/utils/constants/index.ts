@@ -28,13 +28,13 @@ export const NATIVE_DECIMALS = parseInt(
   10
 )
 export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
-export const NATIVE_TOKEN: GenericToken = {
+export const NATIVE_TOKEN: GenericToken = Object.freeze({
   type: TokenType.Native,
   denomOrAddress: NATIVE_DENOM,
   symbol: nativeTokenLabel(NATIVE_DENOM),
   decimals: NATIVE_DECIMALS,
   imageUrl: nativeTokenLogoURI(NATIVE_DENOM) || getFallbackImage(NATIVE_DENOM),
-}
+})
 
 export const USDC_DECIMALS = parseInt(
   process.env.NEXT_PUBLIC_USDC_DECIMALS || '6',
@@ -198,3 +198,7 @@ export const HIDDEN_BALANCE_PREFIX = 'hiddenBalance:'
 // Supported NFT video extensions. If an NFT image is a video, we'll try to
 // render a video player instead of an image.
 export const NFT_VIDEO_EXTENSIONS = ['mp4', 'webm', 'mov', 'avi']
+
+// Widgets
+// The namespace (prefix) of widgets stored in a DAO's core items list.
+export const DAO_WIDGET_ITEM_NAMESPACE = 'widget:'

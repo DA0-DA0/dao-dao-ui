@@ -63,15 +63,15 @@ export const SdaLayout = ({
           // automatically displays.
           responsiveNavigation.enabled
             ? 'opacity-30 sm:opacity-100'
-            : // Right sidebar can be responsive up to xl size. After that, it automatically displays.
+            : // Right sidebar can be responsive up to 2xl size. After that, it automatically displays.
             responsiveRightSidebar.enabled
-            ? 'opacity-30 xl:opacity-100'
+            ? 'opacity-30 2xl:opacity-100'
             : 'opacity-100'
         )}
       >
         <div
           className={clsx(
-            'fixed right-4 bottom-4 z-10 cursor-pointer sm:right-6 sm:bottom-6 xl:hidden'
+            'fixed right-4 bottom-4 z-10 cursor-pointer sm:right-6 sm:bottom-6 2xl:hidden'
           )}
           onClick={connected ? responsiveRightSidebar.toggle : undefined}
         >

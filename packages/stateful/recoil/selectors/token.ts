@@ -1,8 +1,11 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
 import {
+  Cw20BaseSelectors,
   DaoCoreV2Selectors,
   cw20TokenDaosWithStakedBalanceSelector,
+  genericTokenSelector,
+  nativeBalanceSelector,
   nativeBalancesSelector,
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
@@ -19,7 +22,7 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
   isValidContractAddress,
   isValidWalletAddress,
@@ -44,7 +47,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
       const usdUnitPrice = get(wyndUsdPriceSelector(token.denomOrAddress))
 
       // For now, stakingInfo only exists for native token, until ICA.
-      if (token.denomOrAddress === NATIVE_DENOM) {
+      if (token.denomOrAddress === NATIVE_TOKEN.denomOrAddress) {
         const nativeDelegationInfo = get(
           nativeDelegationInfoSelector({ address: walletAddress, chainId })
         )
@@ -131,11 +134,23 @@ export const tokenCardLazyInfoSelector = selectorFamily<
         (stakingInfo
           ? stakingInfo.totalStaked + stakingInfo.totalUnstaking
           : 0) +
-        // Add balances staked in DAOs.
-        (daosGoverned?.reduce(
-          (acc, { stakedBalance }) => acc + (stakedBalance ?? 0),
-          0
-        ) || 0)
+        // Add balances staked in DAOs, grouped by their
+        // `stakingContractAddress` so we don't double-count tokens staked with
+        // the same staking contract if that staking contract is used in
+        // different DAOs in the list.
+        Object.values(
+          daosGoverned?.reduce(
+            (acc, { stakingContractAddress, stakedBalance = 0 }) => ({
+              ...acc,
+              // If the staking contract address is already in the accumulator,
+              // overwrite so we don't double-count. All staked balances for the
+              // same staking contract should be the same, so overwriting should
+              // do nothing.
+              [stakingContractAddress]: stakedBalance,
+            }),
+            {} as Record<string, number>
+          ) || {}
+        ).reduce((acc, stakedBalance) => acc + stakedBalance, 0)
 
       return {
         usdUnitPrice,
@@ -151,34 +166,83 @@ export const genericTokenBalancesSelector = selectorFamily<
   WithChainId<{
     address: string
     cw20GovernanceTokenAddress?: string
+    // Only get balances for this token type.
+    filter?: TokenType
   }>
 >({
   key: 'genericTokenBalances',
   get:
-    ({ address, cw20GovernanceTokenAddress, chainId }) =>
+    ({ address, cw20GovernanceTokenAddress, chainId, filter }) =>
     async ({ get }) => {
-      const nativeTokenBalances = get(
-        nativeBalancesSelector({
-          address,
-          chainId,
-        })
-      )
+      const nativeTokenBalances =
+        !filter || filter === TokenType.Native
+          ? get(
+              nativeBalancesSelector({
+                address,
+                chainId,
+              })
+            )
+          : []
 
-      const cw20TokenBalances = get(
-        isValidContractAddress(address, CHAIN_BECH32_PREFIX)
-          ? DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
-              contractAddress: address,
-              governanceTokenAddress: cw20GovernanceTokenAddress,
-              chainId,
-            })
-          : isValidWalletAddress(address, CHAIN_BECH32_PREFIX)
-          ? walletCw20BalancesSelector({
-              walletAddress: address,
-              chainId,
-            })
-          : waitForAll([])
-      )
+      const cw20TokenBalances =
+        !filter || filter === TokenType.Cw20
+          ? get(
+              isValidContractAddress(address, CHAIN_BECH32_PREFIX)
+                ? DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
+                    contractAddress: address,
+                    governanceTokenAddress: cw20GovernanceTokenAddress,
+                    chainId,
+                  })
+                : isValidWalletAddress(address, CHAIN_BECH32_PREFIX)
+                ? walletCw20BalancesSelector({
+                    walletAddress: address,
+                    chainId,
+                  })
+                : waitForAll([])
+            )
+          : []
 
       return [...nativeTokenBalances, ...cw20TokenBalances]
+    },
+})
+
+export const genericTokenBalanceSelector = selectorFamily<
+  GenericTokenBalance,
+  Parameters<typeof genericTokenSelector>[0] & {
+    walletAddress: string
+  }
+>({
+  key: 'genericTokenBalance',
+  get:
+    ({ walletAddress, ...params }) =>
+    async ({ get }) => {
+      const token = get(genericTokenSelector(params))
+
+      let balance = '0'
+      if (token.type === TokenType.Native) {
+        balance = get(
+          nativeBalanceSelector({
+            address: walletAddress,
+            chainId: params.chainId,
+          })
+        ).amount
+      } else if (token.type === TokenType.Cw20) {
+        balance = get(
+          Cw20BaseSelectors.balanceSelector({
+            contractAddress: params.denomOrAddress,
+            chainId: params.chainId,
+            params: [
+              {
+                address: walletAddress,
+              },
+            ],
+          })
+        ).balance
+      }
+
+      return {
+        token,
+        balance,
+      }
     },
 })

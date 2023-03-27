@@ -2,11 +2,17 @@ import {
   ArrowRightAltRounded,
   SubdirectoryArrowRightRounded,
 } from '@mui/icons-material'
+import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { HerbEmoji, InputErrorMessage, NumberInput } from '@dao-dao/stateless'
+import {
+  HerbEmoji,
+  InputErrorMessage,
+  NumberInput,
+  useDetectWrap,
+} from '@dao-dao/stateless'
 import {
   ActionComponent,
   AddressInputProps,
@@ -36,9 +42,15 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
+  const { containerRef, childRef, wrapped } = useDetectWrap()
+  const Icon = wrapped ? SubdirectoryArrowRightRounded : ArrowRightAltRounded
+
   return (
     <ActionCard Icon={HerbEmoji} onRemove={onRemove} title={t('title.mint')}>
-      <div className="flex flex-col items-stretch gap-x-3 gap-y-2 sm:flex-row">
+      <div
+        className="flex flex-row flex-wrap items-stretch gap-x-3 gap-y-2"
+        ref={containerRef}
+      >
         <NumberInput
           containerClassName="w-full sm:w-auto"
           disabled={!isCreating}
@@ -54,10 +66,14 @@ export const MintComponent: ActionComponent<MintOptions> = ({
           watch={watch}
         />
 
-        <div className="flex grow flex-row items-stretch gap-2 sm:gap-3">
-          <div className="flex flex-row items-center pl-1 sm:pl-0">
-            <ArrowRightAltRounded className="!hidden !h-6 !w-6 text-text-secondary sm:!block" />
-            <SubdirectoryArrowRightRounded className="!h-4 !w-4 text-text-secondary sm:!hidden" />
+        <div
+          className="flex grow flex-row items-stretch gap-2 sm:gap-3"
+          ref={childRef}
+        >
+          <div
+            className={clsx('flex flex-row items-center', wrapped && 'pl-1')}
+          >
+            <Icon className="!h-6 !w-6 text-text-secondary" />
           </div>
 
           <AddressInput

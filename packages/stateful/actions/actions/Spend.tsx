@@ -1,9 +1,10 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
-import { ActionCardLoader, MoneyEmoji } from '@dao-dao/stateless'
+import { MoneyEmoji } from '@dao-dao/stateless'
 import { TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -13,15 +14,17 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_DENOM,
+  CHAIN_BECH32_PREFIX,
+  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  isValidContractAddress,
   makeBankMessage,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { AddressInput, SuspenseLoader } from '../../components'
+import { AddressInput } from '../../components'
 import {
   SpendData,
   SpendComponent as StatelessSpendComponent,
@@ -34,29 +37,39 @@ const useDefaults: UseDefaults<SpendData> = () => {
   return {
     to: walletAddress,
     amount: 1,
-    denom: NATIVE_DENOM,
+    denom: NATIVE_TOKEN.denomOrAddress,
   }
 }
 
 const Component: ActionComponent<undefined, SpendData> = (props) => {
-  const loadingTokens = useTokenBalances()
+  // Get the selected token if not creating.
+  const { watch } = useFormContext<SpendData>()
+  const denom = watch((props.fieldNamePrefix + 'denom') as 'denom')
+
+  const loadingTokens = useTokenBalances({
+    // Load selected token when not creating, in case it is no longer returned
+    // in the list of all tokens for the given DAO/wallet.
+    additionalTokens: props.isCreating
+      ? undefined
+      : [
+          {
+            // Cw20 denoms are contract addresses, native denoms are not.
+            type: isValidContractAddress(denom, CHAIN_BECH32_PREFIX)
+              ? TokenType.Cw20
+              : TokenType.Native,
+            denomOrAddress: denom,
+          },
+        ],
+  })
 
   return (
-    <SuspenseLoader
-      fallback={<ActionCardLoader />}
-      forceFallback={
-        // Manually trigger loader.
-        loadingTokens.loading
-      }
-    >
-      <StatelessSpendComponent
-        {...props}
-        options={{
-          tokens: loadingTokens.loading ? [] : loadingTokens.data,
-          AddressInput,
-        }}
-      />
-    </SuspenseLoader>
+    <StatelessSpendComponent
+      {...props}
+      options={{
+        tokens: loadingTokens,
+        AddressInput,
+      }}
+    />
   )
 }
 

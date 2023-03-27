@@ -22,7 +22,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_DENOM,
+  NATIVE_TOKEN,
   decodeRawProtobufMsg,
   encodeRawProtobufMsg,
   isDecodedStargateMsg,
@@ -55,13 +55,13 @@ interface AuthzExecData {
 const useDefaults: UseDefaults<AuthzExecData> = () => ({
   authzExecActionType: AuthzExecActionTypes.Delegate,
   delegate: {
-    amount: { denom: NATIVE_DENOM, amount: '0' },
+    amount: { denom: NATIVE_TOKEN.denomOrAddress, amount: '0' },
     delegatorAddress: '',
     validatorAddress: '',
   },
   undelegate: {
     amount: {
-      denom: NATIVE_DENOM,
+      denom: NATIVE_TOKEN.denomOrAddress,
       amount: '0',
     },
     delegatorAddress: '',
@@ -72,7 +72,7 @@ const useDefaults: UseDefaults<AuthzExecData> = () => ({
     validatorSrcAddress: '',
     validatorDstAddress: '',
     amount: {
-      denom: NATIVE_DENOM,
+      denom: NATIVE_TOKEN.denomOrAddress,
       amount: '0',
     },
   },

@@ -1,4 +1,4 @@
-import { ComponentType } from 'react'
+import { ComponentPropsWithoutRef, ComponentType } from 'react'
 
 export interface IconButtonifierProps {
   variant: 'primary' | 'primary_inverted' | 'secondary' | 'ghost' | 'none'
@@ -12,3 +12,6 @@ export interface IconButtonifierProps {
   className?: string
   iconClassName?: string
 }
+
+export type IconButtonProps = ComponentPropsWithoutRef<'button'> &
+  IconButtonifierProps

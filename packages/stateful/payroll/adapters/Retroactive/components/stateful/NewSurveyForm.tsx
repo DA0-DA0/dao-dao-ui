@@ -1,16 +1,14 @@
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
-import {
-  DaoCoreV2Selectors,
-  nativeBalancesSelector,
-} from '@dao-dao/state/recoil'
 import { Loader, useCachedLoading, useDaoInfoContext } from '@dao-dao/stateless'
+import { TokenType } from '@dao-dao/types'
 import { convertDenomToMicroDenomWithDecimals } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../components'
+import { genericTokenBalancesSelector } from '../../../../../recoil'
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
@@ -32,20 +30,14 @@ export const NewSurveyForm = () => {
   const { denomOrAddress: governanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
-  const cw20TokenInfos = useRecoilValue(
-    DaoCoreV2Selectors.allCw20InfosSelector({
-      contractAddress: coreAddress,
-      chainId,
-      governanceTokenAddress,
-    })
-  )
   // This needs to be loaded via a cached loadable to avoid displaying a loader
   // when this data updates on a schedule. Manually trigger a suspense loader
   // the first time when the initial data is still loading.
-  const nativeBalancesLoadable = useCachedLoading(
-    nativeBalancesSelector({
+  const availableTokensLoading = useCachedLoading(
+    genericTokenBalancesSelector({
       address: coreAddress,
       chainId,
+      cw20GovernanceTokenAddress: governanceTokenAddress,
     }),
     []
   )
@@ -61,7 +53,7 @@ export const NewSurveyForm = () => {
   const onCreate = useCallback(
     async (surveyData: NewSurveyFormData) => {
       // Need balances to be loaded.
-      if (nativeBalancesLoadable.loading) {
+      if (availableTokensLoading.loading) {
         toast.error(t('error.loadingData'))
         return
       }
@@ -86,12 +78,16 @@ export const NewSurveyForm = () => {
             const cw20Tokens: Cw20Token[] = []
 
             tokens.forEach(({ denomOrAddress, amount }) => {
-              const nativeDecimals = nativeBalancesLoadable.data.find(
-                ({ token }) => token.denomOrAddress === denomOrAddress
+              const nativeDecimals = availableTokensLoading.data.find(
+                ({ token }) =>
+                  token.type === TokenType.Native &&
+                  token.denomOrAddress === denomOrAddress
               )?.token.decimals
-              const cw20Decimals = cw20TokenInfos.find(
-                ({ address }) => address === denomOrAddress
-              )?.info.decimals
+              const cw20Decimals = availableTokensLoading.data.find(
+                ({ token }) =>
+                  token.type === TokenType.Cw20 &&
+                  token.denomOrAddress === denomOrAddress
+              )?.token.decimals
 
               if (cw20Decimals !== undefined) {
                 cw20Tokens.push({
@@ -137,14 +133,7 @@ export const NewSurveyForm = () => {
         setLoading(false)
       }
     },
-    [
-      coreAddress,
-      cw20TokenInfos,
-      nativeBalancesLoadable,
-      postRequest,
-      setRefreshStatus,
-      t,
-    ]
+    [coreAddress, availableTokensLoading, postRequest, setRefreshStatus, t]
   )
 
   return (
@@ -154,19 +143,16 @@ export const NewSurveyForm = () => {
         // Manually trigger since we are using a cached loadable but want to
         // wait for this. We use the loadable to prevent re-rendering when the
         // data is updated on a schedule.
-        nativeBalancesLoadable.loading
+        availableTokensLoading.loading
       }
     >
       <StatelessNewSurveyForm
-        cw20TokenInfos={cw20TokenInfos}
-        loading={loading}
-        nativeDenoms={
-          nativeBalancesLoadable.loading
+        availableTokens={
+          availableTokensLoading.loading
             ? []
-            : nativeBalancesLoadable.data.map(
-                ({ token }) => token.denomOrAddress
-              )
+            : availableTokensLoading.data.map(({ token }) => token)
         }
+        loading={loading}
         onCreate={onCreate}
       />
     </SuspenseLoader>
