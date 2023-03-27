@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react'
 
 import { GasEmoji } from '@dao-dao/stateless'
 import {
+  ActionContextType,
   ActionMaker,
   CoreActionKey,
   UseDecodedCosmosMsg,
@@ -36,14 +37,19 @@ export const makeFeeShareAction: ActionMaker<FeeShareData> = ({
   address,
   context,
 }) => {
+  // Only DAOs.
+  if (context.type !== ActionContextType.Dao) {
+    return null
+  }
+
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<FeeShareData> = (
     msg: Record<string, any>
   ) =>
     useMemo(() => {
       if (
         !isDecodedStargateMsg(msg) ||
-        msg.stargate.typeUrl !== (FeeShareType.Register as string) ||
-        msg.stargate.typeUrl !== (FeeShareType.Update as string)
+        (msg.stargate.typeUrl !== (FeeShareType.Register as string) &&
+          msg.stargate.typeUrl !== (FeeShareType.Update as string))
       ) {
         return {
           match: false,

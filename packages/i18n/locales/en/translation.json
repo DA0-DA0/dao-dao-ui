@@ -356,7 +356,7 @@
     "existingTokenSwapContract": "Existing token swap contract",
     "existingTokens": "Existing Tokens",
     "feeShareContractAddressDescription": "The address to claim fee share for. NOTE: you must be admin or the creator of this smart contract to claim fees for it.",
-    "feeShareToggleWithdrawerAddress": "Set custom withdrawer address",
+    "feeShareToggleWithdrawerAddress": "Custom withdrawer address",
     "feeShareToggleWithdrawerAddressDescription": "Set custom withdrawer address. By default it is set to the DAO address.",
     "feeShareWithdrawerAddress": "Set custom withdrawer address",
     "feeShareWithdrawerAddressDescription": "The address to withdraw fees, by default this is the DAO address or the executer of this action.",
