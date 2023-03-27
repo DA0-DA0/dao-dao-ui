@@ -18,6 +18,19 @@ const Template: ComponentStory<typeof DaoMemberCard> = (args) => (
 
 export const makeProps = (): DaoMemberCardProps => ({
   address: 'juno1abczhsdyechxcjz90y',
+  // Random number between 0 and 100,000 with 6 decimals.
+  balance: {
+    label: 'Staked',
+    unit: 'DAO',
+    value: {
+      loading: false,
+      data: (
+        Math.floor(Math.random() * (100000 * 1e6) + 1e6) / 1e6
+      ).toLocaleString(undefined, {
+        maximumFractionDigits: 6,
+      }),
+    },
+  },
   // Random number between 0 and 31 with 2 decimals.
   votingPowerPercent: {
     loading: false,
