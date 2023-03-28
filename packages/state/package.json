@@ -8,11 +8,11 @@
     "lint": "eslint ."
   },
   "dependencies": {
-    "@cosmjs/amino": "0.29.3",
-    "@cosmjs/cosmwasm-stargate": "0.29.3",
-    "@cosmjs/encoding": "0.29.3",
-    "@cosmjs/proto-signing": "0.29.3",
-    "@cosmjs/stargate": "0.29.3",
+    "@cosmjs/amino": "^0.30.1",
+    "@cosmjs/cosmwasm-stargate": "^0.30.1",
+    "@cosmjs/encoding": "^0.30.1",
+    "@cosmjs/proto-signing": "^0.30.1",
+    "@cosmjs/stargate": "^0.30.1",
     "@dao-dao/utils": "2.2.0",
     "cosmjs-types": "^0.5.2",
     "graphql": "^16.6.0",
@@ -25,7 +25,7 @@
   "devDependencies": {
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",
-    "@noahsaso/cosmodal": "^0.8.3",
+    "@noahsaso/cosmodal": "^0.8.10",
     "typescript": "^4.8.3"
   },
   "prettier": "@dao-dao/config/prettier"

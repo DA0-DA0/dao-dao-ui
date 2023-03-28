@@ -28,4 +28,4 @@ export const makeReactHookFormDecorator = <T extends Record<string, any> = {}>(
     )
   }
 
-export const ReactHookFormDecorator = makeReactHookFormDecorator()
+export const ReactHookFormDecorator: DecoratorFn = makeReactHookFormDecorator()

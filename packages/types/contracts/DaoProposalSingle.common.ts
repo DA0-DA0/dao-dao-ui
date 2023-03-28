@@ -6,15 +6,6 @@ export enum Vote {
   Abstain = 'abstain',
 }
 
-export enum Status {
-  Open = 'open',
-  Rejected = 'rejected',
-  Passed = 'passed',
-  Executed = 'executed',
-  ExecutionFailed = 'execution_failed',
-  Closed = 'closed',
-}
-
 export type Threshold =
   | {
       absolute_percentage: {

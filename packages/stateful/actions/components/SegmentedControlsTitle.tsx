@@ -1,7 +1,8 @@
 import clsx from 'clsx'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 
-import { SegmentedControls, SegmentedControlsProps } from '@dao-dao/stateless'
+import { SegmentedControls } from '@dao-dao/stateless'
+import { SegmentedControlsProps } from '@dao-dao/types'
 
 export type SegmentedControlsTitleProps<
   T extends unknown,

@@ -1,4 +1,5 @@
-import { DaoVotingNativeStakedAdapter } from '../../adapters/DaoVotingNativeStaked'
+import { DaoVotingNativeStakedAdapterId } from '@dao-dao/utils'
+
 import { useVotingModuleAdapterContextIfAvailable } from '../context'
 
 // Returns the useGovernanceTokenInfo hook response if using the native-staked
@@ -17,5 +18,5 @@ export const useNativeCommonGovernanceTokenInfoIfExists = () => {
 
   const info = useCommonGovernanceTokenInfo?.()
 
-  return id === DaoVotingNativeStakedAdapter.id ? info : undefined
+  return id === DaoVotingNativeStakedAdapterId ? info : undefined
 }

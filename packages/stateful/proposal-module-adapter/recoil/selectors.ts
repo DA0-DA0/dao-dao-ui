@@ -54,7 +54,7 @@ export const proposalModuleAdapterProposalCountSelector = selectorFamily<
             queryContractIndexerSelector({
               contractAddress: params.proposalModuleAddress,
               chainId: params.chainId,
-              formulaName: adapter.queries.proposalCount.indexerFormula,
+              formula: adapter.queries.proposalCount.indexerFormula,
             })
             // Null when indexer fails.
           ) ?? undefined

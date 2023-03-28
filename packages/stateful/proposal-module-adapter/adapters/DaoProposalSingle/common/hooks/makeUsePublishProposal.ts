@@ -26,6 +26,7 @@ import { usePropose as useProposePrePropose } from '../../contracts/DaoPrePropos
 import { usePropose as useProposeV2 } from '../../contracts/DaoProposalSingle.v2.hooks'
 import {
   MakeUsePublishProposalOptions,
+  NewProposalData,
   PublishProposal,
   UsePublishProposal,
 } from '../../types'
@@ -180,7 +181,10 @@ export const makeUsePublishProposal =
     }, [simulationBypassExpiration])
 
     const publishProposal: PublishProposal = useCallback(
-      async (newProposalData, { failedSimulationBypassSeconds = 0 } = {}) => {
+      async (
+        { title, description, msgs },
+        { failedSimulationBypassSeconds = 0 } = {}
+      ) => {
         if (!connected) {
           throw new Error(t('error.connectWalletToContinue'))
         }
@@ -197,13 +201,13 @@ export const makeUsePublishProposal =
         // Only simulate messages if any exist. Allow proposals without
         // messages. Also allow bypassing simulation check for a period of time.
         if (
-          newProposalData.msgs.length > 0 &&
+          msgs.length > 0 &&
           (!simulationBypassExpiration ||
             simulationBypassExpiration < new Date())
         ) {
           try {
             // Throws error if simulation fails, indicating invalid message.
-            await simulateMsgs(newProposalData.msgs)
+            await simulateMsgs(msgs)
           } catch (err) {
             // If failed simulation bypass duration is set, allow bypassing
             // simulation check for a period of time.
@@ -272,11 +276,19 @@ export const makeUsePublishProposal =
             ? coins(requiredProposalDeposit, depositInfoNativeTokenDenom)
             : undefined
 
+        // Recreate form data with just the expected fields to remove any fields
+        // added by other proposal module forms.
+        const proposalData: NewProposalData = {
+          title,
+          description,
+          msgs,
+        }
+
         let response
         //! V1
         if (proposalModule.version === ContractVersion.V1) {
           response = await doProposeV1(
-            newProposalData,
+            proposalData,
             'auto',
             undefined,
             proposeFunds
@@ -287,19 +299,14 @@ export const makeUsePublishProposal =
             ? await doProposePrePropose(
                 {
                   msg: {
-                    propose: newProposalData,
+                    propose: proposalData,
                   },
                 },
                 'auto',
                 undefined,
                 proposeFunds
               )
-            : await doProposeV2(
-                newProposalData,
-                'auto',
-                undefined,
-                proposeFunds
-              )
+            : await doProposeV2(proposalData, 'auto', undefined, proposeFunds)
         }
 
         if (proposeFunds?.length) {

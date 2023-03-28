@@ -9,10 +9,7 @@ import {
 import { CoreActionKey } from '@dao-dao/types'
 
 import { useActionForKey } from '../../../actions'
-import {
-  useEncodedDaoProposalSinglePrefill,
-  useMembership,
-} from '../../../hooks'
+import { useDaoProposalSinglePrefill, useMembership } from '../../../hooks'
 import {
   nftCardInfosForDaoSelector,
   treasuryTokenCardInfosSelector,
@@ -60,7 +57,7 @@ export const TreasuryAndNftsTab = () => {
 
   // ManageCw721 action defaults to adding
   const addCw721Action = useActionForKey(CoreActionKey.ManageCw721)
-  const encodedProposalPrefill = useEncodedDaoProposalSinglePrefill({
+  const addCollectionProposalPrefill = useDaoProposalSinglePrefill({
     actions: addCw721Action
       ? [
           {
@@ -79,9 +76,9 @@ export const TreasuryAndNftsTab = () => {
       TokenCard={DaoTokenCard}
       addCollectionHref={
         // Prefill URL only valid if action exists.
-        !!addCw721Action && encodedProposalPrefill
+        !!addCw721Action && addCollectionProposalPrefill
           ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
-              prefill: encodedProposalPrefill,
+              prefill: addCollectionProposalPrefill,
             })
           : undefined
       }

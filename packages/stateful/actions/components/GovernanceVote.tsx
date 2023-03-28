@@ -78,7 +78,7 @@ export const GovernanceVoteComponent: ActionComponent<
     (p) => p.proposalId.toString() === proposalId
   )
 
-  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ suffix: false })
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
 
   return (
     <ActionCard

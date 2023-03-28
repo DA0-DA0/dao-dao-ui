@@ -61,6 +61,7 @@ export interface NewProposalProps
     | 'unloadDraft'
     | 'draftSaving'
     | 'deleteDraft'
+    | 'proposalModuleSelector'
   > {
   createProposal: (newProposalData: NewProposalData) => Promise<void>
   loading: boolean
@@ -92,18 +93,18 @@ export const NewProposal = ({
   draftSaving,
   deleteDraft,
   simulationBypassExpiration,
+  proposalModuleSelector,
 }: NewProposalProps) => {
   const { t } = useTranslation()
 
-  // Unpack here because we use these at the top level as well as
-  // inside of nested components.
+  // Unpack here because we use these at the top level as well as inside of
+  // nested components.
   const {
     register,
     control,
     handleSubmit,
     watch,
     formState: { errors },
-    resetField,
   } = useFormContext<NewProposalForm>()
 
   const [showPreview, setShowPreview] = useState(false)
@@ -134,8 +135,8 @@ export const NewProposal = ({
       const nativeEvent = event?.nativeEvent as SubmitEvent
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
+      // Preview toggled in onClick handler.
       if (submitterValue === ProposeSubmitValue.Preview) {
-        setShowPreview((p) => !p)
         return
       }
 
@@ -171,7 +172,10 @@ export const NewProposal = ({
   const proposalName = watch('title')
 
   return (
-    <form onSubmit={handleSubmit(onSubmitForm, onSubmitError)}>
+    <form
+      className="flex flex-col gap-6"
+      onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
+    >
       <div className="rounded-lg bg-background-tertiary">
         <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-4 px-6">
           <p className="primary-text text-text-body">
@@ -213,12 +217,10 @@ export const NewProposal = ({
         </div>
       </div>
 
-      <p className="title-text my-6 text-text-body">
-        {t('title.actions', { count: actionDataFields.length })}
-      </p>
+      {proposalModuleSelector}
 
       {actionDataFields.length > 0 && (
-        <div className="mb-4 flex flex-col gap-2">
+        <div className="-mb-2 flex flex-col gap-2">
           {actionDataFields.map(({ id, key, data }, index) => {
             const Component = loadedActions[key]?.action?.Component
             if (!Component) {
@@ -235,18 +237,7 @@ export const NewProposal = ({
                   fieldNamePrefix={`actionData.${index}.data.`}
                   index={index}
                   isCreating
-                  onRemove={() => {
-                    // Reset the data field to avoid stale data. Honestly not
-                    // sure why this has to happen; I figured the `remove` call
-                    // would do this automatically. Some actions, like Execute
-                    // Smart Contract, don't seem to need this, while others,
-                    // like the Token Swap actions, do.
-                    resetField(`actionData.${index}.data`, {
-                      defaultValue: {},
-                    })
-                    // Remove the action.
-                    removeAction(index)
-                  }}
+                  onRemove={() => removeAction(index)}
                 />
               </SuspenseLoader>
             )
@@ -254,18 +245,20 @@ export const NewProposal = ({
         </div>
       )}
 
-      <ActionSelector
-        actions={actions}
-        onSelectAction={({ key }) => {
-          appendAction({
-            key,
-            // Clone to prevent the form from mutating the original object.
-            data: cloneDeep(loadedActions[key]?.defaults ?? {}),
-          })
-        }}
-      />
+      <div className="self-start">
+        <ActionSelector
+          actions={actions}
+          onSelectAction={({ key }) => {
+            appendAction({
+              key,
+              // Clone to prevent the form from mutating the original object.
+              data: cloneDeep(loadedActions[key]?.defaults ?? {}),
+            })
+          }}
+        />
+      </div>
 
-      <div className="mt-6 flex flex-col gap-2 border-y border-border-secondary py-6">
+      <div className="flex flex-col gap-2 border-y border-border-secondary py-6">
         <div className="flex flex-row items-center justify-between gap-6">
           <p className="title-text text-text-body">
             {t('info.reviewYourProposal')}
@@ -274,6 +267,7 @@ export const NewProposal = ({
           <div className="flex flex-row items-center justify-end gap-2">
             <Button
               disabled={loading}
+              onClick={() => setShowPreview((p) => !p)}
               type="submit"
               value={ProposeSubmitValue.Preview}
               variant="secondary"
@@ -370,7 +364,15 @@ export const NewProposal = ({
         {showPreview && (
           <div className="mt-4 rounded-md border border-border-secondary p-6">
             <ProposalContentDisplay
-              actionDisplay={
+              createdAt={new Date()}
+              creator={{
+                address: walletAddress,
+                name: walletProfileData.loading
+                  ? { loading: true }
+                  : { loading: false, data: walletProfileData.profile.name },
+              }}
+              description={proposalDescription}
+              innerContentDisplay={
                 actionDataFields.length ? (
                   <CosmosMessageDisplay
                     value={decodedMessagesString(
@@ -388,21 +390,13 @@ export const NewProposal = ({
                   />
                 ) : undefined
               }
-              createdAt={new Date()}
-              creator={{
-                address: walletAddress,
-                name: walletProfileData.loading
-                  ? { loading: true }
-                  : { loading: false, data: walletProfileData.profile.name },
-              }}
-              description={proposalDescription}
               title={proposalTitle}
             />
           </div>
         )}
       </div>
 
-      <div className="mt-4 flex flex-row items-center justify-end gap-2">
+      <div className="flex flex-row items-center justify-end gap-2">
         {draft ? (
           <>
             <p

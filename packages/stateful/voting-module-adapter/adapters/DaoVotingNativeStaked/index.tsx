@@ -2,12 +2,13 @@ import { PeopleAltOutlined } from '@mui/icons-material'
 import { useMemo } from 'react'
 
 import { DaoTabId, VotingModuleAdapter } from '@dao-dao/types'
+import { DaoVotingNativeStakedAdapterId } from '@dao-dao/utils'
 
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
 import { useCommonGovernanceTokenInfo, useDaoInfoBarItems } from './hooks'
 
 export const DaoVotingNativeStakedAdapter: VotingModuleAdapter = {
-  id: 'DaoVotingNativeStaked',
+  id: DaoVotingNativeStakedAdapterId,
   contractNames: [
     // V1
     'cw-native-staked-balance-voting',

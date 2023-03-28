@@ -1,10 +1,6 @@
-import {
-  DepositRefundPolicy,
-  DurationUnits,
-  ProposalModuleAdapter,
-} from '@dao-dao/types'
+import { ProposalModuleAdapter } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { NATIVE_TOKEN } from '@dao-dao/utils'
+import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
 import {
   NewProposal,
@@ -15,38 +11,30 @@ import {
   reverseProposalInfosSelector,
 } from './common'
 import {
-  ProposalActionDisplay,
+  ProposalInnerContentDisplay,
   ProposalLine,
   ProposalStatusAndInfo,
   ProposalVoteTally,
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
-import {
-  AllowRevotingVotingConfigItem,
-  ProposalDepositVotingConfigItem,
-  ProposalSubmissionPolicyVotingConfigItem,
-  QuorumVotingConfigItem,
-  ThresholdVotingConfigItem,
-  VotingDurationVotingConfigItem,
-  getInstantiateInfo,
-} from './daoCreation'
+import { ThresholdVotingConfigItem, getInstantiateInfo } from './daoCreation'
 import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
 import {
   useCastVote,
   useLoadingProposalExecutionTxHash,
+  useLoadingVoteOptions,
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
-  useVoteOptions,
 } from './hooks'
-import { DaoCreationConfig, NewProposalForm } from './types'
+import { DaoCreationExtraVotingConfig, NewProposalForm } from './types'
 
 export const DaoProposalSingleAdapter: ProposalModuleAdapter<
-  DaoCreationConfig,
+  DaoCreationExtraVotingConfig,
   Vote,
   NewProposalForm
 > = {
-  id: 'DaoProposalSingle',
+  id: DaoProposalSingleAdapterId,
   contractNames: [
     // V1
     'cw-govmod-single',
@@ -127,14 +115,14 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       useCastVote,
       useProposalRefreshers,
       useLoadingProposalExecutionTxHash,
-      useVoteOptions,
+      useLoadingVoteOptions,
       useLoadingWalletVoteInfo,
     },
 
     // Components
     components: {
       ProposalStatusAndInfo,
-      ProposalActionDisplay,
+      ProposalInnerContentDisplay,
       ProposalWalletVote,
       ProposalVotes,
       ProposalVoteTally,
@@ -156,43 +144,15 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
   },
 
   daoCreation: {
-    defaultConfig: {
-      threshold: {
-        majority: true,
-        value: 75,
+    extraVotingConfig: {
+      default: {
+        threshold: {
+          majority: true,
+          value: 67,
+        },
       },
-      quorumEnabled: true,
-      quorum: {
-        majority: false,
-        value: 20,
-      },
-      votingDuration: {
-        value: 1,
-        units: DurationUnits.Weeks,
-      },
-      proposalDeposit: {
-        enabled: false,
-        amount: 10,
-        type: 'native',
-        denomOrAddress: NATIVE_TOKEN.denomOrAddress,
-        token: undefined,
-        refundPolicy: DepositRefundPolicy.OnlyPassed,
-      },
-      anyoneCanPropose: false,
-      allowRevoting: false,
-    },
 
-    votingConfig: {
-      items: [VotingDurationVotingConfigItem, ProposalDepositVotingConfigItem],
-      advancedItems: [
-        AllowRevotingVotingConfigItem,
-        ThresholdVotingConfigItem,
-        QuorumVotingConfigItem,
-        ProposalSubmissionPolicyVotingConfigItem,
-      ],
-      advancedWarningI18nKeys: [
-        'daoCreationAdapter.DaoProposalSingle.advancedWarning',
-      ],
+      advancedItems: [ThresholdVotingConfigItem],
     },
 
     getInstantiateInfo,

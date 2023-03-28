@@ -4,11 +4,11 @@ import { DaoCreationGetInstantiateInfo } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import {
   CODE_ID_CONFIG,
+  DaoVotingCw721StakedAdapterId,
   convertDurationWithUnitsToDuration,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
-import { DaoVotingCw721StakedAdapter } from '../../../index'
 import { DaoCreationConfig } from '../types'
 import instantiateSchema from './instantiate_schema.json'
 
@@ -34,7 +34,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   return {
     admin: { core_module: {} },
     code_id: CODE_ID_CONFIG.DaoVotingCw721Staked,
-    label: `DAO_${daoName}_${DaoVotingCw721StakedAdapter.id}`,
+    label: `DAO_${daoName}_${DaoVotingCw721StakedAdapterId}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }
 }

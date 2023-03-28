@@ -1,9 +1,9 @@
-import { Check } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ButtonLink } from './buttons/ButtonLink'
+import { SelectCircle } from './inputs'
 import { MarkdownRenderer } from './MarkdownRenderer'
 
 export interface OptionCardProps {
@@ -63,21 +63,10 @@ export const OptionCard = ({
       )}
       onClick={onSelect}
     >
-      <div
-        className={clsx(
-          'absolute top-5 left-5 h-5 w-5 rounded-full border border-border-primary transition',
-          selected
-            ? 'flex items-center justify-center bg-component-pill'
-            : 'bg-background-primary'
-        )}
-      >
-        <Check
-          className={clsx(
-            '!h-4 !w-4 text-icon-primary transition',
-            selected ? 'opacity-100' : 'opacity-0'
-          )}
-        />
-      </div>
+      <SelectCircle
+        className="absolute top-5 left-5"
+        selected={selected ?? false}
+      />
 
       <div className="mt-10 flex flex-col items-center gap-4 p-6 pt-4">
         <div className="text-6xl">

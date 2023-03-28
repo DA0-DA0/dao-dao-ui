@@ -48,7 +48,7 @@ export const stakingContractSelector = selectorFamily<
       const stakingContract = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingCw20Staked/stakingContract',
+          formula: 'daoVotingCw20Staked/stakingContract',
         })
       )
       if (stakingContract) {
@@ -73,7 +73,7 @@ export const daoSelector = selectorFamily<
       const dao = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingCw20Staked/dao',
+          formula: 'daoVotingCw20Staked/dao',
         })
       )
       if (dao) {
@@ -98,7 +98,7 @@ export const activeThresholdSelector = selectorFamily<
       const activeThreshold = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingCw20Staked/activeThreshold',
+          formula: 'daoVotingCw20Staked/activeThreshold',
         })
       )
       // Null when indexer fails. Undefined if no active threshold.
@@ -126,7 +126,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
       const votingPower = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingCw20Staked/votingPower',
+          formula: 'daoVotingCw20Staked/votingPower',
           args: {
             address: params[0].address,
           },
@@ -161,7 +161,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
       const totalPower = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingCw20Staked/totalPower',
+          formula: 'daoVotingCw20Staked/totalPower',
           block: params[0].height ? { height: params[0].height } : undefined,
           id,
         })
@@ -191,7 +191,7 @@ export const infoSelector = selectorFamily<
       const info = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'info',
+          formula: 'info',
         })
       )
       if (info) {
@@ -216,7 +216,7 @@ export const tokenContractSelector = selectorFamily<
       const tokenContract = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingCw20Staked/tokenContract',
+          formula: 'daoVotingCw20Staked/tokenContract',
         })
       )
       if (tokenContract) {
@@ -261,7 +261,7 @@ export const topStakersSelector = selectorFamily<
       get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingCw20Staked/topStakers',
+          formula: 'daoVotingCw20Staked/topStakers',
           args: {
             limit,
           },
