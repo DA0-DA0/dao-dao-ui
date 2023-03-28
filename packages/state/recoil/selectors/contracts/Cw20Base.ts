@@ -78,7 +78,7 @@ export const balanceSelector = selectorFamily<
       const balance = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20/balance',
+          formula: 'cw20/balance',
           args: params[0],
           id,
         })
@@ -105,7 +105,7 @@ export const tokenInfoSelector = selectorFamily<
       const tokenInfo = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20/tokenInfo',
+          formula: 'cw20/tokenInfo',
         })
       )
       if (tokenInfo) {
@@ -130,7 +130,7 @@ export const minterSelector = selectorFamily<
       const minter = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20/minter',
+          formula: 'cw20/minter',
         })
       )
       if (minter) {
@@ -157,7 +157,7 @@ export const allowanceSelector = selectorFamily<
       const allowance = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20/allowance',
+          formula: 'cw20/allowance',
           args: params[0],
           id,
         })
@@ -186,7 +186,7 @@ export const allAllowancesSelector = selectorFamily<
       const allowances = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20/ownerAllowances',
+          formula: 'cw20/ownerAllowances',
           args: params[0],
           id,
         })
@@ -213,7 +213,7 @@ export const allAccountsSelector = selectorFamily<
       const accounts = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20/allAccounts',
+          formula: 'cw20/allAccounts',
           args: params[0],
         })
       )
@@ -239,7 +239,7 @@ export const marketingInfoSelector = selectorFamily<
       const marketingInfo = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20/marketingInfo',
+          formula: 'cw20/marketingInfo',
         })
       )
       if (marketingInfo) {
@@ -299,7 +299,7 @@ export const logoUrlSelector = selectorFamily<
         queryContractIndexerSelector({
           contractAddress,
           chainId,
-          formulaName: 'cw20/logoUrl',
+          formula: 'cw20/logoUrl',
         })
       )
       // Null when indexer fails.
@@ -360,7 +360,7 @@ export const topAccountBalancesSelector = selectorFamily<
       get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20/topAccountBalances',
+          formula: 'cw20/topAccountBalances',
           args: {
             limit,
           },
@@ -377,7 +377,7 @@ export const daosSelector = selectorFamily<string[], QueryClientParams>({
       get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20/daos',
+          formula: 'cw20/daos',
         })
       ) ?? [],
 })

@@ -12,7 +12,7 @@
     "start": "yarn dapp start",
     "format": "prettier --write \"**/*.{css,json,md}\" && turbo run format --continue --parallel",
     "lint": "prettier --check \"**/*.{css,json,md}\" && turbo run lint --continue --parallel",
-    "test": "turbo run test",
+    "test": "jest",
     "dapp": "yarn workspace @dao-dao/dapp",
     "sda": "yarn workspace @dao-dao/sda",
     "i18n": "yarn workspace @dao-dao/i18n",
@@ -25,7 +25,10 @@
     "publish-all": "lerna publish --no-private from-package"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.0",
+    "jest": "^29.5.0",
     "lerna": "^6.4.1",
+    "ts-jest": "^29.0.5",
     "turbo": "latest",
     "turbo-ignore": "latest"
   },

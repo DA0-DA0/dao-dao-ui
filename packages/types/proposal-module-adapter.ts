@@ -1,4 +1,4 @@
-import { ComponentType } from 'react'
+import { CSSProperties, ComponentType, ReactNode } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
@@ -11,7 +11,6 @@ import {
   DaoCreationVotingConfigItem,
   ProposalDraft,
   ProposalModule,
-  ProposalPrefill,
 } from './dao'
 import { ProposalCreatedCardProps } from './proposal'
 import { LinkWrapperProps, LoadingData } from './stateless'
@@ -55,7 +54,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
   hooks: {
     useProposalRefreshers: () => ProposalRefreshers
     useLoadingProposalExecutionTxHash: () => LoadingData<string | undefined>
-    useVoteOptions: () => ProposalVoteOption<Vote>[]
+    useLoadingVoteOptions: () => LoadingData<ProposalVoteOption<Vote>[]>
     // Return when no wallet connected.
     useLoadingWalletVoteInfo: () =>
       | undefined
@@ -69,7 +68,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
   // Components
   components: {
     ProposalStatusAndInfo: ComponentType<BaseProposalStatusAndInfoProps>
-    ProposalActionDisplay: ComponentType<BaseProposalActionDisplayProps>
+    ProposalInnerContentDisplay: ComponentType<BaseProposalInnerContentDisplayProps>
     ProposalWalletVote: ComponentType<BaseProposalWalletVoteProps<Vote>>
     ProposalVotes: ComponentType
     ProposalVoteTally: ComponentType
@@ -78,7 +77,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
 }
 
 export type ProposalModuleAdapter<
-  DaoCreationConfig extends FieldValues = any,
+  DaoCreationExtraVotingConfig extends FieldValues = any,
   Vote extends unknown = any,
   FormData extends FieldValues = any
 > = {
@@ -103,15 +102,15 @@ export type ProposalModuleAdapter<
   }
 
   daoCreation: {
-    defaultConfig: DaoCreationConfig
-
-    votingConfig: {
-      items: DaoCreationVotingConfigItem[]
+    // Voting config added to the common voting config.
+    extraVotingConfig?: {
+      default: DaoCreationExtraVotingConfig
+      items?: DaoCreationVotingConfigItem[]
       advancedItems?: DaoCreationVotingConfigItem[]
       advancedWarningI18nKeys?: string[]
     }
 
-    getInstantiateInfo: DaoCreationGetInstantiateInfo<DaoCreationConfig>
+    getInstantiateInfo: DaoCreationGetInstantiateInfo<DaoCreationExtraVotingConfig>
   }
 }
 
@@ -179,9 +178,10 @@ export interface BaseProposalStatusAndInfoProps {
   onCloseSuccess: () => void | Promise<void>
 }
 
-export interface BaseProposalActionDisplayProps<D extends any = any> {
-  onDuplicate: (data: ProposalPrefill<D>) => void
-  duplicateLoading: boolean
+export interface BaseProposalInnerContentDisplayProps<
+  FormData extends FieldValues = any
+> {
+  setDuplicateFormData: (data: FormData) => void
   availableActions: Action[]
 }
 
@@ -204,6 +204,7 @@ export interface BaseNewProposalProps<FormData extends FieldValues = any> {
   unloadDraft: () => void
   draftSaving: boolean
   deleteDraft: (index: number) => void
+  proposalModuleSelector: ReactNode
 }
 
 export interface WalletVoteInfo<T> {
@@ -221,9 +222,10 @@ export interface ProposalRefreshers {
 }
 
 export interface ProposalVoteOption<Vote> {
-  Icon: ComponentType<{ className: string }>
+  Icon: ComponentType<{ className: string; style?: CSSProperties }>
   label: string
   value: Vote
+  color?: string
 }
 
 export interface ProfileNewProposalCardInfoLine {
@@ -231,4 +233,10 @@ export interface ProfileNewProposalCardInfoLine {
   label: string
   value: string
   valueClassName?: string
+}
+
+export type PercentOrMajorityValue = {
+  majority: boolean
+  // Will be used when `majority` is false.
+  value: number
 }

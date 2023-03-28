@@ -5,6 +5,10 @@ import { DaoVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adap
 import { WalletProviderDecorator } from '@dao-dao/storybook/decorators'
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
 import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators/makeDappLayoutDecorator'
+import {
+  DaoProposalSingleAdapterId,
+  DaoVotingCw20StakedAdapterId,
+} from '@dao-dao/utils'
 
 import { CreateDaoVoting } from './CreateDaoVoting'
 
@@ -20,7 +24,7 @@ export default {
       imageUrl:
         'https://ipfs.stargaze.zone/ipfs/QmbGvE3wmxex8KiBbbvMjR8f9adR28s3XkiZSTuGmHoMHV/33.jpg',
       votingModuleAdapter: {
-        id: DaoVotingCw20StakedAdapter.id,
+        id: DaoVotingCw20StakedAdapterId,
         data: {
           ...DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig,
           newInfo: {
@@ -32,9 +36,9 @@ export default {
       },
       proposalModuleAdapters: [
         {
-          id: DaoProposalSingleAdapter.id,
+          id: DaoProposalSingleAdapterId,
           data: {
-            ...DaoProposalSingleAdapter.daoCreation.defaultConfig,
+            ...DaoProposalSingleAdapter.daoCreation.extraVotingConfig?.default,
             proposalDeposit: {
               amount: 5.2,
               refundFailed: false,

@@ -30,17 +30,26 @@ export enum CoreActionKey {
   WithdrawTokenSwap = 'withdrawTokenSwap',
   ManageStorageItems = 'manageStorageItems',
   GovernanceVote = 'governanceVote',
+  UpgradeV1ToV2 = 'upgradeV1ToV2',
+  ManagePayroll = 'managePayroll',
+  ManageVesting = 'manageVesting',
   WyndSwap = 'wyndSwap',
   DaoAdminExec = 'daoAdminExec',
+  EnableMultipleChoice = 'enableMultipleChoice',
   ManageWidgets = 'manageWidgets',
 }
 
+// TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
 // Actions defined in voting or proposal module adapters.
 export enum AdapterActionKey {
   ManageMembers = 'manageMembers',
   Mint = 'mint',
-  UpdatePreProposeConfig = 'updatePreProposeConfig',
-  UpdateProposalConfig = 'updateProposalConfig',
+  // DaoProposalSingle
+  UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
+  UpdateProposalSingleConfig = 'updateProposalSingleConfig',
+  // DaoProposalMultiple
+  UpdatePreProposeMultipleConfig = 'updatePreProposeMultipleConfig',
+  UpdateProposalMultipleConfig = 'updateProposalMultipleConfig',
 }
 
 export type ActionKey = CoreActionKey | AdapterActionKey
@@ -106,6 +115,12 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   label: string
   description: string
   Component: ActionComponent<Options, Data>
+  // This determines if the action should be hidden from creation. If true, the
+  // action will not be shown in the list of actions to create, but it will
+  // still match and render in existing contexts. This is used to conditionally
+  // show the upgrade actions while still allowing them to render in existing
+  // proposals.
+  disallowCreation?: boolean
   // Hook to get default fields for form display.
   useDefaults: UseDefaults<Data>
   // Hook to make function to convert action data to CosmosMsgFor_Empty.
@@ -147,6 +162,13 @@ export type ActionMaker<Data extends {} = any, ExtraOptions extends {} = {}> = (
 export interface IActionsContext {
   options: ActionOptions
   actions: Action[]
+}
+
+export type UseActionsOptions = {
+  // If true, the actions will be filtered to only include those which are
+  // allowed to be created. This is used to hide the upgrade actions from the
+  // list of actions to create.
+  isCreating?: boolean
 }
 
 export type LoadedAction = {

@@ -27,7 +27,7 @@ export const walletCw20BalancesSelector = selectorFamily<
           queryWalletIndexerSelector({
             chainId,
             walletAddress,
-            formulaName: 'tokens/list',
+            formula: 'tokens/list',
             id,
           })
         ) ?? []

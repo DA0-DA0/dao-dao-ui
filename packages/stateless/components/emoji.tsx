@@ -149,6 +149,10 @@ export const FireEmoji = () => (
   <EmojiWrapper emoji="🔥" labelI18nKey="emoji.fire" />
 )
 
+export const UnicornEmoji = () => (
+  <EmojiWrapper emoji="🦄" labelI18nKey="emoji.unicorn" />
+)
+
 export const LockWithPenEmoji = () => (
   <EmojiWrapper emoji="🔏" labelI18nKey="emoji.lockWithPen" />
 )
@@ -167,6 +171,10 @@ export const CycleEmoji = () => (
 
 export const JoystickEmoji = () => (
   <EmojiWrapper emoji="🕹️" labelI18nKey="emoji.joystick" />
+)
+
+export const NumbersEmoji = () => (
+  <EmojiWrapper emoji="🔢" labelI18nKey="emoji.numbers" />
 )
 
 export const HammerAndWrenchEmoji = () => (

@@ -106,7 +106,7 @@ export const adminSelector = selectorFamily<
       const admin = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/admin',
+          formula: 'daoCore/admin',
         })
       )
       // Null when indexer fails. Undefined if no admin.
@@ -132,7 +132,7 @@ export const adminNominationSelector = selectorFamily<
       const nomination = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/adminNomination',
+          formula: 'daoCore/adminNomination',
         })
       )
       // Null when indexer fails. Undefined if no nomination.
@@ -158,7 +158,7 @@ export const configSelector = selectorFamily<
       const config = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/config',
+          formula: 'daoCore/config',
         })
       )
       if (config) {
@@ -253,7 +253,7 @@ export const dumpStateSelector = selectorFamily<
       const state = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/dumpState',
+          formula: 'daoCore/dumpState',
         })
       )
       if (state) {
@@ -284,7 +284,7 @@ export const getItemSelector = selectorFamily<
       const item = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/item',
+          formula: 'daoCore/item',
           args: params[0],
         })
       )
@@ -327,7 +327,7 @@ export const proposalModulesSelector = selectorFamily<
       const proposalModules = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/proposalModules',
+          formula: 'daoCore/proposalModules',
         })
       )
       if (proposalModules) {
@@ -352,7 +352,7 @@ export const activeProposalModulesSelector = selectorFamily<
       const activeProposalModules = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/activeProposalModules',
+          formula: 'daoCore/activeProposalModules',
         })
       )
       if (activeProposalModules) {
@@ -377,7 +377,7 @@ export const pauseInfoSelector = selectorFamily<
       const paused = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/paused',
+          formula: 'daoCore/paused',
         })
       )
       if (paused) {
@@ -402,7 +402,7 @@ export const votingModuleSelector = selectorFamily<
       const votingModule = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/votingModule',
+          formula: 'daoCore/votingModule',
         })
       )
       if (votingModule) {
@@ -443,7 +443,7 @@ export const daoURISelector = selectorFamily<
       const daoUri = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/daoUri',
+          formula: 'daoCore/daoUri',
         })
       )
       // Null when indexer fails. Undefined if no URI.
@@ -473,7 +473,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
       const votingPower = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/votingPower',
+          formula: 'daoCore/votingPower',
           args: {
             address: params[0].address,
           },
@@ -510,7 +510,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
       const totalPower = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/totalPower',
+          formula: 'daoCore/totalPower',
           block: params[0].height ? { height: params[0].height } : undefined,
           id,
         })
@@ -541,7 +541,7 @@ export const infoSelector = selectorFamily<
       const info = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'info',
+          formula: 'info',
         })
       )
       if (info) {
@@ -567,7 +567,7 @@ export const allCw20TokenListSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/cw20List',
+          formula: 'daoCore/cw20List',
         })
       )
       if (list) {
@@ -680,7 +680,7 @@ export const allCw20TokensWithBalancesSelector = selectorFamily<
       let balances: Cw20BalancesResponse | null = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/cw20Balances',
+          formula: 'daoCore/cw20Balances',
           // Update each time one of these changes.
           id: generalId + specificId,
         })
@@ -763,7 +763,7 @@ export const allCw721TokenListSelector = selectorFamily<
       let list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/cw721List',
+          formula: 'daoCore/cw721List',
         })
       )
       if (list && Array.isArray(list)) {
@@ -883,7 +883,7 @@ export const listAllSubDaosSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/listSubDaos',
+          formula: 'daoCore/listSubDaos',
         })
       )
       if (list) {
@@ -985,7 +985,7 @@ export const listAllItemsSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoCore/listItems',
+          formula: 'daoCore/listItems',
         })
       )
       if (list) {

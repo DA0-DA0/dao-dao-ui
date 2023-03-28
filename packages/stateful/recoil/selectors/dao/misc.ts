@@ -6,9 +6,11 @@ import {
   DaoVotingCw20StakedSelectors,
   contractInstantiateTimeSelector,
   contractVersionSelector,
+  queryContractIndexerSelector,
 } from '@dao-dao/state'
 import {
   ContractVersion,
+  ContractVersionInfo,
   DaoInfo,
   ProposalModule,
   WithChainId,
@@ -16,12 +18,12 @@ import {
 import {
   CHAIN_ID,
   CHAIN_PREFIX_ID_MAP,
+  DaoVotingCw20StakedAdapterId,
   isValidContractAddress,
 } from '@dao-dao/utils'
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
-import { DaoVotingCw20StakedAdapter } from '../../../voting-module-adapter/adapters/DaoVotingCw20Staked'
 
 export const daoCoreProposalModulesSelector = selectorFamily<
   ProposalModule[],
@@ -81,7 +83,7 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
         usesCw20VotingModule =
           !!votingModuleInfo &&
           matchVotingModuleAdapter(votingModuleInfo.info.contract)?.id ===
-            DaoVotingCw20StakedAdapter.id
+            DaoVotingCw20StakedAdapterId
       } catch {
         usesCw20VotingModule = false
       }
@@ -98,6 +100,46 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
           : undefined
 
       return cw20GovernanceTokenAddress
+    },
+})
+
+// Retrieve all potential SubDAOs of the DAO from the indexer.
+export const daoPotentialSubDaosSelector = selectorFamily<
+  string[],
+  WithChainId<{
+    coreAddress: string
+  }>
+>({
+  key: 'daoPotentialSubDaos',
+  get:
+    ({ coreAddress, chainId }) =>
+    ({ get }) => {
+      const potentialSubDaos: {
+        contractAddress: string
+        info: ContractVersionInfo
+      }[] = get(
+        queryContractIndexerSelector({
+          chainId,
+          contractAddress: coreAddress,
+          formula: 'daoCore/potentialSubDaos',
+        })
+      )
+
+      // Filter out those that do not appear to be DAO contracts and also the
+      // contract itself since it is probably its own admin.
+      return potentialSubDaos
+        .filter(
+          ({ contractAddress, info }) =>
+            contractAddress !== coreAddress &&
+            [
+              // V1
+              'cw-core',
+              // V2
+              'cwd-core',
+              'dao-core',
+            ].some((name) => info.contract.includes(name))
+        )
+        .map(({ contractAddress }) => contractAddress)
     },
 })
 

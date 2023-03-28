@@ -7,13 +7,13 @@ import {
 } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
 import {
   CODE_ID_CONFIG,
+  DaoVotingCw20StakedAdapterId,
   NEW_DAO_CW20_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
-import { DaoVotingCw20StakedAdapter } from '../../../index'
 import { DaoCreationConfig, GovernanceTokenType } from '../types'
 import instantiateSchema from './instantiate_schema.json'
 
@@ -98,7 +98,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   return {
     admin: { core_module: {} },
     code_id: CODE_ID_CONFIG.DaoVotingCw20Staked,
-    label: `DAO_${daoName}_${DaoVotingCw20StakedAdapter.id}`,
+    label: `DAO_${daoName}_${DaoVotingCw20StakedAdapterId}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }
 }

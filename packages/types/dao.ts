@@ -13,10 +13,15 @@ import {
 } from 'react-hook-form'
 
 import { ContractVersion } from './chain'
-import { ModuleInstantiateInfo } from './contracts/common'
+import { DepositRefundPolicy, ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
-import { ProposalModuleAdapter } from './proposal-module-adapter'
+import {
+  PercentOrMajorityValue,
+  ProposalModuleAdapter,
+} from './proposal-module-adapter'
 import { DaoCardProps, SuspenseLoaderProps } from './stateless'
+import { GenericToken } from './token'
+import { DurationWithUnits } from './units'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
@@ -117,6 +122,7 @@ export interface CreateDaoContext<
     Required<VotingModuleAdapter>,
     'id' | 'daoCreation'
   >[]
+  commonVotingConfig: DaoCreationCommonVotingConfigItems
   votingModuleDaoCreationAdapter: Required<VotingModuleAdapter>['daoCreation']
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
   generateInstantiateMsg: () => DaoCoreV2InstantiateMsg
@@ -136,6 +142,7 @@ export interface NewDao<VotingModuleAdapterData extends FieldValues = any> {
     id: string
     data: any
   }[]
+  votingConfig: DaoCreationVotingConfig
   advancedVotingConfigEnabled: boolean
 }
 
@@ -210,6 +217,11 @@ export interface DaoCreationVotingConfigItem<
   getReviewClassName?: (data: ModuleData) => string
 }
 
+export type DaoCreationCommonVotingConfigItems = {
+  items: DaoCreationVotingConfigItem[]
+  advancedItems: DaoCreationVotingConfigItem[]
+}
+
 export type DaoCreationGetInstantiateInfo<
   ModuleData extends FieldValues = any
 > = (
@@ -224,6 +236,48 @@ export type DaoCreatedCardProps = Omit<
   DaoCardProps,
   'follow' | 'LinkWrapper' | 'IconButtonLink'
 >
+
+export type DaoCreationVotingConfigWithAllowRevoting = {
+  allowRevoting: boolean
+}
+
+export type DaoCreationVotingConfigWithProposalDeposit = {
+  proposalDeposit: {
+    enabled: boolean
+    amount: number
+    // Token input fields.
+    type: 'native' | 'cw20' | 'voting_module_token'
+    denomOrAddress: string
+    // Loaded from token input fields to access metadata.
+    token?: GenericToken
+    refundPolicy: DepositRefundPolicy
+  }
+}
+
+export type DaoCreationVotingConfigWithProposalSubmissionPolicy = {
+  anyoneCanPropose: boolean
+}
+
+export type DaoCreationVotingConfigWithQuorum = {
+  quorum: PercentOrMajorityValue
+}
+
+export type DaoCreationVotingConfigWithVotingDuration = {
+  votingDuration: DurationWithUnits
+}
+
+export type DaoCreationVotingConfigWithEnableMultipleChoice = {
+  enableMultipleChoice: boolean
+}
+
+export type DaoCreationVotingConfig = DaoCreationVotingConfigWithAllowRevoting &
+  DaoCreationVotingConfigWithProposalDeposit &
+  DaoCreationVotingConfigWithProposalSubmissionPolicy &
+  DaoCreationVotingConfigWithQuorum &
+  DaoCreationVotingConfigWithVotingDuration &
+  DaoCreationVotingConfigWithEnableMultipleChoice
+
+//! Other
 
 export type DaoPayrollConfig = {
   type: string

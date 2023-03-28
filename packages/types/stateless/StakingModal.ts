@@ -5,6 +5,7 @@ import { ValidatorPickerProps } from './ValidatorPicker'
 export enum StakingMode {
   Stake = 'stake',
   Unstake = 'unstake',
+  Restake = 'restake',
   Claim = 'claim',
 }
 
@@ -40,7 +41,14 @@ export interface StakingModalProps {
   // Are we ready to stake? Ex: is wallet connected?
   loading: boolean
   // Triggered when the stake / unstake / claim button is pressed.
-  onAction: (mode: StakingMode, amount: number, validator?: string) => void
+  onAction: (
+    mode: StakingMode,
+    amount: number,
+    validator?: string,
+    // If mode is `StakingMode.Restake`, this will be the validator to unstake
+    // funds from.
+    fromValidator?: string
+  ) => void
   // If present, will control the visibility of the staking modal. If absent,
   // the modal will be visible always.
   visible?: boolean
@@ -54,4 +62,6 @@ export interface StakingModalProps {
     | 'nativeDecimals'
     | 'nativeDenom'
   >
+  // Enable restaking. Validator picker must be present as well.
+  enableRestaking?: boolean
 }

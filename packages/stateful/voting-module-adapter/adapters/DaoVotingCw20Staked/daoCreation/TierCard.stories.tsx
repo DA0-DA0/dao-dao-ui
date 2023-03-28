@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { NewDao } from '@dao-dao/types'
+import { DaoVotingCw20StakedAdapterId } from '@dao-dao/utils'
 
 import { makeDefaultNewDao } from '../../../../recoil/atoms'
 import { DaoVotingCw20StakedAdapter } from '../../../index'
@@ -25,7 +26,7 @@ const Template: ComponentStory<typeof TierCard> = (args) => {
     defaultValues: {
       ...makeDefaultNewDao(),
       votingModuleAdapter: {
-        id: DaoVotingCw20StakedAdapter.id,
+        id: DaoVotingCw20StakedAdapterId,
         data: DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig,
       },
     },

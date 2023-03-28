@@ -75,7 +75,7 @@ export const stakedBalanceAtHeightSelector = selectorFamily<
       const balance = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20Stake/stakedBalance',
+          formula: 'cw20Stake/stakedBalance',
           args: {
             address: params[0].address,
           },
@@ -110,7 +110,7 @@ export const totalStakedAtHeightSelector = selectorFamily<
       const total = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20Stake/totalStaked',
+          formula: 'cw20Stake/totalStaked',
           block: params[0].height ? { height: params[0].height } : undefined,
           id,
         })
@@ -142,7 +142,7 @@ export const stakedValueSelector = selectorFamily<
       const value = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20Stake/stakedValue',
+          formula: 'cw20Stake/stakedValue',
           args: params[0],
           id,
         })
@@ -171,7 +171,7 @@ export const totalValueSelector = selectorFamily<
       const total = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20Stake/totalValue',
+          formula: 'cw20Stake/totalValue',
           id,
         })
       )
@@ -197,7 +197,7 @@ export const getConfigSelector = selectorFamily<
       const config = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20Stake/config',
+          formula: 'cw20Stake/config',
         })
       )
       if (config) {
@@ -224,7 +224,7 @@ export const claimsSelector = selectorFamily<
       const claims = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20Stake/claims',
+          formula: 'cw20Stake/claims',
           args: params[0],
           id,
         })
@@ -265,7 +265,7 @@ export const listStakersSelector = selectorFamily<
       const list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20Stake/listStakers',
+          formula: 'cw20Stake/listStakers',
           args: params[0],
         })
       )
@@ -296,7 +296,7 @@ export const topStakersSelector = selectorFamily<
       get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cw20Stake/topStakers',
+          formula: 'cw20Stake/topStakers',
           args: {
             limit,
           },

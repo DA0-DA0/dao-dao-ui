@@ -13,7 +13,7 @@ export interface ProposalVoteButtonProps<Vote extends unknown> {
 }
 
 export const ProposalVoteButton = <Vote extends unknown>({
-  option: { label, Icon },
+  option: { label, Icon, color },
   onClick,
   pressed = false,
   disabled = false,
@@ -36,7 +36,7 @@ export const ProposalVoteButton = <Vote extends unknown>({
     size="lg"
     variant="secondary"
   >
-    <p>{label}</p>
-    <Icon className="!h-6 !w-6" />
+    <p className="text-left">{label}</p>
+    <Icon className="!h-6 !w-6" style={{ color }} />
   </Button>
 )

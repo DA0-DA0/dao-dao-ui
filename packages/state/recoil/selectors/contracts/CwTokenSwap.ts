@@ -37,7 +37,7 @@ export const statusSelector = selectorFamily<
       const status = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'cwTokenSwap/status',
+          formula: 'cwTokenSwap/status',
         })
       )
       if (status) {

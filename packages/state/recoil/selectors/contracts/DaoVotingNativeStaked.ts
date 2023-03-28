@@ -71,7 +71,7 @@ export const daoSelector = selectorFamily<
       const dao = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingNativeStaked/dao',
+          formula: 'daoVotingNativeStaked/dao',
         })
       )
       if (dao) {
@@ -96,7 +96,7 @@ export const getConfigSelector = selectorFamily<
       const config = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingNativeStaked/config',
+          formula: 'daoVotingNativeStaked/config',
         })
       )
       if (config) {
@@ -121,7 +121,7 @@ export const claimsSelector = selectorFamily<
       const claims = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingNativeStaked/claims',
+          formula: 'daoVotingNativeStaked/claims',
           args: params[0],
         })
       )
@@ -148,7 +148,7 @@ export const listStakersSelector = selectorFamily<
       const stakers = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingNativeStaked/listStakers',
+          formula: 'daoVotingNativeStaked/listStakers',
           args: params[0],
         })
       )
@@ -176,7 +176,7 @@ export const votingPowerAtHeightSelector = selectorFamily<
       const votingPower = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingNativeStaked/votingPower',
+          formula: 'daoVotingNativeStaked/votingPower',
           args: {
             address: params[0].address,
           },
@@ -211,7 +211,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
       const totalPower = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingNativeStaked/totalPower',
+          formula: 'daoVotingNativeStaked/totalPower',
           block: params[0].height ? { height: params[0].height } : undefined,
           id,
         })
@@ -241,7 +241,7 @@ export const infoSelector = selectorFamily<
       const info = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'info',
+          formula: 'info',
         })
       )
       if (info) {
@@ -272,7 +272,7 @@ export const topStakersSelector = selectorFamily<
       get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formulaName: 'daoVotingNativeStaked/topStakers',
+          formula: 'daoVotingNativeStaked/topStakers',
         })
       ) ?? undefined,
 })

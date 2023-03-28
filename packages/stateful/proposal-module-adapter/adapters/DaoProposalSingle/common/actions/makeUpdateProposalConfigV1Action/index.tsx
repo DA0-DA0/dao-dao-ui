@@ -338,7 +338,7 @@ export const makeUpdateProposalConfigV1Action: ActionMaker<
   }
 
   return {
-    key: AdapterActionKey.UpdateProposalConfig,
+    key: AdapterActionKey.UpdateProposalSingleConfig,
     Icon: BallotDepositEmoji,
     label: t('form.updateVotingConfigTitle'),
     description: t('info.updateVotingConfigActionDescription'),

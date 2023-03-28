@@ -5,6 +5,8 @@ import { nativeTokenLabel, nativeTokenLogoURI } from '../ibc'
 import { ChainPrefixIdMaps } from './chainPrefixIdMaps'
 import { CodeIdConfigs } from './codeIdConfigs'
 
+export * from './adapters'
+
 export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV
 
 export const SITE_URL =
@@ -114,6 +116,9 @@ export const NEW_DAO_CW20_DECIMALS = parseInt(
   process.env.NEXT_PUBLIC_NEW_DAO_CW20_DECIMALS || '6',
   10
 )
+
+// This will not change with environment.
+export const MAX_NUM_PROPOSAL_CHOICES = 20
 
 // Stargaze
 export const STARGAZE_RPC_ENDPOINT = process.env

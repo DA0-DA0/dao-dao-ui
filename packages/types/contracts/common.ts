@@ -270,3 +270,13 @@ export interface MintMsg {
     recipient: string
   }
 }
+
+// Used by both DaoProposalSingle and DaoProposalMultiple.
+export enum ProposalStatus {
+  Open = 'open',
+  Rejected = 'rejected',
+  Passed = 'passed',
+  Executed = 'executed',
+  ExecutionFailed = 'execution_failed',
+  Closed = 'closed',
+}

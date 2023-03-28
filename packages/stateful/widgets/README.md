@@ -24,20 +24,33 @@ minting/purchasing NFTs.
 
 ## Writing a widget
 
-A widget exports an ID, default variables it depends on, and a component that
-renders on the DAO page.
+A widget exports an ID, some metadata, and a component that renders on the DAO
+page. Widgets depend on a set of variables that are defined when the widget is
+added to the DAO. Defaults for these variables should be set in the
+`defaultValues` object in the widget definition, and they are passed to the
+component via a `variables` object. The default values object will appear in the
+widget creation action.
 
 All you need to do is define a widget object and add it to the list of widgets
-in `core.ts`.
+in [`core.ts`](./core.ts).
 
 ```ts
-import { Widget } from '@dao-dao/types/widgets'
+import { Widget, WidgetVisibilityContext } from '@dao-dao/types/widgets'
 
 const MyWidget: Widget = {
   id: 'my_widget_id',
+  visibilityContext: WidgetVisibilityContext.Always,
+  defaultValues: {
+    button: 'Pay',
+    amount: '100000ujuno',
+    ...
+  },
   Component: ...,
 }
 ```
+
+Take a look at the other widgets in this package for examples. Widgets have very
+few moving parts, so the best way to learn is to simply read through them.
 
 ## Usage (already implemented)
 

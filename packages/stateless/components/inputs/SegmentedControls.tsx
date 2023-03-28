@@ -1,21 +1,9 @@
 import clsx from 'clsx'
 import { useState } from 'react'
 
+import { SegmentedControlsProps } from '@dao-dao/types'
+
 import { Button } from '../buttons'
-
-export interface SegmentedControlTab<T extends unknown> {
-  label: string
-  value: T
-}
-
-export interface SegmentedControlsProps<T extends unknown> {
-  tabs: SegmentedControlTab<T>[]
-  selected: T
-  onSelect: (value: T) => void
-  loading?: T
-  className?: string
-  disabled?: boolean
-}
 
 export const SegmentedControls = <T extends unknown>({
   tabs,
