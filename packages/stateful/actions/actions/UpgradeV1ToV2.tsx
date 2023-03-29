@@ -1,6 +1,15 @@
 import { useCallback } from 'react'
-import { useRecoilValueLoadable, waitForAll } from 'recoil'
+import {
+  constSelector,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  waitForAll,
+} from 'recoil'
 
+import {
+  DaoVotingCw20StakedSelectors,
+  contractSelector,
+} from '@dao-dao/state/recoil'
 import { UnicornEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -15,6 +24,7 @@ import {
 import { PreProposeInfo } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   CODE_ID_CONFIG,
+  DaoVotingCw20StakedAdapterId,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -25,6 +35,7 @@ import {
   matchAndLoadCommon,
 } from '../../proposal-module-adapter'
 import { daoPotentialSubDaosSelector } from '../../recoil'
+import { useVotingModuleAdapterContextIfAvailable } from '../../voting-module-adapter/react/context'
 import {
   UpgradeV1ToV2Component,
   UpgradeV1ToV2Data,
@@ -80,6 +91,28 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
     // core list, which is what the migration contract expects.
     const proposalModuleDepositInfosLoadable = useCachedLoadable(
       waitForAll(depositInfoSelectors)
+    )
+
+    // If the DAO is using the CW20 staked voting module, we need to get the
+    // staking contract address to pass through the code ID to the migration
+    // contract. It may be the legacy code ID or the v1 code ID.
+    const { id } = useVotingModuleAdapterContextIfAvailable() ?? {}
+    const stakingContractAddress = useRecoilValue(
+      id === DaoVotingCw20StakedAdapterId
+        ? DaoVotingCw20StakedSelectors.stakingContractSelector({
+            contractAddress: context.info.votingModuleAddress,
+            params: [],
+            chainId,
+          })
+        : constSelector(undefined)
+    )
+    const stakingContract = useRecoilValue(
+      stakingContractAddress
+        ? contractSelector({
+            contractAddress: stakingContractAddress,
+            chainId,
+          })
+        : constSelector(undefined)
     )
 
     return useCallback(
@@ -152,7 +185,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
                       v1_code_ids: {
                         proposal_single: 427,
                         cw4_voting: 429,
-                        cw20_stake: 430,
+                        cw20_stake: stakingContract?.codeId ?? 430,
                         cw20_staked_balances_voting: 431,
                       },
                       v2_code_ids: {
@@ -170,7 +203,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
           },
         })
       },
-      [proposalModuleDepositInfosLoadable]
+      [proposalModuleDepositInfosLoadable, stakingContract?.codeId]
     )
   }
 

@@ -1,4 +1,4 @@
-import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { Contract, CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { fromBase64, toHex } from '@cosmjs/encoding'
 import {
   Coin,
@@ -659,4 +659,17 @@ export const validatorSlashesSelector = selectorFamily<
           formula: 'staking/slashes',
         })
       )) ?? [],
+})
+
+export const contractSelector = selectorFamily<
+  Contract,
+  WithChainId<{ contractAddress: string }>
+>({
+  key: 'contract',
+  get:
+    ({ contractAddress, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientForChainSelector(chainId))
+      return await client.getContract(contractAddress)
+    },
 })
