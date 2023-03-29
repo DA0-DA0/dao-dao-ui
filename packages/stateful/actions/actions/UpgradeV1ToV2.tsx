@@ -114,6 +114,8 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
           })
         : constSelector(undefined)
     )
+    // Allow only legacy (41) or v1 (430) code ID.
+    const stakingContractCodeId = stakingContract?.codeId === 41 ? 41 : 430
 
     return useCallback(
       ({ subDaos }) => {
@@ -185,7 +187,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
                       v1_code_ids: {
                         proposal_single: 427,
                         cw4_voting: 429,
-                        cw20_stake: stakingContract?.codeId ?? 430,
+                        cw20_stake: stakingContractCodeId,
                         cw20_staked_balances_voting: 431,
                       },
                       v2_code_ids: {
@@ -203,7 +205,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
           },
         })
       },
-      [proposalModuleDepositInfosLoadable, stakingContract?.codeId]
+      [proposalModuleDepositInfosLoadable, stakingContractCodeId]
     )
   }
 
