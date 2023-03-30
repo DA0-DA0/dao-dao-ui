@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 
 import {
   CategorizedActionAndData,
+  CosmosMsgForEmpty,
   DepositInfoSelector,
   IProposalModuleAdapterCommonOptions,
   PartialCategorizedActionKeyAndData,
@@ -10,7 +11,6 @@ import {
 } from '@dao-dao/types'
 import {
   CheckedMultipleChoiceOption,
-  CosmosMsgForEmpty,
   MultipleChoiceOptionType,
   MultipleChoiceOptions,
   MultipleChoiceProposal,

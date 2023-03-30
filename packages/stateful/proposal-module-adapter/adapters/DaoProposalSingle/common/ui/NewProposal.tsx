@@ -21,12 +21,12 @@ import {
   ActionCategorySelector,
   Button,
   CategorizedActionEditor,
-  CosmosMessageDisplay,
   FilterableItem,
   FilterableItemPopup,
   IconButton,
   InputErrorMessage,
   ProposalContentDisplay,
+  RawActionsRenderer,
   TextAreaInput,
   TextInput,
   Tooltip,
@@ -34,13 +34,11 @@ import {
 import {
   ActionCategoryWithLabel,
   BaseNewProposalProps,
-  CategorizedActionKeyAndData,
   LoadedActions,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import {
-  decodedMessagesString,
+  convertActionsToMessages,
   formatDateTime,
   formatTime,
   processError,
@@ -133,15 +131,10 @@ export const NewProposal = ({
     shouldUnregister: true,
   })
 
-  const categorizedActionsWithData = watch('actionData') || []
-
-  // Filter out unchosen actions.
-  const allActionsWithData = categorizedActionsWithData.filter(
-    (a): a is CategorizedActionKeyAndData => !!a.actionKey && !!a.data
-  )
+  const actionData = watch('actionData') || []
 
   const onSubmitForm: SubmitHandler<NewProposalForm> = useCallback(
-    ({ title, description }, event) => {
+    ({ title, description, actionData }, event) => {
       setShowSubmitErrorNote(false)
       setSubmitError('')
 
@@ -155,12 +148,7 @@ export const NewProposal = ({
 
       let msgs
       try {
-        msgs = allActionsWithData
-          .map(({ actionKey, data }) =>
-            loadedActions[actionKey]?.transform(data)
-          )
-          // Filter out undefined messages.
-          .filter(Boolean) as CosmosMsgFor_Empty[]
+        msgs = convertActionsToMessages(loadedActions, actionData)
       } catch (err) {
         console.error(err)
         setSubmitError(
@@ -177,7 +165,7 @@ export const NewProposal = ({
         msgs,
       })
     },
-    [allActionsWithData, createProposal, loadedActions]
+    [createProposal, loadedActions]
   )
 
   const onSubmitError: SubmitErrorHandler<NewProposalForm> = useCallback(
@@ -233,9 +221,9 @@ export const NewProposal = ({
 
       {proposalModuleSelector}
 
-      {categorizedActionsWithData.length > 0 && (
+      {actionData.length > 0 && (
         <div className="-mb-2 flex flex-col gap-2">
-          {categorizedActionsWithData.map((field, index) => (
+          {actionData.map((field, index) => (
             <CategorizedActionEditor
               key={
                 // Use ID from field array that corresponds with this action,
@@ -245,11 +233,10 @@ export const NewProposal = ({
               }
               {...field}
               SuspenseLoader={SuspenseLoader}
+              actionDataFieldName="actionData"
+              actionErrors={errors?.actionData?.[index] || {}}
               addAction={appendAction}
-              allActionsWithData={allActionsWithData}
               categories={categories}
-              errors={errors?.actionData?.[index] || {}}
-              fieldNamePrefix={`actionData.${index}.`}
               index={index}
               isCreating
               loadedActions={loadedActions}
@@ -385,20 +372,10 @@ export const NewProposal = ({
               }}
               description={proposalDescription}
               innerContentDisplay={
-                allActionsWithData.length ? (
-                  <CosmosMessageDisplay
-                    value={decodedMessagesString(
-                      allActionsWithData
-                        .map(({ actionKey, data }) => {
-                          try {
-                            return loadedActions[actionKey]?.transform(data)
-                          } catch (err) {
-                            console.error(err)
-                          }
-                        })
-                        // Filter out undefined messages.
-                        .filter(Boolean) as CosmosMsgFor_Empty[]
-                    )}
+                actionData.length ? (
+                  <RawActionsRenderer
+                    actionData={actionData}
+                    loadedActions={loadedActions}
                   />
                 ) : undefined
               }

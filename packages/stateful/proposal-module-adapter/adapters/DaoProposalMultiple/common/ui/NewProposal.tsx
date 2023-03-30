@@ -34,16 +34,13 @@ import {
 import {
   ActionCategoryWithLabel,
   BaseNewProposalProps,
-  CategorizedActionKeyAndData,
   LoadedActions,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
-import {
-  CosmosMsgForEmpty,
-  MultipleChoiceOptionType,
-} from '@dao-dao/types/contracts/DaoProposalMultiple'
+import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   MAX_NUM_PROPOSAL_CHOICES,
+  convertActionsToMessages,
   formatDateTime,
   formatTime,
   processError,
@@ -160,16 +157,7 @@ export const NewProposal = ({
         options = proposalFormData.choices.map((option) => ({
           title: option.title,
           description: option.description,
-          msgs: option.actionData
-            // Filter out unchosen actions.
-            .filter(
-              (a): a is CategorizedActionKeyAndData => !!a.actionKey && !!a.data
-            )
-            .map(({ actionKey, data }) =>
-              loadedActions[actionKey]?.transform(data)
-            )
-            // Filter out undefined messages.
-            .filter(Boolean) as CosmosMsgForEmpty[],
+          msgs: convertActionsToMessages(loadedActions, option.actionData),
         }))
       } catch (err) {
         console.error(err)
@@ -447,21 +435,10 @@ export const NewProposal = ({
                           vote_count: '0',
                         },
                         actionData: [],
-                        decodedMessages: (actionData ?? [])
-                          // Filter out unchosen actions.
-                          .filter(
-                            (a): a is CategorizedActionKeyAndData =>
-                              !!a.actionKey && !!a.data
-                          )
-                          .map(({ actionKey, data }) => {
-                            try {
-                              return loadedActions[actionKey]?.transform(data)
-                            } catch (err) {
-                              console.error(err)
-                            }
-                          })
-                          // Filter out undefined messages.
-                          .filter(Boolean) as CosmosMsgForEmpty[],
+                        decodedMessages: convertActionsToMessages(
+                          loadedActions,
+                          actionData || []
+                        ),
                         voteOption: {
                           Icon: Circle,
                           label: title,

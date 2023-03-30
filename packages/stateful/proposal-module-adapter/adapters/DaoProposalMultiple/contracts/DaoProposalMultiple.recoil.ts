@@ -7,12 +7,10 @@ import {
   refreshProposalsIdAtom,
   signingCosmWasmClientAtom,
 } from '@dao-dao/state'
-import { WithChainId } from '@dao-dao/types'
+import { Addr, InfoResponse, WithChainId } from '@dao-dao/types'
 import {
-  Addr,
   Config,
   HooksResponse,
-  InfoResponse,
   ProposalCreationPolicyResponse,
   ProposalListResponse,
   ProposalResponse,

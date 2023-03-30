@@ -85,27 +85,31 @@ export const useActionForKey = (actionKey: ActionKey) =>
   useActionsForMatching().find(({ action }) => action.key === actionKey)
 
 // Flatten action categories into processed list of actions for generating
-// messages from actions. Use action categories instead of actions for matching
-// so we can apply the options.
-export const useLoadedActions = (
+// messages from actions.
+export const useLoadedActionsAndCategories = (
   ...args: Parameters<typeof useActionCategories>
-): LoadedActions =>
-  useActionCategories(...args)
-    .flatMap((category) =>
-      category.actions.map((action) => ({
+): {
+  loadedActions: LoadedActions
+  categories: ActionCategoryWithLabel[]
+} => {
+  const categories = useActionCategories(...args)
+  // Load actions by calling hooks necessary to using the action. This calls the
+  // hooks in the same order every time, as action categories do not change, so
+  // this is a safe use of hooks.
+  const loadedActions = categories.reduce((acc, category) => {
+    category.actions.forEach((action) => {
+      acc[action.key] = {
         category,
         action,
-      }))
-    )
-    .reduce(
-      (acc, { category, action }) => ({
-        ...acc,
-        [action.key]: {
-          category,
-          action,
-          transform: action.useTransformToCosmos(),
-          defaults: action.useDefaults(),
-        },
-      }),
-      {} as LoadedActions
-    )
+        transform: action.useTransformToCosmos(),
+        defaults: action.useDefaults(),
+      }
+    })
+    return acc
+  }, {} as LoadedActions)
+
+  return {
+    loadedActions,
+    categories,
+  }
+}

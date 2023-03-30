@@ -21,7 +21,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useActionCategories, useLoadedActions } from '../../../../../actions'
+import { useLoadedActionsAndCategories } from '../../../../../actions'
 import { SuspenseLoader } from '../../../../../components/SuspenseLoader'
 import { useMembership } from '../../../../../hooks'
 import { proposalSelector } from '../../contracts/DaoProposalMultiple.recoil'
@@ -54,8 +54,7 @@ export const NewProposal = ({
   } = useDaoInfoContext()
   const { connected } = useWallet()
 
-  const categories = useActionCategories()
-  const loadedActions = useLoadedActions()
+  const { loadedActions, categories } = useLoadedActionsAndCategories()
 
   const { isMember = false } = useMembership({
     coreAddress,

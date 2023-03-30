@@ -25,7 +25,6 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionCategoryWithLabel,
-  CategorizedActionKeyAndData,
   LoadedActions,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
@@ -87,13 +86,7 @@ export const MultipleChoiceOptionEditor = <
     shouldUnregister: true,
   })
 
-  const categorizedActionsWithData =
-    watch(`choices.${optionIndex}.actionData`) || []
-
-  // Filter out unchosen actions.
-  const allActionsWithData = categorizedActionsWithData.filter(
-    (a): a is CategorizedActionKeyAndData => !!a.actionKey && !!a.data
-  )
+  const actionData = watch(`choices.${optionIndex}.actionData`) || []
 
   // Default to if description exists, in case of duplication.
   const [showingDescription, setShowingDescription] = useState(!!description)
@@ -176,9 +169,9 @@ export const MultipleChoiceOptionEditor = <
             </Button>
           )}
 
-          {categorizedActionsWithData.length > 0 && (
+          {actionData.length > 0 && (
             <div className="flex flex-col gap-1">
-              {categorizedActionsWithData.map((field, actionIndex) => (
+              {actionData.map((field, actionIndex) => (
                 <CategorizedActionEditor
                   key={
                     // Use ID from field array that corresponds with this
@@ -188,11 +181,10 @@ export const MultipleChoiceOptionEditor = <
                   }
                   {...field}
                   SuspenseLoader={SuspenseLoader}
+                  actionDataFieldName={`choices.${optionIndex}.actionData`}
+                  actionErrors={errorsOption?.actionData?.[actionIndex] || {}}
                   addAction={appendAction}
-                  allActionsWithData={allActionsWithData}
                   categories={categories}
-                  errors={errorsOption?.actionData?.[actionIndex] || {}}
-                  fieldNamePrefix={`choices.${optionIndex}.actionData.${actionIndex}.`}
                   index={actionIndex}
                   isCreating
                   loadedActions={loadedActions}

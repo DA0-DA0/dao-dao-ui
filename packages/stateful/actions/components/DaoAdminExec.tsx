@@ -14,7 +14,6 @@ import {
   ActionCategoryWithLabel,
   AddressInputProps,
   CategorizedAction,
-  CategorizedActionKeyAndData,
   CosmosMsgFor_Empty,
   LoadingData,
   PartialCategorizedActionKeyAndData,
@@ -28,6 +27,7 @@ import {
 } from '@dao-dao/types/actions'
 import {
   CHAIN_BECH32_PREFIX,
+  convertActionsToMessages,
   decodeMessages,
   isValidContractAddress,
   validateContractAddress,
@@ -49,7 +49,7 @@ export type DaoAdminExecData = {
   msgs: CosmosMsgFor_Empty[]
 
   // Internal action data so that errors are added to main form.
-  _actions?: PartialCategorizedActionKeyAndData[]
+  _actionData?: PartialCategorizedActionKeyAndData[]
 }
 
 export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = (
@@ -125,26 +125,17 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
     append: appendAction,
     remove: removeAction,
   } = useFieldArray({
-    name: (fieldNamePrefix + '_actions') as '_actions',
+    name: (fieldNamePrefix + '_actionData') as '_actionData',
     control,
   })
 
-  const categorizedActionsWithData =
-    watch((fieldNamePrefix + '_actions') as '_actions') || []
-
-  // Filter out unchosen actions.
-  const allActionsWithData = categorizedActionsWithData.filter(
-    (a): a is CategorizedActionKeyAndData => !!a.actionKey && !!a.data
-  )
+  const actionData =
+    watch((fieldNamePrefix + '_actionData') as '_actionData') || []
 
   // Update action msgs from actions form data.
   let msgs: CosmosMsgFor_Empty[] = []
   try {
-    msgs =
-      (allActionsWithData
-        .map(({ actionKey, data }) => loadedActions[actionKey]?.transform(data))
-        // Filter out undefined messages.
-        .filter(Boolean) as CosmosMsgFor_Empty[]) ?? []
+    msgs = convertActionsToMessages(loadedActions, actionData)
 
     if (errors?.msgs) {
       clearErrors((fieldNamePrefix + 'msgs') as 'msgs')
@@ -168,9 +159,9 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
 
   return (
     <>
-      {categorizedActionsWithData.length > 0 && (
+      {actionData.length > 0 && (
         <div className="mb-4 flex flex-col gap-2">
-          {categorizedActionsWithData.map((field, index) => (
+          {actionData.map((field, index) => (
             <CategorizedActionEditor
               key={
                 // Use ID from field array that corresponds with this action,
@@ -180,11 +171,10 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
               }
               {...field}
               SuspenseLoader={SuspenseLoader}
+              actionDataFieldName={fieldNamePrefix + '_actionData'}
+              actionErrors={errors?._actionData?.[index] || {}}
               addAction={appendAction}
-              allActionsWithData={allActionsWithData}
               categories={categories}
-              errors={errors?._actions?.[index] || {}}
-              fieldNamePrefix={fieldNamePrefix + `_actions.${index}.`}
               index={index}
               isCreating={isCreating}
               loadedActions={loadedActions}

@@ -5,7 +5,6 @@ import { FieldErrors, useFormContext } from 'react-hook-form'
 import { ActionCard, Loader } from '@dao-dao/stateless'
 import {
   ActionCategoryWithLabel,
-  CategorizedActionKeyAndData,
   LoadedActions,
   PartialCategorizedActionKeyAndData,
   SuspenseLoaderProps,
@@ -17,11 +16,15 @@ export type CategorizedActionEditorProps =
   PartialCategorizedActionKeyAndData & {
     categories: ActionCategoryWithLabel[]
     loadedActions: LoadedActions
-    fieldNamePrefix: string
-    allActionsWithData: CategorizedActionKeyAndData[]
+    // The field name that contains all action data, which is expected to be of
+    // type `PartialCategorizedActionKeyAndData[]`.
+    actionDataFieldName: string
+    // The index of this action in the form's field array at `actionsFieldName`.
     index: number
     onRemove: () => void
-    errors: FieldErrors
+    // The errors for this particular action, *not* all actions like the
+    // `actionsFieldName` above.
+    actionErrors: FieldErrors
     addAction: (action: PartialCategorizedActionKeyAndData) => void
     isCreating: boolean
     SuspenseLoader: ComponentType<SuspenseLoaderProps>
@@ -30,11 +33,10 @@ export type CategorizedActionEditorProps =
 export const CategorizedActionEditor = ({
   categories,
   loadedActions,
-  fieldNamePrefix,
-  allActionsWithData,
+  actionDataFieldName,
   index,
   onRemove,
-  errors,
+  actionErrors,
   addAction,
   isCreating,
   SuspenseLoader,
@@ -43,20 +45,27 @@ export const CategorizedActionEditor = ({
   actionKey,
   data,
 }: CategorizedActionEditorProps) => {
-  const { setError, clearErrors, setValue } =
-    useFormContext<PartialCategorizedActionKeyAndData>()
+  const { watch, setError, clearErrors, setValue } = useFormContext<{
+    actionData: PartialCategorizedActionKeyAndData[]
+  }>()
+
+  // All actions from the form.
+  const actionData = watch(actionDataFieldName as 'actionData') || []
+  // The prefix for this action's field names.
+  const actionFieldName =
+    `${actionDataFieldName}.${index}` as `actionData.${number}`
 
   // Set error if no action is selected.
   useEffect(() => {
     if (!actionKey) {
-      setError((fieldNamePrefix + 'actionKey') as 'actionKey', {
+      setError(`${actionFieldName}.actionKey`, {
         type: 'manual',
         message: 'Please select an action.',
       })
     } else {
-      clearErrors((fieldNamePrefix + 'actionKey') as 'actionKey')
+      clearErrors(`${actionFieldName}.actionKey`)
     }
-  }, [actionKey, clearErrors, fieldNamePrefix, setError])
+  }, [actionKey, clearErrors, actionFieldName, setError])
 
   if (!actionKey || !data) {
     // If not creating, we should never have an action without data. If action
@@ -82,9 +91,9 @@ export const CategorizedActionEditor = ({
           }
 
           // Update the action key and data.
-          setValue((fieldNamePrefix + 'actionKey') as 'actionKey', key)
+          setValue(`${actionFieldName}.actionKey`, key)
           setValue(
-            (fieldNamePrefix + 'data') as 'data',
+            `${actionFieldName}.data`,
             // Clone to prevent the form from mutating the original object.
             cloneDeep(action.defaults ?? {})
           )
@@ -108,14 +117,14 @@ export const CategorizedActionEditor = ({
     >
       <SuspenseLoader fallback={<Loader />}>
         <action.Component
-          allActionsWithData={allActionsWithData}
+          allActionsWithData={actionData}
           data={data}
-          fieldNamePrefix={fieldNamePrefix + 'data.'}
+          fieldNamePrefix={actionFieldName + '.data.'}
           index={index}
           {...(isCreating
             ? {
                 isCreating,
-                errors: errors?.data || {},
+                errors: actionErrors?.data || {},
                 addAction,
                 onRemove,
               }

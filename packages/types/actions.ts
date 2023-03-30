@@ -92,7 +92,7 @@ export type CategorizedAction = {
 // A component which will render an action's input form.
 export type ActionComponentProps<O = undefined, D = any> = {
   fieldNamePrefix: string
-  allActionsWithData: CategorizedActionKeyAndData[]
+  allActionsWithData: PartialCategorizedActionKeyAndData[]
   index: number
   data: D
 } & (

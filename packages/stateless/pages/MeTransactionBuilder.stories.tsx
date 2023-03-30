@@ -2,10 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/stateful'
-import {
-  useActionCategories,
-  useLoadedActions,
-} from '@dao-dao/stateful/actions'
+import { useLoadedActionsAndCategories } from '@dao-dao/stateful/actions'
 import {
   WalletActionsProviderDecorator,
   WalletProviderDecorator,
@@ -26,8 +23,7 @@ export default {
 } as ComponentMeta<typeof MeTransactionBuilder>
 
 const Template: ComponentStory<typeof MeTransactionBuilder> = (args) => {
-  const categories = useActionCategories()
-  const loadedActions = useLoadedActions()
+  const { loadedActions, categories } = useLoadedActionsAndCategories()
 
   const formMethods = useForm<MeTransactionForm>({
     mode: 'onChange',

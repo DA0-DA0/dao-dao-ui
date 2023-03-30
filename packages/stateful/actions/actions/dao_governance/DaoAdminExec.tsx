@@ -29,10 +29,9 @@ import {
 } from '../../components/DaoAdminExec'
 import {
   WalletActionsProvider,
-  useActionCategories,
   useActionOptions,
   useActionsForMatching,
-  useLoadedActions,
+  useLoadedActionsAndCategories,
 } from '../../react'
 
 const useDefaults: UseDefaults<DaoAdminExecData> = () => ({
@@ -58,8 +57,7 @@ const InnerComponentLoading: ActionComponent<InnerOptions> = (props) => (
 )
 
 const InnerComponent: ActionComponent<InnerOptions> = (props) => {
-  const categories = useActionCategories()
-  const loadedActions = useLoadedActions()
+  const { categories, loadedActions } = useLoadedActionsAndCategories()
   const actionsForMatching = useActionsForMatching()
 
   return (

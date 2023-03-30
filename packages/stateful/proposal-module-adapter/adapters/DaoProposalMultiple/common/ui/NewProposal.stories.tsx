@@ -7,9 +7,8 @@ import {
   DaoPageWrapperDecorator,
   WalletProviderDecorator,
 } from '@dao-dao/storybook/decorators'
-import { LoadedActions } from '@dao-dao/types'
 
-import { useActionCategories } from '../../../../../actions'
+import { useLoadedActionsAndCategories } from '../../../../../actions'
 import { SuspenseLoader } from '../../../../../components/SuspenseLoader'
 import { NewProposalForm } from '../../types'
 import { NewProposal } from './NewProposal'
@@ -22,32 +21,7 @@ export default {
 } as ComponentMeta<typeof NewProposal>
 
 const Template: ComponentStory<typeof NewProposal> = (args) => {
-  const categories = useActionCategories()
-
-  const loadedActions = categories
-    .flatMap((category) =>
-      category.actions.map((action) => ({
-        category,
-        action,
-      }))
-    )
-    .reduce(
-      (acc, { category, action }) => ({
-        ...acc,
-        [action.key]: {
-          category,
-          action,
-          transform: (data: unknown) => {
-            console.log('transform', action, data)
-            return {
-              placeholder: action.key,
-            }
-          },
-          defaults: {},
-        },
-      }),
-      {} as LoadedActions
-    )
+  const { loadedActions, categories } = useLoadedActionsAndCategories()
 
   const formMethods = useForm<NewProposalForm>({
     mode: 'onChange',
