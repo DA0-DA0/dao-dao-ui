@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 import {
   Button,
   Checkbox,
-  FamilyEmoji,
   IconButton,
   InputErrorMessage,
   InputLabel,
@@ -14,8 +13,6 @@ import {
 import { ActionComponent, AddressInputProps } from '@dao-dao/types'
 import { SubDao } from '@dao-dao/types/contracts/DaoCore.v2'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
-
-import { ActionCard } from './ActionCard'
 
 export interface ManageSubDaosData {
   toAdd: SubDao[]
@@ -33,7 +30,6 @@ export interface ManageSubDaosOptions {
 
 export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: { currentSubDaos, AddressInput },
@@ -59,11 +55,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
   })
 
   return (
-    <ActionCard
-      Icon={FamilyEmoji}
-      onRemove={onRemove}
-      title={t('title.manageSubDaos')}
-    >
+    <>
       <div className="flex flex-col gap-1">
         <InputLabel name={t('form.subDaosToRecognize')} />
         <div className="flex flex-col items-stretch gap-2">
@@ -169,6 +161,6 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
           )}
         </div>
       </div>
-    </ActionCard>
+    </>
   )
 }

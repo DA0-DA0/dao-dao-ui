@@ -18,7 +18,6 @@ import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
 import {
-  BallotDepositEmoji,
   IconButtonLink,
   MarkdownRenderer,
   NoContent,
@@ -48,7 +47,6 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../react'
-import { ActionCard } from './ActionCard'
 
 export interface GovernanceVoteOptions {
   proposals: GovProposalWithDecodedContent[]
@@ -64,7 +62,6 @@ export const GovernanceVoteComponent: ActionComponent<
   GovernanceVoteOptions
 > = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: { proposals, existingVotesLoading },
@@ -81,20 +78,7 @@ export const GovernanceVoteComponent: ActionComponent<
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
 
   return (
-    <ActionCard
-      Icon={BallotDepositEmoji}
-      footer={
-        !isCreating || proposals.length > 0 ? (
-          <VoteFooter
-            existingVotesLoading={existingVotesLoading}
-            fieldNamePrefix={fieldNamePrefix}
-            isCreating={isCreating}
-          />
-        ) : undefined
-      }
-      onRemove={onRemove}
-      title={t('title.voteOnGovernanceProposal')}
-    >
+    <>
       {isCreating &&
         (proposals.length === 0 ? (
           <NoContent
@@ -229,7 +213,17 @@ export const GovernanceVoteComponent: ActionComponent<
           </p>
         )
       )}
-    </ActionCard>
+
+      {(!isCreating || proposals.length > 0) && (
+        <div className="-mx-6 flex flex-col gap-2 border-t border-border-secondary p-6 pt-5">
+          <VoteFooter
+            existingVotesLoading={existingVotesLoading}
+            fieldNamePrefix={fieldNamePrefix}
+            isCreating={isCreating}
+          />
+        </div>
+      )}
+    </>
   )
 }
 

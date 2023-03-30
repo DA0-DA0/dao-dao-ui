@@ -6,6 +6,15 @@ import { TFunction } from 'react-i18next'
 import { CosmosMsgFor_Empty } from './contracts/common'
 import { DaoInfo } from './dao'
 
+export enum ActionCategoryKey {
+  Authz = 'authz',
+  ChainGovernance = 'chainGovernance',
+  DaoGovernance = 'daoGovernance',
+  Other = 'other',
+  SmartContracting = 'smartContracting',
+  Treasury = 'treasury',
+}
+
 // Actions defined in the core actions system (@dao-dao/stateful/actions). These
 // are provided in the top-level ActionsProvider.
 export enum CoreActionKey {
@@ -54,20 +63,36 @@ export enum AdapterActionKey {
 
 export type ActionKey = CoreActionKey | AdapterActionKey
 
-export interface ActionAndData {
+export type CategorizedActionAndData = {
+  category: ActionCategoryWithLabel
   action: Action
   data: any
 }
 
-export interface ActionKeyAndData {
-  key: ActionKey
+export type PartialCategorizedActionAndData = Pick<
+  CategorizedActionAndData,
+  'category'
+> &
+  Partial<Omit<CategorizedActionAndData, 'category'>>
+
+export interface CategorizedActionKeyAndData {
+  categoryKey: ActionCategoryKey
+  actionKey: ActionKey
   data: any
+}
+
+export type PartialCategorizedActionKeyAndData =
+  Partial<CategorizedActionKeyAndData>
+
+export type CategorizedAction = {
+  category: ActionCategoryWithLabel
+  action: Action
 }
 
 // A component which will render an action's input form.
 export type ActionComponentProps<O = undefined, D = any> = {
   fieldNamePrefix: string
-  allActionsWithData: ActionKeyAndData[]
+  allActionsWithData: CategorizedActionKeyAndData[]
   index: number
   data: D
 } & (
@@ -75,7 +100,7 @@ export type ActionComponentProps<O = undefined, D = any> = {
       isCreating: true
       onRemove: () => void
       errors: FieldErrors
-      addAction: (action: ActionKeyAndData) => void
+      addAction: (action: PartialCategorizedActionKeyAndData) => void
     }
   | {
       isCreating: false
@@ -129,6 +154,20 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   useDecodedCosmosMsg: UseDecodedCosmosMsg<Data>
 }
 
+export type ActionCategory = {
+  // If many categories exist with the same key, they will be merged. The first
+  // defined label and description will be used. This allows additional modules
+  // to add actions to the same category without changing any metadata.
+  key: ActionCategoryKey
+  label?: string
+  description?: string
+  actions: Action[]
+}
+
+export type ActionCategoryWithLabel = Omit<ActionCategory, 'label'> & {
+  label: string
+}
+
 export enum ActionContextType {
   Dao = 'dao',
   Wallet = 'wallet',
@@ -157,11 +196,26 @@ export type ActionMaker<Data extends {} = any, ExtraOptions extends {} = {}> = (
   options: ActionOptions<ExtraOptions>
 ) => Action<Data> | null
 
+// A category maker can return null to indicate that the category should not be
+// included. It can also return either actions, action makers, or both. This is
+// convience to avoid every category maker needing the same boilerplate action
+// maker code. `actionMakers` will be made into actions and merged with
+// `actions`. If no actions exist after all are made, the category will be
+// ignored.
+export type ActionCategoryMaker<ExtraOptions extends {} = {}> = (
+  options: ActionOptions<ExtraOptions>
+) =>
+  | (Omit<ActionCategory, 'actions'> & {
+      actions?: Action[]
+      actionMakers?: ActionMaker[]
+    })
+  | null
+
 // React context/provider system for actions.
 
-export interface IActionsContext {
+export type IActionsContext = {
   options: ActionOptions
-  actions: Action[]
+  categories: ActionCategoryWithLabel[]
 }
 
 export type UseActionsOptions = {
@@ -172,6 +226,7 @@ export type UseActionsOptions = {
 }
 
 export type LoadedAction = {
+  category: ActionCategoryWithLabel
   action: Action
   transform: ReturnType<UseTransformToCosmos>
   defaults: ReturnType<UseDefaults>

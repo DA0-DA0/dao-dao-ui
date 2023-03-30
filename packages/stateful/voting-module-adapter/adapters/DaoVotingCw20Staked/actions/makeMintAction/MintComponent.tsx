@@ -5,10 +5,8 @@ import {
 import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
 
 import {
-  HerbEmoji,
   InputErrorMessage,
   NumberInput,
   useDetectWrap,
@@ -24,8 +22,6 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard } from '../../../../../actions'
-
 export interface MintOptions {
   govToken: GenericToken
   // Used to display the profile of the address receiving minted tokens.
@@ -34,19 +30,17 @@ export interface MintOptions {
 
 export const MintComponent: ActionComponent<MintOptions> = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: { govToken, AddressInput },
 }) => {
-  const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
   const { containerRef, childRef, wrapped } = useDetectWrap()
   const Icon = wrapped ? SubdirectoryArrowRightRounded : ArrowRightAltRounded
 
   return (
-    <ActionCard Icon={HerbEmoji} onRemove={onRemove} title={t('title.mint')}>
+    <>
       <div
         className="flex flex-row flex-wrap items-stretch gap-x-3 gap-y-2"
         ref={containerRef}
@@ -93,6 +87,6 @@ export const MintComponent: ActionComponent<MintOptions> = ({
           <InputErrorMessage error={errors?.to} />
         </div>
       )}
-    </ActionCard>
+    </>
   )
 }

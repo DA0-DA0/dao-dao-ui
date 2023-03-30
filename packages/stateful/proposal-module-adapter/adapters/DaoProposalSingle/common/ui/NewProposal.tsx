@@ -7,8 +7,7 @@ import {
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import cloneDeep from 'lodash.clonedeep'
-import { useCallback, useState } from 'react'
+import { ComponentType, useCallback, useState } from 'react'
 import {
   SubmitErrorHandler,
   SubmitHandler,
@@ -19,9 +18,9 @@ import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
 import {
-  ActionCardLoader,
-  ActionSelector,
+  ActionCategorySelector,
   Button,
+  CategorizedActionEditor,
   CosmosMessageDisplay,
   FilterableItem,
   FilterableItemPopup,
@@ -32,7 +31,13 @@ import {
   TextInput,
   Tooltip,
 } from '@dao-dao/stateless'
-import { Action, BaseNewProposalProps, LoadedActions } from '@dao-dao/types'
+import {
+  ActionCategoryWithLabel,
+  BaseNewProposalProps,
+  CategorizedActionKeyAndData,
+  LoadedActions,
+  SuspenseLoaderProps,
+} from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import {
   decodedMessagesString,
@@ -42,7 +47,6 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../../components/SuspenseLoader'
 import { useWalletInfo } from '../../../../../hooks'
 import { NewProposalData, NewProposalForm } from '../../types'
 
@@ -70,9 +74,10 @@ export interface NewProposalProps
   anyoneCanPropose: boolean
   depositUnsatisfied: boolean
   connected: boolean
-  actions: Action[]
+  categories: ActionCategoryWithLabel[]
   loadedActions: LoadedActions
   simulationBypassExpiration?: Date
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
 export const NewProposal = ({
@@ -83,7 +88,7 @@ export const NewProposal = ({
   anyoneCanPropose,
   depositUnsatisfied,
   connected,
-  actions,
+  categories,
   loadedActions,
   draft,
   saveDraft,
@@ -94,6 +99,7 @@ export const NewProposal = ({
   deleteDraft,
   simulationBypassExpiration,
   proposalModuleSelector,
+  SuspenseLoader,
 }: NewProposalProps) => {
   const { t } = useTranslation()
 
@@ -127,8 +133,15 @@ export const NewProposal = ({
     shouldUnregister: true,
   })
 
+  const categorizedActionsWithData = watch('actionData') || []
+
+  // Filter out unchosen actions.
+  const allActionsWithData = categorizedActionsWithData.filter(
+    (a): a is CategorizedActionKeyAndData => !!a.actionKey && !!a.data
+  )
+
   const onSubmitForm: SubmitHandler<NewProposalForm> = useCallback(
-    ({ actionData, ...data }, event) => {
+    ({ title, description }, event) => {
       setShowSubmitErrorNote(false)
       setSubmitError('')
 
@@ -142,8 +155,10 @@ export const NewProposal = ({
 
       let msgs
       try {
-        msgs = actionData
-          .map(({ key, data }) => loadedActions[key]?.transform(data))
+        msgs = allActionsWithData
+          .map(({ actionKey, data }) =>
+            loadedActions[actionKey]?.transform(data)
+          )
           // Filter out undefined messages.
           .filter(Boolean) as CosmosMsgFor_Empty[]
       } catch (err) {
@@ -157,19 +172,18 @@ export const NewProposal = ({
       }
 
       createProposal({
-        ...data,
+        title,
+        description,
         msgs,
       })
     },
-    [createProposal, loadedActions]
+    [allActionsWithData, createProposal, loadedActions]
   )
 
   const onSubmitError: SubmitErrorHandler<NewProposalForm> = useCallback(
     () => setShowSubmitErrorNote(true),
     [setShowSubmitErrorNote]
   )
-
-  const proposalName = watch('title')
 
   return (
     <form
@@ -219,40 +233,38 @@ export const NewProposal = ({
 
       {proposalModuleSelector}
 
-      {actionDataFields.length > 0 && (
+      {categorizedActionsWithData.length > 0 && (
         <div className="-mb-2 flex flex-col gap-2">
-          {actionDataFields.map(({ id, key, data }, index) => {
-            const Component = loadedActions[key]?.action?.Component
-            if (!Component) {
-              return null
-            }
-
-            return (
-              <SuspenseLoader key={id} fallback={<ActionCardLoader />}>
-                <Component
-                  addAction={appendAction}
-                  allActionsWithData={actionDataFields}
-                  data={data}
-                  errors={errors.actionData?.[index]?.data || {}}
-                  fieldNamePrefix={`actionData.${index}.data.`}
-                  index={index}
-                  isCreating
-                  onRemove={() => removeAction(index)}
-                />
-              </SuspenseLoader>
-            )
-          })}
+          {categorizedActionsWithData.map((field, index) => (
+            <CategorizedActionEditor
+              key={
+                // Use ID from field array that corresponds with this action,
+                // but use the data from watching the actions field so that it
+                // updates.
+                actionDataFields[index].id
+              }
+              {...field}
+              SuspenseLoader={SuspenseLoader}
+              addAction={appendAction}
+              allActionsWithData={allActionsWithData}
+              categories={categories}
+              errors={errors?.actionData?.[index] || {}}
+              fieldNamePrefix={`actionData.${index}.`}
+              index={index}
+              isCreating
+              loadedActions={loadedActions}
+              onRemove={() => removeAction(index)}
+            />
+          ))}
         </div>
       )}
 
       <div className="self-start">
-        <ActionSelector
-          actions={actions}
-          onSelectAction={({ key }) => {
+        <ActionCategorySelector
+          categories={categories}
+          onSelectCategory={({ key }) => {
             appendAction({
-              key,
-              // Clone to prevent the form from mutating the original object.
-              data: cloneDeep(loadedActions[key]?.defaults ?? {}),
+              categoryKey: key,
             })
           }}
         />
@@ -373,13 +385,13 @@ export const NewProposal = ({
               }}
               description={proposalDescription}
               innerContentDisplay={
-                actionDataFields.length ? (
+                allActionsWithData.length ? (
                   <CosmosMessageDisplay
                     value={decodedMessagesString(
-                      actionDataFields
-                        .map(({ key, data }) => {
+                      allActionsWithData
+                        .map(({ actionKey, data }) => {
                           try {
-                            return loadedActions[key]?.transform(data)
+                            return loadedActions[actionKey]?.transform(data)
                           } catch (err) {
                             console.error(err)
                           }
@@ -472,11 +484,11 @@ export const NewProposal = ({
 
             <Tooltip
               title={
-                proposalName ? undefined : t('info.enterNameBeforeSavingDraft')
+                proposalTitle ? undefined : t('info.enterNameBeforeSavingDraft')
               }
             >
               <Button
-                disabled={!proposalName}
+                disabled={!proposalTitle}
                 onClick={saveDraft}
                 variant="secondary"
               >

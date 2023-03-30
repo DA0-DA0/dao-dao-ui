@@ -2,17 +2,11 @@ import { Check, Close } from '@mui/icons-material'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import {
-  CodeMirrorInput,
-  InputLabel,
-  PickEmoji,
-  SelectInput,
-} from '@dao-dao/stateless'
+import { CodeMirrorInput, InputLabel, SelectInput } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { validateJSON } from '@dao-dao/utils'
 
-import { ValidatorActionType } from '../actions/ValidatorActions'
-import { ActionCard } from './ActionCard'
+import { ValidatorActionType } from '../actions/chain_governance/ValidatorActions'
 
 export const useValidatorActions = (): {
   type: ValidatorActionType
@@ -42,7 +36,6 @@ export const useValidatorActions = (): {
 
 export const ValidatorActionsComponent: ActionComponent = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
 }) => {
@@ -53,11 +46,7 @@ export const ValidatorActionsComponent: ActionComponent = ({
   const validatorActionType = watch(fieldNamePrefix + 'validatorActionType')
 
   return (
-    <ActionCard
-      Icon={PickEmoji}
-      onRemove={onRemove}
-      title={t('title.validatorActions')}
-    >
+    <>
       <SelectInput
         defaultValue={validatorActions[0].type}
         disabled={!isCreating}
@@ -123,6 +112,6 @@ export const ValidatorActionsComponent: ActionComponent = ({
           )}
         </div>
       )}
-    </ActionCard>
+    </>
   )
 }

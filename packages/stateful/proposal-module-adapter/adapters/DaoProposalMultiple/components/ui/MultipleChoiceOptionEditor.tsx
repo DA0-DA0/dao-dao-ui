@@ -1,7 +1,7 @@
 import { Add, Circle, Close, CopyAllOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
-import { useState } from 'react'
+import { ComponentType, useState } from 'react'
 import {
   Control,
   FieldErrors,
@@ -14,19 +14,23 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import {
-  ActionCardLoader,
-  ActionSelector,
+  ActionCategorySelector,
   Button,
+  CategorizedActionEditor,
   DropdownIconButton,
   IconButton,
   InputErrorMessage,
   TextAreaInput,
   TextInput,
 } from '@dao-dao/stateless'
-import { Action, LoadedActions } from '@dao-dao/types'
+import {
+  CategorizedActionKeyAndData,
+  LoadedActions,
+  ActionCategoryWithLabel,
+  SuspenseLoaderProps,
+} from '@dao-dao/types'
 import { validateRequired } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../../components'
 import { MultipleChoiceOptionFormData, NewProposalForm } from '../../types'
 
 export interface MultipleChoiceOptionEditorProps<
@@ -39,10 +43,11 @@ export interface MultipleChoiceOptionEditorProps<
   registerOption: UseFormRegister<FV>
   optionIndex: number
   control: Control<FV>
-  actions: Action[]
+  categories: ActionCategoryWithLabel[]
   removeOption: () => void
   addOption: (value: Partial<MultipleChoiceOptionFormData>) => void
   loadedActions: LoadedActions
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
 export const MultipleChoiceOptionEditor = <
@@ -54,10 +59,11 @@ export const MultipleChoiceOptionEditor = <
   errorsOption,
   registerOption,
   optionIndex,
-  actions,
+  categories,
   removeOption,
   addOption,
   loadedActions,
+  SuspenseLoader,
 }: MultipleChoiceOptionEditorProps<FV, FieldName>) => {
   const { t } = useTranslation()
 
@@ -71,12 +77,23 @@ export const MultipleChoiceOptionEditor = <
 
   const description = watch(`choices.${optionIndex}.description`)
 
-  const optionActionData = watch(`choices.${optionIndex}.actionData`) ?? []
-  const { append: appendAction, remove: removeAction } = useFieldArray({
+  const {
+    fields: optionActionDataFields,
+    append: appendAction,
+    remove: removeAction,
+  } = useFieldArray({
     name: `choices.${optionIndex}.actionData`,
     control,
     shouldUnregister: true,
   })
+
+  const categorizedActionsWithData =
+    watch(`choices.${optionIndex}.actionData`) || []
+
+  // Filter out unchosen actions.
+  const allActionsWithData = categorizedActionsWithData.filter(
+    (a): a is CategorizedActionKeyAndData => !!a.actionKey && !!a.data
+  )
 
   // Default to if description exists, in case of duplication.
   const [showingDescription, setShowingDescription] = useState(!!description)
@@ -159,48 +176,42 @@ export const MultipleChoiceOptionEditor = <
             </Button>
           )}
 
-          {optionActionData?.length > 0 && (
+          {categorizedActionsWithData.length > 0 && (
             <div className="flex flex-col gap-1">
-              {optionActionData.map(({ key, data }, actionIndex) => {
-                const Component = loadedActions[key]?.action?.Component
-                if (!Component) {
-                  return null
-                }
-
-                return (
-                  <SuspenseLoader
-                    key={`${optionIndex}-${actionIndex}-${key}`}
-                    fallback={<ActionCardLoader />}
-                  >
-                    <Component
-                      addAction={appendAction}
-                      allActionsWithData={optionActionData}
-                      data={data}
-                      errors={
-                        errorsOption?.actionData?.[actionIndex]?.data || {}
-                      }
-                      fieldNamePrefix={`choices.${optionIndex}.actionData.${actionIndex}.data.`}
-                      index={actionIndex}
-                      isCreating
-                      onRemove={() => removeAction(actionIndex)}
-                    />
-                  </SuspenseLoader>
-                )
-              })}
+              {categorizedActionsWithData.map((field, actionIndex) => (
+                <CategorizedActionEditor
+                  key={
+                    // Use ID from field array that corresponds with this
+                    // action, but use the data from watching the actions field
+                    // so that it updates.
+                    optionActionDataFields[actionIndex].id
+                  }
+                  {...field}
+                  SuspenseLoader={SuspenseLoader}
+                  addAction={appendAction}
+                  allActionsWithData={allActionsWithData}
+                  categories={categories}
+                  errors={errorsOption?.actionData?.[actionIndex] || {}}
+                  fieldNamePrefix={`choices.${optionIndex}.actionData.${actionIndex}.`}
+                  index={actionIndex}
+                  isCreating
+                  loadedActions={loadedActions}
+                  onRemove={() => removeAction(actionIndex)}
+                />
+              ))}
             </div>
           )}
         </div>
 
         <div className="border-l-[3px] border-dashed border-border-interactive-focus pt-4 pb-2 pl-5">
-          <ActionSelector
-            actions={actions}
+          <ActionCategorySelector
+            categories={categories}
             // There will be many action selector buttons on-screen, so the
             // keybind wouldn't know which one to open.
             disableKeybind
-            onSelectAction={({ key }) => {
+            onSelectCategory={({ key }) => {
               appendAction({
-                key,
-                data: loadedActions[key]?.defaults ?? {},
+                categoryKey: key,
               })
             }}
           />

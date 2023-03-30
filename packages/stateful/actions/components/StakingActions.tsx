@@ -3,7 +3,6 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  DepositEmoji,
   InputErrorMessage,
   InputLabel,
   NumberInput,
@@ -24,8 +23,6 @@ import {
   validateRequired,
   validateValidatorAddress,
 } from '@dao-dao/utils'
-
-import { ActionCard } from './ActionCard'
 
 export const useStakeActions = (): { type: StakeType; name: string }[] => {
   const { t } = useTranslation()
@@ -69,7 +66,6 @@ export interface StakeData {
 
 export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: {
@@ -223,11 +219,7 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
   }, [setError, clearErrors, validate, fieldNamePrefix, amount])
 
   return (
-    <ActionCard
-      Icon={DepositEmoji}
-      onRemove={onRemove}
-      title={t('title.stakingActions')}
-    >
+    <>
       <div className="flex flex-col gap-2">
         <div className="flex flex-col gap-2 xs:flex-row">
           {/* Choose type of stake operation. */}
@@ -368,6 +360,6 @@ export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
           <InputErrorMessage error={errors?._error} />
         </div>
       )}
-    </ActionCard>
+    </>
   )
 }

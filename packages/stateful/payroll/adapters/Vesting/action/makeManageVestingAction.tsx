@@ -8,7 +8,7 @@ import {
   nativeUnstakingDurationSecondsSelector,
 } from '@dao-dao/state/recoil'
 import {
-  ActionCardLoader,
+  Loader,
   MoneyWingsEmoji,
   SegmentedControls,
   useCachedLoadable,
@@ -48,7 +48,7 @@ import {
   parseEncodedMessage,
 } from '@dao-dao/utils'
 
-import { ActionCard, useActionOptions } from '../../../../actions'
+import { useActionOptions } from '../../../../actions'
 import { useTokenBalances } from '../../../../actions/hooks/useTokenBalances'
 import {
   AddressInput,
@@ -213,65 +213,59 @@ const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
 
   return (
     <SuspenseLoader
-      fallback={<ActionCardLoader />}
+      fallback={<Loader />}
       forceFallback={
         // Manually trigger loader.
         tokenBalances.loading
       }
     >
-      <ActionCard
-        Icon={MoneyWingsEmoji}
-        onRemove={props.onRemove}
-        title={t('title.manageVesting')}
-      >
-        {props.isCreating ? (
-          <SegmentedControls<ManageVestingData['mode']>
-            className="mb-2"
-            onSelect={(value) =>
-              setValue((props.fieldNamePrefix + 'mode') as 'mode', value)
-            }
-            selected={mode}
-            tabs={tabs}
-          />
-        ) : (
-          <p className="title-text mb-2">{selectedTab?.label}</p>
-        )}
+      {props.isCreating ? (
+        <SegmentedControls<ManageVestingData['mode']>
+          className="mb-2"
+          onSelect={(value) =>
+            setValue((props.fieldNamePrefix + 'mode') as 'mode', value)
+          }
+          selected={mode}
+          tabs={tabs}
+        />
+      ) : (
+        <p className="title-text mb-2">{selectedTab?.label}</p>
+      )}
 
-        {mode === 'begin' ? (
-          <BeginVesting
-            {...props}
-            errors={props.errors?.begin}
-            fieldNamePrefix={props.fieldNamePrefix + 'begin.'}
-            options={{
-              tokens: tokenBalances.loading ? [] : tokenBalances.data,
-              vestingFactoryOwner,
-              AddressInput,
-            }}
-          />
-        ) : mode === 'registerSlash' ? (
-          <RegisterSlash
-            {...props}
-            errors={props.errors?.registerSlash}
-            fieldNamePrefix={props.fieldNamePrefix + 'registerSlash.'}
-            options={{
-              vestingInfos,
-              selectedVest,
-              EntityDisplay,
-            }}
-          />
-        ) : mode === 'cancel' ? (
-          <CancelVesting
-            {...props}
-            errors={props.errors?.cancel}
-            fieldNamePrefix={props.fieldNamePrefix + 'cancel.'}
-            options={{
-              vestingInfos,
-              cancelledVestingContract: selectedVest,
-              EntityDisplay,
-            }}
-          />
-        ) : null}
-      </ActionCard>
+      {mode === 'begin' ? (
+        <BeginVesting
+          {...props}
+          errors={props.errors?.begin}
+          fieldNamePrefix={props.fieldNamePrefix + 'begin.'}
+          options={{
+            tokens: tokenBalances.loading ? [] : tokenBalances.data,
+            vestingFactoryOwner,
+            AddressInput,
+          }}
+        />
+      ) : mode === 'registerSlash' ? (
+        <RegisterSlash
+          {...props}
+          errors={props.errors?.registerSlash}
+          fieldNamePrefix={props.fieldNamePrefix + 'registerSlash.'}
+          options={{
+            vestingInfos,
+            selectedVest,
+            EntityDisplay,
+          }}
+        />
+      ) : mode === 'cancel' ? (
+        <CancelVesting
+          {...props}
+          errors={props.errors?.cancel}
+          fieldNamePrefix={props.fieldNamePrefix + 'cancel.'}
+          options={{
+            vestingInfos,
+            cancelledVestingContract: selectedVest,
+            EntityDisplay,
+          }}
+        />
+      ) : null}
     </SuspenseLoader>
   )
 }

@@ -27,12 +27,12 @@ export const SubDaosTab = () => {
   )
 
   const upgradeToV2Action = useActionForKey(CoreActionKey.UpgradeV1ToV2)
-  const upgradeToV2ActionDefaults = upgradeToV2Action?.useDefaults()
+  const upgradeToV2ActionDefaults = upgradeToV2Action?.action.useDefaults()
   const proposalPrefillUpgrade = useDaoProposalSinglePrefill({
     actions: upgradeToV2Action
       ? [
           {
-            action: upgradeToV2Action,
+            actionKey: upgradeToV2Action.action.key,
             data: upgradeToV2ActionDefaults,
           },
         ]

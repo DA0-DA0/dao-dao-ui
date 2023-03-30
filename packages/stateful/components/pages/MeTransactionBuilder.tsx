@@ -16,7 +16,10 @@ import {
   temporarySavedTxsAtom,
   useCfWorkerAuthPostRequest,
 } from '@dao-dao/stateful'
-import { useActions, useLoadActions } from '@dao-dao/stateful/actions'
+import {
+  useActionCategories,
+  useLoadedActions,
+} from '@dao-dao/stateful/actions'
 import {
   MeTransactionBuilder as StatelessMeTransactionBuilder,
   useCachedLoading,
@@ -41,8 +44,8 @@ export const MeTransactionBuilder = () => {
     signingCosmWasmClient,
   } = useWallet()
 
-  const actions = useActions()
-  const loadedActions = useLoadActions(actions)
+  const categories = useActionCategories()
+  const loadedActions = useLoadedActions()
 
   const [_meTransactionAtom, setWalletTransactionAtom] =
     useRecoilState(meTransactionAtom)
@@ -218,7 +221,7 @@ export const MeTransactionBuilder = () => {
   return (
     <StatelessMeTransactionBuilder
       SuspenseLoader={SuspenseLoader}
-      actions={actions}
+      categories={categories}
       deleteSave={deleteSave}
       error={error}
       execute={execute}

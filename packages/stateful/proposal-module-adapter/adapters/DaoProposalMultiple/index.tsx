@@ -5,7 +5,7 @@ import { DaoProposalMultipleAdapterId } from '@dao-dao/utils'
 import {
   NewProposal,
   makeDepositInfoSelector,
-  makeUseActions,
+  makeGetActionCategoryMakers,
   makeUseProfileNewProposalCardInfoLines,
   makeUsePublishProposal,
   reverseProposalInfosSelector,
@@ -37,8 +37,6 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
   id: DaoProposalMultipleAdapterId,
   contractNames: ['dao-proposal-multiple'],
 
-  // TODO: Make common accessible somehow inside components and hooks via hooks?
-  // Make react provider for this common object?
   loadCommon: (options) => {
     // Make here so we can pass into common hooks and components that need it.
     const depositInfoSelector = makeDepositInfoSelector({
@@ -78,7 +76,6 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
 
       // Hooks
       hooks: {
-        useActions: makeUseActions(options),
         useProfileNewProposalCardInfoLines:
           makeUseProfileNewProposalCardInfoLines({
             options,
@@ -95,6 +92,11 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
             {...props}
           />
         ),
+      },
+
+      // Functions
+      functions: {
+        getActionCategoryMakers: makeGetActionCategoryMakers(options),
       },
     }
   },

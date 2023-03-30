@@ -18,6 +18,7 @@ import {
 import { useTranslation } from 'react-i18next'
 
 import {
+  CategorizedActionKeyAndData,
   MeTransactionBuilderProps,
   MeTransactionForm,
   MeTransactionSave,
@@ -30,10 +31,10 @@ import {
 } from '@dao-dao/utils'
 
 import {
-  ActionCardLoader,
-  ActionSelector,
+  ActionCategorySelector,
   Button,
   ButtonLink,
+  CategorizedActionEditor,
   CopyToClipboard,
   CosmosMessageDisplay,
   IconButton,
@@ -50,7 +51,7 @@ enum SubmitValue {
 }
 
 export const MeTransactionBuilder = ({
-  actions,
+  categories,
   loadedActions,
   formMethods,
   execute,
@@ -73,19 +74,28 @@ export const MeTransactionBuilder = ({
     reset,
   } = formMethods
 
-  const watchActions = watch('actions')
-
-  const { append, remove } = useFieldArray({
+  const {
+    fields: actionDataFields,
+    append,
+    remove,
+  } = useFieldArray({
     name: 'actions',
     control,
     shouldUnregister: true,
   })
 
+  const categorizedActionsWithData = watch('actions') || []
+
+  // Filter out unchosen actions.
+  const allActionsWithData = categorizedActionsWithData.filter(
+    (a): a is CategorizedActionKeyAndData => !!a.actionKey && !!a.data
+  )
+
   const [showPreview, setShowPreview] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
 
   const onSubmitForm: SubmitHandler<MeTransactionForm> = useCallback(
-    ({ actions }, event) => {
+    (_, event) => {
       setShowSubmitErrorNote(false)
 
       const nativeEvent = event?.nativeEvent as SubmitEvent
@@ -96,14 +106,14 @@ export const MeTransactionBuilder = ({
         return
       }
 
-      const messages = actions
-        .map(({ key, data }) => loadedActions[key]?.transform(data))
+      const messages = allActionsWithData
+        .map(({ actionKey, data }) => loadedActions[actionKey]?.transform(data))
         // Filter out undefined messages.
         .filter(Boolean) as CosmosMsgFor_Empty[]
 
       execute(messages)
     },
-    [execute, loadedActions]
+    [allActionsWithData, execute, loadedActions]
   )
 
   const onSubmitError: SubmitErrorHandler<MeTransactionForm> = useCallback(
@@ -135,7 +145,7 @@ export const MeTransactionBuilder = ({
         ...data,
         // Clone the actions since the save gets cached. We don't want this form
         // to affect the save once it's been saved.
-        actions: cloneDeep(watchActions),
+        actions: cloneDeep(categorizedActionsWithData),
       })
     ) {
       setSaveModalVisible(false)
@@ -153,39 +163,38 @@ export const MeTransactionBuilder = ({
           className="flex flex-col gap-4"
           onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
         >
-          {watchActions.length > 0 && (
+          {categorizedActionsWithData.length > 0 && (
             <div className="flex flex-col gap-2">
-              {watchActions.map(({ key, data }, index) => {
-                const Component = loadedActions[key]?.action?.Component
-                if (!Component) {
-                  return null
-                }
-
-                return (
-                  <SuspenseLoader key={index} fallback={<ActionCardLoader />}>
-                    <Component
-                      addAction={append}
-                      allActionsWithData={watchActions}
-                      data={data}
-                      errors={errors.actions?.[index]?.data || {}}
-                      fieldNamePrefix={`actions.${index}.data.`}
-                      index={index}
-                      isCreating
-                      onRemove={() => remove(index)}
-                    />
-                  </SuspenseLoader>
-                )
-              })}
+              {categorizedActionsWithData.map((field, index) => (
+                <CategorizedActionEditor
+                  key={
+                    // Use ID from field array that corresponds with this action,
+                    // but use the data from watching the actions field so that it
+                    // updates.
+                    actionDataFields[index].id
+                  }
+                  {...field}
+                  SuspenseLoader={SuspenseLoader}
+                  addAction={append}
+                  allActionsWithData={allActionsWithData}
+                  categories={categories}
+                  errors={errors.actions?.[index] || {}}
+                  fieldNamePrefix={`actions.${index}.`}
+                  index={index}
+                  isCreating
+                  loadedActions={loadedActions}
+                  onRemove={() => remove(index)}
+                />
+              ))}
             </div>
           )}
 
           <div>
-            <ActionSelector
-              actions={actions}
-              onSelectAction={({ key }) => {
+            <ActionCategorySelector
+              categories={categories}
+              onSelectCategory={({ key }) => {
                 append({
-                  key,
-                  data: loadedActions[key]?.defaults ?? {},
+                  categoryKey: key,
                 })
               }}
             />
@@ -199,7 +208,7 @@ export const MeTransactionBuilder = ({
             <div className="flex flex-row items-center justify-end gap-2">
               <Button
                 disabled={
-                  loading || (watchActions.length === 0 && !showPreview)
+                  loading || (allActionsWithData.length === 0 && !showPreview)
                 }
                 type="submit"
                 value={SubmitValue.Preview}
@@ -219,7 +228,7 @@ export const MeTransactionBuilder = ({
               </Button>
 
               <Button
-                disabled={watchActions.length === 0}
+                disabled={allActionsWithData.length === 0}
                 loading={loading}
                 type="submit"
                 value={SubmitValue.Submit}
@@ -256,8 +265,10 @@ export const MeTransactionBuilder = ({
           {showPreview && (
             <CosmosMessageDisplay
               value={decodedMessagesString(
-                watchActions
-                  .map(({ key, data }) => loadedActions[key]?.transform(data))
+                allActionsWithData
+                  .map(({ actionKey, data }) =>
+                    loadedActions[actionKey]?.transform(data)
+                  )
                   // Filter out undefined messages.
                   .filter(Boolean) as CosmosMsgFor_Empty[]
               )}
@@ -272,7 +283,7 @@ export const MeTransactionBuilder = ({
             <p className="title-text">{t('title.saved')}</p>
 
             <Button
-              disabled={loading || watchActions.length === 0}
+              disabled={loading || allActionsWithData.length === 0}
               onClick={() => {
                 // Clear form and open.
                 saveReset()

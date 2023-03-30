@@ -1,10 +1,10 @@
 import { ReactNode } from 'react'
 
 import {
-  ActionAndData,
-  ActionKeyAndData,
+  CategorizedActionAndData,
   DepositInfoSelector,
   IProposalModuleAdapterCommonOptions,
+  PartialCategorizedActionKeyAndData,
   ProcessedTQ,
   ProposalVoteOption,
 } from '@dao-dao/types'
@@ -20,7 +20,7 @@ import {
 export interface MultipleChoiceOptionFormData {
   title: string
   description: string
-  actionData: ActionKeyAndData[]
+  actionData: PartialCategorizedActionKeyAndData[]
 }
 
 export interface NewProposalForm {
@@ -109,7 +109,7 @@ export type ProposalWithMetadata = MultipleChoiceProposal & {
 
 export type MultipleChoiceOptionData = {
   choice: CheckedMultipleChoiceOption
-  actionData: ActionAndData[]
+  actionData: CategorizedActionAndData[]
   decodedMessages: {
     [key: string]: any
   }[]

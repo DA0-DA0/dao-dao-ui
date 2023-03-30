@@ -1,12 +1,10 @@
 // External API
 
-import { useCallback } from 'react'
-
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
-  Action,
-  ActionOptions,
+  ActionCategoryKey,
+  ActionCategoryMaker,
   PayrollAdapterWithActions,
 } from '@dao-dao/types'
 
@@ -30,19 +28,21 @@ export const usePayrollAdapter = (): PayrollAdapterWithActions | undefined => {
       ? getAdapterById(payrollConfig.contents.type)
       : undefined
 
-  // Create hook to generate actions for the adapter.
-  const makeActions = useCallback(
-    (options: ActionOptions) =>
-      (adapter?.actionMakers
-        ?.map((makeAction) => makeAction(options))
-        .filter(Boolean) ?? []) as Action[],
-    [adapter]
-  )
+  const actionCategoryMakers: ActionCategoryMaker[] = adapter?.actionMakers
+    ?.length
+    ? [
+        () => ({
+          // Add payroll adapter actions to the Treasury category.
+          key: ActionCategoryKey.Treasury,
+          actionMakers: adapter.actionMakers,
+        }),
+      ]
+    : []
 
   return (
     adapter && {
       ...adapter,
-      makeActions,
+      actionCategoryMakers,
     }
   )
 }

@@ -22,7 +22,6 @@ import {
 } from '@dao-dao/types'
 import { NATIVE_TOKEN, StakeType } from '@dao-dao/utils'
 
-import { useActionForKey } from '../../actions'
 import { useDaoProposalSinglePrefill } from '../../hooks'
 import { tokenCardLazyInfoSelector } from '../../recoil'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
@@ -75,31 +74,27 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     : lazyInfo.data.stakingInfo?.stakes ?? []
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
 
-  const stakeAction = useActionForKey(CoreActionKey.StakingActions)
-
   // Does not get used if not native token.
   const proposalPrefillClaim = useDaoProposalSinglePrefill({
-    actions: stakeAction
-      ? stakesWithRewards.map(({ validator: { address } }) => ({
-          action: stakeAction,
-          data: {
-            stakeType: StakeType.WithdrawDelegatorReward,
-            validator: address,
-            // Default values, not needed for displaying this type of message.
-            amount: 1,
-            denom: props.token.denomOrAddress,
-          },
-        }))
-      : [],
+    actions: stakesWithRewards.map(({ validator: { address } }) => ({
+      actionKey: CoreActionKey.StakingActions,
+      data: {
+        stakeType: StakeType.WithdrawDelegatorReward,
+        validator: address,
+        // Default values, not needed for displaying this type of message.
+        amount: 1,
+        denom: props.token.denomOrAddress,
+      },
+    })),
   })
   // Does not get used if not native token.
   const proposalPrefillStakeUnstake = useDaoProposalSinglePrefill({
     // If has unstaked, show stake action by default.
-    actions: stakeAction
-      ? props.unstakedBalance > 0
+    actions:
+      props.unstakedBalance > 0
         ? [
             {
-              action: stakeAction,
+              actionKey: CoreActionKey.StakingActions,
               data: {
                 stakeType: StakeType.Delegate,
                 validator: '',
@@ -110,20 +105,18 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
           ]
         : // If has only staked, show unstake actions by default.
           lazyStakes.map(({ validator, amount }) => ({
-            action: stakeAction,
+            actionKey: CoreActionKey.StakingActions,
             data: {
               stakeType: StakeType.Undelegate,
               validator,
               amount,
               denom: props.token.denomOrAddress,
             },
-          }))
-      : [],
+          })),
   })
 
+  // Prefill URLs valid...
   const proposeClaimHref =
-    // Prefill URLs valid if action exists,
-    !!stakeAction &&
     // ...if there is something to claim,
     stakesWithRewards.length > 0 &&
     // ...if there is a valid prefill (meaning proposal module adapter exists)
@@ -134,9 +127,8 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
         })
       : undefined
 
+  // Prefill URLs valid...
   const proposeStakeUnstakeHref =
-    // Prefill URLs valid if action exists,
-    !!stakeAction &&
     // ...if there is something to stake or unstake,
     (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
     // ...if there is a valid prefill (meaning proposal module adapter exists)

@@ -52,7 +52,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
 
   const transferActionDefaults = useActionForKey(
     CoreActionKey.TransferNft
-  )?.useDefaults() as TransferNftData | undefined
+  )?.action.useDefaults() as TransferNftData | undefined
 
   // Setup actions for popup. Prefill with cw20 related actions.
   const buttonPopupSections: ButtonPopupSection[] = [
@@ -97,7 +97,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
                 href: getMeTxPrefillPath({
                   actions: [
                     {
-                      key: CoreActionKey.TransferNft,
+                      actionKey: CoreActionKey.TransferNft,
                       data: {
                         ...transferActionDefaults,
                         collection: props.collection.address,
@@ -115,7 +115,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
                 href: getMeTxPrefillPath({
                   actions: [
                     {
-                      key: CoreActionKey.BurnNft,
+                      actionKey: CoreActionKey.BurnNft,
                       data: {
                         collection: props.collection.address,
                         tokenId: props.tokenId,

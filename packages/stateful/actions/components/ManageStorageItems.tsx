@@ -10,15 +10,12 @@ import {
   SegmentedControls,
   SelectInput,
   TextInput,
-  WrenchEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   DAO_CORE_PAYROLL_CONFIG_ITEM_KEY,
   validateRequired,
 } from '@dao-dao/utils'
-
-import { ActionCard } from './ActionCard'
 
 export interface ManageStorageItemsData {
   setting: boolean
@@ -32,13 +29,7 @@ export interface ManageStorageItemsOptions {
 
 export const ManageStorageItemsComponent: ActionComponent<
   ManageStorageItemsOptions
-> = ({
-  fieldNamePrefix,
-  onRemove,
-  errors,
-  isCreating,
-  options: { existingItems },
-}) => {
+> = ({ fieldNamePrefix, errors, isCreating, options: { existingItems } }) => {
   const { t } = useTranslation()
   const { register, watch, setValue, trigger } = useFormContext()
 
@@ -55,11 +46,7 @@ export const ManageStorageItemsComponent: ActionComponent<
   }, [fieldNamePrefix, trigger])
 
   return (
-    <ActionCard
-      Icon={WrenchEmoji}
-      onRemove={onRemove}
-      title={t('title.manageStorageItems')}
-    >
+    <>
       <SegmentedControls<boolean>
         className="mb-2"
         disabled={!isCreating}
@@ -212,7 +199,7 @@ export const ManageStorageItemsComponent: ActionComponent<
           <InputErrorMessage error={errors?.key} />
         </div>
       )}
-    </ActionCard>
+    </>
   )
 }
 

@@ -210,7 +210,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
               href: getMeTxPrefillPath({
                 actions: [
                   {
-                    key: CoreActionKey.Spend,
+                    actionKey: CoreActionKey.Spend,
                     data: {
                       to: '',
                       amount: 0,

@@ -9,7 +9,7 @@ import {
 } from '@dao-dao/storybook/decorators'
 import { LoadedActions } from '@dao-dao/types'
 
-import { useActions } from '../../../../../actions'
+import { useActionCategories } from '../../../../../actions'
 import { NewProposalForm } from '../../types'
 import { NewProposal } from './NewProposal'
 
@@ -21,25 +21,32 @@ export default {
 } as ComponentMeta<typeof NewProposal>
 
 const Template: ComponentStory<typeof NewProposal> = (args) => {
-  const actions = useActions()
+  const categories = useActionCategories()
 
-  // Call relevant action hooks in the same order every time.
-  const loadedActions: LoadedActions = actions.reduce(
-    (acc, action) => ({
-      ...acc,
-      [action.key]: {
+  const loadedActions = categories
+    .flatMap((category) =>
+      category.actions.map((action) => ({
+        category,
         action,
-        transform: (data: unknown) => {
-          console.log('transform', action, data)
-          return {
-            placeholder: action.key,
-          }
+      }))
+    )
+    .reduce(
+      (acc, { category, action }) => ({
+        ...acc,
+        [action.key]: {
+          category,
+          action,
+          transform: (data: unknown) => {
+            console.log('transform', action, data)
+            return {
+              placeholder: action.key,
+            }
+          },
+          defaults: {},
         },
-        defaults: {},
-      },
-    }),
-    {}
-  )
+      }),
+      {} as LoadedActions
+    )
 
   const formMethods = useForm<NewProposalForm>({
     mode: 'onChange',
@@ -52,7 +59,11 @@ const Template: ComponentStory<typeof NewProposal> = (args) => {
 
   return (
     <FormProvider {...formMethods}>
-      <NewProposal {...args} actions={actions} loadedActions={loadedActions} />
+      <NewProposal
+        {...args}
+        categories={categories}
+        loadedActions={loadedActions}
+      />
     </FormProvider>
   )
 }

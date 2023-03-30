@@ -9,13 +9,10 @@ import {
   IconButton,
   InputErrorMessage,
   InputLabel,
-  UnicornEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent, AddressInputProps } from '@dao-dao/types'
 import { SubDao } from '@dao-dao/types/contracts/DaoCore.v2'
 import { validateContractAddress, validateRequired } from '@dao-dao/utils'
-
-import { ActionCard } from './ActionCard'
 
 export interface UpgradeV1ToV2Data {
   subDaos: SubDao[]
@@ -28,13 +25,7 @@ export interface UpgradeV1ToV2ComponentOptions {
 
 export const UpgradeV1ToV2Component: ActionComponent<
   UpgradeV1ToV2ComponentOptions
-> = ({
-  fieldNamePrefix,
-  onRemove,
-  errors,
-  isCreating,
-  options: { AddressInput },
-}) => {
+> = ({ fieldNamePrefix, errors, isCreating, options: { AddressInput } }) => {
   const { t } = useTranslation()
   const { register, control } = useFormContext<UpgradeV1ToV2Data>()
 
@@ -48,12 +39,7 @@ export const UpgradeV1ToV2Component: ActionComponent<
   })
 
   return (
-    <ActionCard
-      Icon={UnicornEmoji}
-      childrenContainerClassName="!gap-2"
-      onRemove={onRemove}
-      title={t('title.upgradeToV2')}
-    >
+    <div className="flex flex-col gap-2">
       {isCreating && (
         <p className="body-text mb-4 max-w-prose">
           {t('info.upgradeToV2Explanation')}
@@ -109,6 +95,6 @@ export const UpgradeV1ToV2Component: ActionComponent<
           )
         )}
       </div>
-    </ActionCard>
+    </div>
   )
 }

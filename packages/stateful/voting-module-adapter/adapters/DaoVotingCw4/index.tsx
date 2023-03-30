@@ -9,11 +9,8 @@ import {
   GovernanceConfigurationReview,
   getInstantiateInfo,
 } from './daoCreation'
-import {
-  useActions,
-  useDaoInfoBarItems,
-  useProfileNewProposalCardAddresses,
-} from './hooks'
+import { getActionCategoryMakers } from './functions'
+import { useDaoInfoBarItems, useProfileNewProposalCardAddresses } from './hooks'
 import { DaoCreationConfig } from './types'
 
 export const DaoVotingCw4Adapter: VotingModuleAdapter<DaoCreationConfig> = {
@@ -29,7 +26,6 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter<DaoCreationConfig> = {
   load: () => ({
     // Hooks
     hooks: {
-      useActions,
       useDaoInfoBarItems,
       useProfileNewProposalCardAddresses,
     },
@@ -45,6 +41,11 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter<DaoCreationConfig> = {
         },
       ],
       ProfileCardMemberInfo,
+    },
+
+    // Functions
+    functions: {
+      getActionCategoryMakers,
     },
   }),
 

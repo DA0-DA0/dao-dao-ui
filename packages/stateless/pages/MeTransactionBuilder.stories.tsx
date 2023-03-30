@@ -2,7 +2,10 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/stateful'
-import { useActions, useLoadActions } from '@dao-dao/stateful/actions'
+import {
+  useActionCategories,
+  useLoadedActions,
+} from '@dao-dao/stateful/actions'
 import {
   WalletActionsProviderDecorator,
   WalletProviderDecorator,
@@ -23,8 +26,8 @@ export default {
 } as ComponentMeta<typeof MeTransactionBuilder>
 
 const Template: ComponentStory<typeof MeTransactionBuilder> = (args) => {
-  const actions = useActions()
-  const loadedActions = useLoadActions(actions)
+  const categories = useActionCategories()
+  const loadedActions = useLoadedActions()
 
   const formMethods = useForm<MeTransactionForm>({
     mode: 'onChange',
@@ -36,7 +39,7 @@ const Template: ComponentStory<typeof MeTransactionBuilder> = (args) => {
   return (
     <MeTransactionBuilder
       {...args}
-      actions={actions}
+      categories={categories}
       formMethods={formMethods}
       loadedActions={loadedActions}
     />
@@ -60,7 +63,7 @@ Default.args = {
           'Send $10 USDC to my DAO. This is a very long description. I wish it were shorter.',
         actions: [
           {
-            key: CoreActionKey.Spend,
+            actionKey: CoreActionKey.Spend,
             data: {},
           },
         ],
@@ -78,7 +81,7 @@ Default.args = {
   saving: false,
 
   // Overwritten in template.
-  actions: [],
+  categories: [],
   loadedActions: {},
   formMethods: {} as any,
 }

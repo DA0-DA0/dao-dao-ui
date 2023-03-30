@@ -5,7 +5,6 @@ import {
   DaoImage,
   FormSwitchCard,
   ImageSelector,
-  InfoEmoji,
   InputErrorMessage,
   InputLabel,
   TextAreaInput,
@@ -22,26 +21,20 @@ import {
 
 import { LinkWrapper, Trans } from '../../components'
 import { useActionOptions } from '../react'
-import { ActionCard } from './ActionCard'
 
 export type UpdateInfoData = ConfigV1Response | ConfigV2Response
 
 export const UpdateInfoComponent: ActionComponent<
   undefined,
   UpdateInfoData
-> = ({ fieldNamePrefix, errors, onRemove, isCreating, data }) => {
+> = ({ fieldNamePrefix, errors, isCreating, data }) => {
   const { name } = useDaoInfoContext()
   const { address } = useActionOptions()
   const { t } = useTranslation()
   const { register, watch, setValue } = useFormContext()
 
   return (
-    <ActionCard
-      Icon={InfoEmoji}
-      childrenContainerClassName="flex flex-row flex-wrap items-center justify-center gap-4"
-      onRemove={onRemove}
-      title={t('title.updateInfo')}
-    >
+    <div className="flex flex-row flex-wrap items-center justify-center gap-4">
       {isCreating ? (
         <div className="flex flex-col gap-4 pl-2">
           <ImageSelector
@@ -123,6 +116,6 @@ export const UpdateInfoComponent: ActionComponent<
           </p>
         )}
       </div>
-    </ActionCard>
+    </div>
   )
 }

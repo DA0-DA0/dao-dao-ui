@@ -51,6 +51,8 @@ const InnerDaoHome = () => {
         })
       : constSelector(undefined)
   )
+
+  // Check if action exists, since v1 DAOs do not have this action.
   const manageSubDaosAction = useActionForKey(CoreActionKey.ManageSubDaos)
   // Prefill URL only valid if action exists.
   const prefillValid = !!manageSubDaosAction
@@ -65,7 +67,7 @@ const InnerDaoHome = () => {
           }),
           actions: [
             {
-              action: manageSubDaosAction,
+              actionKey: manageSubDaosAction.action.key,
               data: {
                 toAdd: [
                   {

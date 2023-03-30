@@ -6,7 +6,6 @@ import {
   Button,
   FormattedJsonDisplay,
   FormattedJsonDisplayProps,
-  ImageEmoji,
   InputErrorMessage,
   InputLabel,
   SegmentedControls,
@@ -17,8 +16,6 @@ import {
   validateContractAddress,
   validateRequired,
 } from '@dao-dao/utils/validation'
-
-import { ActionCard } from './ActionCard'
 
 interface Token {
   address: string
@@ -33,7 +30,6 @@ export interface ManageCw721Options {
 
 export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: {
@@ -49,11 +45,7 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
   const tokenAddress = watch(fieldNamePrefix + 'address')
 
   return (
-    <ActionCard
-      Icon={ImageEmoji}
-      onRemove={onRemove}
-      title={t('title.manageTreasuryNfts')}
-    >
+    <>
       <div className="flex flex-col gap-1">
         <SegmentedControls<boolean>
           className="mb-4"
@@ -124,6 +116,6 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
       </div>
 
       <FormattedJsonDisplay {...formattedJsonDisplayProps} />
-    </ActionCard>
+    </>
   )
 }

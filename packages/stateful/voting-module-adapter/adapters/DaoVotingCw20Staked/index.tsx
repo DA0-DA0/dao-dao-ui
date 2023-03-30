@@ -11,8 +11,8 @@ import {
   UnstakingDurationVotingConfigItem,
   getInstantiateInfo,
 } from './daoCreation'
+import { getActionCategoryMakers } from './functions'
 import {
-  useActions,
   useCommonGovernanceTokenInfo,
   useDaoInfoBarItems,
   useProfileNewProposalCardAddresses,
@@ -33,7 +33,6 @@ export const DaoVotingCw20StakedAdapter: VotingModuleAdapter<DaoCreationConfig> 
     load: () => ({
       // Hooks
       hooks: {
-        useActions,
         useDaoInfoBarItems,
         useProfileNewProposalCardAddresses,
         useCommonGovernanceTokenInfo,
@@ -52,6 +51,11 @@ export const DaoVotingCw20StakedAdapter: VotingModuleAdapter<DaoCreationConfig> 
             Icon: PeopleAltOutlined,
           },
         ],
+      },
+
+      // Functions
+      functions: {
+        getActionCategoryMakers,
       },
     }),
 

@@ -7,7 +7,6 @@ import {
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
-  LockWithKeyEmoji,
   NumberInput,
   SelectInput,
   ValidatorPicker,
@@ -23,8 +22,13 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { AuthzExecActionTypes } from '../actions/AuthzExec'
-import { ActionCard } from './ActionCard'
+export enum AuthzExecActionTypes {
+  Delegate = '/cosmos.staking.v1beta1.MsgDelegate',
+  Undelegate = '/cosmos.staking.v1beta1.MsgUndelegate',
+  Redelegate = '/cosmos.staking.v1beta1.MsgBeginRedelegate',
+  ClaimRewards = '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+  Custom = 'custom',
+}
 
 export interface AuthzExecOptions {
   AddressInput: ComponentType<AddressInputProps>
@@ -63,7 +67,6 @@ export const useAuthzExecActionTypes = (): {
 
 export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: { AddressInput, validators },
@@ -95,11 +98,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
   )
 
   return (
-    <ActionCard
-      Icon={LockWithKeyEmoji}
-      onRemove={onRemove}
-      title={t('title.authzExec')}
-    >
+    <>
       <div className="flex flex-col items-stretch gap-1">
         <InputLabel
           name={t('form.authzExecActionType')}
@@ -346,6 +345,6 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
           )}
         </div>
       )}
-    </ActionCard>
+    </>
   )
 }

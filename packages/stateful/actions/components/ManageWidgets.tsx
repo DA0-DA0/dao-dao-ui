@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 import {
   CodeMirrorInput,
   FilterableItemPopup,
-  HammerAndWrenchEmoji,
   InputLabel,
   InputThemedText,
   Tooltip,
@@ -15,7 +14,6 @@ import { DaoWidget, Widget } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { validateJSON } from '@dao-dao/utils'
 
-import { ActionCard } from './ActionCard'
 import { SegmentedControlsTitle } from './SegmentedControlsTitle'
 
 export type ManageWidgetsData = {
@@ -31,7 +29,6 @@ export type ManageWidgetsOptions = {
 
 export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: { availableWidgets, existingWidgets },
@@ -90,11 +87,7 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = ({
   ])
 
   return (
-    <ActionCard
-      Icon={HammerAndWrenchEmoji}
-      onRemove={onRemove}
-      title={t('title.manageWidgets')}
-    >
+    <>
       <SegmentedControlsTitle
         className="mb-2"
         fieldName={(fieldNamePrefix + 'mode') as 'mode'}
@@ -218,7 +211,7 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = ({
           )}
         </div>
       )}
-    </ActionCard>
+    </>
   )
 }
 

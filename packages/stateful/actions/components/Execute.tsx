@@ -10,7 +10,6 @@ import {
   FormSwitchCard,
   InputErrorMessage,
   InputLabel,
-  SwordsEmoji,
   TokenInput,
 } from '@dao-dao/stateless'
 import { GenericTokenBalance, LoadingData, TokenType } from '@dao-dao/types'
@@ -24,7 +23,6 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard } from './ActionCard'
 import {
   NativeCoinSelector,
   NativeCoinSelectorProps,
@@ -48,7 +46,6 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
   const { t } = useTranslation()
   const {
     fieldNamePrefix,
-    onRemove,
     errors,
     isCreating,
     options: { balances },
@@ -75,11 +72,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
   )
 
   return (
-    <ActionCard
-      Icon={SwordsEmoji}
-      onRemove={onRemove}
-      title={t('title.executeSmartContract')}
-    >
+    <>
       <div className="flex flex-col items-stretch gap-1">
         <InputLabel name={t('form.smartContractAddress')} />
         <AddressInput
@@ -236,6 +229,6 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
           )}
         </div>
       </div>
-    </ActionCard>
+    </>
   )
 }

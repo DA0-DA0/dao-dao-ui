@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
-  FireEmoji,
   HorizontalNftCard,
   InputErrorMessage,
   Loader,
@@ -13,12 +12,10 @@ import {
 } from '@dao-dao/stateless'
 import { ActionComponent, NftCardInfo } from '@dao-dao/types'
 
-import { ActionCard } from '../ActionCard'
 import { BurnNftOptions } from './types'
 
 export const BurnNft: ActionComponent<BurnNftOptions> = ({
   fieldNamePrefix,
-  onRemove,
   isCreating,
   errors,
   options: { options, nftInfo },
@@ -54,7 +51,7 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
   const [showModal, setShowModal] = useState<boolean>(isCreating && !selected)
 
   return (
-    <ActionCard Icon={FireEmoji} onRemove={onRemove} title={t('title.burnNft')}>
+    <>
       <div className="flex flex-col gap-2">
         {nftInfo.loading ? (
           <Loader size={24} />
@@ -110,6 +107,6 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
           visible={showModal}
         />
       )}
-    </ActionCard>
+    </>
   )
 }

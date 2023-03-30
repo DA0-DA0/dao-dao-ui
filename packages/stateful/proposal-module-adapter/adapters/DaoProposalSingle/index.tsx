@@ -5,7 +5,7 @@ import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 import {
   NewProposal,
   makeDepositInfoSelector,
-  makeUseActions,
+  makeGetActionCategoryMakers,
   makeUseProfileNewProposalCardInfoLines,
   makeUsePublishProposal,
   reverseProposalInfosSelector,
@@ -83,7 +83,6 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
 
       // Hooks
       hooks: {
-        useActions: makeUseActions(options),
         useProfileNewProposalCardInfoLines:
           makeUseProfileNewProposalCardInfoLines({
             options,
@@ -100,6 +99,11 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
             {...props}
           />
         ),
+      },
+
+      // Functions
+      functions: {
+        getActionCategoryMakers: makeGetActionCategoryMakers(options),
       },
     }
   },

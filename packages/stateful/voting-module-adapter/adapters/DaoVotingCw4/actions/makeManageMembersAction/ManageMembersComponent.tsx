@@ -15,7 +15,6 @@ import {
   InputErrorMessage,
   InputLabel,
   NumberInput,
-  PeopleEmoji,
   TooltipInfoIcon,
   useDetectWrap,
 } from '@dao-dao/stateless'
@@ -26,8 +25,6 @@ import {
   validateNonNegative,
   validateRequired,
 } from '@dao-dao/utils'
-
-import { ActionCard } from '../../../../../actions'
 
 export interface ManageMembersData {
   toAdd: Member[]
@@ -45,7 +42,6 @@ export const ManageMembersComponent: ActionComponent<
   ManageMembersData
 > = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: { currentMembers, AddressInput },
@@ -75,11 +71,7 @@ export const ManageMembersComponent: ActionComponent<
   const Icon = wrapped ? SubdirectoryArrowRightRounded : ArrowRightAltRounded
 
   return (
-    <ActionCard
-      Icon={PeopleEmoji}
-      onRemove={onRemove}
-      title={t('title.manageMembers')}
-    >
+    <>
       <div className="flex flex-col gap-1">
         <div className="flex flex-row gap-2">
           <InputLabel name={t('form.membersToAddOrUpdate')} />
@@ -255,6 +247,6 @@ export const ManageMembersComponent: ActionComponent<
           )}
         </div>
       </div>
-    </ActionCard>
+    </>
   )
 }

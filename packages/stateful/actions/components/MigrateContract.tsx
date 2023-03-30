@@ -7,7 +7,6 @@ import {
   InputErrorMessage,
   InputLabel,
   NumberInput,
-  WhaleEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
@@ -19,7 +18,6 @@ import {
 
 import { Trans } from '../../components/Trans'
 import { useActionOptions } from '../react/context'
-import { ActionCard } from './ActionCard'
 import { IsAdminWarning } from './IsAdminWarning'
 
 export interface MigrateOptions {
@@ -29,7 +27,6 @@ export interface MigrateOptions {
 
 export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: { onContractChange, contractAdmin },
@@ -39,11 +36,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
   const { address } = useActionOptions()
 
   return (
-    <ActionCard
-      Icon={WhaleEmoji}
-      onRemove={onRemove}
-      title={t('title.migrateSmartContract')}
-    >
+    <>
       <p className="secondary-text max-w-prose">
         <Trans key="form.migrateDescription">
           This will{' '}
@@ -100,6 +93,6 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
         />
         <InputErrorMessage error={errors?.msg} />
       </div>
-    </ActionCard>
+    </>
   )
 }

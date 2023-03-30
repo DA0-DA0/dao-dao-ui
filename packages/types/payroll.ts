@@ -1,6 +1,6 @@
 import { ComponentType } from 'react'
 
-import { Action, ActionMaker, ActionOptions } from './actions'
+import { ActionCategoryMaker, ActionMaker } from './actions'
 
 export type PayrollAdapter = {
   id: string
@@ -9,5 +9,5 @@ export type PayrollAdapter = {
 }
 
 export type PayrollAdapterWithActions = Omit<PayrollAdapter, 'actionMakers'> & {
-  makeActions: (options: ActionOptions) => Action[]
+  actionCategoryMakers: ActionCategoryMaker[]
 }

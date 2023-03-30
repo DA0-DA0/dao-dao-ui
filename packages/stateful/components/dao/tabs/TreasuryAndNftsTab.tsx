@@ -61,8 +61,8 @@ export const TreasuryAndNftsTab = () => {
     actions: addCw721Action
       ? [
           {
-            action: addCw721Action,
-            data: addCw721Action.useDefaults(),
+            actionKey: addCw721Action.action.key,
+            data: addCw721Action.action.useDefaults(),
           },
         ]
       : [],

@@ -3,18 +3,16 @@ import JSON5 from 'json5'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { CodeMirrorInput, RobotEmoji } from '@dao-dao/stateless'
+import { CodeMirrorInput } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
 
 import { Trans } from '../../components/Trans'
-import { ActionCard } from './ActionCard'
 
 const INVALID_COSMOS_MSG = 'INVALID_COSMOS_MSG'
 
 export const CustomComponent: ActionComponent = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
 }) => {
@@ -22,7 +20,7 @@ export const CustomComponent: ActionComponent = ({
   const { control } = useFormContext()
 
   return (
-    <ActionCard Icon={RobotEmoji} onRemove={onRemove} title={t('title.custom')}>
+    <>
       <CodeMirrorInput
         control={control}
         error={errors?.message}
@@ -72,6 +70,6 @@ export const CustomComponent: ActionComponent = ({
           <Check className="!h-5 !w-5" /> {t('info.jsonIsValid')}
         </p>
       )}
-    </ActionCard>
+    </>
   )
 }

@@ -6,14 +6,11 @@ import {
   BeeEmoji,
   Button,
   GridCardContainer,
-  MoneyBagEmoji,
   OptionCard,
   SuitAndTieEmoji,
   XEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent, DaoPayrollConfig } from '@dao-dao/types'
-
-import { ActionCard } from './ActionCard'
 
 export type ManagePayrollData = Partial<DaoPayrollConfig>
 
@@ -27,7 +24,6 @@ export const ManagePayrollComponent: ActionComponent<
   ManagePayrollData
 > = ({
   fieldNamePrefix,
-  onRemove,
   isCreating,
   options: { instantiating, instantiateVestingFactory },
 }) => {
@@ -43,11 +39,7 @@ export const ManagePayrollComponent: ActionComponent<
     watchType === 'vesting' && !!data && 'factory' in data && !!data.factory
 
   return (
-    <ActionCard
-      Icon={MoneyBagEmoji}
-      onRemove={onRemove}
-      title={t('title.managePayroll')}
-    >
+    <>
       {isCreating ? (
         <GridCardContainer cardType="tall">
           {options.map(
@@ -104,7 +96,7 @@ export const ManagePayrollComponent: ActionComponent<
           )}
         </div>
       )}
-    </ActionCard>
+    </>
   )
 }
 

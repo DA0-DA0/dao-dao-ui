@@ -12,7 +12,6 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
-  CycleEmoji,
   FilterableItemPopup,
   IconButton,
   InputErrorMessage,
@@ -42,7 +41,6 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../react'
-import { ActionCard } from '../ActionCard'
 
 export interface WyndSwapData {
   tokenIn: GenericToken
@@ -65,7 +63,6 @@ export interface WyndSwapOptions {
 
 export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: {
@@ -197,11 +194,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
   const [swapCycles, setSwapCycles] = useState(0)
 
   return (
-    <ActionCard
-      Icon={CycleEmoji}
-      onRemove={onRemove}
-      title={t('title.swapTokensOnWynd')}
-    >
+    <>
       <InputErrorMessage
         className="-mb-2 self-end text-right"
         error={errors?.tokenInAmount}
@@ -565,7 +558,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
       </div>
 
       <InputErrorMessage error={errors?.swapOperations} />
-    </ActionCard>
+    </>
   )
 }
 

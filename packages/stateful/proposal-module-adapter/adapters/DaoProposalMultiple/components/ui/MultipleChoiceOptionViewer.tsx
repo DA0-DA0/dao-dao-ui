@@ -1,19 +1,20 @@
 import { AnalyticsOutlined, Check } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useState } from 'react'
+import { ComponentType, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ActionsRenderer,
   Button,
   CosmosMessageDisplay,
   DropdownIconButton,
   MarkdownRenderer,
   Tooltip,
 } from '@dao-dao/stateless'
+import { SuspenseLoaderProps } from '@dao-dao/types'
 import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
-import { ActionsRenderer } from '../../../../../actions'
 import { MultipleChoiceOptionData } from '../../types'
 
 export type MultipleChoiceOptionViewerProps = {
@@ -23,6 +24,7 @@ export type MultipleChoiceOptionViewerProps = {
   winner?: boolean
   // Used when previewing to force raw JSON display.
   forceRaw?: boolean
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
 export const MultipleChoiceOptionViewer = ({
@@ -30,6 +32,7 @@ export const MultipleChoiceOptionViewer = ({
   lastOption,
   winner,
   forceRaw,
+  SuspenseLoader,
 }: MultipleChoiceOptionViewerProps) => {
   const { t } = useTranslation()
 
@@ -116,6 +119,7 @@ export const MultipleChoiceOptionViewer = ({
           />
         ) : (
           <ActionsRenderer
+            SuspenseLoader={SuspenseLoader}
             actionData={actionData}
             onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
           />

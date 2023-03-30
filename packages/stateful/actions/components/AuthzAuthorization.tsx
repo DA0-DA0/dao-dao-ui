@@ -6,7 +6,6 @@ import {
   FormSwitchCard,
   InputErrorMessage,
   InputLabel,
-  KeyEmoji,
   SelectInput,
   TextInput,
 } from '@dao-dao/stateless'
@@ -18,8 +17,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { AuthzExecActionTypes } from '../actions/AuthzExec'
-import { ActionCard } from './ActionCard'
+import { AuthzExecActionTypes } from './AuthzExec'
 
 export interface AuthzOptions {
   AddressInput: ComponentType<AddressInputProps>
@@ -32,7 +30,6 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
   const {
     data,
     fieldNamePrefix,
-    onRemove,
     errors,
     isCreating,
     options: { AddressInput },
@@ -40,11 +37,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
   const { register, setValue, watch } = useFormContext()
 
   return (
-    <ActionCard
-      Icon={KeyEmoji}
-      onRemove={onRemove}
-      title={t('title.authzAuthorization')}
-    >
+    <>
       <div className="flex flex-col items-stretch gap-1">
         <InputLabel name={t('form.grantOrRevokeAuthz')} />
         <SelectInput
@@ -139,6 +132,6 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
           value={watch(fieldNamePrefix + 'custom')}
         />
       )}
-    </ActionCard>
+    </>
   )
 }

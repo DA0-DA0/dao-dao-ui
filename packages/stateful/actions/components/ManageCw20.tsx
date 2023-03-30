@@ -9,7 +9,6 @@ import {
   InputErrorMessage,
   InputLabel,
   SegmentedControls,
-  TokenEmoji,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
@@ -17,8 +16,6 @@ import {
   validateContractAddress,
   validateRequired,
 } from '@dao-dao/utils/validation'
-
-import { ActionCard } from './ActionCard'
 
 interface Token {
   address: string
@@ -33,7 +30,6 @@ export interface ManageCw20Options {
 
 export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: {
@@ -49,11 +45,7 @@ export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
   const tokenAddress = watch(fieldNamePrefix + 'address')
 
   return (
-    <ActionCard
-      Icon={TokenEmoji}
-      onRemove={onRemove}
-      title={t('title.manageTreasuryTokens')}
-    >
+    <>
       <div className="flex flex-col gap-1">
         <SegmentedControls<boolean>
           className="mb-4"
@@ -124,6 +116,6 @@ export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
       </div>
 
       <FormattedJsonDisplay {...formattedJsonDisplayProps} />
-    </ActionCard>
+    </>
   )
 }

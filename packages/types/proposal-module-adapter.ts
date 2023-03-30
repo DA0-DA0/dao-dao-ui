@@ -2,7 +2,7 @@ import { CSSProperties, ComponentType, ReactNode } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
-import { Action, ActionOptions } from './actions'
+import { ActionCategoryMaker, CategorizedAction } from './actions'
 import { ContractVersion } from './chain'
 import { Expiration } from './contracts'
 import { CheckedDepositInfo } from './contracts/common'
@@ -34,13 +34,17 @@ export interface IProposalModuleAdapterCommon<
 
   // Hooks
   hooks: {
-    useActions: (options: ActionOptions) => Action[]
     useProfileNewProposalCardInfoLines: () => ProfileNewProposalCardInfoLine[]
   }
 
   // Components
   components: {
     NewProposal: ComponentType<BaseNewProposalProps>
+  }
+
+  // Functions
+  functions: {
+    getActionCategoryMakers: () => ActionCategoryMaker[]
   }
 }
 
@@ -182,7 +186,7 @@ export interface BaseProposalInnerContentDisplayProps<
   FormData extends FieldValues = any
 > {
   setDuplicateFormData: (data: FormData) => void
-  availableActions: Action[]
+  actionsForMatching: CategorizedAction[]
 }
 
 export interface BaseProposalWalletVoteProps<T> {

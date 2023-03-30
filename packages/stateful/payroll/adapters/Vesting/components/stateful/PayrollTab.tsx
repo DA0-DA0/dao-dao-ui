@@ -44,13 +44,13 @@ export const PayrollTab = () => {
   )
 
   const vestingAction = useActionForKey(CoreActionKey.ManageVesting)
-  const vestingActionDefaults = vestingAction?.useDefaults()
+  const vestingActionDefaults = vestingAction?.action.useDefaults()
 
   const createVestingPaymentPrefill = useDaoProposalSinglePrefill({
     actions: vestingAction
       ? [
           {
-            action: vestingAction,
+            actionKey: vestingAction.action.key,
             data: vestingActionDefaults,
           },
         ]

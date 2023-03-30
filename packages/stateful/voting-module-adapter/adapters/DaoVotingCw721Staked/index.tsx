@@ -15,7 +15,6 @@ import {
   getInstantiateInfo,
 } from './daoCreation'
 import {
-  useActions,
   useCommonGovernanceTokenInfo,
   useDaoInfoBarItems,
   useProfileNewProposalCardAddresses,
@@ -36,7 +35,6 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter<DaoCreationConfig>
     load: () => ({
       // Hooks
       hooks: {
-        useActions,
         useDaoInfoBarItems,
         useProfileNewProposalCardAddresses,
         useCommonGovernanceTokenInfo,
@@ -59,6 +57,11 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter<DaoCreationConfig>
           },
         ],
         ProfileCardMemberInfo,
+      },
+
+      // Functions
+      functions: {
+        getActionCategoryMakers: () => [],
       },
     }),
 

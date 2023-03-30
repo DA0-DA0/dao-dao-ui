@@ -1,12 +1,7 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import {
-  AddressInput,
-  InputErrorMessage,
-  InputLabel,
-  MushroomEmoji,
-} from '@dao-dao/stateless'
+import { AddressInput, InputErrorMessage, InputLabel } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   validateAddress,
@@ -15,7 +10,6 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../react/context'
-import { ActionCard } from './ActionCard'
 import { IsAdminWarning } from './IsAdminWarning'
 
 export interface UpdateAdminOptions {
@@ -25,7 +19,6 @@ export interface UpdateAdminOptions {
 
 export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: { onContractChange, contractAdmin },
@@ -35,11 +28,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
   const { address } = useActionOptions()
 
   return (
-    <ActionCard
-      Icon={MushroomEmoji}
-      onRemove={onRemove}
-      title={t('title.updateContractAdmin')}
-    >
+    <>
       <p className="secondary-text max-w-prose">
         {t('form.updateAdminDescription')}
       </p>
@@ -71,6 +60,6 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
       </div>
 
       <IsAdminWarning admin={contractAdmin} maybeAdmin={address} />
-    </ActionCard>
+    </>
   )
 }

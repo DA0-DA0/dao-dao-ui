@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 
 import {
   AddressInput,
-  BabyEmoji,
   Button,
   CodeMirrorInput,
   CopyToClipboard,
@@ -25,7 +24,6 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard } from './ActionCard'
 import {
   NativeCoinSelector,
   NativeCoinSelectorProps,
@@ -43,7 +41,6 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
   const { t } = useTranslation()
   const {
     fieldNamePrefix,
-    onRemove,
     errors,
     isCreating,
     options: { instantiatedAddress },
@@ -59,11 +56,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
   })
 
   return (
-    <ActionCard
-      Icon={BabyEmoji}
-      onRemove={onRemove}
-      title={t('title.instantiateSmartContract')}
-    >
+    <>
       {instantiatedAddress && (
         <div className="flex flex-row items-center gap-3 text-text-primary">
           <InputLabel name={t('form.instantiatedAddress') + ':'} />
@@ -195,6 +188,6 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
         />
         <InputErrorMessage error={errors?.admin} />
       </div>
-    </ActionCard>
+    </>
   )
 }

@@ -5,12 +5,11 @@ import {
   MembersTab as StatelessMembersTab,
   useNavHelpers,
 } from '@dao-dao/stateless'
+import { AdapterActionKey } from '@dao-dao/types'
 
-import { useActionOptions } from '../../../../actions'
 import { ButtonLink, DaoMemberCard } from '../../../../components'
 import { useDaoProposalSinglePrefill, useMembership } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { makeManageMembersAction } from '../actions'
 import { useVotingModule as useCw4VotingModule } from '../hooks/useVotingModule'
 
 export const MembersTab = () => {
@@ -28,22 +27,16 @@ export const MembersTab = () => {
     throw new Error(t('error.loadingData'))
   }
 
-  const options = useActionOptions()
-  const manageMembersAction = makeManageMembersAction(options)
-  // Prefill URL only valid if action exists.
-  const prefillValid = !!manageMembersAction
   const addMemberProposalPrefill = useDaoProposalSinglePrefill({
-    actions: manageMembersAction
-      ? [
-          {
-            action: manageMembersAction,
-            data: {
-              toAdd: [{ addr: '', weight: NaN }],
-              toRemove: [],
-            },
-          },
-        ]
-      : [],
+    actions: [
+      {
+        actionKey: AdapterActionKey.ManageMembers,
+        data: {
+          toAdd: [{ addr: '', weight: NaN }],
+          toRemove: [],
+        },
+      },
+    ],
   })
 
   const memberCards: ComponentPropsWithoutRef<typeof DaoMemberCard>[] =
@@ -70,7 +63,7 @@ export const MembersTab = () => {
       ButtonLink={ButtonLink}
       DaoMemberCard={DaoMemberCard}
       addMemberHref={
-        prefillValid && addMemberProposalPrefill
+        addMemberProposalPrefill
           ? getDaoProposalPath(coreAddress, 'create', {
               prefill: addMemberProposalPrefill,
             })

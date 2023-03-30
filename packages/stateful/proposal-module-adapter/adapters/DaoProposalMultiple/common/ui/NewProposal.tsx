@@ -10,7 +10,7 @@ import {
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { useCallback, useState } from 'react'
+import { ComponentType, useCallback, useState } from 'react'
 import {
   SubmitErrorHandler,
   SubmitHandler,
@@ -31,7 +31,13 @@ import {
   TextInput,
   Tooltip,
 } from '@dao-dao/stateless'
-import { Action, BaseNewProposalProps, LoadedActions } from '@dao-dao/types'
+import {
+  ActionCategoryWithLabel,
+  BaseNewProposalProps,
+  CategorizedActionKeyAndData,
+  LoadedActions,
+  SuspenseLoaderProps,
+} from '@dao-dao/types'
 import {
   CosmosMsgForEmpty,
   MultipleChoiceOptionType,
@@ -76,9 +82,10 @@ export interface NewProposalProps
   anyoneCanPropose: boolean
   depositUnsatisfied: boolean
   connected: boolean
-  actions: Action[]
+  categories: ActionCategoryWithLabel[]
   loadedActions: LoadedActions
   simulationBypassExpiration?: Date
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
 export const NewProposal = ({
@@ -89,7 +96,7 @@ export const NewProposal = ({
   anyoneCanPropose,
   depositUnsatisfied,
   connected,
-  actions,
+  categories,
   loadedActions,
   draft,
   saveDraft,
@@ -100,6 +107,7 @@ export const NewProposal = ({
   deleteDraft,
   simulationBypassExpiration,
   proposalModuleSelector,
+  SuspenseLoader,
 }: NewProposalProps) => {
   const { t } = useTranslation()
 
@@ -153,7 +161,13 @@ export const NewProposal = ({
           title: option.title,
           description: option.description,
           msgs: option.actionData
-            .map(({ key, data }) => loadedActions[key]?.transform(data))
+            // Filter out unchosen actions.
+            .filter(
+              (a): a is CategorizedActionKeyAndData => !!a.actionKey && !!a.data
+            )
+            .map(({ actionKey, data }) =>
+              loadedActions[actionKey]?.transform(data)
+            )
             // Filter out undefined messages.
             .filter(Boolean) as CosmosMsgForEmpty[],
         }))
@@ -236,8 +250,9 @@ export const NewProposal = ({
           {multipleChoiceFields.map(({ id }, index) => (
             <MultipleChoiceOptionEditor
               key={id}
-              actions={actions}
+              SuspenseLoader={SuspenseLoader}
               addOption={addOption}
+              categories={categories}
               control={control}
               descriptionFieldName={`choices.${index}.description`}
               errorsOption={errors?.choices?.[index]}
@@ -421,6 +436,7 @@ export const NewProposal = ({
                   {choices.map(({ title, description, actionData }, index) => (
                     <MultipleChoiceOptionViewer
                       key={index}
+                      SuspenseLoader={SuspenseLoader}
                       data={{
                         choice: {
                           description,
@@ -432,9 +448,14 @@ export const NewProposal = ({
                         },
                         actionData: [],
                         decodedMessages: (actionData ?? [])
-                          .map(({ key, data }) => {
+                          // Filter out unchosen actions.
+                          .filter(
+                            (a): a is CategorizedActionKeyAndData =>
+                              !!a.actionKey && !!a.data
+                          )
+                          .map(({ actionKey, data }) => {
                             try {
-                              return loadedActions[key]?.transform(data)
+                              return loadedActions[actionKey]?.transform(data)
                             } catch (err) {
                               console.error(err)
                             }
@@ -458,6 +479,7 @@ export const NewProposal = ({
 
                   {/* None of the above */}
                   <MultipleChoiceOptionViewer
+                    SuspenseLoader={SuspenseLoader}
                     data={{
                       choice: {
                         description: '',

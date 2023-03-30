@@ -9,7 +9,6 @@ import {
   CodeMirrorInput,
   FormSwitchCard,
   HorizontalNftCard,
-  ImageEmoji,
   InputErrorMessage,
   InputLabel,
   NftSelectionModal,
@@ -22,12 +21,10 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { ActionCard } from '../ActionCard'
 import { TransferNftOptions } from './types'
 
 export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
   fieldNamePrefix,
-  onRemove,
   isCreating,
   errors,
   options: { options, nftInfo, AddressInput },
@@ -59,11 +56,7 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
   const [showModal, setShowModal] = useState<boolean>(isCreating && !selected)
 
   return (
-    <ActionCard
-      Icon={ImageEmoji}
-      onRemove={onRemove}
-      title={t('title.transferNft')}
-    >
+    <>
       <div className="flex flex-col gap-y-4 gap-x-12 lg:flex-row lg:flex-wrap">
         <div className="flex grow flex-col gap-4">
           <div className="flex flex-col gap-1">
@@ -187,6 +180,6 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
           visible={showModal}
         />
       )}
-    </ActionCard>
+    </>
   )
 }

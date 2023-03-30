@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next'
 
 import {
   InputErrorMessage,
-  MoneyEmoji,
   TokenInput,
   useDetectWrap,
 } from '@dao-dao/stateless'
@@ -28,7 +27,6 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../react'
-import { ActionCard } from './ActionCard'
 
 export interface SpendData {
   to: string
@@ -44,7 +42,6 @@ export interface SpendOptions {
 
 export const SpendComponent: ActionComponent<SpendOptions> = ({
   fieldNamePrefix,
-  onRemove,
   errors,
   isCreating,
   options: { tokens, AddressInput },
@@ -150,7 +147,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   const Icon = wrapped ? SubdirectoryArrowRightRounded : ArrowRightAltRounded
 
   return (
-    <ActionCard Icon={MoneyEmoji} onRemove={onRemove} title={t('title.spend')}>
+    <>
       <div
         className="flex min-w-0 flex-row flex-wrap items-stretch justify-between gap-x-3 gap-y-2"
         ref={containerRef}
@@ -217,6 +214,6 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           <InputErrorMessage error={errors?._error} />
         </div>
       )}
-    </ActionCard>
+    </>
   )
 }
