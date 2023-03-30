@@ -1,42 +1,34 @@
 import { Check, Link } from '@mui/icons-material'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
-import useDeepCompareEffect from 'use-deep-compare-effect'
+import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import { ActionCardLoader, IconButton } from '@dao-dao/stateless'
-import { Action, ActionAndData, ActionKeyAndData } from '@dao-dao/types/actions'
+import { ActionAndData, ActionKeyAndData } from '@dao-dao/types/actions'
 
 import { SuspenseLoader } from '../../components/SuspenseLoader'
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
-  availableActions: Action[]
   actionData: ActionAndData[]
   hideCopyLink?: boolean
   onCopyLink?: () => void
 }
 
 export const ActionsRenderer = ({
-  availableActions,
   actionData,
   hideCopyLink,
   onCopyLink,
 }: ActionsRendererProps) => {
-  const formMethods = useForm<{ actions: ActionKeyAndData[] }>({
-    defaultValues: {
-      actions: [],
-    },
-  })
-  useDeepCompareEffect(() => {
-    formMethods.reset({
-      actions: actionData.map(({ action: { key }, data }) => ({
+  const actionKeysWithData = useMemo(
+    () =>
+      actionData.map(({ action: { key }, data }) => ({
         key,
         data,
       })),
-    })
-  }, [actionData, formMethods.reset])
-
-  const actionKeysWithData = formMethods.watch('actions')
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useDeepCompareMemoize([actionData])
+  )
 
   const [copied, setCopied] = useState<number>()
   // Unset copied after 2 seconds.
@@ -47,47 +39,76 @@ export const ActionsRenderer = ({
   }, [copied])
 
   return (
-    <FormProvider {...formMethods}>
-      <form className="flex flex-col gap-2">
-        {/* Use keys to get length, and index into map. */}
-        {actionKeysWithData.map(({ key, data }, index) => {
-          const action = availableActions.find((action) => action.key === key)
-          // Should never happen because all actions get matched.
-          if (!action) {
-            return null
-          }
+    <div className="flex flex-col gap-2">
+      {actionData.map((props, index) => (
+        <div key={index} className="group relative" id={`A${index + 1}`}>
+          <ActionRenderer
+            key={
+              // Re-render when the action at a given position changes so the
+              // form resets. If the action changed and the data in the form was
+              // updated in a `useEffect`, the new action may try to render the
+              // past action's data and error in unexpected ways. The data in
+              // the form needs to match the action being rendered at all times,
+              // thus re-render the entire component (and reset the form) when
+              // the action changes. This is necessary because the component
+              // expects to exist inside a FormProvider, and a FormProvider
+              // depends on a `useForm` hook return value.
+              `${index}-${props.action.key}`
+            }
+            {...props}
+            allActionsWithData={actionKeysWithData}
+            index={index}
+          />
 
-          return (
-            <div key={index} className="group relative" id={`A${index + 1}`}>
-              <SuspenseLoader fallback={<ActionCardLoader />}>
-                <action.Component
-                  allActionsWithData={actionKeysWithData}
-                  data={data}
-                  fieldNamePrefix={`actions.${index}.data.`}
-                  index={index}
-                  isCreating={false}
-                />
-              </SuspenseLoader>
+          {!hideCopyLink && (
+            <IconButton
+              Icon={copied === index ? Check : Link}
+              className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100"
+              onClick={() => {
+                const url = new URL(window.location.href)
+                url.hash = '#' + `A${index + 1}`
+                navigator.clipboard.writeText(url.href)
+                setCopied(index)
+                onCopyLink?.()
+              }}
+              size="sm"
+              variant="none"
+            />
+          )}
+        </div>
+      ))}
+    </div>
+  )
+}
 
-              {!hideCopyLink && (
-                <IconButton
-                  Icon={copied === index ? Check : Link}
-                  className="absolute top-1 right-1 opacity-0 transition-opacity group-hover:opacity-100"
-                  onClick={() => {
-                    const url = new URL(window.location.href)
-                    url.hash = '#' + `A${index + 1}`
-                    navigator.clipboard.writeText(url.href)
-                    setCopied(index)
-                    onCopyLink?.()
-                  }}
-                  size="sm"
-                  variant="none"
-                />
-              )}
-            </div>
-          )
-        })}
-      </form>
+export type ActionRendererProps = ActionAndData & {
+  allActionsWithData: ActionKeyAndData[]
+  index: number
+}
+
+export const ActionRenderer = ({
+  action,
+  data,
+  allActionsWithData,
+  index,
+}: ActionRendererProps) => {
+  const form = useForm({
+    defaultValues: {
+      data,
+    },
+  })
+
+  return (
+    <FormProvider {...form}>
+      <SuspenseLoader fallback={<ActionCardLoader />}>
+        <action.Component
+          allActionsWithData={allActionsWithData}
+          data={data}
+          fieldNamePrefix="data."
+          index={index}
+          isCreating={false}
+        />
+      </SuspenseLoader>
     </FormProvider>
   )
 }

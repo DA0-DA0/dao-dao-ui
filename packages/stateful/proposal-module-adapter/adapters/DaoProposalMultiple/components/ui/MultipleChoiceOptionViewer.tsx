@@ -11,7 +11,6 @@ import {
   MarkdownRenderer,
   Tooltip,
 } from '@dao-dao/stateless'
-import { Action } from '@dao-dao/types'
 import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
 import { ActionsRenderer } from '../../../../../actions'
@@ -20,7 +19,6 @@ import { MultipleChoiceOptionData } from '../../types'
 export type MultipleChoiceOptionViewerProps = {
   data: MultipleChoiceOptionData
   lastOption: boolean
-  availableActions: Action[]
   // If undefined, no winner picked yet.
   winner?: boolean
   // Used when previewing to force raw JSON display.
@@ -30,7 +28,6 @@ export type MultipleChoiceOptionViewerProps = {
 export const MultipleChoiceOptionViewer = ({
   data: { choice, actionData, decodedMessages, voteOption },
   lastOption,
-  availableActions,
   winner,
   forceRaw,
 }: MultipleChoiceOptionViewerProps) => {
@@ -120,7 +117,6 @@ export const MultipleChoiceOptionViewer = ({
         ) : (
           <ActionsRenderer
             actionData={actionData}
-            availableActions={availableActions}
             onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
           />
         )}

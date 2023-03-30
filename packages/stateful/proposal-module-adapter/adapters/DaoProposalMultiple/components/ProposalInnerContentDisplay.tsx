@@ -135,7 +135,6 @@ export const InnerProposalInnerContentDisplay = ({
       {optionsData.map((data, index) => (
         <MultipleChoiceOptionViewer
           key={index}
-          availableActions={availableActions}
           data={data}
           lastOption={index === optionsData.length - 1}
           winner={

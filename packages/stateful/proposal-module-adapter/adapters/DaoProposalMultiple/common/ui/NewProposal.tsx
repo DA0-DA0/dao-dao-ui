@@ -421,7 +421,6 @@ export const NewProposal = ({
                   {choices.map(({ title, description, actionData }, index) => (
                     <MultipleChoiceOptionViewer
                       key={index}
-                      availableActions={[]}
                       data={{
                         choice: {
                           description,
@@ -459,7 +458,6 @@ export const NewProposal = ({
 
                   {/* None of the above */}
                   <MultipleChoiceOptionViewer
-                    availableActions={[]}
                     data={{
                       choice: {
                         description: '',
