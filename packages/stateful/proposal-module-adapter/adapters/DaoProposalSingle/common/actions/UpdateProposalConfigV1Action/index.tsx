@@ -5,6 +5,7 @@ import { Cw20BaseSelectors } from '@dao-dao/state'
 import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
   AdapterActionKey,
   ContractVersion,
@@ -209,7 +210,7 @@ export const makeUpdateProposalConfigV1ActionMaker =
     version,
     address: proposalModuleAddress,
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
-  ({ t }) => {
+  ({ t, context }) => {
     // Only v1.
     if (version !== ContractVersion.V1) {
       return null
@@ -342,7 +343,14 @@ export const makeUpdateProposalConfigV1ActionMaker =
     return {
       key: AdapterActionKey.UpdateProposalSingleConfig,
       Icon: BallotDepositEmoji,
-      label: t('form.updateVotingConfigTitle'),
+      label: t('form.updateVotingConfigTitle', {
+        context:
+          // If more than one proposal module, specify which one this is.
+          context.type === ActionContextType.Dao &&
+          context.info.proposalModules.length > 1
+            ? 'singleChoice'
+            : undefined,
+      }),
       description: t('info.updateVotingConfigActionDescription'),
       Component,
       useDefaults,

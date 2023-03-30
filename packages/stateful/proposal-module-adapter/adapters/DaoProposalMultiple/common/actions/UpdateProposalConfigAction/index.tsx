@@ -1,8 +1,9 @@
 import { useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { GearEmoji } from '@dao-dao/stateless'
+import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
+  ActionContextType,
   ActionMaker,
   AdapterActionKey,
   ProposalModule,
@@ -139,7 +140,7 @@ export const makeUpdateProposalConfigActionMaker =
   ({
     address: proposalModuleAddress,
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
-  ({ t }) => {
+  ({ t, context }) => {
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useRecoilValue(
         configSelector({
@@ -221,8 +222,15 @@ export const makeUpdateProposalConfigActionMaker =
 
     return {
       key: AdapterActionKey.UpdateProposalMultipleConfig,
-      Icon: GearEmoji,
-      label: t('form.updateVotingConfigTitle'),
+      Icon: BallotDepositEmoji,
+      label: t('form.updateVotingConfigTitle', {
+        context:
+          // If more than one proposal module, specify which one this is.
+          context.type === ActionContextType.Dao &&
+          context.info.proposalModules.length > 1
+            ? 'multipleChoice'
+            : undefined,
+      }),
       description: t('info.updateVotingConfigActionDescription'),
       Component,
       useDefaults,

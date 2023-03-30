@@ -7,6 +7,7 @@ import { genericTokenSelector } from '@dao-dao/state'
 import { GearEmoji, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionMaker,
   AdapterActionKey,
   DepositRefundPolicy,
@@ -113,7 +114,7 @@ export const makeUpdatePreProposeConfigActionMaker =
   ({
     preProposeAddress,
   }: ProposalModule): ActionMaker<UpdatePreProposeConfigData> =>
-  ({ t }) => {
+  ({ t, context }) => {
     // Only when pre propose address present.
     if (!preProposeAddress) {
       return null
@@ -356,7 +357,14 @@ export const makeUpdatePreProposeConfigActionMaker =
     return {
       key: AdapterActionKey.UpdatePreProposeMultipleConfig,
       Icon: GearEmoji,
-      label: t('form.updateProposalSubmissionConfigTitle'),
+      label: t('form.updateProposalSubmissionConfigTitle', {
+        context:
+          // If more than one proposal module, specify which one this is.
+          context.type === ActionContextType.Dao &&
+          context.info.proposalModules.length > 1
+            ? 'multipleChoice'
+            : undefined,
+      }),
       description: t('info.updateProposalSubmissionConfigActionDescription'),
       Component,
       useDefaults,

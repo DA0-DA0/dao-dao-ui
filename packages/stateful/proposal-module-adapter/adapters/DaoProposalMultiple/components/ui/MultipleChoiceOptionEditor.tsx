@@ -24,9 +24,9 @@ import {
   TextInput,
 } from '@dao-dao/stateless'
 import {
+  ActionCategoryWithLabel,
   CategorizedActionKeyAndData,
   LoadedActions,
-  ActionCategoryWithLabel,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
 import { validateRequired } from '@dao-dao/utils'

@@ -3,6 +3,7 @@ import { useRecoilValue } from 'recoil'
 
 import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
+  ActionContextType,
   ActionMaker,
   AdapterActionKey,
   ContractVersion,
@@ -165,7 +166,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
     version,
     address: proposalModuleAddress,
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
-  ({ t }) => {
+  ({ t, context }) => {
     // Only v2.
     if (version === ContractVersion.V1) {
       return null
@@ -265,7 +266,14 @@ export const makeUpdateProposalConfigV2ActionMaker =
     return {
       key: AdapterActionKey.UpdateProposalSingleConfig,
       Icon: BallotDepositEmoji,
-      label: t('form.updateVotingConfigTitle'),
+      label: t('form.updateVotingConfigTitle', {
+        context:
+          // If more than one proposal module, specify which one this is.
+          context.type === ActionContextType.Dao &&
+          context.info.proposalModules.length > 1
+            ? 'singleChoice'
+            : undefined,
+      }),
       description: t('info.updateVotingConfigActionDescription'),
       Component,
       useDefaults,
