@@ -110,10 +110,30 @@ export const makeManageWidgetsAction: ActionMaker<ManageWidgetsData> = ({
         },
       }) &&
       msg.wasm.execute.contract_addr === address &&
-      ('set_item' in msg.wasm.execute.msg ||
-        'remove_item' in msg.wasm.execute.msg)
+      (('set_item' in msg.wasm.execute.msg &&
+        msg.wasm.execute.msg.set_item.key.startsWith(
+          DAO_WIDGET_ITEM_NAMESPACE
+        )) ||
+        ('remove_item' in msg.wasm.execute.msg &&
+          msg.wasm.execute.msg.remove_item.key.startsWith(
+            DAO_WIDGET_ITEM_NAMESPACE
+          )))
     ) {
       const mode = 'set_item' in msg.wasm.execute.msg ? 'set' : 'delete'
+
+      let values = '{}'
+      if (mode === 'set') {
+        try {
+          values = JSON.stringify(
+            JSON.parse(msg.wasm.execute.msg.set_item[valueKey]),
+            null,
+            2
+          )
+        } catch (err) {
+          console.error(err)
+          values = msg.wasm.execute.msg.set_item[valueKey]
+        }
+      }
 
       return {
         match: true,
@@ -123,14 +143,7 @@ export const makeManageWidgetsAction: ActionMaker<ManageWidgetsData> = ({
             ? msg.wasm.execute.msg.set_item.key
             : msg.wasm.execute.msg.remove_item.key
           ).replace(new RegExp(`^${DAO_WIDGET_ITEM_NAMESPACE}`), ''),
-          values:
-            mode === 'set'
-              ? JSON.stringify(
-                  JSON.parse(msg.wasm.execute.msg.set_item[valueKey]),
-                  null,
-                  2
-                )
-              : '{}',
+          values,
         },
       }
     }
