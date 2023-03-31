@@ -1,6 +1,5 @@
 import { Add, Remove } from '@mui/icons-material'
 import clsx from 'clsx'
-import Fuse from 'fuse.js'
 import cloneDeep from 'lodash.clonedeep'
 import { ComponentType, useState } from 'react'
 import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
@@ -19,6 +18,7 @@ import { Loader } from '../logo/Loader'
 import { FilterableItemPopup } from '../popup/FilterableItemPopup'
 import { ActionCard } from './ActionCard'
 import { ActionCategoryActionPickerCard } from './ActionCategoryActionPickerCard'
+import { ACTION_CATEGORY_SELECTOR_FILTERABLE_KEYS } from './ActionCategorySelector'
 
 // The props needed to render an action from a message.
 export type ActionsEditorProps = {
@@ -223,7 +223,7 @@ export const ActionEditor = ({
         />
 
         <FilterableItemPopup
-          filterableItemKeys={FILTERABLE_KEYS}
+          filterableItemKeys={ACTION_CATEGORY_SELECTOR_FILTERABLE_KEYS}
           items={categories.map((category) => ({
             ...category,
             selected: category.key === categoryKey,
@@ -312,6 +312,7 @@ export const ActionEditor = ({
                   remove(index)
                 }
               }}
+              size="sm"
               variant="secondary"
             />
           )}
@@ -332,14 +333,10 @@ export const ActionEditor = ({
               data: cloneDeep(loadedAction.defaults ?? {}),
             })
           }
+          size="sm"
           variant="secondary"
         />
       )}
     </ActionCard>
   )
 }
-
-const FILTERABLE_KEYS: Fuse.FuseOptionKey<ActionCategoryWithLabel>[] = [
-  'label',
-  'description',
-]

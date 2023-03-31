@@ -139,6 +139,8 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   Icon: ComponentType
   label: string
   description: string
+  // Optional keywords to improve search results.
+  keywords?: string[]
   Component: ActionComponent<Options, Data>
   // This determines if the action should be hidden from creation. If true, the
   // action will not be shown in the list of actions to create, but it will
@@ -168,6 +170,8 @@ export type ActionCategory = {
   key: ActionCategoryKey
   label?: string
   description?: string
+  // Optional keywords to improve search results.
+  keywords?: string[]
   actions: Action[]
 }
 

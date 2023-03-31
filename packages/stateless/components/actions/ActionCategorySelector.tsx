@@ -55,7 +55,7 @@ export const ActionCategorySelector = ({
 
   return (
     <FilterableItemPopup
-      filterableItemKeys={FILTERABLE_KEYS}
+      filterableItemKeys={ACTION_CATEGORY_SELECTOR_FILTERABLE_KEYS}
       getKeydownEventListener={
         disableKeybind ? undefined : getKeydownEventListener
       }
@@ -89,7 +89,12 @@ export const ActionCategorySelector = ({
   )
 }
 
-const FILTERABLE_KEYS: Fuse.FuseOptionKey<ActionCategoryWithLabel>[] = [
-  'label',
-  'description',
-]
+export const ACTION_CATEGORY_SELECTOR_FILTERABLE_KEYS: Fuse.FuseOptionKey<ActionCategoryWithLabel>[] =
+  [
+    'label',
+    'description',
+    'keywords',
+    'actions.label',
+    'actions.description',
+    'actions.keywords',
+  ]

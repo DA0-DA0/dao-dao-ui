@@ -99,12 +99,18 @@ export const makeActionCategoriesWithLabel = (
 
       if (existing) {
         // Merge actions.
-        existing.actions.push(...category.actions)
+        existing.actions = [...existing.actions, ...category.actions]
         // Update label and description if they're not defined.
         existing.label ||= category.label
         existing.description ||= category.description
+        // Merge keywords.
+        existing.keywords = [
+          ...(existing.keywords ?? []),
+          ...(category.keywords ?? []),
+        ]
       } else {
-        // Shallow-copy the category so we don't mutate the original.
+        // Shallow-copy the category so we don't mutate the original when
+        // merging data above in future reduce iterations.
         acc.push({ ...category })
       }
 
