@@ -33,6 +33,5 @@ Default.args = {
     automatically_add_cw721s: true,
   },
   isCreating: true,
-  onRemove: () => alert('remove'),
   errors: {},
 }

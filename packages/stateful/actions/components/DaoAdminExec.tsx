@@ -113,7 +113,6 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = (
 
 export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
   fieldNamePrefix,
-  isCreating,
   errors,
   options: { categories, loadedActions, SuspenseLoader },
 }) => {
@@ -176,7 +175,6 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
               addAction={appendAction}
               categories={categories}
               index={index}
-              isCreating={isCreating}
               loadedActions={loadedActions}
               onRemove={() => removeAction(index)}
             />

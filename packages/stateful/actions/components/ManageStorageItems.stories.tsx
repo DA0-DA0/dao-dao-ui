@@ -33,6 +33,5 @@ Default.args = {
     existingItems: [['color', 'blue']],
   },
   isCreating: true,
-  onRemove: () => alert('remove'),
   errors: {},
 }

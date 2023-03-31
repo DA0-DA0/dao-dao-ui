@@ -98,13 +98,11 @@ export type ActionComponentProps<O = undefined, D = any> = {
 } & (
   | {
       isCreating: true
-      onRemove: () => void
       errors: FieldErrors
       addAction: (action: PartialCategorizedActionKeyAndData) => void
     }
   | {
       isCreating: false
-      onRemove?: undefined
       errors?: undefined
       addAction?: undefined
     }

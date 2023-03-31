@@ -238,7 +238,6 @@ export const NewProposal = ({
               addAction={appendAction}
               categories={categories}
               index={index}
-              isCreating
               loadedActions={loadedActions}
               onRemove={() => removeAction(index)}
             />

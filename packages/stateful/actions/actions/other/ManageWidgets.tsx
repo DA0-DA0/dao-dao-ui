@@ -1,7 +1,7 @@
 import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 
-import { ActionCardLoader, HammerAndWrenchEmoji } from '@dao-dao/stateless'
+import { HammerAndWrenchEmoji, Loader } from '@dao-dao/stateless'
 import { ContractVersion } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -35,7 +35,7 @@ const Component: ActionComponent = (props) => {
 
   return (
     <SuspenseLoader
-      fallback={<ActionCardLoader />}
+      fallback={<Loader />}
       forceFallback={loadingExistingWidgets.loading}
     >
       {!loadingExistingWidgets.loading && (

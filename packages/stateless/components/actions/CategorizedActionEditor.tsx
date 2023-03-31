@@ -26,7 +26,6 @@ export type CategorizedActionEditorProps =
     // `actionsFieldName` above.
     actionErrors: FieldErrors
     addAction: (action: PartialCategorizedActionKeyAndData) => void
-    isCreating: boolean
     SuspenseLoader: ComponentType<SuspenseLoaderProps>
   }
 
@@ -38,7 +37,6 @@ export const CategorizedActionEditor = ({
   onRemove,
   actionErrors,
   addAction,
-  isCreating,
   SuspenseLoader,
 
   categoryKey,
@@ -68,10 +66,9 @@ export const CategorizedActionEditor = ({
   }, [actionKey, clearErrors, actionFieldName, setError])
 
   if (!actionKey || !data) {
-    // If not creating, we should never have an action without data. If action
-    // and data are not set, category must be set. Otherwise, we can't render
-    // anything.
-    if (!isCreating || !categoryKey) {
+    // If action and data are not set, category must be set. Otherwise, we can't
+    // render anything.
+    if (!categoryKey) {
       return null
     }
 
@@ -111,26 +108,24 @@ export const CategorizedActionEditor = ({
 
   return (
     <ActionCard
-      Icon={action.Icon}
+      action={action}
+      category={category}
+      goBackToCategory={() => {
+        // Clear action key and data, preserving the category key.
+        setValue(`${actionFieldName}.actionKey`, undefined)
+        setValue(`${actionFieldName}.data`, undefined)
+      }}
       onRemove={onRemove}
-      title={`${category.label} > ${action.label}`}
     >
       <SuspenseLoader fallback={<Loader />}>
         <action.Component
+          addAction={addAction}
           allActionsWithData={actionData}
           data={data}
+          errors={actionErrors?.data || {}}
           fieldNamePrefix={actionFieldName + '.data.'}
           index={index}
-          {...(isCreating
-            ? {
-                isCreating,
-                errors: actionErrors?.data || {},
-                addAction,
-                onRemove,
-              }
-            : {
-                isCreating,
-              })}
+          isCreating
         />
       </SuspenseLoader>
     </ActionCard>

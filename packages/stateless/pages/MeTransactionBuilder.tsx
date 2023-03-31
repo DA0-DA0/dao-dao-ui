@@ -184,7 +184,6 @@ export const MeTransactionBuilder = ({
                   addAction={append}
                   categories={categories}
                   index={index}
-                  isCreating
                   loadedActions={loadedActions}
                   onRemove={() => remove(index)}
                 />

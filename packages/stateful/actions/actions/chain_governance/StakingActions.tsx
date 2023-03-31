@@ -9,11 +9,7 @@ import {
   nativeUnstakingDurationSecondsSelector,
   validatorsSelector,
 } from '@dao-dao/state'
-import {
-  ActionCardLoader,
-  DepositEmoji,
-  useCachedLoading,
-} from '@dao-dao/stateless'
+import { DepositEmoji, Loader, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -233,7 +229,7 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
 
   return (
     <SuspenseLoader
-      fallback={<ActionCardLoader />}
+      fallback={<Loader />}
       forceFallback={
         // Manually trigger loader.
         loadingNativeBalance.loading ||

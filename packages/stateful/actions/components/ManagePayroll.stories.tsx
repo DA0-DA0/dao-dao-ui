@@ -27,7 +27,6 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   isCreating: true,
-  onRemove: () => alert('remove'),
   errors: {},
   options: {
     instantiating: false,

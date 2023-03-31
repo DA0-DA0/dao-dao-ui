@@ -1,37 +1,61 @@
-import { Close } from '@mui/icons-material'
+import { ArrowBackIosRounded, Close } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, ReactNode } from 'react'
+import { ReactNode } from 'react'
 
-import { ActionComponentProps } from '@dao-dao/types/actions'
+import { Action, ActionCategoryWithLabel } from '@dao-dao/types'
 
+import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
 
-interface ActionCardProps extends Pick<ActionComponentProps, 'onRemove'> {
-  children: ReactNode | ReactNode[]
-  Icon?: ComponentType
-  title: string
-  footer?: ReactNode
+export type ActionCardProps = {
+  category: ActionCategoryWithLabel
+  // If defined, makes the category button clickable with a back arrow.
+  goBackToCategory?: () => void
+  action?: Action
+  onRemove?: () => void
   childrenContainerClassName?: string
+  children: ReactNode | ReactNode[]
 }
 
 export const ActionCard = ({
-  Icon,
-  title,
+  category,
+  goBackToCategory,
+  action,
   onRemove,
-  children,
-  footer,
   childrenContainerClassName,
+  children,
 }: ActionCardProps) => (
   <div className="flex flex-col overflow-x-auto rounded-lg bg-background-tertiary">
-    <div className="primary-text flex flex-row items-start justify-between gap-4 border-b border-border-base p-4 text-text-body">
-      <div className="flex flex-row items-center gap-3">
-        {Icon && (
-          <p className="text-xl">
-            <Icon />
-          </p>
-        )}
+    <div className="primary-text flex flex-row items-center justify-between gap-4 border-b border-border-base p-4 text-text-body">
+      <div className="flex flex-row items-center gap-4">
+        {action ? (
+          <>
+            <Button
+              className={clsx(
+                !goBackToCategory &&
+                  'pointer-events-none !bg-background-secondary'
+              )}
+              onClick={goBackToCategory}
+              size="lg"
+              variant="secondary"
+            >
+              {!!goBackToCategory && (
+                <ArrowBackIosRounded className="!h-5 !w-5" />
+              )}
+              {category.label}
+            </Button>
 
-        <p>{title}</p>
+            <div className="flex flex-row items-center gap-2">
+              <p className="text-xl">
+                <action.Icon />
+              </p>
+
+              <p>{action.label}</p>
+            </div>
+          </>
+        ) : (
+          <p>{category.label}</p>
+        )}
       </div>
 
       {onRemove && (
@@ -47,11 +71,5 @@ export const ActionCard = ({
     >
       {children}
     </div>
-
-    {footer && (
-      <div className="flex flex-col gap-2 border-t border-border-secondary p-6 pt-5">
-        {footer}
-      </div>
-    )}
   </div>
 )

@@ -186,7 +186,6 @@ export const MultipleChoiceOptionEditor = <
                   addAction={appendAction}
                   categories={categories}
                   index={actionIndex}
-                  isCreating
                   loadedActions={loadedActions}
                   onRemove={() => removeAction(actionIndex)}
                 />

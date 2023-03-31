@@ -8,11 +8,7 @@ import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useMemo } from 'react'
 
 import { validatorsSelector } from '@dao-dao/state/recoil'
-import {
-  ActionCardLoader,
-  LockWithKeyEmoji,
-  useCachedLoading,
-} from '@dao-dao/stateless'
+import { LockWithKeyEmoji, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionMaker,
@@ -29,7 +25,7 @@ import {
   makeStargateMessage,
 } from '@dao-dao/utils'
 
-import { AddressInput, SuspenseLoader } from '../../../components'
+import { AddressInput } from '../../../components'
 import {
   AuthzExecActionTypes,
   AuthzExecComponent as StatelessAuthzComponent,
@@ -89,15 +85,13 @@ const Component: ActionComponent = (props) => {
   )
 
   return (
-    <SuspenseLoader fallback={<ActionCardLoader />}>
-      <StatelessAuthzComponent
-        {...props}
-        options={{
-          AddressInput,
-          validators: loadingValidators.loading ? [] : loadingValidators.data,
-        }}
-      />
-    </SuspenseLoader>
+    <StatelessAuthzComponent
+      {...props}
+      options={{
+        AddressInput,
+        validators: loadingValidators.loading ? [] : loadingValidators.data,
+      }}
+    />
   )
 }
 

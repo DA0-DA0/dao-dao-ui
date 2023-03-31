@@ -96,6 +96,5 @@ Default.args = {
     nativeUnstakingDurationSeconds: 2419200,
   },
   isCreating: true,
-  onRemove: () => alert('remove'),
   errors: {},
 }

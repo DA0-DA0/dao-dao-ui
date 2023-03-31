@@ -155,10 +155,7 @@ export const ActionRenderer = ({
 
   return (
     <FormProvider {...form}>
-      <ActionCard
-        Icon={action.Icon}
-        title={`${category.label} > ${action.label}`}
-      >
+      <ActionCard action={action} category={category}>
         {all.map(({ index, data }, dataIndex) => (
           <SuspenseLoader key={index} fallback={<Loader size={36} />}>
             <action.Component

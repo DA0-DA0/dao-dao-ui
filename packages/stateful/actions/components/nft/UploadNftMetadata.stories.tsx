@@ -39,6 +39,5 @@ Default.args = {
   index: 0,
   data: {},
   isCreating: true,
-  onRemove: () => alert('remove'),
   errors: {},
 }

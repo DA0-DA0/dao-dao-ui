@@ -34,7 +34,6 @@ Default.args = {
     toRemove: [],
   },
   isCreating: true,
-  onRemove: () => alert('remove'),
   errors: {},
   options: {
     currentMembers: ['member1', 'member2'],

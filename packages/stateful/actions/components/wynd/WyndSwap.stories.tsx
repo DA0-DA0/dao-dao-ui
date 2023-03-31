@@ -62,6 +62,5 @@ Default.args = {
     AddressInput,
   },
   isCreating: true,
-  onRemove: () => alert('remove'),
   errors: {},
 }
