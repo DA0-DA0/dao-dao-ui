@@ -82,16 +82,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<EnableMultipleChoiceData> = (
 export const makeEnableMultipleChoiceAction: ActionMaker<
   EnableMultipleChoiceData
 > = ({ t, address, chainId, context }) => {
-  // Only show for v2 DAOs that do not already have a multiple choice proposal
-  // module setup.
+  // Only show for v2 DAOs. Disallows creation if multiple choice proposal
+  // module already exists, down at the bottom of this function.
   if (
     context.type !== ActionContextType.Dao ||
-    context.info.coreVersion === ContractVersion.V1 ||
-    context.info.proposalModules.some(({ contractName }) =>
-      DaoProposalMultipleAdapter.contractNames.some((name) =>
-        contractName.includes(name)
-      )
-    )
+    context.info.coreVersion === ContractVersion.V1
   ) {
     return null
   }
@@ -227,5 +222,12 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
+    // Do not allow creating/using this action if the DAO already has a multiple
+    // choice proposal module setup.
+    disallowCreation: context.info.proposalModules.some(({ contractName }) =>
+      DaoProposalMultipleAdapter.contractNames.some((name) =>
+        contractName.includes(name)
+      )
+    ),
   }
 }
