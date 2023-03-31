@@ -178,10 +178,10 @@ export const NewProposal = ({
     [createProposal, loadedActions]
   )
 
-  const onSubmitError: SubmitErrorHandler<NewProposalForm> = useCallback(
-    () => setShowSubmitErrorNote(true),
-    [setShowSubmitErrorNote]
-  )
+  const onSubmitError: SubmitErrorHandler<NewProposalForm> = useCallback(() => {
+    setShowSubmitErrorNote(true)
+    setSubmitError('')
+  }, [setShowSubmitErrorNote])
 
   const proposalName = watch('title')
 

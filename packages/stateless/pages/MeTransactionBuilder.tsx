@@ -125,6 +125,7 @@ export const MeTransactionBuilder = ({
       console.error('Form errors', errors)
 
       setShowSubmitErrorNote(true)
+      setSubmitError('')
     },
     [setShowSubmitErrorNote]
   )
