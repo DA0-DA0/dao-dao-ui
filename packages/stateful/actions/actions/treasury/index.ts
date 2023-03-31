@@ -9,10 +9,17 @@ import {
 } from './token_swap'
 import { makeWyndSwapAction } from './WyndSwap'
 
-export const makeDaoTreasuryActionCategory: ActionCategoryMaker = ({ t }) => ({
+export const makeTreasuryActionCategory: ActionCategoryMaker = ({
+  t,
+  context,
+}) => ({
   key: ActionCategoryKey.Treasury,
-  label: t('actionCategory.daoTreasuryLabel'),
-  description: t('actionCategory.daoTreasuryDescription'),
+  label: t('actionCategory.treasuryLabel', {
+    context: context.type,
+  }),
+  description: t('actionCategory.treasuryDescription', {
+    context: context.type,
+  }),
   actionMakers: [
     makeSpendAction,
     makeWyndSwapAction,

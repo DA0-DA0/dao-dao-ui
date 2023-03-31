@@ -1,19 +1,23 @@
 {
   "actionCategory": {
-    "authzDescription": "Grant and revoke authorizations, or perform an Authz execution.",
-    "authzLabel": "Authz",
+    "authorizationsDescription": "Grant and revoke authorizations, or perform an authorized execution.",
+    "authorizationsLabel": "Authorizations",
     "chainGovernanceDescription": "Interact with the governance of the blockchain.",
     "chainGovernanceLabel": "Chain Governance",
+    "customDescription": "Execute any custom message.",
+    "customLabel": "Custom",
+    "daoAppearanceDescription": "Customize the appearance of the DAO's page.",
+    "daoAppearanceLabel": "DAO Appearance",
     "daoGovernanceDescription": "Configure the governance of the DAO.",
     "daoGovernanceLabel": "DAO Governance",
-    "daoTreasuryDescription": "Manage the treasury of the DAO, create payments, or swap tokens.",
-    "daoTreasuryLabel": "DAO Treasury",
     "nftsDescription": "Mint, transfer, burn, and display NFTs in the treasury.",
     "nftsLabel": "NFTs",
-    "otherDescription": "Miscellanous actions.",
-    "otherLabel": "Other",
     "smartContractingDescription": "Instantiate, execute, and manage smart contracts.",
-    "smartContractingLabel": "Smart Contracting"
+    "smartContractingLabel": "Smart Contracting",
+    "treasuryDescription_dao": "Manage the DAO's treasury: create payments, manage staking, or swap tokens.",
+    "treasuryDescription_wallet": "Send, swap, and manage staking for your tokens.",
+    "treasuryLabel_dao": "DAO Treasury",
+    "treasuryLabel_wallet": "Wallet"
   },
   "button": {
     "acceptTerms": "I accept the terms",

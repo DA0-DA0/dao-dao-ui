@@ -7,10 +7,11 @@ import { CosmosMsgFor_Empty } from './contracts/common'
 import { DaoInfo } from './dao'
 
 export enum ActionCategoryKey {
-  Authz = 'authz',
+  Authorizations = 'authorizations',
   ChainGovernance = 'chainGovernance',
+  DaoAppearance = 'daoAppearance',
   DaoGovernance = 'daoGovernance',
-  Other = 'other',
+  Custom = 'custom',
   SmartContracting = 'smartContracting',
   Treasury = 'treasury',
   Nfts = 'nfts',

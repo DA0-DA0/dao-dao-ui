@@ -4,7 +4,6 @@ import { makeDaoAdminExecAction } from './DaoAdminExec'
 import { makeEnableMultipleChoiceAction } from './EnableMultipleChoice'
 import { makeManageStorageItemsAction } from './ManageStorageItems'
 import { makeManageSubDaosAction } from './ManageSubDaos'
-import { makeUpdateInfoAction } from './UpdateInfo'
 import { makeUpgradeV1ToV2 } from './UpgradeV1ToV2'
 
 export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
@@ -14,7 +13,6 @@ export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
   label: t('actionCategory.daoGovernanceLabel'),
   description: t('actionCategory.daoGovernanceDescription'),
   actionMakers: [
-    makeUpdateInfoAction,
     makeUpgradeV1ToV2,
     makeEnableMultipleChoiceAction,
     makeManageStorageItemsAction,

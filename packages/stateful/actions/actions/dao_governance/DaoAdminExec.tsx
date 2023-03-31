@@ -203,13 +203,18 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<DaoAdminExecData> = (
 
 export const makeDaoAdminExecAction: ActionMaker<DaoAdminExecData> = ({
   t,
-}) => ({
-  key: CoreActionKey.DaoAdminExec,
-  Icon: JoystickEmoji,
-  label: t('title.daoAdminExec'),
-  description: t('info.daoAdminExecDescription'),
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
-})
+  context,
+}) =>
+  // Only allow using this action in DAOs.
+  context.type === ActionContextType.Dao
+    ? {
+        key: CoreActionKey.DaoAdminExec,
+        Icon: JoystickEmoji,
+        label: t('title.daoAdminExec'),
+        description: t('info.daoAdminExecDescription'),
+        Component,
+        useDefaults,
+        useTransformToCosmos,
+        useDecodedCosmosMsg,
+      }
+    : null
