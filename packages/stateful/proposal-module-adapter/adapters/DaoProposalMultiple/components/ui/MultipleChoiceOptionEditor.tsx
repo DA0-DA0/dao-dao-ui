@@ -170,7 +170,7 @@ export const MultipleChoiceOptionEditor = <
           )}
 
           {actionData.length > 0 && (
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col gap-2">
               {actionData.map((field, actionIndex) => (
                 <CategorizedActionEditor
                   key={

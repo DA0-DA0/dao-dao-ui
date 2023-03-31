@@ -1,6 +1,7 @@
 import { ArrowBackIosRounded, Close } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { Action, ActionCategoryWithLabel } from '@dao-dao/types'
 
@@ -24,52 +25,64 @@ export const ActionCard = ({
   onRemove,
   childrenContainerClassName,
   children,
-}: ActionCardProps) => (
-  <div className="flex flex-col overflow-x-auto rounded-lg bg-background-tertiary">
-    <div className="primary-text flex flex-row items-center justify-between gap-4 border-b border-border-base p-4 text-text-body">
-      <div className="flex flex-row items-center gap-4">
-        {action ? (
-          <>
-            <Button
-              className={clsx(
-                !goBackToCategory &&
-                  'pointer-events-none !bg-background-secondary'
-              )}
-              onClick={goBackToCategory}
-              size="lg"
-              variant="secondary"
-            >
-              {!!goBackToCategory && (
-                <ArrowBackIosRounded className="!h-5 !w-5" />
-              )}
-              {category.label}
-            </Button>
+}: ActionCardProps) => {
+  const { t } = useTranslation()
 
-            <div className="flex flex-row items-center gap-2">
-              <p className="text-xl">
-                <action.Icon />
-              </p>
+  return (
+    <div className="flex flex-col overflow-x-auto rounded-lg bg-background-tertiary">
+      <div className="primary-text flex flex-row items-center justify-between gap-4 border-b border-border-base p-4 text-text-body">
+        <div className="flex flex-row items-center gap-4">
+          <Button
+            className={clsx(
+              !goBackToCategory &&
+                'pointer-events-none !bg-background-secondary'
+            )}
+            onClick={goBackToCategory}
+            size="lg"
+            variant="secondary"
+          >
+            {!!goBackToCategory && (
+              <ArrowBackIosRounded className="!h-5 !w-5" />
+            )}
 
-              <p>{action.label}</p>
-            </div>
-          </>
-        ) : (
-          <p>{category.label}</p>
+            {category.label}
+          </Button>
+
+          {action ? (
+            <>
+              <div className="flex flex-row items-center gap-2">
+                <p className="text-xl">
+                  <action.Icon />
+                </p>
+
+                <p className="title-text">{action.label}</p>
+              </div>
+            </>
+          ) : (
+            <p className="primary-text text-text-secondary">
+              {t('title.chooseAnAction')}
+            </p>
+          )}
+        </div>
+
+        {onRemove && (
+          <IconButton
+            Icon={Close}
+            onClick={onRemove}
+            size="sm"
+            variant="ghost"
+          />
         )}
       </div>
 
-      {onRemove && (
-        <IconButton Icon={Close} onClick={onRemove} size="sm" variant="ghost" />
-      )}
+      <div
+        className={clsx(
+          'flex flex-col gap-4 px-6 pt-4 pb-5',
+          childrenContainerClassName
+        )}
+      >
+        {children}
+      </div>
     </div>
-
-    <div
-      className={clsx(
-        'flex flex-col gap-4 px-6 pt-4 pb-5',
-        childrenContainerClassName
-      )}
-    >
-      {children}
-    </div>
-  </div>
-)
+  )
+}

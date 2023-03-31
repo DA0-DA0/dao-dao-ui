@@ -29,7 +29,7 @@ export const ActionCategoryActionPickerCard = ({
         )}
 
         <div className="flex flex-col items-start gap-1">
-          <p className="title-text">{action.label}</p>
+          <p className="primary-text">{action.label}</p>
           <p className="caption-text">{action.description}</p>
         </div>
       </Button>

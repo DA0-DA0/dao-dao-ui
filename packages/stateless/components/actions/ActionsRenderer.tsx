@@ -24,6 +24,7 @@ export interface ActionsRendererProps {
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
+// Groups actions together and renders uneditable cards.
 export const ActionsRenderer = ({
   actionData,
   hideCopyLink,
@@ -140,6 +141,7 @@ export type ActionRendererProps = {
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
+// Renders a group of data that belong to the same action.
 export const ActionRenderer = ({
   category,
   action,
