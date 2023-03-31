@@ -16,6 +16,7 @@ import {
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { FilterableItemPopup } from '../popup/FilterableItemPopup'
+import { Tooltip } from '../tooltip'
 import { ActionCard } from './ActionCard'
 import { ActionCategoryActionPickerCard } from './ActionCategoryActionPickerCard'
 import { ACTION_CATEGORY_SELECTOR_FILTERABLE_KEYS } from './ActionCategorySelector'
@@ -282,7 +283,7 @@ export const ActionEditor = ({
             // Re-render when the action at a given position changes.
             `${index}-${actionKey}`
           }
-          className="flex animate-fade-in flex-row items-start gap-6"
+          className="flex animate-fade-in flex-row items-start gap-4"
         >
           <div className="flex min-w-0 grow flex-col gap-4">
             <SuspenseLoader fallback={<Loader size={36} />}>
@@ -300,42 +301,50 @@ export const ActionEditor = ({
 
           {/* Show remove button if action is resuable OR if there are more than one action. If there are more than one action, individual ones should be removable. But if there is only one, which is the intended state for an action configured as not reusable, don't show the remove button. */}
           {(!action.notReusable || all.length > 1) && (
-            <IconButton
-              Icon={Remove}
-              circular
-              onClick={() => {
-                // If only one action left, go back to category picker.
-                if (all.length === 1) {
-                  goBackToCategoryPicker()
-                } else {
-                  clearErrors(`${actionDataFieldName}.${index}`)
-                  remove(index)
-                }
-              }}
-              size="sm"
-              variant="secondary"
-            />
+            <Tooltip title={t('button.remove')}>
+              <IconButton
+                Icon={Remove}
+                circular
+                onClick={() => {
+                  // If only one action left, go back to category picker.
+                  if (all.length === 1) {
+                    goBackToCategoryPicker()
+                  } else {
+                    clearErrors(`${actionDataFieldName}.${index}`)
+                    remove(index)
+                  }
+                }}
+                size="sm"
+                variant="secondary"
+              />
+            </Tooltip>
           )}
         </div>
       ))}
 
       {/* Don't show add button if action is not reusable. */}
       {!action.notReusable && (
-        <IconButton
-          Icon={Add}
-          circular
-          className="self-end"
-          onClick={() =>
-            // Make another entry for the same action with the default values.
-            append({
-              categoryKey,
-              actionKey,
-              data: cloneDeep(loadedAction.defaults ?? {}),
-            })
-          }
-          size="sm"
-          variant="secondary"
-        />
+        <Tooltip
+          title={t('button.addAnotherAction', {
+            action: action.label,
+          })}
+        >
+          <IconButton
+            Icon={Add}
+            circular
+            className="self-end"
+            onClick={() =>
+              // Make another entry for the same action with the default values.
+              append({
+                categoryKey,
+                actionKey,
+                data: cloneDeep(loadedAction.defaults ?? {}),
+              })
+            }
+            size="sm"
+            variant="secondary"
+          />
+        </Tooltip>
       )}
     </ActionCard>
   )
