@@ -150,7 +150,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
                 ...props,
                 onRemove: props.isCreating
                   ? () => removeCoin(index)
-                  : props.onRemove,
+                  : undefined,
               } as NativeCoinSelectorProps)}
               errors={errors?.funds?.[index]}
               fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}

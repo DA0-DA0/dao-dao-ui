@@ -18,6 +18,7 @@ export type NativeCoinSelectorProps = ComponentProps<
     nativeBalances: LoadingData<GenericTokenBalance[]>
   }>
 > & {
+  onRemove?: () => void
   className?: string
 }
 
