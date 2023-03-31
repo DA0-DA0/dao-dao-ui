@@ -1,7 +1,12 @@
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { AddressInput, InputErrorMessage, InputLabel } from '@dao-dao/stateless'
+import {
+  AddressInput,
+  InputErrorMessage,
+  InputLabel,
+  IsAdminWarning,
+} from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   validateAddress,
@@ -10,7 +15,6 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../react/context'
-import { IsAdminWarning } from './IsAdminWarning'
 
 export interface UpdateAdminOptions {
   onContractChange: (s: string) => void

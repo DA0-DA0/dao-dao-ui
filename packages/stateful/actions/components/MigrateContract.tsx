@@ -6,6 +6,7 @@ import {
   CodeMirrorInput,
   InputErrorMessage,
   InputLabel,
+  IsAdminWarning,
   NumberInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -18,7 +19,6 @@ import {
 
 import { Trans } from '../../components/Trans'
 import { useActionOptions } from '../react/context'
-import { IsAdminWarning } from './IsAdminWarning'
 
 export interface MigrateOptions {
   onContractChange: (s: string) => void

@@ -10,6 +10,8 @@ import {
   FormSwitchCard,
   InputErrorMessage,
   InputLabel,
+  NativeCoinSelector,
+  NativeCoinSelectorProps,
   TokenInput,
 } from '@dao-dao/stateless'
 import { GenericTokenBalance, LoadingData, TokenType } from '@dao-dao/types'
@@ -22,11 +24,6 @@ import {
   validateCosmosMsg,
   validateRequired,
 } from '@dao-dao/utils'
-
-import {
-  NativeCoinSelector,
-  NativeCoinSelectorProps,
-} from './NativeCoinSelector'
 
 export interface ExecuteData {
   address: string

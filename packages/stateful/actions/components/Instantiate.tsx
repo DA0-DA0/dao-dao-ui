@@ -10,6 +10,8 @@ import {
   CopyToClipboard,
   InputErrorMessage,
   InputLabel,
+  NativeCoinSelector,
+  NativeCoinSelectorProps,
   NumberInput,
   TextInput,
 } from '@dao-dao/stateless'
@@ -23,11 +25,6 @@ import {
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
-
-import {
-  NativeCoinSelector,
-  NativeCoinSelectorProps,
-} from './NativeCoinSelector'
 
 export interface InstantiateOptions {
   nativeBalances: LoadingData<GenericTokenBalance[]>

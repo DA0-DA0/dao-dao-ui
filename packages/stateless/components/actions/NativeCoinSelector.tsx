@@ -4,14 +4,19 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
-import { IconButton, InputErrorMessage, TokenInput } from '@dao-dao/stateless'
-import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
-import { ActionComponent } from '@dao-dao/types/actions'
+import {
+  ActionComponent,
+  GenericTokenBalance,
+  LoadingData,
+} from '@dao-dao/types'
 import {
   NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
+
+import { IconButton } from '../icon_buttons'
+import { InputErrorMessage, TokenInput } from '../inputs'
 
 export type NativeCoinSelectorProps = ComponentProps<
   ActionComponent<{
