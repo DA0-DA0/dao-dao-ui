@@ -366,6 +366,7 @@ export const makeUpdatePreProposeConfigActionMaker =
             : undefined,
       }),
       description: t('info.updateProposalSubmissionConfigActionDescription'),
+      notReusable: true,
       Component,
       useDefaults,
       useTransformToCosmos,

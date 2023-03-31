@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { SuspenseLoaderProps } from '@dao-dao/types'
 import {
   ActionCategoryWithLabel,
+  ActionKey,
   LoadedActions,
   PartialCategorizedActionKeyAndData,
 } from '@dao-dao/types/actions'
@@ -214,6 +215,11 @@ export const ActionEditor = ({
               cloneDeep(action.defaults ?? {})
             )
           }}
+          usedActionKeys={
+            actionData
+              .map(({ actionKey }) => actionKey)
+              .filter(Boolean) as ActionKey[]
+          }
         />
 
         <FilterableItemPopup
@@ -292,37 +298,43 @@ export const ActionEditor = ({
             </SuspenseLoader>
           </div>
 
-          <IconButton
-            Icon={Remove}
-            circular
-            onClick={() => {
-              // If only one action left, go back to category picker.
-              if (all.length === 1) {
-                goBackToCategoryPicker()
-              } else {
-                clearErrors(`${actionDataFieldName}.${index}`)
-                remove(index)
-              }
-            }}
-            variant="secondary"
-          />
+          {/* Show remove button if action is resuable OR if there are more than one action. If there are more than one action, individual ones should be removable. But if there is only one, which is the intended state for an action configured as not reusable, don't show the remove button. */}
+          {(!action.notReusable || all.length > 1) && (
+            <IconButton
+              Icon={Remove}
+              circular
+              onClick={() => {
+                // If only one action left, go back to category picker.
+                if (all.length === 1) {
+                  goBackToCategoryPicker()
+                } else {
+                  clearErrors(`${actionDataFieldName}.${index}`)
+                  remove(index)
+                }
+              }}
+              variant="secondary"
+            />
+          )}
         </div>
       ))}
 
-      <IconButton
-        Icon={Add}
-        circular
-        className="self-end"
-        onClick={() =>
-          // Make another entry for the same action with the default values.
-          append({
-            categoryKey,
-            actionKey,
-            data: cloneDeep(loadedAction.defaults ?? {}),
-          })
-        }
-        variant="secondary"
-      />
+      {/* Don't show add button if action is not reusable. */}
+      {!action.notReusable && (
+        <IconButton
+          Icon={Add}
+          circular
+          className="self-end"
+          onClick={() =>
+            // Make another entry for the same action with the default values.
+            append({
+              categoryKey,
+              actionKey,
+              data: cloneDeep(loadedAction.defaults ?? {}),
+            })
+          }
+          variant="secondary"
+        />
+      )}
     </ActionCard>
   )
 }

@@ -115,6 +115,7 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
     Icon: InfoEmoji,
     label: t('title.updateInfo'),
     description: t('info.updateInfoActionDescription'),
+    notReusable: true,
     Component,
     useDefaults,
     useTransformToCosmos,

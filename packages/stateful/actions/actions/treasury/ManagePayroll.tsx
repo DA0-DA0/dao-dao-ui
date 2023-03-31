@@ -213,6 +213,7 @@ export const makeManagePayrollAction: ActionMaker<ManagePayrollData> = ({
     Icon: MoneyBagEmoji,
     label: t('title.managePayroll'),
     description: t('info.managePayrollDescription'),
+    notReusable: true,
     Component,
     useDefaults,
     useTransformToCosmos,

@@ -111,6 +111,7 @@ export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
     Icon: PeopleEmoji,
     label: t('title.manageMembers'),
     description: t('info.manageMembersActionDescription'),
+    notReusable: true,
     Component,
     useDefaults,
     useTransformToCosmos,

@@ -275,6 +275,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
             : undefined,
       }),
       description: t('info.updateVotingConfigActionDescription'),
+      notReusable: true,
       Component,
       useDefaults,
       useTransformToCosmos,

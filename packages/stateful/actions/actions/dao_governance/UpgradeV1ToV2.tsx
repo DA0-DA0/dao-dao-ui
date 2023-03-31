@@ -225,6 +225,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
     Icon: UnicornEmoji,
     label: t('title.upgradeToV2'),
     description: t('info.upgradeToV2Description'),
+    notReusable: true,
     Component,
     // Only allow v1 DAOs to use this action, but still show it for v2 DAOs
     // since they may have used it to upgrade from v1 in the past.

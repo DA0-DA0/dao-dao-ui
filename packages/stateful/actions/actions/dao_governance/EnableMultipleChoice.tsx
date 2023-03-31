@@ -218,6 +218,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     Icon: NumbersEmoji,
     label: t('title.enableMultipleChoiceProposals'),
     description: t('info.enableMultipleChoiceProposalsDescription'),
+    notReusable: true,
     Component,
     useDefaults,
     useTransformToCosmos,

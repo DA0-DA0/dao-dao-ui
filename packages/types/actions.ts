@@ -145,6 +145,13 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   // show the upgrade actions while still allowing them to render in existing
   // proposals.
   disallowCreation?: boolean
+  // Whether or not this action is reusable. Defaults to false. If true, when
+  // editing the action, the add and remove button in the group will be removed,
+  // and the action will be hidden from future category picker selections. Some
+  // actions, like 'Spend', make sense to use multiple times, while others, like
+  // 'Update Info' or any configuration updater, should only be used once at a
+  // time. We should prevent users from adding multiple of these actions.
+  notReusable?: boolean
   // Hook to get default fields for form display.
   useDefaults: UseDefaults<Data>
   // Hook to make function to convert action data to CosmosMsgFor_Empty.

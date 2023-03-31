@@ -124,6 +124,7 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
     Icon: FamilyEmoji,
     label: t('title.manageSubDaos'),
     description: t('info.manageSubDaosActionDescription'),
+    notReusable: true,
     Component,
     useDefaults,
     useTransformToCosmos,

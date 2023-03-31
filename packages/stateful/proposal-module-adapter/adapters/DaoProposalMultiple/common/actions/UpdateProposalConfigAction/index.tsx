@@ -232,6 +232,7 @@ export const makeUpdateProposalConfigActionMaker =
             : undefined,
       }),
       description: t('info.updateVotingConfigActionDescription'),
+      notReusable: true,
       Component,
       useDefaults,
       useTransformToCosmos,
