@@ -5,23 +5,23 @@ import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { TokenStake } from '@dao-dao/types'
 import { StakeType } from '@dao-dao/utils'
 
-import { StakeComponent, StakeData } from './StakingActions'
+import { ManageStakingComponent, ManageStakingData } from './ManageStaking'
 
 export default {
-  title: 'DAO DAO / packages / stateful / actions / components / Stake',
-  component: StakeComponent,
+  title: 'DAO DAO / packages / stateful / actions / components / ManageStaking',
+  component: ManageStakingComponent,
   decorators: [
-    makeReactHookFormDecorator<StakeData>({
+    makeReactHookFormDecorator<ManageStakingData>({
       stakeType: StakeType.Delegate,
       validator: '',
       toValidator: '',
       amount: 1,
     }),
   ],
-} as ComponentMeta<typeof StakeComponent>
+} as ComponentMeta<typeof ManageStakingComponent>
 
-const Template: ComponentStory<typeof StakeComponent> = (args) => (
-  <StakeComponent {...args} />
+const Template: ComponentStory<typeof ManageStakingComponent> = (args) => (
+  <ManageStakingComponent {...args} />
 )
 
 const stakes: TokenStake[] = [

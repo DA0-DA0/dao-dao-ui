@@ -21,7 +21,7 @@ export enum ActionCategoryKey {
 // are provided in the top-level ActionsProvider.
 export enum CoreActionKey {
   Spend = 'spend',
-  StakingActions = 'stakingActions',
+  ManageStaking = 'manageStaking',
   ManageCw20 = 'manageCw20',
   ManageCw721 = 'manageCw721',
   TransferNft = 'transferNft',

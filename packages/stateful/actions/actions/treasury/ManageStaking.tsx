@@ -30,32 +30,35 @@ import {
 import { SuspenseLoader } from '../../../components/SuspenseLoader'
 import { useExecutedProposalTxLoadable } from '../../../hooks'
 import {
-  StakeData,
-  StakeComponent as StatelessStakeComponent,
+  ManageStakingData,
+  ManageStakingComponent as StatelessManageStakingComponent,
   useStakeActions,
-} from '../../components/StakingActions'
+} from '../../components/ManageStaking'
 import { useActionOptions } from '../../react'
 
-const useTransformToCosmos: UseTransformToCosmos<StakeData> = () =>
-  useCallback(({ stakeType, amount, validator, toValidator }: StakeData) => {
-    if (stakeType === StakeType.WithdrawDelegatorReward) {
-      return makeDistributeMessage(validator)
-    }
+const useTransformToCosmos: UseTransformToCosmos<ManageStakingData> = () =>
+  useCallback(
+    ({ stakeType, amount, validator, toValidator }: ManageStakingData) => {
+      if (stakeType === StakeType.WithdrawDelegatorReward) {
+        return makeDistributeMessage(validator)
+      }
 
-    const microAmount = convertDenomToMicroDenomWithDecimals(
-      amount,
-      NATIVE_TOKEN.decimals
-    )
-    return makeStakingMessage(
-      stakeType,
-      microAmount.toString(),
-      NATIVE_TOKEN.denomOrAddress,
-      validator,
-      toValidator
-    )
-  }, [])
+      const microAmount = convertDenomToMicroDenomWithDecimals(
+        amount,
+        NATIVE_TOKEN.decimals
+      )
+      return makeStakingMessage(
+        stakeType,
+        microAmount.toString(),
+        NATIVE_TOKEN.denomOrAddress,
+        validator,
+        toValidator
+      )
+    },
+    []
+  )
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
   msg: Record<string, any>
 ) => {
   const stakeActions = useStakeActions()
@@ -116,7 +119,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<StakeData> = (
   return { match: false }
 }
 
-const Component: ActionComponent<undefined, StakeData> = (props) => {
+const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
   const { chainId, address } = useActionOptions()
 
   // These need to be loaded via cached loadables to avoid displaying a loader
@@ -186,7 +189,7 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
     const claimValidatorRewardsActionData = props.allActionsWithData
       .filter(
         ({ actionKey, data }) =>
-          actionKey === CoreActionKey.StakingActions &&
+          actionKey === CoreActionKey.ManageStaking &&
           'stakeType' in data &&
           data.stakeType === StakeType.WithdrawDelegatorReward &&
           'validator' in data &&
@@ -239,7 +242,7 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
         loadingValidators.loading
       }
     >
-      <StatelessStakeComponent
+      <StatelessManageStakingComponent
         {...props}
         options={{
           nativeBalance:
@@ -276,12 +279,12 @@ const Component: ActionComponent<undefined, StakeData> = (props) => {
   )
 }
 
-export const makeStakingActionsAction: ActionMaker<StakeData> = ({
+export const makeManageStakingAction: ActionMaker<ManageStakingData> = ({
   t,
   chainId,
   address,
 }) => {
-  const useDefaults: UseDefaults<StakeData> = () => {
+  const useDefaults: UseDefaults<ManageStakingData> = () => {
     const stakeActions = useStakeActions()
 
     const loadingNativeDelegationInfo = useCachedLoading(
@@ -311,10 +314,10 @@ export const makeStakingActionsAction: ActionMaker<StakeData> = ({
   }
 
   return {
-    key: CoreActionKey.StakingActions,
+    key: CoreActionKey.ManageStaking,
     Icon: DepositEmoji,
-    label: t('title.stakingActions'),
-    description: t('info.stakingActionsDescription'),
+    label: t('title.manageStaking'),
+    description: t('info.manageStakingDescription'),
     keywords: [
       'stake',
       'unstake',

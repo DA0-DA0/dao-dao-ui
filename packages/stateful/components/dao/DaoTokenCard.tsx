@@ -77,7 +77,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
   // Does not get used if not native token.
   const proposalPrefillClaim = useDaoProposalSinglePrefill({
     actions: stakesWithRewards.map(({ validator: { address } }) => ({
-      actionKey: CoreActionKey.StakingActions,
+      actionKey: CoreActionKey.ManageStaking,
       data: {
         stakeType: StakeType.WithdrawDelegatorReward,
         validator: address,
@@ -94,7 +94,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
       props.unstakedBalance > 0
         ? [
             {
-              actionKey: CoreActionKey.StakingActions,
+              actionKey: CoreActionKey.ManageStaking,
               data: {
                 stakeType: StakeType.Delegate,
                 validator: '',
@@ -105,7 +105,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
           ]
         : // If has only staked, show unstake actions by default.
           lazyStakes.map(({ validator, amount }) => ({
-            actionKey: CoreActionKey.StakingActions,
+            actionKey: CoreActionKey.ManageStaking,
             data: {
               stakeType: StakeType.Undelegate,
               validator,

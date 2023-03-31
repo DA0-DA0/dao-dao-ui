@@ -47,7 +47,7 @@ export const useStakeActions = (): { type: StakeType; name: string }[] => {
   ]
 }
 
-export interface StakeOptions {
+export interface ManageStakingOptions {
   nativeBalance: string
   stakes: TokenStake[]
   validators: Validator[]
@@ -56,7 +56,7 @@ export interface StakeOptions {
   nativeUnstakingDurationSeconds: number
 }
 
-export interface StakeData {
+export interface ManageStakingData {
   stakeType: StakeType
   validator: string
   // For use when redelegating.
@@ -64,7 +64,10 @@ export interface StakeData {
   amount: number
 }
 
-export const StakeComponent: ActionComponent<StakeOptions, StakeData> = ({
+export const ManageStakingComponent: ActionComponent<
+  ManageStakingOptions,
+  ManageStakingData
+> = ({
   fieldNamePrefix,
   errors,
   isCreating,
