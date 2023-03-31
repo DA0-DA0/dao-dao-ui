@@ -8,13 +8,12 @@ import {
   FilterableItemPopup,
   InputLabel,
   InputThemedText,
+  SegmentedControlsTitle,
   Tooltip,
 } from '@dao-dao/stateless'
 import { DaoWidget, Widget } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { validateJSON } from '@dao-dao/utils'
-
-import { SegmentedControlsTitle } from './SegmentedControlsTitle'
 
 export type ManageWidgetsData = {
   mode: 'set' | 'delete'
@@ -90,8 +89,8 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = ({
     <>
       <SegmentedControlsTitle
         className="mb-2"
+        editable={isCreating}
         fieldName={(fieldNamePrefix + 'mode') as 'mode'}
-        isCreating={isCreating}
         tabs={[
           {
             label: t('button.addUpdateWidget'),

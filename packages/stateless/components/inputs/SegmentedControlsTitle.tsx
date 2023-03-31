@@ -9,17 +9,17 @@ export type SegmentedControlsTitleProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
 > = Omit<SegmentedControlsProps<T>, 'selected' | 'onSelect'> & {
-  isCreating: boolean
+  editable: boolean
   fieldName: FieldName
 }
 
-// Show segmented controls when creating and title of selected tab otherwise.
+// Show segmented controls when editing and title of selected tab otherwise.
 export const SegmentedControlsTitle = <
   T extends unknown,
   FV extends FieldValues,
   FieldName extends Path<FV>
 >({
-  isCreating,
+  editable,
   fieldName,
   ...props
 }: SegmentedControlsTitleProps<T, FV, FieldName>) => {
@@ -30,7 +30,7 @@ export const SegmentedControlsTitle = <
 
   return (
     <>
-      {isCreating ? (
+      {editable ? (
         <SegmentedControls<T>
           {...props}
           onSelect={(value) => setValue(fieldName, value as any)}

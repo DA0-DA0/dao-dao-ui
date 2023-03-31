@@ -8,7 +8,7 @@ import {
   FormattedJsonDisplayProps,
   InputErrorMessage,
   InputLabel,
-  SegmentedControls,
+  SegmentedControlsTitle,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
@@ -47,11 +47,10 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
   return (
     <>
       <div className="flex flex-col gap-1">
-        <SegmentedControls<boolean>
+        <SegmentedControlsTitle
           className="mb-4"
-          disabled={!isCreating}
-          onSelect={(value) => setValue(fieldNamePrefix + 'adding', value)}
-          selected={addingNew}
+          editable={isCreating}
+          fieldName={fieldNamePrefix + 'adding'}
           tabs={[
             {
               label: t('title.addCw721ToTreasury'),

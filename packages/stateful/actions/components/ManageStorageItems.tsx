@@ -7,7 +7,7 @@ import {
   Button,
   InputErrorMessage,
   InputLabel,
-  SegmentedControls,
+  SegmentedControlsTitle,
   SelectInput,
   TextInput,
 } from '@dao-dao/stateless'
@@ -47,11 +47,10 @@ export const ManageStorageItemsComponent: ActionComponent<
 
   return (
     <>
-      <SegmentedControls<boolean>
+      <SegmentedControlsTitle
         className="mb-2"
-        disabled={!isCreating}
-        onSelect={(value) => setValue(fieldNamePrefix + 'setting', value)}
-        selected={setting}
+        editable={isCreating}
+        fieldName={fieldNamePrefix + 'setting'}
         tabs={[
           {
             label: t('title.setItem'),
