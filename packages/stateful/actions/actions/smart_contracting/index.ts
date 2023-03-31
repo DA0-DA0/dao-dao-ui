@@ -9,11 +9,11 @@ export const makeSmartContractingActionCategory: ActionCategoryMaker = ({
   t,
 }) => ({
   key: ActionCategoryKey.SmartContracting,
-  label: t('title.smartContracting'),
-  description: t('info.smartContractingDescription'),
+  label: t('actionCategory.smartContractingLabel'),
+  description: t('actionCategory.smartContractingDescription'),
   actionMakers: [
-    makeExecuteAction,
     makeInstantiateAction,
+    makeExecuteAction,
     makeMigrateAction,
     makeUpdateAdminAction,
   ],

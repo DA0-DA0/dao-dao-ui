@@ -5,7 +5,7 @@ import { makeAuthzExecAction } from './AuthzExec'
 
 export const makeAuthzActionCategory: ActionCategoryMaker = ({ t }) => ({
   key: ActionCategoryKey.Authz,
-  label: t('title.authz'),
-  description: t('info.authzDescription'),
+  label: t('actionCategory.authzLabel'),
+  description: t('actionCategory.authzDescription'),
   actionMakers: [makeAuthzAuthorizationAction, makeAuthzExecAction],
 })

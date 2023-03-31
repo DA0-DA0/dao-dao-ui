@@ -18,10 +18,10 @@ import {
   nftCardInfoSelector,
   nftCardInfosForDaoSelector,
   walletNftCardInfos,
-} from '../../../../recoil/selectors/nft'
-import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../../voting-module-adapter'
-import { BurnNft, BurnNftData } from '../../../components/nft'
-import { useActionOptions } from '../../../react'
+} from '../../../recoil/selectors/nft'
+import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../voting-module-adapter'
+import { BurnNft, BurnNftData } from '../../components/nft'
+import { useActionOptions } from '../../react'
 
 const useDefaults: UseDefaults<BurnNftData> = () => ({
   collection: '',

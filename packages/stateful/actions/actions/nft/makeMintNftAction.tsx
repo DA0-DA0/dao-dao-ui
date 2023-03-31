@@ -18,9 +18,9 @@ import {
 } from '@dao-dao/types/actions'
 import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../components'
-import { MintNftData, UploadNftMetadata } from '../../../components/nft'
-import { useActionOptions } from '../../../react'
+import { SuspenseLoader } from '../../../components'
+import { MintNftData, UploadNftMetadata } from '../../components/nft'
+import { useActionOptions } from '../../react'
 import { ChooseExistingNftCollection } from './ChooseExistingNftCollection'
 import { InstantiateNftCollection } from './InstantiateNftCollection'
 import { MintNft } from './MintNft'

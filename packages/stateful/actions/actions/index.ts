@@ -10,6 +10,7 @@ import { DISABLED_ACTIONS } from '@dao-dao/utils'
 import { makeAuthzActionCategory } from './authz'
 import { makeChainGovernanceActionCategory } from './chain_governance'
 import { makeDaoGovernanceActionCategory } from './dao_governance'
+import { makeManageNftsActionCategory } from './nft'
 import { makeOtherActionCategory } from './other'
 import { makeSmartContractingActionCategory } from './smart_contracting'
 import { makeDaoTreasuryActionCategory } from './treasury'
@@ -17,6 +18,7 @@ import { makeDaoTreasuryActionCategory } from './treasury'
 // Get all core action category makers.
 export const getCoreActionCategoryMakers = (): ActionCategoryMaker[] => [
   makeDaoTreasuryActionCategory,
+  makeManageNftsActionCategory,
   makeDaoGovernanceActionCategory,
   makeSmartContractingActionCategory,
   makeAuthzActionCategory,

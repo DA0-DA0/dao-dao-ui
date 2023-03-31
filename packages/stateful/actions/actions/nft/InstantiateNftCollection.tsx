@@ -11,9 +11,9 @@ import {
 } from '@dao-dao/types'
 import { CODE_ID_CONFIG, processError } from '@dao-dao/utils'
 
-import { AddressInput } from '../../../../components'
-import { InstantiateNftCollection as StatelessInstantiateNftCollection } from '../../../components/nft'
-import { useActionOptions } from '../../../react'
+import { AddressInput } from '../../../components'
+import { InstantiateNftCollection as StatelessInstantiateNftCollection } from '../../components/nft'
+import { useActionOptions } from '../../react'
 
 export const InstantiateNftCollection: ActionComponent = (props) => {
   const { t } = useTranslation()

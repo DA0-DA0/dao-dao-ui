@@ -11,13 +11,10 @@ import {
   NftCardInfo,
 } from '@dao-dao/types'
 
-import { AddressInput } from '../../../../components'
-import { nftCardInfoWithUriSelector } from '../../../../recoil'
-import {
-  MintNftData,
-  MintNft as StatelessMintNft,
-} from '../../../components/nft'
-import { useActionOptions } from '../../../react'
+import { AddressInput } from '../../../components'
+import { nftCardInfoWithUriSelector } from '../../../recoil'
+import { MintNftData, MintNft as StatelessMintNft } from '../../components/nft'
+import { useActionOptions } from '../../react'
 
 export const MintNft: ActionComponent = (props) => {
   const { chainId, context, address } = useActionOptions()

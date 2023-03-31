@@ -8,11 +8,11 @@ export const makeChainGovernanceActionCategory: ActionCategoryMaker = ({
   t,
 }) => ({
   key: ActionCategoryKey.ChainGovernance,
-  label: t('title.chainGovernance'),
-  description: t('info.chainGovernanceDescription'),
+  label: t('actionCategory.chainGovernanceLabel'),
+  description: t('actionCategory.chainGovernanceDescription'),
   actionMakers: [
-    makeGovernanceVoteAction,
     makeStakingActionsAction,
+    makeGovernanceVoteAction,
     makeValidatorActionsAction,
   ],
 })

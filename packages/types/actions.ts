@@ -13,6 +13,7 @@ export enum ActionCategoryKey {
   Other = 'other',
   SmartContracting = 'smartContracting',
   Treasury = 'treasury',
+  Nfts = 'nfts',
 }
 
 // Actions defined in the core actions system (@dao-dao/stateful/actions). These

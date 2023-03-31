@@ -11,14 +11,14 @@ export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
   t,
 }) => ({
   key: ActionCategoryKey.DaoGovernance,
-  label: t('title.daoGovernance'),
-  description: t('info.daoGovernanceDescription'),
+  label: t('actionCategory.daoGovernanceLabel'),
+  description: t('actionCategory.daoGovernanceDescription'),
   actionMakers: [
-    makeDaoAdminExecAction,
+    makeUpdateInfoAction,
+    makeUpgradeV1ToV2,
     makeEnableMultipleChoiceAction,
     makeManageStorageItemsAction,
     makeManageSubDaosAction,
-    makeUpdateInfoAction,
-    makeUpgradeV1ToV2,
+    makeDaoAdminExecAction,
   ],
 })

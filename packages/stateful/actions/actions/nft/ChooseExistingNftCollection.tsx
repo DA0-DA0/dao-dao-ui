@@ -7,8 +7,8 @@ import { useCachedLoadable } from '@dao-dao/stateless'
 import { ActionComponent, ActionContextType } from '@dao-dao/types'
 import { objectMatchesStructure, processError } from '@dao-dao/utils'
 
-import { ChooseExistingNftCollection as StatelessChooseExistingNftCollection } from '../../../components/nft'
-import { useActionOptions } from '../../../react'
+import { ChooseExistingNftCollection as StatelessChooseExistingNftCollection } from '../../components/nft'
+import { useActionOptions } from '../../react'
 
 export const ChooseExistingNftCollection: ActionComponent = (props) => {
   const { context, address, chainId, t } = useActionOptions()
