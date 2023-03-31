@@ -284,7 +284,7 @@ export const ActionEditor = ({
           }
           className="flex animate-fade-in flex-row items-start gap-6"
         >
-          <div className="flex grow flex-col gap-4">
+          <div className="flex min-w-0 grow flex-col gap-4">
             <SuspenseLoader fallback={<Loader size={36} />}>
               <action.Component
                 addAction={append}
