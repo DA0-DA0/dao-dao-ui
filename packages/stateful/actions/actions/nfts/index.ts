@@ -5,10 +5,15 @@ import { makeMintNftAction } from './makeMintNftAction'
 import { makeManageCw721Action } from './ManageCw721'
 import { makeTransferNftAction } from './TransferNft'
 
-export const makeManageNftsActionCategory: ActionCategoryMaker = ({ t }) => ({
+export const makeManageNftsActionCategory: ActionCategoryMaker = ({
+  t,
+  context,
+}) => ({
   key: ActionCategoryKey.Nfts,
   label: t('actionCategory.nftsLabel'),
-  description: t('actionCategory.nftsDescription'),
+  description: t('actionCategory.nftsDescription', {
+    context: context.type,
+  }),
   actionMakers: [
     makeMintNftAction,
     makeTransferNftAction,

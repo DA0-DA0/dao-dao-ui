@@ -3,6 +3,7 @@ import { ActionCategoryKey, ActionCategoryMaker } from '@dao-dao/types'
 import { makeManageCw20Action } from './ManageCw20'
 import { makeManagePayrollAction } from './ManagePayroll'
 import { makeSpendAction } from './Spend'
+import { makeStakingActionsAction } from './StakingActions'
 import {
   makePerformTokenSwapAction,
   makeWithdrawTokenSwapAction,
@@ -22,6 +23,7 @@ export const makeTreasuryActionCategory: ActionCategoryMaker = ({
   }),
   actionMakers: [
     makeSpendAction,
+    makeStakingActionsAction,
     makeWyndSwapAction,
     makeManageCw20Action,
     makePerformTokenSwapAction,

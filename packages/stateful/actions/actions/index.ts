@@ -12,7 +12,7 @@ import { makeChainGovernanceActionCategory } from './chain_governance'
 import { makeCustomActionCategory } from './custom'
 import { makeDaoAppearanceActionCategory } from './dao_appearance'
 import { makeDaoGovernanceActionCategory } from './dao_governance'
-import { makeManageNftsActionCategory } from './nft'
+import { makeManageNftsActionCategory } from './nfts'
 import { makeSmartContractingActionCategory } from './smart_contracting'
 import { makeTreasuryActionCategory } from './treasury'
 
