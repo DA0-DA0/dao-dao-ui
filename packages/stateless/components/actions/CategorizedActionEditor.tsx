@@ -29,12 +29,15 @@ export type CategorizedActionEditorProps =
     SuspenseLoader: ComponentType<SuspenseLoaderProps>
   }
 
+// A category and action combo editor. If the action is selected, renders
+// the selected action's editor. Otherwise, shows the list of actions in the
+// category that can be selected.
 export const CategorizedActionEditor = ({
   categories,
   loadedActions,
   actionDataFieldName,
   index,
-  onRemove,
+  onRemove: _onRemove,
   actionErrors,
   addAction,
   SuspenseLoader,
@@ -52,6 +55,17 @@ export const CategorizedActionEditor = ({
   // The prefix for this action's field names.
   const actionFieldName =
     `${actionDataFieldName}.${index}` as `actionData.${number}`
+
+  // Clear all errors when the action is removed, in case any manual errors were
+  // not cleaned up. This also takes care of clearing the manual error below
+  // when no action is selected. If manual errors persist, the form gets stuck.
+  const onRemove = () => {
+    // Clear all errors for this action.
+    clearErrors(actionFieldName)
+
+    // Remove the action from the form.
+    _onRemove()
+  }
 
   // Set error if no action is selected.
   useEffect(() => {
@@ -114,6 +128,8 @@ export const CategorizedActionEditor = ({
         // Clear action key and data, preserving the category key.
         setValue(`${actionFieldName}.actionKey`, undefined)
         setValue(`${actionFieldName}.data`, undefined)
+        // Clear errors on action data if any left over.
+        clearErrors(`${actionFieldName}.data`)
       }}
       onRemove={onRemove}
     >
