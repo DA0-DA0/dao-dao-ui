@@ -31,14 +31,13 @@ export const ActionCard = ({
 
   return (
     <div className="flex flex-col overflow-x-auto rounded-lg bg-background-tertiary">
-      <div className="primary-text flex flex-row items-center justify-between gap-4 border-b border-border-base p-4 text-text-body">
-        <div className="flex flex-row items-center gap-4">
+      <div className="primary-text flex flex-row items-center justify-between gap-8 border-b border-border-base p-4 text-text-body">
+        <div className="flex flex-col items-start gap-x-4 gap-y-2 sm:flex-row sm:flex-wrap sm:items-center">
           <Button
             className={clsx(
               !onCategoryClick && 'pointer-events-none !bg-background-secondary'
             )}
             onClick={onCategoryClick}
-            size="lg"
             variant="secondary"
           >
             {!!onCategoryClick && !!action && (
@@ -48,21 +47,23 @@ export const ActionCard = ({
             {category.label}
           </Button>
 
-          {action ? (
-            <>
-              <div className="flex flex-row items-center gap-2">
-                <p className="text-xl">
-                  <action.Icon />
-                </p>
+          <div className="pl-[10px] sm:pl-0">
+            {action ? (
+              <>
+                <div className="flex flex-row items-center gap-2">
+                  <p className="text-xl">
+                    <action.Icon />
+                  </p>
 
-                <p className="title-text">{action.label}</p>
-              </div>
-            </>
-          ) : (
-            <p className="primary-text text-text-secondary">
-              {t('title.chooseAnAction')}
-            </p>
-          )}
+                  <p className="title-text">{action.label}</p>
+                </div>
+              </>
+            ) : (
+              <p className="primary-text text-text-secondary">
+                {t('title.chooseAnAction')}
+              </p>
+            )}
+          </div>
         </div>
 
         {onRemove && (
