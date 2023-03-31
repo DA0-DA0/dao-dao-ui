@@ -15,7 +15,7 @@ import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import {
   getCoreActionCategoryMakers,
   makeActionCategoriesWithLabel,
-} from '../actions'
+} from '../core'
 import { ActionsContext } from './context'
 
 export interface ActionsProviderProps {

@@ -262,8 +262,11 @@ export const ActionEditor = ({
       .forEach(({ index }) => remove(index))
 
     // Clear action key and data for the first entry, preserving the category
-    // key.
+    // key. Set the category key in case it is undefined. A category key may be
+    // undefined if an action was duplicated, prefilled, or manually added from
+    // another action.
     const index = all[0].index
+    setValue(`${actionDataFieldName}.${index}.categoryKey`, category.key)
     setValue(`${actionDataFieldName}.${index}.actionKey`, undefined)
     setValue(`${actionDataFieldName}.${index}.data`, undefined)
     // Clear errors on action data if any left over.
