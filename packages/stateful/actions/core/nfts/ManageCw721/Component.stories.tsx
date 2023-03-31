@@ -5,8 +5,7 @@ import { ReactHookFormDecorator } from '@dao-dao/storybook'
 import { ManageCw721Component } from './Component'
 
 export default {
-  title:
-    'DAO DAO / packages / stateful / actions / core / nfts / ManageCw721',
+  title: 'DAO DAO / packages / stateful / actions / core / nfts / ManageCw721',
   component: ManageCw721Component,
   decorators: [ReactHookFormDecorator],
 } as ComponentMeta<typeof ManageCw721Component>

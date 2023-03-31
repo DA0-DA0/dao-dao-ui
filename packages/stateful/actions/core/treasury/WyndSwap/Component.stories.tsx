@@ -14,8 +14,7 @@ import { WyndSwapComponent, WyndSwapData } from './Component'
 const usdc = getJunoIbcUsdc()
 
 export default {
-  title:
-    'DAO DAO / packages / stateful / actions / core / treasury / WyndSwap',
+  title: 'DAO DAO / packages / stateful / actions / core / treasury / WyndSwap',
   component: WyndSwapComponent,
   decorators: [
     makeReactHookFormDecorator<WyndSwapData>({
