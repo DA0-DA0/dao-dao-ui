@@ -1,8 +1,10 @@
+import Fuse from 'fuse.js'
 import cloneDeep from 'lodash.clonedeep'
-import { ComponentType, useEffect } from 'react'
+import { ComponentType, useEffect, useState } from 'react'
 import { FieldErrors, useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
-import { ActionCard, Loader } from '@dao-dao/stateless'
+import { ActionCard, FilterableItemPopup, Loader } from '@dao-dao/stateless'
 import {
   ActionCategoryWithLabel,
   LoadedActions,
@@ -46,9 +48,12 @@ export const CategorizedActionEditor = ({
   actionKey,
   data,
 }: CategorizedActionEditorProps) => {
+  const { t } = useTranslation()
   const { watch, setError, clearErrors, setValue } = useFormContext<{
     actionData: PartialCategorizedActionKeyAndData[]
   }>()
+
+  const [changeCategoryOpen, setChangeCategoryOpen] = useState(false)
 
   // All actions from the form.
   const actionData = watch(actionDataFieldName as 'actionData') || []
@@ -92,24 +97,45 @@ export const CategorizedActionEditor = ({
     }
 
     return (
-      <ActionCategoryActionPickerCard
-        category={category}
-        onRemove={onRemove}
-        onSelectAction={({ key }) => {
-          const action = loadedActions[key]
-          if (!action) {
-            return
-          }
+      <>
+        <ActionCategoryActionPickerCard
+          category={category}
+          onChangeCategory={() => setChangeCategoryOpen(true)}
+          onRemove={onRemove}
+          onSelectAction={({ key }) => {
+            const action = loadedActions[key]
+            if (!action) {
+              return
+            }
 
-          // Update the action key and data.
-          setValue(`${actionFieldName}.actionKey`, key)
-          setValue(
-            `${actionFieldName}.data`,
-            // Clone to prevent the form from mutating the original object.
-            cloneDeep(action.defaults ?? {})
-          )
-        }}
-      />
+            // Update the action key and data.
+            setValue(`${actionFieldName}.actionKey`, key)
+            setValue(
+              `${actionFieldName}.data`,
+              // Clone to prevent the form from mutating the original object.
+              cloneDeep(action.defaults ?? {})
+            )
+          }}
+        />
+
+        <FilterableItemPopup
+          filterableItemKeys={FILTERABLE_KEYS}
+          items={categories.map((category) => ({
+            ...category,
+            selected: category.key === categoryKey,
+          }))}
+          onSelect={({ key }) => {
+            // Change category key.
+            setValue(`${actionFieldName}.categoryKey`, key)
+          }}
+          searchPlaceholder={t('info.findCategory')}
+          trigger={{
+            type: 'manual',
+            open: changeCategoryOpen,
+            setOpen: setChangeCategoryOpen,
+          }}
+        />
+      </>
     )
   }
 
@@ -124,7 +150,7 @@ export const CategorizedActionEditor = ({
     <ActionCard
       action={action}
       category={category}
-      goBackToCategory={() => {
+      onCategoryClick={() => {
         // Clear action key and data, preserving the category key.
         setValue(`${actionFieldName}.actionKey`, undefined)
         setValue(`${actionFieldName}.data`, undefined)
@@ -147,3 +173,8 @@ export const CategorizedActionEditor = ({
     </ActionCard>
   )
 }
+
+const FILTERABLE_KEYS: Fuse.FuseOptionKey<ActionCategoryWithLabel>[] = [
+  'label',
+  'description',
+]

@@ -7,14 +7,20 @@ export type ActionCategoryActionPickerCardProps = {
   category: ActionCategoryWithLabel
   onSelectAction: (action: Action) => void
   onRemove: () => void
+  onChangeCategory: () => void
 }
 
 export const ActionCategoryActionPickerCard = ({
   category,
   onSelectAction,
   onRemove,
+  onChangeCategory,
 }: ActionCategoryActionPickerCardProps) => (
-  <ActionCard category={category} onRemove={onRemove}>
+  <ActionCard
+    category={category}
+    onCategoryClick={onChangeCategory}
+    onRemove={onRemove}
+  >
     {category.actions.map((action) => (
       <Button
         key={action.key}

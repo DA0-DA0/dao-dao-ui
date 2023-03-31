@@ -10,8 +10,9 @@ import { IconButton } from '../icon_buttons'
 
 export type ActionCardProps = {
   category: ActionCategoryWithLabel
-  // If defined, makes the category button clickable with a back arrow.
-  goBackToCategory?: () => void
+  // If defined, makes the category button clickable. If an action is defined,
+  // this will be the back button and show a back arrow.
+  onCategoryClick?: () => void
   action?: Action
   onRemove?: () => void
   childrenContainerClassName?: string
@@ -20,7 +21,7 @@ export type ActionCardProps = {
 
 export const ActionCard = ({
   category,
-  goBackToCategory,
+  onCategoryClick,
   action,
   onRemove,
   childrenContainerClassName,
@@ -34,14 +35,13 @@ export const ActionCard = ({
         <div className="flex flex-row items-center gap-4">
           <Button
             className={clsx(
-              !goBackToCategory &&
-                'pointer-events-none !bg-background-secondary'
+              !onCategoryClick && 'pointer-events-none !bg-background-secondary'
             )}
-            onClick={goBackToCategory}
+            onClick={onCategoryClick}
             size="lg"
             variant="secondary"
           >
-            {!!goBackToCategory && (
+            {!!onCategoryClick && !!action && (
               <ArrowBackIosRounded className="!h-5 !w-5" />
             )}
 

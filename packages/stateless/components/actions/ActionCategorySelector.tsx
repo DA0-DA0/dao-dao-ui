@@ -61,7 +61,7 @@ export const ActionCategorySelector = ({
       }
       items={categories}
       onSelect={onSelectCategory}
-      searchPlaceholder={t('info.searchActionPlaceholder')}
+      searchPlaceholder={t('info.findCategory')}
       trigger={{
         type: 'button',
         props: ({ open }) => ({
