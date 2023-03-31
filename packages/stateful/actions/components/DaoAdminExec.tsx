@@ -5,8 +5,8 @@ import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import {
   ActionCategorySelector,
+  ActionsEditor,
   ActionsRenderer,
-  CategorizedActionEditor,
   Loader,
   RadioInput,
 } from '@dao-dao/stateless'
@@ -119,11 +119,7 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
   const { watch, control, setValue, clearErrors, setError } =
     useFormContext<DaoAdminExecData>()
 
-  const {
-    fields: actionDataFields,
-    append: appendAction,
-    remove: removeAction,
-  } = useFieldArray({
+  const { append } = useFieldArray({
     name: (fieldNamePrefix + '_actionData') as '_actionData',
     control,
   })
@@ -158,29 +154,14 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
 
   return (
     <>
-      {actionData.length > 0 && (
-        <div className="mb-4 flex flex-col gap-2">
-          {actionData.map((field, index) => (
-            <CategorizedActionEditor
-              key={
-                // Use ID from field array that corresponds with this action,
-                // but use the data from watching the actions field so that it
-                // updates.
-                actionDataFields[index].id
-              }
-              {...field}
-              SuspenseLoader={SuspenseLoader}
-              actionDataFieldName={fieldNamePrefix + '_actionData'}
-              actionErrors={errors?._actionData?.[index] || {}}
-              addAction={appendAction}
-              categories={categories}
-              index={index}
-              loadedActions={loadedActions}
-              onRemove={() => removeAction(index)}
-            />
-          ))}
-        </div>
-      )}
+      <ActionsEditor
+        SuspenseLoader={SuspenseLoader}
+        actionDataErrors={errors?._actionData}
+        actionDataFieldName={fieldNamePrefix + '_actionData'}
+        categories={categories}
+        className="mb-4"
+        loadedActions={loadedActions}
+      />
 
       {categories.length === 0 ? (
         <Loader />
@@ -189,7 +170,7 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
           <ActionCategorySelector
             categories={categories}
             onSelectCategory={({ key }) => {
-              appendAction({
+              append({
                 categoryKey: key,
               })
             }}

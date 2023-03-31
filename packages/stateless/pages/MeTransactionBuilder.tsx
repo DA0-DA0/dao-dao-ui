@@ -31,9 +31,9 @@ import {
 
 import {
   ActionCategorySelector,
+  ActionsEditor,
   Button,
   ButtonLink,
-  CategorizedActionEditor,
   CopyToClipboard,
   IconButton,
   InputErrorMessage,
@@ -73,11 +73,7 @@ export const MeTransactionBuilder = ({
     reset,
   } = formMethods
 
-  const {
-    fields: actionDataFields,
-    append,
-    remove,
-  } = useFieldArray({
+  const { append } = useFieldArray({
     name: 'actions',
     control,
     shouldUnregister: true,
@@ -168,29 +164,13 @@ export const MeTransactionBuilder = ({
           className="flex flex-col gap-4"
           onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
         >
-          {actionData.length > 0 && (
-            <div className="flex flex-col gap-2">
-              {actionData.map((field, index) => (
-                <CategorizedActionEditor
-                  key={
-                    // Use ID from field array that corresponds with this
-                    // action, but use the data from watching the actions field
-                    // so that it updates.
-                    actionDataFields[index].id
-                  }
-                  {...field}
-                  SuspenseLoader={SuspenseLoader}
-                  actionDataFieldName="actions"
-                  actionErrors={errors.actions?.[index] || {}}
-                  addAction={append}
-                  categories={categories}
-                  index={index}
-                  loadedActions={loadedActions}
-                  onRemove={() => remove(index)}
-                />
-              ))}
-            </div>
-          )}
+          <ActionsEditor
+            SuspenseLoader={SuspenseLoader}
+            actionDataErrors={errors?.actions}
+            actionDataFieldName="actions"
+            categories={categories}
+            loadedActions={loadedActions}
+          />
 
           <div>
             <ActionCategorySelector

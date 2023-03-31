@@ -1,6 +1,6 @@
 export * from './ActionCard'
 export * from './ActionCategoryActionPickerCard'
 export * from './ActionCategorySelector'
+export * from './ActionsEditor'
 export * from './ActionsRenderer'
-export * from './CategorizedActionEditor'
 export * from './RawActionsRenderer'

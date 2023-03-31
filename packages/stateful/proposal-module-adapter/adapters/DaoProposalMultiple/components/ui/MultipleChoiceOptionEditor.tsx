@@ -15,8 +15,8 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ActionCategorySelector,
+  ActionsEditor,
   Button,
-  CategorizedActionEditor,
   DropdownIconButton,
   IconButton,
   InputErrorMessage,
@@ -76,17 +76,11 @@ export const MultipleChoiceOptionEditor = <
 
   const description = watch(`choices.${optionIndex}.description`)
 
-  const {
-    fields: optionActionDataFields,
-    append: appendAction,
-    remove: removeAction,
-  } = useFieldArray({
+  const { append } = useFieldArray({
     name: `choices.${optionIndex}.actionData`,
     control,
     shouldUnregister: true,
   })
-
-  const actionData = watch(`choices.${optionIndex}.actionData`) || []
 
   // Default to if description exists, in case of duplication.
   const [showingDescription, setShowingDescription] = useState(!!description)
@@ -169,29 +163,13 @@ export const MultipleChoiceOptionEditor = <
             </Button>
           )}
 
-          {actionData.length > 0 && (
-            <div className="flex flex-col gap-2">
-              {actionData.map((field, actionIndex) => (
-                <CategorizedActionEditor
-                  key={
-                    // Use ID from field array that corresponds with this
-                    // action, but use the data from watching the actions field
-                    // so that it updates.
-                    optionActionDataFields[actionIndex].id
-                  }
-                  {...field}
-                  SuspenseLoader={SuspenseLoader}
-                  actionDataFieldName={`choices.${optionIndex}.actionData`}
-                  actionErrors={errorsOption?.actionData?.[actionIndex] || {}}
-                  addAction={appendAction}
-                  categories={categories}
-                  index={actionIndex}
-                  loadedActions={loadedActions}
-                  onRemove={() => removeAction(actionIndex)}
-                />
-              ))}
-            </div>
-          )}
+          <ActionsEditor
+            SuspenseLoader={SuspenseLoader}
+            actionDataErrors={errorsOption?.actionData}
+            actionDataFieldName={`choices.${optionIndex}.actionData`}
+            categories={categories}
+            loadedActions={loadedActions}
+          />
         </div>
 
         <div className="border-l-[3px] border-dashed border-border-interactive-focus pt-4 pb-2 pl-5">
@@ -201,7 +179,7 @@ export const MultipleChoiceOptionEditor = <
             // keybind wouldn't know which one to open.
             disableKeybind
             onSelectCategory={({ key }) => {
-              appendAction({
+              append({
                 categoryKey: key,
               })
             }}

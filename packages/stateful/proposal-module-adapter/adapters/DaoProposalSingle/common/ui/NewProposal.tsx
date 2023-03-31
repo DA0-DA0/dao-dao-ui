@@ -19,8 +19,8 @@ import TimeAgo from 'react-timeago'
 
 import {
   ActionCategorySelector,
+  ActionsEditor,
   Button,
-  CategorizedActionEditor,
   FilterableItem,
   FilterableItemPopup,
   IconButton,
@@ -121,11 +121,7 @@ export const NewProposal = ({
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
 
-  const {
-    fields: actionDataFields,
-    append: appendAction,
-    remove: removeAction,
-  } = useFieldArray({
+  const { append } = useFieldArray({
     name: 'actionData',
     control,
     shouldUnregister: true,
@@ -221,35 +217,20 @@ export const NewProposal = ({
 
       {proposalModuleSelector}
 
-      {actionData.length > 0 && (
-        <div className="-mb-2 flex flex-col gap-2">
-          {actionData.map((field, index) => (
-            <CategorizedActionEditor
-              key={
-                // Use ID from field array that corresponds with this action,
-                // but use the data from watching the actions field so that it
-                // updates.
-                actionDataFields[index].id
-              }
-              {...field}
-              SuspenseLoader={SuspenseLoader}
-              actionDataFieldName="actionData"
-              actionErrors={errors?.actionData?.[index] || {}}
-              addAction={appendAction}
-              categories={categories}
-              index={index}
-              loadedActions={loadedActions}
-              onRemove={() => removeAction(index)}
-            />
-          ))}
-        </div>
-      )}
+      <ActionsEditor
+        SuspenseLoader={SuspenseLoader}
+        actionDataErrors={errors?.actionData}
+        actionDataFieldName="actionData"
+        categories={categories}
+        className="-mb-2"
+        loadedActions={loadedActions}
+      />
 
       <div className="self-start">
         <ActionCategorySelector
           categories={categories}
           onSelectCategory={({ key }) => {
-            appendAction({
+            append({
               categoryKey: key,
             })
           }}
