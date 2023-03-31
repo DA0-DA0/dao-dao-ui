@@ -437,7 +437,10 @@ export const NewProposal = ({
                         actionData: [],
                         decodedMessages: convertActionsToMessages(
                           loadedActions,
-                          actionData || []
+                          actionData || [],
+                          {
+                            throwErrors: false,
+                          }
                         ),
                         voteOption: {
                           Icon: Circle,

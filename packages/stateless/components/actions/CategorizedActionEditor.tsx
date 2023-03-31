@@ -1,6 +1,6 @@
 import Fuse from 'fuse.js'
 import cloneDeep from 'lodash.clonedeep'
-import { ComponentType, useEffect, useState } from 'react'
+import { ComponentType, useState } from 'react'
 import { FieldErrors, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -49,7 +49,7 @@ export const CategorizedActionEditor = ({
   data,
 }: CategorizedActionEditorProps) => {
   const { t } = useTranslation()
-  const { watch, setError, clearErrors, setValue } = useFormContext<{
+  const { watch, clearErrors, setValue } = useFormContext<{
     actionData: PartialCategorizedActionKeyAndData[]
   }>()
 
@@ -62,8 +62,7 @@ export const CategorizedActionEditor = ({
     `${actionDataFieldName}.${index}` as `actionData.${number}`
 
   // Clear all errors when the action is removed, in case any manual errors were
-  // not cleaned up. This also takes care of clearing the manual error below
-  // when no action is selected. If manual errors persist, the form gets stuck.
+  // not cleaned up. If manual errors persist, the form gets stuck.
   const onRemove = () => {
     // Clear all errors for this action.
     clearErrors(actionFieldName)
@@ -71,18 +70,6 @@ export const CategorizedActionEditor = ({
     // Remove the action from the form.
     _onRemove()
   }
-
-  // Set error if no action is selected.
-  useEffect(() => {
-    if (!actionKey) {
-      setError(`${actionFieldName}.actionKey`, {
-        type: 'manual',
-        message: 'Please select an action.',
-      })
-    } else {
-      clearErrors(`${actionFieldName}.actionKey`)
-    }
-  }, [actionKey, clearErrors, actionFieldName, setError])
 
   if (!actionKey || !data) {
     // If action and data are not set, category must be set. Otherwise, we can't

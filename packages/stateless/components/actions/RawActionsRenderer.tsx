@@ -23,7 +23,9 @@ export const RawActionsRenderer = ({
 }: RawActionsRendererProps) => (
   <CosmosMessageDisplay
     value={decodedMessagesString(
-      convertActionsToMessages(loadedActions, actionData)
+      convertActionsToMessages(loadedActions, actionData, {
+        throwErrors: false,
+      })
     )}
   />
 )
