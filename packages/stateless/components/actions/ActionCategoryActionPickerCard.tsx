@@ -1,3 +1,5 @@
+import { MouseEvent } from 'react'
+
 import {
   Action,
   ActionCategoryWithLabel,
@@ -12,7 +14,7 @@ export type ActionCategoryActionPickerCardProps = {
   // Action keys already used. If an action is not reusable, and it is already
   // used, it should not be disabled in this category action picker.
   usedActionKeys: ActionKey[]
-  onSelectAction: (action: Action) => void
+  onSelectAction: (action: Action, event: MouseEvent<HTMLButtonElement>) => void
   onRemove: () => void
   onChangeCategory: () => void
 }
@@ -38,7 +40,7 @@ export const ActionCategoryActionPickerCard = ({
         <Button
           key={action.key}
           contentContainerClassName="gap-4 text-left"
-          onClick={() => onSelectAction(action)}
+          onClick={(event) => onSelectAction(action, event)}
           variant="ghost"
         >
           {action.Icon && (

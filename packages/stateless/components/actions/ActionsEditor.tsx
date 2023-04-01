@@ -202,9 +202,20 @@ export const ActionEditor = ({
           category={category}
           onChangeCategory={() => setChangeCategoryOpen(true)}
           onRemove={onRemove}
-          onSelectAction={({ key }) => {
+          onSelectAction={({ key }, event) => {
             const action = loadedActions[key]
             if (!action) {
+              return
+            }
+
+            // If holding shift, add as a new action.
+            if (event.shiftKey) {
+              append({
+                categoryKey,
+                actionKey: key,
+                // Clone to prevent the form from mutating the original object.
+                data: cloneDeep(action.defaults ?? {}),
+              })
               return
             }
 
