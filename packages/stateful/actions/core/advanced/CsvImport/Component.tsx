@@ -158,7 +158,7 @@ export const CsvImportComponent: ActionComponent<CsvImportOptions> = ({
 
   return pendingActions.length > 0 ? (
     <>
-      <p>{t('info.reviewActionImportData')}</p>
+      <p className="max-w-prose">{t('info.reviewActionImportData')}</p>
 
       <CosmosMessageDisplay
         className="styled-scrollbar max-h-96 overflow-y-auto pr-1"
