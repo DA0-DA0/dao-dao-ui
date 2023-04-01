@@ -280,50 +280,58 @@ export const ActionEditor = ({
       onCategoryClick={goBackToCategoryPicker}
       onRemove={onRemove}
     >
-      {all.map(({ index, data }) => (
-        <div
-          key={
-            // Re-render when the action at a given position changes.
-            `${index}-${actionKey}`
-          }
-          className="flex animate-fade-in flex-row items-start gap-4"
-        >
-          <div className="flex min-w-0 grow flex-col gap-4">
-            <SuspenseLoader fallback={<Loader size={36} />}>
-              <action.Component
-                addAction={append}
-                allActionsWithData={actionData}
-                data={data}
-                errors={actionDataErrors?.[index]?.data || {}}
-                fieldNamePrefix={`${actionDataFieldName}.${index}.data.`}
-                index={index}
-                isCreating
-              />
-            </SuspenseLoader>
-          </div>
+      {all.map(({ index, data }) => {
+        const removeAction = () => {
+          clearErrors(`${actionDataFieldName}.${index}`)
+          remove(index)
+        }
 
-          {/* Show remove button if action is resuable OR if there are more than one action. If there are more than one action, individual ones should be removable. But if there is only one, which is the intended state for an action configured as not reusable, don't show the remove button. */}
-          {(!action.notReusable || all.length > 1) && (
-            <Tooltip title={t('button.remove')}>
-              <IconButton
-                Icon={Remove}
-                circular
-                onClick={() => {
-                  // If only one action left, go back to category picker.
-                  if (all.length === 1) {
-                    goBackToCategoryPicker()
-                  } else {
-                    clearErrors(`${actionDataFieldName}.${index}`)
-                    remove(index)
-                  }
-                }}
-                size="sm"
-                variant="secondary"
-              />
-            </Tooltip>
-          )}
-        </div>
-      ))}
+        return (
+          <div
+            key={
+              // Re-render when the action at a given position changes.
+              `${index}-${actionKey}`
+            }
+            className="flex animate-fade-in flex-row items-start gap-4"
+          >
+            <div className="flex min-w-0 grow flex-col gap-4">
+              <SuspenseLoader fallback={<Loader size={36} />}>
+                <action.Component
+                  addAction={append}
+                  allActionsWithData={actionData}
+                  data={data}
+                  errors={actionDataErrors?.[index]?.data || {}}
+                  fieldNamePrefix={`${actionDataFieldName}.${index}.data.`}
+                  index={index}
+                  isCreating
+                  remove={removeAction}
+                />
+              </SuspenseLoader>
+            </div>
+
+            {/* Show remove button if action is resuable OR if there are more than one action. If there are more than one action, individual ones should be removable. But if there is only one, which is the intended state for an action configured as not reusable, don't show the remove button. */}
+            {(!action.notReusable || all.length > 1) && (
+              <Tooltip title={t('button.remove')}>
+                <IconButton
+                  Icon={Remove}
+                  circular
+                  onClick={() => {
+                    // If only one action left, go back to category picker.
+                    if (all.length === 1) {
+                      goBackToCategoryPicker()
+                    } else {
+                      // Otherwise just remove this action.
+                      removeAction()
+                    }
+                  }}
+                  size="sm"
+                  variant="secondary"
+                />
+              </Tooltip>
+            )}
+          </div>
+        )
+      })}
 
       {/* Don't show add button if action is not reusable. */}
       {!action.notReusable && (

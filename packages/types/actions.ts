@@ -37,6 +37,7 @@ export enum CoreActionKey {
   AuthzExec = 'authzExec',
   ValidatorActions = 'validatorActions',
   Custom = 'custom',
+  CsvImport = 'csvImport',
   PerformTokenSwap = 'performTokenSwap',
   WithdrawTokenSwap = 'withdrawTokenSwap',
   ManageStorageItems = 'manageStorageItems',
@@ -101,12 +102,16 @@ export type ActionComponentProps<O = undefined, D = any> = {
   | {
       isCreating: true
       errors: FieldErrors
+      // Adds a new action to the form.
       addAction: (action: PartialCategorizedActionKeyAndData) => void
+      // Removes this action from the form.
+      remove: () => void
     }
   | {
       isCreating: false
       errors?: undefined
       addAction?: undefined
+      remove?: undefined
     }
 ) &
   (O extends undefined ? {} : { options: O })

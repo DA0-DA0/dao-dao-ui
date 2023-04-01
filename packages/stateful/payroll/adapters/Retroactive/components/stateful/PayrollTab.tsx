@@ -1,6 +1,6 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { saveAs } from 'file-saver'
-import { parse as parseJsonToCsv } from 'json2csv'
+import { unparse as jsonToCsv } from 'papaparse'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { waitForAll } from 'recoil'
@@ -117,7 +117,7 @@ export const PayrollTab = () => {
         )
 
         // Create and save CSV.
-        const csvContent = parseJsonToCsv(csvData, { fields: csvTitles })
+        const csvContent = jsonToCsv(csvData, { columns: csvTitles })
         saveAs(
           new Blob([csvContent], { type: 'text/plain;charset=utf-8' }),
           `survey-${id}.csv`
