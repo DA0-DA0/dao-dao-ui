@@ -60,8 +60,8 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter<DaoCreationConfig>
       },
 
       // Functions
-      functions: {
-        getActionCategoryMakers: () => [],
+      fields: {
+        actionCategoryMakers: [],
       },
     }),
 

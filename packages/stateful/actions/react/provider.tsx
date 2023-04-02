@@ -53,27 +53,20 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
 
   // Get voting module adapter actions.
   const votingModuleActionCategoryMakers =
-    useVotingModuleAdapter().functions.getActionCategoryMakers()
+    useVotingModuleAdapter().fields.actionCategoryMakers
 
   // Get all actions for all proposal module adapters.
-  const proposalModuleActionCategoryMakerGetters = useMemo(
+  const proposalModuleActionCategoryMakers = useMemo(
     () =>
-      info.proposalModules.map(
+      info.proposalModules.flatMap(
         (proposalModule) =>
           matchAndLoadCommon(proposalModule, {
             chainId: info.chainId,
             coreAddress: info.coreAddress,
-          }).functions.getActionCategoryMakers
+          }).fields.actionCategoryMakers
       ),
     [info]
   )
-  // The proposal modules for a DAO should never change, so we can safely call
-  // these hooks in an iterative callback. They should always be called in the
-  // same order.
-  const proposalModuleActionCategoryMakers =
-    proposalModuleActionCategoryMakerGetters.flatMap(
-      (getActionCategoryMakers) => getActionCategoryMakers()
-    )
 
   const payrollActionCategoryMakers =
     usePayrollAdapter()?.actionCategoryMakers ?? []

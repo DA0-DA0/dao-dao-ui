@@ -4,8 +4,8 @@ import { DaoProposalMultipleAdapterId } from '@dao-dao/utils'
 
 import {
   NewProposal,
+  makeActionCategoryMakers,
   makeDepositInfoSelector,
-  makeGetActionCategoryMakers,
   makeUseProfileNewProposalCardInfoLines,
   makeUsePublishProposal,
   reverseProposalInfosSelector,
@@ -60,6 +60,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
           choices: [],
         }),
         newProposalFormTitleKey: 'title',
+        actionCategoryMakers: makeActionCategoryMakers(options),
       },
 
       // Selectors
@@ -92,11 +93,6 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
             {...props}
           />
         ),
-      },
-
-      // Functions
-      functions: {
-        getActionCategoryMakers: makeGetActionCategoryMakers(options),
       },
     }
   },

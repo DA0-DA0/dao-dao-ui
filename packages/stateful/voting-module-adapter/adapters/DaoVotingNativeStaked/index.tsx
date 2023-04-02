@@ -40,8 +40,8 @@ export const DaoVotingNativeStakedAdapter: VotingModuleAdapter = {
     },
 
     // Functions
-    functions: {
-      getActionCategoryMakers: () => [],
+    fields: {
+      actionCategoryMakers: [],
     },
   }),
 }

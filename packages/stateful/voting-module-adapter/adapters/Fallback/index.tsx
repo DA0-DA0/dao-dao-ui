@@ -21,8 +21,8 @@ export const FallbackAdapter: VotingModuleAdapter = {
     },
 
     // Functions
-    functions: {
-      getActionCategoryMakers: () => [],
+    fields: {
+      actionCategoryMakers: [],
     },
   }),
 }

@@ -1,15 +1,19 @@
 import { PeopleAltOutlined } from '@mui/icons-material'
 
 import { HandshakeEmoji } from '@dao-dao/stateless'
-import { DaoTabId, VotingModuleAdapter } from '@dao-dao/types'
+import {
+  ActionCategoryKey,
+  DaoTabId,
+  VotingModuleAdapter,
+} from '@dao-dao/types'
 
+import { makeManageMembersAction } from './actions'
 import { MembersTab, ProfileCardMemberInfo } from './components'
 import {
   GovernanceConfigurationInput,
   GovernanceConfigurationReview,
   getInstantiateInfo,
 } from './daoCreation'
-import { getActionCategoryMakers } from './functions'
 import { useDaoInfoBarItems, useProfileNewProposalCardAddresses } from './hooks'
 import { DaoCreationConfig } from './types'
 
@@ -44,8 +48,14 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter<DaoCreationConfig> = {
     },
 
     // Functions
-    functions: {
-      getActionCategoryMakers,
+    fields: {
+      actionCategoryMakers: [
+        () => ({
+          // Add to DAO Governance category.
+          key: ActionCategoryKey.DaoGovernance,
+          actionMakers: [makeManageMembersAction],
+        }),
+      ],
     },
   }),
 

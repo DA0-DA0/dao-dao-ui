@@ -42,9 +42,9 @@ export interface IVotingModuleAdapter {
     StakingModal?: ComponentType<BaseStakingModalProps>
   }
 
-  // Functions
-  functions: {
-    getActionCategoryMakers: () => ActionCategoryMaker[]
+  // Fields
+  fields: {
+    actionCategoryMakers: ActionCategoryMaker[]
   }
 }
 

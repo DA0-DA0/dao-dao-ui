@@ -4,8 +4,8 @@ import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
 import {
   NewProposal,
+  makeActionCategoryMakers,
   makeDepositInfoSelector,
-  makeGetActionCategoryMakers,
   makeUseProfileNewProposalCardInfoLines,
   makeUsePublishProposal,
   reverseProposalInfosSelector,
@@ -67,6 +67,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
           actionData: [],
         }),
         newProposalFormTitleKey: 'title',
+        actionCategoryMakers: makeActionCategoryMakers(options),
       },
 
       // Selectors
@@ -99,11 +100,6 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
             {...props}
           />
         ),
-      },
-
-      // Functions
-      functions: {
-        getActionCategoryMakers: makeGetActionCategoryMakers(options),
       },
     }
   },

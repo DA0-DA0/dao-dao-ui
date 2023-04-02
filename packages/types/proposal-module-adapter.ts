@@ -24,6 +24,7 @@ export interface IProposalModuleAdapterCommon<
     // data each time.
     makeDefaultNewProposalForm: () => FormData
     newProposalFormTitleKey: FieldPath<FormData>
+    actionCategoryMakers: ActionCategoryMaker[]
   }
 
   // Selectors
@@ -40,11 +41,6 @@ export interface IProposalModuleAdapterCommon<
   // Components
   components: {
     NewProposal: ComponentType<BaseNewProposalProps>
-  }
-
-  // Functions
-  functions: {
-    getActionCategoryMakers: () => ActionCategoryMaker[]
   }
 }
 

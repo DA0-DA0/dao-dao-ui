@@ -1,9 +1,15 @@
 import { PeopleAltOutlined } from '@mui/icons-material'
 
 import { DaoEmoji } from '@dao-dao/stateless'
-import { DaoTabId, DurationUnits, VotingModuleAdapter } from '@dao-dao/types'
+import {
+  ActionCategoryKey,
+  DaoTabId,
+  DurationUnits,
+  VotingModuleAdapter,
+} from '@dao-dao/types'
 import { DaoVotingCw20StakedAdapterId } from '@dao-dao/utils'
 
+import { makeMintAction } from './actions'
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
 import {
   GovernanceConfigurationInput,
@@ -11,7 +17,6 @@ import {
   UnstakingDurationVotingConfigItem,
   getInstantiateInfo,
 } from './daoCreation'
-import { getActionCategoryMakers } from './functions'
 import {
   useCommonGovernanceTokenInfo,
   useDaoInfoBarItems,
@@ -54,8 +59,14 @@ export const DaoVotingCw20StakedAdapter: VotingModuleAdapter<DaoCreationConfig> 
       },
 
       // Functions
-      functions: {
-        getActionCategoryMakers,
+      fields: {
+        actionCategoryMakers: [
+          () => ({
+            // Add to DAO Governance category.
+            key: ActionCategoryKey.DaoGovernance,
+            actionMakers: [makeMintAction],
+          }),
+        ],
       },
     }),
 
