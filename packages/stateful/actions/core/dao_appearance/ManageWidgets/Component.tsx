@@ -156,7 +156,7 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
                   children: (
                     <>
                       {widget ? (
-                        <div className="flex flex-col items-start gap-1">
+                        <div className="flex flex-col items-start gap-1 text-left">
                           <p>{t('widgetTitle.' + widget.id)}</p>
                           <p className="caption-text">
                             {t('widgetDescription.' + widget.id)}
