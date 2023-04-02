@@ -168,7 +168,7 @@ export const MintNftEditor = ({
       </div>
 
       <div className="space-y-1">
-        <InputLabel name={t('form.mintMessage')} />
+        <InputLabel name={t('form.minterContractMessage')} />
 
         <CodeMirrorInput
           control={control}

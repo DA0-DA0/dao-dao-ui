@@ -5,7 +5,7 @@ import { ActionCategoryMaker, ActionComponentProps } from './actions'
 export enum WidgetLocation {
   // Widget is displayed on the homepage (the first tab).
   Home = 'home',
-  // Widget is displayed in its own tab.
+  // Widget is displayed in its own tab. `Icon` must be provided as well.
   Tab = 'tab',
 }
 
@@ -23,12 +23,14 @@ export type WidgetRendererProps<Variables extends Record<string, unknown>> = {
   variables: Variables
 }
 
-export type WidgetEditorProps<Variables extends Record<string, unknown>> =
+export type WidgetEditorProps<Variables extends Record<string, unknown> = any> =
   ActionComponentProps<undefined, Variables>
 
 export type Widget<Variables extends Record<string, unknown> = any> = {
   // A unique identifier for the widget.
   id: string
+  // An icon for the widget. Used when `location` is `WidgetLocation.Tab`.
+  Icon?: ComponentType<{ className: string }>
   // The location where the widget is displayed.
   location: WidgetLocation
   // The context in which the widget is visible.
@@ -39,8 +41,8 @@ export type Widget<Variables extends Record<string, unknown> = any> = {
   Renderer: ComponentType<WidgetRendererProps<Variables>>
   // Component that allows the user to edit the widget's variables in an action.
   Editor: ComponentType<WidgetEditorProps<Variables>>
-  // Actions that are available in proposals when the widget is enabled.
-  getActionCategoryMakers?: () => ActionCategoryMaker[]
+  // Actions that are available in proposals when this widget is enabled.
+  getActionCategoryMakers?: (variables: Variables) => ActionCategoryMaker[]
 }
 
 // DaoWidget is the structure of a widget as stored in the DAO's core item map

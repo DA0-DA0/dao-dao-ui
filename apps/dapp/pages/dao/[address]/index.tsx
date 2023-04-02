@@ -29,7 +29,7 @@ import {
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { CoreActionKey, DaoPageMode } from '@dao-dao/types'
+import { CoreActionKey, DaoPageMode, WidgetLocation } from '@dao-dao/types'
 import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const InnerDaoHome = () => {
@@ -149,6 +149,8 @@ const InnerDaoHome = () => {
     // Load widgets before rendering so that home is selected if there are
     // widgets.
     suspendWhileLoading: true,
+    // Only load home widgets.
+    location: WidgetLocation.Home,
   })
   const tabs = useDaoTabs({
     includeHome:

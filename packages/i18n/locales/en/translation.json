@@ -415,8 +415,8 @@
     "messageType": "Message type",
     "migrateDescription": "This will <1>migrate</1> the selected contract to a new code ID.",
     "migrateMessage": "Migrate message",
-    "mintMessage": "Mint message",
     "minterContract": "Minter contract",
+    "minterContractMessage": "Minter contract message",
     "multipleChoiceDescription": "This allows proposals to contain multiple choices instead of just `Yes` and `No`.\n\n**CAUTION:** Using more features increases the risk to a DAO because there are more things that can go wrong. You can always enable this later.",
     "multipleChoiceOptionDescriptionPlaceholder": "Give your choice a description... (supports Markdown format)",
     "multipleChoiceOptionTitlePlaceholder": "Give your choice a title",
@@ -1211,10 +1211,14 @@
   },
   "widgetDescription": {
     "mint_nft": "Display an NFT collection with a button to mint new NFTs.",
+    "retroactive": "After each contribution cycle, contributors are assigned points based on their contributions. Payment is split based on the points they receive.",
+    "vesting": "A vesting contract distributes funds to contributors over time at a constant rate. The DAO can vote to cancel vesting at any time.",
     "wynd_deposit": "Deposit any token on WYND DEX into your DAO."
   },
   "widgetTitle": {
     "mint_nft": "Mint NFT",
+    "retroactive": "Retroactive Compensation",
+    "vesting": "Vesting Payments",
     "wynd_deposit": "WYND Deposit"
   }
 }

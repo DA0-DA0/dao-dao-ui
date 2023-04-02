@@ -39,7 +39,7 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
   } = props
 
   const { t } = useTranslation()
-  const { setValue, watch } = useFormContext<ManageWidgetsData>()
+  const { setValue, watch, clearErrors } = useFormContext<ManageWidgetsData>()
 
   const mode = watch((fieldNamePrefix + 'mode') as 'mode')
   const widgetId = watch((fieldNamePrefix + 'id') as 'id')
@@ -63,8 +63,11 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
         // Clone so we don't mutate the default values object.
         cloneDeep(existingWidget?.values || defaultValues || {})
       )
+      // Clear errors for the values in case there are any left over from the
+      // previous widget.
+      clearErrors((fieldNamePrefix + 'values') as 'values')
     },
-    [fieldNamePrefix, setValue]
+    [clearErrors, fieldNamePrefix, setValue]
   )
 
   // When creating, if mode set to 'set', select the first available widget. If
