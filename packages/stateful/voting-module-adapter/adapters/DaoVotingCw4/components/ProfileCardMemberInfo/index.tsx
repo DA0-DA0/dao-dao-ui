@@ -1,9 +1,9 @@
 import { useDaoInfoContext } from '@dao-dao/stateless'
 import { BaseProfileCardMemberInfoProps } from '@dao-dao/types'
 
-import { useMembership } from '../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../react/context'
-import { ProfileCardMemberInfo as StatelessProfileCardMemberInfo } from '../ui/ProfileCardMemberInfo'
+import { useMembership } from '../../../../../hooks'
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
+import { ProfileCardMemberInfo as StatelessProfileCardMemberInfo } from './ProfileCardMemberInfo'
 
 export const ProfileCardMemberInfo = ({
   maxGovernanceTokenDeposit: _,

@@ -1,4 +1,4 @@
-import { FlagOutlined, Timelapse } from '@mui/icons-material'
+import { BookOutlined, FlagOutlined, Timelapse } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
@@ -21,18 +21,18 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useLoadedActionsAndCategories } from '../../../../../actions'
-import { SuspenseLoader } from '../../../../../components/SuspenseLoader'
-import { useMembership } from '../../../../../hooks'
-import { proposalSelector } from '../../contracts/DaoProposalMultiple.recoil'
-import { makeGetProposalInfo } from '../../functions'
+import { useLoadedActionsAndCategories } from '../../../../../../actions'
+import { SuspenseLoader } from '../../../../../../components/SuspenseLoader'
+import { useMembership } from '../../../../../../hooks'
+import { proposalSelector } from '../../../contracts/DaoProposalSingle.common.recoil'
+import { makeGetProposalInfo } from '../../../functions'
 import {
   NewProposalData,
   NewProposalForm,
   UsePublishProposal,
-} from '../../types'
-import { useProcessQ } from '../hooks'
-import { NewProposal as StatelessNewProposal } from '../ui/NewProposal'
+} from '../../../types'
+import { useProcessTQ } from '../../hooks'
+import { NewProposal as StatelessNewProposal } from './NewProposal'
 
 export type NewProposalProps = BaseNewProposalProps<NewProposalForm> & {
   options: IProposalModuleAdapterCommonOptions
@@ -82,7 +82,7 @@ export const NewProposal = ({
       ? blockHeightLoadable.contents
       : undefined
 
-  const processQ = useProcessQ()
+  const processTQ = useProcessTQ()
 
   const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
 
@@ -96,7 +96,7 @@ export const NewProposal = ({
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
       async (newProposalData: NewProposalData) => {
-        if (!connected || blockHeight === undefined) {
+        if (blockHeight === undefined) {
           toast.error(t('error.loadingData'))
           return
         }
@@ -112,6 +112,7 @@ export const NewProposal = ({
             }
           )
 
+          // Get proposal info to display card.
           const proposalInfo = await makeGetProposalInfo({
             ...options,
             proposalNumber,
@@ -138,7 +139,7 @@ export const NewProposal = ({
             )
           ).proposal
 
-          const { quorum } = processQ(proposal.voting_strategy)
+          const { threshold, quorum } = processTQ(proposal.threshold)
 
           onCreateSuccess(
             proposalInfo
@@ -148,9 +149,17 @@ export const NewProposal = ({
                   description: newProposalData.description,
                   info: [
                     {
-                      Icon: FlagOutlined,
-                      label: `${t('title.quorum')}: ${quorum.display}`,
+                      Icon: BookOutlined,
+                      label: `${t('title.threshold')}: ${threshold.display}`,
                     },
+                    ...(quorum
+                      ? [
+                          {
+                            Icon: FlagOutlined,
+                            label: `${t('title.quorum')}: ${quorum.display}`,
+                          },
+                        ]
+                      : []),
                     ...(expirationDate
                       ? [
                           {
@@ -192,10 +201,9 @@ export const NewProposal = ({
       daoImageUrl,
       onCreateSuccess,
       options,
-      processQ,
+      processTQ,
       publishProposal,
       t,
-      connected,
       daoName,
     ]
   )

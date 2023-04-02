@@ -1,11 +1,11 @@
 import { ProposalStatus } from '@dao-dao/types'
 
-import { SuspenseLoader } from '../../../../components'
-import { useLoadingProposal, useLoadingVotesInfo } from '../hooks'
+import { SuspenseLoader } from '../../../../../components'
+import { useLoadingProposal, useLoadingVotesInfo } from '../../hooks'
 import {
   ProposalVoteTallyLoader,
   ProposalVoteTally as StatelessProposalVoteTally,
-} from './ui/ProposalVoteTally'
+} from './ProposalVoteTally'
 
 export const ProposalVoteTally = () => {
   const loadingProposal = useLoadingProposal()

@@ -1,7 +1,4 @@
 import {
-  Add,
-  Block,
-  Circle,
   Close,
   GavelRounded,
   Visibility,
@@ -21,12 +18,15 @@ import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
 import {
+  ActionCategorySelector,
+  ActionsEditor,
   Button,
   FilterableItem,
   FilterableItemPopup,
   IconButton,
   InputErrorMessage,
   ProposalContentDisplay,
+  RawActionsRenderer,
   TextAreaInput,
   TextInput,
   Tooltip,
@@ -37,9 +37,7 @@ import {
   LoadedActions,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
-import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
-  MAX_NUM_PROPOSAL_CHOICES,
   convertActionsToMessages,
   formatDateTime,
   formatTime,
@@ -47,13 +45,8 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useWalletInfo } from '../../../../../hooks'
-import {
-  MULTIPLE_CHOICE_OPTION_COLORS,
-  MultipleChoiceOptionEditor,
-} from '../../components/ui/MultipleChoiceOptionEditor'
-import { MultipleChoiceOptionViewer } from '../../components/ui/MultipleChoiceOptionViewer'
-import { NewProposalData, NewProposalForm } from '../../types'
+import { useWalletInfo } from '../../../../../../hooks'
+import { NewProposalData, NewProposalForm } from '../../../types'
 
 enum ProposeSubmitValue {
   Preview = 'Preview',
@@ -128,19 +121,16 @@ export const NewProposal = ({
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
 
-  const {
-    fields: multipleChoiceFields,
-    append: addOption,
-    remove: removeOption,
-  } = useFieldArray({
+  const { append } = useFieldArray({
+    name: 'actionData',
     control,
-    name: 'choices',
     shouldUnregister: true,
   })
-  const choices = watch('choices') ?? []
+
+  const actionData = watch('actionData') || []
 
   const onSubmitForm: SubmitHandler<NewProposalForm> = useCallback(
-    ({ ...proposalFormData }, event) => {
+    ({ title, description, actionData }, event) => {
       setShowSubmitErrorNote(false)
       setSubmitError('')
 
@@ -152,13 +142,9 @@ export const NewProposal = ({
         return
       }
 
-      let options
+      let msgs
       try {
-        options = proposalFormData.choices.map((option) => ({
-          title: option.title,
-          description: option.description,
-          msgs: convertActionsToMessages(loadedActions, option.actionData),
-        }))
+        msgs = convertActionsToMessages(loadedActions, actionData)
       } catch (err) {
         console.error(err)
         setSubmitError(
@@ -170,9 +156,9 @@ export const NewProposal = ({
       }
 
       createProposal({
-        title: proposalFormData.title,
-        description: proposalFormData.description,
-        choices: { options },
+        title,
+        description,
+        msgs,
       })
     },
     [createProposal, loadedActions]
@@ -182,8 +168,6 @@ export const NewProposal = ({
     setShowSubmitErrorNote(true)
     setSubmitError('')
   }, [setShowSubmitErrorNote])
-
-  const proposalName = watch('title')
 
   return (
     <form
@@ -233,66 +217,24 @@ export const NewProposal = ({
 
       {proposalModuleSelector}
 
-      {choices.length > 0 && (
-        <div className="flex flex-col items-stretch gap-6">
-          {multipleChoiceFields.map(({ id }, index) => (
-            <MultipleChoiceOptionEditor
-              key={id}
-              SuspenseLoader={SuspenseLoader}
-              addOption={addOption}
-              categories={categories}
-              control={control}
-              descriptionFieldName={`choices.${index}.description`}
-              errorsOption={errors?.choices?.[index]}
-              loadedActions={loadedActions}
-              optionIndex={index}
-              registerOption={register}
-              removeOption={() => removeOption(index)}
-              titleFieldName={`choices.${index}.title`}
-            />
-          ))}
-        </div>
-      )}
+      <ActionsEditor
+        SuspenseLoader={SuspenseLoader}
+        actionDataErrors={errors?.actionData}
+        actionDataFieldName="actionData"
+        categories={categories}
+        className="-mb-2"
+        loadedActions={loadedActions}
+      />
 
-      <div>
-        <div
-          className="flex cursor-pointer flex-row items-center gap-2 border-t border-border-secondary py-10"
-          onClick={() =>
-            addOption({
-              title: '',
-              description: '',
-              actionData: [],
+      <div className="self-start">
+        <ActionCategorySelector
+          categories={categories}
+          onSelectCategory={({ key }) => {
+            append({
+              categoryKey: key,
             })
-          }
-        >
-          <Add className="!h-6 !w-6 text-icon-primary" />
-
-          <Circle
-            className="!h-4 !w-4"
-            style={{
-              color:
-                MULTIPLE_CHOICE_OPTION_COLORS[
-                  choices.length % MULTIPLE_CHOICE_OPTION_COLORS.length
-                ],
-            }}
-          />
-
-          <p className="title-text">{t('button.addNewOption')}</p>
-        </div>
-
-        <div className="flex flex-col gap-3 border-t border-border-secondary pt-10 pb-4">
-          <div className="flex flex-row items-center gap-2">
-            <div className="h-6 w-6"></div>
-
-            <Block className="!h-4 !w-4 text-icon-primary" />
-
-            <p className="title-text">{t('title.noneOfTheAbove')}</p>
-          </div>
-
-          <p className="caption-text ml-14">
-            {t('info.cannotRemoveNoneOption')}
-          </p>
-        </div>
+          }}
+        />
       </div>
 
       <div className="flex flex-col gap-2 border-y border-border-secondary py-6">
@@ -330,12 +272,6 @@ export const NewProposal = ({
                   ? t('error.notEnoughForDeposit')
                   : isPaused
                   ? t('error.daoIsPaused')
-                  : choices.length < 2
-                  ? t('error.tooFewChoices')
-                  : choices.length > MAX_NUM_PROPOSAL_CHOICES
-                  ? t('error.tooManyChoices', {
-                      count: MAX_NUM_PROPOSAL_CHOICES,
-                    })
                   : undefined
               }
             >
@@ -344,9 +280,7 @@ export const NewProposal = ({
                   !connected ||
                   (!anyoneCanPropose && !isMember) ||
                   depositUnsatisfied ||
-                  isPaused ||
-                  choices.length < 2 ||
-                  choices.length > MAX_NUM_PROPOSAL_CHOICES
+                  isPaused
                 }
                 loading={loading}
                 type="submit"
@@ -395,7 +329,7 @@ export const NewProposal = ({
         )}
 
         {showSubmitErrorNote && (
-          <p className="secondary-text text-right text-text-interactive-error">
+          <p className="secondary-text self-end text-right text-text-interactive-error">
             {t('error.correctErrorsAbove')}
           </p>
         )}
@@ -418,69 +352,12 @@ export const NewProposal = ({
               }}
               description={proposalDescription}
               innerContentDisplay={
-                <div>
-                  <p className="title-text mb-2">{t('title.voteOptions')}</p>
-
-                  {choices.map(({ title, description, actionData }, index) => (
-                    <MultipleChoiceOptionViewer
-                      key={index}
-                      SuspenseLoader={SuspenseLoader}
-                      data={{
-                        choice: {
-                          description,
-                          index,
-                          msgs: [],
-                          title,
-                          option_type: MultipleChoiceOptionType.Standard,
-                          vote_count: '0',
-                        },
-                        actionData: [],
-                        decodedMessages: convertActionsToMessages(
-                          loadedActions,
-                          actionData || [],
-                          {
-                            throwErrors: false,
-                          }
-                        ),
-                        voteOption: {
-                          Icon: Circle,
-                          label: title,
-                          value: { option_id: index },
-                          color:
-                            MULTIPLE_CHOICE_OPTION_COLORS[
-                              index % MULTIPLE_CHOICE_OPTION_COLORS.length
-                            ],
-                        },
-                      }}
-                      forceRaw
-                      lastOption={false}
-                    />
-                  ))}
-
-                  {/* None of the above */}
-                  <MultipleChoiceOptionViewer
-                    SuspenseLoader={SuspenseLoader}
-                    data={{
-                      choice: {
-                        description: '',
-                        index: choices.length,
-                        msgs: [],
-                        title: '',
-                        option_type: MultipleChoiceOptionType.None,
-                        vote_count: '0',
-                      },
-                      actionData: [],
-                      decodedMessages: [],
-                      voteOption: {
-                        Icon: Block,
-                        label: '',
-                        value: { option_id: choices.length },
-                      },
-                    }}
-                    forceRaw
-                    lastOption
+                actionData.length ? (
+                  <RawActionsRenderer
+                    actionData={actionData}
+                    loadedActions={loadedActions}
                   />
-                </div>
+                ) : undefined
               }
               title={proposalTitle}
             />
@@ -564,11 +441,11 @@ export const NewProposal = ({
 
             <Tooltip
               title={
-                proposalName ? undefined : t('info.enterNameBeforeSavingDraft')
+                proposalTitle ? undefined : t('info.enterNameBeforeSavingDraft')
               }
             >
               <Button
-                disabled={!proposalName}
+                disabled={!proposalTitle}
                 onClick={saveDraft}
                 variant="secondary"
               >

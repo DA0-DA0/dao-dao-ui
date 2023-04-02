@@ -1,3 +1,5 @@
+export * from './MultipleChoiceOptionEditor'
+export * from './MultipleChoiceOptionViewer'
 export * from './ProposalInnerContentDisplay'
 export * from './ProposalLine'
 export * from './ProposalStatusAndInfo'

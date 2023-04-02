@@ -24,7 +24,7 @@ import {
   useLoadingVotesInfo,
 } from '../hooks'
 import { MultipleChoiceOptionData, NewProposalForm, VotesInfo } from '../types'
-import { MultipleChoiceOptionViewer } from './ui/MultipleChoiceOptionViewer'
+import { MultipleChoiceOptionViewer } from './MultipleChoiceOptionViewer'
 
 export const ProposalInnerContentDisplay = (
   props: BaseProposalInnerContentDisplayProps<NewProposalForm>

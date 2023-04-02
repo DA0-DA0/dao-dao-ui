@@ -15,7 +15,7 @@ import {
 import { SuspenseLoaderProps } from '@dao-dao/types'
 import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
-import { MultipleChoiceOptionData } from '../../types'
+import { MultipleChoiceOptionData } from '../types'
 
 export type MultipleChoiceOptionViewerProps = {
   data: MultipleChoiceOptionData

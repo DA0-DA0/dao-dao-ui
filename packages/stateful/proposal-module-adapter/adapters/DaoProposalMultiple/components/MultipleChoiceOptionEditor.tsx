@@ -30,7 +30,7 @@ import {
 } from '@dao-dao/types'
 import { validateRequired } from '@dao-dao/utils'
 
-import { MultipleChoiceOptionFormData, NewProposalForm } from '../../types'
+import { MultipleChoiceOptionFormData, NewProposalForm } from '../types'
 
 export interface MultipleChoiceOptionEditorProps<
   FV extends FieldValues,

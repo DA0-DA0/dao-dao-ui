@@ -8,13 +8,13 @@ import {
   WalletProviderDecorator,
 } from '@dao-dao/storybook/decorators'
 
-import { useLoadedActionsAndCategories } from '../../../../../actions'
-import { NewProposalForm } from '../../types'
+import { useLoadedActionsAndCategories } from '../../../../../../actions'
+import { NewProposalForm } from '../../../types'
 import { NewProposal } from './NewProposal'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalSingle / common / ui / NewProposal',
+    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalSingle / common / components / NewProposal',
   component: NewProposal,
   decorators: [DaoPageWrapperDecorator, WalletProviderDecorator],
 } as ComponentMeta<typeof NewProposal>

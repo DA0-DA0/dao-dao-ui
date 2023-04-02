@@ -7,7 +7,7 @@ import { ProposalVoteTally } from './ProposalVoteTally'
 
 export default {
   title:
-    'DAO DAO / packages / proposal-module-adapter / adapters / DaoProposalMultiple / components / ui / ProposalVoteTally',
+    'DAO DAO / packages / proposal-module-adapter / adapters / DaoProposalMultiple / components / ProposalVoteTally',
   component: ProposalVoteTally,
 } as ComponentMeta<typeof ProposalVoteTally>
 
