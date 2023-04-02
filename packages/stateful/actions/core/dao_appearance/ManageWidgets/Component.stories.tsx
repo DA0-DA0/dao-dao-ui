@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 
+import { SuspenseLoader } from '../../../../components'
 import { WyndDepositWidget, getWidgets } from '../../../../widgets'
 import { ManageWidgetsComponent } from './Component'
 
@@ -32,5 +33,6 @@ Default.args = {
         values: WyndDepositWidget.defaultValues,
       },
     ],
+    SuspenseLoader,
   },
 }

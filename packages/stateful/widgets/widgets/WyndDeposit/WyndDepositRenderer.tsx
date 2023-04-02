@@ -33,7 +33,7 @@ import {
 import {
   GenericToken,
   TokenType,
-  WidgetComponentProps,
+  WidgetRendererProps,
   WyndPoolToken,
 } from '@dao-dao/types'
 import { ExecuteSwapOperationsMsg } from '@dao-dao/types/contracts/WyndexMultiHop'
@@ -52,7 +52,7 @@ import { useLoadingWyndReferralCommission } from '../../../hooks'
 import { genericTokenBalancesSelector } from '../../../recoil'
 import { WyndDepositData } from './types'
 
-export const WyndDepositComponent = ({
+export const WyndDepositRenderer = ({
   variables: {
     markdown,
     outputToken: _outputToken,
@@ -61,7 +61,7 @@ export const WyndDepositComponent = ({
     buttonLabel,
     tokenInstructions,
   },
-}: WidgetComponentProps<WyndDepositData>) => {
+}: WidgetRendererProps<WyndDepositData>) => {
   const { t } = useTranslation()
   const {
     signingCosmWasmClient,

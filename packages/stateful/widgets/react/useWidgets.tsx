@@ -102,7 +102,7 @@ export const useWidgets = ({
 
           // Fill component with loaded values.
           const WidgetComponent = () => (
-            <widget.Component variables={(daoWidget.values || {}) as any} />
+            <widget.Renderer variables={(daoWidget.values || {}) as any} />
           )
 
           return {

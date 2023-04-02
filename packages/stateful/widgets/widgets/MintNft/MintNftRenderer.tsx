@@ -15,19 +15,19 @@ import {
   useCachedLoading,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { WidgetComponentProps } from '@dao-dao/types'
+import { WidgetRendererProps } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
 import { nftCardInfoSelector } from '../../../recoil'
 import { MintNftData } from './types'
 
-export const MintNftComponent = ({
+export const MintNftRenderer = ({
   variables: {
     nftCollection,
     description,
     mint: { contract, msg, buttonLabel },
   },
-}: WidgetComponentProps<MintNftData>) => {
+}: WidgetRendererProps<MintNftData>) => {
   const { t } = useTranslation()
   const {
     address: walletAddress = '',

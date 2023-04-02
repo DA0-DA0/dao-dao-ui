@@ -1,39 +1,45 @@
-import { ArrowDropDown, Check, Close } from '@mui/icons-material'
-import { useCallback, useEffect, useRef } from 'react'
+import { ArrowDropDown, VisibilityRounded } from '@mui/icons-material'
+import cloneDeep from 'lodash.clonedeep'
+import { ComponentType, useCallback, useEffect, useRef } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  CodeMirrorInput,
   FilterableItemPopup,
   InputLabel,
   InputThemedText,
+  Loader,
   SegmentedControlsTitle,
   Tooltip,
 } from '@dao-dao/stateless'
-import { DaoWidget, Widget } from '@dao-dao/types'
+import { DaoWidget, SuspenseLoaderProps, Widget } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { validateJSON } from '@dao-dao/utils'
 
 export type ManageWidgetsData = {
   mode: 'set' | 'delete'
   id: string
-  values: string
+  // Widget data type.
+  values: Record<string, unknown>
 }
 
 export type ManageWidgetsOptions = {
   availableWidgets: readonly Widget[]
   existingWidgets: DaoWidget[]
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
-export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = ({
-  fieldNamePrefix,
-  errors,
-  isCreating,
-  options: { availableWidgets, existingWidgets },
-}) => {
+export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
+  props
+) => {
+  const {
+    fieldNamePrefix,
+    errors,
+    isCreating,
+    options: { availableWidgets, existingWidgets, SuspenseLoader },
+  } = props
+
   const { t } = useTranslation()
-  const { setValue, watch, control } = useFormContext<ManageWidgetsData>()
+  const { setValue, watch } = useFormContext<ManageWidgetsData>()
 
   const mode = watch((fieldNamePrefix + 'mode') as 'mode')
   const widgetId = watch((fieldNamePrefix + 'id') as 'id')
@@ -54,7 +60,8 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = ({
       )
       setValue(
         (fieldNamePrefix + 'values') as 'values',
-        JSON.stringify(existingWidget?.values || defaultValues || {}, null, 2)
+        // Clone so we don't mutate the default values object.
+        cloneDeep(existingWidget?.values || defaultValues || {})
       )
     },
     [fieldNamePrefix, setValue]
@@ -104,89 +111,80 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = ({
       />
 
       {isCreating ? (
-        <div className="flex flex-col gap-2">
-          <InputLabel name={t('form.widget')} />
-          <FilterableItemPopup
-            filterableItemKeys={FILTERABLE_KEYS}
-            items={availableWidgets
-              .filter(
-                ({ id }) =>
-                  // If setting, show all available widgets.
-                  mode === 'set' ||
-                  // If removing, only show widgets that exist.
-                  existingWidgets.some((existing) => existing.id === id)
-              )
-              .map((widget) => ({
-                key: widget.id,
-                label: t('widgetTitle.' + widget.id),
-                description: t('widgetDescription.' + widget.id),
-                widget,
-                // Show checkmark if widget exists when adding/updating widgets.
-                rightNode:
-                  mode === 'set' &&
-                  existingWidgets.some(
-                    (existing) => existing.id === widget.id
-                  ) ? (
-                    <Tooltip title={t('info.widgetActive')}>
-                      <Check className="!h-6 !w-6" />
-                    </Tooltip>
-                  ) : undefined,
-              }))}
-            onSelect={({ widget }) => selectWidget(widget)}
-            searchPlaceholder={t('info.searchForWidget')}
-            trigger={{
-              type: 'button',
-              props: {
-                className: 'self-start',
-                contentContainerClassName: 'justify-between !gap-4',
-                size: 'lg',
-                variant: 'ghost_outline',
-                children: (
-                  <>
-                    {widget ? (
-                      <div className="flex flex-col items-start gap-1">
-                        <p>{t('widgetTitle.' + widget.id)}</p>
-                        <p className="caption-text">
-                          {t('widgetDescription.' + widget.id)}
+        <>
+          <div className="space-y-2">
+            <InputLabel name={t('form.widget')} />
+
+            <FilterableItemPopup
+              filterableItemKeys={FILTERABLE_KEYS}
+              items={availableWidgets
+                .filter(
+                  ({ id }) =>
+                    // If setting, show all available widgets.
+                    mode === 'set' ||
+                    // If removing, only show widgets that exist.
+                    existingWidgets.some((existing) => existing.id === id)
+                )
+                .map((widget) => ({
+                  key: widget.id,
+                  label: t('widgetTitle.' + widget.id),
+                  description: t('widgetDescription.' + widget.id),
+                  widget,
+                  // Show checkmark if widget exists when adding/updating widgets.
+                  rightNode:
+                    mode === 'set' &&
+                    existingWidgets.some(
+                      (existing) => existing.id === widget.id
+                    ) ? (
+                      <Tooltip title={t('info.widgetActive')}>
+                        <VisibilityRounded className="!h-6 !w-6" />
+                      </Tooltip>
+                    ) : undefined,
+                }))}
+              onSelect={({ widget }) => selectWidget(widget)}
+              searchPlaceholder={t('info.searchForWidget')}
+              trigger={{
+                type: 'button',
+                props: {
+                  className: 'self-start',
+                  contentContainerClassName: 'justify-between !gap-4',
+                  size: 'lg',
+                  variant: 'ghost_outline',
+                  children: (
+                    <>
+                      {widget ? (
+                        <div className="flex flex-col items-start gap-1">
+                          <p>{t('widgetTitle.' + widget.id)}</p>
+                          <p className="caption-text">
+                            {t('widgetDescription.' + widget.id)}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-text-secondary">
+                          {t('button.selectWidget')}
                         </p>
-                      </div>
-                    ) : (
-                      <p className="text-text-secondary">
-                        {t('button.selectWidget')}
-                      </p>
-                    )}
+                      )}
 
-                    <ArrowDropDown className="!h-6 !w-6 text-icon-primary" />
-                  </>
-                ),
-              },
-            }}
-          />
+                      <ArrowDropDown className="!h-6 !w-6 text-icon-primary" />
+                    </>
+                  ),
+                },
+              }}
+            />
+          </div>
 
-          {mode === 'set' && (
-            <>
-              <InputLabel className="mt-2" name={t('form.options')} />
-
-              <CodeMirrorInput
-                control={control}
-                error={errors?.values}
-                fieldName={(fieldNamePrefix + 'values') as 'values'}
-                validation={[validateJSON]}
-              />
-
-              {errors?.values ? (
-                <p className="flex items-center gap-1 text-sm text-text-interactive-error">
-                  <Close className="!h-5 !w-5" />{' '}
-                  <span>{errors.values.message}</span>
-                </p>
-              ) : (
-                <p className="flex items-center gap-1 text-sm text-text-interactive-valid">
-                  <Check className="!h-5 !w-5" /> {t('info.jsonIsValid')}
-                </p>
-              )}
-            </>
+          {mode === 'set' && widget && (
+            <SuspenseLoader fallback={<Loader />}>
+              <div className="flex flex-col gap-4">
+                <widget.Editor
+                  {...props}
+                  errors={errors?.values}
+                  fieldNamePrefix={fieldNamePrefix + 'values.'}
+                />
+              </div>
+            </SuspenseLoader>
           )}
-        </div>
+        </>
       ) : (
         <div className="flex flex-col gap-4">
           <InputThemedText className="!flex-col !items-start !gap-1 self-start">
@@ -198,15 +196,15 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = ({
             )}
           </InputThemedText>
 
-          {mode === 'set' && (
-            <div className="space-y-1">
-              <InputLabel name={t('form.options')} />
-              <CodeMirrorInput
-                control={control}
-                fieldName={(fieldNamePrefix + 'values') as 'values'}
-                readOnly
-              />
-            </div>
+          {mode === 'set' && widget && (
+            <SuspenseLoader fallback={<Loader />}>
+              <div className="flex flex-col gap-4">
+                <widget.Editor
+                  {...props}
+                  fieldNamePrefix={fieldNamePrefix + 'values.'}
+                />
+              </div>
+            </SuspenseLoader>
           )}
         </div>
       )}
