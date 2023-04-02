@@ -17,7 +17,13 @@ export const convertActionsToMessages = (
   } = {}
 ): CosmosMsgForEmpty[] =>
   actions
-    .map(({ actionKey, data }) => {
+    .map(({ categoryKey, actionKey, data }) => {
+      // If no category or action, skip it.
+      if (!categoryKey && !actionKey) {
+        return
+      }
+
+      // If no action or data, throw error because this is an unselected action.
       if (!actionKey || !data) {
         if (throwErrors) {
           throw new Error('No action selected.')
