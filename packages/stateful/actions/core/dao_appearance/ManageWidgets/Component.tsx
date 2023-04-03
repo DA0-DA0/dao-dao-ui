@@ -133,7 +133,8 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
                   label: t('widgetTitle.' + widget.id),
                   description: t('widgetDescription.' + widget.id),
                   widget,
-                  // Show checkmark if widget exists when adding/updating widgets.
+                  // Show checkmark if widget exists when adding/updating
+                  // widgets.
                   rightNode:
                     mode === 'set' &&
                     existingWidgets.some(
@@ -176,7 +177,7 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
             />
           </div>
 
-          {mode === 'set' && widget && (
+          {mode === 'set' && widget?.Editor && (
             <SuspenseLoader fallback={<Loader />}>
               <div className="flex flex-col gap-4">
                 <widget.Editor
@@ -199,7 +200,7 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
             )}
           </InputThemedText>
 
-          {mode === 'set' && widget && (
+          {mode === 'set' && widget?.Editor && (
             <SuspenseLoader fallback={<Loader />}>
               <div className="flex flex-col gap-4">
                 <widget.Editor

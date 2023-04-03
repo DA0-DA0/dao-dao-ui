@@ -37,6 +37,7 @@ export interface DaoInfo {
   description: string
   imageUrl: string | null
   created: Date | undefined
+  items: Record<string, string>
 
   parentDao: DaoParentInfo | null
 }
