@@ -35,5 +35,9 @@ Sentry.init({
     'The user aborted a request.',
     'Cancel rendering route',
     'Transaction rejected',
+    'Failed to load static props',
+    "Cannot assign to read only property 'keplr' of object '#<Window>'",
+    'out of gas in location',
+    'Load failed',
   ],
 })

@@ -50,7 +50,11 @@ export const ProfileNameDisplayAndEditor = ({
       setEditingName(undefined)
     } catch (err) {
       console.error(err)
-      toast.error(processError(err))
+      toast.error(
+        processError(err, {
+          forceCapture: false,
+        })
+      )
     } finally {
       setSavingName(false)
     }
