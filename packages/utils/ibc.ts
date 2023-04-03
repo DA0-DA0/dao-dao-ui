@@ -9,24 +9,27 @@ import { getFallbackImage } from './getFallbackImage'
 export const ibcAssets: (GenericToken & {
   id: string
   description?: string
-})[] = asset_list.assets.map(
-  ({
-    base,
-    symbol,
-    logo_URIs: { png, svg, jpeg } = {},
-    name,
-    display,
-    denom_units,
-  }) => ({
-    id: display,
-    type: TokenType.Native,
-    denomOrAddress: base,
-    symbol,
-    decimals: denom_units.find(({ denom }) => denom === display)?.exponent ?? 0,
-    imageUrl: svg || png || jpeg,
-    description: symbol === name ? undefined : name,
-  })
-)
+})[] = asset_list.assets
+  .map(
+    ({
+      base,
+      symbol,
+      logo_URIs: { png, svg, jpeg } = {},
+      name,
+      display,
+      denom_units,
+    }) => ({
+      id: display,
+      type: TokenType.Native,
+      denomOrAddress: base,
+      symbol,
+      decimals:
+        denom_units.find(({ denom }) => denom === display)?.exponent ?? 0,
+      imageUrl: svg || png || jpeg,
+      description: symbol === name ? undefined : name,
+    })
+  )
+  .sort((a, b) => a.symbol.localeCompare(b.symbol))
 
 // NATIVE_TOKEN depends on this function, so don't use it inside this function
 // or it will create a circular dependency.
