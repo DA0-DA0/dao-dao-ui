@@ -7,20 +7,20 @@ import {
 } from '@dao-dao/storybook'
 
 import { useLoadedActionsAndCategories } from '../../../react'
-import { CsvImportComponent } from './Component'
+import { BulkImportComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / advanced / CsvImport',
-  component: CsvImportComponent,
+    'DAO DAO / packages / stateful / actions / core / advanced / BulkImportComponent',
+  component: BulkImportComponent,
   decorators: [
     makeDaoProvidersDecorator(makeDaoInfo()),
     ReactHookFormDecorator,
   ],
-} as ComponentMeta<typeof CsvImportComponent>
+} as ComponentMeta<typeof BulkImportComponent>
 
-const Template: ComponentStory<typeof CsvImportComponent> = (args) => (
-  <CsvImportComponent
+const Template: ComponentStory<typeof BulkImportComponent> = (args) => (
+  <BulkImportComponent
     {...args}
     options={{
       loadedActions: useLoadedActionsAndCategories().loadedActions,

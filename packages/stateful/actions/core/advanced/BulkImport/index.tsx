@@ -9,14 +9,14 @@ import {
 } from '@dao-dao/types/actions'
 
 import { useLoadedActionsAndCategories } from '../../../react/context'
-import { CsvImportComponent } from './Component'
+import { BulkImportComponent } from './Component'
 
 const useDefaults: UseDefaults = () => ({})
 const useTransformToCosmos: UseTransformToCosmos = () => () => undefined
 const useDecodedCosmosMsg: UseDecodedCosmosMsg = () => ({ match: false })
 
 const Component: ActionComponent = (props) => (
-  <CsvImportComponent
+  <BulkImportComponent
     {...props}
     options={{
       loadedActions: useLoadedActionsAndCategories().loadedActions,
@@ -26,11 +26,11 @@ const Component: ActionComponent = (props) => (
 
 // This action is not intended to output any messages. It is just an interface
 // that can add other actions.
-export const makeCsvImportAction: ActionMaker = ({ t }) => ({
-  key: CoreActionKey.CsvImport,
+export const makeBulkImportAction: ActionMaker = ({ t }) => ({
+  key: CoreActionKey.BulkImport,
   Icon: FileFolderEmoji,
-  label: t('title.importFromCsv'),
-  description: t('info.importFromCsvDescription'),
+  label: t('title.bulkImportActions'),
+  description: t('info.bulkImportActionsDescription'),
   notReusable: true,
   Component,
   useDefaults,

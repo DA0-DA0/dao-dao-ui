@@ -37,7 +37,7 @@ export enum CoreActionKey {
   AuthzExec = 'authzExec',
   ValidatorActions = 'validatorActions',
   Custom = 'custom',
-  CsvImport = 'csvImport',
+  BulkImport = 'bulkImport',
   PerformTokenSwap = 'performTokenSwap',
   WithdrawTokenSwap = 'withdrawTokenSwap',
   ManageStorageItems = 'manageStorageItems',
