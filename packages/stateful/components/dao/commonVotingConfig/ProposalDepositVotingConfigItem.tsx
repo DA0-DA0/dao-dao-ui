@@ -165,13 +165,7 @@ const ProposalDepositInput = ({
       ...NATIVE_TOKEN,
     },
     // Then the IBC assets.
-    ...ibcAssets.tokens.map(({ juno_denom, symbol, name, logoURI }) => ({
-      type: TokenType.Native,
-      denomOrAddress: juno_denom,
-      symbol,
-      description: symbol === name ? undefined : name,
-      imageUrl: logoURI,
-    })),
+    ...ibcAssets,
     // Then other CW20.
     {
       type: TokenType.Cw20,
