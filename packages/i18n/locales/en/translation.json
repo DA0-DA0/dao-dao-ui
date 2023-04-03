@@ -1211,8 +1211,8 @@
   },
   "widgetDescription": {
     "mint_nft": "Display an NFT collection with a button to mint new NFTs.",
-    "retroactive": "After each contribution cycle, contributors are assigned points based on their contributions. Payment is split based on the points they receive.",
-    "vesting": "A vesting contract distributes funds to contributors over time at a constant rate. The DAO can vote to cancel vesting at any time.",
+    "retroactive": "Reward contributors for work they've already done. Vote on how to distribute payments in regular cycles.",
+    "vesting": "Vest funds to contributors at a constant rate, similar to a salary.",
     "wynd_deposit": "Deposit any token on WYND DEX into your DAO."
   },
   "widgetTitle": {
