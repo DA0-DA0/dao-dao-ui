@@ -164,8 +164,6 @@ const ProposalDepositInput = ({
     {
       ...NATIVE_TOKEN,
     },
-    // Then the IBC assets.
-    ...ibcAssets,
     // Then other CW20.
     {
       type: TokenType.Cw20,
@@ -174,6 +172,8 @@ const ProposalDepositInput = ({
         (type === TokenType.Cw20 && tokenLoaded?.symbol) || t('form.cw20Token'),
       imageUrl: (type === TokenType.Cw20 && tokenLoaded?.imageUrl) || undefined,
     },
+    // Then the IBC assets.
+    ...ibcAssets,
   ]
   const selectedToken = availableTokens.find(
     (token) =>

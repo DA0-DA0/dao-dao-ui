@@ -94,8 +94,6 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
     {
       ...NATIVE_TOKEN,
     },
-    // Then the IBC assets.
-    ...ibcAssets,
     // Then other CW20.
     {
       type: TokenType.Cw20,
@@ -107,6 +105,8 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         (depositInfo.type === TokenType.Cw20 && depositInfo.token?.imageUrl) ||
         undefined,
     },
+    // Then the IBC assets.
+    ...ibcAssets,
   ]
   const selectedToken = availableTokens.find(
     (token) =>
