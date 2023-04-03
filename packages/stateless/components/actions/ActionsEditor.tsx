@@ -10,6 +10,7 @@ import {
   ActionCategoryWithLabel,
   ActionKey,
   LoadedActions,
+  PartialCategorizedActionAndData,
   PartialCategorizedActionKeyAndData,
 } from '@dao-dao/types/actions'
 
@@ -33,10 +34,12 @@ export type ActionsEditorProps = {
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
-type GroupedPartialCategorizedActionKeyAndData = Omit<
-  PartialCategorizedActionKeyAndData,
-  'data'
+type GroupedActionData = Omit<
+  PartialCategorizedActionAndData,
+  'data' | 'category'
 > & {
+  category: ActionCategoryWithLabel
+  actionDefaults: any
   all: {
     // Index of data in `actionData` list.
     index: number
@@ -61,51 +64,60 @@ export const ActionsEditor = ({
 
   // Group action data by action by combining each action's data into a group so
   // they can be rendered together.
-  const groupedActionData = actionData.reduce((acc, field, index) => {
-    const { categoryKey, actionKey, data } = field
+  const groupedActionData = actionData.reduce(
+    (acc, field, index): GroupedActionData[] => {
+      const { categoryKey, actionKey, data } = field
 
-    // If no action is selected, add new group since still picking action from
-    // category.
-    if (!actionKey) {
-      return [
-        ...acc,
-        {
-          categoryKey,
-          actionKey,
+      const loadedAction = actionKey && loadedActions[actionKey]
+
+      // Get category from loaded action if key is undefined. It should only be
+      // undefined if the action data is loaded from a duplicate/prefill or
+      // bulk import.
+      const category = categoryKey
+        ? categories.find((c) => c.key === categoryKey)
+        : loadedAction?.category
+
+      // If no action and no category, skip. This is likely due to a cached
+      // action in the saved form that no longer exists, or was used and is no
+      // longer usable (such as enabling multiple choice). If action key is
+      // defined but no action is found, same thing.
+      if (!category || (actionKey && !loadedAction)) {
+        return acc
+      }
+
+      // If no action is selected, add new group since still picking action from
+      // category.
+      if (!loadedAction) {
+        return [
+          ...acc,
+          {
+            category,
+            action: undefined,
+            actionDefaults: {},
+            all: [{ index, data }],
+          },
+        ]
+      }
+
+      // Find existing group for action.
+      const existingGroup = acc.find((group) => group.action?.key === actionKey)
+      if (existingGroup) {
+        // Add data to existing group.
+        existingGroup.all.push({ index, data })
+      } else {
+        // or create new group if action does not yet exist.
+        acc.push({
+          category,
+          action: loadedAction.action,
+          actionDefaults: loadedAction.defaults,
           all: [{ index, data }],
-        },
-      ]
-    }
+        })
+      }
 
-    // Get category from loaded actions if key is undefined. It should only be
-    // undefined if the action data is loaded from a duplicate/prefill.
-    const category = categoryKey
-      ? categories.find((c) => c.key === categoryKey)
-      : loadedActions[actionKey]?.category
-
-    // Should never happen.
-    if (!category) {
-      throw new Error(
-        `No category found for action ${actionKey} in loaded actions.`
-      )
-    }
-
-    // Find existing group for action.
-    const existingGroup = acc.find((group) => group.actionKey === actionKey)
-    if (existingGroup) {
-      // Add data to existing group.
-      existingGroup.all.push({ index, data })
-    } else {
-      // or create new group if action does not yet exist.
-      acc.push({
-        categoryKey: category.key,
-        actionKey,
-        all: [{ index, data }],
-      })
-    }
-
-    return acc
-  }, [] as GroupedPartialCategorizedActionKeyAndData[])
+      return acc
+    },
+    [] as GroupedActionData[]
+  )
 
   return groupedActionData.length > 0 ? (
     <div className={clsx('flex flex-col gap-2', className)}>
@@ -125,7 +137,7 @@ export const ActionsEditor = ({
   ) : null
 }
 
-export type ActionEditorProps = GroupedPartialCategorizedActionKeyAndData & {
+export type ActionEditorProps = GroupedActionData & {
   categories: ActionCategoryWithLabel[]
   loadedActions: LoadedActions
   actionDataFieldName: string
@@ -145,8 +157,9 @@ export const ActionEditor = ({
   actionDataFieldName: _actionDataFieldName,
   actionDataErrors,
 
-  categoryKey,
-  actionKey,
+  category,
+  action,
+  actionDefaults,
   all,
   SuspenseLoader,
 }: ActionEditorProps) => {
@@ -180,15 +193,7 @@ export const ActionEditor = ({
   }
 
   // If no action, render category picker.
-  if (!actionKey) {
-    // If action and data are not set, category must be set. Otherwise, we can't
-    // render anything.
-    const category =
-      categoryKey && categories.find((category) => category.key === categoryKey)
-    if (!category) {
-      return null
-    }
-
+  if (!action) {
     // A category picker must have exactly one corresponding action data field
     // so we can retrieve what index to update.
     const index = all[0]?.index
@@ -211,7 +216,7 @@ export const ActionEditor = ({
             // If holding shift, add as a new action.
             if (event.shiftKey) {
               append({
-                categoryKey,
+                categoryKey: category.key,
                 actionKey: key,
                 // Clone to prevent the form from mutating the original object.
                 data: cloneDeep(action.defaults ?? {}),
@@ -236,9 +241,9 @@ export const ActionEditor = ({
 
         <FilterableItemPopup
           filterableItemKeys={ACTION_CATEGORY_SELECTOR_FILTERABLE_KEYS}
-          items={categories.map((category) => ({
-            ...category,
-            selected: category.key === categoryKey,
+          items={categories.map((c) => ({
+            ...c,
+            selected: c.key === category.key,
           }))}
           onSelect={({ key }) => {
             // Change category key.
@@ -254,13 +259,6 @@ export const ActionEditor = ({
       </>
     )
   }
-
-  const loadedAction = loadedActions[actionKey]
-  if (!loadedAction) {
-    return null
-  }
-
-  const { category, action } = loadedAction
 
   const goBackToCategoryPicker = () => {
     // Remove all entries for this action except the first one so that it
@@ -301,7 +299,7 @@ export const ActionEditor = ({
           <div
             key={
               // Re-render when the action at a given position changes.
-              `${index}-${actionKey}`
+              `${index}-${action.key}`
             }
             className="flex animate-fade-in flex-row items-start gap-4"
           >
@@ -358,9 +356,9 @@ export const ActionEditor = ({
             onClick={() =>
               // Make another entry for the same action with the default values.
               append({
-                categoryKey,
-                actionKey,
-                data: cloneDeep(loadedAction.defaults ?? {}),
+                categoryKey: category.key,
+                actionKey: action.key,
+                data: cloneDeep(actionDefaults),
               })
             }
             size="sm"

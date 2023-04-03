@@ -43,7 +43,8 @@ export enum CoreActionKey {
   ManageStorageItems = 'manageStorageItems',
   GovernanceVote = 'governanceVote',
   UpgradeV1ToV2 = 'upgradeV1ToV2',
-  ManagePayroll = 'managePayroll',
+  EnableVestingPayments = 'enableVestingPayments',
+  EnableRetroactiveCompensation = 'enableRetroactiveCompensation',
   ManageVesting = 'manageVesting',
   WyndSwap = 'wyndSwap',
   DaoAdminExec = 'daoAdminExec',
@@ -72,11 +73,7 @@ export type CategorizedActionAndData = {
   data: any
 }
 
-export type PartialCategorizedActionAndData = Pick<
-  CategorizedActionAndData,
-  'category'
-> &
-  Partial<Omit<CategorizedActionAndData, 'category'>>
+export type PartialCategorizedActionAndData = Partial<CategorizedActionAndData>
 
 export interface CategorizedActionKeyAndData {
   categoryKey: ActionCategoryKey

@@ -14,6 +14,7 @@ import { useTranslation } from 'react-i18next'
 
 import { GenericToken, LoadingData, TokenType } from '@dao-dao/types'
 import {
+  convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   toAccessibleImageUrl,
   validateNonNegative,
@@ -27,6 +28,9 @@ import { NumberInput } from './NumberInput'
 export type TokenInputOption = Omit<GenericToken, 'type' | 'decimals'> & {
   type: TokenType | string
   description?: string
+  // Only necessary if `convertMicroDenom` is true so the input can
+  // intelligently convert the value. 0 will be used if not provided.
+  decimals?: number
 }
 
 export type TokenInputProps<
@@ -43,6 +47,10 @@ export type TokenInputProps<
   amountMax?: number
   amountStep?: number
   amountValidations?: Validate<number>[]
+  // If true, will convert the amount to micro-denom using the token's decimals
+  // value for the form. Thus, the input will display the macro-denom amount,
+  // but the form will receive the micro-denom amount. Default is false.
+  convertMicroDenom?: boolean
   // The pair of `type` and `denomOrAddress` must be unique for each token.
   tokens: LoadingData<T[]>
   onSelectToken: (token: T) => void
@@ -74,6 +82,7 @@ export const TokenInput = <
   amountMax,
   amountStep,
   amountValidations,
+  convertMicroDenom = false,
   // The available tokens and selection handlers for the token. Various
   // use-cases exist for this component, so the token selection is left up to
   // the caller instead of being handled internally like the amount field.
@@ -102,7 +111,12 @@ export const TokenInput = <
       ? undefined
       : tokens.data.find((token) => token === _selectedToken)
 
-  const amount = Number(watch(amountFieldName))
+  const amount = convertMicroDenom
+    ? convertMicroDenomToDenomWithDecimals(
+        watch(amountFieldName),
+        selectedToken?.decimals ?? 0
+      )
+    : Number(watch(amountFieldName))
 
   const selectedTokenDisplay = useMemo(
     () =>
@@ -152,14 +166,19 @@ export const TokenInput = <
         <>
           <NumberInput
             containerClassName="min-w-[12rem] grow basis-[12rem]"
-            disabled={disabled}
+            disabled={disabled || !selectedToken}
             error={amountError}
             fieldName={amountFieldName}
             max={amountMax}
             min={amountMin}
             register={register}
-            setValue={(fieldName, value) => setValue(fieldName, value as any)}
+            setValue={(fieldName, value, options) =>
+              setValue(fieldName, value as any, options)
+            }
             step={amountStep}
+            transformDecimals={
+              convertMicroDenom ? selectedToken?.decimals : undefined
+            }
             validation={[
               amountMin ? validatePositive : validateNonNegative,
 
@@ -198,7 +217,7 @@ export const TokenInput = <
                   <>
                     {selectedTokenDisplay}
 
-                    <ArrowDropDown className="!h-6 !w-6" />
+                    {!disabled && <ArrowDropDown className="!h-6 !w-6" />}
                   </>
                 ),
               },

@@ -9,9 +9,9 @@ import {
   IActionsContext,
 } from '@dao-dao/types'
 
-import { usePayrollAdapter } from '../../payroll'
 import { matchAndLoadCommon } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
+import { useWidgets } from '../../widgets'
 import {
   getCoreActionCategoryMakers,
   makeActionCategoriesWithLabel,
@@ -43,7 +43,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   // - core actions
   // - voting module adapter actions
   // - all proposal module adapters actions
-  // - payroll adapter actions
+  // - widget adapter actions
   //
   // The core action categories are relevant to all DAOs, and the adapter action
   // categories are relevant to the DAO's specific modules. There will be one
@@ -68,8 +68,15 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     [info]
   )
 
-  const payrollActionCategoryMakers =
-    usePayrollAdapter()?.actionCategoryMakers ?? []
+  const loadingWidgets = useWidgets({
+    suspendWhileLoading: true,
+  })
+  const widgetActionCategoryMakers = loadingWidgets.loading
+    ? []
+    : loadingWidgets.data.flatMap(
+        ({ widget, daoWidget }) =>
+          widget.getActionCategoryMakers?.(daoWidget.values || {}) ?? []
+      )
 
   // Make action categories.
   const categories = makeActionCategoriesWithLabel(
@@ -77,7 +84,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
       ...coreActionCategoryMakers,
       ...votingModuleActionCategoryMakers,
       ...proposalModuleActionCategoryMakers,
-      ...payrollActionCategoryMakers,
+      ...widgetActionCategoryMakers,
     ],
     options
   )

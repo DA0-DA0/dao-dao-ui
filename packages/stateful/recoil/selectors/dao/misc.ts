@@ -206,6 +206,21 @@ export const daoInfoSelector: (param: {
         })
       )
 
+      const _items = get(
+        DaoCoreV2Selectors.listAllItemsSelector({
+          contractAddress: dumpState.voting_module,
+          chainId,
+        })
+      )
+      // Convert items list into map.
+      const items = _items.reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: value,
+        }),
+        {} as Record<string, string>
+      )
+
       let parentDaoInfo
       let parentSubDaos
       if (
@@ -244,6 +259,7 @@ export const daoInfoSelector: (param: {
         description: dumpState.config.description,
         imageUrl: dumpState.config.image_url || null,
         created,
+        items,
         parentDao: parentDaoInfo
           ? {
               coreAddress: dumpState.admin,

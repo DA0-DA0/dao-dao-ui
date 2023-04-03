@@ -1,4 +1,3 @@
-import JSON5 from 'json5'
 import { useCallback, useMemo } from 'react'
 
 import { HammerAndWrenchEmoji, Loader } from '@dao-dao/stateless'
@@ -28,7 +27,7 @@ import {
 const useDefaults: UseDefaults<ManageWidgetsData> = () => ({
   mode: 'set',
   id: '',
-  values: '{}',
+  values: {},
 })
 
 const Component: ActionComponent = (props) => {
@@ -48,6 +47,7 @@ const Component: ActionComponent = (props) => {
             existingWidgets: loadingExistingWidgets.data.map(
               ({ daoWidget }) => daoWidget
             ),
+            SuspenseLoader,
           }}
         />
       )}
@@ -84,7 +84,7 @@ export const makeManageWidgetsAction: ActionMaker<ManageWidgetsData> = ({
                   ? {
                       set_item: {
                         key: DAO_WIDGET_ITEM_NAMESPACE + id,
-                        [valueKey]: JSON.stringify(JSON5.parse(values)),
+                        [valueKey]: JSON.stringify(values),
                       },
                     }
                   : {
@@ -123,17 +123,12 @@ export const makeManageWidgetsAction: ActionMaker<ManageWidgetsData> = ({
     ) {
       const mode = 'set_item' in msg.wasm.execute.msg ? 'set' : 'delete'
 
-      let values = '{}'
+      let values = {}
       if (mode === 'set') {
         try {
-          values = JSON.stringify(
-            JSON.parse(msg.wasm.execute.msg.set_item[valueKey]),
-            null,
-            2
-          )
+          values = JSON.parse(msg.wasm.execute.msg.set_item[valueKey])
         } catch (err) {
           console.error(err)
-          values = msg.wasm.execute.msg.set_item[valueKey]
         }
       }
 
