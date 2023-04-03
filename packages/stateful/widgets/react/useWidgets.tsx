@@ -123,7 +123,7 @@ export const useWidgets = ({
         // Filter out any undefined widgets.
         .filter((widget): widget is LoadedWidget => !!widget)
     )
-  }, [widgetItemsLoadable, isMember, t])
+  }, [widgetItemsLoadable, isMember, t, location])
 
   return loadedWidgets
     ? {
