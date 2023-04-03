@@ -32,7 +32,11 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
       })
     } catch (err) {
       console.error(err)
-      toast.error(err instanceof Error ? err.message : processError(err))
+      toast.error(
+        processError(err, {
+          forceCapture: false,
+        })
+      )
     }
   }
   const unsetProfilePhoto = async () => {
@@ -40,7 +44,11 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
       await updateProfileNft(null)
     } catch (err) {
       console.error(err)
-      toast.error(err instanceof Error ? err.message : processError(err))
+      toast.error(
+        processError(err, {
+          forceCapture: false,
+        })
+      )
     }
   }
 
