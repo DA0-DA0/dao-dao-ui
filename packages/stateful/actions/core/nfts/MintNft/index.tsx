@@ -9,8 +9,8 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -181,7 +181,7 @@ export const makeMintNftAction: ActionMaker<MintNftData> = ({ t, address }) => {
   }
 
   return {
-    key: CoreActionKey.MintNft,
+    key: ActionKey.MintNft,
     Icon: CameraWithFlashEmoji,
     label: t('title.mintNft'),
     description: t('info.mintNftDescription'),

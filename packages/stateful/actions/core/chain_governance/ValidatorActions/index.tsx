@@ -10,8 +10,8 @@ import { useCallback, useMemo } from 'react'
 
 import { PickEmoji } from '@dao-dao/stateless'
 import {
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -229,7 +229,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
   }
 
   return {
-    key: CoreActionKey.ValidatorActions,
+    key: ActionKey.ValidatorActions,
     Icon: PickEmoji,
     label: t('title.validatorActions'),
     description: t('info.validatorActionsDescription'),

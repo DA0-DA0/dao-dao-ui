@@ -10,8 +10,8 @@ import { SwordsEmoji } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -215,7 +215,7 @@ const Component: ActionComponent = (props) => {
 }
 
 export const makeExecuteAction: ActionMaker<ExecuteData> = ({ t }) => ({
-  key: CoreActionKey.Execute,
+  key: ActionKey.Execute,
   Icon: SwordsEmoji,
   label: t('title.executeSmartContract'),
   description: t('info.executeSmartContractActionDescription'),

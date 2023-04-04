@@ -6,8 +6,8 @@ import { FireEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -113,7 +113,7 @@ const Component: ActionComponent = (props) => {
 }
 
 export const makeBurnNftAction: ActionMaker<BurnNftData> = ({ t }) => ({
-  key: CoreActionKey.BurnNft,
+  key: ActionKey.BurnNft,
   Icon: FireEmoji,
   label: t('title.burnNft'),
   description: t('info.burnNftDescription'),

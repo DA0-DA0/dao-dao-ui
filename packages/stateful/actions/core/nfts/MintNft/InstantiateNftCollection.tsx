@@ -4,11 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import {
-  ActionComponent,
-  ActionContextType,
-  CoreActionKey,
-} from '@dao-dao/types'
+import { ActionComponent, ActionContextType, ActionKey } from '@dao-dao/types'
 import { CODE_ID_CONFIG, processError } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
@@ -60,7 +56,7 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
       // Add display NFT action if in a DAO.
       if (props.isCreating && context.type === ActionContextType.Dao) {
         props.addAction({
-          actionKey: CoreActionKey.ManageCw721,
+          actionKey: ActionKey.ManageCw721,
           data: {
             adding: true,
             address: contractAddress,

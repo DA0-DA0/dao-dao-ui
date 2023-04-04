@@ -6,9 +6,9 @@ import { FamilyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
+  ActionKey,
   ActionMaker,
   ContractVersion,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -120,7 +120,7 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
         }
 
   return {
-    key: CoreActionKey.ManageSubDaos,
+    key: ActionKey.ManageSubDaos,
     Icon: FamilyEmoji,
     label: t('title.manageSubDaos'),
     description: t('info.manageSubDaosActionDescription'),

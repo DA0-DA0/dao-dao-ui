@@ -3,8 +3,8 @@ import { useCallback } from 'react'
 import { BeeEmoji } from '@dao-dao/stateless'
 import {
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -59,7 +59,7 @@ export const makeEnableRetroactiveCompensationAction: ActionMaker = (
   }
 
   return {
-    key: CoreActionKey.EnableRetroactiveCompensation,
+    key: ActionKey.EnableRetroactiveCompensation,
     Icon: BeeEmoji,
     label: t('title.enableRetroactiveCompensation'),
     description: t('widgetDescription.retroactive'),

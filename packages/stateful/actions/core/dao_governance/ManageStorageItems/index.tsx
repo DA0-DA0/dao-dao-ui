@@ -7,8 +7,8 @@ import { ContractVersion } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -128,7 +128,7 @@ export const makeManageStorageItemsAction: ActionMaker<
   }
 
   return {
-    key: CoreActionKey.ManageStorageItems,
+    key: ActionKey.ManageStorageItems,
     Icon: WrenchEmoji,
     label: t('title.manageStorageItems'),
     description: t('info.manageStorageItemsDescription'),

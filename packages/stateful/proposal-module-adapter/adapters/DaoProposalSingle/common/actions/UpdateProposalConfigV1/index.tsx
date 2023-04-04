@@ -6,8 +6,8 @@ import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  AdapterActionKey,
   ContractVersion,
   ProposalModule,
   UseDecodedCosmosMsg,
@@ -341,7 +341,7 @@ export const makeUpdateProposalConfigV1ActionMaker =
     }
 
     return {
-      key: AdapterActionKey.UpdateProposalSingleConfig,
+      key: ActionKey.UpdateProposalSingleConfig,
       Icon: BallotDepositEmoji,
       label: t('form.updateVotingConfigTitle', {
         context:

@@ -4,8 +4,8 @@ import { useRecoilValue } from 'recoil'
 import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  AdapterActionKey,
   ProposalModule,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -221,7 +221,7 @@ export const makeUpdateProposalConfigActionMaker =
     }
 
     return {
-      key: AdapterActionKey.UpdateProposalMultipleConfig,
+      key: ActionKey.UpdateProposalMultipleConfig,
       Icon: BallotDepositEmoji,
       label: t('form.updateVotingConfigTitle', {
         context:

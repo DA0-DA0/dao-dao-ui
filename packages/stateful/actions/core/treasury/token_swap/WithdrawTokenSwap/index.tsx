@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { BrokenHeartEmoji, InputErrorMessage, Loader } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -128,7 +128,7 @@ export const makeWithdrawTokenSwapAction: ActionMaker<
   }
 
   return {
-    key: CoreActionKey.WithdrawTokenSwap,
+    key: ActionKey.WithdrawTokenSwap,
     Icon: BrokenHeartEmoji,
     label: t('title.withdrawTokenSwap'),
     description: t('info.withdrawTokenSwapDescription'),

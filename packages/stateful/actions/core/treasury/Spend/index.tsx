@@ -8,8 +8,8 @@ import { MoneyEmoji } from '@dao-dao/stateless'
 import { TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
@@ -200,7 +200,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
 }
 
 export const makeSpendAction: ActionMaker<SpendData> = ({ t, context }) => ({
-  key: CoreActionKey.Spend,
+  key: ActionKey.Spend,
   Icon: MoneyEmoji,
   label: t('title.spend'),
   description: t('info.spendActionDescription', {

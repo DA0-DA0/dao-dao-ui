@@ -32,8 +32,8 @@ import {
 } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
@@ -160,7 +160,7 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
 
       // All swap actions' data.
       const swapActionsData = props.allActionsWithData
-        .filter(({ actionKey }) => actionKey === CoreActionKey.WyndSwap)
+        .filter(({ actionKey }) => actionKey === ActionKey.WyndSwap)
         .map(({ data }) => data) as WyndSwapData[]
       // Index of this action in the list of all swap actions.
       const innerIndex = swapActionsData.indexOf(
@@ -719,7 +719,7 @@ export const makeWyndSwapAction: ActionMaker<WyndSwapData> = ({ t, chainId }) =>
   // WYND only exists on Juno mainnet.
   chainId === ChainInfoID.Juno1
     ? {
-        key: CoreActionKey.WyndSwap,
+        key: ActionKey.WyndSwap,
         Icon: CycleEmoji,
         label: t('title.swapTokensOnWynd'),
         description: t('info.swapTokensOnWyndDescription'),

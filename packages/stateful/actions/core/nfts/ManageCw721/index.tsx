@@ -14,8 +14,8 @@ import { ImageEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -203,7 +203,7 @@ export const makeManageCw721Action: ActionMaker<ManageCw721Data> = ({
         }
 
   return {
-    key: CoreActionKey.ManageCw721,
+    key: ActionKey.ManageCw721,
     Icon: ImageEmoji,
     label: t('title.manageTreasuryNfts'),
     description: t('info.manageTreasuryNftsDescription'),

@@ -7,7 +7,7 @@ import {
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { CoreActionKey, WidgetRendererProps } from '@dao-dao/types'
+import { ActionKey, WidgetRendererProps } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../../../actions'
@@ -46,7 +46,7 @@ export const TabRenderer = ({
     []
   )
 
-  const vestingAction = useActionForKey(CoreActionKey.ManageVesting)
+  const vestingAction = useActionForKey(ActionKey.ManageVesting)
   const vestingActionDefaults = vestingAction?.action.useDefaults()
 
   const createVestingPaymentPrefill = useDaoProposalSinglePrefill({

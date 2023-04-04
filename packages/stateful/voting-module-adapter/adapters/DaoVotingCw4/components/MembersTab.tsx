@@ -5,7 +5,7 @@ import {
   MembersTab as StatelessMembersTab,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { AdapterActionKey } from '@dao-dao/types'
+import { ActionKey } from '@dao-dao/types'
 
 import { ButtonLink, DaoMemberCard } from '../../../../components'
 import { useDaoProposalSinglePrefill, useMembership } from '../../../../hooks'
@@ -30,7 +30,7 @@ export const MembersTab = () => {
   const addMemberProposalPrefill = useDaoProposalSinglePrefill({
     actions: [
       {
-        actionKey: AdapterActionKey.ManageMembers,
+        actionKey: ActionKey.ManageMembers,
         data: {
           toAdd: [{ addr: '', weight: NaN }],
           toRemove: [],

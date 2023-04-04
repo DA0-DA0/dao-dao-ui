@@ -3,8 +3,8 @@ import { useCallback, useMemo } from 'react'
 import { HerbEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  AdapterActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -99,7 +99,7 @@ export const makeMintAction: ActionMaker<MintData> = ({ t, address }) => {
   })
 
   return {
-    key: AdapterActionKey.Mint,
+    key: ActionKey.Mint,
     Icon: HerbEmoji,
     label: t('title.mint'),
     description: t('info.mintActionDescription'),

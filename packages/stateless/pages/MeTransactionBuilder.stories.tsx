@@ -8,7 +8,7 @@ import {
   WalletProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { CoreActionKey, MeTransactionForm } from '@dao-dao/types'
+import { ActionKey, MeTransactionForm } from '@dao-dao/types'
 
 import { MeTransactionBuilder } from './MeTransactionBuilder'
 
@@ -59,7 +59,7 @@ Default.args = {
           'Send $10 USDC to my DAO. This is a very long description. I wish it were shorter.',
         actions: [
           {
-            actionKey: CoreActionKey.Spend,
+            actionKey: ActionKey.Spend,
             data: {},
           },
         ],

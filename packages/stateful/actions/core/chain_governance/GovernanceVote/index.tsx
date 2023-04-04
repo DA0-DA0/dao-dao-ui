@@ -13,8 +13,8 @@ import {
 import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -157,7 +157,7 @@ export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
         }
 
   return {
-    key: CoreActionKey.GovernanceVote,
+    key: ActionKey.GovernanceVote,
     Icon: BallotDepositEmoji,
     label: t('title.voteOnGovernanceProposal'),
     description: t('info.voteOnGovernanceProposalDescription'),

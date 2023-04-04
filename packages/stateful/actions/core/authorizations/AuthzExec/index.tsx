@@ -11,8 +11,8 @@ import { validatorsSelector } from '@dao-dao/state/recoil'
 import { LockWithKeyEmoji, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -182,7 +182,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
     )
 
   return {
-    key: CoreActionKey.AuthzExec,
+    key: ActionKey.AuthzExec,
     Icon: LockWithKeyEmoji,
     label: t('title.authzExec'),
     description: t('info.authzExecDescription'),

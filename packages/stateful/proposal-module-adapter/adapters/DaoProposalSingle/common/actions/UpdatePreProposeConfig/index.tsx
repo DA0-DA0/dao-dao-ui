@@ -8,8 +8,8 @@ import { GearEmoji, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  AdapterActionKey,
   DepositRefundPolicy,
   ProposalModule,
   TokenType,
@@ -355,7 +355,7 @@ export const makeUpdatePreProposeConfigActionMaker =
     }
 
     return {
-      key: AdapterActionKey.UpdatePreProposeSingleConfig,
+      key: ActionKey.UpdatePreProposeSingleConfig,
       Icon: GearEmoji,
       label: t('form.updateProposalSubmissionConfigTitle', {
         context:

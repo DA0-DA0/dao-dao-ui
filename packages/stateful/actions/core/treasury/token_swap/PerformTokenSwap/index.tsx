@@ -11,8 +11,8 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -248,7 +248,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<PerformTokenSwapData> = (
 export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
   t,
 }) => ({
-  key: CoreActionKey.PerformTokenSwap,
+  key: ActionKey.PerformTokenSwap,
   Icon: HandshakeEmoji,
   label: t('title.tokenSwap'),
   description: t('info.tokenSwapDescription'),

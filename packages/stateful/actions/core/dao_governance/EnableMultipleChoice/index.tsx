@@ -11,8 +11,8 @@ import {
 } from '@dao-dao/types'
 import {
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -214,7 +214,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
   }
 
   return {
-    key: CoreActionKey.EnableMultipleChoice,
+    key: ActionKey.EnableMultipleChoice,
     Icon: NumbersEmoji,
     label: t('title.enableMultipleChoiceProposals'),
     description: t('info.enableMultipleChoiceProposalsDescription'),

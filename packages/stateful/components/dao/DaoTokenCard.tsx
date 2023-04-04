@@ -15,11 +15,7 @@ import {
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import {
-  ButtonPopupSection,
-  CoreActionKey,
-  TokenCardInfo,
-} from '@dao-dao/types'
+import { ActionKey, ButtonPopupSection, TokenCardInfo } from '@dao-dao/types'
 import { NATIVE_TOKEN, StakeType } from '@dao-dao/utils'
 
 import { useDaoProposalSinglePrefill } from '../../hooks'
@@ -77,7 +73,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
   // Does not get used if not native token.
   const proposalPrefillClaim = useDaoProposalSinglePrefill({
     actions: stakesWithRewards.map(({ validator: { address } }) => ({
-      actionKey: CoreActionKey.ManageStaking,
+      actionKey: ActionKey.ManageStaking,
       data: {
         stakeType: StakeType.WithdrawDelegatorReward,
         validator: address,
@@ -94,7 +90,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
       props.unstakedBalance > 0
         ? [
             {
-              actionKey: CoreActionKey.ManageStaking,
+              actionKey: ActionKey.ManageStaking,
               data: {
                 stakeType: StakeType.Delegate,
                 validator: '',
@@ -105,7 +101,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
           ]
         : // If has only staked, show unstake actions by default.
           lazyStakes.map(({ validator, amount }) => ({
-            actionKey: CoreActionKey.ManageStaking,
+            actionKey: ActionKey.ManageStaking,
             data: {
               stakeType: StakeType.Undelegate,
               validator,

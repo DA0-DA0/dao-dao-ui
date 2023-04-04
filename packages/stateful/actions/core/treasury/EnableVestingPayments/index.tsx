@@ -3,8 +3,8 @@ import { useCallback } from 'react'
 import { SuitAndTieEmoji } from '@dao-dao/stateless'
 import {
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -65,7 +65,7 @@ export const makeEnableVestingPaymentsAction: ActionMaker<
   }
 
   return {
-    key: CoreActionKey.EnableVestingPayments,
+    key: ActionKey.EnableVestingPayments,
     Icon: SuitAndTieEmoji,
     label: t('title.enableVestingPayments'),
     description: t('widgetDescription.vesting'),

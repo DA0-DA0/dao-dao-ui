@@ -29,7 +29,7 @@ import {
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { CoreActionKey, DaoPageMode, WidgetLocation } from '@dao-dao/types'
+import { ActionKey, DaoPageMode, WidgetLocation } from '@dao-dao/types'
 import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const InnerDaoHome = () => {
@@ -53,7 +53,7 @@ const InnerDaoHome = () => {
   )
 
   // Check if action exists, since v1 DAOs do not have this action.
-  const manageSubDaosAction = useActionForKey(CoreActionKey.ManageSubDaos)
+  const manageSubDaosAction = useActionForKey(ActionKey.ManageSubDaos)
   // Prefill URL only valid if action exists.
   const prefillValid = !!manageSubDaosAction
   const addSubDaoProposalPrefill = useDaoProposalSinglePrefill(

@@ -17,9 +17,8 @@ export enum ActionCategoryKey {
   Nfts = 'nfts',
 }
 
-// Actions defined in the core actions system (@dao-dao/stateful/actions). These
-// are provided in the top-level ActionsProvider.
-export enum CoreActionKey {
+// TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
+export enum ActionKey {
   Spend = 'spend',
   ManageStaking = 'manageStaking',
   ManageCw20 = 'manageCw20',
@@ -45,18 +44,13 @@ export enum CoreActionKey {
   UpgradeV1ToV2 = 'upgradeV1ToV2',
   EnableVestingPayments = 'enableVestingPayments',
   EnableRetroactiveCompensation = 'enableRetroactiveCompensation',
-  ManageVesting = 'manageVesting',
   WyndSwap = 'wyndSwap',
   DaoAdminExec = 'daoAdminExec',
   EnableMultipleChoice = 'enableMultipleChoice',
   ManageWidgets = 'manageWidgets',
-}
-
-// TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
-// Actions defined in voting or proposal module adapters.
-export enum AdapterActionKey {
   ManageMembers = 'manageMembers',
   Mint = 'mint',
+  ManageVesting = 'manageVesting',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',
@@ -64,8 +58,6 @@ export enum AdapterActionKey {
   UpdatePreProposeMultipleConfig = 'updatePreProposeMultipleConfig',
   UpdateProposalMultipleConfig = 'updateProposalMultipleConfig',
 }
-
-export type ActionKey = CoreActionKey | AdapterActionKey
 
 export type CategorizedActionAndData = {
   category: ActionCategoryWithLabel

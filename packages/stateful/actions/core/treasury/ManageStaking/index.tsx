@@ -12,8 +12,8 @@ import {
 import { DepositEmoji, Loader, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -189,7 +189,7 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
     const claimValidatorRewardsActionData = props.allActionsWithData
       .filter(
         ({ actionKey, data }) =>
-          actionKey === CoreActionKey.ManageStaking &&
+          actionKey === ActionKey.ManageStaking &&
           'stakeType' in data &&
           data.stakeType === StakeType.WithdrawDelegatorReward &&
           'validator' in data &&
@@ -314,7 +314,7 @@ export const makeManageStakingAction: ActionMaker<ManageStakingData> = ({
   }
 
   return {
-    key: CoreActionKey.ManageStaking,
+    key: ActionKey.ManageStaking,
     Icon: DepositEmoji,
     label: t('title.manageStaking'),
     description: t('info.manageStakingDescription'),

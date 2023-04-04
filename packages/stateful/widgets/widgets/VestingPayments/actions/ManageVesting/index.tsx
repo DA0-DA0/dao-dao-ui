@@ -22,8 +22,8 @@ import {
 import {
   ActionComponent,
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -622,7 +622,7 @@ export const makeManageVestingActionMaker =
     }
 
     return {
-      key: CoreActionKey.ManageVesting,
+      key: ActionKey.ManageVesting,
       Icon: MoneyWingsEmoji,
       label: t('title.manageVesting'),
       description: t('info.manageVestingDescription'),

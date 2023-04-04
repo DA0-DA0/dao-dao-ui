@@ -5,8 +5,8 @@ import { ContractVersion } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -149,7 +149,7 @@ export const makeManageWidgetsAction: ActionMaker<ManageWidgetsData> = ({
   }
 
   return {
-    key: CoreActionKey.ManageWidgets,
+    key: ActionKey.ManageWidgets,
     Icon: HammerAndWrenchEmoji,
     label: t('title.manageWidgets'),
     description: t('info.manageWidgetsDescription'),

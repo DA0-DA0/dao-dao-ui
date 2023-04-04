@@ -5,7 +5,7 @@ import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { InfoEmoji } from '@dao-dao/stateless'
 import { ActionContextType, ActionMaker } from '@dao-dao/types'
 import {
-  CoreActionKey,
+  ActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -108,7 +108,7 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
         }
 
   return {
-    key: CoreActionKey.UpdateInfo,
+    key: ActionKey.UpdateInfo,
     Icon: InfoEmoji,
     label: t('title.updateInfo'),
     description: t('info.updateInfoActionDescription'),

@@ -4,8 +4,8 @@ import { useCallback, useMemo } from 'react'
 import { KeyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -149,7 +149,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
     )
 
   return {
-    key: CoreActionKey.AuthzAuthorization,
+    key: ActionKey.AuthzAuthorization,
     Icon: KeyEmoji,
     label: t('title.authzAuthorization'),
     description: t('info.authzAuthorizationDescription'),

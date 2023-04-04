@@ -8,8 +8,8 @@ import { BoxEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -186,7 +186,7 @@ export const makeTransferNftAction: ActionMaker<TransferNftData> = ({
   t,
   context: { type },
 }) => ({
-  key: CoreActionKey.TransferNft,
+  key: ActionKey.TransferNft,
   Icon: BoxEmoji,
   label: t('title.transferNft'),
   description: t('info.transferNftDescription', { context: type }),

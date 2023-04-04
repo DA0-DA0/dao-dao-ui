@@ -6,8 +6,8 @@ import { contractAdminSelector } from '@dao-dao/state'
 import { WhaleEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -100,7 +100,7 @@ const Component: ActionComponent = (props) => {
 }
 
 export const makeMigrateAction: ActionMaker<MigrateData> = ({ t }) => ({
-  key: CoreActionKey.Migrate,
+  key: ActionKey.Migrate,
   Icon: WhaleEmoji,
   label: t('title.migrateSmartContract'),
   description: t('info.migrateSmartContractActionDescription'),

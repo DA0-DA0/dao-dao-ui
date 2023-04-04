@@ -14,8 +14,8 @@ import { TokenEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -203,7 +203,7 @@ export const makeManageCw20Action: ActionMaker<ManageCw20Data> = ({
         }
 
   return {
-    key: CoreActionKey.ManageCw20,
+    key: ActionKey.ManageCw20,
     Icon: TokenEmoji,
     label: t('title.manageTreasuryTokens'),
     description: t('info.manageTreasuryTokensDescription'),

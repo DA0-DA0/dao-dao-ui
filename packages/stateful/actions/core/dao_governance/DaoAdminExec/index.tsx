@@ -7,8 +7,8 @@ import { JoystickEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -208,7 +208,7 @@ export const makeDaoAdminExecAction: ActionMaker<DaoAdminExecData> = ({
   // Only allow using this action in DAOs.
   context.type === ActionContextType.Dao
     ? {
-        key: CoreActionKey.DaoAdminExec,
+        key: ActionKey.DaoAdminExec,
         Icon: JoystickEmoji,
         label: t('title.daoAdminExec'),
         description: t('info.daoAdminExecDescription'),

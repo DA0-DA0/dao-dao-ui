@@ -10,9 +10,9 @@ import { Loader, UnicornEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
+  ActionKey,
   ActionMaker,
   ContractVersion,
-  CoreActionKey,
   LoadingData,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -378,7 +378,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
         }
 
   return {
-    key: CoreActionKey.UpgradeV1ToV2,
+    key: ActionKey.UpgradeV1ToV2,
     Icon: UnicornEmoji,
     label: t('title.upgradeToV2'),
     description: t('info.upgradeToV2Description'),

@@ -11,7 +11,7 @@ import { Loader, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
-  CoreActionKey,
+  ActionKey,
   NftCardInfo,
 } from '@dao-dao/types'
 import { isValidContractAddress } from '@dao-dao/utils'
@@ -118,13 +118,13 @@ export const MintNft: ActionComponent = (props) => {
       // Ensure no action already exists to add this collection.
       !props.allActionsWithData.some(
         ({ actionKey, data }) =>
-          actionKey === CoreActionKey.ManageCw721 &&
+          actionKey === ActionKey.ManageCw721 &&
           data.address === collectionAddress &&
           data.adding
       )
     ) {
       props.addAction({
-        actionKey: CoreActionKey.ManageCw721,
+        actionKey: ActionKey.ManageCw721,
         data: {
           adding: true,
           address: collectionAddress,

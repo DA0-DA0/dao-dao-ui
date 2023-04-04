@@ -1,8 +1,8 @@
 import { FileFolderEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionKey,
   ActionMaker,
-  CoreActionKey,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -31,7 +31,7 @@ const Component: ActionComponent = (props) => (
 // This action is not intended to output any messages. It is just an interface
 // that can add other actions.
 export const makeBulkImportAction: ActionMaker = ({ t }) => ({
-  key: CoreActionKey.BulkImport,
+  key: ActionKey.BulkImport,
   Icon: FileFolderEmoji,
   label: t('title.bulkImportActions'),
   description: t('info.bulkImportActionsDescription'),
