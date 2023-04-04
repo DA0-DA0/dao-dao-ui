@@ -9,11 +9,11 @@ import { ComponentProps } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { ButtonPopupSection, CoreActionKey } from '@dao-dao/types'
+import { ActionKey, ButtonPopupSection } from '@dao-dao/types'
 import { CHAIN_ID, getMeTxPrefillPath, processError } from '@dao-dao/utils'
 
 import { useActionForKey } from '../actions'
-import { TransferNftData } from '../actions/components/nft'
+import { TransferNftData } from '../actions/core/nfts/TransferNft'
 import { useWalletInfo } from '../hooks'
 import { ButtonLink } from './ButtonLink'
 import { NftCard } from './NftCard'
@@ -59,8 +59,8 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
     walletProfileData.profile.nft?.tokenId === props.tokenId
 
   const transferActionDefaults = useActionForKey(
-    CoreActionKey.TransferNft
-  )?.useDefaults() as TransferNftData | undefined
+    ActionKey.TransferNft
+  )?.action.useDefaults() as TransferNftData | undefined
 
   // Setup actions for popup. Prefill with cw20 related actions.
   const buttonPopupSections: ButtonPopupSection[] = [
@@ -105,7 +105,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
                 href: getMeTxPrefillPath({
                   actions: [
                     {
-                      key: CoreActionKey.TransferNft,
+                      actionKey: ActionKey.TransferNft,
                       data: {
                         ...transferActionDefaults,
                         collection: props.collection.address,
@@ -123,7 +123,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
                 href: getMeTxPrefillPath({
                   actions: [
                     {
-                      key: CoreActionKey.BurnNft,
+                      actionKey: ActionKey.BurnNft,
                       data: {
                         collection: props.collection.address,
                         tokenId: props.tokenId,

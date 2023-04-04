@@ -5,13 +5,16 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
-import { Coin, ProposalStatus } from '@dao-dao/types/contracts/common'
 import {
   Addr,
   Binary,
+  Coin,
+  Empty,
+  ProposalStatus,
+} from '@dao-dao/types/contracts/common'
+import {
   Config,
   DepositInfoResponse,
-  Empty,
   ProposeMessage,
   UncheckedDenom,
   UncheckedDepositInfo,

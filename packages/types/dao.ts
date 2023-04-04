@@ -37,6 +37,7 @@ export interface DaoInfo {
   description: string
   imageUrl: string | null
   created: Date | undefined
+  items: Record<string, string>
 
   parentDao: DaoParentInfo | null
 }
@@ -297,9 +298,9 @@ export enum DaoTabId {
 
 export type DaoTab = {
   // ID used in URL hash.
-  id: DaoTabId
+  id: DaoTabId | string
   label: string
-  Icon: ComponentType<{ className: string }>
+  Icon?: ComponentType<{ className: string }>
 }
 
 export type DaoTabWithComponent = DaoTab & {

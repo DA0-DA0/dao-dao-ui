@@ -13,7 +13,7 @@ import {
   useOnDaoWebSocketMessage,
   walletProfileDataSelector,
 } from '@dao-dao/stateful'
-import { useActions, useOrderedActionsToMatch } from '@dao-dao/stateful/actions'
+import { useActionsForMatching } from '@dao-dao/stateful/actions'
 import {
   ProposalModuleAdapterProvider,
   useProposalModuleAdapterContext,
@@ -39,9 +39,7 @@ interface InnerDaoProposalProps {
 const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
   const daoInfo = useDaoInfoContext()
-  const orderedActions = useOrderedActionsToMatch(
-    useActions({ isCreating: false })
-  )
+  const actionsForMatching = useActionsForMatching({ isCreating: false })
   const { getDaoProposalPath } = useNavHelpers()
   const { connected, address } = useWallet()
   const {
@@ -200,7 +198,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
       proposalInnerContentDisplay={
         <SuspenseLoader fallback={<Loader />}>
           <ProposalInnerContentDisplay
-            availableActions={orderedActions}
+            actionsForMatching={actionsForMatching}
             setDuplicateFormData={setDuplicateFormData}
           />
         </SuspenseLoader>

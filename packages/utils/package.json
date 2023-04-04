@@ -30,7 +30,7 @@
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",
     "@keplr-wallet/types": "^0.11.49",
-    "@noahsaso/cosmodal": "^0.8.10",
+    "@noahsaso/cosmodal": "^0.8.11",
     "@types/ripemd160": "^2.0.0",
     "interchain-rpc": "1.5.0",
     "next": "12.2.6",

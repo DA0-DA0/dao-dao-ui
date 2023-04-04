@@ -4,9 +4,10 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 
 ## Widgets
 
-| Widget                       | Summary         |
-| ---------------------------- | --------------- |
-| [MintNft](./widgets/MintNft) | Mint NFT Widget |
+- [MintNft](./widgets/MintNft)
+- [RetroactiveCompensation](./widgets/RetroactiveCompensation)
+- [VestingPayments](./widgets/VestingPayments)
+- [WyndDeposit](./widgets/WyndDeposit)
 
 ## Layout
 

@@ -136,6 +136,7 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
     'panic: invalid request',
     'tx already exists in cache',
     'Load failed',
+    'fetch failed',
   ],
   [CommonError.Unauthorized]: ['Unauthorized'],
   [CommonError.InsufficientForProposalDeposit]: ['Overflow: Cannot Sub with'],

@@ -6,7 +6,7 @@ import {
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { CoreActionKey } from '@dao-dao/types'
+import { ActionKey } from '@dao-dao/types'
 
 import { useActionForKey } from '../../../actions'
 import { useDaoProposalSinglePrefill, useMembership } from '../../../hooks'
@@ -56,13 +56,13 @@ export const TreasuryAndNftsTab = () => {
   )
 
   // ManageCw721 action defaults to adding
-  const addCw721Action = useActionForKey(CoreActionKey.ManageCw721)
+  const addCw721Action = useActionForKey(ActionKey.ManageCw721)
   const addCollectionProposalPrefill = useDaoProposalSinglePrefill({
     actions: addCw721Action
       ? [
           {
-            action: addCw721Action,
-            data: addCw721Action.useDefaults(),
+            actionKey: addCw721Action.action.key,
+            data: addCw721Action.action.useDefaults(),
           },
         ]
       : [],

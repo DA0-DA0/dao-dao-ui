@@ -1,6 +1,0 @@
-export * from './ProposalInnerContentDisplay'
-export * from './ProposalLine'
-export * from './ProposalStatusAndInfo'
-export * from './ProposalVoteTally'
-export * from './ProposalVotes'
-export * from './ProposalWalletVote'
