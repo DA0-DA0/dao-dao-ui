@@ -26,9 +26,6 @@ export interface MintNftData {
       video?: string
     }
   }
-  // Set after uploading metadata to IPFS by UploadNftMetadata component, for
-  // displaying during final step by MintNft component.
-  imageUrl?: string
   // Set in final step by MintNft component.
   mintMsg: MintMsgForNullable_Empty
 }

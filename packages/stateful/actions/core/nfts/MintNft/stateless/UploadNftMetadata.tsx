@@ -67,7 +67,7 @@ export const UploadNftMetadata: ActionComponent = ({
               },
             }
 
-      const { metadataUrl, imageUrl } = await uploadNft(
+      const { metadataUrl } = await uploadNft(
         metadata.name,
         metadata.description,
         file,
@@ -78,7 +78,6 @@ export const UploadNftMetadata: ActionComponent = ({
         (fieldNamePrefix + 'mintMsg.token_uri') as 'mintMsg.token_uri',
         metadataUrl
       )
-      setValue((fieldNamePrefix + 'imageUrl') as 'imageUrl', imageUrl)
 
       // If not showing advanced, clear properties if set, since we copy the
       // metadata over to the final Mint NFT step to show a preview.

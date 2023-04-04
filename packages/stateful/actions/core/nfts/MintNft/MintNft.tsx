@@ -2,7 +2,11 @@ import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import {
+  Cw721BaseSelectors,
+  DaoCoreV2Selectors,
+  nftUriDataSelector,
+} from '@dao-dao/state/recoil'
 import { Loader, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -10,6 +14,7 @@ import {
   CoreActionKey,
   NftCardInfo,
 } from '@dao-dao/types'
+import { isValidContractAddress } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
 import { nftCardInfoWithUriSelector } from '../../../../recoil'
@@ -18,11 +23,14 @@ import { MintNft as StatelessMintNft } from './stateless/MintNft'
 import { MintNftData } from './types'
 
 export const MintNft: ActionComponent = (props) => {
-  const { chainId, context, address } = useActionOptions()
+  const { chainId, bech32Prefix, context, address } = useActionOptions()
   const { watch } = useFormContext()
 
-  const data: MintNftData = watch(props.fieldNamePrefix)
-  const collectionAddress = data.collectionAddress ?? ''
+  const {
+    contractChosen,
+    collectionAddress = '',
+    mintMsg,
+  }: MintNftData = watch(props.fieldNamePrefix)
 
   const nftInfoLoading = useCachedLoading<NftCardInfo | undefined>(
     // Nothing to load if creating.
@@ -31,30 +39,52 @@ export const MintNft: ActionComponent = (props) => {
       : // If viewing, get info from token URI.
         nftCardInfoWithUriSelector({
           collection: collectionAddress,
-          tokenId: data.mintMsg.token_id,
-          tokenUri: data.mintMsg.token_uri,
+          tokenId: mintMsg.token_id,
+          tokenUri: mintMsg.token_uri,
           chainId,
         }),
     undefined
   )
+
+  const creatingNftTokenUriDataLoading = useCachedLoading(
+    props.isCreating && mintMsg.token_uri
+      ? nftUriDataSelector(mintMsg.token_uri)
+      : undefined,
+    undefined
+  )
+
+  const creatingCollectionInfoLoading = useCachedLoading(
+    props.isCreating &&
+      contractChosen &&
+      isValidContractAddress(collectionAddress, bech32Prefix)
+      ? Cw721BaseSelectors.contractInfoSelector({
+          contractAddress: collectionAddress,
+          chainId,
+          params: [],
+        })
+      : undefined,
+    undefined
+  )
+
   // If creating, use the data from the form. Otherwise, use the data loading.
   // Undefined when loading.
   const nftInfo: NftCardInfo | undefined = props.isCreating
-    ? {
-        collection: {
-          address: collectionAddress,
-          name: data.instantiateMsg?.name ?? '',
-        },
-        tokenId: data.mintMsg.token_id,
-        imageUrl: data.imageUrl,
-        name: data.metadata?.name ?? '',
-        description: data.metadata?.description ?? '',
-        // Show audio/video in preview when creating.
-        metadata: {
-          properties: data.metadata?.properties,
-        },
-        chainId,
-      }
+    ? creatingNftTokenUriDataLoading.loading ||
+      !creatingNftTokenUriDataLoading.data ||
+      creatingCollectionInfoLoading.loading
+      ? undefined
+      : {
+          collection: {
+            address: collectionAddress,
+            name: creatingCollectionInfoLoading.data?.name ?? '',
+          },
+          tokenId: mintMsg.token_id,
+          imageUrl: creatingNftTokenUriDataLoading.data.imageUrl,
+          name: creatingNftTokenUriDataLoading.data.name ?? '',
+          description: creatingNftTokenUriDataLoading.data.description ?? '',
+          metadata: creatingNftTokenUriDataLoading.data,
+          chainId,
+        }
     : nftInfoLoading.loading || !nftInfoLoading.data
     ? undefined
     : nftInfoLoading.data

@@ -1,6 +1,6 @@
 {
   "actionCategory": {
-    "advancedDescription": "Execute custom actions and import bulk actions.",
+    "advancedDescription": "Execute custom actions and bulk import actions.",
     "advancedLabel": "Advanced",
     "authorizationsDescription": "Grant, revoke, and perform authorizations.",
     "authorizationsLabel": "Authorizations",
