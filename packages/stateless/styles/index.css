@@ -3,16 +3,6 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'studiofeixen';
-  src: url('https://fonts.withoutdoing.com/StudioFeixenSansEdgy-Bold.eot');
-  src: url('https://font.withoutdoing.com/StudioFeixenSansEdgy-Bold.eot')
-      format('embedded-opentype'),
-    url('https://fonts.withoutdoing.com/StudioFeixenSansEdgy-Bold.woff2')
-      format('woff2'),
-    url('https://fonts.withoutdoing.com/StudioFeixenSansEdgy-Bold')
-      format('woff'),
-    url('https://fonts.withoutdoing.com/StudioFeixenSansEdgy-Bold.ttf')
-      format('truetype');
   font-weight: normal;
   font-style: normal;
 }
@@ -263,7 +253,7 @@ input[type='number']::-webkit-outer-spin-button {
   }
 
   .hero-text {
-    font-family: 'studiofeixen';
+    font-family: 'inter';
     font-style: normal;
     font-weight: 700;
     font-size: 1.625rem;

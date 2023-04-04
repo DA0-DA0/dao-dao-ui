@@ -71,11 +71,7 @@ const useDefaults: UseDefaults<WyndSwapData> = () => {
 
   return {
     tokenIn: {
-      type: TokenType.Native,
-      denomOrAddress: usdc.juno_denom,
-      symbol: usdc.symbol,
-      decimals: usdc.decimals,
-      imageUrl: usdc.logoURI,
+      ...usdc,
     },
     tokenInAmount: 0,
     tokenOut: {

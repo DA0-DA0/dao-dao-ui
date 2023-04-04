@@ -80,10 +80,6 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
             ...governanceToken,
             type: 'voting_module_token',
             description: t('title.governanceToken'),
-            imageUrl:
-              (depositInfo.type === 'voting_module_token' &&
-                depositInfo.token?.imageUrl) ||
-              undefined,
           },
         ]
       : []),
@@ -91,14 +87,6 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
     {
       ...NATIVE_TOKEN,
     },
-    // Then the IBC assets.
-    ...ibcAssets.tokens.map(({ juno_denom, symbol, name, logoURI }) => ({
-      type: TokenType.Native,
-      denomOrAddress: juno_denom,
-      symbol,
-      description: symbol === name ? undefined : name,
-      imageUrl: logoURI,
-    })),
     // Then other CW20.
     {
       type: TokenType.Cw20,
@@ -110,6 +98,8 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         (depositInfo.type === TokenType.Cw20 && depositInfo.token?.imageUrl) ||
         undefined,
     },
+    // Then the IBC assets.
+    ...ibcAssets,
   ]
   const selectedToken = availableTokens.find(
     (token) =>
