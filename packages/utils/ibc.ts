@@ -1,9 +1,35 @@
+import { asset_list } from '@chain-registry/juno'
+
+import { GenericToken, TokenType } from '@dao-dao/types'
+
 import { NATIVE_TOKEN } from './constants'
 import { concatAddressStartEnd } from './conversion'
 import { getFallbackImage } from './getFallbackImage'
-import ibcAssets from './ibc_assets.json'
 
-export { ibcAssets }
+export const ibcAssets: (GenericToken & {
+  id: string
+  description?: string
+})[] = asset_list.assets
+  .map(
+    ({
+      base,
+      symbol,
+      logo_URIs: { png, svg, jpeg } = {},
+      name,
+      display,
+      denom_units,
+    }) => ({
+      id: display,
+      type: TokenType.Native,
+      denomOrAddress: base,
+      symbol,
+      decimals:
+        denom_units.find(({ denom }) => denom === display)?.exponent ?? 0,
+      imageUrl: svg || png || jpeg,
+      description: symbol === name ? undefined : name,
+    })
+  )
+  .sort((a, b) => a.symbol.localeCompare(b.symbol))
 
 // NATIVE_TOKEN depends on this function, so don't use it inside this function
 // or it will create a circular dependency.
@@ -11,8 +37,8 @@ export function nativeTokenLabel(denom: string): string {
   // Search IBC asset strings (juno_denom) if denom is in IBC format.
   // Otherwise just check microdenoms.
   const asset = denom.startsWith('ibc')
-    ? ibcAssets.tokens.find(({ juno_denom }) => juno_denom === denom)
-    : ibcAssets.tokens.find(({ denom: d }) => d === denom)
+    ? ibcAssets.find(({ denomOrAddress }) => denomOrAddress === denom)
+    : ibcAssets.find(({ denomOrAddress }) => denomOrAddress === denom)
 
   return (
     asset?.symbol ||
@@ -28,10 +54,10 @@ export function nativeTokenLogoURI(denom: string): string | undefined {
   }
 
   const asset = denom.startsWith('ibc')
-    ? ibcAssets.tokens.find(({ juno_denom }) => juno_denom === denom)
-    : ibcAssets.tokens.find(({ denom: d }) => d === denom)
+    ? ibcAssets.find(({ denomOrAddress }) => denomOrAddress === denom)
+    : ibcAssets.find(({ denomOrAddress }) => denomOrAddress === denom)
 
-  return asset?.logoURI || getFallbackImage(denom)
+  return asset?.imageUrl || getFallbackImage(denom)
 }
 
 export function nativeTokenDecimals(denom: string): number | undefined {
@@ -46,15 +72,13 @@ export function nativeTokenDecimals(denom: string): number | undefined {
   }
 
   const asset = denom.startsWith('ibc')
-    ? ibcAssets.tokens.find(({ juno_denom }) => juno_denom === denom)
-    : ibcAssets.tokens.find(({ denom: d }) => d === denom)
+    ? ibcAssets.find(({ denomOrAddress }) => denomOrAddress === denom)
+    : ibcAssets.find(({ denomOrAddress }) => denomOrAddress === denom)
   return asset?.decimals
 }
 
-export const getJunoIbcUsdc = () =>
-  ibcAssets.tokens.find(({ id }) => id === 'usd-coin')!
-
-export const JUNO_USDC_DENOM = getJunoIbcUsdc().juno_denom
+export const getJunoIbcUsdc = () => ibcAssets.find(({ id }) => id === 'usdc')!
+export const JUNO_USDC_DENOM = getJunoIbcUsdc().denomOrAddress
 
 // Returns true if this denom is the IBC denom for USDC on Juno.
 export const isJunoIbcUsdc = (ibcDenom: string): boolean =>

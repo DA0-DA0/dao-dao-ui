@@ -5,7 +5,6 @@ import {
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
-import { TokenType } from '@dao-dao/types'
 import { NATIVE_TOKEN, getJunoIbcUsdc } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../components'
@@ -24,11 +23,7 @@ export default {
       },
       tokenInAmount: 0,
       tokenOut: {
-        type: TokenType.Cw20,
-        denomOrAddress: usdc.juno_denom,
-        symbol: usdc.symbol,
-        decimals: usdc.decimals,
-        imageUrl: usdc.logoURI,
+        ...usdc,
       },
       tokenOutAmount: 0,
       minOutAmount: 0,
