@@ -18,11 +18,11 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
   "toAdd": [
     {
       "addr": "<SUBDAO ADDRESS TO ADD>"
-    },
+    }
     // More SubDAOs can be added here.
   ],
   "toRemove": [
-    "<SUBDAO ADDRESS TO REMOVE>",
+    "<SUBDAO ADDRESS TO REMOVE>"
     // More SubDAOs can be added here.
   ]
 }
