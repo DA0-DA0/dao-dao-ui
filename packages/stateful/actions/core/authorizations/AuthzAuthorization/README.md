@@ -16,7 +16,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 ```json
 {
   "custom": <true | false>,
-  "mode": <"grant" | "revoke">,
+  "mode": "<grant | revoke>",
   "value": {
     "grantee": "<AUTHORIZED ADDRESS>",
     "msgTypeUrl": "<AUTHORIZED MESSAGE TYPE URL>"
