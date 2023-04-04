@@ -10,7 +10,7 @@ import {
 
 export default {
   title:
-    'DAO DAO / packages / stateful / voting-module-adapter / adapters / DaoVotingCw4 / actions / makeManageMembersAction / ManageMembersComponent',
+    'DAO DAO / packages / stateful / voting-module-adapter / adapters / DaoVotingCw4 / actions / ManageMembers',
   component: ManageMembersComponent,
   decorators: [
     makeReactHookFormDecorator<ManageMembersData>({

@@ -1,4 +1,5 @@
 import JSON5 from 'json5'
+import merge from 'lodash.merge'
 import uniq from 'lodash.uniq'
 import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -63,7 +64,8 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
         return
       }
 
-      // Validate data is list of `actions` with `key` and `data` keys.
+      // Validate data is list of `actions` with `key` present. Some actions
+      // take no `data`, so `data` is optional.
       if (
         !objectMatchesStructure(data, {
           actions: {},
@@ -74,7 +76,6 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
           (action: any) =>
             !objectMatchesStructure(action, {
               key: {},
-              data: {},
             })
         )
       ) {
@@ -84,7 +85,7 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
 
       const actions = data.actions as {
         key: any
-        data: any
+        data?: any
       }[]
 
       // Verify the action key of each action is valid.
@@ -103,13 +104,18 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
       }
 
       setPendingActions(
-        actions.map(
-          ({ key, data }): PendingAction => ({
-            // Existence validated above.
-            loadedAction: loadedActions[key as keyof typeof loadedActions]!,
-            data,
-          })
-        )
+        actions.map(({ key, data }): PendingAction => {
+          // Existence validated above.
+          const loadedAction = loadedActions[key as keyof typeof loadedActions]!
+
+          return {
+            loadedAction,
+            // Use the action's defaults as a base, and then merge in the
+            // imported data, overriding any defaults. If data is undefined,
+            // then the action's defaults will be used.
+            data: merge({}, loadedAction.defaults, data),
+          }
+        })
       )
     }
     reader.onerror = () => {

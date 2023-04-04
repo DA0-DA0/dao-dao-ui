@@ -29,7 +29,7 @@ const TYPE_URL_GENERIC_AUTHORIZATION =
 
 interface AuthzData {
   custom?: boolean
-  typeUrl: string
+  mode: 'grant' | 'revoke'
   value: {
     grantee: string
     msgTypeUrl: string
@@ -38,7 +38,7 @@ interface AuthzData {
 
 const useDefaults: UseDefaults<AuthzData> = () => ({
   custom: false,
-  typeUrl: TYPE_URL_MSG_GRANT,
+  mode: 'grant',
   value: {
     grantee: '',
     msgTypeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
@@ -97,7 +97,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
             match: true,
             data: {
               custom: false,
-              typeUrl: msg.stargate.typeUrl,
+              mode: 'grant',
               value: {
                 msgTypeUrl: decodeRawProtobufMsg(
                   msg.stargate.value.grant!.authorization!
@@ -111,6 +111,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
             match: true,
             data: {
               custom: false,
+              mode: 'revoke',
               ...(msg as DecodedStargateMsg<MsgRevoke>).stargate,
             },
           }
@@ -119,12 +120,13 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
 
   const useTransformToCosmos: UseTransformToCosmos<AuthzData> = () =>
     useCallback(
-      ({ typeUrl, value: { grantee, msgTypeUrl } }: AuthzData) =>
+      ({ mode, value: { grantee, msgTypeUrl } }: AuthzData) =>
         makeStargateMessage({
           stargate: {
-            typeUrl,
+            typeUrl:
+              mode === 'grant' ? TYPE_URL_MSG_GRANT : TYPE_URL_MSG_REVOKE,
             value: {
-              ...(typeUrl === TYPE_URL_MSG_GRANT
+              ...(mode === 'grant'
                 ? {
                     grant: {
                       authorization: encodeRawProtobufMsg({

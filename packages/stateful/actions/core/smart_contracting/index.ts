@@ -2,7 +2,7 @@ import { ActionCategoryKey, ActionCategoryMaker } from '@dao-dao/types'
 
 import { makeExecuteAction } from './Execute'
 import { makeInstantiateAction } from './Instantiate'
-import { makeMigrateAction } from './MigrateContract'
+import { makeMigrateAction } from './Migrate'
 import { makeUpdateAdminAction } from './UpdateAdmin'
 
 export const makeSmartContractingActionCategory: ActionCategoryMaker = ({

@@ -1,4 +1,4 @@
-import { DownloadDoneRounded, DownloadRounded } from '@mui/icons-material'
+import { Download, DownloadDone } from '@mui/icons-material'
 import clsx from 'clsx'
 import {
   CSSProperties,
@@ -28,8 +28,8 @@ export type FileDropInputProps = {
 
 export const FileDropInput = ({
   onSelect,
-  Icon = DownloadRounded,
-  IconHover = DownloadDoneRounded,
+  Icon = Download,
+  IconHover = DownloadDone,
   dropHereText,
   dragHereOrSelect,
   Trans,

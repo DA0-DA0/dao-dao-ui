@@ -7,11 +7,14 @@ import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalMultiple / common / actions / makeUpdateProposalConfigV2Action / UpdateProposalConfigComponent',
+    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalSingle / common / actions / UpdateProposalConfigV2',
   component: UpdateProposalConfigComponent,
   decorators: [
     makeReactHookFormDecorator<UpdateProposalConfigData>({
       onlyMembersExecute: true,
+      thresholdType: '%',
+      thresholdPercentage: 42,
+      quorumEnabled: true,
       quorumType: 'majority',
       proposalDuration: 456,
       proposalDurationUnits: 'days',

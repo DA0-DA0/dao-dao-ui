@@ -1,2 +1,2 @@
-export { makeUpdatePreProposeConfigActionMaker } from './UpdatePreProposeConfigAction'
-export { makeUpdateProposalConfigActionMaker } from './UpdateProposalConfigAction'
+export { makeUpdatePreProposeConfigActionMaker } from './UpdatePreProposeConfig'
+export { makeUpdateProposalConfigActionMaker } from './UpdateProposalConfig'

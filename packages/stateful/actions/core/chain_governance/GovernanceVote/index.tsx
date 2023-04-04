@@ -33,7 +33,6 @@ import {
 } from './Component'
 
 const useDefaults: UseDefaults<GovernanceVoteData> = () => ({
-  voteAsValidator: true,
   proposalId: '',
   vote: VoteOption.VOTE_OPTION_ABSTAIN,
 })

@@ -9,7 +9,7 @@ import { MintComponent } from './MintComponent'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / voting-module-adapter / adapters / DaoVotingCw20Staked / actions / makeMintAction / MintComponent',
+    'DAO DAO / packages / stateful / voting-module-adapter / adapters / DaoVotingCw20Staked / actions / Mint',
   component: MintComponent,
   decorators: [
     makeReactHookFormDecorator<MintData>({

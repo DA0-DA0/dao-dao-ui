@@ -6,6 +6,7 @@ import {
   FormSwitchCard,
   InputErrorMessage,
   InputLabel,
+  SegmentedControlsTitle,
   SelectInput,
   TextInput,
 } from '@dao-dao/stateless'
@@ -38,21 +39,20 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
 
   return (
     <>
-      <div className="flex flex-col items-stretch gap-1">
-        <InputLabel name={t('form.grantOrRevokeAuthz')} />
-        <SelectInput
-          disabled={!isCreating}
-          fieldName={fieldNamePrefix + 'typeUrl'}
-          register={register}
-        >
-          <option value="/cosmos.authz.v1beta1.MsgGrant">
-            {t('form.grantAuthorizationOption')}
-          </option>
-          <option value="/cosmos.authz.v1beta1.MsgRevoke">
-            {t('form.revokeAuthorizationOption')}
-          </option>
-        </SelectInput>
-      </div>
+      <SegmentedControlsTitle
+        editable={isCreating}
+        fieldName={fieldNamePrefix + 'mode'}
+        tabs={[
+          {
+            label: t('form.grantAuthorizationOption'),
+            value: 'grant',
+          },
+          {
+            label: t('form.revokeAuthorizationOption'),
+            value: 'revoke',
+          },
+        ]}
+      />
 
       <div className="flex flex-col items-stretch gap-1">
         <InputLabel

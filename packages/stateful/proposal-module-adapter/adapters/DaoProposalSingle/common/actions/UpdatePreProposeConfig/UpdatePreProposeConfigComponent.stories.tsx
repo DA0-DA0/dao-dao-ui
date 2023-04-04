@@ -13,7 +13,7 @@ import {
 
 export default {
   title:
-    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalMultiple / common / actions / makeUpdatePreProposeConfigAction / UpdatePreProposeConfigComponent',
+    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalSingle / common / actions / UpdatePreProposeConfig',
   component: UpdatePreProposeConfigComponent,
   decorators: [
     makeReactHookFormDecorator<UpdatePreProposeConfigData>({

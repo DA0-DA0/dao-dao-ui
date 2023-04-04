@@ -1,17 +1,23 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
+import { TokenType } from '@dao-dao/types'
 
 import { UpdateProposalConfigData } from '.'
 import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalSingle / common / actions / makeUpdateProposalConfigV2Action / UpdateProposalConfigComponent',
+    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalSingle / common / actions / UpdateProposalConfigV1',
   component: UpdateProposalConfigComponent,
   decorators: [
     makeReactHookFormDecorator<UpdateProposalConfigData>({
       onlyMembersExecute: true,
+      depositRequired: true,
+      depositInfo: {
+        deposit: 123,
+        refundFailedProposals: true,
+      },
       thresholdType: '%',
       thresholdPercentage: 42,
       quorumEnabled: true,
@@ -34,4 +40,13 @@ Default.args = {
   index: 0,
   data: {},
   isCreating: true,
+  options: {
+    commonGovernanceTokenInfo: {
+      type: TokenType.Cw20,
+      denomOrAddress: 'gov',
+      symbol: 'GOV',
+      decimals: 6,
+      imageUrl: undefined,
+    },
+  },
 }
