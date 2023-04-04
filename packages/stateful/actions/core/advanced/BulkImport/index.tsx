@@ -8,6 +8,8 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 
+import { SuspenseLoader } from '../../../../components/SuspenseLoader'
+import { Trans } from '../../../../components/Trans'
 import { useLoadedActionsAndCategories } from '../../../react/context'
 import { BulkImportComponent } from './Component'
 
@@ -20,6 +22,8 @@ const Component: ActionComponent = (props) => (
     {...props}
     options={{
       loadedActions: useLoadedActionsAndCategories().loadedActions,
+      SuspenseLoader,
+      Trans,
     }}
   />
 )

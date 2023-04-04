@@ -1,33 +1,43 @@
 import JSON5 from 'json5'
 import uniq from 'lodash.uniq'
-import { useState } from 'react'
+import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button, CosmosMessageDisplay, FileDropInput } from '@dao-dao/stateless'
+import {
+  ActionsRenderer,
+  Button,
+  ButtonLink,
+  FileDropInput,
+} from '@dao-dao/stateless'
+import { SuspenseLoaderProps, TransProps } from '@dao-dao/types'
 import {
   ActionComponent,
+  CategorizedActionAndData,
+  LoadedAction,
   LoadedActions,
-  PartialCategorizedActionKeyAndData,
 } from '@dao-dao/types/actions'
 import { objectMatchesStructure } from '@dao-dao/utils'
 
-import { Trans } from '../../../../components'
-
 export type BulkImportOptions = {
   loadedActions: LoadedActions
+  SuspenseLoader: ComponentType<SuspenseLoaderProps>
+  Trans: ComponentType<TransProps>
+}
+
+type PendingAction = {
+  loadedAction: LoadedAction
+  data: any
 }
 
 export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
   addAction,
   remove,
-  options: { loadedActions },
+  options: { loadedActions, SuspenseLoader, Trans },
 }) => {
   const { t } = useTranslation()
 
   const [error, setError] = useState('')
-  const [pendingActions, setPendingActions] = useState<
-    PartialCategorizedActionKeyAndData[]
-  >([])
+  const [pendingActions, setPendingActions] = useState<PendingAction[]>([])
 
   const onSelect = (file: File) => {
     setError('')
@@ -93,23 +103,13 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
       }
 
       setPendingActions(
-        actions
-          .map(
-            ({ key, data }): PartialCategorizedActionKeyAndData | undefined => {
-              const loadedAction =
-                loadedActions[key as keyof typeof loadedActions]
-              // Type-check, validated above.
-              if (!loadedAction) {
-                return
-              }
-
-              return {
-                actionKey: loadedAction.action.key,
-                data,
-              }
-            }
-          )
-          .filter((data): data is PartialCategorizedActionKeyAndData => !!data)
+        actions.map(
+          ({ key, data }): PendingAction => ({
+            // Existence validated above.
+            loadedAction: loadedActions[key as keyof typeof loadedActions]!,
+            data,
+          })
+        )
       )
     }
     reader.onerror = () => {
@@ -120,7 +120,18 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
 
   const importPending = () => {
     // Add all pending actions to the form.
-    pendingActions.forEach((action) => addAction?.(action))
+    pendingActions.forEach(
+      ({
+        loadedAction: {
+          action: { key },
+        },
+        data,
+      }) =>
+        addAction?.({
+          actionKey: key,
+          data,
+        })
+    )
     // Remove this action from the form.
     remove?.()
   }
@@ -129,9 +140,19 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
     <>
       <p className="max-w-prose">{t('info.reviewActionImportData')}</p>
 
-      <CosmosMessageDisplay
-        className="styled-scrollbar max-h-96 overflow-y-auto pr-1"
-        value={JSON.stringify(pendingActions, null, 2)}
+      <ActionsRenderer
+        SuspenseLoader={SuspenseLoader}
+        actionData={pendingActions.map(
+          ({
+            loadedAction: { category, action },
+            data,
+          }): CategorizedActionAndData => ({
+            category,
+            action,
+            data,
+          })
+        )}
+        hideCopyLink
       />
 
       <div className="flex flex-row items-stretch justify-end gap-2 self-end">
@@ -144,6 +165,20 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
     </>
   ) : (
     <>
+      <p>
+        <Trans i18nKey="info.bulkImportActionExplanation">
+          Choose a JSON file below that matches the format described in{' '}
+          <ButtonLink
+            containerClassName="inline-block"
+            href="https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions"
+            variant="underline"
+          >
+            this guide
+          </ButtonLink>
+          .
+        </Trans>
+      </p>
+
       <FileDropInput Trans={Trans} onSelect={onSelect} />
 
       {error && <p className="text-text-interactive-error">{error}</p>}

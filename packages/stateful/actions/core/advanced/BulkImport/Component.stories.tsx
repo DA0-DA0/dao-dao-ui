@@ -6,6 +6,8 @@ import {
   makeDaoProvidersDecorator,
 } from '@dao-dao/storybook'
 
+import { SuspenseLoader } from '../../../../components/SuspenseLoader'
+import { Trans } from '../../../../components/Trans'
 import { useLoadedActionsAndCategories } from '../../../react'
 import { BulkImportComponent } from './Component'
 
@@ -23,6 +25,7 @@ const Template: ComponentStory<typeof BulkImportComponent> = (args) => (
   <BulkImportComponent
     {...args}
     options={{
+      ...args.options,
       loadedActions: useLoadedActionsAndCategories().loadedActions,
     }}
   />
@@ -36,4 +39,9 @@ Default.args = {
   data: {},
   isCreating: true,
   errors: {},
+  options: {
+    loadedActions: {},
+    SuspenseLoader,
+    Trans,
+  },
 }
