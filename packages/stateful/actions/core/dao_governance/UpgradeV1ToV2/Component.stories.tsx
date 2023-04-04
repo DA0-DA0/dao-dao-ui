@@ -6,7 +6,7 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
 
-import { AddressInput } from '../../../../components'
+import { AddressInput, EntityDisplay } from '../../../../components'
 import { UpgradeV1ToV2Component } from './Component'
 
 export default {
@@ -34,6 +34,8 @@ Default.args = {
   isCreating: true,
   errors: {},
   options: {
+    v1SubDaos: [],
     AddressInput,
+    EntityDisplay,
   },
 }

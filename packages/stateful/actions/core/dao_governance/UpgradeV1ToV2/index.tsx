@@ -1,13 +1,19 @@
-import { useCallback } from 'react'
-import { useRecoilValueLoadable, waitForAll } from 'recoil'
+import { useCallback, useMemo } from 'react'
+import { useRecoilValueLoadable, waitForAll, waitForAllSettled } from 'recoil'
 
-import { UnicornEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import {
+  DaoCoreV2Selectors,
+  contractVersionSelector,
+  isContractSelector,
+} from '@dao-dao/state/recoil'
+import { Loader, UnicornEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
   ActionMaker,
   ContractVersion,
   CoreActionKey,
+  LoadingData,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -19,22 +25,98 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { AddressInput } from '../../../../components'
+import { AddressInput, EntityDisplay } from '../../../../components'
 import {
   DaoProposalSingleAdapter,
   matchAndLoadCommon,
 } from '../../../../proposal-module-adapter'
-import { daoPotentialSubDaosSelector } from '../../../../recoil'
+import {
+  daoCoreProposalModulesSelector,
+  daoPotentialSubDaosSelector,
+} from '../../../../recoil'
+import { useActionOptions } from '../../../react'
 import { UpgradeV1ToV2Component, UpgradeV1ToV2Data } from './Component'
 
-const Component: ActionComponent = (props) => (
-  <UpgradeV1ToV2Component
-    {...props}
-    options={{
-      AddressInput,
-    }}
-  />
-)
+const useV1SubDaos = () => {
+  const { address, chainId } = useActionOptions()
+
+  const potentialSubDaos = useRecoilValueLoadable(
+    daoPotentialSubDaosSelector({
+      coreAddress: address,
+      chainId,
+    })
+  )
+  // Verify that the potential SubDAOs are actually DAOs.
+  const potentialSubDaosAreDaos = useCachedLoadable(
+    potentialSubDaos.state === 'hasValue'
+      ? waitForAll(
+          potentialSubDaos.contents.map((contractAddress) =>
+            isContractSelector({
+              contractAddress,
+              chainId,
+              names: [
+                // V1
+                'cw-core',
+                // V2
+                'cwd-core',
+                'dao-core',
+              ],
+            })
+          )
+        )
+      : undefined
+  )
+  // Get the versions of the potential SubDAOs.
+  const potentialSubDaoVersions = useCachedLoadable(
+    potentialSubDaos.state === 'hasValue'
+      ? waitForAllSettled(
+          potentialSubDaos.contents.map((contractAddress) =>
+            contractVersionSelector({ contractAddress })
+          )
+        )
+      : undefined
+  )
+
+  const potentialV1SubDaos: LoadingData<string[]> = useMemo(
+    () =>
+      potentialSubDaos.state === 'hasValue' &&
+      potentialSubDaosAreDaos.state === 'hasValue' &&
+      potentialSubDaoVersions.state === 'hasValue'
+        ? {
+            loading: false,
+            data: potentialSubDaos.contents.filter(
+              (_, i) =>
+                potentialSubDaosAreDaos.contents[i] &&
+                potentialSubDaoVersions.contents[i].state === 'hasValue' &&
+                potentialSubDaoVersions.contents[i].contents ===
+                  ContractVersion.V1
+            ),
+          }
+        : {
+            loading: true,
+          },
+    [potentialSubDaoVersions, potentialSubDaos, potentialSubDaosAreDaos]
+  )
+
+  return potentialV1SubDaos
+}
+
+const Component: ActionComponent = (props) => {
+  const v1SubDaos = useV1SubDaos()
+
+  return v1SubDaos.loading ? (
+    <Loader />
+  ) : (
+    <UpgradeV1ToV2Component
+      {...props}
+      options={{
+        v1SubDaos: v1SubDaos.data,
+        AddressInput,
+        EntityDisplay,
+      }}
+    />
+  )
+}
 
 export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
   context,
@@ -55,7 +137,11 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
     )
 
     return {
+      targetAddress:
+        // If DAO is not on v1, don't default to the DAO address.
+        context.info.coreVersion === ContractVersion.V1 ? address : '',
       subDaos:
+        context.info.coreVersion === ContractVersion.V1 &&
         potentialSubDaos.state === 'hasValue'
           ? potentialSubDaos.contents.map((addr) => ({
               addr,
@@ -65,32 +151,105 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
   }
 
   const useTransformToCosmos: UseTransformToCosmos<UpgradeV1ToV2Data> = () => {
+    const v1SubDaos = useV1SubDaos()
+    const v1SubDaoProposalModules = useCachedLoadable(
+      v1SubDaos.loading
+        ? undefined
+        : waitForAll(
+            v1SubDaos.data.map((coreAddress) =>
+              daoCoreProposalModulesSelector({
+                coreAddress,
+                chainId,
+              })
+            )
+          )
+    )
+    const v1SubDaoConfigs = useCachedLoadable(
+      v1SubDaos.loading
+        ? undefined
+        : waitForAll(
+            v1SubDaos.data.map((contractAddress) =>
+              DaoCoreV2Selectors.configSelector({
+                contractAddress,
+                chainId,
+                params: [],
+              })
+            )
+          )
+    )
+
+    const availableDaos = useMemo(
+      () =>
+        !v1SubDaos.loading &&
+        v1SubDaoProposalModules.state === 'hasValue' &&
+        v1SubDaoConfigs.state === 'hasValue'
+          ? [
+              {
+                address,
+                name: context.info.name,
+                proposalModules: context.info.proposalModules,
+              },
+              ...v1SubDaos.data.map((address, index) => ({
+                address,
+                name: v1SubDaoConfigs.contents[index].name,
+                proposalModules: v1SubDaoProposalModules.contents[index],
+              })),
+            ]
+          : undefined,
+      [v1SubDaoProposalModules, v1SubDaoConfigs, v1SubDaos]
+    )
+
     // Get proposal module deposit info to pass through to pre-propose.
-    const depositInfoSelectors = context.info.proposalModules.map(
-      (proposalModule) =>
-        matchAndLoadCommon(proposalModule, {
-          chainId,
-          coreAddress: address,
-        }).selectors.depositInfo
+    const depositInfoSelectors = availableDaos?.map(
+      ({ address: coreAddress, proposalModules }) =>
+        proposalModules.map(
+          (proposalModule) =>
+            matchAndLoadCommon(proposalModule, {
+              chainId,
+              coreAddress,
+            }).selectors.depositInfo
+        )
     )
     // The deposit infos are ordered to match the proposal modules in the DAO
     // core list, which is what the migration contract expects.
     const proposalModuleDepositInfosLoadable = useCachedLoadable(
-      waitForAll(depositInfoSelectors)
+      depositInfoSelectors
+        ? waitForAll(
+            depositInfoSelectors.map((selectors) => waitForAll(selectors))
+          )
+        : undefined
     )
 
     return useCallback(
-      ({ subDaos }) => {
-        if (proposalModuleDepositInfosLoadable.state === 'hasError') {
-          throw proposalModuleDepositInfosLoadable.contents
-        } else if (proposalModuleDepositInfosLoadable.state === 'loading') {
+      ({ targetAddress, subDaos }) => {
+        if (
+          !availableDaos ||
+          proposalModuleDepositInfosLoadable.state === 'loading'
+        ) {
           return
         }
 
+        if (proposalModuleDepositInfosLoadable.state === 'hasError') {
+          throw proposalModuleDepositInfosLoadable.contents
+        }
+
+        // Get proposal module deposit infos for the target DAO based on the
+        // index of the address in the available DAOs list.
+        const targetDaoIndex = availableDaos.findIndex(
+          ({ address }) => address === targetAddress
+        )
+        if (targetDaoIndex === -1) {
+          throw new Error(t('error.loadingData'))
+        }
+
+        const { name, proposalModules } = availableDaos[targetDaoIndex]
+        const proposalModuleDepositInfos =
+          proposalModuleDepositInfosLoadable.contents[targetDaoIndex]
+
         // Array of tuples of each proposal module address and its params.
-        const proposalParams = proposalModuleDepositInfosLoadable.contents.map(
+        const proposalParams = proposalModuleDepositInfos.map(
           (depositInfo, index) => [
-            context.info.proposalModules[index].address,
+            proposalModules[index].address,
             {
               close_proposal_on_execution_failure: true,
               pre_propose_info: {
@@ -98,7 +257,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
                   info: {
                     admin: { core_module: {} },
                     code_id: CODE_ID_CONFIG.DaoPreProposeSingle,
-                    label: `DAO_${context.info.name}_pre-propose-${DaoProposalSingleAdapter.id}`,
+                    label: `DAO_${name}_pre-propose-${DaoProposalSingleAdapter.id}`,
                     msg: Buffer.from(
                       JSON.stringify({
                         deposit_info: depositInfo
@@ -133,11 +292,11 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
         return makeWasmMessage({
           wasm: {
             migrate: {
-              contract_addr: address,
+              contract_addr: targetAddress,
               new_code_id: CODE_ID_CONFIG.DaoCore,
               msg: {
                 from_v1: {
-                  dao_uri: `https://daodao.zone/dao/${address}`,
+                  dao_uri: `https://daodao.zone/dao/${targetAddress}`,
                   params: {
                     migrator_code_id: CODE_ID_CONFIG.DaoMigrator,
                     params: {
@@ -167,7 +326,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
           },
         })
       },
-      [proposalModuleDepositInfosLoadable]
+      [availableDaos, proposalModuleDepositInfosLoadable]
     )
   }
 
@@ -210,6 +369,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
       ? {
           match: true,
           data: {
+            targetAddress: msg.wasm.migrate.contract_addr,
             subDaos: msg.wasm.migrate.msg.from_v1.params.params.sub_daos,
           },
         }
@@ -224,9 +384,6 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
     description: t('info.upgradeToV2Description'),
     notReusable: true,
     Component,
-    // Only allow v1 DAOs to use this action, but still show it for v2 DAOs
-    // since they may have used it to upgrade from v1 in the past.
-    disallowCreation: context.info.coreVersion !== ContractVersion.V1,
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
