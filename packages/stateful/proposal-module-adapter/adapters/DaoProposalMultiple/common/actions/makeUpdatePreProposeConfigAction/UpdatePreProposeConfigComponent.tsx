@@ -83,10 +83,6 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
             ...governanceToken,
             type: 'voting_module_token',
             description: t('title.governanceToken'),
-            imageUrl:
-              (depositInfo.type === 'voting_module_token' &&
-                depositInfo.token?.imageUrl) ||
-              undefined,
           },
         ]
       : []),
