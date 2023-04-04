@@ -69,6 +69,7 @@ export const makeEnableVestingPaymentsAction: ActionMaker<
     Icon: SuitAndTieEmoji,
     label: t('title.enableVestingPayments'),
     description: t('widgetDescription.vesting'),
+    keywords: ['payroll'],
     notReusable: true,
     Component,
     useDefaults,

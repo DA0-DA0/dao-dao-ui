@@ -63,6 +63,7 @@ export const makeEnableRetroactiveCompensationAction: ActionMaker = (
     Icon: BeeEmoji,
     label: t('title.enableRetroactiveCompensation'),
     description: t('widgetDescription.retroactive'),
+    keywords: ['payroll'],
     notReusable: true,
     Component,
     useDefaults,
