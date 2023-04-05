@@ -35,7 +35,7 @@ export const Pagination = ({
   return (
     <div
       className={clsx(
-        'flex max-w-md flex-row items-center justify-between gap-2',
+        'flex max-w-sm flex-row items-center justify-between gap-4',
         className
       )}
     >

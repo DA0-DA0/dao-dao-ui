@@ -86,15 +86,13 @@ export const ActionCard = ({
         )}
       </div>
 
-      <div className="styled-scrollbar mr-1 max-h-[75vh] overflow-y-auto">
-        <div
-          className={clsx(
-            'flex flex-col gap-4 pl-6 pr-5 pt-4 pb-5',
-            childrenContainerClassName
-          )}
-        >
-          {children}
-        </div>
+      <div
+        className={clsx(
+          'flex flex-col gap-4 px-6 pt-4 pb-5',
+          childrenContainerClassName
+        )}
+      >
+        {children}
       </div>
     </div>
   )

@@ -1,6 +1,7 @@
-import { Check, Link } from '@mui/icons-material'
+import { Check, Link, WarningRounded } from '@mui/icons-material'
 import { ComponentType, useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import { SuspenseLoaderProps } from '@dao-dao/types'
@@ -14,6 +15,7 @@ import {
 
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
+import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
 import { ActionCard } from './ActionCard'
 
 // The props needed to render an action from a message.
@@ -141,6 +143,8 @@ export type ActionRendererProps = {
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
+const ACTIONS_PER_PAGE = 20
+
 // Renders a group of data that belong to the same action.
 export const ActionRenderer = ({
   category,
@@ -149,26 +153,61 @@ export const ActionRenderer = ({
   allActionsWithData,
   SuspenseLoader,
 }: ActionRendererProps) => {
+  const { t } = useTranslation()
   const form = useForm({
     defaultValues: {
       data: all.map(({ data }) => data),
     },
   })
 
+  const [page, setPage] = useState(PAGINATION_MIN_PAGE)
+  const minIndex = (page - 1) * ACTIONS_PER_PAGE
+  const maxIndex = page * ACTIONS_PER_PAGE
+  const maxPage = Math.ceil(all.length / ACTIONS_PER_PAGE)
+
   return (
     <FormProvider {...form}>
       <ActionCard action={action} actionCount={all.length} category={category}>
-        {all.map(({ index, data }, dataIndex) => (
-          <SuspenseLoader key={index} fallback={<Loader size={36} />}>
-            <action.Component
-              allActionsWithData={allActionsWithData}
-              data={data}
-              fieldNamePrefix={`data.${dataIndex}.`}
-              index={index}
-              isCreating={false}
+        {all.map(
+          ({ index, data }, dataIndex) =>
+            // Paginate manually instead of slicing the array so that the
+            // `dataIndex` matches the index in the `data` array of the form.
+            dataIndex >= minIndex &&
+            dataIndex < maxIndex && (
+              <SuspenseLoader key={index} fallback={<Loader size={36} />}>
+                <action.Component
+                  allActionsWithData={allActionsWithData}
+                  data={data}
+                  fieldNamePrefix={`data.${dataIndex}.`}
+                  index={index}
+                  isCreating={false}
+                />
+              </SuspenseLoader>
+            )
+        )}
+
+        {maxPage > PAGINATION_MIN_PAGE && (
+          <div className="-mx-6 flex flex-col gap-4 border-t border-border-secondary p-6 pb-0">
+            <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
+              <WarningRounded className="!h-12 !w-12 text-icon-interactive-warning" />
+
+              <p className="primary-text text-text-interactive-warning-body">
+                {t('info.actionPageWarning', {
+                  actions: all.length,
+                  pages: maxPage,
+                })}
+              </p>
+            </div>
+
+            <Pagination
+              className="w-full self-center"
+              page={page}
+              pageSize={ACTIONS_PER_PAGE}
+              setPage={setPage}
+              total={all.length}
             />
-          </SuspenseLoader>
-        ))}
+          </div>
+        )}
       </ActionCard>
     </FormProvider>
   )

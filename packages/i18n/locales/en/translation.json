@@ -538,6 +538,7 @@
   },
   "info": {
     "abstainVote": "Abstain",
+    "actionPageWarning": "There are {{actions}} actions across {{pages}} pages. Make sure you view all pages before voting.",
     "actionPaysTokenSwap_paid": "This action sent {{amount}} ${{tokenSymbol}} to the token swap contract below.",
     "actionPaysTokenSwap_unpaid": "This action sends {{amount}} ${{tokenSymbol}} to the token swap contract below.",
     "actionWithdrawsTokenSwap_done": "This action withdrew {{amount}} ${{tokenSymbol}} from the token swap contract below.",
