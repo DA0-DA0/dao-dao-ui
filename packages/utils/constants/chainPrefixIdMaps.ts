@@ -6,14 +6,14 @@ import { ChainPrefixIdMap } from '@dao-dao/types'
 // to the chain ID it is on.
 
 const testnet: ChainPrefixIdMap = {
-  juno: ChainInfoID.Uni6,
+  stars: ChainInfoID.Stargaze1,
 }
 
 const mainnet: ChainPrefixIdMap = {
-  juno: ChainInfoID.Juno1,
+  stars: ChainInfoID.Stargaze1,
 }
 
 export const ChainPrefixIdMaps = {
   testnet,
-  mainnet,
+  // mainnet,
 }

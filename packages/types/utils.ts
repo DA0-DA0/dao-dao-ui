@@ -44,7 +44,7 @@ export interface CodeIdConfig {
 }
 
 export interface ChainPrefixIdMap {
-  juno: string
+  stars: string
 }
 
 export type ParametersExceptFirst<F> = F extends (
