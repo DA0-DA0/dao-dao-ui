@@ -4,14 +4,14 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState, waitForAll } from 'recoil'
 
-import { Cw20BaseSelectors, wyndUsdPriceSelector } from '@dao-dao/state/recoil'
+import { genericTokenWithUsdPriceSelector } from '@dao-dao/state/recoil'
 import {
   Loader,
   useCachedLoadable,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { AmountWithTimestampAndDenom } from '@dao-dao/types'
+import { TokenType } from '@dao-dao/types'
 
 import { EntityDisplay, SuspenseLoader } from '../../../../../../components'
 import {
@@ -109,37 +109,28 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
     ]
   )
 
-  const loadingCw20TokenInfos = useCachedLoadable(
+  const tokenPrices = useCachedLoadable(
     statusLoadable.state === 'hasValue' && statusLoadable.contents
-      ? waitForAll(
-          statusLoadable.contents.survey.attributes.flatMap(({ cw20Tokens }) =>
-            cw20Tokens.map(({ address }) =>
-              Cw20BaseSelectors.tokenInfoWithAddressAndLogoSelector({
-                contractAddress: address,
-                chainId,
-                params: [],
-              })
-            )
-          )
-        )
-      : undefined
-  )
-
-  const prices = useCachedLoadable(
-    statusLoadable.state === 'hasValue' &&
-      statusLoadable.contents &&
-      loadingCw20TokenInfos.state === 'hasValue'
       ? waitForAll(
           statusLoadable.contents.survey.attributes.flatMap(
             ({ nativeTokens, cw20Tokens }) => [
-              ...nativeTokens.map(({ denom }) => wyndUsdPriceSelector(denom)),
-              ...cw20Tokens.map(({ address }) => wyndUsdPriceSelector(address)),
+              ...nativeTokens.map(({ denom }) =>
+                genericTokenWithUsdPriceSelector({
+                  type: TokenType.Native,
+                  denomOrAddress: denom,
+                })
+              ),
+              ...cw20Tokens.map(({ address }) =>
+                genericTokenWithUsdPriceSelector({
+                  type: TokenType.Cw20,
+                  denomOrAddress: address,
+                })
+              ),
             ]
           )
         )
       : undefined
   )
-
   const walletEntity = useEntity({
     address: walletAddress,
     chainId,
@@ -149,26 +140,20 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
     <SuspenseLoader
       fallback={<Loader />}
       forceFallback={
-        statusLoadable.state === 'loading' ||
-        loadingCw20TokenInfos.state === 'loading' ||
-        prices.state === 'loading'
+        statusLoadable.state === 'loading' || tokenPrices.state === 'loading'
       }
     >
       {statusLoadable.state === 'hasValue' &&
         !!statusLoadable.contents &&
-        loadingCw20TokenInfos.state === 'hasValue' &&
-        prices.state === 'hasValue' && (
+        tokenPrices.state === 'hasValue' && (
           <StatelessProposalCreationForm
             EntityDisplay={EntityDisplay}
             completeRatings={data}
-            cw20TokenInfos={loadingCw20TokenInfos.contents}
             entity={walletEntity}
             loading={loading || statusLoadable.updating}
             onComplete={onComplete}
-            prices={
-              prices.contents.filter(Boolean) as AmountWithTimestampAndDenom[]
-            }
             status={statusLoadable.contents}
+            tokenPrices={tokenPrices.contents}
             walletAddress={walletAddress}
           />
         )}

@@ -15,19 +15,14 @@ import {
   TokenAmountDisplay,
 } from '@dao-dao/stateless'
 import {
-  AmountWithTimestampAndDenom,
   Entity,
+  GenericTokenWithUsdPrice,
   LoadingData,
   StatefulEntityDisplayProps,
-  TokenInfoResponseWithAddressAndLogo,
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   decodedMessagesString,
-  getFallbackImage,
-  nativeTokenDecimals,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -42,8 +37,7 @@ export interface ProposalCreationFormProps {
   onComplete: (data: ProposalCreationFormData) => Promise<void>
   loading: boolean
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
-  cw20TokenInfos: TokenInfoResponseWithAddressAndLogo[]
-  prices: AmountWithTimestampAndDenom[]
+  tokenPrices: GenericTokenWithUsdPrice[]
   walletAddress: string
   entity: LoadingData<Entity>
 }
@@ -54,37 +48,23 @@ export const ProposalCreationForm = ({
   onComplete,
   loading,
   EntityDisplay,
-  cw20TokenInfos,
-  prices,
+  tokenPrices,
   walletAddress,
   entity,
 }: ProposalCreationFormProps) => {
   const { t } = useTranslation()
 
-  // Convert cw20TokenInfos into map of token addresses to token info.
-  const cw20TokenInfosMap = useMemo(
+  // Map token denom to price info.
+  const tokenMap = useMemo(
     () =>
-      cw20TokenInfos.reduce(
+      tokenPrices.reduce(
         (acc, tokenInfo) => ({
           ...acc,
-          [tokenInfo.address]: tokenInfo,
+          [tokenInfo.token.denomOrAddress]: tokenInfo,
         }),
-        {} as Record<string, TokenInfoResponseWithAddressAndLogo>
+        {} as Record<string, GenericTokenWithUsdPrice>
       ),
-    [cw20TokenInfos]
-  )
-
-  // Convert prices into map of token to price.
-  const pricesMap = useMemo(
-    () =>
-      prices.reduce(
-        (acc, price) => ({
-          ...acc,
-          [price.denom]: price,
-        }),
-        {} as Record<string, AmountWithTimestampAndDenom>
-      ),
-    [prices]
+    [tokenPrices]
   )
 
   const [showPreview, setShowPreview] = useState(false)
@@ -276,44 +256,29 @@ export const ProposalCreationForm = ({
                 const backgroundClassName =
                   contributionIndex % 2 !== 0 && 'bg-background-tertiary'
 
-                const nativeTokens = compensation.compensationPerAttribute
-                  .flatMap(({ nativeTokens }) => nativeTokens)
+                const tokens = compensation.compensationPerAttribute
+                  .flatMap(({ cw20Tokens, nativeTokens }) => [
+                    ...nativeTokens,
+                    ...cw20Tokens,
+                  ])
                   .reduce(
-                    (acc, { denom, amount }) => ({
+                    (acc, { denomOrAddress, amount }) => ({
                       ...acc,
-                      [denom]:
-                        (acc[denom] ?? 0) +
+                      [denomOrAddress]:
+                        (acc[denomOrAddress] ?? 0) +
                         convertMicroDenomToDenomWithDecimals(
                           amount,
-                          nativeTokenDecimals(denom) ?? 0
+                          tokenMap[denomOrAddress]?.token.decimals ?? 0
                         ),
                     }),
                     {} as Record<string, number>
                   )
-                const cw20Tokens = compensation.compensationPerAttribute
-                  .flatMap(({ cw20Tokens }) => cw20Tokens)
-                  .reduce(
-                    (acc, { address, amount }) => ({
-                      ...acc,
-                      [address]:
-                        (acc[address] ?? 0) +
-                        convertMicroDenomToDenomWithDecimals(
-                          amount,
-                          cw20TokenInfosMap[address]?.decimals ?? 0
-                        ),
-                    }),
-                    {} as Record<string, number>
+                const totalUsdc = Object.entries(tokens)
+                  .map(
+                    ([denomOrAddress, amount]) =>
+                      (tokenMap[denomOrAddress]?.usdPrice ?? 0) * amount
                   )
-                const totalUsdc = [
-                  ...Object.entries(nativeTokens).map(
-                    ([denom, amount]) =>
-                      (pricesMap[denom]?.amount ?? 0) * amount
-                  ),
-                  ...Object.entries(cw20Tokens).map(
-                    ([address, amount]) =>
-                      (pricesMap[address]?.amount ?? 0) * amount
-                  ),
-                ].reduce((acc, amount) => acc + amount, 0)
+                  .reduce((acc, amount) => acc + amount, 0)
 
                 return (
                   <Fragment key={id}>
@@ -356,31 +321,20 @@ export const ProposalCreationForm = ({
                           'rounded-br-md'
                       )}
                     >
-                      {Object.entries(nativeTokens).map(
-                        ([denom, amount], index) => (
+                      {Object.entries(tokens).map(
+                        ([denomOrAddress, amount], index) => (
                           <TokenAmountDisplay
                             key={index}
                             amount={amount}
                             className="text-right"
-                            decimals={nativeTokenDecimals(denom) ?? 0}
-                            iconUrl={nativeTokenLogoURI(denom)}
-                            symbol={nativeTokenLabel(denom)}
-                          />
-                        )
-                      )}
-                      {Object.entries(cw20Tokens).map(
-                        ([address, amount], index) => (
-                          <TokenAmountDisplay
-                            key={index}
-                            amount={amount}
-                            className="text-right"
-                            decimals={cw20TokenInfosMap[address]?.decimals ?? 0}
-                            iconUrl={
-                              cw20TokenInfosMap[address]?.logoUrl ||
-                              getFallbackImage(address)
+                            dateFetched={tokenMap[denomOrAddress]?.timestamp}
+                            decimals={
+                              tokenMap[denomOrAddress]?.token.decimals ?? 0
                             }
+                            iconUrl={tokenMap[denomOrAddress]?.token.imageUrl}
                             symbol={
-                              cw20TokenInfosMap[address]?.symbol ?? address
+                              tokenMap[denomOrAddress]?.token.symbol ??
+                              denomOrAddress
                             }
                           />
                         )
@@ -390,7 +344,7 @@ export const ProposalCreationForm = ({
                         <TokenAmountDisplay
                           amount={totalUsdc}
                           className="caption-text text-right"
-                          dateFetched={prices[0]?.timestamp}
+                          dateFetched={tokenPrices[0]?.timestamp}
                           estimatedUsdValue
                           hideApprox
                           prefix="= "

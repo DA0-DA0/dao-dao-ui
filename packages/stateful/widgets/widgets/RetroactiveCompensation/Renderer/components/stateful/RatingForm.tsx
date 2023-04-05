@@ -6,16 +6,15 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValue, useSetRecoilState, waitForAll } from 'recoil'
 
 import {
-  Cw20BaseSelectors,
   cosmWasmClientForChainSelector,
-  wyndUsdPriceSelector,
+  genericTokenWithUsdPriceSelector,
 } from '@dao-dao/state/recoil'
 import {
   Loader,
   useCachedLoadable,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { AmountWithTimestampAndDenom } from '@dao-dao/types'
+import { TokenType } from '@dao-dao/types'
 
 import {
   AddressInput,
@@ -79,31 +78,23 @@ export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
     [coreAddress, postRequest, setRefreshStatus, t]
   )
 
-  const loadingCw20TokenInfos = useCachedLoadable(
+  const tokenPrices = useCachedLoadable(
     statusLoadable.state === 'hasValue' && statusLoadable.contents
-      ? waitForAll(
-          statusLoadable.contents.survey.attributes.flatMap(({ cw20Tokens }) =>
-            cw20Tokens.map(({ address }) =>
-              Cw20BaseSelectors.tokenInfoWithAddressAndLogoSelector({
-                contractAddress: address,
-                chainId,
-                params: [],
-              })
-            )
-          )
-        )
-      : undefined
-  )
-
-  const prices = useCachedLoadable(
-    statusLoadable.state === 'hasValue' &&
-      statusLoadable.contents &&
-      loadingCw20TokenInfos.state === 'hasValue'
       ? waitForAll(
           statusLoadable.contents.survey.attributes.flatMap(
             ({ nativeTokens, cw20Tokens }) => [
-              ...nativeTokens.map(({ denom }) => wyndUsdPriceSelector(denom)),
-              ...cw20Tokens.map(({ address }) => wyndUsdPriceSelector(address)),
+              ...nativeTokens.map(({ denom }) =>
+                genericTokenWithUsdPriceSelector({
+                  type: TokenType.Native,
+                  denomOrAddress: denom,
+                })
+              ),
+              ...cw20Tokens.map(({ address }) =>
+                genericTokenWithUsdPriceSelector({
+                  type: TokenType.Cw20,
+                  denomOrAddress: address,
+                })
+              ),
             ]
           )
         )
@@ -148,28 +139,22 @@ export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
     <SuspenseLoader
       fallback={<Loader />}
       forceFallback={
-        statusLoadable.state === 'loading' ||
-        loadingCw20TokenInfos.state === 'loading' ||
-        prices.state === 'loading'
+        statusLoadable.state === 'loading' || tokenPrices.state === 'loading'
       }
     >
       {statusLoadable.state === 'hasValue' &&
         !!statusLoadable.contents &&
-        loadingCw20TokenInfos.state === 'hasValue' &&
-        prices.state === 'hasValue' && (
+        tokenPrices.state === 'hasValue' && (
           <StatelessRatingForm
             AddressInput={AddressInput}
             EntityDisplay={EntityDisplay}
-            cw20TokenInfos={loadingCw20TokenInfos.contents}
             data={data}
             loadingNominate={loadingNominate}
             loadingSubmit={loadingSubmit || statusLoadable.updating}
             onNominate={onNominate}
             onSubmit={onSubmit}
-            prices={
-              prices.contents.filter(Boolean) as AmountWithTimestampAndDenom[]
-            }
             status={statusLoadable.contents}
+            tokenPrices={tokenPrices.contents}
           />
         )}
     </SuspenseLoader>

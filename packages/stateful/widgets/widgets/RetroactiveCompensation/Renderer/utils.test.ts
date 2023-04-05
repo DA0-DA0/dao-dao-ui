@@ -1,4 +1,5 @@
 import {
+  AnyToken,
   Attribute,
   ContributionCompensation,
   ContributionRating,
@@ -13,6 +14,15 @@ const nativeToken = (amount: number): NativeToken => ({
 })
 const cw20Token = (amount: number): Cw20Token => ({
   address: 'junoCw20Dao',
+  amount: amount.toString(),
+})
+
+const anyNativeToken = (amount: number): AnyToken => ({
+  denomOrAddress: 'ujuno',
+  amount: amount.toString(),
+})
+const anyCw20Token = (amount: number): AnyToken => ({
+  denomOrAddress: 'junoCw20Dao',
   amount: amount.toString(),
 })
 
@@ -55,18 +65,18 @@ describe('computeCompensation', () => {
         compensationPerAttribute: [
           {
             averageRating: 50,
-            nativeTokens: [nativeToken(1000)],
+            nativeTokens: [anyNativeToken(1000)],
             cw20Tokens: [],
           },
           {
             averageRating: 50,
             nativeTokens: [],
-            cw20Tokens: [cw20Token(1000)],
+            cw20Tokens: [anyCw20Token(1000)],
           },
           {
             averageRating: 50,
-            nativeTokens: [nativeToken(1000)],
-            cw20Tokens: [cw20Token(1000)],
+            nativeTokens: [anyNativeToken(1000)],
+            cw20Tokens: [anyCw20Token(1000)],
           },
         ],
       },
@@ -75,18 +85,18 @@ describe('computeCompensation', () => {
         compensationPerAttribute: [
           {
             averageRating: 0,
-            nativeTokens: [nativeToken(0)],
+            nativeTokens: [anyNativeToken(0)],
             cw20Tokens: [],
           },
           {
             averageRating: 0,
             nativeTokens: [],
-            cw20Tokens: [cw20Token(0)],
+            cw20Tokens: [anyCw20Token(0)],
           },
           {
             averageRating: 0,
-            nativeTokens: [nativeToken(0)],
-            cw20Tokens: [cw20Token(0)],
+            nativeTokens: [anyNativeToken(0)],
+            cw20Tokens: [anyCw20Token(0)],
           },
         ],
       },
@@ -115,18 +125,18 @@ describe('computeCompensation', () => {
         compensationPerAttribute: [
           {
             averageRating: 100,
-            nativeTokens: [nativeToken(1000)],
+            nativeTokens: [anyNativeToken(1000)],
             cw20Tokens: [],
           },
           {
             averageRating: 100,
             nativeTokens: [],
-            cw20Tokens: [cw20Token(1000)],
+            cw20Tokens: [anyCw20Token(1000)],
           },
           {
             averageRating: 100,
-            nativeTokens: [nativeToken(1000)],
-            cw20Tokens: [cw20Token(1000)],
+            nativeTokens: [anyNativeToken(1000)],
+            cw20Tokens: [anyCw20Token(1000)],
           },
         ],
       },
@@ -135,18 +145,18 @@ describe('computeCompensation', () => {
         compensationPerAttribute: [
           {
             averageRating: 0,
-            nativeTokens: [nativeToken(0)],
+            nativeTokens: [anyNativeToken(0)],
             cw20Tokens: [],
           },
           {
             averageRating: 0,
             nativeTokens: [],
-            cw20Tokens: [cw20Token(0)],
+            cw20Tokens: [anyCw20Token(0)],
           },
           {
             averageRating: 0,
-            nativeTokens: [nativeToken(0)],
-            cw20Tokens: [cw20Token(0)],
+            nativeTokens: [anyNativeToken(0)],
+            cw20Tokens: [anyCw20Token(0)],
           },
         ],
       },
@@ -175,18 +185,18 @@ describe('computeCompensation', () => {
         compensationPerAttribute: [
           {
             averageRating: 100,
-            nativeTokens: [nativeToken(500)],
+            nativeTokens: [anyNativeToken(500)],
             cw20Tokens: [],
           },
           {
             averageRating: 100,
             nativeTokens: [],
-            cw20Tokens: [cw20Token(500)],
+            cw20Tokens: [anyCw20Token(500)],
           },
           {
             averageRating: 100,
-            nativeTokens: [nativeToken(500)],
-            cw20Tokens: [cw20Token(500)],
+            nativeTokens: [anyNativeToken(500)],
+            cw20Tokens: [anyCw20Token(500)],
           },
         ],
       },
@@ -195,18 +205,18 @@ describe('computeCompensation', () => {
         compensationPerAttribute: [
           {
             averageRating: 100,
-            nativeTokens: [nativeToken(500)],
+            nativeTokens: [anyNativeToken(500)],
             cw20Tokens: [],
           },
           {
             averageRating: 100,
             nativeTokens: [],
-            cw20Tokens: [cw20Token(500)],
+            cw20Tokens: [anyCw20Token(500)],
           },
           {
             averageRating: 100,
-            nativeTokens: [nativeToken(500)],
-            cw20Tokens: [cw20Token(500)],
+            nativeTokens: [anyNativeToken(500)],
+            cw20Tokens: [anyCw20Token(500)],
           },
         ],
       },
@@ -235,18 +245,18 @@ describe('computeCompensation', () => {
         compensationPerAttribute: [
           {
             averageRating: 0,
-            nativeTokens: [nativeToken(0)],
+            nativeTokens: [anyNativeToken(0)],
             cw20Tokens: [],
           },
           {
             averageRating: 0,
             nativeTokens: [],
-            cw20Tokens: [cw20Token(0)],
+            cw20Tokens: [anyCw20Token(0)],
           },
           {
             averageRating: 0,
-            nativeTokens: [nativeToken(0)],
-            cw20Tokens: [cw20Token(0)],
+            nativeTokens: [anyNativeToken(0)],
+            cw20Tokens: [anyCw20Token(0)],
           },
         ],
       },
@@ -255,18 +265,18 @@ describe('computeCompensation', () => {
         compensationPerAttribute: [
           {
             averageRating: 12,
-            nativeTokens: [nativeToken(1000)],
+            nativeTokens: [anyNativeToken(1000)],
             cw20Tokens: [],
           },
           {
             averageRating: 56,
             nativeTokens: [],
-            cw20Tokens: [cw20Token(1000)],
+            cw20Tokens: [anyCw20Token(1000)],
           },
           {
             averageRating: 34,
-            nativeTokens: [nativeToken(1000)],
-            cw20Tokens: [cw20Token(1000)],
+            nativeTokens: [anyNativeToken(1000)],
+            cw20Tokens: [anyCw20Token(1000)],
           },
         ],
       },
@@ -295,18 +305,18 @@ describe('computeCompensation', () => {
         compensationPerAttribute: [
           {
             averageRating: 0,
-            nativeTokens: [nativeToken(0)],
+            nativeTokens: [anyNativeToken(0)],
             cw20Tokens: [],
           },
           {
             averageRating: 0,
             nativeTokens: [],
-            cw20Tokens: [cw20Token(0)],
+            cw20Tokens: [anyCw20Token(0)],
           },
           {
             averageRating: 0,
-            nativeTokens: [nativeToken(0)],
-            cw20Tokens: [cw20Token(0)],
+            nativeTokens: [anyNativeToken(0)],
+            cw20Tokens: [anyCw20Token(0)],
           },
         ],
       },
@@ -315,18 +325,18 @@ describe('computeCompensation', () => {
         compensationPerAttribute: [
           {
             averageRating: 0,
-            nativeTokens: [nativeToken(0)],
+            nativeTokens: [anyNativeToken(0)],
             cw20Tokens: [],
           },
           {
             averageRating: 0,
             nativeTokens: [],
-            cw20Tokens: [cw20Token(0)],
+            cw20Tokens: [anyCw20Token(0)],
           },
           {
             averageRating: 0,
-            nativeTokens: [nativeToken(0)],
-            cw20Tokens: [cw20Token(0)],
+            nativeTokens: [anyNativeToken(0)],
+            cw20Tokens: [anyCw20Token(0)],
           },
         ],
       },
@@ -365,18 +375,18 @@ describe('computeCompensation', () => {
         compensationPerAttribute: [
           {
             averageRating: 75,
-            nativeTokens: [nativeToken(750)],
+            nativeTokens: [anyNativeToken(750)],
             cw20Tokens: [],
           },
           {
             averageRating: 75,
             nativeTokens: [],
-            cw20Tokens: [cw20Token(750)],
+            cw20Tokens: [anyCw20Token(750)],
           },
           {
             averageRating: 75,
-            nativeTokens: [nativeToken(750)],
-            cw20Tokens: [cw20Token(750)],
+            nativeTokens: [anyNativeToken(750)],
+            cw20Tokens: [anyCw20Token(750)],
           },
         ],
       },
@@ -385,18 +395,18 @@ describe('computeCompensation', () => {
         compensationPerAttribute: [
           {
             averageRating: 25,
-            nativeTokens: [nativeToken(250)],
+            nativeTokens: [anyNativeToken(250)],
             cw20Tokens: [],
           },
           {
             averageRating: 25,
             nativeTokens: [],
-            cw20Tokens: [cw20Token(250)],
+            cw20Tokens: [anyCw20Token(250)],
           },
           {
             averageRating: 25,
-            nativeTokens: [nativeToken(250)],
-            cw20Tokens: [cw20Token(250)],
+            nativeTokens: [anyNativeToken(250)],
+            cw20Tokens: [anyCw20Token(250)],
           },
         ],
       },

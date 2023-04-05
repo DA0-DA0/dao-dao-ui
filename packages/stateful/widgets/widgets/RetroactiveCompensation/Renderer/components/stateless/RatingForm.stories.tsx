@@ -1,5 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { TokenType } from '@dao-dao/types'
+import { NATIVE_TOKEN } from '@dao-dao/utils'
+
 import { AddressInput, EntityDisplay } from '../../../../../../components'
 import { makeSurvey } from './ContributionForm.stories'
 import { RatingForm } from './RatingForm'
@@ -19,6 +22,7 @@ Default.args = {
   status: {
     survey: makeSurvey(),
     contribution: 'this is my contribution\n\npls give me money',
+    contributionSelfRatings: null,
     rated: false,
   },
   data: {
@@ -30,6 +34,7 @@ Default.args = {
           address: 'juno1',
         },
         content: 'I did stuff',
+        ratings: [20, 40],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
@@ -40,6 +45,7 @@ Default.args = {
           address: 'juno2',
         },
         content: 'I did other stuff\n:D',
+        ratings: [20, 40],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
@@ -51,24 +57,23 @@ Default.args = {
   loadingSubmit: false,
   EntityDisplay,
   AddressInput,
-  cw20TokenInfos: [
+  tokenPrices: [
     {
-      address: 'usdc',
-      name: 'USDC',
-      symbol: 'USDC',
-      decimals: 6,
-      total_supply: '1000000000000000',
-    },
-  ],
-  prices: [
-    {
-      denom: 'ujuno',
-      amount: 1,
+      token: {
+        type: TokenType.Cw20,
+        denomOrAddress: 'dao',
+        symbol: 'DAO',
+        decimals: 6,
+        imageUrl: '/daodao.png',
+      },
+      usdPrice: 1,
       timestamp: new Date(),
     },
     {
-      denom: 'usdc',
-      amount: 1,
+      token: {
+        ...NATIVE_TOKEN,
+      },
+      usdPrice: 1,
       timestamp: new Date(),
     },
   ],

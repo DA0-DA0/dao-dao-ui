@@ -25,6 +25,12 @@ export type GenericToken = {
   imageUrl: string | undefined
 }
 
+export type GenericTokenWithUsdPrice = {
+  token: GenericToken
+  usdPrice?: number
+  timestamp?: Date
+}
+
 export type GenericTokenBalance = {
   token: GenericToken
   balance: string

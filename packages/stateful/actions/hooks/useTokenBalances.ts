@@ -1,6 +1,10 @@
 import { useMemo } from 'react'
 import { waitForAll } from 'recoil'
 
+import {
+  genericTokenBalanceSelector,
+  genericTokenBalancesSelector,
+} from '@dao-dao/state'
 import { useCachedLoading } from '@dao-dao/stateless'
 import {
   GenericToken,
@@ -9,10 +13,6 @@ import {
   TokenType,
 } from '@dao-dao/types'
 
-import {
-  genericTokenBalanceSelector,
-  genericTokenBalancesSelector,
-} from '../../recoil'
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../voting-module-adapter'
 import { useActionOptions } from '../react'
 

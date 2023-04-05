@@ -172,18 +172,22 @@ export const OpenSurveySection = ({
               ...nativeTokens
                 .filter(({ amount }) => amount !== '0')
                 .map(
-                  ({ amount, denom }): CosmosMsgFor_Empty => ({
-                    bank: makeBankMessage(amount, contributor.address, denom),
+                  ({ denomOrAddress, amount }): CosmosMsgFor_Empty => ({
+                    bank: makeBankMessage(
+                      amount,
+                      contributor.address,
+                      denomOrAddress
+                    ),
                   })
                 ),
               ...cw20Tokens
                 .filter(({ amount }) => amount !== '0')
                 .map(
-                  ({ amount, address }): CosmosMsgFor_Empty =>
+                  ({ denomOrAddress, amount }): CosmosMsgFor_Empty =>
                     makeWasmMessage({
                       wasm: {
                         execute: {
-                          contract_addr: address,
+                          contract_addr: denomOrAddress,
                           funds: [],
                           msg: {
                             transfer: {
