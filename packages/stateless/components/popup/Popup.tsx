@@ -23,13 +23,16 @@ export const Popup = ({
   setOpenRef,
 }: PopupProps) => {
   const wrapperRef = useRef<HTMLDivElement | null>(null)
-  const [open, setOpen] = useState(false)
+
+  const [_open, _setOpen] = useState(false)
+  const open = trigger.type === 'manual' ? trigger.open : _open
+  const setOpen = trigger.type === 'manual' ? trigger.setOpen : _setOpen
 
   // On route change, close the popup.
   const { asPath } = useRouter()
   useEffect(() => {
     setOpen(false)
-  }, [asPath])
+  }, [asPath, setOpen])
 
   // Store open and setOpen in ref so parent can access them.
   useEffect(() => {
@@ -48,7 +51,7 @@ export const Popup = ({
         setOpenRef.current = null
       }
     }
-  }, [open, openRef, setOpenRef])
+  }, [open, openRef, setOpen, setOpenRef])
 
   // Trigger open callbacks.
   useEffect(() => {
@@ -72,7 +75,7 @@ export const Popup = ({
     document.addEventListener('keydown', handleKeyPress)
     // Clean up event listener.
     return () => document.removeEventListener('keydown', handleKeyPress)
-  }, [open])
+  }, [open, setOpen])
 
   const dropdownRef = useRef<HTMLDivElement | null>(null)
 
@@ -100,7 +103,7 @@ export const Popup = ({
 
     window.addEventListener('click', closeIfClickOutside)
     return () => window.removeEventListener('click', closeIfClickOutside)
-  }, [open])
+  }, [open, setOpen])
 
   // Apply keydown event listener.
   useEffect(() => {
@@ -113,7 +116,7 @@ export const Popup = ({
     document.addEventListener('keydown', listener)
     // Clean up event listener on unmount.
     return () => document.removeEventListener('keydown', listener)
-  }, [getKeydownEventListener, open])
+  }, [getKeydownEventListener, open, setOpen])
 
   // Track button to position the dropdown.
   const { onDropdownRef, onTrackRef } = useTrackDropdown({

@@ -90,7 +90,7 @@ export const Proposal = ({
 
         {/* Make entire pane scrollable, even space around and under status and info card on the side. */}
         <div className="no-scrollbar absolute top-0 right-0 bottom-0 left-0 z-[1] h-full overflow-y-auto pt-10 pb-6 mdlg:pl-[21rem]">
-          <div className="mb-3">
+          <div className="mb-9">
             <ProposalContentDisplay
               IconButtonLink={IconButtonLink}
               createdAt={

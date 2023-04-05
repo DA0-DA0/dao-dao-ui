@@ -9,10 +9,13 @@ import {
   IActionsContext,
 } from '@dao-dao/types'
 
-import { usePayrollAdapter } from '../../payroll'
 import { matchAndLoadCommon } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
-import { getActions } from '../actions'
+import { useWidgets } from '../../widgets'
+import {
+  getCoreActionCategoryMakers,
+  makeActionCategoriesWithLabel,
+} from '../core'
 import { ActionsContext } from './context'
 
 export interface ActionsProviderProps {
@@ -36,56 +39,59 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     },
   }
 
-  // Get the actions for a DAO from its various sources:
+  // Get the action category makers for a DAO from its various sources:
   // - core actions
   // - voting module adapter actions
   // - all proposal module adapters actions
-  // - payroll adapter actions
+  // - widget adapter actions
   //
-  // The core actions are relevant to all DAOs, and the adapter actions are
-  // relevant to the DAO's specific modules. There will be one voting module and
-  // many proposal modules.
+  // The core action categories are relevant to all DAOs, and the adapter action
+  // categories are relevant to the DAO's specific modules. There will be one
+  // voting module and many proposal modules.
+
+  const coreActionCategoryMakers = getCoreActionCategoryMakers()
 
   // Get voting module adapter actions.
-  const votingModuleActions = useVotingModuleAdapter().hooks.useActions(options)
+  const votingModuleActionCategoryMakers =
+    useVotingModuleAdapter().fields.actionCategoryMakers
 
   // Get all actions for all proposal module adapters.
-  const proposalModuleUseActionHooks = useMemo(
+  const proposalModuleActionCategoryMakers = useMemo(
     () =>
-      info.proposalModules.map(
+      info.proposalModules.flatMap(
         (proposalModule) =>
           matchAndLoadCommon(proposalModule, {
             chainId: info.chainId,
             coreAddress: info.coreAddress,
-          }).hooks.useActions
+          }).fields.actionCategoryMakers
       ),
     [info]
   )
-  // The proposal modules for a DAO should never change, so we can safely call
-  // these hooks in an iterative callback. They should always be called in the
-  // same order.
-  const proposalModuleActions = proposalModuleUseActionHooks.flatMap(
-    (useActions) =>
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      useActions(options)
+
+  const loadingWidgets = useWidgets({
+    suspendWhileLoading: true,
+  })
+  const widgetActionCategoryMakers = loadingWidgets.loading
+    ? []
+    : loadingWidgets.data.flatMap(
+        ({ widget, daoWidget }) =>
+          widget.getActionCategoryMakers?.(daoWidget.values || {}) ?? []
+      )
+
+  // Make action categories.
+  const categories = makeActionCategoriesWithLabel(
+    [
+      ...coreActionCategoryMakers,
+      ...votingModuleActionCategoryMakers,
+      ...proposalModuleActionCategoryMakers,
+      ...widgetActionCategoryMakers,
+    ],
+    options
   )
-
-  const payrollActions = usePayrollAdapter()?.makeActions(options)
-
-  const coreActions = getActions(options)
 
   const context: IActionsContext = {
     options,
-    actions: [
-      ...coreActions,
-      ...votingModuleActions,
-      ...proposalModuleActions,
-      ...(payrollActions ?? []),
-    ]
-      // Sort alphabetically.
-      .sort((a, b) =>
-        a.label.toLowerCase().localeCompare(b.label.toLowerCase())
-      ),
+    categories,
   }
 
   return (
@@ -113,15 +119,14 @@ export const WalletActionsProvider = ({ children }: ActionsProviderProps) => {
     },
   }
 
-  const coreActions = getActions(options)
+  const categories = makeActionCategoriesWithLabel(
+    getCoreActionCategoryMakers(),
+    options
+  )
 
   const context: IActionsContext = {
     options,
-    actions: coreActions
-      // Sort alphabetically.
-      .sort((a, b) =>
-        a.label.toLowerCase().localeCompare(b.label.toLowerCase())
-      ),
+    categories,
   }
 
   return (

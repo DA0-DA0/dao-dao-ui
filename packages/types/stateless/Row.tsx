@@ -3,7 +3,7 @@ import { ComponentType, ReactNode } from 'react'
 import { LinkWrapperProps } from './LinkWrapper'
 
 export interface RowProps {
-  Icon: ComponentType<{ className: string }>
+  Icon?: ComponentType<{ className: string }>
   label: string
   expandedLocalStorageKey?: string
   showBadge?: boolean

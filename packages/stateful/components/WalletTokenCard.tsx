@@ -22,7 +22,7 @@ import {
   useCachedLoadable,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import { CoreActionKey, TokenCardInfo, TokenType } from '@dao-dao/types'
+import { ActionKey, TokenCardInfo, TokenType } from '@dao-dao/types'
 import {
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
@@ -210,7 +210,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
               href: getMeTxPrefillPath({
                 actions: [
                   {
-                    key: CoreActionKey.Spend,
+                    actionKey: ActionKey.Spend,
                     data: {
                       to: '',
                       amount: 0,
