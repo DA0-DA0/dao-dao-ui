@@ -208,7 +208,7 @@ export const daoInfoSelector: (param: {
 
       const _items = get(
         DaoCoreV2Selectors.listAllItemsSelector({
-          contractAddress: dumpState.voting_module,
+          contractAddress: coreAddress,
           chainId,
         })
       )
