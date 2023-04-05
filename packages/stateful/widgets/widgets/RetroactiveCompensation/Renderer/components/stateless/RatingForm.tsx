@@ -11,7 +11,6 @@ import {
   InputLabel,
   MarkdownRenderer,
   RangeInput,
-  TextAreaInput,
   TokenAmountDisplay,
 } from '@dao-dao/stateless'
 import {
@@ -34,15 +33,18 @@ import {
   Status,
 } from '../../types'
 import { computeCompensation } from '../../utils'
+import {
+  ContributionFormData,
+  ContributionFormInput,
+} from './ContributionFormInput'
 
 export interface ContributionRatingData {
   contributions: Contribution[]
   existingRatings: ContributionRating[]
 }
 
-export interface NominationForm {
+export type NominationForm = ContributionFormData & {
   contributor: string
-  contribution: string
 }
 
 export interface RatingFormProps {
@@ -124,7 +126,12 @@ export const RatingForm = ({
     handleSubmit: nominationHandleSubmit,
     formState: { errors: nominationErrors },
     setValue: nominationSetValue,
-  } = useForm<NominationForm>()
+  } = useForm<NominationForm>({
+    defaultValues: {
+      contribution: '',
+      ratings: survey.attributes.map(() => null),
+    },
+  })
 
   return (
     <div className="flex grow flex-col gap-6">
@@ -449,17 +456,15 @@ export const RatingForm = ({
             <InputErrorMessage error={nominationErrors?.contributor} />
           </div>
 
-          <div className="space-y-1">
-            <InputLabel name={t('form.contribution')} />
-            <TextAreaInput
-              error={nominationErrors?.contribution}
-              fieldName="contribution"
-              register={nominationRegister}
-              rows={10}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage error={nominationErrors?.contribution} />
-          </div>
+          <ContributionFormInput
+            errors={nominationErrors}
+            register={nominationRegister as any}
+            setValue={nominationSetValue as any}
+            survey={survey}
+            thirdPerson
+            tokenPrices={tokenPrices}
+            watch={nominationWatch as any}
+          />
 
           <Button
             className="self-end"

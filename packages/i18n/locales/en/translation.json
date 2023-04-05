@@ -631,6 +631,7 @@
     "govTokenAddress": "Governance Token",
     "groupAddress": "CW4 Group",
     "historySinceDate": "History since {{date}}",
+    "howWouldTheyLikeToBeCompensated": "How would they like to be compensated?",
     "howWouldYouLikeToBeCompensated": "How would you like to be compensated?",
     "inboxDescription": "Open proposals and other pending tasks for your DAOs.",
     "instantiateSmartContractActionDescription": "Instantiate a smart contract.",

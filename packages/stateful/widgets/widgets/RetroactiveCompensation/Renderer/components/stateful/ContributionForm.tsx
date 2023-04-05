@@ -18,10 +18,8 @@ import { useEntity } from '../../../../../../hooks'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
-import {
-  ContributionFormData,
-  ContributionForm as StatelessContributionForm,
-} from '../stateless/ContributionForm'
+import { ContributionForm as StatelessContributionForm } from '../stateless/ContributionForm'
+import { ContributionFormData } from '../stateless/ContributionFormInput'
 
 export const ContributionForm = () => {
   const { t } = useTranslation()
