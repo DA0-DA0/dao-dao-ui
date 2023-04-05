@@ -14,6 +14,7 @@ import {
 
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
+import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
 import { ActionCard } from './ActionCard'
 
 // The props needed to render an action from a message.
@@ -141,6 +142,8 @@ export type ActionRendererProps = {
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
+const ACTIONS_PER_PAGE = 20
+
 // Renders a group of data that belong to the same action.
 export const ActionRenderer = ({
   category,
@@ -155,20 +158,36 @@ export const ActionRenderer = ({
     },
   })
 
+  const [page, setPage] = useState(PAGINATION_MIN_PAGE)
+  const minIndex = (page - 1) * ACTIONS_PER_PAGE
+  const maxIndex = page * ACTIONS_PER_PAGE
+
   return (
     <FormProvider {...form}>
       <ActionCard action={action} category={category}>
-        {all.map(({ index, data }, dataIndex) => (
-          <SuspenseLoader key={index} fallback={<Loader size={36} />}>
-            <action.Component
-              allActionsWithData={allActionsWithData}
-              data={data}
-              fieldNamePrefix={`data.${dataIndex}.`}
-              index={index}
-              isCreating={false}
-            />
-          </SuspenseLoader>
-        ))}
+        {all.map(({ index, data }, dataIndex) =>
+          // Paginate manually by rendering null so that the `dataIndex` matches
+          // the index in the `data` array of the form.
+          dataIndex < minIndex || dataIndex >= maxIndex ? null : (
+            <SuspenseLoader key={index} fallback={<Loader size={36} />}>
+              <action.Component
+                allActionsWithData={allActionsWithData}
+                data={data}
+                fieldNamePrefix={`data.${dataIndex}.`}
+                index={index}
+                isCreating={false}
+              />
+            </SuspenseLoader>
+          )
+        )}
+
+        <Pagination
+          className="self-center"
+          page={page}
+          pageSize={ACTIONS_PER_PAGE}
+          setPage={setPage}
+          total={all.length}
+        />
       </ActionCard>
     </FormProvider>
   )
