@@ -14,6 +14,7 @@ export type ActionCardProps = {
   // this will be the back button and show a back arrow.
   onCategoryClick?: () => void
   action?: Action
+  actionCount?: number
   onRemove?: () => void
   childrenContainerClassName?: string
   children: ReactNode | ReactNode[]
@@ -23,6 +24,7 @@ export const ActionCard = ({
   category,
   onCategoryClick,
   action,
+  actionCount = 0,
   onRemove,
   childrenContainerClassName,
   children,
@@ -47,7 +49,7 @@ export const ActionCard = ({
             {category.label}
           </Button>
 
-          <div className="pl-[10px] sm:pl-0">
+          <div className="pl-[10px] pr-4 sm:pl-0">
             {action ? (
               <>
                 <div className="flex flex-row items-center gap-2">
@@ -55,7 +57,15 @@ export const ActionCard = ({
                     <action.Icon />
                   </p>
 
-                  <p className="title-text">{action.label}</p>
+                  <div className="flex flex-row items-end gap-2">
+                    <p className="title-text">{action.label}</p>
+
+                    {actionCount > 1 && (
+                      <p className="caption-text">
+                        ({t('info.actions', { count: actionCount })})
+                      </p>
+                    )}
+                  </div>
                 </div>
               </>
             ) : (
@@ -76,13 +86,15 @@ export const ActionCard = ({
         )}
       </div>
 
-      <div
-        className={clsx(
-          'flex flex-col gap-4 px-6 pt-4 pb-5',
-          childrenContainerClassName
-        )}
-      >
-        {children}
+      <div className="styled-scrollbar mr-1 max-h-[75vh] overflow-y-auto">
+        <div
+          className={clsx(
+            'flex flex-col gap-4 pl-6 pr-5 pt-4 pb-5',
+            childrenContainerClassName
+          )}
+        >
+          {children}
+        </div>
       </div>
     </div>
   )
