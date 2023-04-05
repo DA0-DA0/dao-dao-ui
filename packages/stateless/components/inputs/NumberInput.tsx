@@ -217,9 +217,15 @@ export const NumberInput = <
             required: required && 'Required',
             validate,
             setValueAs: (value) =>
-              value && transformDecimals
+              // If not a number AND not a string or an empty string, set NaN.
+              // Empty strings get converted to 0 with the Number constructor,
+              // which we don't want, because then the input can't be cleared.
+              typeof value !== 'number' &&
+              (typeof value !== 'string' || value.trim() === '')
+                ? NaN
+                : transformDecimals
                 ? convertDenomToMicroDenomWithDecimals(value, transformDecimals)
-                : value,
+                : Number(value),
           }))}
       />
 
