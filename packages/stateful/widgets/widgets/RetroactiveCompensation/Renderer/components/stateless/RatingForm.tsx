@@ -163,9 +163,6 @@ export const RatingForm = ({
           <p className="rounded-tl-md bg-background-primary p-6">
             {t('title.contributor')}
           </p>
-          <p className="border-l border-border-secondary bg-background-primary p-6 text-right">
-            {t('title.whatTheyWouldLike')}
-          </p>
           {/* Attribute labels */}
           {survey.attributes.map(({ name }, attributeIndex) => (
             <p
@@ -175,8 +172,11 @@ export const RatingForm = ({
               {name}
             </p>
           ))}
-          <p className="rounded-tr-md border-l border-border-secondary bg-background-primary p-6 text-right">
+          <p className="border-l border-border-secondary bg-background-primary p-6 text-right">
             {t('title.projectedCompensation')}
+          </p>
+          <p className="rounded-tr-md border-l border-border-secondary bg-background-primary p-6 text-right">
+            {t('title.whatTheyWouldLike')}
           </p>
 
           {data.contributions.map((contribution, contributionIndex) => {
@@ -303,48 +303,6 @@ export const RatingForm = ({
                   </div>
                 </div>
 
-                {/* What they would like */}
-                <div
-                  className={clsx(
-                    'flex flex-col items-end justify-center gap-1 border-l border-border-secondary p-6',
-                    backgroundClassName
-                  )}
-                >
-                  {selfRatedTokens !== null && (
-                    <>
-                      {Object.entries(selfRatedTokens).map(
-                        ([denomOrAddress, amount], index) => (
-                          <TokenAmountDisplay
-                            key={index}
-                            amount={amount}
-                            className="text-right"
-                            dateFetched={tokenMap[denomOrAddress]?.timestamp}
-                            decimals={
-                              tokenMap[denomOrAddress]?.token.decimals ?? 0
-                            }
-                            iconUrl={tokenMap[denomOrAddress]?.token.imageUrl}
-                            symbol={
-                              tokenMap[denomOrAddress]?.token.symbol ??
-                              denomOrAddress
-                            }
-                          />
-                        )
-                      )}
-
-                      <div className="mt-3">
-                        <TokenAmountDisplay
-                          amount={selfRatedTotalUsdc}
-                          className="caption-text text-right"
-                          dateFetched={tokenPrices[0]?.timestamp}
-                          estimatedUsdValue
-                          hideApprox
-                          prefix="= "
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-
                 {survey.attributes.map((_, attributeIndex) => (
                   <div
                     key={attributeIndex}
@@ -373,9 +331,7 @@ export const RatingForm = ({
                 <div
                   className={clsx(
                     'flex flex-col items-end justify-center gap-1 border-l border-border-secondary p-6',
-                    backgroundClassName,
-                    contributionIndex === data.contributions.length - 1 &&
-                      'rounded-br-md'
+                    backgroundClassName
                   )}
                 >
                   {!allRatingsAbstain && (
@@ -410,6 +366,50 @@ export const RatingForm = ({
                         />
                       </div>
                     </>
+                  )}
+                </div>
+
+                {/* What they would like */}
+                <div
+                  className={clsx(
+                    'border-l border-border-secondary',
+                    backgroundClassName,
+                    contributionIndex === data.contributions.length - 1 &&
+                      'rounded-br-md'
+                  )}
+                >
+                  {selfRatedTokens !== null && (
+                    <div className="flex h-full w-full flex-col items-end justify-center gap-1 bg-background-tertiary p-6">
+                      {Object.entries(selfRatedTokens).map(
+                        ([denomOrAddress, amount], index) => (
+                          <TokenAmountDisplay
+                            key={index}
+                            amount={amount}
+                            className="text-right"
+                            dateFetched={tokenMap[denomOrAddress]?.timestamp}
+                            decimals={
+                              tokenMap[denomOrAddress]?.token.decimals ?? 0
+                            }
+                            iconUrl={tokenMap[denomOrAddress]?.token.imageUrl}
+                            symbol={
+                              tokenMap[denomOrAddress]?.token.symbol ??
+                              denomOrAddress
+                            }
+                          />
+                        )
+                      )}
+
+                      <div className="mt-3">
+                        <TokenAmountDisplay
+                          amount={selfRatedTotalUsdc}
+                          className="caption-text text-right"
+                          dateFetched={tokenPrices[0]?.timestamp}
+                          estimatedUsdValue
+                          hideApprox
+                          prefix="= "
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
               </Fragment>
