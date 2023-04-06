@@ -538,6 +538,7 @@
   },
   "info": {
     "abstainVote": "Abstain",
+    "actionPageWarning": "There are {{actions}} actions across {{pages}} pages. Make sure you view all pages before voting.",
     "actionPaysTokenSwap_paid": "This action sent {{amount}} ${{tokenSymbol}} to the token swap contract below.",
     "actionPaysTokenSwap_unpaid": "This action sends {{amount}} ${{tokenSymbol}} to the token swap contract below.",
     "actionWithdrawsTokenSwap_done": "This action withdrew {{amount}} ${{tokenSymbol}} from the token swap contract below.",
@@ -666,6 +667,7 @@
     "minimumOutputRequiredDescription_wallet": "The exact swap price will fluctuate during the transaction, but the minimum output amount is guaranteed. If the price drops and no longer satisfies this minimum output required, the swap will not occur.",
     "mintActionDescription": "Mint new governance tokens.",
     "mintNftDescription": "Create a new NFT.",
+    "mustViewAllActionPagesBeforeVoting": "You must view all action pages before voting.",
     "name": "Name",
     "newMemberExplanation": "To add a new member, the DAO must pass a proposal.",
     "nftCollectionExplanation_all": "In this DAO, voting share is determined by staking NFTs from a collection. This is the collection members stake to gain voting power in this DAO.",
@@ -829,6 +831,7 @@
     "vestingPaymentsRefreshSeconds": "Vesting payments refresh every {{seconds}} seconds.",
     "voteOnGovernanceProposalDescription": "Vote on an open chain governance proposal, as an individual or as a validator.",
     "voteTallyRefreshesSeconds": "Vote tally refreshes every {{seconds}} seconds.",
+    "voteUntilExpirationExplanation": "Although the proposal outcome is determined, you may cast a vote until the proposal expires to be included in the final tally.",
     "votingModuleAdapterCreationDiscord": "Want to help us support this voting module? Join the <2><0>DAO DAO Discord</0><1/></2> and post in #dao-help.",
     "votingModuleNotYetSupported": "This DAO uses a voting module that our UI does not yet support. Functionality may be limited.",
     "votingPowerAtCreationTooltip": "This was your voting power at the time of proposal creation.",

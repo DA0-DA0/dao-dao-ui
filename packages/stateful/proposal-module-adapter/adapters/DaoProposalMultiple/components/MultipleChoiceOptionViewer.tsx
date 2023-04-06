@@ -24,6 +24,8 @@ export type MultipleChoiceOptionViewerProps = {
   winner?: boolean
   // Used when previewing to force raw JSON display.
   forceRaw?: boolean
+  // Called when the user has viewed all action pages.
+  setSeenAllActionPages?: () => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -32,6 +34,7 @@ export const MultipleChoiceOptionViewer = ({
   lastOption,
   winner,
   forceRaw,
+  setSeenAllActionPages,
   SuspenseLoader,
 }: MultipleChoiceOptionViewerProps) => {
   const { t } = useTranslation()
@@ -122,6 +125,7 @@ export const MultipleChoiceOptionViewer = ({
             SuspenseLoader={SuspenseLoader}
             actionData={actionData}
             onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
+            setSeenAllActionPages={setSeenAllActionPages}
           />
         )}
 

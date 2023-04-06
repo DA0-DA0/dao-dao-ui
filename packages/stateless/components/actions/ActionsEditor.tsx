@@ -326,6 +326,7 @@ export const ActionEditor = ({
   return (
     <ActionCard
       action={action}
+      actionCount={all.length}
       category={category}
       onCategoryClick={goBackToCategoryPicker}
       onRemove={onRemove}

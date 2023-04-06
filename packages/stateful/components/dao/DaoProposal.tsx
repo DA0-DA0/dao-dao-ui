@@ -51,7 +51,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         ProposalVoteTally,
         ProposalVotes,
       },
-      hooks: { useProposalRefreshers },
+      hooks: { useProposalRefreshers, useLoadingWalletVoteInfo },
     },
   } = useProposalModuleAdapterContext()
 
@@ -64,6 +64,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
   const { refreshProposal, refreshProposalAndAll, refreshing } =
     useProposalRefreshers()
+  const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 
   // Vote listener. Show alerts and refresh accordingly.
   const { listening: listeningForVote, fallback: onVoteSuccess } =
@@ -146,6 +147,9 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     return () => clearInterval(interval)
   }, [listeningForProposal, listeningForVote, refreshProposalAndAll])
 
+  // Whether or not the user has seen all the action pages.
+  const [seenAllActionPages, setSeenAllActionPages] = useState(false)
+
   // Memoize ProposalStatusAndInfo so it doesn't re-render when the proposal
   // refreshes. The cached loadable it uses internally depends on the
   // component's consistency. If we inline the component definition in the props
@@ -157,9 +161,16 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         onCloseSuccess={onCloseSuccess}
         onExecuteSuccess={onExecuteSuccess}
         onVoteSuccess={onVoteSuccess}
+        seenAllActionPages={seenAllActionPages}
       />
     ),
-    [ProposalStatusAndInfo, onCloseSuccess, onExecuteSuccess, onVoteSuccess]
+    [
+      ProposalStatusAndInfo,
+      onCloseSuccess,
+      onExecuteSuccess,
+      onVoteSuccess,
+      seenAllActionPages,
+    ]
   )
 
   // This gets passed down to the proposal module adapter's
@@ -200,6 +211,15 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
           <ProposalInnerContentDisplay
             actionsForMatching={actionsForMatching}
             setDuplicateFormData={setDuplicateFormData}
+            setSeenAllActionPages={
+              // Only set seen all action pages if the user can vote. This
+              // prevents the warning from appearing if the user can't vote.
+              loadingWalletVoteInfo &&
+              !loadingWalletVoteInfo.loading &&
+              loadingWalletVoteInfo.data.canVote
+                ? () => setSeenAllActionPages(true)
+                : undefined
+            }
           />
         </SuspenseLoader>
       }
