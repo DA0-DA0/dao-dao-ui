@@ -24,6 +24,8 @@ export interface ActionsRendererProps {
   actionData: CategorizedActionAndData[]
   hideCopyLink?: boolean
   onCopyLink?: () => void
+  // If undefined, will not show warning to view all pages. This is likely only
+  // defined when the user can vote.
   setSeenAllActionPages?: () => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
@@ -194,6 +196,8 @@ export type ActionRendererProps = {
     data: any
   }[]
   allActionsWithData: CategorizedActionKeyAndData[]
+  // If undefined, will not show warning to view all pages. This is likely only
+  // defined when the user can vote.
   setSeenAllPages?: () => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
@@ -264,18 +268,20 @@ export const ActionRenderer = ({
             )
         )}
 
-        {maxPage > PAGINATION_MIN_PAGE && setSeenAllPages && (
+        {maxPage > PAGINATION_MIN_PAGE && (
           <div className="-mx-6 flex flex-col gap-4 border-t border-border-secondary p-6 pb-0">
-            <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
-              <WarningRounded className="!h-12 !w-12 text-icon-interactive-warning" />
+            {setSeenAllPages && (
+              <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
+                <WarningRounded className="!h-12 !w-12 text-icon-interactive-warning" />
 
-              <p className="primary-text text-text-interactive-warning-body">
-                {t('info.actionPageWarning', {
-                  actions: all.length,
-                  pages: maxPage,
-                })}
-              </p>
-            </div>
+                <p className="primary-text text-text-interactive-warning-body">
+                  {t('info.actionPageWarning', {
+                    actions: all.length,
+                    pages: maxPage,
+                  })}
+                </p>
+              </div>
+            )}
 
             <Pagination
               className="w-full self-center"
