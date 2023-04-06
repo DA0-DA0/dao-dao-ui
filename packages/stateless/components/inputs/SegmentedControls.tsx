@@ -77,7 +77,7 @@ export const SegmentedControls = <T extends unknown>({
               className={clsx(
                 // Render transparent background so the sliding indicator can
                 // show through underneath.
-                'relative flex h-full w-full items-center justify-center !bg-transparent !px-4',
+                'relative flex h-full w-full items-center justify-center !bg-transparent !px-4 whitespace-nowrap',
                 selected === value || hovering === index
                   ? // Brighten text when selected or hovering over this tab.
                     '!text-text-body'

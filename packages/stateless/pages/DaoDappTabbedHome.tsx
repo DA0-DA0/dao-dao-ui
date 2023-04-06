@@ -101,16 +101,16 @@ export const DaoDappTabbedHome = ({
           follow={follow}
         />
 
-        <div className="flex flex-col items-center border-y border-t-border-base border-b-border-secondary py-6">
+        <div className="overflow-x-auto border-t border-border-base pt-6 pb-4">
           <SegmentedControls
-            className="w-full max-w-2xl shrink"
+            className="w-max"
             onSelect={setSelectedTab}
             selected={selectedTab}
             tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
           />
         </div>
 
-        <div className="py-6">
+        <div className="mt-2 border-t border-border-secondary py-6">
           {tabs.map(({ id, Component }) => (
             <div key={id} className={clsx(selectedTab !== id && 'hidden')}>
               <SuspenseLoader fallback={<Loader />}>
