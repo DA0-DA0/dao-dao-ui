@@ -30,8 +30,3 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 If `cw20` is true, then `funds` can only contain 1 entry, and `denom` should be
 the address of a CW20 token.
-
-`amount` and `denom` are in the base unit with no decimals. For example, if you
-want to spend 1 $JUNO, since JUNO has 6 decimals, then `amount` should be
-`1000000` and `denom` should be `ujuno`. If this is confusing, please ask for
-help!
