@@ -74,7 +74,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
   useEffect(() => {
     const timeout = setTimeout(() => {
       setShowUnseenActionPagesWarning(true)
-    }, 3000)
+    }, 1000)
     return () => clearTimeout(timeout)
   }, [])
 
