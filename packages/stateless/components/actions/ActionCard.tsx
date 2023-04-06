@@ -14,6 +14,7 @@ export type ActionCardProps = {
   // this will be the back button and show a back arrow.
   onCategoryClick?: () => void
   action?: Action
+  actionCount?: number
   onRemove?: () => void
   childrenContainerClassName?: string
   children: ReactNode | ReactNode[]
@@ -23,6 +24,7 @@ export const ActionCard = ({
   category,
   onCategoryClick,
   action,
+  actionCount = 0,
   onRemove,
   childrenContainerClassName,
   children,
@@ -47,7 +49,7 @@ export const ActionCard = ({
             {category.label}
           </Button>
 
-          <div className="pl-[10px] sm:pl-0">
+          <div className="pl-[10px] pr-4 sm:pl-0">
             {action ? (
               <>
                 <div className="flex flex-row items-center gap-2">
@@ -55,7 +57,15 @@ export const ActionCard = ({
                     <action.Icon />
                   </p>
 
-                  <p className="title-text">{action.label}</p>
+                  <div className="flex flex-row items-end gap-2">
+                    <p className="title-text">{action.label}</p>
+
+                    {actionCount > 1 && (
+                      <p className="caption-text">
+                        ({t('info.actions', { count: actionCount })})
+                      </p>
+                    )}
+                  </div>
                 </div>
               </>
             ) : (

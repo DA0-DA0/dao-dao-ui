@@ -1,26 +1,32 @@
-import { Check, Link } from '@mui/icons-material'
+import { Check, Link, WarningRounded } from '@mui/icons-material'
 import { ComponentType, useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import { SuspenseLoaderProps } from '@dao-dao/types'
 import {
   Action,
   ActionCategoryWithLabel,
-  ActionKey,
   CategorizedActionAndData,
   CategorizedActionKeyAndData,
 } from '@dao-dao/types/actions'
 
 import { IconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
+import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
 import { ActionCard } from './ActionCard'
+
+const ACTIONS_PER_PAGE = 20
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
   actionData: CategorizedActionAndData[]
   hideCopyLink?: boolean
   onCopyLink?: () => void
+  // If undefined, will not show warning to view all pages. This is likely only
+  // defined when the user can vote.
+  setSeenAllActionPages?: () => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -29,16 +35,17 @@ export const ActionsRenderer = ({
   actionData,
   hideCopyLink,
   onCopyLink,
+  setSeenAllActionPages,
   SuspenseLoader,
 }: ActionsRendererProps) => {
   const actionKeysWithData = useMemo(
     () =>
       actionData.map(
-        ({
-          category: { key: categoryKey },
-          action: { key: actionKey },
-          data,
-        }): CategorizedActionKeyAndData => ({
+        (
+          { category: { key: categoryKey }, action: { key: actionKey }, data },
+          index
+        ): CategorizedActionKeyAndData => ({
+          _id: index.toString(),
           categoryKey,
           actionKey,
           data,
@@ -48,32 +55,36 @@ export const ActionsRenderer = ({
     useDeepCompareMemoize([actionData])
   )
 
-  // Group action data by action.
+  // Group action data by adjacent action, preserving order.
   const groupedActionData = useMemo(
     () =>
-      Object.entries(
-        actionData.reduce(
-          (acc, { category, action, data }, index) => ({
-            ...acc,
-            [action.key]: {
-              category,
-              action,
-              all: [
-                ...(acc[action.key]?.all || []),
-                {
-                  data,
-                  // Index in the original array.
-                  index,
-                },
-              ],
-            },
-          }),
-          {} as Record<
-            ActionKey,
-            Omit<ActionRendererProps, 'allActionsWithData'>
-          >
-        )
-      ),
+      actionData.reduce((acc, { category, action, data }, index) => {
+        // If most recent action is the same as the current action, add the
+        // current action's data to the most recent action's data.
+        const lastAction = acc[acc.length - 1]
+        if (lastAction && lastAction.action.key === action.key) {
+          lastAction.all.push({
+            data,
+            // Index in the original array.
+            index,
+          })
+        } else {
+          // Otherwise, add a new action to the list.
+          acc.push({
+            category,
+            action,
+            all: [
+              {
+                data,
+                // Index in the original array.
+                index,
+              },
+            ],
+          })
+        }
+
+        return acc
+      }, [] as Omit<ActionRendererProps, 'SuspenseLoader' | 'allActionsWithData' | 'setSeenAllPages'>[]),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useDeepCompareMemoize([actionData])
   )
@@ -86,9 +97,43 @@ export const ActionsRenderer = ({
     return () => clearTimeout(timeout)
   }, [copied])
 
+  // Store for each action group whether the user has seen all pages.
+  const [seenAllPagesForAction, setSeenAllPagesForAction] = useState(() =>
+    groupedActionData.reduce(
+      (acc, { all }, index) => ({
+        ...acc,
+        [index]: all.length <= ACTIONS_PER_PAGE,
+      }),
+      {} as Record<number, boolean | undefined>
+    )
+  )
+  // Check that every action has seen all pages, and if so, call the
+  // `setSeenAllActionPages` callback.
+  const [markedSeen, setMarkedSeen] = useState(false)
+  useEffect(() => {
+    if (markedSeen) {
+      return
+    }
+
+    if (
+      setSeenAllActionPages &&
+      [...Array(groupedActionData.length)].every(
+        (_, index) => seenAllPagesForAction[index]
+      )
+    ) {
+      setSeenAllActionPages()
+      setMarkedSeen(true)
+    }
+  }, [
+    groupedActionData.length,
+    markedSeen,
+    seenAllPagesForAction,
+    setSeenAllActionPages,
+  ])
+
   return (
     <div className="flex flex-col gap-2">
-      {groupedActionData.map(([actionKey, props], index) => (
+      {groupedActionData.map((props, index) => (
         <div key={index} className="group relative" id={`A${index + 1}`}>
           <ActionRenderer
             key={
@@ -101,11 +146,24 @@ export const ActionsRenderer = ({
               // the action changes. This is necessary because the component
               // expects to exist inside a FormProvider, and a FormProvider
               // depends on a `useForm` hook return value.
-              `${index}-${actionKey}`
+              `${index}-${props.action.key}`
             }
             {...props}
             SuspenseLoader={SuspenseLoader}
             allActionsWithData={actionKeysWithData}
+            setSeenAllPages={
+              setSeenAllActionPages &&
+              (() =>
+                setSeenAllPagesForAction((prev) =>
+                  // Don't update if already true.
+                  prev[index]
+                    ? prev
+                    : {
+                        ...prev,
+                        [index]: true,
+                      }
+                ))
+            }
           />
 
           {!hideCopyLink && (
@@ -138,6 +196,9 @@ export type ActionRendererProps = {
     data: any
   }[]
   allActionsWithData: CategorizedActionKeyAndData[]
+  // If undefined, will not show warning to view all pages. This is likely only
+  // defined when the user can vote.
+  setSeenAllPages?: () => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -147,28 +208,90 @@ export const ActionRenderer = ({
   action,
   all,
   allActionsWithData,
+  setSeenAllPages,
   SuspenseLoader,
 }: ActionRendererProps) => {
+  const { t } = useTranslation()
   const form = useForm({
     defaultValues: {
       data: all.map(({ data }) => data),
     },
   })
 
+  const [page, setPage] = useState(PAGINATION_MIN_PAGE)
+  const minIndex = (page - 1) * ACTIONS_PER_PAGE
+  const maxIndex = page * ACTIONS_PER_PAGE
+  const maxPage = Math.ceil(all.length / ACTIONS_PER_PAGE)
+
+  // Store pages visited so we can check if we've seen all pages. Initialize to
+  // the first page.
+  const [pagesVisited, setPagesVisited] = useState(() => new Set([page]))
+  useEffect(() => {
+    setPagesVisited((prev) => {
+      const next = new Set(prev)
+      next.add(page)
+      return next
+    })
+  }, [page])
+
+  const [markedSeen, setMarkedSeen] = useState(false)
+  useEffect(() => {
+    if (markedSeen) {
+      return
+    }
+
+    // If all pages have been visited, mark as seen.
+    if (setSeenAllPages && pagesVisited.size === maxPage) {
+      setSeenAllPages()
+      setMarkedSeen(true)
+    }
+  }, [markedSeen, maxPage, page, pagesVisited.size, setSeenAllPages])
+
   return (
     <FormProvider {...form}>
-      <ActionCard action={action} category={category}>
-        {all.map(({ index, data }, dataIndex) => (
-          <SuspenseLoader key={index} fallback={<Loader size={36} />}>
-            <action.Component
-              allActionsWithData={allActionsWithData}
-              data={data}
-              fieldNamePrefix={`data.${dataIndex}.`}
-              index={index}
-              isCreating={false}
+      <ActionCard action={action} actionCount={all.length} category={category}>
+        {all.map(
+          ({ index, data }, dataIndex) =>
+            // Paginate manually instead of slicing the array so that the
+            // `dataIndex` matches the index in the `data` array of the form.
+            dataIndex >= minIndex &&
+            dataIndex < maxIndex && (
+              <SuspenseLoader key={index} fallback={<Loader size={36} />}>
+                <action.Component
+                  allActionsWithData={allActionsWithData}
+                  data={data}
+                  fieldNamePrefix={`data.${dataIndex}.`}
+                  index={index}
+                  isCreating={false}
+                />
+              </SuspenseLoader>
+            )
+        )}
+
+        {maxPage > PAGINATION_MIN_PAGE && (
+          <div className="-mx-6 flex flex-col gap-4 border-t border-border-secondary px-6 pt-5">
+            {setSeenAllPages && (
+              <div className="mt-1 flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
+                <WarningRounded className="!h-12 !w-12 text-icon-interactive-warning" />
+
+                <p className="primary-text text-text-interactive-warning-body">
+                  {t('info.actionPageWarning', {
+                    actions: all.length,
+                    pages: maxPage,
+                  })}
+                </p>
+              </div>
+            )}
+
+            <Pagination
+              className="w-full self-center"
+              page={page}
+              pageSize={ACTIONS_PER_PAGE}
+              setPage={setPage}
+              total={all.length}
             />
-          </SuspenseLoader>
-        ))}
+          </div>
+        )}
       </ActionCard>
     </FormProvider>
   )
