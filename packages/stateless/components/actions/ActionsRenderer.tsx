@@ -269,9 +269,9 @@ export const ActionRenderer = ({
         )}
 
         {maxPage > PAGINATION_MIN_PAGE && (
-          <div className="-mx-6 flex flex-col gap-4 border-t border-border-secondary p-6 pb-0">
+          <div className="-mx-6 flex flex-col gap-4 border-t border-border-secondary px-6 pt-5">
             {setSeenAllPages && (
-              <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
+              <div className="mt-1 flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
                 <WarningRounded className="!h-12 !w-12 text-icon-interactive-warning" />
 
                 <p className="primary-text text-text-interactive-warning-body">
