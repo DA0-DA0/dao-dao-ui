@@ -149,16 +149,18 @@ export const ActionsRenderer = ({
             {...props}
             SuspenseLoader={SuspenseLoader}
             allActionsWithData={actionKeysWithData}
-            setSeenAllPages={() =>
-              setSeenAllPagesForAction((prev) =>
-                // Don't update if already true.
-                prev[index]
-                  ? prev
-                  : {
-                      ...prev,
-                      [index]: true,
-                    }
-              )
+            setSeenAllPages={
+              setSeenAllActionPages &&
+              (() =>
+                setSeenAllPagesForAction((prev) =>
+                  // Don't update if already true.
+                  prev[index]
+                    ? prev
+                    : {
+                        ...prev,
+                        [index]: true,
+                      }
+                ))
             }
           />
 
@@ -192,7 +194,7 @@ export type ActionRendererProps = {
     data: any
   }[]
   allActionsWithData: CategorizedActionKeyAndData[]
-  setSeenAllPages: () => void
+  setSeenAllPages?: () => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -235,7 +237,7 @@ export const ActionRenderer = ({
     }
 
     // If all pages have been visited, mark as seen.
-    if (pagesVisited.size === maxPage) {
+    if (setSeenAllPages && pagesVisited.size === maxPage) {
       setSeenAllPages()
       setMarkedSeen(true)
     }
@@ -262,7 +264,7 @@ export const ActionRenderer = ({
             )
         )}
 
-        {maxPage > PAGINATION_MIN_PAGE && (
+        {maxPage > PAGINATION_MIN_PAGE && setSeenAllPages && (
           <div className="-mx-6 flex flex-col gap-4 border-t border-border-secondary p-6 pb-0">
             <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
               <WarningRounded className="!h-12 !w-12 text-icon-interactive-warning" />

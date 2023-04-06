@@ -161,6 +161,7 @@ export const InnerProposalInnerContentDisplay = ({
     }
 
     if (
+      setSeenAllActionPages &&
       [...Array(proposal.choices.length)].every(
         (_, index) => seenAllActionPagesForOption[index]
       )

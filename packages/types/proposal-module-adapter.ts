@@ -187,7 +187,7 @@ export interface BaseProposalInnerContentDisplayProps<
   setDuplicateFormData: (data: FormData) => void
   actionsForMatching: CategorizedAction[]
   // Called when the user has viewed all action pages.
-  setSeenAllActionPages: () => void
+  setSeenAllActionPages?: () => void
 }
 
 export interface BaseProposalWalletVoteProps<T> {

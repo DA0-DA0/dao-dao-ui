@@ -51,7 +51,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         ProposalVoteTally,
         ProposalVotes,
       },
-      hooks: { useProposalRefreshers },
+      hooks: { useProposalRefreshers, useLoadingWalletVoteInfo },
     },
   } = useProposalModuleAdapterContext()
 
@@ -64,6 +64,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
   const { refreshProposal, refreshProposalAndAll, refreshing } =
     useProposalRefreshers()
+  const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 
   // Vote listener. Show alerts and refresh accordingly.
   const { listening: listeningForVote, fallback: onVoteSuccess } =
@@ -210,7 +211,15 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
           <ProposalInnerContentDisplay
             actionsForMatching={actionsForMatching}
             setDuplicateFormData={setDuplicateFormData}
-            setSeenAllActionPages={() => setSeenAllActionPages(true)}
+            setSeenAllActionPages={
+              // Only set seen all action pages if the user can vote. This
+              // prevents the warning from appearing if the user can't vote.
+              loadingWalletVoteInfo &&
+              !loadingWalletVoteInfo.loading &&
+              loadingWalletVoteInfo.data.canVote
+                ? () => setSeenAllActionPages(true)
+                : undefined
+            }
           />
         </SuspenseLoader>
       }

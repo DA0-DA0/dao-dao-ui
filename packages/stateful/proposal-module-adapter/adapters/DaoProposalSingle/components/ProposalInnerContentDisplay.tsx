@@ -66,7 +66,7 @@ const InnerProposalInnerContentDisplay = ({
       return
     }
 
-    if (!decodedMessages.length) {
+    if (setSeenAllActionPages && !decodedMessages.length) {
       setSeenAllActionPages()
       setMarkedSeen(true)
     }
