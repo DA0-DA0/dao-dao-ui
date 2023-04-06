@@ -45,11 +45,6 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 `denomOrAddress` should be either a native/IBC token denomination (e.g.
 `ujuno`), or a CW20 token contract address.
 
-`amount` and `denomOrAddress` are in the base unit with no decimals. For
-example, if you want to spend 1 $JUNO, since JUNO has 6 decimals, then `amount`
-should be `1000000` and `denomOrAddress` should be `ujuno`. If this is
-confusing, please ask for help!
-
 Only the corresponding field is required for each mode. For example, if you want
 to begin a vesting payment, then only `begin` is required, and `cancel` and
 `registerSlash` can be omitted.
