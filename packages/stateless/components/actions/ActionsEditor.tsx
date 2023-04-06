@@ -62,8 +62,8 @@ export const ActionsEditor = ({
   // All categorized actions from the form.
   const actionData = watch(actionDataFieldName as 'actionData') || []
 
-  // Group action data by action by combining each action's data into a group so
-  // they can be rendered together.
+  // Group action data by adjacent action, preserving order. Adjacent data of
+  // the same action are combined into a group so they can be rendered together.
   const groupedActionData = actionData.reduce(
     (acc, field, index): GroupedActionData[] => {
       const { categoryKey, actionKey, data } = field
@@ -99,13 +99,15 @@ export const ActionsEditor = ({
         ]
       }
 
-      // Find existing group for action.
-      const existingGroup = acc.find((group) => group.action?.key === actionKey)
-      if (existingGroup) {
-        // Add data to existing group.
-        existingGroup.all.push({ index, data })
+      // If most recent group is for the current action, add the current
+      // action's data to the most recent group.
+      const lastGroup = acc[acc.length - 1]
+      if (lastGroup?.action && lastGroup.action.key === actionKey) {
+        // Add data to group.
+        lastGroup.all.push({ index, data })
       } else {
-        // or create new group if action does not yet exist.
+        // or create new group if previously adjacent group is for a different
+        // action.
         acc.push({
           category,
           action: loadedAction.action,
@@ -170,7 +172,7 @@ export const ActionEditor = ({
 
   // Type assertion assumes the passed in field name is correct.
   const actionDataFieldName = _actionDataFieldName as 'actionData'
-  const { append, remove } = useFieldArray({
+  const { append, insert, remove } = useFieldArray({
     name: actionDataFieldName,
     control,
   })
@@ -354,8 +356,9 @@ export const ActionEditor = ({
             circular
             className="self-end"
             onClick={() =>
-              // Make another entry for the same action with the default values.
-              append({
+              // Insert another entry for the same action with the default
+              // values after the last one in this group.
+              insert(all[all.length - 1].index + 1, {
                 categoryKey: category.key,
                 actionKey: action.key,
                 data: cloneDeep(actionDefaults),
