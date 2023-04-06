@@ -1,5 +1,5 @@
 import { AnalyticsOutlined } from '@mui/icons-material'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import useDeepCompareEffect from 'use-deep-compare-effect'
@@ -47,6 +47,7 @@ const InnerProposalInnerContentDisplay = ({
   setDuplicateFormData,
   actionsForMatching,
   proposal,
+  setSeenAllActionPages,
 }: BaseProposalInnerContentDisplayProps<NewProposalForm> & {
   proposal: Proposal | SingleChoiceProposal
 }) => {
@@ -55,8 +56,15 @@ const InnerProposalInnerContentDisplay = ({
 
   const decodedMessages = useMemo(
     () => decodeMessages(proposal.msgs),
-    [proposal]
+    [proposal.msgs]
   )
+
+  // If no msgs, set seen all action pages to true so that the user can vote.
+  useEffect(() => {
+    if (!decodedMessages.length) {
+      setSeenAllActionPages()
+    }
+  }, [decodedMessages.length, setSeenAllActionPages])
 
   // Call relevant action hooks in the same order every time.
   const actionData: CategorizedActionAndData[] = decodedMessages.map(
@@ -109,6 +117,7 @@ const InnerProposalInnerContentDisplay = ({
         SuspenseLoader={SuspenseLoader}
         actionData={actionData}
         onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
+        setSeenAllActionPages={setSeenAllActionPages}
       />
 
       <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">

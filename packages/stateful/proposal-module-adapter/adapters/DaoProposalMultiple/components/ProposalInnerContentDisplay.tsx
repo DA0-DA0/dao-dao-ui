@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
@@ -62,6 +62,7 @@ export const InnerProposalInnerContentDisplay = ({
   proposal,
   voteOptions,
   votesInfo: { winningChoice },
+  setSeenAllActionPages,
 }: BaseProposalInnerContentDisplayProps<NewProposalForm> & {
   proposal: MultipleChoiceProposal
   voteOptions: ProposalVoteOption<MultipleChoiceVote>[]
@@ -134,6 +135,35 @@ export const InnerProposalInnerContentDisplay = ({
     })
   }, [optionsData, proposal.title, proposal.description, setDuplicateFormData])
 
+  // Store for each option whether the user has seen all action pages.
+  const [seenAllActionPagesForOption, setSeenAllActionPagesPerOption] =
+    useState(
+      // Initialize to true if there are no msgs for an option.
+      () =>
+        optionsData.reduce(
+          (acc, { decodedMessages }, index) => ({
+            ...acc,
+            [index]: decodedMessages.length === 0,
+          }),
+          {} as Record<number, boolean | undefined>
+        )
+    )
+  // Check that every option has seen all action pages, and if so, call the
+  // `setSeenAllActionPages` callback.
+  useEffect(() => {
+    if (
+      [...Array(proposal.choices.length)].every(
+        (_, index) => seenAllActionPagesForOption[index]
+      )
+    ) {
+      setSeenAllActionPages()
+    }
+  }, [
+    proposal.choices.length,
+    seenAllActionPagesForOption,
+    setSeenAllActionPages,
+  ])
+
   return (
     <div>
       <p className="title-text mb-2">{t('title.voteOptions')}</p>
@@ -144,6 +174,12 @@ export const InnerProposalInnerContentDisplay = ({
           SuspenseLoader={SuspenseLoader}
           data={data}
           lastOption={index === optionsData.length - 1}
+          setSeenAllActionPages={() =>
+            setSeenAllActionPagesPerOption((prev) => ({
+              ...prev,
+              [index]: true,
+            }))
+          }
           winner={
             (proposal.status === ProposalStatus.Passed ||
               proposal.status === ProposalStatus.Executed ||

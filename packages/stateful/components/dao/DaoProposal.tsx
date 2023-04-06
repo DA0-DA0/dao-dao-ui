@@ -146,6 +146,9 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     return () => clearInterval(interval)
   }, [listeningForProposal, listeningForVote, refreshProposalAndAll])
 
+  // Whether or not the user has seen all the action pages.
+  const [seenAllActionPages, setSeenAllActionPages] = useState(false)
+
   // Memoize ProposalStatusAndInfo so it doesn't re-render when the proposal
   // refreshes. The cached loadable it uses internally depends on the
   // component's consistency. If we inline the component definition in the props
@@ -157,9 +160,16 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         onCloseSuccess={onCloseSuccess}
         onExecuteSuccess={onExecuteSuccess}
         onVoteSuccess={onVoteSuccess}
+        seenAllActionPages={seenAllActionPages}
       />
     ),
-    [ProposalStatusAndInfo, onCloseSuccess, onExecuteSuccess, onVoteSuccess]
+    [
+      ProposalStatusAndInfo,
+      onCloseSuccess,
+      onExecuteSuccess,
+      onVoteSuccess,
+      seenAllActionPages,
+    ]
   )
 
   // This gets passed down to the proposal module adapter's
@@ -200,6 +210,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
           <ProposalInnerContentDisplay
             actionsForMatching={actionsForMatching}
             setDuplicateFormData={setDuplicateFormData}
+            setSeenAllActionPages={() => setSeenAllActionPages(true)}
           />
         </SuspenseLoader>
       }

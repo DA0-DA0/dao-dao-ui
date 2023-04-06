@@ -18,11 +18,14 @@ import { Loader } from '../logo/Loader'
 import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
 import { ActionCard } from './ActionCard'
 
+const ACTIONS_PER_PAGE = 20
+
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
   actionData: CategorizedActionAndData[]
   hideCopyLink?: boolean
   onCopyLink?: () => void
+  setSeenAllActionPages?: () => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -31,6 +34,7 @@ export const ActionsRenderer = ({
   actionData,
   hideCopyLink,
   onCopyLink,
+  setSeenAllActionPages,
   SuspenseLoader,
 }: ActionsRendererProps) => {
   const actionKeysWithData = useMemo(
@@ -72,7 +76,7 @@ export const ActionsRenderer = ({
           }),
           {} as Record<
             ActionKey,
-            Omit<ActionRendererProps, 'allActionsWithData'>
+            Omit<ActionRendererProps, 'allActionsWithData' | 'setSeenAllPages'>
           >
         )
       ),
@@ -87,6 +91,29 @@ export const ActionsRenderer = ({
     // Cleanup on unmount.
     return () => clearTimeout(timeout)
   }, [copied])
+
+  // Store for each action group whether the user has seen all pages.
+  const [seenAllPagesForAction, setSeenAllPagesForAction] = useState(() =>
+    groupedActionData.reduce(
+      (acc, [, { all }], index) => ({
+        ...acc,
+        [index]: all.length <= ACTIONS_PER_PAGE,
+      }),
+      {} as Record<number, boolean | undefined>
+    )
+  )
+  // Check that every action has seen all pages, and if so, call the
+  // `setSeenAllActionPages` callback.
+  useEffect(() => {
+    if (
+      setSeenAllActionPages &&
+      [...Array(groupedActionData.length)].every(
+        (_, index) => seenAllPagesForAction[index]
+      )
+    ) {
+      setSeenAllActionPages()
+    }
+  }, [groupedActionData.length, seenAllPagesForAction, setSeenAllActionPages])
 
   return (
     <div className="flex flex-col gap-2">
@@ -108,6 +135,12 @@ export const ActionsRenderer = ({
             {...props}
             SuspenseLoader={SuspenseLoader}
             allActionsWithData={actionKeysWithData}
+            setSeenAllPages={() =>
+              setSeenAllPagesForAction((prev) => ({
+                ...prev,
+                [index]: true,
+              }))
+            }
           />
 
           {!hideCopyLink && (
@@ -140,10 +173,9 @@ export type ActionRendererProps = {
     data: any
   }[]
   allActionsWithData: CategorizedActionKeyAndData[]
+  setSeenAllPages: () => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
-
-const ACTIONS_PER_PAGE = 20
 
 // Renders a group of data that belong to the same action.
 export const ActionRenderer = ({
@@ -151,6 +183,7 @@ export const ActionRenderer = ({
   action,
   all,
   allActionsWithData,
+  setSeenAllPages,
   SuspenseLoader,
 }: ActionRendererProps) => {
   const { t } = useTranslation()
@@ -164,6 +197,35 @@ export const ActionRenderer = ({
   const minIndex = (page - 1) * ACTIONS_PER_PAGE
   const maxIndex = page * ACTIONS_PER_PAGE
   const maxPage = Math.ceil(all.length / ACTIONS_PER_PAGE)
+
+  // Store pages visited so we can check if we've seen all pages.
+  const [pagesVisited, setPagesVisited] = useState(() => new Set([page]))
+  useEffect(() => {
+    setPagesVisited((prev) => {
+      const next = new Set(prev)
+      next.add(page)
+      return next
+    })
+  }, [page])
+
+  const [markedSeen, setMarkedSeen] = useState(false)
+  useEffect(() => {
+    if (markedSeen) {
+      return
+    }
+
+    // If only one page, mark as seen.
+    if (maxPage === PAGINATION_MIN_PAGE) {
+      setSeenAllPages()
+      setMarkedSeen(true)
+    }
+
+    // If all pages have been visited, mark as seen.
+    if (pagesVisited.size === maxPage) {
+      setSeenAllPages()
+      setMarkedSeen(true)
+    }
+  }, [markedSeen, maxPage, page, pagesVisited.size, setSeenAllPages])
 
   return (
     <FormProvider {...form}>
