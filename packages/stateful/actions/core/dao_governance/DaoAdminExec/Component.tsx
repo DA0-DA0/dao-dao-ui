@@ -2,6 +2,7 @@ import { ComponentType, useMemo } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import useDeepCompareEffect from 'use-deep-compare-effect'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   ActionCategorySelector,
@@ -16,7 +17,6 @@ import {
   CategorizedAction,
   CosmosMsgFor_Empty,
   LoadingData,
-  PartialCategorizedActionKeyAndData,
   StatefulEntityDisplayProps,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
@@ -24,6 +24,7 @@ import {
   ActionComponent,
   CategorizedActionAndData,
   LoadedActions,
+  PartialCategorizedActionKeyAndData,
 } from '@dao-dao/types/actions'
 import {
   CHAIN_BECH32_PREFIX,
@@ -171,6 +172,10 @@ export const DaoAdminExecActionEditor: ActionComponent<DaoAdminExecOptions> = ({
             categories={categories}
             onSelectCategory={({ key }) => {
               append({
+                // See `CategorizedActionKeyAndData` comment in
+                // `packages/types/actions.ts` for an explanation of why we need
+                // to append with a unique ID.
+                _id: uuidv4(),
                 categoryKey: key,
               })
             }}

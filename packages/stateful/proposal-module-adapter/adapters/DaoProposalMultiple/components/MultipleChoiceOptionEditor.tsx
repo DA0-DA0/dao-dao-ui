@@ -12,6 +12,7 @@ import {
   useFormContext,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   ActionCategorySelector,
@@ -180,6 +181,10 @@ export const MultipleChoiceOptionEditor = <
             disableKeybind
             onSelectCategory={({ key }) => {
               append({
+                // See `CategorizedActionKeyAndData` comment in
+                // `packages/types/actions.ts` for an explanation of why we need
+                // to append with a unique ID.
+                _id: uuidv4(),
                 categoryKey: key,
               })
             }}

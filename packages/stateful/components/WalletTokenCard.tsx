@@ -207,18 +207,16 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
               Icon: PaymentRounded,
               label: t('button.spend'),
               closeOnClick: true,
-              href: getMeTxPrefillPath({
-                actions: [
-                  {
-                    actionKey: ActionKey.Spend,
-                    data: {
-                      to: '',
-                      amount: 0,
-                      denom: props.token.denomOrAddress,
-                    },
+              href: getMeTxPrefillPath([
+                {
+                  actionKey: ActionKey.Spend,
+                  data: {
+                    to: '',
+                    amount: 0,
+                    denom: props.token.denomOrAddress,
                   },
-                ],
-              }),
+                },
+              ]),
             },
             ...(isUsdc && MAINNET
               ? [
