@@ -8,7 +8,6 @@ import { SuspenseLoaderProps } from '@dao-dao/types'
 import {
   Action,
   ActionCategoryWithLabel,
-  ActionKey,
   CategorizedActionAndData,
   CategorizedActionKeyAndData,
 } from '@dao-dao/types/actions'
@@ -40,11 +39,11 @@ export const ActionsRenderer = ({
   const actionKeysWithData = useMemo(
     () =>
       actionData.map(
-        ({
-          category: { key: categoryKey },
-          action: { key: actionKey },
-          data,
-        }): CategorizedActionKeyAndData => ({
+        (
+          { category: { key: categoryKey }, action: { key: actionKey }, data },
+          index
+        ): CategorizedActionKeyAndData => ({
+          _id: index.toString(),
           categoryKey,
           actionKey,
           data,
@@ -54,32 +53,36 @@ export const ActionsRenderer = ({
     useDeepCompareMemoize([actionData])
   )
 
-  // Group action data by action.
+  // Group action data by adjacent action, preserving order.
   const groupedActionData = useMemo(
     () =>
-      Object.entries(
-        actionData.reduce(
-          (acc, { category, action, data }, index) => ({
-            ...acc,
-            [action.key]: {
-              category,
-              action,
-              all: [
-                ...(acc[action.key]?.all || []),
-                {
-                  data,
-                  // Index in the original array.
-                  index,
-                },
-              ],
-            },
-          }),
-          {} as Record<
-            ActionKey,
-            Omit<ActionRendererProps, 'allActionsWithData' | 'setSeenAllPages'>
-          >
-        )
-      ),
+      actionData.reduce((acc, { category, action, data }, index) => {
+        // If most recent action is the same as the current action, add the
+        // current action's data to the most recent action's data.
+        const lastAction = acc[acc.length - 1]
+        if (lastAction && lastAction.action.key === action.key) {
+          lastAction.all.push({
+            data,
+            // Index in the original array.
+            index,
+          })
+        } else {
+          // Otherwise, add a new action to the list.
+          acc.push({
+            category,
+            action,
+            all: [
+              {
+                data,
+                // Index in the original array.
+                index,
+              },
+            ],
+          })
+        }
+
+        return acc
+      }, [] as Omit<ActionRendererProps, 'SuspenseLoader' | 'allActionsWithData' | 'setSeenAllPages'>[]),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     useDeepCompareMemoize([actionData])
   )
@@ -95,7 +98,7 @@ export const ActionsRenderer = ({
   // Store for each action group whether the user has seen all pages.
   const [seenAllPagesForAction, setSeenAllPagesForAction] = useState(() =>
     groupedActionData.reduce(
-      (acc, [, { all }], index) => ({
+      (acc, { all }, index) => ({
         ...acc,
         [index]: all.length <= ACTIONS_PER_PAGE,
       }),
@@ -128,7 +131,7 @@ export const ActionsRenderer = ({
 
   return (
     <div className="flex flex-col gap-2">
-      {groupedActionData.map(([actionKey, props], index) => (
+      {groupedActionData.map((props, index) => (
         <div key={index} className="group relative" id={`A${index + 1}`}>
           <ActionRenderer
             key={
@@ -141,7 +144,7 @@ export const ActionsRenderer = ({
               // the action changes. This is necessary because the component
               // expects to exist inside a FormProvider, and a FormProvider
               // depends on a `useForm` hook return value.
-              `${index}-${actionKey}`
+              `${index}-${props.action.key}`
             }
             {...props}
             SuspenseLoader={SuspenseLoader}

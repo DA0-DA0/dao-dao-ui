@@ -1,9 +1,10 @@
 import { Add, Remove } from '@mui/icons-material'
 import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
-import { ComponentType, useState } from 'react'
+import { ComponentType, useCallback, useState } from 'react'
 import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { v4 as uuidv4 } from 'uuid'
 
 import { SuspenseLoaderProps } from '@dao-dao/types'
 import {
@@ -41,6 +42,7 @@ type GroupedActionData = Omit<
   category: ActionCategoryWithLabel
   actionDefaults: any
   all: {
+    _id: string
     // Index of data in `actionData` list.
     index: number
     data: any
@@ -59,15 +61,18 @@ export const ActionsEditor = ({
   const { watch } = useFormContext<{
     actionData: PartialCategorizedActionKeyAndData[]
   }>()
+
   // All categorized actions from the form.
   const actionData = watch(actionDataFieldName as 'actionData') || []
 
-  // Group action data by action by combining each action's data into a group so
-  // they can be rendered together.
+  // Group action data by adjacent action, preserving order. Adjacent data of
+  // the same action are combined into a group so they can be rendered together.
   const groupedActionData = actionData.reduce(
-    (acc, field, index): GroupedActionData[] => {
-      const { categoryKey, actionKey, data } = field
-
+    (
+      acc,
+      { _id, categoryKey, actionKey, data },
+      index
+    ): GroupedActionData[] => {
       const loadedAction = actionKey && loadedActions[actionKey]
 
       // Get category from loaded action if key is undefined. It should only be
@@ -94,23 +99,41 @@ export const ActionsEditor = ({
             category,
             action: undefined,
             actionDefaults: {},
-            all: [{ index, data }],
+            all: [
+              {
+                _id,
+                index,
+                data,
+              },
+            ],
           },
         ]
       }
 
-      // Find existing group for action.
-      const existingGroup = acc.find((group) => group.action?.key === actionKey)
-      if (existingGroup) {
-        // Add data to existing group.
-        existingGroup.all.push({ index, data })
+      // If most recent group is for the current action, add the current
+      // action's data to the most recent group.
+      const lastGroup = acc[acc.length - 1]
+      if (lastGroup?.action && lastGroup.action.key === actionKey) {
+        // Add data to group.
+        lastGroup.all.push({
+          _id,
+          index,
+          data,
+        })
       } else {
-        // or create new group if action does not yet exist.
+        // or create new group if previously adjacent group is for a different
+        // action.
         acc.push({
           category,
           action: loadedAction.action,
           actionDefaults: loadedAction.defaults,
-          all: [{ index, data }],
+          all: [
+            {
+              _id,
+              index,
+              data,
+            },
+          ],
         })
       }
 
@@ -122,7 +145,14 @@ export const ActionsEditor = ({
   return groupedActionData.length > 0 ? (
     <div className={clsx('flex flex-col gap-2', className)}>
       {groupedActionData.map((group, index) => (
-        <div key={index} className="group relative" id={`A${index + 1}`}>
+        <div
+          key={
+            // Re-render when the group at a given position changes.
+            `${index}-${group.category.key}`
+          }
+          className="group relative"
+          id={`A${index + 1}`}
+        >
           <ActionEditor
             {...group}
             SuspenseLoader={SuspenseLoader}
@@ -141,11 +171,11 @@ export type ActionEditorProps = GroupedActionData & {
   categories: ActionCategoryWithLabel[]
   loadedActions: LoadedActions
   actionDataFieldName: string
-
   // The errors for all actions, pointed to by `actionsFieldName` above.
   actionDataErrors:
     | FieldErrors<PartialCategorizedActionKeyAndData[]>
     | undefined
+
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
@@ -170,10 +200,21 @@ export const ActionEditor = ({
 
   // Type assertion assumes the passed in field name is correct.
   const actionDataFieldName = _actionDataFieldName as 'actionData'
-  const { append, remove } = useFieldArray({
+  const { append, insert, remove } = useFieldArray({
     name: actionDataFieldName,
     control,
   })
+  const addAction = useCallback(
+    (data: Omit<PartialCategorizedActionKeyAndData, '_id'>) =>
+      append({
+        // See `CategorizedActionKeyAndData` comment in
+        // `packages/types/actions.ts` for an explanation of why we need to
+        // append with a unique ID.
+        _id: uuidv4(),
+        ...data,
+      }),
+    [append]
+  )
 
   // All categorized actions from the form.
   const actionData = watch(actionDataFieldName as 'actionData') || []
@@ -215,7 +256,7 @@ export const ActionEditor = ({
 
             // If holding shift, add as a new action.
             if (event.shiftKey) {
-              append({
+              addAction({
                 categoryKey: category.key,
                 actionKey: key,
                 // Clone to prevent the form from mutating the original object.
@@ -290,7 +331,7 @@ export const ActionEditor = ({
       onCategoryClick={goBackToCategoryPicker}
       onRemove={onRemove}
     >
-      {all.map(({ index, data }) => {
+      {all.map(({ _id, index, data }) => {
         const removeAction = () => {
           clearErrors(`${actionDataFieldName}.${index}`)
           remove(index)
@@ -299,15 +340,18 @@ export const ActionEditor = ({
         return (
           <div
             key={
-              // Re-render when the action at a given position changes.
-              `${index}-${action.key}`
+              // If _id empty, likely due to an old saved form state, use index
+              // and action as re-render key. Using a unique `key` ensures that
+              // the action does not re-render when other parts of the form
+              // change.
+              _id || `${index}-${action.key}`
             }
             className="flex animate-fade-in flex-row items-start gap-4"
           >
             <div className="flex min-w-0 grow flex-col gap-4">
               <SuspenseLoader fallback={<Loader size={36} />}>
                 <action.Component
-                  addAction={append}
+                  addAction={addAction}
                   allActionsWithData={actionData}
                   data={data}
                   errors={actionDataErrors?.[index]?.data || {}}
@@ -355,8 +399,13 @@ export const ActionEditor = ({
             circular
             className="self-end"
             onClick={() =>
-              // Make another entry for the same action with the default values.
-              append({
+              // Insert another entry for the same action with the default
+              // values after the last one in this group.
+              insert(all[all.length - 1].index + 1, {
+                // See `CategorizedActionKeyAndData` comment in
+                // `packages/types/actions.ts` for an explanation of why we need
+                // to insert with a unique ID.
+                _id: uuidv4(),
                 categoryKey: category.key,
                 actionKey: action.key,
                 data: cloneDeep(actionDefaults),

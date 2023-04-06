@@ -59,6 +59,7 @@ Default.args = {
           'Send $10 USDC to my DAO. This is a very long description. I wish it were shorter.',
         actions: [
           {
+            _id: 'spend1',
             actionKey: ActionKey.Spend,
             data: {},
           },
