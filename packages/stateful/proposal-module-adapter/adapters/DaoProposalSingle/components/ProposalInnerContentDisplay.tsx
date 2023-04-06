@@ -84,7 +84,8 @@ const InnerProposalInnerContentDisplay = ({
   )
 
   const actionKeyAndData = actionData.map(
-    ({ category, action, data }): CategorizedActionKeyAndData => ({
+    ({ category, action, data }, index): CategorizedActionKeyAndData => ({
+      _id: index.toString(),
       categoryKey: category.key,
       actionKey: action.key,
       data,

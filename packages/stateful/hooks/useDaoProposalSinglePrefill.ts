@@ -1,6 +1,6 @@
 import { useDaoInfoContext } from '@dao-dao/stateless'
 import {
-  PartialCategorizedActionKeyAndData,
+  PartialCategorizedActionKeyAndDataNoId,
   ProposalPrefill,
 } from '@dao-dao/types'
 import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
@@ -9,7 +9,7 @@ import { matchAdapter as matchProposalModuleAdapter } from '../proposal-module-a
 import { NewProposalForm } from '../proposal-module-adapter/adapters/DaoProposalSingle/types'
 
 export interface UseEncodedProposalPrefillUrlOptions {
-  actions: PartialCategorizedActionKeyAndData[]
+  actions: PartialCategorizedActionKeyAndDataNoId[]
   title?: string
   description?: string
   proposalModuleId?: string
@@ -36,7 +36,10 @@ export const useDaoProposalSinglePrefill = ({
     data: {
       title,
       description,
-      actionData: actions,
+      actionData: actions.map((action, index) => ({
+        _id: index.toString(),
+        ...action,
+      })),
     },
   }
 

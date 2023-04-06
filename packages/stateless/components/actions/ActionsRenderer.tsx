@@ -33,11 +33,11 @@ export const ActionsRenderer = ({
   const actionKeysWithData = useMemo(
     () =>
       actionData.map(
-        ({
-          category: { key: categoryKey },
-          action: { key: actionKey },
-          data,
-        }): CategorizedActionKeyAndData => ({
+        (
+          { category: { key: categoryKey }, action: { key: actionKey }, data },
+          index
+        ): CategorizedActionKeyAndData => ({
+          _id: index.toString(),
           categoryKey,
           actionKey,
           data,
