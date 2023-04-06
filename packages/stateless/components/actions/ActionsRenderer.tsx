@@ -217,7 +217,8 @@ export const ActionRenderer = ({
   const maxIndex = page * ACTIONS_PER_PAGE
   const maxPage = Math.ceil(all.length / ACTIONS_PER_PAGE)
 
-  // Store pages visited so we can check if we've seen all pages.
+  // Store pages visited so we can check if we've seen all pages. Initialize to
+  // the first page.
   const [pagesVisited, setPagesVisited] = useState(() => new Set([page]))
   useEffect(() => {
     setPagesVisited((prev) => {
@@ -231,12 +232,6 @@ export const ActionRenderer = ({
   useEffect(() => {
     if (markedSeen) {
       return
-    }
-
-    // If only one page, mark as seen.
-    if (maxPage === PAGINATION_MIN_PAGE) {
-      setSeenAllPages()
-      setMarkedSeen(true)
     }
 
     // If all pages have been visited, mark as seen.
