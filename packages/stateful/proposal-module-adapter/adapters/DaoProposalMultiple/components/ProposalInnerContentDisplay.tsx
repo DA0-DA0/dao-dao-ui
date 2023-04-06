@@ -150,15 +150,22 @@ export const InnerProposalInnerContentDisplay = ({
     )
   // Check that every option has seen all action pages, and if so, call the
   // `setSeenAllActionPages` callback.
+  const [markedSeen, setMarkedSeen] = useState(false)
   useEffect(() => {
+    if (markedSeen) {
+      return
+    }
+
     if (
       [...Array(proposal.choices.length)].every(
         (_, index) => seenAllActionPagesForOption[index]
       )
     ) {
       setSeenAllActionPages()
+      setMarkedSeen(true)
     }
   }, [
+    markedSeen,
     proposal.choices.length,
     seenAllActionPagesForOption,
     setSeenAllActionPages,
@@ -175,10 +182,15 @@ export const InnerProposalInnerContentDisplay = ({
           data={data}
           lastOption={index === optionsData.length - 1}
           setSeenAllActionPages={() =>
-            setSeenAllActionPagesPerOption((prev) => ({
-              ...prev,
-              [index]: true,
-            }))
+            setSeenAllActionPagesPerOption((prev) =>
+              // Don't update if already true.
+              prev[index]
+                ? prev
+                : {
+                    ...prev,
+                    [index]: true,
+                  }
+            )
           }
           winner={
             (proposal.status === ProposalStatus.Passed ||

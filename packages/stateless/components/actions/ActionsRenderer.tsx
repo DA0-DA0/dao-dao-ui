@@ -104,7 +104,12 @@ export const ActionsRenderer = ({
   )
   // Check that every action has seen all pages, and if so, call the
   // `setSeenAllActionPages` callback.
+  const [markedSeen, setMarkedSeen] = useState(false)
   useEffect(() => {
+    if (markedSeen) {
+      return
+    }
+
     if (
       setSeenAllActionPages &&
       [...Array(groupedActionData.length)].every(
@@ -112,8 +117,14 @@ export const ActionsRenderer = ({
       )
     ) {
       setSeenAllActionPages()
+      setMarkedSeen(true)
     }
-  }, [groupedActionData.length, seenAllPagesForAction, setSeenAllActionPages])
+  }, [
+    groupedActionData.length,
+    markedSeen,
+    seenAllPagesForAction,
+    setSeenAllActionPages,
+  ])
 
   return (
     <div className="flex flex-col gap-2">
@@ -136,10 +147,15 @@ export const ActionsRenderer = ({
             SuspenseLoader={SuspenseLoader}
             allActionsWithData={actionKeysWithData}
             setSeenAllPages={() =>
-              setSeenAllPagesForAction((prev) => ({
-                ...prev,
-                [index]: true,
-              }))
+              setSeenAllPagesForAction((prev) =>
+                // Don't update if already true.
+                prev[index]
+                  ? prev
+                  : {
+                      ...prev,
+                      [index]: true,
+                    }
+              )
             }
           />
 

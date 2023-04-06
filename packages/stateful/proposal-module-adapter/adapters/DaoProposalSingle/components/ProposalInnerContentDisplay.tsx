@@ -60,11 +60,17 @@ const InnerProposalInnerContentDisplay = ({
   )
 
   // If no msgs, set seen all action pages to true so that the user can vote.
+  const [markedSeen, setMarkedSeen] = useState(false)
   useEffect(() => {
+    if (markedSeen) {
+      return
+    }
+
     if (!decodedMessages.length) {
       setSeenAllActionPages()
+      setMarkedSeen(true)
     }
-  }, [decodedMessages.length, setSeenAllActionPages])
+  }, [decodedMessages.length, markedSeen, setSeenAllActionPages])
 
   // Call relevant action hooks in the same order every time.
   const actionData: CategorizedActionAndData[] = decodedMessages.map(
