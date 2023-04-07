@@ -2,13 +2,13 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { SuspenseLoader } from '@dao-dao/stateful'
-import { useActions, useLoadActions } from '@dao-dao/stateful/actions'
+import { useLoadedActionsAndCategories } from '@dao-dao/stateful/actions'
 import {
   WalletActionsProviderDecorator,
   WalletProviderDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { CoreActionKey, MeTransactionForm } from '@dao-dao/types'
+import { ActionKey, MeTransactionForm } from '@dao-dao/types'
 
 import { MeTransactionBuilder } from './MeTransactionBuilder'
 
@@ -23,8 +23,7 @@ export default {
 } as ComponentMeta<typeof MeTransactionBuilder>
 
 const Template: ComponentStory<typeof MeTransactionBuilder> = (args) => {
-  const actions = useActions()
-  const loadedActions = useLoadActions(actions)
+  const { loadedActions, categories } = useLoadedActionsAndCategories()
 
   const formMethods = useForm<MeTransactionForm>({
     mode: 'onChange',
@@ -36,7 +35,7 @@ const Template: ComponentStory<typeof MeTransactionBuilder> = (args) => {
   return (
     <MeTransactionBuilder
       {...args}
-      actions={actions}
+      categories={categories}
       formMethods={formMethods}
       loadedActions={loadedActions}
     />
@@ -60,7 +59,8 @@ Default.args = {
           'Send $10 USDC to my DAO. This is a very long description. I wish it were shorter.',
         actions: [
           {
-            key: CoreActionKey.Spend,
+            _id: 'spend1',
+            actionKey: ActionKey.Spend,
             data: {},
           },
         ],
@@ -78,7 +78,7 @@ Default.args = {
   saving: false,
 
   // Overwritten in template.
-  actions: [],
+  categories: [],
   loadedActions: {},
   formMethods: {} as any,
 }

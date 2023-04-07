@@ -2,10 +2,9 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useFormContext } from 'react-hook-form'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
-import { TokenType } from '@dao-dao/types'
 import { NATIVE_TOKEN, ibcAssets } from '@dao-dao/utils'
 
-import { TokenInput, TokenInputOption } from './TokenInput'
+import { TokenInput } from './TokenInput'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / inputs / TokenInput',
@@ -41,18 +40,7 @@ Default.args = {
   amountStep: 0.000001,
   tokens: {
     loading: false,
-    data: [
-      NATIVE_TOKEN,
-      ...ibcAssets.tokens.map(
-        ({ juno_denom, symbol, name, logoURI }): TokenInputOption => ({
-          type: TokenType.Native,
-          denomOrAddress: juno_denom,
-          symbol,
-          description: symbol === name ? undefined : name,
-          imageUrl: logoURI,
-        })
-      ),
-    ],
+    data: [NATIVE_TOKEN, ...ibcAssets],
   },
 }
 

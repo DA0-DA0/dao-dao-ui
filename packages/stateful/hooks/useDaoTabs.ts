@@ -3,16 +3,15 @@ import {
   FiberSmartRecordOutlined,
   HomeOutlined,
   HowToVoteOutlined,
-  PaidOutlined,
 } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoTabId, DaoTabWithComponent } from '@dao-dao/types'
+import { DaoTabId, DaoTabWithComponent, WidgetLocation } from '@dao-dao/types'
 
 import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '../components'
-import { usePayrollAdapter } from '../payroll'
 import { useVotingModuleAdapter } from '../voting-module-adapter'
+import { useWidgets } from '../widgets'
 
 export type UseDaoTabsOptions = {
   includeHome?: ComponentType
@@ -27,8 +26,25 @@ export const useDaoTabs = ({
     components: { extraTabs },
   } = useVotingModuleAdapter()
 
-  // Get payroll tab component, if exists.
-  const PayrollTab = usePayrollAdapter()?.PayrollTab
+  // Get widget tab components, if exist.
+  const loadingWidgets = useWidgets({
+    // Only load tab widgets.
+    location: WidgetLocation.Tab,
+  })
+  const widgetTabs = loadingWidgets.loading
+    ? []
+    : loadingWidgets.data.map(
+        ({
+          title,
+          widget: { id, Icon },
+          WidgetComponent,
+        }): DaoTabWithComponent => ({
+          id,
+          label: title,
+          Icon,
+          Component: WidgetComponent,
+        })
+      )
 
   return [
     ...(includeHome
@@ -63,15 +79,6 @@ export const useDaoTabs = ({
       label: t(labelI18nKey),
       ...tab,
     })) ?? []),
-    ...(PayrollTab
-      ? [
-          {
-            id: DaoTabId.Payroll,
-            label: t('title.payroll'),
-            Component: PayrollTab,
-            Icon: PaidOutlined,
-          },
-        ]
-      : []),
+    ...widgetTabs,
   ]
 }

@@ -1,10 +1,10 @@
 import { ReactNode } from 'react'
 
 import {
-  ActionAndData,
-  ActionKeyAndData,
+  CategorizedActionAndData,
   DepositInfoSelector,
   IProposalModuleAdapterCommonOptions,
+  PartialCategorizedActionKeyAndData,
   PercentOrMajorityValue,
   ProcessedTQ,
 } from '@dao-dao/types'
@@ -15,7 +15,7 @@ import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle
 export interface NewProposalForm {
   title: string
   description: string
-  actionData: ActionKeyAndData[]
+  actionData: PartialCategorizedActionKeyAndData[]
 }
 
 // Converted data from actions into Cosmos messages.
@@ -95,5 +95,5 @@ export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
 
 export type MessagesWithActionData = {
   decodedMessages: any[]
-  actionData: ActionAndData[]
+  actionData: CategorizedActionAndData[]
 }

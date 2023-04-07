@@ -1,5 +1,3 @@
-import { useMemo } from 'react'
-
 import { VotingModuleAdapter } from '@dao-dao/types'
 
 import { Placeholder } from './Placeholder'
@@ -13,7 +11,6 @@ export const FallbackAdapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useActions: () => useMemo(() => [], []),
       useDaoInfoBarItems: () => [],
       useProfileNewProposalCardAddresses: () => [],
     },
@@ -21,6 +18,11 @@ export const FallbackAdapter: VotingModuleAdapter = {
     // Components
     components: {
       ProfileCardMemberInfo: Placeholder,
+    },
+
+    // Functions
+    fields: {
+      actionCategoryMakers: [],
     },
   }),
 }

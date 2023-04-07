@@ -5,7 +5,6 @@ import {
   HomeOutlined,
   InboxOutlined,
 } from '@mui/icons-material'
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
@@ -19,7 +18,7 @@ import {
 } from '@dao-dao/types/command'
 import { CHAIN_ID, getUrlBaseForChainId } from '@dao-dao/utils'
 
-import { useFollowingDaos, useMembership } from '../../../hooks'
+import { useFollowingDaos } from '../../../hooks'
 
 export const makeGenericDaoContext: CommandModalContextMaker<{
   dao: CommandModalDaoInfo
@@ -27,12 +26,6 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
   const useSections = () => {
     const { t } = useTranslation()
     const { getDaoPath, getDaoProposalPath, router } = useNavHelpers()
-
-    const { status } = useWallet()
-    const { isMember } = useMembership({
-      coreAddress,
-      chainId,
-    })
 
     const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
       useFollowingDaos()
@@ -92,11 +85,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           name: t('button.createAProposal'),
           Icon: InboxOutlined,
           href: createProposalHref,
-          disabled: !isMember,
-          loading:
-            navigatingToHref === createProposalHref ||
-            status === WalletConnectionStatus.Initializing ||
-            status === WalletConnectionStatus.Connecting,
+          loading: navigatingToHref === createProposalHref,
         },
         {
           name: copied

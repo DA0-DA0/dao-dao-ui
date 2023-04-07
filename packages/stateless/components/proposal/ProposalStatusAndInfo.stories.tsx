@@ -125,5 +125,6 @@ Vote.args = {
       { Icon: CloseIcon, label: 'No', value: VoteType.No },
       { Icon: Texture, label: 'Abstain', value: VoteType.Abstain },
     ],
+    proposalOpen: true,
   },
 }

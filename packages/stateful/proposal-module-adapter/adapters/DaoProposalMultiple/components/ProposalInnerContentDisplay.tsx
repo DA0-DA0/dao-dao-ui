@@ -1,12 +1,12 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { Loader } from '@dao-dao/stateless'
 import {
-  ActionAndData,
-  ActionKeyAndData,
   BaseProposalInnerContentDisplayProps,
+  CategorizedActionAndData,
+  CategorizedActionKeyAndData,
   ProposalStatus,
   ProposalVoteOption,
 } from '@dao-dao/types'
@@ -24,7 +24,7 @@ import {
   useLoadingVotesInfo,
 } from '../hooks'
 import { MultipleChoiceOptionData, NewProposalForm, VotesInfo } from '../types'
-import { MultipleChoiceOptionViewer } from './ui/MultipleChoiceOptionViewer'
+import { MultipleChoiceOptionViewer } from './MultipleChoiceOptionViewer'
 
 export const ProposalInnerContentDisplay = (
   props: BaseProposalInnerContentDisplayProps<NewProposalForm>
@@ -58,10 +58,11 @@ export const ProposalInnerContentDisplay = (
 
 export const InnerProposalInnerContentDisplay = ({
   setDuplicateFormData,
-  availableActions,
+  actionsForMatching,
   proposal,
   voteOptions,
   votesInfo: { winningChoice },
+  setSeenAllActionPages,
 }: BaseProposalInnerContentDisplayProps<NewProposalForm> & {
   proposal: MultipleChoiceProposal
   voteOptions: ProposalVoteOption<MultipleChoiceVote>[]
@@ -79,24 +80,29 @@ export const InnerProposalInnerContentDisplay = ({
     (choice, index): MultipleChoiceOptionData => {
       const voteOption = voteOptions[index]
       const decodedMessages = mappedDecodedMessages[index]
-      const actionData: ActionAndData[] = decodedMessages.map((message) => {
-        const actionMatch = availableActions
-          .map((action) => ({
-            action,
-            ...action.useDecodedCosmosMsg(message),
-          }))
-          .find(({ match }) => match)
+      const actionData: CategorizedActionAndData[] = decodedMessages.map(
+        (message) => {
+          const actionMatch = actionsForMatching
+            .map(({ category, action }) => ({
+              category,
+              action,
+              ...action.useDecodedCosmosMsg(message),
+            }))
+            .find(({ match }) => match)
 
-        // There should always be a match since custom matches all. This should
-        // never happen as long as the Custom action exists.
-        if (!actionMatch?.match) {
-          throw new Error(t('error.loadingData'))
+          // There should always be a match since custom matches all. This
+          // should never happen as long as the Custom action exists.
+          if (!actionMatch?.match) {
+            throw new Error(t('error.loadingData'))
+          }
+
+          return {
+            category: actionMatch.category,
+            action: actionMatch.action,
+            data: actionMatch.data,
+          }
         }
-        return {
-          action: actionMatch.action,
-          data: actionMatch.data,
-        }
-      })
+      )
 
       return {
         choice,
@@ -119,14 +125,56 @@ export const InnerProposalInnerContentDisplay = ({
           title: choice.title,
           description: choice.description,
           actionData: actionData.map(
-            ({ action: { key }, data }): ActionKeyAndData => ({
-              key,
+            (
+              { category, action, data },
+              index
+            ): CategorizedActionKeyAndData => ({
+              _id: index.toString(),
+              categoryKey: category.key,
+              actionKey: action.key,
               data,
             })
           ),
         })),
     })
   }, [optionsData, proposal.title, proposal.description, setDuplicateFormData])
+
+  // Store for each option whether the user has seen all action pages.
+  const [seenAllActionPagesForOption, setSeenAllActionPagesPerOption] =
+    useState(
+      // Initialize to true if there are no msgs for an option.
+      () =>
+        optionsData.reduce(
+          (acc, { decodedMessages }, index) => ({
+            ...acc,
+            [index]: decodedMessages.length === 0,
+          }),
+          {} as Record<number, boolean | undefined>
+        )
+    )
+  // Check that every option has seen all action pages, and if so, call the
+  // `setSeenAllActionPages` callback.
+  const [markedSeen, setMarkedSeen] = useState(false)
+  useEffect(() => {
+    if (markedSeen) {
+      return
+    }
+
+    if (
+      setSeenAllActionPages &&
+      [...Array(proposal.choices.length)].every(
+        (_, index) => seenAllActionPagesForOption[index]
+      )
+    ) {
+      setSeenAllActionPages()
+      setMarkedSeen(true)
+    }
+  }, [
+    markedSeen,
+    proposal.choices.length,
+    seenAllActionPagesForOption,
+    setSeenAllActionPages,
+  ])
 
   return (
     <div>
@@ -135,9 +183,20 @@ export const InnerProposalInnerContentDisplay = ({
       {optionsData.map((data, index) => (
         <MultipleChoiceOptionViewer
           key={index}
-          availableActions={availableActions}
+          SuspenseLoader={SuspenseLoader}
           data={data}
           lastOption={index === optionsData.length - 1}
+          setSeenAllActionPages={() =>
+            setSeenAllActionPagesPerOption((prev) =>
+              // Don't update if already true.
+              prev[index]
+                ? prev
+                : {
+                    ...prev,
+                    [index]: true,
+                  }
+            )
+          }
           winner={
             (proposal.status === ProposalStatus.Passed ||
               proposal.status === ProposalStatus.Executed ||

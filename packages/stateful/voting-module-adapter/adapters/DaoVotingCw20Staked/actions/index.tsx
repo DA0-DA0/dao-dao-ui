@@ -1,1 +1,1 @@
-export * from './makeMintAction'
+export * from './Mint'

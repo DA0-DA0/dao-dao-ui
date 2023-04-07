@@ -1,10 +1,12 @@
-import { Widget, WidgetVisibilityContext } from '@dao-dao/types'
+import { Widget, WidgetLocation, WidgetVisibilityContext } from '@dao-dao/types'
 
-import { MintNftComponent } from './MintNftComponent'
+import { MintNftEditor as Editor } from './MintNftEditor'
+import { MintNftRenderer as Renderer } from './MintNftRenderer'
 import { MintNftData } from './types'
 
 export const MintNftWidget: Widget<MintNftData> = {
   id: 'mint_nft',
+  location: WidgetLocation.Home,
   visibilityContext: WidgetVisibilityContext.Always,
   defaultValues: {
     nftCollection: '',
@@ -15,5 +17,6 @@ export const MintNftWidget: Widget<MintNftData> = {
       buttonLabel: 'Mint NFT',
     },
   },
-  Component: MintNftComponent,
+  Renderer,
+  Editor,
 }

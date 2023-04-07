@@ -9,11 +9,11 @@ import { ComponentProps } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { ButtonPopupSection, CoreActionKey } from '@dao-dao/types'
+import { ActionKey, ButtonPopupSection } from '@dao-dao/types'
 import { CHAIN_ID, getMeTxPrefillPath, processError } from '@dao-dao/utils'
 
 import { useActionForKey } from '../actions'
-import { TransferNftData } from '../actions/components/nft'
+import { TransferNftData } from '../actions/core/nfts/TransferNft'
 import { useWalletInfo } from '../hooks'
 import { ButtonLink } from './ButtonLink'
 import { NftCard } from './NftCard'
@@ -32,7 +32,11 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
       })
     } catch (err) {
       console.error(err)
-      toast.error(err instanceof Error ? err.message : processError(err))
+      toast.error(
+        processError(err, {
+          forceCapture: false,
+        })
+      )
     }
   }
   const unsetProfilePhoto = async () => {
@@ -40,7 +44,11 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
       await updateProfileNft(null)
     } catch (err) {
       console.error(err)
-      toast.error(err instanceof Error ? err.message : processError(err))
+      toast.error(
+        processError(err, {
+          forceCapture: false,
+        })
+      )
     }
   }
 
@@ -51,8 +59,8 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
     walletProfileData.profile.nft?.tokenId === props.tokenId
 
   const transferActionDefaults = useActionForKey(
-    CoreActionKey.TransferNft
-  )?.useDefaults() as TransferNftData | undefined
+    ActionKey.TransferNft
+  )?.action.useDefaults() as TransferNftData | undefined
 
   // Setup actions for popup. Prefill with cw20 related actions.
   const buttonPopupSections: ButtonPopupSection[] = [
@@ -94,35 +102,31 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
                 Icon: SendRounded,
                 label: t('button.transfer'),
                 closeOnClick: true,
-                href: getMeTxPrefillPath({
-                  actions: [
-                    {
-                      key: CoreActionKey.TransferNft,
-                      data: {
-                        ...transferActionDefaults,
-                        collection: props.collection.address,
-                        tokenId: props.tokenId,
-                        recipient: '',
-                      },
+                href: getMeTxPrefillPath([
+                  {
+                    actionKey: ActionKey.TransferNft,
+                    data: {
+                      ...transferActionDefaults,
+                      collection: props.collection.address,
+                      tokenId: props.tokenId,
+                      recipient: '',
                     },
-                  ],
-                }),
+                  },
+                ]),
               },
               {
                 Icon: LocalFireDepartment,
                 label: t('button.burn'),
                 closeOnClick: true,
-                href: getMeTxPrefillPath({
-                  actions: [
-                    {
-                      key: CoreActionKey.BurnNft,
-                      data: {
-                        collection: props.collection.address,
-                        tokenId: props.tokenId,
-                      },
+                href: getMeTxPrefillPath([
+                  {
+                    actionKey: ActionKey.BurnNft,
+                    data: {
+                      collection: props.collection.address,
+                      tokenId: props.tokenId,
                     },
-                  ],
-                }),
+                  },
+                ]),
               },
             ],
           },

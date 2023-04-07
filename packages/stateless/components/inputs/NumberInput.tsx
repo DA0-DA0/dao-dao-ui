@@ -9,6 +9,11 @@ import {
   Validate,
 } from 'react-hook-form'
 
+import {
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
+} from '@dao-dao/utils'
+
 import { IconButton } from '../icon_buttons'
 
 // To show plus/minus buttons, make sure to provide (`value` or
@@ -32,8 +37,8 @@ export interface NumberInputProps<
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
   // Applies to the input when registering with a form.
   required?: boolean
-  // Override `setValueAs` when registering with a form.
-  setValueAs?: (value: any) => any
+  // Transform the value displayed in the input by these decimals.
+  transformDecimals?: number
   // If error present, outline input in red.
   error?: any
   // Hide plus/minus buttons
@@ -45,7 +50,11 @@ export interface NumberInputProps<
   watch?: (fieldName: any) => number | undefined
   // Used to set the value when the plus/minus buttons are clicked. Accepts the
   // react-hook-form `watch` function, or any custom function.
-  setValue?: (fieldName: any, value: number) => void
+  setValue?: (
+    fieldName: any,
+    value: number,
+    options?: { shouldValidate: boolean }
+  ) => void
   // Applies to the outer-most container, which contains the plus/minus buttons,
   // the input, and the unit.
   containerClassName?: string
@@ -80,7 +89,7 @@ export const NumberInput = <
   className,
   containerClassName,
   required,
-  setValueAs,
+  transformDecimals,
   ghost,
   unit,
   textClassName,
@@ -93,7 +102,16 @@ export const NumberInput = <
     {}
   )
 
-  const value = watch && fieldName ? Number(watch(fieldName) || 0) : _value
+  const watchedField = watch && fieldName ? watch(fieldName) : _value
+  const untransformedValue =
+    !watchedField && watchedField !== 0 ? watchedField : Number(watchedField)
+  const value =
+    untransformedValue && transformDecimals
+      ? convertMicroDenomToDenomWithDecimals(
+          untransformedValue,
+          transformDecimals
+        )
+      : untransformedValue
 
   return (
     <div
@@ -135,11 +153,14 @@ export const NumberInput = <
                 Math.min(
                   Math.max(
                     // Subtract 1 whole number.
-                    Number((value - 1).toFixed(0)),
+                    Number(((value || 0) - 1).toFixed(0)),
                     typeof props.min === 'number' ? props.min : -Infinity
                   ),
                   typeof props.max === 'number' ? props.max : Infinity
-                )
+                ),
+                {
+                  shouldValidate: true,
+                }
               )
             }
             size={
@@ -160,11 +181,14 @@ export const NumberInput = <
                 Math.min(
                   Math.max(
                     // Add 1 whole number.
-                    Number((value + 1).toFixed(0)),
+                    Number(((value || 0) + 1).toFixed(0)),
                     typeof props.min === 'number' ? props.min : -Infinity
                   ),
                   typeof props.max === 'number' ? props.max : Infinity
-                )
+                ),
+                {
+                  shouldValidate: true,
+                }
               )
             }
             size={
@@ -185,14 +209,23 @@ export const NumberInput = <
         )}
         disabled={disabled}
         type="number"
-        value={_value}
+        value={value}
         {...props}
         {...(register &&
           fieldName &&
           register(fieldName, {
             required: required && 'Required',
             validate,
-            ...(setValueAs ? { setValueAs } : { valueAsNumber: true }),
+            setValueAs: (value) =>
+              // If not a number AND not a string or an empty string, set NaN.
+              // Empty strings get converted to 0 with the Number constructor,
+              // which we don't want, because then the input can't be cleared.
+              typeof value !== 'number' &&
+              (typeof value !== 'string' || value.trim() === '')
+                ? NaN
+                : transformDecimals
+                ? convertDenomToMicroDenomWithDecimals(value, transformDecimals)
+                : Number(value),
           }))}
       />
 

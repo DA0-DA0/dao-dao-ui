@@ -1,13 +1,15 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useMemo } from 'react'
 
 import {
-  Action,
+  ActionCategoryWithLabel,
   ActionKey,
-  CoreActionKey,
+  CategorizedAction,
   IActionsContext,
   LoadedActions,
   UseActionsOptions,
 } from '@dao-dao/types/actions'
+
+import { actionKeyToMatchOrder } from './utils'
 
 //! External
 
@@ -25,60 +27,89 @@ const useActionsContext = (): IActionsContext => {
   return context
 }
 
-export const useActions = ({
+export const useActionCategories = ({
   isCreating = true,
-}: UseActionsOptions = {}): Action[] =>
-  useActionsContext()
-    // Filter out actions which are not allowed to be created. This is used to
-    // hide the upgrade actions from the list of actions to create.
-    .actions.filter((action) => !isCreating || !action.disallowCreation)
-    // Sort alphabetically.
-    .sort((a, b) => a.label.toLowerCase().localeCompare(b.label.toLowerCase()))
+}: UseActionsOptions = {}): ActionCategoryWithLabel[] => {
+  const categories = useActionsContext().categories
 
-// Only core actions are always provided by the top-level context.
-// Adapter-specific actions may be available but are not guaranteed.
-export const useActionForKey = (actionKey: ActionKey) =>
-  useActions().find(({ key }) => key === actionKey)
+  return useMemo(
+    () =>
+      categories
+        .map((c) =>
+          // Filter out actions which are not allowed to be created. This is used to
+          // hide the upgrade actions from the list of actions to create.
+          !isCreating
+            ? c
+            : {
+                ...c,
+                actions: c.actions.filter((action) => !action.disallowCreation),
+              }
+        )
+        // Filter out categories with no actions.
+        .filter((c) => c.actions.length > 0),
+    [categories, isCreating]
+  )
+}
+
+// Get flatten list of actions from categories ordered for matching messages to
+// actions.
+export const useActionsForMatching = (
+  ...args: Parameters<typeof useActionCategories>
+) => {
+  const categories = useActionCategories(...args)
+
+  return useMemo(
+    () =>
+      categories
+        .flatMap((category): CategorizedAction[] =>
+          category.actions.map((action) => ({
+            category,
+            action,
+          }))
+        )
+        .sort((a, b) => {
+          const aValue = actionKeyToMatchOrder(a.action.key)
+          const bValue = actionKeyToMatchOrder(b.action.key)
+          return aValue - bValue
+        }),
+    [categories]
+  )
+}
 
 // Access options passed to actions.
 export const useActionOptions = () => useActionsContext().options
 
-// This returns the order value of an action for matching. It ensures the last
-// four actions are set items, migrate smart contract, execute smart contract,
-// and custom, since these are all catch-alls for other actions, custom being
-// the broadest catch-all for all messages. Do this by assigning values and
-// sorting the actions in ascending order.
-const actionKeyToMatchOrder = (key: ActionKey) =>
-  (
-    [
-      CoreActionKey.ManageStorageItems,
-      CoreActionKey.Migrate,
-      CoreActionKey.Execute,
-      CoreActionKey.Custom,
-    ] as ActionKey[]
-  ).indexOf(key)
+// Only core actions are always provided. Adapter-specific actions may be
+// available but are not guaranteed based on the context.
+export const useActionForKey = (actionKey: ActionKey) =>
+  useActionsForMatching().find(({ action }) => action.key === actionKey)
 
-export const useOrderedActionsToMatch = (actions: Action[]): Action[] => {
-  const orderedActions = actions.sort((a, b) => {
-    const aValue = actionKeyToMatchOrder(a.key)
-    const bValue = actionKeyToMatchOrder(b.key)
-    return aValue - bValue
-  })
-
-  return orderedActions
-}
-
-// Call relevant action hooks in the same order every time. This would likely be
-// called on the output of useActions.
-export const useLoadActions = (actions: Action[]): LoadedActions =>
-  actions.reduce(
-    (acc, action) => ({
-      ...acc,
-      [action.key]: {
+// Flatten action categories into processed list of actions for generating
+// messages from actions.
+export const useLoadedActionsAndCategories = (
+  ...args: Parameters<typeof useActionCategories>
+): {
+  loadedActions: LoadedActions
+  categories: ActionCategoryWithLabel[]
+} => {
+  const categories = useActionCategories(...args)
+  // Load actions by calling hooks necessary to using the action. This calls the
+  // hooks in the same order every time, as action categories do not change, so
+  // this is a safe use of hooks.
+  const loadedActions = categories.reduce((acc, category) => {
+    category.actions.forEach((action) => {
+      acc[action.key] = {
+        category,
         action,
         transform: action.useTransformToCosmos(),
         defaults: action.useDefaults(),
-      },
-    }),
-    {}
-  )
+      }
+    })
+    return acc
+  }, {} as LoadedActions)
+
+  return {
+    loadedActions,
+    categories,
+  }
+}

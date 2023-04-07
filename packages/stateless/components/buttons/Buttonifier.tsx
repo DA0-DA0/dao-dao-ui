@@ -53,7 +53,7 @@ export const getButtonifiedClassNames = ({
     focused && 'ring-2 ring-inset ring-border-interactive-focus',
 
     // Rounded if circular.
-    circular ? 'rounded-full' : 'rounded-md',
+    circular ? 'aspect-square rounded-full' : 'rounded-md',
 
     // Pulse if loading for a variant that we don't display the loader.
     loading && variant === PULSE_LOADING_VARIANTS && 'animate-pulse',

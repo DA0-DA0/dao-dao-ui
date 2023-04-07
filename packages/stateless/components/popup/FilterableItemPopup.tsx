@@ -62,7 +62,10 @@ export const FilterableItemPopup = <T extends FilterableItem>({
 }: FilterableItemPopupProps<T>) => {
   const { t } = useTranslation()
 
-  const [open, setOpen] = useState(false)
+  const [_open, _setOpen] = useState(false)
+  const open = trigger.type === 'manual' ? trigger.open : _open
+  const setOpen = trigger.type === 'manual' ? trigger.setOpen : _setOpen
+
   const { searchBarProps, filteredData, setFilter } = useSearchFilter(
     items,
     filterableItemKeys
@@ -105,7 +108,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
         setOpen(false)
       }
     },
-    [closeOnSelect]
+    [closeOnSelect, setOpen]
   )
 
   const handleKeyPress = useCallback(
@@ -170,7 +173,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
         document.removeEventListener('keydown', listener)
       }
     }
-  }, [getKeydownEventListener, handleKeyPress, open])
+  }, [getKeydownEventListener, handleKeyPress, open, setOpen])
 
   useEffect(() => {
     // Auto focus on search bar on open.
@@ -194,7 +197,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
       />
 
       <Modal
-        containerClassName="!w-[24rem] !max-w-[96vw] !h-[32rem] !max-h-[96vh]"
+        containerClassName="!w-[28rem] !max-w-[96vw] !h-[36rem] !max-h-[96vh]"
         contentContainerClassName="p-3 pt-4"
         headerContainerClassName="p-4"
         headerContent={

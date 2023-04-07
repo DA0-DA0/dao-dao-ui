@@ -2,7 +2,7 @@ import { CSSProperties, ComponentType, ReactNode } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
-import { Action, ActionOptions } from './actions'
+import { ActionCategoryMaker, CategorizedAction } from './actions'
 import { ContractVersion } from './chain'
 import { Expiration } from './contracts'
 import { CheckedDepositInfo } from './contracts/common'
@@ -24,6 +24,7 @@ export interface IProposalModuleAdapterCommon<
     // data each time.
     makeDefaultNewProposalForm: () => FormData
     newProposalFormTitleKey: FieldPath<FormData>
+    actionCategoryMakers: ActionCategoryMaker[]
   }
 
   // Selectors
@@ -34,7 +35,6 @@ export interface IProposalModuleAdapterCommon<
 
   // Hooks
   hooks: {
-    useActions: (options: ActionOptions) => Action[]
     useProfileNewProposalCardInfoLines: () => ProfileNewProposalCardInfoLine[]
   }
 
@@ -176,13 +176,18 @@ export interface BaseProposalStatusAndInfoProps {
   onVoteSuccess: () => void | Promise<void>
   onExecuteSuccess: () => void | Promise<void>
   onCloseSuccess: () => void | Promise<void>
+  // Whether or not the user has viewed all action pages. If they haven't, they
+  // can't vote.
+  seenAllActionPages: boolean
 }
 
 export interface BaseProposalInnerContentDisplayProps<
   FormData extends FieldValues = any
 > {
   setDuplicateFormData: (data: FormData) => void
-  availableActions: Action[]
+  actionsForMatching: CategorizedAction[]
+  // Called when the user has viewed all action pages.
+  setSeenAllActionPages?: () => void
 }
 
 export interface BaseProposalWalletVoteProps<T> {

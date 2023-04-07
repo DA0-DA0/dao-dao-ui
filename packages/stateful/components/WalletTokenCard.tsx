@@ -22,7 +22,7 @@ import {
   useCachedLoadable,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import { CoreActionKey, TokenCardInfo, TokenType } from '@dao-dao/types'
+import { ActionKey, TokenCardInfo, TokenType } from '@dao-dao/types'
 import {
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
@@ -207,18 +207,16 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
               Icon: PaymentRounded,
               label: t('button.spend'),
               closeOnClick: true,
-              href: getMeTxPrefillPath({
-                actions: [
-                  {
-                    key: CoreActionKey.Spend,
-                    data: {
-                      to: '',
-                      amount: 0,
-                      denom: props.token.denomOrAddress,
-                    },
+              href: getMeTxPrefillPath([
+                {
+                  actionKey: ActionKey.Spend,
+                  data: {
+                    to: '',
+                    amount: 0,
+                    denom: props.token.denomOrAddress,
                   },
-                ],
-              }),
+                },
+              ]),
             },
             ...(isUsdc && MAINNET
               ? [
