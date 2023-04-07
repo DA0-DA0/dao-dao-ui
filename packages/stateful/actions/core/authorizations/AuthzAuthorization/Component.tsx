@@ -171,10 +171,10 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
                 <option value={AuthzExecActionTypes.Spend}>
                   {t('title.spend')}
                 </option>
-                <option value={AuthorizationTypeUrl.ContractExecution}>
+                <option value={AuthzExecActionTypes.Execute}>
                   {t('title.executeSmartContract')}
                 </option>
-                <option value={AuthorizationTypeUrl.ContractMigration}>
+                <option value={AuthzExecActionTypes.Migrate}>
                   {t('title.migrateSmartContract')}
                 </option>
               </SelectInput>

@@ -22,7 +22,6 @@ export enum AuthzExecActionTypes {
   Spend = '/cosmos.bank.v1beta1.MsgSend',
   Execute = '/cosmwasm.wasm.v1.MsgExecuteContract',
   Migrate = '/cosmwasm.wasm.v1.MsgMigrateContract',
-  Custom = 'custom',
 }
 
 export enum AuthorizationTypeUrl {
