@@ -116,7 +116,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
         <div className="flex flex-col items-stretch gap-1">
           <InputLabel
             name={t('form.authzType')}
-            tooltip={'form.authzTypeDescription'}
+            tooltip={t('form.authzTypeDescription')}
           />
           <SelectInput
             disabled={!isCreating}
@@ -143,7 +143,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
         mode === 'revoke') && (
         <>
           {!customTypeUrl ? (
-            <div className="flex flex-col items-stretch gap-1">
+            <div className="flex flex-col gap-1">
               <InputLabel
                 name={t('form.messageType')}
                 tooltip={t('form.authzMessageType')}
@@ -228,44 +228,50 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
 
       {authorizationTypeUrl === AuthorizationTypeUrl.Spend && mode === 'grant' && (
         <div className="flex flex-col gap-1">
-          <InputLabel name={t('form.spendAuthorization')} />
-          <div className="flex flex-col items-stretch gap-2">
-            {coins.map(({ id }, index) => (
-              <NativeCoinSelector
-                key={id}
-                {...({
-                  ...props,
-                  options: {
-                    nativeBalances: balances.loading
-                      ? { loading: true }
-                      : {
-                          loading: false,
-                          data: balances.data.filter(
-                            ({ token }) => token.type === TokenType.Native
-                          ),
-                        },
-                  },
-                  onRemove: isCreating ? () => removeCoin(index) : undefined,
-                } as NativeCoinSelectorProps)}
-                errors={errors?.funds?.[index]}
-                fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
-              />
-            ))}
-            {!isCreating && coins.length === 0 && (
-              <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
-                {t('info.none')}
-              </p>
-            )}
-            {isCreating && (
-              <Button
-                className="self-start"
-                onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
-                variant="secondary"
-              >
-                {t('button.addPayment')}
-              </Button>
-            )}
-          </div>
+          <InputLabel
+            name={t('form.spendingAllowance')}
+            tooltip={t('form.spendingAllowanceDescription')}
+          />
+
+          {isCreating || coins.length > 0 ? (
+            <div className="flex flex-col items-stretch gap-1">
+              {coins.map(({ id }, index) => (
+                <NativeCoinSelector
+                  key={id}
+                  {...({
+                    ...props,
+                    options: {
+                      nativeBalances: balances.loading
+                        ? { loading: true }
+                        : {
+                            loading: false,
+                            data: balances.data.filter(
+                              ({ token }) => token.type === TokenType.Native
+                            ),
+                          },
+                    },
+                    onRemove: isCreating ? () => removeCoin(index) : undefined,
+                  } as NativeCoinSelectorProps)}
+                  errors={errors?.funds?.[index]}
+                  fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
+                />
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs italic text-text-tertiary">
+              {t('info.none')}
+            </p>
+          )}
+
+          {isCreating && (
+            <Button
+              className="mt-2 self-start"
+              onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
+              variant="secondary"
+            >
+              {t('button.addAllowance')}
+            </Button>
+          )}
         </div>
       )}
 
@@ -273,7 +279,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
         authorizationTypeUrl === AuthorizationTypeUrl.ContractMigration) &&
         mode === 'grant' && (
           <>
-            <div className="flex flex-col items-stretch gap-1">
+            <div className="flex flex-col gap-1">
               <InputLabel name={t('form.smartContractAddress')} />
               <TextInput
                 disabled={!isCreating}
@@ -289,11 +295,12 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
               <InputErrorMessage error={errors?.contract} />
             </div>
 
-            <div className="flex flex-col items-stretch gap-1">
+            <div className="flex flex-col gap-1">
               <InputLabel
                 name={t('form.permissions')}
                 tooltip={t('form.permissionsDescription')}
               />
+
               <RadioInput
                 fieldName={fieldNamePrefix + 'filterType'}
                 options={[
@@ -310,7 +317,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
             </div>
 
             {filterType === FilterTypes.Keys && (
-              <div className="flex flex-col items-stretch gap-1">
+              <div className="flex flex-col gap-1">
                 <InputLabel
                   name={t('form.allowedMethods')}
                   tooltip={t('form.allowedMethodsDescription')}
@@ -323,12 +330,13 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
                   register={register}
                   validation={[validateRequired]}
                 />
+
                 <InputErrorMessage error={errors?.filterKeys} />
               </div>
             )}
 
             {filterType === FilterTypes.Msg && (
-              <div className="flex flex-col items-stretch gap-1">
+              <div className="flex flex-col gap-1">
                 <InputLabel
                   name={t('form.smartContractMessage')}
                   tooltip={t('form.smartContractMessageDescription')}
@@ -366,11 +374,12 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
               </div>
             )}
 
-            <div className="flex flex-col items-stretch gap-1">
+            <div className="flex flex-col gap-1">
               <InputLabel
                 name={t('form.authzLimits')}
                 tooltip={t('form.authzLimitsDescription')}
               />
+
               <RadioInput
                 fieldName={fieldNamePrefix + 'limitType'}
                 options={[
@@ -386,77 +395,82 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
               />
             </div>
 
-            {limitType !== LimitTypes.Funds && (
-              <>
-                <div className="flex flex-col items-stretch gap-1">
-                  <InputLabel
-                    name={t('form.calls')}
-                    tooltip={t('form.callsDescription')}
-                  />
-                  <NumberInput
-                    containerClassName="grow"
-                    error={errors?.calls}
-                    fieldName={fieldNamePrefix + 'calls'}
-                    min={0}
-                    register={register}
-                    setValue={setValue}
-                    sizing="sm"
-                    step={1}
-                    validation={[validateNonNegative, validateRequired]}
-                    watch={watch}
-                  />
-                </div>
-              </>
+            {(limitType === LimitTypes.Calls ||
+              limitType === LimitTypes.Combined) && (
+              <div className="flex flex-col gap-1">
+                <InputLabel
+                  name={t('form.calls')}
+                  tooltip={t('form.callsDescription')}
+                />
+
+                <NumberInput
+                  containerClassName="grow"
+                  error={errors?.calls}
+                  fieldName={fieldNamePrefix + 'calls'}
+                  min={0}
+                  register={register}
+                  setValue={setValue}
+                  sizing="sm"
+                  step={1}
+                  validation={[validateNonNegative, validateRequired]}
+                  watch={watch}
+                />
+              </div>
             )}
 
-            {limitType !== LimitTypes.Calls && (
-              <>
+            {(limitType === LimitTypes.Funds ||
+              limitType === LimitTypes.Combined) && (
+              <div className="flex flex-col gap-1">
                 <InputLabel
-                  name={t('form.spendingLimit')}
-                  tooltip={t('form.spendingLimitDescription')}
+                  name={t('form.spendingAllowance')}
+                  tooltip={t('form.spendingAllowanceDescription')}
                 />
-                <div className="flex flex-col items-stretch gap-1">
-                  {coins.map(({ id }, index) => (
-                    <NativeCoinSelector
-                      key={id}
-                      {...({
-                        ...props,
-                        options: {
-                          nativeBalances: balances.loading
-                            ? { loading: true }
-                            : {
-                                loading: false,
-                                data: balances.data.filter(
-                                  ({ token }) => token.type === TokenType.Native
-                                ),
-                              },
-                        },
-                        onRemove: isCreating
-                          ? () => removeCoin(index)
-                          : undefined,
-                      } as NativeCoinSelectorProps)}
-                      errors={errors?.funds?.[index]}
-                      fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
-                    />
-                  ))}
-                  {!isCreating && coins.length === 0 && (
-                    <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
-                      {t('info.none')}
-                    </p>
-                  )}
-                  {isCreating && (
-                    <Button
-                      className="self-start"
-                      onClick={() =>
-                        appendCoin({ amount: 1, denom: NATIVE_DENOM })
-                      }
-                      variant="secondary"
-                    >
-                      {t('button.addPayment')}
-                    </Button>
-                  )}
-                </div>
-              </>
+
+                {isCreating || coins.length > 0 ? (
+                  <div className="flex flex-col gap-1">
+                    {coins.map(({ id }, index) => (
+                      <NativeCoinSelector
+                        key={id}
+                        {...({
+                          ...props,
+                          options: {
+                            nativeBalances: balances.loading
+                              ? { loading: true }
+                              : {
+                                  loading: false,
+                                  data: balances.data.filter(
+                                    ({ token }) =>
+                                      token.type === TokenType.Native
+                                  ),
+                                },
+                          },
+                          onRemove: isCreating
+                            ? () => removeCoin(index)
+                            : undefined,
+                        } as NativeCoinSelectorProps)}
+                        errors={errors?.funds?.[index]}
+                        fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs italic text-text-tertiary">
+                    {t('info.none')}
+                  </p>
+                )}
+
+                {isCreating && (
+                  <Button
+                    className="mt-2 self-start"
+                    onClick={() =>
+                      appendCoin({ amount: 1, denom: NATIVE_DENOM })
+                    }
+                    variant="secondary"
+                  >
+                    {t('button.addAllowance')}
+                  </Button>
+                )}
+              </div>
             )}
           </>
         )}

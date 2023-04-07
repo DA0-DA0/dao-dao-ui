@@ -16,11 +16,12 @@ import {
   MsgWithdrawDelegatorRewardEncodeObject,
 } from '@cosmjs/stargate'
 import { VoteOption as CosmosGovVoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
+import { Any } from 'cosmjs-types/google/protobuf/any'
 import Long from 'long'
 
 import { CosmosMsgFor_Empty } from '@dao-dao/types'
 
-import { decodeStargateMessage } from './messages'
+import { decodeStargateMessage, encodeRawProtobufMsg } from './messages'
 
 export const cwMsgToEncodeObject = (
   msg: CosmosMsgFor_Empty,
@@ -220,3 +221,7 @@ export const cwMsgToEncodeObject = (
 
   throw new Error('Unsupported cosmos message.')
 }
+
+export const cwMsgToProtobuf = (
+  ...params: Parameters<typeof cwMsgToEncodeObject>
+): Any => encodeRawProtobufMsg(cwMsgToEncodeObject(...params))

@@ -43,6 +43,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
   return (
     <>
       <AddressInput
+        disabled={!isCreating}
         error={errors?.address}
         fieldName={(fieldNamePrefix + 'address') as 'address'}
         register={register}

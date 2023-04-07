@@ -12,7 +12,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import {
-  cosmwasmToProtobuf,
+  cwMsgToProtobuf,
   decodeRawProtobufMsg,
   isDecodedStargateMsg,
   isValidContractAddress,
@@ -166,7 +166,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
             typeUrl: TYPE_URL_MSG_EXEC,
             value: {
               grantee,
-              msgs: msgs.map((msg) => cosmwasmToProtobuf(msg, address)),
+              msgs: msgs.map((msg) => cwMsgToProtobuf(msg, address)),
             },
           },
         }),
