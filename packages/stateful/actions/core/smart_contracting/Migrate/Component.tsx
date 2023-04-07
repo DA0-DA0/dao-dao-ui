@@ -66,7 +66,7 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
           <InputErrorMessage error={errors?.contract} />
         </div>
         <div className="flex flex-col gap-1">
-          <InputLabel name={t('form.codeID')} />
+          <InputLabel name={t('form.codeId')} />
           <NumberInput
             containerClassName="xs:h-full"
             disabled={!isCreating}

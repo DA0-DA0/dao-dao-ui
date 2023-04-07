@@ -1,180 +1,239 @@
-import type { MsgWithdrawDelegatorReward } from 'cosmjs-types/cosmos/distribution/v1beta1/tx'
-import type {
-  MsgBeginRedelegate,
-  MsgDelegate,
-  MsgUndelegate,
-} from 'cosmjs-types/cosmos/staking/v1beta1/tx'
-import cloneDeep from 'lodash.clonedeep'
-import { useCallback, useMemo } from 'react'
+import { Any } from 'cosmjs-types/google/protobuf/any'
+import { useCallback, useEffect, useMemo } from 'react'
+import { useFormContext } from 'react-hook-form'
+import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { validatorsSelector } from '@dao-dao/state/recoil'
-import { LockWithKeyEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { LockWithKeyEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
   ActionMaker,
+  CosmosMsgFor_Empty,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/types/actions'
+} from '@dao-dao/types'
 import {
-  NATIVE_TOKEN,
-  decodeRawProtobufMsg,
-  encodeRawProtobufMsg,
+  cwMsgToProtobuf,
   isDecodedStargateMsg,
+  isValidContractAddress,
+  isValidWalletAddress,
   makeStargateMessage,
+  objectMatchesStructure,
+  protobufToCwMsg,
 } from '@dao-dao/utils'
 
-import { AddressInput } from '../../../../components'
-import { useActionOptions } from '../../../react'
 import {
-  AuthzExecActionTypes,
-  AuthzExecComponent as StatelessAuthzComponent,
+  AddressInput,
+  DaoProviders,
+  EntityDisplay,
+  SuspenseLoader,
+} from '../../../../components'
+import { daoInfoSelector } from '../../../../recoil'
+import {
+  WalletActionsProvider,
+  useActionOptions,
+  useActionsForMatching,
+  useLoadedActionsAndCategories,
+} from '../../../react'
+import {
+  AuthzExecData,
+  AuthzExecOptions,
+  AuthzExecComponent as StatelessAuthzExecComponent,
 } from './Component'
 
 const TYPE_URL_MSG_EXEC = '/cosmos.authz.v1beta1.MsgExec'
 
-interface AuthzExecData {
-  authzExecActionType: AuthzExecActionTypes
-  delegate: MsgDelegate
-  undelegate: MsgUndelegate
-  redelegate: MsgBeginRedelegate
-  claimRewards: MsgWithdrawDelegatorReward
-  custom: string
-}
-
 const useDefaults: UseDefaults<AuthzExecData> = () => ({
-  authzExecActionType: AuthzExecActionTypes.Delegate,
-  delegate: {
-    amount: { denom: NATIVE_TOKEN.denomOrAddress, amount: '0' },
-    delegatorAddress: '',
-    validatorAddress: '',
-  },
-  undelegate: {
-    amount: {
-      denom: NATIVE_TOKEN.denomOrAddress,
-      amount: '0',
-    },
-    delegatorAddress: '',
-    validatorAddress: '',
-  },
-  redelegate: {
-    delegatorAddress: '',
-    validatorSrcAddress: '',
-    validatorDstAddress: '',
-    amount: {
-      denom: NATIVE_TOKEN.denomOrAddress,
-      amount: '0',
-    },
-  },
-  claimRewards: {
-    delegatorAddress: '',
-    validatorAddress: '',
-  },
-  custom: '[]',
+  address: '',
+  msgs: [],
 })
 
-const Component: ActionComponent = (props) => {
-  const { chainId } = useActionOptions()
+type InnerOptions = Pick<AuthzExecOptions, 'msgPerSenderIndex'>
 
-  const loadingValidators = useCachedLoading(
-    validatorsSelector({
-      chainId,
-    }),
-    []
-  )
+const InnerComponentLoading: ActionComponent<InnerOptions> = (props) => (
+  <StatelessAuthzExecComponent
+    {...props}
+    options={{
+      msgPerSenderIndex: props.options.msgPerSenderIndex,
+      categories: [],
+      loadedActions: {},
+      actionsForMatching: [],
+      AddressInput,
+      EntityDisplay,
+      SuspenseLoader,
+    }}
+  />
+)
+
+const InnerComponent: ActionComponent<InnerOptions> = (props) => {
+  const { categories, loadedActions } = useLoadedActionsAndCategories()
+  const actionsForMatching = useActionsForMatching()
 
   return (
-    <StatelessAuthzComponent
+    <StatelessAuthzExecComponent
       {...props}
       options={{
+        msgPerSenderIndex: props.options.msgPerSenderIndex,
+        categories,
+        loadedActions,
+        actionsForMatching,
         AddressInput,
-        validators: loadingValidators.loading ? [] : loadingValidators.data,
+        EntityDisplay,
+        SuspenseLoader,
       }}
     />
   )
 }
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
-  msg: Record<string, any>
-) => {
-  const data = useDefaults()
+const InnerComponentWrapper: ActionComponent<
+  InnerOptions & { address: string }
+> = (props) => {
+  const { bech32Prefix } = useActionOptions()
+  const {
+    options: { address },
+  } = props
 
-  return useMemo(() => {
-    // Check this is a stargate message, and that this is an Authz MsgExec
-    // message formatted by this action.
-    if (
-      !isDecodedStargateMsg(msg) ||
-      msg.stargate.typeUrl !== TYPE_URL_MSG_EXEC ||
-      msg.stargate.value.msgs?.length !== 1
-    ) {
-      return { match: false }
+  const isContractAddress = isValidContractAddress(address, bech32Prefix)
+  const isWalletAddress = isValidWalletAddress(address, bech32Prefix)
+  // If contract, try to load DAO info.
+  const daoInfoLoadable = useRecoilValueLoadable(
+    isContractAddress
+      ? daoInfoSelector({
+          coreAddress: address,
+        })
+      : constSelector(undefined)
+  )
+
+  return isContractAddress ? (
+    daoInfoLoadable.state === 'hasValue' ? (
+      <SuspenseLoader fallback={<InnerComponentLoading {...props} />}>
+        <DaoProviders info={daoInfoLoadable.contents!}>
+          <InnerComponent {...props} />
+        </DaoProviders>
+      </SuspenseLoader>
+    ) : (
+      <InnerComponentLoading {...props} />
+    )
+  ) : isWalletAddress ? (
+    <WalletActionsProvider>
+      <InnerComponent {...props} />
+    </WalletActionsProvider>
+  ) : (
+    <InnerComponent {...props} />
+  )
+}
+
+const Component: ActionComponent = (props) => {
+  // Load DAO info for chosen DAO.
+  const { watch, setValue, clearErrors } = useFormContext<AuthzExecData>()
+  const address = watch((props.fieldNamePrefix + 'address') as 'address')
+  const msgsPerSender =
+    watch((props.fieldNamePrefix + '_msgs') as '_msgs') ?? []
+
+  // Reset actions when address changes during creation.
+  useEffect(() => {
+    if (props.isCreating) {
+      setValue((props.fieldNamePrefix + 'msgs') as 'msgs', [])
+      clearErrors((props.fieldNamePrefix + 'msgs') as 'msgs')
+      setValue(
+        (props.fieldNamePrefix + '_actionData') as '_actionData',
+        undefined
+      )
+      clearErrors((props.fieldNamePrefix + '_actionData') as '_actionData')
     }
+  }, [clearErrors, address, props.fieldNamePrefix, props.isCreating, setValue])
 
-    // Decode the message included with Authz MsgExec.
-    const decodedExecMsg = decodeRawProtobufMsg(msg.stargate.value.msgs[0])
-
-    // Check that the type_url for default Authz messages, set data accordingly.
-    const decodedData = cloneDeep(data)
-    switch (decodedExecMsg.typeUrl) {
-      case AuthzExecActionTypes.Delegate:
-        decodedData.authzExecActionType = AuthzExecActionTypes.Delegate
-        decodedData.delegate = decodedExecMsg.value
-      case AuthzExecActionTypes.Redelegate:
-        decodedData.authzExecActionType = AuthzExecActionTypes.Redelegate
-        decodedData.redelegate = decodedExecMsg.value
-      case AuthzExecActionTypes.Undelegate:
-        decodedData.authzExecActionType = AuthzExecActionTypes.Undelegate
-        decodedData.undelegate = decodedExecMsg.value
-      case AuthzExecActionTypes.ClaimRewards:
-        decodedData.authzExecActionType = AuthzExecActionTypes.ClaimRewards
-        decodedData.claimRewards = decodedExecMsg.value
-      default:
-        decodedData.authzExecActionType = AuthzExecActionTypes.Custom
-        decodedData.custom = decodedExecMsg.value
-    }
-
-    return {
-      match: true,
-      data: decodedData,
-    }
-  }, [msg, data])
+  // When creating, just show one form for the chosen address. When not
+  // creating, render a form for each sender message group since the component
+  // needs to be wrapped in the providers for that sender.
+  return props.isCreating ? (
+    <InnerComponentWrapper
+      {...props}
+      options={{
+        address,
+      }}
+    />
+  ) : (
+    <>
+      {msgsPerSender.map(({ sender }, index) => (
+        <InnerComponentWrapper
+          key={index}
+          {...props}
+          options={{
+            address: sender,
+            // Set so the component knows which sender message group to render.
+            msgPerSenderIndex: index,
+          }}
+        />
+      ))}
+    </>
+  )
 }
 
 export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
   t,
-  address,
+  address: grantee,
 }) => {
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
+    msg: Record<string, any>
+  ) =>
+    useMemo(() => {
+      if (
+        !isDecodedStargateMsg(msg) ||
+        msg.stargate.typeUrl !== TYPE_URL_MSG_EXEC ||
+        !objectMatchesStructure(msg.stargate.value, {
+          grantee: {},
+          msgs: {},
+        }) ||
+        // Make sure this address is the grantee.
+        msg.stargate.value.grantee !== grantee ||
+        !Array.isArray(msg.stargate.value.msgs)
+      ) {
+        return { match: false }
+      }
+
+      // Group adjacent messages by sender, preserving message order.
+      const msgsPerSender = (msg.stargate.value.msgs as Any[])
+        .map((msg) => protobufToCwMsg(msg))
+        .reduce(
+          (acc, { msg, sender }) => {
+            const last = acc[acc.length - 1]
+            if (last && last.sender === sender) {
+              last.msgs.push(msg)
+            } else {
+              acc.push({ sender, msgs: [msg] })
+            }
+            return acc
+          },
+          [] as {
+            sender: string
+            msgs: CosmosMsgFor_Empty[]
+          }[]
+        )
+
+      return {
+        match: true,
+        data: {
+          // Technically each message could have a different address. While we
+          // don't support that on creation, we can still detect and render them
+          // correctly in the component.
+          address: '',
+          msgs: [],
+          _msgs: msgsPerSender,
+        },
+      }
+    }, [msg])
+
   const useTransformToCosmos: UseTransformToCosmos<AuthzExecData> = () =>
     useCallback(
-      (data: AuthzExecData) =>
+      ({ address, msgs }) =>
         makeStargateMessage({
           stargate: {
             typeUrl: TYPE_URL_MSG_EXEC,
             value: {
-              grantee: address,
-              msgs:
-                data.authzExecActionType === AuthzExecActionTypes.Custom
-                  ? JSON.parse(data.custom)
-                  : [
-                      encodeRawProtobufMsg({
-                        typeUrl: data.authzExecActionType,
-                        value:
-                          data.authzExecActionType ===
-                          AuthzExecActionTypes.Delegate
-                            ? data.delegate
-                            : data.authzExecActionType ===
-                              AuthzExecActionTypes.Undelegate
-                            ? data.undelegate
-                            : data.authzExecActionType ===
-                              AuthzExecActionTypes.Redelegate
-                            ? data.redelegate
-                            : data.authzExecActionType ===
-                              AuthzExecActionTypes.ClaimRewards
-                            ? data.claimRewards
-                            : undefined,
-                      }),
-                    ],
+              grantee,
+              msgs: msgs.map((msg) => cwMsgToProtobuf(msg, address)),
             },
           },
         }),

@@ -32,7 +32,7 @@ export enum ActionKey {
   Execute = 'execute',
   Migrate = 'migrate',
   UpdateAdmin = 'updateAdmin',
-  AuthzAuthorization = 'authzAuthorization',
+  AuthzGrantRevoke = 'authzGrantRevoke',
   AuthzExec = 'authzExec',
   ValidatorActions = 'validatorActions',
   Custom = 'custom',

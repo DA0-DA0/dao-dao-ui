@@ -182,7 +182,7 @@
     "automaticallyAddNFTsTooltip": "shood nftz sent 2 da da0 get addid 2 da trezury¿",
     "automaticallyAddTokensTitle": "auto-addd tokenz",
     "automaticallyAddTokensTooltip": "shood tokenz sent 2 da da0 get aded 2 da trezoree¿",
-    "codeID": "code id",
+    "codeId": "code id",
     "contractLabel": "contrakt labbel",
     "cw20Token": "cw20 tokken",
     "daoDescriptionPlaceholder": "giv yur da0 a descripishon...",
