@@ -276,16 +276,13 @@ export const AuthzGrantRevokeComponent: ActionComponent<
           <>
             <div className="flex flex-col gap-1">
               <InputLabel name={t('form.smartContractAddress')} />
-              <TextInput
+              <AddressInput
                 disabled={!isCreating}
                 error={errors?.contract}
                 fieldName={fieldNamePrefix + 'contract'}
-                placeholder={!isCreating ? t('info.none') : undefined}
                 register={register}
-                validation={[
-                  (v: string) =>
-                    validateAddress(v) || validateContractAddress(v, false),
-                ]}
+                type="contract"
+                validation={[validateContractAddress]}
               />
               <InputErrorMessage error={errors?.contract} />
             </div>
