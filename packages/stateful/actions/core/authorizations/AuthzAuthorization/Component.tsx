@@ -297,8 +297,8 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
 
             <div className="flex flex-col gap-1">
               <InputLabel
-                name={t('form.permissions')}
-                tooltip={t('form.permissionsDescription')}
+                name={t('form.contractPermissions')}
+                tooltip={t('form.contractPermissionsDescription')}
               />
 
               <RadioInput
@@ -377,7 +377,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
 
             <div className="flex flex-col gap-1">
               <InputLabel
-                name={t('form.authzLimits')}
+                name={t('form.limits')}
                 tooltip={t('form.authzLimitsDescription')}
               />
 
