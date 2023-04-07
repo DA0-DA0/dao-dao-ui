@@ -92,7 +92,7 @@ export enum CommonError {
   Network = 'Network error. Ensure you are connected to the internet, refresh the page, or try again later. If your network is working, the blockchain nodes may be having problems.',
   Unauthorized = 'Unauthorized.',
   InsufficientForProposalDeposit = 'Insufficient unstaked deposit tokens. Ensure you have enough unstaked deposit tokens to pay for the proposal deposit.',
-  PendingTransaction = 'You have another pending transaction. Please try again in 30 seconds.',
+  PendingTransaction = 'You have another pending transaction. Please try again in 10 seconds.',
   TextEncodingDecodingError = 'Text encoding/decoding error. Invalid character present in text.',
   TxnSentTimeout = 'Transaction sent but has not yet been detected. Refresh this page to view its changes or check back later.',
   InvalidJSONResponse = 'Invalid JSON response from server.',

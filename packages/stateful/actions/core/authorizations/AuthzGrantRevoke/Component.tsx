@@ -1,3 +1,4 @@
+import { Check, Close } from '@mui/icons-material'
 import JSON5 from 'json5'
 import { ComponentType } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
@@ -38,12 +39,13 @@ import {
 import {
   AuthorizationTypeUrl,
   AuthzExecActionTypes,
+  AuthzGrantRevokeData,
   FilterTypes,
   LimitTypes,
 } from './types'
 
 export type AuthzGrantRevokeOptions = {
-  AddressInput: ComponentType<AddressInputProps>
+  AddressInput: ComponentType<AddressInputProps<AuthzGrantRevokeData>>
   balances: LoadingData<GenericTokenBalance[]>
 }
 
@@ -57,7 +59,9 @@ export const AuthzGrantRevokeComponent: ActionComponent<
     isCreating,
     options: { AddressInput, balances },
   } = props
-  const { control, register, setValue, watch } = useFormContext()
+
+  const { control, register, setValue, watch } =
+    useFormContext<AuthzGrantRevokeData>()
 
   const {
     fields: coins,
@@ -65,14 +69,18 @@ export const AuthzGrantRevokeComponent: ActionComponent<
     remove: removeCoin,
   } = useFieldArray({
     control,
-    name: fieldNamePrefix + 'funds',
+    name: (fieldNamePrefix + 'funds') as 'funds',
   })
 
-  const mode = watch(fieldNamePrefix + 'mode')
-  const authorizationTypeUrl = watch(fieldNamePrefix + 'authorizationTypeUrl')
-  const customTypeUrl = watch(fieldNamePrefix + 'customTypeUrl')
-  const filterType = watch(fieldNamePrefix + 'filterType')
-  const limitType = watch(fieldNamePrefix + 'limitType')
+  const mode = watch((fieldNamePrefix + 'mode') as 'mode')
+  const authorizationTypeUrl = watch(
+    (fieldNamePrefix + 'authorizationTypeUrl') as 'authorizationTypeUrl'
+  )
+  const customTypeUrl = watch(
+    (fieldNamePrefix + 'customTypeUrl') as 'customTypeUrl'
+  )
+  const filterType = watch((fieldNamePrefix + 'filterType') as 'filterType')
+  const limitType = watch((fieldNamePrefix + 'limitType') as 'limitType')
 
   return (
     <>
@@ -101,13 +109,10 @@ export const AuthzGrantRevokeComponent: ActionComponent<
         <AddressInput
           disabled={!isCreating}
           error={errors?.grantee}
-          fieldName={fieldNamePrefix + 'grantee'}
+          fieldName={(fieldNamePrefix + 'grantee') as 'grantee'}
           placeholder={!isCreating ? t('info.none') : undefined}
           register={register}
-          validation={[
-            (v: string) =>
-              validateAddress(v) || validateContractAddress(v, false),
-          ]}
+          validation={[validateAddress]}
         />
         <InputErrorMessage error={errors?.grantee} />
       </div>
@@ -120,7 +125,10 @@ export const AuthzGrantRevokeComponent: ActionComponent<
           />
           <SelectInput
             disabled={!isCreating}
-            fieldName={fieldNamePrefix + 'authorizationTypeUrl'}
+            fieldName={
+              (fieldNamePrefix +
+                'authorizationTypeUrl') as 'authorizationTypeUrl'
+            }
             register={register}
           >
             <option value={AuthorizationTypeUrl.Generic}>
@@ -150,7 +158,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
               />
               <SelectInput
                 disabled={!isCreating}
-                fieldName={fieldNamePrefix + 'msgTypeUrl'}
+                fieldName={(fieldNamePrefix + 'msgTypeUrl') as 'msgTypeUrl'}
                 register={register}
               >
                 <option value={AuthzExecActionTypes.Delegate}>
@@ -185,7 +193,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
               <TextInput
                 disabled={!isCreating}
                 error={errors?.msgTypeUrl}
-                fieldName={fieldNamePrefix + 'msgTypeUrl'}
+                fieldName={(fieldNamePrefix + 'msgTypeUrl') as 'msgTypeUrl'}
                 placeholder={
                   !isCreating ? t('info.none') : t('form.messageType')
                 }
@@ -199,14 +207,14 @@ export const AuthzGrantRevokeComponent: ActionComponent<
           {(isCreating || customTypeUrl) && (
             <FormSwitchCard
               containerClassName="self-start"
-              fieldName={fieldNamePrefix + 'customTypeUrl'}
+              fieldName={(fieldNamePrefix + 'customTypeUrl') as 'customTypeUrl'}
               label={t('form.authzUseCustomMessageType')}
               onToggle={
                 // Set message type URL back to delegate if customTypeUrl is disabled.
                 (customTypeUrl) =>
                   !customTypeUrl &&
                   setValue(
-                    fieldNamePrefix + 'msgTypeUrl',
+                    (fieldNamePrefix + 'msgTypeUrl') as 'msgTypeUrl',
                     AuthzExecActionTypes.Delegate
                   )
               }
@@ -215,7 +223,9 @@ export const AuthzGrantRevokeComponent: ActionComponent<
               sizing="sm"
               tooltip={t('form.authzCustomMessageTypeTooltip')}
               tooltipIconSize="sm"
-              value={watch(fieldNamePrefix + 'customTypeUrl')}
+              value={watch(
+                (fieldNamePrefix + 'customTypeUrl') as 'customTypeUrl'
+              )}
             />
           )}
         </>
@@ -279,7 +289,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
               <AddressInput
                 disabled={!isCreating}
                 error={errors?.contract}
-                fieldName={fieldNamePrefix + 'contract'}
+                fieldName={(fieldNamePrefix + 'contract') as 'contract'}
                 register={register}
                 type="contract"
                 validation={[validateContractAddress]}
@@ -295,7 +305,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
 
               <RadioInput
                 disabled={!isCreating}
-                fieldName={fieldNamePrefix + 'filterType'}
+                fieldName={(fieldNamePrefix + 'filterType') as 'filterType'}
                 options={[
                   { label: t('title.all'), value: FilterTypes.All },
                   { label: t('form.allowedMethods'), value: FilterTypes.Keys },
@@ -319,7 +329,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                 <TextInput
                   disabled={!isCreating}
                   error={errors?.filterKeys}
-                  fieldName={fieldNamePrefix + 'filterKeys'}
+                  fieldName={(fieldNamePrefix + 'filterKeys') as 'filterKeys'}
                   register={register}
                   validation={[validateRequired]}
                 />
@@ -337,8 +347,8 @@ export const AuthzGrantRevokeComponent: ActionComponent<
 
                 <CodeMirrorInput
                   control={control}
-                  error={errors?.filterMsg}
-                  fieldName={fieldNamePrefix + 'filterMsg'}
+                  error={errors?.filterMsgs}
+                  fieldName={(fieldNamePrefix + 'filterMsgs') as 'filterMsgs'}
                   readOnly={!isCreating}
                   validation={[
                     (v: string) => {
@@ -348,22 +358,38 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                       } catch (err) {
                         return err instanceof Error ? err.message : `${err}`
                       }
-                      msg = makeWasmMessage({
-                        wasm: {
-                          execute: {
-                            contract_addr: '',
-                            funds: [],
-                            msg,
-                          },
-                        },
-                      })
+
+                      const msgs = (Array.isArray(msg) ? msg : [msg]).map(
+                        (msg) =>
+                          makeWasmMessage({
+                            wasm: {
+                              execute: {
+                                contract_addr: '',
+                                funds: [],
+                                msg,
+                              },
+                            },
+                          })
+                      )
+
                       return (
-                        validateCosmosMsg(msg).valid ||
+                        msgs.every((msg) => validateCosmosMsg(msg).valid) ||
                         t('error.invalidExecuteMessage')
                       )
                     },
                   ]}
                 />
+
+                {errors?.filterMsgs ? (
+                  <p className="mt-1 flex items-center gap-1 text-sm text-text-interactive-error">
+                    <Close className="!h-5 !w-5" />{' '}
+                    <span>{errors.filterMsgs.message}</span>
+                  </p>
+                ) : (
+                  <p className="mt-1 flex items-center gap-1 text-sm text-text-interactive-valid">
+                    <Check className="!h-5 !w-5" /> {t('info.jsonIsValid')}
+                  </p>
+                )}
               </div>
             )}
 
@@ -375,7 +401,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
 
               <RadioInput
                 disabled={!isCreating}
-                fieldName={fieldNamePrefix + 'limitType'}
+                fieldName={(fieldNamePrefix + 'limitType') as 'limitType'}
                 options={[
                   { label: t('form.calls'), value: LimitTypes.Calls },
                   { label: t('form.funds'), value: LimitTypes.Funds },
@@ -401,7 +427,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                   containerClassName="grow"
                   disabled={!isCreating}
                   error={errors?.calls}
-                  fieldName={fieldNamePrefix + 'calls'}
+                  fieldName={(fieldNamePrefix + 'calls') as 'calls'}
                   min={0}
                   register={register}
                   setValue={setValue}

@@ -269,9 +269,9 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
             filter = {
               typeUrl: filterType,
               value: {
-                messages: Array.isArray(parsed)
-                  ? parsed
-                  : [parsed].map((m: unknown) => toUtf8(JSON.stringify(m))),
+                messages: (Array.isArray(parsed) ? parsed : [parsed]).map(
+                  (m: unknown) => toUtf8(JSON.stringify(m))
+                ),
               },
             }
             break
