@@ -42,14 +42,14 @@ import {
   LimitTypes,
 } from './types'
 
-export interface AuthzOptions {
+export type AuthzGrantRevokeOptions = {
   AddressInput: ComponentType<AddressInputProps>
   balances: LoadingData<GenericTokenBalance[]>
 }
 
-export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
-  props
-) => {
+export const AuthzGrantRevokeComponent: ActionComponent<
+  AuthzGrantRevokeOptions
+> = (props) => {
   const { t } = useTranslation()
   const {
     fieldNamePrefix,

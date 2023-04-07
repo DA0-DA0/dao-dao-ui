@@ -9,20 +9,20 @@ import {
 import { TokenType } from '@dao-dao/types'
 import { NATIVE_DENOM } from '@dao-dao/utils'
 
-import { AuthzAuthorizationComponent } from './Component'
+import { AuthzGrantRevokeComponent } from './Component'
 import {
   AuthorizationTypeUrl,
-  AuthzData,
+  AuthzGrantRevokeData,
   FilterTypes,
   LimitTypes,
 } from './types'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / authorizations / AuthzAuthorization',
-  component: AuthzAuthorizationComponent,
+    'DAO DAO / packages / stateful / actions / core / authorizations / AuthzGrantRevoke',
+  component: AuthzGrantRevokeComponent,
   decorators: [
-    makeReactHookFormDecorator<AuthzData>({
+    makeReactHookFormDecorator<AuthzGrantRevokeData>({
       mode: 'grant',
       authorizationTypeUrl: AuthorizationTypeUrl.Generic,
       customTypeUrl: false,
@@ -38,10 +38,10 @@ export default {
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),
   ],
-} as ComponentMeta<typeof AuthzAuthorizationComponent>
+} as ComponentMeta<typeof AuthzGrantRevokeComponent>
 
-const Template: ComponentStory<typeof AuthzAuthorizationComponent> = (args) => (
-  <AuthzAuthorizationComponent {...args} />
+const Template: ComponentStory<typeof AuthzGrantRevokeComponent> = (args) => (
+  <AuthzGrantRevokeComponent {...args} />
 )
 
 export const Default = Template.bind({})

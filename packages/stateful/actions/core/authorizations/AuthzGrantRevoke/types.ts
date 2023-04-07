@@ -1,4 +1,4 @@
-export type AuthzData = {
+export type AuthzGrantRevokeData = {
   mode: 'grant' | 'revoke'
   authorizationTypeUrl: AuthorizationTypeUrl
   customTypeUrl: boolean

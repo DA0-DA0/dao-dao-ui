@@ -27,10 +27,10 @@ import {
 
 import { AddressInput, SuspenseLoader } from '../../../../components'
 import { useTokenBalances } from '../../../hooks'
-import { AuthzAuthorizationComponent as StatelessAuthzAuthorizationComponent } from './Component'
+import { AuthzGrantRevokeComponent as StatelessAuthzAuthorizationComponent } from './Component'
 import {
   AuthorizationTypeUrl,
-  AuthzData,
+  AuthzGrantRevokeData,
   FilterTypes,
   LimitTypes,
 } from './types'
@@ -38,7 +38,7 @@ import {
 const TYPE_URL_MSG_GRANT = '/cosmos.authz.v1beta1.MsgGrant'
 const TYPE_URL_MSG_REVOKE = '/cosmos.authz.v1beta1.MsgRevoke'
 
-const useDefaults: UseDefaults<AuthzData> = () => ({
+const useDefaults: UseDefaults<AuthzGrantRevokeData> = () => ({
   mode: 'grant',
   authorizationTypeUrl: AuthorizationTypeUrl.Generic,
   customTypeUrl: false,
@@ -75,11 +75,11 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
+export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
   t,
   address,
 }) => {
-  const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzGrantRevokeData> = (
     msg: Record<string, any>
   ) => {
     const defaults = useDefaults()
@@ -236,7 +236,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
     return { match: false }
   }
 
-  const useTransformToCosmos: UseTransformToCosmos<AuthzData> = () =>
+  const useTransformToCosmos: UseTransformToCosmos<AuthzGrantRevokeData> = () =>
     useCallback(
       ({
         mode,
@@ -250,7 +250,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
         contract,
         limitType,
         calls,
-      }: AuthzData) => {
+      }: AuthzGrantRevokeData) => {
         let filter: DecodedStargateMsg['stargate'] = {
           typeUrl: FilterTypes.All,
           value: {},
@@ -345,7 +345,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
               break
             case AuthorizationTypeUrl.ContractExecution:
               authorization = {
-                typeUrl: authorizationTypeUrl as string,
+                typeUrl: authorizationTypeUrl,
                 value: {
                   grants: [
                     {
@@ -359,7 +359,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
               break
             case AuthorizationTypeUrl.ContractMigration:
               authorization = {
-                typeUrl: authorizationTypeUrl as string,
+                typeUrl: authorizationTypeUrl,
                 value: {
                   grants: [
                     {
@@ -409,7 +409,7 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
     )
 
   return {
-    key: ActionKey.AuthzAuthorization,
+    key: ActionKey.AuthzGrantRevoke,
     Icon: KeyEmoji,
     label: t('title.authzAuthorization'),
     description: t('info.authzAuthorizationDescription'),

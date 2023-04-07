@@ -1,6 +1,7 @@
-# AuthzAuthorization
+# AuthzGrantRevoke
 
-Authorize an account to execute messages on behalf of another account via authz.
+Authorize an account to execute messages on behalf of another account via authz,
+or revoke an authorization.
 
 ## Bulk import format
 
@@ -9,7 +10,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ### Key
 
-`authzAuthorization`
+`authzGrantRevoke`
 
 ### Data format
 
