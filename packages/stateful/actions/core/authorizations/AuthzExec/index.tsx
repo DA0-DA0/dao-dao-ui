@@ -38,6 +38,7 @@ import {
 } from '../../../react'
 import {
   AuthzExecData,
+  AuthzExecOptions,
   AuthzExecComponent as StatelessAuthzExecComponent,
 } from './Component'
 
@@ -48,10 +49,13 @@ const useDefaults: UseDefaults<AuthzExecData> = () => ({
   msgs: [],
 })
 
-const InnerComponentLoading: ActionComponent = (props) => (
+type InnerOptions = Pick<AuthzExecOptions, 'msgPerSenderIndex'>
+
+const InnerComponentLoading: ActionComponent<InnerOptions> = (props) => (
   <StatelessAuthzExecComponent
     {...props}
     options={{
+      msgPerSenderIndex: props.options.msgPerSenderIndex,
       categories: [],
       loadedActions: {},
       actionsForMatching: [],
@@ -62,7 +66,7 @@ const InnerComponentLoading: ActionComponent = (props) => (
   />
 )
 
-const InnerComponent: ActionComponent = (props) => {
+const InnerComponent: ActionComponent<InnerOptions> = (props) => {
   const { categories, loadedActions } = useLoadedActionsAndCategories()
   const actionsForMatching = useActionsForMatching()
 
@@ -70,6 +74,7 @@ const InnerComponent: ActionComponent = (props) => {
     <StatelessAuthzExecComponent
       {...props}
       options={{
+        msgPerSenderIndex: props.options.msgPerSenderIndex,
         categories,
         loadedActions,
         actionsForMatching,
@@ -81,22 +86,13 @@ const InnerComponent: ActionComponent = (props) => {
   )
 }
 
-const Component: ActionComponent = (props) => {
+const InnerComponentWrapper: ActionComponent<
+  InnerOptions & { address: string }
+> = (props) => {
   const { bech32Prefix } = useActionOptions()
-
-  // Load DAO info for chosen DAO.
-  const { watch, setValue, clearErrors } = useFormContext()
-  const address = watch(props.fieldNamePrefix + 'address')
-
-  // Reset actions when address changes during creation.
-  useEffect(() => {
-    if (props.isCreating) {
-      setValue(props.fieldNamePrefix + 'msgs', [])
-      clearErrors(props.fieldNamePrefix + 'msgs')
-      setValue(props.fieldNamePrefix + '_actions', undefined)
-      clearErrors(props.fieldNamePrefix + '_actions')
-    }
-  }, [clearErrors, address, props.fieldNamePrefix, props.isCreating, setValue])
+  const {
+    options: { address },
+  } = props
 
   const isContractAddress = isValidContractAddress(address, bech32Prefix)
   const isWalletAddress = isValidWalletAddress(address, bech32Prefix)
@@ -125,6 +121,53 @@ const Component: ActionComponent = (props) => {
     </WalletActionsProvider>
   ) : (
     <InnerComponent {...props} />
+  )
+}
+
+const Component: ActionComponent = (props) => {
+  // Load DAO info for chosen DAO.
+  const { watch, setValue, clearErrors } = useFormContext<AuthzExecData>()
+  const address = watch((props.fieldNamePrefix + 'address') as 'address')
+  const msgsPerSender =
+    watch((props.fieldNamePrefix + '_msgs') as '_msgs') ?? []
+
+  // Reset actions when address changes during creation.
+  useEffect(() => {
+    if (props.isCreating) {
+      setValue((props.fieldNamePrefix + 'msgs') as 'msgs', [])
+      clearErrors((props.fieldNamePrefix + 'msgs') as 'msgs')
+      setValue(
+        (props.fieldNamePrefix + '_actionData') as '_actionData',
+        undefined
+      )
+      clearErrors((props.fieldNamePrefix + '_actionData') as '_actionData')
+    }
+  }, [clearErrors, address, props.fieldNamePrefix, props.isCreating, setValue])
+
+  // When creating, just show one form for the chosen address. When not
+  // creating, render a form for each sender message group since the component
+  // needs to be wrapped in the providers for that sender.
+  return props.isCreating ? (
+    <InnerComponentWrapper
+      {...props}
+      options={{
+        address,
+      }}
+    />
+  ) : (
+    <>
+      {msgsPerSender.map(({ sender }, index) => (
+        <InnerComponentWrapper
+          key={index}
+          {...props}
+          options={{
+            address: sender,
+            // Set so the component knows which sender message group to render.
+            msgPerSenderIndex: index,
+          }}
+        />
+      ))}
+    </>
   )
 }
 

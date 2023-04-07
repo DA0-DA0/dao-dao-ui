@@ -32,6 +32,10 @@ export type AuthzExecData = {
 } & NestedActionsEditorFormData
 
 export type AuthzExecOptions = {
+  // When not creating, this will be set to the index of the group of messages
+  // to render.
+  msgPerSenderIndex?: number
+
   AddressInput: ComponentType<AddressInputProps<AuthzExecData>>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 } & NestedActionsEditorOptions &
@@ -46,7 +50,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
     fieldNamePrefix,
     errors,
     isCreating,
-    options: { AddressInput, EntityDisplay, ...options },
+    options: { msgPerSenderIndex, AddressInput, EntityDisplay, ...options },
   } = props
 
   const address = watch((fieldNamePrefix + 'address') as 'address')
@@ -60,6 +64,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
           <p className="title-text -mb-1">{t('title.account')}</p>
 
           <AddressInput
+            autoFocus
             error={errors?.address}
             fieldName={(fieldNamePrefix + 'address') as 'address'}
             register={register}
@@ -77,20 +82,20 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
               <NestedActionsEditor {...props} />
             </>
           ) : (
-            // This will safely render all messages, even if they are not
-            // created via this action, because they will be grouped by sender.
-            msgsPerSender.map(({ sender }, index) => (
-              <div key={index} className="flex flex-col gap-4">
-                <p className="title-text -mb-1">{t('title.account')}</p>
-                <EntityDisplay address={sender} />
+            <div className="flex flex-col gap-4">
+              <p className="title-text -mb-1">{t('title.account')}</p>
+              <EntityDisplay
+                address={msgsPerSender[msgPerSenderIndex!].sender}
+              />
 
-                <p className="title-text -mb-1 mt-1">{t('title.actions')}</p>
-                <NestedActionsRenderer
-                  {...options}
-                  msgsFieldName={fieldNamePrefix + `_msgs.${index}.msgs`}
-                />
-              </div>
-            ))
+              <p className="title-text -mb-1 mt-1">{t('title.actions')}</p>
+              <NestedActionsRenderer
+                {...options}
+                msgsFieldName={
+                  fieldNamePrefix + `_msgs.${msgPerSenderIndex!}.msgs`
+                }
+              />
+            </div>
           )}
         </>
       )}
