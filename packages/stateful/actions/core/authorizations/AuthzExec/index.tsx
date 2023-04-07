@@ -1,3 +1,4 @@
+import { Any } from 'cosmjs-types/google/protobuf/any'
 import { useCallback, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
@@ -7,23 +8,25 @@ import {
   ActionComponent,
   ActionKey,
   ActionMaker,
+  CosmosMsgFor_Empty,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import {
   cwMsgToProtobuf,
-  decodeRawProtobufMsg,
   isDecodedStargateMsg,
   isValidContractAddress,
   isValidWalletAddress,
   makeStargateMessage,
   objectMatchesStructure,
+  protobufToCwMsg,
 } from '@dao-dao/utils'
 
 import {
   AddressInput,
   DaoProviders,
+  EntityDisplay,
   SuspenseLoader,
 } from '../../../../components'
 import { daoInfoSelector } from '../../../../recoil'
@@ -53,6 +56,7 @@ const InnerComponentLoading: ActionComponent = (props) => (
       loadedActions: {},
       actionsForMatching: [],
       AddressInput,
+      EntityDisplay,
       SuspenseLoader,
     }}
   />
@@ -70,6 +74,7 @@ const InnerComponent: ActionComponent = (props) => {
         loadedActions,
         actionsForMatching,
         AddressInput,
+        EntityDisplay,
         SuspenseLoader,
       }}
     />
@@ -145,15 +150,34 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
         return { match: false }
       }
 
+      // Group adjacent messages by sender, preserving message order.
+      const msgsPerSender = (msg.stargate.value.msgs as Any[])
+        .map((msg) => protobufToCwMsg(msg))
+        .reduce(
+          (acc, { msg, sender }) => {
+            const last = acc[acc.length - 1]
+            if (last && last.sender === sender) {
+              last.msgs.push(msg)
+            } else {
+              acc.push({ sender, msgs: [msg] })
+            }
+            return acc
+          },
+          [] as {
+            sender: string
+            msgs: CosmosMsgFor_Empty[]
+          }[]
+        )
+
       return {
         match: true,
         data: {
-          // Not sure if it's possible to extract the target address since the
-          // address may show up in any part of the message body.
+          // Technically each message could have a different address. While we
+          // don't support that on creation, we can still detect and render them
+          // correctly in the component.
           address: '',
-          msgs: msg.stargate.value.msgs.map((msg: any) =>
-            decodeRawProtobufMsg(msg)
-          ),
+          msgs: [],
+          _msgs: msgsPerSender,
         },
       }
     }, [msg])
