@@ -1,9 +1,10 @@
 import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
+import JSON5 from 'json5'
 import Long from 'long'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 
 import { KeyEmoji, Loader } from '@dao-dao/stateless'
-import { Coin } from '@dao-dao/types'
+import { Coin, DecodedStargateMsg } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionKey,
@@ -44,7 +45,7 @@ const useDefaults: UseDefaults<AuthzData> = () => ({
   grantee: '',
   filterType: FilterTypes.All,
   filterKeys: '',
-  filterMsg: '{}',
+  filterMsgs: '{}',
   funds: [],
   contract: '',
   calls: 10,
@@ -80,161 +81,160 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
 }) => {
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzData> = (
     msg: Record<string, any>
-  ) =>
-    useMemo(() => {
-      if (
-        !isDecodedStargateMsg(msg) ||
-        (msg.stargate.typeUrl !== TYPE_URL_MSG_GRANT &&
-          msg.stargate.typeUrl !== TYPE_URL_MSG_REVOKE) ||
-        !objectMatchesStructure(msg.stargate.value, {
-          grantee: {},
-          granter: {},
-        }) ||
-        // Make sure this address is the granter.
-        msg.stargate.value.granter !== address
-      ) {
+  ) => {
+    const defaults = useDefaults()
+
+    if (
+      !isDecodedStargateMsg(msg) ||
+      (msg.stargate.typeUrl !== TYPE_URL_MSG_GRANT &&
+        msg.stargate.typeUrl !== TYPE_URL_MSG_REVOKE) ||
+      !objectMatchesStructure(msg.stargate.value, {
+        grantee: {},
+        granter: {},
+      }) ||
+      // Make sure this address is the granter.
+      msg.stargate.value.granter !== address
+    ) {
+      return { match: false }
+    }
+
+    if (msg.stargate.typeUrl === TYPE_URL_MSG_GRANT) {
+      const authorizationTypeUrl =
+        msg.stargate.value.grant?.authorization?.typeUrl
+
+      // If no authorization type, this is not a match
+      if (!authorizationTypeUrl) {
         return { match: false }
       }
 
-      if (msg.stargate.typeUrl === TYPE_URL_MSG_GRANT) {
-        let authorizationTypeUrl =
-          msg.stargate.value.grant?.authorization?.typeUrl
-
-        // If no authorization type, this is not a match
-        if (!authorizationTypeUrl) {
-          return { match: false }
+      switch (authorizationTypeUrl) {
+        case AuthorizationTypeUrl.Generic: {
+          return {
+            match: true,
+            data: {
+              ...defaults,
+              mode: 'grant',
+              authorizationTypeUrl,
+              customTypeUrl: false,
+              msgTypeUrl: decodeRawProtobufMsg(
+                msg.stargate.value.grant!.authorization!
+              ).value.msg,
+              grantee: msg.stargate.value.grantee,
+            },
+          }
         }
 
-        switch (authorizationTypeUrl) {
-          case AuthorizationTypeUrl.Generic: {
-            return {
-              match: true,
-              data: {
-                mode: 'grant',
-                authorizationTypeUrl,
-                customTypeUrl: false,
-                msgTypeUrl: decodeRawProtobufMsg(
-                  msg.stargate.value.grant!.authorization!
-                ).value.msg,
-                grantee: msg.stargate.value.grantee,
-              },
-            }
+        case AuthorizationTypeUrl.Spend: {
+          const { spendLimit } = decodeRawProtobufMsg(
+            msg.stargate.value.grant!.authorization!
+          ).value
+
+          return {
+            match: true,
+            data: {
+              ...defaults,
+              mode: 'grant',
+              authorizationTypeUrl,
+              customTypeUrl: false,
+              grantee: msg.stargate.value.grantee,
+              funds: spendLimit.map(({ denom, amount }: Coin) => ({
+                amount: convertMicroDenomToDenomWithDecimals(
+                  amount,
+                  nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
+                ),
+                denom,
+              })),
+            },
           }
+        }
 
-          case AuthorizationTypeUrl.Spend: {
-            const { spendLimit } = decodeRawProtobufMsg(
-              msg.stargate.value.grant!.authorization!
-            ).value
+        case AuthorizationTypeUrl.ContractExecution:
+        case AuthorizationTypeUrl.ContractMigration: {
+          const { contract, filter, limit } = decodeRawProtobufMsg(
+            msg.stargate.value.grant!.authorization!
+          ).value.grants[0]
 
-            return {
-              match: true,
-              data: {
-                mode: 'grant',
-                authorizationTypeUrl,
-                customTypeUrl: false,
-                grantee: msg.stargate.value.grantee,
-                funds: spendLimit.map((c: Coin) => {
-                  return {
-                    amount: convertMicroDenomToDenomWithDecimals(
-                      c.amount,
-                      nativeTokenDecimals(c.denom) ?? NATIVE_TOKEN.decimals
-                    ),
-                    denom: c.denom,
-                  }
-                }),
-              },
-            }
-          }
+          const decodedLimit = decodeRawProtobufMsg(limit)
+          const limitType = decodedLimit.typeUrl as LimitTypes
 
-          case AuthorizationTypeUrl.ContractExecution: {
-            let { contract, filter, limit } = decodeRawProtobufMsg(
-              msg.stargate.value.grant!.authorization!
-            ).value.grants[0]
-            let decodedLimit = decodeRawProtobufMsg(limit)
-            let decodedFilter = decodeRawProtobufMsg(filter)
+          const decodedFilter = decodeRawProtobufMsg(filter)
+          const filterType = decodedFilter.typeUrl as FilterTypes
 
-            return {
-              match: true,
-              data: {
-                mode: 'grant',
-                authorizationTypeUrl,
-                customTypeUrl: false,
-                grantee: msg.stargate.value.grantee,
-                funds: decodedLimit.value.amounts.map((c: Coin) => {
-                  return {
-                    amount: convertMicroDenomToDenomWithDecimals(
-                      c.amount,
-                      nativeTokenDecimals(c.denom) ?? NATIVE_TOKEN.decimals
-                    ),
-                    denom: c.denom,
-                  }
-                }),
-                contract,
-                filterType: decodedFilter?.typeUrl as FilterTypes,
-                filterKeys: decodedFilter.value?.keys?.join() || '',
-                filterMsg: fromUtf8(decodedFilter?.value?.messages) || '{}',
-                limitType: decodedLimit?.typeUrl as LimitTypes,
-                calls:
-                  decodedLimit?.value?.remaining ||
-                  decodedLimit?.value?.callsRemaining ||
-                  0,
-              },
-            }
-          }
-
-          case AuthorizationTypeUrl.ContractMigration: {
-            let { contract, filter, limit } = decodeRawProtobufMsg(
-              msg.stargate.value.grant!.authorization!
-            ).value.grants[0]
-            let decodedLimit = decodeRawProtobufMsg(limit)
-            let decodedFilter = decodeRawProtobufMsg(filter)
-
-            return {
-              match: true,
-              data: {
-                mode: 'grant',
-                authorizationTypeUrl,
-                customTypeUrl: false,
-                grantee: msg.stargate.value.grantee,
-                funds: decodedLimit.value.amounts.map((c: Coin) => {
-                  return {
-                    amount: convertMicroDenomToDenomWithDecimals(
-                      c.amount,
-                      nativeTokenDecimals(c.denom) ?? NATIVE_TOKEN.decimals
-                    ),
-                    denom: c.denom,
-                  }
-                }),
-                contract,
-                filterType: decodedFilter?.typeUrl as FilterTypes,
-                filterKeys: decodedFilter.value?.keys?.join() || '',
-                filterMsg: fromUtf8(decodedFilter?.value?.messages) || '{}',
-                limitType: decodedLimit?.typeUrl as LimitTypes,
-                calls:
-                  decodedLimit?.value?.remaining ||
-                  decodedLimit?.value?.callsRemaining ||
-                  0,
-              },
-            }
-          }
-
-          default:
+          // Type guard, should always pass until new types are added.
+          if (
+            !Object.values(LimitTypes).includes(limitType) ||
+            !Object.values(FilterTypes).includes(filterType)
+          ) {
             return { match: false }
-        }
-      } else if (msg.stargate.typeUrl === TYPE_URL_MSG_REVOKE) {
-        return {
-          match: true,
-          data: {
-            mode: 'revoke',
-            customTypeUrl: false,
-            grantee: msg.stargate.value.grantee,
-            msgTypeUrl: msg.stargate.value.msgTypeUrl,
-          },
-        }
-      }
+          }
 
-      return { match: false }
-    }, [msg])
+          const filterMsgs =
+            filterType === FilterTypes.Msgs
+              ? (decodedFilter.value.messages as Uint8Array[]).map((msg) =>
+                  JSON.parse(fromUtf8(msg))
+                )
+              : []
+
+          return {
+            match: true,
+            data: {
+              ...defaults,
+              mode: 'grant',
+              authorizationTypeUrl,
+              customTypeUrl: false,
+              grantee: msg.stargate.value.grantee,
+              funds:
+                decodedLimit.value.amounts?.map(({ denom, amount }: Coin) => ({
+                  amount: convertMicroDenomToDenomWithDecimals(
+                    amount,
+                    nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
+                  ),
+                  denom,
+                })) ?? [],
+              contract,
+              filterType,
+              filterKeys:
+                filterType === FilterTypes.Keys
+                  ? decodedFilter.value.keys.join()
+                  : '',
+              filterMsgs: JSON.stringify(
+                filterMsgs.length === 0
+                  ? {}
+                  : filterMsgs.length === 1
+                  ? filterMsgs[0]
+                  : filterMsgs,
+                null,
+                2
+              ),
+              limitType,
+              calls:
+                limitType === LimitTypes.Calls
+                  ? (decodedLimit.value.remaining as Long).toNumber()
+                  : limitType === LimitTypes.Combined
+                  ? (decodedLimit.value.callsRemaining as Long).toNumber()
+                  : 0,
+            },
+          }
+        }
+
+        default:
+          return { match: false }
+      }
+    } else if (msg.stargate.typeUrl === TYPE_URL_MSG_REVOKE) {
+      return {
+        match: true,
+        data: {
+          ...defaults,
+          mode: 'revoke',
+          customTypeUrl: false,
+          grantee: msg.stargate.value.grantee,
+          msgTypeUrl: msg.stargate.value.msgTypeUrl,
+        },
+      }
+    }
+
+    return { match: false }
+  }
 
   const useTransformToCosmos: UseTransformToCosmos<AuthzData> = () =>
     useCallback(
@@ -244,61 +244,59 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
         grantee,
         msgTypeUrl,
         filterKeys,
-        filterMsg,
+        filterMsgs,
         filterType,
         funds,
         contract,
         limitType,
         calls,
       }: AuthzData) => {
-        let filter
+        let filter: DecodedStargateMsg['stargate'] = {
+          typeUrl: FilterTypes.All,
+          value: {},
+        }
         switch (filterType) {
-          case FilterTypes.All:
-            filter = {
-              typeUrl: filterType as string,
-              value: {},
-            }
-            break
           case FilterTypes.Keys:
             filter = {
-              typeUrl: filterType as string,
+              typeUrl: filterType,
               value: {
-                keys: filterKeys?.split(','),
+                keys: filterKeys.split(',').map((k) => k.trim()),
               },
             }
             break
-          case FilterTypes.Msg:
+          case FilterTypes.Msgs:
+            const parsed = JSON5.parse(filterMsgs)
             filter = {
-              typeUrl: filterType as string,
+              typeUrl: filterType,
               value: {
-                messages: [toUtf8(filterMsg as string)],
+                messages: Array.isArray(parsed)
+                  ? parsed
+                  : [parsed].map((m: unknown) => toUtf8(JSON.stringify(m))),
               },
             }
             break
         }
 
-        let limit
+        let limit: DecodedStargateMsg['stargate']
         switch (limitType) {
           case LimitTypes.Combined:
             limit = {
-              typeUrl: limitType as string,
+              typeUrl: limitType,
               value: {
                 callsRemaining: Long.fromInt(calls as number),
-                amounts: funds?.map((c) => {
-                  return {
-                    amount: convertDenomToMicroDenomWithDecimals(
-                      c.amount,
-                      nativeTokenDecimals(c.denom) ?? NATIVE_TOKEN.decimals
-                    ).toString(),
-                    denom: c.denom,
-                  }
-                }),
+                amounts: funds.map(({ denom, amount }) => ({
+                  amount: convertDenomToMicroDenomWithDecimals(
+                    amount,
+                    nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
+                  ).toString(),
+                  denom,
+                })),
               },
             }
             break
           case LimitTypes.Calls:
             limit = {
-              typeUrl: limitType as string,
+              typeUrl: limitType,
               value: {
                 remaining: Long.fromInt(calls as number),
               },
@@ -306,28 +304,26 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
             break
           case LimitTypes.Funds:
             limit = {
-              typeUrl: limitType as string,
+              typeUrl: limitType,
               value: {
-                amounts: funds?.map((c) => {
-                  return {
-                    amount: convertDenomToMicroDenomWithDecimals(
-                      c.amount,
-                      nativeTokenDecimals(c.denom) ?? NATIVE_TOKEN.decimals
-                    ).toString(),
-                    denom: c.denom,
-                  }
-                }),
+                amounts: funds.map(({ denom, amount }) => ({
+                  amount: convertDenomToMicroDenomWithDecimals(
+                    amount,
+                    nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
+                  ).toString(),
+                  denom,
+                })),
               },
             }
             break
         }
 
-        let authorization
+        let authorization: DecodedStargateMsg['stargate'] | undefined
         if (mode === 'grant') {
           switch (authorizationTypeUrl) {
             case AuthorizationTypeUrl.Generic:
               authorization = {
-                typeUrl: authorizationTypeUrl as string,
+                typeUrl: authorizationTypeUrl,
                 value: {
                   msg: msgTypeUrl,
                 },
@@ -335,17 +331,15 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
               break
             case AuthorizationTypeUrl.Spend:
               authorization = {
-                typeUrl: authorizationTypeUrl as string,
+                typeUrl: authorizationTypeUrl,
                 value: {
-                  spendLimit: funds?.map((c) => {
-                    return {
-                      amount: convertDenomToMicroDenomWithDecimals(
-                        c.amount,
-                        nativeTokenDecimals(c.denom) ?? NATIVE_TOKEN.decimals
-                      ).toString(),
-                      denom: c.denom,
-                    }
-                  }),
+                  spendLimit: funds.map(({ denom, amount }) => ({
+                    amount: convertDenomToMicroDenomWithDecimals(
+                      amount,
+                      nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
+                    ).toString(),
+                    denom,
+                  })),
                 },
               }
               break
@@ -356,8 +350,8 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                   grants: [
                     {
                       contract,
-                      filter: encodeRawProtobufMsg(filter as any),
-                      limit: encodeRawProtobufMsg(limit as any),
+                      filter: encodeRawProtobufMsg(filter),
+                      limit: encodeRawProtobufMsg(limit),
                     },
                   ],
                 },
@@ -370,8 +364,8 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
                   grants: [
                     {
                       contract,
-                      filter: encodeRawProtobufMsg(filter as any),
-                      limit: encodeRawProtobufMsg(limit as any),
+                      filter: encodeRawProtobufMsg(filter),
+                      limit: encodeRawProtobufMsg(limit),
                     },
                   ],
                 },
@@ -384,9 +378,9 @@ export const makeAuthzAuthorizationAction: ActionMaker<AuthzData> = ({
         }
 
         // Expiration set to 10 years
-        let date = new Date()
+        const date = new Date()
         date.setFullYear(date.getFullYear() + 10)
-        let seconds = Long.fromInt(Math.round(date.getTime() / 1000))
+        const seconds = Long.fromInt(Math.round(date.getTime() / 1000))
 
         return makeStargateMessage({
           stargate: {

@@ -31,7 +31,7 @@ export default {
       contract: '',
       filterType: FilterTypes.All,
       filterKeys: '',
-      filterMsg: '{}',
+      filterMsgs: '{}',
       funds: [],
       limitType: LimitTypes.Calls,
       calls: 10,

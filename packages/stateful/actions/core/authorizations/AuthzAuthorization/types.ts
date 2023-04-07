@@ -1,16 +1,16 @@
 export type AuthzData = {
   mode: 'grant' | 'revoke'
-  authorizationTypeUrl?: AuthorizationTypeUrl
-  customTypeUrl?: boolean
+  authorizationTypeUrl: AuthorizationTypeUrl
+  customTypeUrl: boolean
   grantee: string
-  contract?: string
-  funds?: { denom: string; amount: number }[]
-  msgTypeUrl?: string
-  filterType?: FilterTypes
-  filterKeys?: string
-  filterMsg?: string
-  limitType?: LimitTypes
-  calls?: number
+  contract: string
+  funds: { denom: string; amount: number }[]
+  msgTypeUrl: string
+  filterType: FilterTypes
+  filterKeys: string
+  filterMsgs: string
+  limitType: LimitTypes
+  calls: number
 }
 
 export enum AuthzExecActionTypes {
@@ -35,7 +35,7 @@ export enum AuthorizationTypeUrl {
 export enum FilterTypes {
   All = '/cosmwasm.wasm.v1.AllowAllMessagesFilter',
   Keys = '/cosmwasm.wasm.v1.AcceptedMessageKeysFilter',
-  Msg = '/cosmwasm.wasm.v1.AcceptedMessagesFilter',
+  Msgs = '/cosmwasm.wasm.v1.AcceptedMessagesFilter',
 }
 
 export enum LimitTypes {

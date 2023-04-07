@@ -93,7 +93,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
 
       {mode === 'grant' && <Warning>{t('info.authzWarning')}</Warning>}
 
-      <div className="flex flex-col items-stretch gap-1">
+      <div className="flex flex-col gap-1">
         <InputLabel
           name={t('form.granteeAddress')}
           tooltip={t('form.granteeAddressTooltip')}
@@ -113,7 +113,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
       </div>
 
       {mode === 'grant' && (
-        <div className="flex flex-col items-stretch gap-1">
+        <div className="flex flex-col gap-1">
           <InputLabel
             name={t('form.authzType')}
             tooltip={t('form.authzTypeDescription')}
@@ -185,7 +185,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
               </SelectInput>
             </div>
           ) : (
-            <div className="flex flex-col items-stretch gap-1">
+            <div className="flex flex-col gap-1">
               <InputLabel name={t('form.messageType')} />
               <TextInput
                 disabled={!isCreating}
@@ -302,13 +302,14 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
               />
 
               <RadioInput
+                disabled={!isCreating}
                 fieldName={fieldNamePrefix + 'filterType'}
                 options={[
                   { label: t('title.all'), value: FilterTypes.All },
                   { label: t('form.allowedMethods'), value: FilterTypes.Keys },
                   {
                     label: t('form.message'),
-                    value: FilterTypes.Msg,
+                    value: FilterTypes.Msgs,
                   },
                 ]}
                 setValue={setValue}
@@ -335,7 +336,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
               </div>
             )}
 
-            {filterType === FilterTypes.Msg && (
+            {filterType === FilterTypes.Msgs && (
               <div className="flex flex-col gap-1">
                 <InputLabel
                   name={t('form.smartContractMessage')}
@@ -381,6 +382,7 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
               />
 
               <RadioInput
+                disabled={!isCreating}
                 fieldName={fieldNamePrefix + 'limitType'}
                 options={[
                   { label: t('form.calls'), value: LimitTypes.Calls },
@@ -405,12 +407,13 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
 
                 <NumberInput
                   containerClassName="grow"
+                  disabled={!isCreating}
                   error={errors?.calls}
                   fieldName={fieldNamePrefix + 'calls'}
                   min={0}
                   register={register}
                   setValue={setValue}
-                  sizing="sm"
+                  sizing="md"
                   step={1}
                   validation={[validateNonNegative, validateRequired]}
                   watch={watch}
