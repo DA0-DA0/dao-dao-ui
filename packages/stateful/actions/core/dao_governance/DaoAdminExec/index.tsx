@@ -23,7 +23,6 @@ import {
 } from '../../../../components'
 import { daoInfoSelector } from '../../../../recoil'
 import {
-  WalletActionsProvider,
   useActionOptions,
   useActionsForMatching,
   useLoadedActionsAndCategories,
@@ -136,22 +135,16 @@ const Component: ActionComponent = (props) => {
         : { loading: true },
   }
 
-  return context.type === ActionContextType.Dao ? (
-    daoInfoLoadable.state === 'hasValue' ? (
-      <SuspenseLoader
-        fallback={<InnerComponentLoading {...props} options={options} />}
-      >
-        <DaoProviders info={daoInfoLoadable.contents!}>
-          <InnerComponent {...props} options={options} />
-        </DaoProviders>
-      </SuspenseLoader>
-    ) : (
-      <InnerComponentLoading {...props} options={options} />
-    )
+  return daoInfoLoadable.state === 'hasValue' ? (
+    <SuspenseLoader
+      fallback={<InnerComponentLoading {...props} options={options} />}
+    >
+      <DaoProviders info={daoInfoLoadable.contents!}>
+        <InnerComponent {...props} options={options} />
+      </DaoProviders>
+    </SuspenseLoader>
   ) : (
-    <WalletActionsProvider>
-      <InnerComponent {...props} options={options} />
-    </WalletActionsProvider>
+    <InnerComponentLoading {...props} options={options} />
   )
 }
 
