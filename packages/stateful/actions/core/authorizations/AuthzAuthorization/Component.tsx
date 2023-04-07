@@ -168,20 +168,15 @@ export const AuthzAuthorizationComponent: ActionComponent<AuthzOptions> = (
                 <option value={AuthzExecActionTypes.Vote}>
                   {t('title.vote')}
                 </option>
-
-                {mode === 'grant' && (
-                  <>
-                    <option value={AuthzExecActionTypes.Spend}>
-                      {t('title.spend')}
-                    </option>
-                    <option value={AuthorizationTypeUrl.ContractExecution}>
-                      {t('title.executeSmartContract')}
-                    </option>
-                    <option value={AuthorizationTypeUrl.ContractMigration}>
-                      {t('title.migrateSmartContract')}
-                    </option>
-                  </>
-                )}
+                <option value={AuthzExecActionTypes.Spend}>
+                  {t('title.spend')}
+                </option>
+                <option value={AuthorizationTypeUrl.ContractExecution}>
+                  {t('title.executeSmartContract')}
+                </option>
+                <option value={AuthorizationTypeUrl.ContractMigration}>
+                  {t('title.migrateSmartContract')}
+                </option>
               </SelectInput>
             </div>
           ) : (
