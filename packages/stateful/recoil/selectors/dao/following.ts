@@ -1,5 +1,5 @@
 import uniq from 'lodash.uniq'
-import { atom, selectorFamily, waitForAll } from 'recoil'
+import { atomFamily, selectorFamily, waitForAll } from 'recoil'
 
 import { refreshFollowingDaosAtom } from '@dao-dao/state'
 import { DaoDropdownInfo } from '@dao-dao/stateless'
@@ -14,10 +14,13 @@ import { daoCoreProposalModulesSelector } from './misc'
 // session. This will be reset on page refresh. Set this right away so the UI
 // can update immediately even if the API takes up to a minute or two. Though
 // likely it only takes 10 seconds or so.
-export const temporaryFollowingDaosAtom = atom<{
-  following: string[]
-  unfollowing: string[]
-}>({
+export const temporaryFollowingDaosAtom = atomFamily<
+  {
+    following: string[]
+    unfollowing: string[]
+  },
+  string
+>({
   key: 'temporaryFollowingDaos',
   default: { following: [], unfollowing: [] },
 })
@@ -34,7 +37,7 @@ export const followingDaosSelector = selectorFamily<
     async ({ get }) => {
       get(refreshFollowingDaosAtom)
 
-      const temporary = get(temporaryFollowingDaosAtom)
+      const temporary = get(temporaryFollowingDaosAtom(walletAddress))
 
       const response = await fetch(
         FOLLOWING_DAOS_API_BASE + `/following/${chainId}/${walletAddress}`
