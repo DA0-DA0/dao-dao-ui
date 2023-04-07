@@ -1,9 +1,8 @@
 import {
+  AnyToken,
   Attribute,
   ContributionCompensation,
   ContributionRating,
-  Cw20Token,
-  NativeToken,
 } from './types'
 
 // Distribute compensation per survey attribute among the contributions
@@ -69,8 +68,8 @@ export const computeCompensation = (
             totalOfAverages === 0 ? 0 : averageRating / totalOfAverages
 
           const nativeTokens = attribute.nativeTokens.map(
-            ({ amount, ...token }): NativeToken => ({
-              ...token,
+            ({ denom, amount }): AnyToken => ({
+              denomOrAddress: denom,
               amount: Math.floor(
                 Number(amount) * proportionalCompensation
               ).toString(),
@@ -78,8 +77,8 @@ export const computeCompensation = (
           )
 
           const cw20Tokens = attribute.cw20Tokens.map(
-            ({ amount, ...token }): Cw20Token => ({
-              ...token,
+            ({ address, amount }): AnyToken => ({
+              denomOrAddress: address,
               amount: Math.floor(
                 Number(amount) * proportionalCompensation
               ).toString(),

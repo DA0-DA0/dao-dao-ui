@@ -3,46 +3,49 @@ import { ComponentType } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import {
-  Button,
-  InputErrorMessage,
-  MarkdownRenderer,
-  TextAreaInput,
-  Tooltip,
-} from '@dao-dao/stateless'
-import { Entity } from '@dao-dao/types'
-import { formatDateTimeTz, validateRequired } from '@dao-dao/utils'
+import { Button, MarkdownRenderer, Tooltip } from '@dao-dao/stateless'
+import { Entity, GenericTokenWithUsdPrice } from '@dao-dao/types'
+import { formatDateTimeTz } from '@dao-dao/utils'
 
 import { Status, SurveyStatus } from '../../types'
-
-interface ContributionFormData {
-  contribution: string
-}
+import {
+  ContributionFormData,
+  ContributionFormInput,
+} from './ContributionFormInput'
 
 export interface ContributionFormProps {
   status: Status
-  onSubmit: (contribution: string) => Promise<void>
+  onSubmit: (data: ContributionFormData) => Promise<void>
   loading: boolean
   entity: Entity
   EntityDisplay: ComponentType
+  tokenPrices: GenericTokenWithUsdPrice[]
 }
 
 export const ContributionForm = ({
-  status: { survey, contribution: existingContribution },
+  status: {
+    survey,
+    contribution: existingContribution,
+    contributionSelfRatings,
+  },
   onSubmit,
   loading,
   entity,
   EntityDisplay,
+  tokenPrices,
 }: ContributionFormProps) => {
   const { t } = useTranslation()
 
   const {
     register,
+    watch,
+    setValue,
     handleSubmit,
     formState: { errors },
   } = useForm<ContributionFormData>({
     defaultValues: {
       contribution: existingContribution || '',
+      ratings: contributionSelfRatings || survey.attributes.map(() => null),
     },
   })
 
@@ -65,7 +68,7 @@ export const ContributionForm = ({
   return (
     <form
       className="flex grow flex-col gap-6"
-      onSubmit={handleSubmit(({ contribution }) => onSubmit(contribution))}
+      onSubmit={handleSubmit(onSubmit)}
     >
       {/* Hidden on small screens. Moves below so it is centered with the column. */}
       <div className="hidden max-w-prose space-y-1 break-words lg:block">
@@ -100,17 +103,14 @@ export const ContributionForm = ({
             )}
           </div>
 
-          <div className="flex flex-col">
-            <TextAreaInput
-              error={errors.contribution}
-              fieldName="contribution"
-              placeholder={t('form.iContributedPlaceholder')}
-              register={register}
-              rows={10}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage error={errors.contribution} />
-          </div>
+          <ContributionFormInput
+            errors={errors}
+            register={register}
+            setValue={setValue}
+            survey={survey}
+            tokenPrices={tokenPrices}
+            watch={watch}
+          />
 
           {contributed && (
             <p className="caption-text self-end text-right text-text-interactive-valid">

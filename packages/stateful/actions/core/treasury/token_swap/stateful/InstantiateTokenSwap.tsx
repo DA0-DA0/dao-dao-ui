@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
+import { genericTokenBalancesSelector } from '@dao-dao/state'
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { Loader, useCachedLoading } from '@dao-dao/stateless'
 import { ActionComponent, TokenType } from '@dao-dao/types'
@@ -19,7 +20,6 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput, Trans } from '../../../../../components'
-import { genericTokenBalancesSelector } from '../../../../../recoil/selectors/token'
 import { useTokenBalances } from '../../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../../react'
 import { InstantiateTokenSwap as StatelessInstantiateTokenSwap } from '../stateless/InstantiateTokenSwap'

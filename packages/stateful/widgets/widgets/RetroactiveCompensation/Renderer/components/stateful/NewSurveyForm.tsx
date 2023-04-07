@@ -3,12 +3,12 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
+import { genericTokenBalancesSelector } from '@dao-dao/state'
 import { Loader, useCachedLoading, useDaoInfoContext } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import { convertDenomToMicroDenomWithDecimals } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../../../components'
-import { genericTokenBalancesSelector } from '../../../../../../recoil'
 import { useCw20CommonGovernanceTokenInfoIfExists } from '../../../../../../voting-module-adapter/react/hooks/useCw20CommonGovernanceTokenInfoIfExists'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'

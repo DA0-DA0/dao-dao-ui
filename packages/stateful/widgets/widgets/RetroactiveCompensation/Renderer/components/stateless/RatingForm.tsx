@@ -11,22 +11,16 @@ import {
   InputLabel,
   MarkdownRenderer,
   RangeInput,
-  TextAreaInput,
   TokenAmountDisplay,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
-  AmountWithTimestampAndDenom,
+  GenericTokenWithUsdPrice,
   StatefulEntityDisplayProps,
-  TokenInfoResponseWithAddressAndLogo,
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
-  getFallbackImage,
-  nativeTokenDecimals,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
   validateAddress,
   validateRequired,
 } from '@dao-dao/utils'
@@ -39,15 +33,18 @@ import {
   Status,
 } from '../../types'
 import { computeCompensation } from '../../utils'
+import {
+  ContributionFormData,
+  ContributionFormInput,
+} from './ContributionFormInput'
 
 export interface ContributionRatingData {
   contributions: Contribution[]
   existingRatings: ContributionRating[]
 }
 
-export interface NominationForm {
+export type NominationForm = ContributionFormData & {
   contributor: string
-  contribution: string
 }
 
 export interface RatingFormProps {
@@ -57,8 +54,7 @@ export interface RatingFormProps {
   loadingSubmit: boolean
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   AddressInput: ComponentType<AddressInputProps<NominationForm>>
-  cw20TokenInfos: TokenInfoResponseWithAddressAndLogo[]
-  prices: AmountWithTimestampAndDenom[]
+  tokenPrices: GenericTokenWithUsdPrice[]
   onNominate: (data: NominationForm) => Promise<void>
   loadingNominate: boolean
 }
@@ -70,8 +66,7 @@ export const RatingForm = ({
   loadingSubmit,
   EntityDisplay,
   AddressInput,
-  cw20TokenInfos,
-  prices,
+  tokenPrices,
   onNominate,
   loadingNominate,
 }: RatingFormProps) => {
@@ -112,30 +107,17 @@ export const RatingForm = ({
       )
     : []
 
-  // Convert cw20TokenInfos into map of token addresses to token info.
-  const cw20TokenInfosMap = useMemo(
+  // Map token denom to price info.
+  const tokenMap = useMemo(
     () =>
-      cw20TokenInfos.reduce(
+      tokenPrices.reduce(
         (acc, tokenInfo) => ({
           ...acc,
-          [tokenInfo.address]: tokenInfo,
+          [tokenInfo.token.denomOrAddress]: tokenInfo,
         }),
-        {} as Record<string, TokenInfoResponseWithAddressAndLogo>
+        {} as Record<string, GenericTokenWithUsdPrice>
       ),
-    [cw20TokenInfos]
-  )
-
-  // Convert prices into map of token to price.
-  const pricesMap = useMemo(
-    () =>
-      prices.reduce(
-        (acc, price) => ({
-          ...acc,
-          [price.denom]: price,
-        }),
-        {} as Record<string, AmountWithTimestampAndDenom>
-      ),
-    [prices]
+    [tokenPrices]
   )
 
   const {
@@ -144,7 +126,12 @@ export const RatingForm = ({
     handleSubmit: nominationHandleSubmit,
     formState: { errors: nominationErrors },
     setValue: nominationSetValue,
-  } = useForm<NominationForm>()
+  } = useForm<NominationForm>({
+    defaultValues: {
+      contribution: '',
+      ratings: survey.attributes.map(() => null),
+    },
+  })
 
   return (
     <div className="flex grow flex-col gap-6">
@@ -165,15 +152,14 @@ export const RatingForm = ({
       >
         <div
           className="grid-rows-auto -mb-2 grid items-stretch justify-items-stretch overflow-x-auto pb-4"
-          // Column for contributor, each attribute, and projected
-          // compenstaion.
+          // Column for contributor, each attribute, what they would like, and
+          // projected compenstaion.
           style={{
-            gridTemplateColumns: `1fr ${survey.attributes
+            gridTemplateColumns: `1fr auto ${survey.attributes
               .map(() => 'auto')
               .join(' ')} auto`,
           }}
         >
-          {/* Row for titles, which are mostly attribute names. */}
           <p className="rounded-tl-md bg-background-primary p-6">
             {t('title.contributor')}
           </p>
@@ -186,9 +172,11 @@ export const RatingForm = ({
               {name}
             </p>
           ))}
-          {/* Projected compensation */}
-          <p className="rounded-tr-md border-l border-border-secondary bg-background-primary p-6 text-right">
+          <p className="border-l border-border-secondary bg-background-primary p-6 text-right">
             {t('title.projectedCompensation')}
+          </p>
+          <p className="rounded-tr-md border-l border-border-secondary bg-background-primary p-6 text-right">
+            {t('title.whatTheyWouldLike')}
           </p>
 
           {data.contributions.map((contribution, contributionIndex) => {
@@ -198,43 +186,72 @@ export const RatingForm = ({
 
             const compensationForContribution =
               compensation[contributionIndex].compensationPerAttribute
-            const nativeTokens = compensationForContribution
-              .flatMap(({ nativeTokens }) => nativeTokens)
+            const projectedTokens = compensationForContribution
+              .flatMap(({ cw20Tokens, nativeTokens }) => [
+                ...nativeTokens,
+                ...cw20Tokens,
+              ])
               .reduce(
-                (acc, { denom, amount }) => ({
+                (acc, { denomOrAddress, amount }) => ({
                   ...acc,
-                  [denom]:
-                    (acc[denom] ?? 0) +
+                  [denomOrAddress]:
+                    (acc[denomOrAddress] ?? 0) +
                     convertMicroDenomToDenomWithDecimals(
                       amount,
-                      nativeTokenDecimals(denom) ?? 0
+                      tokenMap[denomOrAddress]?.token.decimals ?? 0
                     ),
                 }),
                 {} as Record<string, number>
               )
-            const cw20Tokens = compensationForContribution
-              .flatMap(({ cw20Tokens }) => cw20Tokens)
-              .reduce(
-                (acc, { address, amount }) => ({
-                  ...acc,
-                  [address]:
-                    (acc[address] ?? 0) +
-                    convertMicroDenomToDenomWithDecimals(
-                      amount,
-                      cw20TokenInfosMap[address]?.decimals ?? 0
-                    ),
-                }),
-                {} as Record<string, number>
+            const projectedTotalUsdc = Object.entries(projectedTokens)
+              .map(
+                ([denomOrAddress, amount]) =>
+                  (tokenMap[denomOrAddress]?.usdPrice ?? 0) * amount
               )
-            const totalUsdc = [
-              ...Object.entries(nativeTokens).map(
-                ([denom, amount]) => (pricesMap[denom]?.amount ?? 0) * amount
-              ),
-              ...Object.entries(cw20Tokens).map(
-                ([address, amount]) =>
-                  (pricesMap[address]?.amount ?? 0) * amount
-              ),
-            ].reduce((acc, amount) => acc + amount, 0)
+              .reduce((acc, amount) => acc + amount, 0)
+
+            // Map token denom to amount they determined they said they want.
+            const selfRatedTokens = contribution.ratings?.every(
+              (rating) => rating !== null
+            )
+              ? survey.attributes
+                  .flatMap(({ nativeTokens, cw20Tokens }, attributeIndex) => [
+                    ...nativeTokens.map(({ denom, amount }) => ({
+                      denomOrAddress: denom,
+                      amount,
+                      rating: contribution.ratings?.[attributeIndex] ?? 0,
+                    })),
+                    ...cw20Tokens.map(({ address, amount }) => ({
+                      denomOrAddress: address,
+                      amount,
+                      rating: contribution.ratings?.[attributeIndex] ?? 0,
+                    })),
+                  ])
+                  .reduce(
+                    (acc, { denomOrAddress, amount, rating }) => ({
+                      ...acc,
+                      [denomOrAddress]:
+                        (acc[denomOrAddress] ?? 0) +
+                        convertMicroDenomToDenomWithDecimals(
+                          amount,
+                          tokenMap[denomOrAddress]?.token.decimals ?? 0
+                        ) *
+                          // Multiply by the proportion of the rating they
+                          // self-assigned.
+                          (rating / 100),
+                    }),
+                    {} as Record<string, number>
+                  )
+              : null
+
+            const selfRatedTotalUsdc = selfRatedTokens
+              ? Object.entries(selfRatedTokens)
+                  .map(
+                    ([denomOrAddress, amount]) =>
+                      (tokenMap[denomOrAddress]?.usdPrice ?? 0) * amount
+                  )
+                  .reduce((acc, amount) => acc + amount, 0)
+              : 0
 
             const attributeRatingsFieldName =
               `ratings.${contributionIndex}.attributes` as const
@@ -314,54 +331,85 @@ export const RatingForm = ({
                 <div
                   className={clsx(
                     'flex flex-col items-end justify-center gap-1 border-l border-border-secondary p-6',
-                    backgroundClassName,
-                    contributionIndex === data.contributions.length - 1 &&
-                      'rounded-br-md'
+                    backgroundClassName
                   )}
                 >
                   {!allRatingsAbstain && (
                     <>
-                      {Object.entries(nativeTokens).map(
-                        ([denom, amount], index) => (
+                      {Object.entries(projectedTokens).map(
+                        ([denomOrAddress, amount], index) => (
                           <TokenAmountDisplay
                             key={index}
                             amount={amount}
                             className="text-right"
-                            decimals={nativeTokenDecimals(denom) ?? 0}
-                            iconUrl={nativeTokenLogoURI(denom)}
-                            symbol={nativeTokenLabel(denom)}
-                          />
-                        )
-                      )}
-                      {Object.entries(cw20Tokens).map(
-                        ([address, amount], index) => (
-                          <TokenAmountDisplay
-                            key={index}
-                            amount={amount}
-                            className="text-right"
-                            decimals={cw20TokenInfosMap[address]?.decimals ?? 0}
-                            iconUrl={
-                              cw20TokenInfosMap[address]?.logoUrl ||
-                              getFallbackImage(address)
+                            dateFetched={tokenMap[denomOrAddress]?.timestamp}
+                            decimals={
+                              tokenMap[denomOrAddress]?.token.decimals ?? 0
                             }
+                            iconUrl={tokenMap[denomOrAddress]?.token.imageUrl}
                             symbol={
-                              cw20TokenInfosMap[address]?.symbol ?? address
+                              tokenMap[denomOrAddress]?.token.symbol ??
+                              denomOrAddress
                             }
                           />
                         )
                       )}
 
-                      <div className="mt-4">
+                      <div className="mt-3">
                         <TokenAmountDisplay
-                          amount={totalUsdc}
+                          amount={projectedTotalUsdc}
                           className="caption-text text-right"
-                          dateFetched={prices[0]?.timestamp}
+                          dateFetched={tokenPrices[0]?.timestamp}
                           estimatedUsdValue
                           hideApprox
                           prefix="= "
                         />
                       </div>
                     </>
+                  )}
+                </div>
+
+                {/* What they would like */}
+                <div
+                  className={clsx(
+                    'border-l border-border-secondary',
+                    backgroundClassName,
+                    contributionIndex === data.contributions.length - 1 &&
+                      'rounded-br-md'
+                  )}
+                >
+                  {selfRatedTokens !== null && (
+                    <div className="flex h-full w-full flex-col items-end justify-center gap-1 bg-background-tertiary p-6">
+                      {Object.entries(selfRatedTokens).map(
+                        ([denomOrAddress, amount], index) => (
+                          <TokenAmountDisplay
+                            key={index}
+                            amount={amount}
+                            className="text-right"
+                            dateFetched={tokenMap[denomOrAddress]?.timestamp}
+                            decimals={
+                              tokenMap[denomOrAddress]?.token.decimals ?? 0
+                            }
+                            iconUrl={tokenMap[denomOrAddress]?.token.imageUrl}
+                            symbol={
+                              tokenMap[denomOrAddress]?.token.symbol ??
+                              denomOrAddress
+                            }
+                          />
+                        )
+                      )}
+
+                      <div className="mt-3">
+                        <TokenAmountDisplay
+                          amount={selfRatedTotalUsdc}
+                          className="caption-text text-right"
+                          dateFetched={tokenPrices[0]?.timestamp}
+                          estimatedUsdValue
+                          hideApprox
+                          prefix="= "
+                        />
+                      </div>
+                    </div>
                   )}
                 </div>
               </Fragment>
@@ -408,17 +456,15 @@ export const RatingForm = ({
             <InputErrorMessage error={nominationErrors?.contributor} />
           </div>
 
-          <div className="space-y-1">
-            <InputLabel name={t('form.contribution')} />
-            <TextAreaInput
-              error={nominationErrors?.contribution}
-              fieldName="contribution"
-              register={nominationRegister}
-              rows={10}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage error={nominationErrors?.contribution} />
-          </div>
+          <ContributionFormInput
+            errors={nominationErrors}
+            register={nominationRegister as any}
+            setValue={nominationSetValue as any}
+            survey={survey}
+            thirdPerson
+            tokenPrices={tokenPrices}
+            watch={nominationWatch as any}
+          />
 
           <Button
             className="self-end"
