@@ -1,7 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { EntityDisplay } from '@dao-dao/stateless/components/EntityDisplay'
-import { EntityType } from '@dao-dao/types'
+import { EntityType, TokenType } from '@dao-dao/types'
+import { NATIVE_TOKEN } from '@dao-dao/utils'
 
 import { Survey, SurveyStatus } from '../../types'
 import { ContributionForm } from './ContributionForm'
@@ -57,9 +58,10 @@ Default.args = {
   status: {
     survey: makeSurvey(),
     contribution: 'this is my contribution\n\npls give me money',
+    contributionSelfRatings: null,
     rated: false,
   },
-  onSubmit: async (contribution) => alert('submit: ' + contribution),
+  onSubmit: async (data) => alert('submit: ' + JSON.stringify(data)),
   loading: false,
   entity: {
     type: EntityType.Wallet,
@@ -81,4 +83,24 @@ Default.args = {
       }}
     />
   ),
+  tokenPrices: [
+    {
+      token: {
+        type: TokenType.Cw20,
+        denomOrAddress: 'dao',
+        symbol: 'DAO',
+        decimals: 6,
+        imageUrl: '/daodao.png',
+      },
+      usdPrice: 1,
+      timestamp: new Date(),
+    },
+    {
+      token: {
+        ...NATIVE_TOKEN,
+      },
+      usdPrice: 1,
+      timestamp: new Date(),
+    },
+  ],
 }

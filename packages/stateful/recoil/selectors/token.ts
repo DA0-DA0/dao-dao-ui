@@ -1,31 +1,21 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily } from 'recoil'
 
 import {
-  Cw20BaseSelectors,
-  DaoCoreV2Selectors,
   cw20TokenDaosWithStakedBalanceSelector,
-  genericTokenSelector,
-  nativeBalanceSelector,
-  nativeBalancesSelector,
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
-  walletCw20BalancesSelector,
   wyndUsdPriceSelector,
 } from '@dao-dao/state'
 import {
   GenericToken,
-  GenericTokenBalance,
   TokenCardLazyInfo,
   TokenType,
   UnstakingTaskStatus,
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHAIN_BECH32_PREFIX,
   NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
-  isValidContractAddress,
-  isValidWalletAddress,
 } from '@dao-dao/utils'
 
 export const tokenCardLazyInfoSelector = selectorFamily<
@@ -157,92 +147,6 @@ export const tokenCardLazyInfoSelector = selectorFamily<
         stakingInfo,
         totalBalance,
         daosGoverned,
-      }
-    },
-})
-
-export const genericTokenBalancesSelector = selectorFamily<
-  GenericTokenBalance[],
-  WithChainId<{
-    address: string
-    cw20GovernanceTokenAddress?: string
-    // Only get balances for this token type.
-    filter?: TokenType
-  }>
->({
-  key: 'genericTokenBalances',
-  get:
-    ({ address, cw20GovernanceTokenAddress, chainId, filter }) =>
-    async ({ get }) => {
-      const nativeTokenBalances =
-        !filter || filter === TokenType.Native
-          ? get(
-              nativeBalancesSelector({
-                address,
-                chainId,
-              })
-            )
-          : []
-
-      const cw20TokenBalances =
-        !filter || filter === TokenType.Cw20
-          ? get(
-              isValidContractAddress(address, CHAIN_BECH32_PREFIX)
-                ? DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
-                    contractAddress: address,
-                    governanceTokenAddress: cw20GovernanceTokenAddress,
-                    chainId,
-                  })
-                : isValidWalletAddress(address, CHAIN_BECH32_PREFIX)
-                ? walletCw20BalancesSelector({
-                    walletAddress: address,
-                    chainId,
-                  })
-                : waitForAll([])
-            )
-          : []
-
-      return [...nativeTokenBalances, ...cw20TokenBalances]
-    },
-})
-
-export const genericTokenBalanceSelector = selectorFamily<
-  GenericTokenBalance,
-  Parameters<typeof genericTokenSelector>[0] & {
-    walletAddress: string
-  }
->({
-  key: 'genericTokenBalance',
-  get:
-    ({ walletAddress, ...params }) =>
-    async ({ get }) => {
-      const token = get(genericTokenSelector(params))
-
-      let balance = '0'
-      if (token.type === TokenType.Native) {
-        balance = get(
-          nativeBalanceSelector({
-            address: walletAddress,
-            chainId: params.chainId,
-          })
-        ).amount
-      } else if (token.type === TokenType.Cw20) {
-        balance = get(
-          Cw20BaseSelectors.balanceSelector({
-            contractAddress: params.denomOrAddress,
-            chainId: params.chainId,
-            params: [
-              {
-                address: walletAddress,
-              },
-            ],
-          })
-        ).balance
-      }
-
-      return {
-        token,
-        balance,
       }
     },
 })
