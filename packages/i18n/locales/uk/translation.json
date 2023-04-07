@@ -106,7 +106,7 @@
     "automaticallyAddNFTsTooltip": "Чи додавати NFTs що надсилатимуть до Спілки автоматично?",
     "automaticallyAddTokensTitle": "Автоматично додавати Акції.",
     "automaticallyAddTokensTooltip": "Чи додавати Акції та Кошти до Скарбниці автоматично?",
-    "codeID": "ID для Інструкцій Контракту",
+    "codeId": "ID для Інструкцій Контракту",
     "contractLabel": "Назва Контракту",
     "defaultTierName": "Курінь Засновників",
     "description": "Опис",

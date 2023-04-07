@@ -110,7 +110,7 @@
     "automaticallyAddNFTsTooltip": "Vuoi che gli NFT inviati alla DAO vengano automaticamente aggiunti al fondo di cassa?",
     "automaticallyAddTokensTitle": "Aggiungi automaticamente i token",
     "automaticallyAddTokensTooltip": "Vuoi che i token inviati alla DAO vengano automaticamente aggiunti al fondo di cassa?",
-    "codeID": "ID del codice",
+    "codeId": "ID del codice",
     "contractLabel": "Etichetta del contratto",
     "defaultTierName": "Colaboratori primari",
     "description": "Descrizione",
