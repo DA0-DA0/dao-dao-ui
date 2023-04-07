@@ -27,43 +27,15 @@ import {
 import { AddressInput, SuspenseLoader } from '../../../../components'
 import { useTokenBalances } from '../../../hooks'
 import { AuthzAuthorizationComponent as StatelessAuthzAuthorizationComponent } from './Component'
+import {
+  AuthorizationTypeUrl,
+  AuthzData,
+  FilterTypes,
+  LimitTypes,
+} from './types'
 
 const TYPE_URL_MSG_GRANT = '/cosmos.authz.v1beta1.MsgGrant'
 const TYPE_URL_MSG_REVOKE = '/cosmos.authz.v1beta1.MsgRevoke'
-
-export enum AuthorizationTypeUrl {
-  Generic = '/cosmos.authz.v1beta1.GenericAuthorization',
-  ContractExecution = '/cosmwasm.wasm.v1.ContractExecutionAuthorization',
-  ContractMigration = '/cosmwasm.wasm.v1.ContractMigrationAuthorization',
-  Spend = '/cosmos.bank.v1beta1.SendAuthorization',
-}
-
-export enum FilterTypes {
-  All = '/cosmwasm.wasm.v1.AllowAllMessagesFilter',
-  Keys = '/cosmwasm.wasm.v1.AcceptedMessageKeysFilter',
-  Msg = '/cosmwasm.wasm.v1.AcceptedMessagesFilter',
-}
-
-export enum LimitTypes {
-  Combined = '/cosmwasm.wasm.v1.CombinedLimit',
-  Calls = '/cosmwasm.wasm.v1.MaxCallsLimit',
-  Funds = '/cosmwasm.wasm.v1.MaxFundsLimit',
-}
-
-export interface AuthzData {
-  mode: 'grant' | 'revoke'
-  authorizationTypeUrl?: AuthorizationTypeUrl
-  customTypeUrl?: boolean
-  grantee: string
-  contract?: string
-  funds?: { denom: string; amount: number }[]
-  msgTypeUrl?: string
-  filterType?: FilterTypes
-  filterKeys?: string
-  filterMsg?: string
-  limitType?: LimitTypes
-  calls?: number
-}
 
 const useDefaults: UseDefaults<AuthzData> = () => ({
   mode: 'grant',

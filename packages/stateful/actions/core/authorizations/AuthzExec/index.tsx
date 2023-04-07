@@ -123,39 +123,41 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
-  msg: Record<string, any>
-) =>
-  useMemo(() => {
-    if (
-      !isDecodedStargateMsg(msg) ||
-      msg.stargate.typeUrl !== TYPE_URL_MSG_EXEC ||
-      !objectMatchesStructure(msg.stargate.value, {
-        grantee: {},
-        msgs: {},
-      }) ||
-      !Array.isArray(msg.stargate.value.msgs)
-    ) {
-      return { match: false }
-    }
-
-    return {
-      match: true,
-      data: {
-        // Not sure if it's possible to extract the target address since the
-        // address may show up in any part of the message body.
-        address: '',
-        msgs: msg.stargate.value.msgs.map((msg: any) =>
-          decodeRawProtobufMsg(msg)
-        ),
-      },
-    }
-  }, [msg])
-
 export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
   t,
   address: grantee,
 }) => {
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
+    msg: Record<string, any>
+  ) =>
+    useMemo(() => {
+      if (
+        !isDecodedStargateMsg(msg) ||
+        msg.stargate.typeUrl !== TYPE_URL_MSG_EXEC ||
+        !objectMatchesStructure(msg.stargate.value, {
+          grantee: {},
+          msgs: {},
+        }) ||
+        // Make sure this address is the grantee.
+        msg.stargate.value.grantee !== grantee ||
+        !Array.isArray(msg.stargate.value.msgs)
+      ) {
+        return { match: false }
+      }
+
+      return {
+        match: true,
+        data: {
+          // Not sure if it's possible to extract the target address since the
+          // address may show up in any part of the message body.
+          address: '',
+          msgs: msg.stargate.value.msgs.map((msg: any) =>
+            decodeRawProtobufMsg(msg)
+          ),
+        },
+      }
+    }, [msg])
+
   const useTransformToCosmos: UseTransformToCosmos<AuthzExecData> = () =>
     useCallback(
       ({ address, msgs }) =>
