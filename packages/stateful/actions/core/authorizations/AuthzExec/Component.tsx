@@ -1,349 +1,103 @@
-import { Check, Close } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  CodeMirrorInput,
-  InputErrorMessage,
-  InputLabel,
-  NumberInput,
-  SelectInput,
-  ValidatorPicker,
+  NestedActionsEditor,
+  NestedActionsEditorFormData,
+  NestedActionsEditorOptions,
+  NestedActionsRenderer,
+  NestedActionsRendererProps,
 } from '@dao-dao/stateless'
-import { AddressInputProps, Validator } from '@dao-dao/types'
+import {
+  AddressInputProps,
+  CosmosMsgFor_Empty,
+  StatefulEntityDisplayProps,
+} from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
-  convertMicroDenomToDenomWithDecimals,
+  CHAIN_BECH32_PREFIX,
+  isValidAddress,
   validateAddress,
-  validateJSON,
-  validatePositive,
-  validateRequired,
 } from '@dao-dao/utils'
 
-export enum AuthzExecActionTypes {
-  Delegate = '/cosmos.staking.v1beta1.MsgDelegate',
-  Undelegate = '/cosmos.staking.v1beta1.MsgUndelegate',
-  Redelegate = '/cosmos.staking.v1beta1.MsgBeginRedelegate',
-  ClaimRewards = '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
-  Custom = 'custom',
-}
+export type AuthzExecData = {
+  // Set common address to use for all actions.
+  address: string
+  // Once created, fill group adjacent messages by sender.
+  _msgs?: {
+    sender: string
+    msgs: CosmosMsgFor_Empty[]
+  }[]
+} & NestedActionsEditorFormData
 
-export interface AuthzExecOptions {
-  AddressInput: ComponentType<AddressInputProps>
-  validators: Validator[]
-}
+export type AuthzExecOptions = {
+  // When not creating, this will be set to the index of the group of messages
+  // to render.
+  msgPerSenderIndex?: number
 
-export const useAuthzExecActionTypes = (): {
-  type: AuthzExecActionTypes
-  name: string
-}[] => {
+  AddressInput: ComponentType<AddressInputProps<AuthzExecData>>
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
+} & NestedActionsEditorOptions &
+  Omit<NestedActionsRendererProps, 'msgsFieldName'>
+
+export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
+  props
+) => {
   const { t } = useTranslation()
+  const { watch, register } = useFormContext<AuthzExecData>()
+  const {
+    fieldNamePrefix,
+    errors,
+    isCreating,
+    options: { msgPerSenderIndex, AddressInput, EntityDisplay, ...options },
+  } = props
 
-  return [
-    {
-      type: AuthzExecActionTypes.Delegate,
-      name: t('title.stake'),
-    },
-    {
-      type: AuthzExecActionTypes.Undelegate,
-      name: t('title.unstake'),
-    },
-    {
-      type: AuthzExecActionTypes.Redelegate,
-      name: t('title.restake'),
-    },
-    {
-      type: AuthzExecActionTypes.ClaimRewards,
-      name: t('title.claimRewards'),
-    },
-    {
-      type: AuthzExecActionTypes.Custom,
-      name: t('title.custom'),
-    },
-  ]
-}
-
-export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = ({
-  fieldNamePrefix,
-  errors,
-  isCreating,
-  options: { AddressInput, validators },
-}) => {
-  const { t } = useTranslation()
-  const { control, register, setValue, watch } = useFormContext()
-
-  const authzExecActions = useAuthzExecActionTypes()
-
-  const authzExecActionType = watch(fieldNamePrefix + 'authzExecActionType')
-
-  const minAmount = convertMicroDenomToDenomWithDecimals(
-    1,
-    NATIVE_TOKEN.decimals
-  )
-
-  const claimRewardsValidator = watch(
-    fieldNamePrefix + 'claimRewards.validatorAddress'
-  )
-  const delegateValidator = watch(fieldNamePrefix + 'delegate.validatorAddress')
-  const redelegateDstValidator = watch(
-    fieldNamePrefix + 'redelegate.validatorDstAddress'
-  )
-  const redelegateSrcValidator = watch(
-    fieldNamePrefix + 'redelegate.validatorSrcAddress'
-  )
-  const undelegateValidator = watch(
-    fieldNamePrefix + 'undelegate.validatorAddress'
-  )
+  const address = watch((fieldNamePrefix + 'address') as 'address')
+  const msgsPerSender = watch((fieldNamePrefix + '_msgs') as '_msgs') || []
 
   return (
     <>
-      <div className="flex flex-col items-stretch gap-1">
-        <InputLabel
-          name={t('form.authzExecActionType')}
-          tooltip={t('form.authzExecActionTypeTooltip')}
-        />
-        <SelectInput
-          containerClassName="grow"
-          defaultValue={authzExecActions[0].type}
-          disabled={!isCreating}
-          error={errors?.authzExecActionType}
-          fieldName={fieldNamePrefix + 'authzExecActionType'}
-          register={register}
-        >
-          {authzExecActions.map(({ name, type }, idx) => (
-            <option key={idx} value={type}>
-              {name}
-            </option>
-          ))}
-        </SelectInput>
-      </div>
-
-      {authzExecActionType === AuthzExecActionTypes.Delegate && (
+      {/* When creating, show common address field for all messages. When not creating, msgs will be grouped by sender and displayed in order, which if created via this action, will look the same with one address at the top and many actions below it. */}
+      {isCreating && (
         <>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('form.delegatorAddress')} />
-            <AddressInput
-              disabled={!isCreating}
-              error={errors?.delegate?.delegatorAddress}
-              fieldName={fieldNamePrefix + 'delegate.delegatorAddress'}
-              register={register}
-              validation={[(v: string) => validateAddress(v)]}
-            />
-            <InputErrorMessage error={errors?.delegate?.delegatorAddress} />
-          </div>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('form.validator')} />
-            <ValidatorPicker
-              displayClassName="grow min-w-0"
-              nativeDecimals={NATIVE_TOKEN.decimals}
-              nativeDenom={NATIVE_TOKEN.denomOrAddress}
-              onSelect={({ address }) =>
-                setValue(fieldNamePrefix + 'delegate.validatorAddress', address)
-              }
-              readOnly={!isCreating}
-              selectedAddress={delegateValidator}
-              validators={validators}
-            />
-          </div>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('title.chooseTokenAmount')} />
-            <NumberInput
-              disabled={!isCreating}
-              error={errors?.delegate?.amount?.amount}
-              fieldName={fieldNamePrefix + 'delegate.amount.amount'}
-              min={minAmount}
-              register={register}
-              setValue={setValue}
-              step={minAmount}
-              unit={'$' + NATIVE_TOKEN.symbol}
-              validation={[validatePositive, validateRequired]}
-              watch={watch}
-            />
-            <InputErrorMessage error={errors?.delegate?.amount?.amount} />
-          </div>
-        </>
-      )}
+          <p className="title-text -mb-1">{t('title.account')}</p>
 
-      {authzExecActionType === AuthzExecActionTypes.Undelegate && (
-        <>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('form.delegatorAddress')} />
-            <AddressInput
-              disabled={!isCreating}
-              error={errors?.undelegate?.delegatorAddress}
-              fieldName={fieldNamePrefix + 'undelegate.delegatorAddress'}
-              register={register}
-              validation={[(v: string) => validateAddress(v)]}
-            />
-            <InputErrorMessage error={errors?.undelegate?.delegatorAddress} />
-          </div>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('form.validator')} />
-            <ValidatorPicker
-              displayClassName="grow min-w-0"
-              nativeDecimals={NATIVE_TOKEN.decimals}
-              nativeDenom={NATIVE_TOKEN.denomOrAddress}
-              onSelect={({ address }) =>
-                setValue(
-                  fieldNamePrefix + 'undelegate.validatorAddress',
-                  address
-                )
-              }
-              readOnly={!isCreating}
-              selectedAddress={undelegateValidator}
-              validators={validators}
-            />
-          </div>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('title.chooseTokenAmount')} />
-            <NumberInput
-              disabled={!isCreating}
-              error={errors?.undelegate?.amount?.amount}
-              fieldName={fieldNamePrefix + 'undelegate.amount.amount'}
-              min={minAmount}
-              register={register}
-              setValue={setValue}
-              step={minAmount}
-              unit={'$' + NATIVE_TOKEN.symbol}
-              validation={[validatePositive, validateRequired]}
-              watch={watch}
-            />
-            <InputErrorMessage error={errors?.undelegate?.amount?.amount} />
-          </div>
-        </>
-      )}
-
-      {authzExecActionType === AuthzExecActionTypes.Redelegate && (
-        <>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('form.delegatorAddress')} />
-            <AddressInput
-              disabled={!isCreating}
-              error={errors?.redelegate?.delegatorAddress}
-              fieldName={fieldNamePrefix + 'redelegate.delegatorAddress'}
-              register={register}
-              validation={[(v: string) => validateAddress(v)]}
-            />
-            <InputErrorMessage error={errors?.redelegate?.delegatorAddress} />
-          </div>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel
-              name={t('form.redelegateSourceValidator')}
-              tooltip={t('form.redelegateSourceValidatorTooltip')}
-            />
-            <ValidatorPicker
-              displayClassName="grow min-w-0"
-              nativeDecimals={NATIVE_TOKEN.decimals}
-              nativeDenom={NATIVE_TOKEN.denomOrAddress}
-              onSelect={({ address }) =>
-                setValue(
-                  fieldNamePrefix + 'redelegate.validatorSrcAddress',
-                  address
-                )
-              }
-              readOnly={!isCreating}
-              selectedAddress={redelegateSrcValidator}
-              validators={validators}
-            />
-          </div>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel
-              name={t('form.redelegateDestinationValidator')}
-              tooltip={t('form.redelegateDestinationValidatorTooltip')}
-            />
-            <ValidatorPicker
-              displayClassName="grow min-w-0"
-              nativeDecimals={NATIVE_TOKEN.decimals}
-              nativeDenom={NATIVE_TOKEN.denomOrAddress}
-              onSelect={({ address }) =>
-                setValue(
-                  fieldNamePrefix + 'redelegate.validatorDstAddress',
-                  address
-                )
-              }
-              readOnly={!isCreating}
-              selectedAddress={redelegateDstValidator}
-              validators={validators}
-            />
-          </div>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('title.chooseTokenAmount')} />
-            <NumberInput
-              disabled={!isCreating}
-              error={errors?.redelegate?.amount?.amount}
-              fieldName={fieldNamePrefix + 'redelegate.amount.amount'}
-              min={minAmount}
-              register={register}
-              setValue={setValue}
-              step={minAmount}
-              unit={'$' + NATIVE_TOKEN.symbol}
-              validation={[validatePositive, validateRequired]}
-              watch={watch}
-            />
-            <InputErrorMessage error={errors?.redelegate?.amount?.amount} />
-          </div>
-        </>
-      )}
-
-      {authzExecActionType === AuthzExecActionTypes.ClaimRewards && (
-        <>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('form.delegatorAddress')} />
-            <AddressInput
-              disabled={!isCreating}
-              error={errors?.claimRewards?.delegatorAddress}
-              fieldName={fieldNamePrefix + 'claimRewards.delegatorAddress'}
-              register={register}
-              validation={[(v: string) => validateAddress(v)]}
-            />
-            <InputErrorMessage error={errors?.claimRewards?.delegatorAddress} />
-          </div>
-          <div className="flex flex-col items-stretch gap-1">
-            <InputLabel name={t('form.validator')} />
-            <ValidatorPicker
-              displayClassName="grow min-w-0"
-              nativeDecimals={NATIVE_TOKEN.decimals}
-              nativeDenom={NATIVE_TOKEN.denomOrAddress}
-              onSelect={({ address }) =>
-                setValue(
-                  fieldNamePrefix + 'claimRewards.validatorAddress',
-                  address
-                )
-              }
-              readOnly={!isCreating}
-              selectedAddress={claimRewardsValidator}
-              validators={validators}
-            />
-          </div>
-        </>
-      )}
-
-      {authzExecActionType === AuthzExecActionTypes.Custom && (
-        <div className="flex flex-col items-stretch gap-1">
-          <InputLabel
-            name={t('form.encodedMessages')}
-            tooltip={t('form.encodedMessagesTooltip')}
+          <AddressInput
+            autoFocus
+            error={errors?.address}
+            fieldName={(fieldNamePrefix + 'address') as 'address'}
+            register={register}
+            validation={[validateAddress]}
           />
-          <CodeMirrorInput
-            control={control}
-            error={errors?.custom}
-            fieldName={fieldNamePrefix + 'custom'}
-            readOnly={!isCreating}
-            validation={[validateJSON]}
-          />
-          {errors?.custom?.message ? (
-            <p className="text-error flex items-center gap-1 text-sm">
-              <Close className="inline w-5" />{' '}
-              <span>{errors.custom?.message}</span>
-            </p>
+        </>
+      )}
+
+      {(isValidAddress(address, CHAIN_BECH32_PREFIX) || !isCreating) && (
+        <>
+          {isCreating ? (
+            <>
+              <p className="title-text -mb-1 mt-1">{t('title.actions')}</p>
+
+              <NestedActionsEditor {...props} />
+            </>
           ) : (
-            <p className="text-success flex items-center gap-1 text-sm">
-              <Check className="inline w-5" /> {t('info.jsonIsValid')}
-            </p>
+            <div className="flex flex-col gap-4">
+              <p className="title-text -mb-1">{t('title.account')}</p>
+              <EntityDisplay
+                address={msgsPerSender[msgPerSenderIndex!].sender}
+              />
+
+              <p className="title-text -mb-1 mt-1">{t('title.actions')}</p>
+              <NestedActionsRenderer
+                {...options}
+                msgsFieldName={
+                  fieldNamePrefix + `_msgs.${msgPerSenderIndex!}.msgs`
+                }
+              />
+            </div>
           )}
-        </div>
+        </>
       )}
     </>
   )

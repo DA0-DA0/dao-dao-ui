@@ -23,7 +23,6 @@ import {
 } from '../../../../components'
 import { daoInfoSelector } from '../../../../recoil'
 import {
-  WalletActionsProvider,
   useActionOptions,
   useActionsForMatching,
   useLoadedActionsAndCategories,
@@ -80,16 +79,21 @@ const Component: ActionComponent = (props) => {
   const { context, address } = useActionOptions()
 
   // Load DAO info for chosen DAO.
-  const { watch, setValue, clearErrors } = useFormContext()
-  const coreAddress = watch(props.fieldNamePrefix + 'coreAddress')
+  const { watch, setValue, clearErrors } = useFormContext<DaoAdminExecData>()
+  const coreAddress = watch(
+    (props.fieldNamePrefix + 'coreAddress') as 'coreAddress'
+  )
 
   // Reset actions when core address changes during creation.
   useEffect(() => {
     if (props.isCreating) {
-      setValue(props.fieldNamePrefix + 'msgs', [])
-      clearErrors(props.fieldNamePrefix + 'msgs')
-      setValue(props.fieldNamePrefix + '_actions', undefined)
-      clearErrors(props.fieldNamePrefix + '_actions')
+      setValue((props.fieldNamePrefix + 'msgs') as 'msgs', [])
+      clearErrors((props.fieldNamePrefix + 'msgs') as 'msgs')
+      setValue(
+        (props.fieldNamePrefix + '_actionData') as '_actionData',
+        undefined
+      )
+      clearErrors((props.fieldNamePrefix + '_actionData') as '_actionData')
     }
   }, [
     clearErrors,
@@ -136,22 +140,16 @@ const Component: ActionComponent = (props) => {
         : { loading: true },
   }
 
-  return context.type === ActionContextType.Dao ? (
-    daoInfoLoadable.state === 'hasValue' ? (
-      <SuspenseLoader
-        fallback={<InnerComponentLoading {...props} options={options} />}
-      >
-        <DaoProviders info={daoInfoLoadable.contents!}>
-          <InnerComponent {...props} options={options} />
-        </DaoProviders>
-      </SuspenseLoader>
-    ) : (
-      <InnerComponentLoading {...props} options={options} />
-    )
+  return daoInfoLoadable.state === 'hasValue' ? (
+    <SuspenseLoader
+      fallback={<InnerComponentLoading {...props} options={options} />}
+    >
+      <DaoProviders info={daoInfoLoadable.contents!}>
+        <InnerComponent {...props} options={options} />
+      </DaoProviders>
+    </SuspenseLoader>
   ) : (
-    <WalletActionsProvider>
-      <InnerComponent {...props} options={options} />
-    </WalletActionsProvider>
+    <InnerComponentLoading {...props} options={options} />
   )
 }
 

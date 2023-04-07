@@ -122,7 +122,7 @@
     "automaticallyAddNFTsTooltip": " Czy NFTs wysłane do Organizacji powinny zostać dodane do skarbca?",
     "automaticallyAddTokensTitle": "Automatycznie dodaj tokeny",
     "automaticallyAddTokensTooltip": "Czy tokeny wysłane do Organizacji powinny zostać dodane do skarbca?",
-    "codeID": "ID kodu",
+    "codeId": "ID kodu",
     "contractLabel": "Nazwa kontraktu",
     "defaultTierName": "Główni Kontrybutorzy",
     "description": "Opis",

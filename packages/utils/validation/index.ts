@@ -52,12 +52,11 @@ export const makeValidateDate =
     (v && !isNaN(Date.parse(v))) ||
     t(time ? 'error.invalidDateTime' : 'error.invalidDate')
 
-export const validateContractAddress = (
-  v: string | undefined,
-  required = true
-) =>
+export const validateContractAddress = (v: any, required = true) =>
   (!required && !v) ||
-  (v && isValidContractAddress(v, CHAIN_BECH32_PREFIX)) ||
+  (v &&
+    typeof v === 'string' &&
+    isValidContractAddress(v, CHAIN_BECH32_PREFIX)) ||
   'Invalid contract address'
 
 export const validateJSON = (v: string) => {

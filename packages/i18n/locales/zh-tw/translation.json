@@ -124,7 +124,7 @@
     "automaticallyAddNFTsTooltip": "傳到 DAO 的 NFT 可以自動加進 DAO 的存庫嗎？",
     "automaticallyAddTokensTitle": "自動加入代幣",
     "automaticallyAddTokensTooltip": "傳到 DAO 的代幣應該自動加入 DAO 嗎？",
-    "codeID": "Code ID",
+    "codeId": "Code ID",
     "contractLabel": "合約標籤",
     "defaultTierName": "核心成員",
     "description": "描述",

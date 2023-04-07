@@ -53,3 +53,10 @@ export type ParametersExceptFirst<F> = F extends (
 ) => any
   ? R
   : never
+
+export type DecodedStargateMsg<Value = any> = {
+  stargate: {
+    typeUrl: string
+    value: Value
+  }
+}

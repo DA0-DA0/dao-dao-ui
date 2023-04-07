@@ -17,7 +17,7 @@ import { Loader } from '../logo/Loader'
 import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
 import { ActionCard } from './ActionCard'
 
-const ACTIONS_PER_PAGE = 20
+export const ACTIONS_PER_PAGE = 20
 
 // The props needed to render an action from a message.
 export interface ActionsRendererProps {
