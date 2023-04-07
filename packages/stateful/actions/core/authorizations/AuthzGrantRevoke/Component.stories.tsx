@@ -26,7 +26,7 @@ export default {
       mode: 'grant',
       authorizationTypeUrl: AuthorizationTypeUrl.Generic,
       customTypeUrl: false,
-      grantee: 'juno1jv65s3grqf6v6jl3dp4t6c9t9rk99cd8lyv94w',
+      grantee: 'junoContract',
       msgTypeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
       contract: '',
       filterType: FilterTypes.All,
