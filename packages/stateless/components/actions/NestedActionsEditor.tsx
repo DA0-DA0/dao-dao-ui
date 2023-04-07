@@ -74,7 +74,7 @@ export const NestedActionsEditor: ActionComponent<
   }, [msgs])
 
   return (
-    <>
+    <div className="flex flex-col">
       <ActionsEditor
         SuspenseLoader={SuspenseLoader}
         actionDataErrors={errors?._actionData}
@@ -102,6 +102,6 @@ export const NestedActionsEditor: ActionComponent<
           />
         </div>
       )}
-    </>
+    </div>
   )
 }

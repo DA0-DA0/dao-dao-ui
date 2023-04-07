@@ -56,27 +56,35 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
     <>
       {/* When creating, show common address field for all messages. When not creating, msgs will be grouped by sender and displayed in order, which if created via this action, will look the same with one address at the top and many actions below it. */}
       {isCreating && (
-        <AddressInput
-          error={errors?.address}
-          fieldName={(fieldNamePrefix + 'address') as 'address'}
-          register={register}
-          validation={[validateAddress]}
-        />
+        <>
+          <p className="title-text -mb-1">{t('title.account')}</p>
+
+          <AddressInput
+            error={errors?.address}
+            fieldName={(fieldNamePrefix + 'address') as 'address'}
+            register={register}
+            validation={[validateAddress]}
+          />
+        </>
       )}
 
       {(isValidAddress(address, CHAIN_BECH32_PREFIX) || !isCreating) && (
         <>
-          <p className="title-text">{t('title.actions')}</p>
-
           {isCreating ? (
-            <NestedActionsEditor {...props} />
+            <>
+              <p className="title-text -mb-1 mt-1">{t('title.actions')}</p>
+
+              <NestedActionsEditor {...props} />
+            </>
           ) : (
             // This will safely render all messages, even if they are not
             // created via this action, because they will be grouped by sender.
             msgsPerSender.map(({ sender }, index) => (
               <div key={index} className="flex flex-col gap-4">
+                <p className="title-text -mb-1">{t('title.account')}</p>
                 <EntityDisplay address={sender} />
 
+                <p className="title-text -mb-1 mt-1">{t('title.actions')}</p>
                 <NestedActionsRenderer
                   {...options}
                   msgsFieldName={fieldNamePrefix + `_msgs.${index}.msgs`}
