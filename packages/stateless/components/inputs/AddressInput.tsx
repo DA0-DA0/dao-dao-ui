@@ -177,7 +177,7 @@ export const AddressInput = <
   return (
     <div
       className={clsx(
-        'secondary-text group flex min-w-0 items-center gap-3 bg-transparent font-mono text-sm transition-all placeholder:font-sans',
+        'secondary-text group flex min-w-0 items-center gap-3 bg-transparent font-sans text-sm transition-all',
         // If not only displaying entity, add more border.
         onlyDisplayEntity
           ? 'p-2'
@@ -203,7 +203,7 @@ export const AddressInput = <
 
           <input
             className={clsx(
-              'ring-none body-text w-full border-none bg-transparent font-mono outline-none',
+              'ring-none body-text w-full border-none bg-transparent font-mono outline-none placeholder:font-sans',
               className
             )}
             disabled={disabled}
