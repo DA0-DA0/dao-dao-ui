@@ -66,7 +66,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 
       <div className="flex flex-row items-center gap-2">
         <div className="flex flex-col items-stretch gap-1">
-          <InputLabel name={t('form.codeID')} />
+          <InputLabel name={t('form.codeId')} />
           <NumberInput
             disabled={!isCreating}
             error={errors?.codeId}

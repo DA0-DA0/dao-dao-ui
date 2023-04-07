@@ -32,7 +32,7 @@ export enum ActionKey {
   Execute = 'execute',
   Migrate = 'migrate',
   UpdateAdmin = 'updateAdmin',
-  AuthzAuthorization = 'authzAuthorization',
+  AuthzGrantRevoke = 'authzGrantRevoke',
   AuthzExec = 'authzExec',
   ValidatorActions = 'validatorActions',
   Custom = 'custom',
@@ -67,14 +67,24 @@ export type CategorizedActionAndData = {
 
 export type PartialCategorizedActionAndData = Partial<CategorizedActionAndData>
 
-export interface CategorizedActionKeyAndData {
+export type CategorizedActionKeyAndData = {
+  // Add an ID field to prevent unnecessary re-renders when things move around.
+  // This should be handled by react-hook-form's `useFieldArray`, but it only
+  // works internally for that specific hook call, and we need to use it in many
+  // different components.
+  _id: string
   categoryKey: ActionCategoryKey
   actionKey: ActionKey
   data: any
 }
 
+export type PartialCategorizedActionKeyAndDataNoId = Partial<
+  Omit<CategorizedActionKeyAndData, '_id'>
+>
+
 export type PartialCategorizedActionKeyAndData =
-  Partial<CategorizedActionKeyAndData>
+  PartialCategorizedActionKeyAndDataNoId &
+    Pick<CategorizedActionKeyAndData, '_id'>
 
 export type CategorizedAction = {
   category: ActionCategoryWithLabel
@@ -92,7 +102,9 @@ export type ActionComponentProps<O = undefined, D = any> = {
       isCreating: true
       errors: FieldErrors
       // Adds a new action to the form.
-      addAction: (action: PartialCategorizedActionKeyAndData) => void
+      addAction: (
+        action: Omit<PartialCategorizedActionKeyAndData, '_id'>
+      ) => void
       // Removes this action from the form.
       remove: () => void
     }

@@ -119,7 +119,7 @@
     "automaticallyAddNFTsTooltip": "DAO로 보내진 NFT를 트레저리에 자동으로 넣으시겠습니까?",
     "automaticallyAddTokensTitle": "자동으로 토큰 추가",
     "automaticallyAddTokensTooltip": "DAO에 보내진 토큰을 트레저리에 자동으로 추가하겠습니까?",
-    "codeID": "코드 ID",
+    "codeId": "코드 ID",
     "contractLabel": "계약 라벨",
     "defaultTierName": "주요 기여자",
     "description": "설명",

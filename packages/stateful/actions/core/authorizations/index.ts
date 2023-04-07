@@ -1,7 +1,7 @@
 import { ActionCategoryKey, ActionCategoryMaker } from '@dao-dao/types'
 
-import { makeAuthzAuthorizationAction } from './AuthzAuthorization'
 import { makeAuthzExecAction } from './AuthzExec'
+import { makeAuthzGrantRevokeAction } from './AuthzGrantRevoke'
 
 export const makeAuthorizationsActionCategory: ActionCategoryMaker = ({
   t,
@@ -9,5 +9,5 @@ export const makeAuthorizationsActionCategory: ActionCategoryMaker = ({
   key: ActionCategoryKey.Authorizations,
   label: t('actionCategory.authorizationsLabel'),
   description: t('actionCategory.authorizationsDescription'),
-  actionMakers: [makeAuthzAuthorizationAction, makeAuthzExecAction],
+  actionMakers: [makeAuthzGrantRevokeAction, makeAuthzExecAction],
 })

@@ -125,7 +125,7 @@
     "automaticallyAddNFTsTooltip": "¿Agregar los NFTs enviados al DAO a la tesorería?",
     "automaticallyAddTokensTitle": "Agregar tokens de forma automática.",
     "automaticallyAddTokensTooltip": "¿Agregar los tokens enviados al DAO a la tesorería?",
-    "codeID": "Code ID",
+    "codeId": "Code ID",
     "contractLabel": "Etiqueta de contrato",
     "defaultTierName": "Principales contribuidores",
     "description": "Descripción",

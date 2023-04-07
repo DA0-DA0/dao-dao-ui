@@ -381,6 +381,7 @@ const InnerProposalStatusAndInfo = ({
               currentVote: loadingWalletVoteInfo.data.vote,
               onCastVote: castVote,
               options: voteOptions.data,
+              proposalOpen: proposal.status === ProposalStatus.Open,
             }
           : undefined
       }

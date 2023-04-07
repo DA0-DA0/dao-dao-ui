@@ -102,35 +102,31 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
                 Icon: SendRounded,
                 label: t('button.transfer'),
                 closeOnClick: true,
-                href: getMeTxPrefillPath({
-                  actions: [
-                    {
-                      actionKey: ActionKey.TransferNft,
-                      data: {
-                        ...transferActionDefaults,
-                        collection: props.collection.address,
-                        tokenId: props.tokenId,
-                        recipient: '',
-                      },
+                href: getMeTxPrefillPath([
+                  {
+                    actionKey: ActionKey.TransferNft,
+                    data: {
+                      ...transferActionDefaults,
+                      collection: props.collection.address,
+                      tokenId: props.tokenId,
+                      recipient: '',
                     },
-                  ],
-                }),
+                  },
+                ]),
               },
               {
                 Icon: LocalFireDepartment,
                 label: t('button.burn'),
                 closeOnClick: true,
-                href: getMeTxPrefillPath({
-                  actions: [
-                    {
-                      actionKey: ActionKey.BurnNft,
-                      data: {
-                        collection: props.collection.address,
-                        tokenId: props.tokenId,
-                      },
+                href: getMeTxPrefillPath([
+                  {
+                    actionKey: ActionKey.BurnNft,
+                    data: {
+                      collection: props.collection.address,
+                      tokenId: props.tokenId,
                     },
-                  ],
-                }),
+                  },
+                ]),
               },
             ],
           },
