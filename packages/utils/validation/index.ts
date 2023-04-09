@@ -13,9 +13,7 @@ import { isValidUrl } from '../isValidUrl'
 
 export * from './makeValidateMsg'
 
-export const validateRequired = (
-  v: string | number | boolean | null | undefined
-) => {
+export const validateRequired = (v: any) => {
   if (typeof v === 'string') {
     return v.trim().length !== 0 || 'Field is required'
   }

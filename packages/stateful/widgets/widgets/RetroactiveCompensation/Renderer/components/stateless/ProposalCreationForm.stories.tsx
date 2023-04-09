@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { EntityType } from '@dao-dao/types'
+import { EntityType, TokenType } from '@dao-dao/types'
+import { NATIVE_TOKEN } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../../../../../../components'
 import { makeSurvey } from './ContributionForm.stories'
@@ -21,6 +22,7 @@ Default.args = {
   status: {
     survey: makeSurvey(),
     contribution: 'this is my contribution\n\npls give me money',
+    contributionSelfRatings: null,
     rated: false,
   },
   completeRatings: {
@@ -34,6 +36,7 @@ Default.args = {
         content: 'I contributed so much of my BLOOD SWEAT AND TEARS',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        ratings: [20, 40],
         compensation: {
           contributionId: 1,
           compensationPerAttribute: [
@@ -41,7 +44,7 @@ Default.args = {
               averageRating: 0,
               nativeTokens: [
                 {
-                  denom: 'ujuno',
+                  denomOrAddress: 'ujuno',
                   amount: '0',
                 },
               ],
@@ -51,7 +54,7 @@ Default.args = {
               averageRating: 30,
               nativeTokens: [
                 {
-                  denom: 'ujuno',
+                  denomOrAddress: 'ujuno',
                   amount: '10000000000',
                 },
               ],
@@ -68,6 +71,7 @@ Default.args = {
         },
         content:
           "i did absolutely nothing but i expect money because i'm around",
+        ratings: [20, 40],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         compensation: {
@@ -77,7 +81,7 @@ Default.args = {
               averageRating: 100,
               nativeTokens: [
                 {
-                  denom: 'ujuno',
+                  denomOrAddress: 'ujuno',
                   amount: '15000000000',
                 },
               ],
@@ -87,7 +91,7 @@ Default.args = {
               averageRating: 75,
               nativeTokens: [
                 {
-                  denom: 'ujuno',
+                  denomOrAddress: 'ujuno',
                   amount: '25000000000',
                 },
               ],
@@ -136,24 +140,23 @@ Default.args = {
   onComplete: async (data) => alert('complete: ' + JSON.stringify(data)),
   loading: false,
   EntityDisplay,
-  cw20TokenInfos: [
+  tokenPrices: [
     {
-      address: 'usdc',
-      name: 'USDC',
-      symbol: 'USDC',
-      decimals: 6,
-      total_supply: '1000000000000000',
-    },
-  ],
-  prices: [
-    {
-      denom: 'ujuno',
-      amount: 1,
+      token: {
+        type: TokenType.Cw20,
+        denomOrAddress: 'dao',
+        symbol: 'DAO',
+        decimals: 6,
+        imageUrl: '/daodao.png',
+      },
+      usdPrice: 1,
       timestamp: new Date(),
     },
     {
-      denom: 'usdc',
-      amount: 1,
+      token: {
+        ...NATIVE_TOKEN,
+      },
+      usdPrice: 1,
       timestamp: new Date(),
     },
   ],

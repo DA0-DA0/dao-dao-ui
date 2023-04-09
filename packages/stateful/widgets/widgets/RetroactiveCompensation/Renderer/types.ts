@@ -55,6 +55,7 @@ export interface NewSurveyFormData
 export interface Status {
   survey: Survey
   contribution: string | null
+  contributionSelfRatings: (number | null)[] | null
   rated: boolean
 }
 
@@ -86,6 +87,7 @@ export interface ContributionResponse {
   id: number
   contributor: string
   content: string
+  ratings: (number | null)[] | null
   createdAt: string
   updatedAt: string
 }
@@ -117,8 +119,8 @@ export interface ContributionCompensation {
   contributionId: number
   compensationPerAttribute: {
     averageRating: number
-    nativeTokens: NativeToken[]
-    cw20Tokens: Cw20Token[]
+    nativeTokens: AnyToken[]
+    cw20Tokens: AnyToken[]
   }[]
 }
 

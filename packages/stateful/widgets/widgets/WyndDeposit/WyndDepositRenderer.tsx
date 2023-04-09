@@ -12,6 +12,7 @@ import {
   waitForAll,
 } from 'recoil'
 
+import { genericTokenBalancesSelector } from '@dao-dao/state'
 import {
   WyndexMultiHopSelectors,
   genericTokenSelector,
@@ -49,7 +50,6 @@ import {
 
 import { EntityDisplay } from '../../../components'
 import { useLoadingWyndReferralCommission } from '../../../hooks'
-import { genericTokenBalancesSelector } from '../../../recoil'
 import { WyndDepositData } from './types'
 
 export const WyndDepositRenderer = ({

@@ -114,15 +114,36 @@ export const MintNft: ActionComponent = (props) => {
       // Ensure the collection is not already in the DAO.
       daoCollections.state === 'hasValue' &&
       daoCollections.contents &&
-      !daoCollections.contents.includes(collectionAddress) &&
-      // Ensure no action already exists to add this collection.
-      !props.allActionsWithData.some(
-        ({ actionKey, data }) =>
-          actionKey === ActionKey.ManageCw721 &&
-          data.address === collectionAddress &&
-          data.adding
-      )
+      !daoCollections.contents.includes(collectionAddress)
     ) {
+      setAdded(true)
+
+      // Ensure no action already exists to add this collection.
+      if (
+        props.allActionsWithData.some(
+          ({ actionKey, data }) =>
+            actionKey === ActionKey.ManageCw721 &&
+            data.address === collectionAddress &&
+            data.adding
+        )
+      ) {
+        return
+      }
+
+      // Only add the action if we are the first mint action for this
+      // collection. On a bulk import, this prevents every mint action from
+      // adding the collection.
+      if (
+        props.allActionsWithData.findIndex(
+          ({ actionKey, data }) =>
+            actionKey === ActionKey.MintNft &&
+            data &&
+            data.collectionAddress === collectionAddress
+        ) !== props.index
+      ) {
+        return
+      }
+
       props.addAction({
         actionKey: ActionKey.ManageCw721,
         data: {
@@ -130,7 +151,6 @@ export const MintNft: ActionComponent = (props) => {
           address: collectionAddress,
         },
       })
-      setAdded(true)
     }
   }, [
     added,
