@@ -12,6 +12,7 @@ export const SegmentedControls = <T extends unknown>({
   loading,
   className,
   disabled,
+  noWrap,
 }: SegmentedControlsProps<T>) => {
   const [hovering, setHovering] = useState<number>()
 
@@ -22,6 +23,7 @@ export const SegmentedControls = <T extends unknown>({
       className={clsx(
         'group grid auto-cols-fr grid-flow-col rounded-md bg-background-tertiary',
         disabled && 'pointer-events-none',
+        noWrap && 'w-max',
         className
       )}
       onMouseLeave={() => setHovering(undefined)}
@@ -77,12 +79,13 @@ export const SegmentedControls = <T extends unknown>({
               className={clsx(
                 // Render transparent background so the sliding indicator can
                 // show through underneath.
-                'relative flex h-full w-full items-center justify-center !bg-transparent !px-4 whitespace-nowrap',
+                'relative flex h-full w-full items-center justify-center !bg-transparent !px-4',
                 selected === value || hovering === index
                   ? // Brighten text when selected or hovering over this tab.
                     '!text-text-body'
                   : // Dim text when not selected and not hovering over this tab.
-                    '!text-text-secondary'
+                    '!text-text-secondary',
+                noWrap && 'whitespace-nowrap'
               )}
               loading={loading === value}
               onClick={() => onSelect(value)}

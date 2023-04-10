@@ -7,4 +7,5 @@ export type SegmentedControlsProps<T extends unknown> = {
   loading?: T
   className?: string
   disabled?: boolean
+  noWrap?: boolean
 }

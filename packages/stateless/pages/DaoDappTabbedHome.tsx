@@ -103,7 +103,7 @@ export const DaoDappTabbedHome = ({
 
         <div className="overflow-x-auto border-t border-border-base pt-6 pb-4">
           <SegmentedControls
-            className="w-max"
+            noWrap
             onSelect={setSelectedTab}
             selected={selectedTab}
             tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
