@@ -24,6 +24,7 @@ import {
   STARGAZE_TESTNET_REST_ENDPOINT,
   STARGAZE_TESTNET_RPC_ENDPOINT,
   WC_ICON_PATH,
+  typesRegistry,
 } from '@dao-dao/utils'
 
 // Assert environment variable CHAIN_ID is a valid chain.
@@ -90,11 +91,13 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         gasPrice: GasPrice.fromString(
           '0.0025' + chainInfo.feeCurrencies[0].coinMinimalDenom
         ),
+        registry: typesRegistry,
       })}
       getSigningStargateClientOptions={(chainInfo) => ({
         gasPrice: GasPrice.fromString(
           '0.0025' + chainInfo.feeCurrencies[0].coinMinimalDenom
         ),
+        registry: typesRegistry,
       })}
       localStorageKey="connectedWalletId"
       preselectedWalletType={
