@@ -11,6 +11,10 @@ export const EmojiWrapper = ({ labelI18nKey, emoji }: EmojiWrapperProps) => {
   return <Emoji label={t(labelI18nKey)} symbol={emoji} />
 }
 
+export const GasEmoji = () => (
+  <EmojiWrapper emoji="⛽" labelI18nKey="emoji.gas" />
+)
+
 export const KeyEmoji = () => (
   <EmojiWrapper emoji="🔑" labelI18nKey="emoji.key" />
 )
