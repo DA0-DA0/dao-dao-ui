@@ -12,6 +12,8 @@ import { AddressInputProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { validateAddress, validateContractAddress } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../react'
+
 export enum FeeShareType {
   Register = '/juno.feeshare.v1.MsgRegisterFeeShare',
   Update = '/juno.feeshare.v1.MsgUpdateFeeShare',
@@ -35,6 +37,7 @@ export const FeeShareComponent: ActionComponent<FeeShareOptions> = ({
   options: { AddressInput },
 }) => {
   const { t } = useTranslation()
+  const { context } = useActionOptions()
   const { register, setValue, watch } = useFormContext<FeeShareData>()
 
   const showWithdrawer = watch(
@@ -80,7 +83,7 @@ export const FeeShareComponent: ActionComponent<FeeShareOptions> = ({
         <div className="flex flex-col items-stretch gap-1">
           <InputLabel
             name={t('form.feeShareWithdrawerAddress')}
-            tooltip={t('form.feeShareWithdrawerAddressDescription')}
+            tooltip={t('form.feeShareWithdrawerAddressTooltip')}
           />
           <AddressInput
             disabled={!isCreating}
@@ -100,7 +103,9 @@ export const FeeShareComponent: ActionComponent<FeeShareOptions> = ({
         readOnly={!isCreating}
         setValue={setValue}
         sizing="sm"
-        tooltip={t('form.feeShareToggleWithdrawerAddressDescription')}
+        tooltip={t('form.feeShareToggleWithdrawerAddressTooltip', {
+          context: context.type,
+        })}
         tooltipIconSize="sm"
         value={watch((fieldNamePrefix + 'showWithdrawer') as 'showWithdrawer')}
       />
