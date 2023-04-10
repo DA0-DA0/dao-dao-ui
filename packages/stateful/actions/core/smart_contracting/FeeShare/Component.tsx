@@ -5,7 +5,7 @@ import {
   FormSwitchCard,
   InputErrorMessage,
   InputLabel,
-  SegmentedControls,
+  SegmentedControlsTitle,
   TextInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -29,17 +29,18 @@ export const FeeShareComponent: ActionComponent = ({
   isCreating,
 }) => {
   const { t } = useTranslation()
-  const { register, setValue, watch } = useFormContext()
+  const { register, setValue, watch } = useFormContext<FeeShareData>()
 
-  const showWithdrawer = watch(fieldNamePrefix + 'showWithdrawer')
-  const typeUrl = watch(fieldNamePrefix + 'typeUrl')
+  const showWithdrawer = watch(
+    (fieldNamePrefix + 'showWithdrawer') as 'showWithdrawer'
+  )
 
   return (
     <>
       <div className="flex flex-col items-stretch gap-1">
-        <SegmentedControls<string>
-          onSelect={(value) => setValue(fieldNamePrefix + 'typeUrl', value)}
-          selected={typeUrl}
+        <SegmentedControlsTitle
+          editable={isCreating}
+          fieldName={(fieldNamePrefix + 'typeUrl') as 'typeUrl'}
           tabs={[
             {
               label: t('info.register'),
@@ -61,10 +62,10 @@ export const FeeShareComponent: ActionComponent = ({
         <TextInput
           disabled={!isCreating}
           error={errors?.contract}
-          fieldName={fieldNamePrefix + 'contract'}
+          fieldName={(fieldNamePrefix + 'contract') as 'contract'}
           placeholder={!isCreating ? t('info.none') : undefined}
           register={register}
-          validation={[(v: string) => validateContractAddress(v, false)]}
+          validation={[(v) => validateContractAddress(v, false)]}
         />
         <InputErrorMessage error={errors?.contract} />
       </div>
@@ -78,13 +79,10 @@ export const FeeShareComponent: ActionComponent = ({
           <TextInput
             disabled={!isCreating}
             error={errors?.withdrawer}
-            fieldName={fieldNamePrefix + 'withdrawer'}
+            fieldName={(fieldNamePrefix + 'withdrawer') as 'withdrawer'}
             placeholder={!isCreating ? t('info.none') : undefined}
             register={register}
-            validation={[
-              (v: string) =>
-                validateAddress(v) || validateContractAddress(v, false),
-            ]}
+            validation={[(v) => validateAddress(v, false)]}
           />
           <InputErrorMessage error={errors?.contract} />
         </div>
@@ -92,19 +90,14 @@ export const FeeShareComponent: ActionComponent = ({
 
       <FormSwitchCard
         containerClassName="self-start"
-        fieldName={fieldNamePrefix + 'showWithdrawer'}
+        fieldName={(fieldNamePrefix + 'showWithdrawer') as 'showWithdrawer'}
         label={t('form.feeShareToggleWithdrawerAddress')}
-        onToggle={
-          // Set message type URL back to delegate if custom is disabled.
-          (showWithdrawer) =>
-            setValue(fieldNamePrefix + 'showWithdrawer', showWithdrawer)
-        }
         readOnly={!isCreating}
         setValue={setValue}
         sizing="sm"
         tooltip={t('form.feeShareToggleWithdrawerAddressDescription')}
         tooltipIconSize="sm"
-        value={watch(fieldNamePrefix + 'showWithdrawer')}
+        value={watch((fieldNamePrefix + 'showWithdrawer') as 'showWithdrawer')}
       />
     </>
   )
