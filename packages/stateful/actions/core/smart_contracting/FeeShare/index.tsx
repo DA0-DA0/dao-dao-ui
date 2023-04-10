@@ -2,6 +2,7 @@ import { useCallback, useMemo } from 'react'
 
 import { GasEmoji } from '@dao-dao/stateless'
 import {
+  ActionComponent,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
@@ -10,11 +11,8 @@ import {
 } from '@dao-dao/types/actions'
 import { isDecodedStargateMsg, makeStargateMessage } from '@dao-dao/utils'
 
-import {
-  FeeShareComponent as Component,
-  FeeShareData,
-  FeeShareType,
-} from './Component'
+import { AddressInput } from '../../../../components/AddressInput'
+import { FeeShareComponent, FeeShareData, FeeShareType } from './Component'
 
 const useDefaults: UseDefaults<FeeShareData> = () => ({
   typeUrl: FeeShareType.Register,
@@ -22,6 +20,15 @@ const useDefaults: UseDefaults<FeeShareData> = () => ({
   showWithdrawer: false,
   withdrawer: '',
 })
+
+const Component: ActionComponent = (props) => (
+  <FeeShareComponent
+    {...props}
+    options={{
+      AddressInput,
+    }}
+  />
+)
 
 export const makeFeeShareAction: ActionMaker<FeeShareData> = ({
   t,
@@ -46,9 +53,9 @@ export const makeFeeShareAction: ActionMaker<FeeShareData> = ({
       return {
         match: true,
         data: {
+          typeUrl: msg.stargate.typeUrl,
           contract: contractAddress,
           showWithdrawer: withdrawerAddress !== address,
-          typeUrl: msg.stargate.typeUrl,
           withdrawer: withdrawerAddress,
         },
       }

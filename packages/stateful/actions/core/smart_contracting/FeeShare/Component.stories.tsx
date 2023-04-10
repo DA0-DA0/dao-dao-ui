@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
 
+import { AddressInput } from '../../../../components/AddressInput'
 import { FeeShareComponent, FeeShareData, FeeShareType } from './Component'
 
 export default {
@@ -30,4 +31,7 @@ Default.args = {
   data: {},
   isCreating: true,
   errors: {},
+  options: {
+    AddressInput,
+  },
 }

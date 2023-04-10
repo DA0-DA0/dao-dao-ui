@@ -1,3 +1,4 @@
+import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -6,8 +7,8 @@ import {
   InputErrorMessage,
   InputLabel,
   SegmentedControlsTitle,
-  TextInput,
 } from '@dao-dao/stateless'
+import { AddressInputProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { validateAddress, validateContractAddress } from '@dao-dao/utils'
 
@@ -17,16 +18,21 @@ export enum FeeShareType {
 }
 
 export type FeeShareData = {
+  typeUrl: FeeShareType
   contract: string
   showWithdrawer: boolean
-  typeUrl: FeeShareType
   withdrawer?: string
 }
 
-export const FeeShareComponent: ActionComponent = ({
+export type FeeShareOptions = {
+  AddressInput: ComponentType<AddressInputProps<FeeShareData>>
+}
+
+export const FeeShareComponent: ActionComponent<FeeShareOptions> = ({
   fieldNamePrefix,
   errors,
   isCreating,
+  options: { AddressInput },
 }) => {
   const { t } = useTranslation()
   const { register, setValue, watch } = useFormContext<FeeShareData>()
@@ -59,12 +65,12 @@ export const FeeShareComponent: ActionComponent = ({
           name={t('form.smartContractAddress')}
           tooltip={t('form.feeShareContractAddressDescription')}
         />
-        <TextInput
+        <AddressInput
           disabled={!isCreating}
           error={errors?.contract}
           fieldName={(fieldNamePrefix + 'contract') as 'contract'}
-          placeholder={!isCreating ? t('info.none') : undefined}
           register={register}
+          type="contract"
           validation={[(v) => validateContractAddress(v, false)]}
         />
         <InputErrorMessage error={errors?.contract} />
@@ -76,15 +82,14 @@ export const FeeShareComponent: ActionComponent = ({
             name={t('form.feeShareWithdrawerAddress')}
             tooltip={t('form.feeShareWithdrawerAddressDescription')}
           />
-          <TextInput
+          <AddressInput
             disabled={!isCreating}
             error={errors?.withdrawer}
             fieldName={(fieldNamePrefix + 'withdrawer') as 'withdrawer'}
-            placeholder={!isCreating ? t('info.none') : undefined}
             register={register}
             validation={[(v) => validateAddress(v, false)]}
           />
-          <InputErrorMessage error={errors?.contract} />
+          <InputErrorMessage error={errors?.withdrawer} />
         </div>
       )}
 
