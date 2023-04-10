@@ -24,6 +24,7 @@ env:
   NEXT_PUBLIC_AIRDROP_URL: NEXT_PUBLIC_AIRDROP_URL
   NEXT_PUBLIC_SEARCH_URL: NEXT_PUBLIC_SEARCH_URL
   NEXT_PUBLIC_SEARCH_API_KEY: NEXT_PUBLIC_SEARCH_API_KEY
+  NODE_OPTIONS: --max_old_space_size=4096
 jobs:
   ci:
     name: Lint, Build, & Upload
@@ -36,5 +37,4 @@ jobs:
           cache: 'yarn'
       - run: yarn install
       - run: yarn lint
-      - run: yarn dapp build
-      - run: yarn sda build
+      - run: yarn build
