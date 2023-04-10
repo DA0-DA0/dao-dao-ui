@@ -19,6 +19,7 @@ import {
 import {
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
+  ME_SAVED_TX_PREFIX,
   NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
@@ -28,8 +29,6 @@ import {
   walletStakedNftCardInfosSelector,
   walletStargazeNftCardInfosSelector,
 } from './nft'
-
-export const SAVED_TX_PREFIX = 'savedTx:'
 
 // This doesn't update right away due to Cloudflare KV Store latency, so this
 // serves to keep track of all successful updates for the current session. This
@@ -57,7 +56,7 @@ export const savedTxsSelector = selectorFamily<MeTransactionSave[], string>({
       const temporary = get(temporarySavedTxsAtom(walletPublicKey))
 
       const response = await fetch(
-        KVPK_API_BASE + `/list/${walletPublicKey}/${SAVED_TX_PREFIX}`
+        KVPK_API_BASE + `/list/${walletPublicKey}/${ME_SAVED_TX_PREFIX}`
       )
 
       if (response.ok) {

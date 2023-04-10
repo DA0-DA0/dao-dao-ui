@@ -48,6 +48,7 @@ export enum ActionKey {
   DaoAdminExec = 'daoAdminExec',
   EnableMultipleChoice = 'enableMultipleChoice',
   ManageWidgets = 'manageWidgets',
+  FeeShare = 'feeShare',
   ManageMembers = 'manageMembers',
   Mint = 'mint',
   ManageVesting = 'manageVesting',
