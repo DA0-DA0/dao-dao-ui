@@ -101,8 +101,25 @@ export const DaoDappTabbedHome = ({
           follow={follow}
         />
 
-        <div className="overflow-x-auto border-t border-border-base pt-6 pb-4">
+        <div className="h-[1px] bg-border-base" />
+
+        <div className="-mx-6 overflow-x-auto px-6 pt-6 pb-4">
           <SegmentedControls
+            className="hidden lg:grid"
+            moreTabs={
+              tabs.length > 4
+                ? tabs.slice(4).map(({ id, label }) => ({ label, value: id }))
+                : undefined
+            }
+            onSelect={setSelectedTab}
+            selected={selectedTab}
+            tabs={tabs
+              .slice(0, 4)
+              .map(({ id, label }) => ({ label, value: id }))}
+          />
+
+          <SegmentedControls
+            className="lg:hidden"
             noWrap
             onSelect={setSelectedTab}
             selected={selectedTab}
