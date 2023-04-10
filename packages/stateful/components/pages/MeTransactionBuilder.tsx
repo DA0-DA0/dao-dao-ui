@@ -10,7 +10,6 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import { meTransactionAtom, refreshSavedTxsAtom } from '@dao-dao/state'
 import {
-  SAVED_TX_PREFIX,
   SuspenseLoader,
   savedTxsSelector,
   temporarySavedTxsAtom,
@@ -28,6 +27,7 @@ import {
 } from '@dao-dao/types'
 import {
   KVPK_API_BASE,
+  ME_SAVED_TX_PREFIX,
   cwMsgToEncodeObject,
   processError,
 } from '@dao-dao/utils'
@@ -155,7 +155,7 @@ export const MeTransactionBuilder = () => {
         )
       )
 
-      const key = SAVED_TX_PREFIX + nameHash
+      const key = ME_SAVED_TX_PREFIX + nameHash
       await postTxSavesRequest('/set', {
         key,
         value: save,
@@ -193,7 +193,7 @@ export const MeTransactionBuilder = () => {
         )
       )
 
-      const key = SAVED_TX_PREFIX + nameHash
+      const key = ME_SAVED_TX_PREFIX + nameHash
       await postTxSavesRequest('/set', {
         key,
         value: null,

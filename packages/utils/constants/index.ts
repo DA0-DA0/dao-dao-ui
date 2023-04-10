@@ -59,6 +59,9 @@ export const CHAIN_BECH32_PREFIX = process.env
 export const DAO_DAO_DAO_ADDRESS = process.env
   .NEXT_PUBLIC_DAO_DAO_DAO_ADDRESS as string
 
+// KVPK prefix for saved Me page transactions.
+export const ME_SAVED_TX_PREFIX = `${CHAIN_ID}:savedTx:`
+
 export const STARGAZE_TESTNET_CHAIN_ID = 'elgafar-1'
 export const STARGAZE_TESTNET_RPC_ENDPOINT =
   'https://rpc.elgafar-1.stargaze-apis.com:443'
