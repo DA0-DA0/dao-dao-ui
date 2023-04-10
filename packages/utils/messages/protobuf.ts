@@ -39,6 +39,7 @@ import {
 import { Any } from 'cosmjs-types/google/protobuf/any'
 import { Timestamp } from 'cosmjs-types/google/protobuf/timestamp'
 import { cosmos } from 'interchain-rpc'
+import { juno } from 'juno-network'
 import Long from 'long'
 
 import {
@@ -452,6 +453,11 @@ export const typesRegistry = new Registry([
       '/cosmwasm.wasm.v1.ContractMigrationAuthorization',
       ContractMigrationAuthorization,
     ],
+    [
+      '/juno.feeshare.v1.MsgRegisterFeeShare',
+      juno.feeshare.v1.MsgRegisterFeeShare,
+    ],
+    ['/juno.feeshare.v1.MsgUpdateFeeShare', juno.feeshare.v1.MsgUpdateFeeShare],
   ] as ReadonlyArray<[string, GeneratedType]>),
 ])
 
