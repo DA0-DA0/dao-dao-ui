@@ -36,4 +36,5 @@ jobs:
           cache: 'yarn'
       - run: yarn install
       - run: yarn lint
-      - run: yarn build --concurrency 1
+      - run: yarn dapp build
+      - run: yarn sda build
