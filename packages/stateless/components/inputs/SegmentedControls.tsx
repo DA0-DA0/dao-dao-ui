@@ -32,7 +32,7 @@ export const SegmentedControls = <T extends unknown>({
           {index > 0 && (
             <div
               className={clsx(
-                'h-4 w-[1px] self-center bg-border-primary opacity-100',
+                'h-4 w-[1px] shrink-0 self-center bg-border-primary opacity-100',
                 {
                   // Emphasize left border when...
                   '!bg-border-interactive-hover':

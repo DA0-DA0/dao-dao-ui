@@ -1,1 +1,1 @@
-export * from './makeManageMembersAction'
+export * from './ManageMembers'

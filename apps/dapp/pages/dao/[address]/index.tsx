@@ -29,7 +29,7 @@ import {
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { CoreActionKey, DaoPageMode } from '@dao-dao/types'
+import { ActionKey, DaoPageMode, WidgetLocation } from '@dao-dao/types'
 import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const InnerDaoHome = () => {
@@ -51,7 +51,9 @@ const InnerDaoHome = () => {
         })
       : constSelector(undefined)
   )
-  const manageSubDaosAction = useActionForKey(CoreActionKey.ManageSubDaos)
+
+  // Check if action exists, since v1 DAOs do not have this action.
+  const manageSubDaosAction = useActionForKey(ActionKey.ManageSubDaos)
   // Prefill URL only valid if action exists.
   const prefillValid = !!manageSubDaosAction
   const addSubDaoProposalPrefill = useDaoProposalSinglePrefill(
@@ -65,7 +67,7 @@ const InnerDaoHome = () => {
           }),
           actions: [
             {
-              action: manageSubDaosAction,
+              actionKey: manageSubDaosAction.action.key,
               data: {
                 toAdd: [
                   {
@@ -147,6 +149,8 @@ const InnerDaoHome = () => {
     // Load widgets before rendering so that home is selected if there are
     // widgets.
     suspendWhileLoading: true,
+    // Only load home widgets.
+    location: WidgetLocation.Home,
   })
   const tabs = useDaoTabs({
     includeHome:

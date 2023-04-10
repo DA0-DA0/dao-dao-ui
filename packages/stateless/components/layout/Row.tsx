@@ -10,7 +10,7 @@ import { Loader } from '../logo/Loader'
 import { Tooltip } from '../tooltip/Tooltip'
 
 export const Row = ({
-  Icon,
+  Icon: _Icon,
   label,
   expandedLocalStorageKey,
   showBadge,
@@ -43,6 +43,7 @@ export const Row = ({
     }
   }, [expanded, expandedLocalStorageKey, forceExpanded])
 
+  const Icon = _Icon || ((props) => <div {...props} style={{ content: ' ' }} />)
   const ExpandButton = expanded ? UnfoldLess : UnfoldMore
 
   return compact ? (

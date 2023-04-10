@@ -13,9 +13,7 @@ import { isValidUrl } from '../isValidUrl'
 
 export * from './makeValidateMsg'
 
-export const validateRequired = (
-  v: string | number | boolean | null | undefined
-) => {
+export const validateRequired = (v: any) => {
   if (typeof v === 'string') {
     return v.trim().length !== 0 || 'Field is required'
   }
@@ -33,9 +31,9 @@ export const validatePercent = (v: string | number) => {
   return (!isNaN(p) && p <= 100 && p >= 0) || 'Invalid percentage'
 }
 
-export const validateAddress = (v: string, required = true) =>
+export const validateAddress = (v: any, required = true) =>
   (!required && !v) ||
-  (v && isValidAddress(v, CHAIN_BECH32_PREFIX)) ||
+  (v && typeof v === 'string' && isValidAddress(v, CHAIN_BECH32_PREFIX)) ||
   'Invalid address'
 
 export const validateValidatorAddress = (v: string) =>
@@ -54,12 +52,11 @@ export const makeValidateDate =
     (v && !isNaN(Date.parse(v))) ||
     t(time ? 'error.invalidDateTime' : 'error.invalidDate')
 
-export const validateContractAddress = (
-  v: string | undefined,
-  required = true
-) =>
+export const validateContractAddress = (v: any, required = true) =>
   (!required && !v) ||
-  (v && isValidContractAddress(v, CHAIN_BECH32_PREFIX)) ||
+  (v &&
+    typeof v === 'string' &&
+    isValidContractAddress(v, CHAIN_BECH32_PREFIX)) ||
   'Invalid contract address'
 
 export const validateJSON = (v: string) => {

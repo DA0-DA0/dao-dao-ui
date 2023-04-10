@@ -20,6 +20,7 @@ import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwC
 import {
   Config,
   ConfigResponse as ConfigV2Response,
+  ListItemsResponse,
   ProposalModuleWithInfo,
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
@@ -145,6 +146,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         activeProposalModules,
         created,
         parentDao,
+        items: _items,
       } = await daoCoreDumpState(chainId, bech32Prefix, coreAddress, serverT)
       coreVersion = version
 
@@ -161,6 +163,15 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         coreAddress,
         coreVersion,
         activeProposalModules
+      )
+
+      // Convert items list into map.
+      const items = _items.reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: value,
+        }),
+        {} as Record<string, string>
       )
 
       // Must be called after server side translations has been awaited, because
@@ -225,6 +236,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           description: config.description,
           imageUrl: overrideImageUrl ?? config.image_url ?? null,
           created: created?.toJSON() ?? null,
+          items,
           parentDao,
         },
         ...additionalProps,
@@ -461,6 +473,7 @@ const loadParentDaoInfo = async (
 }
 
 const LEGACY_DAO_CONTRACT_NAMES = ['crates.io:sg_dao', 'crates.io:cw3_dao']
+const ITEM_LIST_LIMIT = 30
 
 interface DaoCoreDumpState {
   admin: string
@@ -473,6 +486,7 @@ interface DaoCoreDumpState {
   activeProposalModules: ProposalModuleWithInfo[]
   created: Date | undefined
   parentDao: DaoParentInfo | null
+  items: ListItemsResponse
 }
 
 const daoCoreDumpState = async (
@@ -505,6 +519,13 @@ const daoCoreDumpState = async (
         throw new Error(serverT('error.failedParsingCoreVersion'))
       }
 
+      const items =
+        (await queryIndexer<ListItemsResponse>(
+          'contract',
+          coreAddress,
+          'daoCore/listItems'
+        )) ?? []
+
       const parentDaoInfo = await loadParentDaoInfo(
         chainId,
         bech32Prefix,
@@ -527,6 +548,7 @@ const daoCoreDumpState = async (
         created: indexerDumpedState.createdAt
           ? new Date(indexerDumpedState.createdAt)
           : undefined,
+        items,
         parentDao: parentDaoInfo
           ? {
               ...parentDaoInfo,
@@ -571,6 +593,25 @@ const daoCoreDumpState = async (
     coreAddress,
     coreVersion
   )
+
+  // Get all items.
+  const items: ListItemsResponse = []
+  while (true) {
+    const _items = await daoCoreClient.listItems({
+      startAfter: items[items.length - 1]?.[0],
+      limit: ITEM_LIST_LIMIT,
+    })
+    if (!_items.length) {
+      break
+    }
+
+    items.push(..._items)
+
+    // If we got less than the limit, we've reached the end.
+    if (_items.length < ITEM_LIST_LIMIT) {
+      break
+    }
+  }
 
   const parentDao = await loadParentDaoInfo(
     chainId,
@@ -620,6 +661,7 @@ const daoCoreDumpState = async (
       ({ status }) => status === 'enabled' || status === 'Enabled'
     ),
     created: undefined,
+    items,
     parentDao: parentDao
       ? {
           ...parentDao,

@@ -1,7 +1,11 @@
 import { ComponentType, ReactNode } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
-import { Action, ActionKeyAndData, LoadedActions } from './actions'
+import {
+  ActionCategoryWithLabel,
+  LoadedActions,
+  PartialCategorizedActionKeyAndData,
+} from './actions'
 import { CosmosMsgFor_Empty } from './contracts'
 import { NftCardInfo } from './dao'
 import { WalletProfileData } from './profile'
@@ -9,7 +13,7 @@ import { LoadingData, SuspenseLoaderProps } from './stateless'
 import { TokenCardInfo } from './token'
 
 export type MeTransactionForm = {
-  actions: ActionKeyAndData[]
+  actions: PartialCategorizedActionKeyAndData[]
 }
 
 export type MeTransactionSave = MeTransactionForm & {
@@ -39,7 +43,7 @@ export type MeProps = {
 }
 
 export type MeTransactionBuilderProps = {
-  actions: Action[]
+  categories: ActionCategoryWithLabel[]
   loadedActions: LoadedActions
   formMethods: UseFormReturn<MeTransactionForm, object>
   execute: (messages: CosmosMsgFor_Empty[]) => Promise<void>

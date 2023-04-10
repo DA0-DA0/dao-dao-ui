@@ -1,6 +1,10 @@
-import { AnalyticsOutlined } from '@mui/icons-material'
+import {
+  AnalyticsOutlined,
+  InfoOutlined,
+  WarningRounded,
+} from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, Fragment, useState } from 'react'
+import { ComponentType, Fragment, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ProposalVoteOption } from '@dao-dao/types'
@@ -28,7 +32,13 @@ export interface ProposalStatusAndInfoProps<Vote extends unknown = unknown> {
     currentVote?: Vote
     onCastVote: (vote: Vote) => void | Promise<void>
     options: ProposalVoteOption<Vote>[]
+    // Whether or not the proposal is still open. If not, and voting is still
+    // allowed, explain that the user can vote up until expiration.
+    proposalOpen: boolean
   }
+  // Whether or not the user has viewed all action pages. If they haven't, they
+  // can't vote.
+  seenAllActionPages?: boolean
   className?: string
 }
 
@@ -38,6 +48,8 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
   inline = false,
   action,
   vote,
+  // If undefined, assume the user has seen all action pages.
+  seenAllActionPages = true,
   className,
 }: ProposalStatusAndInfoProps<Vote>) => {
   const { t } = useTranslation()
@@ -53,6 +65,18 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
   // allowed, and the current vote selected is the same vote as before.
   const currentVoteSelected =
     !!currentVote && selectedVote === currentVote.value
+
+  // Give actions a few seconds to render before showing unseen action pages
+  // warning. Actions take a moment to load state, match, and group accordingly,
+  // so the pages are not immediately available.
+  const [showUnseenActionPagesWarning, setShowUnseenActionPagesWarning] =
+    useState(false)
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setShowUnseenActionPagesWarning(true)
+    }, 1000)
+    return () => clearTimeout(timeout)
+  }, [])
 
   return (
     <div
@@ -119,29 +143,60 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
       {vote && (
         <div
           className={clsx(
-            'flex flex-col items-stretch gap-1 border-t border-border-secondary',
+            'flex flex-col border-t border-border-secondary',
             inline ? 'p-6' : 'pt-8'
           )}
         >
-          {vote.options.map((option, index) => (
-            <ProposalVoteButton
-              key={index}
-              disabled={vote.loading}
-              onClick={() => setSelectedVote(option.value)}
-              option={option}
-              pressed={option.value === selectedVote}
-            />
-          ))}
+          {/* If has not seen all action pages, and has not yet cast a vote, show warning. */}
+          {showUnseenActionPagesWarning &&
+            !seenAllActionPages &&
+            !vote.currentVote && (
+              <div className="mb-4 flex animate-fade-in flex-row items-center gap-3 rounded-md bg-background-secondary p-4">
+                <WarningRounded className="!h-10 !w-10 text-icon-interactive-warning" />
+
+                <p className="primary-text text-text-interactive-warning-body">
+                  {t('info.mustViewAllActionPagesBeforeVoting')}
+                </p>
+              </div>
+            )}
+
+          {/* If proposal no longer open but voting is allowed, explain why. */}
+          {!vote.proposalOpen && (
+            <div className="mb-4 flex flex-row items-center gap-3 rounded-md bg-background-tertiary p-4">
+              <InfoOutlined className="!h-6 !w-6 text-icon-secondary" />
+
+              <p className="secondary-text">
+                {t('info.voteUntilExpirationExplanation')}
+              </p>
+            </div>
+          )}
+
+          <div className="flex flex-col gap-1">
+            {vote.options.map((option, index) => (
+              <ProposalVoteButton
+                key={index}
+                disabled={vote.loading}
+                onClick={() => setSelectedVote(option.value)}
+                option={option}
+                pressed={option.value === selectedVote}
+              />
+            ))}
+          </div>
 
           <Button
-            className="mt-3"
-            contentContainerClassName={clsx('justify-center', {
-              'primary-text': !selectedVote,
-            })}
+            center
+            className="mt-4"
             disabled={
-              // Disable when no vote selected, or selected vote is already the
-              // current vote. This is possible when revoting is allowed.
-              !selectedVote || currentVoteSelected
+              // Disable when...
+              //
+              // ...no vote selected,
+              !selectedVote ||
+              // ...selected vote is already the current vote (possible when
+              // revoting is allowed),
+              currentVoteSelected ||
+              // ...or the user has not seen all action pages and has not yet
+              // voted.
+              (!seenAllActionPages && !vote.currentVote)
             }
             loading={vote.loading}
             onClick={() => selectedVote && vote.onCastVote(selectedVote)}

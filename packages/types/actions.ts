@@ -6,11 +6,21 @@ import { TFunction } from 'react-i18next'
 import { CosmosMsgFor_Empty } from './contracts/common'
 import { DaoInfo } from './dao'
 
-// Actions defined in the core actions system (@dao-dao/stateful/actions). These
-// are provided in the top-level ActionsProvider.
-export enum CoreActionKey {
+export enum ActionCategoryKey {
+  Authorizations = 'authorizations',
+  ChainGovernance = 'chainGovernance',
+  DaoAppearance = 'daoAppearance',
+  DaoGovernance = 'daoGovernance',
+  Custom = 'custom',
+  SmartContracting = 'smartContracting',
+  Treasury = 'treasury',
+  Nfts = 'nfts',
+}
+
+// TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
+export enum ActionKey {
   Spend = 'spend',
-  StakingActions = 'stakingActions',
+  ManageStaking = 'manageStaking',
   ManageCw20 = 'manageCw20',
   ManageCw721 = 'manageCw721',
   TransferNft = 'transferNft',
@@ -22,29 +32,26 @@ export enum CoreActionKey {
   Execute = 'execute',
   Migrate = 'migrate',
   UpdateAdmin = 'updateAdmin',
-  AuthzAuthorization = 'authzAuthorization',
+  AuthzGrantRevoke = 'authzGrantRevoke',
   AuthzExec = 'authzExec',
   ValidatorActions = 'validatorActions',
   Custom = 'custom',
+  BulkImport = 'bulkImport',
   PerformTokenSwap = 'performTokenSwap',
   WithdrawTokenSwap = 'withdrawTokenSwap',
   ManageStorageItems = 'manageStorageItems',
   GovernanceVote = 'governanceVote',
   UpgradeV1ToV2 = 'upgradeV1ToV2',
-  ManagePayroll = 'managePayroll',
-  ManageVesting = 'manageVesting',
+  EnableVestingPayments = 'enableVestingPayments',
+  EnableRetroactiveCompensation = 'enableRetroactiveCompensation',
   WyndSwap = 'wyndSwap',
   DaoAdminExec = 'daoAdminExec',
   EnableMultipleChoice = 'enableMultipleChoice',
   ManageWidgets = 'manageWidgets',
   FeeShare = 'feeShare',
-}
-
-// TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
-// Actions defined in voting or proposal module adapters.
-export enum AdapterActionKey {
   ManageMembers = 'manageMembers',
   Mint = 'mint',
+  ManageVesting = 'manageVesting',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',
@@ -53,36 +60,60 @@ export enum AdapterActionKey {
   UpdateProposalMultipleConfig = 'updateProposalMultipleConfig',
 }
 
-export type ActionKey = CoreActionKey | AdapterActionKey
-
-export interface ActionAndData {
+export type CategorizedActionAndData = {
+  category: ActionCategoryWithLabel
   action: Action
   data: any
 }
 
-export interface ActionKeyAndData {
-  key: ActionKey
+export type PartialCategorizedActionAndData = Partial<CategorizedActionAndData>
+
+export type CategorizedActionKeyAndData = {
+  // Add an ID field to prevent unnecessary re-renders when things move around.
+  // This should be handled by react-hook-form's `useFieldArray`, but it only
+  // works internally for that specific hook call, and we need to use it in many
+  // different components.
+  _id: string
+  categoryKey: ActionCategoryKey
+  actionKey: ActionKey
   data: any
+}
+
+export type PartialCategorizedActionKeyAndDataNoId = Partial<
+  Omit<CategorizedActionKeyAndData, '_id'>
+>
+
+export type PartialCategorizedActionKeyAndData =
+  PartialCategorizedActionKeyAndDataNoId &
+    Pick<CategorizedActionKeyAndData, '_id'>
+
+export type CategorizedAction = {
+  category: ActionCategoryWithLabel
+  action: Action
 }
 
 // A component which will render an action's input form.
 export type ActionComponentProps<O = undefined, D = any> = {
   fieldNamePrefix: string
-  allActionsWithData: ActionKeyAndData[]
+  allActionsWithData: PartialCategorizedActionKeyAndData[]
   index: number
   data: D
 } & (
   | {
       isCreating: true
-      onRemove: () => void
       errors: FieldErrors
-      addAction: (action: ActionKeyAndData) => void
+      // Adds a new action to the form.
+      addAction: (
+        action: Omit<PartialCategorizedActionKeyAndData, '_id'>
+      ) => void
+      // Removes this action from the form.
+      remove: () => void
     }
   | {
       isCreating: false
-      onRemove?: undefined
       errors?: undefined
       addAction?: undefined
+      remove?: undefined
     }
 ) &
   (O extends undefined ? {} : { options: O })
@@ -115,6 +146,8 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   Icon: ComponentType
   label: string
   description: string
+  // Optional keywords to improve search results.
+  keywords?: string[]
   Component: ActionComponent<Options, Data>
   // This determines if the action should be hidden from creation. If true, the
   // action will not be shown in the list of actions to create, but it will
@@ -122,12 +155,35 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   // show the upgrade actions while still allowing them to render in existing
   // proposals.
   disallowCreation?: boolean
+  // Whether or not this action is reusable. Defaults to false. If true, when
+  // editing the action, the add and remove button in the group will be removed,
+  // and the action will be hidden from future category picker selections. Some
+  // actions, like 'Spend', make sense to use multiple times, while others, like
+  // 'Update Info' or any configuration updater, should only be used once at a
+  // time. We should prevent users from adding multiple of these actions.
+  notReusable?: boolean
   // Hook to get default fields for form display.
   useDefaults: UseDefaults<Data>
   // Hook to make function to convert action data to CosmosMsgFor_Empty.
   useTransformToCosmos: UseTransformToCosmos<Data>
   // Hook to make function to convert decoded msg to form display fields.
   useDecodedCosmosMsg: UseDecodedCosmosMsg<Data>
+}
+
+export type ActionCategory = {
+  // If many categories exist with the same key, they will be merged. The first
+  // defined label and description will be used. This allows additional modules
+  // to add actions to the same category without changing any metadata.
+  key: ActionCategoryKey
+  label?: string
+  description?: string
+  // Optional keywords to improve search results.
+  keywords?: string[]
+  actions: Action[]
+}
+
+export type ActionCategoryWithLabel = Omit<ActionCategory, 'label'> & {
+  label: string
 }
 
 export enum ActionContextType {
@@ -158,11 +214,26 @@ export type ActionMaker<Data extends {} = any, ExtraOptions extends {} = {}> = (
   options: ActionOptions<ExtraOptions>
 ) => Action<Data> | null
 
+// A category maker can return null to indicate that the category should not be
+// included. It can also return either actions, action makers, or both. This is
+// convience to avoid every category maker needing the same boilerplate action
+// maker code. `actionMakers` will be made into actions and merged with
+// `actions`. If no actions exist after all are made, the category will be
+// ignored.
+export type ActionCategoryMaker<ExtraOptions extends {} = {}> = (
+  options: ActionOptions<ExtraOptions>
+) =>
+  | (Omit<ActionCategory, 'actions'> & {
+      actions?: Action[]
+      actionMakers?: ActionMaker[]
+    })
+  | null
+
 // React context/provider system for actions.
 
-export interface IActionsContext {
+export type IActionsContext = {
   options: ActionOptions
-  actions: Action[]
+  categories: ActionCategoryWithLabel[]
 }
 
 export type UseActionsOptions = {
@@ -173,6 +244,7 @@ export type UseActionsOptions = {
 }
 
 export type LoadedAction = {
+  category: ActionCategoryWithLabel
   action: Action
   transform: ReturnType<UseTransformToCosmos>
   defaults: ReturnType<UseDefaults>

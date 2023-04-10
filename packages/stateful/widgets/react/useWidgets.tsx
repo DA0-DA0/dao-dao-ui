@@ -1,6 +1,7 @@
 // External API
 
 import { ComponentType, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
@@ -9,6 +10,7 @@ import {
   DaoWidget,
   LoadingData,
   Widget,
+  WidgetLocation,
   WidgetVisibilityContext,
 } from '@dao-dao/types'
 import { DAO_WIDGET_ITEM_NAMESPACE } from '@dao-dao/utils'
@@ -20,9 +22,12 @@ type UseWidgetsOptions = {
   // If true, will suspend while loading. Otherwise, will start off as loading
   // but not suspend the UI.
   suspendWhileLoading?: boolean
+  // If passed, will only return the widgets in this location.
+  location?: WidgetLocation
 }
 
 type LoadedWidget = {
+  title: string
   widget: Widget
   daoWidget: DaoWidget
   WidgetComponent: ComponentType
@@ -34,7 +39,9 @@ type UseWidgetsResult = LoadingData<LoadedWidget[]>
 // undefined.
 export const useWidgets = ({
   suspendWhileLoading = false,
+  location,
 }: UseWidgetsOptions = {}): UseWidgetsResult => {
+  const { t } = useTranslation()
   const { coreAddress, chainId } = useDaoInfoContext()
   const { isMember = false } = useMembership({
     coreAddress,
@@ -82,7 +89,8 @@ export const useWidgets = ({
       parsedWidgets
         .map((daoWidget): LoadedWidget | undefined => {
           const widget = getWidgetById(daoWidget.id)
-          if (!widget) {
+          // Enforce location filter.
+          if (!widget || (location && widget.location !== location)) {
             return
           }
 
@@ -102,10 +110,11 @@ export const useWidgets = ({
 
           // Fill component with loaded values.
           const WidgetComponent = () => (
-            <widget.Component variables={(daoWidget.values || {}) as any} />
+            <widget.Renderer variables={(daoWidget.values || {}) as any} />
           )
 
           return {
+            title: t('widgetTitle.' + widget.id),
             widget,
             daoWidget,
             WidgetComponent,
@@ -114,7 +123,7 @@ export const useWidgets = ({
         // Filter out any undefined widgets.
         .filter((widget): widget is LoadedWidget => !!widget)
     )
-  }, [widgetItemsLoadable, isMember])
+  }, [widgetItemsLoadable, isMember, t, location])
 
   return loadedWidgets
     ? {

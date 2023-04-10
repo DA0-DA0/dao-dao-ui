@@ -38,7 +38,9 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   // Following API doesn't update right away, so this serves to keep track of
   // all successful updates for the current session. This will be reset on page
   // refresh.
-  const setTemporary = useSetRecoilState(temporaryFollowingDaosAtom)
+  const setTemporary = useSetRecoilState(
+    temporaryFollowingDaosAtom(walletAddress ?? '')
+  )
 
   const followingDaosLoading = useCachedLoading(
     walletAddress

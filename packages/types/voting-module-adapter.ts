@@ -1,7 +1,7 @@
 import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 
-import { Action, ActionOptions } from './actions'
+import { ActionCategoryMaker } from './actions'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationGovernanceConfigInputProps,
@@ -28,7 +28,6 @@ export interface BaseStakingModalProps {
 export interface IVotingModuleAdapter {
   // Hooks
   hooks: {
-    useActions: (options: ActionOptions) => Action[]
     useDaoInfoBarItems: () => DaoInfoBarItem[]
     useProfileNewProposalCardAddresses: () => ProfileNewProposalCardAddress[]
     useCommonGovernanceTokenInfo?: () => GenericToken
@@ -41,6 +40,11 @@ export interface IVotingModuleAdapter {
     })[]
     ProfileCardMemberInfo: ComponentType<BaseProfileCardMemberInfoProps>
     StakingModal?: ComponentType<BaseStakingModalProps>
+  }
+
+  // Fields
+  fields: {
+    actionCategoryMakers: ActionCategoryMaker[]
   }
 }
 

@@ -4,7 +4,7 @@ import {
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
-import { ContractVersion, CoreActionKey } from '@dao-dao/types'
+import { ActionKey, ContractVersion } from '@dao-dao/types'
 
 import { useActionForKey } from '../../../actions'
 import { useDaoProposalSinglePrefill, useMembership } from '../../../hooks'
@@ -26,13 +26,13 @@ export const SubDaosTab = () => {
     []
   )
 
-  const upgradeToV2Action = useActionForKey(CoreActionKey.UpgradeV1ToV2)
-  const upgradeToV2ActionDefaults = upgradeToV2Action?.useDefaults()
+  const upgradeToV2Action = useActionForKey(ActionKey.UpgradeV1ToV2)
+  const upgradeToV2ActionDefaults = upgradeToV2Action?.action.useDefaults()
   const proposalPrefillUpgrade = useDaoProposalSinglePrefill({
     actions: upgradeToV2Action
       ? [
           {
-            action: upgradeToV2Action,
+            actionKey: upgradeToV2Action.action.key,
             data: upgradeToV2ActionDefaults,
           },
         ]

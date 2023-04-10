@@ -29,6 +29,7 @@ export const makeDaoInfo = (): DaoInfo => ({
   created: new Date(
     Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000)
   ),
+  items: {},
   parentDao: null,
 })
 

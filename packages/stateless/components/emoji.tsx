@@ -184,3 +184,7 @@ export const NumbersEmoji = () => (
 export const HammerAndWrenchEmoji = () => (
   <EmojiWrapper emoji="🛠️" labelI18nKey="emoji.hammerAndWrench" />
 )
+
+export const FileFolderEmoji = () => (
+  <EmojiWrapper emoji="📁" labelI18nKey="emoji.fileFolder" />
+)

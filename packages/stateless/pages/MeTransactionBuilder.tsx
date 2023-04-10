@@ -16,29 +16,30 @@ import {
   useForm,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   MeTransactionBuilderProps,
   MeTransactionForm,
   MeTransactionSave,
 } from '@dao-dao/types'
-import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import {
   CHAIN_TXN_URL_PREFIX,
-  decodedMessagesString,
+  convertActionsToMessages,
+  processError,
   validateRequired,
 } from '@dao-dao/utils'
 
 import {
-  ActionCardLoader,
-  ActionSelector,
+  ActionCategorySelector,
+  ActionsEditor,
   Button,
   ButtonLink,
   CopyToClipboard,
-  CosmosMessageDisplay,
   IconButton,
   InputErrorMessage,
   Modal,
+  RawActionsRenderer,
   TextAreaInput,
   TextInput,
   Tooltip,
@@ -50,7 +51,7 @@ enum SubmitValue {
 }
 
 export const MeTransactionBuilder = ({
-  actions,
+  categories,
   loadedActions,
   formMethods,
   execute,
@@ -73,20 +74,22 @@ export const MeTransactionBuilder = ({
     reset,
   } = formMethods
 
-  const watchActions = watch('actions')
-
-  const { append, remove } = useFieldArray({
+  const { append } = useFieldArray({
     name: 'actions',
     control,
     shouldUnregister: true,
   })
 
+  const actionData = watch('actions') || []
+
   const [showPreview, setShowPreview] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
+  const [submitError, setSubmitError] = useState('')
 
   const onSubmitForm: SubmitHandler<MeTransactionForm> = useCallback(
     ({ actions }, event) => {
       setShowSubmitErrorNote(false)
+      setSubmitError('')
 
       const nativeEvent = event?.nativeEvent as SubmitEvent
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
@@ -96,12 +99,20 @@ export const MeTransactionBuilder = ({
         return
       }
 
-      const messages = actions
-        .map(({ key, data }) => loadedActions[key]?.transform(data))
-        // Filter out undefined messages.
-        .filter(Boolean) as CosmosMsgFor_Empty[]
+      let msgs
+      try {
+        msgs = convertActionsToMessages(loadedActions, actions)
+      } catch (err) {
+        console.error(err)
+        setSubmitError(
+          processError(err, {
+            forceCapture: false,
+          })
+        )
+        return
+      }
 
-      execute(messages)
+      execute(msgs)
     },
     [execute, loadedActions]
   )
@@ -111,6 +122,7 @@ export const MeTransactionBuilder = ({
       console.error('Form errors', errors)
 
       setShowSubmitErrorNote(true)
+      setSubmitError('')
     },
     [setShowSubmitErrorNote]
   )
@@ -135,7 +147,7 @@ export const MeTransactionBuilder = ({
         ...data,
         // Clone the actions since the save gets cached. We don't want this form
         // to affect the save once it's been saved.
-        actions: cloneDeep(watchActions),
+        actions: cloneDeep(actionData),
       })
     ) {
       setSaveModalVisible(false)
@@ -153,39 +165,24 @@ export const MeTransactionBuilder = ({
           className="flex flex-col gap-4"
           onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
         >
-          {watchActions.length > 0 && (
-            <div className="flex flex-col gap-2">
-              {watchActions.map(({ key, data }, index) => {
-                const Component = loadedActions[key]?.action?.Component
-                if (!Component) {
-                  return null
-                }
-
-                return (
-                  <SuspenseLoader key={index} fallback={<ActionCardLoader />}>
-                    <Component
-                      addAction={append}
-                      allActionsWithData={watchActions}
-                      data={data}
-                      errors={errors.actions?.[index]?.data || {}}
-                      fieldNamePrefix={`actions.${index}.data.`}
-                      index={index}
-                      isCreating
-                      onRemove={() => remove(index)}
-                    />
-                  </SuspenseLoader>
-                )
-              })}
-            </div>
-          )}
+          <ActionsEditor
+            SuspenseLoader={SuspenseLoader}
+            actionDataErrors={errors?.actions}
+            actionDataFieldName="actions"
+            categories={categories}
+            loadedActions={loadedActions}
+          />
 
           <div>
-            <ActionSelector
-              actions={actions}
-              onSelectAction={({ key }) => {
+            <ActionCategorySelector
+              categories={categories}
+              onSelectCategory={({ key }) => {
                 append({
-                  key,
-                  data: loadedActions[key]?.defaults ?? {},
+                  // See `CategorizedActionKeyAndData` comment in
+                  // `packages/types/actions.ts` for an explanation of why we
+                  // need to append with a unique ID.
+                  _id: uuidv4(),
+                  categoryKey: key,
                 })
               }}
             />
@@ -198,9 +195,7 @@ export const MeTransactionBuilder = ({
 
             <div className="flex flex-row items-center justify-end gap-2">
               <Button
-                disabled={
-                  loading || (watchActions.length === 0 && !showPreview)
-                }
+                disabled={loading || (actionData.length === 0 && !showPreview)}
                 type="submit"
                 value={SubmitValue.Preview}
                 variant="secondary"
@@ -219,7 +214,7 @@ export const MeTransactionBuilder = ({
               </Button>
 
               <Button
-                disabled={watchActions.length === 0}
+                disabled={actionData.length === 0}
                 loading={loading}
                 type="submit"
                 value={SubmitValue.Submit}
@@ -233,6 +228,12 @@ export const MeTransactionBuilder = ({
           {showSubmitErrorNote && (
             <p className="secondary-text max-w-prose self-end text-right text-base text-text-interactive-error">
               {t('error.correctErrorsAbove')}
+            </p>
+          )}
+
+          {!!submitError && (
+            <p className="secondary-text self-end text-right text-text-interactive-error">
+              {submitError}
             </p>
           )}
 
@@ -254,13 +255,9 @@ export const MeTransactionBuilder = ({
           )}
 
           {showPreview && (
-            <CosmosMessageDisplay
-              value={decodedMessagesString(
-                watchActions
-                  .map(({ key, data }) => loadedActions[key]?.transform(data))
-                  // Filter out undefined messages.
-                  .filter(Boolean) as CosmosMsgFor_Empty[]
-              )}
+            <RawActionsRenderer
+              actionData={actionData}
+              loadedActions={loadedActions}
             />
           )}
         </form>
@@ -272,7 +269,7 @@ export const MeTransactionBuilder = ({
             <p className="title-text">{t('title.saved')}</p>
 
             <Button
-              disabled={loading || watchActions.length === 0}
+              disabled={loading || actionData.length === 0}
               onClick={() => {
                 // Clear form and open.
                 saveReset()

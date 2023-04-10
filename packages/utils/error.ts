@@ -92,7 +92,7 @@ export enum CommonError {
   Network = 'Network error. Ensure you are connected to the internet, refresh the page, or try again later. If your network is working, the blockchain nodes may be having problems.',
   Unauthorized = 'Unauthorized.',
   InsufficientForProposalDeposit = 'Insufficient unstaked deposit tokens. Ensure you have enough unstaked deposit tokens to pay for the proposal deposit.',
-  PendingTransaction = 'You have another pending transaction. Please try again in 30 seconds.',
+  PendingTransaction = 'You have another pending transaction. Please try again in 10 seconds.',
   TextEncodingDecodingError = 'Text encoding/decoding error. Invalid character present in text.',
   TxnSentTimeout = 'Transaction sent but has not yet been detected. Refresh this page to view its changes or check back later.',
   InvalidJSONResponse = 'Invalid JSON response from server.',
@@ -108,7 +108,7 @@ export enum CommonError {
 // ["abc", "def"] matches "abc" or "def" or "abc def". ["abc", ["def", "ghi"]]
 // matches "abc def ghi" or "def ghi" but NOT "abc def" or "abc ghi".
 const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
-  [CommonError.RequestRejected]: ['Request rejected'],
+  [CommonError.RequestRejected]: ['Request rejected', 'Ledger init aborted'],
   [CommonError.InvalidAddress]: [
     'decoding bech32 failed: invalid checksum',
     'contract: not found',
@@ -119,7 +119,7 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
   [CommonError.InsufficientFunds]: [
     'insufficient funds',
     // Try to send money with no balance.
-    'Account does not exist on chain.',
+    'does not exist on chain.',
     ['fee payer address', 'does not exist'],
   ],
   [CommonError.GetClientFailed]: [
@@ -136,6 +136,7 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
     'panic: invalid request',
     'tx already exists in cache',
     'Load failed',
+    'fetch failed',
   ],
   [CommonError.Unauthorized]: ['Unauthorized'],
   [CommonError.InsufficientForProposalDeposit]: ['Overflow: Cannot Sub with'],

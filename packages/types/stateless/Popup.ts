@@ -58,3 +58,8 @@ export type PopupTrigger =
       type: 'custom'
       Renderer: PopupTriggerCustomComponent
     }
+  | {
+      type: 'manual'
+      open: boolean
+      setOpen: Dispatch<SetStateAction<boolean>>
+    }

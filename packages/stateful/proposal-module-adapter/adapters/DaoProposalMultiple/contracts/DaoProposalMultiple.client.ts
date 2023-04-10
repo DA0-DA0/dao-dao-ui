@@ -5,20 +5,22 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
-import { Coin } from '@dao-dao/types/contracts/common'
 import {
   Addr,
-  Config,
+  Coin,
   Duration,
-  HooksResponse,
   InfoResponse,
+  Uint64,
+} from '@dao-dao/types/contracts/common'
+import {
+  Config,
+  HooksResponse,
   MultipleChoiceOptions,
   MultipleChoiceVote,
   PreProposeInfo,
   ProposalCreationPolicyResponse,
   ProposalListResponse,
   ProposalResponse,
-  Uint64,
   VoteListResponse,
   VoteResponse,
   VotingStrategy,

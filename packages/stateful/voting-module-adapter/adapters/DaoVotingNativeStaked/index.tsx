@@ -1,5 +1,4 @@
 import { PeopleAltOutlined } from '@mui/icons-material'
-import { useMemo } from 'react'
 
 import { DaoTabId, VotingModuleAdapter } from '@dao-dao/types'
 import { DaoVotingNativeStakedAdapterId } from '@dao-dao/utils'
@@ -20,7 +19,6 @@ export const DaoVotingNativeStakedAdapter: VotingModuleAdapter = {
   load: () => ({
     // Hooks
     hooks: {
-      useActions: () => useMemo(() => [], []),
       useDaoInfoBarItems,
       useProfileNewProposalCardAddresses: () => [],
       useCommonGovernanceTokenInfo,
@@ -39,6 +37,11 @@ export const DaoVotingNativeStakedAdapter: VotingModuleAdapter = {
           Icon: PeopleAltOutlined,
         },
       ],
+    },
+
+    // Functions
+    fields: {
+      actionCategoryMakers: [],
     },
   }),
 }

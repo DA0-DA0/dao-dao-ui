@@ -106,7 +106,7 @@
     "automaticallyAddNFTsTooltip": "发送到DAO地址的NFT应该被添加到国库吗？",
     "automaticallyAddTokensTitle": "自动添加代币",
     "automaticallyAddTokensTooltip": "发送到DAO地址的代币应该被添加到国库吗？",
-    "codeID": "Code ID",
+    "codeId": "Code ID",
     "contractLabel": "合约标签",
     "defaultTierName": "核心贡献者",
     "description": "描述",
