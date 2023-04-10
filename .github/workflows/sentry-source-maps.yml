@@ -36,4 +36,4 @@ jobs:
           cache: 'yarn'
       - run: yarn install
       - run: yarn lint
-      - run: yarn build
+      - run: yarn build --concurrency 1
