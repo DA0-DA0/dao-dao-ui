@@ -8,6 +8,7 @@ import {
 } from '@dao-dao/types'
 
 import { makeCreatePostActionMaker } from './actions/CreatePost'
+import { makeDeletePostActionMaker } from './actions/DeletePost'
 import { PressEditor as Editor } from './PressEditor'
 import { Renderer } from './Renderer'
 import { PressData } from './types'
@@ -24,8 +25,11 @@ export const PressWidget: Widget<PressData> = {
       key: ActionCategoryKey.Press,
       label: t('actionCategory.pressLabel'),
       description: t('actionCategory.pressDescription'),
-      keywords: ['post'],
-      actionMakers: [makeCreatePostActionMaker(data)],
+      keywords: ['publish', 'article', 'news', 'announcement'],
+      actionMakers: [
+        makeCreatePostActionMaker(data),
+        makeDeletePostActionMaker(data),
+      ],
     }),
   ],
 }

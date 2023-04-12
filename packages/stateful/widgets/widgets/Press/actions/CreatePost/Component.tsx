@@ -17,7 +17,20 @@ import { ActionComponent, LoadingData } from '@dao-dao/types'
 import { processError, uploadNft, validateRequired } from '@dao-dao/utils'
 
 import { PostMarkdown } from '../../components/PostMarkdown'
-import { CreatePostData, Post } from '../../types'
+import { Post } from '../../types'
+
+export type CreatePostData = {
+  tokenId: string
+  tokenUri: string
+  // Used while creating, uploaded to IPFS.
+  uploaded: boolean
+  data?: {
+    title: string
+    description: string
+    content: string
+    order: number
+  }
+}
 
 type CreatePostOptions = {
   postLoading: LoadingData<Post | undefined>

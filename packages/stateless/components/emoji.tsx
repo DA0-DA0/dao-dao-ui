@@ -192,3 +192,7 @@ export const FileFolderEmoji = () => (
 export const MemoEmoji = () => (
   <EmojiWrapper emoji="📝" labelI18nKey="emoji.memo" />
 )
+
+export const TrashEmoji = () => (
+  <EmojiWrapper emoji="🗑️" labelI18nKey="emoji.trash" />
+)

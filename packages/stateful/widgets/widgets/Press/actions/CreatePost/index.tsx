@@ -14,8 +14,8 @@ import {
 import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
 import { postSelector } from '../../state'
-import { CreatePostData, PressData } from '../../types'
-import { CreatePostComponent } from './Component'
+import { PressData } from '../../types'
+import { CreatePostComponent, CreatePostData } from './Component'
 
 const useDefaults: UseDefaults<CreatePostData> = () => ({
   tokenId: '',
@@ -54,7 +54,9 @@ export const makeCreatePostActionMaker =
             },
           },
         },
-      }) && msg.wasm.execute.msg.mint.token_uri
+      }) &&
+      msg.wasm.execute.contract_addr === contract &&
+      msg.wasm.execute.msg.mint.token_uri
         ? {
             match: true,
             data: {
