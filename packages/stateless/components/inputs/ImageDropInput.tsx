@@ -24,8 +24,9 @@ export const ImageDropInput = ({
 
   const [imageData, setImageData] = useState<string>()
   const onSelect = (file: File) => {
-    setImageData(URL.createObjectURL(file))
-    _onSelect(file)
+    const url = URL.createObjectURL(file)
+    setImageData(url)
+    _onSelect(file, url)
   }
 
   return (

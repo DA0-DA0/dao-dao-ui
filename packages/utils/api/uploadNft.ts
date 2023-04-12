@@ -1,9 +1,10 @@
 import JSON5 from 'json5'
 import { NextApiRequest, NextApiResponse } from 'next'
 import { Blob, NFTStorage } from 'nft.storage'
+import { TokenInput } from 'nft.storage/dist/src/lib/interface'
 
 import { NFT_STORAGE_API_KEY } from '../constants'
-import { parseFormWithImage } from '../server'
+import { parseForm } from '../server'
 
 export default async function handler(
   req: NextApiRequest,
@@ -15,7 +16,9 @@ export default async function handler(
       fields: { name, description = '', extra: _extra },
       imageData,
       mimetype,
-    } = await parseFormWithImage(req)
+    } = await parseForm(req, {
+      requireImage: false,
+    })
 
     // Make sure name is not empty.
     if (!name?.trim()) {
@@ -38,19 +41,43 @@ export default async function handler(
     const client = new NFTStorage({
       token: NFT_STORAGE_API_KEY,
     })
-    const metadata = await client.store({
+
+    let cid: string
+    let metadataUrl: string
+    let imageUrl: string | undefined
+
+    const metadata = {
       ...extra,
 
-      // Ensure name, description, and image are set by their fields.
+      // Ensure name, description, and image are set (overriding extra).
       name,
       // In case description is empty, use extra.description if present.
       description: description || extra.description || '',
-      image: new Blob([imageData], { type: mimetype }),
-    })
+
+      // Add image if present.
+      ...(imageData && {
+        image: new Blob([imageData], { type: mimetype }),
+      }),
+    }
+    // If image exists, upload it with metadata. Otherwise, manually upload
+    // metadata only.
+    if (metadata.image) {
+      const storedMetadata = await client.store(metadata as TokenInput)
+      cid = storedMetadata.ipnft
+      metadataUrl = storedMetadata.url
+      imageUrl = storedMetadata.embed().image.toString()
+    } else {
+      const metadataJsonFilename = 'metadata.json'
+      cid = await client.storeDirectory([
+        new File([JSON.stringify(metadata, null, 2)], metadataJsonFilename),
+      ])
+      metadataUrl = `ipfs://${cid}/${metadataJsonFilename}`
+    }
 
     return res.status(200).json({
-      metadataUrl: metadata.url,
-      imageUrl: metadata.embed().image.toString(),
+      cid,
+      metadataUrl,
+      imageUrl,
     })
   } catch (err) {
     return res
