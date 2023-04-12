@@ -757,7 +757,6 @@
     "pendingRewards": "Pending rewards",
     "percentVotingPower": "{{percent}} voting power",
     "percentagesRepresentVotingPower": "Percentages represent voting power.",
-    "postIdWasDeleted": "Post {{id}} was deleted.",
     "postedOnDate": "Posted on {{date}}",
     "preReleaseExplanation": "This is a pre-release version of DAO DAO running on the {{chain}} chain.",
     "pressDescriptionTooltip": "This description will be included with the post's NFT metadata and may show up in wallets or other places. Think of it as a brief description of the post.",
