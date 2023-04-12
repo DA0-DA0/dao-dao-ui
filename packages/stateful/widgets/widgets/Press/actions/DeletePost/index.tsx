@@ -1,4 +1,6 @@
 import { useCallback } from 'react'
+import { useFormContext } from 'react-hook-form'
+import { constSelector } from 'recoil'
 
 import { TrashEmoji, useCachedLoading } from '@dao-dao/stateless'
 import {
@@ -12,7 +14,7 @@ import {
 } from '@dao-dao/types/actions'
 import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
-import { postsSelector } from '../../state'
+import { postSelector, postsSelector } from '../../state'
 import { PressData } from '../../types'
 import { DeletePostComponent, DeletePostData } from './Component'
 
@@ -76,6 +78,9 @@ export const makeDeletePostActionMaker =
     // Memoize to prevent unnecessary re-renders.
     const Component: ActionComponent = useCallback(
       (props) => {
+        const { watch } = useFormContext()
+        const id = watch((props.fieldNamePrefix + 'id') as 'id')
+
         const postsLoading = useCachedLoading(
           postsSelector({
             contractAddress: contract,
@@ -84,11 +89,25 @@ export const makeDeletePostActionMaker =
           []
         )
 
+        // Once created, manually load metadata; it won't be retrievable from
+        // the contract if it was successfully removed since the token was
+        // burned.
+        const postLoading = useCachedLoading(
+          !props.isCreating
+            ? postSelector({
+                id,
+                metadataUri: `ipfs://${id}/metadata.json`,
+              })
+            : constSelector(undefined),
+          undefined
+        )
+
         return (
           <DeletePostComponent
             {...props}
             options={{
               postsLoading,
+              postLoading,
             }}
           />
         )
