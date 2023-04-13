@@ -226,10 +226,10 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         />
       )}
       <SyncFollowingModal />
-
-      {updateProfileNft.visible && (
-        <PfpkNftSelectionModal onClose={updateProfileNft.toggle} />
-      )}
+      <PfpkNftSelectionModal
+        onClose={updateProfileNft.toggle}
+        visible={updateProfileNft.visible}
+      />
 
       {daoCreatedCardProps && (
         <DaoCreatedModal

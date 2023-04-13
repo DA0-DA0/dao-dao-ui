@@ -129,10 +129,10 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
         onClose={() => setBetaWarningAccepted(true)}
         visible={mountedInBrowser && !betaWarningAccepted}
       />
-
-      {updateProfileNft.visible && (
-        <PfpkNftSelectionModal onClose={updateProfileNft.toggle} />
-      )}
+      <PfpkNftSelectionModal
+        onClose={updateProfileNft.toggle}
+        visible={updateProfileNft.visible}
+      />
 
       {daoCreatedCardProps && (
         <DaoCreatedModal
