@@ -231,38 +231,25 @@ export const walletNftCardInfos = selectorFamily<
         return []
       }
 
-      // Get token IDs owned by wallet for each collection. The indexer may not
-      // return properly formatted token IDs, such as when the underlying
-      // contract uses numbers for token IDs instead of strings.
-      const tokenIds = get(
-        waitForAllSettled(
-          collections.map(({ collectionAddress }) =>
-            Cw721BaseSelectors.allTokensForOwnerSelector({
-              contractAddress: collectionAddress,
-              chainId,
-              owner: walletAddress,
-            })
-          )
-        )
-      )
-
       const nftCardInfos = get(
-        waitForAll(
-          collections.flatMap(({ collectionAddress }, index) =>
-            tokenIds[index].state === 'hasValue'
-              ? (tokenIds[index].contents as string[]).map((tokenId) =>
-                  nftCardInfoSelector({
-                    collection: collectionAddress,
-                    tokenId,
-                    chainId,
-                  })
-                )
-              : []
+        waitForAllSettled(
+          collections.flatMap(({ collectionAddress, tokens }) =>
+            tokens.map((tokenId) =>
+              nftCardInfoSelector({
+                collection: collectionAddress,
+                tokenId,
+                chainId,
+              })
+            )
           )
         )
       )
 
       return nftCardInfos
+        .map((loadable) =>
+          loadable.state === 'hasValue' ? loadable.contents : undefined
+        )
+        .filter((info): info is NftCardInfo => info !== undefined)
     },
 })
 
@@ -292,40 +279,28 @@ export const walletStakedNftCardInfosSelector = selectorFamily<
         return []
       }
 
-      // Get token IDs owned by wallet for each collection. The indexer may not
-      // return properly formatted token IDs, such as when the underlying
-      // contract uses numbers for token IDs instead of strings.
-      const tokenIds = get(
-        waitForAllSettled(
-          collections.map(({ collectionAddress }) =>
-            Cw721BaseSelectors.allTokensForOwnerSelector({
-              contractAddress: collectionAddress,
-              chainId,
-              owner: walletAddress,
-            })
-          )
-        )
-      )
-
       const nftCardInfos = get(
-        waitForAll(
-          collections.flatMap(({ collectionAddress }, index) =>
-            tokenIds[index].state === 'hasValue'
-              ? (tokenIds[index].contents as string[]).map((tokenId) =>
-                  nftCardInfoSelector({
-                    collection: collectionAddress,
-                    tokenId,
-                    chainId,
-                  })
-                )
-              : []
+        waitForAllSettled(
+          collections.flatMap(({ collectionAddress, tokens }) =>
+            tokens.map((tokenId) =>
+              nftCardInfoSelector({
+                collection: collectionAddress,
+                tokenId,
+                chainId,
+              })
+            )
           )
         )
       )
 
-      return nftCardInfos.map((nftCardInfo) => ({
-        ...nftCardInfo,
-        staked: true,
-      }))
+      return nftCardInfos
+        .map((loadable) =>
+          loadable.state === 'hasValue' ? loadable.contents : undefined
+        )
+        .filter((info): info is NftCardInfo => info !== undefined)
+        .map((info) => ({
+          ...info,
+          staked: true,
+        }))
     },
 })
