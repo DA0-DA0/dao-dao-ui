@@ -1,15 +1,15 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { DeletePostComponent } from './Component'
+import { UpdatePostComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / widgets / widgets / Press / actions / DeletePost',
-  component: DeletePostComponent,
-} as ComponentMeta<typeof DeletePostComponent>
+    'DAO DAO / packages / stateful / widgets / widgets / Press / actions / UpdatePost',
+  component: UpdatePostComponent,
+} as ComponentMeta<typeof UpdatePostComponent>
 
-const Template: ComponentStory<typeof DeletePostComponent> = (args) => (
-  <DeletePostComponent {...args} />
+const Template: ComponentStory<typeof UpdatePostComponent> = (args) => (
+  <UpdatePostComponent {...args} />
 )
 
 export const Default = Template.bind({})
@@ -20,6 +20,9 @@ Default.args = {
   data: {},
   isCreating: true,
   options: {
+    postLoading: {
+      loading: true,
+    },
     postsLoading: {
       loading: false,
       data: [
@@ -40,9 +43,6 @@ Default.args = {
           pastVersions: [],
         },
       ],
-    },
-    postLoading: {
-      loading: true,
     },
   },
 }

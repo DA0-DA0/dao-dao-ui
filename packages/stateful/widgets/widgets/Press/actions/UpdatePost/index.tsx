@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { MemoEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { PencilEmoji, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
@@ -13,11 +13,11 @@ import {
 } from '@dao-dao/types/actions'
 import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
-import { postSelector } from '../../state'
+import { postSelector, postsSelector } from '../../state'
 import { PressData } from '../../types'
-import { CreatePostComponent, CreatePostData } from './Component'
+import { UpdatePostComponent, UpdatePostData } from './Component'
 
-const useDefaults: UseDefaults<CreatePostData> = () => ({
+const useDefaults: UseDefaults<UpdatePostData> = () => ({
   tokenId: '',
   tokenUri: '',
   uploaded: false,
@@ -28,15 +28,15 @@ const useDefaults: UseDefaults<CreatePostData> = () => ({
   },
 })
 
-export const makeCreatePostActionMaker =
-  ({ contract }: PressData): ActionMaker<CreatePostData> =>
-  ({ t, context, address }) => {
+export const makeUpdatePostActionMaker =
+  ({ contract }: PressData): ActionMaker<UpdatePostData> =>
+  ({ t, context, address, chainId }) => {
     // Only available in DAO context.
     if (context.type !== ActionContextType.Dao) {
       return null
     }
 
-    const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreatePostData> = (
+    const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdatePostData> = (
       msg: Record<string, any>
     ) =>
       objectMatchesStructure(msg, {
@@ -68,7 +68,7 @@ export const makeCreatePostActionMaker =
             match: false,
           }
 
-    const useTransformToCosmos: UseTransformToCosmos<CreatePostData> = () =>
+    const useTransformToCosmos: UseTransformToCosmos<UpdatePostData> = () =>
       useCallback(
         ({ tokenId, tokenUri }) =>
           makeWasmMessage({
@@ -90,37 +90,53 @@ export const makeCreatePostActionMaker =
       )
 
     // Memoize to prevent unnecessary re-renders.
-    const Component: ActionComponent = useCallback((props) => {
-      const { watch } = useFormContext<CreatePostData>()
-      const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
-      const tokenUri = watch((props.fieldNamePrefix + 'tokenUri') as 'tokenUri')
-      const uploaded = watch((props.fieldNamePrefix + 'uploaded') as 'uploaded')
+    const Component: ActionComponent = useCallback(
+      (props) => {
+        const { watch } = useFormContext<UpdatePostData>()
+        const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
+        const tokenUri = watch(
+          (props.fieldNamePrefix + 'tokenUri') as 'tokenUri'
+        )
+        const uploaded = watch(
+          (props.fieldNamePrefix + 'uploaded') as 'uploaded'
+        )
 
-      const postLoading = useCachedLoading(
-        uploaded && tokenId && tokenUri
-          ? postSelector({
-              id: tokenId,
-              metadataUri: tokenUri,
-            })
-          : undefined,
-        undefined
-      )
+        const postLoading = useCachedLoading(
+          uploaded && tokenId && tokenUri
+            ? postSelector({
+                id: tokenId,
+                metadataUri: tokenUri,
+              })
+            : undefined,
+          undefined
+        )
 
-      return (
-        <CreatePostComponent
-          {...props}
-          options={{
-            postLoading,
-          }}
-        />
-      )
-    }, [])
+        const postsLoading = useCachedLoading(
+          postsSelector({
+            contractAddress: contract,
+            chainId,
+          }),
+          []
+        )
+
+        return (
+          <UpdatePostComponent
+            {...props}
+            options={{
+              postLoading,
+              postsLoading,
+            }}
+          />
+        )
+      },
+      [chainId]
+    )
 
     return {
-      key: ActionKey.CreatePost,
-      Icon: MemoEmoji,
-      label: t('title.createPost'),
-      description: t('info.createPostDescription'),
+      key: ActionKey.UpdatePost,
+      Icon: PencilEmoji,
+      label: t('title.updatePost'),
+      description: t('info.updatePostDescription'),
       Component,
       useDefaults,
       useTransformToCosmos,

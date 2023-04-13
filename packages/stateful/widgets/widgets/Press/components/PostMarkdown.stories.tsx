@@ -19,6 +19,8 @@ Default.args = {
     title: 'This is a post',
     content: '## Hello!\n\nI am a post.',
     headerImage: 'ipfs://',
-    lastUpdated: new Date(),
+    created: new Date(),
+    order: 1,
+    pastVersions: [],
   },
 }

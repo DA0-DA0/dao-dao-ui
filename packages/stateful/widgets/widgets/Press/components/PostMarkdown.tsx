@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { MarkdownRenderer } from '@dao-dao/stateless'
-import { formatDate } from '@dao-dao/utils'
+import { formatDate, transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 
 import { Post } from '../types'
 
@@ -14,7 +14,7 @@ export type PostMarkdownProps = {
 }
 
 export const PostMarkdown = ({
-  post: { title, content, headerImage, lastUpdated },
+  post: { title, content, headerImage, created: lastUpdated },
   className,
   addAnchors,
 }: PostMarkdownProps) => {
@@ -47,7 +47,9 @@ export const PostMarkdown = ({
         <div
           className="mb-8 h-64 w-full bg-contain bg-center bg-no-repeat"
           style={{
-            backgroundImage: `url(${headerImage})`,
+            backgroundImage: `url(${transformIpfsUrlToHttpsIfNecessary(
+              headerImage
+            )})`,
           }}
         ></div>
       )}

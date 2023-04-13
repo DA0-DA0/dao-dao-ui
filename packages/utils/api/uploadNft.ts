@@ -1,6 +1,6 @@
 import JSON5 from 'json5'
 import { NextApiRequest, NextApiResponse } from 'next'
-import { Blob, NFTStorage } from 'nft.storage'
+import { Blob, File, NFTStorage } from 'nft.storage'
 import { TokenInput } from 'nft.storage/dist/src/lib/interface'
 
 import { NFT_STORAGE_API_KEY } from '../constants'
@@ -59,9 +59,10 @@ export default async function handler(
         image: new Blob([imageData], { type: mimetype }),
       }),
     }
-    // If image exists, upload it with metadata. Otherwise, manually upload
-    // metadata only.
-    if (metadata.image) {
+    // If image exists and is not a string, upload it with metadata. Otherwise,
+    // manually upload metadata only. If image is a string, it is assumed to be
+    // a URL and will be used as the image URL in the metadata.
+    if (metadata.image && typeof metadata.image !== 'string') {
       const storedMetadata = await client.store(metadata as TokenInput)
       cid = storedMetadata.ipnft
       metadataUrl = storedMetadata.url
@@ -72,6 +73,7 @@ export default async function handler(
         new File([JSON.stringify(metadata, null, 2)], metadataJsonFilename),
       ])
       metadataUrl = `ipfs://${cid}/${metadataJsonFilename}`
+      imageUrl = typeof metadata.image === 'string' ? metadata.image : undefined
     }
 
     return res.status(200).json({

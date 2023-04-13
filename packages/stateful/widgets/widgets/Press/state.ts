@@ -71,9 +71,14 @@ export const postSelector = selectorFamily<
         ? {
             id,
             title: data.name || id,
+            description: data.description,
             content: data.properties.content,
-            headerImage: data.imageUrl,
-            lastUpdated: new Date(data.properties.created),
+            // Use `image` field directly since it should be in IPFS format.
+            // `imageUrl` is processed into `https`.
+            headerImage: data.image,
+            created: new Date(data.properties.created),
+            order: data.properties.order,
+            pastVersions: data.properties.pastVersions || [],
           }
         : undefined
     },

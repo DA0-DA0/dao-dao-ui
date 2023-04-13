@@ -1,4 +1,5 @@
 import { WarningRounded } from '@mui/icons-material'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Loader, NoContent } from '@dao-dao/stateless'
@@ -20,11 +21,19 @@ export const PostList = ({
 }: PostListProps) => {
   const { t } = useTranslation()
 
+  const sortedPosts = useMemo(
+    () =>
+      postsLoading.loading
+        ? []
+        : postsLoading.data.sort((a, b) => b.order - a.order),
+    [postsLoading]
+  )
+
   return postsLoading.loading ? (
     <Loader fill={false} />
-  ) : postsLoading.data.length ? (
+  ) : sortedPosts.length > 0 ? (
     <div className="space-y-1 border-t border-border-secondary pt-6">
-      {postsLoading.data.map((post, index) => (
+      {sortedPosts.map((post, index) => (
         <PostLine
           key={post.id}
           onClick={() => onClick(post.id)}

@@ -30,9 +30,16 @@ export const Renderer = ({
       ? undefined
       : window.location.hash.replace('#', '').split('/')[1]
   )
-  const openPost = postsLoading.loading
-    ? undefined
-    : postsLoading.data.find((post) => post.id === openPostId)
+  const openPost =
+    postsLoading.loading || !openPostId
+      ? undefined
+      : postsLoading.data.find(
+          (post) =>
+            // Select post if it's the one we're looking for or if it's a newer
+            // version of the selected ID (this ensures that old links stay
+            // valid when posts are updated).
+            post.id === openPostId || post.pastVersions.includes(openPostId)
+        )
 
   // Store selected post in URL hash.
   useEffect(() => {

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { Trans, useTranslation } from 'react-i18next'
@@ -9,17 +9,24 @@ import {
   InputErrorMessage,
   InputLabel,
   Loader,
+  SelectInput,
   SwitchCard,
   TextAreaInput,
   TextInput,
 } from '@dao-dao/stateless'
-import { ActionComponent, LoadingData } from '@dao-dao/types'
-import { processError, uploadNft, validateRequired } from '@dao-dao/utils'
+import { ActionComponent, ActionKey, LoadingData } from '@dao-dao/types'
+import {
+  processError,
+  transformIpfsUrlToHttpsIfNecessary,
+  uploadNft,
+  validateRequired,
+} from '@dao-dao/utils'
 
 import { PostMarkdown } from '../../components/PostMarkdown'
 import { Post } from '../../types'
 
-export type CreatePostData = {
+export type UpdatePostData = {
+  updateId?: string
   tokenId: string
   tokenUri: string
   // Used while creating, uploaded to IPFS.
@@ -31,18 +38,21 @@ export type CreatePostData = {
   }
 }
 
-type CreatePostOptions = {
+type UpdatePostOptions = {
   postLoading: LoadingData<Post | undefined>
+  postsLoading: LoadingData<Post[]>
 }
 
-export const CreatePostComponent: ActionComponent<CreatePostOptions> = ({
+export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { postLoading },
+  options: { postLoading, postsLoading },
+  addAction,
+  allActionsWithData,
 }) => {
   const { t } = useTranslation()
-  const { register, watch, setValue } = useFormContext<CreatePostData>()
+  const { register, watch, setValue } = useFormContext<UpdatePostData>()
 
   const uploaded = watch((fieldNamePrefix + 'uploaded') as 'uploaded')
   const data = watch((fieldNamePrefix + 'data') as 'data')
@@ -52,8 +62,35 @@ export const CreatePostComponent: ActionComponent<CreatePostOptions> = ({
   const [showPreview, setShowPreview] = useState(false)
   const [uploading, setUploading] = useState(false)
 
+  const updateId = watch((fieldNamePrefix + 'updateId') as 'updateId')
+  const updatingPost = postsLoading.loading
+    ? undefined
+    : postsLoading.data.find(({ id }) => id === updateId)
+  // When updatingPost changes, update form values.
+  useEffect(() => {
+    if (updatingPost) {
+      setValue((fieldNamePrefix + 'data') as 'data', {
+        title: updatingPost.title,
+        description: updatingPost.description || '',
+        content: updatingPost.content,
+      })
+      setImageUrl(updatingPost.headerImage)
+      setImage(undefined)
+    }
+  }, [fieldNamePrefix, setValue, updatingPost])
+
+  // If updateId is undefined and posts finish loading, set to first post.
+  useEffect(() => {
+    if (!updateId && !postsLoading.loading && postsLoading.data.length > 0) {
+      setValue(
+        (fieldNamePrefix + 'updateId') as 'updateId',
+        postsLoading.data[0].id
+      )
+    }
+  }, [fieldNamePrefix, postsLoading, setValue, updateId])
+
   const upload = async () => {
-    if (!data) {
+    if (!data || !updatingPost) {
       toast.error(t('error.loadingData'))
       return
     }
@@ -66,11 +103,17 @@ export const CreatePostComponent: ActionComponent<CreatePostOptions> = ({
         data.description,
         image,
         JSON.stringify({
+          // If no image but imageUrl, set image to existing imageUrl.
+          ...(imageUrl &&
+            !image && {
+              image: imageUrl,
+            }),
+
           properties: {
             content: data.content,
             created: now.toISOString(),
-            order: now.getTime(),
-            pastVersions: [],
+            order: updatingPost.order,
+            pastVersions: [...updatingPost.pastVersions, updatingPost.id],
           },
         })
       )
@@ -78,6 +121,21 @@ export const CreatePostComponent: ActionComponent<CreatePostOptions> = ({
       setValue((fieldNamePrefix + 'tokenId') as 'tokenId', cid)
       setValue((fieldNamePrefix + 'tokenUri') as 'tokenUri', metadataUrl)
       setValue((fieldNamePrefix + 'uploaded') as 'uploaded', true)
+
+      // Add action to delete old post if does not already exist.
+      if (
+        !allActionsWithData.some(
+          ({ actionKey, data }) =>
+            actionKey === ActionKey.DeletePost && data.id === updatingPost.id
+        )
+      ) {
+        addAction?.({
+          actionKey: ActionKey.DeletePost,
+          data: {
+            id: updatingPost.id,
+          },
+        })
+      }
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -94,12 +152,33 @@ export const CreatePostComponent: ActionComponent<CreatePostOptions> = ({
 
   return isCreating && !uploaded ? (
     <>
+      <div className="flex flex-col gap-2">
+        <InputLabel name={t('form.postToUpdate')} />
+        <SelectInput
+          error={errors?.updateId}
+          fieldName={(fieldNamePrefix + 'updateId') as 'updateId'}
+          register={register}
+          validation={[validateRequired]}
+        >
+          {!postsLoading.loading &&
+            postsLoading.data.map(({ id, title }) => (
+              <option key={id} value={id}>
+                {title}
+              </option>
+            ))}
+        </SelectInput>
+        <InputErrorMessage error={errors?.updateId} />
+      </div>
+
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
         <div className="flex flex-col gap-1">
           <InputLabel name={t('title.header')} optional />
           <ImageDropInput
             Trans={Trans}
             className="aspect-square w-full shrink-0 sm:h-40 sm:w-40"
+            currentImage={
+              imageUrl && transformIpfsUrlToHttpsIfNecessary(imageUrl)
+            }
             onSelect={(image, imageUrl) => {
               setImage(image)
               setImageUrl(imageUrl)

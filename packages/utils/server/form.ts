@@ -1,6 +1,6 @@
 import { promises as fs } from 'fs'
 
-import { Fields, Files, IncomingForm } from 'formidable'
+import { Fields, File, Files, IncomingForm } from 'formidable'
 import { NextApiRequest } from 'next'
 
 // Returns contents of form from a Next.js API route request.
@@ -36,7 +36,7 @@ export const parseForm = async (
     throw new Error('Too many files found.')
   }
 
-  const file = files[0]
+  const file: File | undefined = files[0]
 
   // Makes sure file is an image.
   if (file && !file.mimetype?.startsWith('image')) {
@@ -56,6 +56,6 @@ export const parseForm = async (
   return {
     fields,
     imageData,
-    mimetype: file.mimetype ?? undefined,
+    mimetype: file?.mimetype ?? undefined,
   }
 }
