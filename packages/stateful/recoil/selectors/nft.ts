@@ -1,6 +1,6 @@
 import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { ChainInfoID } from '@noahsaso/cosmodal'
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
   Cw721BaseSelectors,
@@ -35,14 +35,19 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
 
       get(refreshWalletStargazeNftsAtom(stargazeWalletAddress))
 
-      const stargazeNfts: StargazeNft[] = await (
-        await fetch(
-          STARGAZE_PROFILE_API_TEMPLATE.replace(
-            'ADDRESS',
-            stargazeWalletAddress
+      let stargazeNfts: StargazeNft[] = []
+      try {
+        stargazeNfts = await (
+          await fetch(
+            STARGAZE_PROFILE_API_TEMPLATE.replace(
+              'ADDRESS',
+              stargazeWalletAddress
+            )
           )
-        )
-      ).json()
+        ).json()
+      } catch (err) {
+        console.error(err)
+      }
 
       if (!Array.isArray(stargazeNfts)) {
         return []
@@ -232,7 +237,7 @@ export const walletNftCardInfos = selectorFamily<
       }
 
       const nftCardInfos = get(
-        waitForAll(
+        waitForAllSettled(
           collections.flatMap(({ collectionAddress, tokens }) =>
             tokens.map((tokenId) =>
               nftCardInfoSelector({
@@ -246,6 +251,10 @@ export const walletNftCardInfos = selectorFamily<
       )
 
       return nftCardInfos
+        .map((loadable) =>
+          loadable.state === 'hasValue' ? loadable.contents : undefined
+        )
+        .filter((info): info is NftCardInfo => info !== undefined)
     },
 })
 
@@ -276,7 +285,7 @@ export const walletStakedNftCardInfosSelector = selectorFamily<
       }
 
       const nftCardInfos = get(
-        waitForAll(
+        waitForAllSettled(
           collections.flatMap(({ collectionAddress, tokens }) =>
             tokens.map((tokenId) =>
               nftCardInfoSelector({
@@ -289,9 +298,14 @@ export const walletStakedNftCardInfosSelector = selectorFamily<
         )
       )
 
-      return nftCardInfos.map((nftCardInfo) => ({
-        ...nftCardInfo,
-        staked: true,
-      }))
+      return nftCardInfos
+        .map((loadable) =>
+          loadable.state === 'hasValue' ? loadable.contents : undefined
+        )
+        .filter((info): info is NftCardInfo => info !== undefined)
+        .map((info) => ({
+          ...info,
+          staked: true,
+        }))
     },
 })
