@@ -35,14 +35,19 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
 
       get(refreshWalletStargazeNftsAtom(stargazeWalletAddress))
 
-      const stargazeNfts: StargazeNft[] = await (
-        await fetch(
-          STARGAZE_PROFILE_API_TEMPLATE.replace(
-            'ADDRESS',
-            stargazeWalletAddress
+      let stargazeNfts: StargazeNft[] = []
+      try {
+        stargazeNfts = await (
+          await fetch(
+            STARGAZE_PROFILE_API_TEMPLATE.replace(
+              'ADDRESS',
+              stargazeWalletAddress
+            )
           )
-        )
-      ).json()
+        ).json()
+      } catch (err) {
+        console.error(err)
+      }
 
       if (!Array.isArray(stargazeNfts)) {
         return []
