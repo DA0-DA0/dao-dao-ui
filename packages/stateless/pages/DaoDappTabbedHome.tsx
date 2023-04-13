@@ -103,16 +103,33 @@ export const DaoDappTabbedHome = ({
           follow={follow}
         />
 
-        <div className="flex flex-col items-center border-y border-t-border-base border-b-border-secondary py-6">
+        <div className="h-[1px] bg-border-base" />
+
+        <div className="styled-scrollbar -mx-6 mb-2 overflow-x-auto px-6 pt-6 pb-2">
           <SegmentedControls
-            className="w-full max-w-2xl shrink"
+            className="hidden mdlg:grid"
+            moreTabs={
+              tabs.length > 4
+                ? tabs.slice(4).map(({ id, label }) => ({ label, value: id }))
+                : undefined
+            }
+            onSelect={setSelectedTab}
+            selected={selectedTab}
+            tabs={tabs
+              .slice(0, 4)
+              .map(({ id, label }) => ({ label, value: id }))}
+          />
+
+          <SegmentedControls
+            className="mdlg:hidden"
+            noWrap
             onSelect={setSelectedTab}
             selected={selectedTab}
             tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
           />
         </div>
 
-        <div className="py-6">
+        <div className="mt-2 border-t border-border-secondary py-6">
           {tabs.map(({ id, Component }) => (
             <div key={id} className={clsx(selectedTab !== id && 'hidden')}>
               <SuspenseLoader fallback={<Loader />}>

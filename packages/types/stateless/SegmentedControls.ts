@@ -7,4 +7,7 @@ export type SegmentedControlsProps<T extends unknown> = {
   loading?: T
   className?: string
   disabled?: boolean
+  noWrap?: boolean
+  // If present, a More dropdown will be added to the end of the tabs.
+  moreTabs?: TypedOption<T>[]
 }
