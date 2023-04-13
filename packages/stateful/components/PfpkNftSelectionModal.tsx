@@ -17,10 +17,14 @@ import { useWalletInfo } from '../hooks'
 import { walletNativeAndStargazeNftsSelector } from '../recoil'
 import { SuspenseLoader } from './SuspenseLoader'
 
-export type PfpkNftSelectionModalProps = Pick<Required<ModalProps>, 'onClose'>
+export type PfpkNftSelectionModalProps = Pick<
+  Required<ModalProps>,
+  'onClose' | 'visible'
+>
 
 export const InnerPfpkNftSelectionModal = ({
   onClose,
+  visible,
 }: PfpkNftSelectionModalProps) => {
   const { t } = useTranslation()
   const {
@@ -144,7 +148,7 @@ export const InnerPfpkNftSelectionModal = ({
         />
       }
       selectedIds={selected ? [selected] : []}
-      visible
+      visible={visible}
     />
   )
 }
