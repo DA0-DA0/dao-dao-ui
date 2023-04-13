@@ -103,9 +103,9 @@ export const DaoDappTabbedHome = ({
 
         <div className="h-[1px] bg-border-base" />
 
-        <div className="-mx-6 overflow-x-auto px-6 pt-6 pb-4">
+        <div className="styled-scrollbar -mx-6 mb-2 overflow-x-auto px-6 pt-6 pb-2">
           <SegmentedControls
-            className="hidden lg:grid"
+            className="hidden mdlg:grid"
             moreTabs={
               tabs.length > 4
                 ? tabs.slice(4).map(({ id, label }) => ({ label, value: id }))
@@ -119,7 +119,7 @@ export const DaoDappTabbedHome = ({
           />
 
           <SegmentedControls
-            className="lg:hidden"
+            className="mdlg:hidden"
             noWrap
             onSelect={setSelectedTab}
             selected={selectedTab}
