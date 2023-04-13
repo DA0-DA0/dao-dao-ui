@@ -777,6 +777,8 @@
       "willPass": "If the current vote stands, this proposal will pass."
     },
     "proposalThresholdTooltip": "A proposal must attain this proportion of 'Yes' votes to pass.",
+    "proposeDeleteTooltip": "Propose deleting this post",
+    "proposeUpdateTooltip": "Propose updates to this post",
     "ratingClosesAt": "Rating closes at {{date}}.",
     "reached": "Reached",
     "recognizeSubDaoDescription": "Recognizing {{name}} as a SubDAO will display it inside the SubDAOs tab.",

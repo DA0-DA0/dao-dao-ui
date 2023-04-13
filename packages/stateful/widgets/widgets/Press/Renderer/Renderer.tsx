@@ -1,9 +1,18 @@
-import { Add, ArrowBackIosRounded } from '@mui/icons-material'
+import {
+  Add,
+  ArrowBackIosRounded,
+  DeleteRounded,
+  EditRounded,
+} from '@mui/icons-material'
 import { ComponentType, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button, Tooltip } from '@dao-dao/stateless'
-import { ButtonLinkProps, LoadingData } from '@dao-dao/types'
+import {
+  ButtonLinkProps,
+  IconButtonLinkProps,
+  LoadingData,
+} from '@dao-dao/types'
 
 import { PostMarkdown } from '../components/PostMarkdown'
 import { Post } from '../types'
@@ -13,14 +22,22 @@ export interface RendererProps {
   postsLoading: LoadingData<Post[]>
   isMember: boolean
   createPostHref: string | undefined
+  // Template containing IDTOUPDATE for the post ID to update.
+  updatePostHref: string | undefined
+  // Template containing IDTODELETE for the post ID to update.
+  deletePostHref: string | undefined
   ButtonLink: ComponentType<ButtonLinkProps>
+  IconButtonLink: ComponentType<IconButtonLinkProps>
 }
 
 export const Renderer = ({
   postsLoading,
   isMember,
   createPostHref,
+  updatePostHref,
+  deletePostHref,
   ButtonLink,
+  IconButtonLink,
 }: RendererProps) => {
   const { t } = useTranslation()
 
@@ -86,6 +103,26 @@ export const Renderer = ({
               {t('button.newPost')}
             </ButtonLink>
           </Tooltip>
+        )}
+
+        {openPost && isMember && updatePostHref && deletePostHref && (
+          <div className="flex flex-row items-stretch justify-end gap-2">
+            <Tooltip title={t('info.proposeUpdateTooltip')}>
+              <IconButtonLink
+                Icon={EditRounded}
+                href={updatePostHref.replace('IDTOUPDATE', openPost.id)}
+                variant="secondary"
+              />
+            </Tooltip>
+
+            <Tooltip title={t('info.proposeDeleteTooltip')}>
+              <IconButtonLink
+                Icon={DeleteRounded}
+                href={deletePostHref.replace('IDTODELETE', openPost.id)}
+                variant="secondary"
+              />
+            </Tooltip>
+          </div>
         )}
       </div>
 

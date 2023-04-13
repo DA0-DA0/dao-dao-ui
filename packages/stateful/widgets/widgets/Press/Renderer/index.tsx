@@ -6,7 +6,7 @@ import {
 import { ActionKey, WidgetRendererProps } from '@dao-dao/types'
 
 import { useActionForKey } from '../../../../actions'
-import { ButtonLink } from '../../../../components'
+import { ButtonLink, IconButtonLink } from '../../../../components'
 import { useDaoProposalSinglePrefill } from '../../../../hooks/useDaoProposalSinglePrefill'
 import { useMembership } from '../../../../hooks/useMembership'
 import { postsSelector } from '../state'
@@ -33,7 +33,6 @@ export const Renderer = ({
 
   const createPostAction = useActionForKey(ActionKey.CreatePost)
   const createPostActionDefaults = createPostAction?.action.useDefaults()
-
   const createPostPrefill = useDaoProposalSinglePrefill({
     actions: createPostAction
       ? [
@@ -45,9 +44,40 @@ export const Renderer = ({
       : [],
   })
 
+  const updatePostAction = useActionForKey(ActionKey.UpdatePost)
+  const updatePostActionDefaults = updatePostAction?.action.useDefaults()
+  const updatePostPrefill = useDaoProposalSinglePrefill({
+    actions: updatePostAction
+      ? [
+          {
+            actionKey: updatePostAction.action.key,
+            data: {
+              ...updatePostActionDefaults,
+              updateId: 'IDTOUPDATE',
+            },
+          },
+        ]
+      : [],
+  })
+
+  const deletePostAction = useActionForKey(ActionKey.DeletePost)
+  const deletePostPrefill = useDaoProposalSinglePrefill({
+    actions: deletePostAction
+      ? [
+          {
+            actionKey: deletePostAction.action.key,
+            data: {
+              id: 'IDTODELETE',
+            },
+          },
+        ]
+      : [],
+  })
+
   return (
     <StatelessRenderer
       ButtonLink={ButtonLink}
+      IconButtonLink={IconButtonLink}
       createPostHref={
         createPostAction && createPostPrefill
           ? getDaoProposalPath(coreAddress, 'create', {
@@ -55,8 +85,22 @@ export const Renderer = ({
             })
           : undefined
       }
+      deletePostHref={
+        deletePostAction && deletePostPrefill
+          ? getDaoProposalPath(coreAddress, 'create', {
+              prefill: deletePostPrefill,
+            })
+          : undefined
+      }
       isMember={isMember}
       postsLoading={postsLoading}
+      updatePostHref={
+        updatePostAction && updatePostPrefill
+          ? getDaoProposalPath(coreAddress, 'create', {
+              prefill: updatePostPrefill,
+            })
+          : undefined
+      }
     />
   )
 }
