@@ -107,7 +107,7 @@ export const DaoDappTabbedHome = ({
 
         <div className="styled-scrollbar -mx-6 mb-2 overflow-x-auto px-6 pt-6 pb-2">
           <SegmentedControls
-            className="hidden mdlg:grid"
+            className="mx-auto hidden w-max max-w-full mdlg:grid"
             moreTabs={
               tabs.length > 4
                 ? tabs.slice(4).map(({ id, label }) => ({ label, value: id }))
