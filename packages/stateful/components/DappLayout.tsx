@@ -3,7 +3,13 @@ import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  constSelector,
+  useRecoilState,
+  useRecoilValue,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from 'recoil'
 
 import {
   betaWarningAcceptedAtom,
@@ -33,6 +39,7 @@ import { useFollowingDaos, useWalletInfo } from '../hooks'
 import {
   daoCreatedCardPropsAtom,
   followingDaoDropdownInfosSelector,
+  walletTokenCardInfosSelector,
 } from '../recoil'
 import { ConnectWallet } from './ConnectWallet'
 import { IconButtonLink } from './IconButtonLink'
@@ -73,7 +80,8 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   }
 
   //! WALLET CONNECTION ERROR MODALS
-  const { connect, connected, error, status } = useWalletManager()
+  const { connect, connected, error, status, connectedWallet } =
+    useWalletManager()
   const {
     walletAddress,
     walletProfileData,
@@ -164,6 +172,16 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     []
   )
 
+  //! Wallet balances, load in background so they're ready.
+  useRecoilValueLoadable(
+    connectedWallet
+      ? walletTokenCardInfosSelector({
+          walletAddress: connectedWallet.address,
+          chainId: connectedWallet.chainInfo.chainId,
+        })
+      : constSelector(undefined)
+  )
+
   return (
     <StatelessDappLayout
       connect={connect}
@@ -226,10 +244,10 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         />
       )}
       <SyncFollowingModal />
-
-      {updateProfileNft.visible && (
-        <PfpkNftSelectionModal onClose={updateProfileNft.toggle} />
-      )}
+      <PfpkNftSelectionModal
+        onClose={updateProfileNft.toggle}
+        visible={updateProfileNft.visible}
+      />
 
       {daoCreatedCardProps && (
         <DaoCreatedModal

@@ -53,7 +53,8 @@ export const DaoDappTabbedHome = ({
     const windowHash =
       typeof window === 'undefined'
         ? undefined
-        : window.location.hash.replace('#', '')
+        : // Remove hash prefix and split on slash to get tab ID. Anything after a slash is tab-specific info.
+          window.location.hash.replace('#', '').split('/')[0]
 
     return windowHash && tabs.some(({ id }) => id === windowHash)
       ? windowHash
@@ -66,7 +67,8 @@ export const DaoDappTabbedHome = ({
       return
     }
 
-    if (window.location.hash.replace('#', '') !== selectedTab) {
+    // Make sure hash is set to the selected tab with optional parameters.
+    if (!new RegExp(`^#${selectedTab}(/.*)?$`).test(window.location.hash)) {
       window.location.hash = selectedTab
     }
   }, [selectedTab])
@@ -101,16 +103,33 @@ export const DaoDappTabbedHome = ({
           follow={follow}
         />
 
-        <div className="flex flex-col items-center border-y border-t-border-base border-b-border-secondary py-6">
+        <div className="h-[1px] bg-border-base" />
+
+        <div className="styled-scrollbar -mx-6 mb-2 overflow-x-auto px-6 pt-6 pb-2">
           <SegmentedControls
-            className="w-full max-w-2xl shrink"
+            className="mx-auto hidden w-max max-w-full mdlg:grid"
+            moreTabs={
+              tabs.length > 4
+                ? tabs.slice(4).map(({ id, label }) => ({ label, value: id }))
+                : undefined
+            }
+            onSelect={setSelectedTab}
+            selected={selectedTab}
+            tabs={tabs
+              .slice(0, 4)
+              .map(({ id, label }) => ({ label, value: id }))}
+          />
+
+          <SegmentedControls
+            className="mdlg:hidden"
+            noWrap
             onSelect={setSelectedTab}
             selected={selectedTab}
             tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
           />
         </div>
 
-        <div className="py-6">
+        <div className="mt-2 border-t border-border-secondary py-6">
           {tabs.map(({ id, Component }) => (
             <div key={id} className={clsx(selectedTab !== id && 'hidden')}>
               <SuspenseLoader fallback={<Loader />}>

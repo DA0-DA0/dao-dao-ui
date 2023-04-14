@@ -1,6 +1,6 @@
 import { CloudDownloadRounded, CloudUploadRounded } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useState } from 'react'
+import { ComponentType, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { TransProps } from '@dao-dao/types'
@@ -11,6 +11,7 @@ export type ImageDropInputProps = Pick<
   FileDropInputProps,
   'onSelect' | 'className' | 'loading'
 > & {
+  currentImage?: string
   Trans: ComponentType<TransProps>
 }
 
@@ -18,21 +19,30 @@ export const ImageDropInput = ({
   onSelect: _onSelect,
   className,
   loading,
+  currentImage,
   Trans,
 }: ImageDropInputProps) => {
   const { t } = useTranslation()
 
-  const [imageData, setImageData] = useState<string>()
+  const [image, setImage] = useState<string | undefined>(currentImage)
   const onSelect = (file: File) => {
-    setImageData(URL.createObjectURL(file))
-    _onSelect(file)
+    const url = URL.createObjectURL(file)
+    setImage(url)
+    _onSelect(file, url)
   }
+
+  // If passed in image changes, update the image.
+  useEffect(() => {
+    if (currentImage) {
+      setImage(currentImage)
+    }
+  }, [currentImage])
 
   return (
     <FileDropInput
       Icon={CloudUploadRounded}
       IconHover={CloudDownloadRounded}
-      className={clsx(className, imageData && '!outline-solid')}
+      className={clsx(className, image && '!outline-solid')}
       dragHereOrSelect={
         <Trans i18nKey="form.dragImageHereOrClick">
           Drag image here or{' '}
@@ -43,10 +53,10 @@ export const ImageDropInput = ({
         </Trans>
       }
       dropHereText={t('form.dropImageHere')}
-      hideText={!!imageData}
+      hideText={!!image}
       loading={loading}
       onSelect={onSelect}
-      style={imageData ? { backgroundImage: `url(${imageData})` } : undefined}
+      style={image ? { backgroundImage: `url(${image})` } : undefined}
     />
   )
 }

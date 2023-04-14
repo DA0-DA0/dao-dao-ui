@@ -1,15 +1,16 @@
 import { promises as fs } from 'fs'
 
-import { Fields, Files, IncomingForm } from 'formidable'
+import { Fields, File, Files, IncomingForm } from 'formidable'
 import { NextApiRequest } from 'next'
 
 // Returns contents of form from a Next.js API route request.
-export const parseFormWithImage = async (
-  req: NextApiRequest
+export const parseForm = async (
+  req: NextApiRequest,
+  { requireImage = false } = {}
 ): Promise<{
   fields: Record<string, string | undefined>
-  imageData: Buffer
-  mimetype: string
+  imageData: Buffer | undefined
+  mimetype: string | undefined
 }> => {
   // Get fields and files from form.
   const { fields: _fields, files: _files } = await new Promise<{
@@ -28,17 +29,17 @@ export const parseFormWithImage = async (
   // Flatten files since a value in this object may be an array of files.
   const files = Object.values(_files).flat()
 
-  // Make sure there is only one file.
-  if (files.length === 0) {
+  // Make sure there is only one file, or optionally none if not required.
+  if (requireImage && files.length === 0) {
     throw new Error('No files found.')
   } else if (files.length > 1) {
     throw new Error('Too many files found.')
   }
 
-  const file = files[0]
+  const file: File | undefined = files[0]
 
   // Makes sure file is an image.
-  if (!file.mimetype?.startsWith('image')) {
+  if (file && !file.mimetype?.startsWith('image')) {
     throw new Error('Only images are supported.')
   }
 
@@ -50,11 +51,11 @@ export const parseFormWithImage = async (
     return acc
   }, {} as Record<string, string>)
   // Read image data from temporarily uploaded location.
-  const imageData = await fs.readFile(files[0].filepath)
+  const imageData = file ? await fs.readFile(file.filepath) : undefined
 
   return {
     fields,
     imageData,
-    mimetype: file.mimetype,
+    mimetype: file?.mimetype ?? undefined,
   }
 }

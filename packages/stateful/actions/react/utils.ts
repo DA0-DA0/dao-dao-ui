@@ -8,6 +8,10 @@ import { ActionKey } from '@dao-dao/types'
 export const actionKeyToMatchOrder = (key: ActionKey) =>
   (
     [
+      // Some actions, like create/delete Press post, are more specific NFT
+      // operations.
+      ActionKey.MintNft,
+      ActionKey.BurnNft,
       // This is before manage storage items becuase it is a more specific item
       // management action.
       ActionKey.ManageWidgets,
