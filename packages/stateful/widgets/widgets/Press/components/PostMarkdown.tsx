@@ -52,7 +52,7 @@ export const PostMarkdown = ({
     >
       {image && (
         <div
-          className="mb-6 h-64 w-full bg-cover bg-center bg-no-repeat"
+          className="mb-6 h-64 w-full bg-contain bg-center bg-no-repeat"
           style={{
             backgroundImage: `url(${transformIpfsUrlToHttpsIfNecessary(
               image
