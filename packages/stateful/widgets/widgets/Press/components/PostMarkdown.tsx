@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next'
 
 import { MarkdownRenderer, Tooltip } from '@dao-dao/stateless'
 import {
-  formatDate,
   formatDateTimeTz,
+  formatDateWithDayAndMaybeYear,
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
 
@@ -66,7 +66,7 @@ export const PostMarkdown = ({
       <Tooltip title={formatDateTimeTz(initiallyCreated)}>
         <p className="caption-text font-xs mb-8 self-start italic">
           {t('info.postedOnDate', {
-            date: formatDate(initiallyCreated),
+            date: formatDateWithDayAndMaybeYear(initiallyCreated),
           })}
         </p>
       </Tooltip>
@@ -74,7 +74,9 @@ export const PostMarkdown = ({
       {initiallyCreated.getTime() !== created.getTime() && (
         <Tooltip title={formatDateTimeTz(created)}>
           <p className="caption-text font-xs -mt-7 mb-8 self-start italic">
-            {t('info.lastUpdatedOnDate', { date: formatDate(created) })}
+            {t('info.lastUpdatedOnDate', {
+              date: formatDateWithDayAndMaybeYear(created),
+            })}
           </p>
         </Tooltip>
       )}

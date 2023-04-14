@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 
 import { Tooltip } from '@dao-dao/stateless'
-import { formatDate, formatDateTimeTz } from '@dao-dao/utils'
+import { formatDateTimeTz, formatDateWithDayAndMaybeYear } from '@dao-dao/utils'
 
 import { Post } from '../types'
 
@@ -28,7 +28,7 @@ export const PostLine = ({
     <div className="flex flex-row items-center justify-end">
       <Tooltip title={formatDateTimeTz(post.initiallyCreated)}>
         <p className="secondary-text text-right font-mono">
-          {formatDate(post.initiallyCreated)}
+          {formatDateWithDayAndMaybeYear(post.initiallyCreated)}
         </p>
       </Tooltip>
     </div>
