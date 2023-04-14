@@ -133,6 +133,14 @@ const eslintConfig = {
                 'No top-level i18n keys allowed. Organize top-level keys into a nested object.',
             },
             {
+              regex: 'dangerouslySetInnerHTML',
+              message: 'dangerouslySetInnerHTML is not allowed.',
+            },
+            {
+              regex: 'eval(',
+              message: 'eval is not allowed.',
+            },
+            {
               regex: 'animate-spin([^-])',
               replacement: {
                 function: '"animate-spin-medium" + $[1]',
