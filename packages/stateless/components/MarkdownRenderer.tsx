@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import ReactMarkdown from 'react-markdown'
 import { HeadingComponent } from 'react-markdown/lib/ast-to-react'
+import rehypeSanitize from 'rehype-sanitize'
 import remarkGfm from 'remark-gfm'
 
 import { IconButton } from './icon_buttons/IconButton'
@@ -40,6 +41,7 @@ export const MarkdownRenderer = ({
     }
     linkTarget="_blank"
     rawSourcePos
+    rehypePlugins={[rehypeSanitize]}
     remarkPlugins={[remarkGfm]}
   >
     {markdown}
