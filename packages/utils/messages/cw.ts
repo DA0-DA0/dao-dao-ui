@@ -68,7 +68,7 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
 
 export function decodeMessages(
   msgs: CosmosMsgFor_Empty[]
-): { [key: string]: any }[] {
+): Record<string, any>[] {
   const decodedMessages: any[] = []
 
   for (const msgObj of msgs) {
