@@ -12,15 +12,17 @@ const Template: ComponentStory<typeof PostMarkdown> = (args) => (
   <PostMarkdown {...args} />
 )
 
+const now = new Date()
+
 export const Default = Template.bind({})
 Default.args = {
   post: {
     id: '1',
     title: 'This is a post',
     content: '## Hello!\n\nI am a post.',
-    headerImage: 'ipfs://',
-    created: new Date(),
-    order: 1,
+    image: 'ipfs://',
+    created: now,
     pastVersions: [],
+    initiallyCreated: now,
   },
 }

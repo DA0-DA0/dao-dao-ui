@@ -681,6 +681,7 @@
     "itemsInInboxNotification_other": "There are {{count}} pending items in your inbox.",
     "jsonIsValid": "json is valid",
     "keplrModalWalletExplanation": "Your wallet is your digital identity on the blockchain. Having one lets you interact with web3 applications like DAO DAO.\nWe recommend the Keplr wallet.",
+    "lastUpdatedOnDate": "Last updated on {{date}}",
     "loading": "Loading...",
     "loadingMembership": "Loading membership...",
     "loadingProposalStatus": "The proposal is loading...",

@@ -1,3 +1,4 @@
+import { ArrowBackIosRounded } from '@mui/icons-material'
 import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -74,7 +75,7 @@ export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
         description: updatingPost.description || '',
         content: updatingPost.content,
       })
-      setImageUrl(updatingPost.headerImage)
+      setImageUrl(updatingPost.image)
       setImage(undefined)
     }
   }, [fieldNamePrefix, setValue, updatingPost])
@@ -112,8 +113,13 @@ export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
           properties: {
             content: data.content,
             created: now.toISOString(),
-            order: updatingPost.order,
-            pastVersions: [...updatingPost.pastVersions, updatingPost.id],
+            pastVersions: [
+              ...updatingPost.pastVersions,
+              {
+                id: updatingPost.id,
+                created: updatingPost.created.toISOString(),
+              },
+            ],
           },
         })
       )
@@ -149,6 +155,8 @@ export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
     setValue((fieldNamePrefix + 'tokenUri') as 'tokenUri', '')
     setValue((fieldNamePrefix + 'uploaded') as 'uploaded', false)
   }
+
+  const now = new Date()
 
   return isCreating && !uploaded ? (
     <>
@@ -252,10 +260,10 @@ export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
               id: 'new',
               title: data?.title ?? '',
               content: data?.content ?? '',
-              headerImage: imageUrl,
-              created: new Date(),
-              order: 0,
+              image: imageUrl,
+              created: now,
               pastVersions: [],
+              initiallyCreated: now,
             }}
           />
         </div>
@@ -271,6 +279,7 @@ export const UpdatePostComponent: ActionComponent<UpdatePostOptions> = ({
           onClick={continueEditing}
           variant="secondary"
         >
+          <ArrowBackIosRounded className="!h-4 !w-4" />
           {t('button.continueEditing')}
         </Button>
       )}

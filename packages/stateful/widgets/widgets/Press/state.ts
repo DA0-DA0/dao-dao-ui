@@ -3,7 +3,7 @@ import { constSelector, selectorFamily, waitForAll } from 'recoil'
 import { Cw721BaseSelectors, nftUriDataSelector } from '@dao-dao/state/recoil'
 import { WithChainId } from '@dao-dao/types'
 
-import { Post } from './types'
+import { Post, PostVersion } from './types'
 
 export const postsSelector = selectorFamily<
   Post[],
@@ -62,24 +62,38 @@ export const postSelector = selectorFamily<
     ({ id, metadataUri }) =>
     ({ get }) => {
       const data = get(nftUriDataSelector(metadataUri))
+      if (!data || !('properties' in data)) {
+        return
+      }
 
-      return data &&
-        'properties' in data &&
-        'content' in data.properties &&
-        'created' in data.properties &&
-        data.properties.created
-        ? {
-            id,
-            title: data.name || id,
-            description: data.description,
-            content: data.properties.content,
-            // Use `image` field directly since it should be in IPFS format.
-            // `imageUrl` is processed into `https`.
-            headerImage: data.image,
-            created: new Date(data.properties.created),
-            order: data.properties.order,
-            pastVersions: data.properties.pastVersions || [],
-          }
-        : undefined
+      const created = new Date(data.properties.created)
+      const pastVersions: PostVersion[] = (
+        data.properties.pastVersions || []
+      ).map(
+        ({
+          created,
+          ...version
+        }: {
+          id: string
+          created: string
+        }): PostVersion => ({
+          ...version,
+          created: new Date(created),
+        })
+      )
+
+      return {
+        id,
+        title: data.name || id,
+        description: data.description,
+        content: data.properties.content,
+        // Use `image` field directly since we want it to use IPFS protocol.
+        // `data.imageUrl` is processed into `https`, so don't use it.
+        image: data.image,
+        created,
+        pastVersions,
+        initiallyCreated:
+          pastVersions.length > 0 ? pastVersions[0].created : created,
+      }
     },
 })

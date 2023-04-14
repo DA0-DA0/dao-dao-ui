@@ -1,3 +1,4 @@
+import { ArrowBackIosRounded } from '@mui/icons-material'
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -69,7 +70,6 @@ export const CreatePostComponent: ActionComponent<CreatePostOptions> = ({
           properties: {
             content: data.content,
             created: now.toISOString(),
-            order: now.getTime(),
             pastVersions: [],
           },
         })
@@ -91,6 +91,8 @@ export const CreatePostComponent: ActionComponent<CreatePostOptions> = ({
     setValue((fieldNamePrefix + 'tokenUri') as 'tokenUri', '')
     setValue((fieldNamePrefix + 'uploaded') as 'uploaded', false)
   }
+
+  const now = new Date()
 
   return isCreating && !uploaded ? (
     <>
@@ -173,10 +175,10 @@ export const CreatePostComponent: ActionComponent<CreatePostOptions> = ({
               id: 'new',
               title: data?.title ?? '',
               content: data?.content ?? '',
-              headerImage: imageUrl,
-              created: new Date(),
-              order: 0,
+              image: imageUrl,
+              created: now,
               pastVersions: [],
+              initiallyCreated: now,
             }}
           />
         </div>
@@ -192,6 +194,7 @@ export const CreatePostComponent: ActionComponent<CreatePostOptions> = ({
           onClick={continueEditing}
           variant="secondary"
         >
+          <ArrowBackIosRounded className="!h-4 !w-4" />
           {t('button.continueEditing')}
         </Button>
       )}

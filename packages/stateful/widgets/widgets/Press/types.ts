@@ -13,14 +13,20 @@ export type Post = {
   // Markdown content of the post.
   content: string
   // An optional header image to display above the title.
-  headerImage?: string
+  image?: string
   // The date the post was created (i.e. proposed).
   created: Date
-  // This is used to order the posts in the UI. It is initially set to the
-  // epoch time when the post is created, however when a post is edited, the old
-  // one is destroyed and a new one is created. To preserve the order, the new
-  // post will have the same order as the old one.
-  order: number
-  // The IDs of earlier versions of this post.
-  pastVersions: string[]
+  // The earlier versions of this post.
+  pastVersions: PostVersion[]
+  // The first date the post was created (i.e. proposed). This is either the
+  // post's `created` date or the earliest `created` date of any of its
+  // `pastVersions`.
+  initiallyCreated: Date
+}
+
+export type PostVersion = {
+  // The ID of the post.
+  id: string
+  // The date the post version was created (i.e. proposed).
+  created: Date
 }

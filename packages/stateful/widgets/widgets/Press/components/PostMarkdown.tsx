@@ -2,8 +2,12 @@ import clsx from 'clsx'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { MarkdownRenderer } from '@dao-dao/stateless'
-import { formatDate, transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
+import { MarkdownRenderer, Tooltip } from '@dao-dao/stateless'
+import {
+  formatDate,
+  formatDateTimeTz,
+  transformIpfsUrlToHttpsIfNecessary,
+} from '@dao-dao/utils'
 
 import { Post } from '../types'
 
@@ -14,7 +18,7 @@ export type PostMarkdownProps = {
 }
 
 export const PostMarkdown = ({
-  post: { title, content, headerImage, created: lastUpdated },
+  post: { title, content, image, created, initiallyCreated },
   className,
   addAnchors,
 }: PostMarkdownProps) => {
@@ -41,14 +45,17 @@ export const PostMarkdown = ({
 
   return (
     <div
-      className={clsx('mx-auto w-full max-w-[38rem] self-center', className)}
+      className={clsx(
+        'mx-auto flex w-full max-w-[38rem] flex-col self-center',
+        className
+      )}
     >
-      {headerImage && (
+      {image && (
         <div
-          className="mb-8 h-64 w-full bg-contain bg-center bg-no-repeat"
+          className="mb-6 h-64 w-full bg-cover bg-center bg-no-repeat"
           style={{
             backgroundImage: `url(${transformIpfsUrlToHttpsIfNecessary(
-              headerImage
+              image
             )})`,
           }}
         ></div>
@@ -56,9 +63,21 @@ export const PostMarkdown = ({
 
       <p className="hero-text mb-1 text-4xl">{title}</p>
 
-      <p className="caption-text font-xs mb-6 italic">
-        {t('info.postedOnDate', { date: formatDate(lastUpdated) })}
-      </p>
+      <Tooltip title={formatDateTimeTz(initiallyCreated)}>
+        <p className="caption-text font-xs mb-8 self-start italic">
+          {t('info.postedOnDate', {
+            date: formatDate(initiallyCreated),
+          })}
+        </p>
+      </Tooltip>
+      {/* If this post's creation date is different from when it was initially created, show last updated. */}
+      {initiallyCreated.getTime() !== created.getTime() && (
+        <Tooltip title={formatDateTimeTz(created)}>
+          <p className="caption-text font-xs -mt-7 mb-8 self-start italic">
+            {t('info.lastUpdatedOnDate', { date: formatDate(created) })}
+          </p>
+        </Tooltip>
+      )}
 
       <MarkdownRenderer
         addAnchors={addAnchors}

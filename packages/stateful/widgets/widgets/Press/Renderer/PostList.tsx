@@ -25,7 +25,10 @@ export const PostList = ({
     () =>
       postsLoading.loading
         ? []
-        : postsLoading.data.sort((a, b) => b.order - a.order),
+        : postsLoading.data.sort(
+            (a, b) =>
+              b.initiallyCreated.getTime() - a.initiallyCreated.getTime()
+          ),
     [postsLoading]
   )
 

@@ -55,7 +55,10 @@ export const Renderer = ({
             // Select post if it's the one we're looking for or if it's a newer
             // version of the selected ID (this ensures that old links stay
             // valid when posts are updated).
-            post.id === openPostId || post.pastVersions.includes(openPostId)
+            post.id === openPostId ||
+            post.pastVersions.some(
+              (version) => 'id' in version && version.id === openPostId
+            )
         )
 
   // Store selected post in URL hash.

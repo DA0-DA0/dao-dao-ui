@@ -26,9 +26,9 @@ export const PostLine = ({
     <p className="primary-text">{post.title}</p>
 
     <div className="flex flex-row items-center justify-end">
-      <Tooltip title={formatDateTimeTz(post.created)}>
+      <Tooltip title={formatDateTimeTz(post.initiallyCreated)}>
         <p className="secondary-text text-right font-mono">
-          {formatDate(post.created)}
+          {formatDate(post.initiallyCreated)}
         </p>
       </Tooltip>
     </div>
