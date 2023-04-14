@@ -1,3 +1,4 @@
+import { StdSignDoc } from '@cosmjs/amino'
 import { GasPrice } from '@cosmjs/stargate'
 import {
   ChainInfoID,
@@ -6,8 +7,10 @@ import {
   WalletType,
   useWallet,
 } from '@noahsaso/cosmodal'
+import { PromptSign } from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
 import { isMobile } from '@walletconnect/browser-utils'
-import { PropsWithChildren, ReactNode, useEffect } from 'react'
+import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
+import { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
@@ -24,8 +27,11 @@ import {
   STARGAZE_TESTNET_REST_ENDPOINT,
   STARGAZE_TESTNET_RPC_ENDPOINT,
   WC_ICON_PATH,
+  WEB3AUTH_CLIENT_ID,
   typesRegistry,
 } from '@dao-dao/utils'
+
+import { Web3AuthPromptModal } from './Web3AuthPromptModal'
 
 // Assert environment variable CHAIN_ID is a valid chain.
 if (!(Object.values(ChainInfoID) as string[]).includes(CHAIN_ID)) {
@@ -38,6 +44,14 @@ export interface WalletProviderProps {
 
 export const WalletProvider = ({ children }: WalletProviderProps) => {
   const { t } = useTranslation()
+
+  const [web3AuthPrompt, setWeb3AuthPrompt] = useState<
+    | {
+        signDoc: SignDoc | StdSignDoc
+        resolve: (value: boolean) => void
+      }
+    | undefined
+  >()
 
   return (
     <WalletManagerProvider
@@ -86,6 +100,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         ...(CHAIN_ID === ChainInfoID.Juno1
           ? [WalletType.WalletConnectKeplr]
           : []),
+        WalletType.Web3Auth,
       ]}
       getSigningCosmWasmClientOptions={(chainInfo) => ({
         gasPrice: GasPrice.fromString(
@@ -114,8 +129,25 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
             WC_ICON_PATH,
         ],
       }}
+      walletOptions={{
+        [WalletType.Web3Auth]: {
+          clientId: WEB3AUTH_CLIENT_ID,
+          promptSign: (...params: Parameters<PromptSign>): Promise<boolean> =>
+            new Promise((resolve) =>
+              setWeb3AuthPrompt({
+                signDoc: params[1],
+                resolve: (value) => {
+                  setWeb3AuthPrompt(undefined)
+                  resolve(value)
+                },
+              })
+            ),
+        },
+      }}
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>
+
+      <Web3AuthPromptModal {...web3AuthPrompt} />
     </WalletManagerProvider>
   )
 }
