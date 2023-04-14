@@ -15,6 +15,7 @@ export enum ActionCategoryKey {
   SmartContracting = 'smartContracting',
   Treasury = 'treasury',
   Nfts = 'nfts',
+  Press = 'press',
 }
 
 // TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
@@ -58,6 +59,10 @@ export enum ActionKey {
   // DaoProposalMultiple
   UpdatePreProposeMultipleConfig = 'updatePreProposeMultipleConfig',
   UpdateProposalMultipleConfig = 'updateProposalMultipleConfig',
+  // Press
+  CreatePost = 'createPost',
+  UpdatePost = 'updatePost',
+  DeletePost = 'deletePost',
 }
 
 export type CategorizedActionAndData = {

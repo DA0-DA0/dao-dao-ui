@@ -53,7 +53,8 @@ export const DaoDappTabbedHome = ({
     const windowHash =
       typeof window === 'undefined'
         ? undefined
-        : window.location.hash.replace('#', '')
+        : // Remove hash prefix and split on slash to get tab ID. Anything after a slash is tab-specific info.
+          window.location.hash.replace('#', '').split('/')[0]
 
     return windowHash && tabs.some(({ id }) => id === windowHash)
       ? windowHash
@@ -66,7 +67,8 @@ export const DaoDappTabbedHome = ({
       return
     }
 
-    if (window.location.hash.replace('#', '') !== selectedTab) {
+    // Make sure hash is set to the selected tab with optional parameters.
+    if (!new RegExp(`^#${selectedTab}(/.*)?$`).test(window.location.hash)) {
       window.location.hash = selectedTab
     }
   }, [selectedTab])
@@ -105,7 +107,7 @@ export const DaoDappTabbedHome = ({
 
         <div className="styled-scrollbar -mx-6 mb-2 overflow-x-auto px-6 pt-6 pb-2">
           <SegmentedControls
-            className="hidden mdlg:grid"
+            className="mx-auto hidden w-max max-w-full mdlg:grid"
             moreTabs={
               tabs.length > 4
                 ? tabs.slice(4).map(({ id, label }) => ({ label, value: id }))

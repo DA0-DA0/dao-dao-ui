@@ -188,3 +188,11 @@ export const HammerAndWrenchEmoji = () => (
 export const FileFolderEmoji = () => (
   <EmojiWrapper emoji="📁" labelI18nKey="emoji.fileFolder" />
 )
+
+export const MemoEmoji = () => (
+  <EmojiWrapper emoji="📝" labelI18nKey="emoji.memo" />
+)
+
+export const TrashEmoji = () => (
+  <EmojiWrapper emoji="🗑️" labelI18nKey="emoji.trash" />
+)

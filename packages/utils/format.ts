@@ -40,6 +40,13 @@ export const formatDate = (date: Date, both = false) =>
     : dateFormatterNoDay
   ).format(date)
 
+// Shows month and date. Adds year if not this year.
+export const formatDateWithDayAndMaybeYear = (date: Date) =>
+  (date.getFullYear() === new Date().getFullYear()
+    ? dateFormatterNoYear
+    : dateFormatterDayAndYear
+  ).format(date)
+
 export const dateTimeFormatter = new Intl.DateTimeFormat('default', {
   dateStyle: 'short',
   timeStyle: 'short',

@@ -13,16 +13,19 @@ export const getNftName = (
 export const uploadNft = async (
   name: string,
   description: string,
-  file: File,
+  image?: File,
   extra?: string
 ): Promise<{
+  cid: string
   metadataUrl: string
-  imageUrl: string
+  imageUrl: string | undefined
 }> => {
   const form = new FormData()
   form.append('name', name)
   form.append('description', description)
-  form.append('image', file)
+  if (image) {
+    form.append('image', image)
+  }
   if (extra) {
     form.append('extra', extra)
   }

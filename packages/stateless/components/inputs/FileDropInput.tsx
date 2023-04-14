@@ -14,7 +14,7 @@ import { TransProps } from '@dao-dao/types'
 import { Loader } from '../logo/Loader'
 
 export type FileDropInputProps = {
-  onSelect: (file: File) => void | Promise<void>
+  onSelect: (file: File, fileUrl: string) => void | Promise<void>
   Icon?: ComponentType<{ className: string }>
   IconHover?: ComponentType<{ className: string }>
   dropHereText?: string
@@ -79,7 +79,7 @@ export const FileDropInput = ({
         // Select file if exists.
         const file = e.dataTransfer.files?.[0]
         if (file) {
-          onSelect(file)
+          onSelect(file, URL.createObjectURL(file))
         }
       }}
       style={style}
@@ -91,7 +91,7 @@ export const FileDropInput = ({
           // selected.
           const file = e.target.files?.[0]
           if (file) {
-            onSelect(file)
+            onSelect(file, URL.createObjectURL(file))
 
             // Unselect file.
             e.target.value = ''

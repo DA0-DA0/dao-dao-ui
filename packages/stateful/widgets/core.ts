@@ -4,6 +4,7 @@ import { Widget } from '@dao-dao/types'
 import { CHAIN_ID } from '@dao-dao/utils'
 
 import {
+  PressWidget,
   RetroactiveCompensationWidget,
   VestingPaymentsWidget,
   WyndDepositWidget,
@@ -15,6 +16,7 @@ export const getWidgets = (): readonly Widget[] => [
 
   VestingPaymentsWidget,
   RetroactiveCompensationWidget,
+  PressWidget,
 
   // WYND only available on Juno mainnet.
   ...(CHAIN_ID === ChainInfoID.Juno1 ? [WyndDepositWidget] : []),
