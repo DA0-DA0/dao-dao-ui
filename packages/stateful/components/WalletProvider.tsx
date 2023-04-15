@@ -20,6 +20,7 @@ import {
   CHAIN_ID,
   CHAIN_REST_ENDPOINT,
   CHAIN_RPC_ENDPOINT,
+  MAINNET,
   SITE_URL,
   STARGAZE_REST_ENDPOINT,
   STARGAZE_RPC_ENDPOINT,
@@ -132,6 +133,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
       walletOptions={{
         [WalletType.Web3Auth]: {
           clientId: WEB3AUTH_CLIENT_ID,
+          web3AuthNetwork: MAINNET ? 'cyan' : 'testnet',
           promptSign: (...params: Parameters<PromptSign>): Promise<boolean> =>
             new Promise((resolve) =>
               setWeb3AuthPrompt({
