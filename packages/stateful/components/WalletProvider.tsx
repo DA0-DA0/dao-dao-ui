@@ -8,7 +8,6 @@ import {
   useWallet,
 } from '@noahsaso/cosmodal'
 import { PromptSign } from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
-import { isMobile } from '@walletconnect/browser-utils'
 import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
 import { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -116,10 +115,6 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         registry: typesRegistry,
       })}
       localStorageKey="connectedWalletId"
-      preselectedWalletType={
-        // If on a mobile device, default to WalletConnect.
-        isMobile() ? WalletType.WalletConnectKeplr : undefined
-      }
       renderLoader={() => <Loader size={42} />}
       walletConnectClientMeta={{
         name: t('meta.title'),
