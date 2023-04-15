@@ -28,6 +28,7 @@ import { AudioPlayer } from './AudioPlayer'
 import { Button } from './buttons'
 import { CopyToClipboardUnderline } from './CopyToClipboard'
 import { Checkbox } from './inputs'
+import { LinkWrapper } from './LinkWrapper'
 import { MarkdownRenderer } from './MarkdownRenderer'
 import { ButtonPopup } from './popup/ButtonPopup'
 import { TooltipLikeDisplay } from './tooltip/TooltipLikeDisplay'
@@ -173,12 +174,11 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           </div>
 
           {externalLink && (
-            <a
+            <LinkWrapper
               href={externalLink.href}
               // Don't click on anything else, such as the checkbox.
               onClick={(e) => e.stopPropagation()}
-              rel="noreferrer"
-              target="_blank"
+              openInNewTab
             >
               <TooltipLikeDisplay
                 className="absolute bottom-4 left-4 opacity-0 shadow-dp4 transition-opacity hover:!opacity-90 group-hover:opacity-100"
@@ -187,7 +187,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                   destination: externalLink.name,
                 })}
               />
-            </a>
+            </LinkWrapper>
           )}
 
           {buttonPopup && buttonPopup.sections.length > 0 && (
