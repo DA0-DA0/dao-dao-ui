@@ -137,7 +137,7 @@ const eslintConfig = {
               message: 'dangerouslySetInnerHTML is not allowed.',
             },
             {
-              regex: 'eval(',
+              regex: 'eval\\(',
               message: 'eval is not allowed.',
             },
             {

@@ -16,6 +16,7 @@ import {
 
 import { AudioPlayer } from './AudioPlayer'
 import { CopyToClipboard } from './CopyToClipboard'
+import { LinkWrapper } from './LinkWrapper'
 
 export interface HorizontalNftCardProps extends NftCardInfo {
   className?: string
@@ -184,14 +185,13 @@ export const HorizontalNftCard = forwardRef<
           {/* Source chain */}
           {chainImageNode ? (
             externalLink ? (
-              <a
+              <LinkWrapper
                 className="shrink-0"
                 href={externalLink?.href}
-                rel="noreferrer"
-                target="_blank"
+                openInNewTab
               >
                 {chainImageNode}
-              </a>
+              </LinkWrapper>
             ) : (
               chainImageNode
             )

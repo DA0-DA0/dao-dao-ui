@@ -10,7 +10,6 @@ import {
 } from '@mui/icons-material'
 import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
-import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -165,10 +164,10 @@ export const DappNavigation = ({
       >
         <PageHeader
           centerNode={
-            <Link className="flex flex-row items-center gap-2" href="/">
+            <LinkWrapper className="flex flex-row items-center gap-2" href="/">
               <Logo size={32} />
               {!compact && <p className="header-text">{t('meta.title')}</p>}
-            </Link>
+            </LinkWrapper>
           }
           forceCenter={compact}
           noBorder={compact}
