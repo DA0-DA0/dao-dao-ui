@@ -67,13 +67,6 @@ const config = {
       locale: false,
     },
   ],
-  webpack: (config) => {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      crypto: require.resolve('crypto-browserify'),
-    }
-    return config
-  },
   // Only upload source maps to Sentry in CI action when token is provided.
   sentry: {
     disableServerWebpackPlugin:
