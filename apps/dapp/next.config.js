@@ -27,6 +27,7 @@ const config = {
     '@dao-dao/stateful',
     '@dao-dao/i18n',
     '@dao-dao/types',
+    '@noahsaso/cosmodal',
   ],
   i18n,
   /*
