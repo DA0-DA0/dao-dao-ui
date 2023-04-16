@@ -14,6 +14,7 @@ const withTM = require('next-transpile-modules')([
   '@dao-dao/stateful',
   '@dao-dao/i18n',
   '@dao-dao/types',
+  '@noahsaso/cosmodal',
 ])
 
 const { withSentryConfig } = require('@sentry/nextjs')
