@@ -67,22 +67,6 @@ const config = {
       permanent: false,
     },
   ],
-  webpack: (config, options) => {
-    if (options.isServer) {
-      config.externals = ['@noahsaso/cosmodal', ...config.externals]
-    }
-
-    config.resolve.alias['@noahsaso/cosmodal'] = path.resolve(
-      __dirname,
-      '..',
-      '..',
-      'node_modules',
-      '@noahsaso',
-      'cosmodal'
-    )
-
-    return config
-  },
   // Only upload source maps to Sentry in CI action when token is provided.
   sentry: {
     disableServerWebpackPlugin:
