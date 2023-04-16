@@ -55,8 +55,10 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
   >()
 
   const web3AuthWalletOptions = {
-    clientId: WEB3AUTH_CLIENT_ID,
-    web3AuthNetwork: MAINNET ? 'cyan' : 'testnet',
+    client: {
+      clientId: WEB3AUTH_CLIENT_ID,
+      web3AuthNetwork: MAINNET ? 'cyan' : 'testnet',
+    },
     promptSign: (...params: Parameters<PromptSign>): Promise<boolean> =>
       new Promise((resolve) =>
         setWeb3AuthPrompt({
