@@ -4137,11 +4137,12 @@
     jsbi "^3.1.5"
     sha.js "^2.4.11"
 
-"@noahsaso/cosmodal@0.9.6":
-  version "0.9.6"
-  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.9.6.tgz#fba8e6477a7383471e8e9a870a712f2ad32c05b5"
-  integrity sha512-RqoXjDJ7X8W6K7I8X9kdWAweW/Hq4QsgA3fr4CnLpaMUAIPQO1lcGcfvv4AzwTPGlCmhL89nRzSn5Jf+gNoSMg==
+"@noahsaso/cosmodal@0.10.0-alpha.4":
+  version "0.10.0-alpha.4"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.10.0-alpha.4.tgz#f885543bfe7d663ee2cbb8c22f8f353a19e4e81c"
+  integrity sha512-P9/tTcg7reo6AebnHqUurFDlkPz7gsbt0lvsR/CjbxDrmzsBvQgQBj/OTWvq9vAMSYO+IXL39/I+A7sm5hZb3w==
   dependencies:
+    "@toruslabs/eccrypto" "^2.1.1"
     "@walletconnect/client" "^1.7.8"
     "@walletconnect/utils" "^1.7.8"
     "@web3auth/base" "^5.1.0"
@@ -6533,7 +6534,7 @@
     socket.io-client "^4.6.1"
     unload "^2.4.1"
 
-"@toruslabs/eccrypto@^2.0.0":
+"@toruslabs/eccrypto@^2.0.0", "@toruslabs/eccrypto@^2.1.1":
   version "2.1.1"
   resolved "https://registry.yarnpkg.com/@toruslabs/eccrypto/-/eccrypto-2.1.1.tgz#8ff819c5a96ed4482eec08c92f69c4cfb162ad6d"
   integrity sha512-6A+MF/oVDs8O87/vJBKW6y662aRf0unvfN3Nvw4MFfBiyGoAxUAtIp8Dl1p44dsVabfHsHMLFxNGVDJGyTL1UQ==
