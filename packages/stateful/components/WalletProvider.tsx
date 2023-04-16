@@ -112,9 +112,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         WalletType.Keplr,
         WalletType.Leap,
         // Only allow WalletConnect on mainnet.
-        ...(CHAIN_ID === ChainInfoID.Juno1
-          ? [WalletType.WalletConnectKeplr]
-          : []),
+        ...(MAINNET ? [WalletType.WalletConnectKeplr] : []),
         // Web3Auth social logins.
         WalletType.Google,
         WalletType.Apple,
