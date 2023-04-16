@@ -1,4 +1,3 @@
-import { StdSignDoc } from '@cosmjs/amino'
 import { GasPrice } from '@cosmjs/stargate'
 import {
   ChainInfoID,
@@ -7,8 +6,10 @@ import {
   WalletType,
   useWallet,
 } from '@noahsaso/cosmodal'
-import { PromptSign } from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
-import { SignDoc } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
+import {
+  PromptSign,
+  SignData,
+} from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
 import { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
@@ -47,11 +48,26 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
 
   const [web3AuthPrompt, setWeb3AuthPrompt] = useState<
     | {
-        signDoc: SignDoc | StdSignDoc
+        signData: SignData
         resolve: (value: boolean) => void
       }
     | undefined
   >()
+
+  const web3AuthWalletOptions = {
+    clientId: WEB3AUTH_CLIENT_ID,
+    web3AuthNetwork: MAINNET ? 'cyan' : 'testnet',
+    promptSign: (...params: Parameters<PromptSign>): Promise<boolean> =>
+      new Promise((resolve) =>
+        setWeb3AuthPrompt({
+          signData: params[1],
+          resolve: (value) => {
+            setWeb3AuthPrompt(undefined)
+            resolve(value)
+          },
+        })
+      ),
+  }
 
   return (
     <WalletManagerProvider
@@ -100,7 +116,11 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         ...(CHAIN_ID === ChainInfoID.Juno1
           ? [WalletType.WalletConnectKeplr]
           : []),
-        WalletType.Web3Auth,
+        // Web3Auth social logins.
+        WalletType.Google,
+        WalletType.Apple,
+        WalletType.Discord,
+        WalletType.Twitter,
       ]}
       getSigningCosmWasmClientOptions={(chainInfo) => ({
         gasPrice: GasPrice.fromString(
@@ -126,20 +146,10 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         ],
       }}
       walletOptions={{
-        [WalletType.Web3Auth]: {
-          clientId: WEB3AUTH_CLIENT_ID,
-          web3AuthNetwork: MAINNET ? 'cyan' : 'testnet',
-          promptSign: (...params: Parameters<PromptSign>): Promise<boolean> =>
-            new Promise((resolve) =>
-              setWeb3AuthPrompt({
-                signDoc: params[1],
-                resolve: (value) => {
-                  setWeb3AuthPrompt(undefined)
-                  resolve(value)
-                },
-              })
-            ),
-        },
+        [WalletType.Google]: web3AuthWalletOptions,
+        [WalletType.Apple]: web3AuthWalletOptions,
+        [WalletType.Discord]: web3AuthWalletOptions,
+        [WalletType.Twitter]: web3AuthWalletOptions,
       }}
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>

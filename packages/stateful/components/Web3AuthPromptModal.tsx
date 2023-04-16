@@ -1,5 +1,5 @@
-import { StdSignDoc } from '@cosmjs/amino'
-import { SignDoc, TxBody } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
+import { SignData } from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
+import { TxBody } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -17,25 +17,24 @@ import { WalletActionsProvider } from '../actions/react/provider'
 import { SuspenseLoader } from './SuspenseLoader'
 
 type Web3AuthPromptModalProps = {
-  signDoc?: SignDoc | StdSignDoc
+  signData?: SignData
   resolve?: (value: boolean) => void
 }
 
 export const Web3AuthPromptModal = ({
-  signDoc,
+  signData,
   resolve,
 }: Web3AuthPromptModalProps) => {
   const { t } = useTranslation()
 
   const decoded = useMemo(() => {
-    if (!signDoc) {
+    if (!signData) {
       return
     }
 
-    // SignDoc (protobuf)
-    if ('bodyBytes' in signDoc) {
+    if (signData.type === 'direct') {
       const messages = decodeMessages(
-        TxBody.decode(signDoc.bodyBytes).messages.map(
+        TxBody.decode(signData.value.bodyBytes).messages.map(
           (msg) => protobufToCwMsg(msg).msg
         )
       )
@@ -44,15 +43,13 @@ export const Web3AuthPromptModal = ({
         type: 'cw' as const,
         messages,
       }
-
-      // StdSignDoc (amino)
-    } else if ('msgs' in signDoc) {
+    } else if (signData.type === 'amino') {
       return {
         type: 'amino' as const,
-        messages: signDoc.msgs,
+        messages: signData.value.msgs,
       }
     }
-  }, [signDoc])
+  }, [signData])
 
   // Re-create when messages change so that hooks are called in the same order.
   const WalletActionsRenderer = useMemo(
@@ -90,7 +87,7 @@ export const Web3AuthPromptModal = ({
         title: t('title.reviewTransaction'),
       }}
       onClose={() => resolve?.(false)}
-      visible={!!signDoc && !!resolve}
+      visible={!!signData && !!resolve}
     >
       {decoded &&
         (decoded.type === 'cw' ? (
