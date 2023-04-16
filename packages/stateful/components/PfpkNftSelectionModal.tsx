@@ -123,7 +123,8 @@ export const InnerPfpkNftSelectionModal = ({
         subtitle: t('info.chooseNftProfilePictureSubtitle'),
       }}
       nfts={
-        walletStatus === WalletConnectionStatus.Errored
+        walletStatus === WalletConnectionStatus.ReadyForConnection &&
+        walletError
           ? { loading: false, errored: true, error: walletError }
           : nfts
       }
