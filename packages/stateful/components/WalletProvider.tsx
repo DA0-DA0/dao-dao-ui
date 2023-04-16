@@ -103,7 +103,6 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         modalSubheader: '!title-text',
         wallet:
           '!rounded-lg !bg-background-secondary !p-4 !shadow-none transition-opacity opacity-100 hover:opacity-80 active:opacity-70',
-        walletImage: '!rounded-full',
         walletName: '!primary-text',
         walletDescription: '!caption-text',
         textContent: '!body-text',
