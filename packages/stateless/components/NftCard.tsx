@@ -122,7 +122,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
       >
         <div
           className={clsx(
-            'relative flex aspect-square flex-col items-stretch overflow-hidden',
+            'relative flex flex-col items-stretch',
             // Make entire image clickable checkbox if present.
             checkbox && 'cursor-pointer'
           )}
@@ -141,7 +141,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
               ) : imageUrl ? (
                 <Image
                   alt={t('info.nftImage')}
-                  className="object-cover"
+                  className="h-full w-full object-cover"
                   fill
                   height={500}
                   onLoadingComplete={() => setImageLoading(false)}
