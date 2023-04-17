@@ -75,7 +75,8 @@ export const UpgradeV1ToV2Component: ActionComponent<
       )}
 
       {/* If v1 SubDAOs exist, show them along with the current DAO. If not creating, only show if the target is not the current DAO. */}
-      {v1SubDaos.length > 0 && (isCreating || targetAddress !== address) && (
+      {((v1SubDaos.length > 0 && isCreating) ||
+        (!isCreating && targetAddress !== address)) && (
         <div className="space-y-1">
           <InputLabel name={t('title.dao')} />
 
