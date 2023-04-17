@@ -7,14 +7,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 const withInterceptStdout = require('next-intercept-stdout')
-const withTM = require('next-transpile-modules')([
-  '@dao-dao/stateless',
-  '@dao-dao/utils',
-  '@dao-dao/state',
-  '@dao-dao/stateful',
-  '@dao-dao/i18n',
-  '@dao-dao/types',
-])
 
 const { withSentryConfig } = require('@sentry/nextjs')
 /** @type {import("@sentry/nextjs").SentryWebpackPluginOptions} */
@@ -28,8 +20,14 @@ const { i18n } = require('./next-i18next.config')
 
 /** @type {import("next").NextConfig} */
 const config = {
-  // Faster minifier during Next build.
-  swcMinify: true,
+  transpilePackages: [
+    '@dao-dao/stateless',
+    '@dao-dao/utils',
+    '@dao-dao/state',
+    '@dao-dao/stateful',
+    '@dao-dao/i18n',
+    '@dao-dao/types',
+  ],
   i18n,
   /*
     The reactStrictMode flag is set to false
@@ -116,7 +114,7 @@ if (process.env.NEXT_PUBLIC_CHAIN_ID === 'testing') {
 module.exports = withSentryConfig(
   withBundleAnalyzer(
     withInterceptStdout(
-      withTM(config),
+      config,
       // Silence Recoil duplicate warnings on dev.
       (text) =>
         process.env.NODE_ENV === 'development' &&

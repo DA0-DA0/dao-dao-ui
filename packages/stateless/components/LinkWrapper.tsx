@@ -49,10 +49,12 @@ export const LinkWrapper = forwardRef<HTMLDivElement, LinkWrapperProps>(
             {children}
           </a>
         ) : (
-          <Link href={href ?? '#'}>
-            <a className={contentClassName} onClick={onClick}>
-              {children}
-            </a>
+          <Link
+            className={contentClassName}
+            href={href ?? '#'}
+            onClick={onClick}
+          >
+            {children}
           </Link>
         )}
       </div>

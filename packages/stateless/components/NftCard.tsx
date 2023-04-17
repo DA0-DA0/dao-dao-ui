@@ -142,10 +142,9 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                 <Image
                   alt={t('info.nftImage')}
                   className="h-full w-full object-cover"
-                  height={500}
+                  fill
                   onLoadingComplete={() => setImageLoading(false)}
                   src={toAccessibleImageUrl(imageUrl, { proxy: true })}
-                  width={500}
                 />
               ) : (
                 <div className="flex h-full w-full items-center justify-center">
