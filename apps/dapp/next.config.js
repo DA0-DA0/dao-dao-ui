@@ -28,8 +28,6 @@ const config = {
     '@dao-dao/i18n',
     '@dao-dao/types',
   ],
-  // Faster minifier during Next build.
-  swcMinify: true,
   i18n,
   /*
     The reactStrictMode flag is set to false
