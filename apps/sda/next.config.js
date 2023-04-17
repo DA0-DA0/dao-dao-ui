@@ -29,6 +29,12 @@ const config = {
     '@dao-dao/types',
     '@noahsaso/cosmodal',
   ],
+  webpack: (config) => {
+    // @noahsaso/cosmodal uses @toruslabs/eccrypto, which uses `stream`. This
+    // needs to be polyfilled.
+    config.resolve.alias['stream'] = 'stream-browserify'
+    return config
+  },
   i18n,
   /*
     The reactStrictMode flag is set to false
