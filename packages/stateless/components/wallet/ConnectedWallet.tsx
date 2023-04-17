@@ -86,7 +86,7 @@ export const ConnectedWallet = ({
         </Tooltip>
 
         {onDisconnect && (
-          <Tooltip title={t('info.disconnectWalletTooltip')}>
+          <Tooltip title={t('title.logOut')}>
             <IconButton
               Icon={Close}
               className="text-icon-secondary"

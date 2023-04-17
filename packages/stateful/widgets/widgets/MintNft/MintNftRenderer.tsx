@@ -62,7 +62,7 @@ export const MintNftRenderer = ({
 
   const onClick = async () => {
     if (!signingCosmWasmClient || !walletAddress) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return
     }
 
@@ -102,9 +102,7 @@ export const MintNftRenderer = ({
         />
       )}
 
-      <Tooltip
-        title={connected ? undefined : t('error.connectWalletToContinue')}
-      >
+      <Tooltip title={connected ? undefined : t('error.logInToContinue')}>
         <Button
           center
           disabled={!connected}

@@ -23,16 +23,6 @@ export const CosmodalUi = ({
   connectingWallet,
 }: UiProps) => {
   const { t } = useTranslation()
-  const title =
-    status === WalletConnectionStatus.SelectingWallet
-      ? t('title.selectSignInMethod')
-      : status === WalletConnectionStatus.Connecting
-      ? walletConnectUri
-        ? t('title.scanQrCode')
-        : t('title.connectingToWallet', { wallet: connectingWallet?.name })
-      : status === WalletConnectionStatus.Resetting
-      ? t('title.resetting')
-      : ''
 
   const web3AuthWallets = wallets.filter((wallet) =>
     WEB3AUTH_WALLETS.includes(wallet)
@@ -40,6 +30,19 @@ export const CosmodalUi = ({
   const otherWallets = wallets.filter(
     (wallet) => !WEB3AUTH_WALLETS.includes(wallet)
   )
+
+  const title =
+    status === WalletConnectionStatus.SelectingWallet
+      ? t('title.selectSignInMethod')
+      : status === WalletConnectionStatus.Connecting
+      ? walletConnectUri
+        ? t('title.scanQrCode')
+        : connectingWallet && web3AuthWallets.includes(connectingWallet)
+        ? t('title.loggingInToService', { service: connectingWallet?.name })
+        : t('title.connectingToWallet', { wallet: connectingWallet?.name })
+      : status === WalletConnectionStatus.Resetting
+      ? t('title.resetting')
+      : ''
 
   const mobile = isMobile()
   const android = isAndroid()

@@ -76,7 +76,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   const setFollowing = useCallback(
     async (coreAddressOrAddresses: string | string[]) => {
       if (!ready) {
-        toast.error(t('error.connectWalletToFollow'))
+        toast.error(t('error.logInToFollow'))
         return false
       }
       if (updating) {
@@ -115,7 +115,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   const setUnfollowing = useCallback(
     async (coreAddressOrAddresses: string | string[]) => {
       if (!ready) {
-        toast.error(t('error.connectWalletToFollow'))
+        toast.error(t('error.logInToFollow'))
         return false
       }
       if (updating) {

@@ -125,7 +125,7 @@ const InnerStakingModal = ({
 
   const onAction = async () => {
     if (!connected) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return
     }
 

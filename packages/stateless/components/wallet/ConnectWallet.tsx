@@ -17,7 +17,7 @@ export const ConnectWallet = ({ onConnect, ...props }: ConnectWalletProps) => {
   return (
     <Button {...props} onClick={onConnect} size="lg">
       <Sensors className="!h-6 !w-6" />
-      <p>{t('button.connectWallet')}</p>
+      <p>{t('button.logIn')}</p>
     </Button>
   )
 }

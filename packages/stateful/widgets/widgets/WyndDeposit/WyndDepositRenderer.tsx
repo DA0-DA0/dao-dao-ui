@@ -241,7 +241,7 @@ export const WyndDepositRenderer = ({
 
   const deposit = async () => {
     if (!signingCosmWasmClient || !walletAddress) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return
     }
 

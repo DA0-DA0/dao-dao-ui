@@ -97,7 +97,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
       return
     }
     if (!signingCosmWasmClient || !walletAddress) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return
     }
 

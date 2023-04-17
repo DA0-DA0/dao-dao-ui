@@ -41,7 +41,7 @@ export const InnerStargazeNftImportModal = ({
   const [loading, setLoading] = useState(false)
   const onAction = useCallback(async () => {
     if (!signingCosmWasmClient || !stargazeWalletAddress) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return
     }
     if (!selected.length || nfts.loading || nfts.errored) {
