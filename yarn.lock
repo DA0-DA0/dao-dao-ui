@@ -4117,10 +4117,10 @@
     jsbi "^3.1.5"
     sha.js "^2.4.11"
 
-"@noahsaso/cosmodal@0.10.0-alpha.5":
-  version "0.10.0-alpha.5"
-  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.10.0-alpha.5.tgz#28ee5ce2ac30b8ea33b539461c79ad3d1ee10685"
-  integrity sha512-IxVT5/Y81jZQ8bQfQF8wgWb+FRHBpdpHeN/BiN8S+iiIxRRcnj2BIUp6bh+D9MKH4yP80pttnZHr2VmwMtm+MQ==
+"@noahsaso/cosmodal@0.10.0-alpha.8":
+  version "0.10.0-alpha.8"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.10.0-alpha.8.tgz#47b4bf03f73d7740caa29079029e579083c4378f"
+  integrity sha512-jB0C278/UvLIhcb8X0oX5rm02Vk4WIq5Ieyko/SSGrirG453X71TmKzJn2zIyaDS+ek/Jn86r5lwrN3kAUCNCQ==
   dependencies:
     "@toruslabs/eccrypto" "^2.1.1"
     "@walletconnect/client" "^1.7.8"
@@ -18398,7 +18398,7 @@ qrcode.react@^1.0.1:
     prop-types "^15.6.0"
     qr.js "0.0.0"
 
-qrcode.react@^3.0.2:
+qrcode.react@^3.0.2, qrcode.react@^3.1.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/qrcode.react/-/qrcode.react-3.1.0.tgz#5c91ddc0340f768316fbdb8fff2765134c2aecd8"
   integrity sha512-oyF+Urr3oAMUG/OiOuONL3HXM+53wvuH3mtIWQrYmsXoAq0DkvZp2RYUWFSMFtbdOpuS++9v+WAkzNVkMlNW6Q==

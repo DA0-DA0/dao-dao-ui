@@ -10,12 +10,12 @@ import {
   PromptSign,
   SignData,
 } from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
+import { isMobile } from '@walletconnect/browser-utils'
 import { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { signingCosmWasmClientAtom } from '@dao-dao/state'
-import { Loader } from '@dao-dao/stateless'
 import {
   CHAIN_ID,
   CHAIN_REST_ENDPOINT,
@@ -32,6 +32,7 @@ import {
   typesRegistry,
 } from '@dao-dao/utils'
 
+import { CosmodalUi } from './CosmodalUi'
 import { Web3AuthPromptModal } from './Web3AuthPromptModal'
 
 // Assert environment variable CHAIN_ID is a valid chain.
@@ -73,8 +74,9 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
 
   return (
     <WalletManagerProvider
-      // Use environment variables to determine RPC/REST nodes.
+      CustomUi={CosmodalUi}
       chainInfoOverrides={[
+        // Use environment variables to determine RPC/REST nodes.
         {
           // Typechecked above.
           ...ChainInfoMap[CHAIN_ID as ChainInfoID],
@@ -96,28 +98,11 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         },
       ]}
       defaultChainId={CHAIN_ID}
-      defaultUiConfig={{
-        classNames: {
-          modalOverlay: '!backdrop-brightness-50 !backdrop-filter',
-          modalContent:
-            '!p-6 !max-w-md !bg-background-base !rounded-lg !border !border-border-secondary !shadow-dp8',
-          modalCloseButton:
-            '!p-1 !text-icon-tertiary bg-transparent hover:!bg-background-interactive-hover active:!bg-background-interactive-pressed !rounded-full !transition !absolute !top-2 !right-2',
-          modalHeader: '!header-text',
-          modalSubheader: '!title-text',
-          wallet:
-            '!rounded-lg !bg-background-secondary !p-4 !shadow-none transition-opacity opacity-100 hover:opacity-80 active:opacity-70',
-          walletName: '!primary-text',
-          walletDescription: '!caption-text',
-          textContent: '!body-text',
-        },
-        renderLoader: () => <Loader size={42} />,
-      }}
       enabledWalletTypes={[
-        WalletType.Keplr,
-        WalletType.Leap,
+        // Only show extension wallets on desktop.
+        ...(!isMobile() ? [WalletType.Keplr, WalletType.Leap] : []),
         // Only allow WalletConnect on mainnet.
-        ...(MAINNET ? [WalletType.WalletConnectKeplr] : []),
+        ...(MAINNET ? [WalletType.KeplrMobile] : []),
         // Web3Auth social logins.
         WalletType.Google,
         WalletType.Apple,
