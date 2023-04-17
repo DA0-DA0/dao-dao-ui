@@ -108,10 +108,11 @@ export const Modal = ({
                   <>
                     <p
                       className={clsx(
-                        'header-text mb-1',
-                        titleClassName,
+                        'header-text',
+                        header.subtitle && 'mb-1',
                         // If close button displaying, add more right padding.
-                        !hideCloseButton && 'pr-12'
+                        !hideCloseButton && 'pr-12',
+                        titleClassName
                       )}
                     >
                       {header.title}
