@@ -33,7 +33,7 @@ export const CosmodalUi = ({
 
   const title =
     status === WalletConnectionStatus.SelectingWallet
-      ? t('title.selectSignInMethod')
+      ? t('title.logInWith')
       : status === WalletConnectionStatus.Connecting
       ? walletConnectUri
         ? t('title.scanQrCode')
