@@ -51,7 +51,7 @@
     "@cosmjs/amino": "^0.30.1",
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",
-    "@noahsaso/cosmodal": "0.10.0-beta.4",
+    "@noahsaso/cosmodal": "0.10.0",
     "@storybook/react": "^6.5.10",
     "@types/file-saver": "^2.0.5",
     "@types/lodash.clonedeep": "^4.5.0",
