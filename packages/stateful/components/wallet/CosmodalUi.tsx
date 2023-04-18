@@ -5,7 +5,8 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { walletModalVisibleAtom } from '@dao-dao/state/recoil'
-import { Loader, Modal } from '@dao-dao/stateless'
+import { Loader, Modal, Warning } from '@dao-dao/stateless'
+import { processError } from '@dao-dao/utils'
 
 import { CosmodalConnected } from './CosmodalConnected'
 import { CosmodalWalletConnectQr } from './CosmodalWalletConnectQr'
@@ -15,10 +16,11 @@ export const CosmodalUi = (props: UiProps) => {
   const {
     wallets,
     walletConnectUri,
-    cancel,
+    disconnect,
     status,
     connectingWallet,
     connectedWallet,
+    error,
   } = props
 
   const { t } = useTranslation()
@@ -44,7 +46,7 @@ export const CosmodalUi = (props: UiProps) => {
       ? walletConnectUri
         ? t('title.scanQrCode')
         : connectingWallet && web3AuthWallets.includes(connectingWallet)
-        ? t('title.loggingInToService', { service: connectingWallet?.name })
+        ? t('title.loggingInToService', { service: connectingWallet.name })
         : t('title.connectingToWallet', { wallet: connectingWallet?.name })
       : status === WalletConnectionStatus.Resetting
       ? t('title.resetting')
@@ -61,6 +63,11 @@ export const CosmodalUi = (props: UiProps) => {
 
   return (
     <Modal
+      footerContent={
+        error && (
+          <Warning content={processError(error, { forceCapture: false })} />
+        )
+      }
       header={{
         title,
       }}
@@ -70,7 +77,7 @@ export const CosmodalUi = (props: UiProps) => {
         // user is in the process of connecting to a wallet. In this case,
         // cancel on close to interrupt the process.
         if (status !== WalletConnectionStatus.Connected) {
-          cancel()
+          disconnect()
         }
       }}
       visible={

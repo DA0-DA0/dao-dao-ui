@@ -87,6 +87,14 @@ const config = {
       'img-proxy.ekez.workers.dev',
     ],
   },
+  modularizeImports: {
+    '@mui/material': {
+      transform: '@mui/material/{{member}}',
+    },
+    '@mui/icons-material': {
+      transform: '@mui/icons-material/{{member}}',
+    },
+  },
 }
 
 // Only need rewrites for local development

@@ -1,4 +1,4 @@
-import { UiProps } from '@noahsaso/cosmodal'
+import { UiProps, Wallet, WalletConnectionStatus } from '@noahsaso/cosmodal'
 import { wallets as WEB3AUTH_WALLETS } from '@noahsaso/cosmodal/dist/wallets/web3auth'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
@@ -8,6 +8,7 @@ import { Button, Tooltip } from '@dao-dao/stateless'
 export const CosmodalWalletList = ({
   wallets,
   connectToWallet,
+  status,
   connectingWallet,
 }: UiProps) => {
   const { t } = useTranslation()
@@ -19,6 +20,11 @@ export const CosmodalWalletList = ({
     (wallet) => !WEB3AUTH_WALLETS.includes(wallet)
   )
 
+  const isConnectingTo = (wallet: Wallet) =>
+    status === WalletConnectionStatus.Connecting &&
+    !!connectingWallet &&
+    connectingWallet.type === wallet.type
+
   return (
     <div className="flex flex-col gap-2">
       <div className="grid grid-cols-2 grid-rows-2 gap-2 xs:flex xs:flex-row">
@@ -27,11 +33,13 @@ export const CosmodalWalletList = ({
             <Button
               className={clsx(
                 '!p-3',
-                connectingWallet?.type === wallet.type && 'animate-pulse'
+                isConnectingTo(wallet) && 'animate-pulse'
               )}
               contentContainerClassName="flex justify-center items-center grow"
               disabled={
-                connectingWallet && connectingWallet.type !== wallet.type
+                // Disable if connecting to another wallet.
+                status === WalletConnectionStatus.Connecting &&
+                !isConnectingTo(wallet)
               }
               onClick={() => connectToWallet(wallet)}
               variant="secondary"
@@ -56,11 +64,13 @@ export const CosmodalWalletList = ({
               key={wallet.type}
               className={clsx(
                 '!p-4',
-                connectingWallet?.type === wallet.type && 'animate-pulse'
+                isConnectingTo(wallet) && 'animate-pulse'
               )}
               contentContainerClassName="!gap-3 text-left"
               disabled={
-                connectingWallet && connectingWallet.type !== wallet.type
+                // Disable if connecting to another wallet.
+                status === WalletConnectionStatus.Connecting &&
+                !isConnectingTo(wallet)
               }
               onClick={() => connectToWallet(wallet)}
               variant="secondary"
