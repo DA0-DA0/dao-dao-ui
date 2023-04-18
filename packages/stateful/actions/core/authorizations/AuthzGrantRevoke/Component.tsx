@@ -99,7 +99,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
         ]}
       />
 
-      {mode === 'grant' && <Warning>{t('info.authzWarning')}</Warning>}
+      {mode === 'grant' && <Warning content={t('info.authzWarning')} />}
 
       <div className="flex flex-col gap-1">
         <InputLabel
