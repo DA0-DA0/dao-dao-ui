@@ -18,7 +18,7 @@ export const CosmodalConnected = ({ connectedWallet }: UiProps) => {
   const { walletProfileData } = useWalletInfo()
 
   return connectedWallet ? (
-    <div className="flex flex-col items-center gap-6">
+    <div className="flex flex-col items-stretch gap-6">
       <div className="flex flex-col items-center">
         {/* Image */}
         <div className="relative">
@@ -27,12 +27,14 @@ export const CosmodalConnected = ({ connectedWallet }: UiProps) => {
             loading={walletProfileData.loading}
             size="lg"
           />
-          <div
-            className="absolute bottom-0 right-0 h-6 w-6 bg-contain bg-center bg-no-repeat"
-            style={{
-              backgroundImage: `url(${connectedWallet.wallet.imageUrl})`,
-            }}
-          />
+          <div className="absolute -right-2 -bottom-2 flex h-8 w-8 items-center justify-center rounded-full bg-background-base shadow-dp4">
+            <div
+              className="h-6 w-6 bg-contain bg-center bg-no-repeat"
+              style={{
+                backgroundImage: `url(${connectedWallet.wallet.imageUrl})`,
+              }}
+            />
+          </div>
         </div>
         {/* Name */}
         <p

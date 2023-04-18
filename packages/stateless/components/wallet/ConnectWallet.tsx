@@ -7,7 +7,7 @@ import { Button } from '../buttons'
 
 export interface ConnectWalletProps
   extends Partial<Omit<ButtonProps, 'onClick' | 'size'>> {
-  onConnect: () => void
+  onConnect?: () => void
   className?: string
 }
 

@@ -37,6 +37,7 @@ export const CosmodalUi = (props: UiProps) => {
   )
 
   const title =
+    status === WalletConnectionStatus.ReadyForConnection ||
     status === WalletConnectionStatus.SelectingWallet
       ? t('title.logInWith')
       : status === WalletConnectionStatus.Connecting
@@ -52,6 +53,7 @@ export const CosmodalUi = (props: UiProps) => {
       : ''
 
   const showWalletList =
+    status === WalletConnectionStatus.ReadyForConnection ||
     status === WalletConnectionStatus.SelectingWallet ||
     (status === WalletConnectionStatus.Connecting && !walletConnectUri)
   const showWalletConnect =
@@ -72,7 +74,9 @@ export const CosmodalUi = (props: UiProps) => {
         }
       }}
       visible={
-        (visible && status === WalletConnectionStatus.Connected) ||
+        (visible &&
+          (status === WalletConnectionStatus.ReadyForConnection ||
+            status === WalletConnectionStatus.Connected)) ||
         status === WalletConnectionStatus.SelectingWallet ||
         status === WalletConnectionStatus.Connecting ||
         status === WalletConnectionStatus.Resetting
