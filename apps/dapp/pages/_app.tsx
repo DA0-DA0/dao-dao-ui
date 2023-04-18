@@ -26,7 +26,6 @@ import {
 } from '@dao-dao/stateful'
 import {
   PageLoader,
-  RootContext,
   Theme,
   ThemeProvider,
   ToastNotifications,
@@ -70,33 +69,27 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
   }, [navigatingToHref, setNavigatingToHref])
 
   return (
-    <RootContext.Provider
-      value={{
-        mode: DaoPageMode.Dapp,
-      }}
+    <ThemeProvider
+      theme={theme}
+      themeChangeCount={themeChangeCount}
+      updateTheme={setTheme}
     >
-      <ThemeProvider
-        theme={theme}
-        themeChangeCount={themeChangeCount}
-        updateTheme={setTheme}
-      >
-        {/* Show loader on fallback page when loading static props. */}
-        {router.isFallback ? (
-          <PageLoader />
-        ) : (
-          <WalletProvider>
-            {/* Inbox in AppContextProvider uses wallet context. */}
-            <AppContextProvider>
-              <DappLayout>
-                <Component {...pageProps} />
-              </DappLayout>
-            </AppContextProvider>
-          </WalletProvider>
-        )}
+      {/* Show loader on fallback page when loading static props. */}
+      {router.isFallback ? (
+        <PageLoader />
+      ) : (
+        <WalletProvider>
+          {/* AppContextProvider uses wallet context. */}
+          <AppContextProvider mode={DaoPageMode.Dapp}>
+            <DappLayout>
+              <Component {...pageProps} />
+            </DappLayout>
+          </AppContextProvider>
+        </WalletProvider>
+      )}
 
-        <ToastNotifications />
-      </ThemeProvider>
-    </RootContext.Provider>
+      <ToastNotifications />
+    </ThemeProvider>
   )
 }
 

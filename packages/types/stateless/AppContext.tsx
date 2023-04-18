@@ -57,5 +57,6 @@ export type IAppContext = CommonAppContext &
   )
 
 export type AppContextProviderProps = {
+  mode: DaoPageMode
   children: ReactNode
 }

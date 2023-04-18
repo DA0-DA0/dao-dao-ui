@@ -7,7 +7,7 @@ import {
   getDaoProposalPath as _getDaoProposalPath,
 } from '@dao-dao/utils'
 
-import { useRootContextIfAvailable } from '../components/layout/RootContext'
+import { useAppContextIfAvailable } from '../components/layout/AppContext'
 
 export const useNavHelpers = (overrideMode?: DaoPageMode) => {
   const router = useRouter()
@@ -15,7 +15,7 @@ export const useNavHelpers = (overrideMode?: DaoPageMode) => {
   // On SDA, some pages, like 404 and discord redirect, render outside the app
   // layout context. We still want to be able to use these helpers to redirect
   // to DAO pages, so we allow overriding the mode.
-  const { mode } = useRootContextIfAvailable() ?? {
+  const { mode } = useAppContextIfAvailable() ?? {
     mode: overrideMode,
   }
   if (!mode) {
