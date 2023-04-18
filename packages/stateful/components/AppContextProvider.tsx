@@ -2,7 +2,7 @@ import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
 import { indexerWebSocketChannelSubscriptionsAtom } from '@dao-dao/state/recoil'
-import { AppContext } from '@dao-dao/stateless'
+import { AppContext, useRootContext } from '@dao-dao/stateless'
 import {
   AppContextProviderProps,
   CommandModalContextMaker,
@@ -14,10 +14,9 @@ import { makeGenericContext } from '../command'
 import { useWebSocket } from '../hooks'
 import { useInbox } from '../inbox'
 
-export const AppContextProvider = ({
-  mode,
-  children,
-}: AppContextProviderProps) => {
+export const AppContextProvider = ({ children }: AppContextProviderProps) => {
+  const { mode } = useRootContext()
+
   // Visibility toggles.
   const [responsiveNavigationEnabled, setResponsiveNavigationEnabled] =
     useState(false)

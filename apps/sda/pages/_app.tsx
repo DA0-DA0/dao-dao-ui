@@ -27,6 +27,7 @@ import {
 } from '@dao-dao/stateful'
 import {
   PageLoader,
+  RootContext,
   Theme,
   ThemeProvider,
   ToastNotifications,
@@ -74,36 +75,42 @@ const InnerApp = ({
   }, [navigatingToHref, setNavigatingToHref])
 
   return (
-    <ThemeProvider
-      theme={theme}
-      themeChangeCount={themeChangeCount}
-      updateTheme={setTheme}
+    <RootContext.Provider
+      value={{
+        mode: DaoPageMode.Sda,
+      }}
     >
-      {/* Show loader on fallback page when loading static props. */}
-      {router.isFallback ? (
-        <PageLoader />
-      ) : router.pathname === '/discord' ||
-        router.pathname === '/404' ||
-        router.pathname === '/500' ||
-        router.pathname === '/_error' ? (
-        <Component {...pageProps} />
-      ) : (
-        <WalletProvider>
-          {/* AppContextProvider uses wallet context. */}
-          <AppContextProvider mode={DaoPageMode.Sda}>
-            {/* All non-error/discord redirect SDA pages are a DAO page. */}
-            <DaoPageWrapper setIcon={setIcon} {...pageProps}>
-              {/* SdaLayout needs DaoPageWrapper for navigation tabs. */}
-              <SdaLayout>
-                <Component {...pageProps} />
-              </SdaLayout>
-            </DaoPageWrapper>
-          </AppContextProvider>
-        </WalletProvider>
-      )}
+      <ThemeProvider
+        theme={theme}
+        themeChangeCount={themeChangeCount}
+        updateTheme={setTheme}
+      >
+        {/* Show loader on fallback page when loading static props. */}
+        {router.isFallback ? (
+          <PageLoader />
+        ) : router.pathname === '/discord' ||
+          router.pathname === '/404' ||
+          router.pathname === '/500' ||
+          router.pathname === '/_error' ? (
+          <Component {...pageProps} />
+        ) : (
+          <WalletProvider>
+            {/* Inbox in AppContextProvider uses wallet context. */}
+            <AppContextProvider>
+              {/* All non-error/discord redirect SDA pages are a DAO page. */}
+              <DaoPageWrapper setIcon={setIcon} {...pageProps}>
+                {/* SdaLayout needs DaoPageWrapper for navigation tabs. */}
+                <SdaLayout>
+                  <Component {...pageProps} />
+                </SdaLayout>
+              </DaoPageWrapper>
+            </AppContextProvider>
+          </WalletProvider>
+        )}
 
-      <ToastNotifications />
-    </ThemeProvider>
+        <ToastNotifications />
+      </ThemeProvider>
+    </RootContext.Provider>
   )
 }
 
