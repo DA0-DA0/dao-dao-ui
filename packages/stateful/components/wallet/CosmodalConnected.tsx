@@ -27,14 +27,15 @@ export const CosmodalConnected = ({ connectedWallet }: UiProps) => {
             loading={walletProfileData.loading}
             size="lg"
           />
-          <div className="absolute -right-2 -bottom-2 flex h-8 w-8 items-center justify-center rounded-full bg-background-base shadow-dp4">
-            <div
-              className="h-6 w-6 bg-contain bg-center bg-no-repeat"
-              style={{
-                backgroundImage: `url(${connectedWallet.wallet.imageUrl})`,
-              }}
-            />
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            alt=""
+            className="object-no-repeat absolute -right-2 -bottom-2 h-6 w-6 object-contain object-center"
+            src={connectedWallet.wallet.imageUrl}
+            style={{
+              filter: 'drop-shadow(0px 2px 8px rgba(0, 0, 0, 1))',
+            }}
+          />
         </div>
         {/* Name */}
         <p
