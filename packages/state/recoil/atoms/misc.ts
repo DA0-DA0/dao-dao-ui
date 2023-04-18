@@ -37,3 +37,12 @@ export const noKeplrAccountAtom = atom<boolean>({
   key: 'noKeplrAccountAtom',
   default: false,
 })
+
+// If true, will display wallet modal. The wallet modal will always be visible
+// when connecting to a wallet. This atom is used to display the wallet modal
+// when not actively connecting to a wallet, likely to display the connected
+// wallet or switch to another one.
+export const walletModalVisibleAtom = atom<boolean>({
+  key: 'walletModalVisible',
+  default: false,
+})

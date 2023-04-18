@@ -1,5 +1,7 @@
 import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
+import { useSetRecoilState } from 'recoil'
 
+import { walletModalVisibleAtom } from '@dao-dao/state/recoil'
 import { SidebarWallet as OriginalSidebarWallet } from '@dao-dao/stateless'
 import { NATIVE_TOKEN } from '@dao-dao/utils'
 
@@ -7,15 +9,11 @@ import { useWalletInfo } from '../hooks'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const SidebarWallet = () => {
-  const {
-    connect,
-    disconnect,
-    isEmbeddedKeplrMobileWeb,
-    connected,
-    connectedWallet,
-    status,
-  } = useWalletManager()
+  const { connect, connected, connectedWallet, status } = useWalletManager()
   const { walletBalance } = useWalletInfo()
+
+  const setWalletModalVisible = useSetRecoilState(walletModalVisibleAtom)
+  const openWalletModal = () => setWalletModalVisible(true)
 
   return (
     <SuspenseLoader
@@ -23,6 +21,7 @@ export const SidebarWallet = () => {
         <OriginalSidebarWallet
           connectedOrConnecting
           data={{ loading: true }}
+          openWalletModal={openWalletModal}
           tokenDecimals={NATIVE_TOKEN.decimals}
           tokenSymbol={NATIVE_TOKEN.symbol}
         />
@@ -55,7 +54,7 @@ export const SidebarWallet = () => {
                   loading: true,
                 }
           }
-          onDisconnect={isEmbeddedKeplrMobileWeb ? undefined : disconnect}
+          openWalletModal={openWalletModal}
           tokenDecimals={NATIVE_TOKEN.decimals}
           tokenSymbol={NATIVE_TOKEN.symbol}
         />

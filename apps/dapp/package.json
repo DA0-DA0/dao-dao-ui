@@ -31,7 +31,7 @@
     "@keplr-wallet/stores": "^0.11.49",
     "@keplr-wallet/types": "^0.11.49",
     "@mui/icons-material": "^5.10.3",
-    "@noahsaso/cosmodal": "0.10.0",
+    "@noahsaso/cosmodal": "0.10.1",
     "@sentry/nextjs": "^7.7.0",
     "@types/formidable": "^2.0.5",
     "cors": "^2.8.5",

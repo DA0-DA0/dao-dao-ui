@@ -32,7 +32,7 @@ import {
   typesRegistry,
 } from '@dao-dao/utils'
 
-import { CosmodalUi } from './CosmodalUi'
+import { CosmodalUi } from './wallet'
 import { Web3AuthPromptModal } from './Web3AuthPromptModal'
 
 // Assert environment variable CHAIN_ID is a valid chain.

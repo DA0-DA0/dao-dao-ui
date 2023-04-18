@@ -1,4 +1,4 @@
-import { Check, Close, Link, Wallet } from '@mui/icons-material'
+import { Check, Link, OpenInFull, Wallet } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -17,7 +17,7 @@ export interface ConnectedWalletProps {
   }>
   tokenDecimals: number
   tokenSymbol: string
-  onDisconnect?: () => void
+  openWalletModal: () => void
   className?: string
 }
 
@@ -25,7 +25,7 @@ export const ConnectedWallet = ({
   data,
   tokenDecimals,
   tokenSymbol,
-  onDisconnect,
+  openWalletModal,
   className,
 }: ConnectedWalletProps) => {
   const { t } = useTranslation()
@@ -85,18 +85,14 @@ export const ConnectedWallet = ({
           />
         </Tooltip>
 
-        {onDisconnect && (
-          <Tooltip title={t('title.logOut')}>
-            <IconButton
-              Icon={Close}
-              className="text-icon-secondary"
-              disabled={data.loading}
-              onClick={onDisconnect}
-              size="sm"
-              variant="ghost"
-            />
-          </Tooltip>
-        )}
+        <IconButton
+          Icon={OpenInFull}
+          className="text-icon-secondary"
+          disabled={data.loading}
+          onClick={openWalletModal}
+          size="sm"
+          variant="ghost"
+        />
       </div>
     </div>
   )

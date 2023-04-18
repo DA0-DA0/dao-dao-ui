@@ -27,6 +27,7 @@ Default.args = {
   },
   tokenDecimals: 6,
   tokenSymbol: 'JUNO',
+  openWalletModal: () => alert('open'),
 }
 
 export const Loading = Template.bind({})
@@ -36,4 +37,5 @@ Loading.args = {
   },
   tokenDecimals: 6,
   tokenSymbol: 'JUNO',
+  openWalletModal: () => alert('open'),
 }
