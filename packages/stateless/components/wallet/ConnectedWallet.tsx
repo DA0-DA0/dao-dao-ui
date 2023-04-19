@@ -1,8 +1,8 @@
-import { Settings } from '@mui/icons-material'
+import { Settings, Wallet } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 
-import { CopyToClipboardUnderline } from '../CopyToClipboard'
+import { CopyableAddress } from '../CopyableAddress'
 import { IconButton } from '../icon_buttons'
 
 export interface ConnectedWalletProps {
@@ -47,10 +47,11 @@ export const ConnectedWallet = ({
         <div className="flex min-w-0 flex-col justify-center gap-1">
           <p className="primary-text text-text-body">{walletName}</p>
 
-          <CopyToClipboardUnderline
-            className="!legend-text"
-            takeAll
-            value={walletAddress}
+          <CopyableAddress
+            Icon={Wallet}
+            address={walletAddress}
+            iconClassName="!h-4 !w-4"
+            textClassName="!legend-text"
           />
         </div>
       </div>

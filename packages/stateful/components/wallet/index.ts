@@ -1,1 +1,1 @@
-export * from './CosmodalUi'
+export * from './WalletModals'

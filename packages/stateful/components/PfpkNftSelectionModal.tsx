@@ -8,6 +8,7 @@ import {
   ModalProps,
   NftSelectionModal,
   ProfileImage,
+  useAppContext,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { NftCardInfo } from '@dao-dao/types'
@@ -154,8 +155,17 @@ export const InnerPfpkNftSelectionModal = ({
   )
 }
 
-export const PfpkNftSelectionModal = (props: PfpkNftSelectionModalProps) => (
-  <SuspenseLoader fallback={<ModalLoader {...props} />}>
-    <InnerPfpkNftSelectionModal {...props} />
-  </SuspenseLoader>
-)
+export const PfpkNftSelectionModal = () => {
+  const { updateProfileNft } = useAppContext()
+
+  return (
+    <SuspenseLoader
+      fallback={<ModalLoader onClose={updateProfileNft.toggle} />}
+    >
+      <InnerPfpkNftSelectionModal
+        onClose={updateProfileNft.toggle}
+        visible={updateProfileNft.visible}
+      />
+    </SuspenseLoader>
+  )
+}

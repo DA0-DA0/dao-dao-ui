@@ -3,6 +3,7 @@ import { MutableRefObject, ReactNode } from 'react'
 import { CommandModalContextMaker } from '../command'
 import { DaoPageMode } from '../dao'
 import { InboxState } from '../inbox'
+import { Web3AuthPrompt } from '../wallet'
 
 // App context used by all page modes.
 export type CommonAppContext = {
@@ -19,6 +20,7 @@ export type CommonAppContext = {
     enabled: boolean
     toggle: () => void
   }
+  web3AuthPrompt: Web3AuthPrompt | undefined
 
   // Page header.
   pageHeaderRef: MutableRefObject<HTMLDivElement | null>
@@ -58,5 +60,6 @@ export type IAppContext = CommonAppContext &
 
 export type AppContextProviderProps = {
   mode: DaoPageMode
+  web3AuthPrompt: Web3AuthPrompt | undefined
   children: ReactNode
 }

@@ -1,4 +1,4 @@
-import { UiProps, WalletConnectionStatus } from '@noahsaso/cosmodal'
+import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 import { wallets as WEB3AUTH_WALLETS } from '@noahsaso/cosmodal/dist/wallets/web3auth'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -12,16 +12,16 @@ import { CosmodalConnected } from './CosmodalConnected'
 import { CosmodalWalletConnectQr } from './CosmodalWalletConnectQr'
 import { CosmodalWalletList } from './CosmodalWalletList'
 
-export const CosmodalUi = (props: UiProps) => {
+export const CosmodalUi = () => {
+  const { uiProps } = useWalletManager()
   const {
-    wallets,
     walletConnectUri,
     disconnect,
     status,
     connectingWallet,
     connectedWallet,
     error,
-  } = props
+  } = uiProps
 
   const { t } = useTranslation()
 
@@ -34,10 +34,6 @@ export const CosmodalUi = (props: UiProps) => {
     }
   }, [status, setVisible])
 
-  const web3AuthWallets = wallets.filter((wallet) =>
-    WEB3AUTH_WALLETS.includes(wallet)
-  )
-
   const title =
     status === WalletConnectionStatus.ReadyForConnection ||
     status === WalletConnectionStatus.SelectingWallet
@@ -45,7 +41,7 @@ export const CosmodalUi = (props: UiProps) => {
       : status === WalletConnectionStatus.Connecting
       ? walletConnectUri
         ? t('title.scanQrCode')
-        : connectingWallet && web3AuthWallets.includes(connectingWallet)
+        : connectingWallet && WEB3AUTH_WALLETS.includes(connectingWallet)
         ? t('title.loggingInToService', { service: connectingWallet.name })
         : t('title.connectingToWallet', { wallet: connectingWallet?.name })
       : status === WalletConnectionStatus.Resetting
@@ -90,13 +86,13 @@ export const CosmodalUi = (props: UiProps) => {
       }
     >
       {showWalletList ? (
-        <CosmodalWalletList {...props} />
+        <CosmodalWalletList {...uiProps} />
       ) : showWalletConnect ? (
-        <CosmodalWalletConnectQr {...props} />
+        <CosmodalWalletConnectQr {...uiProps} />
       ) : status === WalletConnectionStatus.Resetting ? (
         <Loader size={42} />
       ) : status === WalletConnectionStatus.Connected ? (
-        <CosmodalConnected {...props} />
+        <CosmodalConnected {...uiProps} />
       ) : null}
     </Modal>
   )

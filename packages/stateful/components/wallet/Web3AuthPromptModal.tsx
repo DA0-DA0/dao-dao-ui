@@ -1,4 +1,3 @@
-import { SignData } from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
 import { TxBody } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -8,33 +7,27 @@ import {
   Button,
   CosmosMessageDisplay,
   Modal,
+  useAppContext,
 } from '@dao-dao/stateless'
 import { CategorizedActionAndData } from '@dao-dao/types'
 import { decodeMessages, protobufToCwMsg } from '@dao-dao/utils'
 
-import { useActionsForMatching } from '../actions'
-import { WalletActionsProvider } from '../actions/react/provider'
-import { SuspenseLoader } from './SuspenseLoader'
+import { useActionsForMatching } from '../../actions'
+import { WalletActionsProvider } from '../../actions/react/provider'
+import { SuspenseLoader } from '../SuspenseLoader'
 
-type Web3AuthPromptModalProps = {
-  signData?: SignData
-  resolve?: (value: boolean) => void
-}
-
-export const Web3AuthPromptModal = ({
-  signData,
-  resolve,
-}: Web3AuthPromptModalProps) => {
+export const Web3AuthPromptModal = () => {
   const { t } = useTranslation()
+  const { web3AuthPrompt: prompt } = useAppContext()
 
   const decoded = useMemo(() => {
-    if (!signData) {
+    if (!prompt) {
       return
     }
 
-    if (signData.type === 'direct') {
+    if (prompt.signData.type === 'direct') {
       const messages = decodeMessages(
-        TxBody.decode(signData.value.bodyBytes).messages.map(
+        TxBody.decode(prompt.signData.value.bodyBytes).messages.map(
           (msg) => protobufToCwMsg(msg).msg
         )
       )
@@ -43,13 +36,13 @@ export const Web3AuthPromptModal = ({
         type: 'cw' as const,
         messages,
       }
-    } else if (signData.type === 'amino') {
+    } else if (prompt.signData.type === 'amino') {
       return {
         type: 'amino' as const,
-        messages: signData.value.msgs,
+        messages: prompt.signData.value.msgs,
       }
     }
-  }, [signData])
+  }, [prompt])
 
   // Re-create when messages change so that hooks are called in the same order.
   const WalletActionsRenderer = useMemo(
@@ -67,7 +60,7 @@ export const Web3AuthPromptModal = ({
           <Button
             center
             className="grow"
-            onClick={() => resolve?.(false)}
+            onClick={() => prompt?.resolve(false)}
             variant="secondary"
           >
             {t('button.reject')}
@@ -76,7 +69,7 @@ export const Web3AuthPromptModal = ({
           <Button
             center
             className="grow"
-            onClick={() => resolve?.(true)}
+            onClick={() => prompt?.resolve(true)}
             variant="primary"
           >
             {t('button.approve')}
@@ -86,8 +79,8 @@ export const Web3AuthPromptModal = ({
       header={{
         title: t('title.reviewTransaction'),
       }}
-      onClose={() => resolve?.(false)}
-      visible={!!signData && !!resolve}
+      onClose={() => prompt?.resolve(false)}
+      visible={!!prompt}
     >
       {decoded &&
         (decoded.type === 'cw' ? (

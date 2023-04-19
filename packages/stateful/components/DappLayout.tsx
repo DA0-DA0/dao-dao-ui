@@ -44,9 +44,9 @@ import {
 import { ConnectWallet } from './ConnectWallet'
 import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
-import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
 import { SyncFollowingModal } from './SyncFollowingModal'
+import { WalletModals } from './wallet'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
@@ -73,7 +73,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   const [proposalCreatedCardProps, setProposalCreatedCardProps] =
     useRecoilState(proposalCreatedCardPropsAtom)
 
-  const { rootCommandContextMaker, updateProfileNft, inbox } = useAppContext()
+  const { rootCommandContextMaker, inbox } = useAppContext()
   // Type-check, should always be loaded for dapp.
   if (!inbox) {
     throw new Error(t('error.loadingData'))
@@ -244,10 +244,9 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         />
       )}
       <SyncFollowingModal />
-      <PfpkNftSelectionModal
-        onClose={updateProfileNft.toggle}
-        visible={updateProfileNft.visible}
-      />
+
+      {/* Wallet UI */}
+      <WalletModals />
 
       {daoCreatedCardProps && (
         <DaoCreatedModal

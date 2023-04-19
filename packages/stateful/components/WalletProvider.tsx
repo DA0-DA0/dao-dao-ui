@@ -6,16 +6,20 @@ import {
   WalletType,
   useWallet,
 } from '@noahsaso/cosmodal'
-import {
-  PromptSign,
-  SignData,
-} from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
+import { PromptSign } from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
 import { isMobile } from '@walletconnect/browser-utils'
-import { PropsWithChildren, ReactNode, useEffect, useState } from 'react'
+import {
+  Dispatch,
+  PropsWithChildren,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { signingCosmWasmClientAtom } from '@dao-dao/state'
+import { Web3AuthPrompt } from '@dao-dao/types'
 import {
   CHAIN_ID,
   CHAIN_REST_ENDPOINT,
@@ -32,28 +36,26 @@ import {
   typesRegistry,
 } from '@dao-dao/utils'
 
-import { CosmodalUi } from './wallet'
-import { Web3AuthPromptModal } from './Web3AuthPromptModal'
-
 // Assert environment variable CHAIN_ID is a valid chain.
 if (!(Object.values(ChainInfoID) as string[]).includes(CHAIN_ID)) {
   throw new Error(`CHAIN_ID constant (${CHAIN_ID}) is an invalid chain ID.`)
 }
 
-export interface WalletProviderProps {
+export type WalletProviderProps = {
+  // This needs to be provided by the parent component and then passed to the
+  // AppContext that wraps the app. Since the AppContext uses the inbox which
+  // depends on the wallet, we need to pass the setter to the wallet provider so
+  // that the value can be passed to the AppContext, used by the
+  // Web3AuthPromptModal in the respective app layout (DappLayout or SdaLayout).
+  setWeb3AuthPrompt: Dispatch<SetStateAction<Web3AuthPrompt | undefined>>
   children: ReactNode
 }
 
-export const WalletProvider = ({ children }: WalletProviderProps) => {
+export const WalletProvider = ({
+  setWeb3AuthPrompt,
+  children,
+}: WalletProviderProps) => {
   const { t } = useTranslation()
-
-  const [web3AuthPrompt, setWeb3AuthPrompt] = useState<
-    | {
-        signData: SignData
-        resolve: (value: boolean) => void
-      }
-    | undefined
-  >()
 
   const web3AuthWalletOptions = {
     client: {
@@ -64,9 +66,9 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
       new Promise((resolve) =>
         setWeb3AuthPrompt({
           signData: params[1],
-          resolve: (value) => {
+          resolve: (approved) => {
             setWeb3AuthPrompt(undefined)
-            resolve(value)
+            resolve(approved)
           },
         })
       ),
@@ -74,7 +76,6 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
 
   return (
     <WalletManagerProvider
-      CustomUi={CosmodalUi}
       chainInfoOverrides={[
         // Use environment variables to determine RPC/REST nodes.
         {
@@ -98,6 +99,7 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         },
       ]}
       defaultChainId={CHAIN_ID}
+      disableDefaultUi
       enabledWalletTypes={[
         // Only show extension wallets on desktop.
         ...(!isMobile() ? [WalletType.Keplr, WalletType.Leap] : []),
@@ -139,8 +141,6 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
       }}
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>
-
-      <Web3AuthPromptModal {...web3AuthPrompt} />
     </WalletManagerProvider>
   )
 }
