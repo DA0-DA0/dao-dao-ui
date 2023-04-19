@@ -197,7 +197,7 @@
     "governanceTokenSymbolPlaceholder": "a alfanumerik symble (e.g. \"DOG\")",
     "image": "imaj",
     "imageURLTitle": "imaj url",
-    "imageURLTooltip": "a link 2 an imaj. 4 exampul: https://moonphase.is/image.svg",
+    "imageUrlTooltip": "a link 2 an imaj. 4 exampul: https://moonphase.is/image.svg",
     "initialSupply": "tottal tokenn suplie",
     "instantiatedAddress": "instanshie8d adres",
     "maxCharacters": "maxx ov {{max}} charakterz",

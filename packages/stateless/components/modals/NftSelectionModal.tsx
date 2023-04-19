@@ -38,9 +38,16 @@ export interface NftSelectionModalProps<T extends NftCardInfo>
   onNftClick: (nft: T) => void
   onSelectAll?: () => void
   onDeselectAll?: () => void
-  onAction: () => void
-  actionLoading: boolean
-  actionLabel: string
+  action: {
+    loading?: boolean
+    label: string
+    onClick: () => void
+  }
+  secondaryAction?: {
+    loading?: boolean
+    label: string
+    onClick: () => void
+  }
   fallbackError?: string
   allowSelectingNone?: boolean
   selectedDisplay?: ReactNode
@@ -54,9 +61,8 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   onNftClick,
   onSelectAll,
   onDeselectAll,
-  onAction,
-  actionLoading,
-  actionLabel,
+  action,
+  secondaryAction,
   fallbackError,
   containerClassName,
   allowSelectingNone,
@@ -142,13 +148,26 @@ export const NftSelectionModal = <T extends NftCardInfo>({
             <p>{t('info.numNftsSelected', { count: selectedIds.length })}</p>
           )}
 
-          <Button
-            disabled={!allowSelectingNone && selectedIds.length === 0}
-            loading={actionLoading}
-            onClick={onAction}
-          >
-            {actionLabel}
-          </Button>
+          <div className="flex flex-row items-stretch gap-2">
+            {secondaryAction && (
+              <Button
+                loading={secondaryAction.loading}
+                onClick={secondaryAction.onClick}
+                variant="secondary"
+              >
+                {secondaryAction.label}
+              </Button>
+            )}
+
+            <Button
+              disabled={!allowSelectingNone && selectedIds.length === 0}
+              loading={action.loading}
+              onClick={action.onClick}
+              variant="primary"
+            >
+              {action.label}
+            </Button>
+          </div>
         </div>
       }
       headerContent={
@@ -221,7 +240,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
             checkbox={{
               checked: selectedIds.includes(getIdForNft(nft as T)),
               // Disable toggling if currently staking.
-              onClick: () => !actionLoading && onNftClick(nft as T),
+              onClick: () => !action.loading && onNftClick(nft as T),
             }}
           />
         ))

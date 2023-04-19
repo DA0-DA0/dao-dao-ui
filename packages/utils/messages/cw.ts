@@ -128,6 +128,13 @@ export const makeWasmMessage = (message: {
     msg.wasm.instantiate.msg = toBase64(
       toUtf8(JSON.stringify(message.wasm.instantiate.msg))
     )
+  } else if (message?.wasm?.instantiate2) {
+    msg.wasm.instantiate2.msg = toBase64(
+      toUtf8(JSON.stringify(message.wasm.instantiate2.msg))
+    )
+    msg.wasm.instantiate2.salt = toBase64(
+      toUtf8(message.wasm.instantiate2.salt)
+    )
   } else if (message.wasm.migrate) {
     msg.wasm.migrate.msg = toBase64(
       toUtf8(JSON.stringify(message.wasm.migrate.msg))

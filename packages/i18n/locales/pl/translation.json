@@ -137,7 +137,7 @@
     "governanceTokenSymbolPlaceholder": "Symbol alfanumeryczny (np, \"CEBULA\")",
     "governanceTokenSymbolTitle": "Symbol tokenu",
     "imageURLTitle": "URL zdjęcia",
-    "imageURLTooltip": "Link do zdjęcia. Na przykład: https://moonphase.is/image.svg",
+    "imageUrlTooltip": "Link do zdjęcia. Na przykład: https://moonphase.is/image.svg",
     "initialSupply": "Całkowite zasoby tokenu",
     "instantiatedAddress": "Utworzony adres",
     "junoAddress": "Juno adres",
