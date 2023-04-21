@@ -103,7 +103,7 @@ export const WalletProvider = ({
       enabledWalletTypes={[
         // Only show extension wallets on desktop.
         ...(!isMobile() ? [WalletType.Keplr, WalletType.Leap] : []),
-        // Only allow WalletConnect on mainnet.
+        // Only allow Keplr Mobile on mainnet since it can't use testnet.
         ...(MAINNET ? [WalletType.KeplrMobile] : []),
         // Web3Auth social logins.
         WalletType.Google,

@@ -8,6 +8,7 @@ import {
   ProfileImage,
   ProfileNameDisplayAndEditor,
   Tooltip,
+  Warning,
   useAppContext,
 } from '@dao-dao/stateless'
 
@@ -20,8 +21,16 @@ export const CosmodalConnected = ({ connectedWallet }: UiProps) => {
   const { walletProfileData, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppContext()
 
+  const isWeb3Auth =
+    !!connectedWallet && WEB3AUTH_WALLETS.includes(connectedWallet.wallet)
+
   return connectedWallet ? (
     <div className="flex flex-col items-stretch gap-6">
+      <Warning
+        content={t('info.socialLoginWarning', { context: 'onlySocial' })}
+        size="sm"
+      />
+
       <div className="flex flex-col items-center">
         {/* Image */}
         <div className="relative">
@@ -33,7 +42,7 @@ export const CosmodalConnected = ({ connectedWallet }: UiProps) => {
           />
           <Tooltip
             title={
-              WEB3AUTH_WALLETS.includes(connectedWallet.wallet)
+              isWeb3Auth
                 ? t('info.signedInAs', {
                     name: connectedWallet.name,
                   })
