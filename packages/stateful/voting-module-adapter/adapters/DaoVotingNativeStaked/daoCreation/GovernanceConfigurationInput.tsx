@@ -14,9 +14,9 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
-  isValidFactoryDenom,
-  validateContractAddress,
+  isValidTokenFactoryDenom,
   validateRequired,
+  validateTokenFactoryDenom,
 } from '@dao-dao/utils'
 
 import { DaoCreationConfig } from '../types'
@@ -37,7 +37,7 @@ export const GovernanceConfigurationInput = ({
 
   //! Validate existing governance token.
   const existingGovernanceTokenLoadable = useRecoilValueLoadable(
-    denom && isValidFactoryDenom(denom, CHAIN_BECH32_PREFIX)
+    denom && isValidTokenFactoryDenom(denom, CHAIN_BECH32_PREFIX)
       ? genericTokenSelector({
           type: TokenType.Native,
           denomOrAddress: denom,
@@ -84,11 +84,10 @@ export const GovernanceConfigurationInput = ({
               error={errors.votingModuleAdapter?.data?.denom}
               fieldName="votingModuleAdapter.data.denom"
               ghost
-              // TODO
-              placeholder={'factory'}
+              placeholder={`factory/${CHAIN_BECH32_PREFIX}.../denom`}
               register={register}
               validation={[
-                validateContractAddress,
+                validateTokenFactoryDenom,
                 validateRequired,
                 () =>
                   existingGovernanceTokenLoadable.state === 'hasValue' ||

@@ -7,6 +7,7 @@ import cosmosMsgSchema from '../cosmos_msg.json'
 import {
   isValidAddress,
   isValidContractAddress,
+  isValidTokenFactoryDenom,
   isValidValidatorAddress,
 } from '../isValidAddress'
 import { isValidUrl } from '../isValidUrl'
@@ -57,7 +58,14 @@ export const validateContractAddress = (v: any, required = true) =>
   (v &&
     typeof v === 'string' &&
     isValidContractAddress(v, CHAIN_BECH32_PREFIX)) ||
-  'Invalid contract address'
+  'Invalid contract address.'
+
+export const validateTokenFactoryDenom = (v: any, required = true) =>
+  (!required && !v) ||
+  (v &&
+    typeof v === 'string' &&
+    isValidTokenFactoryDenom(v, CHAIN_BECH32_PREFIX)) ||
+  'Invalid token factory denom. Ensure it is lower–cased.'
 
 export const validateJSON = (v: string) => {
   try {

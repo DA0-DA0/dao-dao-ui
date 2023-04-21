@@ -48,7 +48,10 @@ export function isValidContractAddress(
   return !!unprefixed.match(bech32Regex)
 }
 
-export const isValidFactoryDenom = (denom: string, chainPrefix: string) => {
+export const isValidTokenFactoryDenom = (
+  denom: string,
+  chainPrefix: string
+) => {
   const regex = /^factory\/[a-km-zA-HJ-NP-Z0-9]{39}\/.+$/im
   if (!denom?.length) {
     return false

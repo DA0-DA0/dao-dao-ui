@@ -11,7 +11,7 @@ import {
   CHAIN_BECH32_PREFIX,
   getFallbackImage,
   isValidContractAddress,
-  isValidFactoryDenom,
+  isValidTokenFactoryDenom,
   isValidWalletAddress,
   nativeTokenDecimals,
   nativeTokenLabel,
@@ -47,7 +47,7 @@ export const genericTokenSelector = selectorFamily<
               params: [],
             })
           : // Native factory tokens.
-          isValidFactoryDenom(denomOrAddress, CHAIN_BECH32_PREFIX)
+          isValidTokenFactoryDenom(denomOrAddress, CHAIN_BECH32_PREFIX)
           ? factoryTokenInfoSelector({
               denom: denomOrAddress,
               chainId,
