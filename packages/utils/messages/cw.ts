@@ -68,7 +68,7 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
 
 export function decodeMessages(
   msgs: CosmosMsgFor_Empty[]
-): { [key: string]: any }[] {
+): Record<string, any>[] {
   const decodedMessages: any[] = []
 
   for (const msgObj of msgs) {
@@ -127,6 +127,13 @@ export const makeWasmMessage = (message: {
   } else if (message?.wasm?.instantiate) {
     msg.wasm.instantiate.msg = toBase64(
       toUtf8(JSON.stringify(message.wasm.instantiate.msg))
+    )
+  } else if (message?.wasm?.instantiate2) {
+    msg.wasm.instantiate2.msg = toBase64(
+      toUtf8(JSON.stringify(message.wasm.instantiate2.msg))
+    )
+    msg.wasm.instantiate2.salt = toBase64(
+      toUtf8(message.wasm.instantiate2.salt)
     )
   } else if (message.wasm.migrate) {
     msg.wasm.migrate.msg = toBase64(

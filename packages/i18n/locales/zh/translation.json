@@ -121,7 +121,7 @@
     "governanceTokenSymbolPlaceholder": "含有字母数字的符号 (例子：\"DOG\")",
     "governanceTokenSymbolTitle": "代币符号",
     "imageURLTitle": "图片 URL",
-    "imageURLTooltip": "图片的链接，例如: https://moonphase.is/image.svg",
+    "imageUrlTooltip": "图片的链接，例如: https://moonphase.is/image.svg",
     "initialSupply": "代币初始供应量",
     "instantiatedAddress": "实例化地址",
     "junoAddress": "Juno 地址",

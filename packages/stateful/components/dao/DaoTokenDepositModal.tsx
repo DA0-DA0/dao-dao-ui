@@ -79,7 +79,7 @@ export const DaoTokenDepositModal = ({
   const onDeposit = useCallback(
     async (amount: number) => {
       if (!signingCosmWasmClient || !address) {
-        toast.error(t('error.connectWalletToContinue'))
+        toast.error(t('error.logInToContinue'))
         return
       }
 

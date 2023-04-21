@@ -27,7 +27,7 @@ export const VestingPaymentsEditor = ({
   const [instantiating, setInstantiating] = useState(false)
   const instantiateVestingFactory = async () => {
     if (!walletAddress || !signingCosmWasmClient) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return
     }
 

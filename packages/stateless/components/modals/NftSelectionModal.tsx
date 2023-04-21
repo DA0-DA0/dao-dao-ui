@@ -38,13 +38,22 @@ export interface NftSelectionModalProps<T extends NftCardInfo>
   onNftClick: (nft: T) => void
   onSelectAll?: () => void
   onDeselectAll?: () => void
-  onAction: () => void
-  actionLoading: boolean
-  actionLabel: string
+  action: {
+    loading?: boolean
+    label: string
+    onClick: () => void
+  }
+  secondaryAction?: {
+    loading?: boolean
+    label: string
+    onClick: () => void
+  }
   fallbackError?: string
   allowSelectingNone?: boolean
   selectedDisplay?: ReactNode
   headerDisplay?: ReactNode
+  // What displays when there are no NFTs.
+  noneDisplay?: ReactNode
 }
 
 export const NftSelectionModal = <T extends NftCardInfo>({
@@ -54,14 +63,14 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   onNftClick,
   onSelectAll,
   onDeselectAll,
-  onAction,
-  actionLoading,
-  actionLabel,
+  action,
+  secondaryAction,
   fallbackError,
   containerClassName,
   allowSelectingNone,
   selectedDisplay,
   headerDisplay,
+  noneDisplay,
   ...modalProps
 }: NftSelectionModalProps<T>) => {
   const { t } = useTranslation()
@@ -142,58 +151,76 @@ export const NftSelectionModal = <T extends NftCardInfo>({
             <p>{t('info.numNftsSelected', { count: selectedIds.length })}</p>
           )}
 
-          <Button
-            disabled={!allowSelectingNone && selectedIds.length === 0}
-            loading={actionLoading}
-            onClick={onAction}
-          >
-            {actionLabel}
-          </Button>
-        </div>
-      }
-      headerContent={
-        <div className="mt-4 flex flex-col gap-4">
-          {headerDisplay}
-
-          <SearchBar
-            autoFocus
-            placeholder={t('info.searchNftsPlaceholder')}
-            {...searchBarProps}
-          />
-
-          <div
-            className={clsx(
-              'flex flex-row flex-wrap items-center gap-x-8 gap-y-4',
-              // Push sort/filter to the right no matter what.
-              showSelectAll ? 'justify-between' : 'justify-end'
-            )}
-          >
-            {showSelectAll && (
+          <div className="flex flex-row items-stretch gap-2">
+            {secondaryAction && (
               <Button
-                className="text-text-interactive-active"
-                disabled={nfts.loading}
-                onClick={
-                  nfts.loading
-                    ? undefined
-                    : nfts.data.length === selectedIds.length
-                    ? onDeselectAll
-                    : onSelectAll
-                }
-                variant="underline"
+                loading={secondaryAction.loading}
+                onClick={secondaryAction.onClick}
+                variant="secondary"
               >
-                {!nfts.loading &&
-                  (nfts.data.length === selectedIds.length
-                    ? t('button.deselectAllNfts', { count: nfts.data.length })
-                    : t('button.selectAllNfts', { count: nfts.data.length }))}
+                {secondaryAction.label}
               </Button>
             )}
 
-            <div className="flex grow flex-row items-center justify-end gap-4">
-              <ButtonPopup position="left" {...filterNftButtonPopupProps} />
-              <ButtonPopup position="left" {...sortButtonPopupProps} />
-            </div>
+            <Button
+              disabled={!allowSelectingNone && selectedIds.length === 0}
+              loading={action.loading}
+              onClick={action.onClick}
+              variant="primary"
+            >
+              {action.label}
+            </Button>
           </div>
         </div>
+      }
+      headerContent={
+        headerDisplay ||
+        nfts.loading ||
+        nfts.errored ||
+        nfts.data.length > 0 ? (
+          <div className="mt-4 flex flex-col gap-4">
+            {headerDisplay}
+
+            <SearchBar
+              autoFocus
+              placeholder={t('info.searchNftsPlaceholder')}
+              {...searchBarProps}
+            />
+
+            <div
+              className={clsx(
+                'flex flex-row flex-wrap items-center gap-x-8 gap-y-4',
+                // Push sort/filter to the right no matter what.
+                showSelectAll ? 'justify-between' : 'justify-end'
+              )}
+            >
+              {showSelectAll && (
+                <Button
+                  className="text-text-interactive-active"
+                  disabled={nfts.loading}
+                  onClick={
+                    nfts.loading
+                      ? undefined
+                      : nfts.data.length === selectedIds.length
+                      ? onDeselectAll
+                      : onSelectAll
+                  }
+                  variant="underline"
+                >
+                  {!nfts.loading &&
+                    (nfts.data.length === selectedIds.length
+                      ? t('button.deselectAllNfts', { count: nfts.data.length })
+                      : t('button.selectAllNfts', { count: nfts.data.length }))}
+                </Button>
+              )}
+
+              <div className="flex grow flex-row items-center justify-end gap-4">
+                <ButtonPopup position="left" {...filterNftButtonPopupProps} />
+                <ButtonPopup position="left" {...sortButtonPopupProps} />
+              </div>
+            </div>
+          </div>
+        ) : undefined
       }
     >
       {nfts.loading ? (
@@ -221,16 +248,18 @@ export const NftSelectionModal = <T extends NftCardInfo>({
             checkbox={{
               checked: selectedIds.includes(getIdForNft(nft as T)),
               // Disable toggling if currently staking.
-              onClick: () => !actionLoading && onNftClick(nft as T),
+              onClick: () => !action.loading && onNftClick(nft as T),
             }}
           />
         ))
       ) : (
-        <NoContent
-          Icon={Image}
-          body={t('info.noNftsYet')}
-          className="grow justify-center"
-        />
+        noneDisplay || (
+          <NoContent
+            Icon={Image}
+            body={t('info.noNftsYet')}
+            className="grow justify-center"
+          />
+        )
       )}
     </Modal>
   )

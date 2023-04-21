@@ -516,7 +516,7 @@ export const CreateDaoForm = ({
           // Don't stop creating on success, since we are navigating to a new
           // page and want to prevent creating duplicate DAOs.
         } else {
-          toast.error(t('error.connectWalletToCreate'))
+          toast.error(t('error.logInToCreate'))
         }
 
         return

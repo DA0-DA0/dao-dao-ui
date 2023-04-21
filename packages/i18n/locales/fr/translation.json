@@ -140,7 +140,7 @@
     "governanceTokenSymbolPlaceholder": "Un symbole alphanumérique (e.g., \"DOG\")",
     "governanceTokenSymbolTitle": "Symbole du Jeton",
     "imageURLTitle": "URL de l'image",
-    "imageURLTooltip": "Un lien à une image. Par exemple: https://moonphase.is/image.svg",
+    "imageUrlTooltip": "Un lien à une image. Par exemple: https://moonphase.is/image.svg",
     "initialSupply": "Offre totale de jetons",
     "instantiatedAddress": "Adresse instanciée",
     "junoAddress": "Adresse Juno",

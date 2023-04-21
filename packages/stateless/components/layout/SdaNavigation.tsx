@@ -6,7 +6,6 @@ import {
   TagRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -143,7 +142,7 @@ export const SdaNavigation = ({
       >
         <PageHeader
           centerNode={
-            <Link
+            <LinkWrapper
               className={clsx(
                 'flex flex-row items-center gap-2 overflow-hidden',
                 // Make room for rightNode switch button.
@@ -165,7 +164,7 @@ export const SdaNavigation = ({
                   <p className="header-text truncate">{daoInfo.name}</p>
                 </Tooltip>
               )}
-            </Link>
+            </LinkWrapper>
           }
           forceCenter={compact}
           noBorder={compact}

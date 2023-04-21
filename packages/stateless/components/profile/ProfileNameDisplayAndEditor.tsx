@@ -18,6 +18,7 @@ export type ProfileNameDisplayAndEditorProps = {
   updateProfileName: (name: string | null) => Promise<void>
   className?: string
   nameClassName?: string
+  // The height of this should match the line-height of the name.
   editingContainerClassName?: string
 }
 
@@ -27,7 +28,8 @@ export const ProfileNameDisplayAndEditor = ({
   updateProfileName,
   className,
   nameClassName = '!title-text',
-  editingContainerClassName,
+  // h-5 matches the line-height of title-text.
+  editingContainerClassName = 'h-5',
 }: ProfileNameDisplayAndEditorProps) => {
   const { t } = useTranslation()
 

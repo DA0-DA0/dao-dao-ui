@@ -109,7 +109,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
 
   const setBalanceHidden = async (hidden: boolean) => {
     if (!hiddenBalancesReady) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
     }
 
     setSavingHidden(true)
@@ -160,7 +160,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
       return
     }
     if (!signingCosmWasmClient || !walletAddress) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return
     }
 

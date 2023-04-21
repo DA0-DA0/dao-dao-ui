@@ -10,10 +10,10 @@ import { PAGE_HEADER_HEIGHT_CLASS_NAMES } from './PageHeader'
 
 export type SidebarWalletProps =
   | ({
-      connectedOrConnecting: true
+      connected: true
     } & Omit<ConnectedWalletProps, 'className'>)
   | ({
-      connectedOrConnecting: false
+      connected: false
     } & Omit<ConnectWalletProps, 'className'>)
 
 export const SidebarWallet = (props: SidebarWalletProps) => (
@@ -23,11 +23,11 @@ export const SidebarWallet = (props: SidebarWalletProps) => (
       PAGE_HEADER_HEIGHT_CLASS_NAMES
     )}
   >
-    {props.connectedOrConnecting ? (
+    {props.connected ? (
       <ConnectedWallet
         {...{
           ...props,
-          connectedOrConnecting: undefined,
+          connected: undefined,
         }}
       />
     ) : (
@@ -37,7 +37,7 @@ export const SidebarWallet = (props: SidebarWalletProps) => (
         variant="secondary"
         {...{
           ...props,
-          connectedOrConnecting: undefined,
+          connected: undefined,
         }}
       />
     )}

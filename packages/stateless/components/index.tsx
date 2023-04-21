@@ -20,6 +20,7 @@ export * from './wallet'
 
 export * from './AudioPlayer'
 export * from './Collapsible'
+export * from './CopyableAddress'
 export * from './CopyToClipboard'
 export * from './CornerGradient'
 export * from './CosmosMessageDisplay'

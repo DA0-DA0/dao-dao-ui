@@ -89,7 +89,7 @@ export const MeTransactionBuilder = () => {
   const execute: MeTransactionBuilderProps['execute'] = useCallback(
     async (data) => {
       if (!signingCosmWasmClient || !walletAddress) {
-        setError(t('error.connectWalletToContinue'))
+        setError(t('error.logInToContinue'))
         return
       }
 
@@ -140,7 +140,7 @@ export const MeTransactionBuilder = () => {
 
   const save = async (save: MeTransactionSave) => {
     if (!txSavesReady) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return false
     }
 
@@ -179,7 +179,7 @@ export const MeTransactionBuilder = () => {
   }
   const deleteSave = async (save: MeTransactionSave) => {
     if (!txSavesReady) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return false
     }
 

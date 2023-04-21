@@ -135,7 +135,7 @@ export type StargateMsg = {
 /**
  * The message types of the wasm module.
  *
- * See https://github.com/CosmWasm/wasmd/blob/v0.14.0/x/wasm/internal/types/tx.proto
+ * See hhttps://github.com/CosmWasm/wasmd/blob/v0.29.0/x/wasm/types/tx.pb.go
  */
 export type WasmMsg =
   | {
@@ -161,6 +161,31 @@ export type WasmMsg =
          * msg is the JSON-encoded InstantiateMsg struct (as raw Binary)
          */
         msg: Binary
+      }
+    }
+  | {
+      instantiate2: {
+        admin?: string | null
+        code_id: number
+        funds: Coin[]
+        /**
+         * A human-readable label for the contract
+         */
+        label: string
+        /**
+         * msg is the JSON-encoded InstantiateMsg struct (as raw Binary)
+         */
+        msg: Binary
+        /**
+         * Salt is an arbitrary value provided by the sender. Size can be 1 to
+         * 64.
+         */
+        salt: Binary
+        /**
+         * FixMsg include the msg value into the hash for the predictable
+         * address. Default is false.
+         */
+        fix_msg: boolean
       }
     }
   | {

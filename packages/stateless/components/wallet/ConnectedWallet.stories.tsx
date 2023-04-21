@@ -14,26 +14,8 @@ const Template: ComponentStory<typeof ConnectedWallet> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  data: {
-    loading: false,
-    data: {
-      walletName: '@Modern-Edamame',
-      walletAddress: 'juno123abx789xyz',
-      tokenBalance: {
-        loading: false,
-        data: 2400.111111,
-      },
-    },
-  },
-  tokenDecimals: 6,
-  tokenSymbol: 'JUNO',
-}
-
-export const Loading = Template.bind({})
-Loading.args = {
-  data: {
-    loading: true,
-  },
-  tokenDecimals: 6,
-  tokenSymbol: 'JUNO',
+  walletProviderImageUrl: '/daodao.png',
+  walletName: '@Modern-Edamame',
+  walletAddress: 'juno123abx789xyz',
+  openWalletModal: () => alert('open'),
 }

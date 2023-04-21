@@ -76,7 +76,7 @@ export const Modal = ({
         >
           <div
             className={clsx(
-              'relative flex h-min max-h-[90vh] max-w-md cursor-auto flex-col overflow-x-hidden rounded-lg border border-border-secondary bg-background-base shadow-dp8 transition-transform duration-[120ms]',
+              'relative flex h-min max-h-[82vh] max-w-md cursor-auto flex-col overflow-x-hidden rounded-lg border border-border-secondary bg-background-base shadow-dp8 transition-transform duration-[120ms]',
               visible ? 'scale-100' : 'scale-90',
               // If no children, remove bottom padding since header has its own
               // padding.
@@ -108,10 +108,11 @@ export const Modal = ({
                   <>
                     <p
                       className={clsx(
-                        'header-text mb-1',
-                        titleClassName,
+                        'header-text',
+                        header.subtitle && 'mb-1',
                         // If close button displaying, add more right padding.
-                        !hideCloseButton && 'pr-12'
+                        !hideCloseButton && 'pr-12',
+                        titleClassName
                       )}
                     >
                       {header.title}
