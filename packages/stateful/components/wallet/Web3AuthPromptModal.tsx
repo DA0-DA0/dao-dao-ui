@@ -1,3 +1,4 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { TxBody } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -14,11 +15,13 @@ import { decodeMessages, protobufToCwMsg } from '@dao-dao/utils'
 
 import { useActionsForMatching } from '../../actions'
 import { WalletActionsProvider } from '../../actions/react/provider'
+import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export const Web3AuthPromptModal = () => {
   const { t } = useTranslation()
   const { web3AuthPrompt: prompt } = useAppContext()
+  const { address } = useWallet()
 
   const decoded = useMemo(() => {
     if (!prompt) {
@@ -79,6 +82,14 @@ export const Web3AuthPromptModal = () => {
       header={{
         title: t('title.reviewTransaction'),
       }}
+      headerContent={
+        <div className="mt-1 flex flex-row items-center gap-3">
+          <p className="title-text font-normal text-text-secondary">
+            {t('title.signingAs')}:
+          </p>
+          {address && <EntityDisplay address={address} />}
+        </div>
+      }
       onClose={() => prompt?.resolve(false)}
       visible={!!prompt}
     >
