@@ -57,7 +57,7 @@ export const WalletProvider = ({
 }: WalletProviderProps) => {
   const { t } = useTranslation()
 
-  const web3AuthWalletOptions = {
+  const web3AuthWalletOptions = Object.freeze({
     client: {
       clientId: WEB3AUTH_CLIENT_ID,
       web3AuthNetwork: MAINNET ? 'cyan' : 'testnet',
@@ -72,7 +72,7 @@ export const WalletProvider = ({
           },
         })
       ),
-  }
+  })
 
   return (
     <WalletManagerProvider
