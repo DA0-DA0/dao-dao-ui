@@ -672,6 +672,7 @@
     "finishedAt": "Finished at",
     "finishesAt": "Finishes at",
     "followTooltip": "Receive updates in your inbox about this DAO.",
+    "foundSymbol": "Found ${{symbol}}.",
     "getTokensOn": "Get tokens on {{name}}.",
     "goToParent": "Go to parent DAO",
     "govNftCollection": "Governance NFT Collection",

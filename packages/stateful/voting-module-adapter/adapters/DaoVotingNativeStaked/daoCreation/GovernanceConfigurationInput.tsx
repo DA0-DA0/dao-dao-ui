@@ -3,11 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state'
-import {
-  FormattedJsonDisplay,
-  InputErrorMessage,
-  TextInput,
-} from '@dao-dao/stateless'
+import { InputErrorMessage, Loader, TextInput } from '@dao-dao/stateless'
 import {
   DaoCreationGovernanceConfigInputProps,
   TokenType,
@@ -47,7 +43,7 @@ export const GovernanceConfigurationInput = ({
 
   useEffect(() => {
     if (existingGovernanceTokenLoadable.state !== 'hasError') {
-      if (errors?.votingModuleAdapter?.data?.denom) {
+      if (errors?.votingModuleAdapter?.data?._tokenError) {
         clearErrors('votingModuleAdapter.data._tokenError')
       }
       return
@@ -77,7 +73,7 @@ export const GovernanceConfigurationInput = ({
           </p>
         </div>
 
-        <div className="space-y-4 p-4">
+        <div className="space-y-2 p-4">
           <div>
             <TextInput
               className="symbol-small-body-text font-mono text-text-secondary"
@@ -86,13 +82,7 @@ export const GovernanceConfigurationInput = ({
               ghost
               placeholder={`factory/${CHAIN_BECH32_PREFIX}.../denom`}
               register={register}
-              validation={[
-                validateTokenFactoryDenom,
-                validateRequired,
-                () =>
-                  existingGovernanceTokenLoadable.state === 'hasValue' ||
-                  t('info.verifyingGovernanceToken'),
-              ]}
+              validation={[validateRequired, validateTokenFactoryDenom]}
             />
             <InputErrorMessage
               error={
@@ -102,10 +92,17 @@ export const GovernanceConfigurationInput = ({
             />
           </div>
 
-          <FormattedJsonDisplay
-            jsonLoadable={existingGovernanceTokenLoadable}
-            title={t('title.tokenInfo')}
-          />
+          {existingGovernanceTokenLoadable.state === 'loading' ? (
+            <Loader />
+          ) : (
+            existingGovernanceTokenLoadable.state === 'hasValue' && (
+              <p className="primary-text text-text-interactive-valid">
+                {t('info.foundSymbol', {
+                  symbol: existingGovernanceTokenLoadable.contents?.symbol,
+                })}
+              </p>
+            )
+          )}
         </div>
       </div>
     </>

@@ -1,72 +1,53 @@
-export function isValidWalletAddress(
-  address: string,
-  chainPrefix: string
-): boolean {
-  const bech32Regex = /^[a-km-zA-HJ-NP-Z0-9]{39}$/im
+export const isValidWalletAddress = (address: string, chainPrefix: string) => {
   if (!address?.length) {
     return false
   }
-  if (!address.startsWith(chainPrefix)) {
-    return false
-  }
-  const unprefixed = address.replace(chainPrefix, '')
-  return !!unprefixed.match(bech32Regex)
+  const regex = new RegExp(`^${chainPrefix}[a-km-zA-HJ-NP-Z0-9]{39}$`, 'im')
+  return !!address.match(regex)
 }
 
-export function isValidValidatorAddress(
+export const isValidValidatorAddress = (
   address: string,
   chainPrefix: string
-): boolean {
-  const bech32Regex = /^[a-km-zA-HJ-NP-Z0-9]{46}$/im
-  // Some validators may be run by DAOs and have contract addresses
-  // This has a length of 66 because of the valoper prefix (i.e. junovaloper)
-  const bech32ContractRegex = /^[a-km-zA-HJ-NP-Z0-9]{66}$/im
+) => {
   if (!address?.length) {
     return false
   }
-  if (address.search('valoper') < 0) {
-    return false
-  }
-  const unprefixed = address.replace(chainPrefix, '')
-  return (
-    !!unprefixed.match(bech32Regex) || !!unprefixed.match(bech32ContractRegex)
+  // Some validators may be run by DAOs and have contract addresses. This has a
+  // length of 66 because of the valoper prefix (i.e. junovaloper).
+  const regex = new RegExp(
+    `^${chainPrefix}valoper([a-km-zA-HJ-NP-Z0-9]{46}|[a-km-zA-HJ-NP-Z0-9]{66})$`,
+    'im'
   )
+  return !!address.match(regex)
 }
 
-export function isValidContractAddress(
+export const isValidContractAddress = (
   address: string,
   chainPrefix: string
-): boolean {
-  const bech32Regex = /^[a-km-zA-HJ-NP-Z0-9]{59}$/im
+) => {
   if (!address?.length) {
     return false
   }
-  if (!address.startsWith(chainPrefix)) {
-    return false
-  }
-  const unprefixed = address.replace(chainPrefix, '')
-  return !!unprefixed.match(bech32Regex)
+  const regex = new RegExp(`^${chainPrefix}[a-km-zA-HJ-NP-Z0-9]{59}$`, 'im')
+  return !!address.match(regex)
 }
 
 export const isValidTokenFactoryDenom = (
   denom: string,
   chainPrefix: string
 ) => {
-  const regex = /^factory\/[a-km-zA-HJ-NP-Z0-9]{39}\/.+$/im
   if (!denom?.length) {
     return false
   }
-  if (!denom.startsWith(chainPrefix)) {
-    return false
-  }
-  const unprefixed = denom.replace(chainPrefix, '')
-  return !!unprefixed.match(regex)
+  const regex = new RegExp(
+    `^factory/${chainPrefix}[a-km-zA-HJ-NP-Z0-9]{39}/.+`,
+    'im'
+  )
+  return !!denom.match(regex)
 }
 
 // Validates a bech32 address.
-export function isValidAddress(address: string, chainPrefix: string): boolean {
-  return (
-    isValidWalletAddress(address, chainPrefix) ||
-    isValidContractAddress(address, chainPrefix)
-  )
-}
+export const isValidAddress = (address: string, chainPrefix: string) =>
+  isValidWalletAddress(address, chainPrefix) ||
+  isValidContractAddress(address, chainPrefix)

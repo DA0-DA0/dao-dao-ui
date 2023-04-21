@@ -8,6 +8,7 @@ import {
   DaoCreationConfig as DaoVotingCw20StakedConfig,
   GovernanceTokenType,
 } from '@dao-dao/stateful/voting-module-adapter/adapters/DaoVotingCw20Staked/types'
+import { DaoCreationConfig as DaoVotingNativeStakedConfig } from '@dao-dao/stateful/voting-module-adapter/adapters/DaoVotingNativeStaked/types'
 import {
   AddressInput,
   FormSwitchCard,
@@ -31,6 +32,7 @@ import {
 import {
   CHAIN_BECH32_PREFIX,
   DaoVotingCw20StakedAdapterId,
+  DaoVotingNativeStakedAdapterId,
   NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
   convertMicroDenomToDenomWithDecimals,
@@ -57,6 +59,11 @@ const ProposalDepositInput = ({
     votingModuleAdapter.id === DaoVotingCw20StakedAdapterId
   const cw20StakedBalanceVotingAdapterData =
     votingModuleAdapter.data as DaoVotingCw20StakedConfig
+
+  const isDaoVotingNativeStakedAdapter =
+    votingModuleAdapter.id === DaoVotingNativeStakedAdapterId
+  const nativeStakedBalanceVotingAdapterData =
+    votingModuleAdapter.data as DaoVotingNativeStakedConfig
 
   // Governance token may be new or existing, so we have to handle both cases.
   const cw20GovernanceTokenSymbol = isDaoVotingCw20StakedAdapter
@@ -93,6 +100,17 @@ const ProposalDepositInput = ({
     ]
   )
 
+  const governanceTokenLoadable = useRecoilValueLoadable(
+    isDaoVotingCw20StakedAdapter
+      ? constSelector(memoizedCw20GovernanceToken)
+      : isDaoVotingNativeStakedAdapter
+      ? genericTokenSelector({
+          type: TokenType.Native,
+          denomOrAddress: nativeStakedBalanceVotingAdapterData.denom,
+        })
+      : constSelector(undefined)
+  )
+
   const tokenLoadable = useRecoilValueLoadable(
     type === 'cw20' &&
       denomOrAddress &&
@@ -107,7 +125,14 @@ const ProposalDepositInput = ({
           denomOrAddress,
         })
       : type === 'voting_module_token'
-      ? constSelector(memoizedCw20GovernanceToken)
+      ? isDaoVotingCw20StakedAdapter
+        ? constSelector(memoizedCw20GovernanceToken)
+        : isDaoVotingNativeStakedAdapter
+        ? genericTokenSelector({
+            type: TokenType.Native,
+            denomOrAddress: nativeStakedBalanceVotingAdapterData.denom,
+          })
+        : constSelector(undefined)
       : constSelector(undefined)
   )
   const tokenLoaded =
@@ -149,14 +174,20 @@ const ProposalDepositInput = ({
 
   const availableTokens: TokenInputOption[] = [
     // Governance token first.
-    ...(cw20GovernanceTokenSymbol
+    ...(governanceTokenLoadable.state === 'hasValue' &&
+    !!governanceTokenLoadable.contents
       ? [
           {
-            type: 'voting_module_token',
-            denomOrAddress: 'voting_module_token',
-            symbol: cw20GovernanceTokenSymbol,
+            type: isDaoVotingCw20StakedAdapter
+              ? // Only works for cw20.
+                'voting_module_token'
+              : TokenType.Native,
+            denomOrAddress: isDaoVotingCw20StakedAdapter
+              ? 'voting_module_token'
+              : governanceTokenLoadable.contents.denomOrAddress,
+            symbol: governanceTokenLoadable.contents.symbol,
             description: t('title.governanceToken'),
-            imageUrl: cw20GovernanceTokenImageUrl,
+            imageUrl: governanceTokenLoadable.contents.imageUrl,
           },
         ]
       : []),

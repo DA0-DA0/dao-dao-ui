@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state'
-import { CopyToClipboard, FormattedJsonDisplay } from '@dao-dao/stateless'
+import { CopyToClipboard, Loader } from '@dao-dao/stateless'
 import {
   DaoCreationGovernanceConfigReviewProps,
   TokenType,
@@ -28,13 +28,20 @@ export const GovernanceConfigurationReview = ({
         <p className="primary-text text-text-body">{t('title.factoryToken')}</p>
       </div>
 
-      <div className="space-y-4 p-4">
+      <div className="space-y-2 p-4">
         <CopyToClipboard takeAll value={denom} />
 
-        <FormattedJsonDisplay
-          jsonLoadable={tokenLoadable}
-          title={t('title.tokenInfo')}
-        />
+        {tokenLoadable.state === 'loading' ? (
+          <Loader />
+        ) : (
+          tokenLoadable.state === 'hasValue' && (
+            <p className="primary-text text-text-interactive-valid">
+              {t('info.foundSymbol', {
+                symbol: tokenLoadable.contents?.symbol,
+              })}
+            </p>
+          )
+        )}
       </div>
     </div>
   )
