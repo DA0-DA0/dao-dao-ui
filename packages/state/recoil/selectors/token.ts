@@ -11,13 +11,18 @@ import {
   CHAIN_BECH32_PREFIX,
   getFallbackImage,
   isValidContractAddress,
+  isValidFactoryDenom,
   isValidWalletAddress,
   nativeTokenDecimals,
   nativeTokenLabel,
   nativeTokenLogoURI,
 } from '@dao-dao/utils'
 
-import { nativeBalanceSelector, nativeBalancesSelector } from './chain'
+import {
+  denomMetadataSelector,
+  nativeBalanceSelector,
+  nativeBalancesSelector,
+} from './chain'
 import {
   Cw20BaseSelectors,
   Cw20StakeSelectors,
@@ -41,7 +46,14 @@ export const genericTokenSelector = selectorFamily<
               chainId,
               params: [],
             })
-          : constSelector({
+          : // Native factory tokens.
+          isValidFactoryDenom(denomOrAddress, CHAIN_BECH32_PREFIX)
+          ? factoryTokenInfoSelector({
+              denom: denomOrAddress,
+              chainId,
+            })
+          : // Native IBC tokens.
+            constSelector({
               decimals: nativeTokenDecimals(denomOrAddress) ?? 0,
               symbol: nativeTokenLabel(denomOrAddress),
             })
@@ -221,5 +233,34 @@ export const cw20TokenDaosWithStakedBalanceSelector = selectorFamily<
         .sort((a, b) => b.stakedBalance - a.stakedBalance)
 
       return daosWithBalances
+    },
+})
+
+export const factoryTokenInfoSelector = selectorFamily<
+  {
+    symbol: string
+    decimals: number
+  },
+  WithChainId<{ denom: string }>
+>({
+  key: 'factoryTokenInfo',
+  get:
+    (params) =>
+    async ({ get }) => {
+      const { base, denomUnits, symbol } = get(denomMetadataSelector(params))
+
+      // `display` field not yet updated to point to the correct denom unit, so
+      // use the first one with nonzero decimals if it exists, and the first
+      // otherwise.
+      const displayDenom =
+        denomUnits.find((unit) => unit.exponent > 0) || denomUnits[0]
+      if (!displayDenom) {
+        throw new Error('No denom unit found for token factory denom')
+      }
+
+      return {
+        symbol: symbol || base,
+        decimals: displayDenom.exponent,
+      }
     },
 })

@@ -136,6 +136,7 @@ export const makeWasmMessage = (message: {
   // Messages such as update or clear admin pass through without modification.
   return msg
 }
+
 export const makeExecutableMintMessage = (
   msg: MintMsg,
   contractAddress: string
