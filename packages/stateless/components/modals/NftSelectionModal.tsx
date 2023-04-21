@@ -52,6 +52,8 @@ export interface NftSelectionModalProps<T extends NftCardInfo>
   allowSelectingNone?: boolean
   selectedDisplay?: ReactNode
   headerDisplay?: ReactNode
+  // What displays when there are no NFTs.
+  noneDisplay?: ReactNode
 }
 
 export const NftSelectionModal = <T extends NftCardInfo>({
@@ -68,6 +70,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   allowSelectingNone,
   selectedDisplay,
   headerDisplay,
+  noneDisplay,
   ...modalProps
 }: NftSelectionModalProps<T>) => {
   const { t } = useTranslation()
@@ -171,48 +174,53 @@ export const NftSelectionModal = <T extends NftCardInfo>({
         </div>
       }
       headerContent={
-        <div className="mt-4 flex flex-col gap-4">
-          {headerDisplay}
+        headerDisplay ||
+        nfts.loading ||
+        nfts.errored ||
+        nfts.data.length > 0 ? (
+          <div className="mt-4 flex flex-col gap-4">
+            {headerDisplay}
 
-          <SearchBar
-            autoFocus
-            placeholder={t('info.searchNftsPlaceholder')}
-            {...searchBarProps}
-          />
+            <SearchBar
+              autoFocus
+              placeholder={t('info.searchNftsPlaceholder')}
+              {...searchBarProps}
+            />
 
-          <div
-            className={clsx(
-              'flex flex-row flex-wrap items-center gap-x-8 gap-y-4',
-              // Push sort/filter to the right no matter what.
-              showSelectAll ? 'justify-between' : 'justify-end'
-            )}
-          >
-            {showSelectAll && (
-              <Button
-                className="text-text-interactive-active"
-                disabled={nfts.loading}
-                onClick={
-                  nfts.loading
-                    ? undefined
-                    : nfts.data.length === selectedIds.length
-                    ? onDeselectAll
-                    : onSelectAll
-                }
-                variant="underline"
-              >
-                {!nfts.loading &&
-                  (nfts.data.length === selectedIds.length
-                    ? t('button.deselectAllNfts', { count: nfts.data.length })
-                    : t('button.selectAllNfts', { count: nfts.data.length }))}
-              </Button>
-            )}
+            <div
+              className={clsx(
+                'flex flex-row flex-wrap items-center gap-x-8 gap-y-4',
+                // Push sort/filter to the right no matter what.
+                showSelectAll ? 'justify-between' : 'justify-end'
+              )}
+            >
+              {showSelectAll && (
+                <Button
+                  className="text-text-interactive-active"
+                  disabled={nfts.loading}
+                  onClick={
+                    nfts.loading
+                      ? undefined
+                      : nfts.data.length === selectedIds.length
+                      ? onDeselectAll
+                      : onSelectAll
+                  }
+                  variant="underline"
+                >
+                  {!nfts.loading &&
+                    (nfts.data.length === selectedIds.length
+                      ? t('button.deselectAllNfts', { count: nfts.data.length })
+                      : t('button.selectAllNfts', { count: nfts.data.length }))}
+                </Button>
+              )}
 
-            <div className="flex grow flex-row items-center justify-end gap-4">
-              <ButtonPopup position="left" {...filterNftButtonPopupProps} />
-              <ButtonPopup position="left" {...sortButtonPopupProps} />
+              <div className="flex grow flex-row items-center justify-end gap-4">
+                <ButtonPopup position="left" {...filterNftButtonPopupProps} />
+                <ButtonPopup position="left" {...sortButtonPopupProps} />
+              </div>
             </div>
           </div>
-        </div>
+        ) : undefined
       }
     >
       {nfts.loading ? (
@@ -245,11 +253,13 @@ export const NftSelectionModal = <T extends NftCardInfo>({
           />
         ))
       ) : (
-        <NoContent
-          Icon={Image}
-          body={t('info.noNftsYet')}
-          className="grow justify-center"
-        />
+        noneDisplay || (
+          <NoContent
+            Icon={Image}
+            body={t('info.noNftsYet')}
+            className="grow justify-center"
+          />
+        )
       )}
     </Modal>
   )

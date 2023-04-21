@@ -1,3 +1,4 @@
+import { Image } from '@mui/icons-material'
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -9,7 +10,9 @@ import {
   ModalLoader,
   ModalProps,
   NftSelectionModal,
+  NoContent,
   ProfileImage,
+  Tooltip,
   useAppContext,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
@@ -213,6 +216,17 @@ export const InnerPfpkNftSelectionModal = ({
             ? { loading: false, errored: true, error: walletError }
             : nfts
         }
+        noneDisplay={
+          MAINNET ? (
+            <NoContent
+              Icon={Image}
+              body={t('info.nothingHereYet')}
+              buttonLabel={t('button.uploadImage')}
+              className="grow justify-center"
+              onClick={() => setShowImageSelector(true)}
+            />
+          ) : undefined
+        }
         onClose={onClose}
         onNftClick={(nft) =>
           setSelected(
@@ -230,17 +244,21 @@ export const InnerPfpkNftSelectionModal = ({
             : undefined
         }
         selectedDisplay={
-          <ProfileImage
-            imageUrl={
-              !nfts.loading
-                ? selectedNft
-                  ? selectedNft.imageUrl
-                  : backupImageUrl
-                : undefined
-            }
-            loading={nfts.loading}
-            size="sm"
-          />
+          <Tooltip title={t('title.preview')}>
+            <div>
+              <ProfileImage
+                imageUrl={
+                  !nfts.loading
+                    ? selectedNft
+                      ? selectedNft.imageUrl
+                      : backupImageUrl
+                    : undefined
+                }
+                loading={nfts.loading}
+                size="sm"
+              />
+            </div>
+          </Tooltip>
         }
         selectedIds={selected ? [selected] : []}
         visible={visible}

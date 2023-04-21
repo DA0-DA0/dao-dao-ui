@@ -746,6 +746,7 @@
     "notAdmin": "Your DAO is not the admin of this contract. The proposal will not be executable while this is the case.",
     "notMet": "Not met",
     "nothingFound": "Nothing found.",
+    "nothingHereYet": "Nothing here yet.",
     "numContributors_one": "{{count}} contributor",
     "numContributors_other": "{{count}} contributors",
     "numNftsSelected_one": "{{count}} NFT selected",
