@@ -2,7 +2,7 @@ import { asset_list } from '@chain-registry/juno'
 
 import { GenericToken, TokenType } from '@dao-dao/types'
 
-import { NATIVE_TOKEN } from './constants'
+import { NATIVE_DENOM, NATIVE_TOKEN } from './constants'
 import { concatAddressStartEnd } from './conversion'
 import { getFallbackImage } from './getFallbackImage'
 
@@ -30,6 +30,11 @@ export const ibcAssets: (GenericToken & {
     })
   )
   .sort((a, b) => a.symbol.localeCompare(b.symbol))
+
+// Native token exists if it is the native denom or any of the IBC assets.
+export const nativeTokenExists = (denom: string) =>
+  denom === NATIVE_DENOM ||
+  ibcAssets.some(({ denomOrAddress }) => denomOrAddress === denom)
 
 // NATIVE_TOKEN depends on this function, so don't use it inside this function
 // or it will create a circular dependency.

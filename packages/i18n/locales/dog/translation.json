@@ -80,21 +80,18 @@
     "useExistingToken": "us an existin tokken",
     "withDecodedModuleMessages": "wif dekodded modul messajez"
   },
-  "daoCreationAdapter": {
-    "DaoProposalSingle": {
-      "advancedWarning": "deez iz advancd fitchurz. threshhold n kwurum kan interact in counterintuitev wayz. if u configure dem wifout fullie understanding how dey werk, u kan lock yer da0, makin it impossibul 4 puppozalz 2 passs."
-    },
-    "DaoVotingCw20Staked": {
-      "description": "fluud organizashon wif manie memberz hoo can joinn n leev az dey wish. memberz can alter der goobernanz powa n particippashon by exchangin tokenz.",
-      "membership": "bi steakin tokkenz",
-      "name": "tokken-based da0",
-      "supplies": "tokkenz"
-    },
-    "DaoVotingCw4": {
+  "daoCreation": {
+    "DaoVotingMembershipBased": {
       "description": "smol organizashon wif a few membberz hoo are likely 2 stick aroun. membberz can b addd n remoovd by a voat ov existin membberz",
       "membership": "by invitashon",
       "name": "membarship da0 (mullteesig)",
       "supplies": "none"
+    },
+    "DaoVotingTokenBased": {
+      "description": "fluud organizashon wif manie memberz hoo can joinn n leev az dey wish. memberz can alter der goobernanz powa n particippashon by exchangin tokenz.",
+      "membership": "bi steakin tokkenz",
+      "name": "tokken-based da0",
+      "supplies": "tokkenz"
     }
   },
   "depositRefundPolicy": {

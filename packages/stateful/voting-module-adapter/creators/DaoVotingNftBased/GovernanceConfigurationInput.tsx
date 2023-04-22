@@ -16,7 +16,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { DaoCreationConfig, GovernanceTokenType } from '../types'
+import { GovernanceTokenType, VotingModuleCreatorConfig } from './types'
 
 export const GovernanceConfigurationInput = ({
   data,
@@ -29,34 +29,34 @@ export const GovernanceConfigurationInput = ({
       clearErrors,
     },
   },
-}: DaoCreationGovernanceConfigInputProps<DaoCreationConfig>) => {
+}: DaoCreationGovernanceConfigInputProps<VotingModuleCreatorConfig>) => {
   const { t } = useTranslation()
 
   //! Validate existing governance token.
-  const existingGovernanceTokenAddress =
+  const existingGovernanceTokenDenomOrAddress =
     data.tokenType === GovernanceTokenType.Existing
-      ? data.existingGovernanceTokenAddress
+      ? data.existingGovernanceTokenDenomOrAddress
       : undefined
   const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
-    existingGovernanceTokenAddress &&
+    existingGovernanceTokenDenomOrAddress &&
       isValidContractAddress(
-        existingGovernanceTokenAddress,
+        existingGovernanceTokenDenomOrAddress,
         CHAIN_BECH32_PREFIX
       )
       ? Cw721BaseSelectors.contractInfoSelector({
-          contractAddress: existingGovernanceTokenAddress,
+          contractAddress: existingGovernanceTokenDenomOrAddress,
           params: [],
         })
       : constSelector(undefined)
   )
   const numOfTokensLoadable = useRecoilValueLoadable(
-    existingGovernanceTokenAddress &&
+    existingGovernanceTokenDenomOrAddress &&
       isValidContractAddress(
-        existingGovernanceTokenAddress,
+        existingGovernanceTokenDenomOrAddress,
         CHAIN_BECH32_PREFIX
       )
       ? Cw721BaseSelectors.numTokensSelector({
-          contractAddress: existingGovernanceTokenAddress,
+          contractAddress: existingGovernanceTokenDenomOrAddress,
           params: [],
         })
       : constSelector(undefined)
@@ -64,30 +64,30 @@ export const GovernanceConfigurationInput = ({
 
   useEffect(() => {
     setValue(
-      'votingModuleAdapter.data.existingGovernanceTokenInfo',
+      'votingModuleCreator.data.existingGovernanceTokenInfo',
       existingGovernanceTokenInfoLoadable.state === 'hasValue'
         ? existingGovernanceTokenInfoLoadable.contents
         : undefined
     )
 
     if (existingGovernanceTokenInfoLoadable.state !== 'hasError') {
-      if (errors?.votingModuleAdapter?.data?.existingGovernanceTokenInfo) {
+      if (errors?.votingModuleCreator?.data?.existingGovernanceTokenInfo) {
         clearErrors(
-          'votingModuleAdapter.data.existingGovernanceTokenInfo._error'
+          'votingModuleCreator.data.existingGovernanceTokenInfo._error'
         )
       }
       return
     }
 
-    if (!errors?.votingModuleAdapter?.data?.existingGovernanceTokenInfo) {
-      setError('votingModuleAdapter.data.existingGovernanceTokenInfo._error', {
+    if (!errors?.votingModuleCreator?.data?.existingGovernanceTokenInfo) {
+      setError('votingModuleCreator.data.existingGovernanceTokenInfo._error', {
         type: 'manual',
         message: t('error.failedToGetTokenInfo', { tokenType: 'CW721' }),
       })
     }
   }, [
     clearErrors,
-    errors?.votingModuleAdapter?.data?.existingGovernanceTokenInfo,
+    errors?.votingModuleCreator?.data?.existingGovernanceTokenInfo,
     existingGovernanceTokenInfoLoadable,
     setError,
     setValue,
@@ -108,26 +108,20 @@ export const GovernanceConfigurationInput = ({
             <TextInput
               className="symbol-small-body-text font-mono text-text-secondary"
               error={
-                errors.votingModuleAdapter?.data?.existingGovernanceTokenAddress
+                errors.votingModuleCreator?.data
+                  ?.existingGovernanceTokenDenomOrAddress
               }
-              fieldName="votingModuleAdapter.data.existingGovernanceTokenAddress"
+              fieldName="votingModuleCreator.data.existingGovernanceTokenDenomOrAddress"
               ghost
               placeholder={CHAIN_BECH32_PREFIX + '...'}
               register={register}
-              validation={[
-                validateContractAddress,
-                validateRequired,
-                () =>
-                  existingGovernanceTokenInfoLoadable.state !== 'loading' ||
-                  !!data.existingGovernanceTokenInfo ||
-                  t('info.verifyingGovernanceToken'),
-              ]}
+              validation={[validateContractAddress, validateRequired]}
             />
             <InputErrorMessage
               error={
-                errors.votingModuleAdapter?.data
-                  ?.existingGovernanceTokenAddress ||
-                errors.votingModuleAdapter?.data?.existingGovernanceTokenInfo
+                errors.votingModuleCreator?.data
+                  ?.existingGovernanceTokenDenomOrAddress ||
+                errors.votingModuleCreator?.data?.existingGovernanceTokenInfo
                   ?._error
               }
             />

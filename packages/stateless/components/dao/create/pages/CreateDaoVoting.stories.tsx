@@ -1,13 +1,13 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { DaoProposalSingleAdapter } from '@dao-dao/stateful/proposal-module-adapter'
-import { DaoVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter'
+import { DaoVotingTokenBasedCreator } from '@dao-dao/stateful/voting-module-adapter/creators/DaoVotingTokenBased'
 import { WalletProviderDecorator } from '@dao-dao/storybook/decorators'
 import { makeCreateDaoFormDecorator } from '@dao-dao/storybook/decorators/makeCreateDaoFormDecorator'
 import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators/makeDappLayoutDecorator'
 import {
   DaoProposalSingleAdapterId,
-  DaoVotingCw20StakedAdapterId,
+  DaoVotingTokenBasedCreatorId,
 } from '@dao-dao/utils'
 
 import { CreateDaoVoting } from './CreateDaoVoting'
@@ -23,12 +23,12 @@ export default {
       description: "There are evil cows all over the place. Let's milk 'em!",
       imageUrl:
         'https://ipfs.stargaze.zone/ipfs/QmbGvE3wmxex8KiBbbvMjR8f9adR28s3XkiZSTuGmHoMHV/33.jpg',
-      votingModuleAdapter: {
-        id: DaoVotingCw20StakedAdapterId,
+      votingModuleCreator: {
+        id: DaoVotingTokenBasedCreatorId,
         data: {
-          ...DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig,
+          ...DaoVotingTokenBasedCreator.defaultConfig,
           newInfo: {
-            ...DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig.newInfo,
+            ...DaoVotingTokenBasedCreator.defaultConfig.newInfo,
             symbol: 'TST',
             name: 'Test Token',
           },

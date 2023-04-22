@@ -5,23 +5,23 @@ import { Cw721BaseSelectors } from '@dao-dao/state'
 import { CopyToClipboard, FormattedJsonDisplay } from '@dao-dao/stateless'
 import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 
-import { DaoCreationConfig } from '../types'
+import { VotingModuleCreatorConfig } from './types'
 
 export const GovernanceConfigurationReview = ({
-  data: { existingGovernanceTokenAddress },
-}: DaoCreationGovernanceConfigReviewProps<DaoCreationConfig>) => {
+  data: { existingGovernanceTokenDenomOrAddress },
+}: DaoCreationGovernanceConfigReviewProps<VotingModuleCreatorConfig>) => {
   const { t } = useTranslation()
 
   const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
     Cw721BaseSelectors.contractInfoSelector({
-      contractAddress: existingGovernanceTokenAddress,
+      contractAddress: existingGovernanceTokenDenomOrAddress,
       params: [],
     })
   )
 
   const numOfTokensLoadable = useRecoilValueLoadable(
     Cw721BaseSelectors.numTokensSelector({
-      contractAddress: existingGovernanceTokenAddress,
+      contractAddress: existingGovernanceTokenDenomOrAddress,
       params: [],
     })
   )
@@ -35,7 +35,10 @@ export const GovernanceConfigurationReview = ({
       </div>
 
       <div className="space-y-4 p-4">
-        <CopyToClipboard takeAll value={existingGovernanceTokenAddress} />
+        <CopyToClipboard
+          takeAll
+          value={existingGovernanceTokenDenomOrAddress}
+        />
 
         <FormattedJsonDisplay
           jsonLoadable={existingGovernanceTokenInfoLoadable}

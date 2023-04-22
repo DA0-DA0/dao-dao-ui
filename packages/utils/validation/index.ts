@@ -4,6 +4,7 @@ import { TFunction } from 'react-i18next'
 
 import { CHAIN_BECH32_PREFIX } from '../constants'
 import cosmosMsgSchema from '../cosmos_msg.json'
+import { nativeTokenExists } from '../ibc'
 import {
   isValidAddress,
   isValidContractAddress,
@@ -60,12 +61,25 @@ export const validateContractAddress = (v: any, required = true) =>
     isValidContractAddress(v, CHAIN_BECH32_PREFIX)) ||
   'Invalid contract address.'
 
+export const validateNativeDenom = (v: any, required = true) =>
+  (!required && !v) ||
+  (v && typeof v === 'string' && nativeTokenExists(v)) ||
+  'Invalid native denom. Ensure it is lower–cased.'
+
 export const validateTokenFactoryDenom = (v: any, required = true) =>
   (!required && !v) ||
   (v &&
     typeof v === 'string' &&
     isValidTokenFactoryDenom(v, CHAIN_BECH32_PREFIX)) ||
   'Invalid token factory denom. Ensure it is lower–cased.'
+
+export const validateNativeOrFactoryTokenDenom = (v: any, required = true) =>
+  (!required && !v) ||
+  (v &&
+    typeof v === 'string' &&
+    (nativeTokenExists(v) ||
+      isValidTokenFactoryDenom(v, CHAIN_BECH32_PREFIX))) ||
+  'Invalid native token denom. Ensure it is lower–cased.'
 
 export const validateJSON = (v: string) => {
   try {

@@ -7,15 +7,19 @@ import { useFieldArray } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { Cw20BaseSelectors } from '@dao-dao/state'
+import {
+  Cw20BaseSelectors,
+  genericTokenSelector,
+  nativeSupplySelector,
+} from '@dao-dao/state'
 import {
   Button,
   ChartDataEntry,
   DaoCreateVotingPowerDistributionBarChart,
-  FormattedJsonDisplay,
   ImageSelector,
   InputErrorMessage,
   InputLabel,
+  Loader,
   NumberInput,
   SegmentedControls,
   TextInput,
@@ -24,23 +28,28 @@ import {
 import {
   CreateDaoCustomValidator,
   DaoCreationGovernanceConfigInputProps,
+  TokenType,
 } from '@dao-dao/types'
+import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
   CHAIN_BECH32_PREFIX,
   NEW_DAO_CW20_DECIMALS,
   formatPercentOf100,
   isValidContractAddress,
+  isValidTokenFactoryDenom,
+  nativeTokenExists,
   validateContractAddress,
+  validateNativeOrFactoryTokenDenom,
   validatePercent,
   validatePositive,
   validateRequired,
   validateTokenSymbol,
 } from '@dao-dao/utils'
 
-import { Trans } from '../../../../components/Trans'
-import { DaoVotingCw20StakedAdapter } from '../index'
-import { DaoCreationConfig, GovernanceTokenType } from '../types'
+import { DaoVotingTokenBasedCreator } from '.'
+import { Trans } from '../../../components/Trans'
 import { TierCard } from './TierCard'
+import { GovernanceTokenType, VotingModuleCreatorConfig } from './types'
 
 export const GovernanceConfigurationInput = ({
   data,
@@ -56,7 +65,7 @@ export const GovernanceConfigurationInput = ({
     },
     setCustomValidator,
   },
-}: DaoCreationGovernanceConfigInputProps<DaoCreationConfig>) => {
+}: DaoCreationGovernanceConfigInputProps<VotingModuleCreatorConfig>) => {
   const { t } = useTranslation()
   const { address: walletAddress } = useWallet()
 
@@ -66,14 +75,12 @@ export const GovernanceConfigurationInput = ({
     remove: removeTier,
   } = useFieldArray({
     control,
-    name: 'votingModuleAdapter.data.tiers',
+    name: 'votingModuleCreator.data.tiers',
   })
 
   const addTierRef = useRef<HTMLButtonElement>(null)
   const addTier = useCallback(() => {
-    appendTier(
-      cloneDeep(DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig.tiers[0])
-    )
+    appendTier(cloneDeep(DaoVotingTokenBasedCreator.defaultConfig.tiers[0]))
     // Scroll button to bottom of screen.
     addTierRef.current?.scrollIntoView({
       behavior: 'smooth',
@@ -97,10 +104,10 @@ export const GovernanceConfigurationInput = ({
     )
       return
 
-    setValue('votingModuleAdapter.data.tiers.0.name', t('form.defaultTierName'))
+    setValue('votingModuleCreator.data.tiers.0.name', t('form.defaultTierName'))
     if (walletAddress) {
       setValue(
-        'votingModuleAdapter.data.tiers.0.members.0.address',
+        'votingModuleCreator.data.tiers.0.members.0.address',
         walletAddress
       )
     }
@@ -121,28 +128,28 @@ export const GovernanceConfigurationInput = ({
       // Ensure voting power has been given to at least one member.
       if (totalWeight === 0) {
         if (setNewErrors) {
-          setError('votingModuleAdapter.data._tiersError', {
+          setError('votingModuleCreator.data._tiersError', {
             message: t('error.noVotingPower'),
           })
         }
         valid = false
-      } else if (errors?.votingModuleAdapter?.data?._tiersError) {
-        clearErrors('votingModuleAdapter.data._tiersError')
+      } else if (errors?.votingModuleCreator?.data?._tiersError) {
+        clearErrors('votingModuleCreator.data._tiersError')
       }
 
       // Ensure each tier has at least one member.
       data.tiers.forEach((tier, tierIndex) => {
         if (tier.members.length === 0) {
           if (setNewErrors) {
-            setError(`votingModuleAdapter.data.tiers.${tierIndex}._error`, {
+            setError(`votingModuleCreator.data.tiers.${tierIndex}._error`, {
               message: t('error.noMembers'),
             })
           }
           valid = false
         } else if (
-          errors?.votingModuleAdapter?.data?.tiers?.[tierIndex]?._error
+          errors?.votingModuleCreator?.data?.tiers?.[tierIndex]?._error
         ) {
-          clearErrors(`votingModuleAdapter.data.tiers.${tierIndex}._error`)
+          clearErrors(`votingModuleCreator.data.tiers.${tierIndex}._error`)
         }
       })
 
@@ -151,8 +158,8 @@ export const GovernanceConfigurationInput = ({
     [
       clearErrors,
       data.tiers,
-      errors?.votingModuleAdapter?.data?._tiersError,
-      errors?.votingModuleAdapter?.data?.tiers,
+      errors?.votingModuleCreator?.data?._tiersError,
+      errors?.votingModuleCreator?.data?.tiers,
       setError,
       t,
     ]
@@ -172,70 +179,88 @@ export const GovernanceConfigurationInput = ({
     initialTreasuryPercent + totalMemberPercent === 100
 
   //! Validate existing governance token.
-  const existingGovernanceTokenAddress =
-    data.tokenType === GovernanceTokenType.Existing
-      ? data.existingGovernanceTokenAddress
-      : undefined
-  const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
-    existingGovernanceTokenAddress &&
+  const existingGovernanceTokenIsCw20 =
+    data.existingTokenType === TokenType.Cw20
+  const existingGovernanceTokenIsValid =
+    (data.tokenType === GovernanceTokenType.Existing &&
+      existingGovernanceTokenIsCw20 &&
       isValidContractAddress(
-        existingGovernanceTokenAddress,
+        data.existingTokenDenomOrAddress,
         CHAIN_BECH32_PREFIX
-      )
-      ? Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: existingGovernanceTokenAddress,
-          params: [],
+      )) ||
+    // Native token.
+    nativeTokenExists(data.existingTokenDenomOrAddress) ||
+    // Native factory token.
+    isValidTokenFactoryDenom(
+      data.existingTokenDenomOrAddress,
+      CHAIN_BECH32_PREFIX
+    )
+  const existingGovernanceTokenLoadable = useRecoilValueLoadable(
+    existingGovernanceTokenIsValid
+      ? genericTokenSelector({
+          type: data.existingTokenType,
+          denomOrAddress: data.existingTokenDenomOrAddress,
         })
       : constSelector(undefined)
   )
-  const existingGovernanceTokenLogoUrlLoadable = useRecoilValueLoadable(
-    existingGovernanceTokenAddress &&
-      isValidContractAddress(
-        existingGovernanceTokenAddress,
-        CHAIN_BECH32_PREFIX
-      )
-      ? Cw20BaseSelectors.logoUrlSelector({
-          contractAddress: existingGovernanceTokenAddress,
-        })
+  const existingGovernanceTokenSupply = useRecoilValueLoadable<
+    TokenInfoResponse | number | undefined
+  >(
+    existingGovernanceTokenIsValid
+      ? existingGovernanceTokenIsCw20
+        ? Cw20BaseSelectors.tokenInfoSelector({
+            contractAddress: data.existingTokenDenomOrAddress,
+            params: [],
+          })
+        : nativeSupplySelector({
+            denom: data.existingTokenDenomOrAddress,
+          })
       : constSelector(undefined)
   )
   useEffect(() => {
     setValue(
-      'votingModuleAdapter.data.existingGovernanceTokenInfo',
-      existingGovernanceTokenInfoLoadable.state === 'hasValue'
-        ? existingGovernanceTokenInfoLoadable.contents
+      'votingModuleCreator.data.existingToken',
+      existingGovernanceTokenLoadable.state === 'hasValue'
+        ? existingGovernanceTokenLoadable.contents
         : undefined
     )
     setValue(
-      'votingModuleAdapter.data.existingGovernanceTokenLogoUrl',
-      existingGovernanceTokenLogoUrlLoadable.state === 'hasValue'
-        ? existingGovernanceTokenLogoUrlLoadable.contents
+      'votingModuleCreator.data.existingTokenSupply',
+      existingGovernanceTokenSupply.state === 'hasValue'
+        ? typeof existingGovernanceTokenSupply.contents === 'number'
+          ? existingGovernanceTokenSupply.contents.toString()
+          : existingGovernanceTokenSupply.contents?.total_supply
         : undefined
     )
 
-    if (existingGovernanceTokenInfoLoadable.state !== 'hasError') {
-      if (errors?.votingModuleAdapter?.data?.existingGovernanceTokenInfo) {
-        clearErrors(
-          'votingModuleAdapter.data.existingGovernanceTokenInfo._error'
-        )
+    if (
+      existingGovernanceTokenLoadable.state !== 'hasError' &&
+      existingGovernanceTokenSupply.state !== 'hasError'
+    ) {
+      if (errors?.votingModuleCreator?.data?.existingToken?._error) {
+        clearErrors('votingModuleCreator.data.existingToken._error')
       }
       return
     }
 
-    if (!errors?.votingModuleAdapter?.data?.existingGovernanceTokenInfo) {
-      setError('votingModuleAdapter.data.existingGovernanceTokenInfo._error', {
+    if (!errors?.votingModuleCreator?.data?.existingToken?._error) {
+      setError('votingModuleCreator.data.existingToken._error', {
         type: 'manual',
-        message: t('error.failedToGetTokenInfo', { tokenType: 'CW20' }),
+        message: existingGovernanceTokenIsCw20
+          ? t('error.failedToGetTokenInfo', { tokenType: 'CW20' })
+          : t('error.failedToGetFactoryTokenInfo'),
       })
     }
   }, [
     clearErrors,
-    errors?.votingModuleAdapter?.data?.existingGovernanceTokenInfo,
-    existingGovernanceTokenInfoLoadable,
-    existingGovernanceTokenLogoUrlLoadable,
+    existingGovernanceTokenIsCw20,
+    errors?.votingModuleCreator?.data?.existingToken?._error,
+    existingGovernanceTokenLoadable,
     setError,
     setValue,
     t,
+    existingGovernanceTokenSupply.state,
+    existingGovernanceTokenSupply.contents,
   ])
 
   //! Bar chart data
@@ -268,13 +293,13 @@ export const GovernanceConfigurationInput = ({
       <SegmentedControls
         className="mt-8 mb-4 w-max"
         onSelect={(tokenType) =>
-          setValue('votingModuleAdapter.data.tokenType', tokenType)
+          setValue('votingModuleCreator.data.tokenType', tokenType)
         }
         selected={data.tokenType}
         tabs={[
           {
             label: t('button.createAToken'),
-            value: GovernanceTokenType.New,
+            value: GovernanceTokenType.NewCw20,
           },
           {
             label: t('button.useExistingToken'),
@@ -283,7 +308,7 @@ export const GovernanceConfigurationInput = ({
         ]}
       />
 
-      {data.tokenType === GovernanceTokenType.New ? (
+      {data.tokenType === GovernanceTokenType.NewCw20 ? (
         <>
           <div className="mb-10 rounded-lg bg-background-tertiary">
             <div className="flex h-14 flex-row border-b border-border-base p-4">
@@ -298,8 +323,8 @@ export const GovernanceConfigurationInput = ({
                   <InputLabel name={t('form.image')} />
                   <ImageSelector
                     Trans={Trans}
-                    error={errors.votingModuleAdapter?.data?.newInfo?.imageUrl}
-                    fieldName="votingModuleAdapter.data.newInfo.imageUrl"
+                    error={errors.votingModuleCreator?.data?.newInfo?.imageUrl}
+                    fieldName="votingModuleCreator.data.newInfo.imageUrl"
                     register={register}
                     setValue={setValue}
                     size={40}
@@ -315,9 +340,9 @@ export const GovernanceConfigurationInput = ({
                       </p>
                       <TextInput
                         error={
-                          errors.votingModuleAdapter?.data?.newInfo?.symbol
+                          errors.votingModuleCreator?.data?.newInfo?.symbol
                         }
-                        fieldName="votingModuleAdapter.data.newInfo.symbol"
+                        fieldName="votingModuleCreator.data.newInfo.symbol"
                         placeholder={t('form.governanceTokenSymbolPlaceholder')}
                         register={register}
                         validation={[validateRequired, validateTokenSymbol]}
@@ -325,7 +350,7 @@ export const GovernanceConfigurationInput = ({
                     </div>
 
                     <InputErrorMessage
-                      error={errors.votingModuleAdapter?.data?.newInfo?.symbol}
+                      error={errors.votingModuleCreator?.data?.newInfo?.symbol}
                     />
                   </div>
                 </div>
@@ -334,14 +359,14 @@ export const GovernanceConfigurationInput = ({
                 <InputLabel name={t('form.name')} />
                 <div className="flex flex-col">
                   <TextInput
-                    error={errors.votingModuleAdapter?.data?.newInfo?.name}
-                    fieldName="votingModuleAdapter.data.newInfo.name"
+                    error={errors.votingModuleCreator?.data?.newInfo?.name}
+                    fieldName="votingModuleCreator.data.newInfo.name"
                     placeholder={t('form.governanceTokenNamePlaceholder')}
                     register={register}
                     validation={[validateRequired]}
                   />
                   <InputErrorMessage
-                    error={errors.votingModuleAdapter?.data?.newInfo?.name}
+                    error={errors.votingModuleCreator?.data?.newInfo?.name}
                   />
                 </div>
               </div>
@@ -358,9 +383,9 @@ export const GovernanceConfigurationInput = ({
                     className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                     containerClassName="grow"
                     error={
-                      errors.votingModuleAdapter?.data?.newInfo?.initialSupply
+                      errors.votingModuleCreator?.data?.newInfo?.initialSupply
                     }
-                    fieldName="votingModuleAdapter.data.newInfo.initialSupply"
+                    fieldName="votingModuleCreator.data.newInfo.initialSupply"
                     ghost
                     register={register}
                     step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
@@ -376,7 +401,7 @@ export const GovernanceConfigurationInput = ({
                 <InputErrorMessage
                   className="self-end"
                   error={
-                    errors.votingModuleAdapter?.data?.newInfo?.initialSupply
+                    errors.votingModuleCreator?.data?.newInfo?.initialSupply
                   }
                 />
               </div>
@@ -394,10 +419,10 @@ export const GovernanceConfigurationInput = ({
                       className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                       containerClassName="grow"
                       error={
-                        errors.votingModuleAdapter?.data?.newInfo
+                        errors.votingModuleCreator?.data?.newInfo
                           ?.initialTreasuryPercent
                       }
-                      fieldName="votingModuleAdapter.data.newInfo.initialTreasuryPercent"
+                      fieldName="votingModuleCreator.data.newInfo.initialTreasuryPercent"
                       ghost
                       register={register}
                       step={0.0001}
@@ -417,7 +442,7 @@ export const GovernanceConfigurationInput = ({
                   <InputErrorMessage
                     className="self-end"
                     error={
-                      errors.votingModuleAdapter?.data?.newInfo?.initialSupply
+                      errors.votingModuleCreator?.data?.newInfo?.initialSupply
                     }
                   />
                 </div>
@@ -480,54 +505,79 @@ export const GovernanceConfigurationInput = ({
               </Button>
 
               <InputErrorMessage
-                error={errors.votingModuleAdapter?.data?._tiersError}
+                error={errors.votingModuleCreator?.data?._tiersError}
               />
             </div>
           </div>
         </>
       ) : data.tokenType === GovernanceTokenType.Existing ? (
         <div className="rounded-lg bg-background-tertiary">
-          <div className="flex h-14 flex-row border-b border-border-base p-4">
-            <p className="primary-text text-text-body">
-              {t('form.tokenContractAddressTitle')}
-            </p>
+          <div className="flex flex-row border-b border-border-base p-4">
+            <SegmentedControls<TokenType.Cw20 | TokenType.Native>
+              onSelect={(value) => {
+                setValue('votingModuleCreator.data.existingTokenType', value)
+                setValue(
+                  'votingModuleCreator.data.existingTokenDenomOrAddress',
+                  ''
+                )
+              }}
+              selected={data.existingTokenType}
+              tabs={[
+                {
+                  label: t('form.cw20Token'),
+                  value: TokenType.Cw20,
+                },
+                {
+                  label: t('form.nativeOrFactoryToken'),
+                  value: TokenType.Native,
+                },
+              ]}
+            />
           </div>
 
-          <div className="space-y-4 p-4">
+          <div className="space-y-2 p-4">
             <div>
               <TextInput
                 className="symbol-small-body-text font-mono text-text-secondary"
                 error={
-                  errors.votingModuleAdapter?.data
-                    ?.existingGovernanceTokenAddress
+                  errors.votingModuleCreator?.data?.existingTokenDenomOrAddress
                 }
-                fieldName="votingModuleAdapter.data.existingGovernanceTokenAddress"
+                fieldName="votingModuleCreator.data.existingTokenDenomOrAddress"
                 ghost
-                placeholder={CHAIN_BECH32_PREFIX + '...'}
+                placeholder={
+                  existingGovernanceTokenIsCw20
+                    ? CHAIN_BECH32_PREFIX + '...'
+                    : `"denom" OR "factory/${CHAIN_BECH32_PREFIX}.../denom"`
+                }
                 register={register}
                 validation={[
-                  validateContractAddress,
                   validateRequired,
-                  () =>
-                    existingGovernanceTokenInfoLoadable.state !== 'loading' ||
-                    !!data.existingGovernanceTokenInfo ||
-                    t('info.verifyingGovernanceToken'),
+                  ...(existingGovernanceTokenIsCw20
+                    ? [validateContractAddress]
+                    : [validateNativeOrFactoryTokenDenom]),
                 ]}
               />
               <InputErrorMessage
                 error={
-                  errors.votingModuleAdapter?.data
-                    ?.existingGovernanceTokenAddress ||
-                  errors.votingModuleAdapter?.data?.existingGovernanceTokenInfo
-                    ?._error
+                  errors.votingModuleCreator?.data
+                    ?.existingTokenDenomOrAddress ||
+                  errors.votingModuleCreator?.data?.existingToken?._error
                 }
               />
             </div>
 
-            <FormattedJsonDisplay
-              jsonLoadable={existingGovernanceTokenInfoLoadable}
-              title={t('form.tokenInfo')}
-            />
+            {existingGovernanceTokenLoadable.state === 'loading' ? (
+              <Loader />
+            ) : (
+              existingGovernanceTokenLoadable.state === 'hasValue' &&
+              !!existingGovernanceTokenLoadable.contents && (
+                <p className="primary-text text-text-interactive-valid">
+                  {t('info.foundSymbol', {
+                    symbol: existingGovernanceTokenLoadable.contents?.symbol,
+                  })}
+                </p>
+              )
+            )}
           </div>
         </div>
       ) : null}

@@ -1,12 +1,12 @@
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValueLoadable } from 'recoil'
+import { useRecoilValueLoadable } from 'recoil'
 
-import { Cw20BaseSelectors } from '@dao-dao/state'
+import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
   ChartDataEntry,
   CopyToClipboard,
   DaoCreateVotingPowerDistributionReviewCard,
-  FormattedJsonDisplay,
+  Loader,
   TierDataEntry,
   VOTING_POWER_DISTRIBUTION_COLORS,
   useNamedThemeColor,
@@ -14,27 +14,26 @@ import {
 import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { EntityDisplay } from '../../../../components'
-import { DaoCreationConfig, GovernanceTokenType } from '../types'
+import { EntityDisplay } from '../../../components'
+import { GovernanceTokenType, VotingModuleCreatorConfig } from './types'
 
 export const GovernanceConfigurationReview = ({
   data: {
     tiers,
     tokenType,
     newInfo: { symbol: newSymbol, initialTreasuryPercent },
-    existingGovernanceTokenAddress,
+    existingTokenType,
+    existingTokenDenomOrAddress,
   },
-}: DaoCreationGovernanceConfigReviewProps<DaoCreationConfig>) => {
+}: DaoCreationGovernanceConfigReviewProps<VotingModuleCreatorConfig>) => {
   const { t } = useTranslation()
   const treasuryColor = `rgba(${useNamedThemeColor('light')}, 0.45)`
 
-  const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
-    tokenType === GovernanceTokenType.Existing && existingGovernanceTokenAddress
-      ? Cw20BaseSelectors.tokenInfoSelector({
-          contractAddress: existingGovernanceTokenAddress,
-          params: [],
-        })
-      : constSelector(undefined)
+  const tokenLoadable = useRecoilValueLoadable(
+    genericTokenSelector({
+      type: existingTokenType,
+      denomOrAddress: existingTokenDenomOrAddress,
+    })
   )
 
   // If existing token, just display the token info again since there are no
@@ -42,19 +41,26 @@ export const GovernanceConfigurationReview = ({
   if (tokenType === GovernanceTokenType.Existing) {
     return (
       <div className="rounded-lg bg-background-tertiary">
-        <div className="flex h-14 flex-row border-b border-border-base p-4">
+        <div className="flex flex-row border-b border-border-base p-4">
           <p className="primary-text text-text-body">
             {t('title.existingToken')}
           </p>
         </div>
 
-        <div className="space-y-4 p-4">
-          <CopyToClipboard takeAll value={existingGovernanceTokenAddress} />
+        <div className="space-y-2 p-4">
+          <CopyToClipboard takeAll value={existingTokenDenomOrAddress} />
 
-          <FormattedJsonDisplay
-            jsonLoadable={existingGovernanceTokenInfoLoadable}
-            title={t('form.tokenInfo')}
-          />
+          {tokenLoadable.state === 'loading' ? (
+            <Loader />
+          ) : (
+            tokenLoadable.state === 'hasValue' && (
+              <p className="primary-text text-text-interactive-valid">
+                {t('info.foundSymbol', {
+                  symbol: tokenLoadable.contents?.symbol,
+                })}
+              </p>
+            )
+          )}
         </div>
       </div>
     )
@@ -118,10 +124,9 @@ export const GovernanceConfigurationReview = ({
   })
 
   const symbol =
-    (tokenType === GovernanceTokenType.New
+    (tokenType === GovernanceTokenType.NewCw20
       ? newSymbol
-      : existingGovernanceTokenInfoLoadable.state === 'hasValue' &&
-        existingGovernanceTokenInfoLoadable.contents?.symbol) ||
+      : tokenLoadable.state === 'hasValue' && tokenLoadable.contents?.symbol) ||
     t('info.tokens').toLocaleUpperCase()
 
   return (

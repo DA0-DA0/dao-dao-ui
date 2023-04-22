@@ -40,7 +40,7 @@ import {
   CHAIN_ID,
   CODE_ID_CONFIG,
   DaoProposalMultipleAdapterId,
-  DaoVotingCw20StakedAdapterId,
+  DaoVotingTokenBasedCreatorId,
   FACTORY_CONTRACT_ADDRESS,
   NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
@@ -63,13 +63,13 @@ import {
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
 import {
-  getAdapterById as getVotingModuleAdapterById,
-  getAdapters as getVotingModuleAdapters,
+  getCreatorById as getVotingModuleCreatorById,
+  getCreators as getVotingModuleCreators,
 } from '../../voting-module-adapter'
 import {
-  DaoCreationConfig as DaoVotingCw20StakedCreationConfig,
+  VotingModuleCreatorConfig as DaoVotingTokenBasedCreatorConfig,
   GovernanceTokenType,
-} from '../../voting-module-adapter/adapters/DaoVotingCw20Staked/types'
+} from '../../voting-module-adapter/creators/DaoVotingTokenBased/types'
 import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { Trans } from '../Trans'
@@ -119,17 +119,15 @@ export const CreateDaoForm = ({
     // Verify that the voting module adapter is still valid, since the IDs have
     // been renamed a couple times.
     if (
-      cached &&
-      cached.votingModuleAdapter &&
-      !getVotingModuleAdapterById(cached.votingModuleAdapter.id)
+      !cached?.votingModuleCreator ||
+      !getVotingModuleCreatorById(cached.votingModuleCreator.id)
     ) {
-      cached.votingModuleAdapter = defaultNewDao.votingModuleAdapter
+      cached.votingModuleCreator = defaultNewDao.votingModuleCreator
     }
     // Verify that the proposal module adapters are still valid, since the IDs
     // have been renamed a couple times.
     if (
-      cached &&
-      cached.proposalModuleAdapters &&
+      cached?.proposalModuleAdapters &&
       Array.isArray(cached.proposalModuleAdapters)
     ) {
       cached.proposalModuleAdapters = cached.proposalModuleAdapters.filter(
@@ -141,19 +139,19 @@ export const CreateDaoForm = ({
     }
 
     // Merge defaults in case there are any new fields.
-    const votingModuleAdapter = getVotingModuleAdapterById(
-      cached.votingModuleAdapter.id
+    const votingModuleCreator = getVotingModuleCreatorById(
+      cached.votingModuleCreator.id
     )
     merge(
       // Merges into this object.
-      cached.votingModuleAdapter.data,
+      cached.votingModuleCreator.data,
       // Start with defaults.
-      votingModuleAdapter?.daoCreation?.defaultConfig,
+      votingModuleCreator?.defaultConfig,
       // Overwrite with existing values.
-      cached.votingModuleAdapter.data
+      cached.votingModuleCreator.data
     )
 
-    cached.proposalModuleAdapters.forEach((adapter) => {
+    cached.proposalModuleAdapters?.forEach((adapter) => {
       const proposalModuleAdapter = getProposalModuleAdapterById(adapter.id)
       merge(
         // Merges into this object.
@@ -196,7 +194,10 @@ export const CreateDaoForm = ({
     name,
     description,
     imageUrl,
-    votingModuleAdapter,
+    votingModuleCreator: {
+      id: votingModuleCreatorId,
+      data: votingModuleCreatorData,
+    },
     proposalModuleAdapters,
     votingConfig,
   } = newDao
@@ -253,25 +254,16 @@ export const CreateDaoForm = ({
 
   //! Adapters and message generators
 
-  // Get voting module adapters with daoCreation fields set.
-  const availableVotingModuleAdapters: CreateDaoContext['availableVotingModuleAdapters'] =
-    useMemo(
-      () =>
-        getVotingModuleAdapters()
-          .filter(({ daoCreation }) => !!daoCreation)
-          .map(({ id, daoCreation }) => ({
-            id,
-            daoCreation: daoCreation!,
-          })),
-      []
-    )
+  // Get voting module creators.
+  const availableVotingModuleCreators: CreateDaoContext['availableVotingModuleCreators'] =
+    useMemo(() => getVotingModuleCreators(), [])
 
-  // Get selected voting module adapter.
-  const votingModuleDaoCreationAdapter = useMemo(
-    () => getVotingModuleAdapterById(votingModuleAdapter.id)?.daoCreation,
-    [votingModuleAdapter.id]
+  // Get selected voting module creator.
+  const votingModuleCreator = useMemo(
+    () => getVotingModuleCreatorById(votingModuleCreatorId),
+    [votingModuleCreatorId]
   )
-  if (!votingModuleDaoCreationAdapter) {
+  if (!votingModuleCreator) {
     throw new Error(t('error.loadingData'))
   }
 
@@ -299,12 +291,11 @@ export const CreateDaoForm = ({
   // Generate instantiation message.
   const generateInstantiateMsg = useCallback(() => {
     // Generate voting module adapter instantiation message.
-    const votingModuleInstantiateInfo =
-      votingModuleDaoCreationAdapter.getInstantiateInfo(
-        newDao,
-        votingModuleAdapter.data,
-        t
-      )
+    const votingModuleInstantiateInfo = votingModuleCreator.getInstantiateInfo(
+      newDao,
+      votingModuleCreatorData,
+      t
+    )
 
     // Generate proposal module adapters' instantiation messages.
     const proposalModuleInstantiateInfos =
@@ -338,8 +329,8 @@ export const CreateDaoForm = ({
     proposalModuleDaoCreationAdapters,
     t,
     validateInstantiateMsg,
-    votingModuleAdapter.data,
-    votingModuleDaoCreationAdapter,
+    votingModuleCreator,
+    votingModuleCreatorData,
   ])
 
   //! Submit handlers
@@ -392,9 +383,9 @@ export const CreateDaoForm = ({
   const [customValidator, setCustomValidator] =
     useState<CreateDaoCustomValidator>()
 
-  const cw20StakedBalanceVotingData =
-    votingModuleAdapter.id === DaoVotingCw20StakedAdapterId
-      ? (votingModuleAdapter.data as DaoVotingCw20StakedCreationConfig)
+  const daoVotingTokenBasedCreatorData =
+    votingModuleCreatorId === DaoVotingTokenBasedCreatorId
+      ? (votingModuleCreatorData as DaoVotingTokenBasedCreatorConfig)
       : undefined
 
   const awaitNextBlock = useAwaitNextBlock()
@@ -429,47 +420,46 @@ export const CreateDaoForm = ({
 
             // Get tokenSymbol and tokenBalance for DAO card.
             const { tokenSymbol, tokenBalance, tokenDecimals } =
-              votingModuleAdapter.id === DaoVotingCw20StakedAdapterId &&
-              cw20StakedBalanceVotingData
+              votingModuleCreatorId === DaoVotingTokenBasedCreatorId &&
+              daoVotingTokenBasedCreatorData
                 ? //! Display governance token supply if using governance tokens.
                   {
                     tokenBalance:
-                      cw20StakedBalanceVotingData.tokenType ===
-                      GovernanceTokenType.New
-                        ? cw20StakedBalanceVotingData.newInfo.initialSupply
+                      daoVotingTokenBasedCreatorData.tokenType ===
+                      GovernanceTokenType.NewCw20
+                        ? daoVotingTokenBasedCreatorData.newInfo.initialSupply
                         : // If using existing token but no token info loaded (should
                         // be impossible), just display 0.
-                        !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                        !daoVotingTokenBasedCreatorData.existingToken ||
+                          daoVotingTokenBasedCreatorData.existingTokenSupply ===
+                            undefined
                         ? 0
                         : // If using existing token, convert supply from query using decimals.
                           convertMicroDenomToDenomWithDecimals(
-                            cw20StakedBalanceVotingData
-                              .existingGovernanceTokenInfo.total_supply,
-                            cw20StakedBalanceVotingData
-                              .existingGovernanceTokenInfo.decimals
+                            daoVotingTokenBasedCreatorData.existingTokenSupply,
+                            daoVotingTokenBasedCreatorData.existingToken
+                              .decimals
                           ),
                     tokenSymbol:
-                      cw20StakedBalanceVotingData.tokenType ===
-                      GovernanceTokenType.New
-                        ? cw20StakedBalanceVotingData.newInfo.symbol
+                      daoVotingTokenBasedCreatorData.tokenType ===
+                      GovernanceTokenType.NewCw20
+                        ? daoVotingTokenBasedCreatorData.newInfo.symbol
                         : // If using existing token but no token info loaded (should
                         // be impossible), the tokenBalance above will be set to
                         // 0, so use the native token here so this value is
                         // accurate.
-                        !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
+                        !daoVotingTokenBasedCreatorData.existingToken
                         ? NATIVE_TOKEN.symbol
-                        : cw20StakedBalanceVotingData
-                            .existingGovernanceTokenInfo?.symbol ||
+                        : daoVotingTokenBasedCreatorData.existingToken.symbol ||
                           t('info.token').toLocaleUpperCase(),
                     tokenDecimals:
-                      cw20StakedBalanceVotingData.tokenType ===
+                      daoVotingTokenBasedCreatorData.tokenType ===
                         GovernanceTokenType.Existing &&
-                      cw20StakedBalanceVotingData.existingGovernanceTokenInfo
-                        ? cw20StakedBalanceVotingData
-                            .existingGovernanceTokenInfo.decimals
+                      daoVotingTokenBasedCreatorData.existingToken
+                        ? daoVotingTokenBasedCreatorData.existingToken.decimals
                         : // If using existing token but no token info loaded
                           // (should be impossible), the tokenBalance above will be
-                          // set to 0, so this doesn't matter.
+                          // set to 0, so it doesn't matter that this is wrong.
                           NEW_DAO_CW20_DECIMALS,
                   }
                 : //! Otherwise display native token, which has a balance of 0 initially.
@@ -549,8 +539,8 @@ export const CreateDaoForm = ({
       t,
       mode,
       refreshBalances,
-      votingModuleAdapter.id,
-      cw20StakedBalanceVotingData,
+      votingModuleCreatorId,
+      daoVotingTokenBasedCreatorData,
       setDaoCreatedCardProps,
       name,
       description,
@@ -604,20 +594,20 @@ export const CreateDaoForm = ({
   const createDaoContext: CreateDaoContext = useMemo(
     () => ({
       form,
-      availableVotingModuleAdapters,
       generateInstantiateMsg,
       setCustomValidator: (fn) => setCustomValidator(() => fn),
       commonVotingConfig: loadCommonVotingConfigItems(),
-      votingModuleDaoCreationAdapter,
+      availableVotingModuleCreators,
+      votingModuleCreator,
       proposalModuleDaoCreationAdapters,
       SuspenseLoader,
     }),
     [
-      availableVotingModuleAdapters,
+      availableVotingModuleCreators,
       form,
       generateInstantiateMsg,
       proposalModuleDaoCreationAdapters,
-      votingModuleDaoCreationAdapter,
+      votingModuleCreator,
     ]
   )
 

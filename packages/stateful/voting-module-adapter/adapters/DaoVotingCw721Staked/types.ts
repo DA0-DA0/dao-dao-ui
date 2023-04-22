@@ -1,30 +1,11 @@
 import {
   Duration,
-  DurationWithUnits,
   GenericToken,
   LoadingData,
   LoadingDataWithError,
   NftCardInfo,
 } from '@dao-dao/types'
 import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
-
-export enum GovernanceTokenType {
-  New,
-  Existing,
-}
-
-export interface DaoCreationConfig {
-  tokenType: GovernanceTokenType
-  existingGovernanceTokenAddress: string
-  // TokenInfoResponse
-  existingGovernanceTokenInfo?: {
-    name: string
-    symbol: string
-    total_supply?: string
-    _error?: undefined
-  }
-  unstakingDuration: DurationWithUnits
-}
 
 export interface UseStakingInfoOptions {
   fetchClaims?: boolean

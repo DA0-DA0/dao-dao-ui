@@ -1,43 +1,11 @@
 import {
   AmountWithTimestampAndDenom,
   Duration,
-  DurationWithUnits,
   GenericToken,
   LoadingData,
-  NewDaoTier,
 } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { Claim } from '@dao-dao/types/contracts/Cw20Stake'
-
-export enum GovernanceTokenType {
-  New,
-  Existing,
-}
-
-export interface DaoCreationConfig {
-  tiers: NewDaoTier[]
-  // For custom errors.
-  _tiersError?: undefined
-  tokenType: GovernanceTokenType
-  newInfo: {
-    initialSupply: number
-    initialTreasuryPercent: number
-    imageUrl?: string
-    symbol: string
-    name: string
-  }
-  existingGovernanceTokenAddress: string
-  // TokenInfoResponse
-  existingGovernanceTokenInfo?: {
-    decimals: number
-    name: string
-    symbol: string
-    total_supply: string
-    _error?: undefined
-  }
-  existingGovernanceTokenLogoUrl?: string
-  unstakingDuration: DurationWithUnits
-}
 
 export interface UseStakingInfoOptions {
   fetchClaims?: boolean

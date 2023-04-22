@@ -22,7 +22,7 @@ import {
 import { DaoCardProps, SuspenseLoaderProps } from './stateless'
 import { GenericToken } from './token'
 import { DurationWithUnits } from './units'
-import { VotingModuleAdapter } from './voting-module-adapter'
+import { VotingModuleCreator } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
 export interface DaoInfo {
@@ -116,28 +116,25 @@ export interface ProposalDraft<FormData = any> {
 export type CreateDaoCustomValidator = (setNewErrors: boolean) => void
 
 export interface CreateDaoContext<
-  VotingModuleAdapterModuleData extends FieldValues = any
+  VotingModuleCreatorConfig extends FieldValues = any
 > {
-  form: UseFormReturn<NewDao<VotingModuleAdapterModuleData>>
-  availableVotingModuleAdapters: Pick<
-    Required<VotingModuleAdapter>,
-    'id' | 'daoCreation'
-  >[]
+  form: UseFormReturn<NewDao<VotingModuleCreatorConfig>>
   commonVotingConfig: DaoCreationCommonVotingConfigItems
-  votingModuleDaoCreationAdapter: Required<VotingModuleAdapter>['daoCreation']
+  availableVotingModuleCreators: readonly VotingModuleCreator[]
+  votingModuleCreator: VotingModuleCreator
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
   generateInstantiateMsg: () => DaoCoreV2InstantiateMsg
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
-export interface NewDao<VotingModuleAdapterData extends FieldValues = any> {
+export interface NewDao<VotingModuleCreatorData extends FieldValues = any> {
   name: string
   description: string
   imageUrl?: string
-  votingModuleAdapter: {
+  votingModuleCreator: {
     id: string
-    data: VotingModuleAdapterData
+    data: VotingModuleCreatorData
   }
   proposalModuleAdapters: {
     id: string

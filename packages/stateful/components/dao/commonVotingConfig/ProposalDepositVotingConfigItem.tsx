@@ -1,14 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { UseFormWatch } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
-  DaoCreationConfig as DaoVotingCw20StakedConfig,
+  VotingModuleCreatorConfig as DaoVotingTokenBasedCreatorConfig,
   GovernanceTokenType,
-} from '@dao-dao/stateful/voting-module-adapter/adapters/DaoVotingCw20Staked/types'
-import { DaoCreationConfig as DaoVotingNativeStakedConfig } from '@dao-dao/stateful/voting-module-adapter/adapters/DaoVotingNativeStaked/types'
+} from '@dao-dao/stateful/voting-module-adapter/creators/DaoVotingTokenBased/types'
 import {
   AddressInput,
   FormSwitchCard,
@@ -19,6 +18,7 @@ import {
   SelectInput,
   TokenInput,
   TokenInputOption,
+  useCachedLoadable,
 } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
@@ -26,13 +26,11 @@ import {
   DaoCreationVotingConfigItemReviewProps,
   DaoCreationVotingConfigWithProposalDeposit,
   DepositRefundPolicy,
-  GenericToken,
   TokenType,
 } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
-  DaoVotingCw20StakedAdapterId,
-  DaoVotingNativeStakedAdapterId,
+  DaoVotingTokenBasedCreatorId,
   NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
   convertMicroDenomToDenomWithDecimals,
@@ -44,7 +42,7 @@ import {
 const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
 
 const ProposalDepositInput = ({
-  newDao: { votingModuleAdapter },
+  newDao: { votingModuleCreator },
   data: {
     proposalDeposit: { enabled, type, denomOrAddress, token },
   },
@@ -55,63 +53,29 @@ const ProposalDepositInput = ({
 }: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithProposalDeposit>) => {
   const { t } = useTranslation()
 
-  const isDaoVotingCw20StakedAdapter =
-    votingModuleAdapter.id === DaoVotingCw20StakedAdapterId
-  const cw20StakedBalanceVotingAdapterData =
-    votingModuleAdapter.data as DaoVotingCw20StakedConfig
-
-  const isDaoVotingNativeStakedAdapter =
-    votingModuleAdapter.id === DaoVotingNativeStakedAdapterId
-  const nativeStakedBalanceVotingAdapterData =
-    votingModuleAdapter.data as DaoVotingNativeStakedConfig
-
-  // Governance token may be new or existing, so we have to handle both cases.
-  const cw20GovernanceTokenSymbol = isDaoVotingCw20StakedAdapter
-    ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
-      ? cw20StakedBalanceVotingAdapterData.newInfo.symbol
-      : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo?.symbol
-    : undefined
-  const cw20GovernanceTokenDecimals = isDaoVotingCw20StakedAdapter
-    ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
-      ? NEW_DAO_CW20_DECIMALS
-      : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenInfo?.decimals
-    : undefined
-  const cw20GovernanceTokenImageUrl = isDaoVotingCw20StakedAdapter
-    ? cw20StakedBalanceVotingAdapterData.tokenType === GovernanceTokenType.New
-      ? cw20StakedBalanceVotingAdapterData.newInfo.imageUrl
-      : cw20StakedBalanceVotingAdapterData.existingGovernanceTokenLogoUrl
-    : undefined
-
-  const memoizedCw20GovernanceToken: GenericToken = useMemo(
-    () => ({
-      // Does not matter.
-      type: TokenType.Cw20,
-      // Does not matter.
-      denomOrAddress: '',
-      // Does not matter.
-      symbol: cw20GovernanceTokenSymbol ?? '',
-      decimals: cw20GovernanceTokenDecimals ?? 0,
-      imageUrl: cw20GovernanceTokenImageUrl,
-    }),
-    [
-      cw20GovernanceTokenDecimals,
-      cw20GovernanceTokenImageUrl,
-      cw20GovernanceTokenSymbol,
-    ]
-  )
+  const isDaoVotingTokenBasedCreator =
+    votingModuleCreator.id === DaoVotingTokenBasedCreatorId
+  const tokenBasedCreatorConfig =
+    votingModuleCreator.data as DaoVotingTokenBasedCreatorConfig
 
   const governanceTokenLoadable = useRecoilValueLoadable(
-    isDaoVotingCw20StakedAdapter
-      ? constSelector(memoizedCw20GovernanceToken)
-      : isDaoVotingNativeStakedAdapter
-      ? genericTokenSelector({
-          type: TokenType.Native,
-          denomOrAddress: nativeStakedBalanceVotingAdapterData.denom,
-        })
+    isDaoVotingTokenBasedCreator
+      ? tokenBasedCreatorConfig.tokenType === GovernanceTokenType.NewCw20
+        ? constSelector({
+            type: TokenType.Cw20,
+            denomOrAddress: '',
+            symbol: tokenBasedCreatorConfig.newInfo.symbol,
+            decimals: NEW_DAO_CW20_DECIMALS,
+            imageUrl: tokenBasedCreatorConfig.newInfo.imageUrl,
+          })
+        : genericTokenSelector({
+            type: tokenBasedCreatorConfig.existingTokenType,
+            denomOrAddress: tokenBasedCreatorConfig.existingTokenDenomOrAddress,
+          })
       : constSelector(undefined)
   )
 
-  const tokenLoadable = useRecoilValueLoadable(
+  const tokenLoadable = useCachedLoadable(
     type === 'cw20' &&
       denomOrAddress &&
       isValidContractAddress(denomOrAddress, CHAIN_BECH32_PREFIX)
@@ -125,13 +89,8 @@ const ProposalDepositInput = ({
           denomOrAddress,
         })
       : type === 'voting_module_token'
-      ? isDaoVotingCw20StakedAdapter
-        ? constSelector(memoizedCw20GovernanceToken)
-        : isDaoVotingNativeStakedAdapter
-        ? genericTokenSelector({
-            type: TokenType.Native,
-            denomOrAddress: nativeStakedBalanceVotingAdapterData.denom,
-          })
+      ? governanceTokenLoadable.state === 'hasValue'
+        ? constSelector(governanceTokenLoadable.contents)
         : constSelector(undefined)
       : constSelector(undefined)
   )
@@ -174,20 +133,23 @@ const ProposalDepositInput = ({
 
   const availableTokens: TokenInputOption[] = [
     // Governance token first.
-    ...(governanceTokenLoadable.state === 'hasValue' &&
+    ...(isDaoVotingTokenBasedCreator &&
+    governanceTokenLoadable.state === 'hasValue' &&
     !!governanceTokenLoadable.contents
       ? [
           {
-            type: isDaoVotingCw20StakedAdapter
-              ? // Only works for cw20.
-                'voting_module_token'
-              : TokenType.Native,
-            denomOrAddress: isDaoVotingCw20StakedAdapter
-              ? 'voting_module_token'
-              : governanceTokenLoadable.contents.denomOrAddress,
-            symbol: governanceTokenLoadable.contents.symbol,
+            ...governanceTokenLoadable.contents,
+            type:
+              governanceTokenLoadable.contents.type === TokenType.Cw20
+                ? // Only works for cw20.
+                  'voting_module_token'
+                : TokenType.Native,
+            denomOrAddress:
+              governanceTokenLoadable.contents.type === TokenType.Cw20
+                ? // Only works for cw20.
+                  'voting_module_token'
+                : governanceTokenLoadable.contents.denomOrAddress,
             description: t('title.governanceToken'),
-            imageUrl: governanceTokenLoadable.contents.imageUrl,
           },
         ]
       : []),

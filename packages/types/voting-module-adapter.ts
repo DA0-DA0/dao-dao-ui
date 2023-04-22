@@ -48,36 +48,11 @@ export interface IVotingModuleAdapter {
   }
 }
 
-export type VotingModuleAdapter<DaoCreationConfig extends FieldValues = any> = {
+export type VotingModuleAdapter = {
   id: string
   contractNames: string[]
 
   load: (options: IVotingModuleAdapterOptions) => IVotingModuleAdapter
-
-  // Filling out these fields will add a structure preset to the DAO creation
-  // flow.
-  daoCreation?: {
-    displayInfo: {
-      Icon: ComponentType
-      nameI18nKey: string
-      descriptionI18nKey: string
-      suppliesI18nKey: string
-      membershipI18nKey: string
-    }
-    defaultConfig: DaoCreationConfig
-
-    governanceConfig: {
-      Input: ComponentType<DaoCreationGovernanceConfigInputProps>
-      Review: ComponentType<DaoCreationGovernanceConfigReviewProps>
-    }
-    votingConfig: {
-      items: DaoCreationVotingConfigItem[]
-      advancedItems?: DaoCreationVotingConfigItem[]
-      advancedWarningI18nKeys?: string[]
-    }
-
-    getInstantiateInfo: DaoCreationGetInstantiateInfo<DaoCreationConfig>
-  }
 }
 
 export interface IVotingModuleAdapterOptions {
@@ -89,4 +64,29 @@ export interface IVotingModuleAdapterContext {
   id: string
   options: IVotingModuleAdapterOptions
   adapter: IVotingModuleAdapter
+}
+
+export type VotingModuleCreator<Config extends FieldValues = any> = {
+  id: string
+  defaultConfig: Config
+
+  displayInfo: {
+    Icon: ComponentType
+    nameI18nKey: string
+    descriptionI18nKey: string
+    suppliesI18nKey: string
+    membershipI18nKey: string
+  }
+
+  governanceConfig: {
+    Input: ComponentType<DaoCreationGovernanceConfigInputProps>
+    Review: ComponentType<DaoCreationGovernanceConfigReviewProps>
+  }
+  votingConfig: {
+    items: DaoCreationVotingConfigItem[]
+    advancedItems?: DaoCreationVotingConfigItem[]
+    advancedWarningI18nKeys?: string[]
+  }
+
+  getInstantiateInfo: DaoCreationGetInstantiateInfo<Config>
 }

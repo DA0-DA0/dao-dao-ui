@@ -2,16 +2,16 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
 import { NewDao } from '@dao-dao/types'
-import { DaoVotingCw4AdapterId } from '@dao-dao/utils'
+import { DaoVotingTokenBasedCreatorId } from '@dao-dao/utils'
 
-import { makeDefaultNewDao } from '../../../../recoil/atoms'
-import { DaoVotingCw4Adapter } from '../../../index'
-import { DaoCreationConfig } from '../types'
+import { DaoVotingTokenBasedCreator } from '.'
+import { makeDefaultNewDao } from '../../../recoil/atoms'
 import { TierCard } from './TierCard'
+import { VotingModuleCreatorConfig } from './types'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / voting-module-adapter / adapters / DaoVotingCw4 / daoCreation / TierCard',
+    'DAO DAO / packages / stateful / voting-module-adapter / creators / DaoVotingTokenBased / TierCard',
   component: TierCard,
 } as ComponentMeta<typeof TierCard>
 
@@ -22,12 +22,12 @@ const Template: ComponentStory<typeof TierCard> = (args) => {
     formState: { errors },
     setValue,
     watch,
-  } = useForm<NewDao<DaoCreationConfig>>({
+  } = useForm<NewDao<VotingModuleCreatorConfig>>({
     defaultValues: {
       ...makeDefaultNewDao(),
-      votingModuleAdapter: {
-        id: DaoVotingCw4AdapterId,
-        data: DaoVotingCw4Adapter.daoCreation!.defaultConfig,
+      votingModuleCreator: {
+        id: DaoVotingTokenBasedCreatorId,
+        data: DaoVotingTokenBasedCreator.defaultConfig,
       },
     },
   })
@@ -37,7 +37,7 @@ const Template: ComponentStory<typeof TierCard> = (args) => {
       <TierCard
         {...args}
         control={control}
-        data={watch('votingModuleAdapter.data')}
+        data={watch('votingModuleCreator.data')}
         errors={errors}
         register={register}
         remove={() => alert('remove')}

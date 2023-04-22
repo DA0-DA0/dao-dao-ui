@@ -11,14 +11,18 @@ import { DaoCreateConfigReviewCard } from '../DaoCreateConfigReviewCard'
 export const CreateDaoReview = ({
   form: { watch },
   commonVotingConfig,
-  votingModuleDaoCreationAdapter,
+  votingModuleCreator,
   proposalModuleDaoCreationAdapters,
   generateInstantiateMsg,
 }: CreateDaoContext) => {
   const { t } = useTranslation()
 
   const newDao = watch()
-  const { votingModuleAdapter, proposalModuleAdapters, votingConfig } = newDao
+  const {
+    votingModuleCreator: { data: votingModuleCreatorData },
+    proposalModuleAdapters,
+    votingConfig,
+  } = newDao
 
   const [decodeModuleMessages, setDecodeModuleMessages] = useState(true)
   const togglePreviewRef = useRef<HTMLDivElement>(null)
@@ -112,8 +116,8 @@ export const CreateDaoReview = ({
         {t('title.governanceConfiguration')}
       </p>
 
-      <votingModuleDaoCreationAdapter.governanceConfig.Review
-        data={votingModuleAdapter.data}
+      <votingModuleCreator.governanceConfig.Review
+        data={votingModuleCreatorData}
         newDao={newDao}
       />
 
@@ -122,10 +126,8 @@ export const CreateDaoReview = ({
       </p>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3">
-        {votingModuleDaoCreationAdapter.votingConfig.items
-          .concat(
-            votingModuleDaoCreationAdapter.votingConfig.advancedItems ?? []
-          )
+        {votingModuleCreator.votingConfig.items
+          .concat(votingModuleCreator.votingConfig.advancedItems ?? [])
           .map(
             (
               {
@@ -145,10 +147,10 @@ export const CreateDaoReview = ({
                   Icon={Icon}
                   name={t(nameI18nKey)}
                   review={
-                    <Review data={votingModuleAdapter.data} newDao={newDao} />
+                    <Review data={votingModuleCreatorData} newDao={newDao} />
                   }
                   reviewClassName={getReviewClassName?.(
-                    votingModuleAdapter.data
+                    votingModuleCreatorData
                   )}
                   tooltip={tooltipI18nKey && t(tooltipI18nKey)}
                 />

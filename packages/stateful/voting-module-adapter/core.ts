@@ -2,6 +2,7 @@ import {
   IVotingModuleAdapterContext,
   IVotingModuleAdapterOptions,
   VotingModuleAdapter,
+  VotingModuleCreator,
 } from '@dao-dao/types'
 import { normalizeContractName } from '@dao-dao/utils'
 
@@ -12,6 +13,11 @@ import {
   DaoVotingNativeStakedAdapter,
   FallbackAdapter,
 } from './adapters'
+import {
+  DaoVotingMembershipBasedCreator,
+  DaoVotingNftBasedCreator,
+  DaoVotingTokenBasedCreator,
+} from './creators'
 
 // Adapters need to be loaded lazily like this, as opposed to just defining a
 // global array, due to cyclic dependencies. The adapter defintion files include
@@ -21,12 +27,19 @@ import {
 // should have a dependency chain that leads back to the matching functions
 // below, except the react provider, which we should only be used externally.
 // This is a problem to solve later.
+
 export const getAdapters = (): readonly VotingModuleAdapter[] => [
   DaoVotingCw4Adapter,
   DaoVotingCw20StakedAdapter,
   DaoVotingNativeStakedAdapter,
   DaoVotingCw721StakedAdapter,
   FallbackAdapter,
+]
+
+export const getCreators = (): readonly VotingModuleCreator[] => [
+  DaoVotingMembershipBasedCreator,
+  DaoVotingNftBasedCreator,
+  DaoVotingTokenBasedCreator,
 ]
 
 export const getAdapterById = (id: string) =>
@@ -59,3 +72,6 @@ export const matchAndLoadAdapter = (
     options,
   }
 }
+
+export const getCreatorById = (id: string) =>
+  getCreators().find((creator) => creator.id === id)

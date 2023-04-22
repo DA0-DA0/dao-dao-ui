@@ -1,24 +1,18 @@
 import { PeopleAltOutlined } from '@mui/icons-material'
 
-import { HandshakeEmoji } from '@dao-dao/stateless'
 import {
   ActionCategoryKey,
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
+import { DaoVotingCw4AdapterId } from '@dao-dao/utils'
 
 import { makeManageMembersAction } from './actions'
 import { MembersTab, ProfileCardMemberInfo } from './components'
-import {
-  GovernanceConfigurationInput,
-  GovernanceConfigurationReview,
-  getInstantiateInfo,
-} from './daoCreation'
 import { useDaoInfoBarItems, useProfileNewProposalCardAddresses } from './hooks'
-import { DaoCreationConfig } from './types'
 
-export const DaoVotingCw4Adapter: VotingModuleAdapter<DaoCreationConfig> = {
-  id: 'DaoVotingCw4',
+export const DaoVotingCw4Adapter: VotingModuleAdapter = {
+  id: DaoVotingCw4AdapterId,
   contractNames: [
     // V1
     'cw4-voting',
@@ -58,35 +52,4 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter<DaoCreationConfig> = {
       ],
     },
   }),
-
-  daoCreation: {
-    displayInfo: {
-      Icon: HandshakeEmoji,
-      nameI18nKey: 'daoCreationAdapter.DaoVotingCw4.name',
-      descriptionI18nKey: 'daoCreationAdapter.DaoVotingCw4.description',
-      suppliesI18nKey: 'daoCreationAdapter.DaoVotingCw4.supplies',
-      membershipI18nKey: 'daoCreationAdapter.DaoVotingCw4.membership',
-    },
-    defaultConfig: {
-      tiers: [
-        {
-          name: '',
-          weight: 1,
-          members: [
-            {
-              address: '',
-            },
-          ],
-        },
-      ],
-    },
-    governanceConfig: {
-      Input: GovernanceConfigurationInput,
-      Review: GovernanceConfigurationReview,
-    },
-    votingConfig: {
-      items: [],
-    },
-    getInstantiateInfo,
-  },
 }
