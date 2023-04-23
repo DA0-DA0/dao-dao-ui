@@ -23,7 +23,7 @@ export const useCfWorkerAuthPostRequest = (
       data?: Record<string, unknown>
     ): Promise<R> => {
       if (!ready) {
-        throw new Error(t('error.connectWalletToContinue'))
+        throw new Error(t('error.logInToContinue'))
       }
 
       // Fetch nonce.

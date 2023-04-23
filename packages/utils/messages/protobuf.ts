@@ -36,6 +36,7 @@ import {
   MaxCallsLimit,
   MaxFundsLimit,
 } from 'cosmjs-types/cosmwasm/wasm/v1/authz'
+import { MsgInstantiateContract2 } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { Any } from 'cosmjs-types/google/protobuf/any'
 import { Timestamp } from 'cosmjs-types/google/protobuf/timestamp'
 import { cosmos } from 'interchain-rpc'
@@ -183,6 +184,23 @@ export const cwMsgToEncodeObject = (
           label: wasmMsg.instantiate.label,
           msg: fromBase64(wasmMsg.instantiate.msg),
           funds: wasmMsg.instantiate.funds,
+        },
+      }
+      return encodeObject
+    }
+
+    if ('instantiate2' in wasmMsg) {
+      const encodeObject: EncodeObject = {
+        typeUrl: '/cosmwasm.wasm.v1.MsgInstantiateContract2',
+        value: {
+          sender,
+          admin: wasmMsg.instantiate2.admin ?? undefined,
+          codeId: Long.fromInt(wasmMsg.instantiate2.code_id),
+          label: wasmMsg.instantiate2.label,
+          msg: fromBase64(wasmMsg.instantiate2.msg),
+          funds: wasmMsg.instantiate2.funds,
+          salt: fromBase64(wasmMsg.instantiate2.salt),
+          fixMsg: wasmMsg.instantiate2.fix_msg,
         },
       }
       return encodeObject
@@ -430,7 +448,7 @@ export const typesRegistry = new Registry([
   ...defaultRegistryTypes,
   ...wasmTypes,
 
-  // Custom types not in @cosmjs/stargate default registry.
+  // Custom types not in default registry.
   ...([
     ['/cosmos.slashing.v1beta1.MsgUnjail', MsgUnjail],
     ['/cosmos.authz.v1beta1.GenericAuthorization', GenericAuthorization],
@@ -458,6 +476,7 @@ export const typesRegistry = new Registry([
       juno.feeshare.v1.MsgRegisterFeeShare,
     ],
     ['/juno.feeshare.v1.MsgUpdateFeeShare', juno.feeshare.v1.MsgUpdateFeeShare],
+    ['/cosmwasm.wasm.v1.MsgInstantiateContract2', MsgInstantiateContract2],
   ] as ReadonlyArray<[string, GeneratedType]>),
 ])
 

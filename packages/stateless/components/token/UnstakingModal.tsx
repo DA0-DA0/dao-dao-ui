@@ -111,7 +111,7 @@ export const UnstakingModal = ({
     <Modal
       {...modalProps}
       containerClassName={clsx(
-        '!h-[38rem] !max-h-[90vh] w-full max-w-2xl',
+        '!h-[38rem] !max-h-[82vh] w-full max-w-2xl',
         containerClassName
       )}
     >

@@ -102,7 +102,7 @@ const InnerStakingModal = ({
   const awaitNextBlock = useAwaitNextBlock()
   const onAction = async (mode: StakingMode, amount: number) => {
     if (!connected) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return
     }
 
@@ -234,7 +234,7 @@ const InnerStakingModal = ({
     <StatelessStakingModal
       amount={amount}
       claimableTokens={sumClaimsAvailable}
-      error={connected ? undefined : t('error.connectWalletToContinue')}
+      error={connected ? undefined : t('error.logInToContinue')}
       initialMode={initialMode}
       loading={stakingLoading}
       loadingStakableTokens={

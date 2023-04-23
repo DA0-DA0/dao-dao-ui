@@ -52,6 +52,7 @@ export const makeAppContextDecorator: (
             visible: updateProfileVisible,
             toggle: () => setUpdateProfileVisible((v) => !v),
           },
+          web3AuthPrompt: undefined,
           pageHeaderRef,
           setPageHeaderRef,
           rightSidebarRef,

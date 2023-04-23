@@ -20,7 +20,6 @@ import {
   PageLoader,
   ProposalCreatedModal,
   SdaLayout as StatelessSdaLayout,
-  useAppContext,
 } from '@dao-dao/stateless'
 
 import { useDaoTabs, useWalletInfo } from '../hooks'
@@ -29,9 +28,9 @@ import { ConnectWallet } from './ConnectWallet'
 import { SdaDaoHome } from './dao'
 import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
-import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
 import { SuspenseLoader } from './SuspenseLoader'
+import { WalletModals } from './wallet'
 
 export const SdaLayout = ({ children }: { children: ReactNode }) => {
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
@@ -89,8 +88,6 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
 
   const tabs = useDaoTabs({ includeHome: SdaDaoHome })
 
-  const { updateProfileNft } = useAppContext()
-
   return (
     <StatelessSdaLayout
       connect={connect}
@@ -129,10 +126,9 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
         onClose={() => setBetaWarningAccepted(true)}
         visible={mountedInBrowser && !betaWarningAccepted}
       />
-      <PfpkNftSelectionModal
-        onClose={updateProfileNft.toggle}
-        visible={updateProfileNft.visible}
-      />
+
+      {/* Wallet UI */}
+      <WalletModals />
 
       {daoCreatedCardProps && (
         <DaoCreatedModal

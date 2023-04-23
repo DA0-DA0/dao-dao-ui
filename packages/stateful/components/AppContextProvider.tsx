@@ -16,6 +16,7 @@ import { useInbox } from '../inbox'
 
 export const AppContextProvider = ({
   mode,
+  web3AuthPrompt,
   children,
 }: AppContextProviderProps) => {
   // Visibility toggles.
@@ -90,6 +91,7 @@ export const AppContextProvider = ({
       visible: updateProfileNftVisible,
       toggle: () => setUpdateProfileNftVisible((v) => !v),
     },
+    web3AuthPrompt,
     // Include the page header and right sidebar portal refs in the context
     // to be accessed by the component portals.
     pageHeaderRef,

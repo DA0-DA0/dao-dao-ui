@@ -1,6 +1,5 @@
 import { ArrowDropDown, ArrowForwardIos, Close } from '@mui/icons-material'
 import clsx from 'clsx'
-import Link from 'next/link'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -11,6 +10,7 @@ import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 import { useDaoInfoContextIfAvailable, useNavHelpers } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
+import { LinkWrapper } from '../LinkWrapper'
 import { Tooltip } from '../tooltip'
 import { TopGradient } from '../TopGradient'
 import { useAppContext } from './AppContext'
@@ -101,11 +101,12 @@ export const Breadcrumbs = ({
                       'max-w-[8rem]'
                   )}
                 >
-                  <Link href={href}>
-                    <a className="transition-opacity hover:opacity-80">
-                      {firstOrLast ? label : '...'}
-                    </a>
-                  </Link>
+                  <LinkWrapper
+                    className="transition-opacity hover:opacity-80"
+                    href={href}
+                  >
+                    {firstOrLast ? label : '...'}
+                  </LinkWrapper>
                 </div>
               </Tooltip>
 
@@ -171,9 +172,12 @@ export const Breadcrumbs = ({
                 top: responsive ? `${idx * 5}rem` : 0,
               }}
             >
-              <Link href={href}>
-                <a className="transition-opacity hover:opacity-80">{label}</a>
-              </Link>
+              <LinkWrapper
+                className="transition-opacity hover:opacity-80"
+                href={href}
+              >
+                {label}
+              </LinkWrapper>
 
               <p>/</p>
             </div>

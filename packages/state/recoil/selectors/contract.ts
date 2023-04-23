@@ -1,3 +1,4 @@
+import { CodeDetails } from '@cosmjs/cosmwasm-stargate'
 import { selectorFamily } from 'recoil'
 
 import { ContractVersion, WithChainId } from '@dao-dao/types'
@@ -66,6 +67,19 @@ export const contractAdminSelector = selectorFamily<
       } catch (_) {
         return undefined
       }
+    },
+})
+
+export const codeDetailsSelector = selectorFamily<
+  CodeDetails,
+  WithChainId<{ codeId: number }>
+>({
+  key: 'contractAdmin',
+  get:
+    ({ codeId, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientForChainSelector(chainId))
+      return await client.getCodeDetails(codeId)
     },
 })
 

@@ -30,7 +30,7 @@ import {
   ThemeProvider,
   ToastNotifications,
 } from '@dao-dao/stateless'
-import { DaoPageMode } from '@dao-dao/types'
+import { DaoPageMode, Web3AuthPrompt } from '@dao-dao/types'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 type DappProps = AppProps<{ featuredDaoDumpStates?: any[] } | {}>
@@ -39,10 +39,16 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
+
   const [navigatingToHref, setNavigatingToHref] =
     useRecoilState(navigatingToHrefAtom)
+
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
+
+  const [web3AuthPrompt, setWeb3AuthPrompt] = useState<
+    Web3AuthPrompt | undefined
+  >()
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
@@ -78,9 +84,12 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
       {router.isFallback ? (
         <PageLoader />
       ) : (
-        <WalletProvider>
+        <WalletProvider setWeb3AuthPrompt={setWeb3AuthPrompt}>
           {/* AppContextProvider uses wallet context. */}
-          <AppContextProvider mode={DaoPageMode.Dapp}>
+          <AppContextProvider
+            mode={DaoPageMode.Dapp}
+            web3AuthPrompt={web3AuthPrompt}
+          >
             <DappLayout>
               <Component {...pageProps} />
             </DappLayout>

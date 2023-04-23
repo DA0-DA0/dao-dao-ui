@@ -30,7 +30,7 @@ export const CommandModal = ({
 
   return (
     <Modal
-      containerClassName="!w-[36rem] !max-w-[90vw] !h-[28rem] !max-h-[90vh]"
+      containerClassName="!w-[36rem] !max-w-[82vw] !h-[28rem] !max-h-[82vh]"
       contentContainerClassName="p-3 pt-4"
       headerContainerClassName="p-4"
       headerContent={

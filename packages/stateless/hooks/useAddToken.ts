@@ -19,7 +19,7 @@ export const useAddToken = () => {
             if (keplr && (await suggestToken(keplr, address))) {
               toast.success(t('success.addedToken'))
             } else {
-              toast.error(t('error.connectWalletToContinue'))
+              toast.error(t('error.logInToContinue'))
             }
           }
         : undefined,

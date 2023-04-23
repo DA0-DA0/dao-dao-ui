@@ -59,6 +59,10 @@ export const CHAIN_BECH32_PREFIX = process.env
 export const DAO_DAO_DAO_ADDRESS = process.env
   .NEXT_PUBLIC_DAO_DAO_DAO_ADDRESS as string
 
+// https://dashboard.web3auth.io
+export const WEB3AUTH_CLIENT_ID = process.env
+  .NEXT_PUBLIC_WEB3AUTH_CLIENT_ID as string
+
 // KVPK prefix for saved Me page transactions.
 export const ME_SAVED_TX_PREFIX = `${CHAIN_ID}:savedTx:`
 

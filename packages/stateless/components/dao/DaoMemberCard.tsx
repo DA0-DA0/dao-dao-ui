@@ -1,11 +1,10 @@
-import { Tag } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { DaoMemberCardProps } from '@dao-dao/types/stateless/DaoMemberCard'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { CopyToClipboardUnderline } from '../CopyToClipboard'
+import { CopyableAddress } from '../CopyableAddress'
 import { ProfileImage } from '../profile'
 
 export const DaoMemberCard = ({
@@ -35,15 +34,7 @@ export const DaoMemberCard = ({
           {profileLoading ? '...' : profile.name}
         </p>
         {/* Address */}
-        <div className="flex w-full min-w-0 flex-row items-center justify-center gap-1">
-          <Tag className="!h-5 !w-5 text-icon-tertiary" />
-
-          <CopyToClipboardUnderline
-            className="text-sm !text-text-tertiary"
-            takeAll
-            value={address}
-          />
-        </div>
+        <CopyableAddress address={address} />
       </div>
 
       <div className="flex flex-col gap-2 border-t border-border-interactive-disabled p-4">

@@ -1,21 +1,37 @@
+import { Image } from '@mui/icons-material'
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useState } from 'react'
+import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ImageSelectorModal,
   ModalLoader,
   ModalProps,
   NftSelectionModal,
+  NoContent,
   ProfileImage,
+  Tooltip,
+  useAppContext,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { NftCardInfo } from '@dao-dao/types'
-import { processError } from '@dao-dao/utils'
+import {
+  InstantiateMsg,
+  MintMsgForNullable_Empty,
+} from '@dao-dao/types/contracts/Cw721Base'
+import {
+  CODE_ID_CONFIG,
+  MAINNET,
+  processError,
+  uploadNft,
+} from '@dao-dao/utils'
 
-import { useWalletInfo } from '../hooks'
+import { useInstantiateAndExecute, useWalletInfo } from '../hooks'
 import { walletNativeAndStargazeNftsSelector } from '../recoil'
 import { SuspenseLoader } from './SuspenseLoader'
+import { Trans } from './Trans'
 
 export type PfpkNftSelectionModalProps = Pick<
   Required<ModalProps>,
@@ -47,6 +63,7 @@ export const InnerPfpkNftSelectionModal = ({
     updateProfileNft,
     updatingProfile,
     backupImageUrl,
+    refreshBalances,
   } = useWalletInfo()
   // Initialize to selected NFT.
   const [selected, setSelected] = useState<string | undefined>(
@@ -112,49 +129,173 @@ export const InnerPfpkNftSelectionModal = ({
     }
   }, [nfts, selected, selectedNft, t, updateProfileNft, onClose])
 
+  const [showImageSelector, setShowImageSelector] = useState(false)
+  const { register, setValue, watch } = useForm<{ image: string }>()
+  const image = watch('image')
+
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const { ready: instantiateAndExecuteReady, instantiateAndExecute } =
+    useInstantiateAndExecute(CODE_ID_CONFIG.Cw721Base)
+  const uploadImage = useCallback(async () => {
+    if (!image) {
+      toast.error(t('error.noImage'))
+    }
+
+    setUploadingImage(true)
+    try {
+      const { cid, metadataUrl } = await uploadNft(
+        'DAO DAO Profile Picture',
+        '',
+        undefined,
+        // Use image URL directly instead of uploading a file.
+        JSON.stringify({
+          image,
+        })
+      )
+
+      // Instantiate and execute cw721 mint.
+      const { contractAddress } = await instantiateAndExecute({
+        instantiate: {
+          admin: walletAddress,
+          funds: [],
+          label: 'DAO DAO Profile Picture',
+          msg: {
+            minter: walletAddress,
+            name: 'DAO DAO Profile Picture',
+            symbol: 'PIC',
+          } as InstantiateMsg,
+        },
+        executes: [
+          {
+            funds: [],
+            msg: {
+              mint: {
+                owner: walletAddress,
+                token_id: cid,
+                token_uri: metadataUrl,
+              } as MintMsgForNullable_Empty,
+            },
+          },
+        ],
+      })
+
+      // On success, hide image selector, select new collection and token ID,
+      // and refresh NFT list.
+      setShowImageSelector(false)
+      setSelected(`${contractAddress}:${cid}`)
+      refreshBalances()
+    } catch (err) {
+      console.error(err)
+      toast.error(
+        processError(err, {
+          forceCapture: false,
+        })
+      )
+    } finally {
+      setUploadingImage(false)
+    }
+  }, [image, instantiateAndExecute, refreshBalances, t, walletAddress])
+
   return (
-    <NftSelectionModal
-      actionLabel={t('button.save')}
-      actionLoading={updatingProfile}
-      allowSelectingNone
-      getIdForNft={getIdForNft}
-      header={{
-        title: t('title.chooseNftProfilePicture'),
-        subtitle: t('info.chooseNftProfilePictureSubtitle'),
-      }}
-      nfts={
-        walletStatus === WalletConnectionStatus.Errored
-          ? { loading: false, errored: true, error: walletError }
-          : nfts
-      }
-      onAction={onAction}
-      onClose={onClose}
-      onNftClick={(nft) =>
-        setSelected(
-          selected === getIdForNft(nft) ? undefined : getIdForNft(nft)
-        )
-      }
-      selectedDisplay={
-        <ProfileImage
-          imageUrl={
-            !nfts.loading
-              ? selectedNft
-                ? selectedNft.imageUrl
-                : backupImageUrl
-              : undefined
+    <>
+      <NftSelectionModal
+        action={{
+          loading: updatingProfile,
+          label: t('button.save'),
+          onClick: onAction,
+        }}
+        allowSelectingNone
+        getIdForNft={getIdForNft}
+        header={{
+          title: t('title.chooseProfilePicture'),
+          subtitle: t('info.chooseProfilePictureSubtitle'),
+        }}
+        nfts={
+          walletStatus === WalletConnectionStatus.ReadyForConnection &&
+          walletError
+            ? { loading: false, errored: true, error: walletError }
+            : nfts
+        }
+        noneDisplay={
+          MAINNET ? (
+            <NoContent
+              Icon={Image}
+              body={t('info.nothingHereYet')}
+              buttonLabel={t('button.uploadImage')}
+              className="grow justify-center"
+              onClick={() => setShowImageSelector(true)}
+            />
+          ) : undefined
+        }
+        onClose={onClose}
+        onNftClick={(nft) =>
+          setSelected(
+            selected === getIdForNft(nft) ? undefined : getIdForNft(nft)
+          )
+        }
+        secondaryAction={
+          // Only Juno mainnet NFTs are supported in PFPK.
+          MAINNET
+            ? {
+                loading: !instantiateAndExecuteReady,
+                label: t('button.uploadImage'),
+                onClick: () => setShowImageSelector(true),
+              }
+            : undefined
+        }
+        selectedDisplay={
+          <Tooltip title={t('title.preview')}>
+            <div>
+              <ProfileImage
+                imageUrl={
+                  !nfts.loading
+                    ? selectedNft
+                      ? selectedNft.imageUrl
+                      : backupImageUrl
+                    : undefined
+                }
+                loading={nfts.loading}
+                size="sm"
+              />
+            </div>
+          </Tooltip>
+        }
+        selectedIds={selected ? [selected] : []}
+        visible={visible}
+      />
+
+      {/* Only Juno mainnet NFTs are supported in PFPK. */}
+      {MAINNET && (
+        <ImageSelectorModal
+          Trans={Trans}
+          buttonLabel={t('button.save')}
+          fieldName="image"
+          imageClassName="!rounded-2xl"
+          loading={uploadingImage}
+          onClose={(done) =>
+            done ? uploadImage() : setShowImageSelector(false)
           }
-          loading={nfts.loading}
-          size="sm"
+          register={register}
+          setValue={setValue}
+          visible={showImageSelector}
+          watch={watch}
         />
-      }
-      selectedIds={selected ? [selected] : []}
-      visible={visible}
-    />
+      )}
+    </>
   )
 }
 
-export const PfpkNftSelectionModal = (props: PfpkNftSelectionModalProps) => (
-  <SuspenseLoader fallback={<ModalLoader {...props} />}>
-    <InnerPfpkNftSelectionModal {...props} />
-  </SuspenseLoader>
-)
+export const PfpkNftSelectionModal = () => {
+  const { updateProfileNft } = useAppContext()
+
+  return (
+    <SuspenseLoader
+      fallback={<ModalLoader onClose={updateProfileNft.toggle} />}
+    >
+      <InnerPfpkNftSelectionModal
+        onClose={updateProfileNft.toggle}
+        visible={updateProfileNft.visible}
+      />
+    </SuspenseLoader>
+  )
+}

@@ -272,7 +272,7 @@ export const NewProposal = ({
             <Tooltip
               title={
                 !connected
-                  ? t('error.connectWalletToContinue')
+                  ? t('error.logInToContinue')
                   : depositUnsatisfied
                   ? t('error.notEnoughForDeposit')
                   : isPaused
