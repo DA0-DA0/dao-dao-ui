@@ -55,11 +55,15 @@ export const StakingModal = ({
 
   // If choosing a validator, unstakable amount depends on chosen validator.
   if (validatorPicker) {
+    // If restaking, fromValidator is source of funds.
+    const targetValidator =
+      mode === StakingMode.Restake ? fromValidator : validator
+
     loadingUnstakableTokens = {
       loading: false,
       data:
         validatorPicker.stakes?.find(
-          (stake) => stake.validator.address === validator
+          (stake) => stake.validator.address === targetValidator
         )?.amount ?? 0,
     }
   }
