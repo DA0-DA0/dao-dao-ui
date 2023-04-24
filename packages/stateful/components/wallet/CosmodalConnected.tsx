@@ -26,10 +26,12 @@ export const CosmodalConnected = ({ connectedWallet }: UiProps) => {
 
   return connectedWallet ? (
     <div className="flex flex-col items-stretch gap-6">
-      <Warning
-        content={t('info.socialLoginWarning', { context: 'onlySocial' })}
-        size="sm"
-      />
+      {isWeb3Auth && (
+        <Warning
+          content={t('info.socialLoginWarning', { context: 'onlySocial' })}
+          size="sm"
+        />
+      )}
 
       <div className="flex flex-col items-center">
         {/* Image */}
