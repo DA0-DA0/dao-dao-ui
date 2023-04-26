@@ -254,7 +254,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                   />
                 ) : null}
 
-                <div className="min-w-0 space-y-1 text-left">
+                <div className="min-w-0 text-left">
                   <div className="flex flex-row items-center gap-2">
                     {item.selected && (
                       <Check className="!h-4 !w-4 text-icon-brand" />
@@ -271,7 +271,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                   </div>
 
                   {item.description && (
-                    <div className="secondary-text break-words">
+                    <div className="legend-text break-words">
                       {item.description}
                     </div>
                   )}

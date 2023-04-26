@@ -210,6 +210,8 @@ export const TokenInput = <
                         {getDisplayNameForChainId(token.chainId)}
                       </p>
                     ),
+                    iconClassName: '!h-8 !w-8',
+                    contentContainerClassName: '!gap-3',
                   }))
             }
             onSelect={(token) => onSelectToken(token as T)}

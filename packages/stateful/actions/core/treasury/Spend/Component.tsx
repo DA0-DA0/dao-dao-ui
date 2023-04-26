@@ -190,7 +190,18 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               ? { loading: true }
               : {
                   loading: false,
-                  data: tokens.data.map(({ token }) => token),
+                  data: tokens.data.map(({ balance, token }) => ({
+                    ...token,
+                    description:
+                      t('title.balance') +
+                      ': ' +
+                      convertMicroDenomToDenomWithDecimals(
+                        balance,
+                        token.decimals
+                      ).toLocaleString(undefined, {
+                        maximumFractionDigits: token.decimals,
+                      }),
+                  })),
                 }
           }
           watch={watch}
