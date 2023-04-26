@@ -16,7 +16,7 @@ import {
 import { TokenType, WidgetEditorProps, WyndPoolToken } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
-  validateAddress,
+  makeValidateAddress,
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../actions'
@@ -30,7 +30,7 @@ export const WyndDepositEditor = ({
 }: WidgetEditorProps<WyndDepositData>) => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: chainId },
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
   const { watch, register, setValue } = useFormContext<WyndDepositData>()
@@ -140,7 +140,7 @@ export const WyndDepositEditor = ({
           fieldName={(fieldNamePrefix + 'outputAddress') as 'outputAddress'}
           placeholder={t('title.daoTreasury')}
           register={register}
-          validation={[(v) => validateAddress(v, false)]}
+          validation={[makeValidateAddress(bech32Prefix, false)]}
         />
         <InputErrorMessage error={errors?.outputAddress} />
       </div>

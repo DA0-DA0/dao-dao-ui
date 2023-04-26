@@ -15,11 +15,9 @@ import {
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import {
-  CHAIN_BECH32_PREFIX,
-  isValidAddress,
-  validateAddress,
-} from '@dao-dao/utils'
+import { isValidAddress, makeValidateAddress } from '@dao-dao/utils'
+
+import { useActionOptions } from '../../../react'
 
 export type AuthzExecData = {
   // Set common address to use for all actions.
@@ -45,6 +43,9 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
   props
 ) => {
   const { t } = useTranslation()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { watch, register } = useFormContext<AuthzExecData>()
   const {
     fieldNamePrefix,
@@ -68,12 +69,12 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
             error={errors?.address}
             fieldName={(fieldNamePrefix + 'address') as 'address'}
             register={register}
-            validation={[validateAddress]}
+            validation={[makeValidateAddress(bech32Prefix)]}
           />
         </>
       )}
 
-      {(isValidAddress(address, CHAIN_BECH32_PREFIX) || !isCreating) && (
+      {(isValidAddress(address, bech32Prefix) || !isCreating) && (
         <>
           {isCreating ? (
             <>

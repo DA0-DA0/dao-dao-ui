@@ -9,19 +9,19 @@ import {
   SelectInput,
   TokenAmountDisplay,
   ValidatorPicker,
+  useChain,
 } from '@dao-dao/stateless'
 import { TokenStake, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  CHAIN_BECH32_PREFIX,
   NATIVE_TOKEN,
   StakeType,
   convertMicroDenomToDenomWithDecimals,
   isValidValidatorAddress,
+  makeValidateValidatorAddress,
   secondsToWdhms,
   validatePositive,
   validateRequired,
-  validateValidatorAddress,
 } from '@dao-dao/utils'
 
 export const useStakeActions = (): { type: StakeType; name: string }[] => {
@@ -81,6 +81,7 @@ export const ManageStakingComponent: ActionComponent<
   },
 }) => {
   const { t } = useTranslation()
+  const { bech32_prefix: bech32Prefix } = useChain()
   const { register, watch, setError, clearErrors, setValue } = useFormContext()
   const stakeActions = useStakeActions()
 
@@ -102,12 +103,12 @@ export const ManageStakingComponent: ActionComponent<
 
   // Get how much is staked and pending for the selected validator.
   const sourceValidatorStaked =
-    (isValidValidatorAddress(validator, CHAIN_BECH32_PREFIX) &&
+    (isValidValidatorAddress(validator, bech32Prefix) &&
       stakes.find(({ validator: { address } }) => address === validator)
         ?.amount) ||
     0
   const sourceValidatorPendingRewards =
-    (isValidValidatorAddress(validator, CHAIN_BECH32_PREFIX) &&
+    (isValidValidatorAddress(validator, bech32Prefix) &&
       stakes.find(({ validator: { address } }) => address === validator)
         ?.rewards) ||
     0
@@ -130,7 +131,8 @@ export const ManageStakingComponent: ActionComponent<
     }
 
     // Validate validator address.
-    const validateValidator = validateValidatorAddress(validator)
+    const validateValidator =
+      makeValidateValidatorAddress(bech32Prefix)(validator)
     if (typeof validateValidator === 'string') {
       return validateValidator
     }
@@ -176,7 +178,8 @@ export const ManageStakingComponent: ActionComponent<
       if (!toValidator) {
         return t('error.noValidatorFound')
       }
-      const validateToValidator = validateValidatorAddress(toValidator)
+      const validateToValidator =
+        makeValidateValidatorAddress(bech32Prefix)(toValidator)
       if (typeof validateToValidator === 'string') {
         return validateToValidator
       }
@@ -195,12 +198,13 @@ export const ManageStakingComponent: ActionComponent<
     return t('error.unexpectedError')
   }, [
     validator,
-    toValidator,
     stakeType,
     maxAmount,
     t,
     amount,
     sourceValidatorStaked,
+    toValidator,
+    bech32Prefix,
   ])
 
   // Perform validation.

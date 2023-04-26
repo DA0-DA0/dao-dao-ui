@@ -15,12 +15,7 @@ import {
   useChain,
 } from '@dao-dao/stateless'
 import { AddressInputProps, Entity, EntityType } from '@dao-dao/types'
-import {
-  CHAIN_BECH32_PREFIX,
-  getFallbackImage,
-  isValidAddress,
-  toBech32Hash,
-} from '@dao-dao/utils'
+import { getFallbackImage, isValidAddress, toBech32Hash } from '@dao-dao/utils'
 
 import { walletProfileDataSelector } from '../recoil/selectors/profile'
 import { EntityDisplay } from './EntityDisplay'
@@ -31,7 +26,7 @@ export const AddressInput = <
 >(
   props: AddressInputProps<FV, FieldName>
 ) => {
-  const { chain_id: chainId } = useChain()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
   const { t } = useTranslation()
 
   // Null if not within a FormProvider.
@@ -43,7 +38,7 @@ export const AddressInput = <
     formValue &&
     formValue.length >= 3 &&
     // Don't search name if it's an address.
-    !isValidAddress(formValue, CHAIN_BECH32_PREFIX)
+    !isValidAddress(formValue, bech32Prefix)
 
   const searchProfilesLoadable = useCachedLoadable(
     hasFormValue && props.type !== 'contract'

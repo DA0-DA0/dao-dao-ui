@@ -22,7 +22,7 @@ import {
   NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  validateAddress,
+  makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -47,8 +47,11 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   options: { tokens, AddressInput },
 }) => {
   const { t } = useTranslation()
+  const {
+    context,
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { register, watch, setValue, setError, clearErrors } = useFormContext()
-  const { context } = useActionOptions()
 
   const spendAmount = watch(fieldNamePrefix + 'amount')
   const spendDenom = watch(fieldNamePrefix + 'denom')
@@ -201,7 +204,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             error={errors?.to}
             fieldName={fieldNamePrefix + 'to'}
             register={register}
-            validation={[validateRequired, validateAddress]}
+            validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
           />
         </div>
       </div>

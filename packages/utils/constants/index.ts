@@ -54,8 +54,6 @@ export const CHAIN_RPC_ENDPOINT = process.env
   .NEXT_PUBLIC_CHAIN_RPC_ENDPOINT as string
 export const CHAIN_REST_ENDPOINT = process.env
   .NEXT_PUBLIC_CHAIN_REST_ENDPOINT as string
-export const CHAIN_BECH32_PREFIX = process.env
-  .NEXT_PUBLIC_CHAIN_BECH32_PREFIX as string
 export const DAO_DAO_DAO_ADDRESS = process.env
   .NEXT_PUBLIC_DAO_DAO_DAO_ADDRESS as string
 

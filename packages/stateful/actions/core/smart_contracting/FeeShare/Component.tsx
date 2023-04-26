@@ -10,7 +10,10 @@ import {
 } from '@dao-dao/stateless'
 import { AddressInputProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { validateAddress, validateContractAddress } from '@dao-dao/utils'
+import {
+  makeValidateAddress,
+  makeValidateContractAddress,
+} from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 
@@ -37,7 +40,10 @@ export const FeeShareComponent: ActionComponent<FeeShareOptions> = ({
   options: { AddressInput },
 }) => {
   const { t } = useTranslation()
-  const { context } = useActionOptions()
+  const {
+    context,
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { register, setValue, watch } = useFormContext<FeeShareData>()
 
   const showWithdrawer = watch(
@@ -74,7 +80,7 @@ export const FeeShareComponent: ActionComponent<FeeShareOptions> = ({
           fieldName={(fieldNamePrefix + 'contract') as 'contract'}
           register={register}
           type="contract"
-          validation={[(v) => validateContractAddress(v, false)]}
+          validation={[makeValidateContractAddress(bech32Prefix, false)]}
         />
         <InputErrorMessage error={errors?.contract} />
       </div>
@@ -90,7 +96,7 @@ export const FeeShareComponent: ActionComponent<FeeShareOptions> = ({
             error={errors?.withdrawer}
             fieldName={(fieldNamePrefix + 'withdrawer') as 'withdrawer'}
             register={register}
-            validation={[(v) => validateAddress(v, false)]}
+            validation={[makeValidateAddress(bech32Prefix, false)]}
           />
           <InputErrorMessage error={errors?.withdrawer} />
         </div>

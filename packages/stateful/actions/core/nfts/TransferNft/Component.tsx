@@ -20,11 +20,13 @@ import {
   NftCardInfo,
 } from '@dao-dao/types'
 import {
-  validateAddress,
-  validateContractAddress,
+  makeValidateAddress,
+  makeValidateContractAddress,
   validateJSON,
   validateRequired,
 } from '@dao-dao/utils'
+
+import { useActionOptions } from '../../../react'
 
 export interface TransferNftOptions {
   // The set of NFTs that may be transfered as part of this action.
@@ -42,6 +44,9 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
   options: { options, nftInfo, AddressInput },
 }) => {
   const { t } = useTranslation()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { control, watch, setValue, setError, register, clearErrors } =
     useFormContext()
 
@@ -87,9 +92,9 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
                 validateRequired,
                 // If executing smart contract, ensure recipient is smart
                 // contract.
-                executeSmartContract
-                  ? validateContractAddress
-                  : validateAddress,
+                (executeSmartContract
+                  ? makeValidateContractAddress
+                  : makeValidateAddress)(bech32Prefix),
               ]}
             />
             <InputErrorMessage error={errors?.recipient} />

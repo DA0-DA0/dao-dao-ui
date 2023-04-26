@@ -13,9 +13,11 @@ import {
 import { ActionComponent } from '@dao-dao/types/actions'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
-  validateContractAddress,
+  makeValidateContractAddress,
   validateRequired,
 } from '@dao-dao/utils/validation'
+
+import { useActionOptions } from '../../../react'
 
 interface Token {
   address: string
@@ -39,6 +41,9 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
   },
 }) => {
   const { t } = useTranslation()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { register, setValue, watch } = useFormContext()
 
   const addingNew = watch(fieldNamePrefix + 'adding')
@@ -101,7 +106,7 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
           type="contract"
           validation={[
             validateRequired,
-            validateContractAddress,
+            makeValidateContractAddress(bech32Prefix),
             // Invalidate field if additional error is present.
             () => additionalAddressError || true,
           ]}

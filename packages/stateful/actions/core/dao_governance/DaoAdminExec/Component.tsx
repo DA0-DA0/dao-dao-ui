@@ -18,10 +18,11 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  CHAIN_BECH32_PREFIX,
   isValidContractAddress,
-  validateContractAddress,
+  makeValidateContractAddress,
 } from '@dao-dao/utils'
+
+import { useActionOptions } from '../../../react'
 
 export type DaoAdminExecData = {
   coreAddress: string
@@ -39,6 +40,9 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = (
   props
 ) => {
   const { t } = useTranslation()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { watch, setValue, register } = useFormContext<DaoAdminExecData>()
   const {
     fieldNamePrefix,
@@ -72,7 +76,7 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = (
               fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
               register={register}
               type="contract"
-              validation={[validateContractAddress]}
+              validation={[makeValidateContractAddress(bech32Prefix)]}
             />
           )
         ) : (
@@ -80,7 +84,7 @@ export const DaoAdminExecComponent: ActionComponent<DaoAdminExecOptions> = (
         )}
       </div>
 
-      {isValidContractAddress(coreAddress, CHAIN_BECH32_PREFIX) && (
+      {isValidContractAddress(coreAddress, bech32Prefix) && (
         <>
           <p className="title-text">{t('title.actions')}</p>
 

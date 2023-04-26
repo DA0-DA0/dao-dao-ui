@@ -14,7 +14,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  CHAIN_BECH32_PREFIX,
   NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -43,6 +42,10 @@ const useDefaults: UseDefaults<SpendData> = () => {
 }
 
 const Component: ActionComponent<undefined, SpendData> = (props) => {
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
+
   // Get the selected token if not creating.
   const { watch } = useFormContext<SpendData>()
   const denom = watch((props.fieldNamePrefix + 'denom') as 'denom')
@@ -55,7 +58,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
       : [
           {
             // Cw20 denoms are contract addresses, native denoms are not.
-            type: isValidContractAddress(denom, CHAIN_BECH32_PREFIX)
+            type: isValidContractAddress(denom, bech32Prefix)
               ? TokenType.Cw20
               : TokenType.Native,
             denomOrAddress: denom,

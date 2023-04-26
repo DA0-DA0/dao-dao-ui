@@ -2,7 +2,6 @@ import Ajv from 'ajv'
 import JSON5 from 'json5'
 import { TFunction } from 'react-i18next'
 
-import { CHAIN_BECH32_PREFIX } from '../constants'
 import cosmosMsgSchema from '../cosmos_msg.json'
 import {
   isValidAddress,
@@ -31,13 +30,23 @@ export const validatePercent = (v: string | number) => {
   return (!isNaN(p) && p <= 100 && p >= 0) || 'Invalid percentage'
 }
 
-export const validateAddress = (v: any, required = true) =>
-  (!required && !v) ||
-  (v && typeof v === 'string' && isValidAddress(v, CHAIN_BECH32_PREFIX)) ||
-  'Invalid address'
+export const makeValidateAddress =
+  (bech32Prefix: string, required = true) =>
+  (v: any) =>
+    (!required && !v) ||
+    (v && typeof v === 'string' && isValidAddress(v, bech32Prefix)) ||
+    'Invalid address'
 
-export const validateValidatorAddress = (v: string) =>
-  isValidValidatorAddress(v, CHAIN_BECH32_PREFIX) || 'Invalid address'
+export const makeValidateValidatorAddress =
+  (bech32Prefix: string) => (v: string) =>
+    isValidValidatorAddress(v, bech32Prefix) || 'Invalid address'
+
+export const makeValidateContractAddress =
+  (bech32Prefix: string, required = true) =>
+  (v: any) =>
+    (!required && !v) ||
+    (v && typeof v === 'string' && isValidContractAddress(v, bech32Prefix)) ||
+    'Invalid contract address'
 
 export const validateUrl = (v: string | undefined) =>
   (v && isValidUrl(v)) || 'Invalid image URL: must start with https.'
@@ -51,13 +60,6 @@ export const makeValidateDate =
   (v: string | undefined) =>
     (v && !isNaN(Date.parse(v))) ||
     t(time ? 'error.invalidDateTime' : 'error.invalidDate')
-
-export const validateContractAddress = (v: any, required = true) =>
-  (!required && !v) ||
-  (v &&
-    typeof v === 'string' &&
-    isValidContractAddress(v, CHAIN_BECH32_PREFIX)) ||
-  'Invalid contract address'
 
 export const validateJSON = (v: string) => {
   try {

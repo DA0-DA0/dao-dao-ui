@@ -6,8 +6,8 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHAIN_BECH32_PREFIX,
   PFPK_API_BASE,
+  getChainForChainId,
   processError,
   transformIpfsUrlToHttpsIfNecessary,
 } from '@dao-dao/utils'
@@ -62,7 +62,7 @@ export const searchProfilesByNamePrefixSelector = selectorFamily<
 >({
   key: 'searchProfilesByNamePrefix',
   get:
-    ({ namePrefix }) =>
+    ({ namePrefix, chainId }) =>
     async ({ get }) => {
       if (namePrefix.length < 3) {
         return []
@@ -72,7 +72,8 @@ export const searchProfilesByNamePrefixSelector = selectorFamily<
       let hits: ProfileSearchHit[] = []
       try {
         const response = await fetch(
-          PFPK_API_BASE + `/search/${CHAIN_BECH32_PREFIX}/${namePrefix}`
+          PFPK_API_BASE +
+            `/search/${getChainForChainId(chainId).bech32_prefix}/${namePrefix}`
         )
         if (response.ok) {
           const { profiles: _hits } = (await response.json()) as {

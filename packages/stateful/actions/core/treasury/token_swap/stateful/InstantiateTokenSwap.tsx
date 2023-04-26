@@ -2,6 +2,7 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { genericTokenBalancesSelector } from '@dao-dao/state'
@@ -10,7 +11,6 @@ import { Loader, useCachedLoading } from '@dao-dao/stateless'
 import { ActionComponent, TokenType } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
-  CHAIN_BECH32_PREFIX,
   CODE_ID_CONFIG,
   NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
@@ -29,7 +29,8 @@ export const InstantiateTokenSwap: ActionComponent<
   undefined,
   PerformTokenSwapData
 > = (props) => {
-  const { address: selfAddress, t } = useActionOptions()
+  const { t } = useTranslation()
+  const { address: selfAddress } = useActionOptions()
   const { setValue } = useFormContext()
   const { address: walletAddress, signingCosmWasmClient } = useWallet()
 
@@ -159,7 +160,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
   Omit<InstantiateTokenSwapOptions, 'counterpartyTokenBalances'>
 > = (props) => {
   const {
-    chain: { chain_id: chainId },
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
   const { resetField, watch } = useFormContext()
 
@@ -213,7 +214,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
   // Try to retrieve governance token address, failing if not a cw20-based DAO.
   const counterpartyDaoGovernanceTokenAddressLoadable = useRecoilValueLoadable(
     counterpartyAddress &&
-      isValidContractAddress(counterpartyAddress, CHAIN_BECH32_PREFIX)
+      isValidContractAddress(counterpartyAddress, bech32Prefix)
       ? DaoCoreV2Selectors.tryFetchGovernanceTokenAddressSelector({
           contractAddress: counterpartyAddress,
           chainId,
@@ -224,7 +225,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
   // Load balances as loadables since they refresh automatically on a timer.
   const counterpartyTokenBalances = useCachedLoading(
     counterpartyAddress &&
-      isValidAddress(counterpartyAddress, CHAIN_BECH32_PREFIX) &&
+      isValidAddress(counterpartyAddress, bech32Prefix) &&
       counterpartyDaoGovernanceTokenAddressLoadable.state !== 'loading'
       ? genericTokenBalancesSelector({
           address: counterpartyAddress,

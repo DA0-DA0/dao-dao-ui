@@ -19,11 +19,13 @@ import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
+  makeValidateContractAddress,
   makeWasmMessage,
-  validateContractAddress,
   validateCosmosMsg,
   validateRequired,
 } from '@dao-dao/utils'
+
+import { useActionOptions } from '../../../react'
 
 export interface ExecuteData {
   address: string
@@ -40,13 +42,18 @@ export interface ExecuteOptions {
 }
 
 export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
-  const { t } = useTranslation()
   const {
     fieldNamePrefix,
     errors,
     isCreating,
     options: { balances },
   } = props
+
+  const { t } = useTranslation()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
+
   const { register, control, watch, setValue } = useFormContext()
   const {
     fields: coins,
@@ -78,7 +85,10 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
           fieldName={fieldNamePrefix + 'address'}
           register={register}
           type="contract"
-          validation={[validateRequired, validateContractAddress]}
+          validation={[
+            validateRequired,
+            makeValidateContractAddress(bech32Prefix),
+          ]}
         />
         <InputErrorMessage error={errors?.address} />
       </div>

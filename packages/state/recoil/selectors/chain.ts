@@ -34,7 +34,6 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHAIN_BECH32_PREFIX,
   CHAIN_ID,
   JUNO_USDC_DENOM,
   NATIVE_TOKEN,
@@ -318,7 +317,7 @@ export const blocksPerYearSelector = selectorFamily<number, WithChainId<{}>>({
     ({ chainId }) =>
     async ({ get }) => {
       // If on juno mainnet or testnet, use juno RPC.
-      if (CHAIN_BECH32_PREFIX === 'juno') {
+      if (chainId === ChainInfoID.Juno1 || chainId === ChainInfoID.Uni6) {
         const client = get(junoRpcClientSelector)
         return (await client.mint.params()).params.blocksPerYear.toNumber()
       }

@@ -28,14 +28,15 @@ import {
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_DENOM,
+  makeValidateAddress,
+  makeValidateContractAddress,
   makeWasmMessage,
-  validateAddress,
-  validateContractAddress,
   validateCosmosMsg,
   validateNonNegative,
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../react'
 import {
   AuthorizationTypeUrl,
   AuthzExecActionTypes,
@@ -53,6 +54,9 @@ export const AuthzGrantRevokeComponent: ActionComponent<
   AuthzGrantRevokeOptions
 > = (props) => {
   const { t } = useTranslation()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const {
     fieldNamePrefix,
     errors,
@@ -112,7 +116,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
           fieldName={(fieldNamePrefix + 'grantee') as 'grantee'}
           placeholder={!isCreating ? t('info.none') : undefined}
           register={register}
-          validation={[validateAddress]}
+          validation={[makeValidateAddress(bech32Prefix)]}
         />
         <InputErrorMessage error={errors?.grantee} />
       </div>
@@ -292,7 +296,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                 fieldName={(fieldNamePrefix + 'contract') as 'contract'}
                 register={register}
                 type="contract"
-                validation={[validateContractAddress]}
+                validation={[makeValidateContractAddress(bech32Prefix)]}
               />
               <InputErrorMessage error={errors?.contract} />
             </div>

@@ -20,15 +20,15 @@ import {
   TokenType,
 } from '@dao-dao/types'
 import {
-  CHAIN_BECH32_PREFIX,
   NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
   ibcAssets,
   isValidContractAddress,
-  validateContractAddress,
+  makeValidateContractAddress,
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../../../actions'
 import { Trans } from '../../../../../../components/Trans'
 
 const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
@@ -61,6 +61,9 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
   options: { governanceToken, cw20AddressError },
 }) => {
   const { t } = useTranslation()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { register, setValue, watch } =
     useFormContext<UpdatePreProposeConfigData>()
 
@@ -206,7 +209,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                   // hasn't yet loaded.
                   isValidContractAddress(
                     depositInfo.denomOrAddress,
-                    CHAIN_BECH32_PREFIX
+                    bech32Prefix
                   ) && !cw20AddressError ? (
                     <Loader size={24} />
                   ) : (
@@ -234,7 +237,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                   type="contract"
                   validation={[
                     validateRequired,
-                    validateContractAddress,
+                    makeValidateContractAddress(bech32Prefix),
                     // Invalidate field if additional error is present.
                     () => cw20AddressError || true,
                   ]}

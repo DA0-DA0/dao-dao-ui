@@ -14,8 +14,9 @@ import {
   useDetectWrap,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
-import { validateAddress, validateRequired } from '@dao-dao/utils'
+import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../react'
 import { MintNftOptions } from '../types'
 
 // Form displayed when the user is minting a new NFT.
@@ -26,6 +27,10 @@ export const MintNft: ActionComponent<MintNftOptions> = ({
   options: { nftInfo, AddressInput },
 }) => {
   const { t } = useTranslation()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
+
   const { register } = useFormContext()
 
   const { containerRef, childRef, wrapped } = useDetectWrap()
@@ -69,7 +74,7 @@ export const MintNft: ActionComponent<MintNftOptions> = ({
             error={errors?.mintMsg?.owner}
             fieldName={fieldNamePrefix + 'mintMsg.owner'}
             register={register}
-            validation={[validateRequired, validateAddress]}
+            validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
           />
         </div>
       </div>

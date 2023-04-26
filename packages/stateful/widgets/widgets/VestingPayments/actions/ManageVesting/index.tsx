@@ -35,7 +35,6 @@ import {
 } from '@dao-dao/types/contracts/CwPayrollFactory'
 import { InstantiateMsg as VestingInstantiateMsg } from '@dao-dao/types/contracts/CwVesting'
 import {
-  CHAIN_BECH32_PREFIX,
   NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToSeconds,
@@ -285,7 +284,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
 
 export const makeManageVestingActionMaker =
   ({ factory }: VestingPaymentsData): ActionMaker<ManageVestingData> =>
-  ({ t, context, chain: { chain_id: chainId } }) => {
+  ({
+    t,
+    context,
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  }) => {
     // Only available in DAO context.
     if (context.type !== ActionContextType.Dao) {
       return null
@@ -524,7 +527,7 @@ export const makeManageVestingActionMaker =
 
         if (
           !selectedAddress ||
-          !isValidContractAddress(selectedAddress, CHAIN_BECH32_PREFIX)
+          !isValidContractAddress(selectedAddress, bech32Prefix)
         ) {
           setError(
             (props.fieldNamePrefix +

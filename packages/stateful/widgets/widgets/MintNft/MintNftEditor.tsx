@@ -24,7 +24,7 @@ import { WidgetEditorProps } from '@dao-dao/types'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
   isValidContractAddress,
-  validateContractAddress,
+  makeValidateContractAddress,
   validateJSON,
   validateRequired,
 } from '@dao-dao/utils'
@@ -130,7 +130,7 @@ export const MintNftEditor = ({
             type="contract"
             validation={[
               validateRequired,
-              validateContractAddress,
+              makeValidateContractAddress(bech32Prefix),
               // Invalidate field if not a valid token contract.
               () =>
                 tokenInfoLoadable.state !== 'hasError' ||
@@ -165,7 +165,10 @@ export const MintNftEditor = ({
           fieldName={(fieldNamePrefix + 'mint.contract') as 'mint.contract'}
           register={register}
           type="contract"
-          validation={[validateRequired, validateContractAddress]}
+          validation={[
+            validateRequired,
+            makeValidateContractAddress(bech32Prefix),
+          ]}
         />
         <InputErrorMessage error={errors?.mint?.contract} />
       </div>

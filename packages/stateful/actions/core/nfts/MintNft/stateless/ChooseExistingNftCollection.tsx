@@ -8,8 +8,9 @@ import {
   InputLabel,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
-import { validateContractAddress, validateRequired } from '@dao-dao/utils'
+import { makeValidateContractAddress, validateRequired } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../react'
 import { ChooseExistingNftCollectionOptions } from '../types'
 
 // Displayed when entering an existing NFT collection address.
@@ -21,6 +22,9 @@ export const ChooseExistingNftCollection: ActionComponent<
   options: { chooseLoading, onChooseExistingContract, existingCollections },
 }) => {
   const { t } = useTranslation()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { register, watch, setValue } = useFormContext()
 
   const collectionAddress = watch(fieldNamePrefix + 'collectionAddress')
@@ -35,7 +39,10 @@ export const ChooseExistingNftCollection: ActionComponent<
           fieldName={fieldNamePrefix + 'collectionAddress'}
           register={register}
           type="contract"
-          validation={[validateRequired, validateContractAddress]}
+          validation={[
+            validateRequired,
+            makeValidateContractAddress(bech32Prefix),
+          ]}
         />
 
         <InputErrorMessage error={errors?.collectionAddress} />

@@ -38,10 +38,10 @@ import {
   getDaoPath,
   getRpcForChainId,
   isValidWalletAddress,
+  makeValidateContractAddress,
   parseContractVersion,
   processError,
   toAccessibleImageUrl,
-  validateContractAddress,
 } from '@dao-dao/utils'
 import {
   CHAIN_ID,
@@ -117,7 +117,9 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     if (
       !coreAddress ||
       typeof coreAddress !== 'string' ||
-      validateContractAddress(coreAddress) !== true
+      makeValidateContractAddress(getChainForChainId(CHAIN_ID).bech32_prefix)(
+        coreAddress
+      ) !== true
     ) {
       // Excluding `info` will render DAONotFound.
       return {

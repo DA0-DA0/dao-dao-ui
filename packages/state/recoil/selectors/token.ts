@@ -8,7 +8,7 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHAIN_BECH32_PREFIX,
+  getChainForChainId,
   getFallbackImage,
   isValidContractAddress,
   isValidWalletAddress,
@@ -112,13 +112,19 @@ export const genericTokenBalancesSelector = selectorFamily<
       const cw20TokenBalances =
         !filter || filter === TokenType.Cw20
           ? get(
-              isValidContractAddress(address, CHAIN_BECH32_PREFIX)
+              isValidContractAddress(
+                address,
+                getChainForChainId(chainId).bech32_prefix
+              )
                 ? DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
                     contractAddress: address,
                     governanceTokenAddress: cw20GovernanceTokenAddress,
                     chainId,
                   })
-                : isValidWalletAddress(address, CHAIN_BECH32_PREFIX)
+                : isValidWalletAddress(
+                    address,
+                    getChainForChainId(chainId).bech32_prefix
+                  )
                 ? walletCw20BalancesSelector({
                     walletAddress: address,
                     chainId,

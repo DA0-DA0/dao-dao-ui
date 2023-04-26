@@ -5,8 +5,9 @@ import { createPortal } from 'react-dom'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 
 import { AddressInputProps } from '@dao-dao/types'
-import { CHAIN_BECH32_PREFIX, isValidAddress } from '@dao-dao/utils'
+import { isValidAddress } from '@dao-dao/utils'
 
+import { useChain } from '../../hooks/useChainContext'
 import { useTrackDropdown } from '../../hooks/useTrackDropdown'
 import { EntityDisplay as StatelessEntityDisplay } from '../EntityDisplay'
 import { Loader } from '../logo/Loader'
@@ -32,6 +33,8 @@ export const AddressInput = <
   placeholder,
   ...rest
 }: AddressInputProps<FV, FieldName>) => {
+  const { bech32_prefix: bech32Prefix } = useChain()
+
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
     {}
@@ -47,9 +50,7 @@ export const AddressInput = <
   const formValue = watch?.(fieldName)
 
   const showEntity =
-    EntityDisplay &&
-    !!formValue &&
-    isValidAddress(formValue, CHAIN_BECH32_PREFIX)
+    EntityDisplay && !!formValue && isValidAddress(formValue, bech32Prefix)
 
   const inputRef = useRef<HTMLInputElement | null>(null)
   const { ref: registerRef, ...inputRegistration } = register(fieldName, {
@@ -210,7 +211,7 @@ export const AddressInput = <
             placeholder={
               placeholder ||
               // If contract, use chain prefix.
-              (type === 'contract' ? `${CHAIN_BECH32_PREFIX}...` : undefined)
+              (type === 'contract' ? `${bech32Prefix}...` : undefined)
             }
             type="text"
             {...rest}

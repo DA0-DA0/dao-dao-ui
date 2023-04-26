@@ -33,8 +33,8 @@ import {
   convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
+  makeValidateAddress,
   makeValidateDate,
-  validateAddress,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
@@ -65,7 +65,11 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   options: { tokens, vestingFactoryOwner, AddressInput },
 }) => {
   const { t } = useTranslation()
-  const { address, context } = useActionOptions()
+  const {
+    context,
+    address,
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
 
   const { register, watch, setValue } = useFormContext()
 
@@ -181,7 +185,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
               error={errors?.recipient}
               fieldName={fieldNamePrefix + 'recipient'}
               register={register}
-              validation={[validateRequired, validateAddress]}
+              validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
             />
           </div>
         </div>

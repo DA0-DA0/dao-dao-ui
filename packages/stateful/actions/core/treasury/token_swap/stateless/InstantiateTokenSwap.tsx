@@ -9,13 +9,13 @@ import {
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 import {
-  CHAIN_BECH32_PREFIX,
   convertMicroDenomToDenomWithDecimals,
   isValidAddress,
-  validateAddress,
+  makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../react'
 import { InstantiateTokenSwapOptions } from '../types'
 
 // Form displayed when the user is instantiating a new token swap.
@@ -34,7 +34,9 @@ export const InstantiateTokenSwap: ActionComponent<
   },
 }) => {
   const { t } = useTranslation()
-
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { register, watch, setValue, trigger } = useFormContext()
 
   const selfParty = watch(fieldNamePrefix + 'selfParty')
@@ -68,8 +70,7 @@ export const InstantiateTokenSwap: ActionComponent<
   const counterpartySymbol = counterpartyToken?.token.symbol ?? t('info.tokens')
 
   const counterpartyAddressValid =
-    !!counterparty.address &&
-    isValidAddress(counterparty.address, CHAIN_BECH32_PREFIX)
+    !!counterparty.address && isValidAddress(counterparty.address, bech32Prefix)
 
   return (
     <div className="flex flex-col gap-4">
@@ -91,7 +92,7 @@ export const InstantiateTokenSwap: ActionComponent<
           error={errors?.counterparty?.address}
           fieldName={fieldNamePrefix + 'counterparty.address'}
           register={register}
-          validation={[validateRequired, validateAddress]}
+          validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
         />
 
         <InputErrorMessage error={errors?.counterparty?.address} />

@@ -17,10 +17,11 @@ import {
   NumberInput,
   TextInput,
   VOTING_POWER_DISTRIBUTION_COLORS,
+  useChain,
 } from '@dao-dao/stateless'
 import { NewDao } from '@dao-dao/types'
 import {
-  validateAddress,
+  makeValidateAddress,
   validateNonNegative,
   validateRequired,
 } from '@dao-dao/utils'
@@ -49,7 +50,6 @@ export const TierCard = ({
 
   ...props
 }: TierCardProps) => {
-  const { t } = useTranslation()
   const {
     data,
     tierIndex,
@@ -60,6 +60,9 @@ export const TierCard = ({
     setValue,
     showColorDotOnMember,
   } = props
+
+  const { t } = useTranslation()
+  const { bech32_prefix: bech32Prefix } = useChain()
 
   const {
     fields: members,
@@ -189,7 +192,10 @@ export const TierCard = ({
                     placeholder={t('form.membersAddress')}
                     register={register}
                     setValue={setValue}
-                    validation={[validateAddress, validateRequired]}
+                    validation={[
+                      validateRequired,
+                      makeValidateAddress(bech32Prefix),
+                    ]}
                     watch={watch}
                   />
                 </div>

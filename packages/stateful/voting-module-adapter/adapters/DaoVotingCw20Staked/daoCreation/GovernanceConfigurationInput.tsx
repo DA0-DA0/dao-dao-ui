@@ -27,11 +27,10 @@ import {
   DaoCreationGovernanceConfigInputProps,
 } from '@dao-dao/types'
 import {
-  CHAIN_BECH32_PREFIX,
   NEW_DAO_CW20_DECIMALS,
   formatPercentOf100,
   isValidContractAddress,
-  validateContractAddress,
+  makeValidateContractAddress,
   validatePercent,
   validatePositive,
   validateRequired,
@@ -59,7 +58,7 @@ export const GovernanceConfigurationInput = ({
   },
 }: DaoCreationGovernanceConfigInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
   const { address: walletAddress } = useWallet()
 
   const {
@@ -180,10 +179,7 @@ export const GovernanceConfigurationInput = ({
       : undefined
   const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
     existingGovernanceTokenAddress &&
-      isValidContractAddress(
-        existingGovernanceTokenAddress,
-        CHAIN_BECH32_PREFIX
-      )
+      isValidContractAddress(existingGovernanceTokenAddress, bech32Prefix)
       ? Cw20BaseSelectors.tokenInfoSelector({
           chainId,
           contractAddress: existingGovernanceTokenAddress,
@@ -193,10 +189,7 @@ export const GovernanceConfigurationInput = ({
   )
   const existingGovernanceTokenLogoUrlLoadable = useRecoilValueLoadable(
     existingGovernanceTokenAddress &&
-      isValidContractAddress(
-        existingGovernanceTokenAddress,
-        CHAIN_BECH32_PREFIX
-      )
+      isValidContractAddress(existingGovernanceTokenAddress, bech32Prefix)
       ? Cw20BaseSelectors.logoUrlSelector({
           chainId,
           contractAddress: existingGovernanceTokenAddress,
@@ -507,11 +500,11 @@ export const GovernanceConfigurationInput = ({
                 }
                 fieldName="votingModuleAdapter.data.existingGovernanceTokenAddress"
                 ghost
-                placeholder={CHAIN_BECH32_PREFIX + '...'}
+                placeholder={bech32Prefix + '...'}
                 register={register}
                 validation={[
-                  validateContractAddress,
                   validateRequired,
+                  makeValidateContractAddress(bech32Prefix),
                   () =>
                     existingGovernanceTokenInfoLoadable.state !== 'loading' ||
                     !!data.existingGovernanceTokenInfo ||
