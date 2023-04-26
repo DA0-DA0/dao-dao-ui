@@ -37,7 +37,10 @@ const useDefaults: UseDefaults<ManageCw20Data> = () => ({
 })
 
 const Component: ActionComponent = (props) => {
-  const { address, chainId } = useActionOptions()
+  const {
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   const { t } = useTranslation()
   const { fieldNamePrefix } = props

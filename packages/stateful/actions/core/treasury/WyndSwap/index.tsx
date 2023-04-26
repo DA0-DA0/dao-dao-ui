@@ -715,9 +715,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<WyndSwapData> = (
   }
 }
 
-export const makeWyndSwapAction: ActionMaker<WyndSwapData> = ({ t, chainId }) =>
+export const makeWyndSwapAction: ActionMaker<WyndSwapData> = ({ t, chain }) =>
   // WYND only exists on Juno mainnet.
-  chainId === ChainInfoID.Juno1
+  chain.chain_id === ChainInfoID.Juno1
     ? {
         key: ActionKey.WyndSwap,
         Icon: CycleEmoji,

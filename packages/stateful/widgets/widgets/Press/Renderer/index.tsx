@@ -1,5 +1,6 @@
 import {
   useCachedLoading,
+  useChain,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -16,11 +17,11 @@ import { Renderer as StatelessRenderer } from './Renderer'
 export const Renderer = ({
   variables: { contract },
 }: WidgetRendererProps<PressData>) => {
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
+  const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useNavHelpers()
   const { isMember = false } = useMembership({
     coreAddress,
-    chainId,
   })
 
   const postsLoading = useCachedLoading(

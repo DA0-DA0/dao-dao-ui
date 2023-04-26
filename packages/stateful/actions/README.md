@@ -22,8 +22,6 @@ import { ActionContextType } from '@dao-dao/types'
 const App = () => (
   <ActionsProvider
     options={{
-      chainId: 'juno-1',
-      bech32Prefix: 'juno',
       address: 'daoCoreAddressGoesHere',
       context: {
         type: ActionContextType.Dao,

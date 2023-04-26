@@ -7,6 +7,7 @@
     "lint": "eslint ."
   },
   "devDependencies": {
+    "@chain-registry/types": "^0.16.0",
     "@cosmjs/cosmwasm-stargate": "^0.30.1",
     "@dao-dao/config": "2.2.0",
     "next-i18next": "^11.0.0",
@@ -23,6 +24,7 @@
   },
   "prettier": "@dao-dao/config/prettier",
   "dependencies": {
+    "chain-registry": "^1.13.0",
     "interchain-rpc": "1.5.0"
   }
 }

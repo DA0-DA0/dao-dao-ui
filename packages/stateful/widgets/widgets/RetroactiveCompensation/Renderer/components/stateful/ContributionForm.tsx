@@ -23,13 +23,10 @@ import { ContributionFormData } from '../stateless/ContributionFormInput'
 
 export const ContributionForm = () => {
   const { t } = useTranslation()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet()
-  const walletEntity = useEntity({
-    address: walletAddress,
-    chainId,
-  })
+  const walletEntity = useEntity(walletAddress)
 
   const postRequest = usePostRequest()
 

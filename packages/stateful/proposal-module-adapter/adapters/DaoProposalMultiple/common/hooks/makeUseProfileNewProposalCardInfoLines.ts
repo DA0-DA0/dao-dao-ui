@@ -39,14 +39,14 @@ export const makeUseProfileNewProposalCardInfoLines =
 
     const config = useRecoilValue(
       configSelector({
+        chainId: options.chain.chain_id,
         contractAddress: options.proposalModule.address,
-        chainId: options.chainId,
       })
     )
     const depositInfo = useRecoilValue(depositInfoSelector)
     const anyoneCanPropose = useRecoilValue(
       anyoneCanProposeSelector({
-        chainId: options.chainId,
+        chainId: options.chain.chain_id,
         preProposeAddress: options.proposalModule.preProposeAddress,
       })
     )
@@ -63,7 +63,7 @@ export const makeUseProfileNewProposalCardInfoLines =
               'native' in depositInfo.denom
                 ? depositInfo.denom.native
                 : depositInfo.denom.cw20,
-            chainId: options.chainId,
+            chainId: options.chain.chain_id,
           })
         : constSelector(undefined)
     )
@@ -78,7 +78,7 @@ export const makeUseProfileNewProposalCardInfoLines =
 
     const blocksPerYear = useRecoilValue(
       blocksPerYearSelector({
-        chainId: options.chainId,
+        chainId: options.chain.chain_id,
       })
     )
 

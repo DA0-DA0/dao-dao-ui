@@ -1,5 +1,6 @@
 import { ReactNode, useState } from 'react'
 
+import { useChain } from '@dao-dao/stateless'
 import {
   IProposalModuleAdapterInitialOptions,
   IProposalModuleContext,
@@ -13,7 +14,7 @@ export interface ProposalModuleAdapterProviderProps {
   proposalModules: ProposalModule[]
   proposalId: string
   children: ReactNode | ReactNode[]
-  initialOptions: IProposalModuleAdapterInitialOptions
+  initialOptions: Omit<IProposalModuleAdapterInitialOptions, 'chain'>
 }
 
 // Ensure this re-renders when the voting module contract name or options
@@ -25,8 +26,12 @@ export const ProposalModuleAdapterProvider = ({
   children,
   initialOptions,
 }: ProposalModuleAdapterProviderProps) => {
+  const chain = useChain()
   const [context] = useState<IProposalModuleContext>(() =>
-    matchAndLoadAdapter(proposalModules, proposalId, initialOptions)
+    matchAndLoadAdapter(proposalModules, proposalId, {
+      ...initialOptions,
+      chain,
+    })
   )
 
   return (

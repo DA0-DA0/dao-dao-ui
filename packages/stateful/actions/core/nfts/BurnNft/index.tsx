@@ -73,7 +73,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<BurnNftData> = (
     : { match: false }
 
 const Component: ActionComponent = (props) => {
-  const { context, address, chainId } = useActionOptions()
+  const {
+    context,
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
   const { watch } = useFormContext()
   const { denomOrAddress: governanceCollectionAddress } =
     useCw721CommonGovernanceTokenInfoIfExists() ?? {}

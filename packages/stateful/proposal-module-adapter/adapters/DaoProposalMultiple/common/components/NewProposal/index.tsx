@@ -49,7 +49,6 @@ export const NewProposal = ({
   const {
     name: daoName,
     imageUrl: daoImageUrl,
-    chainId,
     coreAddress,
   } = useDaoInfoContext()
   const { connected } = useWallet()
@@ -58,7 +57,6 @@ export const NewProposal = ({
 
   const { isMember = false } = useMembership({
     coreAddress,
-    chainId,
   })
 
   const [loading, setLoading] = useState(false)

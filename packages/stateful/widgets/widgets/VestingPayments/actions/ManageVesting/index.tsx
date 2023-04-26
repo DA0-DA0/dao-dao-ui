@@ -1,6 +1,7 @@
 import { coins } from '@cosmjs/amino'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
@@ -49,7 +50,6 @@ import {
 } from '@dao-dao/utils'
 
 import { useTokenBalances } from '../../../../../actions/hooks/useTokenBalances'
-import { useActionOptions } from '../../../../../actions/react/context'
 import {
   AddressInput,
   EntityDisplay,
@@ -280,7 +280,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
 
 export const makeManageVestingActionMaker =
   ({ factory }: VestingPaymentsData): ActionMaker<ManageVestingData> =>
-  ({ t, context, chainId }) => {
+  ({ t, context, chain: { chain_id: chainId } }) => {
     // Only available in DAO context.
     if (context.type !== ActionContextType.Dao) {
       return null
@@ -438,11 +438,10 @@ export const makeManageVestingActionMaker =
       )
     }
 
-    // Memoize to prevent re-renders
     const Component: ActionComponent<undefined, ManageVestingData> = (
       props
     ) => {
-      const { t, chainId } = useActionOptions()
+      const { t } = useTranslation()
 
       const { setValue, watch, setError, clearErrors } =
         useFormContext<ManageVestingData>()

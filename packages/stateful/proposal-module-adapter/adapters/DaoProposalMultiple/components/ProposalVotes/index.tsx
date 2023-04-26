@@ -12,9 +12,9 @@ import { VoteDisplay } from './VoteDisplay'
 
 export const ProposalVotes = () => {
   const {
+    chain: { chain_id: chainId },
     proposalModule: { address: proposalModuleAddress },
     proposalNumber,
-    chainId,
   } = useProposalModuleAdapterOptions()
 
   const loadingProposal = useLoadingProposal()
@@ -24,8 +24,8 @@ export const ProposalVotes = () => {
     : Number(loadingProposal.data.total_power)
   const votesLoadable = useCachedLoadable(
     listAllVotesSelector({
-      contractAddress: proposalModuleAddress,
       chainId,
+      contractAddress: proposalModuleAddress,
       proposalId: proposalNumber,
     })
   )

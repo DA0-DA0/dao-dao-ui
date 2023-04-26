@@ -15,7 +15,7 @@ import {
   refreshWalletBalancesIdAtom,
   refreshWalletProfileAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoadable, useChain } from '@dao-dao/stateless'
 import { WalletProfileData, WalletProfileUpdate } from '@dao-dao/types'
 import {
   NATIVE_TOKEN,
@@ -42,7 +42,8 @@ export interface UseWalletReturn {
   backupImageUrl: string
 }
 
-export const useWalletInfo = (chainId?: string): UseWalletReturn => {
+export const useWalletInfo = (): UseWalletReturn => {
+  const { chain_id: chainId } = useChain()
   const { address, connected, publicKey } = useWallet()
   const connectWalletToChain = useConnectWalletToChain()
 
@@ -71,7 +72,12 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
     state: walletStakedNativeBalanceState,
     contents: walletStakedNativeBalanceContents,
   } = useCachedLoadable(
-    address ? nativeDelegatedBalanceSelector({ address, chainId }) : undefined
+    address
+      ? nativeDelegatedBalanceSelector({
+          address,
+          chainId,
+        })
+      : undefined
   )
   const walletStakedBalance =
     walletStakedNativeBalanceState === 'hasValue' &&
@@ -87,7 +93,12 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
     state: nativeBalancesFetchedAtState,
     contents: nativeBalancesFetchedAtContents,
   } = useCachedLoadable(
-    address ? nativeBalancesFetchedAtSelector({ address, chainId }) : undefined
+    address
+      ? nativeBalancesFetchedAtSelector({
+          address,
+          chainId,
+        })
+      : undefined
   )
   const dateBalancesFetched =
     nativeBalancesFetchedAtState === 'hasValue'

@@ -25,26 +25,20 @@ import { daoCorePolytoneProxiesSelector } from './dao'
 // refreshes. Use `tokenCardLazyInfoSelector`.
 export const treasuryTokenCardInfosSelector = selectorFamily<
   TokenCardInfo[],
-  WithChainId<{
+  {
     coreAddress: string
     cw20GovernanceTokenAddress?: string
     nativeGovernanceTokenDenom?: string
-  }>
+  }
 >({
   key: 'treasuryTokenCardInfos',
   get:
-    ({
-      coreAddress,
-      cw20GovernanceTokenAddress,
-      nativeGovernanceTokenDenom,
-      chainId = CHAIN_ID,
-    }) =>
+    ({ coreAddress, cw20GovernanceTokenAddress, nativeGovernanceTokenDenom }) =>
     ({ get }) => {
       const polytoneProxies = Object.entries(
         get(
           daoCorePolytoneProxiesSelector({
             coreAddress,
-            chainId,
           })
         )
       )
@@ -53,11 +47,11 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
         // Native.
         {
           owner: coreAddress,
-          chainId,
+          chainId: CHAIN_ID,
           balances: get(
             nativeBalancesSelector({
               address: coreAddress,
-              chainId,
+              chainId: CHAIN_ID,
             })
           ),
         },
@@ -78,7 +72,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
       const cw20s = get(
         DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
           contractAddress: coreAddress,
-          chainId,
+          chainId: CHAIN_ID,
           governanceTokenAddress: cw20GovernanceTokenAddress,
         })
       )
@@ -128,7 +122,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
 
           const info: TokenCardInfo = {
             owner: coreAddress,
-            chainId,
+            chainId: CHAIN_ID,
             token,
             isGovernanceToken: isGovernanceToken ?? false,
             unstakedBalance,

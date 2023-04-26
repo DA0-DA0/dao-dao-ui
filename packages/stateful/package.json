@@ -48,6 +48,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@chain-registry/types": "^0.16.0",
     "@cosmjs/amino": "^0.30.1",
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",

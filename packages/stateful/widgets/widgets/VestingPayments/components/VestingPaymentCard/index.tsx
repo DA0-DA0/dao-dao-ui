@@ -8,11 +8,7 @@ import {
   refreshVestingAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
-import {
-  useAddToken,
-  useCachedLoadable,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { useAddToken, useCachedLoadable, useChain } from '@dao-dao/stateless'
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
@@ -37,7 +33,7 @@ import { VestingPaymentCard as StatelessVestingPaymentCard } from './VestingPaym
 
 export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const { t } = useTranslation()
-  const { chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
   const { refreshBalances } = useWalletInfo()
 
   const {
@@ -51,10 +47,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     endDate,
   } = vestingInfo
 
-  const recipientEntity = useEntity({
-    address: vest.recipient,
-    chainId,
-  })
+  const recipientEntity = useEntity(vest.recipient)
 
   const lazyInfoLoading = loadableToLoadingData(
     useCachedLoadable(
@@ -85,7 +78,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     setRefreshBalances((r) => r + 1)
   }
 
-  const awaitNextBlock = useAwaitNextBlock(chainId)
+  const awaitNextBlock = useAwaitNextBlock()
 
   const { address: walletAddress = '' } = useWallet()
   const distribute = useDistribute({

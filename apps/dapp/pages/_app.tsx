@@ -25,13 +25,14 @@ import {
   WalletProvider,
 } from '@dao-dao/stateful'
 import {
+  ChainProvider,
   PageLoader,
   Theme,
   ThemeProvider,
   ToastNotifications,
 } from '@dao-dao/stateless'
 import { DaoPageMode, Web3AuthPrompt } from '@dao-dao/types'
-import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
+import { CHAIN_ID, SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 type DappProps = AppProps<{ featuredDaoDumpStates?: any[] } | {}>
 
@@ -80,24 +81,26 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      {/* Show loader on fallback page when loading static props. */}
-      {router.isFallback ? (
-        <PageLoader />
-      ) : (
-        <WalletProvider setWeb3AuthPrompt={setWeb3AuthPrompt}>
-          {/* AppContextProvider uses wallet context. */}
-          <AppContextProvider
-            mode={DaoPageMode.Dapp}
-            web3AuthPrompt={web3AuthPrompt}
-          >
-            <DappLayout>
-              <Component {...pageProps} />
-            </DappLayout>
-          </AppContextProvider>
-        </WalletProvider>
-      )}
+      <ChainProvider chainId={CHAIN_ID}>
+        {/* Show loader on fallback page when loading static props. */}
+        {router.isFallback ? (
+          <PageLoader />
+        ) : (
+          <WalletProvider setWeb3AuthPrompt={setWeb3AuthPrompt}>
+            {/* AppContextProvider uses wallet context. */}
+            <AppContextProvider
+              mode={DaoPageMode.Dapp}
+              web3AuthPrompt={web3AuthPrompt}
+            >
+              <DappLayout>
+                <Component {...pageProps} />
+              </DappLayout>
+            </AppContextProvider>
+          </WalletProvider>
+        )}
 
-      <ToastNotifications />
+        <ToastNotifications />
+      </ChainProvider>
     </ThemeProvider>
   )
 }

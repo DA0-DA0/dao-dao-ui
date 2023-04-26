@@ -23,7 +23,7 @@ export const makeGetProposalInfo =
   ({
     proposalModule,
     proposalNumber,
-    chainId,
+    chain: { chain_id: chainId },
   }: IProposalModuleAdapterOptions) =>
   async (): Promise<CommonProposalInfo | undefined> => {
     // Lazily connect if necessary.

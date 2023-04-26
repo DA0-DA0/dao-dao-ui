@@ -3,11 +3,9 @@ import { useMemo } from 'react'
 
 import { DaoPageWrapper } from '@dao-dao/stateful'
 import { ContractVersion, DaoInfo, DaoInfoSerializable } from '@dao-dao/types'
-import { CHAIN_BECH32_PREFIX, CHAIN_ID } from '@dao-dao/utils'
+import { CHAIN_BECH32_PREFIX } from '@dao-dao/utils'
 
 export const makeDaoInfo = (): DaoInfo => ({
-  chainId: CHAIN_ID,
-  bech32Prefix: CHAIN_BECH32_PREFIX,
   coreAddress: CHAIN_BECH32_PREFIX + 'DaoCoreAddress',
   coreVersion: ContractVersion.V2Alpha,
   votingModuleAddress: 'votingModuleAddress',

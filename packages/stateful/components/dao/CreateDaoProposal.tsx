@@ -16,6 +16,7 @@ import {
   CreateProposal,
   PageLoader,
   ProposalModuleSelector,
+  useChain,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -36,6 +37,7 @@ import { SuspenseLoader } from '../SuspenseLoader'
 export const CreateDaoProposal = () => {
   const { t } = useTranslation()
   const { goToDaoProposal, router } = useNavHelpers()
+  const chain = useChain()
   const daoInfo = useDaoInfoContext()
   const { connected } = useWallet()
 
@@ -53,10 +55,10 @@ export const CreateDaoProposal = () => {
   const proposalModuleAdapterCommon = useMemo(
     () =>
       matchAndLoadCommon(selectedProposalModule, {
-        chainId: daoInfo.chainId,
+        chain,
         coreAddress: daoInfo.coreAddress,
       }),
-    [daoInfo.chainId, daoInfo.coreAddress, selectedProposalModule]
+    [chain, daoInfo.coreAddress, selectedProposalModule]
   )
 
   const {
@@ -294,11 +296,11 @@ export const CreateDaoProposal = () => {
       daoInfo.proposalModules.map(
         (proposalModule) =>
           matchAndLoadCommon(proposalModule, {
-            chainId: daoInfo.chainId,
+            chain,
             coreAddress: daoInfo.coreAddress,
           }).hooks.useProfileNewProposalCardInfoLines
       ),
-    [daoInfo]
+    [chain, daoInfo.coreAddress, daoInfo.proposalModules]
   )
   // Proposal modules stay constant, so we can safely ignore the warning.
   proposalModuleHooks.forEach((useProfileNewProposalCardInfoLines) =>

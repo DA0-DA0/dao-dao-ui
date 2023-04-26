@@ -1,8 +1,8 @@
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
-import { Entity, EntityType, LoadingData, WithChainId } from '@dao-dao/types'
+import { useCachedLoadable, useChain } from '@dao-dao/stateless'
+import { Entity, EntityType, LoadingData } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
   getFallbackImage,
@@ -12,14 +12,9 @@ import {
 
 import { walletProfileDataSelector } from '../recoil'
 
-export type UseEntityOptions = WithChainId<{
-  address: string
-}>
+export const useEntity = (address: string): LoadingData<Entity> => {
+  const { chain_id: chainId } = useChain()
 
-export const useEntity = ({
-  address,
-  chainId,
-}: UseEntityOptions): LoadingData<Entity> => {
   // Try to load config assuming the address is a DAO.
   const daoConfig = useCachedLoadable(
     address && isValidContractAddress(address, CHAIN_BECH32_PREFIX)

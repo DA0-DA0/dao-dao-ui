@@ -81,7 +81,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<EnableMultipleChoiceData> = (
 
 export const makeEnableMultipleChoiceAction: ActionMaker<
   EnableMultipleChoiceData
-> = ({ t, address, chainId, context }) => {
+> = ({ t, address, context, chain: { chain_id: chainId } }) => {
   // Only show for v2 DAOs. Disallows creation if multiple choice proposal
   // module already exists, down at the bottom of this function.
   if (

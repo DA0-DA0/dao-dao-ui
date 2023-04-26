@@ -10,7 +10,7 @@ import {
   RadioInput,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { POLYTONE_NOTES, getNameForChainId } from '@dao-dao/utils'
+import { POLYTONE_NOTES, getDisplayNameForChainId } from '@dao-dao/utils'
 
 export type CrossChainExecData = {
   chainId: string
@@ -36,7 +36,7 @@ export const CrossChainExecComponent: ActionComponent<CrossChainExecOptions> = (
           disabled={!isCreating}
           fieldName={(fieldNamePrefix + 'chainId') as 'chainId'}
           options={Object.keys(POLYTONE_NOTES).map((chainId) => ({
-            label: getNameForChainId(chainId),
+            label: getDisplayNameForChainId(chainId),
             value: chainId,
           }))}
           setValue={setValue}

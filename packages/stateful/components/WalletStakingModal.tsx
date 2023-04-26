@@ -16,6 +16,7 @@ import {
   StakingModalProps,
   StakingMode,
   useCachedLoadable,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   NATIVE_TOKEN,
@@ -34,11 +35,8 @@ export type WalletStakingModalProps = Pick<
 
 export const WalletStakingModal = (props: WalletStakingModalProps) => {
   const { t } = useTranslation()
-  const {
-    chainInfo: { chainId } = {},
-    address: walletAddress = '',
-    signingCosmWasmClient,
-  } = useWallet()
+  const { chain_id: chainId } = useChain()
+  const { address: walletAddress = '', signingCosmWasmClient } = useWallet()
 
   const { walletBalance, refreshBalances } = useWalletInfo()
   // Refreshes validator balances.

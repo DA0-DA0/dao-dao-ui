@@ -1,9 +1,9 @@
 import { Buffer } from 'buffer'
 
+import { Chain } from '@chain-registry/types'
 import { fromHex, toBech32 } from '@cosmjs/encoding'
 import { decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
 import { ChainInfoID, ChainInfoMap } from '@noahsaso/cosmodal'
-import { chains } from 'chain-registry'
 import { bondStatusToJSON } from 'cosmjs-types/cosmos/staking/v1beta1/staking'
 import { Validator as RpcValidator } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import RIPEMD160 from 'ripemd160'
@@ -65,7 +65,7 @@ export const cosmosValidatorToValidator = ({
   tokens: Number(tokens),
 })
 
-export const getImageUrlForChainId = (chainId: string) =>
+export const getImageUrlForChainId = (chainId: string): string | undefined =>
   chainId === ChainInfoID.Juno1 || chainId === ChainInfoID.Uni6
     ? '/juno.png'
     : chainId === ChainInfoID.Stargaze1 || chainId === STARGAZE_TESTNET_CHAIN_ID
@@ -90,14 +90,20 @@ export const secp256k1PublicKeyToBech32Address = async (
   return toBech32(bech32Prefix, fromHex(ripemd160Hex))
 }
 
-export const getNameForChainId = (chainId: string): string => {
-  const chain = chains.find(({ chain_id }) => chain_id === chainId)
-  return chain?.pretty_name ?? chainId
+const cachedChains: Record<string, Chain | undefined> = {}
+export const maybeGetChainForChainId = (chainId: string): Chain | undefined => {
+  cachedChains[chainId] ||= maybeGetChainForChainId(chainId)
+  return cachedChains[chainId]
 }
 
-export const getBech32PrefixForChainId = (
-  chainId: string
-): string | undefined => {
-  const chain = chains.find(({ chain_id }) => chain_id === chainId)
-  return chain?.bech32_prefix
+export const getChainForChainId = (chainId: string): Chain => {
+  const chain = maybeGetChainForChainId(chainId)
+  if (!chain) {
+    throw new Error(`Chain with ID ${chainId} not found`)
+  }
+
+  return chain
 }
+
+export const getDisplayNameForChainId = (chainId: string): string =>
+  maybeGetChainForChainId(chainId)?.pretty_name ?? chainId

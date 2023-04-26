@@ -8,7 +8,7 @@ import {
   indexerWebSocketSelector,
   mountedInBrowserAtom,
 } from '@dao-dao/state/recoil'
-import { useDaoInfoContext } from '@dao-dao/stateless'
+import { useChain, useDaoInfoContext } from '@dao-dao/stateless'
 import { ParametersExceptFirst } from '@dao-dao/types'
 import {
   objectMatchesStructure,
@@ -215,7 +215,8 @@ export const useOnWebSocketMessage = (
 export const useOnDaoWebSocketMessage = (
   ...args: ParametersExceptFirst<typeof useOnWebSocketMessage>
 ) => {
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
+  const { coreAddress } = useDaoInfoContext()
   return useOnWebSocketMessage(
     [webSocketChannelNameForDao({ coreAddress, chainId })],
     ...args

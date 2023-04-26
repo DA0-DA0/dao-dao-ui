@@ -17,6 +17,7 @@ export type CachedLoadable<T> =
       contents: any
     }
 
+// TODO: Make required?
 export type WithChainId<T> = T & {
   chainId?: string
 }

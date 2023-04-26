@@ -101,13 +101,12 @@ const InnerProposalStatusAndInfo = ({
   depositInfo: CheckedDepositInfo | undefined
 }) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
+  const { name: daoName, coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { connected, address: walletAddress = '' } = useWallet()
   const { isMember = false } = useMembership({
     coreAddress,
-    chainId,
   })
 
   const config = useRecoilValue(

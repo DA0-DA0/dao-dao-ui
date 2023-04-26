@@ -120,7 +120,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
 }
 
 const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
-  const { chainId, address } = useActionOptions()
+  const {
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   // These need to be loaded via cached loadables to avoid displaying a loader
   // when this data updates on a schedule. Manually trigger a suspense loader
@@ -281,7 +284,7 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
 
 export const makeManageStakingAction: ActionMaker<ManageStakingData> = ({
   t,
-  chainId,
+  chain: { chain_id: chainId },
   address,
 }) => {
   const useDefaults: UseDefaults<ManageStakingData> = () => {

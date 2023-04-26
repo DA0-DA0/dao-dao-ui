@@ -9,12 +9,11 @@ export const ProfileCardMemberInfo = ({
   maxGovernanceTokenDeposit: _,
   ...props
 }: BaseProfileCardMemberInfoProps) => {
-  const { name: daoName, chainId } = useDaoInfoContext()
+  const { name: daoName } = useDaoInfoContext()
   const { coreAddress } = useVotingModuleAdapterOptions()
 
   const { walletVotingWeight, totalVotingWeight } = useMembership({
     coreAddress,
-    chainId,
   })
 
   return (

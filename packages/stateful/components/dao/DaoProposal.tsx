@@ -248,7 +248,6 @@ export const DaoProposal = ({
   proposalInfo && serializedInfo ? (
     <ProposalModuleAdapterProvider
       initialOptions={{
-        chainId: serializedInfo.chainId,
         coreAddress: serializedInfo.coreAddress,
       }}
       proposalId={proposalInfo.id}

@@ -35,14 +35,12 @@ const InnerProposalLine = ({
 }) => {
   const {
     coreAddress,
-    chainId,
     proposalModule: { prefix: proposalPrefix },
     proposalNumber,
   } = useProposalModuleAdapterOptions()
 
   const { isMember = false } = useMembership({
     coreAddress,
-    chainId,
   })
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 

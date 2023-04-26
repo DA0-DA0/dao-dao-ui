@@ -35,7 +35,7 @@ interface ProposalCreationFormProps {
 export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
   const { t } = useTranslation()
   const { goToDaoProposal } = useNavHelpers()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet()
 
@@ -131,10 +131,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
         )
       : undefined
   )
-  const walletEntity = useEntity({
-    address: walletAddress,
-    chainId,
-  })
+  const walletEntity = useEntity(walletAddress)
 
   return (
     <SuspenseLoader

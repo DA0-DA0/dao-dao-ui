@@ -39,7 +39,7 @@ interface ValidatorActionsData {
 export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
   t,
   address,
-  bech32Prefix,
+  chain: { bech32_prefix: bech32Prefix },
 }) => {
   const validatorAddress = toValidatorAddress(address, bech32Prefix)
 

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state'
-import { GearEmoji, useDaoInfoContext } from '@dao-dao/stateless'
+import { GearEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
@@ -30,6 +30,7 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../../../actions'
 import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
 import { configSelector } from '../../../contracts/DaoPreProposeSingle.recoil'
 import {
@@ -39,7 +40,9 @@ import {
 
 export const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
-  const { bech32Prefix } = useDaoInfoContext()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
 
   const {
     hooks: { useCommonGovernanceTokenInfo },

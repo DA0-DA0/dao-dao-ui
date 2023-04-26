@@ -158,7 +158,9 @@ export const InstantiateTokenSwap: ActionComponent<
 const InnerInstantiateTokenSwap: ActionComponent<
   Omit<InstantiateTokenSwapOptions, 'counterpartyTokenBalances'>
 > = (props) => {
-  const { chainId } = useActionOptions()
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
   const { resetField, watch } = useFormContext()
 
   // Only set defaults once.

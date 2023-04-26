@@ -1,6 +1,8 @@
-import { useContext } from 'react'
+import { createContext, useContext } from 'react'
 
-import { DaoInfoContext } from '../components/dao/DaoInfoContext'
+import { DaoInfo } from '@dao-dao/types'
+
+export const DaoInfoContext = createContext<DaoInfo | null>(null)
 
 export const useDaoInfoContext = () => {
   const context = useContext(DaoInfoContext)

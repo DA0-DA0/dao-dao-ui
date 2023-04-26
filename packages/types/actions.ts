@@ -1,4 +1,5 @@
 // eslint-disable-next-line regex/invalid
+import { Chain } from '@chain-registry/types'
 import { ComponentType, FunctionComponent } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
@@ -208,8 +209,7 @@ export type ActionContext =
 
 export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
   t: TFunction
-  chainId: string
-  bech32Prefix: string
+  chain: Chain
   // coreAddress if context.type === Dao
   // walletAddress if context.type === Wallet
   address: string

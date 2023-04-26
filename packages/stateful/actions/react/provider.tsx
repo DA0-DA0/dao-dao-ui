@@ -2,7 +2,7 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Loader, useDaoInfoContext } from '@dao-dao/stateless'
+import { Loader, useChain, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   ActionContextType,
   ActionOptions,
@@ -27,11 +27,11 @@ export interface ActionsProviderProps {
 // where this component is used for a usage example.
 export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   const { t } = useTranslation()
+  const chain = useChain()
   const info = useDaoInfoContext()
   const options: ActionOptions = {
     t,
-    chainId: info.chainId,
-    bech32Prefix: info.bech32Prefix,
+    chain,
     address: info.coreAddress,
     context: {
       type: ActionContextType.Dao,
@@ -61,11 +61,11 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
       info.proposalModules.flatMap(
         (proposalModule) =>
           matchAndLoadCommon(proposalModule, {
-            chainId: info.chainId,
+            chain,
             coreAddress: info.coreAddress,
           }).fields.actionCategoryMakers
       ),
-    [info]
+    [chain, info.coreAddress, info.proposalModules]
   )
 
   const loadingWidgets = useWidgets({
@@ -103,6 +103,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
 
 export const WalletActionsProvider = ({ children }: ActionsProviderProps) => {
   const { t } = useTranslation()
+  const chain = useChain()
   const { chainInfo, address } = useWallet()
 
   if (!chainInfo || !address) {
@@ -111,8 +112,7 @@ export const WalletActionsProvider = ({ children }: ActionsProviderProps) => {
 
   const options: ActionOptions = {
     t,
-    chainId: chainInfo.chainId,
-    bech32Prefix: chainInfo.bech32Config.bech32PrefixAccAddr,
+    chain,
     address: address,
     context: {
       type: ActionContextType.Wallet,

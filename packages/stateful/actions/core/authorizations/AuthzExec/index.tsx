@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { LockWithKeyEmoji } from '@dao-dao/stateless'
+import { LockWithKeyEmoji, useChain } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -32,7 +32,6 @@ import {
 import { daoInfoSelector } from '../../../../recoil'
 import {
   WalletActionsProvider,
-  useActionOptions,
   useActionsForMatching,
   useLoadedActionsAndCategories,
 } from '../../../react'
@@ -93,10 +92,10 @@ const InnerComponent: ActionComponent<InnerOptions> = (props) => {
 const InnerComponentWrapper: ActionComponent<
   InnerOptions & { address: string }
 > = (props) => {
-  const { bech32Prefix } = useActionOptions()
   const {
     options: { address },
   } = props
+  const { bech32_prefix: bech32Prefix, chain_id: chainId } = useChain()
 
   const isContractAddress = isValidContractAddress(address, bech32Prefix)
   const isWalletAddress = isValidWalletAddress(address, bech32Prefix)
@@ -104,6 +103,7 @@ const InnerComponentWrapper: ActionComponent<
   const daoInfoLoadable = useRecoilValueLoadable(
     isContractAddress
       ? daoInfoSelector({
+          chainId,
           coreAddress: address,
         })
       : constSelector(undefined)

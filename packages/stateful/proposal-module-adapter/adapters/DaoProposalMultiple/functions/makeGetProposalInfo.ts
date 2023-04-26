@@ -14,9 +14,9 @@ import { DaoProposalMultipleQueryClient } from '../contracts/DaoProposalMultiple
 
 export const makeGetProposalInfo =
   ({
+    chain: { chain_id: chainId },
     proposalModule,
     proposalNumber,
-    chainId,
   }: IProposalModuleAdapterOptions) =>
   async (): Promise<CommonProposalInfo | undefined> => {
     // Lazily connect if necessary.

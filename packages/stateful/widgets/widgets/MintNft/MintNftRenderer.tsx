@@ -13,7 +13,7 @@ import {
   Tooltip,
   useCachedLoadable,
   useCachedLoading,
-  useDaoInfoContext,
+  useChain,
 } from '@dao-dao/stateless'
 import { WidgetRendererProps } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
@@ -29,12 +29,12 @@ export const MintNftRenderer = ({
   },
 }: WidgetRendererProps<MintNftData>) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const {
     address: walletAddress = '',
     signingCosmWasmClient,
     connected,
   } = useWallet()
-  const { chainId } = useDaoInfoContext()
 
   const [minting, setMinting] = useState(false)
 

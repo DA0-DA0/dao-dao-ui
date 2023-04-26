@@ -62,7 +62,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
       }
 
 const Component: ActionComponent = (props) => {
-  const { chainId, bech32Prefix } = useActionOptions()
+  const {
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const [contract, setContract] = useState('')
 
   const admin = useRecoilValueLoadable(

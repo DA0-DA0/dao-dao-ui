@@ -19,6 +19,7 @@ export * from './tooltip'
 export * from './wallet'
 
 export * from './AudioPlayer'
+export * from './ChainProvider'
 export * from './Collapsible'
 export * from './CopyableAddress'
 export * from './CopyToClipboard'

@@ -3,6 +3,7 @@ import { useWallet } from '@noahsaso/cosmodal'
 import {
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
   useCachedLoading,
+  useChain,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -25,6 +26,7 @@ import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
 import { DaoTokenCard } from '../DaoTokenCard'
 
 export const TreasuryAndNftsTab = () => {
+  const { chain_id: chainId } = useChain()
   const daoInfo = useDaoInfoContext()
   const { connected } = useWallet()
   const { getDaoProposalPath } = useNavHelpers()
@@ -40,7 +42,6 @@ export const TreasuryAndNftsTab = () => {
   const tokens = useCachedLoading(
     treasuryTokenCardInfosSelector({
       coreAddress: daoInfo.coreAddress,
-      chainId: daoInfo.chainId,
       cw20GovernanceTokenAddress,
       nativeGovernanceTokenDenom,
     }),
@@ -48,8 +49,8 @@ export const TreasuryAndNftsTab = () => {
   )
   const nfts = useCachedLoading(
     nftCardInfosForDaoSelector({
+      chainId,
       coreAddress: daoInfo.coreAddress,
-      chainId: daoInfo.chainId,
       governanceCollectionAddress: cw721GovernanceCollectionAddress,
     }),
     []

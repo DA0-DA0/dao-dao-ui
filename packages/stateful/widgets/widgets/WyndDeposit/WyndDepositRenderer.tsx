@@ -29,6 +29,7 @@ import {
   TokenAmountDisplay,
   useCachedLoadable,
   useCachedLoading,
+  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -68,7 +69,8 @@ export const WyndDepositRenderer = ({
     address: walletAddress = '',
     connected,
   } = useWallet()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
+  const { coreAddress } = useDaoInfoContext()
 
   // Default to the DAO's treasury if no output specified.
   const outputAddress = _outputAddress || coreAddress

@@ -38,7 +38,10 @@ export const MintNftEditor = ({
   errors,
 }: WidgetEditorProps<MintNftData>) => {
   const { t } = useTranslation()
-  const { address, chainId, bech32Prefix } = useActionOptions()
+  const {
+    address,
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  } = useActionOptions()
 
   const { watch, setValue, register, control } = useFormContext<MintNftData>()
   const tokenAddress = watch(

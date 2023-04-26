@@ -37,7 +37,11 @@ import { anyoneCanProposeSelector } from '../selectors'
 
 export const makeUsePublishProposal =
   ({
-    options: { chainId, coreAddress, proposalModule },
+    options: {
+      chain: { chain_id: chainId },
+      coreAddress,
+      proposalModule,
+    },
     depositInfoSelector,
   }: MakeUsePublishProposalOptions): UsePublishProposal =>
   () => {
@@ -45,12 +49,11 @@ export const makeUsePublishProposal =
     const { connected, address: walletAddress } = useWallet()
     const { isMember = false } = useMembership({
       coreAddress,
-      chainId,
     })
 
     const anyoneCanPropose = useRecoilValue(
       anyoneCanProposeSelector({
-        chainId: chainId,
+        chainId,
         preProposeAddress: proposalModule.preProposeAddress,
       })
     )
@@ -158,11 +161,7 @@ export const makeUsePublishProposal =
     })
 
     const awaitNextBlock = useAwaitNextBlock()
-
-    const simulateMsgs = useSimulateCosmosMsgs({
-      senderAddress: coreAddress,
-      chainId,
-    })
+    const simulateMsgs = useSimulateCosmosMsgs(coreAddress)
 
     // If simulation fails and `failedSimulationBypassDuration` is defined,
     // allow bypassing for a period of time by setting this to a date in the

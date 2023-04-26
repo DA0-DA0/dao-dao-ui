@@ -4,10 +4,7 @@ import { StatefulEntityDisplayProps } from '@dao-dao/types'
 import { useEntity } from '../hooks'
 
 export const EntityDisplay = (props: StatefulEntityDisplayProps) => {
-  const loadingEntity = useEntity({
-    address: props.address,
-    chainId: props.chainId,
-  })
+  const loadingEntity = useEntity(props.address)
 
   return <StatelessEntityDisplay {...props} loadingEntity={loadingEntity} />
 }

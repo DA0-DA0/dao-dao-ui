@@ -31,6 +31,7 @@ import {
   DappLayout as StatelessDappLayout,
   useAppContext,
   useCachedLoading,
+  useChain,
   usePlatform,
 } from '@dao-dao/stateless'
 
@@ -51,6 +52,8 @@ import { WalletModals } from './wallet'
 export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
   const router = useRouter()
+  const { chain_id: chainId } = useChain()
+
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
     installWarningVisibleAtom
@@ -177,7 +180,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     connectedWallet
       ? walletTokenCardInfosSelector({
           walletAddress: connectedWallet.address,
-          chainId: connectedWallet.chainInfo.chainId,
+          chainId,
         })
       : constSelector(undefined)
   )

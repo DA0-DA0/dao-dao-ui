@@ -23,7 +23,11 @@ import { MintNft as StatelessMintNft } from './stateless/MintNft'
 import { MintNftData } from './types'
 
 export const MintNft: ActionComponent = (props) => {
-  const { chainId, bech32Prefix, context, address } = useActionOptions()
+  const {
+    context,
+    address,
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { watch } = useFormContext()
 
   const {

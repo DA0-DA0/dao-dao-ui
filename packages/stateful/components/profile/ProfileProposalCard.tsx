@@ -7,6 +7,7 @@ import {
   ProfileVoteCard,
   useAppContext,
   useCachedLoadable,
+  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
@@ -25,12 +26,8 @@ export interface ProfileProposalCardProps {
 }
 
 export const ProfileProposalCard = () => {
-  const {
-    chainId,
-    coreAddress,
-    name: daoName,
-    proposalModules,
-  } = useDaoInfoContext()
+  const chain = useChain()
+  const { coreAddress, name: daoName, proposalModules } = useDaoInfoContext()
   const { walletProfileData, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppContext()
 
@@ -49,11 +46,11 @@ export const ProfileProposalCard = () => {
       proposalModules.map(
         (proposalModule) =>
           matchAndLoadCommon(proposalModule, {
-            chainId,
+            chain,
             coreAddress,
           }).selectors.depositInfo
       ),
-    [chainId, coreAddress, proposalModules]
+    [chain, coreAddress, proposalModules]
   )
   const proposalModuleDepositInfosLoadable = useCachedLoadable(
     waitForAll(depositInfoSelectors)
@@ -83,7 +80,6 @@ export const ProfileProposalCard = () => {
   // Relevant for showing them membership join info or not.
   const { isMember = false } = useMembership({
     coreAddress,
-    chainId,
   })
 
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()

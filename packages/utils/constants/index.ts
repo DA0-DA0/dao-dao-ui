@@ -2,7 +2,6 @@ import { GenericToken, TokenType } from '@dao-dao/types'
 
 import { getFallbackImage } from '../getFallbackImage'
 import { nativeTokenLabel, nativeTokenLogoURI } from '../ibc'
-import { ChainPrefixIdMaps } from './chainPrefixIdMaps'
 import { CodeIdConfigs } from './codeIdConfigs'
 import { PolytoneNotesPerChain } from './polytoneNotes'
 
@@ -83,10 +82,6 @@ if (!(CHAIN_ID in CodeIdConfigs)) {
   console.error(`Chain ID '${CHAIN_ID}' not found in Code ID Configs`)
 }
 export const CODE_ID_CONFIG = CodeIdConfigs[CHAIN_ID]!
-
-// Chain Prefix -> ID Map for determining chain from DAO core address.
-export const CHAIN_PREFIX_ID_MAP =
-  ChainPrefixIdMaps[MAINNET ? 'mainnet' : 'testnet']
 
 // Polytone Notes
 if (!(CHAIN_ID in PolytoneNotesPerChain)) {

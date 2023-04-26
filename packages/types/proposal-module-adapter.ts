@@ -1,3 +1,4 @@
+import { Chain } from '@chain-registry/types'
 import { CSSProperties, ComponentType, ReactNode } from 'react'
 import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
@@ -115,7 +116,7 @@ export type ProposalModuleAdapter<
 }
 
 export interface IProposalModuleAdapterInitialOptions {
-  chainId: string
+  chain: Chain
   coreAddress: string
 }
 

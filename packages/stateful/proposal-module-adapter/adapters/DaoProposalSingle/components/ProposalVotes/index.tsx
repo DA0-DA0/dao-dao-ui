@@ -14,7 +14,7 @@ export const ProposalVotes = () => {
   const {
     proposalModule: { address: proposalModuleAddress },
     proposalNumber,
-    chainId,
+    chain: { chain_id: chainId },
   } = useProposalModuleAdapterOptions()
 
   const loadingProposal = useLoadingProposal()
@@ -24,8 +24,8 @@ export const ProposalVotes = () => {
     : Number(loadingProposal.data.total_power)
   const votesLoadable = useCachedLoadable(
     listAllVotesSelector({
-      contractAddress: proposalModuleAddress,
       chainId,
+      contractAddress: proposalModuleAddress,
       proposalId: proposalNumber,
     })
   )

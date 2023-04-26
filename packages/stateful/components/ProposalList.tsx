@@ -4,6 +4,7 @@ import { useRecoilCallback, useSetRecoilState } from 'recoil'
 import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
   ProposalList as StatelessProposalList,
+  useChain,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -19,11 +20,11 @@ const PROP_PAGINATE_LIMIT = 20
 const MIN_LOAD_PROPS = 100
 
 export const ProposalList = () => {
-  const { chainId, coreAddress, proposalModules } = useDaoInfoContext()
+  const chain = useChain()
+  const { coreAddress, proposalModules } = useDaoInfoContext()
   const { getDaoProposalPath } = useNavHelpers()
   const { isMember = false } = useMembership({
     coreAddress,
-    chainId,
   })
 
   const [openProposals, setOpenProposals] = useState<ProposalLineProps[]>([])
@@ -36,12 +37,12 @@ export const ProposalList = () => {
     () =>
       proposalModules.map((proposalModule) => ({
         reverseProposalInfos: matchAndLoadCommon(proposalModule, {
-          chainId,
+          chain,
           coreAddress,
         }).selectors.reverseProposalInfos,
         proposalModule,
       })),
-    [chainId, coreAddress, proposalModules]
+    [chain, coreAddress, proposalModules]
   )
 
   // Cursor values for each proposal module for incremental queries.
@@ -152,7 +153,6 @@ export const ProposalList = () => {
             const transformIntoProps = ({
               id,
             }: typeof newProposalInfos[number]): ProposalLineProps => ({
-              chainId,
               coreAddress,
               proposalModules,
               proposalId: id,
@@ -202,7 +202,6 @@ export const ProposalList = () => {
       startBefores,
       reverseProposalInfosSelectors,
       proposalModules,
-      chainId,
       coreAddress,
       getDaoProposalPath,
     ]

@@ -1,11 +1,10 @@
 import { useWallet } from '@noahsaso/cosmodal'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoadable, useChain } from '@dao-dao/stateless'
 
 interface UseMembershipOptions {
   coreAddress: string
-  chainId?: string
   blockHeight?: number
 }
 
@@ -18,9 +17,9 @@ interface UseMembershipResponse {
 
 export const useMembership = ({
   coreAddress,
-  chainId,
   blockHeight,
 }: UseMembershipOptions): UseMembershipResponse => {
+  const { chain_id: chainId } = useChain()
   const { address: walletAddress } = useWallet()
 
   // Use loadable to prevent flickering loading states when wallet address

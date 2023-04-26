@@ -8,6 +8,7 @@ import {
   DaoInfoBar as StatelessDaoInfoBar,
   TokenAmountDisplay,
   useCachedLoading,
+  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 
@@ -25,11 +26,12 @@ export const DaoInfoBar = () => (
 
 const InnerDaoInfoBar = () => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const {
     hooks: { useDaoInfoBarItems },
   } = useVotingModuleAdapter()
   const votingModuleItems = useDaoInfoBarItems()
-  const { chainId, coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfoContext()
 
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}

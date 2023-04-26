@@ -17,7 +17,7 @@ import {
   StakingModalProps,
   StakingMode,
   useCachedLoadable,
-  useDaoInfoContext,
+  useChain,
 } from '@dao-dao/stateless'
 import { TokenStake } from '@dao-dao/types'
 import {
@@ -51,7 +51,7 @@ export const NativeStakingModal = ({
   ...props
 }: NativeStakingModalProps) => {
   const { t } = useTranslation()
-  const { chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
 
   const vestLoadable = useCachedLoadable(
     CwVestingSelectors.infoSelector({

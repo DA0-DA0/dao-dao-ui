@@ -14,6 +14,7 @@ import {
   TokenDepositModal,
   TokenDepositModalProps,
   useCachedLoading,
+  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -36,7 +37,8 @@ export const DaoTokenDepositModal = ({
   ...props
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
+  const { name: daoName, coreAddress } = useDaoInfoContext()
   const { connected, address, signingCosmWasmClient } = useWallet()
   const { refreshBalances: refreshWalletBalances } = useWalletInfo()
 

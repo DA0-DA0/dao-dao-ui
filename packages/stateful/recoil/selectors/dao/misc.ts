@@ -1,4 +1,3 @@
-import { fromBech32 } from '@cosmjs/encoding'
 import { RecoilValueReadOnly, selectorFamily } from 'recoil'
 
 import {
@@ -19,9 +18,9 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_ID,
-  CHAIN_PREFIX_ID_MAP,
   DaoVotingCw20StakedAdapterId,
   POLYTONE_NOTES,
+  getChainForChainId,
   isValidContractAddress,
 } from '@dao-dao/utils'
 
@@ -187,25 +186,14 @@ export const daoPotentialSubDaosSelector = selectorFamily<
 })
 
 export const daoInfoSelector: (param: {
+  chainId: string
   coreAddress: string
   ignoreAdmins?: string[] | undefined
 }) => RecoilValueReadOnly<DaoInfo> = selectorFamily({
   key: 'daoInfo',
   get:
-    ({ coreAddress, ignoreAdmins }) =>
+    ({ chainId, coreAddress, ignoreAdmins }) =>
     ({ get }) => {
-      // Get chain for the DAO based on its address prefix.
-      const bech32Prefix = fromBech32(coreAddress).prefix
-
-      // If address prefix is not recognized, error. We'll retrieve the chain ID
-      // from the DAO's address prefix, so if the prefix is not recognized, we
-      // can't get the chain ID.
-      if (!(bech32Prefix in CHAIN_PREFIX_ID_MAP)) {
-        throw new Error(`DAO address prefix ${bech32Prefix} is not recognized.`)
-      }
-      const chainId =
-        CHAIN_PREFIX_ID_MAP[bech32Prefix as keyof typeof CHAIN_PREFIX_ID_MAP]
-
       const dumpState = get(
         DaoCoreV2Selectors.dumpStateSelector({
           contractAddress: coreAddress,
@@ -273,11 +261,15 @@ export const daoInfoSelector: (param: {
       if (
         dumpState.admin &&
         dumpState.admin !== coreAddress &&
-        isValidContractAddress(dumpState.admin, bech32Prefix) &&
+        isValidContractAddress(
+          dumpState.admin,
+          getChainForChainId(chainId).bech32_prefix
+        ) &&
         !ignoreAdmins?.includes(dumpState.admin)
       ) {
         parentDaoInfo = get(
           daoInfoSelector({
+            chainId,
             coreAddress: dumpState.admin,
             ignoreAdmins: [...(ignoreAdmins ?? []), coreAddress],
           })
@@ -295,8 +287,6 @@ export const daoInfoSelector: (param: {
       }
 
       return {
-        chainId,
-        bech32Prefix,
         coreAddress,
         coreVersion,
         votingModuleAddress: dumpState.voting_module,

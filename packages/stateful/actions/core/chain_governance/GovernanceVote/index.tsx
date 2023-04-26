@@ -39,7 +39,10 @@ const useDefaults: UseDefaults<GovernanceVoteData> = () => ({
 
 const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
   const { isCreating, fieldNamePrefix } = props
-  const { address, chainId } = useActionOptions()
+  const {
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
   const { watch, setValue, setError, clearErrors } =
     useFormContext<GovernanceVoteData>()
 

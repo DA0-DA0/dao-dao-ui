@@ -26,13 +26,14 @@ import {
   WalletProvider,
 } from '@dao-dao/stateful'
 import {
+  ChainProvider,
   PageLoader,
   Theme,
   ThemeProvider,
   ToastNotifications,
 } from '@dao-dao/stateless'
 import { DaoPageMode, Web3AuthPrompt } from '@dao-dao/types'
-import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
+import { CHAIN_ID, SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 const InnerApp = ({
   Component,
@@ -85,33 +86,35 @@ const InnerApp = ({
       themeChangeCount={themeChangeCount}
       updateTheme={setTheme}
     >
-      {/* Show loader on fallback page when loading static props. */}
-      {router.isFallback ? (
-        <PageLoader />
-      ) : router.pathname === '/discord' ||
-        router.pathname === '/404' ||
-        router.pathname === '/500' ||
-        router.pathname === '/_error' ? (
-        <Component {...pageProps} />
-      ) : (
-        <WalletProvider setWeb3AuthPrompt={setWeb3AuthPrompt}>
-          {/* AppContextProvider uses wallet context. */}
-          <AppContextProvider
-            mode={DaoPageMode.Sda}
-            web3AuthPrompt={web3AuthPrompt}
-          >
-            {/* All non-error/discord redirect SDA pages are a DAO page. */}
-            <DaoPageWrapper setIcon={setIcon} {...pageProps}>
-              {/* SdaLayout needs DaoPageWrapper for navigation tabs. */}
-              <SdaLayout>
-                <Component {...pageProps} />
-              </SdaLayout>
-            </DaoPageWrapper>
-          </AppContextProvider>
-        </WalletProvider>
-      )}
+      <ChainProvider chainId={CHAIN_ID}>
+        {/* Show loader on fallback page when loading static props. */}
+        {router.isFallback ? (
+          <PageLoader />
+        ) : router.pathname === '/discord' ||
+          router.pathname === '/404' ||
+          router.pathname === '/500' ||
+          router.pathname === '/_error' ? (
+          <Component {...pageProps} />
+        ) : (
+          <WalletProvider setWeb3AuthPrompt={setWeb3AuthPrompt}>
+            {/* AppContextProvider uses wallet context. */}
+            <AppContextProvider
+              mode={DaoPageMode.Sda}
+              web3AuthPrompt={web3AuthPrompt}
+            >
+              {/* All non-error/discord redirect SDA pages are a DAO page. */}
+              <DaoPageWrapper setIcon={setIcon} {...pageProps}>
+                {/* SdaLayout needs DaoPageWrapper for navigation tabs. */}
+                <SdaLayout>
+                  <Component {...pageProps} />
+                </SdaLayout>
+              </DaoPageWrapper>
+            </AppContextProvider>
+          </WalletProvider>
+        )}
 
-      <ToastNotifications />
+        <ToastNotifications />
+      </ChainProvider>
     </ThemeProvider>
   )
 }

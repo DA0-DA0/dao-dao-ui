@@ -3,7 +3,7 @@ import { useCallback } from 'react'
 import { useSetRecoilState } from 'recoil'
 
 import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoadable, useChain } from '@dao-dao/stateless'
 import { InboxSource } from '@dao-dao/types'
 import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
@@ -18,11 +18,9 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
   id: 'open_proposals',
   Renderer: ProposalLine,
   useData: () => {
-    const {
-      address: walletAddress,
-      status: walletConnectionStatus,
-      chainInfo,
-    } = useWallet()
+    const { chain_id: chainId } = useChain()
+    const { address: walletAddress, status: walletConnectionStatus } =
+      useWallet()
 
     const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
@@ -43,11 +41,11 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
     // the wallet votes, the item is no longer pending, so the inbox pending
     // count needs to be updated.
     useOnWebSocketMessage(
-      daosWithItemsLoadable.state === 'hasValue' && chainInfo
+      daosWithItemsLoadable.state === 'hasValue'
         ? daosWithItemsLoadable.contents.map(({ coreAddress }) =>
             webSocketChannelNameForDao({
               coreAddress,
-              chainId: chainInfo.chainId,
+              chainId,
             })
           )
         : [],

@@ -1,4 +1,11 @@
+import { Chain } from '@chain-registry/types'
+
 import { Coin } from './contracts'
+
+export type IChainContext = {
+  chainId: string
+  chain: Chain
+}
 
 export interface Validator {
   address: string

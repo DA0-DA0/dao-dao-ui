@@ -21,6 +21,7 @@ import {
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
   useCachedLoading,
+  useChain,
 } from '@dao-dao/stateless'
 import { ActionKey, TokenCardInfo, TokenType } from '@dao-dao/types'
 import {
@@ -51,11 +52,11 @@ import { WalletStakingModal } from './WalletStakingModal'
 
 export const WalletTokenCard = (props: TokenCardInfo) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const {
     address: walletAddress = '',
     publicKey,
     signingCosmWasmClient,
-    chainInfo,
   } = useWallet()
 
   const { refreshBalances } = useWalletInfo()
@@ -63,8 +64,8 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   const lazyInfo = useCachedLoading(
     walletAddress
       ? tokenCardLazyInfoSelector({
+          chainId,
           owner: walletAddress,
-          chainId: chainInfo?.chainId,
           token: props.token,
           unstakedBalance: props.unstakedBalance,
         })

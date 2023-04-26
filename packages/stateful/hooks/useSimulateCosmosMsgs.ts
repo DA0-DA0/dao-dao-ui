@@ -3,13 +3,9 @@ import { useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import { cosmosRpcClientForChainSelector } from '@dao-dao/state/recoil'
+import { useChain } from '@dao-dao/stateless'
 import { CosmosMsgFor_Empty } from '@dao-dao/types'
 import { cwMsgToEncodeObject, typesRegistry } from '@dao-dao/utils'
-
-export interface UseSimulateCosmosMsgsOptions {
-  senderAddress: string
-  chainId?: string
-}
 
 const { SignMode } = cosmos.tx.signing.v1beta1
 const { AuthInfo, Fee, Tx, TxBody, SimulateRequest } = cosmos.tx.v1beta1
@@ -23,10 +19,9 @@ const { AuthInfo, Fee, Tx, TxBody, SimulateRequest } = cosmos.tx.v1beta1
 // We can copy this simulate function and leave out the wallet-specific fields
 // (i.e. sequence) and unnecessary fields (i.e. publicKey, memo) to simulate
 // these messages from a DAO address.
-export const useSimulateCosmosMsgs = ({
-  senderAddress,
-  chainId,
-}: UseSimulateCosmosMsgsOptions) => {
+export const useSimulateCosmosMsgs = (senderAddress: string) => {
+  const { chain_id: chainId } = useChain()
+
   const cosmosRpcClient = useRecoilValue(
     cosmosRpcClientForChainSelector(chainId)
   )

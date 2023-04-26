@@ -5,7 +5,7 @@ import {
   Cw721BaseSelectors,
   DaoVotingCw721StakedSelectors,
 } from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -18,11 +18,13 @@ export const useGovernanceCollectionInfo = ({
   fetchWalletBalance = false,
   fetchTreasuryBalance = false,
 }: UseGovernanceCollectionInfoOptions = {}): UseGovernanceCollectionInfoResponse => {
+  const { chain_id: chainId } = useChain()
   const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { nft_address: collectionAddress } = useRecoilValue(
     DaoVotingCw721StakedSelectors.configSelector({
+      chainId,
       contractAddress: votingModuleAddress,
       params: [],
     })
@@ -30,6 +32,7 @@ export const useGovernanceCollectionInfo = ({
 
   const contractInfo = useRecoilValue(
     Cw721BaseSelectors.contractInfoSelector({
+      chainId,
       contractAddress: collectionAddress,
       params: [],
     })
@@ -37,6 +40,7 @@ export const useGovernanceCollectionInfo = ({
 
   const tokenSupplyInfo = useRecoilValue(
     Cw721BaseSelectors.numTokensSelector({
+      chainId,
       contractAddress: collectionAddress,
       params: [],
     })
@@ -48,6 +52,7 @@ export const useGovernanceCollectionInfo = ({
   const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
       ? Cw721BaseSelectors.allTokensForOwnerSelector({
+          chainId,
           contractAddress: collectionAddress,
           owner: walletAddress,
         })
@@ -59,6 +64,7 @@ export const useGovernanceCollectionInfo = ({
   const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
       ? Cw721BaseSelectors.allTokensForOwnerSelector({
+          chainId,
           contractAddress: collectionAddress,
           owner: coreAddress,
         })

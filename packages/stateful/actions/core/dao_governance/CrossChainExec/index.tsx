@@ -17,7 +17,7 @@ import {
   POLYTONE_EAR,
   POLYTONE_NOTES,
   encodeMessageAsBase64,
-  getBech32PrefixForChainId,
+  getChainForChainId,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -99,16 +99,15 @@ const Component: ActionComponent = (props) => {
     }
   }, [clearErrors, chainId, props.fieldNamePrefix, props.isCreating, setValue])
 
+  const chain = getChainForChainId(chainId)
   const polytoneProxy = context.info.polytoneProxies[chainId]
-  const bech32Prefix = getBech32PrefixForChainId(chainId)
-  if (!bech32Prefix || !polytoneProxy) {
+  if (!polytoneProxy) {
     throw new Error('Invalid chain ID.')
   }
 
   const options: ActionOptions = {
     t,
-    chainId,
-    bech32Prefix,
+    chain,
     address: polytoneProxy,
     context: {
       type: ActionContextType.Wallet,

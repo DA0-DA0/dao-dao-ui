@@ -17,6 +17,7 @@
     "@types/remove-markdown": "^0.3.1",
     "@walletconnect/browser-utils": "^1.8.0",
     "a11y-react-emoji": "^1.2.0",
+    "chain-registry": "^1.13.0",
     "chart.js": "^3.9.1",
     "clsx": "^1.1.1",
     "codemirror": "^5.65.0",
@@ -38,6 +39,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@chain-registry/types": "^0.16.0",
     "@dao-dao/config": "2.2.0",
     "@noahsaso/cosmodal": "0.11.0",
     "@storybook/react": "^6.5.10",
@@ -61,9 +63,9 @@
   "peerDependencies": {
     "@dao-dao/stateful": "2.2.0",
     "@dao-dao/storybook": "2.2.0",
+    "next": "^12 || ^13",
     "react": "^17 || ^18",
-    "react-dom": "^17 || ^18",
-    "next": "^12 || ^13"
+    "react-dom": "^17 || ^18"
   },
   "prettier": "@dao-dao/config/prettier"
 }

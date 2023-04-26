@@ -80,7 +80,11 @@ const InnerComponent: ActionComponent<InnerOptions> = (props) => {
 }
 
 const Component: ActionComponent = (props) => {
-  const { context, address } = useActionOptions()
+  const {
+    context,
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   // Load DAO info for chosen DAO.
   const { watch, setValue, clearErrors } = useFormContext<DaoAdminExecData>()
@@ -111,6 +115,7 @@ const Component: ActionComponent = (props) => {
     context.type === ActionContextType.Dao
       ? DaoCoreV2Selectors.listAllSubDaosSelector({
           contractAddress: address,
+          chainId,
         })
       : undefined
   )
@@ -128,6 +133,7 @@ const Component: ActionComponent = (props) => {
     context.type === ActionContextType.Dao
       ? daoInfoSelector({
           coreAddress,
+          chainId,
         })
       : constSelector(undefined)
   )

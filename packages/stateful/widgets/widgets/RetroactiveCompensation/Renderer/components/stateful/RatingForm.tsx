@@ -12,6 +12,7 @@ import {
 import {
   Loader,
   useCachedLoadable,
+  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
@@ -38,7 +39,8 @@ interface RatingFormProps {
 
 export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
   const { t } = useTranslation()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
+  const { coreAddress } = useDaoInfoContext()
   const { publicKey: walletPublicKey } = useWallet()
 
   const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))

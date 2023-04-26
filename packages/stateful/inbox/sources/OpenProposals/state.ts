@@ -11,11 +11,7 @@ import {
   InboxSourceItem,
   WithChainId,
 } from '@dao-dao/types'
-import {
-  CHAIN_ID,
-  convertExpirationToDate,
-  getDaoProposalPath,
-} from '@dao-dao/utils'
+import { convertExpirationToDate, getDaoProposalPath } from '@dao-dao/utils'
 
 import { ProposalLineProps } from '../../../components/ProposalLine'
 import { followingDaosWithProposalModulesSelector } from '../../../recoil'
@@ -77,7 +73,6 @@ export const inboxOpenProposalsSelector = selectorFamily<
                       voted,
                     }): InboxSourceItem<ProposalLineProps> => ({
                       props: {
-                        chainId: CHAIN_ID,
                         coreAddress,
                         proposalId: `${proposalModule.prefix}${id}`,
                         proposalModules,

@@ -30,7 +30,10 @@ const useDefaults: UseDefaults<ManageStorageItemsData> = () => ({
 const Component: ActionComponent<undefined, ManageStorageItemsData> = (
   props
 ) => {
-  const { address, chainId } = useActionOptions()
+  const {
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   const existingItems = useRecoilValue(
     DaoCoreV2Selectors.listAllItemsSelector({

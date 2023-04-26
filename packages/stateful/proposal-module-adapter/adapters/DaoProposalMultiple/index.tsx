@@ -40,7 +40,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
   loadCommon: (options) => {
     // Make here so we can pass into common hooks and components that need it.
     const depositInfoSelector = makeDepositInfoSelector({
-      chainId: options.chainId,
+      chainId: options.chain.chain_id,
       proposalModuleAddress: options.proposalModule.address,
       version: options.proposalModule.version,
       preProposeAddress: options.proposalModule.preProposeAddress,
@@ -67,7 +67,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       selectors: {
         reverseProposalInfos: (props) =>
           reverseProposalInfosSelector({
-            chainId: options.chainId,
+            chainId: options.chain.chain_id,
             proposalModuleAddress: options.proposalModule.address,
             proposalModulePrefix: options.proposalModule.prefix,
             ...props,

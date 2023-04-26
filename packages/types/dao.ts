@@ -25,9 +25,7 @@ import { DurationWithUnits } from './units'
 import { VotingModuleAdapter } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
-export interface DaoInfo {
-  chainId: string
-  bech32Prefix: string
+export type DaoInfo = {
   coreAddress: string
   coreVersion: ContractVersion
   votingModuleAddress: string
@@ -43,7 +41,7 @@ export interface DaoInfo {
   parentDao: DaoParentInfo | null
 }
 
-export interface DaoParentInfo {
+export type DaoParentInfo = {
   coreAddress: string
   coreVersion: ContractVersion
   name: string
@@ -54,9 +52,9 @@ export interface DaoParentInfo {
   registeredSubDao: boolean
 }
 
-// Used in @dao-dao/stateful/components/DaoPageWrapper to serialize DaoInfo loaded
-// via static props (@dao-dao/stateful/server/makeGetDaoStaticProps) to be fed
-// into DaoPageWrapper and available in the UI via DaoInfoContext.
+// Used in @dao-dao/stateful/components/DaoPageWrapper to serialize DaoInfo
+// loaded via static props (@dao-dao/stateful/server/makeGetDaoStaticProps) to
+// be fed into DaoPageWrapper and available in the UI via DaoInfoContext.
 export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
   // Created needs to be serialized and de-serialized.
   created: string | null

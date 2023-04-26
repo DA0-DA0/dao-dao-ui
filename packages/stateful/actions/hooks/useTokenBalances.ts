@@ -28,7 +28,10 @@ export const useTokenBalances = ({
   filter,
   additionalTokens,
 }: UseTokenBalancesOptions = {}): LoadingData<GenericTokenBalance[]> => {
-  const { address, chainId } = useActionOptions()
+  const {
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   // Get CW20 governance token address from voting module adapter if exists, so
   // we can make sure to load it with all cw20 balances, even if it has not been

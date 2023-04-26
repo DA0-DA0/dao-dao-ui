@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useRecoilCallback } from 'recoil'
 
 import {
@@ -23,7 +24,12 @@ interface ChooseExistingTokenSwapOptions {
 export const ChooseExistingTokenSwap: ActionComponent<
   ChooseExistingTokenSwapOptions
 > = ({ options: { action }, ...props }) => {
-  const { address, chainId, context, t } = useActionOptions()
+  const { t } = useTranslation()
+  const {
+    address,
+    context,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
   const { watch, setValue, setError, clearErrors, trigger } = useFormContext()
 
   const tokenSwapContractAddress: string | undefined = watch(
