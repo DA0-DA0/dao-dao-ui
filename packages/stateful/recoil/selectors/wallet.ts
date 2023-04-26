@@ -17,6 +17,7 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
+  CHAIN_ID,
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
@@ -172,12 +173,15 @@ export const walletTokenCardInfosSelector = selectorFamily<
 >({
   key: 'walletTokenCardInfos',
   get:
-    ({ walletAddress, chainId }) =>
+    ({ walletAddress, chainId = CHAIN_ID }) =>
     ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(walletAddress))
 
       const nativeBalances = get(
-        nativeBalancesSelector({ address: walletAddress, chainId })
+        nativeBalancesSelector({
+          address: walletAddress,
+          chainId,
+        })
       )
       const cw20Contracts: ContractWithBalance[] =
         get(
@@ -221,6 +225,8 @@ export const walletTokenCardInfosSelector = selectorFamily<
             ) > 0
 
           const info: TokenCardInfo = {
+            owner: walletAddress,
+            chainId,
             token,
             isGovernanceToken: false,
             unstakedBalance,
@@ -238,6 +244,8 @@ export const walletTokenCardInfosSelector = selectorFamily<
           )
 
           const info: TokenCardInfo = {
+            owner: walletAddress,
+            chainId,
             token,
             isGovernanceToken: false,
             unstakedBalance,

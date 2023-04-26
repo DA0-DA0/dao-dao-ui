@@ -3,6 +3,7 @@ import { Buffer } from 'buffer'
 import { fromHex, toBech32 } from '@cosmjs/encoding'
 import { decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
 import { ChainInfoID, ChainInfoMap } from '@noahsaso/cosmodal'
+import { chains } from 'chain-registry'
 import { bondStatusToJSON } from 'cosmjs-types/cosmos/staking/v1beta1/staking'
 import { Validator as RpcValidator } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import RIPEMD160 from 'ripemd160'
@@ -87,4 +88,16 @@ export const secp256k1PublicKeyToBech32Address = async (
     .update(Buffer.from(sha256Hash))
     .digest('hex')
   return toBech32(bech32Prefix, fromHex(ripemd160Hex))
+}
+
+export const getNameForChainId = (chainId: string): string => {
+  const chain = chains.find(({ chain_id }) => chain_id === chainId)
+  return chain?.pretty_name ?? chainId
+}
+
+export const getBech32PrefixForChainId = (
+  chainId: string
+): string | undefined => {
+  const chain = chains.find(({ chain_id }) => chain_id === chainId)
+  return chain?.bech32_prefix
 }

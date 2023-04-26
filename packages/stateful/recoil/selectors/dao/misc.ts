@@ -4,6 +4,7 @@ import { RecoilValueReadOnly, selectorFamily } from 'recoil'
 import {
   DaoCoreV2Selectors,
   DaoVotingCw20StakedSelectors,
+  PolytoneNoteSelectors,
   contractInstantiateTimeSelector,
   contractVersionSelector,
   queryContractIndexerSelector,
@@ -12,6 +13,7 @@ import {
   ContractVersion,
   ContractVersionInfo,
   DaoInfo,
+  PolytoneProxies,
   ProposalModule,
   WithChainId,
 } from '@dao-dao/types'
@@ -19,6 +21,7 @@ import {
   CHAIN_ID,
   CHAIN_PREFIX_ID_MAP,
   DaoVotingCw20StakedAdapterId,
+  POLYTONE_NOTES,
   isValidContractAddress,
 } from '@dao-dao/utils'
 
@@ -45,6 +48,46 @@ export const daoCoreProposalModulesSelector = selectorFamily<
         coreAddress,
         coreVersion
       )
+    },
+})
+
+export const daoCorePolytoneProxiesSelector = selectorFamily<
+  PolytoneProxies,
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'daoCorePolytoneProxies',
+  get:
+    ({ coreAddress, chainId }) =>
+    ({ get }) => {
+      // Get polytone proxies.
+      const polytoneProxies = Object.entries(POLYTONE_NOTES)
+        .map(([_chainId, note]) => ({
+          chainId: _chainId,
+          proxy: get(
+            PolytoneNoteSelectors.remoteAddressSelector({
+              contractAddress: note!,
+              chainId,
+              params: [
+                {
+                  localAddress: coreAddress,
+                },
+              ],
+            })
+          ),
+        }))
+        .reduce(
+          (acc, { chainId, proxy }) => ({
+            ...acc,
+            ...(proxy
+              ? {
+                  [chainId]: proxy,
+                }
+              : {}),
+          }),
+          {} as PolytoneProxies
+        )
+
+      return polytoneProxies
     },
 })
 
@@ -221,6 +264,10 @@ export const daoInfoSelector: (param: {
         {} as Record<string, string>
       )
 
+      const polytoneProxies = get(
+        daoCorePolytoneProxiesSelector({ coreAddress, chainId })
+      )
+
       let parentDaoInfo
       let parentSubDaos
       if (
@@ -260,6 +307,7 @@ export const daoInfoSelector: (param: {
         imageUrl: dumpState.config.image_url || null,
         created,
         items,
+        polytoneProxies,
         parentDao: parentDaoInfo
           ? {
               coreAddress: dumpState.admin,

@@ -36,7 +36,7 @@ export const MeBalances = () => {
       ? waitForAllSettled(
           tokensWithoutLazyInfo.data.map(({ token, unstakedBalance }) =>
             tokenCardLazyInfoSelector({
-              walletAddress,
+              owner: walletAddress,
               chainId: chainInfo?.chainId,
               token,
               unstakedBalance,

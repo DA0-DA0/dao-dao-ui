@@ -84,6 +84,8 @@ export type TokenCardLazyInfo = {
 }
 
 export type TokenCardInfo = {
+  owner: string
+  chainId: string
   token: GenericToken
   isGovernanceToken: boolean
   subtitle?: string

@@ -11,11 +11,14 @@ import {
 } from '@dao-dao/state'
 import { TokenCardInfo, WithChainId } from '@dao-dao/types'
 import {
+  CHAIN_ID,
   NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
   nativeTokenDecimals,
   nativeTokenLabel,
 } from '@dao-dao/utils'
+
+import { daoCorePolytoneProxiesSelector } from './dao'
 
 // lazyInfo must be loaded in the component separately, since it refreshes on a
 // timer and we don't want this whole selector to reevaluate and load when that
@@ -34,12 +37,44 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
       coreAddress,
       cw20GovernanceTokenAddress,
       nativeGovernanceTokenDenom,
-      chainId,
+      chainId = CHAIN_ID,
     }) =>
     ({ get }) => {
-      const nativeBalances = get(
-        nativeBalancesSelector({ address: coreAddress, chainId })
+      const polytoneProxies = Object.entries(
+        get(
+          daoCorePolytoneProxiesSelector({
+            coreAddress,
+            chainId,
+          })
+        )
       )
+
+      const allNativeBalances = [
+        // Native.
+        {
+          owner: coreAddress,
+          chainId,
+          balances: get(
+            nativeBalancesSelector({
+              address: coreAddress,
+              chainId,
+            })
+          ),
+        },
+        // Polytone.
+        ...polytoneProxies.map(([chainId, proxy]) => ({
+          owner: proxy,
+          chainId,
+          balances: get(
+            nativeBalancesSelector({
+              address: proxy,
+              chainId,
+            })
+          ),
+        })),
+      ]
+
+      // Only cw20s on native chain.
       const cw20s = get(
         DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
           contractAddress: coreAddress,
@@ -49,38 +84,42 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
       )
 
       const infos: TokenCardInfo[] = [
-        ...nativeBalances.map(({ token, balance }) => {
-          const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-            balance,
-            token.decimals
-          )
+        ...allNativeBalances.flatMap(({ owner, chainId, balances }) =>
+          balances.map(({ token, balance }) => {
+            const unstakedBalance = convertMicroDenomToDenomWithDecimals(
+              balance,
+              token.decimals
+            )
 
-          // For now, stakingInfo only exists for native token, until ICA.
-          const hasStakingInfo =
-            token.denomOrAddress === NATIVE_TOKEN.denomOrAddress &&
-            // Check if anything staked.
-            Number(
-              get(
-                nativeDelegatedBalanceSelector({
-                  address: coreAddress,
-                  chainId,
-                })
-              ).amount
-            ) > 0
+            // For now, stakingInfo only exists for native token, until ICA.
+            const hasStakingInfo =
+              token.denomOrAddress === NATIVE_TOKEN.denomOrAddress &&
+              // Check if anything staked.
+              Number(
+                get(
+                  nativeDelegatedBalanceSelector({
+                    address: owner,
+                    chainId,
+                  })
+                ).amount
+              ) > 0
 
-          const info: TokenCardInfo = {
-            token,
-            // True if native token DAO and using this denom.
-            isGovernanceToken:
-              nativeGovernanceTokenDenom === token.denomOrAddress,
-            unstakedBalance,
-            hasStakingInfo,
+            const info: TokenCardInfo = {
+              owner,
+              chainId,
+              token,
+              // True if native token DAO and using this denom.
+              isGovernanceToken:
+                nativeGovernanceTokenDenom === token.denomOrAddress,
+              unstakedBalance,
+              hasStakingInfo,
 
-            lazyInfo: { loading: true },
-          }
+              lazyInfo: { loading: true },
+            }
 
-          return info
-        }),
+            return info
+          })
+        ),
         ...cw20s.map(({ token, balance, isGovernanceToken }) => {
           const unstakedBalance = convertMicroDenomToDenomWithDecimals(
             balance,
@@ -88,6 +127,8 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
           )
 
           const info: TokenCardInfo = {
+            owner: coreAddress,
+            chainId,
             token,
             isGovernanceToken: isGovernanceToken ?? false,
             unstakedBalance,

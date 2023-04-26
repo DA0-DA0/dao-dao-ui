@@ -11,13 +11,11 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
+import { Binary, Duration, InfoResponse } from '@dao-dao/types/contracts/common'
 import {
   ArrayOfString,
-  Binary,
   Config,
-  Duration,
   HooksResponse,
-  InfoResponse,
   NftClaimsResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,

@@ -5,7 +5,11 @@ import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
 
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
-import { DaoCoreV2QueryClient, queryIndexer } from '@dao-dao/state'
+import {
+  DaoCoreV2QueryClient,
+  PolytoneNoteQueryClient,
+  queryIndexer,
+} from '@dao-dao/state'
 import {
   CommonProposalInfo,
   ContractVersion,
@@ -14,6 +18,7 @@ import {
   DaoParentInfo,
   IndexerDumpState,
   InfoResponse,
+  PolytoneProxies,
   ProposalModule,
 } from '@dao-dao/types'
 import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
@@ -38,7 +43,10 @@ import {
   toAccessibleImageUrl,
   validateContractAddress,
 } from '@dao-dao/utils'
-import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
+import {
+  FAST_AVERAGE_COLOR_API_TEMPLATE,
+  POLYTONE_NOTES,
+} from '@dao-dao/utils/constants'
 
 import { DaoPageWrapperProps } from '../components'
 import {
@@ -174,6 +182,51 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         {} as Record<string, string>
       )
 
+      // Get DAO polytone proxies.
+      const polytoneProxies = (
+        await Promise.all(
+          Object.entries(POLYTONE_NOTES).map(async ([_chainId, note]) => {
+            let proxy = await queryIndexer<string>(
+              'contract',
+              note,
+              'polytone/note/remoteAddress',
+              {
+                args: {
+                  address: coreAddress,
+                },
+              }
+            )
+            if (!proxy) {
+              const polytoneNoteClient = new PolytoneNoteQueryClient(
+                // Will not reconnect if already connected. Safe to lazily
+                // evaluate here.
+                await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
+                note
+              )
+              proxy =
+                (await polytoneNoteClient.remoteAddress({
+                  localAddress: coreAddress,
+                })) || undefined
+            }
+
+            return {
+              chainId: _chainId,
+              proxy,
+            }
+          })
+        )
+      ).reduce(
+        (acc, { chainId, proxy }) => ({
+          ...acc,
+          ...(proxy
+            ? {
+                [chainId]: proxy,
+              }
+            : {}),
+        }),
+        {} as PolytoneProxies
+      )
+
       // Must be called after server side translations has been awaited, because
       // props may use the `t` function, and it won't be available until after.
       const {
@@ -237,6 +290,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           imageUrl: overrideImageUrl ?? config.image_url ?? null,
           created: created?.toJSON() ?? null,
           items,
+          polytoneProxies,
           parentDao,
         },
         ...additionalProps,

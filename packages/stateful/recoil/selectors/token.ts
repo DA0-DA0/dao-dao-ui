@@ -21,7 +21,7 @@ import {
 export const tokenCardLazyInfoSelector = selectorFamily<
   TokenCardLazyInfo,
   WithChainId<{
-    walletAddress: string
+    owner: string
     token: GenericToken
     // For calculating totalBalance.
     unstakedBalance: number
@@ -29,7 +29,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
 >({
   key: 'tokenCardLazyInfo',
   get:
-    ({ walletAddress, token, chainId, unstakedBalance }) =>
+    ({ owner, token, chainId, unstakedBalance }) =>
     ({ get }) => {
       let stakingInfo: TokenCardLazyInfo['stakingInfo'] = undefined
       let daosGoverned: TokenCardLazyInfo['daosGoverned'] = undefined
@@ -39,7 +39,10 @@ export const tokenCardLazyInfoSelector = selectorFamily<
       // For now, stakingInfo only exists for native token, until ICA.
       if (token.denomOrAddress === NATIVE_TOKEN.denomOrAddress) {
         const nativeDelegationInfo = get(
-          nativeDelegationInfoSelector({ address: walletAddress, chainId })
+          nativeDelegationInfoSelector({
+            address: owner,
+            chainId,
+          })
         )
 
         if (nativeDelegationInfo) {
@@ -102,11 +105,11 @@ export const tokenCardLazyInfoSelector = selectorFamily<
         }
       }
 
-      if (token.type === TokenType.Cw20 && walletAddress) {
+      if (token.type === TokenType.Cw20 && owner) {
         daosGoverned = get(
           cw20TokenDaosWithStakedBalanceSelector({
             cw20Address: token.denomOrAddress,
-            walletAddress,
+            walletAddress: owner,
           })
         ).map(({ stakedBalance, ...rest }) => ({
           ...rest,

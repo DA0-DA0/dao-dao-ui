@@ -1,5 +1,6 @@
 import { ActionCategoryKey, ActionCategoryMaker } from '@dao-dao/types'
 
+import { makeCrossChainExecAction } from './CrossChainExec'
 import { makeDaoAdminExecAction } from './DaoAdminExec'
 import { makeEnableMultipleChoiceAction } from './EnableMultipleChoice'
 import { makeManageStorageItemsAction } from './ManageStorageItems'
@@ -18,5 +19,6 @@ export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
     makeManageStorageItemsAction,
     makeDaoAdminExecAction,
     makeUpgradeV1ToV2,
+    makeCrossChainExecAction,
   ],
 })

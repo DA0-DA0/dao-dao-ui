@@ -38,6 +38,7 @@ export interface DaoInfo {
   imageUrl: string | null
   created: Date | undefined
   items: Record<string, string>
+  polytoneProxies: PolytoneProxies
 
   parentDao: DaoParentInfo | null
 }
@@ -279,6 +280,9 @@ export type DaoCreationVotingConfig = DaoCreationVotingConfigWithAllowRevoting &
   DaoCreationVotingConfigWithEnableMultipleChoice
 
 //! Other
+
+// Map chain ID to proxy address on that chain for this DAO.
+export type PolytoneProxies = Record<string, string>
 
 export type DaoPayrollConfig = {
   type: string

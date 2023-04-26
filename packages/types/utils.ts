@@ -43,6 +43,9 @@ export interface CodeIdConfig {
   DaoVotingNativeStaked: number
 }
 
+// Map chain ID to polytone note contract address that speaks with that chain.
+export type PolytoneNotes = Record<string, string>
+
 export interface ChainPrefixIdMap {
   juno: string
 }

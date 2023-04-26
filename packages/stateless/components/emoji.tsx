@@ -196,3 +196,7 @@ export const MemoEmoji = () => (
 export const TrashEmoji = () => (
   <EmojiWrapper emoji="🗑️" labelI18nKey="emoji.trash" />
 )
+
+export const ChainEmoji = () => (
+  <EmojiWrapper emoji="⛓️" labelI18nKey="emoji.chains" />
+)

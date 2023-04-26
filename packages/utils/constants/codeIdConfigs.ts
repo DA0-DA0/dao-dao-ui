@@ -1,3 +1,5 @@
+import { ChainInfoID } from '@noahsaso/cosmodal'
+
 import { CodeIdConfig } from '@dao-dao/types'
 
 const junoTestnet: CodeIdConfig = {
@@ -53,6 +55,6 @@ const junoMainnet: CodeIdConfig = {
 }
 
 export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {
-  'uni-6': junoTestnet,
-  'juno-1': junoMainnet,
+  [ChainInfoID.Uni6]: junoTestnet,
+  [ChainInfoID.Juno1]: junoMainnet,
 }

@@ -59,7 +59,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const lazyInfoLoading = loadableToLoadingData(
     useCachedLoadable(
       tokenCardLazyInfoSelector({
-        walletAddress: vestingContractAddress,
+        owner: vestingContractAddress,
         token,
         chainId,
         // Unused. We just want the USD price and staking info.

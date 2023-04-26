@@ -37,7 +37,6 @@ import {
   CHAIN_BECH32_PREFIX,
   CHAIN_ID,
   JUNO_USDC_DENOM,
-  MAINNET,
   NATIVE_TOKEN,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
@@ -153,15 +152,16 @@ export const nativeBalancesSelector = selectorFamily<
 >({
   key: 'nativeBalances',
   get:
-    ({ address, chainId }) =>
+    ({ address, chainId = CHAIN_ID }) =>
     async ({ get }) => {
       const client = get(stargateClientForChainSelector(chainId))
 
       get(refreshWalletBalancesIdAtom(address))
 
       const balances = [...(await client.getAllBalances(address))]
-      // Add native denom if not present.
+      // Add native denom if not present and we're on the current chain.
       if (
+        chainId === CHAIN_ID &&
         !balances.some(({ denom }) => denom === NATIVE_TOKEN.denomOrAddress)
       ) {
         balances.push({
@@ -169,8 +169,11 @@ export const nativeBalancesSelector = selectorFamily<
           denom: NATIVE_TOKEN.denomOrAddress,
         })
       }
-      // Add USDC if not present and on mainnet.
-      if (MAINNET && !balances.some(({ denom }) => isJunoIbcUsdc(denom))) {
+      // Add USDC if not present and on Juno mainnet.
+      if (
+        chainId === ChainInfoID.Juno1 &&
+        !balances.some(({ denom }) => isJunoIbcUsdc(denom))
+      ) {
         balances.push({
           amount: '0',
           denom: JUNO_USDC_DENOM,

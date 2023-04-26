@@ -4,6 +4,7 @@ import { getFallbackImage } from '../getFallbackImage'
 import { nativeTokenLabel, nativeTokenLogoURI } from '../ibc'
 import { ChainPrefixIdMaps } from './chainPrefixIdMaps'
 import { CodeIdConfigs } from './codeIdConfigs'
+import { PolytoneNotesPerChain } from './polytoneNotes'
 
 export * from './adapters'
 
@@ -86,6 +87,13 @@ export const CODE_ID_CONFIG = CodeIdConfigs[CHAIN_ID]!
 // Chain Prefix -> ID Map for determining chain from DAO core address.
 export const CHAIN_PREFIX_ID_MAP =
   ChainPrefixIdMaps[MAINNET ? 'mainnet' : 'testnet']
+
+// Polytone Notes
+if (!(CHAIN_ID in PolytoneNotesPerChain)) {
+  console.error(`Chain ID '${CHAIN_ID}' not found in Polytone Notes per Chain`)
+}
+export const POLYTONE_NOTES = PolytoneNotesPerChain[CHAIN_ID]!
+export const POLYTONE_EAR = process.env.NEXT_PUBLIC_POLYTONE_EAR as string
 
 export const FACTORY_CONTRACT_ADDRESS = process.env
   .NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as string

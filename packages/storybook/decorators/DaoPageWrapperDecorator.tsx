@@ -30,6 +30,7 @@ export const makeDaoInfo = (): DaoInfo => ({
     Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000)
   ),
   items: {},
+  polytoneProxies: {},
   parentDao: null,
 })
 

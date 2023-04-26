@@ -28,13 +28,13 @@ import { DaoTokenDepositModal } from './DaoTokenDepositModal'
 export const DaoTokenCard = (props: TokenCardInfo) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useNavHelpers()
 
   const lazyInfo = useCachedLoading(
     tokenCardLazyInfoSelector({
-      walletAddress: coreAddress,
-      chainId,
+      owner: props.owner,
+      chainId: props.chainId,
       token: props.token,
       unstakedBalance: props.unstakedBalance,
     }),
@@ -58,7 +58,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
 
   // Refresh staking info.
   const setRefreshNativeTokenStakingInfo = useSetRecoilState(
-    refreshNativeTokenStakingInfoAtom(coreAddress)
+    refreshNativeTokenStakingInfoAtom(props.owner)
   )
   const refreshNativeTokenStakingInfo = useCallback(
     () => setRefreshNativeTokenStakingInfo((id) => id + 1),
@@ -75,6 +75,8 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     actions: stakesWithRewards.map(({ validator: { address } }) => ({
       actionKey: ActionKey.ManageStaking,
       data: {
+        // TODO(polytone)
+        chainId: props.chainId,
         stakeType: StakeType.WithdrawDelegatorReward,
         validator: address,
         // Default values, not needed for displaying this type of message.
@@ -92,6 +94,8 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
             {
               actionKey: ActionKey.ManageStaking,
               data: {
+                // TODO(polytone)
+                chainId: props.chainId,
                 stakeType: StakeType.Delegate,
                 validator: '',
                 amount: props.unstakedBalance,
@@ -103,6 +107,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
           lazyStakes.map(({ validator, amount }) => ({
             actionKey: ActionKey.ManageStaking,
             data: {
+              chainId: props.chainId,
               stakeType: StakeType.Undelegate,
               validator,
               amount,
