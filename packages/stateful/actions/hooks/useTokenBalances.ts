@@ -7,6 +7,7 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoading } from '@dao-dao/stateless'
 import {
+  ActionContextType,
   GenericToken,
   GenericTokenBalance,
   LoadingData,
@@ -21,16 +22,21 @@ export type UseTokenBalancesOptions = {
   filter?: TokenType
   // If these are not returned in the balances, they will be added to the end.
   additionalTokens?: Pick<GenericToken, 'type' | 'denomOrAddress'>[]
+  // If true, will return balances for all polytone proxies if this is a DAO.
+  // Defaults to false.
+  allChains?: boolean
 }
 
 // Get native and cw20 token balances for the current context address.
 export const useTokenBalances = ({
   filter,
   additionalTokens,
+  allChains = false,
 }: UseTokenBalancesOptions = {}): LoadingData<GenericTokenBalance[]> => {
   const {
     address,
     chain: { chain_id: chainId },
+    context,
   } = useActionOptions()
 
   // Get CW20 governance token address from voting module adapter if exists, so
@@ -62,6 +68,21 @@ export const useTokenBalances = ({
     []
   )
 
+  const polytoneBalances = useCachedLoading(
+    waitForAll(
+      allChains && context.type === ActionContextType.Dao
+        ? Object.entries(context.info.polytoneProxies).map(([chainId, proxy]) =>
+            genericTokenBalancesSelector({
+              address: proxy,
+              chainId,
+              filter: TokenType.Native,
+            })
+          )
+        : []
+    ),
+    []
+  )
+
   return useMemo(
     () =>
       balances.loading || additionalBalances.loading
@@ -81,8 +102,10 @@ export const useTokenBalances = ({
                           additionalToken.denomOrAddress
                     )
                 ),
+              // Add balances from other chains.
+              ...(polytoneBalances.loading ? [] : polytoneBalances.data.flat()),
             ],
           },
-    [balances, additionalBalances]
+    [balances, additionalBalances, polytoneBalances]
   )
 }

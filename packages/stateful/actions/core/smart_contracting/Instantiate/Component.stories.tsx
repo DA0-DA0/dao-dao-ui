@@ -35,6 +35,7 @@ Default.args = {
         },
         {
           token: {
+            chainId: CHAIN_ID,
             type: TokenType.Native,
             denomOrAddress: 'uatom',
             decimals: 6,

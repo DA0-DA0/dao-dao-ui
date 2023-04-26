@@ -30,6 +30,7 @@ export const useCommonGovernanceTokenInfo = (): GenericToken => {
   )
 
   return {
+    chainId,
     type: TokenType.Cw721,
     denomOrAddress: collectionAddress,
     symbol: contractInfo.symbol,

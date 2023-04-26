@@ -11,7 +11,6 @@ import {
   TokenCardLazyInfo,
   TokenType,
   UnstakingTaskStatus,
-  WithChainId,
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -20,17 +19,19 @@ import {
 
 export const tokenCardLazyInfoSelector = selectorFamily<
   TokenCardLazyInfo,
-  WithChainId<{
+  {
     owner: string
     token: GenericToken
     // For calculating totalBalance.
     unstakedBalance: number
-  }>
+  }
 >({
   key: 'tokenCardLazyInfo',
   get:
-    ({ owner, token, chainId, unstakedBalance }) =>
+    ({ owner, token, unstakedBalance }) =>
     ({ get }) => {
+      const { chainId } = token
+
       let stakingInfo: TokenCardLazyInfo['stakingInfo'] = undefined
       let daosGoverned: TokenCardLazyInfo['daosGoverned'] = undefined
 

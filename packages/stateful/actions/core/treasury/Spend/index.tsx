@@ -5,7 +5,11 @@ import { constSelector, useRecoilValue } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import { MoneyEmoji } from '@dao-dao/stateless'
-import { TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
+import {
+  CosmosMsgForEmpty,
+  TokenType,
+  UseDecodedCosmosMsg,
+} from '@dao-dao/types'
 import {
   ActionComponent,
   ActionKey,
@@ -19,11 +23,13 @@ import {
   getNativeTokenForChainId,
   isValidContractAddress,
   makeBankMessage,
+  makePolytoneExecuteMessage,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
+import { useDecodePolytoneExecuteMsg } from '../../../hooks/useDecodePolytoneExecuteMsg'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
 import {
@@ -38,6 +44,7 @@ const useDefaults: UseDefaults<SpendData> = () => {
   const { address: walletAddress = '' } = useWallet()
 
   return {
+    chainId,
     to: walletAddress,
     amount: 1,
     denom: getNativeTokenForChainId(chainId).denomOrAddress,
@@ -67,6 +74,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
             denomOrAddress: denom,
           },
         ],
+    allChains: true,
   })
 
   return (
@@ -81,7 +89,10 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
 }
 
 const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
-  const loadingTokenBalances = useTokenBalances()
+  const chainId = useActionOptions().chain.chain_id
+  const loadingTokenBalances = useTokenBalances({
+    allChains: true,
+  })
 
   return useCallback(
     (data: SpendData) => {
@@ -90,18 +101,20 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
       }
 
       const token = loadingTokenBalances.data.find(
-        ({ token }) => token.denomOrAddress === data.denom
+        ({ token }) =>
+          token.chainId === data.chainId && token.denomOrAddress === data.denom
       )?.token
       if (!token) {
         throw new Error(`Unknown token: ${data.denom}`)
       }
 
+      let msg: CosmosMsgForEmpty | undefined
       if (token.type === TokenType.Native) {
         const amount = convertDenomToMicroDenomWithDecimals(
           data.amount,
           token.decimals
         )
-        return {
+        msg = {
           bank: makeBankMessage(amount.toString(), data.to, data.denom),
         }
       } else if (token.type === TokenType.Cw20) {
@@ -110,7 +123,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
           token.decimals
         ).toString()
 
-        return makeWasmMessage({
+        msg = makeWasmMessage({
           wasm: {
             execute: {
               contract_addr: data.denom,
@@ -125,17 +138,30 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
           },
         })
       }
+
+      if (!msg) {
+        throw new Error(`Unknown token type: ${token.type}`)
+      }
+
+      if (data.chainId === chainId) {
+        return msg
+      } else {
+        return makePolytoneExecuteMessage(chainId, msg)
+      }
     },
-    [loadingTokenBalances]
+    [chainId, loadingTokenBalances]
   )
 }
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   msg: Record<string, any>
 ) => {
-  const {
-    chain: { chain_id: chainId },
-  } = useActionOptions()
+  let chainId = useActionOptions().chain.chain_id
+  const decodedPolytone = useDecodePolytoneExecuteMsg(msg)
+  if (decodedPolytone.match) {
+    chainId = decodedPolytone.chainId
+    msg = decodedPolytone.msg
+  }
 
   const isNative =
     objectMatchesStructure(msg, {
@@ -186,6 +212,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
+        chainId,
         to: msg.bank.send.to_address,
         amount: convertMicroDenomToDenomWithDecimals(
           msg.bank.send.amount[0].amount,
@@ -198,6 +225,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
+        chainId,
         to: msg.wasm.execute.msg.transfer.recipient,
         amount: convertMicroDenomToDenomWithDecimals(
           msg.wasm.execute.msg.transfer.amount,

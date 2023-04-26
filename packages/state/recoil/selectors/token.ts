@@ -53,6 +53,7 @@ export const genericTokenSelector = selectorFamily<
         ) || getFallbackImage(denomOrAddress)
 
       return {
+        chainId,
         type,
         denomOrAddress,
         symbol: tokenInfo.symbol,

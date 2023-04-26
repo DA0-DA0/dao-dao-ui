@@ -92,6 +92,7 @@ export const useGovernanceCollectionInfo = ({
       totalSupply: tokenSupplyInfo.count,
     },
     token: {
+      chainId,
       type: TokenType.Cw721,
       denomOrAddress: collectionAddress,
       symbol: contractInfo.symbol,

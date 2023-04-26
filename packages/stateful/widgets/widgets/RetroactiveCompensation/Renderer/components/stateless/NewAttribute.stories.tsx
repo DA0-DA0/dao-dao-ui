@@ -33,6 +33,7 @@ export const makeTokenProps = (): Pick<
   availableTokens: [
     getNativeTokenForChainId(CHAIN_ID),
     {
+      chainId: CHAIN_ID,
       type: TokenType.Native,
       denomOrAddress: 'uatom',
       decimals: 6,
@@ -41,6 +42,7 @@ export const makeTokenProps = (): Pick<
         'https://raw.githubusercontent.com/CosmosContracts/junoswap-asset-list/main/images/atom.png',
     },
     {
+      chainId: CHAIN_ID,
       type: TokenType.Cw20,
       denomOrAddress: 'junoCw20DaoAddress',
       decimals: 6,
@@ -48,6 +50,7 @@ export const makeTokenProps = (): Pick<
       imageUrl: '/daodao.png',
     },
     {
+      chainId: CHAIN_ID,
       type: TokenType.Cw20,
       denomOrAddress: 'junoAnotherCw20',
       decimals: 6,

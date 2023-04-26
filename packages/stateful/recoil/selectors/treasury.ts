@@ -101,7 +101,6 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
 
             const info: TokenCardInfo = {
               owner,
-              chainId,
               token,
               // True if native token DAO and using this denom.
               isGovernanceToken:
@@ -123,7 +122,6 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
 
           const info: TokenCardInfo = {
             owner: coreAddress,
-            chainId: CHAIN_ID,
             token,
             isGovernanceToken: isGovernanceToken ?? false,
             unstakedBalance,

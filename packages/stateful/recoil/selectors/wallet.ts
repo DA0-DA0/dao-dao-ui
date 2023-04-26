@@ -227,7 +227,6 @@ export const walletTokenCardInfosSelector = selectorFamily<
 
           const info: TokenCardInfo = {
             owner: walletAddress,
-            chainId,
             token,
             isGovernanceToken: false,
             unstakedBalance,
@@ -246,7 +245,6 @@ export const walletTokenCardInfosSelector = selectorFamily<
 
           const info: TokenCardInfo = {
             owner: walletAddress,
-            chainId,
             token,
             isGovernanceToken: false,
             unstakedBalance,

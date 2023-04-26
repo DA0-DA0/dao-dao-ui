@@ -190,6 +190,7 @@ export const nativeBalancesSelector = selectorFamily<
       )
 
       return tokens.map((token, index) => ({
+        chainId,
         token,
         balance: balances[index].amount,
       }))

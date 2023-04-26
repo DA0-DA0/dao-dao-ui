@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next'
 import { GenericToken, LoadingData, TokenType } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
+  getDisplayNameForChainId,
   getFallbackImage,
   toAccessibleImageUrl,
   validateNonNegative,
@@ -118,6 +119,11 @@ export const TokenInput = <
       )
     : Number(watch(amountFieldName))
 
+  // All tokens from same chain.
+  const allTokensOnSameChain =
+    !tokens.loading &&
+    tokens.data.every((token) => token.chainId === tokens.data[0].chainId)
+
   const selectedTokenDisplay = useMemo(
     () =>
       selectedToken ? (
@@ -199,6 +205,11 @@ export const TokenInput = <
                     iconUrl:
                       token.imageUrl || getFallbackImage(token.denomOrAddress),
                     ...token,
+                    rightNode: allTokensOnSameChain ? undefined : (
+                      <p className="caption-text">
+                        {getDisplayNameForChainId(token.chainId)}
+                      </p>
+                    ),
                   }))
             }
             onSelect={(token) => onSelectToken(token as T)}

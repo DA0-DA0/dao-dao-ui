@@ -27,6 +27,7 @@ const Template: ComponentStory<typeof TokenCard> = (args) => (
 )
 
 export const token: GenericToken = {
+  chainId: CHAIN_ID,
   type: TokenType.Native,
   denomOrAddress: 'ujuno',
   symbol: 'JUNO',
@@ -117,7 +118,6 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
 
   return {
     owner: 'owner',
-    chainId: CHAIN_ID,
     token: {
       ...token,
       imageUrl: `/placeholders/${Math.floor(Math.random() * 5) + 1}.svg`,

@@ -8,7 +8,9 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ChainProvider,
   InputErrorMessage,
+  TokenAmountDisplay,
   TokenInput,
   useDetectWrap,
 } from '@dao-dao/stateless'
@@ -21,7 +23,7 @@ import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  getNativeTokenForChainId,
+  getChainForChainId,
   makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils'
@@ -29,6 +31,7 @@ import {
 import { useActionOptions } from '../../../react'
 
 export interface SpendData {
+  chainId: string
   to: string
   amount: number
   denom: string
@@ -47,19 +50,18 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   options: { tokens, AddressInput },
 }) => {
   const { t } = useTranslation()
-  const {
-    context,
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
-  } = useActionOptions()
-  const nativeToken = getNativeTokenForChainId(chainId)
+  const { context } = useActionOptions()
 
   const { register, watch, setValue, setError, clearErrors } = useFormContext()
 
+  const spendChainId = watch(fieldNamePrefix + 'chainId')
   const spendAmount = watch(fieldNamePrefix + 'amount')
   const spendDenom = watch(fieldNamePrefix + 'denom')
 
+  const { bech32_prefix: bech32Prefix } = getChainForChainId(spendChainId)
+
   const validatePossibleSpend = useCallback(
-    (id: string, amount: string): string | boolean => {
+    (chainId: string, denom: string, amount: string): string | boolean => {
       if (tokens.loading) {
         return true
       }
@@ -70,13 +72,15 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           : 'error.insufficientWalletBalance'
 
       const tokenBalance = tokens.data.find(
-        ({ token: { denomOrAddress } }) => denomOrAddress === id
+        ({ token }) =>
+          token.chainId === chainId && token.denomOrAddress === denom
       )
       if (tokenBalance) {
         const microAmount = convertDenomToMicroDenomWithDecimals(
           amount,
           tokenBalance.token.decimals
         )
+
         return (
           microAmount <= Number(tokenBalance.balance) ||
           t(insufficientBalanceI18nKey, {
@@ -91,17 +95,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         )
       }
 
-      // Just in case native denom not in list.
-      if (id === nativeToken.denomOrAddress) {
-        return t(insufficientBalanceI18nKey, {
-          amount: 0,
-          tokenSymbol: nativeToken.symbol,
-        })
-      }
-
-      return t('error.unknownDenom', { denom: id })
+      return t('error.unknownDenom', { denom })
     },
-    [context.type, nativeToken.denomOrAddress, nativeToken.symbol, t, tokens]
+    [context.type, t, tokens]
   )
 
   // Update amount+denom combo error each time either field is updated
@@ -121,7 +117,11 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       return
     }
 
-    const validation = validatePossibleSpend(spendDenom, spendAmount)
+    const validation = validatePossibleSpend(
+      spendChainId,
+      spendDenom,
+      spendAmount
+    )
     if (validation === true) {
       if (currentError) {
         clearErrors(fieldNamePrefix + '_error')
@@ -142,11 +142,19 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     validatePossibleSpend,
     fieldNamePrefix,
     errors?._error,
+    spendChainId,
   ])
 
   const selectedToken = tokens.loading
     ? undefined
-    : tokens.data.find(({ token }) => token.denomOrAddress === spendDenom)
+    : tokens.data.find(
+        ({ token }) =>
+          token.chainId === spendChainId && token.denomOrAddress === spendDenom
+      )
+  const balance = convertMicroDenomToDenomWithDecimals(
+    selectedToken?.balance ?? 0,
+    selectedToken?.token.decimals ?? 0
+  )
 
   const { containerRef, childRef, wrapped } = useDetectWrap()
   const Icon = wrapped ? SubdirectoryArrowRightRounded : ArrowRightAltRounded
@@ -160,10 +168,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         <TokenInput
           amountError={errors?.amount}
           amountFieldName={fieldNamePrefix + 'amount'}
-          amountMax={convertMicroDenomToDenomWithDecimals(
-            selectedToken?.balance ?? 0,
-            selectedToken?.token.decimals ?? 0
-          )}
+          amountMax={balance}
           amountMin={convertMicroDenomToDenomWithDecimals(
             1,
             selectedToken?.token.decimals ?? 0
@@ -172,9 +177,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             1,
             selectedToken?.token.decimals ?? 0
           )}
-          onSelectToken={({ denomOrAddress }) =>
+          onSelectToken={({ chainId, denomOrAddress }) => {
+            setValue(fieldNamePrefix + 'chainId', chainId)
             setValue(fieldNamePrefix + 'denom', denomOrAddress)
-          }
+          }}
           readOnly={!isCreating}
           register={register}
           selectedToken={selectedToken?.token}
@@ -200,23 +206,40 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             <Icon className="!h-6 !w-6 text-text-secondary" />
           </div>
 
-          <AddressInput
-            containerClassName="grow"
-            disabled={!isCreating}
-            error={errors?.to}
-            fieldName={fieldNamePrefix + 'to'}
-            register={register}
-            validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
-          />
+          {/* Change search address and placeholder based on chain. */}
+          <ChainProvider chainId={spendChainId}>
+            <AddressInput
+              containerClassName="grow"
+              disabled={!isCreating}
+              error={errors?.to}
+              fieldName={fieldNamePrefix + 'to'}
+              register={register}
+              validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
+            />
+          </ChainProvider>
         </div>
       </div>
 
       {(errors?.amount || errors?.denom || errors?.to || errors?._error) && (
-        <div className="-mt-2 flex flex-col gap-1">
+        <div className="-mt-4 flex flex-col gap-1">
           <InputErrorMessage error={errors?.amount} />
           <InputErrorMessage error={errors?.denom} />
           <InputErrorMessage error={errors?.to} />
           <InputErrorMessage error={errors?._error} />
+        </div>
+      )}
+
+      {selectedToken && isCreating && (
+        <div className="-mt-2 flex flex-row items-center gap-2">
+          <p className="secondary-text">{t('title.balance')}:</p>
+
+          <TokenAmountDisplay
+            amount={balance}
+            decimals={selectedToken.token.decimals}
+            iconUrl={selectedToken.token.imageUrl}
+            showFullAmount
+            symbol={selectedToken.token.symbol}
+          />
         </div>
       )}
     </>

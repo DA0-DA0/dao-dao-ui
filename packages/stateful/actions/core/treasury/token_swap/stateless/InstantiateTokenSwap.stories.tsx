@@ -54,6 +54,7 @@ Default.args = {
     selfPartyTokenBalances: [
       {
         token: {
+          chainId: CHAIN_ID,
           type: TokenType.Native,
           denomOrAddress: 'ujuno',
           decimals: 6,
@@ -64,6 +65,7 @@ Default.args = {
       },
       {
         token: {
+          chainId: CHAIN_ID,
           type: TokenType.Cw20,
           denomOrAddress: 'cw20_1',
           decimals: 6,
@@ -74,6 +76,7 @@ Default.args = {
       },
       {
         token: {
+          chainId: CHAIN_ID,
           type: TokenType.Cw20,
           denomOrAddress: 'cw20_2',
           decimals: 6,
@@ -88,6 +91,7 @@ Default.args = {
       data: [
         {
           token: {
+            chainId: CHAIN_ID,
             type: TokenType.Native,
             denomOrAddress: 'ujuno',
             decimals: 6,
@@ -98,6 +102,7 @@ Default.args = {
         },
         {
           token: {
+            chainId: CHAIN_ID,
             type: TokenType.Cw20,
             denomOrAddress: 'cw20_1',
             decimals: 6,
@@ -108,6 +113,7 @@ Default.args = {
         },
         {
           token: {
+            chainId: CHAIN_ID,
             type: TokenType.Cw20,
             denomOrAddress: 'cw20_2',
             decimals: 6,

@@ -80,6 +80,7 @@ const ProposalDepositInput = ({
 
   const memoizedCw20GovernanceToken: GenericToken = useMemo(
     () => ({
+      chainId,
       // Does not matter.
       type: TokenType.Cw20,
       // Does not matter.
@@ -90,6 +91,7 @@ const ProposalDepositInput = ({
       imageUrl: cw20GovernanceTokenImageUrl,
     }),
     [
+      chainId,
       cw20GovernanceTokenDecimals,
       cw20GovernanceTokenImageUrl,
       cw20GovernanceTokenSymbol,
@@ -157,6 +159,7 @@ const ProposalDepositInput = ({
     ...(cw20GovernanceTokenSymbol
       ? [
           {
+            chainId,
             type: 'voting_module_token',
             denomOrAddress: 'voting_module_token',
             symbol: cw20GovernanceTokenSymbol,
@@ -169,6 +172,7 @@ const ProposalDepositInput = ({
     nativeToken,
     // Then other CW20.
     {
+      chainId,
       type: TokenType.Cw20,
       denomOrAddress: 'other_cw20',
       symbol:

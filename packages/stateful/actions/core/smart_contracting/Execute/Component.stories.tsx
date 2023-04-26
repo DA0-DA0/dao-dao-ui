@@ -39,6 +39,7 @@ Default.args = {
         },
         {
           token: {
+            chainId: CHAIN_ID,
             type: TokenType.Native,
             denomOrAddress: 'uatom',
             decimals: 6,
@@ -50,6 +51,7 @@ Default.args = {
         },
         {
           token: {
+            chainId: CHAIN_ID,
             type: TokenType.Cw20,
             denomOrAddress: 'junoCw20DaoAddress',
             decimals: 6,
@@ -60,6 +62,7 @@ Default.args = {
         },
         {
           token: {
+            chainId: CHAIN_ID,
             type: TokenType.Cw20,
             denomOrAddress: 'junoAnotherCw20',
             decimals: 6,

@@ -2,6 +2,7 @@ import { asset_list } from '@chain-registry/juno'
 
 import { GenericToken, TokenType } from '@dao-dao/types'
 
+import { CHAIN_ID } from './constants'
 import { concatAddressStartEnd } from './conversion'
 import { getFallbackImage } from './getFallbackImage'
 
@@ -18,6 +19,7 @@ export const ibcAssets: (GenericToken & {
       display,
       denom_units,
     }) => ({
+      chainId: CHAIN_ID,
       id: display,
       type: TokenType.Native,
       denomOrAddress: base,

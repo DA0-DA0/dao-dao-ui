@@ -34,7 +34,6 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
   const lazyInfo = useCachedLoading(
     tokenCardLazyInfoSelector({
       owner: props.owner,
-      chainId: props.chainId,
       token: props.token,
       unstakedBalance: props.unstakedBalance,
     }),
@@ -75,7 +74,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     actions: stakesWithRewards.map(({ validator: { address } }) => ({
       actionKey: ActionKey.ManageStaking,
       data: {
-        chainId: props.chainId,
+        chainId: props.token.chainId,
         stakeType: StakeType.WithdrawDelegatorReward,
         validator: address,
         // Default values, not needed for displaying this type of message.
@@ -93,7 +92,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
             {
               actionKey: ActionKey.ManageStaking,
               data: {
-                chainId: props.chainId,
+                chainId: props.token.chainId,
                 stakeType: StakeType.Delegate,
                 validator: '',
                 amount: props.unstakedBalance,
@@ -105,7 +104,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
           lazyStakes.map(({ validator, amount }) => ({
             actionKey: ActionKey.ManageStaking,
             data: {
-              chainId: props.chainId,
+              chainId: props.token.chainId,
               stakeType: StakeType.Undelegate,
               validator,
               amount,
@@ -114,7 +113,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
           })),
   })
 
-  const nativeToken = getNativeTokenForChainId(props.chainId)
+  const nativeToken = getNativeTokenForChainId(props.token.chainId)
 
   // Prefill URLs valid...
   const proposeClaimHref =

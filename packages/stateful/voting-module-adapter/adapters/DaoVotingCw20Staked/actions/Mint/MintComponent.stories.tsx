@@ -3,6 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { AddressInput } from '@dao-dao/stateless'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { MintData } from '.'
 import { MintComponent } from './MintComponent'
@@ -32,6 +33,7 @@ Default.args = {
   isCreating: true,
   options: {
     govToken: {
+      chainId: CHAIN_ID,
       type: TokenType.Cw20,
       denomOrAddress: 'gov',
       symbol: 'GOV',

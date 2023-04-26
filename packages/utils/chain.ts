@@ -130,6 +130,7 @@ export const getNativeTokenForChainId = (chainId: string): GenericToken => {
     }
 
     cachedNativeTokens[chainId] = Object.freeze({
+      chainId,
       type: TokenType.Native,
       denomOrAddress: feeDenom,
       symbol: asset.symbol,
@@ -195,6 +196,7 @@ export const getTokenForChainIdAndDenom = (
       }
 
       cachedTokens[key] = Object.freeze({
+        chainId,
         type: TokenType.Native,
         denomOrAddress: denom,
         symbol: asset.symbol,
@@ -220,6 +222,7 @@ export const getTokenForChainIdAndDenom = (
   } catch (err) {
     if (placeholder) {
       return Object.freeze({
+        chainId,
         type: TokenType.Native,
         denomOrAddress: denom,
         symbol: denom,

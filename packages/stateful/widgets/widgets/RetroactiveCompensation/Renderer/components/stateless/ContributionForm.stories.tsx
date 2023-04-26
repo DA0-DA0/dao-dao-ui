@@ -86,6 +86,7 @@ Default.args = {
   tokenPrices: [
     {
       token: {
+        chainId: CHAIN_ID,
         type: TokenType.Cw20,
         denomOrAddress: 'dao',
         symbol: 'DAO',

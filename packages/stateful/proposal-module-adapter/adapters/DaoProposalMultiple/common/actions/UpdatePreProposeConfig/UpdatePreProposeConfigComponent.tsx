@@ -90,6 +90,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
     getNativeTokenForChainId(chainId),
     // Then other CW20.
     {
+      chainId,
       type: TokenType.Cw20,
       denomOrAddress: 'other_cw20',
       symbol:

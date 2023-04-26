@@ -18,6 +18,8 @@ export enum TokenType {
 
 // A native or CW20 token.
 export type GenericToken = {
+  // What chain this token lives on.
+  chainId: string
   type: TokenType
   denomOrAddress: string
   symbol: string
@@ -85,7 +87,6 @@ export type TokenCardLazyInfo = {
 
 export type TokenCardInfo = {
   owner: string
-  chainId: string
   token: GenericToken
   isGovernanceToken: boolean
   subtitle?: string

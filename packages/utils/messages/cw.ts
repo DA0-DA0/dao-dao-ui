@@ -1,4 +1,5 @@
 import { toBase64, toUtf8 } from '@cosmjs/encoding'
+import { v4 as uuidv4 } from 'uuid'
 
 import {
   BankMsg,
@@ -10,6 +11,7 @@ import {
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
 
+import { POLYTONE_EAR, POLYTONE_NOTES } from '../constants'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import { parseEncodedMessage } from './encoding'
 import { decodeStargateMessage } from './protobuf'
@@ -244,3 +246,28 @@ export const makeDistributeMessage = (
     },
   } as DistributionMsg,
 })
+
+export const makePolytoneExecuteMessage = (
+  chainId: string,
+  msg: CosmosMsgFor_Empty
+): CosmosMsgFor_Empty =>
+  makeWasmMessage({
+    wasm: {
+      execute: {
+        contract_addr: POLYTONE_NOTES[chainId],
+        funds: [],
+        msg: {
+          execute: {
+            msgs: [msg],
+            // TODO(polytone): Tune timeout
+            // 10 minutes
+            timeout_seconds: '600',
+            callback: {
+              msg: toBase64(toUtf8(uuidv4())),
+              receiver: POLYTONE_EAR,
+            },
+          },
+        },
+      },
+    },
+  })

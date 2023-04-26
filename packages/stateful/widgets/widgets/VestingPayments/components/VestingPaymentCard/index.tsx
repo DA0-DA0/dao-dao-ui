@@ -54,7 +54,6 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
       tokenCardLazyInfoSelector({
         owner: vestingContractAddress,
         token,
-        chainId,
         // Unused. We just want the USD price and staking info.
         unstakedBalance: 0,
       })
