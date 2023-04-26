@@ -6,7 +6,7 @@ import {
   WyndexFactorySelectors,
   WyndexMultiHopSelectors,
 } from '@dao-dao/state/recoil'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoadable, useChain } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 import {
   WYND_MULTI_HOP_CONTRACT,
@@ -19,10 +19,12 @@ import {
 // automatically use the new value.
 export const useLoadingWyndReferralCommission = (): LoadingData<string> => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
 
   // Get max referral commission from factory config.
   const wyndexMultiHopConfig = useCachedLoadable(
     WyndexMultiHopSelectors.configSelector({
+      chainId,
       contractAddress: WYND_MULTI_HOP_CONTRACT,
       params: [],
     })
@@ -31,6 +33,7 @@ export const useLoadingWyndReferralCommission = (): LoadingData<string> => {
     wyndexMultiHopConfig.state !== 'hasValue'
       ? undefined
       : WyndexFactorySelectors.configSelector({
+          chainId,
           contractAddress: wyndexMultiHopConfig.contents.wyndex_factory,
           params: [],
         })

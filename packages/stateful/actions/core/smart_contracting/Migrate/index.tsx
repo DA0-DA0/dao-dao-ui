@@ -14,6 +14,7 @@ import {
 } from '@dao-dao/types/actions'
 import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../react'
 import { MigrateContractComponent as StatelessMigrateContractComponent } from './Component'
 
 interface MigrateData {
@@ -81,10 +82,17 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
       }
 
 const Component: ActionComponent = (props) => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+
   const [contract, setContract] = useState('')
 
   const admin = useRecoilValueLoadable(
-    contractAdminSelector({ contractAddress: contract })
+    contractAdminSelector({
+      chainId,
+      contractAddress: contract,
+    })
   )
 
   return (

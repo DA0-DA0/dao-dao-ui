@@ -121,7 +121,10 @@ const Component: ActionComponent = (props) => {
   )
   const walletAdminOfDaosLoadable = useCachedLoadable(
     context.type === ActionContextType.Wallet
-      ? walletAdminOfDaosSelector(address)
+      ? walletAdminOfDaosSelector({
+          chainId,
+          walletAddress: address,
+        })
       : undefined
   )
   const childDaosLoadable =

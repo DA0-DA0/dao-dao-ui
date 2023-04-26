@@ -8,6 +8,7 @@ import {
   NftsTab,
   useCachedLoadable,
   useCachedLoading,
+  useChain,
 } from '@dao-dao/stateless'
 
 import { NftCardNoCollection, StakedNftCard } from '../../../../components'
@@ -22,11 +23,13 @@ enum Filter {
 
 export const NftCollectionTab = () => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { collectionAddress, stakingContractAddress } =
     useGovernanceCollectionInfo()
 
   const allTokens = useCachedLoadable(
     Cw721BaseSelectors.allTokensSelector({
+      chainId,
       contractAddress: collectionAddress,
     })
   )
@@ -36,6 +39,7 @@ export const NftCollectionTab = () => {
       ? waitForAll(
           allTokens.contents.map((tokenId) =>
             nftCardInfoSelector({
+              chainId,
               collection: collectionAddress,
               tokenId,
             })
@@ -50,6 +54,7 @@ export const NftCollectionTab = () => {
       ? waitForAll(
           allTokens.contents.map((tokenId) =>
             Cw721BaseSelectors.ownerOfSelector({
+              chainId,
               contractAddress: collectionAddress,
               params: [
                 {
@@ -71,6 +76,7 @@ export const NftCollectionTab = () => {
           allTokens.contents.map((tokenId, index) =>
             tokenOwners.data[index].owner === stakingContractAddress
               ? stakerForNftSelector({
+                  chainId,
                   contractAddress: stakingContractAddress,
                   tokenId,
                 })

@@ -7,6 +7,7 @@ import {
   FormattedJsonDisplay,
   InputErrorMessage,
   TextInput,
+  useChain,
 } from '@dao-dao/stateless'
 import { DaoCreationGovernanceConfigInputProps } from '@dao-dao/types'
 import {
@@ -31,6 +32,7 @@ export const GovernanceConfigurationInput = ({
   },
 }: DaoCreationGovernanceConfigInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
 
   //! Validate existing governance token.
   const existingGovernanceTokenAddress =
@@ -44,6 +46,7 @@ export const GovernanceConfigurationInput = ({
         CHAIN_BECH32_PREFIX
       )
       ? Cw721BaseSelectors.contractInfoSelector({
+          chainId,
           contractAddress: existingGovernanceTokenAddress,
           params: [],
         })
@@ -56,6 +59,7 @@ export const GovernanceConfigurationInput = ({
         CHAIN_BECH32_PREFIX
       )
       ? Cw721BaseSelectors.numTokensSelector({
+          chainId,
           contractAddress: existingGovernanceTokenAddress,
           params: [],
         })

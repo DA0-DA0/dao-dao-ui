@@ -20,27 +20,22 @@ import {
   refreshWalletProposalStatsAtom,
 } from '../atoms'
 
-export type QueryIndexerParams = {
-  type: `${IndexerFormulaType}`
-  address: string
-  formula: string
+export type QueryIndexerParams = QueryIndexerOptions & {
   // Refresh by changing this value.
   id?: number
-} & QueryIndexerOptions
+}
 
 export const queryIndexerSelector = selectorFamily<any, QueryIndexerParams>({
   key: 'queryIndexer',
-  get:
-    ({ type, address, formula, ...options }) =>
-    async () => {
-      try {
-        return await queryIndexer(type, address, formula, options)
-      } catch (err) {
-        // If the indexer fails, return null.
-        console.error(err)
-        return null
-      }
-    },
+  get: (options) => async () => {
+    try {
+      return await queryIndexer(options)
+    } catch (err) {
+      // If the indexer fails, return null.
+      console.error(err)
+      return null
+    }
+  },
 })
 
 export const queryContractIndexerSelector = selectorFamily<
@@ -64,7 +59,7 @@ export const queryContractIndexerSelector = selectorFamily<
 
 export const queryGenericIndexerSelector = selectorFamily<
   any,
-  Omit<QueryIndexerParams, 'type'>
+  Omit<QueryIndexerParams, 'type' | 'address'>
 >({
   key: 'queryGenericIndexer',
   get:
@@ -191,13 +186,17 @@ export const featuredDaoDumpStatesAtom = atom<
   default: null,
 })
 
-export const walletAdminOfDaosSelector = selectorFamily<string[], string>({
+export const walletAdminOfDaosSelector = selectorFamily<
+  string[],
+  WithChainId<{ walletAddress: string }>
+>({
   key: 'walletAdminOfDaos',
   get:
-    (walletAddress) =>
+    ({ walletAddress, chainId }) =>
     ({ get }) => {
       const walletAdminOfDaos: string[] = get(
         queryWalletIndexerSelector({
+          chainId,
           walletAddress,
           formula: 'daos/adminOf',
         })

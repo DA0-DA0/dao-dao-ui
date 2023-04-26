@@ -6,13 +6,14 @@ import featuredDaos from '@dao-dao/state/featured_daos.json'
 import { featuredDaoDumpStatesAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { daoCardInfoSelector } from '../recoil'
 import { useFollowingDaos } from './useFollowingDaos'
 
 export const useLoadingDaoCardInfos = (
-  coreAddresses?: string[],
-  chainId?: string
+  chainId: string,
+  coreAddresses?: string[]
 ): LoadingData<DaoCardInfo[]> => {
   // If `coreAddresses` is undefined, we're still loading DAOs.
   const daoCardInfosLoadable = useCachedLoadable(
@@ -20,8 +21,8 @@ export const useLoadingDaoCardInfos = (
       ? waitForAll(
           coreAddresses.map((coreAddress) =>
             daoCardInfoSelector({
-              coreAddress,
               chainId,
+              coreAddress,
             })
           )
         )
@@ -41,9 +42,9 @@ export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
   DaoCardInfo[]
 > => {
   const data = useLoadingDaoCardInfos(
-    featuredDaos.map(({ coreAddress }) => coreAddress),
     // Featured DAOs only exist on mainnet.
-    ChainInfoID.Juno1
+    ChainInfoID.Juno1,
+    featuredDaos.map(({ coreAddress }) => coreAddress)
   )
 
   // Once featured DAOs load once, clear cache from page static props so the DAO
@@ -62,5 +63,8 @@ export const useLoadingFollowingDaoCardInfos = (): LoadingData<
   DaoCardInfo[]
 > => {
   const { daos } = useFollowingDaos()
-  return useLoadingDaoCardInfos(daos.loading ? undefined : daos.data.following)
+  return useLoadingDaoCardInfos(
+    CHAIN_ID,
+    daos.loading ? undefined : daos.data.following
+  )
 }

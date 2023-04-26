@@ -42,11 +42,12 @@ export const makeGetProposalInfo =
       let info: ContractVersionInfo | undefined
       // Try indexer first.
       try {
-        info = await queryIndexer<ContractVersionInfo>(
-          'contract',
-          proposalModule.address,
-          'info'
-        )
+        info = await queryIndexer<ContractVersionInfo>({
+          type: 'contract',
+          address: proposalModule.address,
+          formula: 'info',
+          chainId,
+        })
       } catch (err) {
         // Ignore error.
         console.error(err)
@@ -64,16 +65,15 @@ export const makeGetProposalInfo =
 
       // Try indexer first.
       try {
-        proposalResponse = await queryIndexer(
-          'contract',
-          proposalModule.address,
-          'daoProposalSingle/proposal',
-          {
-            args: {
-              id: proposalNumber,
-            },
-          }
-        )
+        proposalResponse = await queryIndexer({
+          type: 'contract',
+          address: proposalModule.address,
+          formula: 'daoProposalSingle/proposal',
+          args: {
+            id: proposalNumber,
+          },
+          chainId,
+        })
       } catch (err) {
         // Ignore error.
         console.error(err)
@@ -119,16 +119,15 @@ export const makeGetProposalInfo =
     // Try indexer first.
     let createdAtEpoch: number | null = null
     try {
-      const createdAt = await queryIndexer<string>(
-        'contract',
-        proposalModule.address,
-        'daoProposalSingle/proposalCreatedAt',
-        {
-          args: {
-            id,
-          },
-        }
-      )
+      const createdAt = await queryIndexer<string>({
+        type: 'contract',
+        address: proposalModule.address,
+        formula: 'daoProposalSingle/proposalCreatedAt',
+        args: {
+          id,
+        },
+        chainId,
+      })
       // If indexer returned a value, assume it's a date.
       if (createdAt) {
         createdAtEpoch = new Date(createdAt).getTime()

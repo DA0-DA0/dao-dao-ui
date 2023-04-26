@@ -6,7 +6,7 @@ import {
   DaoVotingCw20StakedSelectors,
   wyndUsdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -20,11 +20,13 @@ export const useGovernanceTokenInfo = ({
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
+  const { chain_id: chainId } = useChain()
   const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const stakingContractAddress = useRecoilValue(
     DaoVotingCw20StakedSelectors.stakingContractSelector({
+      chainId,
       contractAddress: votingModuleAddress,
       params: [],
     })
@@ -32,12 +34,14 @@ export const useGovernanceTokenInfo = ({
 
   const governanceTokenAddress = useRecoilValue(
     DaoVotingCw20StakedSelectors.tokenContractSelector({
+      chainId,
       contractAddress: votingModuleAddress,
       params: [],
     })
   )
   const governanceTokenInfo = useRecoilValue(
     Cw20BaseSelectors.tokenInfoSelector({
+      chainId,
       contractAddress: governanceTokenAddress,
       params: [],
     })
@@ -49,6 +53,7 @@ export const useGovernanceTokenInfo = ({
   const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
       ? Cw20BaseSelectors.balanceSelector({
+          chainId,
           contractAddress: governanceTokenAddress,
           params: [{ address: walletAddress }],
         })
@@ -60,6 +65,7 @@ export const useGovernanceTokenInfo = ({
   const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
       ? Cw20BaseSelectors.balanceSelector({
+          chainId,
           contractAddress: governanceTokenAddress,
           params: [{ address: coreAddress }],
         })

@@ -2,7 +2,11 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { Cw721BaseSelectors } from '@dao-dao/state'
-import { CopyToClipboard, FormattedJsonDisplay } from '@dao-dao/stateless'
+import {
+  CopyToClipboard,
+  FormattedJsonDisplay,
+  useChain,
+} from '@dao-dao/stateless'
 import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 
 import { DaoCreationConfig } from '../types'
@@ -11,9 +15,11 @@ export const GovernanceConfigurationReview = ({
   data: { existingGovernanceTokenAddress },
 }: DaoCreationGovernanceConfigReviewProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
 
   const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
     Cw721BaseSelectors.contractInfoSelector({
+      chainId,
       contractAddress: existingGovernanceTokenAddress,
       params: [],
     })
@@ -21,6 +27,7 @@ export const GovernanceConfigurationReview = ({
 
   const numOfTokensLoadable = useRecoilValueLoadable(
     Cw721BaseSelectors.numTokensSelector({
+      chainId,
       contractAddress: existingGovernanceTokenAddress,
       params: [],
     })

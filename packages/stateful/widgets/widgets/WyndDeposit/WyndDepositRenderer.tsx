@@ -121,6 +121,7 @@ export const WyndDepositRenderer = ({
       ? waitForAll(
           uniqueWyndPoolTokens.map((token) =>
             genericTokenSelector({
+              chainId,
               type: 'native' in token ? TokenType.Native : TokenType.Cw20,
               denomOrAddress: 'native' in token ? token.native : token.token,
             })
@@ -205,6 +206,7 @@ export const WyndDepositRenderer = ({
       outputToken &&
       !loadingMaxReferralCommission.loading
       ? WyndexMultiHopSelectors.simulateReverseSwapOperationsSelector({
+          chainId,
           contractAddress: WYND_MULTI_HOP_CONTRACT,
           params: [
             {

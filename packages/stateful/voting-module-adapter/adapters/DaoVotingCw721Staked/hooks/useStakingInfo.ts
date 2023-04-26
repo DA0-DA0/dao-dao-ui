@@ -34,8 +34,8 @@ export const useStakingInfo = ({
   fetchWalletStakedValue = false,
   fetchWalletUnstakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
-  const { address: walletAddress } = useWallet()
   const { chain_id: chainId } = useChain()
+  const { address: walletAddress } = useWallet()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { collectionAddress: governanceTokenAddress } =
@@ -68,7 +68,11 @@ export const useStakingInfo = ({
 
   // Claims
   const blockHeightLoadable = useCachedLoadable(
-    fetchClaims ? blockHeightSelector({}) : undefined
+    fetchClaims
+      ? blockHeightSelector({
+          chainId,
+        })
+      : undefined
   )
   const blockHeight =
     blockHeightLoadable.state === 'hasValue' ? blockHeightLoadable.contents : 0

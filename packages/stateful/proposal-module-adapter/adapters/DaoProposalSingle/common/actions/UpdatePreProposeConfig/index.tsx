@@ -41,7 +41,7 @@ import {
 export const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
   const {
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
   const {
@@ -62,11 +62,13 @@ export const Component: ActionComponent = (props) => {
       depositInfo.denomOrAddress &&
       isValidContractAddress(depositInfo.denomOrAddress, bech32Prefix)
       ? genericTokenSelector({
+          chainId,
           type: TokenType.Cw20,
           denomOrAddress: depositInfo.denomOrAddress,
         })
       : depositInfo.type === 'native'
       ? genericTokenSelector({
+          chainId,
           type: TokenType.Native,
           denomOrAddress: depositInfo.denomOrAddress,
         })
@@ -117,7 +119,7 @@ export const makeUpdatePreProposeConfigActionMaker =
   ({
     preProposeAddress,
   }: ProposalModule): ActionMaker<UpdatePreProposeConfigData> =>
-  ({ t, context }) => {
+  ({ t, context, chain: { chain_id: chainId } }) => {
     // Only when pre propose address present.
     if (!preProposeAddress) {
       return null
@@ -137,6 +139,7 @@ export const makeUpdatePreProposeConfigActionMaker =
 
       const config = useRecoilValue(
         configSelector({
+          chainId,
           contractAddress: preProposeAddress,
           params: [],
         })
@@ -148,6 +151,7 @@ export const makeUpdatePreProposeConfigActionMaker =
       const token = useRecoilValue(
         config.deposit_info
           ? genericTokenSelector({
+              chainId,
               type:
                 'native' in config.deposit_info.denom
                   ? TokenType.Native
@@ -294,6 +298,7 @@ export const makeUpdatePreProposeConfigActionMaker =
           ? 'voting_module_token' in configDepositInfo.denom
             ? constSelector(governanceToken)
             : genericTokenSelector({
+                chainId,
                 type:
                   'native' in configDepositInfo.denom.token.denom
                     ? TokenType.Native

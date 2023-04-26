@@ -26,6 +26,7 @@ import {
 
 import { AddressInput } from '../../../../components'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
+import { useActionOptions } from '../../../react'
 import {
   SpendData,
   SpendComponent as StatelessSpendComponent,
@@ -126,6 +127,10 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   msg: Record<string, any>
 ) => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+
   const isNative =
     objectMatchesStructure(msg, {
       bank: {
@@ -158,6 +163,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   const token = useRecoilValue(
     isNative || isCw20
       ? genericTokenSelector({
+          chainId,
           type: isNative ? TokenType.Native : TokenType.Cw20,
           denomOrAddress: isNative
             ? msg.bank.send.amount[0].denom

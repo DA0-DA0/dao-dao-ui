@@ -108,6 +108,7 @@ export const tokenCardLazyInfoSelector = selectorFamily<
       if (token.type === TokenType.Cw20 && owner) {
         daosGoverned = get(
           cw20TokenDaosWithStakedBalanceSelector({
+            chainId,
             cw20Address: token.denomOrAddress,
             walletAddress: owner,
           })

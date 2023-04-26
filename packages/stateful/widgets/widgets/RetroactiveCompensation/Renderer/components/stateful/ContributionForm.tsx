@@ -9,6 +9,7 @@ import {
   EntityDisplay,
   Loader,
   useCachedLoadable,
+  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
@@ -23,6 +24,7 @@ import { ContributionFormData } from '../stateless/ContributionFormInput'
 
 export const ContributionForm = () => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet()
@@ -71,12 +73,14 @@ export const ContributionForm = () => {
             ({ nativeTokens, cw20Tokens }) => [
               ...nativeTokens.map(({ denom }) =>
                 genericTokenWithUsdPriceSelector({
+                  chainId,
                   type: TokenType.Native,
                   denomOrAddress: denom,
                 })
               ),
               ...cw20Tokens.map(({ address }) =>
                 genericTokenWithUsdPriceSelector({
+                  chainId,
                   type: TokenType.Cw20,
                   denomOrAddress: address,
                 })

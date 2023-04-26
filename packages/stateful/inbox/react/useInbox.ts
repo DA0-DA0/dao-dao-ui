@@ -2,13 +2,15 @@ import { useEffect, useMemo, useRef } from 'react'
 import { waitForAll } from 'recoil'
 
 import { configSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoCore.v2'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoadable, useChain } from '@dao-dao/stateless'
 import { InboxDaoWithItems, InboxState } from '@dao-dao/types'
 import { getFallbackImage } from '@dao-dao/utils'
 
 import { getSources } from '../core'
 
 export const useInbox = (): InboxState => {
+  const { chain_id: chainId } = useChain()
+
   const sources = getSources().map(({ Renderer, useData }) => ({
     Renderer,
     // Safe to disable since `getSources` is constant. The hooks are always
@@ -83,6 +85,7 @@ export const useInbox = (): InboxState => {
     waitForAll(
       sourceDaosWithItems.map(({ coreAddress }) =>
         configSelector({
+          chainId,
           contractAddress: coreAddress,
           params: [],
         })

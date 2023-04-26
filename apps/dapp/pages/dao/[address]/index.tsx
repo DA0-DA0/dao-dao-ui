@@ -26,6 +26,7 @@ import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import { useWidgets } from '@dao-dao/stateful/widgets'
 import {
   DaoDappTabbedHome,
+  useChain,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -34,6 +35,7 @@ import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const InnerDaoHome = () => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { getDaoProposalPath, router } = useNavHelpers()
 
   const daoInfo = useDaoInfoContext()
@@ -47,6 +49,7 @@ const InnerDaoHome = () => {
   const parentDaosSubDaosLoadable = useRecoilValueLoadable(
     daoInfo.parentDao
       ? DaoCoreV2Selectors.listAllSubDaosSelector({
+          chainId,
           contractAddress: daoInfo.parentDao.coreAddress,
         })
       : constSelector(undefined)

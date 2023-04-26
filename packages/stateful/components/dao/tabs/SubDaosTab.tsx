@@ -1,6 +1,7 @@
 import {
   SubDaosTab as StatelessSubDaosTab,
   useCachedLoading,
+  useChain,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -13,6 +14,7 @@ import { ButtonLink } from '../../ButtonLink'
 import { DaoCard } from '../DaoCard'
 
 export const SubDaosTab = () => {
+  const { chain_id: chainId } = useChain()
   const daoInfo = useDaoInfoContext()
   const { getDaoPath, getDaoProposalPath } = useNavHelpers()
 
@@ -22,7 +24,7 @@ export const SubDaosTab = () => {
     daoInfo.coreVersion === ContractVersion.V1
       ? // Only v2 DAOs have SubDAOs. Passing undefined here returns an infinite loading state, which is fine because it's never used.
         undefined
-      : subDaoCardInfosSelector({ coreAddress: daoInfo.coreAddress }),
+      : subDaoCardInfosSelector({ chainId, coreAddress: daoInfo.coreAddress }),
     []
   )
 

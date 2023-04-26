@@ -16,6 +16,7 @@ import {
   CopyToClipboard,
   LineGraph,
   Loader,
+  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -59,16 +60,25 @@ export const InnerDaoTreasuryHistory = ({
   shortTitle,
 }: DaoTreasuryHistoryProps) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
 
   // Initialization.
-  const latestBlockHeight = useRecoilValue(blockHeightSelector({}))
+  const latestBlockHeight = useRecoilValue(
+    blockHeightSelector({
+      chainId,
+    })
+  )
   const initialMinHeight = latestBlockHeight - BLOCK_HEIGHT_INTERVAL
   const initialLowestHeightLoadedTimestamp = useRecoilValue(
-    blockHeightTimestampSafeSelector({ blockHeight: initialMinHeight })
+    blockHeightTimestampSafeSelector({
+      chainId,
+      blockHeight: initialMinHeight,
+    })
   )
   const initialTransactions = useRecoilValue(
     transformedTreasuryTransactionsSelector({
+      chainId,
       address: coreAddress,
       minHeight: initialMinHeight,
       maxHeight: latestBlockHeight,
@@ -97,6 +107,7 @@ export const InnerDaoTreasuryHistory = ({
 
             const newTransactions = await snapshot.getPromise(
               transformedTreasuryTransactionsSelector({
+                chainId,
                 address: coreAddress,
                 minHeight,
                 maxHeight,
@@ -104,7 +115,10 @@ export const InnerDaoTreasuryHistory = ({
             )
 
             const newLowestHeightLoadedTimestamp = await snapshot.getPromise(
-              blockHeightTimestampSelector({ blockHeight: minHeight })
+              blockHeightTimestampSelector({
+                chainId,
+                blockHeight: minHeight,
+              })
             )
 
             setLowestHeightLoaded(minHeight)
@@ -142,7 +156,10 @@ export const InnerDaoTreasuryHistory = ({
   )
 
   const nativeBalance = useRecoilValue(
-    nativeBalanceSelector({ address: coreAddress })
+    nativeBalanceSelector({
+      chainId,
+      address: coreAddress,
+    })
   )
   const lineGraphValues = useMemo(() => {
     let runningTotal = convertMicroDenomToDenomWithDecimals(

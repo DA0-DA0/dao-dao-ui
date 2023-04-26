@@ -23,6 +23,7 @@ import {
   Proposal,
   ProposalNotFound,
   ProposalProps,
+  useChain,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -38,6 +39,7 @@ interface InnerDaoProposalProps {
 
 const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const daoInfo = useDaoInfoContext()
   const actionsForMatching = useActionsForMatching({ isCreating: false })
   const { getDaoProposalPath } = useNavHelpers()
@@ -58,6 +60,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { profile: creatorProfile, loading: creatorProfileLoading } =
     useRecoilValue(
       walletProfileDataSelector({
+        chainId,
         address: proposalInfo.createdByAddress,
       })
     )

@@ -8,7 +8,7 @@ import {
   nativeSupplySelector,
   wyndUsdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
@@ -30,11 +30,13 @@ export const useGovernanceTokenInfo = ({
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { denom } = useRecoilValue(
     DaoVotingNativeStakedSelectors.getConfigSelector({
+      chainId,
       contractAddress: votingModuleAddress,
       params: [],
     })
@@ -45,7 +47,12 @@ export const useGovernanceTokenInfo = ({
     throw new Error(t('error.loadingData'))
   }
 
-  const supply = useRecoilValue(nativeSupplySelector({ denom }))
+  const supply = useRecoilValue(
+    nativeSupplySelector({
+      chainId,
+      denom,
+    })
+  )
   const governanceTokenInfo: TokenInfoResponse = {
     decimals,
     name: nativeTokenLabel(denom),
@@ -59,6 +66,7 @@ export const useGovernanceTokenInfo = ({
   const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
       ? nativeDenomBalanceSelector({
+          chainId,
           walletAddress,
           denom,
         })
@@ -70,6 +78,7 @@ export const useGovernanceTokenInfo = ({
   const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
       ? nativeDenomBalanceSelector({
+          chainId,
           walletAddress: coreAddress,
           denom,
         })

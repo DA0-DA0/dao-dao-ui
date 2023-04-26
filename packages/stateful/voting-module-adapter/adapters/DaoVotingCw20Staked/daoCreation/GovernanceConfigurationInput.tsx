@@ -20,6 +20,7 @@ import {
   SegmentedControls,
   TextInput,
   VOTING_POWER_DISTRIBUTION_COLORS,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   CreateDaoCustomValidator,
@@ -58,6 +59,7 @@ export const GovernanceConfigurationInput = ({
   },
 }: DaoCreationGovernanceConfigInputProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { address: walletAddress } = useWallet()
 
   const {
@@ -183,6 +185,7 @@ export const GovernanceConfigurationInput = ({
         CHAIN_BECH32_PREFIX
       )
       ? Cw20BaseSelectors.tokenInfoSelector({
+          chainId,
           contractAddress: existingGovernanceTokenAddress,
           params: [],
         })
@@ -195,6 +198,7 @@ export const GovernanceConfigurationInput = ({
         CHAIN_BECH32_PREFIX
       )
       ? Cw20BaseSelectors.logoUrlSelector({
+          chainId,
           contractAddress: existingGovernanceTokenAddress,
         })
       : constSelector(undefined)

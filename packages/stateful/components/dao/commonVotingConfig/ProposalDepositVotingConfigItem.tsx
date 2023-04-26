@@ -18,6 +18,7 @@ import {
   SelectInput,
   TokenInput,
   TokenInputOption,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
@@ -52,6 +53,7 @@ const ProposalDepositInput = ({
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithProposalDeposit>) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
 
   const isDaoVotingCw20StakedAdapter =
     votingModuleAdapter.id === DaoVotingCw20StakedAdapterId
@@ -98,11 +100,13 @@ const ProposalDepositInput = ({
       denomOrAddress &&
       isValidContractAddress(denomOrAddress, CHAIN_BECH32_PREFIX)
       ? genericTokenSelector({
+          chainId,
           type: TokenType.Cw20,
           denomOrAddress,
         })
       : type === 'native'
       ? genericTokenSelector({
+          chainId,
           type: TokenType.Native,
           denomOrAddress,
         })

@@ -166,7 +166,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
     version,
     address: proposalModuleAddress,
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
-  ({ t, context }) => {
+  ({ t, context, chain: { chain_id: chainId } }) => {
     // Only v2.
     if (version === ContractVersion.V1) {
       return null
@@ -175,6 +175,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useRecoilValue(
         configSelector({
+          chainId,
           contractAddress: proposalModuleAddress,
         })
       )
@@ -202,6 +203,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
     > = () => {
       const proposalModuleConfig = useRecoilValue(
         configSelector({
+          chainId,
           contractAddress: proposalModuleAddress,
         })
       )

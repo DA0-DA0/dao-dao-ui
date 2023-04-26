@@ -38,6 +38,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
       const polytoneProxies = Object.entries(
         get(
           daoCorePolytoneProxiesSelector({
+            chainId: CHAIN_ID,
             coreAddress,
           })
         )

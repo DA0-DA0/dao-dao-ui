@@ -86,6 +86,10 @@ const useDefaults: UseDefaults<WyndSwapData> = () => {
 }
 
 const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+
   const { watch, setValue, clearErrors, setError } = useFormContext()
   const tokenIn = watch(props.fieldNamePrefix + 'tokenIn') as GenericToken
   const tokenInAmount = watch(props.fieldNamePrefix + 'tokenInAmount') as number
@@ -126,6 +130,7 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
       ? waitForAll(
           uniqueWyndPoolTokens.map((token) =>
             genericTokenSelector({
+              chainId,
               type: 'native' in token ? TokenType.Native : TokenType.Cw20,
               denomOrAddress: 'native' in token ? token.native : token.token,
             })
@@ -367,6 +372,7 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
       !swapOperationsLoadable.contents
       ? constSelector(undefined)
       : WyndexMultiHopSelectors.simulateSwapOperationsSelector({
+          chainId,
           contractAddress: WYND_MULTI_HOP_CONTRACT,
           params: [
             {
@@ -391,6 +397,7 @@ const Component: ActionComponent<undefined, WyndSwapData> = (props) => {
       !swapOperationsLoadable.contents
       ? constSelector(undefined)
       : WyndexMultiHopSelectors.simulateReverseSwapOperationsSelector({
+          chainId,
           contractAddress: WYND_MULTI_HOP_CONTRACT,
           params: [
             {
@@ -593,7 +600,10 @@ const isValidSwapMsg = (msg: Record<string, any>): boolean =>
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<WyndSwapData> = (
   msg: Record<string, any>
 ) => {
-  const { address } = useActionOptions()
+  const {
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   let swapMsg: ExecuteSwapOperationsMsg | undefined
 
@@ -646,6 +656,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<WyndSwapData> = (
   const tokenIn = useRecoilValue(
     swapMsg
       ? genericTokenSelector({
+          chainId,
           type: isNative ? TokenType.Native : TokenType.Cw20,
           denomOrAddress:
             'native' in
@@ -661,6 +672,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<WyndSwapData> = (
   const tokenOut = useRecoilValue(
     swapMsg
       ? genericTokenSelector({
+          chainId,
           type:
             'native' in
             swapMsg.execute_swap_operations.operations[0].wyndex_swap

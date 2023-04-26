@@ -49,6 +49,7 @@ import {
   parseEncodedMessage,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../../actions'
 import { useTokenBalances } from '../../../../../actions/hooks/useTokenBalances'
 import {
   AddressInput,
@@ -115,6 +116,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
   msg: Record<string, any>
 ) => {
   const defaults = useDefaults()
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   const isNativeBegin =
     objectMatchesStructure(msg, {
@@ -189,6 +193,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
   const tokenLoadable = useCachedLoadable(
     isBegin
       ? genericTokenSelector({
+          chainId,
           type: isNativeBegin ? TokenType.Native : TokenType.Cw20,
           denomOrAddress: isNativeBegin
             ? msg.wasm.execute.funds[0].denom

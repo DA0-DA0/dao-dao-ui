@@ -24,8 +24,16 @@ export const inboxOpenProposalsSelector = selectorFamily<
   get:
     ({ walletAddress, chainId }) =>
     ({ get }) => {
-      const blocksPerYear = get(blocksPerYearSelector({}))
-      const currentBlockHeight = get(blockHeightSelector({}))
+      const blocksPerYear = get(
+        blocksPerYearSelector({
+          chainId,
+        })
+      )
+      const currentBlockHeight = get(
+        blockHeightSelector({
+          chainId,
+        })
+      )
 
       // Need proposal modules for the proposal line props.
       const followingDaosWithProposalModules = walletAddress

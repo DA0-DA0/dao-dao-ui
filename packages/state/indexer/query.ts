@@ -1,23 +1,37 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 
 import { IndexerFormulaType, WithChainId } from '@dao-dao/types'
-import { CHAIN_ID, INDEXER_URL, fetchWithTimeout } from '@dao-dao/utils'
+import { INDEXER_URL, fetchWithTimeout } from '@dao-dao/utils'
 
-export type QueryIndexerOptions = WithChainId<{
-  args?: Record<string, any>
-  block?: {
-    height: number | string
-    // Most formulas do not need the time, so make it optional.
-    timeUnixMs?: number | string
-  }
-}>
+export type QueryIndexerOptions = WithChainId<
+  {
+    formula: string
+    args?: Record<string, any>
+    block?: {
+      height: number | string
+      // Most formulas do not need the time, so make it optional.
+      timeUnixMs?: number | string
+    }
+  } & (
+    | {
+        type: `${IndexerFormulaType.Generic}`
+        address?: never
+      }
+    | {
+        type: `${Exclude<IndexerFormulaType, IndexerFormulaType.Generic>}`
+        address: string
+      }
+  )
+>
 
-export const queryIndexer = async <T = any>(
-  type: `${IndexerFormulaType}`,
-  address: string,
-  formula: string,
-  { args, block, chainId = CHAIN_ID }: QueryIndexerOptions = {}
-): Promise<T | undefined> => {
+export const queryIndexer = async <T = any>({
+  type,
+  address = '_',
+  formula,
+  args,
+  block,
+  chainId,
+}: QueryIndexerOptions): Promise<T | undefined> => {
   // Filter out undefined args.
   if (args) {
     args = Object.entries(args).reduce((acc, [key, value]) => {
@@ -54,6 +68,8 @@ export const queryIndexer = async <T = any>(
 }
 
 export const queryFeaturedDaoDumpStatesFromIndexer = () =>
-  queryIndexer(IndexerFormulaType.Generic, '_', 'featuredDaos', {
+  queryIndexer({
+    type: IndexerFormulaType.Generic,
+    formula: 'featuredDaos',
     chainId: ChainInfoID.Juno1,
   })

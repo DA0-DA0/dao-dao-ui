@@ -28,6 +28,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useTokenBalances } from '../../../hooks'
+import { useActionOptions } from '../../../react'
 import {
   ExecuteData,
   ExecuteComponent as StatelessExecuteComponent,
@@ -109,6 +110,10 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
   msg: Record<string, any>
 ) => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+
   const isExecute = objectMatchesStructure(msg, {
     wasm: {
       execute: {
@@ -139,6 +144,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
   const cw20Token = useRecoilValue(
     isCw20
       ? genericTokenSelector({
+          chainId,
           type: TokenType.Cw20,
           denomOrAddress: msg.wasm.execute.contract_addr,
         })

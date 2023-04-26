@@ -12,8 +12,12 @@ import { useLoadingProposal } from './useLoadingProposal'
 export const useLoadingWalletVoteInfo = ():
   | undefined
   | LoadingData<WalletVoteInfo<Vote>> => {
-  const { coreAddress, proposalModule, proposalNumber } =
-    useProposalModuleAdapterOptions()
+  const {
+    coreAddress,
+    proposalModule,
+    proposalNumber,
+    chain: { chain_id: chainId },
+  } = useProposalModuleAdapterOptions()
   const { address: walletAddress } = useWallet()
 
   const loadingProposal = useLoadingProposal()
@@ -21,6 +25,7 @@ export const useLoadingWalletVoteInfo = ():
   const walletVoteLoadable = useCachedLoadable(
     walletAddress
       ? getVoteSelector({
+          chainId,
           contractAddress: proposalModule.address,
           params: [{ proposalId: proposalNumber, voter: walletAddress }],
         })
@@ -30,6 +35,7 @@ export const useLoadingWalletVoteInfo = ():
   const walletVotingPowerWhenProposalCreatedLoadable = useCachedLoadable(
     walletAddress && !loadingProposal.loading
       ? DaoCoreV2Selectors.votingPowerAtHeightSelector({
+          chainId,
           contractAddress: coreAddress,
           params: [
             {
@@ -44,6 +50,7 @@ export const useLoadingWalletVoteInfo = ():
   const totalVotingPowerWhenProposalCreatedLoadable = useCachedLoadable(
     !loadingProposal.loading
       ? DaoCoreV2Selectors.totalPowerAtHeightSelector({
+          chainId,
           contractAddress: coreAddress,
           params: [
             {

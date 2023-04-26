@@ -87,12 +87,14 @@ export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
             ({ nativeTokens, cw20Tokens }) => [
               ...nativeTokens.map(({ denom }) =>
                 genericTokenWithUsdPriceSelector({
+                  chainId,
                   type: TokenType.Native,
                   denomOrAddress: denom,
                 })
               ),
               ...cw20Tokens.map(({ address }) =>
                 genericTokenWithUsdPriceSelector({
+                  chainId,
                   type: TokenType.Cw20,
                   denomOrAddress: address,
                 })

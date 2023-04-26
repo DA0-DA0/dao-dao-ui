@@ -9,7 +9,11 @@ import {
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
+import {
+  useCachedLoadable,
+  useCachedLoading,
+  useChain,
+} from '@dao-dao/stateless'
 import { claimAvailable } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -20,11 +24,13 @@ export const useStakingInfo = ({
   fetchTotalStakedValue = false,
   fetchWalletStakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
+  const { chain_id: chainId } = useChain()
   const { address: walletAddress } = useWallet()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const stakingContractAddress = useRecoilValue(
     DaoVotingCw20StakedSelectors.stakingContractSelector({
+      chainId,
       contractAddress: votingModuleAddress,
       params: [],
     })
@@ -33,6 +39,7 @@ export const useStakingInfo = ({
   const unstakingDuration =
     useRecoilValue(
       Cw20StakeSelectors.getConfigSelector({
+        chainId,
         contractAddress: stakingContractAddress,
         params: [],
       })
@@ -51,7 +58,11 @@ export const useStakingInfo = ({
 
   // Claims
   const blockHeightLoadable = useCachedLoadable(
-    fetchClaims ? blockHeightSelector({}) : undefined
+    fetchClaims
+      ? blockHeightSelector({
+          chainId,
+        })
+      : undefined
   )
   const blockHeight =
     blockHeightLoadable.state === 'hasValue'
@@ -67,6 +78,7 @@ export const useStakingInfo = ({
   const loadingClaims = useCachedLoading(
     fetchClaims && walletAddress
       ? Cw20StakeSelectors.claimsSelector({
+          chainId,
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
@@ -94,6 +106,7 @@ export const useStakingInfo = ({
   const loadingTotalStakedValue = useCachedLoading(
     fetchTotalStakedValue
       ? Cw20StakeSelectors.totalValueSelector({
+          chainId,
           contractAddress: stakingContractAddress,
           params: [],
         })
@@ -105,6 +118,7 @@ export const useStakingInfo = ({
   const loadingWalletStakedValue = useCachedLoading(
     fetchWalletStakedValue && walletAddress
       ? Cw20StakeSelectors.stakedValueSelector({
+          chainId,
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })

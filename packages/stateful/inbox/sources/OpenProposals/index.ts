@@ -33,6 +33,7 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
           WalletConnectionStatus.AttemptingAutoConnection
         ? undefined
         : inboxOpenProposalsSelector({
+            chainId,
             walletAddress,
           })
     )

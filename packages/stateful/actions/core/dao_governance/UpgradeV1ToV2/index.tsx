@@ -74,7 +74,10 @@ const useV1SubDaos = () => {
     potentialSubDaos.state === 'hasValue'
       ? waitForAllSettled(
           potentialSubDaos.contents.map((contractAddress) =>
-            contractVersionSelector({ contractAddress })
+            contractVersionSelector({
+              chainId,
+              contractAddress,
+            })
           )
         )
       : undefined

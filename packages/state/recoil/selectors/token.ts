@@ -191,8 +191,8 @@ export const cw20TokenDaosWithStakedBalanceSelector = selectorFamily<
     ({ get }) => {
       const daos = get(
         Cw20BaseSelectors.daosWithVotingAndStakingContractSelector({
-          contractAddress: cw20Address,
           chainId,
+          contractAddress: cw20Address,
         })
       )
 
@@ -200,6 +200,7 @@ export const cw20TokenDaosWithStakedBalanceSelector = selectorFamily<
         waitForAll(
           daos.map(({ stakingContractAddress }) =>
             Cw20StakeSelectors.stakedValueSelector({
+              chainId,
               contractAddress: stakingContractAddress,
               params: [
                 {

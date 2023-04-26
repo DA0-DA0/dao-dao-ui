@@ -169,6 +169,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   const followingDaoDropdownInfos = useCachedLoading(
     walletAddress
       ? followingDaoDropdownInfosSelector({
+          chainId,
           walletAddress,
         })
       : undefined,
@@ -179,8 +180,8 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   useRecoilValueLoadable(
     connectedWallet
       ? walletTokenCardInfosSelector({
-          walletAddress: connectedWallet.address,
           chainId,
+          walletAddress: connectedWallet.address,
         })
       : constSelector(undefined)
   )

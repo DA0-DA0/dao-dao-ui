@@ -9,6 +9,7 @@ import {
   FormattedJsonDisplay,
   TierDataEntry,
   VOTING_POWER_DISTRIBUTION_COLORS,
+  useChain,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
 import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
@@ -26,11 +27,13 @@ export const GovernanceConfigurationReview = ({
   },
 }: DaoCreationGovernanceConfigReviewProps<DaoCreationConfig>) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const treasuryColor = `rgba(${useNamedThemeColor('light')}, 0.45)`
 
   const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
     tokenType === GovernanceTokenType.Existing && existingGovernanceTokenAddress
       ? Cw20BaseSelectors.tokenInfoSelector({
+          chainId,
           contractAddress: existingGovernanceTokenAddress,
           params: [],
         })

@@ -12,6 +12,7 @@ import {
 import {
   AddressInput as StatelessAddressInput,
   useCachedLoadable,
+  useChain,
 } from '@dao-dao/stateless'
 import { AddressInputProps, Entity, EntityType } from '@dao-dao/types'
 import {
@@ -30,6 +31,7 @@ export const AddressInput = <
 >(
   props: AddressInputProps<FV, FieldName>
 ) => {
+  const { chain_id: chainId } = useChain()
   const { t } = useTranslation()
 
   // Null if not within a FormProvider.
@@ -46,6 +48,7 @@ export const AddressInput = <
   const searchProfilesLoadable = useCachedLoadable(
     hasFormValue && props.type !== 'contract'
       ? searchProfilesByNamePrefixSelector({
+          chainId,
           namePrefix: formValue,
         })
       : undefined
@@ -66,6 +69,7 @@ export const AddressInput = <
       ? waitForAll(
           searchProfilesLoadable.contents.map(({ address }) =>
             walletProfileDataSelector({
+              chainId,
               address,
             })
           )

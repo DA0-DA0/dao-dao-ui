@@ -171,16 +171,15 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       const polytoneProxies = (
         await Promise.all(
           Object.entries(POLYTONE_NOTES).map(async ([_chainId, note]) => {
-            let proxy = await queryIndexer<string>(
-              'contract',
-              note,
-              'polytone/note/remoteAddress',
-              {
-                args: {
-                  address: coreAddress,
-                },
-              }
-            )
+            let proxy = await queryIndexer<string>({
+              type: 'contract',
+              address: note,
+              formula: 'polytone/note/remoteAddress',
+              args: {
+                address: coreAddress,
+              },
+              chainId: CHAIN_ID,
+            })
             if (!proxy) {
               const polytoneNoteClient = new PolytoneNoteQueryClient(
                 // Will not reconnect if already connected. Safe to lazily
@@ -529,11 +528,12 @@ const daoCoreDumpState = async (
   previousParentAddresses?: string[]
 ): Promise<DaoCoreDumpState> => {
   try {
-    const indexerDumpedState = await queryIndexer<IndexerDumpState>(
-      'contract',
-      coreAddress,
-      'daoCore/dumpState'
-    )
+    const indexerDumpedState = await queryIndexer<IndexerDumpState>({
+      type: 'contract',
+      address: coreAddress,
+      formula: 'daoCore/dumpState',
+      chainId: CHAIN_ID,
+    })
 
     // Use data from indexer if present.
     if (indexerDumpedState) {
@@ -551,11 +551,12 @@ const daoCoreDumpState = async (
       }
 
       const items =
-        (await queryIndexer<ListItemsResponse>(
-          'contract',
-          coreAddress,
-          'daoCore/listItems'
-        )) ?? []
+        (await queryIndexer<ListItemsResponse>({
+          type: 'contract',
+          address: coreAddress,
+          formula: 'daoCore/listItems',
+          chainId: CHAIN_ID,
+        })) ?? []
 
       const parentDaoInfo = await loadParentDaoInfo(
         coreAddress,

@@ -22,6 +22,7 @@ import {
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
+  useChain,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -115,6 +116,7 @@ const InnerProposalStatusAndInfo = ({
   depositInfo: CheckedDepositInfo | undefined
 }) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { name: daoName, coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
@@ -125,6 +127,7 @@ const InnerProposalStatusAndInfo = ({
 
   const config = useRecoilValue(
     configSelector({
+      chainId,
       contractAddress: proposalModule.address,
     })
   )

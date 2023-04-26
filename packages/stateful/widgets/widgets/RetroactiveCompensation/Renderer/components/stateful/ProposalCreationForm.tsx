@@ -8,6 +8,7 @@ import { genericTokenWithUsdPriceSelector } from '@dao-dao/state/recoil'
 import {
   Loader,
   useCachedLoadable,
+  useChain,
   useDaoInfoContext,
   useNavHelpers,
 } from '@dao-dao/stateless'
@@ -34,6 +35,7 @@ interface ProposalCreationFormProps {
 
 export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useNavHelpers()
   const { coreAddress } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
@@ -116,12 +118,14 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
             ({ nativeTokens, cw20Tokens }) => [
               ...nativeTokens.map(({ denom }) =>
                 genericTokenWithUsdPriceSelector({
+                  chainId,
                   type: TokenType.Native,
                   denomOrAddress: denom,
                 })
               ),
               ...cw20Tokens.map(({ address }) =>
                 genericTokenWithUsdPriceSelector({
+                  chainId,
                   type: TokenType.Cw20,
                   denomOrAddress: address,
                 })

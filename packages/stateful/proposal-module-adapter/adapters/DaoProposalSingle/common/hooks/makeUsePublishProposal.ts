@@ -65,7 +65,11 @@ export const makeUsePublishProposal =
         ? depositInfo.denom.native
         : undefined
 
-    const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
+    const blockHeightLoadable = useCachedLoadable(
+      blockHeightSelector({
+        chainId,
+      })
+    )
     const blockHeight =
       blockHeightLoadable.state === 'hasValue'
         ? blockHeightLoadable.contents
@@ -77,6 +81,7 @@ export const makeUsePublishProposal =
     const cw20DepositTokenAllowanceResponseLoadable = useCachedLoadable(
       depositInfoCw20TokenAddress && requiredProposalDeposit && walletAddress
         ? Cw20BaseSelectors.allowanceSelector({
+            chainId,
             contractAddress: depositInfoCw20TokenAddress,
             params: [
               {
@@ -98,6 +103,7 @@ export const makeUsePublishProposal =
     const cw20DepositTokenBalanceLoadable = useCachedLoadable(
       requiredProposalDeposit && walletAddress && depositInfoCw20TokenAddress
         ? Cw20BaseSelectors.balanceSelector({
+            chainId,
             contractAddress: depositInfoCw20TokenAddress,
             params: [{ address: walletAddress }],
           })
@@ -111,6 +117,7 @@ export const makeUsePublishProposal =
     const nativeDepositTokenBalanceLoadable = useCachedLoadable(
       requiredProposalDeposit && walletAddress && depositInfoNativeTokenDenom
         ? nativeDenomBalanceSelector({
+            chainId,
             walletAddress,
             denom: depositInfoNativeTokenDenom,
           })

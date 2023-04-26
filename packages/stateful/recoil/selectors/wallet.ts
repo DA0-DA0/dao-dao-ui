@@ -273,12 +273,14 @@ export const walletNativeAndStargazeNftsSelector = selectorFamily<
     ({ get }) => {
       const nativeNfts = get(
         walletNftCardInfos({
+          chainId: CHAIN_ID,
           walletAddress,
         })
       )
 
       const nativeStakedNfts = get(
         walletStakedNftCardInfosSelector({
+          chainId: CHAIN_ID,
           walletAddress,
         })
       )

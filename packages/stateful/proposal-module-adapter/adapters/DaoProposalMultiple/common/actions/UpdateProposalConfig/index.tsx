@@ -140,10 +140,11 @@ export const makeUpdateProposalConfigActionMaker =
   ({
     address: proposalModuleAddress,
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
-  ({ t, context }) => {
+  ({ t, context, chain: { chain_id: chainId } }) => {
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useRecoilValue(
         configSelector({
+          chainId,
           contractAddress: proposalModuleAddress,
         })
       )
@@ -172,6 +173,7 @@ export const makeUpdateProposalConfigActionMaker =
     > = () => {
       const proposalModuleConfig = useRecoilValue(
         configSelector({
+          chainId,
           contractAddress: proposalModuleAddress,
         })
       )

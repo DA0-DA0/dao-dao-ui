@@ -8,7 +8,11 @@ import {
   refreshClaimsIdAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
+import {
+  useCachedLoadable,
+  useCachedLoading,
+  useChain,
+} from '@dao-dao/stateless'
 import { claimAvailable } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -19,11 +23,13 @@ export const useStakingInfo = ({
   fetchTotalStakedValue = false,
   fetchWalletStakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
+  const { chain_id: chainId } = useChain()
   const { address: walletAddress } = useWallet()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const config = useRecoilValue(
     DaoVotingNativeStakedSelectors.getConfigSelector({
+      chainId,
       contractAddress: votingModuleAddress,
       params: [],
     })
@@ -42,7 +48,11 @@ export const useStakingInfo = ({
 
   // Claims
   const blockHeightLoadable = useCachedLoadable(
-    fetchClaims ? blockHeightSelector({}) : undefined
+    fetchClaims
+      ? blockHeightSelector({
+          chainId,
+        })
+      : undefined
   )
   const blockHeight =
     blockHeightLoadable.state === 'hasValue'
@@ -55,6 +65,7 @@ export const useStakingInfo = ({
   const loadingClaims = useCachedLoading(
     fetchClaims && walletAddress
       ? DaoVotingNativeStakedSelectors.claimsSelector({
+          chainId,
           contractAddress: votingModuleAddress,
           params: [{ address: walletAddress }],
         })
@@ -82,6 +93,7 @@ export const useStakingInfo = ({
   const loadingTotalStakedValue = useCachedLoading(
     fetchTotalStakedValue
       ? DaoVotingNativeStakedSelectors.totalPowerAtHeightSelector({
+          chainId,
           contractAddress: votingModuleAddress,
           params: [{}],
         })
@@ -93,6 +105,7 @@ export const useStakingInfo = ({
   const loadingWalletStakedValue = useCachedLoading(
     fetchWalletStakedValue && walletAddress
       ? DaoVotingNativeStakedSelectors.votingPowerAtHeightSelector({
+          chainId,
           contractAddress: votingModuleAddress,
           params: [{ address: walletAddress }],
         })
