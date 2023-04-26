@@ -1,3 +1,4 @@
+import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { v4 as uuidv4 } from 'uuid'
@@ -15,7 +16,6 @@ import {
 import {
   POLYTONE_EAR,
   POLYTONE_NOTES,
-  encodeMessageAsBase64,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -128,7 +128,7 @@ const useTransformToCosmos: UseTransformToCosmos<CrossChainExecData> = () =>
                 // 10 minutes
                 timeout_seconds: '600',
                 callback: {
-                  msg: encodeMessageAsBase64(uuidv4()),
+                  msg: toBase64(toUtf8(uuidv4())),
                   receiver: POLYTONE_EAR,
                 },
               },
