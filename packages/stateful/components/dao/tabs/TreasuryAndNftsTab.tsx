@@ -47,6 +47,7 @@ export const TreasuryAndNftsTab = () => {
     }),
     []
   )
+  // TODO(polytone): Show NFTs from other chains.
   const nfts = useCachedLoading(
     nftCardInfosForDaoSelector({
       chainId,

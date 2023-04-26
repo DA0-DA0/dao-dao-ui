@@ -21,10 +21,10 @@ import {
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
   useCachedLoading,
-  useChain,
 } from '@dao-dao/stateless'
 import { ActionKey, TokenCardInfo, TokenType } from '@dao-dao/types'
 import {
+  CHAIN_ID,
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
   MAINNET,
@@ -52,13 +52,12 @@ import { WalletStakingModal } from './WalletStakingModal'
 
 export const WalletTokenCard = (props: TokenCardInfo) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
-  const nativeToken = getNativeTokenForChainId(chainId)
+  const nativeToken = getNativeTokenForChainId(props.token.chainId)
   const {
     address: walletAddress = '',
     publicKey,
     signingCosmWasmClient,
-  } = useWallet()
+  } = useWallet(props.token.chainId)
 
   const { refreshBalances } = useWalletInfo()
 
@@ -141,6 +140,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     props.token.type === TokenType.Native &&
     props.token.denomOrAddress === nativeToken.denomOrAddress
   const isUsdc =
+    props.token.chainId === CHAIN_ID &&
     props.token.type === TokenType.Native &&
     isJunoIbcUsdc(props.token.denomOrAddress)
 
