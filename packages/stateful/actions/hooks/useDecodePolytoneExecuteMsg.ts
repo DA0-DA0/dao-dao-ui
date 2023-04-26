@@ -15,7 +15,8 @@ export type UseDecodePolytoneExecuteMsgResult =
     }
 
 export const useDecodePolytoneExecuteMsg = (
-  decodedMsg: Record<string, any>
+  decodedMsg: Record<string, any>,
+  noMessages = false
 ): UseDecodePolytoneExecuteMsgResult => {
   if (
     !objectMatchesStructure(decodedMsg, {
@@ -36,8 +37,8 @@ export const useDecodePolytoneExecuteMsg = (
         },
       },
     }) ||
-    // Currently only support one message.
-    decodedMsg.wasm.execute.msg.execute.msgs.length !== 1
+    // Only support zero or one message.
+    decodedMsg.wasm.execute.msg.execute.msgs.length !== (noMessages ? 0 : 1)
   ) {
     return {
       match: false,
@@ -57,6 +58,8 @@ export const useDecodePolytoneExecuteMsg = (
   return {
     match: true,
     chainId,
-    msg: decodeMessages(decodedMsg.wasm.execute.msg.execute.msgs)[0],
+    msg: noMessages
+      ? {}
+      : decodeMessages(decodedMsg.wasm.execute.msg.execute.msgs)[0],
   }
 }

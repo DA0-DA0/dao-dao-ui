@@ -1,6 +1,6 @@
-# PolytoneExec
+# CreateChainAccount
 
-Execute Cosmos messages on another chain.
+Create an account on another chain via Polytone.
 
 ## Bulk import format
 
@@ -9,15 +9,12 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ### Key
 
-`polytoneExec`
+`createChainAccount`
 
 ### Data format
 
 ```json
 {
-  "chainId": "<CHAIN ID>",
-  "msgs": [
-    // Cosmos messages (supported by CosmWasm) to execute on the other chain.
-  ]
+  "chainId": "<CHAIN ID>"
 }
 ```

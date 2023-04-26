@@ -249,7 +249,8 @@ export const makeDistributeMessage = (
 
 export const makePolytoneExecuteMessage = (
   chainId: string,
-  msg: CosmosMsgFor_Empty
+  // Allow passing no message, which just creates an account.
+  msg?: CosmosMsgFor_Empty
 ): CosmosMsgFor_Empty =>
   makeWasmMessage({
     wasm: {
@@ -258,7 +259,7 @@ export const makePolytoneExecuteMessage = (
         funds: [],
         msg: {
           execute: {
-            msgs: [msg],
+            msgs: msg ? [msg] : [],
             // TODO(polytone): Tune timeout
             // 10 minutes
             timeout_seconds: '600',

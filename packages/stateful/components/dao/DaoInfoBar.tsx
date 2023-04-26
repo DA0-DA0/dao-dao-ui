@@ -13,13 +13,21 @@ import {
   useCachedLoading,
   useChain,
   useDaoInfoContext,
+  useNavHelpers,
 } from '@dao-dao/stateless'
-import { getDisplayNameForChainId, getImageUrlForChainId } from '@dao-dao/utils'
+import { ActionKey } from '@dao-dao/types'
+import {
+  POLYTONE_NOTES,
+  getDisplayNameForChainId,
+  getImageUrlForChainId,
+} from '@dao-dao/utils'
 
+import { useDaoProposalSinglePrefill } from '../../hooks'
 import {
   useCw20CommonGovernanceTokenInfoIfExists,
   useVotingModuleAdapter,
 } from '../../voting-module-adapter'
+import { ButtonLink } from '../ButtonLink'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export const DaoInfoBar = () => (
@@ -36,6 +44,7 @@ const InnerDaoInfoBar = () => {
   } = useVotingModuleAdapter()
   const votingModuleItems = useDaoInfoBarItems()
   const { coreAddress, polytoneProxies } = useDaoInfoContext()
+  const { getDaoProposalPath } = useNavHelpers()
 
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
@@ -60,11 +69,22 @@ const InnerDaoInfoBar = () => {
       address: coreAddress,
     },
     // Other chains
-    ...Object.entries(polytoneProxies).map(([chainId, address]) => ({
+    ...Object.entries(POLYTONE_NOTES).map(([chainId]) => ({
       chainId,
-      address,
+      address: polytoneProxies[chainId],
     })),
   ]
+
+  const createChainAccountPrefill = useDaoProposalSinglePrefill({
+    actions: [
+      {
+        actionKey: ActionKey.CreateChainAccount,
+        data: {
+          chainId: 'CHAIN_ID',
+        },
+      },
+    ],
+  })
 
   return (
     <>
@@ -125,7 +145,7 @@ const InnerDaoInfoBar = () => {
             const name = getDisplayNameForChainId(chainId)
 
             return (
-              <Fragment key={address}>
+              <Fragment key={chainId}>
                 <div className="flex flex-row items-center gap-2">
                   {imageUrl && (
                     <div
@@ -139,12 +159,27 @@ const InnerDaoInfoBar = () => {
                   <p className="primary-text shrink-0">{name}</p>
                 </div>
 
-                <CopyToClipboardUnderline
-                  className="min-w-0"
-                  takeN={12}
-                  tooltip={t('button.clickToCopyAddress')}
-                  value={address}
-                />
+                {address ? (
+                  <CopyToClipboardUnderline
+                    className="min-w-0"
+                    takeN={12}
+                    tooltip={t('button.clickToCopyAddress')}
+                    value={address}
+                  />
+                ) : (
+                  <ButtonLink
+                    containerClassName="justify-self-end"
+                    href={getDaoProposalPath(coreAddress, 'create', {
+                      prefill: createChainAccountPrefill?.replace(
+                        'CHAIN_ID',
+                        chainId
+                      ),
+                    })}
+                    variant="primary"
+                  >
+                    {t('button.create')}
+                  </ButtonLink>
+                )}
               </Fragment>
             )
           })}

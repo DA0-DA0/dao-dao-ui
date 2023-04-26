@@ -124,7 +124,7 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
+export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
   context,
   t,
   address,
