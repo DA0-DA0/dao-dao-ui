@@ -39,6 +39,13 @@ export type GenericTokenBalance = {
   isGovernanceToken?: boolean
 }
 
+export type LooseGenericToken = Pick<
+  GenericToken,
+  'chainId' | 'denomOrAddress'
+> & {
+  type: TokenType | string
+}
+
 export enum UnstakingTaskStatus {
   Unstaking = 'unstaking',
   ReadyToClaim = 'readyToClaim',

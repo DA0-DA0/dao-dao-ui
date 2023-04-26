@@ -18,6 +18,7 @@ import {
   getDisplayNameForChainId,
   getFallbackImage,
   toAccessibleImageUrl,
+  tokensEqual,
   validateNonNegative,
   validatePositive,
   validateRequired,
@@ -55,7 +56,7 @@ export type TokenInputProps<
   // The pair of `type` and `denomOrAddress` must be unique for each token.
   tokens: LoadingData<T[]>
   onSelectToken: (token: T) => void
-  selectedToken: Pick<T, 'type' | 'denomOrAddress'> | undefined
+  selectedToken: Pick<T, 'chainId' | 'type' | 'denomOrAddress'> | undefined
   tokenFallback?: ReactNode
   disabled?: boolean
   readOnly?: boolean
@@ -110,7 +111,7 @@ export const TokenInput = <
   const selectedToken =
     tokens.loading || !_selectedToken
       ? undefined
-      : tokens.data.find((token) => token === _selectedToken)
+      : tokens.data.find((token) => tokensEqual(token, _selectedToken))
 
   const amount = convertMicroDenom
     ? convertMicroDenomToDenomWithDecimals(
