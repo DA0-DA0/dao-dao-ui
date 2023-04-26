@@ -7,7 +7,7 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
 import { TokenType } from '@dao-dao/types'
-import { NATIVE_TOKEN } from '@dao-dao/utils'
+import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { SpendComponent, SpendData } from './Component'
 
@@ -18,7 +18,7 @@ export default {
     makeReactHookFormDecorator<SpendData>({
       to: '',
       amount: 1,
-      denom: NATIVE_TOKEN.denomOrAddress,
+      denom: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),
   ],
@@ -38,7 +38,7 @@ Default.args = {
       loading: false,
       data: [
         {
-          token: NATIVE_TOKEN,
+          token: getNativeTokenForChainId(CHAIN_ID),
           balance: '46252349169321',
         },
         {

@@ -21,11 +21,9 @@ import {
 } from '@dao-dao/stateless'
 import { TokenStake } from '@dao-dao/types'
 import {
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  nativeTokenLabel,
+  getNativeTokenForChainId,
   processError,
 } from '@dao-dao/utils'
 
@@ -109,6 +107,8 @@ export const NativeStakingModal = ({
     return null
   }
 
+  const nativeToken = getNativeTokenForChainId(chainId)
+
   const onAction = async (
     mode: StakingMode,
     amount: number,
@@ -127,7 +127,7 @@ export const NativeStakingModal = ({
         await delegate({
           amount: convertDenomToMicroDenomWithDecimals(
             amount,
-            NATIVE_DECIMALS
+            nativeToken.decimals
           ).toString(),
           validator,
         })
@@ -135,7 +135,7 @@ export const NativeStakingModal = ({
         await undelegate({
           amount: convertDenomToMicroDenomWithDecimals(
             amount,
-            NATIVE_DECIMALS
+            nativeToken.decimals
           ).toString(),
           validator,
         })
@@ -148,7 +148,7 @@ export const NativeStakingModal = ({
         await redelegate({
           amount: convertDenomToMicroDenomWithDecimals(
             amount,
-            NATIVE_DECIMALS
+            nativeToken.decimals
           ).toString(),
           dstValidator: validator,
           srcValidator: fromValidator,
@@ -192,13 +192,14 @@ export const NativeStakingModal = ({
       loading={loading}
       loadingStakableTokens={{
         loading: false,
-        data: convertMicroDenomToDenomWithDecimals(stakable, NATIVE_DECIMALS),
+        data: convertMicroDenomToDenomWithDecimals(
+          stakable,
+          nativeToken.decimals
+        ),
       }}
       onAction={onAction}
       setAmount={setAmount}
-      tokenDecimals={NATIVE_DECIMALS}
-      tokenDenom={NATIVE_DENOM}
-      tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
+      token={nativeToken}
       unstakingDuration={
         unstakingDurationLoadable.state === 'hasValue'
           ? { time: unstakingDurationLoadable.contents }

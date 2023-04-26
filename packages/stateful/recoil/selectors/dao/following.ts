@@ -4,7 +4,7 @@ import { atomFamily, selectorFamily, waitForAll } from 'recoil'
 import { refreshFollowingDaosAtom } from '@dao-dao/state'
 import { DaoDropdownInfo } from '@dao-dao/stateless'
 import { ProposalModule, WithChainId } from '@dao-dao/types'
-import { CHAIN_ID, FOLLOWING_DAOS_API_BASE } from '@dao-dao/utils'
+import { FOLLOWING_DAOS_API_BASE } from '@dao-dao/utils'
 
 import { daoDropdownInfoSelector } from './cards'
 import { daoCoreProposalModulesSelector } from './misc'
@@ -33,7 +33,7 @@ export const followingDaosSelector = selectorFamily<
 >({
   key: 'followingDaos',
   get:
-    ({ walletAddress, chainId = CHAIN_ID }) =>
+    ({ walletAddress, chainId }) =>
     async ({ get }) => {
       get(refreshFollowingDaosAtom)
 

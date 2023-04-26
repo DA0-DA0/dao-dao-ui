@@ -22,6 +22,7 @@ import {
   RightSidebarContent,
   useAppContext,
   useCachedLoadable,
+  useChain,
   useNavHelpers,
   useThemeContext,
 } from '@dao-dao/stateless'
@@ -42,10 +43,10 @@ import {
   DaoProposalMultipleAdapterId,
   DaoVotingCw20StakedAdapterId,
   FACTORY_CONTRACT_ADDRESS,
-  NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
+  getNativeTokenForChainId,
   makeValidateMsg,
   processError,
 } from '@dao-dao/utils'
@@ -97,6 +98,8 @@ export const CreateDaoForm = ({
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
+
   const { goToDao } = useNavHelpers()
   const { setFollowing } = useFollowingDaos()
 
@@ -427,6 +430,8 @@ export const CreateDaoForm = ({
 
             //! Show DAO created modal.
 
+            const nativeToken = getNativeTokenForChainId(chainId)
+
             // Get tokenSymbol and tokenBalance for DAO card.
             const { tokenSymbol, tokenBalance, tokenDecimals } =
               votingModuleAdapter.id === DaoVotingCw20StakedAdapterId &&
@@ -457,7 +462,7 @@ export const CreateDaoForm = ({
                         // 0, so use the native token here so this value is
                         // accurate.
                         !cw20StakedBalanceVotingData.existingGovernanceTokenInfo
-                        ? NATIVE_TOKEN.symbol
+                        ? nativeToken.symbol
                         : cw20StakedBalanceVotingData
                             .existingGovernanceTokenInfo?.symbol ||
                           t('info.token').toLocaleUpperCase(),
@@ -475,8 +480,8 @@ export const CreateDaoForm = ({
                 : //! Otherwise display native token, which has a balance of 0 initially.
                   {
                     tokenBalance: 0,
-                    tokenSymbol: NATIVE_TOKEN.symbol,
-                    tokenDecimals: NATIVE_TOKEN.decimals,
+                    tokenSymbol: nativeToken.symbol,
+                    tokenDecimals: nativeToken.decimals,
                   }
 
             // Set card props to show modal.
@@ -548,7 +553,9 @@ export const CreateDaoForm = ({
       createDaoWithFactory,
       t,
       mode,
+      awaitNextBlock,
       refreshBalances,
+      chainId,
       votingModuleAdapter.id,
       cw20StakedBalanceVotingData,
       setDaoCreatedCardProps,
@@ -557,7 +564,6 @@ export const CreateDaoForm = ({
       imageUrl,
       parentDao,
       goToDao,
-      awaitNextBlock,
       setFollowing,
     ]
   )

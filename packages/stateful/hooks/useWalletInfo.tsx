@@ -15,10 +15,9 @@ import {
   refreshWalletBalancesIdAtom,
   refreshWalletProfileAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useChain } from '@dao-dao/stateless'
+import { useCachedLoadable, useChainContext } from '@dao-dao/stateless'
 import { WalletProfileData, WalletProfileUpdate } from '@dao-dao/types'
 import {
-  NATIVE_TOKEN,
   PFPK_API_BASE,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
@@ -43,7 +42,10 @@ export interface UseWalletReturn {
 }
 
 export const useWalletInfo = (): UseWalletReturn => {
-  const { chain_id: chainId } = useChain()
+  const {
+    chain: { chain_id: chainId },
+    nativeToken,
+  } = useChainContext()
   const { address, connected, publicKey } = useWallet()
   const connectWalletToChain = useConnectWalletToChain()
 
@@ -63,7 +65,7 @@ export const useWalletInfo = (): UseWalletReturn => {
     walletNativeBalanceState === 'hasValue' && walletNativeBalanceContents
       ? convertMicroDenomToDenomWithDecimals(
           walletNativeBalanceContents.amount,
-          NATIVE_TOKEN.decimals
+          nativeToken.decimals
         )
       : undefined
 
@@ -84,7 +86,7 @@ export const useWalletInfo = (): UseWalletReturn => {
     walletStakedNativeBalanceContents
       ? convertMicroDenomToDenomWithDecimals(
           walletStakedNativeBalanceContents.amount,
-          NATIVE_TOKEN.decimals
+          nativeToken.decimals
         )
       : undefined
 

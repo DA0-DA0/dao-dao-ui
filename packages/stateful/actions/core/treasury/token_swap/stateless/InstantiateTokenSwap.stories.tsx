@@ -7,7 +7,7 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
-import { NATIVE_TOKEN } from '@dao-dao/utils'
+import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { Trans } from '../../../../../components/Trans'
 import { PerformTokenSwapData } from '../types'
@@ -27,11 +27,9 @@ export default {
         decimals: 6,
       },
       counterparty: {
+        ...getNativeTokenForChainId(CHAIN_ID),
         address: '',
-        type: NATIVE_TOKEN.type,
-        denomOrAddress: NATIVE_TOKEN.denomOrAddress,
         amount: 0,
-        decimals: NATIVE_TOKEN.decimals,
       },
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),

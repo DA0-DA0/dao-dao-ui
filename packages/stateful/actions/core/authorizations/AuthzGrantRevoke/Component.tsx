@@ -27,7 +27,7 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_DENOM,
+  getNativeTokenForChainId,
   makeValidateAddress,
   makeValidateContractAddress,
   makeWasmMessage,
@@ -55,7 +55,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
 > = (props) => {
   const { t } = useTranslation()
   const {
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
   const {
     fieldNamePrefix,
@@ -261,6 +261,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                     },
                     onRemove: isCreating ? () => removeCoin(index) : undefined,
                   } as NativeCoinSelectorProps)}
+                  chainId={chainId}
                   errors={errors?.funds?.[index]}
                   fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
                 />
@@ -275,7 +276,12 @@ export const AuthzGrantRevokeComponent: ActionComponent<
           {isCreating && (
             <Button
               className="mt-2 self-start"
-              onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
+              onClick={() =>
+                appendCoin({
+                  amount: 1,
+                  denom: getNativeTokenForChainId(chainId).denomOrAddress,
+                })
+              }
               variant="secondary"
             >
               {t('button.addAllowance')}
@@ -473,6 +479,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                             ? () => removeCoin(index)
                             : undefined,
                         } as NativeCoinSelectorProps)}
+                        chainId={chainId}
                         errors={errors?.funds?.[index]}
                         fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
                       />
@@ -488,7 +495,10 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                   <Button
                     className="mt-2 self-start"
                     onClick={() =>
-                      appendCoin({ amount: 1, denom: NATIVE_DENOM })
+                      appendCoin({
+                        amount: 1,
+                        denom: getNativeTokenForChainId(chainId).denomOrAddress,
+                      })
                     }
                     variant="secondary"
                   >

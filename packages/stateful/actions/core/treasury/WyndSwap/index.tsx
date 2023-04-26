@@ -40,13 +40,13 @@ import {
 import { ExecuteSwapOperationsMsg } from '@dao-dao/types/contracts/WyndexMultiHop'
 import {
   DAO_DAO_DAO_ADDRESS,
-  NATIVE_TOKEN,
   WYND_MULTI_HOP_CONTRACT,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   encodeMessageAsBase64,
   genericTokenToAssetInfo,
   getJunoIbcUsdc,
+  getNativeTokenForChainId,
   makeWasmMessage,
   objectMatchesStructure,
   parseEncodedMessage,
@@ -66,17 +66,15 @@ import {
 } from './Component'
 
 const useDefaults: UseDefaults<WyndSwapData> = () => {
-  const usdc = getJunoIbcUsdc()
-  const { address } = useActionOptions()
+  const {
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   return {
-    tokenIn: {
-      ...usdc,
-    },
+    tokenIn: getJunoIbcUsdc(),
     tokenInAmount: 0,
-    tokenOut: {
-      ...NATIVE_TOKEN,
-    },
+    tokenOut: getNativeTokenForChainId(chainId),
     tokenOutAmount: 0,
     minOutAmount: 0,
     maxSlippage: 0.01,

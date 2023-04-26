@@ -4,11 +4,12 @@ import { Chain } from '@chain-registry/types'
 import { fromHex, toBech32 } from '@cosmjs/encoding'
 import { decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
 import { ChainInfoID, ChainInfoMap } from '@noahsaso/cosmodal'
+import { assets, chains } from 'chain-registry'
 import { bondStatusToJSON } from 'cosmjs-types/cosmos/staking/v1beta1/staking'
 import { Validator as RpcValidator } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import RIPEMD160 from 'ripemd160'
 
-import { Validator } from '@dao-dao/types'
+import { GenericToken, TokenType, Validator } from '@dao-dao/types'
 
 import {
   CHAIN_ID,
@@ -17,6 +18,8 @@ import {
   STARGAZE_TESTNET_CHAIN_ID,
   STARGAZE_TESTNET_RPC_ENDPOINT,
 } from './constants'
+import { getFallbackImage } from './getFallbackImage'
+import { ibcAssets } from './ibc'
 
 export const getRpcForChainId = (chainId: string): string => {
   // Override from environment variables. Matched in
@@ -92,7 +95,7 @@ export const secp256k1PublicKeyToBech32Address = async (
 
 const cachedChains: Record<string, Chain | undefined> = {}
 export const maybeGetChainForChainId = (chainId: string): Chain | undefined => {
-  cachedChains[chainId] ||= maybeGetChainForChainId(chainId)
+  cachedChains[chainId] ||= chains.find(({ chain_id }) => chain_id === chainId)
   return cachedChains[chainId]
 }
 
@@ -107,3 +110,124 @@ export const getChainForChainId = (chainId: string): Chain => {
 
 export const getDisplayNameForChainId = (chainId: string): string =>
   maybeGetChainForChainId(chainId)?.pretty_name ?? chainId
+
+const cachedNativeTokens: Record<string, GenericToken | undefined> = {}
+export const getNativeTokenForChainId = (chainId: string): GenericToken => {
+  if (!cachedNativeTokens[chainId]) {
+    const chain = getChainForChainId(chainId)
+
+    const feeDenom = chain.fees?.fee_tokens[0].denom
+    if (!feeDenom) {
+      throw new Error(`Chain ${chainId} has no fee token`)
+    }
+
+    const assetList =
+      assets.find(({ chain_name }) => chain_name === chain.chain_name)
+        ?.assets ?? []
+    const asset = assetList.find(({ base }) => base === feeDenom)
+    if (!asset) {
+      throw new Error(`Chain ${chainId} has no asset for fee token ${feeDenom}`)
+    }
+
+    cachedNativeTokens[chainId] = Object.freeze({
+      type: TokenType.Native,
+      denomOrAddress: feeDenom,
+      symbol: asset.symbol,
+      decimals:
+        asset.denom_units.find(({ denom }) => denom === asset.display)
+          ?.exponent ??
+        asset.denom_units.find(({ exponent }) => exponent > 0)?.exponent ??
+        asset.denom_units[0]?.exponent ??
+        0,
+      // Use local JUNO image.
+      imageUrl: feeDenom.startsWith('ujuno')
+        ? '/juno.png'
+        : // Use asset images.
+          asset.logo_URIs?.svg ??
+          asset.logo_URIs?.png ??
+          asset.logo_URIs?.jpeg ??
+          // Fallback.
+          getFallbackImage(feeDenom),
+    })
+  }
+
+  return cachedNativeTokens[chainId]!
+}
+
+const cachedTokens: Record<string, GenericToken | undefined> = {}
+export const getTokenForChainIdAndDenom = (
+  chainId: string,
+  denom: string,
+  // If true, will return placeholder token if not found. If false, will throw
+  // error.
+  placeholder = true
+): GenericToken => {
+  try {
+    // If native token, return it.
+    const nativeToken = getNativeTokenForChainId(chainId)
+    if (denom === nativeToken.denomOrAddress) {
+      return nativeToken
+    }
+
+    const key = `${chainId}:${denom}`
+    if (!cachedTokens[key]) {
+      // If Juno mainnet, check IBC assets.
+      if (chainId === ChainInfoID.Juno1) {
+        const ibcAsset = ibcAssets.find(
+          ({ denomOrAddress }) => denomOrAddress === denom
+        )
+
+        if (ibcAsset) {
+          cachedTokens[key] = ibcAsset
+          return ibcAsset
+        }
+      }
+
+      // Otherwise, check asset list.
+      const chain = getChainForChainId(chainId)
+
+      const assetList =
+        assets.find(({ chain_name }) => chain_name === chain.chain_name)
+          ?.assets ?? []
+      const asset = assetList.find(({ base }) => base === denom)
+      if (!asset) {
+        throw new Error(`Chain ${chainId} has no asset for token ${denom}`)
+      }
+
+      cachedTokens[key] = Object.freeze({
+        type: TokenType.Native,
+        denomOrAddress: denom,
+        symbol: asset.symbol,
+        decimals:
+          asset.denom_units.find(({ denom }) => denom === asset.display)
+            ?.exponent ??
+          asset.denom_units.find(({ exponent }) => exponent > 0)?.exponent ??
+          asset.denom_units[0]?.exponent ??
+          0,
+        // Use local JUNO image.
+        imageUrl: denom.startsWith('ujuno')
+          ? '/juno.png'
+          : // Use asset images.
+            asset.logo_URIs?.svg ??
+            asset.logo_URIs?.png ??
+            asset.logo_URIs?.jpeg ??
+            // Fallback.
+            getFallbackImage(denom),
+      })
+    }
+
+    return cachedTokens[key]!
+  } catch (err) {
+    if (placeholder) {
+      return Object.freeze({
+        type: TokenType.Native,
+        denomOrAddress: denom,
+        symbol: denom,
+        decimals: 0,
+        imageUrl: getFallbackImage(denom),
+      })
+    } else {
+      throw err
+    }
+  }
+}

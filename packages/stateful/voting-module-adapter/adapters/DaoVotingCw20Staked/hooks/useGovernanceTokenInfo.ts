@@ -46,6 +46,12 @@ export const useGovernanceTokenInfo = ({
       params: [],
     })
   )
+  const governanceTokenLogoUrl = useRecoilValue(
+    Cw20BaseSelectors.logoUrlSelector({
+      chainId,
+      contractAddress: governanceTokenAddress,
+    })
+  )
 
   /// Optional
 
@@ -90,7 +96,7 @@ export const useGovernanceTokenInfo = ({
       denomOrAddress: governanceTokenAddress,
       symbol: governanceTokenInfo.symbol,
       decimals: governanceTokenInfo.decimals,
-      imageUrl: undefined,
+      imageUrl: governanceTokenLogoUrl,
     },
     /// Optional
     // Wallet balance

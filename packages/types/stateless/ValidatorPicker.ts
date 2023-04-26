@@ -1,4 +1,4 @@
-import { TokenStake, Validator } from '@dao-dao/types'
+import { GenericToken, TokenStake, Validator } from '@dao-dao/types'
 
 export interface ValidatorPickerProps {
   validators: Validator[]
@@ -6,9 +6,7 @@ export interface ValidatorPickerProps {
   selectedAddress?: string
   readOnly?: boolean
   onSelect: (validator: Validator) => void
-  // Denom and decimals that correspond with validator tokens (likely the native
-  // token on the chain).
-  nativeDenom: string
-  nativeDecimals: number
+  // Token being staked.
+  token: GenericToken
   displayClassName?: string
 }

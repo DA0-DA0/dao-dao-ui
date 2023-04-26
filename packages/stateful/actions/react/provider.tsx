@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Loader, useChain, useDaoInfoContext } from '@dao-dao/stateless'
 import {
+  ActionContext,
   ActionContextType,
   ActionOptions,
   IActionsContext,
@@ -101,22 +102,22 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   )
 }
 
-export const WalletActionsProvider = ({ children }: ActionsProviderProps) => {
+export const BaseActionsProvider = ({
+  address,
+  context,
+  children,
+}: ActionsProviderProps & {
+  address: string
+  context: ActionContext
+}) => {
   const { t } = useTranslation()
   const chain = useChain()
-  const { chainInfo, address } = useWallet()
-
-  if (!chainInfo || !address) {
-    return <Loader />
-  }
 
   const options: ActionOptions = {
     t,
     chain,
-    address: address,
-    context: {
-      type: ActionContextType.Wallet,
-    },
+    address,
+    context,
   }
 
   const categories = makeActionCategoriesWithLabel(
@@ -124,14 +125,33 @@ export const WalletActionsProvider = ({ children }: ActionsProviderProps) => {
     options
   )
 
-  const context: IActionsContext = {
-    options,
-    categories,
+  return (
+    <ActionsContext.Provider
+      value={{
+        options,
+        categories,
+      }}
+    >
+      {children}
+    </ActionsContext.Provider>
+  )
+}
+
+export const WalletActionsProvider = ({ children }: ActionsProviderProps) => {
+  const { address } = useWallet()
+
+  if (!address) {
+    return <Loader />
   }
 
   return (
-    <ActionsContext.Provider value={context}>
+    <BaseActionsProvider
+      address={address}
+      context={{
+        type: ActionContextType.Wallet,
+      }}
+    >
       {children}
-    </ActionsContext.Provider>
+    </BaseActionsProvider>
   )
 }

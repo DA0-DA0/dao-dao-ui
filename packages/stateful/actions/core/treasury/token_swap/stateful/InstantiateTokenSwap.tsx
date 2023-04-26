@@ -12,8 +12,8 @@ import { ActionComponent, TokenType } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
   CODE_ID_CONFIG,
-  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
+  getNativeTokenForChainId,
   isValidAddress,
   isValidContractAddress,
   processError,
@@ -31,6 +31,7 @@ export const InstantiateTokenSwap: ActionComponent<
 > = (props) => {
   const { t } = useTranslation()
   const { address: selfAddress } = useActionOptions()
+
   const { setValue } = useFormContext()
   const { address: walletAddress, signingCosmWasmClient } = useWallet()
 
@@ -162,6 +163,8 @@ const InnerInstantiateTokenSwap: ActionComponent<
   const {
     chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
+  const nativeToken = getNativeTokenForChainId(chainId)
+
   const { resetField, watch } = useFormContext()
 
   // Only set defaults once.
@@ -185,20 +188,20 @@ const InnerInstantiateTokenSwap: ActionComponent<
         type: selfPartyDefaultCw20 ? TokenType.Cw20 : TokenType.Native,
         denomOrAddress: selfPartyDefaultCw20
           ? selfPartyDefaultCw20.token.denomOrAddress
-          : NATIVE_TOKEN.denomOrAddress,
+          : nativeToken.denomOrAddress,
         amount: 0,
         decimals: selfPartyDefaultCw20
           ? selfPartyDefaultCw20.token.decimals
-          : NATIVE_TOKEN.decimals,
+          : nativeToken.decimals,
       },
     })
     resetField(props.fieldNamePrefix + 'counterparty', {
       defaultValue: {
         address: '',
         type: 'native',
-        denomOrAddress: NATIVE_TOKEN.denomOrAddress,
+        denomOrAddress: nativeToken.denomOrAddress,
         amount: 0,
-        decimals: NATIVE_TOKEN.decimals,
+        decimals: nativeToken.decimals,
       },
     })
 

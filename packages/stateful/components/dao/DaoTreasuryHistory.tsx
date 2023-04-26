@@ -16,12 +16,11 @@ import {
   CopyToClipboard,
   LineGraph,
   Loader,
-  useChain,
+  useChainContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
   CHAIN_TXN_URL_PREFIX,
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
   processError,
 } from '@dao-dao/utils'
@@ -60,7 +59,10 @@ export const InnerDaoTreasuryHistory = ({
   shortTitle,
 }: DaoTreasuryHistoryProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const {
+    chain: { chain_id: chainId },
+    nativeToken,
+  } = useChainContext()
   const { coreAddress } = useDaoInfoContext()
 
   // Initialization.
@@ -164,12 +166,12 @@ export const InnerDaoTreasuryHistory = ({
   const lineGraphValues = useMemo(() => {
     let runningTotal = convertMicroDenomToDenomWithDecimals(
       nativeBalance.amount,
-      NATIVE_TOKEN.decimals
+      nativeToken.decimals
     )
 
     return (
       transactions
-        .filter(({ denomLabel }) => denomLabel === NATIVE_TOKEN.symbol)
+        .filter(({ denomLabel }) => denomLabel === nativeToken.symbol)
         .map(({ amount, outgoing }) => {
           let currentTotal = runningTotal
           runningTotal -= (outgoing ? -1 : 1) * amount
@@ -179,7 +181,12 @@ export const InnerDaoTreasuryHistory = ({
         // display ascending balance.
         .reverse()
     )
-  }, [nativeBalance, transactions])
+  }, [
+    nativeBalance.amount,
+    nativeToken.decimals,
+    nativeToken.symbol,
+    transactions,
+  ])
 
   return (
     <div className="flex flex-col gap-y-4">
@@ -192,9 +199,9 @@ export const InnerDaoTreasuryHistory = ({
           <div className="max-w-lg">
             <LineGraph
               title={t('title.nativeBalanceOverTime', {
-                denomLabel: NATIVE_TOKEN.symbol,
+                denomLabel: nativeToken.symbol,
               }).toLocaleUpperCase()}
-              yTitle={NATIVE_TOKEN.symbol}
+              yTitle={nativeToken.symbol}
               yValues={lineGraphValues}
             />
           </div>

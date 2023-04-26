@@ -7,7 +7,7 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
 import { TokenType } from '@dao-dao/types'
-import { NATIVE_DENOM } from '@dao-dao/utils'
+import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { AuthzGrantRevokeComponent } from './Component'
 import {
@@ -58,13 +58,7 @@ Default.args = {
       loading: false,
       data: [
         {
-          token: {
-            type: TokenType.Native,
-            denomOrAddress: NATIVE_DENOM,
-            decimals: 6,
-            symbol: 'JUNO',
-            imageUrl: '',
-          },
+          token: getNativeTokenForChainId(CHAIN_ID),
           balance: '1231245124',
         },
         {

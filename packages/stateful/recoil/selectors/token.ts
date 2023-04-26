@@ -14,8 +14,8 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
 export const tokenCardLazyInfoSelector = selectorFamily<
@@ -36,8 +36,11 @@ export const tokenCardLazyInfoSelector = selectorFamily<
 
       const usdUnitPrice = get(wyndUsdPriceSelector(token.denomOrAddress))
 
-      // For now, stakingInfo only exists for native token, until ICA.
-      if (token.denomOrAddress === NATIVE_TOKEN.denomOrAddress) {
+      // Staking info only exists for native token.
+      if (
+        token.denomOrAddress ===
+        getNativeTokenForChainId(chainId).denomOrAddress
+      ) {
         const nativeDelegationInfo = get(
           nativeDelegationInfoSelector({
             address: owner,

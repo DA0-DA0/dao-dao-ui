@@ -36,11 +36,11 @@ import {
 import {
   CHAIN_ID,
   JUNO_USDC_DENOM,
-  NATIVE_TOKEN,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
   decodeGovProposalContent,
   getAllRpcResponse,
+  getNativeTokenForChainId,
   getRpcForChainId,
   isJunoIbcUsdc,
   stargateClientRouter,
@@ -151,21 +151,19 @@ export const nativeBalancesSelector = selectorFamily<
 >({
   key: 'nativeBalances',
   get:
-    ({ address, chainId = CHAIN_ID }) =>
+    ({ address, chainId }) =>
     async ({ get }) => {
       const client = get(stargateClientForChainSelector(chainId))
 
       get(refreshWalletBalancesIdAtom(address))
 
       const balances = [...(await client.getAllBalances(address))]
-      // Add native denom if not present and we're on the current chain.
-      if (
-        chainId === CHAIN_ID &&
-        !balances.some(({ denom }) => denom === NATIVE_TOKEN.denomOrAddress)
-      ) {
+      // Add native denom if not present.
+      const nativeToken = getNativeTokenForChainId(chainId)
+      if (!balances.some(({ denom }) => denom === nativeToken.denomOrAddress)) {
         balances.push({
           amount: '0',
-          denom: NATIVE_TOKEN.denomOrAddress,
+          denom: nativeToken.denomOrAddress,
         })
       }
       // Add USDC if not present and on Juno mainnet.
@@ -224,7 +222,10 @@ export const nativeBalanceSelector = selectorFamily<
 
       get(refreshWalletBalancesIdAtom(address))
 
-      return await client.getBalance(address, NATIVE_TOKEN.denomOrAddress)
+      return await client.getBalance(
+        address,
+        getNativeTokenForChainId(chainId).denomOrAddress
+      )
     },
 })
 
@@ -278,16 +279,12 @@ export const nativeDelegatedBalanceSelector = selectorFamily<
       get(refreshWalletBalancesIdAtom(address))
 
       const balance = await client.getBalanceStaked(address)
-
-      // Only allow native denom
-      if (!balance || balance.denom !== NATIVE_TOKEN.denomOrAddress) {
-        return {
+      return (
+        balance ?? {
           amount: '0',
-          denom: NATIVE_TOKEN.denomOrAddress,
+          denom: getNativeTokenForChainId(chainId).denomOrAddress,
         }
-      }
-
-      return balance
+      )
     },
 })
 
@@ -529,8 +526,10 @@ export const nativeDelegationInfoSelector = selectorFamily<
               delegation: { validatorAddress: address },
               balance: delegationBalance,
             }): Delegation | undefined => {
-              // Only allow NATIVE_TOKEN.denomOrAddress.
-              if (delegationBalance.denom !== NATIVE_TOKEN.denomOrAddress) {
+              if (
+                delegationBalance.denom !==
+                getNativeTokenForChainId(chainId).denomOrAddress
+              ) {
                 return
               }
 
@@ -540,7 +539,8 @@ export const nativeDelegationInfoSelector = selectorFamily<
               let pendingReward = rewards
                 .find(({ validatorAddress }) => validatorAddress === address)
                 ?.reward.find(
-                  ({ denom }) => denom === NATIVE_TOKEN.denomOrAddress
+                  ({ denom }) =>
+                    denom === getNativeTokenForChainId(chainId).denomOrAddress
                 )
 
               if (!validator || !pendingReward) {
@@ -586,7 +586,7 @@ export const nativeDelegationInfoSelector = selectorFamily<
                 validator,
                 balance: {
                   amount: balance,
-                  denom: NATIVE_TOKEN.denomOrAddress,
+                  denom: getNativeTokenForChainId(chainId).denomOrAddress,
                 },
                 startedAtHeight: creationHeight.toNumber(),
                 finishesAt: completionTime,

@@ -17,12 +17,11 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   encodeMessageAsBase64,
+  getTokenForChainIdAndDenom,
   makeWasmMessage,
-  nativeTokenDecimals,
   objectMatchesStructure,
   parseEncodedMessage,
 } from '@dao-dao/utils'
@@ -43,6 +42,10 @@ const useDefaults: UseDefaults<ExecuteData> = () => ({
 
 const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
   const { t } = useTranslation()
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+
   const tokenBalances = useTokenBalances()
 
   return useCallback(
@@ -94,7 +97,7 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
                 denom,
                 amount: convertDenomToMicroDenomWithDecimals(
                   amount,
-                  nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
+                  getTokenForChainIdAndDenom(chainId, denom).decimals
                 ).toString(),
               })),
               msg,
@@ -103,7 +106,7 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
         })
       }
     },
-    [t, tokenBalances]
+    [chainId, t, tokenBalances]
   )
 }
 
@@ -184,7 +187,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
                 denom,
                 amount: convertMicroDenomToDenomWithDecimals(
                   amount,
-                  nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
+                  getTokenForChainIdAndDenom(chainId, denom).decimals
                 ),
               })),
           cw20: isCw20,

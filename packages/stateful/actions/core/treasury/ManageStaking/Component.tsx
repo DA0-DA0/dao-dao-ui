@@ -9,20 +9,21 @@ import {
   SelectInput,
   TokenAmountDisplay,
   ValidatorPicker,
-  useChain,
 } from '@dao-dao/stateless'
 import { TokenStake, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
   StakeType,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
   isValidValidatorAddress,
   makeValidateValidatorAddress,
   secondsToWdhms,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
+
+import { useActionOptions } from '../../../react'
 
 export const useStakeActions = (): { type: StakeType; name: string }[] => {
   const { t } = useTranslation()
@@ -57,6 +58,9 @@ export interface ManageStakingOptions {
 }
 
 export interface ManageStakingData {
+  // TODO(polytone)
+  chainId: string
+
   stakeType: StakeType
   validator: string
   // For use when redelegating.
@@ -81,7 +85,11 @@ export const ManageStakingComponent: ActionComponent<
   },
 }) => {
   const { t } = useTranslation()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const {
+    chain: { bech32_prefix: bech32Prefix, chain_id: chainId },
+  } = useActionOptions()
+  const nativeToken = getNativeTokenForChainId(chainId)
+
   const { register, watch, setError, clearErrors, setValue } = useFormContext()
   const stakeActions = useStakeActions()
 
@@ -98,7 +106,7 @@ export const ManageStakingComponent: ActionComponent<
   // Metadata for the given denom.
   const minAmount = convertMicroDenomToDenomWithDecimals(
     1,
-    NATIVE_TOKEN.decimals
+    nativeToken.decimals
   )
 
   // Get how much is staked and pending for the selected validator.
@@ -120,7 +128,7 @@ export const ManageStakingComponent: ActionComponent<
     stakeType === StakeType.Delegate
       ? convertMicroDenomToDenomWithDecimals(
           nativeBalance,
-          NATIVE_TOKEN.decimals
+          nativeToken.decimals
         )
       : sourceValidatorStaked
 
@@ -152,11 +160,11 @@ export const ManageStakingComponent: ActionComponent<
         Number(amount) <= maxAmount ||
         (maxAmount === 0
           ? t('error.treasuryNoTokensCannotStake', {
-              tokenSymbol: NATIVE_TOKEN.symbol,
+              tokenSymbol: nativeToken.symbol,
             })
           : t('error.treasuryInsufficient', {
               amount: humanReadableAmount,
-              tokenSymbol: NATIVE_TOKEN.symbol,
+              tokenSymbol: nativeToken.symbol,
             }))
       )
     }
@@ -168,7 +176,7 @@ export const ManageStakingComponent: ActionComponent<
           ? t('error.nothingStaked')
           : t('error.stakeInsufficient', {
               amount: humanReadableAmount,
-              tokenSymbol: NATIVE_TOKEN.symbol,
+              tokenSymbol: nativeToken.symbol,
             }))
       )
     }
@@ -190,7 +198,7 @@ export const ManageStakingComponent: ActionComponent<
           ? t('error.nothingStaked')
           : t('error.stakeInsufficient', {
               amount: humanReadableAmount,
-              tokenSymbol: NATIVE_TOKEN.symbol,
+              tokenSymbol: nativeToken.symbol,
             }))
       )
     }
@@ -198,13 +206,14 @@ export const ManageStakingComponent: ActionComponent<
     return t('error.unexpectedError')
   }, [
     validator,
+    bech32Prefix,
     stakeType,
     maxAmount,
     t,
     amount,
+    nativeToken.symbol,
     sourceValidatorStaked,
     toValidator,
-    bech32Prefix,
   ])
 
   // Perform validation.
@@ -262,14 +271,13 @@ export const ManageStakingComponent: ActionComponent<
           {/* Choose source validator. */}
           <ValidatorPicker
             displayClassName="grow min-w-0"
-            nativeDecimals={NATIVE_TOKEN.decimals}
-            nativeDenom={NATIVE_TOKEN.denomOrAddress}
             onSelect={({ address }) =>
               setValue(fieldNamePrefix + 'validator', address)
             }
             readOnly={!isCreating}
             selectedAddress={validator}
             stakes={stakes}
+            token={nativeToken}
             validators={
               stakeType === StakeType.Delegate
                 ? validators
@@ -291,7 +299,7 @@ export const ManageStakingComponent: ActionComponent<
             register={register}
             setValue={setValue}
             step={minAmount}
-            unit={'$' + NATIVE_TOKEN.symbol}
+            unit={'$' + nativeToken.symbol}
             validation={[validateRequired, validatePositive]}
             watch={watch}
           />
@@ -324,10 +332,10 @@ export const ManageStakingComponent: ActionComponent<
                   : sourceValidatorPendingRewards
                 : maxAmount
             }
-            decimals={NATIVE_TOKEN.decimals}
-            iconUrl={NATIVE_TOKEN.imageUrl}
+            decimals={nativeToken.decimals}
+            iconUrl={nativeToken.imageUrl}
             showFullAmount
-            symbol={NATIVE_TOKEN.symbol}
+            symbol={nativeToken.symbol}
           />
         </div>
       )}
@@ -347,14 +355,13 @@ export const ManageStakingComponent: ActionComponent<
         <div className="flex flex-col items-start gap-1">
           <InputLabel name={t('form.toValidator')} />
           <ValidatorPicker
-            nativeDecimals={NATIVE_TOKEN.decimals}
-            nativeDenom={NATIVE_TOKEN.denomOrAddress}
             onSelect={({ address }) =>
               setValue(fieldNamePrefix + 'toValidator', address)
             }
             readOnly={!isCreating}
             selectedAddress={toValidator}
             stakes={stakes}
+            token={nativeToken}
             validators={validators}
           />
         </div>

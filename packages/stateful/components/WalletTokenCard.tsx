@@ -28,9 +28,9 @@ import {
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
   MAINNET,
-  NATIVE_TOKEN,
   cwMsgToEncodeObject,
   getMeTxPrefillPath,
+  getNativeTokenForChainId,
   isJunoIbcUsdc,
   processError,
 } from '@dao-dao/utils'
@@ -53,6 +53,7 @@ import { WalletStakingModal } from './WalletStakingModal'
 export const WalletTokenCard = (props: TokenCardInfo) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
+  const nativeToken = getNativeTokenForChainId(chainId)
   const {
     address: walletAddress = '',
     publicKey,
@@ -139,7 +140,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
 
   const isNative =
     props.token.type === TokenType.Native &&
-    props.token.denomOrAddress === NATIVE_TOKEN.denomOrAddress
+    props.token.denomOrAddress === nativeToken.denomOrAddress
   const isUsdc =
     props.token.type === TokenType.Native &&
     isJunoIbcUsdc(props.token.denomOrAddress)
@@ -278,7 +279,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
         lazyInfo={lazyInfo}
         refreshUnstakingTasks={
           props.token.type === TokenType.Native &&
-          props.token.denomOrAddress === NATIVE_TOKEN.denomOrAddress
+          props.token.denomOrAddress === nativeToken.denomOrAddress
             ? refreshNativeTokenStakingInfo
             : undefined
         }

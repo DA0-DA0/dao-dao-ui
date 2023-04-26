@@ -14,9 +14,9 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
   isValidContractAddress,
   makeBankMessage,
   makeWasmMessage,
@@ -32,12 +32,15 @@ import {
 } from './Component'
 
 const useDefaults: UseDefaults<SpendData> = () => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
   const { address: walletAddress = '' } = useWallet()
 
   return {
     to: walletAddress,
     amount: 1,
-    denom: NATIVE_TOKEN.denomOrAddress,
+    denom: getNativeTokenForChainId(chainId).denomOrAddress,
   }
 }
 

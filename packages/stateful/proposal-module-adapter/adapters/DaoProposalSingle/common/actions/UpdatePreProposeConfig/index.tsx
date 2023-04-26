@@ -22,9 +22,9 @@ import {
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/DaoPreProposeSingle'
 import {
-  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
   isValidContractAddress,
   makeWasmMessage,
   objectMatchesStructure,
@@ -194,7 +194,7 @@ export const makeUpdatePreProposeConfigActionMaker =
           : {
               amount: 1,
               type: 'native',
-              denomOrAddress: NATIVE_TOKEN.denomOrAddress,
+              denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
               token: undefined,
               refundPolicy: DepositRefundPolicy.OnlyPassed,
             }
@@ -325,7 +325,7 @@ export const makeUpdatePreProposeConfigActionMaker =
             depositInfo: {
               amount: 1,
               type: 'native',
-              denomOrAddress: NATIVE_TOKEN.denomOrAddress,
+              denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
               refundPolicy: DepositRefundPolicy.OnlyPassed,
             },
             anyoneCanPropose,

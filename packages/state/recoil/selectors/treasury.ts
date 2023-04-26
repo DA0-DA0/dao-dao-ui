@@ -5,8 +5,7 @@ import { selectorFamily, waitForAll } from 'recoil'
 import { AmountWithTimestamp, TokenType, WithChainId } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
-  nativeTokenDecimals,
-  nativeTokenLabel,
+  getTokenForChainIdAndDenom,
 } from '@dao-dao/utils'
 
 import {
@@ -145,20 +144,7 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
             return
           }
 
-          const tokenDecimals = nativeTokenDecimals(coin.denom)
-          const tokenLabel = nativeTokenLabel(coin.denom)
-
-          // Only convert value and denom at the same time. If decimals are
-          // or vice versa, display value in non-converted decimals with
-          // non-converted denom.
-          const amountValue =
-            tokenDecimals !== undefined && tokenLabel !== undefined
-              ? convertMicroDenomToDenomWithDecimals(coin.amount, tokenDecimals)
-              : Number(coin.amount)
-          const denomLabel =
-            tokenDecimals !== undefined && tokenLabel !== undefined
-              ? tokenLabel
-              : coin.denom
+          const token = getTokenForChainIdAndDenom(params.chainId, coin.denom)
 
           return {
             hash,
@@ -166,8 +152,11 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
             timestamp,
             sender,
             recipient,
-            amount: amountValue,
-            denomLabel,
+            amount: convertMicroDenomToDenomWithDecimals(
+              coin.amount,
+              token.decimals
+            ),
+            denomLabel: token.symbol,
             outgoing: sender === params.address,
           }
         })

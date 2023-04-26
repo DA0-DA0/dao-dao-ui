@@ -18,7 +18,7 @@ import {
   SelectInput,
   TokenInput,
   TokenInputOption,
-  useChain,
+  useChainContext,
 } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
@@ -31,7 +31,6 @@ import {
 } from '@dao-dao/types'
 import {
   DaoVotingCw20StakedAdapterId,
-  NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
   convertMicroDenomToDenomWithDecimals,
   ibcAssets,
@@ -52,7 +51,10 @@ const ProposalDepositInput = ({
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithProposalDeposit>) => {
   const { t } = useTranslation()
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const {
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+    nativeToken,
+  } = useChainContext()
 
   const isDaoVotingCw20StakedAdapter =
     votingModuleAdapter.id === DaoVotingCw20StakedAdapterId
@@ -164,9 +166,7 @@ const ProposalDepositInput = ({
         ]
       : []),
     // Then native.
-    {
-      ...NATIVE_TOKEN,
-    },
+    nativeToken,
     // Then other CW20.
     {
       type: TokenType.Cw20,

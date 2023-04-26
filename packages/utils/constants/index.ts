@@ -1,7 +1,3 @@
-import { GenericToken, TokenType } from '@dao-dao/types'
-
-import { getFallbackImage } from '../getFallbackImage'
-import { nativeTokenLabel, nativeTokenLogoURI } from '../ibc'
 import { CodeIdConfigs } from './codeIdConfigs'
 import { PolytoneNotesPerChain } from './polytoneNotes'
 
@@ -24,24 +20,6 @@ export const CHAIN_GOV_PROPOSAL_URL_TEMPLATE = process.env
   .NEXT_PUBLIC_CHAIN_GOV_PROPOSAL_URL_TEMPLATE as string
 export const LEGACY_URL_PREFIX = process.env
   .NEXT_PUBLIC_LEGACY_URL_PREFIX as string
-
-export const NATIVE_DECIMALS = parseInt(
-  process.env.NEXT_PUBLIC_NATIVE_DECIMALS || '6',
-  10
-)
-export const NATIVE_DENOM = process.env.NEXT_PUBLIC_FEE_DENOM as string
-export const NATIVE_TOKEN: GenericToken = Object.freeze({
-  type: TokenType.Native,
-  denomOrAddress: NATIVE_DENOM,
-  symbol: nativeTokenLabel(NATIVE_DENOM),
-  decimals: NATIVE_DECIMALS,
-  imageUrl: nativeTokenLogoURI(NATIVE_DENOM) || getFallbackImage(NATIVE_DENOM),
-})
-
-export const USDC_DECIMALS = parseInt(
-  process.env.NEXT_PUBLIC_USDC_DECIMALS || '6',
-  10
-)
 
 // True if on mainnet, false if on testnet.
 export const MAINNET = process.env.NEXT_PUBLIC_MAINNET === 'true'
@@ -69,9 +47,6 @@ export const STARGAZE_TESTNET_RPC_ENDPOINT =
   'https://rpc.elgafar-1.stargaze-apis.com:443'
 export const STARGAZE_TESTNET_REST_ENDPOINT =
   'https://rest.elgafar-1.stargaze-apis.com:443'
-
-export const MICRO_STAKING_DENOM = process.env
-  .NEXT_PUBLIC_STAKING_DENOM as string
 
 export const CI = process.env.CI === 'true'
 

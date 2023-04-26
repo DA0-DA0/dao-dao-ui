@@ -1,10 +1,12 @@
 import { Chain } from '@chain-registry/types'
 
 import { Coin } from './contracts'
+import { GenericToken } from './token'
 
 export type IChainContext = {
   chainId: string
   chain: Chain
+  nativeToken: GenericToken
 }
 
 export interface Validator {

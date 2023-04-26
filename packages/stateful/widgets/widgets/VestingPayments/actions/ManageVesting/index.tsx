@@ -35,12 +35,12 @@ import {
 } from '@dao-dao/types/contracts/CwPayrollFactory'
 import { InstantiateMsg as VestingInstantiateMsg } from '@dao-dao/types/contracts/CwVesting'
 import {
-  NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   convertSecondsToDurationWithUnits,
   encodeMessageAsBase64,
+  getNativeTokenForChainId,
   isValidContractAddress,
   loadableToLoadingData,
   makeWasmMessage,
@@ -73,30 +73,36 @@ export type ManageVestingData = {
   registerSlash: RegisterSlashData
 }
 
-const useDefaults: UseDefaults<ManageVestingData> = () => ({
-  mode: 'begin',
-  begin: {
-    amount: 1,
-    denomOrAddress: NATIVE_DENOM,
-    recipient: '',
-    startDate: '',
-    title: '',
-    duration: {
-      value: 1,
-      units: DurationUnits.Years,
+const useDefaults: UseDefaults<ManageVestingData> = () => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+
+  return {
+    mode: 'begin',
+    begin: {
+      amount: 1,
+      denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
+      recipient: '',
+      startDate: '',
+      title: '',
+      duration: {
+        value: 1,
+        units: DurationUnits.Years,
+      },
     },
-  },
-  cancel: {
-    address: '',
-  },
-  registerSlash: {
-    address: '',
-    validator: '',
-    time: '',
-    amount: '',
-    duringUnbonding: false,
-  },
-})
+    cancel: {
+      address: '',
+    },
+    registerSlash: {
+      address: '',
+      validator: '',
+      time: '',
+      amount: '',
+      duringUnbonding: false,
+    },
+  }
+}
 
 const instantiateStructure = {
   instantiate_msg: {
@@ -362,7 +368,8 @@ export const makeManageVestingActionMaker =
               total: amount,
               unbonding_duration_seconds:
                 token.type === TokenType.Native &&
-                token.denomOrAddress === NATIVE_DENOM
+                token.denomOrAddress ===
+                  getNativeTokenForChainId(chainId).denomOrAddress
                   ? nativeUnstakingDurationSecondsLoadable.contents
                   : 0,
               vesting_duration_seconds: convertDurationWithUnitsToSeconds(

@@ -20,8 +20,8 @@ import {
   TokenType,
 } from '@dao-dao/types'
 import {
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
   ibcAssets,
   isValidContractAddress,
   makeValidateContractAddress,
@@ -62,7 +62,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
 }) => {
   const { t } = useTranslation()
   const {
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
   const { register, setValue, watch } =
@@ -88,9 +88,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         ]
       : []),
     // Then native.
-    {
-      ...NATIVE_TOKEN,
-    },
+    getNativeTokenForChainId(chainId),
     // Then other CW20.
     {
       type: TokenType.Cw20,

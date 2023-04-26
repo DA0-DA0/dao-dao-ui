@@ -21,8 +21,8 @@ import {
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
 import {
@@ -173,7 +173,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
 >({
   key: 'walletTokenCardInfos',
   get:
-    ({ walletAddress, chainId = CHAIN_ID }) =>
+    ({ walletAddress, chainId }) =>
     ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(walletAddress))
 
@@ -211,9 +211,10 @@ export const walletTokenCardInfosSelector = selectorFamily<
             token.decimals
           )
 
-          // For now, stakingInfo only exists for native token, until ICA.
+          // Staking info only exists for native token.
           const hasStakingInfo =
-            token.denomOrAddress === NATIVE_TOKEN.denomOrAddress &&
+            token.denomOrAddress ===
+              getNativeTokenForChainId(chainId).denomOrAddress &&
             // Check if anything staked.
             Number(
               get(

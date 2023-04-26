@@ -1,3 +1,4 @@
+import { GenericToken } from '..'
 import { Duration } from '../contracts/common'
 import { LoadingData } from './common'
 import { ValidatorPickerProps } from './ValidatorPicker'
@@ -28,12 +29,8 @@ export interface StakingModalProps {
   loadingStakableTokens: LoadingData<number>
   // The duration for unstaking.
   unstakingDuration: Duration | null
-  // Denomination for the token that is being staked.
-  tokenDenom: string
-  // Symbol for the token that is being staked.
-  tokenSymbol: string
-  // Decimals for the token that is being staked.
-  tokenDecimals: number
+  // Token that is being staked.
+  token: GenericToken
   // Proposal deposit for the token that is being staked.
   proposalDeposit?: number
   // Is there an error?
@@ -56,11 +53,7 @@ export interface StakingModalProps {
   // validator address will be present in the `onAction` callback.
   validatorPicker?: Omit<
     ValidatorPickerProps,
-    | 'selectedAddress'
-    | 'onSelect'
-    | 'readOnly'
-    | 'nativeDecimals'
-    | 'nativeDenom'
+    'selectedAddress' | 'onSelect' | 'readOnly' | 'token'
   >
   // Enable restaking. Validator picker must be present as well.
   enableRestaking?: boolean

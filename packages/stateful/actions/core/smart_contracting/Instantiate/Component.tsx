@@ -18,7 +18,7 @@ import {
 import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
+  getNativeTokenForChainId,
   makeValidateAddress,
   makeWasmMessage,
   validateCosmosMsg,
@@ -46,7 +46,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 
   const { t } = useTranslation()
   const {
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
   const { register, control } = useFormContext()
@@ -156,6 +156,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
                   ? () => removeCoin(index)
                   : undefined,
               } as NativeCoinSelectorProps)}
+              chainId={chainId}
               errors={errors?.funds?.[index]}
               fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
             />
@@ -169,7 +170,10 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
             <Button
               className="mb-2 self-start"
               onClick={() =>
-                appendCoin({ amount: 1, denom: NATIVE_TOKEN.denomOrAddress })
+                appendCoin({
+                  amount: 1,
+                  denom: getNativeTokenForChainId(chainId).denomOrAddress,
+                })
               }
               variant="secondary"
             >

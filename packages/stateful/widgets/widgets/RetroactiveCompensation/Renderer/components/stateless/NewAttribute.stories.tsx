@@ -2,7 +2,11 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
-import { NATIVE_TOKEN, getFallbackImage } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  getFallbackImage,
+  getNativeTokenForChainId,
+} from '@dao-dao/utils'
 
 import { NewAttribute, NewAttributeProps } from './NewAttribute'
 
@@ -27,7 +31,7 @@ export const makeTokenProps = (): Pick<
   'availableTokens'
 > => ({
   availableTokens: [
-    NATIVE_TOKEN,
+    getNativeTokenForChainId(CHAIN_ID),
     {
       type: TokenType.Native,
       denomOrAddress: 'uatom',

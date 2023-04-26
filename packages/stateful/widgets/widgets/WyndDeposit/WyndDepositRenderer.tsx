@@ -42,10 +42,10 @@ import { ExecuteSwapOperationsMsg } from '@dao-dao/types/contracts/WyndexMultiHo
 import {
   CHAIN_TXN_URL_PREFIX,
   DAO_DAO_DAO_ADDRESS,
-  NATIVE_TOKEN,
   WYND_MULTI_HOP_CONTRACT,
   convertMicroDenomToDenomWithDecimals,
   genericTokenToAssetInfo,
+  getNativeTokenForChainId,
   processError,
 } from '@dao-dao/utils'
 
@@ -170,7 +170,9 @@ export const WyndDepositRenderer = ({
     [loadingWyndTokens, walletBalances, t]
   )
 
-  const [token, setToken] = useState<GenericToken>(NATIVE_TOKEN)
+  const [token, setToken] = useState<GenericToken>(() =>
+    getNativeTokenForChainId(chainId)
+  )
   const inTokenIsOutToken =
     token.type === _outputToken.type &&
     token.denomOrAddress === _outputToken.denomOrAddress

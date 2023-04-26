@@ -35,9 +35,7 @@ export const StakingModal = ({
   // macrodenom
   loadingUnstakableTokens,
   unstakingDuration,
-  tokenDenom,
-  tokenSymbol,
-  tokenDecimals,
+  token,
   // macrodenom
   proposalDeposit,
   loading,
@@ -164,10 +162,9 @@ export const StakingModal = ({
 
                     <ValidatorPicker
                       {...validatorPicker}
-                      nativeDecimals={tokenDecimals}
-                      nativeDenom={tokenDenom}
                       onSelect={({ address }) => setFromValidator(address)}
                       selectedAddress={fromValidator}
+                      token={token}
                       validators={
                         // Can only restake from validators with stakes.
                         validatorPicker.validators.filter((v) =>
@@ -188,10 +185,9 @@ export const StakingModal = ({
 
                   <ValidatorPicker
                     {...validatorPicker}
-                    nativeDecimals={tokenDecimals}
-                    nativeDenom={tokenDenom}
                     onSelect={({ address }) => setValidator(address)}
                     selectedAddress={validator}
+                    token={token}
                     validators={
                       // If restaking, show all validators for destination.
                       mode === StakingMode.Stake || mode === StakingMode.Restake
@@ -217,8 +213,8 @@ export const StakingModal = ({
       {mode === StakingMode.Claim ? (
         <ClaimModeBody
           amount={claimableTokens}
-          tokenDecimals={tokenDecimals}
-          tokenSymbol={tokenSymbol}
+          tokenDecimals={token.decimals}
+          tokenSymbol={token.symbol}
         />
       ) : (
         <StakeUnstakeModesBody
@@ -232,8 +228,8 @@ export const StakingModal = ({
           mode={mode}
           proposalDeposit={proposalDeposit}
           setAmount={(amount: number) => setAmount(amount)}
-          tokenDecimals={tokenDecimals}
-          tokenSymbol={tokenSymbol}
+          tokenDecimals={token.decimals}
+          tokenSymbol={token.symbol}
           unstakingDuration={unstakingDuration}
         />
       )}

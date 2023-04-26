@@ -5,7 +5,11 @@ import {
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
-import { NATIVE_TOKEN, getJunoIbcUsdc } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  getJunoIbcUsdc,
+  getNativeTokenForChainId,
+} from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
 import { WyndSwapComponent, WyndSwapData } from './Component'
@@ -17,9 +21,7 @@ export default {
   component: WyndSwapComponent,
   decorators: [
     makeReactHookFormDecorator<WyndSwapData>({
-      tokenIn: {
-        ...NATIVE_TOKEN,
-      },
+      tokenIn: getNativeTokenForChainId(CHAIN_ID),
       tokenInAmount: 0,
       tokenOut: {
         ...usdc,

@@ -16,7 +16,7 @@ import {
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, ButtonPopupSection, TokenCardInfo } from '@dao-dao/types'
-import { NATIVE_TOKEN, StakeType } from '@dao-dao/utils'
+import { StakeType, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { useDaoProposalSinglePrefill } from '../../hooks'
 import { tokenCardLazyInfoSelector } from '../../recoil'
@@ -75,7 +75,6 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     actions: stakesWithRewards.map(({ validator: { address } }) => ({
       actionKey: ActionKey.ManageStaking,
       data: {
-        // TODO(polytone)
         chainId: props.chainId,
         stakeType: StakeType.WithdrawDelegatorReward,
         validator: address,
@@ -94,7 +93,6 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
             {
               actionKey: ActionKey.ManageStaking,
               data: {
-                // TODO(polytone)
                 chainId: props.chainId,
                 stakeType: StakeType.Delegate,
                 validator: '',
@@ -116,13 +114,15 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
           })),
   })
 
+  const nativeToken = getNativeTokenForChainId(props.chainId)
+
   // Prefill URLs valid...
   const proposeClaimHref =
     // ...if there is something to claim,
     stakesWithRewards.length > 0 &&
     // ...if there is a valid prefill (meaning proposal module adapter exists)
     proposalPrefillClaim &&
-    props.token.denomOrAddress === NATIVE_TOKEN.denomOrAddress
+    props.token.denomOrAddress === nativeToken.denomOrAddress
       ? getDaoProposalPath(coreAddress, 'create', {
           prefill: proposalPrefillClaim,
         })
@@ -134,7 +134,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
     // ...if there is a valid prefill (meaning proposal module adapter exists)
     proposalPrefillStakeUnstake &&
-    props.token.denomOrAddress === NATIVE_TOKEN.denomOrAddress
+    props.token.denomOrAddress === nativeToken.denomOrAddress
       ? getDaoProposalPath(coreAddress, 'create', {
           prefill: proposalPrefillStakeUnstake,
         })

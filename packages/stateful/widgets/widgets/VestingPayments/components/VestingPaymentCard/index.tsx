@@ -10,8 +10,8 @@ import {
 } from '@dao-dao/state/recoil'
 import { useAddToken, useCachedLoadable, useChain } from '@dao-dao/stateless'
 import {
-  NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
   loadableToLoadingData,
   processError,
 } from '@dao-dao/utils'
@@ -186,18 +186,20 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
         withdrawing={withdrawing}
       />
 
-      {recipientIsWallet && token.denomOrAddress === NATIVE_DENOM && (
-        <NativeStakingModal
-          onClose={() => setShowStakingModal(false)}
-          stakes={
-            lazyInfoLoading.loading
-              ? undefined
-              : lazyInfoLoading.data.stakingInfo?.stakes
-          }
-          vestingInfo={vestingInfo}
-          visible={showStakingModal}
-        />
-      )}
+      {recipientIsWallet &&
+        token.denomOrAddress ===
+          getNativeTokenForChainId(chainId).denomOrAddress && (
+          <NativeStakingModal
+            onClose={() => setShowStakingModal(false)}
+            stakes={
+              lazyInfoLoading.loading
+                ? undefined
+                : lazyInfoLoading.data.stakingInfo?.stakes
+            }
+            vestingInfo={vestingInfo}
+            visible={showStakingModal}
+          />
+        )}
     </>
   )
 }

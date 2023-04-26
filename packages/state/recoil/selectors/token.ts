@@ -1,4 +1,4 @@
-import { constSelector, selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import {
   GenericToken,
@@ -10,11 +10,9 @@ import {
 import {
   getChainForChainId,
   getFallbackImage,
+  getTokenForChainIdAndDenom,
   isValidContractAddress,
   isValidWalletAddress,
-  nativeTokenDecimals,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
 } from '@dao-dao/utils'
 
 import { nativeBalanceSelector, nativeBalancesSelector } from './chain'
@@ -34,26 +32,24 @@ export const genericTokenSelector = selectorFamily<
   get:
     ({ type, denomOrAddress, chainId }) =>
     async ({ get }) => {
+      if (type === TokenType.Native) {
+        return getTokenForChainIdAndDenom(chainId, denomOrAddress)
+      }
+
+      // CW20
       const tokenInfo = get(
-        type === TokenType.Cw20
-          ? Cw20BaseSelectors.tokenInfoSelector({
-              contractAddress: denomOrAddress,
-              chainId,
-              params: [],
-            })
-          : constSelector({
-              decimals: nativeTokenDecimals(denomOrAddress) ?? 0,
-              symbol: nativeTokenLabel(denomOrAddress),
-            })
+        Cw20BaseSelectors.tokenInfoSelector({
+          contractAddress: denomOrAddress,
+          chainId,
+          params: [],
+        })
       )
       const imageUrl =
         get(
-          type === TokenType.Cw20
-            ? Cw20BaseSelectors.logoUrlSelector({
-                contractAddress: denomOrAddress,
-                chainId,
-              })
-            : constSelector(nativeTokenLogoURI(denomOrAddress) ?? '')
+          Cw20BaseSelectors.logoUrlSelector({
+            contractAddress: denomOrAddress,
+            chainId,
+          })
         ) || getFallbackImage(denomOrAddress)
 
       return {

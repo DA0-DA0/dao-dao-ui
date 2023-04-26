@@ -29,7 +29,6 @@ import {
   LoadingData,
 } from '@dao-dao/types'
 import {
-  NATIVE_DECIMALS,
   convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
@@ -93,7 +92,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   const selectedToken = tokens.find(
     ({ token: { denomOrAddress } }) => denomOrAddress === watchDenomOrAddress
   )
-  const selectedDecimals = selectedToken?.token.decimals ?? NATIVE_DECIMALS
+  const selectedDecimals = selectedToken?.token.decimals ?? 0
   const selectedMicroBalance = selectedToken?.balance ?? 0
   const selectedBalance = convertMicroDenomToDenomWithDecimals(
     selectedMicroBalance,

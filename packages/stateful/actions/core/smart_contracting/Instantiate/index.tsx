@@ -14,15 +14,16 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { useExecutedProposalTxLoadable } from '../../../../hooks/useExecutedProposalTxLoadable'
 import { useTokenBalances } from '../../../hooks'
+import { useActionOptions } from '../../../react'
 import { InstantiateComponent as StatelessInstantiateComponent } from './Component'
 
 interface InstantiateData {
@@ -33,39 +34,51 @@ interface InstantiateData {
   funds: { denom: string; amount: number }[]
 }
 
-const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () =>
-  useCallback(({ admin, codeId, label, message, funds }: InstantiateData) => {
-    let msg
-    try {
-      msg = JSON5.parse(message)
-    } catch (err) {
-      console.error(`internal error. unparsable message: (${message})`, err)
-      return
-    }
+const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
-    return makeWasmMessage({
-      wasm: {
-        instantiate: {
-          admin: admin || null,
-          code_id: codeId,
-          funds: funds.map(({ denom, amount }) => ({
-            denom,
-            amount: convertDenomToMicroDenomWithDecimals(
-              amount,
-              NATIVE_TOKEN.decimals
-            ).toString(),
-          })),
-          label,
-          msg,
+  return useCallback(
+    ({ admin, codeId, label, message, funds }: InstantiateData) => {
+      let msg
+      try {
+        msg = JSON5.parse(message)
+      } catch (err) {
+        console.error(`internal error. unparsable message: (${message})`, err)
+        return
+      }
+
+      return makeWasmMessage({
+        wasm: {
+          instantiate: {
+            admin: admin || null,
+            code_id: codeId,
+            funds: funds.map(({ denom, amount }) => ({
+              denom,
+              amount: convertDenomToMicroDenomWithDecimals(
+                amount,
+                getNativeTokenForChainId(chainId).decimals
+              ).toString(),
+            })),
+            label,
+            msg,
+          },
         },
-      },
-    })
-  }, [])
+      })
+    },
+    [chainId]
+  )
+}
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
   msg: Record<string, any>
-) =>
-  objectMatchesStructure(msg, {
+) => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+
+  return objectMatchesStructure(msg, {
     wasm: {
       instantiate: {
         code_id: {},
@@ -88,7 +101,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
               amount: Number(
                 convertMicroDenomToDenomWithDecimals(
                   amount,
-                  NATIVE_TOKEN.decimals
+                  getNativeTokenForChainId(chainId).decimals
                 )
               ),
             })
@@ -98,6 +111,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
     : {
         match: false,
       }
+}
 
 const Component: ActionComponent = (props) => {
   // Get the selected tokens if not creating.

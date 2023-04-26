@@ -12,10 +12,9 @@ import {
 import { TokenCardInfo, WithChainId } from '@dao-dao/types'
 import {
   CHAIN_ID,
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
-  nativeTokenDecimals,
-  nativeTokenLabel,
+  getNativeTokenForChainId,
+  getTokenForChainIdAndDenom,
 } from '@dao-dao/utils'
 
 import { daoCorePolytoneProxiesSelector } from './dao'
@@ -86,9 +85,10 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
               token.decimals
             )
 
-            // For now, stakingInfo only exists for native token, until ICA.
+            // Staking info only exists for native token.
             const hasStakingInfo =
-              token.denomOrAddress === NATIVE_TOKEN.denomOrAddress &&
+              token.denomOrAddress ===
+                getNativeTokenForChainId(chainId).denomOrAddress &&
               // Check if anything staked.
               Number(
                 get(
@@ -267,20 +267,7 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
             return
           }
 
-          const tokenDecimals = nativeTokenDecimals(coin.denom)
-          const tokenLabel = nativeTokenLabel(coin.denom)
-
-          // Only convert value and denom at the same time. If decimals are
-          // or vice versa, display value in non-converted decimals with
-          // non-converted denom.
-          const amountValue =
-            tokenDecimals !== undefined && tokenLabel !== undefined
-              ? convertMicroDenomToDenomWithDecimals(coin.amount, tokenDecimals)
-              : Number(coin.amount)
-          const denomLabel =
-            tokenDecimals !== undefined && tokenLabel !== undefined
-              ? tokenLabel
-              : coin.denom
+          const token = getTokenForChainIdAndDenom(params.chainId, coin.denom)
 
           return {
             hash,
@@ -288,8 +275,11 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
             timestamp,
             sender,
             recipient,
-            amount: amountValue,
-            denomLabel,
+            amount: convertMicroDenomToDenomWithDecimals(
+              coin.amount,
+              token.decimals
+            ),
+            denomLabel: token.symbol,
             outgoing: sender === params.address,
           }
         })

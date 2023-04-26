@@ -20,8 +20,8 @@ import {
 import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   DaoProposalMultipleAdapterId,
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -182,7 +182,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
             ? 'cw20' in depositInfo.denom
               ? depositInfo.denom.cw20
               : depositInfo.denom.native
-            : NATIVE_TOKEN.denomOrAddress,
+            : getNativeTokenForChainId(chainId).denomOrAddress,
           token: depositInfoToken,
           refundPolicy:
             depositInfo?.refund_policy ?? DepositRefundPolicy.OnlyPassed,

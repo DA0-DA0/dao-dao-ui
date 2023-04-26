@@ -8,10 +8,11 @@ import {
   NewDao,
 } from '@dao-dao/types'
 import {
+  CHAIN_ID,
   DaoProposalMultipleAdapterId,
   DaoProposalSingleAdapterId,
   DaoVotingCw4AdapterId,
-  NATIVE_TOKEN,
+  getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
 import {
@@ -56,7 +57,7 @@ export const makeDefaultNewDao = (): NewDao => ({
       enabled: false,
       amount: 10,
       type: 'native',
-      denomOrAddress: NATIVE_TOKEN.denomOrAddress,
+      denomOrAddress: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,
       token: undefined,
       refundPolicy: DepositRefundPolicy.OnlyPassed,
     },

@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { EntityType, TokenType } from '@dao-dao/types'
-import { NATIVE_TOKEN } from '@dao-dao/utils'
+import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../../../../../../components'
 import { makeSurvey } from './ContributionForm.stories'
@@ -153,9 +153,7 @@ Default.args = {
       timestamp: new Date(),
     },
     {
-      token: {
-        ...NATIVE_TOKEN,
-      },
+      token: getNativeTokenForChainId(CHAIN_ID),
       usdPrice: 1,
       timestamp: new Date(),
     },

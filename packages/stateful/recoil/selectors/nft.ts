@@ -13,7 +13,6 @@ import {
 import { NftCardInfo, WithChainId } from '@dao-dao/types'
 import { StargazeNft } from '@dao-dao/types/nft'
 import {
-  CHAIN_ID,
   MAINNET,
   STARGAZE_PROFILE_API_TEMPLATE,
   STARGAZE_TESTNET_CHAIN_ID,
@@ -82,7 +81,7 @@ export const nftCardInfoWithUriSelector = selectorFamily<
 >({
   key: 'nftCardInfo',
   get:
-    ({ tokenId, collection, tokenUri, chainId = CHAIN_ID }) =>
+    ({ tokenId, collection, tokenUri, chainId }) =>
     async ({ get }) => {
       const collectionInfo = get(
         Cw721BaseSelectors.contractInfoSelector({

@@ -19,10 +19,10 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
   StakeType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
   makeDistributeMessage,
   makeStakingMessage,
 } from '@dao-dao/utils'
@@ -36,8 +36,13 @@ import {
   useStakeActions,
 } from './Component'
 
-const useTransformToCosmos: UseTransformToCosmos<ManageStakingData> = () =>
-  useCallback(
+const useTransformToCosmos: UseTransformToCosmos<ManageStakingData> = () => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+  const nativeToken = getNativeTokenForChainId(chainId)
+
+  return useCallback(
     ({ stakeType, amount, validator, toValidator }: ManageStakingData) => {
       if (stakeType === StakeType.WithdrawDelegatorReward) {
         return makeDistributeMessage(validator)
@@ -45,23 +50,31 @@ const useTransformToCosmos: UseTransformToCosmos<ManageStakingData> = () =>
 
       const microAmount = convertDenomToMicroDenomWithDecimals(
         amount,
-        NATIVE_TOKEN.decimals
+        nativeToken.decimals
       )
       return makeStakingMessage(
         stakeType,
         microAmount.toString(),
-        NATIVE_TOKEN.denomOrAddress,
+        nativeToken.denomOrAddress,
         validator,
         toValidator
       )
     },
-    []
+    [nativeToken]
   )
+}
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
   msg: Record<string, any>
 ) => {
   const stakeActions = useStakeActions()
+
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+  const nativeToken = getNativeTokenForChainId(chainId)
+
+  // TODO(polytone)
 
   if (
     'distribution' in msg &&
@@ -71,6 +84,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
     return {
       match: true,
       data: {
+        chainId,
         stakeType: StakeType.WithdrawDelegatorReward,
         validator: msg.distribution.withdraw_delegator_reward.validator,
         // Default values, not needed for displaying this type of message.
@@ -93,13 +107,14 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
       'amount' in data &&
       'amount' in data.amount &&
       'denom' in data.amount &&
-      data.amount.denom === NATIVE_TOKEN.denomOrAddress
+      data.amount.denom === nativeToken.denomOrAddress
     ) {
       const { amount } = data.amount
 
       return {
         match: true,
         data: {
+          chainId,
           stakeType,
           validator:
             stakeType === StakeType.Redelegate
@@ -109,7 +124,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
             stakeType === StakeType.Redelegate ? data.dst_validator : '',
           amount: convertMicroDenomToDenomWithDecimals(
             amount,
-            NATIVE_TOKEN.decimals
+            nativeToken.decimals
           ),
         },
       }
@@ -124,6 +139,7 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
     address,
     chain: { chain_id: chainId },
   } = useActionOptions()
+  const nativeToken = getNativeTokenForChainId(chainId)
 
   // These need to be loaded via cached loadables to avoid displaying a loader
   // when this data updates on a schedule. Manually trigger a suspense loader
@@ -221,13 +237,13 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
       const coin = parseCoins(
         claimValidatorRewardsEvents[innerIndex].attributes.find(
           ({ key }) => key === 'amount'
-        )?.value ?? '0' + NATIVE_TOKEN.denomOrAddress
+        )?.value ?? '0' + nativeToken.denomOrAddress
       )[0]
 
       if (coin) {
         claimedRewards = convertMicroDenomToDenomWithDecimals(
           coin.amount ?? 0,
-          NATIVE_TOKEN.decimals
+          nativeToken.decimals
         )
       }
     }
@@ -258,15 +274,15 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
               ? []
               : loadingNativeDelegationInfo.data.delegations.map(
                   ({ validator, delegated, pendingReward }) => ({
-                    token: NATIVE_TOKEN,
+                    token: nativeToken,
                     validator,
                     amount: convertMicroDenomToDenomWithDecimals(
                       delegated.amount,
-                      NATIVE_TOKEN.decimals
+                      nativeToken.decimals
                     ),
                     rewards: convertMicroDenomToDenomWithDecimals(
                       pendingReward.amount,
-                      NATIVE_TOKEN.decimals
+                      nativeToken.decimals
                     ),
                   })
                 ),
@@ -304,6 +320,7 @@ export const makeManageStakingAction: ActionMaker<ManageStakingData> = ({
     )
 
     return {
+      chainId,
       stakeType: stakeActions[0].type,
       // Default to first validator if exists.
       validator:

@@ -17,9 +17,9 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
   decodeRawProtobufMsg,
   encodeRawProtobufMsg,
+  getNativeTokenForChainId,
   isDecodedStargateMsg,
   makeStargateMessage,
   toValidatorAddress,
@@ -39,7 +39,7 @@ interface ValidatorActionsData {
 export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
   t,
   address,
-  chain: { bech32_prefix: bech32Prefix },
+  chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
 }) => {
   const validatorAddress = toValidatorAddress(address, bech32Prefix)
 
@@ -116,7 +116,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
           },
         },
         value: {
-          denom: NATIVE_TOKEN.denomOrAddress,
+          denom: getNativeTokenForChainId(chainId).denomOrAddress,
           amount: '1000000',
         },
       },

@@ -19,9 +19,9 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
   makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils'
@@ -49,8 +49,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   const { t } = useTranslation()
   const {
     context,
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
+  const nativeToken = getNativeTokenForChainId(chainId)
+
   const { register, watch, setValue, setError, clearErrors } = useFormContext()
 
   const spendAmount = watch(fieldNamePrefix + 'amount')
@@ -90,16 +92,16 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       }
 
       // Just in case native denom not in list.
-      if (id === NATIVE_TOKEN.denomOrAddress) {
+      if (id === nativeToken.denomOrAddress) {
         return t(insufficientBalanceI18nKey, {
           amount: 0,
-          tokenSymbol: NATIVE_TOKEN.symbol,
+          tokenSymbol: nativeToken.symbol,
         })
       }
 
       return t('error.unknownDenom', { denom: id })
     },
-    [context.type, t, tokens]
+    [context.type, nativeToken.denomOrAddress, nativeToken.symbol, t, tokens]
   )
 
   // Update amount+denom combo error each time either field is updated

@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { EntityDisplay } from '@dao-dao/stateless/components/EntityDisplay'
 import { EntityType, TokenType } from '@dao-dao/types'
-import { NATIVE_TOKEN } from '@dao-dao/utils'
+import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { Survey, SurveyStatus } from '../../types'
 import { ContributionForm } from './ContributionForm'
@@ -96,9 +96,7 @@ Default.args = {
       timestamp: new Date(),
     },
     {
-      token: {
-        ...NATIVE_TOKEN,
-      },
+      token: getNativeTokenForChainId(CHAIN_ID),
       usdPrice: 1,
       timestamp: new Date(),
     },

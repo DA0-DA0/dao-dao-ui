@@ -4,7 +4,7 @@ import {
   WidgetLocation,
   WidgetVisibilityContext,
 } from '@dao-dao/types'
-import { NATIVE_TOKEN } from '@dao-dao/utils'
+import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { WyndDepositData } from './types'
 import { WyndDepositEditor as Editor } from './WyndDepositEditor'
@@ -17,7 +17,7 @@ export const WyndDepositWidget: Widget<WyndDepositData> = {
   defaultValues: {
     outputToken: {
       type: TokenType.Native,
-      denomOrAddress: NATIVE_TOKEN.denomOrAddress,
+      denomOrAddress: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,
     },
     outputAmount: '1000000',
     markdown: '',

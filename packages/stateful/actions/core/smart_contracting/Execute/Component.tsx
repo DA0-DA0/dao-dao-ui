@@ -17,8 +17,8 @@ import {
 import { GenericTokenBalance, LoadingData, TokenType } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
   makeValidateContractAddress,
   makeWasmMessage,
   validateCosmosMsg,
@@ -51,7 +51,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
 
   const { t } = useTranslation()
   const {
-    chain: { bech32_prefix: bech32Prefix },
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
   const { register, control, watch, setValue } = useFormContext()
@@ -195,6 +195,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                         ? () => removeCoin(index)
                         : undefined,
                     } as NativeCoinSelectorProps)}
+                    chainId={chainId}
                     errors={errors?.funds?.[index]}
                     fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
                   />
@@ -210,7 +211,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                     onClick={() =>
                       appendCoin({
                         amount: 1,
-                        denom: NATIVE_TOKEN.denomOrAddress,
+                        denom: getNativeTokenForChainId(chainId).denomOrAddress,
                       })
                     }
                     variant="secondary"

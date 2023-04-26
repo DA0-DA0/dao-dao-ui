@@ -2,13 +2,12 @@ import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { v4 as uuidv4 } from 'uuid'
 
-import { ChainEmoji } from '@dao-dao/stateless'
+import { ChainEmoji, ChainProvider } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
   ActionKey,
   ActionMaker,
-  ActionOptions,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -17,18 +16,13 @@ import {
   POLYTONE_EAR,
   POLYTONE_NOTES,
   encodeMessageAsBase64,
-  getChainForChainId,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import {
-  getCoreActionCategoryMakers,
-  makeActionCategoriesWithLabel,
-} from '../../../core'
-import {
-  ActionsContext,
+  BaseActionsProvider,
   useActionOptions,
   useActionsForMatching,
   useLoadedActionsAndCategories,
@@ -77,7 +71,7 @@ const InnerComponent: ActionComponent = (props) => {
 }
 
 const Component: ActionComponent = (props) => {
-  const { t, context } = useActionOptions()
+  const { context } = useActionOptions()
   if (context.type !== ActionContextType.Dao) {
     throw new Error('Invalid context for this action.')
   }
@@ -99,36 +93,23 @@ const Component: ActionComponent = (props) => {
     }
   }, [clearErrors, chainId, props.fieldNamePrefix, props.isCreating, setValue])
 
-  const chain = getChainForChainId(chainId)
   const polytoneProxy = context.info.polytoneProxies[chainId]
   if (!polytoneProxy) {
     throw new Error('Invalid chain ID.')
   }
 
-  const options: ActionOptions = {
-    t,
-    chain,
-    address: polytoneProxy,
-    context: {
-      type: ActionContextType.Wallet,
-    },
-  }
-
-  const categories = makeActionCategoriesWithLabel(
-    getCoreActionCategoryMakers(),
-    options
-  )
-
   return (
     <SuspenseLoader fallback={<InnerComponentLoading {...props} />}>
-      <ActionsContext.Provider
-        value={{
-          options,
-          categories,
-        }}
-      >
-        <InnerComponent {...props} />
-      </ActionsContext.Provider>
+      <ChainProvider chainId={chainId}>
+        <BaseActionsProvider
+          address={polytoneProxy}
+          context={{
+            type: ActionContextType.Wallet,
+          }}
+        >
+          <InnerComponent {...props} />
+        </BaseActionsProvider>
+      </ChainProvider>
     </SuspenseLoader>
   )
 }
