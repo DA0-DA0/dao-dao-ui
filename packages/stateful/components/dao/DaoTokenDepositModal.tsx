@@ -37,13 +37,18 @@ export const DaoTokenDepositModal = ({
   ...props
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { connected, address, signingCosmWasmClient } = useWallet()
+  const { chain_id: currentChainId } = useChain()
+  const { name: daoName, coreAddress, polytoneProxies } = useDaoInfoContext()
+  const { connected, address, signingCosmWasmClient } = useWallet(token.chainId)
   const { refreshBalances: refreshWalletBalances } = useWalletInfo()
 
+  const depositAddress =
+    token.chainId === currentChainId
+      ? coreAddress
+      : polytoneProxies[token.chainId]
+
   const setRefreshDaoBalancesId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(coreAddress)
+    refreshWalletBalancesIdAtom(depositAddress)
   )
   const refreshDaoBalances = useCallback(
     () => setRefreshDaoBalancesId((id) => id + 1),
@@ -56,12 +61,12 @@ export const DaoTokenDepositModal = ({
       : token.type === 'native'
       ? nativeDenomBalanceWithTimestampSelector({
           walletAddress: address,
-          chainId,
+          chainId: token.chainId,
           denom: token.denomOrAddress,
         })
       : Cw20BaseSelectors.balanceWithTimestampSelector({
           contractAddress: token.denomOrAddress,
-          chainId,
+          chainId: token.chainId,
           params: [{ address }],
         }),
     {
@@ -95,14 +100,14 @@ export const DaoTokenDepositModal = ({
         if (token.type === 'native') {
           await signingCosmWasmClient.sendTokens(
             address,
-            coreAddress,
+            depositAddress,
             coins(microAmount, token.denomOrAddress),
             'auto'
           )
         } else if (token.type === 'cw20') {
           await transferCw20({
             amount: microAmount,
-            recipient: coreAddress,
+            recipient: depositAddress,
           })
         }
 
@@ -131,7 +136,7 @@ export const DaoTokenDepositModal = ({
     },
     [
       address,
-      coreAddress,
+      depositAddress,
       daoName,
       onClose,
       refreshDaoBalances,
