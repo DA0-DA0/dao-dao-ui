@@ -21,6 +21,7 @@ export interface RadioInputProps<
   setValue: UseFormSetValue<FV>
   className?: string
   disabled?: boolean
+  onChange?: () => void
 }
 
 export const RadioInput = <FV extends FieldValues, FieldName extends Path<FV>>({
@@ -30,6 +31,7 @@ export const RadioInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   setValue,
   className,
   disabled,
+  onChange,
 }: RadioInputProps<FV, FieldName>) => (
   <div
     className={clsx('flex flex-row flex-wrap items-stretch gap-2', className)}
@@ -42,7 +44,10 @@ export const RadioInput = <FV extends FieldValues, FieldName extends Path<FV>>({
           key={index}
           background
           disabled={disabled}
-          onClick={() => setValue(fieldName, value)}
+          onClick={() => {
+            setValue(fieldName, value)
+            onChange?.()
+          }}
           selected={selected}
           {...labelOrDisplay}
         />

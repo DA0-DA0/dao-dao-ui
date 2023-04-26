@@ -1,7 +1,6 @@
-import { parseCoins } from '@cosmjs/amino'
+import { coin, parseCoins } from '@cosmjs/amino'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useRecoilValue } from 'recoil'
 
 import {
   nativeBalanceSelector,
@@ -9,9 +8,18 @@ import {
   nativeUnstakingDurationSecondsSelector,
   validatorsSelector,
 } from '@dao-dao/state'
-import { DepositEmoji, Loader, useCachedLoading } from '@dao-dao/stateless'
+import {
+  ChainProvider,
+  DepositEmoji,
+  Loader,
+  RadioInput,
+  useCachedLoading,
+  useChainContext,
+} from '@dao-dao/stateless'
+import { CosmosMsgForEmpty } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
@@ -19,16 +27,19 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  POLYTONE_NOTES,
   StakeType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   makeDistributeMessage,
+  makePolytoneExecuteMessage,
   makeStakingMessage,
 } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components/SuspenseLoader'
 import { useExecutedProposalTxLoadable } from '../../../../hooks'
+import { useDecodePolytoneExecuteMsg } from '../../../hooks/useDecodePolytoneExecuteMsg'
 import { useActionOptions } from '../../../react'
 import {
   ManageStakingData,
@@ -37,44 +48,56 @@ import {
 } from './Component'
 
 const useTransformToCosmos: UseTransformToCosmos<ManageStakingData> = () => {
-  const {
-    chain: { chain_id: chainId },
-  } = useActionOptions()
-  const nativeToken = getNativeTokenForChainId(chainId)
+  const currentChainId = useActionOptions().chain.chain_id
 
   return useCallback(
-    ({ stakeType, amount, validator, toValidator }: ManageStakingData) => {
+    ({
+      chainId,
+      stakeType,
+      amount,
+      validator,
+      toValidator,
+    }: ManageStakingData) => {
+      let msg: CosmosMsgForEmpty | undefined
       if (stakeType === StakeType.WithdrawDelegatorReward) {
-        return makeDistributeMessage(validator)
+        msg = makeDistributeMessage(validator)
+      } else {
+        const nativeToken = getNativeTokenForChainId(chainId)
+        const microAmount = convertDenomToMicroDenomWithDecimals(
+          amount,
+          nativeToken.decimals
+        )
+        msg = makeStakingMessage(
+          stakeType,
+          microAmount.toString(),
+          nativeToken.denomOrAddress,
+          validator,
+          toValidator
+        )
       }
 
-      const microAmount = convertDenomToMicroDenomWithDecimals(
-        amount,
-        nativeToken.decimals
-      )
-      return makeStakingMessage(
-        stakeType,
-        microAmount.toString(),
-        nativeToken.denomOrAddress,
-        validator,
-        toValidator
-      )
+      if (chainId === currentChainId) {
+        return msg
+      } else {
+        return makePolytoneExecuteMessage(chainId, msg)
+      }
     },
-    [nativeToken]
+    [currentChainId]
   )
 }
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
   msg: Record<string, any>
 ) => {
+  let chainId = useActionOptions().chain.chain_id
+  const decodedPolytone = useDecodePolytoneExecuteMsg(msg)
+  if (decodedPolytone.match) {
+    chainId = decodedPolytone.chainId
+    msg = decodedPolytone.msg
+  }
+
   const stakeActions = useStakeActions()
-
-  const {
-    chain: { chain_id: chainId },
-  } = useActionOptions()
   const nativeToken = getNativeTokenForChainId(chainId)
-
-  // TODO(polytone)
 
   if (
     'distribution' in msg &&
@@ -134,34 +157,37 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
   return { match: false }
 }
 
-const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
+const InnerComponent: ActionComponent = (props) => {
+  const { address: _address, context, chain } = useActionOptions()
+  const { watch } = useFormContext()
+
   const {
-    address,
     chain: { chain_id: chainId },
-  } = useActionOptions()
-  const nativeToken = getNativeTokenForChainId(chainId)
+    nativeToken,
+  } = useChainContext()
+
+  const address =
+    context.type === ActionContextType.Dao && chainId !== chain.chain_id
+      ? context.info.polytoneProxies[chainId] || ''
+      : _address
 
   // These need to be loaded via cached loadables to avoid displaying a loader
   // when this data updates on a schedule. Manually trigger a suspense loader
   // the first time when the initial data is still loading.
 
   const loadingNativeBalance = useCachedLoading(
-    address
-      ? nativeBalanceSelector({
-          chainId,
-          address,
-        })
-      : undefined,
-    undefined
+    nativeBalanceSelector({
+      chainId,
+      address,
+    }),
+    coin(0, nativeToken.denomOrAddress)
   )
 
   const loadingNativeDelegationInfo = useCachedLoading(
-    address
-      ? nativeDelegationInfoSelector({
-          chainId,
-          address,
-        })
-      : undefined,
+    nativeDelegationInfoSelector({
+      chainId,
+      address,
+    }),
     {
       delegations: [],
       unbondingDelegations: [],
@@ -175,17 +201,17 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
     []
   )
 
-  const nativeUnstakingDurationSeconds = useRecoilValue(
+  const nativeUnstakingDurationSeconds = useCachedLoading(
     nativeUnstakingDurationSecondsSelector({
       chainId,
-    })
+    }),
+    -1
   )
 
   // If in DAO context, use executed proposal TX events to find claimed
   // rewards. If in wallet context, will be undefined.
   const executedTxLoadable = useExecutedProposalTxLoadable()
 
-  const { watch } = useFormContext()
   let claimedRewards: number | undefined
   if (
     executedTxLoadable.state === 'hasValue' &&
@@ -255,10 +281,9 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
       forceFallback={
         // Manually trigger loader.
         loadingNativeBalance.loading ||
-        !loadingNativeBalance.data ||
         loadingNativeDelegationInfo.loading ||
-        !loadingNativeDelegationInfo.data ||
-        loadingValidators.loading
+        loadingValidators.loading ||
+        nativeUnstakingDurationSeconds.loading
       }
     >
       <StatelessManageStakingComponent
@@ -291,10 +316,58 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
             executedTxLoadable.state === 'hasValue' &&
             !!executedTxLoadable.contents,
           claimedRewards,
-          nativeUnstakingDurationSeconds,
+          nativeUnstakingDurationSeconds: nativeUnstakingDurationSeconds.loading
+            ? 0
+            : nativeUnstakingDurationSeconds.data,
         }}
       />
     </SuspenseLoader>
+  )
+}
+
+const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
+  const { context, chain } = useActionOptions()
+  const { watch, setValue } = useFormContext()
+
+  const chainId = watch(props.fieldNamePrefix + 'chainId')
+
+  return (
+    <>
+      {context.type === ActionContextType.Dao && (
+        <div className="mb-4">
+          <RadioInput
+            disabled={!props.isCreating}
+            fieldName={(props.fieldNamePrefix + 'chainId') as 'chainId'}
+            onChange={() => {
+              // Reset validator when switching chain.
+              setValue((props.fieldNamePrefix + 'validator') as 'validator', '')
+              setValue(
+                (props.fieldNamePrefix + 'toValidator') as 'toValidator',
+                ''
+              )
+            }}
+            options={[
+              // Current chain
+              {
+                label: getNativeTokenForChainId(chain.chain_id).symbol,
+                value: chain.chain_id,
+              },
+              // Other chains
+              ...Object.keys(POLYTONE_NOTES).map((chainId) => ({
+                label: getNativeTokenForChainId(chainId).symbol,
+                value: chainId,
+              })),
+            ]}
+            setValue={setValue}
+            watch={watch}
+          />
+        </div>
+      )}
+
+      <ChainProvider chainId={chainId}>
+        <InnerComponent key={chainId} {...props} />
+      </ChainProvider>
+    </>
   )
 }
 

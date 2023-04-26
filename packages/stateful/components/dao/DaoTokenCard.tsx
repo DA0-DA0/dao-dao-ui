@@ -16,7 +16,11 @@ import {
   useNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, ButtonPopupSection, TokenCardInfo } from '@dao-dao/types'
-import { StakeType, getNativeTokenForChainId } from '@dao-dao/utils'
+import {
+  StakeType,
+  getDisplayNameForChainId,
+  getNativeTokenForChainId,
+} from '@dao-dao/utils'
 
 import { useDaoProposalSinglePrefill } from '../../hooks'
 import { tokenCardLazyInfoSelector } from '../../recoil'
@@ -215,6 +219,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
         lazyInfo={lazyInfo}
         onClaim={onClaim}
         refreshUnstakingTasks={refreshNativeTokenStakingInfo}
+        subtitle={getDisplayNameForChainId(props.token.chainId)}
       />
 
       {isCw20GovernanceToken && showCw20StakingModal && StakingModal && (

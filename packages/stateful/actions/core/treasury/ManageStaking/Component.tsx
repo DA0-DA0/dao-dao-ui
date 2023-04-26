@@ -9,21 +9,19 @@ import {
   SelectInput,
   TokenAmountDisplay,
   ValidatorPicker,
+  useChainContext,
 } from '@dao-dao/stateless'
 import { TokenStake, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   StakeType,
   convertMicroDenomToDenomWithDecimals,
-  getNativeTokenForChainId,
   isValidValidatorAddress,
   makeValidateValidatorAddress,
   secondsToWdhms,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
-
-import { useActionOptions } from '../../../react'
 
 export const useStakeActions = (): { type: StakeType; name: string }[] => {
   const { t } = useTranslation()
@@ -58,9 +56,7 @@ export interface ManageStakingOptions {
 }
 
 export interface ManageStakingData {
-  // TODO(polytone)
   chainId: string
-
   stakeType: StakeType
   validator: string
   // For use when redelegating.
@@ -85,10 +81,6 @@ export const ManageStakingComponent: ActionComponent<
   },
 }) => {
   const { t } = useTranslation()
-  const {
-    chain: { bech32_prefix: bech32Prefix, chain_id: chainId },
-  } = useActionOptions()
-  const nativeToken = getNativeTokenForChainId(chainId)
 
   const { register, watch, setError, clearErrors, setValue } = useFormContext()
   const stakeActions = useStakeActions()
@@ -102,6 +94,11 @@ export const ManageStakingComponent: ActionComponent<
   // For use when redelegating.
   const toValidator = watch(fieldNamePrefix + 'toValidator')
   const amount = watch(fieldNamePrefix + 'amount')
+
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+    nativeToken,
+  } = useChainContext()
 
   // Metadata for the given denom.
   const minAmount = convertMicroDenomToDenomWithDecimals(

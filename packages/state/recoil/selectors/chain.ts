@@ -9,16 +9,11 @@ import {
 import { ChainInfoID } from '@noahsaso/cosmodal'
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { cosmos, juno } from 'interchain-rpc'
-import { DelegationDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
 import {
   Proposal as GovProposal,
   WeightedVoteOption,
 } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
-import {
-  DelegationResponse,
-  UnbondingDelegation as RpcUnbondingDelegation,
-  Validator as RpcValidator,
-} from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
+import { Validator as RpcValidator } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import Long from 'long'
 import { selector, selectorFamily, waitForAll } from 'recoil'
 
@@ -473,7 +468,7 @@ export const validatorsSelector = selectorFamily<Validator[], WithChainId<{}>>({
 })
 
 export const nativeDelegationInfoSelector = selectorFamily<
-  NativeDelegationInfo | undefined,
+  NativeDelegationInfo,
   WithChainId<{ address: string }>
 >({
   key: 'nativeDelegationInfo',
@@ -484,41 +479,32 @@ export const nativeDelegationInfoSelector = selectorFamily<
 
       get(refreshNativeTokenStakingInfoAtom(delegatorAddr))
 
-      let delegations: DelegationResponse[]
-      let validators: RpcValidator[]
-      let rewards: DelegationDelegatorReward[]
-      let unbondingDelegations: RpcUnbondingDelegation[]
-      try {
-        delegations = await getAllRpcResponse(
-          client.staking.v1beta1.delegatorDelegations,
-          {
-            delegatorAddr,
-          },
-          'delegationResponses'
-        )
-        validators = await getAllRpcResponse(
-          client.staking.v1beta1.delegatorValidators,
-          {
-            delegatorAddr,
-          },
-          'validators'
-        )
-        rewards = (
-          await client.distribution.v1beta1.delegationTotalRewards({
-            delegatorAddress: delegatorAddr,
-          })
-        ).rewards
-        unbondingDelegations = await getAllRpcResponse(
-          client.staking.v1beta1.delegatorUnbondingDelegations,
-          {
-            delegatorAddr,
-          },
-          'unbondingResponses'
-        )
-      } catch (error) {
-        console.error(error)
-        return undefined
-      }
+      const delegations = await getAllRpcResponse(
+        client.staking.v1beta1.delegatorDelegations,
+        {
+          delegatorAddr,
+        },
+        'delegationResponses'
+      )
+      const validators = await getAllRpcResponse(
+        client.staking.v1beta1.delegatorValidators,
+        {
+          delegatorAddr,
+        },
+        'validators'
+      )
+      const rewards = (
+        await client.distribution.v1beta1.delegationTotalRewards({
+          delegatorAddress: delegatorAddr,
+        })
+      ).rewards
+      const unbondingDelegations = await getAllRpcResponse(
+        client.staking.v1beta1.delegatorUnbondingDelegations,
+        {
+          delegatorAddr,
+        },
+        'unbondingResponses'
+      )
 
       return {
         delegations: delegations
