@@ -172,7 +172,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       // Get DAO polytone proxies.
       const polytoneProxies = (
         await Promise.all(
-          Object.entries(POLYTONE_NOTES).map(async ([_chainId, note]) => {
+          Object.entries(POLYTONE_NOTES).map(async ([_chainId, { note }]) => {
             let proxy = await queryIndexer<string>({
               type: 'contract',
               address: note,

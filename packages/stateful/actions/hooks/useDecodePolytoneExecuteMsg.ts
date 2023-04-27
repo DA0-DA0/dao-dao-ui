@@ -46,7 +46,7 @@ export const useDecodePolytoneExecuteMsg = (
   }
 
   const chainId = Object.entries(POLYTONE_NOTES).find(
-    ([, note]) => note === decodedMsg.wasm.execute.contract_addr
+    ([, { note }]) => note === decodedMsg.wasm.execute.contract_addr
   )?.[0]
   // Unrecognized polytone note.
   if (!chainId) {

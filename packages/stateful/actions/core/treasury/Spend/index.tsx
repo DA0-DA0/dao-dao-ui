@@ -20,6 +20,7 @@ import {
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  getChainForChainId,
   getNativeTokenForChainId,
   isValidContractAddress,
   makeBankMessage,
@@ -52,12 +53,9 @@ const useDefaults: UseDefaults<SpendData> = () => {
 }
 
 const Component: ActionComponent<undefined, SpendData> = (props) => {
-  const {
-    chain: { bech32_prefix: bech32Prefix },
-  } = useActionOptions()
-
   // Get the selected token if not creating.
   const { watch } = useFormContext<SpendData>()
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const denom = watch((props.fieldNamePrefix + 'denom') as 'denom')
 
   const loadingTokens = useTokenBalances({
@@ -68,7 +66,10 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
       : [
           {
             // Cw20 denoms are contract addresses, native denoms are not.
-            type: isValidContractAddress(denom, bech32Prefix)
+            type: isValidContractAddress(
+              denom,
+              getChainForChainId(chainId).bech32_prefix
+            )
               ? TokenType.Cw20
               : TokenType.Native,
             denomOrAddress: denom,
@@ -89,7 +90,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
 }
 
 const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
-  const chainId = useActionOptions().chain.chain_id
+  const currentChainId = useActionOptions().chain.chain_id
   const loadingTokenBalances = useTokenBalances({
     allChains: true,
   })
@@ -143,13 +144,13 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
         throw new Error(`Unknown token type: ${token.type}`)
       }
 
-      if (data.chainId === chainId) {
+      if (data.chainId === currentChainId) {
         return msg
       } else {
-        return makePolytoneExecuteMessage(chainId, msg)
+        return makePolytoneExecuteMessage(data.chainId, msg)
       }
     },
-    [chainId, loadingTokenBalances]
+    [currentChainId, loadingTokenBalances]
   )
 }
 

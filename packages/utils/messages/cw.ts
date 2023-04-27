@@ -255,7 +255,7 @@ export const makePolytoneExecuteMessage = (
   makeWasmMessage({
     wasm: {
       execute: {
-        contract_addr: POLYTONE_NOTES[chainId],
+        contract_addr: POLYTONE_NOTES[chainId]?.note,
         funds: [],
         msg: {
           execute: {

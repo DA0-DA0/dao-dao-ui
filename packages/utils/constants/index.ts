@@ -1,5 +1,5 @@
 import { CodeIdConfigs } from './codeIdConfigs'
-import { PolytoneNotesPerChain } from './polytoneNotes'
+import { PolytoneNotesPerChain } from './polytone'
 
 export * from './adapters'
 

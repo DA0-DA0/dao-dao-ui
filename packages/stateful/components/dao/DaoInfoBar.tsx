@@ -69,7 +69,7 @@ const InnerDaoInfoBar = () => {
       address: coreAddress,
     },
     // Other chains
-    ...Object.entries(POLYTONE_NOTES).map(([chainId]) => ({
+    ...Object.keys(POLYTONE_NOTES).map((chainId) => ({
       chainId,
       address: polytoneProxies[chainId],
     })),

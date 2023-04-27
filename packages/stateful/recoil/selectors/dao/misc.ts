@@ -60,11 +60,11 @@ export const daoCorePolytoneProxiesSelector = selectorFamily<
     ({ get }) => {
       // Get polytone proxies.
       const polytoneProxies = Object.entries(POLYTONE_NOTES)
-        .map(([_chainId, note]) => ({
+        .map(([_chainId, { note }]) => ({
           chainId: _chainId,
           proxy: get(
             PolytoneNoteSelectors.remoteAddressSelector({
-              contractAddress: note!,
+              contractAddress: note,
               chainId,
               params: [
                 {
