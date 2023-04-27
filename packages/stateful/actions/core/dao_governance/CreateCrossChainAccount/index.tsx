@@ -9,9 +9,12 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { POLYTONE_NOTES, makePolytoneExecuteMessage } from '@dao-dao/utils'
+import {
+  POLYTONE_NOTES,
+  decodePolytoneExecuteMsg,
+  makePolytoneExecuteMessage,
+} from '@dao-dao/utils'
 
-import { useDecodePolytoneExecuteMsg } from '../../../hooks/useDecodePolytoneExecuteMsg'
 import {
   CreateCrossChainAccountComponent as Component,
   CreateCrossChainAccountData,
@@ -24,7 +27,7 @@ const useTransformToCosmos: UseTransformToCosmos<
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateCrossChainAccountData> = (
   msg: Record<string, any>
 ) => {
-  const decodedPolytone = useDecodePolytoneExecuteMsg(msg, true)
+  const decodedPolytone = decodePolytoneExecuteMsg(msg, 'zero')
   return decodedPolytone.match
     ? {
         match: true,

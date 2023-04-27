@@ -14,7 +14,11 @@ import {
   ProposalModule,
 } from './dao'
 import { ProposalCreatedCardProps } from './proposal'
-import { LinkWrapperProps, LoadingData } from './stateless'
+import {
+  LinkWrapperProps,
+  LoadingData,
+  SelfRelayExecuteModalProps,
+} from './stateless'
 
 export interface IProposalModuleAdapterCommon<
   FormData extends FieldValues = any
@@ -174,6 +178,10 @@ export interface CommonProposalInfo {
 
 export interface BaseProposalStatusAndInfoProps {
   inline?: boolean
+  // Open self-relay modal to execute a proposal and relay polytone IBC packets.
+  openSelfRelayExecute: (
+    props: Pick<SelfRelayExecuteModalProps, 'chainIds' | 'execute'>
+  ) => void
   onVoteSuccess: () => void | Promise<void>
   onExecuteSuccess: () => void | Promise<void>
   onCloseSuccess: () => void | Promise<void>

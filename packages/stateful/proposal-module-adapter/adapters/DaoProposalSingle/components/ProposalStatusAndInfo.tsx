@@ -36,6 +36,8 @@ import {
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   CHAIN_TXN_URL_PREFIX,
+  decodeMessages,
+  decodePolytoneExecuteMsg,
   formatPercentOf100,
   processError,
 } from '@dao-dao/utils'
@@ -109,6 +111,7 @@ const InnerProposalStatusAndInfo = ({
   onVoteSuccess,
   onExecuteSuccess,
   onCloseSuccess,
+  openSelfRelayExecute,
   ...props
 }: BaseProposalStatusAndInfoProps & {
   proposal: ProposalWithMetadata
@@ -271,15 +274,34 @@ const InnerProposalStatusAndInfo = ({
   }, [proposal.status])
 
   const onExecute = useCallback(async () => {
-    if (!connected) return
+    if (!connected) {
+      return
+    }
+
+    const execute = () => executeProposal({ proposalId: proposalNumber })
+
+    // If any of the proposal messages are a polytone execute, then we need to
+    // use the self-relay execute instead.
+    const polytoneChainIds = new Set(
+      proposal.msgs
+        .map((msg) =>
+          decodePolytoneExecuteMsg(decodeMessages([msg])[0], 'oneOrZero')
+        )
+        .map((decoded) => (decoded.match ? decoded.chainId : null))
+        .filter((chainId): chainId is string => !!chainId)
+    )
+    if (polytoneChainIds.size > 0) {
+      openSelfRelayExecute({
+        execute,
+        chainIds: Array.from(polytoneChainIds),
+      })
+      return
+    }
 
     setActionLoading(true)
 
     try {
-      await executeProposal({
-        proposalId: proposalNumber,
-      })
-
+      await execute()
       await onExecuteSuccess()
     } catch (err) {
       console.error(err)
@@ -290,10 +312,19 @@ const InnerProposalStatusAndInfo = ({
     }
 
     // Loading will stop on success when status refreshes.
-  }, [connected, executeProposal, proposalNumber, onExecuteSuccess])
+  }, [
+    connected,
+    proposal.msgs,
+    executeProposal,
+    proposalNumber,
+    openSelfRelayExecute,
+    onExecuteSuccess,
+  ])
 
   const onClose = useCallback(async () => {
-    if (!connected) return
+    if (!connected) {
+      return
+    }
 
     setActionLoading(true)
 

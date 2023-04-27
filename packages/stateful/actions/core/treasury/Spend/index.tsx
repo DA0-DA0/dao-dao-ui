@@ -20,6 +20,7 @@ import {
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  decodePolytoneExecuteMsg,
   getChainForChainId,
   getNativeTokenForChainId,
   isValidContractAddress,
@@ -30,7 +31,6 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
-import { useDecodePolytoneExecuteMsg } from '../../../hooks/useDecodePolytoneExecuteMsg'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
 import {
@@ -158,7 +158,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   msg: Record<string, any>
 ) => {
   let chainId = useActionOptions().chain.chain_id
-  const decodedPolytone = useDecodePolytoneExecuteMsg(msg)
+  const decodedPolytone = decodePolytoneExecuteMsg(msg)
   if (decodedPolytone.match) {
     chainId = decodedPolytone.chainId
     msg = decodedPolytone.msg

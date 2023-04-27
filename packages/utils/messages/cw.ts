@@ -272,3 +272,68 @@ export const makePolytoneExecuteMessage = (
       },
     },
   })
+
+// Checks if the message is a Polytone execute message and extract sthe chain
+// ID and msg.
+export const decodePolytoneExecuteMsg = (
+  decodedMsg: Record<string, any>,
+  // How many messages are expected.
+  type: 'one' | 'zero' | 'oneOrZero' = 'one'
+):
+  | {
+      match: false
+    }
+  | {
+      match: true
+      chainId: string
+      msg: Record<string, any>
+    } => {
+  if (
+    !objectMatchesStructure(decodedMsg, {
+      wasm: {
+        execute: {
+          contract_addr: {},
+          funds: {},
+          msg: {
+            execute: {
+              msgs: {},
+              timeout_seconds: {},
+              callback: {
+                msg: {},
+                receiver: {},
+              },
+            },
+          },
+        },
+      },
+    }) ||
+    (type === 'zero' &&
+      decodedMsg.wasm.execute.msg.execute.msgs.length !== 0) ||
+    (type === 'one' && decodedMsg.wasm.execute.msg.execute.msgs.length !== 1) ||
+    (type === 'oneOrZero' &&
+      decodedMsg.wasm.execute.msg.execute.msgs.length > 1)
+  ) {
+    return {
+      match: false,
+    }
+  }
+
+  const chainId = Object.entries(POLYTONE_NOTES).find(
+    ([, { note }]) => note === decodedMsg.wasm.execute.contract_addr
+  )?.[0]
+  // Unrecognized polytone note.
+  if (!chainId) {
+    return {
+      match: false,
+    }
+  }
+
+  return {
+    match: true,
+    chainId,
+    msg:
+      decodedMsg.wasm.execute.msg.execute.msgs.length === 0
+        ? {}
+        : decodeMessages(decodedMsg.wasm.execute.msg.execute.msgs)[0],
+  }
+}

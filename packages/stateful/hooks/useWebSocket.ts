@@ -102,7 +102,11 @@ export const useWebSocketChannels = (channelNames: string[]) => {
 export const useWebSocketChannel = (channelName: string) =>
   useWebSocketChannels([channelName])
 
-type OnMessageCallback = (data: Record<string, any>) => any
+type OnMessageCallback = (
+  data: Record<string, any>,
+  // Whether or not the callback was called manually via the fallback.
+  fallback: boolean
+) => any
 // If data not passed, will use the default data passed to the hook.
 type OnMessageFallbackOptions = {
   // If true, will not wait for the next block before calling the callback.
@@ -163,7 +167,7 @@ export const useOnWebSocketMessage = (
           (Array.isArray(expectedTypeOrTypes) &&
             expectedTypeOrTypes.includes(data.type)))
       ) {
-        callbackRef.current(data.data)
+        callbackRef.current(data.data, false)
       }
     }
 
@@ -201,7 +205,7 @@ export const useOnWebSocketMessage = (
         await awaitNextBlock()
       }
 
-      callbackRef.current(data ?? defaultFallbackDataRef.current ?? {})
+      callbackRef.current(data ?? defaultFallbackDataRef.current ?? {}, true)
     },
     [awaitNextBlock]
   )

@@ -31,6 +31,7 @@ import {
   StakeType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  decodePolytoneExecuteMsg,
   getNativeTokenForChainId,
   makeDistributeMessage,
   makePolytoneExecuteMessage,
@@ -39,7 +40,6 @@ import {
 
 import { SuspenseLoader } from '../../../../components/SuspenseLoader'
 import { useExecutedProposalTxLoadable } from '../../../../hooks'
-import { useDecodePolytoneExecuteMsg } from '../../../hooks/useDecodePolytoneExecuteMsg'
 import { useActionOptions } from '../../../react'
 import {
   ManageStakingData,
@@ -90,7 +90,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
   msg: Record<string, any>
 ) => {
   let chainId = useActionOptions().chain.chain_id
-  const decodedPolytone = useDecodePolytoneExecuteMsg(msg)
+  const decodedPolytone = decodePolytoneExecuteMsg(msg)
   if (decodedPolytone.match) {
     chainId = decodedPolytone.chainId
     msg = decodedPolytone.msg
