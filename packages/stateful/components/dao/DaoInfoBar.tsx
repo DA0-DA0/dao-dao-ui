@@ -75,10 +75,10 @@ const InnerDaoInfoBar = () => {
     })),
   ]
 
-  const createChainAccountPrefill = useDaoProposalSinglePrefill({
+  const createCrossChainAccountPrefill = useDaoProposalSinglePrefill({
     actions: [
       {
-        actionKey: ActionKey.CreateChainAccount,
+        actionKey: ActionKey.CreateCrossChainAccount,
         data: {
           chainId: 'CHAIN_ID',
         },
@@ -170,7 +170,7 @@ const InnerDaoInfoBar = () => {
                   <ButtonLink
                     containerClassName="justify-self-end"
                     href={getDaoProposalPath(coreAddress, 'create', {
-                      prefill: createChainAccountPrefill?.replace(
+                      prefill: createCrossChainAccountPrefill?.replace(
                         'CHAIN_ID',
                         chainId
                       ),

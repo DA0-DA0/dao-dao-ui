@@ -13,14 +13,15 @@ import { POLYTONE_NOTES, makePolytoneExecuteMessage } from '@dao-dao/utils'
 
 import { useDecodePolytoneExecuteMsg } from '../../../hooks/useDecodePolytoneExecuteMsg'
 import {
-  CreateChainAccountComponent as Component,
-  CreateChainAccountData,
+  CreateCrossChainAccountComponent as Component,
+  CreateCrossChainAccountData,
 } from './Component'
 
-const useTransformToCosmos: UseTransformToCosmos<CreateChainAccountData> = () =>
-  useCallback(({ chainId }) => makePolytoneExecuteMessage(chainId), [])
+const useTransformToCosmos: UseTransformToCosmos<
+  CreateCrossChainAccountData
+> = () => useCallback(({ chainId }) => makePolytoneExecuteMessage(chainId), [])
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateChainAccountData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateCrossChainAccountData> = (
   msg: Record<string, any>
 ) => {
   const decodedPolytone = useDecodePolytoneExecuteMsg(msg, true)
@@ -36,15 +37,15 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateChainAccountData> = (
       }
 }
 
-export const makeCreateChainAccountAction: ActionMaker<
-  CreateChainAccountData
+export const makeCreateCrossChainAccountAction: ActionMaker<
+  CreateCrossChainAccountData
 > = ({ t, context }) => {
   // Only allow using this action in DAOs.
   if (context.type !== ActionContextType.Dao) {
     return null
   }
 
-  const useDefaults: UseDefaults<CreateChainAccountData> = () => {
+  const useDefaults: UseDefaults<CreateCrossChainAccountData> = () => {
     const missingChainIds = Object.keys(POLYTONE_NOTES).filter(
       (chainId) => !(chainId in context.info.polytoneProxies)
     )
@@ -55,10 +56,10 @@ export const makeCreateChainAccountAction: ActionMaker<
   }
 
   return {
-    key: ActionKey.CreateChainAccount,
+    key: ActionKey.CreateCrossChainAccount,
     Icon: ChainEmoji,
-    label: t('title.createChainAccount'),
-    description: t('info.createChainAccountDescription'),
+    label: t('title.createCrossChainAccount'),
+    description: t('info.createCrossChainAccountDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,

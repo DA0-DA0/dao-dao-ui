@@ -11,16 +11,16 @@ import {
 
 import { useActionOptions } from '../../../react'
 
-export type CreateChainAccountData = {
+export type CreateCrossChainAccountData = {
   chainId: string
 }
 
-export const CreateChainAccountComponent: ActionComponent = ({
+export const CreateCrossChainAccountComponent: ActionComponent = ({
   fieldNamePrefix,
   isCreating,
 }) => {
   const { t } = useTranslation()
-  const { watch, setValue } = useFormContext<CreateChainAccountData>()
+  const { watch, setValue } = useFormContext<CreateCrossChainAccountData>()
 
   const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
   const imageUrl = getImageUrlForChainId(chainId)
@@ -38,7 +38,9 @@ export const CreateChainAccountComponent: ActionComponent = ({
 
   return (
     <>
-      <p className="max-w-prose">{t('info.createChainAccountExplanation')}</p>
+      <p className="max-w-prose">
+        {t('info.createCrossChainAccountExplanation')}
+      </p>
 
       {isCreating ? (
         missingChainIds.length > 0 ? (

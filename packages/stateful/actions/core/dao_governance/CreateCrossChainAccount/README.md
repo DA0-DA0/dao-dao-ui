@@ -1,4 +1,4 @@
-# CreateChainAccount
+# CreateCrossChainAccount
 
 Create an account on another chain via Polytone.
 
@@ -9,7 +9,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ### Key
 
-`createChainAccount`
+`createCrossChainAccount`
 
 ### Data format
 
