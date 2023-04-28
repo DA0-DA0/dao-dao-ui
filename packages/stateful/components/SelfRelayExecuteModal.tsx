@@ -392,9 +392,9 @@ export const SelfRelayExecuteModal = ({
           polytoneNote.remoteConnection
         )
 
-        // Relay packets and get acks. Try 3 times.
+        // Relay packets and get acks. Try 5 times.
         let acks: AckWithMetadata[] | undefined
-        let tries = 3
+        let tries = 5
         while (tries) {
           try {
             acks = await link.relayPackets('A', thesePackets)
@@ -415,7 +415,7 @@ export const SelfRelayExecuteModal = ({
             }
 
             // Wait a second before trying again.
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            await new Promise((resolve) => setTimeout(resolve, 3000))
           }
         }
 
@@ -433,8 +433,8 @@ export const SelfRelayExecuteModal = ({
           relayer,
         })
 
-        // Relay acks. Try 3 times.
-        tries = 3
+        // Relay acks. Try 5 times.
+        tries = 5
         while (tries) {
           try {
             await link.relayAcks('B', acks)
@@ -454,8 +454,8 @@ export const SelfRelayExecuteModal = ({
               throw err
             }
 
-            // Wait a second before trying again.
-            await new Promise((resolve) => setTimeout(resolve, 1000))
+            // Wait a few seconds before trying again.
+            await new Promise((resolve) => setTimeout(resolve, 3000))
           }
         }
       }, Promise.resolve())
