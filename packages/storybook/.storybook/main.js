@@ -15,16 +15,18 @@ module.exports = {
     {
       name: 'storybook-addon-next',
       options: {
-        nextConfigPath: path.resolve(__dirname, 'next.config.js')
-      }
+        nextConfigPath: path.resolve(__dirname, 'next.config.js'),
+      },
     },
   ],
   framework: '@storybook/react',
   webpackFinal: async (config) => {
     config.resolve.plugins = [new tsconfigPathsPlugin()]
-    // This fails to import Buffer, and adding webpack.ProvidePlugin doesn't fix
-    // the issue, so let's just ignore this package!
+    // These packages fail to import Buffer, and adding webpack.ProvidePlugin
+    // doesn't fix the issue, so let's just ignore them!
     config.resolve.alias['tiny-secp256k1'] = false
+    config.resolve.alias['@toruslabs/eccrypto'] = false
+
     return config
   },
 }
