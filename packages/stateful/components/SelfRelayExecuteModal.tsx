@@ -395,12 +395,13 @@ export const SelfRelayExecuteModal = ({
   const relay = async (_executeTxResult?: DeliverTxResponse) => {
     const currentExecuteTxResult = _executeTxResult || executeTxResult
 
-    if (
-      !relayers ||
-      !allReceivingRelayersFunded ||
-      !mnemonicKey ||
-      !currentExecuteTxResult
-    ) {
+    if (!relayers || !mnemonicKey) {
+      toast.error('Relayer not set up')
+      return
+    }
+
+    if (!currentExecuteTxResult) {
+      toast.error('Execute TX not found')
       return
     }
 
@@ -436,6 +437,7 @@ export const SelfRelayExecuteModal = ({
         // Type-check, should never happen since we slice off the first
         // (current chain) relayer, which is just responsible for sending.
         if (!polytoneNote) {
+          throw new Error('Polytone note not found')
           return
         }
 
@@ -551,6 +553,7 @@ export const SelfRelayExecuteModal = ({
   // Refund all remaining tokens from all relayers back to user.
   const refundAll = async () => {
     if (!relayers || !mnemonicKey) {
+      toast.error('Relayer not set up')
       return
     }
 
