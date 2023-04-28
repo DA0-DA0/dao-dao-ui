@@ -1,7 +1,9 @@
 import { Chain } from '@chain-registry/types'
+import { AckWithMetadata } from '@confio/relayer/build/lib/endpoint'
 import { IbcClient } from '@confio/relayer/build/lib/ibcclient'
 import { Link } from '@confio/relayer/build/lib/link'
 import { parsePacketsFromTendermintEvents } from '@confio/relayer/build/lib/utils'
+import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
 import { GasPrice, calculateFee, coins } from '@cosmjs/stargate'
 import { ConnectedWallet, useConnectWalletToChain } from '@noahsaso/cosmodal'
@@ -35,7 +37,7 @@ enum RelayStatus {
   Executing = 'Executing',
   RelayingPackets = 'Relaying packets',
   RelayingAcks = 'Relaying acks',
-  ReturningFees = 'Returning fees',
+  Refunding = 'Refunding',
   Success = 'Success',
   Error = 'Error',
 }
@@ -255,6 +257,7 @@ export const SelfRelayExecuteModal = ({
     }
   }
 
+  const [executeResult, setExecuteResult] = useState<ExecuteResult>()
   const relay = async () => {
     if (
       !relayers ||
@@ -269,68 +272,88 @@ export const SelfRelayExecuteModal = ({
       // Execute the TX and parse the packets from the events.
       setStatus(RelayStatus.Executing)
 
-      const { events, height } = await execute()
-      const packets = parsePacketsFromTendermintEvents(events).map(
+      // If already executed, don't execute again. This may happen if packets or
+      // acks fail to relay.
+      let execResult = executeResult
+      if (!execResult) {
+        execResult = await execute()
+        setExecuteResult(execResult)
+      }
+
+      const packets = parsePacketsFromTendermintEvents(execResult.events).map(
         (packet) => ({
           packet,
-          height,
+          height: execResult!.height,
         })
       )
 
       // Loop over all chains and relay packets.
       setStatus(RelayStatus.RelayingPackets)
 
-      const linksAndAcks = (
-        await Promise.all(
-          // First relayer is current chain that is sending packets. The rest of
-          // the relayers are the chains that are receiving packets.
-          relayers.slice(1).map(async ({ client, polytoneNote }) => {
-            // Type-check, should never happen since we slice off the first
-            // (current chain) relayer, which is just responsible for sending.
-            if (!polytoneNote) {
-              return
-            }
+      // First relayer is current chain that is sending packets. The rest of the
+      // relayers are the chains that are receiving packets. Relay packets
+      // sequentially, one chain at a time, since a wallet can only submit one
+      // TX at a time.
+      const linksAndAcks = await relayers.slice(1).reduce(
+        async (prev, { client, polytoneNote }) => {
+          const curr = await prev
 
-            // Get packets for this chain.
-            const thesePackets = packets.filter(
-              ({ packet }) =>
-                packet.sourcePort === `wasm.${polytoneNote.note}` &&
-                packet.sourceChannel === polytoneNote.localChannel &&
-                packet.destinationChannel === polytoneNote.remoteChannel
-            )
-            if (!thesePackets.length) {
-              return
-            }
+          // Type-check, should never happen since we slice off the first
+          // (current chain) relayer, which is just responsible for sending.
+          if (!polytoneNote) {
+            return curr
+          }
 
-            const link = await Link.createWithExistingConnections(
-              // First relayer is current chain sending packets.
-              relayers[0].client,
-              client,
-              polytoneNote.localConnection,
-              polytoneNote.remoteConnection
-            )
+          // Get packets for this chain.
+          const thesePackets = packets.filter(
+            ({ packet }) =>
+              packet.sourcePort === `wasm.${polytoneNote.note}` &&
+              packet.sourceChannel === polytoneNote.localChannel &&
+              packet.destinationChannel === polytoneNote.remoteChannel
+          )
+          if (!thesePackets.length) {
+            return curr
+          }
 
-            // Relay packets and get acks.
-            const acks = await link.relayPackets('A', packets)
+          const link = await Link.createWithExistingConnections(
+            // First relayer is current chain sending packets.
+            relayers[0].client,
+            client,
+            polytoneNote.localConnection,
+            polytoneNote.remoteConnection
+          )
 
-            return {
+          // Relay packets and get acks.
+          const acks = await link.relayPackets('A', packets)
+
+          return [
+            ...curr,
+            {
               link,
               acks,
-            }
-          })
-        )
-      ).filter(Boolean)
-
-      // Relay acks back to current chain.
-      setStatus(RelayStatus.RelayingAcks)
-      await Promise.all(
-        linksAndAcks.map(async (linkAndAcks) =>
-          linkAndAcks?.link.relayAcks('B', linkAndAcks.acks)
+            },
+          ]
+        },
+        Promise.resolve(
+          [] as {
+            link: Link
+            acks: AckWithMetadata[]
+          }[]
         )
       )
 
+      // Relay acks back to current chain. Relay acks sequentially, one chain at
+      // a time, since a wallet can only submit one TX at a time.
+      setStatus(RelayStatus.RelayingAcks)
+      await linksAndAcks.reduce(async (prev, { link, acks }) => {
+        await prev
+        await link.relayAcks('B', acks)
+      }, Promise.resolve())
+
       // Send fee tokens remaining in the relayer wallets back to the user.
-      setStatus(RelayStatus.ReturningFees)
+      setStatus(RelayStatus.Refunding)
+      // If packets and acks were relayed successfully, execute was successful.
+      setExecuteResult(undefined)
 
       await Promise.all(
         relayers.map(({ chain }) => refundRelayer(chain.chain_id))
