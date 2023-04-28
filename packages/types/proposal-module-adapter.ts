@@ -180,7 +180,10 @@ export interface BaseProposalStatusAndInfoProps {
   inline?: boolean
   // Open self-relay modal to execute a proposal and relay polytone IBC packets.
   openSelfRelayExecute: (
-    props: Pick<SelfRelayExecuteModalProps, 'uniqueId' | 'chainIds' | 'execute'>
+    props: Pick<
+      SelfRelayExecuteModalProps,
+      'uniqueId' | 'chainIds' | 'msgsToExecute'
+    >
   ) => void
   onVoteSuccess: () => void | Promise<void>
   onExecuteSuccess: () => void | Promise<void>

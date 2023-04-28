@@ -39,6 +39,7 @@ import {
   decodeMessages,
   decodePolytoneExecuteMsg,
   formatPercentOf100,
+  makeWasmMessage,
   processError,
 } from '@dao-dao/utils'
 
@@ -278,8 +279,6 @@ const InnerProposalStatusAndInfo = ({
       return
     }
 
-    const execute = () => executeProposal({ proposalId: proposalNumber })
-
     // If any of the proposal messages are a polytone execute, then we need to
     // use the self-relay execute instead.
     const polytoneChainIds = new Set(
@@ -293,7 +292,21 @@ const InnerProposalStatusAndInfo = ({
     if (polytoneChainIds.size > 0) {
       openSelfRelayExecute({
         uniqueId: `${chainId}:${proposalModule.address}:${proposalNumber}`,
-        execute,
+        msgsToExecute: [
+          makeWasmMessage({
+            wasm: {
+              execute: {
+                contract_addr: proposalModule.address,
+                funds: [],
+                msg: {
+                  execute: {
+                    proposal_id: proposalNumber,
+                  },
+                },
+              },
+            },
+          }),
+        ],
         chainIds: Array.from(polytoneChainIds),
       })
       return
@@ -302,7 +315,7 @@ const InnerProposalStatusAndInfo = ({
     setActionLoading(true)
 
     try {
-      await execute()
+      await executeProposal({ proposalId: proposalNumber })
       await onExecuteSuccess()
     } catch (err) {
       console.error(err)

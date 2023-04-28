@@ -73,7 +73,10 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
   const [selfRelayExecuteProps, setSelfRelayExecuteProps] =
     useState<
-      Pick<SelfRelayExecuteModalProps, 'uniqueId' | 'chainIds' | 'execute'>
+      Pick<
+        SelfRelayExecuteModalProps,
+        'uniqueId' | 'chainIds' | 'msgsToExecute'
+      >
     >()
 
   // Vote listener. Show alerts and refresh accordingly.
@@ -264,9 +267,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
       <SelfRelayExecuteModal
         // Placeholders that get overridden when the modal is opened.
         chainIds={[]}
-        execute={() => {
-          throw new Error('Not ready')
-        }}
+        msgsToExecute={[]}
         uniqueId=""
         {...selfRelayExecuteProps}
         onClose={() => setSelfRelayExecuteProps(undefined)}

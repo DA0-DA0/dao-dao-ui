@@ -1,5 +1,4 @@
-import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
-
+import { CosmosMsgForEmpty } from '../contracts'
 import { ModalProps } from './Modal'
 
 export type SelfRelayExecuteModalProps = Pick<
@@ -14,9 +13,9 @@ export type SelfRelayExecuteModalProps = Pick<
   uniqueId: string
   // All chain IDs that will receive an IBC packet.
   chainIds: string[]
-  // The TX execution that will return the transaction with IBC packets that
-  // need self-relaying.
-  execute: () => Promise<ExecuteResult>
+  // The CosmWasm-formatted messages to execute that will create IBC packets
+  // that need self-relaying.
+  msgsToExecute: CosmosMsgForEmpty[]
   // Called when the self-relay execution is successful and all relayer wallets
   // refund the original wallet.
   onSuccess: () => void
