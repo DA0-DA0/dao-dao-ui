@@ -294,6 +294,7 @@ const InnerProposalStatusAndInfo = ({
     )
     if (polytoneChainIds.size > 0) {
       openSelfRelayExecute({
+        uniqueId: `${chainId}:${proposalModule.address}:${proposalNumber}`,
         execute,
         chainIds: Array.from(polytoneChainIds),
       })
@@ -321,6 +322,8 @@ const InnerProposalStatusAndInfo = ({
     executeProposal,
     proposalNumber,
     openSelfRelayExecute,
+    chainId,
+    proposalModule.address,
     onExecuteSuccess,
   ])
 

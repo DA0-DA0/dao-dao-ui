@@ -72,7 +72,9 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 
   const [selfRelayExecuteProps, setSelfRelayExecuteProps] =
-    useState<Pick<SelfRelayExecuteModalProps, 'chainIds' | 'execute'>>()
+    useState<
+      Pick<SelfRelayExecuteModalProps, 'uniqueId' | 'chainIds' | 'execute'>
+    >()
 
   // Vote listener. Show alerts and refresh accordingly.
   const { listening: listeningForVote, fallback: onVoteSuccess } =
@@ -265,6 +267,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         execute={() => {
           throw new Error('Not ready')
         }}
+        uniqueId=""
         {...selfRelayExecuteProps}
         onClose={() => setSelfRelayExecuteProps(undefined)}
         onSuccess={() =>
