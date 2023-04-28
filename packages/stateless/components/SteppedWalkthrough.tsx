@@ -26,6 +26,9 @@ export type SteppedWalkthroughProps = {
     // Optional class names for the icon and its container.
     iconContainerClassName?: string
     iconClassName?: string
+    // Optional statuses to override the default statuses to show the content
+    // for.
+    overrideShowStepContentStatuses?: `${StepStatus}`[]
   }[]
   // Index of the current step.
   stepIndex: number
@@ -60,7 +63,7 @@ export const SteppedWalkthrough = ({
 
     <div className="flex flex-row items-stretch">
       <div className="w-8 border-r-4 border-border-primary"></div>
-      <div className="flex flex-col py-4">
+      <div className="flex grow flex-col py-4">
         {steps.map((step, index) => {
           const past = stepIndex > index
           const current = stepIndex === index
@@ -71,7 +74,9 @@ export const SteppedWalkthrough = ({
             ? StepStatus.Current
             : StepStatus.Future
 
-          const stepContent = showStepContentStatuses.includes(status)
+          const stepContent = (
+            step.overrideShowStepContentStatuses ?? showStepContentStatuses
+          ).includes(status)
             ? step.content?.(status)
             : undefined
 

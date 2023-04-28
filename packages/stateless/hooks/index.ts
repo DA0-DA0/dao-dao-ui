@@ -1,4 +1,5 @@
 export * from './useAddToken'
+export * from './useAnimationFrame'
 export * from './useButtonPopupFilter'
 export * from './useButtonPopupSorter'
 export * from './useCachedLoadable'

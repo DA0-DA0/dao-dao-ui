@@ -6,7 +6,7 @@ import { parsePacketsFromTendermintEvents } from '@confio/relayer/build/lib/util
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing'
 import { GasPrice, calculateFee, coins } from '@cosmjs/stargate'
-import { Check, Close } from '@mui/icons-material'
+import { Check, Close, Send, Verified } from '@mui/icons-material'
 import { ConnectedWallet, useConnectWalletToChain } from '@noahsaso/cosmodal'
 import uniq from 'lodash.uniq'
 import { Fragment, useEffect, useState } from 'react'
@@ -19,6 +19,8 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   Button,
+  FlyingAnimation,
+  Loader,
   Modal,
   SteppedWalkthrough,
   TokenAmountDisplay,
@@ -38,15 +40,14 @@ import {
 } from '@dao-dao/utils'
 
 enum RelayStatus {
-  Uninitialized = 'Uninitialized',
-  Initializing = 'Initializing',
-  Funding = 'Funding',
-  Executing = 'Executing',
-  RelayingPackets = 'Relaying packets',
-  RelayingAcks = 'Relaying acks',
-  Refunding = 'Refunding',
-  Success = 'Success',
-  ExecuteOrRelayErrored = 'Execute or relay errored',
+  Uninitialized,
+  Initializing,
+  Funding,
+  Executing,
+  Relaying,
+  Refunding,
+  Success,
+  ExecuteOrRelayErrored,
 }
 
 // TODO: Figure out how much each relayer needs to pay for gas.
@@ -54,6 +55,7 @@ const RELAYER_ALLOWANCE = 100000
 
 type Relayer = {
   chain: Chain
+  chainImageUrl: string
   feeToken: {
     denom: string
     average_gas_price?: number
@@ -90,6 +92,10 @@ export const SelfRelayExecuteModal = ({
     {}
   )
   const [executeResult, setExecuteResult] = useState<ExecuteResult>()
+  const [relaying, setRelaying] = useState<{
+    type: 'packet' | 'ack'
+    relayer: Relayer
+  }>()
   // Relayer chain IDs currently being refunded.
   const [refundingRelayer, setRefundingRelayer] = useState<
     Record<string, boolean>
@@ -113,6 +119,7 @@ export const SelfRelayExecuteModal = ({
       setExecuteResult(undefined)
       setRefundingRelayer({})
       setRefundedAmount({})
+      setRelaying(undefined)
     }, 500)
   }, [modalProps.visible])
 
@@ -201,6 +208,11 @@ export const SelfRelayExecuteModal = ({
 
       const relayers = await Promise.all(
         chains.map(async (chain): Promise<Relayer> => {
+          const chainImageUrl = getImageUrlForChainId(chain.chain_id)
+          if (!chainImageUrl) {
+            throw new Error('Chain image URL not found')
+          }
+
           const feeToken = chain.fees?.fee_tokens[0]
           if (!feeToken) {
             throw new Error('Fee token not found')
@@ -240,6 +252,7 @@ export const SelfRelayExecuteModal = ({
 
           return {
             chain,
+            chainImageUrl,
             feeToken,
             wallet,
             relayerAddress,
@@ -337,105 +350,91 @@ export const SelfRelayExecuteModal = ({
       await new Promise((resolve) => setTimeout(resolve, 3000))
 
       // Loop over all chains and relay packets.
-      setStatus(RelayStatus.RelayingPackets)
+      setStatus(RelayStatus.Relaying)
 
       // First relayer is current chain that is sending packets. The rest of the
-      // relayers are the chains that are receiving packets. Relay packets
-      // sequentially, one chain at a time, since a wallet can only submit one
-      // TX at a time.
-      const linksAndAcks = await relayers.slice(1).reduce(
-        async (prev, { chain, client, polytoneNote }) => {
-          // Wait for previous chain to finish relaying packets.
-          const curr = await prev
-
-          // Type-check, should never happen since we slice off the first
-          // (current chain) relayer, which is just responsible for sending.
-          if (!polytoneNote) {
-            return curr
-          }
-
-          // Get packets for this chain.
-          const thesePackets = packets.filter(
-            ({ packet }) =>
-              packet.sourcePort === `wasm.${polytoneNote.note}` &&
-              packet.sourceChannel === polytoneNote.localChannel &&
-              packet.destinationChannel === polytoneNote.remoteChannel
-          )
-          if (!thesePackets.length) {
-            return curr
-          }
-
-          const link = await Link.createWithExistingConnections(
-            // First relayer is current chain sending packets.
-            relayers[0].client,
-            client,
-            polytoneNote.localConnection,
-            polytoneNote.remoteConnection
-          )
-
-          // Relay packets and get acks. Try 3 times.
-          let acks: AckWithMetadata[] | undefined
-          let tries = 3
-          while (tries) {
-            try {
-              acks = await link.relayPackets('A', thesePackets)
-              break
-            } catch (err) {
-              tries -= 1
-
-              console.error(
-                `Failed to relay packets to ${chain.chain_id}.${
-                  tries > 0 ? ' Trying again...' : ''
-                }`,
-                err
-              )
-
-              // If no more tries, rethrow error.
-              if (tries === 0) {
-                throw err
-              }
-
-              // Wait a second before trying again.
-              await new Promise((resolve) => setTimeout(resolve, 1000))
-            }
-          }
-
-          // Type-check. Logic above should ensure it is defined or an error is
-          // thrown.
-          if (!acks) {
-            throw new Error('Failed to relay packets and get acks')
-          }
-
-          return [
-            ...curr,
-            {
-              chainId: chain.chain_id,
-              link,
-              acks,
-            },
-          ]
-        },
-        Promise.resolve(
-          [] as {
-            chainId: string
-            link: Link
-            acks: AckWithMetadata[]
-          }[]
-        )
-      )
-
-      // Wait a few seconds for the packets to be indexed.
-      await new Promise((resolve) => setTimeout(resolve, 3000))
-
-      // Relay acks back to current chain. Relay acks sequentially, one chain at
-      // a time, since a wallet can only submit one TX at a time.
-      setStatus(RelayStatus.RelayingAcks)
-      await linksAndAcks.reduce(async (prev, { chainId, link, acks }) => {
-        // Wait for previous chain to finish relaying acks.
+      // relayers are the chains that are receiving packets. Relay and ack
+      // packets sequentially, one chain at a time, since a wallet can only
+      // submit one TX at a time.
+      await relayers.slice(1).reduce(async (prev, relayer) => {
+        // Wait for previous chain to finish relaying packets.
         await prev
 
-        // Relay acks. Try 3 times.
+        const { chain, client, polytoneNote } = relayer
+
+        // Type-check, should never happen since we slice off the first
+        // (current chain) relayer, which is just responsible for sending.
+        if (!polytoneNote) {
+          return
+        }
+
+        // Get packets for this chain.
+        const thesePackets = packets.filter(
+          ({ packet }) =>
+            packet.sourcePort === `wasm.${polytoneNote.note}` &&
+            packet.sourceChannel === polytoneNote.localChannel &&
+            packet.destinationChannel === polytoneNote.remoteChannel
+        )
+        if (!thesePackets.length) {
+          return
+        }
+
+        setRelaying({
+          type: 'packet',
+          relayer,
+        })
+
+        const link = await Link.createWithExistingConnections(
+          // First relayer is current chain sending packets.
+          relayers[0].client,
+          client,
+          polytoneNote.localConnection,
+          polytoneNote.remoteConnection
+        )
+
+        // Relay packets and get acks. Try 3 times.
+        let acks: AckWithMetadata[] | undefined
         let tries = 3
+        while (tries) {
+          try {
+            acks = await link.relayPackets('A', thesePackets)
+            break
+          } catch (err) {
+            tries -= 1
+
+            console.error(
+              `Failed to relay packets to ${chain.chain_id}.${
+                tries > 0 ? ' Trying again...' : ''
+              }`,
+              err
+            )
+
+            // If no more tries, rethrow error.
+            if (tries === 0) {
+              throw err
+            }
+
+            // Wait a second before trying again.
+            await new Promise((resolve) => setTimeout(resolve, 1000))
+          }
+        }
+
+        // Type-check. Logic above should ensure it is defined or an error is
+        // thrown.
+        if (!acks) {
+          throw new Error('Failed to relay packets and get acks')
+        }
+
+        // Wait a few seconds for the packets to be indexed.
+        await new Promise((resolve) => setTimeout(resolve, 3000))
+
+        setRelaying({
+          type: 'ack',
+          relayer,
+        })
+
+        // Relay acks. Try 3 times.
+        tries = 3
         while (tries) {
           try {
             await link.relayAcks('B', acks)
@@ -444,7 +443,7 @@ export const SelfRelayExecuteModal = ({
             tries -= 1
 
             console.error(
-              `Failed to relay acks from ${chainId}.${
+              `Failed to relay acks from ${chain.chain_id}.${
                 tries > 0 ? ' Trying again...' : ''
               }`,
               err
@@ -463,6 +462,7 @@ export const SelfRelayExecuteModal = ({
 
       // If packets and acks were relayed successfully, execute was successful.
       setExecuteResult(undefined)
+      setRelaying(undefined)
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -477,6 +477,7 @@ export const SelfRelayExecuteModal = ({
     try {
       // Send fee tokens remaining in the relayer wallets back to the user.
       setStatus(RelayStatus.Refunding)
+
       await Promise.all(
         relayers.map(({ chain }) => refundRelayer(chain.chain_id))
       )
@@ -486,7 +487,7 @@ export const SelfRelayExecuteModal = ({
       localStorage.removeItem(mnemonicKey)
 
       setStatus(RelayStatus.Success)
-      onSuccess()
+      setTimeout(() => onSuccess(), 2000)
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -567,6 +568,8 @@ export const SelfRelayExecuteModal = ({
     }
   }
 
+  const RelayIcon = !relaying || relaying.type === 'packet' ? Send : Verified
+
   return (
     <Modal
       containerClassName="w-full !max-w-lg"
@@ -587,6 +590,7 @@ export const SelfRelayExecuteModal = ({
       }
     >
       <SteppedWalkthrough
+        className="w-full"
         stepIndex={
           status === RelayStatus.Uninitialized ||
           status === RelayStatus.Initializing
@@ -595,8 +599,7 @@ export const SelfRelayExecuteModal = ({
             ? 1
             : (status === RelayStatus.Funding && allRelayersFunded) ||
               status === RelayStatus.Executing ||
-              status === RelayStatus.RelayingPackets ||
-              status === RelayStatus.RelayingAcks
+              status === RelayStatus.Relaying
             ? 2
             : status !== RelayStatus.Success
             ? 3
@@ -605,7 +608,7 @@ export const SelfRelayExecuteModal = ({
         steps={[
           {
             label: 'Start',
-            content: (stepStatus) => (
+            content: () => (
               <div className="flex flex-col gap-4">
                 <p>
                   To execute this proposal, you must relay the packet from the
@@ -625,7 +628,6 @@ export const SelfRelayExecuteModal = ({
                 <Button
                   center
                   className="self-end"
-                  disabled={stepStatus !== 'current'}
                   loading={status === RelayStatus.Initializing}
                   onClick={setupRelayer}
                 >
@@ -636,7 +638,7 @@ export const SelfRelayExecuteModal = ({
           },
           {
             label: 'Fund relayer',
-            content: (stepStatus) => (
+            content: () => (
               <div className="flex flex-col gap-4">
                 <p>
                   Fund the relayer wallet with tokens to pay transaction fees on
@@ -646,10 +648,13 @@ export const SelfRelayExecuteModal = ({
                 <div className="grid grid-cols-[auto_1fr] items-center gap-2">
                   {relayers?.map(
                     (
-                      { chain: { chain_id, pretty_name }, feeToken: { denom } },
+                      {
+                        chain: { chain_id, pretty_name },
+                        chainImageUrl,
+                        feeToken: { denom },
+                      },
                       index
                     ) => {
-                      const chainImageUrl = getImageUrlForChainId(chain_id)
                       const walletCannotAfford =
                         !walletFunds.loading &&
                         !(walletFundsSufficient?.[index] ?? false)
@@ -668,14 +673,12 @@ export const SelfRelayExecuteModal = ({
                       return (
                         <Fragment key={chain_id}>
                           <div className="flex flex-row items-center gap-2">
-                            {chainImageUrl && (
-                              <div
-                                className="h-6 w-6 bg-contain bg-center bg-no-repeat"
-                                style={{
-                                  backgroundImage: `url(${chainImageUrl})`,
-                                }}
-                              ></div>
-                            )}
+                            <div
+                              className="h-6 w-6 bg-contain bg-center bg-no-repeat"
+                              style={{
+                                backgroundImage: `url(${chainImageUrl})`,
+                              }}
+                            ></div>
 
                             <p className="primary-text shrink-0">
                               {pretty_name}
@@ -702,9 +705,7 @@ export const SelfRelayExecuteModal = ({
                             <Button
                               center
                               className="w-36 justify-self-end"
-                              disabled={
-                                stepStatus !== 'current' || walletCannotAfford
-                              }
+                              disabled={walletCannotAfford}
                               loading={!!fundingRelayer[chain_id]}
                               onClick={() => fundRelayer(chain_id)}
                             >
@@ -729,33 +730,56 @@ export const SelfRelayExecuteModal = ({
                 ? '!bg-icon-interactive-error'
                 : undefined,
             label: 'Execute and Relay',
-            content: (stepStatus) => (
+            content: () => (
               <>
-                <Button
-                  center
-                  disabled={stepStatus !== 'current'}
-                  loading={
-                    status === RelayStatus.Executing ||
-                    status === RelayStatus.RelayingPackets ||
-                    status === RelayStatus.RelayingAcks
-                  }
-                  onClick={relay}
-                >
-                  Execute and Relay
-                </Button>
-
-                {/* TODO: Make nice relaying UI */}
-                {status !== RelayStatus.Funding && (
-                  <div className="mt-4">
-                    <p className="title-text">* INSERT SEXY RELAYING UI *</p>
-                    <p className="body-text">{status}</p>
-                  </div>
+                {status !== RelayStatus.Relaying ? (
+                  <Button
+                    center
+                    loading={status === RelayStatus.Executing}
+                    onClick={relay}
+                  >
+                    Go
+                  </Button>
+                ) : (
+                  relayers &&
+                  relaying && (
+                    <FlyingAnimation
+                      destination={
+                        <Tooltip title={relaying.relayer.chain.pretty_name}>
+                          <div
+                            className="h-8 w-8 rounded-full bg-background-base bg-contain bg-center bg-no-repeat"
+                            style={{
+                              backgroundImage: `url(${relaying.relayer.chainImageUrl})`,
+                            }}
+                          ></div>
+                        </Tooltip>
+                      }
+                      flyer={
+                        <RelayIcon className="text-icon-interactive-primary !h-5 !w-5" />
+                      }
+                      reversed={relaying.type === 'ack'}
+                      source={
+                        // First chain is current source chain.
+                        <Tooltip title={relayers[0].chain.pretty_name}>
+                          <div
+                            className="h-8 w-8 rounded-full bg-background-base bg-contain bg-center bg-no-repeat"
+                            style={{
+                              backgroundImage: `url(${relayers[0].chainImageUrl})`,
+                            }}
+                          ></div>
+                        </Tooltip>
+                      }
+                    />
+                  )
                 )}
               </>
             ),
           },
           {
             label: 'Refund',
+            // Show when this step is current or past. This makes sure the
+            // refund balances are visible once the success step is reached.
+            overrideShowStepContentStatuses: ['current', 'past'],
             content: () => (
               <div className="flex flex-col gap-4">
                 <p>
@@ -766,10 +790,13 @@ export const SelfRelayExecuteModal = ({
                 <div className="grid grid-cols-[auto_1fr] items-center gap-2">
                   {relayers?.map(
                     (
-                      { chain: { chain_id, pretty_name }, feeToken: { denom } },
+                      {
+                        chain: { chain_id, pretty_name },
+                        chainImageUrl,
+                        feeToken: { denom },
+                      },
                       index
                     ) => {
-                      const chainImageUrl = getImageUrlForChainId(chain_id)
                       const empty =
                         !relayerFunds.loading &&
                         !relayerFunds.errored &&
@@ -784,14 +811,12 @@ export const SelfRelayExecuteModal = ({
                       return (
                         <Fragment key={chain_id}>
                           <div className="flex flex-row items-center gap-2">
-                            {chainImageUrl && (
-                              <div
-                                className="h-6 w-6 bg-contain bg-center bg-no-repeat"
-                                style={{
-                                  backgroundImage: `url(${chainImageUrl})`,
-                                }}
-                              ></div>
-                            )}
+                            <div
+                              className="h-6 w-6 bg-contain bg-center bg-no-repeat"
+                              style={{
+                                backgroundImage: `url(${chainImageUrl})`,
+                              }}
+                            ></div>
 
                             <p className="primary-text shrink-0">
                               {pretty_name}
@@ -842,7 +867,7 @@ export const SelfRelayExecuteModal = ({
           },
           {
             label: 'Success',
-            content: () => <p>Done! Reloading page...</p>,
+            content: () => <Loader />,
           },
         ]}
         textClassName="!title-text"
