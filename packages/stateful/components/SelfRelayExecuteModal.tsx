@@ -487,7 +487,7 @@ export const SelfRelayExecuteModal = ({
       localStorage.removeItem(mnemonicKey)
 
       setStatus(RelayStatus.Success)
-      setTimeout(() => onSuccess(), 2000)
+      onSuccess()
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
