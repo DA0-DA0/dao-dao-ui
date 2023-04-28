@@ -51,7 +51,7 @@ enum RelayStatus {
 }
 
 // TODO: Figure out how much each relayer needs to pay for gas.
-const RELAYER_ALLOWANCE = 100000
+const RELAYER_FUNDS_NEEDED = 100000
 
 type Relayer = {
   chain: Chain
@@ -171,8 +171,7 @@ export const SelfRelayExecuteModal = ({
   const walletFundsSufficient =
     !walletFunds.loading && !walletFunds.errored
       ? walletFunds.data.map(
-          // TODO: Figure out how much each relayer needs to pay for gas.
-          ({ amount }) => Number(amount) >= RELAYER_ALLOWANCE
+          ({ amount }) => Number(amount) >= RELAYER_FUNDS_NEEDED
         )
       : undefined
   // If wallet has enough funds to fund all relayers.
@@ -195,8 +194,9 @@ export const SelfRelayExecuteModal = ({
   const allRelayersFunded =
     !relayerFunds.loading &&
     !relayerFunds.errored &&
-    // TODO: Figure out how much each relayer needs to pay for gas.
-    relayerFunds.data.every(({ amount }) => amount !== '0')
+    relayerFunds.data.every(
+      ({ amount }) => Number(amount) >= RELAYER_FUNDS_NEEDED
+    )
 
   const setupRelayer = async () => {
     if (status !== RelayStatus.Uninitialized) {
@@ -308,8 +308,7 @@ export const SelfRelayExecuteModal = ({
         relayer.feeToken.denom
       )
 
-      // TODO: Calculate fees needed better.
-      const fundsNeeded = RELAYER_ALLOWANCE - Number(currentBalance.amount)
+      const fundsNeeded = RELAYER_FUNDS_NEEDED - Number(currentBalance.amount)
 
       // Send tokens to relayer wallet.
       if (fundsNeeded > 0) {
@@ -323,7 +322,7 @@ export const SelfRelayExecuteModal = ({
 
       setFundedAmount((prev) => ({
         ...prev,
-        [chainId]: RELAYER_ALLOWANCE,
+        [chainId]: RELAYER_FUNDS_NEEDED,
       }))
     } catch (err) {
       console.error(err)
@@ -690,8 +689,8 @@ export const SelfRelayExecuteModal = ({
                           : // Use the previously funded amount if the step is past.
                             fundedAmount[chain_id] ?? 0
 
-                      // TODO: Figure out how much each relayer needs to pay for gas.
-                      const funded = funds > 0 || stepStatus === 'past'
+                      const funded =
+                        funds >= RELAYER_FUNDS_NEEDED || stepStatus === 'past'
                       const feeToken = getTokenForChainIdAndDenom(
                         chain_id,
                         denom
