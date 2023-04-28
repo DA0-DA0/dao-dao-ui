@@ -65,9 +65,11 @@ export const FlyingAnimation = ({
     }px`
 
     if (reversed) {
+      flyingRef.current.style.left = ''
       flyingRef.current.style.right = position
     } else {
       flyingRef.current.style.left = position
+      flyingRef.current.style.right = ''
     }
 
     // Bezier curves with 5 points:
