@@ -85,6 +85,7 @@ export const SelfRelayExecuteModal = ({
   const connectWalletToChain = useConnectWalletToChain()
 
   const [status, setStatus] = useState<RelayStatus>(RelayStatus.Uninitialized)
+  const [relayError, setRelayError] = useState<string>()
   const [relayers, setRelayers] = useState<Relayer[]>()
 
   // Relayer chain IDs currently being funded.
@@ -346,6 +347,8 @@ export const SelfRelayExecuteModal = ({
       return
     }
 
+    setRelayError(undefined)
+
     try {
       // Execute the TX and parse the packets from the events.
       setStatus(RelayStatus.Executing)
@@ -484,7 +487,7 @@ export const SelfRelayExecuteModal = ({
       setRelaying(undefined)
     } catch (err) {
       console.error(err)
-      toast.error(processError(err))
+      setRelayError(processError(err))
       setStatus(RelayStatus.ExecuteOrRelayErrored)
       return
     } finally {
@@ -631,12 +634,14 @@ export const SelfRelayExecuteModal = ({
               <div className="flex flex-col gap-4">
                 <p>
                   To execute this proposal, you must relay the packet from the
-                  source chain to the destination chain or chains.
+                  source chain to the destination chain
+                  {chains.length > 2 ? 's' : ''}.
                 </p>
 
                 <p>
                   A new relayer wallet will be created, which you will have to
-                  fund with tokens to pay transaction fees on all chains.
+                  fund with tokens to pay transaction fees on{' '}
+                  {chains.length > 2 ? 'all' : 'both'} chains.
                 </p>
 
                 <p>
@@ -664,7 +669,7 @@ export const SelfRelayExecuteModal = ({
               <div className="flex flex-col gap-4">
                 <p>
                   Fund the relayer wallet with tokens to pay transaction fees on
-                  each chain.
+                  {' ' + (chains.length > 2 ? 'all' : 'both')} chains.
                 </p>
 
                 <div className="grid grid-cols-[auto_1fr] items-center gap-2">
@@ -755,51 +760,66 @@ export const SelfRelayExecuteModal = ({
               status === RelayStatus.ExecuteOrRelayErrored
                 ? '!bg-icon-interactive-error'
                 : undefined,
-            label: 'Execute and Relay',
-            content: () => (
-              <>
-                {status !== RelayStatus.Relaying ? (
-                  <Button
-                    center
-                    loading={status === RelayStatus.Executing}
-                    onClick={relay}
-                  >
-                    Go
+            label: 'Relay',
+            content: () =>
+              status === RelayStatus.ExecuteOrRelayErrored ? (
+                <div className="flex flex-col gap-4">
+                  <p className="text-text-interactive-error">{relayError}</p>
+
+                  <Button center className="self-end" onClick={relay}>
+                    Retry
                   </Button>
-                ) : (
-                  relayers &&
-                  relaying && (
-                    <FlyingAnimation
-                      destination={
-                        <Tooltip title={relaying.relayer.chain.pretty_name}>
-                          <div
-                            className="h-8 w-8 rounded-full bg-background-base bg-contain bg-center bg-no-repeat"
-                            style={{
-                              backgroundImage: `url(${relaying.relayer.chainImageUrl})`,
-                            }}
-                          ></div>
-                        </Tooltip>
-                      }
-                      flyer={
-                        <RelayIcon className="text-icon-interactive-primary !h-5 !w-5" />
-                      }
-                      reversed={relaying.type === 'ack'}
-                      source={
-                        // First chain is current source chain.
-                        <Tooltip title={relayers[0].chain.pretty_name}>
-                          <div
-                            className="h-8 w-8 rounded-full bg-background-base bg-contain bg-center bg-no-repeat"
-                            style={{
-                              backgroundImage: `url(${relayers[0].chainImageUrl})`,
-                            }}
-                          ></div>
-                        </Tooltip>
-                      }
-                    />
-                  )
-                )}
-              </>
-            ),
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <p>
+                    Now that the relayer is funded, execute the proposal and
+                    relay to the other chain{chains.length > 2 ? 's' : ''}.
+                  </p>
+
+                  {status !== RelayStatus.Relaying ? (
+                    <Button
+                      center
+                      className="self-end"
+                      loading={status === RelayStatus.Executing}
+                      onClick={relay}
+                    >
+                      Execute
+                    </Button>
+                  ) : (
+                    relayers &&
+                    relaying && (
+                      <FlyingAnimation
+                        destination={
+                          <Tooltip title={relaying.relayer.chain.pretty_name}>
+                            <div
+                              className="h-8 w-8 rounded-full bg-background-base bg-contain bg-center bg-no-repeat"
+                              style={{
+                                backgroundImage: `url(${relaying.relayer.chainImageUrl})`,
+                              }}
+                            ></div>
+                          </Tooltip>
+                        }
+                        flyer={
+                          <RelayIcon className="text-icon-interactive-primary !h-5 !w-5" />
+                        }
+                        reversed={relaying.type === 'ack'}
+                        source={
+                          // First chain is current source chain.
+                          <Tooltip title={relayers[0].chain.pretty_name}>
+                            <div
+                              className="h-8 w-8 rounded-full bg-background-base bg-contain bg-center bg-no-repeat"
+                              style={{
+                                backgroundImage: `url(${relayers[0].chainImageUrl})`,
+                              }}
+                            ></div>
+                          </Tooltip>
+                        }
+                      />
+                    )
+                  )}
+                </div>
+              ),
           },
           {
             label: 'Refund',
@@ -917,7 +937,16 @@ export const SelfRelayExecuteModal = ({
           },
           {
             label: 'Success',
-            content: () => <Loader />,
+            content: () => (
+              <div className="flex flex-row items-center justify-between gap-8">
+                <p>
+                  The execution and relay succeeded. Cleaning up and reloading
+                  the page...
+                </p>
+
+                <Loader fill={false} size={36} />
+              </div>
+            ),
           },
         ]}
         textClassName="!title-text"
