@@ -4,21 +4,17 @@ import { IbcClient } from '@confio/relayer/build/lib/ibcclient'
 import { Link } from '@confio/relayer/build/lib/link'
 import { parsePacketsFromTendermintEvents } from '@confio/relayer/build/lib/utils'
 import { DirectSecp256k1HdWallet, EncodeObject } from '@cosmjs/proto-signing'
-import {
-  DeliverTxResponse,
-  GasPrice,
-  calculateFee,
-  coins,
-} from '@cosmjs/stargate'
+import { GasPrice, IndexedTx, calculateFee, coins } from '@cosmjs/stargate'
 import { Check, Close, Send, Verified } from '@mui/icons-material'
 import { ConnectedWallet, useConnectWalletToChain } from '@noahsaso/cosmodal'
 import uniq from 'lodash.uniq'
 import { Fragment, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { useRecoilCallback, waitForAll } from 'recoil'
+import { useRecoilCallback, useSetRecoilState, waitForAll } from 'recoil'
 
 import {
   nativeDenomBalanceSelector,
+  refreshPolytoneListenerResultsAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
@@ -56,7 +52,7 @@ enum RelayStatus {
   RelayErrored,
 }
 
-// TODO: Figure out how much each relayer needs to pay for gas.
+// TODO(polytone): Figure out how much each relayer needs to pay for gas.
 const RELAYER_FUNDS_NEEDED = 100000
 
 type Relayer = {
@@ -74,10 +70,11 @@ type Relayer = {
   polytoneNote?: PolytoneNote
 }
 
+// TODO(polytone): i18n
 export const SelfRelayExecuteModal = ({
   uniqueId,
   chainIds: _chainIds,
-  msgsToExecute,
+  transaction,
   onSuccess,
   onClose,
   visible,
@@ -103,7 +100,8 @@ export const SelfRelayExecuteModal = ({
   const [fundedAmount, setFundedAmount] = useState<
     Record<string, number | undefined>
   >({})
-  const [executeTxResult, setExecuteTxResult] = useState<DeliverTxResponse>()
+  const [executeTx, setExecuteTx] =
+    useState<Pick<IndexedTx, 'events' | 'height'>>()
   const [relaying, setRelaying] = useState<{
     type: 'packet' | 'ack'
     relayer: Relayer
@@ -112,6 +110,13 @@ export const SelfRelayExecuteModal = ({
   const [refundedAmount, setRefundedAmount] = useState<
     Record<string, number | undefined>
   >({})
+
+  // Refresher for polytone listener results.
+  const setRefreshPolytoneListenerResults = useSetRecoilState(
+    refreshPolytoneListenerResultsAtom
+  )
+  const refreshPolytoneListenerResults = () =>
+    setRefreshPolytoneListenerResults((id) => id + 1)
 
   // When the modal is closed, reset state.
   useEffect(() => {
@@ -125,7 +130,7 @@ export const SelfRelayExecuteModal = ({
       setRelayers(undefined)
       setFundingRelayer({})
       setFundedAmount({})
-      setExecuteTxResult(undefined)
+      setExecuteTx(undefined)
       setRefundedAmount({})
       setRelaying(undefined)
     }, 500)
@@ -134,6 +139,7 @@ export const SelfRelayExecuteModal = ({
   // Prevent accidentally closing the tab/window in the middle of the process.
   useEffect(() => {
     if (
+      !visible ||
       status === RelayStatus.Uninitialized ||
       status === RelayStatus.Success
     ) {
@@ -147,7 +153,7 @@ export const SelfRelayExecuteModal = ({
 
     window.addEventListener('beforeunload', listener)
     return () => window.removeEventListener('beforeunload', listener)
-  })
+  }, [visible, status])
 
   // Refresh balances for the wallet and relayer wallet.
   const refreshBalances = useRecoilCallback(
@@ -284,7 +290,7 @@ export const SelfRelayExecuteModal = ({
   }
 
   // Send fee tokens to relayer wallet.
-  const fundRelayer = async (chainId: string, withExecute = false) => {
+  const fundRelayer = async (chainId: string, withExecuteRelay = false) => {
     if (!walletCanAffordAllRelayers) {
       toast.error('Not enough funds in wallet')
       return
@@ -302,8 +308,8 @@ export const SelfRelayExecuteModal = ({
     }
 
     // Should never happen, but just to be safe.
-    if (withExecute && relayer.chain.chain_id !== currentChainId) {
-      toast.error('Execution can only happen on the current chain.')
+    if (withExecuteRelay && relayer.chain.chain_id !== currentChainId) {
+      toast.error('Relay can only happen when funding the current chain.')
       return
     }
 
@@ -312,7 +318,7 @@ export const SelfRelayExecuteModal = ({
       [chainId]: true,
     }))
     try {
-      if (withExecute) {
+      if (withExecuteRelay) {
         setStatus(RelayStatus.Executing)
       }
 
@@ -342,10 +348,10 @@ export const SelfRelayExecuteModal = ({
             ]
           : []
 
-      // Add execute message if needed and has not already executed.
-      if (withExecute && !executeTxResult) {
+      // Add execute message if executing and has not already executed.
+      if (withExecuteRelay && !executeTx && transaction.type === 'execute') {
         msgs.push(
-          ...msgsToExecute.map((msg) =>
+          ...transaction.msgs.map((msg) =>
             cwMsgToEncodeObject(msg, relayer.wallet.address)
           )
         )
@@ -375,10 +381,20 @@ export const SelfRelayExecuteModal = ({
         [chainId]: Number(newBalance.amount),
       }))
 
-      // If executing, relay.
-      if (withExecute) {
-        setExecuteTxResult(newExecuteTxResult)
-        relay(newExecuteTxResult)
+      // Begin relay.
+      if (withExecuteRelay) {
+        if (transaction.type === 'execute') {
+          setExecuteTx(newExecuteTxResult)
+          relay(newExecuteTxResult)
+        } else {
+          const tx = await relayer.client.sign.getTx(transaction.hash)
+          if (!tx) {
+            throw new Error('Transaction not found')
+          }
+
+          setExecuteTx(tx)
+          relay(tx)
+        }
       }
     } catch (err) {
       console.error(err)
@@ -392,15 +408,15 @@ export const SelfRelayExecuteModal = ({
     }
   }
 
-  const relay = async (_executeTxResult?: DeliverTxResponse) => {
-    const currentExecuteTxResult = _executeTxResult || executeTxResult
+  const relay = async (_executeTx?: typeof executeTx) => {
+    const currentExecuteTx = _executeTx || executeTx
 
     if (!relayers || !mnemonicKey) {
       toast.error('Relayer not set up')
       return
     }
 
-    if (!currentExecuteTxResult) {
+    if (!currentExecuteTx) {
       toast.error('Execute TX not found')
       return
     }
@@ -415,10 +431,10 @@ export const SelfRelayExecuteModal = ({
     try {
       // Parse the packets from the execution TX events.
       const packets = parsePacketsFromTendermintEvents(
-        currentExecuteTxResult.events
+        currentExecuteTx.events
       ).map((packet) => ({
         packet,
-        height: currentExecuteTxResult.height,
+        height: currentExecuteTx.height,
       }))
 
       // Wait a few seconds for the TX to be indexed.
@@ -438,10 +454,9 @@ export const SelfRelayExecuteModal = ({
         // (current chain) relayer, which is just responsible for sending.
         if (!polytoneNote) {
           throw new Error('Polytone note not found')
-          return
         }
 
-        // Get packets for this chain.
+        // Get packets for this chain that need relaying.
         const thesePackets = packets.filter(
           ({ packet }) =>
             packet.sourcePort === `wasm.${polytoneNote.note}` &&
@@ -470,7 +485,25 @@ export const SelfRelayExecuteModal = ({
         let tries = 5
         while (tries) {
           try {
-            acks = await link.relayPackets('A', thesePackets)
+            // Find packets that need relaying.
+            const unrelayedPackets =
+              await client.query.ibc.channel.unreceivedPackets(
+                thesePackets[0].packet.destinationPort,
+                thesePackets[0].packet.destinationChannel,
+                thesePackets.map(({ packet }) => packet.sequence.toNumber())
+              )
+
+            const packetsNeedingRelay = thesePackets.filter(({ packet }) =>
+              unrelayedPackets.sequences.some((seq) => seq.eq(packet.sequence))
+            )
+
+            // Relay only the packets that need relaying.
+            if (packetsNeedingRelay.length) {
+              acks = await link.relayPackets('A', packetsNeedingRelay)
+            } else {
+              acks = []
+            }
+
             break
           } catch (err) {
             tries -= 1
@@ -498,43 +531,45 @@ export const SelfRelayExecuteModal = ({
           throw new Error('Failed to relay packets and get acks')
         }
 
-        // Wait a few seconds for the packets to be indexed.
-        await new Promise((resolve) => setTimeout(resolve, 3000))
+        if (acks.length) {
+          // Wait a few seconds for the packets to be indexed.
+          await new Promise((resolve) => setTimeout(resolve, 3000))
 
-        setRelaying({
-          type: 'ack',
-          relayer,
-        })
+          setRelaying({
+            type: 'ack',
+            relayer,
+          })
 
-        // Relay acks. Try 5 times.
-        tries = 5
-        while (tries) {
-          try {
-            await link.relayAcks('B', acks)
-            break
-          } catch (err) {
-            tries -= 1
+          // Relay acks. Try 5 times.
+          tries = 5
+          while (tries) {
+            try {
+              await link.relayAcks('B', acks)
+              break
+            } catch (err) {
+              tries -= 1
 
-            console.error(
-              `Failed to relay acks from ${chain.chain_id}.${
-                tries > 0 ? ' Trying again...' : ''
-              }`,
-              err
-            )
+              console.error(
+                `Failed to relay acks from ${chain.chain_id}.${
+                  tries > 0 ? ' Trying again...' : ''
+                }`,
+                err
+              )
 
-            // If no more tries, rethrow error.
-            if (tries === 0) {
-              throw err
+              // If no more tries, rethrow error.
+              if (tries === 0) {
+                throw err
+              }
+
+              // Wait a few seconds before trying again.
+              await new Promise((resolve) => setTimeout(resolve, 3000))
             }
-
-            // Wait a few seconds before trying again.
-            await new Promise((resolve) => setTimeout(resolve, 3000))
           }
         }
       }, Promise.resolve())
 
       // If packets and acks were relayed successfully, execute was successful.
-      setExecuteTxResult(undefined)
+      setExecuteTx(undefined)
       setRelaying(undefined)
     } catch (err) {
       console.error(err)
@@ -544,23 +579,15 @@ export const SelfRelayExecuteModal = ({
     } finally {
       // Refresh all balances.
       relayers.map(refreshBalances)
+
+      // Refresh all polytone listener results.
+      refreshPolytoneListenerResults()
     }
 
-    // If relay was successful, refund.
-    await refundAll()
-  }
-
-  // Refund all remaining tokens from all relayers back to user.
-  const refundAll = async () => {
-    if (!relayers || !mnemonicKey) {
-      toast.error('Relayer not set up')
-      return
-    }
-
+    // If relay was successful, refund remaining tokens from relayer wallet back
+    // to user on all chains.
+    setStatus(RelayStatus.Refunding)
     try {
-      // Send fee tokens remaining in the relayer wallets back to the user.
-      setStatus(RelayStatus.Refunding)
-
       await Promise.all(
         relayers.map(({ chain }) => refundRelayer(chain.chain_id))
       )
@@ -650,7 +677,7 @@ export const SelfRelayExecuteModal = ({
     <Modal
       containerClassName="w-full !max-w-lg"
       header={{
-        title: 'Self Relay',
+        title: 'Relay',
       }}
       onClose={
         // Only allow closing if execution and relaying has not begun. This
@@ -720,7 +747,9 @@ export const SelfRelayExecuteModal = ({
                 <p>
                   Fund the relayer wallet with tokens to pay transaction fees on
                   {' ' + (chains.length > 2 ? 'all' : 'both')} chains. The last
-                  one will execute the proposal and begin the relay.
+                  one will{' '}
+                  {transaction.type === 'execute' ? 'execute and ' : ''}start
+                  the relayer.
                 </p>
 
                 <div className="grid grid-cols-[auto_1fr] items-center gap-2">
@@ -746,9 +775,7 @@ export const SelfRelayExecuteModal = ({
                         !(walletFundsSufficient?.[index] ?? false)
 
                       const funds =
-                        !relayerFunds.loading &&
-                        !relayerFunds.errored &&
-                        stepStatus === 'current'
+                        !relayerFunds.loading && !relayerFunds.errored
                           ? Number(relayerFunds.data[index].amount)
                           : // Use the previously funded amount if the step is past.
                             fundedAmount[chain_id] ?? 0
@@ -767,7 +794,7 @@ export const SelfRelayExecuteModal = ({
                         isExecute && !allReceivingRelayersFunded
 
                       const showFundOrExecuteButton =
-                        !funded || (isExecute && stepStatus === 'current')
+                        stepStatus === 'current' && (!funded || isExecute)
 
                       return (
                         <Fragment key={chain_id}>
@@ -807,8 +834,12 @@ export const SelfRelayExecuteModal = ({
                                   ? 'Insufficient funds'
                                   : isExecute
                                   ? funded
-                                    ? 'Execute'
-                                    : 'Fund and execute'
+                                    ? transaction.type === 'execute'
+                                      ? 'Execute'
+                                      : 'Relay'
+                                    : transaction.type === 'execute'
+                                    ? 'Fund and execute'
+                                    : 'Fund and relay'
                                   : empty
                                   ? 'Fund'
                                   : 'Top up'}
@@ -852,12 +883,11 @@ export const SelfRelayExecuteModal = ({
                 <div className="flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
                   <p className="text-text-interactive-error">{relayError}</p>
 
-                  <Button
-                    className="self-end"
-                    onClick={() => setStatus(RelayStatus.Funding)}
-                  >
-                    Retry
-                  </Button>
+                  <div className="flex grow flex-row justify-end">
+                    <Button onClick={() => setStatus(RelayStatus.Funding)}>
+                      Retry
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 relayers &&

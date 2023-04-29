@@ -60,7 +60,6 @@ if (!(CHAIN_ID in PolytoneNotesPerChain)) {
   console.error(`Chain ID '${CHAIN_ID}' not found in Polytone Notes per Chain`)
 }
 export const POLYTONE_NOTES = PolytoneNotesPerChain[CHAIN_ID]!
-export const POLYTONE_EAR = process.env.NEXT_PUBLIC_POLYTONE_EAR as string
 
 export const FACTORY_CONTRACT_ADDRESS = process.env
   .NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as string

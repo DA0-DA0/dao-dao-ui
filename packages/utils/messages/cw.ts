@@ -1,6 +1,7 @@
 import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { v4 as uuidv4 } from 'uuid'
 
+import { PolytoneNote } from '@dao-dao/types'
 import {
   BankMsg,
   CosmosMsgFor_Empty,
@@ -11,7 +12,7 @@ import {
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
 
-import { POLYTONE_EAR, POLYTONE_NOTES } from '../constants'
+import { POLYTONE_NOTES } from '../constants'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import { parseEncodedMessage } from './encoding'
 import { decodeStargateMessage } from './protobuf'
@@ -260,12 +261,11 @@ export const makePolytoneExecuteMessage = (
         msg: {
           execute: {
             msgs: msg ? [msg] : [],
-            // TODO(polytone): Tune timeout
-            // 10 minutes
-            timeout_seconds: '600',
+            // 3 days
+            timeout_seconds: (3 * 24 * 60 * 60).toString(),
             callback: {
               msg: toBase64(toUtf8(uuidv4())),
-              receiver: POLYTONE_EAR,
+              receiver: POLYTONE_NOTES[chainId]?.listener,
             },
           },
         },
@@ -286,7 +286,9 @@ export const decodePolytoneExecuteMsg = (
   | {
       match: true
       chainId: string
+      polytoneNote: PolytoneNote
       msg: Record<string, any>
+      initiatorMsg: string
     } => {
   if (
     !objectMatchesStructure(decodedMsg, {
@@ -318,11 +320,11 @@ export const decodePolytoneExecuteMsg = (
     }
   }
 
-  const chainId = Object.entries(POLYTONE_NOTES).find(
+  const entry = Object.entries(POLYTONE_NOTES).find(
     ([, { note }]) => note === decodedMsg.wasm.execute.contract_addr
-  )?.[0]
+  )
   // Unrecognized polytone note.
-  if (!chainId) {
+  if (!entry) {
     return {
       match: false,
     }
@@ -330,10 +332,12 @@ export const decodePolytoneExecuteMsg = (
 
   return {
     match: true,
-    chainId,
+    chainId: entry[0],
+    polytoneNote: entry[1],
     msg:
       decodedMsg.wasm.execute.msg.execute.msgs.length === 0
         ? {}
         : decodeMessages(decodedMsg.wasm.execute.msg.execute.msgs)[0],
+    initiatorMsg: decodedMsg.wasm.execute.msg.execute.callback.msg,
   }
 }

@@ -20,6 +20,10 @@ export {
   DaoVotingNativeStakedClient,
   DaoVotingNativeStakedQueryClient,
 } from './DaoVotingNativeStaked'
+export {
+  PolytoneListenerClient,
+  PolytoneListenerQueryClient,
+} from './PolytoneListener'
 export { PolytoneNoteClient, PolytoneNoteQueryClient } from './PolytoneNote'
 export { WyndexFactoryClient, WyndexFactoryQueryClient } from './WyndexFactory'
 export {

@@ -6,15 +6,18 @@ import {
   Key,
   Redo,
   RotateRightOutlined,
+  Send,
   Tag,
 } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
+import uniq from 'lodash.uniq'
+import { ComponentType, useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, waitForAllSettled } from 'recoil'
 
+import { PolytoneListenerSelectors } from '@dao-dao/state/recoil'
 import {
   CopyToClipboardUnderline,
   IconButtonLink,
@@ -22,6 +25,7 @@ import {
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
+  useCachedLoading,
   useChain,
   useDaoInfoContext,
   useNavHelpers,
@@ -274,48 +278,76 @@ const InnerProposalStatusAndInfo = ({
     setActionLoading(false)
   }, [proposal.status])
 
+  // Decoded polytone execute messages.
+  const polytoneMessages = useMemo(
+    () =>
+      proposal.msgs
+        .map((msg) =>
+          decodePolytoneExecuteMsg(decodeMessages([msg])[0], 'oneOrZero')
+        )
+        .map((decoded) => (decoded.match ? decoded : null))
+        .filter((decoded) => decoded !== null)
+        .map((decoded) => decoded!),
+    [proposal.msgs]
+  )
+  const hasPolytoneMessages = polytoneMessages.length > 0
+  // Callback results.
+  const polytoneResults = useCachedLoading(
+    waitForAllSettled(
+      polytoneMessages.map(({ polytoneNote: { listener }, initiatorMsg }) =>
+        PolytoneListenerSelectors.resultSelector({
+          chainId,
+          contractAddress: listener,
+          params: [
+            {
+              initiator: coreAddress,
+              initiatorMsg,
+            },
+          ],
+        })
+      )
+    ),
+    []
+  )
+  const openPolytoneRelay = (transactionHash?: string) =>
+    hasPolytoneMessages &&
+    openSelfRelayExecute({
+      uniqueId: `${chainId}:${proposalModule.address}:${proposalNumber}`,
+      transaction: transactionHash
+        ? {
+            type: 'exists',
+            hash: transactionHash,
+          }
+        : {
+            type: 'execute',
+            msgs: [
+              makeWasmMessage({
+                wasm: {
+                  execute: {
+                    contract_addr: proposalModule.address,
+                    funds: [],
+                    msg: {
+                      execute: {
+                        proposal_id: proposalNumber,
+                      },
+                    },
+                  },
+                },
+              }),
+            ],
+          },
+      chainIds: uniq(polytoneMessages.map(({ chainId }) => chainId)),
+    })
+
   const onExecute = useCallback(async () => {
     if (!connected) {
       return
     }
 
-    // If any of the proposal messages are a polytone execute, then we need to
-    // use the self-relay execute instead.
-    const polytoneChainIds = new Set(
-      proposal.msgs
-        .map((msg) =>
-          decodePolytoneExecuteMsg(decodeMessages([msg])[0], 'oneOrZero')
-        )
-        .map((decoded) => (decoded.match ? decoded.chainId : null))
-        .filter((chainId): chainId is string => !!chainId)
-    )
-    if (polytoneChainIds.size > 0) {
-      openSelfRelayExecute({
-        uniqueId: `${chainId}:${proposalModule.address}:${proposalNumber}`,
-        msgsToExecute: [
-          makeWasmMessage({
-            wasm: {
-              execute: {
-                contract_addr: proposalModule.address,
-                funds: [],
-                msg: {
-                  execute: {
-                    proposal_id: proposalNumber,
-                  },
-                },
-              },
-            },
-          }),
-        ],
-        chainIds: Array.from(polytoneChainIds),
-      })
-      return
-    }
-
     setActionLoading(true)
-
     try {
       await executeProposal({ proposalId: proposalNumber })
+
       await onExecuteSuccess()
     } catch (err) {
       console.error(err)
@@ -326,16 +358,7 @@ const InnerProposalStatusAndInfo = ({
     }
 
     // Loading will stop on success when status refreshes.
-  }, [
-    connected,
-    proposal.msgs,
-    executeProposal,
-    proposalNumber,
-    openSelfRelayExecute,
-    chainId,
-    proposalModule.address,
-    onExecuteSuccess,
-  ])
+  }, [connected, executeProposal, proposalNumber, onExecuteSuccess])
 
   const onClose = useCallback(async () => {
     if (!connected) {
@@ -405,7 +428,9 @@ const InnerProposalStatusAndInfo = ({
               label: t('button.execute'),
               Icon: Key,
               loading: actionLoading,
-              doAction: onExecute,
+              doAction: hasPolytoneMessages
+                ? () => openPolytoneRelay()
+                : onExecute,
             }
           : proposal.status === ProposalStatus.Rejected
           ? {
@@ -413,6 +438,24 @@ const InnerProposalStatusAndInfo = ({
               Icon: CancelOutlined,
               loading: actionLoading,
               doAction: onClose,
+            }
+          : // If executed and has polytone messages that have not been relayed and has loaded TX hash.
+          proposal.status === ProposalStatus.Executed &&
+            polytoneMessages.length > 0 &&
+            !polytoneResults.loading &&
+            polytoneResults.data.some(
+              (loadable) => loadable.state === 'hasError'
+            ) &&
+            !loadingExecutionTxHash.loading &&
+            loadingExecutionTxHash.data
+          ? {
+              label: t('button.relay'),
+              Icon: Send,
+              loading: actionLoading,
+              doAction: () => openPolytoneRelay(loadingExecutionTxHash.data),
+              description:
+                // TODO(polytone): i18n
+                'The proposal was executed, but some or all of the cross-chain messages have not yet been relayed. You must relay them to complete the execution.',
             }
           : undefined
       }

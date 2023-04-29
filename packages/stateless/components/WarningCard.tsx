@@ -1,7 +1,7 @@
 import { WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 
-export type WarningProps = {
+export type WarningCardProps = {
   content: string
   className?: string
   iconClassName?: string
@@ -9,13 +9,13 @@ export type WarningProps = {
   size?: 'sm' | 'default'
 }
 
-export const Warning = ({
+export const WarningCard = ({
   content,
   className,
   iconClassName,
   textClassName,
   size = 'default',
-}: WarningProps) => (
+}: WarningCardProps) => (
   <div
     className={clsx(
       'flex flex-row items-center rounded-md bg-background-secondary',

@@ -46,6 +46,8 @@ export interface CodeIdConfig {
 export type PolytoneNote = {
   // Contract address of note on the local/current chain.
   note: string
+  // Contract address of the note's listener on the local/current chain.
+  listener: string
   // IBC connection IDs
   localConnection: string
   remoteConnection: string

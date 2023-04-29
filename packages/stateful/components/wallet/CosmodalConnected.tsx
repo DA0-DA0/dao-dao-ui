@@ -8,7 +8,7 @@ import {
   ProfileImage,
   ProfileNameDisplayAndEditor,
   Tooltip,
-  Warning,
+  WarningCard,
   useAppContext,
 } from '@dao-dao/stateless'
 
@@ -27,7 +27,7 @@ export const CosmodalConnected = ({ connectedWallet }: UiProps) => {
   return connectedWallet ? (
     <div className="flex flex-col items-stretch gap-6">
       {isWeb3Auth && (
-        <Warning
+        <WarningCard
           content={t('info.socialLoginWarning', { context: 'onlySocial' })}
           size="sm"
         />

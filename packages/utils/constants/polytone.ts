@@ -11,6 +11,8 @@ const junoMainnet: PolytoneNotes = {
     // juno-1
     note: 'juno1w7qxyutgqe7usqn5lp3srm2erqh57hrh4fdwyepl76vz9tmqs2gsspfhxu',
     // juno-1
+    listener: 'juno1sfptnhcfpynp52u8jsaytt2nzxy08ypyaxaur0wka55tylxz5ldq4n5elw',
+    // juno-1
     localConnection: 'connection-349',
     // uni-6
     remoteConnection: 'connection-206',

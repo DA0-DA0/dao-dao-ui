@@ -106,3 +106,9 @@ export const refreshHiddenBalancesAtom = atom({
   key: 'refreshHiddenBalances',
   default: 0,
 })
+
+// Change this to refresh polytone listener results.
+export const refreshPolytoneListenerResultsAtom = atom({
+  key: 'refreshPolytoneListenerResults',
+  default: 0,
+})

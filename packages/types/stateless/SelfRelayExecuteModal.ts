@@ -13,10 +13,23 @@ export type SelfRelayExecuteModalProps = Pick<
   uniqueId: string
   // All chain IDs that will receive an IBC packet.
   chainIds: string[]
-  // The CosmWasm-formatted messages to execute that will create IBC packets
-  // that need self-relaying.
-  msgsToExecute: CosmosMsgForEmpty[]
+  // Information on how to find the transaction to relay packets from.
+  transaction: SelfRelayTransaction
   // Called when the self-relay execution is successful and all relayer wallets
   // refund the original wallet.
   onSuccess: () => void
 }
+
+export type SelfRelayTransaction =
+  | {
+      type: 'execute'
+      // CosmWasm-formatted messages to execute that will create IBC packets
+      // that need self-relaying.
+      msgs: CosmosMsgForEmpty[]
+    }
+  | {
+      type: 'exists'
+      // The transaction hash of the transaction that created the IBC packets
+      // that need self-relaying.
+      hash: string
+    }

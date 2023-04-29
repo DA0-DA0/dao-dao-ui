@@ -182,7 +182,7 @@ export interface BaseProposalStatusAndInfoProps {
   openSelfRelayExecute: (
     props: Pick<
       SelfRelayExecuteModalProps,
-      'uniqueId' | 'chainIds' | 'msgsToExecute'
+      'uniqueId' | 'chainIds' | 'transaction'
     >
   ) => void
   onVoteSuccess: () => void | Promise<void>
