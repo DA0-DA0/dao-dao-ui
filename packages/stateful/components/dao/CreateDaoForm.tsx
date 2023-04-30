@@ -636,7 +636,7 @@ export const CreateDaoForm = ({
           // Use the SubDAOs tab as the home breadcrumb if making a SubDAO.
           homeTab: makingSubDao
             ? {
-                id: DaoTabId.Subdaos,
+                id: DaoTabId.SubDaos,
                 sdaLabel: t('title.subDaos'),
               }
             : undefined,

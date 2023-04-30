@@ -42,12 +42,10 @@ export const Breadcrumbs = ({
                   ? []
                   : [
                       {
-                        href: getDaoPath(
-                          daoInfo.coreAddress,
-                          undefined,
+                        href:
+                          getDaoPath(daoInfo.coreAddress) +
                           // Link to home tab if available.
-                          homeTab?.id
-                        ),
+                          (homeTab ? `/${homeTab.id}` : ''),
                         label: daoInfo.name,
                       },
                     ]),
@@ -59,12 +57,10 @@ export const Breadcrumbs = ({
             ? []
             : [
                 {
-                  href: getDaoPath(
-                    daoInfo.coreAddress,
-                    undefined,
+                  href:
+                    getDaoPath(daoInfo.coreAddress) +
                     // Link to home tab if available.
-                    homeTab?.id
-                  ),
+                    (homeTab ? `/${homeTab.id}` : ''),
                   label: homeTab?.sdaLabel || t('title.home'),
                 },
               ]),

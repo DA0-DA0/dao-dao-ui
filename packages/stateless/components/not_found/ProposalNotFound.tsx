@@ -19,7 +19,7 @@ export const ProposalNotFound = () => {
 
       <ErrorPage title={t('error.couldntFindProposal')}>
         <ButtonLink
-          href={getDaoPath(coreAddress) + '#' + DaoTabId.Proposals}
+          href={getDaoPath(coreAddress) + '/' + DaoTabId.Proposals}
           variant="secondary"
         >
           {t('button.viewProposals')}

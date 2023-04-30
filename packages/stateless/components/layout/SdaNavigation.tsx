@@ -173,13 +173,13 @@ export const SdaNavigation = ({
         <div className={clsx(!compact && 'pt-2')}>
           {tabs.map((tab) => {
             const isOnProposalsTab =
-              tab.id === DaoTabId.Proposals && asPath.includes('/proposals')
+              tab.id === DaoTabId.Proposals && asPath.includes('/proposals/')
             const isCreatingProposal = asPath.startsWith(
               getDaoProposalPath(daoInfo.coreAddress, 'create')
             )
 
             const isCreatingSubDao =
-              tab.id === DaoTabId.Subdaos &&
+              tab.id === DaoTabId.SubDaos &&
               asPath.startsWith(getDaoPath(daoInfo.coreAddress) + '/create')
 
             return (
@@ -188,7 +188,7 @@ export const SdaNavigation = ({
                 LinkWrapper={LinkWrapper}
                 compact={compact}
                 forceExpanded
-                href={getDaoPath(daoInfo.coreAddress) + `#${tab.id}`}
+                href={getDaoPath(daoInfo.coreAddress) + '/' + tab.id}
                 selected={
                   // When no hash is present, the home tab is selected. This is
                   // an edge case since the hash can be present or not to show
@@ -196,6 +196,7 @@ export const SdaNavigation = ({
                   tab.id === DaoTabId.Home &&
                   asPath === getDaoPath(daoInfo.coreAddress)
                 }
+                shallow
                 {...tab}
               >
                 {isOnProposalsTab && (

@@ -285,13 +285,13 @@ export type DaoPayrollConfig = {
   data?: Record<string, unknown>
 }
 
+// Built-in DAO tabs. These do not include widget tabs.
 export enum DaoTabId {
-  Home = '',
+  Home = 'home',
   Proposals = 'proposals',
   Treasury = 'treasury',
-  Subdaos = 'subdaos',
+  SubDaos = 'subdaos',
   Members = 'members',
-  Payroll = 'payroll',
   Staked = 'staked',
   Collection = 'collection',
 }

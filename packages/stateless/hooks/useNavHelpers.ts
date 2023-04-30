@@ -23,8 +23,8 @@ export const useNavHelpers = (overrideMode?: DaoPageMode) => {
   }
 
   const getDaoPath = useCallback(
-    (coreAddress: string, params?: Record<string, unknown>, hash?: string) =>
-      _getDaoPath(mode, coreAddress, params, hash),
+    (coreAddress: string, params?: Record<string, unknown>) =>
+      _getDaoPath(mode, coreAddress, params),
     [mode]
   )
 
@@ -38,9 +38,8 @@ export const useNavHelpers = (overrideMode?: DaoPageMode) => {
     (
       coreAddress: string,
       proposalId: string,
-      params?: Record<string, unknown>,
-      hash?: string
-    ) => _getDaoProposalPath(mode, coreAddress, proposalId, params, hash),
+      params?: Record<string, unknown>
+    ) => _getDaoProposalPath(mode, coreAddress, proposalId, params),
     [mode]
   )
 

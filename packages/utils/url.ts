@@ -2,6 +2,7 @@ import queryString from 'query-string'
 
 import {
   DaoPageMode,
+  DaoTabId,
   PartialCategorizedActionKeyAndDataNoId,
 } from '@dao-dao/types'
 
@@ -28,7 +29,7 @@ export const getDaoProposalPath = (
   hash?: string
 ) => {
   const dao = getDaoPath(mode, coreAddress)
-  const base = `${dao}/proposals/${proposalId}`
+  const base = `${dao}/${DaoTabId.Proposals}/${proposalId}`
   const query = params ? `?${queryString.stringify(params)}` : ''
 
   return base + query + (hash ? `#${hash}` : '')
