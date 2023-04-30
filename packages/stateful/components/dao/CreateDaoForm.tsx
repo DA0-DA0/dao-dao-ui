@@ -22,7 +22,7 @@ import {
   RightSidebarContent,
   useAppContext,
   useCachedLoadable,
-  useNavHelpers,
+  useDaoNavHelpers,
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
@@ -97,7 +97,7 @@ export const CreateDaoForm = ({
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
-  const { goToDao } = useNavHelpers()
+  const { goToDao } = useDaoNavHelpers()
   const { setFollowing } = useFollowingDaos()
 
   const { mode } = useAppContext()

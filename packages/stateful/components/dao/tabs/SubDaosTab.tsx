@@ -2,7 +2,7 @@ import {
   SubDaosTab as StatelessSubDaosTab,
   useCachedLoading,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, ContractVersion } from '@dao-dao/types'
 
@@ -14,7 +14,7 @@ import { DaoCard } from '../DaoCard'
 
 export const SubDaosTab = () => {
   const daoInfo = useDaoInfoContext()
-  const { getDaoPath, getDaoProposalPath } = useNavHelpers()
+  const { getDaoPath, getDaoProposalPath } = useDaoNavHelpers()
 
   const { isMember = false } = useMembership(daoInfo)
 
@@ -43,7 +43,7 @@ export const SubDaosTab = () => {
     <StatelessSubDaosTab
       ButtonLink={ButtonLink}
       DaoCard={DaoCard}
-      createSubDaoHref={getDaoPath(daoInfo.coreAddress) + '/create'}
+      createSubDaoHref={getDaoPath(daoInfo.coreAddress, 'create')}
       daoInfo={daoInfo}
       isMember={isMember}
       subDaos={subDaos}

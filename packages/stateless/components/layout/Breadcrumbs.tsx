@@ -7,7 +7,7 @@ import { DaoPageMode } from '@dao-dao/types'
 import { BreadcrumbsProps } from '@dao-dao/types/stateless/Breadcrumbs'
 import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
-import { useDaoInfoContextIfAvailable, useNavHelpers } from '../../hooks'
+import { useDaoInfoContextIfAvailable, useDaoNavHelpers } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
 import { LinkWrapper } from '../LinkWrapper'
@@ -27,7 +27,7 @@ export const Breadcrumbs = ({
   // Allow using Breadcrumbs outside of DaoPageWrapper.
   const daoInfo = useDaoInfoContextIfAvailable()
   const { mode } = useAppContext()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
 
   const [responsive, setResponsive] = useState(false)
 
@@ -43,9 +43,8 @@ export const Breadcrumbs = ({
                   : [
                       {
                         href:
-                          getDaoPath(daoInfo.coreAddress) +
                           // Link to home tab if available.
-                          (homeTab ? `/${homeTab.id}` : ''),
+                          getDaoPath(daoInfo.coreAddress, homeTab?.id),
                         label: daoInfo.name,
                       },
                     ]),
@@ -58,9 +57,8 @@ export const Breadcrumbs = ({
             : [
                 {
                   href:
-                    getDaoPath(daoInfo.coreAddress) +
                     // Link to home tab if available.
-                    (homeTab ? `/${homeTab.id}` : ''),
+                    getDaoPath(daoInfo.coreAddress, homeTab?.id),
                   label: homeTab?.sdaLabel || t('title.home'),
                 },
               ]),

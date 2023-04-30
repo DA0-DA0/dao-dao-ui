@@ -24,7 +24,7 @@ import {
   ProposalNotFound,
   ProposalProps,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   CommonProposalInfo,
@@ -40,7 +40,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
   const daoInfo = useDaoInfoContext()
   const actionsForMatching = useActionsForMatching({ isCreating: false })
-  const { getDaoProposalPath } = useNavHelpers()
+  const { getDaoProposalPath } = useDaoNavHelpers()
   const { connected, address } = useWallet()
   const {
     id,

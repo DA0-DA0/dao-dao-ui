@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { SuspenseLoader } from '@dao-dao/stateful'
 import { DaoPageMode } from '@dao-dao/types'
 
-import { useNavHelpers } from '../../hooks'
+import { useDaoNavHelpers } from '../../hooks'
 import { ButtonLink } from '../buttons'
 import { ErrorPage } from './ErrorPage'
 
@@ -21,7 +21,7 @@ export const ErrorPage404 = ({ overrideMode }: ErrorPage404Props) => {
   const {
     getDaoPath,
     router: { asPath },
-  } = useNavHelpers(overrideMode)
+  } = useDaoNavHelpers(overrideMode)
   // Get DAO address from path if exists.
   const coreAddress = asPath.startsWith(getDaoPath(''))
     ? asPath.replace(getDaoPath(''), '').split('/')[0]

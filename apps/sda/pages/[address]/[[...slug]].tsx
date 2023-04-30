@@ -15,7 +15,7 @@ import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
 import {
   DaoSdaWrappedTab,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { DaoPageMode } from '@dao-dao/types'
 import { SITE_URL, getDaoPath } from '@dao-dao/utils'
@@ -23,7 +23,7 @@ import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 const DaoHomePage: NextPage = () => {
   const router = useRouter()
   const { coreAddress } = useDaoInfoContext()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
 
   const tabs = useDaoTabs({ includeHome: SdaDaoHome })
   const firstTabId = tabs[0].id
@@ -31,7 +31,7 @@ const DaoHomePage: NextPage = () => {
   // Pre-fetch tabs.
   useEffect(() => {
     tabs.forEach((tab) => {
-      router.prefetch(getDaoPath(coreAddress) + '/' + tab.id)
+      router.prefetch(getDaoPath(coreAddress, tab.id))
     })
   }, [coreAddress, getDaoPath, router, tabs])
 
@@ -39,7 +39,7 @@ const DaoHomePage: NextPage = () => {
   useEffect(() => {
     // If no slug, redirect to first tab.
     if (slug.length === 0) {
-      router.push(getDaoPath(coreAddress) + '/' + firstTabId, undefined, {
+      router.push(getDaoPath(coreAddress, firstTabId), undefined, {
         shallow: true,
       })
     }

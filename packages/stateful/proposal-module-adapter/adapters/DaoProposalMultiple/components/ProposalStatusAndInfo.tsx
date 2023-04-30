@@ -24,7 +24,7 @@ import {
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   TooltipTruncatedText,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
@@ -102,7 +102,7 @@ const InnerProposalStatusAndInfo = ({
 }) => {
   const { t } = useTranslation()
   const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { connected, address: walletAddress = '' } = useWallet()
   const { isMember = false } = useMembership({

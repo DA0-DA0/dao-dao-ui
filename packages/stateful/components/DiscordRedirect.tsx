@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { discordNotifierSetupAtom, mountedInBrowserAtom } from '@dao-dao/state'
-import { PageLoader, useNavHelpers } from '@dao-dao/stateless'
+import { PageLoader, useDaoNavHelpers } from '@dao-dao/stateless'
 import { DaoPageMode, DaoTabId } from '@dao-dao/types'
 
 export type DiscordRedirectProps = {
@@ -16,7 +16,7 @@ export type DiscordRedirectProps = {
 
 export const DiscordRedirect = ({ overrideMode }: DiscordRedirectProps) => {
   const { t } = useTranslation()
-  const { goToDao, router } = useNavHelpers(overrideMode)
+  const { goToDao, router } = useDaoNavHelpers(overrideMode)
   const [discordNotifierSetup, setDiscordNotificationSetup] = useRecoilState(
     discordNotifierSetupAtom
   )
@@ -38,13 +38,9 @@ export const DiscordRedirect = ({ overrideMode }: DiscordRedirectProps) => {
       }
 
       // If state matches, redirect to DAO page with code parameter.
-      goToDao(
-        discordNotifierSetup.coreAddress,
-        {
-          discordNotifier: code,
-        },
-        DaoTabId.Proposals
-      )
+      goToDao(discordNotifierSetup.coreAddress, DaoTabId.Proposals, {
+        discordNotifier: code,
+      })
     } else {
       // If necessary data is not loaded, just redirect home. We are probably
       // not in a setup flow.

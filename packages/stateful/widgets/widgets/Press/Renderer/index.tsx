@@ -1,7 +1,7 @@
 import {
   useCachedLoading,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, WidgetRendererProps } from '@dao-dao/types'
 
@@ -17,7 +17,7 @@ export const Renderer = ({
   variables: { contract },
 }: WidgetRendererProps<PressData>) => {
   const { coreAddress, chainId } = useDaoInfoContext()
-  const { getDaoProposalPath } = useNavHelpers()
+  const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership({
     coreAddress,
     chainId,

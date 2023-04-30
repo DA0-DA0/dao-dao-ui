@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { navigatingToHrefAtom } from '@dao-dao/state'
-import { useNavHelpers } from '@dao-dao/stateless'
+import { useDaoNavHelpers } from '@dao-dao/stateless'
 import {
   CommandModalContextMaker,
   CommandModalContextSection,
@@ -25,7 +25,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
 }> = ({ dao: { chainId = CHAIN_ID, coreAddress, name, imageUrl } }) => {
   const useSections = () => {
     const { t } = useTranslation()
-    const { getDaoPath, getDaoProposalPath, router } = useNavHelpers()
+    const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
 
     const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
       useFollowingDaos()

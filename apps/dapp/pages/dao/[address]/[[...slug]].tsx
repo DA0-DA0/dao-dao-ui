@@ -27,14 +27,14 @@ import { useWidgets } from '@dao-dao/stateful/widgets'
 import {
   DaoDappTabbedHome,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, DaoPageMode, WidgetLocation } from '@dao-dao/types'
 import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const InnerDaoHome = () => {
   const { t } = useTranslation()
-  const { getDaoPath, getDaoProposalPath, router } = useNavHelpers()
+  const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
 
   const daoInfo = useDaoInfoContext()
 
@@ -163,7 +163,7 @@ const InnerDaoHome = () => {
   // Pre-fetch tabs.
   useEffect(() => {
     tabs.forEach((tab) => {
-      router.prefetch(getDaoPath(daoInfo.coreAddress) + '/' + tab.id)
+      router.prefetch(getDaoPath(daoInfo.coreAddress, tab.id))
     })
   }, [daoInfo.coreAddress, getDaoPath, router, tabs])
 
@@ -171,13 +171,9 @@ const InnerDaoHome = () => {
   useEffect(() => {
     // If no slug, redirect to first tab.
     if (slug.length === 0) {
-      router.push(
-        getDaoPath(daoInfo.coreAddress) + '/' + firstTabId,
-        undefined,
-        {
-          shallow: true,
-        }
-      )
+      router.push(getDaoPath(daoInfo.coreAddress, firstTabId), undefined, {
+        shallow: true,
+      })
     }
   }, [daoInfo.coreAddress, getDaoPath, router, slug.length, firstTabId])
 
@@ -187,7 +183,7 @@ const InnerDaoHome = () => {
       : // If tab is invalid, default to first tab.
         firstTabId
   const onSelectTabId = (tabId: string) =>
-    router.push(getDaoPath(daoInfo.coreAddress) + '/' + tabId, undefined, {
+    router.push(getDaoPath(daoInfo.coreAddress, tabId), undefined, {
       shallow: true,
     })
 

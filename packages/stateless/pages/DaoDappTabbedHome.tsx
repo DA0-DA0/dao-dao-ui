@@ -16,7 +16,7 @@ import {
 } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
 import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
-import { useNavHelpers } from '../hooks/useNavHelpers'
+import { useDaoNavHelpers } from '../hooks/useDaoNavHelpers'
 
 export const DaoDappTabbedHome = ({
   daoInfo,
@@ -35,7 +35,7 @@ export const DaoDappTabbedHome = ({
   const {
     getDaoPath,
     router: { asPath },
-  } = useNavHelpers()
+  } = useDaoNavHelpers()
   // Swap the DAO path prefixes instead of just rebuilding the path to preserve
   // any additional info (such as query params).
   const singleDaoPath = asPath.replace(

@@ -10,14 +10,15 @@ import {
 export const getDaoPath = (
   mode: DaoPageMode,
   coreAddress: string,
-  params?: Record<string, unknown>,
-  hash?: string
+  path?: string,
+  params?: Record<string, unknown>
 ) => {
   const base =
-    mode === DaoPageMode.Dapp ? `/dao/${coreAddress}` : `/${coreAddress}`
+    (mode === DaoPageMode.Dapp ? `/dao/${coreAddress}` : `/${coreAddress}`) +
+    (path ? `/${path}` : '')
   const query = params ? `?${queryString.stringify(params)}` : ''
 
-  return base + query + (hash ? `#${hash}` : '')
+  return base + query
 }
 
 // Create a path to a DAO proposal page based on the app's page mode.

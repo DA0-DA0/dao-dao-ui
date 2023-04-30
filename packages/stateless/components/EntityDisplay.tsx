@@ -10,7 +10,7 @@ import {
   toBech32Hash,
 } from '@dao-dao/utils'
 
-import { useNavHelpers } from '../hooks'
+import { useDaoNavHelpers } from '../hooks'
 import { CopyToClipboardUnderline } from './CopyToClipboard'
 import { IconButtonLink } from './icon_buttons'
 import { Tooltip } from './tooltip/Tooltip'
@@ -27,7 +27,7 @@ export const EntityDisplay = ({
   noCopy,
 }: EntityDisplayProps) => {
   const { t } = useTranslation()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
 
   imageSize ??= size === 'lg' ? 28 : 24
 
