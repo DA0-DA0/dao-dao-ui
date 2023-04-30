@@ -53,7 +53,8 @@ export const InnerPfpkNftSelectionModal = ({
     `${nft.collection.address}:${nft.tokenId}`
 
   const nfts = useCachedLoadingWithError(
-    walletAddress
+    // Don't load NFTs until visible.
+    walletAddress && visible
       ? walletNativeAndStargazeNftsSelector(walletAddress)
       : undefined
   )
