@@ -13,7 +13,7 @@ import {
   useCachedLoading,
   useChain,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey } from '@dao-dao/types'
 import {
@@ -44,7 +44,7 @@ const InnerDaoInfoBar = () => {
   } = useVotingModuleAdapter()
   const votingModuleItems = useDaoInfoBarItems()
   const { coreAddress, polytoneProxies } = useDaoInfoContext()
-  const { getDaoProposalPath } = useNavHelpers()
+  const { getDaoProposalPath } = useDaoNavHelpers()
 
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
