@@ -1,6 +1,6 @@
 import { ArrowOutwardRounded } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoDappTabbedHomeProps, DaoPageMode } from '@dao-dao/types'
@@ -50,6 +50,8 @@ export const DaoDappTabbedHome = ({
     )
   }, [coreAddress])
 
+  const tabContainerRef = useRef<HTMLDivElement>(null)
+
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
@@ -82,7 +84,10 @@ export const DaoDappTabbedHome = ({
 
         <div className="h-[1px] bg-border-base" />
 
-        <div className="styled-scrollbar -mx-6 mb-2 overflow-x-auto px-6 pt-6 pb-2">
+        <div
+          className="styled-scrollbar -mx-6 mb-2 overflow-x-auto px-6 pt-6 pb-2"
+          ref={tabContainerRef}
+        >
           <SegmentedControls
             className="mx-auto hidden w-max max-w-full mdlg:grid"
             moreTabs={
@@ -100,7 +105,34 @@ export const DaoDappTabbedHome = ({
           <SegmentedControls
             className="mx-auto mdlg:hidden"
             noWrap
-            onSelect={onSelectTabId}
+            onSelect={(tabId, e) => {
+              onSelectTabId(tabId)
+
+              // Scroll tab to horizontal center.
+              if (tabContainerRef.current) {
+                const containerRect =
+                  tabContainerRef.current.getBoundingClientRect()
+                const containerCenter = containerRect.width / 2
+
+                const tabRect = e.currentTarget.getBoundingClientRect()
+                // The scrollable container may be offset from the left of the
+                // screen by the nav sidebar. Thus, to center the tab
+                // horizontally in the container, we need to subtract the
+                // container's left offset. `getBoundingClientRect` is relative
+                // to the whole window, but the scroll position is relative to
+                // the container itself, so we need the center of the container.
+                const tabCenter =
+                  tabRect.left + tabRect.width / 2 - containerRect.left
+
+                tabContainerRef.current.scrollTo({
+                  left:
+                    tabContainerRef.current.scrollLeft +
+                    tabCenter -
+                    containerCenter,
+                  behavior: 'smooth',
+                })
+              }
+            }}
             selected={selectedTabId}
             tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
           />
