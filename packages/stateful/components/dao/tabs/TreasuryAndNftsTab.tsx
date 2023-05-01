@@ -19,6 +19,7 @@ import {
   useCw721CommonGovernanceTokenInfoIfExists,
   useNativeCommonGovernanceTokenInfoIfExists,
 } from '../../../voting-module-adapter'
+import { ButtonLink } from '../../ButtonLink'
 import { NftCard } from '../../NftCard'
 import { StargazeNftImportModal } from '../../StargazeNftImportModal'
 import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
@@ -66,8 +67,20 @@ export const TreasuryAndNftsTab = () => {
       : [],
   })
 
+  const createCrossChainAccountPrefill = useDaoProposalSinglePrefill({
+    actions: [
+      {
+        actionKey: ActionKey.CreateCrossChainAccount,
+        data: {
+          chainId: 'CHAIN_ID',
+        },
+      },
+    ],
+  })
+
   return (
     <StatelessTreasuryAndNftsTab
+      ButtonLink={ButtonLink}
       FiatDepositModal={connected ? DaoFiatDepositModal : undefined}
       NftCard={NftCard}
       StargazeNftImportModal={StargazeNftImportModal}
@@ -77,6 +90,13 @@ export const TreasuryAndNftsTab = () => {
         !!addCw721Action && addCollectionProposalPrefill
           ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
               prefill: addCollectionProposalPrefill,
+            })
+          : undefined
+      }
+      createCrossChainAccountPrefillHref={
+        createCrossChainAccountPrefill
+          ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
+              prefill: createCrossChainAccountPrefill,
             })
           : undefined
       }

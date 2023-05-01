@@ -66,6 +66,7 @@
     "create": "Create",
     "createAProposal": "Create a proposal",
     "createAToken": "Create a token",
+    "createAccount": "Create account",
     "createDAO": "Create DAO",
     "createSubDao": "Create SubDAO",
     "delete": "Delete",
