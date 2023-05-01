@@ -9,9 +9,19 @@ import {
   TokenCardInfo,
   TypedOption,
 } from '@dao-dao/types'
+import {
+  getChainForChainId,
+  getDisplayNameForChainId,
+  getImageUrlForChainId,
+} from '@dao-dao/utils'
 
-import { useButtonPopupSorter } from '../../../hooks'
+import {
+  useButtonPopupSorter,
+  useChain,
+  useDaoInfoContext,
+} from '../../../hooks'
 import { Button } from '../../buttons'
+import { CopyToClipboard } from '../../CopyToClipboard'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Loader } from '../../logo/Loader'
 import { ModalProps } from '../../modals/Modal'
@@ -45,24 +55,39 @@ export const TreasuryAndNftsTab = <
   StargazeNftImportModal,
   FiatDepositModal,
 }: TreasuryAndNftsTabProps<T, N>) => {
+  const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
+  const { coreAddress, polytoneProxies } = useDaoInfoContext()
+
   const [showImportStargazeNftsModal, setShowImportStargazeNftsModal] =
     useState(false)
 
-  const { t } = useTranslation()
-
-  // Sort governance token first.
-  const sortedTokens = useMemo(
+  // List of [chainId, address], current DAO treasury and all polytone proxies.
+  const addresses = [[chainId, coreAddress], ...Object.entries(polytoneProxies)]
+  // Sort governance token first and group by chain ID.
+  const groupedTokens = useMemo(
     () =>
       tokens.loading
-        ? []
+        ? {}
         : // `sort` mutates, so let's make a copy of the array first.
-          [...tokens.data].sort((a, b) =>
-            !!a.isGovernanceToken === !!b.isGovernanceToken
-              ? 0
-              : a.isGovernanceToken
-              ? -1
-              : 1
-          ),
+          [...tokens.data]
+            .sort((a, b) =>
+              !!a.isGovernanceToken === !!b.isGovernanceToken
+                ? 0
+                : a.isGovernanceToken
+                ? -1
+                : 1
+            )
+            .reduce(
+              (prev, token) => ({
+                ...prev,
+                [token.token.chainId]: [
+                  ...(prev[token.token.chainId] || []),
+                  token,
+                ],
+              }),
+              {} as Record<string, T[]>
+            ),
     [tokens]
   )
 
@@ -92,11 +117,52 @@ export const TreasuryAndNftsTab = <
         {tokens.loading || !tokens.data ? (
           <Loader fill={false} />
         ) : tokens.data.length ? (
-          <GridCardContainer cardType="wide">
-            {sortedTokens.map((props, index) => (
-              <TokenCard {...props} key={index} />
-            ))}
-          </GridCardContainer>
+          <div className="flex flex-col gap-8">
+            {addresses.map(([chainId, address]) => {
+              const chainImageUrl = getImageUrlForChainId(chainId)
+              const bech32Prefix = getChainForChainId(chainId).bech32_prefix
+
+              return (
+                <div key={chainId} className="flex flex-col gap-4">
+                  <div className="flex flex-row items-center gap-3">
+                    <div className="flex flex-row items-center gap-2">
+                      {chainImageUrl && (
+                        <div
+                          className="h-6 w-6 bg-contain bg-center bg-no-repeat"
+                          style={{
+                            backgroundImage: `url(${chainImageUrl})`,
+                          }}
+                        ></div>
+                      )}
+
+                      <p className="primary-text shrink-0">
+                        {getDisplayNameForChainId(chainId)}
+                      </p>
+                    </div>
+
+                    <CopyToClipboard
+                      className="min-w-0 !gap-2 rounded-md bg-background-tertiary p-2 font-mono transition hover:bg-background-secondary"
+                      takeStartEnd={{
+                        start: bech32Prefix.length + 6,
+                        end: 6,
+                      }}
+                      textClassName="!bg-transparent !p-0"
+                      tooltip={t('button.clickToCopyAddress')}
+                      value={address}
+                    />
+                  </div>
+
+                  {groupedTokens[chainId] && (
+                    <GridCardContainer cardType="wide">
+                      {groupedTokens[chainId].map((props, index) => (
+                        <TokenCard {...props} key={index} />
+                      ))}
+                    </GridCardContainer>
+                  )}
+                </div>
+              )
+            })}
+          </div>
         ) : (
           <p className="secondary-text">{t('info.nothingFound')}</p>
         )}
