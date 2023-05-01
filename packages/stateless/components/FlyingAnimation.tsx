@@ -3,7 +3,11 @@ import { ReactNode, useEffect, useRef } from 'react'
 
 import { useAnimationFrame } from '../hooks/useAnimationFrame'
 
-const CONTROLS = [0.7, -0.65, 0.75]
+// Wavey up and down path.
+// const CONTROLS = [0.7, -0.65, 0.75]
+
+// Consistent upwards arc.
+const CONTROLS = [0.75, 0.75, 0.75]
 
 export type FlyingAnimationProps = {
   source: ReactNode
@@ -25,7 +29,7 @@ export const FlyingAnimation = ({
   flyer,
   destination,
   duration = 3,
-  disturbance = 0.7,
+  disturbance = 0,
   reversed = false,
   className,
 }: FlyingAnimationProps) => {

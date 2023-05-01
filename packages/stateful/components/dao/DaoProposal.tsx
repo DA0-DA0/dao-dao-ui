@@ -277,9 +277,10 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
               status: ProposalStatus.Executed,
               proposalId: proposalInfo.id,
             },
-            // Force call the fallback.
+            // Force call the fallback, and don't wait for a block to pass.
             {
               onlyIfNotListening: false,
+              skipWait: true,
             }
           )
         }

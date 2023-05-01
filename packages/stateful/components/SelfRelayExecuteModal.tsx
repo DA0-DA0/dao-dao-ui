@@ -853,7 +853,6 @@ export const SelfRelayExecuteModal = ({
                                   feeToken.decimals
                                 )}
                                 decimals={feeToken.decimals}
-                                iconUrl={feeToken.imageUrl}
                                 symbol={feeToken.symbol}
                               />
 
@@ -895,12 +894,14 @@ export const SelfRelayExecuteModal = ({
                   <FlyingAnimation
                     destination={
                       <Tooltip title={relaying.relayer.chain.pretty_name}>
-                        <div
-                          className="h-8 w-8 rounded-full bg-background-base bg-contain bg-center bg-no-repeat"
-                          style={{
-                            backgroundImage: `url(${relaying.relayer.chainImageUrl})`,
-                          }}
-                        ></div>
+                        <div className="flex items-center justify-center rounded-l-full bg-background-base p-1">
+                          <div
+                            className="h-8 w-8 rounded-full bg-contain bg-center bg-no-repeat"
+                            style={{
+                              backgroundImage: `url(${relaying.relayer.chainImageUrl})`,
+                            }}
+                          ></div>
+                        </div>
                       </Tooltip>
                     }
                     flyer={
@@ -910,12 +911,14 @@ export const SelfRelayExecuteModal = ({
                     source={
                       // First chain is current source chain.
                       <Tooltip title={relayers[0].chain.pretty_name}>
-                        <div
-                          className="h-8 w-8 rounded-full bg-background-base bg-contain bg-center bg-no-repeat"
-                          style={{
-                            backgroundImage: `url(${relayers[0].chainImageUrl})`,
-                          }}
-                        ></div>
+                        <div className="flex items-center justify-center rounded-r-full bg-background-base p-1">
+                          <div
+                            className="h-8 w-8 rounded-full bg-contain bg-center bg-no-repeat"
+                            style={{
+                              backgroundImage: `url(${relayers[0].chainImageUrl})`,
+                            }}
+                          ></div>
+                        </div>
                       </Tooltip>
                     }
                   />
@@ -989,7 +992,6 @@ export const SelfRelayExecuteModal = ({
                                 feeToken.decimals
                               )}
                               decimals={feeToken.decimals}
-                              iconUrl={feeToken.imageUrl}
                               symbol={feeToken.symbol}
                             />
 
