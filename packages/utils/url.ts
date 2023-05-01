@@ -26,14 +26,13 @@ export const getDaoProposalPath = (
   mode: DaoPageMode,
   coreAddress: string,
   proposalId: string,
-  params?: Record<string, unknown>,
-  hash?: string
+  params?: Record<string, unknown>
 ) => {
   const dao = getDaoPath(mode, coreAddress)
   const base = `${dao}/${DaoTabId.Proposals}/${proposalId}`
   const query = params ? `?${queryString.stringify(params)}` : ''
 
-  return base + query + (hash ? `#${hash}` : '')
+  return base + query
 }
 
 // Create a path for the Me page transaction builder with a pre-filled

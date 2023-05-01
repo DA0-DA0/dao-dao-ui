@@ -98,7 +98,7 @@ export const DaoDappTabbedHome = ({
           />
 
           <SegmentedControls
-            className="mdlg:hidden"
+            className="mx-auto mdlg:hidden"
             noWrap
             onSelect={onSelectTabId}
             selected={selectedTabId}
