@@ -3,8 +3,8 @@ import { ComponentType } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { Button, MarkdownRenderer, Tooltip } from '@dao-dao/stateless'
-import { Entity, GenericTokenWithUsdPrice } from '@dao-dao/types'
+import { Button, Loader, MarkdownRenderer, Tooltip } from '@dao-dao/stateless'
+import { Entity, GenericTokenWithUsdPrice, LoadingData } from '@dao-dao/types'
 import { formatDateTimeTz } from '@dao-dao/utils'
 
 import { Status, SurveyStatus } from '../../types'
@@ -14,15 +14,18 @@ import {
 } from './ContributionFormInput'
 
 export interface ContributionFormProps {
+  connected: boolean
   status: Status
   onSubmit: (data: ContributionFormData) => Promise<void>
   loading: boolean
-  entity: Entity
-  EntityDisplay: ComponentType
+  loadingEntity: LoadingData<Entity>
   tokenPrices: GenericTokenWithUsdPrice[]
+  EntityDisplay: ComponentType
+  ConnectWallet: ComponentType
 }
 
 export const ContributionForm = ({
+  connected,
   status: {
     survey,
     contribution: existingContribution,
@@ -30,9 +33,10 @@ export const ContributionForm = ({
   },
   onSubmit,
   loading,
-  entity,
-  EntityDisplay,
+  loadingEntity,
   tokenPrices,
+  EntityDisplay,
+  ConnectWallet,
 }: ContributionFormProps) => {
   const { t } = useTranslation()
 
@@ -88,68 +92,83 @@ export const ContributionForm = ({
           markdown={survey.contributionInstructions}
         />
 
-        <div className="flex min-w-[18rem] grow flex-col gap-4 pb-10">
-          <div className="flex flex-col gap-2">
-            <p className="primary-text text-text-body">
-              {t('title.yourSubmission')}
-            </p>
+        {connected ? (
+          loadingEntity.loading ? (
+            <Loader />
+          ) : (
+            <div className="flex min-w-[18rem] grow flex-col gap-4 pb-10">
+              <div className="flex flex-col gap-2">
+                <p className="primary-text text-text-body">
+                  {t('title.yourSubmission')}
+                </p>
 
-            <EntityDisplay />
+                <EntityDisplay />
 
-            {!entity.name && (
-              <p className="caption-text text-text-interactive-error">
-                {t('error.compensationCycleNeedsProfileName')}
-              </p>
-            )}
-          </div>
+                {!loadingEntity.data.name && (
+                  <p className="caption-text text-text-interactive-error">
+                    {t('error.compensationCycleNeedsProfileName')}
+                  </p>
+                )}
+              </div>
 
-          <ContributionFormInput
-            errors={errors}
-            register={register}
-            setValue={setValue}
-            survey={survey}
-            tokenPrices={tokenPrices}
-            watch={watch}
-          />
+              <ContributionFormInput
+                errors={errors}
+                register={register}
+                setValue={setValue}
+                survey={survey}
+                tokenPrices={tokenPrices}
+                watch={watch}
+              />
 
-          {contributed && (
-            <p className="caption-text self-end text-right text-text-interactive-valid">
-              {t('form.contributionSubmitted')}
-            </p>
-          )}
+              {contributed && (
+                <p className="caption-text self-end text-right text-text-interactive-valid">
+                  {t('form.contributionSubmitted')}
+                </p>
+              )}
 
-          {survey.status === SurveyStatus.Inactive && (
-            <p className="caption-text self-end text-right text-text-interactive-error">
-              {t('info.intakeOpensAt', {
-                date: formatDateTimeTz(new Date(survey.contributionsOpenAt)),
-              })}
-            </p>
-          )}
-
-          <Tooltip
-            title={
-              survey.status === SurveyStatus.Inactive
-                ? t('info.intakeOpensAt', {
+              {survey.status === SurveyStatus.Inactive && (
+                <p className="caption-text self-end text-right text-text-interactive-error">
+                  {t('info.intakeOpensAt', {
                     date: formatDateTimeTz(
                       new Date(survey.contributionsOpenAt)
                     ),
-                  })
-                : !entity.name
-                ? t('error.compensationCycleNeedsProfileName')
-                : undefined
-            }
-          >
-            <Button
-              className="self-end"
-              disabled={survey.status === SurveyStatus.Inactive || !entity.name}
-              loading={loading}
-              type="submit"
-            >
-              <p>{contributed ? t('button.update') : t('button.submit')}</p>
-              <Publish className="!h-4 !w-4" />
-            </Button>
-          </Tooltip>
-        </div>
+                  })}
+                </p>
+              )}
+
+              <Tooltip
+                title={
+                  survey.status === SurveyStatus.Inactive
+                    ? t('info.intakeOpensAt', {
+                        date: formatDateTimeTz(
+                          new Date(survey.contributionsOpenAt)
+                        ),
+                      })
+                    : !loadingEntity.data.name
+                    ? t('error.compensationCycleNeedsProfileName')
+                    : undefined
+                }
+              >
+                <Button
+                  className="self-end"
+                  disabled={
+                    survey.status === SurveyStatus.Inactive ||
+                    !loadingEntity.data.name
+                  }
+                  loading={loading}
+                  type="submit"
+                >
+                  <p>{contributed ? t('button.update') : t('button.submit')}</p>
+                  <Publish className="!h-4 !w-4" />
+                </Button>
+              </Tooltip>
+            </div>
+          )
+        ) : (
+          <div className="flex grow flex-row items-start justify-end">
+            <ConnectWallet />
+          </div>
+        )}
       </div>
     </form>
   )

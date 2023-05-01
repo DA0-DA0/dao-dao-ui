@@ -10,7 +10,7 @@ import {
   LoadingData,
 } from '@dao-dao/types'
 
-import { useNavHelpers } from '../../../hooks'
+import { useDaoNavHelpers } from '../../../hooks'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Loader } from '../../logo/Loader'
 import { NoContent } from '../../NoContent'
@@ -35,7 +35,7 @@ export const SubDaosTab = ({
   ButtonLink,
 }: SubDaosTabProps) => {
   const { t } = useTranslation()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
 
   return (
     <>
@@ -52,7 +52,7 @@ export const SubDaosTab = ({
           className="shrink-0"
           // Disabled for v1 DAOs, not supported.
           disabled={!isMember || daoInfo.coreVersion === ContractVersion.V1}
-          href={getDaoPath(daoInfo.coreAddress) + '/create'}
+          href={getDaoPath(daoInfo.coreAddress, 'create')}
         >
           <Add className="!h-4 !w-4" />
           {t('button.newSubDao')}

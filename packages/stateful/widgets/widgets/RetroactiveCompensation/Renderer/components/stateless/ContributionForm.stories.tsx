@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { EntityDisplay } from '@dao-dao/stateless/components/EntityDisplay'
+import { Default as ConnectWalletStory } from '@dao-dao/stateless/components/wallet/ConnectWallet.stories'
 import { EntityType, TokenType } from '@dao-dao/types'
 import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
 
@@ -55,6 +56,7 @@ export const makeSurvey = (): Survey => ({
 
 export const Default = Template.bind({})
 Default.args = {
+  connected: true,
   status: {
     survey: makeSurvey(),
     contribution: 'this is my contribution\n\npls give me money',
@@ -63,26 +65,15 @@ Default.args = {
   },
   onSubmit: async (data) => alert('submit: ' + JSON.stringify(data)),
   loading: false,
-  entity: {
-    type: EntityType.Wallet,
-    address: 'walletPerson',
-    name: 'wallet Person!',
-    imageUrl: '/placeholders/1.svg',
+  loadingEntity: {
+    loading: false,
+    data: {
+      type: EntityType.Wallet,
+      address: 'walletPerson',
+      name: 'wallet Person!',
+      imageUrl: '/placeholders/1.svg',
+    },
   },
-  EntityDisplay: () => (
-    <EntityDisplay
-      address="juno123"
-      loadingEntity={{
-        loading: false,
-        data: {
-          type: EntityType.Wallet,
-          address: 'walletPerson',
-          name: 'wallet Person!',
-          imageUrl: '/placeholders/1.svg',
-        },
-      }}
-    />
-  ),
   tokenPrices: [
     {
       token: {
@@ -102,4 +93,19 @@ Default.args = {
       timestamp: new Date(),
     },
   ],
+  EntityDisplay: () => (
+    <EntityDisplay
+      address="juno123"
+      loadingEntity={{
+        loading: false,
+        data: {
+          type: EntityType.Wallet,
+          address: 'walletPerson',
+          name: 'wallet Person!',
+          imageUrl: '/placeholders/1.svg',
+        },
+      }}
+    />
+  ),
+  ConnectWallet: () => <ConnectWalletStory {...ConnectWalletStory.args} />,
 }

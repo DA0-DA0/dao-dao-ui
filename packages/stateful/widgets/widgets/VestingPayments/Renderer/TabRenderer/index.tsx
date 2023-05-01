@@ -6,7 +6,7 @@ import {
   useCachedLoadable,
   useChain,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, WidgetRendererProps } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
@@ -25,7 +25,7 @@ export const TabRenderer = ({
 }: WidgetRendererProps<VestingPaymentsData>) => {
   const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
-  const { getDaoProposalPath } = useNavHelpers()
+  const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership({
     coreAddress,
   })

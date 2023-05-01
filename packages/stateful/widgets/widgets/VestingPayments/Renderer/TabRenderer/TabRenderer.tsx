@@ -1,5 +1,5 @@
 import { Add, WarningRounded } from '@mui/icons-material'
-import { ComponentType, useEffect, useState } from 'react'
+import { ComponentType, useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -8,6 +8,8 @@ import {
   Modal,
   NoContent,
   Tooltip,
+  useDaoInfoContext,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   ButtonLinkProps,
@@ -17,6 +19,7 @@ import {
 } from '@dao-dao/types'
 
 import { VestingPaymentLine } from '../../components/VestingPaymentLine'
+import { VESTING_PAYMENTS_WIDGET_ID } from '../../constants'
 import { VestingInfo } from '../../types'
 
 export interface TabRendererProps {
@@ -41,6 +44,25 @@ export const TabRenderer = ({
   Trans,
 }: TabRendererProps) => {
   const { t } = useTranslation()
+  const { coreAddress } = useDaoInfoContext()
+  const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
+
+  const openVestingContract =
+    daoSubpathComponents[0] === VESTING_PAYMENTS_WIDGET_ID
+      ? daoSubpathComponents[1]
+      : undefined
+  const setOpenVestingContract = useCallback(
+    (contract?: string) =>
+      goToDao(
+        coreAddress,
+        VESTING_PAYMENTS_WIDGET_ID + (contract ? `/${contract}` : ''),
+        undefined,
+        {
+          shallow: true,
+        }
+      ),
+    [coreAddress, goToDao]
+  )
 
   // Vesting payments that need a slash registered.
   const vestingPaymentsNeedingSlashRegistration = vestingPaymentsLoading.loading
@@ -60,24 +82,29 @@ export const TabRenderer = ({
 
   const [showingCompleted, setShowingCompleted] = useState(false)
 
-  const [vestingPaymentModalOpen, setVestingPaymentModalOpen] = useState(false)
-  const [openVestingContract, setOpenVestingContract] = useState<
-    string | undefined
-  >()
-  const openVestingPayment = vestingPaymentsLoading.loading
-    ? undefined
-    : vestingPaymentsLoading.data.find(
-        ({ vestingContractAddress }) =>
-          vestingContractAddress === openVestingContract
-      )
+  const [vestingPaymentModalOpen, setVestingPaymentModalOpen] = useState(
+    !!openVestingContract
+  )
+  const openVestingPayment =
+    vestingPaymentsLoading.loading || !openVestingContract
+      ? undefined
+      : vestingPaymentsLoading.data.find(
+          ({ vestingContractAddress }) =>
+            vestingContractAddress === openVestingContract
+        )
   // Wait for modal to close before clearing the open vesting payment to prevent
   // UI flicker.
   useEffect(() => {
-    if (!vestingPaymentModalOpen) {
+    if (!vestingPaymentModalOpen && openVestingPayment) {
       const timeout = setTimeout(() => setOpenVestingContract(undefined), 200)
       return () => clearTimeout(timeout)
     }
-  }, [vestingPaymentModalOpen])
+  }, [
+    openVestingContract,
+    openVestingPayment,
+    setOpenVestingContract,
+    vestingPaymentModalOpen,
+  ])
 
   return (
     <div className="flex flex-col gap-6">
@@ -276,7 +303,7 @@ export const TabRenderer = ({
         contentContainerClassName="!p-0"
         hideCloseButton
         onClose={() => setVestingPaymentModalOpen(false)}
-        visible={vestingPaymentModalOpen}
+        visible={vestingPaymentModalOpen && !!openVestingPayment}
       >
         {openVestingPayment ? (
           <VestingPaymentCard {...openVestingPayment} />

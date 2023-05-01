@@ -13,7 +13,7 @@ import {
   PageHeaderContent,
   RightSidebarContent,
 } from '../components'
-import { useNavHelpers } from '../hooks'
+import { useDaoNavHelpers } from '../hooks'
 
 export interface InboxProps {
   state: InboxState
@@ -27,7 +27,7 @@ export const Inbox = ({
   LinkWrapper,
 }: InboxProps) => {
   const { t } = useTranslation()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
 
   const [refreshSpinning, setRefreshSpinning] = useState(false)
   // Start spinning refresh icon if refreshing sets to true. Turn off once the

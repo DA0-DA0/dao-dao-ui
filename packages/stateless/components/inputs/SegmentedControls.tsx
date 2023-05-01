@@ -86,13 +86,7 @@ export const SegmentedControls = <T extends unknown>({
           index={index}
           loading={loading === value}
           noWrap={noWrap}
-          onClick={(e) => {
-            onSelect(value)
-            // Scroll to the button in case it's off-screen.
-            ;(e.target as HTMLButtonElement).scrollIntoView({
-              behavior: 'smooth',
-            })
-          }}
+          onClick={(e) => onSelect(value, e)}
           onMouseOver={() => setHoveringIndex(index)}
           selectedIndex={selectedIndex}
         >
@@ -145,8 +139,8 @@ export const SegmentedControls = <T extends unknown>({
                   <Button
                     key={index}
                     className="rounded-none text-left"
-                    onClick={() => {
-                      onSelect(value)
+                    onClick={(e) => {
+                      onSelect(value, e)
                       setMoreOpen(false)
                     }}
                     pressed={selectedMoreTabIndex === index}

@@ -10,7 +10,7 @@ import {
   useCachedLoadable,
   useChain,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
@@ -36,7 +36,7 @@ interface ProposalCreationFormProps {
 export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { goToDaoProposal } = useNavHelpers()
+  const { goToDaoProposal } = useDaoNavHelpers()
   const { coreAddress } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet()

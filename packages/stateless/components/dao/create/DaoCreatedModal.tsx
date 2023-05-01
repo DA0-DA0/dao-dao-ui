@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { SITE_URL } from '@dao-dao/utils'
 
-import { useNavHelpers } from '../../../hooks'
+import { useDaoNavHelpers } from '../../../hooks'
 import {
   ItemCreatedModal,
   ItemCreatedModalProps,
@@ -18,7 +18,7 @@ export type DaoCreatedModalProps = Omit<
 
 export const DaoCreatedModal = ({ subDao, ...props }: DaoCreatedModalProps) => {
   const { t } = useTranslation()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
 
   return (
     <ItemCreatedModal<DaoCardProps>

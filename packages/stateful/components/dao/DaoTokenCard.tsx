@@ -13,7 +13,7 @@ import {
   TokenCard as StatelessTokenCard,
   useCachedLoading,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, ButtonPopupSection, TokenCardInfo } from '@dao-dao/types'
 import {
@@ -33,7 +33,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
   const { t } = useTranslation()
   const router = useRouter()
   const { coreAddress } = useDaoInfoContext()
-  const { getDaoProposalPath } = useNavHelpers()
+  const { getDaoProposalPath } = useDaoNavHelpers()
 
   const lazyInfo = useCachedLoading(
     tokenCardLazyInfoSelector({

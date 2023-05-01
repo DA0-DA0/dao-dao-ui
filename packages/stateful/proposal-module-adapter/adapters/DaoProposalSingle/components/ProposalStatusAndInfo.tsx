@@ -28,7 +28,7 @@ import {
   useCachedLoading,
   useChain,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
@@ -126,7 +126,7 @@ const InnerProposalStatusAndInfo = ({
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { connected, address: walletAddress = '' } = useWallet()
   const { isMember = false } = useMembership({
@@ -484,7 +484,7 @@ const InnerProposalStatusAndInfoLoader = (
 ) => {
   const { t } = useTranslation()
   const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
 
   const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
     <p className={clsx('animate-pulse', className)}>...</p>

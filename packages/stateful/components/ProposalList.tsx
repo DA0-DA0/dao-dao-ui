@@ -6,7 +6,7 @@ import {
   ProposalList as StatelessProposalList,
   useChain,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 
 import { useMembership, useOnDaoWebSocketMessage } from '../hooks'
@@ -22,7 +22,7 @@ const MIN_LOAD_PROPS = 100
 export const ProposalList = () => {
   const chain = useChain()
   const { coreAddress, proposalModules } = useDaoInfoContext()
-  const { getDaoProposalPath } = useNavHelpers()
+  const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership({
     coreAddress,
   })
