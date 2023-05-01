@@ -3,7 +3,6 @@ import { useWallet } from '@noahsaso/cosmodal'
 import {
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
   useCachedLoading,
-  useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
@@ -26,7 +25,6 @@ import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
 import { DaoTokenCard } from '../DaoTokenCard'
 
 export const TreasuryAndNftsTab = () => {
-  const { chain_id: chainId } = useChain()
   const daoInfo = useDaoInfoContext()
   const { connected } = useWallet()
   const { getDaoProposalPath } = useDaoNavHelpers()
@@ -47,10 +45,8 @@ export const TreasuryAndNftsTab = () => {
     }),
     []
   )
-  // TODO(polytone): Show NFTs from other chains.
   const nfts = useCachedLoading(
     nftCardInfosForDaoSelector({
-      chainId,
       coreAddress: daoInfo.coreAddress,
       governanceCollectionAddress: cw721GovernanceCollectionAddress,
     }),

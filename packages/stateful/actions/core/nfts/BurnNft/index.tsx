@@ -90,7 +90,6 @@ const Component: ActionComponent = (props) => {
       ? context.type === ActionContextType.Dao
         ? nftCardInfosForDaoSelector({
             coreAddress: address,
-            chainId,
             governanceCollectionAddress,
           })
         : walletNftCardInfos({
