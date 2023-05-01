@@ -5,7 +5,7 @@ import { refreshVestingAtom } from '@dao-dao/state/recoil'
 import {
   useCachedLoadable,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, WidgetRendererProps } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
@@ -23,7 +23,7 @@ export const TabRenderer = ({
   variables: { factory },
 }: WidgetRendererProps<VestingPaymentsData>) => {
   const { coreAddress, chainId } = useDaoInfoContext()
-  const { getDaoProposalPath } = useNavHelpers()
+  const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership({
     coreAddress,
     chainId,

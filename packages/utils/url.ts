@@ -2,6 +2,7 @@ import queryString from 'query-string'
 
 import {
   DaoPageMode,
+  DaoTabId,
   PartialCategorizedActionKeyAndDataNoId,
 } from '@dao-dao/types'
 
@@ -9,14 +10,15 @@ import {
 export const getDaoPath = (
   mode: DaoPageMode,
   coreAddress: string,
-  params?: Record<string, unknown>,
-  hash?: string
+  path?: string,
+  params?: Record<string, unknown>
 ) => {
   const base =
-    mode === DaoPageMode.Dapp ? `/dao/${coreAddress}` : `/${coreAddress}`
+    (mode === DaoPageMode.Dapp ? `/dao/${coreAddress}` : `/${coreAddress}`) +
+    (path ? `/${path}` : '')
   const query = params ? `?${queryString.stringify(params)}` : ''
 
-  return base + query + (hash ? `#${hash}` : '')
+  return base + query
 }
 
 // Create a path to a DAO proposal page based on the app's page mode.
@@ -24,14 +26,13 @@ export const getDaoProposalPath = (
   mode: DaoPageMode,
   coreAddress: string,
   proposalId: string,
-  params?: Record<string, unknown>,
-  hash?: string
+  params?: Record<string, unknown>
 ) => {
   const dao = getDaoPath(mode, coreAddress)
-  const base = `${dao}/proposals/${proposalId}`
+  const base = `${dao}/${DaoTabId.Proposals}/${proposalId}`
   const query = params ? `?${queryString.stringify(params)}` : ''
 
-  return base + query + (hash ? `#${hash}` : '')
+  return base + query
 }
 
 // Create a path for the Me page transaction builder with a pre-filled

@@ -89,7 +89,7 @@ Default.args = {
       Icon: AccountBalanceRounded,
     },
     {
-      id: DaoTabId.Subdaos,
+      id: DaoTabId.SubDaos,
       label: 'SubDAOs',
       Component: () => (
         <SubDaosTabStory {...(SubDaosTabStory.args as SubDaosTabProps)} />
@@ -105,6 +105,8 @@ Default.args = {
       Icon: PeopleAltRounded,
     },
   ],
+  selectedTabId: DaoTabId.Proposals,
+  onSelectTabId: (tabId) => alert(tabId),
   rightSidebarContent: (
     <ProfileMemberCard
       {...(ProfileMemberCardStory.args as ProfileMemberCardProps)}

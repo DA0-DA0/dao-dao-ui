@@ -70,7 +70,7 @@ export const useDaoTabs = ({
       Icon: AccountBalanceWalletOutlined,
     },
     {
-      id: DaoTabId.Subdaos,
+      id: DaoTabId.SubDaos,
       label: t('title.subDaos'),
       Component: SubDaosTab,
       Icon: FiberSmartRecordOutlined,

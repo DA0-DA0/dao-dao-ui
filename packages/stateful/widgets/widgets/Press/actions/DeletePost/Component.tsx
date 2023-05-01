@@ -9,7 +9,7 @@ import {
   Loader,
   SelectInput,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionComponent, LoadingData } from '@dao-dao/types'
 import { validateRequired } from '@dao-dao/utils'
@@ -36,7 +36,7 @@ export const DeletePostComponent: ActionComponent<DeletePostOptions> = ({
   const id = watch((fieldNamePrefix + 'id') as 'id')
 
   const { coreAddress } = useDaoInfoContext()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
 
   return isCreating ? (
     postsLoading.loading ? (
@@ -72,11 +72,7 @@ export const DeletePostComponent: ActionComponent<DeletePostOptions> = ({
         postsLoading.data.some((post) => post.id === id) && (
           <IconButtonLink
             Icon={ArrowOutwardRounded}
-            href={getDaoPath(
-              coreAddress,
-              undefined,
-              `press/${postLoading.data.id}`
-            )}
+            href={getDaoPath(coreAddress, `press/${postLoading.data.id}`)}
             iconClassName="text-icon-tertiary"
             openInNewTab
             size="xs"

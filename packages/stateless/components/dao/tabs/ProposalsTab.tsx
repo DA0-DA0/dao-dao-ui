@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import { ButtonLinkProps, DaoInfo } from '@dao-dao/types'
 
-import { useNavHelpers, usePlatform } from '../../../hooks'
+import { useDaoNavHelpers, usePlatform } from '../../../hooks'
 import { Tooltip } from '../../tooltip/Tooltip'
 
 export interface ProposalsTabProps {
@@ -21,7 +21,7 @@ export const ProposalsTab = ({
 }: ProposalsTabProps) => {
   const { t } = useTranslation()
 
-  const { goToDaoProposal, getDaoProposalPath } = useNavHelpers()
+  const { goToDaoProposal, getDaoProposalPath } = useDaoNavHelpers()
   // Detect if Mac for checking keypress.
   const { isMac } = usePlatform()
 

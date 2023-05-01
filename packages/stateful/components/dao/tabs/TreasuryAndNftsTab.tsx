@@ -4,7 +4,7 @@ import {
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
   useCachedLoading,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey } from '@dao-dao/types'
 
@@ -27,7 +27,7 @@ import { DaoTokenCard } from '../DaoTokenCard'
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
   const { connected } = useWallet()
-  const { getDaoProposalPath } = useNavHelpers()
+  const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership(daoInfo)
 
   const { denomOrAddress: cw20GovernanceTokenAddress } =
