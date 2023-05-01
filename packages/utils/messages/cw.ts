@@ -288,6 +288,7 @@ export const decodePolytoneExecuteMsg = (
       chainId: string
       polytoneNote: PolytoneNote
       msg: Record<string, any>
+      cosmosMsg: CosmosMsgFor_Empty | undefined
       initiatorMsg: string
     } => {
   if (
@@ -338,6 +339,10 @@ export const decodePolytoneExecuteMsg = (
       decodedMsg.wasm.execute.msg.execute.msgs.length === 0
         ? {}
         : decodeMessages(decodedMsg.wasm.execute.msg.execute.msgs)[0],
+    cosmosMsg:
+      decodedMsg.wasm.execute.msg.execute.msgs.length === 0
+        ? undefined
+        : decodedMsg.wasm.execute.msg.execute.msgs[0],
     initiatorMsg: decodedMsg.wasm.execute.msg.execute.callback.msg,
   }
 }

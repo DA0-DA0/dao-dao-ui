@@ -9,10 +9,10 @@ import {
   validatorsSelector,
 } from '@dao-dao/state'
 import {
+  ChainPickerInput,
   ChainProvider,
   DepositEmoji,
   Loader,
-  RadioInput,
   useCachedLoading,
   useChainContext,
 } from '@dao-dao/stateless'
@@ -27,7 +27,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  POLYTONE_NOTES,
   StakeType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -326,7 +325,7 @@ const InnerComponent: ActionComponent = (props) => {
 }
 
 const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
-  const { context, chain } = useActionOptions()
+  const { context } = useActionOptions()
   const { watch, setValue } = useFormContext()
 
   const chainId = watch(props.fieldNamePrefix + 'chainId')
@@ -334,34 +333,20 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <div className="mb-4">
-          <RadioInput
-            disabled={!props.isCreating}
-            fieldName={(props.fieldNamePrefix + 'chainId') as 'chainId'}
-            onChange={() => {
-              // Reset validator when switching chain.
-              setValue((props.fieldNamePrefix + 'validator') as 'validator', '')
-              setValue(
-                (props.fieldNamePrefix + 'toValidator') as 'toValidator',
-                ''
-              )
-            }}
-            options={[
-              // Current chain
-              {
-                label: getNativeTokenForChainId(chain.chain_id).symbol,
-                value: chain.chain_id,
-              },
-              // Other chains
-              ...Object.keys(POLYTONE_NOTES).map((chainId) => ({
-                label: getNativeTokenForChainId(chainId).symbol,
-                value: chainId,
-              })),
-            ]}
-            setValue={setValue}
-            watch={watch}
-          />
-        </div>
+        <ChainPickerInput
+          className="mb-4"
+          disabled={!props.isCreating}
+          fieldName={props.fieldNamePrefix + 'chainId'}
+          labelMode="token"
+          onChange={() => {
+            // Reset validator when switching chain.
+            setValue((props.fieldNamePrefix + 'validator') as 'validator', '')
+            setValue(
+              (props.fieldNamePrefix + 'toValidator') as 'toValidator',
+              ''
+            )
+          }}
+        />
       )}
 
       <ChainProvider chainId={chainId}>

@@ -13,6 +13,7 @@ import {
   NativeCoinSelector,
   NativeCoinSelectorProps,
   TokenInput,
+  useChain,
 } from '@dao-dao/stateless'
 import { GenericTokenBalance, LoadingData, TokenType } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -25,9 +26,8 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../react'
-
 export interface ExecuteData {
+  chainId: string
   address: string
   message: string
   funds: { denom: string; amount: number }[]
@@ -50,9 +50,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
   } = props
 
   const { t } = useTranslation()
-  const {
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
-  } = useActionOptions()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
   const { register, control, watch, setValue } = useFormContext()
   const {

@@ -6,10 +6,15 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
-import { SwordsEmoji } from '@dao-dao/stateless'
-import { TokenType } from '@dao-dao/types'
+import {
+  ChainPickerInput,
+  ChainProvider,
+  SwordsEmoji,
+} from '@dao-dao/stateless'
+import { CosmosMsgForEmpty, TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
@@ -19,8 +24,10 @@ import {
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  decodePolytoneExecuteMsg,
   encodeMessageAsBase64,
   getTokenForChainIdAndDenom,
+  makePolytoneExecuteMessage,
   makeWasmMessage,
   objectMatchesStructure,
   parseEncodedMessage,
@@ -33,23 +40,27 @@ import {
   ExecuteComponent as StatelessExecuteComponent,
 } from './Component'
 
-const useDefaults: UseDefaults<ExecuteData> = () => ({
-  address: '',
-  message: '{}',
-  funds: [],
-  cw20: false,
-})
-
-const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
-  const { t } = useTranslation()
+const useDefaults: UseDefaults<ExecuteData> = () => {
   const {
     chain: { chain_id: chainId },
   } = useActionOptions()
 
+  return {
+    chainId,
+    address: '',
+    message: '{}',
+    funds: [],
+    cw20: false,
+  }
+}
+
+const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
+  const { t } = useTranslation()
+  const currentChainId = useActionOptions().chain.chain_id
   const tokenBalances = useTokenBalances()
 
   return useCallback(
-    ({ address, message, funds, cw20 }: ExecuteData) => {
+    ({ chainId, address, message, funds, cw20 }: ExecuteData) => {
       let msg
       try {
         msg = JSON5.parse(message)
@@ -58,19 +69,22 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
         return
       }
 
+      let executeMsg: CosmosMsgForEmpty | undefined
       if (cw20) {
         const tokenBalance =
           tokenBalances.loading || funds.length !== 1
             ? undefined
             : tokenBalances.data.find(
-                ({ token }) => token.denomOrAddress === funds[0].denom
+                ({ token }) =>
+                  token.chainId === chainId &&
+                  token.denomOrAddress === funds[0].denom
               )
         if (!tokenBalance) {
           throw new Error(t('error.unknownDenom', { denom: funds[0].denom }))
         }
 
         // Execute CW20 send message.
-        return makeWasmMessage({
+        executeMsg = makeWasmMessage({
           wasm: {
             execute: {
               contract_addr: tokenBalance.token.denomOrAddress,
@@ -89,7 +103,7 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
           },
         })
       } else {
-        return makeWasmMessage({
+        executeMsg = makeWasmMessage({
           wasm: {
             execute: {
               contract_addr: address,
@@ -105,17 +119,26 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
           },
         })
       }
+
+      if (chainId === currentChainId) {
+        return executeMsg
+      } else {
+        return makePolytoneExecuteMessage(chainId, executeMsg)
+      }
     },
-    [chainId, t, tokenBalances]
+    [currentChainId, t, tokenBalances]
   )
 }
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
   msg: Record<string, any>
 ) => {
-  const {
-    chain: { chain_id: chainId },
-  } = useActionOptions()
+  let chainId = useActionOptions().chain.chain_id
+  const decodedPolytone = decodePolytoneExecuteMsg(msg)
+  if (decodedPolytone.match) {
+    chainId = decodedPolytone.chainId
+    msg = decodedPolytone.msg
+  }
 
   const isExecute = objectMatchesStructure(msg, {
     wasm: {
@@ -163,6 +186,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
     ? {
         match: true,
         data: {
+          chainId,
           address: isCw20
             ? msg.wasm.execute.msg.send.contract
             : msg.wasm.execute.contract_addr,
@@ -197,7 +221,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
 }
 
 const Component: ActionComponent = (props) => {
-  const { watch } = useFormContext<ExecuteData>()
+  const { context } = useActionOptions()
+  const { watch, setValue } = useFormContext<ExecuteData>()
+
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const funds = watch((props.fieldNamePrefix + 'funds') as 'funds')
   const cw20 = watch((props.fieldNamePrefix + 'cw20') as 'cw20')
 
@@ -211,15 +238,39 @@ const Component: ActionComponent = (props) => {
           type: cw20 ? TokenType.Cw20 : TokenType.Native,
           denomOrAddress: denom,
         })),
+    allChains: true,
   })
 
   return (
-    <StatelessExecuteComponent
-      {...props}
-      options={{
-        balances,
-      }}
-    />
+    <>
+      {context.type === ActionContextType.Dao && (
+        <ChainPickerInput
+          className="mb-4"
+          disabled={!props.isCreating}
+          fieldName={props.fieldNamePrefix + 'chainId'}
+          onChange={() => {
+            // Reset funds when switching chain.
+            setValue((props.fieldNamePrefix + 'funds') as 'funds', [])
+          }}
+        />
+      )}
+
+      <ChainProvider chainId={chainId}>
+        <StatelessExecuteComponent
+          {...props}
+          options={{
+            balances: balances.loading
+              ? balances
+              : {
+                  loading: false,
+                  data: balances.data.filter(
+                    ({ token }) => token.chainId === chainId
+                  ),
+                },
+          }}
+        />
+      </ChainProvider>
+    </>
   )
 }
 
