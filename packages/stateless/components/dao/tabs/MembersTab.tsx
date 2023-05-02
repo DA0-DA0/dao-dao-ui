@@ -10,14 +10,13 @@ import {
   StatefulEntityDisplayProps,
   TypedOption,
 } from '@dao-dao/types'
-import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { Button } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Dropdown } from '../../inputs/Dropdown'
 import { PAGINATION_MIN_PAGE, Pagination } from '../../Pagination'
 import { TooltipInfoIcon } from '../../tooltip/TooltipInfoIcon'
-import { VOTING_POWER_DISTRIBUTION_COLORS_ORDERED } from '../create'
+import { VotingPowerDistribution } from '../../VotingPowerDistribution'
 
 export interface MembersTabProps {
   DaoMemberCard: ComponentType<StatefulDaoMemberCardProps>
@@ -45,7 +44,6 @@ enum TopStakerState {
   All = 100,
 }
 
-const NUM_VERTICAL_BARS = 10
 const MEMBERS_PER_PAGE = 100
 
 export const MembersTab = ({
@@ -178,69 +176,32 @@ export const MembersTab = ({
               />
             </div>
 
-            <div className="grid grid-cols-[auto_1fr_auto] items-center gap-x-6 gap-y-1">
-              {topMembers.map(({ address, votingPowerPercent }, index) => (
-                <Fragment key={address}>
-                  <topVoters.EntityDisplay address={address} />
-
-                  <Bar
-                    color={
-                      VOTING_POWER_DISTRIBUTION_COLORS_ORDERED[
-                        index % VOTING_POWER_DISTRIBUTION_COLORS_ORDERED.length
-                      ]
-                    }
-                    percent={
-                      votingPowerPercent.loading ? 0 : votingPowerPercent.data
-                    }
-                  />
-
-                  <p className="caption-text text-right font-mono text-text-tertiary">
-                    {votingPowerPercent.loading
-                      ? '...'
-                      : formatPercentOf100(votingPowerPercent.data)}
-                  </p>
-                </Fragment>
-              ))}
-
-              {topMembersVotingPowerPercent > 0 && (
-                <>
-                  {/* Space row */}
-                  <div></div>
-                  <Bar color="transparent" percent={0} />
-                  <div></div>
-
-                  <p className="primary-text font-bold text-text-secondary">
-                    {topStakerStateOption?.label ?? t('title.total')}
-                  </p>
-
-                  <Bar
-                    color="var(--text-tertiary)"
-                    percent={topMembersVotingPowerPercent}
-                  />
-
-                  <p className="caption-text text-right font-mono text-text-tertiary">
-                    {formatPercentOf100(topMembersVotingPowerPercent)}
-                  </p>
-                </>
-              )}
-
-              {otherVotingPowerPercent > 0 && (
-                <>
-                  <p className="primary-text font-bold text-text-secondary">
-                    {t('title.otherMembers')}
-                  </p>
-
-                  <Bar
-                    color="var(--text-interactive-disabled)"
-                    percent={otherVotingPowerPercent}
-                  />
-
-                  <p className="caption-text text-right font-mono text-text-tertiary">
-                    {formatPercentOf100(otherVotingPowerPercent)}
-                  </p>
-                </>
-              )}
-            </div>
+            <VotingPowerDistribution
+              EntityDisplay={topVoters.EntityDisplay}
+              data={[
+                ...topMembers,
+                ...(topMembersVotingPowerPercent > 0
+                  ? [
+                      {
+                        label: topStakerStateOption?.label ?? t('title.total'),
+                        votingPowerPercent: topMembersVotingPowerPercent,
+                        section: 2,
+                        color: 'var(--text-tertiary)',
+                      },
+                    ]
+                  : []),
+                ...(otherVotingPowerPercent > 0
+                  ? [
+                      {
+                        label: t('title.otherMembers'),
+                        votingPowerPercent: otherVotingPowerPercent,
+                        section: 2,
+                        color: 'var(--text-interactive-disabled)',
+                      },
+                    ]
+                  : []),
+              ]}
+            />
           </div>
         </div>
       )}
@@ -318,29 +279,3 @@ export const MembersTab = ({
     </>
   )
 }
-
-type BarProps = {
-  color: string
-  percent: number
-}
-
-const Bar = ({ color, percent }: BarProps) => (
-  <div className="relative flex h-8 w-full flex-row items-stretch justify-between">
-    {/* Bar color */}
-    <div
-      className="absolute top-0 bottom-0 left-0"
-      style={{
-        backgroundColor: color,
-        width: formatPercentOf100(percent),
-      }}
-    ></div>
-
-    {/* Vertical bars */}
-    {[...Array(NUM_VERTICAL_BARS)].map((_, index) => (
-      <div
-        key={index}
-        className="-mt-[2px] -mb-[2px] w-[1px] bg-border-secondary"
-      ></div>
-    ))}
-  </div>
-)
