@@ -2,8 +2,8 @@ import Pusher from 'pusher-js'
 import { atom, selector, selectorFamily } from 'recoil'
 
 import { Expiration, IndexerFormulaType, WithChainId } from '@dao-dao/types'
-import { DumpStateResponse } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
+  FEATURED_DAOS_INDEX,
   WEB_SOCKET_PUSHER_APP_KEY,
   WEB_SOCKET_PUSHER_HOST,
   WEB_SOCKET_PUSHER_PORT,
@@ -12,9 +12,11 @@ import {
 import {
   DaoSearchResult,
   QueryIndexerOptions,
+  loadMeilisearchClient,
   queryIndexer,
   searchDaos,
 } from '../../indexer'
+import priorityFeaturedDaos from '../../priority_featured_daos.json'
 import {
   refreshOpenProposalsAtom,
   refreshWalletProposalStatsAtom,
@@ -184,13 +186,6 @@ export const walletProposalStatsSelector = selectorFamily<
     },
 })
 
-export const featuredDaoDumpStatesAtom = atom<
-  (DumpStateResponse & { coreAddress: string })[] | null
->({
-  key: 'featuredDaoDumpStates',
-  default: null,
-})
-
 export const walletAdminOfDaosSelector = selectorFamily<string[], string>({
   key: 'walletAdminOfDaos',
   get:
@@ -230,4 +225,42 @@ export const indexerWebSocketSelector = selector({
     }),
   // Client must be internally mutable.
   dangerouslyAllowMutability: true,
+})
+
+export const indexerMeilisearchClientSelector = selector({
+  key: 'indexerMeilisearchClient',
+  get: () => loadMeilisearchClient(),
+  dangerouslyAllowMutability: true,
+})
+
+// Top 10 featured DAOs by TVL with certain conditions.
+export const indexerFeaturedMainnetDaosSelector = selector({
+  key: 'indexerFeaturedMainnetDaos',
+  get: async ({ get }) => {
+    const client = get(indexerMeilisearchClientSelector)
+    const index = client.index(FEATURED_DAOS_INDEX)
+    const results = await index.search<{ contractAddress: string }>(null, {
+      limit: 10,
+      filter: [
+        'value.daysSinceLastProposalPassed >= 0',
+        'value.daysSinceLastProposalPassed <= 90',
+        'value.giniCoefficient >= 0',
+        'value.giniCoefficient < 0.75',
+        'value.memberCount >= 3',
+        // Exclude priority.
+        `NOT contractAddress IN ["${priorityFeaturedDaos.join('", "')}"]`,
+      ],
+      sort: ['value.tvl:desc'],
+    })
+
+    // Insert hardcoded DAOs at the top.
+    const featuredDaos = [
+      ...priorityFeaturedDaos,
+      ...results.hits
+        .map((hit) => hit.contractAddress)
+        .filter((address) => !priorityFeaturedDaos.includes(address)),
+    ]
+
+    return featuredDaos
+  },
 })

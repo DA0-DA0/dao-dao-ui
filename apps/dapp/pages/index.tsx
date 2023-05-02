@@ -6,10 +6,7 @@ import { GetStaticProps, NextPage } from 'next'
 import { useSetRecoilState } from 'recoil'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import {
-  commandModalVisibleAtom,
-  queryFeaturedDaoDumpStatesFromIndexer,
-} from '@dao-dao/state'
+import { commandModalVisibleAtom } from '@dao-dao/state'
 import {
   DaoCard,
   ProfileDisconnectedCard,
@@ -50,9 +47,6 @@ export default HomePage
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
-    featuredDaoDumpStates: await queryFeaturedDaoDumpStatesFromIndexer().catch(
-      () => null
-    ),
     ...(await serverSideTranslations(locale, ['translation'])),
   },
 })
