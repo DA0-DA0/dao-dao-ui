@@ -10,8 +10,6 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 import { Cw20BaseSelectors } from '@dao-dao/state'
 import {
   Button,
-  ChartDataEntry,
-  DaoCreateVotingPowerDistributionBarChart,
   FormattedJsonDisplay,
   ImageSelector,
   InputErrorMessage,
@@ -20,6 +18,8 @@ import {
   SegmentedControls,
   TextInput,
   VOTING_POWER_DISTRIBUTION_COLORS,
+  VotingPowerDistribution,
+  VotingPowerDistributionEntry,
 } from '@dao-dao/stateless'
 import {
   CreateDaoCustomValidator,
@@ -37,6 +37,7 @@ import {
   validateTokenSymbol,
 } from '@dao-dao/utils'
 
+import { EntityDisplay } from '../../../../components/EntityDisplay'
 import { Trans } from '../../../../components/Trans'
 import { DaoVotingCw20StakedAdapter } from '../index'
 import { DaoCreationConfig, GovernanceTokenType } from '../types'
@@ -240,13 +241,16 @@ export const GovernanceConfigurationInput = ({
 
   //! Bar chart data
 
-  const barData: ChartDataEntry[] =
-    tierFields.length === 1
+  const barData: VotingPowerDistributionEntry[] = [
+    ...(tierFields.length === 1
       ? // Displaying each member of the first tier as separate pie wedges.
         data.tiers[0].members.map(({ address }, memberIndex) => ({
-          name: address.trim() || t('form.membersAddress'),
+          address: address.trim(),
+          // Backup if address is empty.
+          label: t('form.membersAddress'),
           // Governance token-based DAO tier weights are split amongst members.
-          value: data.tiers[0].weight / data.tiers[0].members.length,
+          votingPowerPercent:
+            data.tiers[0].weight / data.tiers[0].members.length,
           color:
             VOTING_POWER_DISTRIBUTION_COLORS[
               memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
@@ -254,14 +258,21 @@ export const GovernanceConfigurationInput = ({
         }))
       : // Displaying entire tier as one pie wedge.
         data.tiers.map(({ name, weight }, tierIndex) => ({
-          name: name.trim() || t('title.tierNum', { tier: tierIndex + 1 }),
+          label: name.trim() || t('title.tierNum', { tier: tierIndex + 1 }),
           // Governance token-based DAO tier weights are split amongst members.
-          value: weight,
+          votingPowerPercent: weight,
           color:
             VOTING_POWER_DISTRIBUTION_COLORS[
               tierIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
             ],
-        }))
+        }))),
+    {
+      label: t('title.treasury'),
+      color: 'var(--text-interactive-disabled)',
+      section: 2,
+      votingPowerPercent: data.newInfo.initialTreasuryPercent,
+    },
+  ]
 
   return (
     <>
@@ -446,11 +457,19 @@ export const GovernanceConfigurationInput = ({
             </div>
           </div>
 
-          <div style={{ height: (tierFields.length + 2) * 50 }}>
-            <DaoCreateVotingPowerDistributionBarChart data={barData} />
-          </div>
+          <p className="title-text mb-8">
+            {t('title.initialTokenDistribution')}
+          </p>
 
-          <div className="mt-4 flex flex-col items-stretch gap-4">
+          <VotingPowerDistribution
+            key={tierFields.length === 1 ? 'member' : 'tier'}
+            // Force re-render when switching between tier-view and member-view.
+            EntityDisplay={EntityDisplay}
+            className="mb-6"
+            data={barData}
+          />
+
+          <div className="flex flex-col items-stretch gap-4">
             {tierFields.map(({ id }, idx) => (
               <TierCard
                 key={id}
