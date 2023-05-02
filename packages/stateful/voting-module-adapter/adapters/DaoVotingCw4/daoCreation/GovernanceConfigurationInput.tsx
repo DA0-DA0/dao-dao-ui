@@ -7,16 +7,17 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
-  ChartDataEntry,
-  DaoCreateVotingPowerDistributionBarChart,
   InputErrorMessage,
   VOTING_POWER_DISTRIBUTION_COLORS,
+  VotingPowerDistribution,
+  VotingPowerDistributionEntry,
 } from '@dao-dao/stateless'
 import {
   CreateDaoCustomValidator,
   DaoCreationGovernanceConfigInputProps,
 } from '@dao-dao/types'
 
+import { EntityDisplay } from '../../../../components'
 import { DaoVotingCw4Adapter } from '../index'
 import { DaoCreationConfig } from '../types'
 import { TierCard } from './TierCard'
@@ -143,21 +144,28 @@ export const GovernanceConfigurationInput = ({
 
   //! Bar chart data
 
-  const barData: ChartDataEntry[] =
+  const totalVotingPower = data.tiers.reduce(
+    (acc, { weight, members }) => acc + weight * members.length,
+    0
+  )
+  const barData: VotingPowerDistributionEntry[] =
     tierFields.length === 1
       ? data.tiers[0].members.map(({ address }, memberIndex) => ({
-          name: address.trim() || t('form.membersAddress'),
+          address: address.trim(),
+          // Backup if address is empty.
+          label: t('form.membersAddress'),
           // Membership-based DAO tier weights are for each member.
-          value: data.tiers[0].weight,
+          votingPowerPercent: (data.tiers[0].weight / totalVotingPower) * 100,
           color:
             VOTING_POWER_DISTRIBUTION_COLORS[
               memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
             ],
         }))
       : data.tiers.map(({ name, weight, members }, tierIndex) => ({
-          name: name.trim() || t('title.tierNum', { tier: tierIndex + 1 }),
+          label: name.trim() || t('title.tierNum', { tier: tierIndex + 1 }),
           // Membership-based DAO tier weights are for each member.
-          value: weight * members.length,
+          votingPowerPercent:
+            ((weight * members.length) / totalVotingPower) * 100,
           color:
             VOTING_POWER_DISTRIBUTION_COLORS[
               tierIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
@@ -166,9 +174,12 @@ export const GovernanceConfigurationInput = ({
 
   return (
     <>
-      <div style={{ height: (tierFields.length + 2) * 50 }}>
-        <DaoCreateVotingPowerDistributionBarChart data={barData} />
-      </div>
+      <VotingPowerDistribution
+        // Force re-render when switching between tier-view and member-view.
+        key={tierFields.length === 1 ? 'member' : 'tier'}
+        EntityDisplay={EntityDisplay}
+        data={barData}
+      />
 
       <div className="mt-16 flex flex-col items-stretch gap-4">
         {tierFields.map(({ id }, idx) => (

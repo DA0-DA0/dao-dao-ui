@@ -1081,6 +1081,7 @@
     "identity": "Identity",
     "inbox": "Inbox",
     "inboxWithCount": "Inbox ({{count}})",
+    "initialTokenDistribution": "Initial Token Distribution",
     "instantiateSmartContract": "Instantiate Smart Contract",
     "lastUpdated": "Last updated",
     "logInWith": "Log in with...",
