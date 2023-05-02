@@ -72,17 +72,6 @@ export const useGovernanceCollectionInfo = ({
     undefined
   )
 
-  // TODO(ICS721): get floor info from marketplace
-  /*
-  // Price info
-  const loadingPrice = useCachedLoading(
-    fetchUsdcPrice && governanceTokenInfo
-      ? wyndUsdPriceSelector(denom)
-      : constSelector(undefined),
-    undefined
-  )
-  */
-
   return {
     stakingContractAddress: votingModuleAddress,
     collectionAddress,
@@ -118,14 +107,5 @@ export const useGovernanceCollectionInfo = ({
           loading: false,
           data: loadingTreasuryBalance.data.length,
         },
-    // Price
-    // loadingPrice: loadingPrice.loading
-    //   ? { loading: true }
-    //   : !loadingPrice.data
-    //   ? undefined
-    //   : {
-    //       loading: false,
-    //       data: loadingPrice.data,
-    //     },
   }
 }

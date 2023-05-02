@@ -161,7 +161,6 @@ type ContractWithBalance = {
   balance: string | undefined
 }
 
-// TODO: Standardize this with the treasury token cards.
 // lazyInfo must be loaded in the component separately, since it refreshes on a
 // timer and we don't want this whole selector to reevaluate and load when that
 // refreshes. Use `tokenCardLazyInfoSelector`.
