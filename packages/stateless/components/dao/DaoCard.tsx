@@ -12,7 +12,7 @@ import removeMarkdown from 'remove-markdown'
 import { DaoCardProps } from '@dao-dao/types/stateless/DaoCard'
 import { formatDate, getUrlBaseForChainId } from '@dao-dao/utils'
 
-import { useNavHelpers } from '../../hooks'
+import { useDaoNavHelpers } from '../../hooks'
 import { IconButton } from '../icon_buttons'
 import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
 import { TooltipInfoIcon } from '../tooltip'
@@ -42,7 +42,7 @@ export const DaoCard = ({
   follow,
 }: DaoCardProps) => {
   const { t } = useTranslation()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
 
   return (
     <LinkWrapper

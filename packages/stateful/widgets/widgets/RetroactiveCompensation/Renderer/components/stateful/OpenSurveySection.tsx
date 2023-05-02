@@ -3,7 +3,7 @@ import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { useDaoInfoContext } from '@dao-dao/stateless'
+import { useDaoInfoContext, useDaoNavHelpers } from '@dao-dao/stateless'
 import { CosmosMsgFor_Empty } from '@dao-dao/types'
 import {
   makeBankMessage,
@@ -12,6 +12,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useMembership } from '../../../../../../hooks'
+import { RETROACTIVE_COMPENSATION_WIDGET_ID } from '../../../constants'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import {
   CompleteRatings,
@@ -36,6 +37,27 @@ export const OpenSurveySection = ({
 }: StatefulOpenSurveySectionProps) => {
   const { t } = useTranslation()
   const { coreAddress, chainId, bech32Prefix } = useDaoInfoContext()
+  const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
+
+  // Show contribution form if `submit` subpath is present and the currently
+  // open survey is inactive or accepting contributions.
+  const showContributionForm =
+    daoSubpathComponents[0] === RETROACTIVE_COMPENSATION_WIDGET_ID &&
+    daoSubpathComponents[1] === 'submit' &&
+    (status.survey.status === SurveyStatus.Inactive ||
+      status.survey.status === SurveyStatus.AcceptingContributions)
+  const setShowContributionForm = useCallback(
+    (show: boolean) =>
+      goToDao(
+        coreAddress,
+        RETROACTIVE_COMPENSATION_WIDGET_ID + (show ? `/submit` : ''),
+        undefined,
+        {
+          shallow: true,
+        }
+      ),
+    [coreAddress, goToDao]
+  )
 
   const { connected } = useWallet()
   // Voting power at time of survey creation, which determines what access level
@@ -47,7 +69,6 @@ export const OpenSurveySection = ({
   })
 
   const [loading, setLoading] = useState(false)
-  const [showContributionForm, setShowContributionForm] = useState(false)
   const [ratingFormData, setRatingFormData] = useState<ContributionRatingData>()
   const [proposalCreationFormData, setProposalCreationFormData] =
     useState<CompleteRatings>()

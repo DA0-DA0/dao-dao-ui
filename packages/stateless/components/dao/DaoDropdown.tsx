@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { DaoDropdownProps } from '@dao-dao/types/stateless/DaoDropdown'
 import { toAccessibleImageUrl } from '@dao-dao/utils'
 
-import { useNavHelpers } from '../../hooks'
+import { useDaoNavHelpers } from '../../hooks'
 import { Collapsible } from '../Collapsible'
 import { Tooltip } from '../tooltip/Tooltip'
 
@@ -20,7 +20,7 @@ export const DaoDropdown = ({
 }: DaoDropdownProps) => {
   const { asPath } = useRouter()
 
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
   const href = getDaoPath(coreAddress)
 
   const selected = asPath.startsWith(href)

@@ -3,7 +3,7 @@ import removeMarkdown from 'remove-markdown'
 
 import { ProposalCardProps } from '@dao-dao/types/stateless/ProposalCard'
 
-import { useNavHelpers } from '../../hooks'
+import { useDaoNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
 
 export * from '@dao-dao/types/stateless/ProposalCard'
@@ -19,7 +19,7 @@ export const ProposalCard = ({
   onMouseLeave,
   LinkWrapper,
 }: ProposalCardProps) => {
-  const { getDaoProposalPath } = useNavHelpers()
+  const { getDaoProposalPath } = useDaoNavHelpers()
 
   return (
     <LinkWrapper

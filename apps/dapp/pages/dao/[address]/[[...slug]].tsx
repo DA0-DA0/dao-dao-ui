@@ -27,14 +27,14 @@ import { useWidgets } from '@dao-dao/stateful/widgets'
 import {
   DaoDappTabbedHome,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, DaoPageMode, WidgetLocation } from '@dao-dao/types'
 import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const InnerDaoHome = () => {
   const { t } = useTranslation()
-  const { getDaoProposalPath, router } = useNavHelpers()
+  const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
 
   const daoInfo = useDaoInfoContext()
 
@@ -145,19 +145,47 @@ const InnerDaoHome = () => {
   const following = isFollowing(daoInfo.coreAddress)
 
   // Add home tab with widgets if any widgets exist.
-  const loadingWidgets = useWidgets({
+  const loadingDaoWidgets = useWidgets({
     // Load widgets before rendering so that home is selected if there are
     // widgets.
     suspendWhileLoading: true,
     // Only load home widgets.
     location: WidgetLocation.Home,
   })
+  const hasHomeWidgets =
+    !loadingDaoWidgets.loading && loadingDaoWidgets.data.length > 0
+
   const tabs = useDaoTabs({
-    includeHome:
-      !loadingWidgets.loading && loadingWidgets.data.length > 0
-        ? DaoWidgets
-        : undefined,
+    includeHome: hasHomeWidgets ? DaoWidgets : undefined,
   })
+  const firstTabId = tabs[0].id
+
+  // Pre-fetch tabs.
+  useEffect(() => {
+    tabs.forEach((tab) => {
+      router.prefetch(getDaoPath(daoInfo.coreAddress, tab.id))
+    })
+  }, [daoInfo.coreAddress, getDaoPath, router, tabs])
+
+  const slug = (router.query.slug || []) as string[]
+  useEffect(() => {
+    // If no slug, redirect to first tab.
+    if (slug.length === 0) {
+      router.push(getDaoPath(daoInfo.coreAddress, firstTabId), undefined, {
+        shallow: true,
+      })
+    }
+  }, [daoInfo.coreAddress, getDaoPath, router, slug.length, firstTabId])
+
+  const tabId =
+    slug.length > 0 && tabs.some(({ id }) => id === slug[0])
+      ? slug[0]
+      : // If tab is invalid, default to first tab.
+        firstTabId
+  const onSelectTabId = (tabId: string) =>
+    router.push(getDaoPath(daoInfo.coreAddress, tabId), undefined, {
+      shallow: true,
+    })
 
   return (
     <DaoDappTabbedHome
@@ -173,7 +201,9 @@ const InnerDaoHome = () => {
             : setFollowing(daoInfo.coreAddress),
         updatingFollowing,
       }}
+      onSelectTabId={onSelectTabId}
       rightSidebarContent={<ProfileDaoHomeCard />}
+      selectedTabId={tabId}
       tabs={tabs}
     />
   )

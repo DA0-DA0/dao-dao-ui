@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   MembersTab as StatelessMembersTab,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey } from '@dao-dao/types'
 
@@ -15,7 +15,7 @@ import { useVotingModule as useCw4VotingModule } from '../hooks/useVotingModule'
 export const MembersTab = () => {
   const { t } = useTranslation()
   const { coreAddress } = useVotingModuleAdapterOptions()
-  const { getDaoProposalPath } = useNavHelpers()
+  const { getDaoProposalPath } = useDaoNavHelpers()
 
   const { isMember = false, totalVotingWeight } = useMembership({
     coreAddress,

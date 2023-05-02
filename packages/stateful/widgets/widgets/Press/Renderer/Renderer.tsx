@@ -4,10 +4,15 @@ import {
   DeleteRounded,
   EditRounded,
 } from '@mui/icons-material'
-import { ComponentType, useEffect, useState } from 'react'
+import { ComponentType, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Tooltip } from '@dao-dao/stateless'
+import {
+  Button,
+  Tooltip,
+  useDaoInfoContext,
+  useDaoNavHelpers,
+} from '@dao-dao/stateless'
 import {
   ButtonLinkProps,
   IconButtonLinkProps,
@@ -15,6 +20,7 @@ import {
 } from '@dao-dao/types'
 
 import { PostMarkdown } from '../components/PostMarkdown'
+import { PRESS_WIDGET_ID } from '../constants'
 import { Post } from '../types'
 import { PostList } from './PostList'
 
@@ -40,13 +46,26 @@ export const Renderer = ({
   IconButtonLink,
 }: RendererProps) => {
   const { t } = useTranslation()
+  const { coreAddress } = useDaoInfoContext()
+  const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
 
-  const [openPostId, setOpenPostId] = useState(() =>
-    // Default to post from URL hash if present and valid.
-    typeof window === 'undefined'
-      ? undefined
-      : window.location.hash.replace('#', '').split('/')[1]
+  const openPostId =
+    daoSubpathComponents[0] === PRESS_WIDGET_ID
+      ? daoSubpathComponents[1]
+      : undefined
+  const setOpenPostId = useCallback(
+    (postId?: string) =>
+      goToDao(
+        coreAddress,
+        PRESS_WIDGET_ID + (postId ? `/${postId}` : ''),
+        undefined,
+        {
+          shallow: true,
+        }
+      ),
+    [coreAddress, goToDao]
   )
+
   const openPost =
     postsLoading.loading || !openPostId
       ? undefined
@@ -60,25 +79,6 @@ export const Renderer = ({
               (version) => 'id' in version && version.id === openPostId
             )
         )
-
-  // Store selected post in URL hash.
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    // Only update hash if we're on the press page.
-    const baseHash = window.location.hash.slice(1).split('/')[0]
-    if (baseHash !== 'press') {
-      return
-    }
-
-    const hash = baseHash + (openPostId ? `/${openPostId}` : '')
-
-    if (window.location.hash.slice(1) !== hash) {
-      window.location.hash = hash
-    }
-  }, [openPostId])
 
   return (
     <div className="flex flex-col gap-6">

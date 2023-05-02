@@ -1,6 +1,6 @@
 import { ArrowOutwardRounded } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoDappTabbedHomeProps, DaoPageMode } from '@dao-dao/types'
@@ -16,7 +16,7 @@ import {
 } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
 import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
-import { useNavHelpers } from '../hooks/useNavHelpers'
+import { useDaoNavHelpers } from '../hooks/useDaoNavHelpers'
 
 export const DaoDappTabbedHome = ({
   daoInfo,
@@ -26,6 +26,8 @@ export const DaoDappTabbedHome = ({
   SuspenseLoader,
   LinkWrapper,
   tabs,
+  selectedTabId,
+  onSelectTabId,
 }: DaoDappTabbedHomeProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
@@ -33,13 +35,13 @@ export const DaoDappTabbedHome = ({
   const {
     getDaoPath,
     router: { asPath },
-  } = useNavHelpers()
+  } = useDaoNavHelpers()
   // Swap the DAO path prefixes instead of just rebuilding the path to preserve
-  // any additional info (such as query params), except remove the hash since we
-  // want to start on the SDA home.
-  const singleDaoPath = asPath
-    .replace(getDaoPath(''), baseGetDaoPath(DaoPageMode.Sda, ''))
-    .split('#')[0]
+  // any additional info (such as query params).
+  const singleDaoPath = asPath.replace(
+    getDaoPath(''),
+    baseGetDaoPath(DaoPageMode.Sda, '')
+  )
 
   useEffect(() => {
     // Trigger SDA to cache page the user might switch to.
@@ -48,30 +50,7 @@ export const DaoDappTabbedHome = ({
     )
   }, [coreAddress])
 
-  const [selectedTab, setSelectedTab] = useState(() => {
-    // Default to tab from URL hash if present and valid.
-    const windowHash =
-      typeof window === 'undefined'
-        ? undefined
-        : // Remove hash prefix and split on slash to get tab ID. Anything after a slash is tab-specific info.
-          window.location.hash.replace('#', '').split('/')[0]
-
-    return windowHash && tabs.some(({ id }) => id === windowHash)
-      ? windowHash
-      : tabs[0].id
-  })
-
-  // Store selected tab in URL hash.
-  useEffect(() => {
-    if (typeof window === 'undefined') {
-      return
-    }
-
-    // Make sure hash is set to the selected tab with optional parameters.
-    if (!new RegExp(`^#${selectedTab}(/.*)?$`).test(window.location.hash)) {
-      window.location.hash = selectedTab
-    }
-  }, [selectedTab])
+  const tabContainerRef = useRef<HTMLDivElement>(null)
 
   return (
     <>
@@ -105,7 +84,10 @@ export const DaoDappTabbedHome = ({
 
         <div className="h-[1px] bg-border-base" />
 
-        <div className="styled-scrollbar -mx-6 mb-2 overflow-x-auto px-6 pt-6 pb-2">
+        <div
+          className="styled-scrollbar -mx-6 mb-2 overflow-x-auto px-6 pt-6 pb-2"
+          ref={tabContainerRef}
+        >
           <SegmentedControls
             className="mx-auto hidden w-max max-w-full mdlg:grid"
             moreTabs={
@@ -113,25 +95,52 @@ export const DaoDappTabbedHome = ({
                 ? tabs.slice(4).map(({ id, label }) => ({ label, value: id }))
                 : undefined
             }
-            onSelect={setSelectedTab}
-            selected={selectedTab}
+            onSelect={onSelectTabId}
+            selected={selectedTabId}
             tabs={tabs
               .slice(0, 4)
               .map(({ id, label }) => ({ label, value: id }))}
           />
 
           <SegmentedControls
-            className="mdlg:hidden"
+            className="mx-auto mdlg:hidden"
             noWrap
-            onSelect={setSelectedTab}
-            selected={selectedTab}
+            onSelect={(tabId, e) => {
+              onSelectTabId(tabId)
+
+              // Scroll tab to horizontal center.
+              if (tabContainerRef.current) {
+                const containerRect =
+                  tabContainerRef.current.getBoundingClientRect()
+                const containerCenter = containerRect.width / 2
+
+                const tabRect = e.currentTarget.getBoundingClientRect()
+                // The scrollable container may be offset from the left of the
+                // screen by the nav sidebar. Thus, to center the tab
+                // horizontally in the container, we need to subtract the
+                // container's left offset. `getBoundingClientRect` is relative
+                // to the whole window, but the scroll position is relative to
+                // the container itself, so we need the center of the container.
+                const tabCenter =
+                  tabRect.left + tabRect.width / 2 - containerRect.left
+
+                tabContainerRef.current.scrollTo({
+                  left:
+                    tabContainerRef.current.scrollLeft +
+                    tabCenter -
+                    containerCenter,
+                  behavior: 'smooth',
+                })
+              }
+            }}
+            selected={selectedTabId}
             tabs={tabs.map(({ id, label }) => ({ label, value: id }))}
           />
         </div>
 
         <div className="mt-2 border-t border-border-secondary py-6">
           {tabs.map(({ id, Component }) => (
-            <div key={id} className={clsx(selectedTab !== id && 'hidden')}>
+            <div key={id} className={clsx(selectedTabId !== id && 'hidden')}>
               <SuspenseLoader fallback={<Loader />}>
                 <Component />
               </SuspenseLoader>

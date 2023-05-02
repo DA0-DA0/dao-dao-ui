@@ -41,7 +41,7 @@ export const DefaultArgs: SdaNavigationProps = {
       Icon: AccountBalanceRounded,
     },
     {
-      id: DaoTabId.Subdaos,
+      id: DaoTabId.SubDaos,
       label: 'SubDAOs',
       Icon: EscalatorWarningRounded,
     },

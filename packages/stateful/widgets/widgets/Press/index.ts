@@ -10,12 +10,13 @@ import {
 import { makeCreatePostActionMaker } from './actions/CreatePost'
 import { makeDeletePostActionMaker } from './actions/DeletePost'
 import { makeUpdatePostActionMaker } from './actions/UpdatePost'
+import { PRESS_WIDGET_ID } from './constants'
 import { PressEditor as Editor } from './PressEditor'
 import { Renderer } from './Renderer'
 import { PressData } from './types'
 
 export const PressWidget: Widget<PressData> = {
-  id: 'press',
+  id: PRESS_WIDGET_ID,
   Icon: ArticleOutlined,
   location: WidgetLocation.Tab,
   visibilityContext: WidgetVisibilityContext.Always,

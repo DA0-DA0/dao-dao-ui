@@ -17,5 +17,8 @@ export interface RowProps {
   loading?: boolean
   selected?: boolean
   LinkWrapper: ComponentType<LinkWrapperProps>
+  // If true, will use shallow routing
+  // (https://nextjs.org/docs/routing/shallow-routing) for local links.
+  shallow?: boolean
   containerClassName?: string
 }
