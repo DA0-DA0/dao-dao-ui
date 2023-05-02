@@ -59,7 +59,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
   return (
     <>
       {instantiatedAddress && (
-        <div className="flex flex-row items-center gap-3 text-text-primary">
+        <div className="flex flex-row items-center gap-6 text-text-primary">
           <InputLabel name={t('form.instantiatedAddress') + ':'} />
           <CopyToClipboard
             takeStartEnd={{ start: instantiatedAddress.length, end: 0 }}

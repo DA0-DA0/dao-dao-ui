@@ -1,10 +1,17 @@
 import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { constSelector } from 'recoil'
 
-import { BabyEmoji, ChainPickerInput, ChainProvider } from '@dao-dao/stateless'
-import { TokenType } from '@dao-dao/types'
+import { PolytoneListenerSelectors } from '@dao-dao/state/recoil'
+import {
+  BabyEmoji,
+  ChainPickerInput,
+  ChainProvider,
+  useCachedLoading,
+} from '@dao-dao/stateless'
+import { PolytoneNote, TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -37,6 +44,13 @@ interface InstantiateData {
   label: string
   message: string
   funds: { denom: string; amount: number }[]
+
+  // Loaded on transform once created if this is a polytone message.
+  _polytone?: {
+    chainId: string
+    note: PolytoneNote
+    initiatorMsg: string
+  }
 }
 
 const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () => {
@@ -119,6 +133,13 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
               ),
             })
           ),
+          _polytone: decodedPolytone.match
+            ? {
+                chainId: decodedPolytone.chainId,
+                note: decodedPolytone.polytoneNote,
+                initiatorMsg: decodedPolytone.initiatorMsg,
+              }
+            : undefined,
         },
       }
     : {
@@ -137,6 +158,26 @@ const Component: ActionComponent = (props) => {
   const chainId =
     watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
   const funds = watch((props.fieldNamePrefix + 'funds') as 'funds')
+
+  // Once created, if this is a polytone message, this will be defined with
+  // polytone metadata that can be used to get the instantiated address.
+  const _polytone = watch((props.fieldNamePrefix + '_polytone') as '_polytone')
+  // Callback results.
+  const polytoneResult = useCachedLoading(
+    _polytone
+      ? PolytoneListenerSelectors.resultSelector({
+          chainId: currentChainId,
+          contractAddress: _polytone.note.listener,
+          params: [
+            {
+              initiator: address,
+              initiatorMsg: _polytone.initiatorMsg,
+            },
+          ],
+        })
+      : constSelector(undefined),
+    undefined
+  )
 
   const nativeBalances = useTokenBalances({
     filter: TokenType.Native,
@@ -167,7 +208,27 @@ const Component: ActionComponent = (props) => {
   // mapping of instantiation actions to instantiated addresses, so we
   // can use the index of this action in all instantiation actions to
   // select the correct address.
-  const instantiatedAddress = useMemo(() => {
+  const getInstantiatedAddress = () => {
+    // If polytone, can get from the polytone execution results directly.
+    if (_polytone) {
+      if (
+        !polytoneResult.loading &&
+        polytoneResult.data &&
+        'execute' in polytoneResult.data.callback.result &&
+        'Ok' in polytoneResult.data.callback.result.execute
+      ) {
+        const instantiateEvent =
+          polytoneResult.data.callback.result.execute.Ok.result[0].events.find(
+            ({ type }) => type === 'instantiate'
+          )
+        return instantiateEvent?.attributes.find(
+          ({ key }) => key === '_contract_address'
+        )?.value
+      }
+
+      return
+    }
+
     if (
       executedTxLoadable.state !== 'hasValue' ||
       !executedTxLoadable.contents
@@ -217,7 +278,8 @@ const Component: ActionComponent = (props) => {
     }
 
     return instantiatedContracts[innerIndex]
-  }, [executedTxLoadable, props, codeId])
+  }
+  const instantiatedAddress = getInstantiatedAddress()
 
   return (
     <>

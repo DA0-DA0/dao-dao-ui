@@ -73,7 +73,7 @@ export const resultSelector = selectorFamily<
         })
       )
       if (result) {
-        return result
+        return { callback: result }
       }
 
       // If indexer query fails, fallback to contract query.
