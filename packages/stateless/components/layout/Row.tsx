@@ -47,6 +47,12 @@ export const Row = ({
   const Icon = _Icon || ((props) => <div {...props} style={{ content: ' ' }} />)
   const ExpandButton = expanded ? UnfoldLess : UnfoldMore
 
+  // If no onClick or href, and has expandable children, set onClick to toggle
+  // expanded.
+  if (!onClick && !href && children && !loading) {
+    onClick = () => setExpanded((e) => !e)
+  }
+
   return compact ? (
     <div className={containerClassName}>
       <RowWrapper LinkWrapper={LinkWrapper} href={href} shallow={shallow}>
@@ -75,7 +81,7 @@ export const Row = ({
         </div>
       </RowWrapper>
 
-      <div>{children}</div>
+      <div className={clsx({ hidden: !expanded })}>{children}</div>
     </div>
   ) : (
     <div className={containerClassName}>
