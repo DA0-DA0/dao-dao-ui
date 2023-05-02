@@ -64,7 +64,10 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
 
   const cw20Tokens = balances.loading
     ? []
-    : balances.data.filter(({ token }) => token.type === TokenType.Cw20)
+    : balances.data.filter(
+        ({ token }) =>
+          token.chainId === chainId && token.type === TokenType.Cw20
+      )
   const cw20 = watch(fieldNamePrefix + 'cw20') as boolean
   const firstDenom = (
     watch(fieldNamePrefix + 'funds.0') as ExecuteData['funds'][0] | undefined
@@ -167,7 +170,9 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                     ? { loading: true }
                     : {
                         loading: false,
-                        data: cw20Tokens.map(({ token }) => token),
+                        data: cw20Tokens
+                          .filter(({ token }) => token.chainId === chainId)
+                          .map(({ token }) => token),
                       }
                 }
                 watch={watch}
@@ -185,7 +190,9 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                           : {
                               loading: false,
                               data: balances.data.filter(
-                                ({ token }) => token.type === TokenType.Native
+                                ({ token }) =>
+                                  token.chainId === chainId &&
+                                  token.type === TokenType.Native
                               ),
                             },
                       },

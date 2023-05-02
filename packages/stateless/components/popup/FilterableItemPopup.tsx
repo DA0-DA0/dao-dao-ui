@@ -245,7 +245,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                 ) : item.iconUrl ? (
                   <div
                     className={clsx(
-                      'h-7 w-7 rounded-full bg-cover bg-center',
+                      'h-7 w-7 shrink-0 rounded-full bg-cover bg-center',
                       item.iconClassName
                     )}
                     style={{
@@ -262,7 +262,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
 
                     <p
                       className={clsx(
-                        'link-text break-words',
+                        'link-text truncate break-words',
                         item.selected ? 'text-text-brand' : 'text-text-body'
                       )}
                     >

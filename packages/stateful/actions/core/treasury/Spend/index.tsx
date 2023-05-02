@@ -18,6 +18,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  CHAIN_ID,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
@@ -55,7 +56,8 @@ const useDefaults: UseDefaults<SpendData> = () => {
 const Component: ActionComponent<undefined, SpendData> = (props) => {
   // Get the selected token if not creating.
   const { watch } = useFormContext<SpendData>()
-  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
+  const chainId =
+    watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
   const denom = watch((props.fieldNamePrefix + 'denom') as 'denom')
 
   const loadingTokens = useTokenBalances({
@@ -65,6 +67,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
       ? undefined
       : [
           {
+            chainId,
             // Cw20 denoms are contract addresses, native denoms are not.
             type: isValidContractAddress(
               denom,

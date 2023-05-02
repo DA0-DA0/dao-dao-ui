@@ -22,6 +22,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  CHAIN_ID,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
@@ -57,7 +58,9 @@ const useDefaults: UseDefaults<ExecuteData> = () => {
 const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
   const { t } = useTranslation()
   const currentChainId = useActionOptions().chain.chain_id
-  const tokenBalances = useTokenBalances()
+  const tokenBalances = useTokenBalances({
+    allChains: true,
+  })
 
   return useCallback(
     ({ chainId, address, message, funds, cw20 }: ExecuteData) => {
@@ -224,7 +227,8 @@ const Component: ActionComponent = (props) => {
   const { context } = useActionOptions()
   const { watch, setValue } = useFormContext<ExecuteData>()
 
-  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
+  const chainId =
+    watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
   const funds = watch((props.fieldNamePrefix + 'funds') as 'funds')
   const cw20 = watch((props.fieldNamePrefix + 'cw20') as 'cw20')
 
@@ -235,6 +239,7 @@ const Component: ActionComponent = (props) => {
     additionalTokens: props.isCreating
       ? undefined
       : funds.map(({ denom }) => ({
+          chainId,
           type: cw20 ? TokenType.Cw20 : TokenType.Native,
           denomOrAddress: denom,
         })),

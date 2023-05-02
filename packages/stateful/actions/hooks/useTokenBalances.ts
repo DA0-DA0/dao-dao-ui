@@ -21,7 +21,7 @@ export type UseTokenBalancesOptions = {
   // Only return balances for tokens of this type.
   filter?: TokenType
   // If these are not returned in the balances, they will be added to the end.
-  additionalTokens?: Pick<GenericToken, 'type' | 'denomOrAddress'>[]
+  additionalTokens?: Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>[]
   // If true, will return balances for all polytone proxies if this is a DAO.
   // Defaults to false.
   allChains?: boolean
@@ -61,7 +61,6 @@ export const useTokenBalances = ({
         genericTokenBalanceSelector({
           ...token,
           walletAddress: address,
-          chainId,
         })
       ) ?? []
     ),
@@ -83,29 +82,45 @@ export const useTokenBalances = ({
     []
   )
 
-  return useMemo(
-    () =>
-      balances.loading || additionalBalances.loading
-        ? { loading: true }
-        : {
-            ...balances,
-            data: [
-              ...balances.data,
-              ...additionalBalances.data
-                // Filter out any tokens that are already in the balances.
-                .filter(
-                  ({ token: additionalToken }) =>
-                    !balances.data.some(
-                      ({ token: balanceToken }) =>
-                        balanceToken.type === additionalToken.type &&
-                        balanceToken.denomOrAddress ===
-                          additionalToken.denomOrAddress
-                    )
-                ),
-              // Add balances from other chains.
-              ...(polytoneBalances.loading ? [] : polytoneBalances.data.flat()),
-            ],
-          },
-    [balances, additionalBalances, polytoneBalances]
+  const allPolytoneBalances = useMemo(
+    () => (polytoneBalances.loading ? [] : polytoneBalances.data.flat()),
+    [polytoneBalances]
   )
+
+  return useMemo(() => {
+    if (
+      balances.loading ||
+      additionalBalances.loading ||
+      polytoneBalances.loading
+    ) {
+      return { loading: true }
+    }
+
+    const allBalances = [
+      ...balances.data,
+      // Add balances from other chains.
+      ...allPolytoneBalances,
+    ]
+    // Add additional balances that are not already in all balances.
+    allBalances.push(
+      ...additionalBalances.data.filter(
+        ({ token: additionalToken }) =>
+          !allBalances.some(
+            ({ token: balanceToken }) =>
+              balanceToken.chainId === additionalToken.chainId &&
+              balanceToken.type === additionalToken.type &&
+              balanceToken.denomOrAddress === additionalToken.denomOrAddress
+          )
+      )
+    )
+
+    return {
+      loading: false,
+      updating:
+        balances.updating ||
+        additionalBalances.updating ||
+        polytoneBalances.updating,
+      data: allBalances,
+    }
+  }, [balances, additionalBalances, polytoneBalances, allPolytoneBalances])
 }

@@ -21,7 +21,7 @@ export interface RadioInputProps<
   setValue: UseFormSetValue<FV>
   className?: string
   disabled?: boolean
-  onChange?: () => void
+  onChange?: (value: UnpackNestedValue<PathValue<FV, FieldName>>) => void
 }
 
 export const RadioInput = <FV extends FieldValues, FieldName extends Path<FV>>({
@@ -46,7 +46,7 @@ export const RadioInput = <FV extends FieldValues, FieldName extends Path<FV>>({
           disabled={disabled}
           onClick={() => {
             setValue(fieldName, value)
-            onChange?.()
+            onChange?.(value)
           }}
           selected={selected}
           {...labelOrDisplay}

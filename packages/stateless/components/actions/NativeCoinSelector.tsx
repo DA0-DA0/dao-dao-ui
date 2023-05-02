@@ -47,7 +47,8 @@ export const NativeCoinSelector = ({
   const selectedTokenBalance = nativeBalances.loading
     ? undefined
     : nativeBalances.data.find(
-        ({ token }) => token.denomOrAddress === watchDenom
+        ({ token }) =>
+          token.chainId === chainId && token.denomOrAddress === watchDenom
       )
 
   const validatePossibleSpend = useCallback(
@@ -57,7 +58,7 @@ export const NativeCoinSelector = ({
       }
 
       const native = nativeBalances.data.find(
-        ({ token }) => token.denomOrAddress === id
+        ({ token }) => token.chainId === chainId && token.denomOrAddress === id
       )
       if (native) {
         const microAmount = convertDenomToMicroDenomWithDecimals(
@@ -92,7 +93,7 @@ export const NativeCoinSelector = ({
     // Since this validation function reference is used in the effect below that
     // updates errors, deeploy compare prevents an infinite loop.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useDeepCompareMemoize([nativeBalances, t])
+    useDeepCompareMemoize([nativeBalances, t, chainId, nativeToken])
   )
 
   // Update amount+denom combo error each time either field is updated
@@ -164,7 +165,9 @@ export const NativeCoinSelector = ({
               ? { loading: true }
               : {
                   loading: false,
-                  data: nativeBalances.data.map(({ token }) => token),
+                  data: nativeBalances.data
+                    .filter(({ token }) => token.chainId === chainId)
+                    .map(({ token }) => token),
                 }
           }
           watch={watch}

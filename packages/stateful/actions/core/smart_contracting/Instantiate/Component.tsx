@@ -14,6 +14,7 @@ import {
   NativeCoinSelectorProps,
   NumberInput,
   TextInput,
+  useChain,
 } from '@dao-dao/stateless'
 import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -25,8 +26,6 @@ import {
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
-
-import { useActionOptions } from '../../../react'
 
 export interface InstantiateOptions {
   nativeBalances: LoadingData<GenericTokenBalance[]>
@@ -45,9 +44,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
   } = props
 
   const { t } = useTranslation()
-  const {
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
-  } = useActionOptions()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
   const { register, control } = useFormContext()
   const {

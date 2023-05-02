@@ -8,6 +8,7 @@ import {
   InputLabel,
   IsAdminWarning,
   NumberInput,
+  useChain,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
@@ -32,11 +33,8 @@ export const MigrateContractComponent: ActionComponent<MigrateOptions> = ({
   options: { onContractChange, contractAdmin },
 }) => {
   const { t } = useTranslation()
-  const {
-    address,
-    chain: { bech32_prefix: bech32Prefix },
-  } = useActionOptions()
-
+  const { address } = useActionOptions()
+  const { bech32_prefix: bech32Prefix } = useChain()
   const { register, control } = useFormContext()
 
   return (

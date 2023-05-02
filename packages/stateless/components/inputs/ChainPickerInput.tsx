@@ -15,7 +15,7 @@ export type ChainPickerInputProps = {
   // Defaults to 'chain'.
   labelMode?: 'chain' | 'token'
   disabled?: boolean
-  onChange?: () => void
+  onChange?: (chainId: string) => void
   className?: string
 }
 
