@@ -8,12 +8,10 @@ import {
 } from 'chart.js'
 import clsx from 'clsx'
 import { ComponentType } from 'react'
-import { Bar, Pie } from 'react-chartjs-2'
+import { Pie } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 
 import { StatefulEntityDisplayProps } from '@dao-dao/types'
-
-import { useNamedThemeColor } from '../../../theme'
 
 declare module 'chart.js' {
   interface TooltipPositionerMap {
@@ -159,59 +157,6 @@ const PieChart = ({ data, className }: ChartProps) => (
     }}
   />
 )
-
-export const DaoCreateVotingPowerDistributionBarChart = ({
-  data,
-}: ChartProps) => {
-  const darkRgb = useNamedThemeColor('dark')
-
-  return (
-    <Bar
-      data={{
-        labels: data.map(({ name }) => name),
-        datasets: [
-          {
-            data: data.map(({ value }) => value),
-            backgroundColor: data.map(({ color }) => color),
-            borderWidth: 0,
-            barThickness: 40,
-          },
-        ],
-      }}
-      options={{
-        maintainAspectRatio: false,
-        plugins: {
-          tooltip: {
-            callbacks: {
-              title: (items) => items[0].label,
-              label: () => '',
-            },
-            titleMarginBottom: 0,
-            position: 'center',
-          },
-        },
-        // Horizontal bar chart
-        indexAxis: 'y',
-        responsive: true,
-        scales: {
-          x: {
-            display: true,
-            ticks: {
-              color: `rgba(${darkRgb}, 0.2)`,
-            },
-            grid: {
-              borderColor: `rgba(${darkRgb}, 0.1)`,
-              color: `rgba(${darkRgb}, 0.1)`,
-            },
-          },
-          y: {
-            display: false,
-          },
-        },
-      }}
-    />
-  )
-}
 
 // 1-10 linear from purple to orange/yellow. Intersperse colors so similar
 // colors are not adjacent.
