@@ -244,6 +244,7 @@ export const indexerFeaturedMainnetDaosSelector = selector({
       filter: [
         'value.daysSinceLastProposalPassed >= 0',
         'value.daysSinceLastProposalPassed <= 90',
+        'value.giniCoefficient >= 0',
         'value.giniCoefficient < 0.75',
         'value.memberCount >= 3',
         // Exclude priority.
