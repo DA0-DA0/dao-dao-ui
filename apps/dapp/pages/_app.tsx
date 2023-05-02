@@ -15,7 +15,6 @@ import { RecoilRoot, useRecoilState, useSetRecoilState } from 'recoil'
 
 import {
   activeThemeAtom,
-  featuredDaoDumpStatesAtom,
   mountedInBrowserAtom,
   navigatingToHrefAtom,
 } from '@dao-dao/state'
@@ -33,9 +32,7 @@ import {
 import { DaoPageMode, Web3AuthPrompt } from '@dao-dao/types'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
-type DappProps = AppProps<{ featuredDaoDumpStates?: any[] } | {}>
-
-const InnerApp = ({ Component, pageProps }: DappProps) => {
+const InnerApp = ({ Component, pageProps }: AppProps) => {
   const router = useRouter()
 
   const setMountedInBrowser = useSetRecoilState(mountedInBrowserAtom)
@@ -102,7 +99,7 @@ const InnerApp = ({ Component, pageProps }: DappProps) => {
   )
 }
 
-const DApp = (props: DappProps) => {
+const DApp = (props: AppProps) => {
   const { t } = useTranslation()
 
   return (
@@ -161,20 +158,7 @@ const DApp = (props: DappProps) => {
         }}
       />
 
-      <RecoilRoot
-        initializeState={(snapshot) => {
-          if (
-            'featuredDaoDumpStates' in props.pageProps &&
-            props.pageProps.featuredDaoDumpStates &&
-            Array.isArray(props.pageProps.featuredDaoDumpStates)
-          ) {
-            snapshot.set(
-              featuredDaoDumpStatesAtom,
-              props.pageProps.featuredDaoDumpStates
-            )
-          }
-        }}
-      >
+      <RecoilRoot>
         <InnerApp {...props} />
       </RecoilRoot>
     </>
