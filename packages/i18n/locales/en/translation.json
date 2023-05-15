@@ -102,6 +102,7 @@
     "logOut": "Log out",
     "manage": "Manage",
     "manageStake": "Manage your ${{tokenSymbol}} stake",
+    "manageStaking": "Manage staking",
     "more": "More",
     "newCompensationCycle": "New Compensation Cycle",
     "newPost": "New post",

@@ -167,7 +167,7 @@ export const VestingPaymentCard = ({
                   ? [
                       {
                         Icon: ChartEmoji,
-                        label: t('title.manageStaking'),
+                        label: t('button.manageStaking'),
                         closeOnClick: true,
                         onClick: onManageStake,
                       },
