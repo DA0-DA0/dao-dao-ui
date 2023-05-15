@@ -205,6 +205,9 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     addToken && cw20Address ? () => addToken(cw20Address) : undefined
 
   const recipientIsWallet = vest.recipient === walletAddress
+  const canManageStaking =
+    (recipientIsWallet || recipientIsDao) &&
+    token.denomOrAddress === NATIVE_DENOM
 
   const [showStakingModal, setShowStakingModal] = useState(false)
 
@@ -232,9 +235,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
         onAddToken={onAddToken}
         onClaim={onClaim}
         onManageStake={
-          recipientIsWallet || recipientIsDao
-            ? () => setShowStakingModal(true)
-            : undefined
+          canManageStaking ? () => setShowStakingModal(true) : undefined
         }
         onWithdraw={onWithdraw}
         recipient={vest.recipient}
@@ -250,20 +251,19 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
         withdrawing={withdrawing}
       />
 
-      {(recipientIsWallet || recipientIsDao) &&
-        token.denomOrAddress === NATIVE_DENOM && (
-          <NativeStakingModal
-            onClose={() => setShowStakingModal(false)}
-            recipientIsDao={recipientIsDao}
-            stakes={
-              lazyInfoLoading.loading
-                ? undefined
-                : lazyInfoLoading.data.stakingInfo?.stakes
-            }
-            vestingInfo={vestingInfo}
-            visible={showStakingModal}
-          />
-        )}
+      {canManageStaking && (
+        <NativeStakingModal
+          onClose={() => setShowStakingModal(false)}
+          recipientIsDao={recipientIsDao}
+          stakes={
+            lazyInfoLoading.loading
+              ? undefined
+              : lazyInfoLoading.data.stakingInfo?.stakes
+          }
+          vestingInfo={vestingInfo}
+          visible={showStakingModal}
+        />
+      )}
     </>
   )
 }
