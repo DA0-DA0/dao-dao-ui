@@ -12,10 +12,13 @@ import {
   useAddToken,
   useCachedLoadable,
   useDaoInfoContext,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
+import { ActionKey, EntityType } from '@dao-dao/types'
 import {
   NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
+  getDaoProposalSinglePrefill,
   loadableToLoadingData,
   processError,
 } from '@dao-dao/utils'
@@ -38,6 +41,7 @@ import { VestingPaymentCard as StatelessVestingPaymentCard } from './VestingPaym
 export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const { t } = useTranslation()
   const { chainId } = useDaoInfoContext()
+  const { goToDaoProposal } = useDaoNavHelpers()
   const { refreshBalances } = useWalletInfo()
 
   const {
@@ -55,6 +59,8 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     address: vest.recipient,
     chainId,
   })
+  const recipientIsDao =
+    !recipientEntity.loading && recipientEntity.data.type === EntityType.Dao
 
   const lazyInfoLoading = loadableToLoadingData(
     useCachedLoadable(
@@ -101,14 +107,38 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const onWithdraw = async () => {
     setWithdrawing(true)
     try {
-      await distribute({})
+      if (recipientIsDao) {
+        await goToDaoProposal(recipientEntity.data.address, 'create', {
+          prefill: getDaoProposalSinglePrefill({
+            actions: [
+              {
+                actionKey: ActionKey.Execute,
+                data: {
+                  address: vestingContractAddress,
+                  message: JSON.stringify(
+                    {
+                      distribute: {},
+                    },
+                    null,
+                    2
+                  ),
+                  funds: [],
+                  cw20: false,
+                },
+              },
+            ],
+          }),
+        })
+      } else {
+        await distribute({})
 
-      // Give time for indexer to update and then refresh.
-      await awaitNextBlock()
+        // Give time for indexer to update and then refresh.
+        await awaitNextBlock()
 
-      refresh()
-      refreshBalances()
-      toast.success(t('success.withdrewPayment'))
+        refresh()
+        refreshBalances()
+        toast.success(t('success.withdrewPayment'))
+      }
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
@@ -121,21 +151,46 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const validators = lazyInfoLoading.loading
     ? undefined
     : lazyInfoLoading.data.stakingInfo?.stakes.map((s) => s.validator.address)
+
   // If no validators or not yet loaded, don't show claim.
   const onClaim =
     validators &&
     (async () => {
       setClaiming(true)
       try {
-        await claim({
-          validators,
-        })
+        if (recipientIsDao) {
+          await goToDaoProposal(recipientEntity.data.address, 'create', {
+            prefill: getDaoProposalSinglePrefill({
+              actions: validators?.map((validator) => ({
+                actionKey: ActionKey.Execute,
+                data: {
+                  address: vestingContractAddress,
+                  message: JSON.stringify(
+                    {
+                      withdraw_delegator_reward: {
+                        validator,
+                      },
+                    },
+                    null,
+                    2
+                  ),
+                  funds: [],
+                  cw20: false,
+                },
+              })),
+            }),
+          })
+        } else {
+          await claim({
+            validators,
+          })
 
-        // Give time for indexer to update and then refresh.
-        await awaitNextBlock()
+          // Give time for indexer to update and then refresh.
+          await awaitNextBlock()
 
-        refresh()
-        toast.success(t('success.claimedRewards'))
+          refresh()
+          toast.success(t('success.claimedRewards'))
+        }
       } catch (err) {
         console.error(err)
         toast.error(processError(err))
@@ -177,7 +232,9 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
         onAddToken={onAddToken}
         onClaim={onClaim}
         onManageStake={
-          recipientIsWallet ? () => setShowStakingModal(true) : undefined
+          recipientIsWallet || recipientIsDao
+            ? () => setShowStakingModal(true)
+            : undefined
         }
         onWithdraw={onWithdraw}
         recipient={vest.recipient}
@@ -193,18 +250,20 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
         withdrawing={withdrawing}
       />
 
-      {recipientIsWallet && token.denomOrAddress === NATIVE_DENOM && (
-        <NativeStakingModal
-          onClose={() => setShowStakingModal(false)}
-          stakes={
-            lazyInfoLoading.loading
-              ? undefined
-              : lazyInfoLoading.data.stakingInfo?.stakes
-          }
-          vestingInfo={vestingInfo}
-          visible={showStakingModal}
-        />
-      )}
+      {(recipientIsWallet || recipientIsDao) &&
+        token.denomOrAddress === NATIVE_DENOM && (
+          <NativeStakingModal
+            onClose={() => setShowStakingModal(false)}
+            recipientIsDao={recipientIsDao}
+            stakes={
+              lazyInfoLoading.loading
+                ? undefined
+                : lazyInfoLoading.data.stakingInfo?.stakes
+            }
+            vestingInfo={vestingInfo}
+            visible={showStakingModal}
+          />
+        )}
     </>
   )
 }
