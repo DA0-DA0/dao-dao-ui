@@ -12,9 +12,12 @@ export const actionKeyToMatchOrder = (key: ActionKey) =>
       // operations.
       ActionKey.MintNft,
       ActionKey.BurnNft,
-      // This is before manage storage items becuase it is a more specific item
+      // This is before manage storage items because it is a more specific item
       // management action.
       ActionKey.ManageWidgets,
+      // This is before manage storage items because it uses item storage when
+      // the cw721 contract is improperly formatted.
+      ActionKey.ManageCw721,
       // Many actions are more specific item management actions.
       ActionKey.ManageStorageItems,
       // The upgrade action (and likely future upgrade actions) are a specific

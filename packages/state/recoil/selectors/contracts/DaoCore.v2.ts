@@ -23,6 +23,7 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
+import { CW721_WORKAROUND_ITEM_KEY_PREFIX } from '@dao-dao/utils'
 
 import { Cw721BaseSelectors, DaoVotingCw20StakedSelectors } from '.'
 import {
@@ -727,6 +728,14 @@ export const allCw721TokenListSelector = selectorFamily<
   get:
     ({ governanceCollectionAddress, ...queryClientParams }) =>
     async ({ get }) => {
+      // Load workaround CW721s from storage items.
+      const workaroundContracts = get(
+        listAllItemsWithPrefixSelector({
+          ...queryClientParams,
+          prefix: CW721_WORKAROUND_ITEM_KEY_PREFIX,
+        })
+      ).map(([key]) => key.substring(CW721_WORKAROUND_ITEM_KEY_PREFIX.length))
+
       let list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
@@ -735,7 +744,7 @@ export const allCw721TokenListSelector = selectorFamily<
       )
       if (list && Array.isArray(list)) {
         // Copy to new array so we can mutate it below.
-        list = [...list]
+        list = [...workaroundContracts, ...list]
         // Add governance collection to beginning of list if not present.
         if (
           governanceCollectionAddress &&
@@ -749,7 +758,7 @@ export const allCw721TokenListSelector = selectorFamily<
 
       // If indexer query fails, fallback to contract query.
 
-      const tokenList: Cw721TokenListResponse = []
+      const tokenList: Cw721TokenListResponse = [...workaroundContracts]
       while (true) {
         const response = await get(
           _cw721TokenListSelector({
