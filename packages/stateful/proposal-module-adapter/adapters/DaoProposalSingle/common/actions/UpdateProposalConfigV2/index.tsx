@@ -1,6 +1,7 @@
-import { useCallback, useMemo } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useCallback } from 'react'
+import { constSelector, useRecoilValue } from 'recoil'
 
+import { isContractSelector } from '@dao-dao/state/recoil'
 import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
   ActionContextType,
@@ -14,8 +15,9 @@ import {
 } from '@dao-dao/types'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { ExecuteMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-import { makeWasmMessage } from '@dao-dao/utils'
+import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
+import { CONTRACT_NAMES } from '../../../constants'
 import { configSelector } from '../../../contracts/DaoProposalSingle.v2.recoil'
 import { UpdateProposalConfigComponent as Component } from './UpdateProposalConfigComponent'
 
@@ -120,46 +122,59 @@ const maxVotingInfoToCosmos = (
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
   msg: Record<string, any>
-) =>
-  useMemo(() => {
-    if (
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'update_config' in msg.wasm.execute.msg &&
-      'threshold' in msg.wasm.execute.msg.update_config &&
-      ('threshold_quorum' in msg.wasm.execute.msg.update_config.threshold ||
-        'absolute_percentage' in
-          msg.wasm.execute.msg.update_config.threshold) &&
-      'max_voting_period' in msg.wasm.execute.msg.update_config &&
-      'only_members_execute' in msg.wasm.execute.msg.update_config &&
-      'allow_revoting' in msg.wasm.execute.msg.update_config &&
-      'dao' in msg.wasm.execute.msg.update_config
-    ) {
-      const config = msg.wasm.execute.msg.update_config
-      const onlyMembersExecute = config.only_members_execute
-
-      if (!('time' in config.max_voting_period)) {
-        return { match: false }
-      }
-
-      const proposalDuration = config.max_voting_period.time
-      const proposalDurationUnits = 'seconds'
-
-      const allowRevoting = !!config.allow_revoting
-
-      return {
-        data: {
-          onlyMembersExecute,
-          proposalDuration,
-          proposalDurationUnits,
-          allowRevoting,
-          ...thresholdToTQData(config.threshold),
+) => {
+  const isUpdateConfig = objectMatchesStructure(msg, {
+    wasm: {
+      execute: {
+        contract_addr: {},
+        funds: {},
+        msg: {
+          update_config: {
+            threshold: {},
+            max_voting_period: {
+              time: {},
+            },
+            only_members_execute: {},
+            allow_revoting: {},
+            dao: {},
+          },
         },
-        match: true,
-      }
-    }
+      },
+    },
+  })
+
+  const isContract = useRecoilValue(
+    isUpdateConfig
+      ? isContractSelector({
+          contractAddress: msg.wasm.execute.contract_addr,
+          names: CONTRACT_NAMES,
+        })
+      : constSelector(false)
+  )
+
+  if (!isUpdateConfig || !isContract) {
     return { match: false }
-  }, [msg])
+  }
+
+  const config = msg.wasm.execute.msg.update_config
+  const onlyMembersExecute = config.only_members_execute
+
+  const proposalDuration = config.max_voting_period.time
+  const proposalDurationUnits = 'seconds'
+
+  const allowRevoting = !!config.allow_revoting
+
+  return {
+    match: true,
+    data: {
+      onlyMembersExecute,
+      proposalDuration,
+      proposalDurationUnits,
+      allowRevoting,
+      ...thresholdToTQData(config.threshold),
+    },
+  }
+}
 
 export const makeUpdateProposalConfigV2ActionMaker =
   ({
