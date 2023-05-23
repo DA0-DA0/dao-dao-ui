@@ -4,10 +4,8 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
   betaWarningAcceptedAtom,
-  installWarningVisibleAtom,
   mountedInBrowserAtom,
   navigationCompactAtom,
-  noKeplrAccountAtom,
   proposalCreatedCardPropsAtom,
   refreshBlockHeightAtom,
   refreshTokenUsdcPriceAtom,
@@ -15,8 +13,6 @@ import {
 import {
   BetaWarningModal,
   DaoCreatedModal,
-  InstallKeplrModal,
-  NoKeplrAccountModal,
   PageLoader,
   ProposalCreatedModal,
   SdaLayout as StatelessSdaLayout,
@@ -34,10 +30,6 @@ import { WalletModals } from './wallet'
 
 export const SdaLayout = ({ children }: { children: ReactNode }) => {
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
-  const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
-    installWarningVisibleAtom
-  )
-  const [noKeplrAccount, setNoKeplrAccount] = useRecoilState(noKeplrAccountAtom)
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
     betaWarningAcceptedAtom
   )
@@ -45,22 +37,12 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
   const [proposalCreatedCardProps, setProposalCreatedCardProps] =
     useRecoilState(proposalCreatedCardPropsAtom)
 
-  //! WALLET CONNECTION ERROR MODALS
-  const { connect, connected, error, status } = useWalletManager()
+  const { connect, connected, status } = useWalletManager()
   const {
     walletAddress,
     walletProfileData,
     refreshBalances: refreshWalletBalances,
   } = useWalletInfo()
-  useEffect(() => {
-    setInstallWarningVisible(
-      error instanceof Error &&
-        error.message === 'Failed to retrieve wallet client.'
-    )
-    setNoKeplrAccount(
-      error instanceof Error && error.message === "key doesn't exist"
-    )
-  }, [error, setInstallWarningVisible, setNoKeplrAccount])
 
   //! Refresh every minute. Block height, USDC conversions, and wallet balances.
   const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
@@ -114,14 +96,6 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
 
       {/* Modals */}
 
-      <InstallKeplrModal
-        onClose={() => setInstallWarningVisible(false)}
-        visible={installWarningVisible}
-      />
-      <NoKeplrAccountModal
-        onClose={() => setNoKeplrAccount(false)}
-        visible={noKeplrAccount}
-      />
       <BetaWarningModal
         onClose={() => setBetaWarningAccepted(true)}
         visible={mountedInBrowser && !betaWarningAccepted}

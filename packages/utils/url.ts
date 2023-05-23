@@ -6,6 +6,8 @@ import {
   PartialCategorizedActionKeyAndDataNoId,
 } from '@dao-dao/types'
 
+import { DaoProposalSingleAdapterId } from './constants/adapters'
+
 // Create a path to a DAO page based on the app's page mode.
 export const getDaoPath = (
   mode: DaoPageMode,
@@ -52,3 +54,25 @@ export const getMeTxPrefillPath = (
 
   return base + query
 }
+
+// Create prefill URL parameter for a DAO's single choice proposal module.
+export const getDaoProposalSinglePrefill = ({
+  title = '',
+  description = '',
+  actions = [],
+}: {
+  actions?: PartialCategorizedActionKeyAndDataNoId[]
+  title?: string
+  description?: string
+}): string =>
+  JSON.stringify({
+    id: DaoProposalSingleAdapterId,
+    data: {
+      title,
+      description,
+      actionData: actions.map((action, index) => ({
+        _id: index.toString(),
+        ...action,
+      })),
+    },
+  })
