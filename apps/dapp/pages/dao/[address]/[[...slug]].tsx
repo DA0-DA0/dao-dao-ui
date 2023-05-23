@@ -16,7 +16,6 @@ import {
   LinkWrapper,
   ProfileDaoHomeCard,
   SuspenseLoader,
-  useDaoProposalSinglePrefill,
   useDaoTabs,
   useFollowingDaos,
   useMembership,
@@ -30,7 +29,11 @@ import {
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, DaoPageMode, WidgetLocation } from '@dao-dao/types'
-import { SITE_URL, getDaoPath } from '@dao-dao/utils'
+import {
+  SITE_URL,
+  getDaoPath,
+  getDaoProposalSinglePrefill,
+} from '@dao-dao/utils'
 
 const InnerDaoHome = () => {
   const { t } = useTranslation()
@@ -56,35 +59,34 @@ const InnerDaoHome = () => {
   const manageSubDaosAction = useActionForKey(ActionKey.ManageSubDaos)
   // Prefill URL only valid if action exists.
   const prefillValid = !!manageSubDaosAction
-  const addSubDaoProposalPrefill = useDaoProposalSinglePrefill(
-    manageSubDaosAction
-      ? {
-          title: t('title.recognizeSubDao', {
-            name: daoInfo.name,
-          }),
-          description: t('info.recognizeSubDaoDescription', {
-            name: daoInfo.name,
-          }),
-          actions: [
-            {
-              actionKey: manageSubDaosAction.action.key,
-              data: {
-                toAdd: [
-                  {
-                    addr: daoInfo.coreAddress,
-                  },
-                ],
-                toRemove: [],
-              },
-            },
-          ],
-        }
-      : { actions: [] }
-  )
   const addSubDaoProposalPrefillHref =
-    prefillValid && daoInfo.parentDao && addSubDaoProposalPrefill
+    prefillValid && daoInfo.parentDao && manageSubDaosAction
       ? getDaoProposalPath(daoInfo.parentDao.coreAddress, 'create', {
-          prefill: addSubDaoProposalPrefill,
+          prefill: getDaoProposalSinglePrefill(
+            manageSubDaosAction
+              ? {
+                  title: t('title.recognizeSubDao', {
+                    name: daoInfo.name,
+                  }),
+                  description: t('info.recognizeSubDaoDescription', {
+                    name: daoInfo.name,
+                  }),
+                  actions: [
+                    {
+                      actionKey: manageSubDaosAction.action.key,
+                      data: {
+                        toAdd: [
+                          {
+                            addr: daoInfo.coreAddress,
+                          },
+                        ],
+                        toRemove: [],
+                      },
+                    },
+                  ],
+                }
+              : {}
+          ),
         })
       : undefined
   useEffect(() => {
@@ -132,7 +134,6 @@ const InnerDaoHome = () => {
     daoInfo.coreAddress,
     daoInfo.name,
     daoInfo.parentDao,
-    addSubDaoProposalPrefill,
     isMemberOfParent,
     parentDaosSubDaosLoadable.contents,
     parentDaosSubDaosLoadable.state,
