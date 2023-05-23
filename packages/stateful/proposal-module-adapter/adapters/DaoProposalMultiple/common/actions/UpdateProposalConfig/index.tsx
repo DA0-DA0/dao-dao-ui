@@ -1,6 +1,7 @@
-import { useCallback, useMemo } from 'react'
-import { useRecoilValue } from 'recoil'
+import { useCallback } from 'react'
+import { constSelector, useRecoilValue } from 'recoil'
 
+import { isContractSelector } from '@dao-dao/state/recoil'
 import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
   ActionContextType,
@@ -18,6 +19,7 @@ import {
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
+import { CONTRACT_NAMES } from '../../../constants'
 import { configSelector } from '../../../contracts/DaoProposalMultiple.recoil'
 import { UpdateProposalConfigComponent as Component } from './UpdateProposalConfigComponent'
 
@@ -90,51 +92,64 @@ const maxVotingInfoToCosmos = (
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
   msg: Record<string, any>
-) =>
-  useMemo(() => {
-    if (
-      objectMatchesStructure(msg, {
-        wasm: {
-          execute: {
-            update_config: {
-              allow_revoting: {},
-              close_proposal_on_execution_failure: {},
-              dao: {},
-              max_voting_period: {
-                time: {},
-              },
-              min_voting_period: {},
-              only_members_execute: {},
-              voting_strategy: {
-                single_choice: {
-                  quorum: {},
-                },
+) => {
+  const isUpdateConfig = objectMatchesStructure(msg, {
+    wasm: {
+      execute: {
+        contract_addr: {},
+        funds: {},
+        msg: {
+          update_config: {
+            allow_revoting: {},
+            close_proposal_on_execution_failure: {},
+            dao: {},
+            max_voting_period: {
+              time: {},
+            },
+            min_voting_period: {},
+            only_members_execute: {},
+            voting_strategy: {
+              single_choice: {
+                quorum: {},
               },
             },
           },
         },
-      })
-    ) {
-      const {
-        allow_revoting: allowRevoting,
-        only_members_execute: onlyMembersExecute,
-        max_voting_period: { time: proposalDuration },
-        voting_strategy: votingStrategy,
-      } = msg.wasm.execute.msg.update_config
+      },
+    },
+  })
 
-      return {
-        data: {
-          allowRevoting,
-          onlyMembersExecute,
-          proposalDuration,
-          proposalDurationUnits: 'seconds',
-          ...votingStrategyToProcessedQuorum(votingStrategy),
-        },
-        match: true,
-      }
-    }
+  const isContract = useRecoilValue(
+    isUpdateConfig
+      ? isContractSelector({
+          contractAddress: msg.wasm.execute.contract_addr,
+          names: CONTRACT_NAMES,
+        })
+      : constSelector(false)
+  )
+
+  if (!isUpdateConfig || !isContract) {
     return { match: false }
-  }, [msg])
+  }
+
+  const {
+    allow_revoting: allowRevoting,
+    only_members_execute: onlyMembersExecute,
+    max_voting_period: { time: proposalDuration },
+    voting_strategy: votingStrategy,
+  } = msg.wasm.execute.msg.update_config
+
+  return {
+    match: true,
+    data: {
+      allowRevoting,
+      onlyMembersExecute,
+      proposalDuration,
+      proposalDurationUnits: 'seconds',
+      ...votingStrategyToProcessedQuorum(votingStrategy),
+    },
+  }
+}
 
 export const makeUpdateProposalConfigActionMaker =
   ({
