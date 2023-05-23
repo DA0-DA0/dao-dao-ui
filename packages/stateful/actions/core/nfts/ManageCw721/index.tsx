@@ -225,7 +225,6 @@ export const makeManageCw721Action: ActionMaker<ManageCw721Data> = ({
     msg: Record<string, any>
   ) => {
     if (
-      msg.wasm.execute.contract_addr === address &&
       objectMatchesStructure(msg, {
         wasm: {
           execute: {
@@ -240,6 +239,7 @@ export const makeManageCw721Action: ActionMaker<ManageCw721Data> = ({
           },
         },
       }) &&
+      msg.wasm.execute.contract_addr === address &&
       // Ensure only one collection is being added or removed, but not both, and
       // not more than one collection. Ideally this component lets you add or
       // remove multiple collections at once, but that's not supported yet.
@@ -271,6 +271,7 @@ export const makeManageCw721Action: ActionMaker<ManageCw721Data> = ({
           },
         },
       }) &&
+      msg.wasm.execute.contract_addr === address &&
       ('set_item' in msg.wasm.execute.msg ||
         'remove_item' in msg.wasm.execute.msg)
     ) {
