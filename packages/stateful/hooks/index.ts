@@ -2,7 +2,6 @@ export * from './contracts'
 
 export * from './useAwaitNextBlock'
 export * from './useCfWorkerAuthPostRequest'
-export * from './useDaoProposalSinglePrefill'
 export * from './useDaoProposalSinglePublishProposal'
 export * from './useDaoTabs'
 export * from './useEntity'

@@ -26,7 +26,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
     "startDate": "<START DATE>",
     "duration": {
       "value": <DURATION VALUE>,
-      "unit": "<seconds | minutes | hours | days | weeks | months | years>"
+      "units": "<seconds | minutes | hours | days | weeks | months | years>"
     }
   },
   "cancel": {
