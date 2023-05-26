@@ -120,7 +120,7 @@ const InnerComponentWrapper: ActionComponent<
       <InnerComponentLoading {...props} />
     )
   ) : isWalletAddress ? (
-    <WalletActionsProvider>
+    <WalletActionsProvider address={address}>
       <InnerComponent {...props} />
     </WalletActionsProvider>
   ) : (
