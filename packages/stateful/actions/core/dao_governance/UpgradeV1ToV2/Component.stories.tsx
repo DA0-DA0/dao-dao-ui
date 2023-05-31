@@ -35,6 +35,8 @@ Default.args = {
   errors: {},
   options: {
     v1SubDaos: [],
+    hasParent: false,
+    onV1: false,
     AddressInput,
     EntityDisplay,
   },

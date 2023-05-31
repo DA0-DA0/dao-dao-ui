@@ -44,6 +44,7 @@ export const makeProps = (id = 1): DaoCardProps => ({
     coreVersion: ContractVersion.V2Alpha,
     name: 'parent',
     imageUrl: 'https://moonphase.is/image.svg',
+    admin: 'parentDaoCoreAddress',
     registeredSubDao: true,
   },
 
