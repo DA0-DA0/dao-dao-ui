@@ -103,6 +103,7 @@ const useV1SubDaos = () => {
 
 const Component: ActionComponent = (props) => {
   const v1SubDaos = useV1SubDaos()
+  const { address, context } = useActionOptions()
 
   return v1SubDaos.loading ? (
     <Loader />
@@ -111,6 +112,13 @@ const Component: ActionComponent = (props) => {
       {...props}
       options={{
         v1SubDaos: v1SubDaos.data,
+        // Has parent if admin is not self.
+        hasParent:
+          context.type === ActionContextType.Dao &&
+          context.info.admin !== address,
+        onV1:
+          context.type === ActionContextType.Dao &&
+          context.info.coreVersion === ContractVersion.V1,
         AddressInput,
         EntityDisplay,
       }}

@@ -5,7 +5,7 @@ import { CreateDaoForm } from './CreateDaoForm'
 
 // Wrap the CreateDaoForm to create a SubDao for the current DAO.
 export const CreateSubDao = () => {
-  const { coreAddress, coreVersion, name, imageUrl, parentDao } =
+  const { coreAddress, coreVersion, name, imageUrl, parentDao, admin } =
     useDaoInfoContext()
 
   return (
@@ -16,6 +16,7 @@ export const CreateSubDao = () => {
         name,
         imageUrl: imageUrl || getFallbackImage(coreAddress),
         parentDao,
+        admin,
 
         // If creating a SubDao, it is not yet registered.
         registeredSubDao: false,
