@@ -1,10 +1,8 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
-import { useEffect } from 'react'
-import { useSetRecoilState, waitForAll } from 'recoil'
+import { waitForAll } from 'recoil'
 
-import featuredDaos from '@dao-dao/state/featured_daos.json'
-import { featuredDaoDumpStatesAtom } from '@dao-dao/state/recoil'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { indexerFeaturedMainnetDaosSelector } from '@dao-dao/state/recoil'
+import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 import { CHAIN_ID } from '@dao-dao/utils'
 
@@ -41,22 +39,15 @@ export const useLoadingDaoCardInfos = (
 export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
   DaoCardInfo[]
 > => {
-  const data = useLoadingDaoCardInfos(
+  const featuredDaos = useCachedLoading(
+    indexerFeaturedMainnetDaosSelector,
+    undefined
+  )
+  return useLoadingDaoCardInfos(
     // Featured DAOs only exist on mainnet.
     ChainInfoID.Juno1,
-    featuredDaos.map(({ coreAddress }) => coreAddress)
+    featuredDaos.loading ? undefined : featuredDaos.data
   )
-
-  // Once featured DAOs load once, clear cache from page static props so the DAO
-  // cards update.
-  const setFeaturedDaoDumpStates = useSetRecoilState(featuredDaoDumpStatesAtom)
-  useEffect(() => {
-    if (!data.loading) {
-      setFeaturedDaoDumpStates(null)
-    }
-  }, [setFeaturedDaoDumpStates, data.loading])
-
-  return data
 }
 
 export const useLoadingFollowingDaoCardInfos = (): LoadingData<

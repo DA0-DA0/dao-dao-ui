@@ -6,9 +6,10 @@ import {
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, ContractVersion } from '@dao-dao/types'
+import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../actions'
-import { useDaoProposalSinglePrefill, useMembership } from '../../../hooks'
+import { useMembership } from '../../../hooks'
 import { subDaoCardInfosSelector } from '../../../recoil'
 import { ButtonLink } from '../../ButtonLink'
 import { DaoCard } from '../DaoCard'
@@ -30,16 +31,6 @@ export const SubDaosTab = () => {
 
   const upgradeToV2Action = useActionForKey(ActionKey.UpgradeV1ToV2)
   const upgradeToV2ActionDefaults = upgradeToV2Action?.action.useDefaults()
-  const proposalPrefillUpgrade = useDaoProposalSinglePrefill({
-    actions: upgradeToV2Action
-      ? [
-          {
-            actionKey: upgradeToV2Action.action.key,
-            data: upgradeToV2ActionDefaults,
-          },
-        ]
-      : [],
-  })
 
   return (
     <StatelessSubDaosTab
@@ -50,7 +41,16 @@ export const SubDaosTab = () => {
       isMember={isMember}
       subDaos={subDaos}
       upgradeToV2Href={getDaoProposalPath(daoInfo.coreAddress, 'create', {
-        prefill: proposalPrefillUpgrade,
+        prefill: getDaoProposalSinglePrefill({
+          actions: upgradeToV2Action
+            ? [
+                {
+                  actionKey: upgradeToV2Action.action.key,
+                  data: upgradeToV2ActionDefaults,
+                },
+              ]
+            : [],
+        }),
       })}
     />
   )

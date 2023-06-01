@@ -135,6 +135,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     let coreVersion: ContractVersion | undefined
     try {
       const {
+        admin,
         config,
         version,
         votingModule: { address: votingModuleAddress, info: votingModuleInfo },
@@ -276,6 +277,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           items,
           polytoneProxies,
           parentDao,
+          admin,
         },
         ...additionalProps,
       }
@@ -476,6 +478,7 @@ const loadParentDaoInfo = async (
 
   try {
     const {
+      admin,
       version,
       config: { name, image_url },
       parentDao,
@@ -490,6 +493,7 @@ const loadParentDaoInfo = async (
       name: name,
       imageUrl: image_url ?? null,
       parentDao,
+      admin,
     }
   } catch (err) {
     // If contract not found, ignore error. Otherwise, log it.

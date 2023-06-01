@@ -305,9 +305,11 @@ export const daoInfoSelector: (param: {
               name: parentDaoInfo.name,
               imageUrl: parentDaoInfo.imageUrl || null,
               parentDao: parentDaoInfo.parentDao,
+              admin: parentDaoInfo.admin,
               registeredSubDao: parentSubDaos?.includes(coreAddress) ?? false,
             }
           : null,
+        admin: dumpState.admin,
       }
     },
 })

@@ -18,6 +18,7 @@ import {
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
+import { CONTRACT_NAMES } from './constants'
 import { getInstantiateInfo } from './daoCreation'
 import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
 import {
@@ -35,7 +36,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
   NewProposalForm
 > = {
   id: DaoProposalMultipleAdapterId,
-  contractNames: ['dao-proposal-multiple'],
+  contractNames: CONTRACT_NAMES,
 
   loadCommon: (options) => {
     // Make here so we can pass into common hooks and components that need it.

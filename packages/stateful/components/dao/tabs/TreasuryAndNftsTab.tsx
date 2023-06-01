@@ -7,9 +7,10 @@ import {
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey } from '@dao-dao/types'
+import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../actions'
-import { useDaoProposalSinglePrefill, useMembership } from '../../../hooks'
+import { useMembership } from '../../../hooks'
 import {
   nftCardInfosForDaoSelector,
   treasuryTokenCardInfosSelector,
@@ -56,18 +57,9 @@ export const TreasuryAndNftsTab = () => {
 
   // ManageCw721 action defaults to adding
   const addCw721Action = useActionForKey(ActionKey.ManageCw721)
-  const addCollectionProposalPrefill = useDaoProposalSinglePrefill({
-    actions: addCw721Action
-      ? [
-          {
-            actionKey: addCw721Action.action.key,
-            data: addCw721Action.action.useDefaults(),
-          },
-        ]
-      : [],
-  })
+  const addCw721ActionDefaults = addCw721Action?.action.useDefaults()
 
-  const createCrossChainAccountPrefill = useDaoProposalSinglePrefill({
+  const createCrossChainAccountPrefill = getDaoProposalSinglePrefill({
     actions: [
       {
         actionKey: ActionKey.CreateCrossChainAccount,
@@ -87,19 +79,28 @@ export const TreasuryAndNftsTab = () => {
       TokenCard={DaoTokenCard}
       addCollectionHref={
         // Prefill URL only valid if action exists.
-        !!addCw721Action && addCollectionProposalPrefill
+        !!addCw721Action
           ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
-              prefill: addCollectionProposalPrefill,
+              prefill: getDaoProposalSinglePrefill({
+                actions: addCw721Action
+                  ? [
+                      {
+                        actionKey: addCw721Action.action.key,
+                        data: addCw721ActionDefaults,
+                      },
+                    ]
+                  : [],
+              }),
             })
           : undefined
       }
-      createCrossChainAccountPrefillHref={
-        createCrossChainAccountPrefill
-          ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
-              prefill: createCrossChainAccountPrefill,
-            })
-          : undefined
-      }
+      createCrossChainAccountPrefillHref={getDaoProposalPath(
+        daoInfo.coreAddress,
+        'create',
+        {
+          prefill: createCrossChainAccountPrefill,
+        }
+      )}
       isMember={isMember}
       nfts={nfts}
       tokens={tokens}

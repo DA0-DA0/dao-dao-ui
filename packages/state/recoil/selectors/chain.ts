@@ -610,7 +610,9 @@ export const walletHexPublicKeySelector = selectorFamily<
     async ({ get }) => {
       const client = get(cosmWasmClientForChainSelector(chainId))
       const account = await client.getAccount(walletAddress)
-      if (!account?.pubkey?.value) {
+      // x/group (multisig) addresses are not strings but sets of public keys
+      // with a threshold, so they don't have a valid single public key.
+      if (!account?.pubkey?.value || typeof account.pubkey.value !== 'string') {
         return
       }
       return toHex(fromBase64(account.pubkey.value))

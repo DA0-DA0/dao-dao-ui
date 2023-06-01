@@ -1,4 +1,3 @@
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily, waitForAll } from 'recoil'
 
 import { GenericTokenBalance, TokenType, WithChainId } from '@dao-dao/types'
@@ -24,24 +23,20 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
-import { CHAIN_ID } from '@dao-dao/utils'
+import { CW721_WORKAROUND_ITEM_KEY_PREFIX } from '@dao-dao/utils'
 
 import { Cw721BaseSelectors, DaoVotingCw20StakedSelectors } from '.'
 import {
   DaoCoreV2Client,
   DaoCoreV2QueryClient,
 } from '../../../contracts/DaoCore.v2'
-import featuredDaos from '../../../featured_daos.json'
 import {
   refreshDaoVotingPowerAtom,
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
-import {
-  featuredDaoDumpStatesAtom,
-  queryContractIndexerSelector,
-} from '../indexer'
+import { queryContractIndexerSelector } from '../indexer'
 import { genericTokenSelector } from '../token'
 import * as Cw20BaseSelectors from './Cw20Base'
 
@@ -223,24 +218,6 @@ export const dumpStateSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      // Try indexer first if loading featured mainnet DAO.
-      if (
-        ((queryClientParams.chainId === undefined &&
-          CHAIN_ID === ChainInfoID.Juno1) ||
-          queryClientParams.chainId === ChainInfoID.Juno1) &&
-        featuredDaos.some(
-          ({ coreAddress }) => coreAddress === queryClientParams.contractAddress
-        )
-      ) {
-        const featuredDaoDumpStates = get(featuredDaoDumpStatesAtom)
-        const dumpedState = featuredDaoDumpStates?.find(
-          ({ coreAddress }) => coreAddress === queryClientParams.contractAddress
-        )
-        if (dumpedState) {
-          return dumpedState
-        }
-      }
-
       const state = get(
         queryContractIndexerSelector({
           ...queryClientParams,
@@ -751,6 +728,14 @@ export const allCw721TokenListSelector = selectorFamily<
   get:
     ({ governanceCollectionAddress, ...queryClientParams }) =>
     async ({ get }) => {
+      // Load workaround CW721s from storage items.
+      const workaroundContracts = get(
+        listAllItemsWithPrefixSelector({
+          ...queryClientParams,
+          prefix: CW721_WORKAROUND_ITEM_KEY_PREFIX,
+        })
+      ).map(([key]) => key.substring(CW721_WORKAROUND_ITEM_KEY_PREFIX.length))
+
       let list = get(
         queryContractIndexerSelector({
           ...queryClientParams,
@@ -759,7 +744,7 @@ export const allCw721TokenListSelector = selectorFamily<
       )
       if (list && Array.isArray(list)) {
         // Copy to new array so we can mutate it below.
-        list = [...list]
+        list = [...workaroundContracts, ...list]
         // Add governance collection to beginning of list if not present.
         if (
           governanceCollectionAddress &&
@@ -773,7 +758,7 @@ export const allCw721TokenListSelector = selectorFamily<
 
       // If indexer query fails, fallback to contract query.
 
-      const tokenList: Cw721TokenListResponse = []
+      const tokenList: Cw721TokenListResponse = [...workaroundContracts]
       while (true) {
         const response = await get(
           _cw721TokenListSelector({

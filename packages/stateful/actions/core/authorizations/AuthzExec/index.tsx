@@ -1,5 +1,5 @@
 import { Any } from 'cosmjs-types/google/protobuf/any'
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
@@ -120,7 +120,7 @@ const InnerComponentWrapper: ActionComponent<
       <InnerComponentLoading {...props} />
     )
   ) : isWalletAddress ? (
-    <WalletActionsProvider>
+    <WalletActionsProvider address={address}>
       <InnerComponent {...props} />
     </WalletActionsProvider>
   ) : (
@@ -130,23 +130,10 @@ const InnerComponentWrapper: ActionComponent<
 
 const Component: ActionComponent = (props) => {
   // Load DAO info for chosen DAO.
-  const { watch, setValue, clearErrors } = useFormContext<AuthzExecData>()
+  const { watch } = useFormContext<AuthzExecData>()
   const address = watch((props.fieldNamePrefix + 'address') as 'address')
   const msgsPerSender =
     watch((props.fieldNamePrefix + '_msgs') as '_msgs') ?? []
-
-  // Reset actions when address changes during creation.
-  useEffect(() => {
-    if (props.isCreating) {
-      setValue((props.fieldNamePrefix + 'msgs') as 'msgs', [])
-      clearErrors((props.fieldNamePrefix + 'msgs') as 'msgs')
-      setValue(
-        (props.fieldNamePrefix + '_actionData') as '_actionData',
-        undefined
-      )
-      clearErrors((props.fieldNamePrefix + '_actionData') as '_actionData')
-    }
-  }, [clearErrors, address, props.fieldNamePrefix, props.isCreating, setValue])
 
   // When creating, just show one form for the chosen address. When not
   // creating, render a form for each sender message group since the component

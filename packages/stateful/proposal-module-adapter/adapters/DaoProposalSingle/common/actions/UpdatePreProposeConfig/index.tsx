@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
-import { genericTokenSelector } from '@dao-dao/state'
+import { genericTokenSelector, isContractSelector } from '@dao-dao/state'
 import { GearEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -32,6 +32,7 @@ import {
 
 import { useActionOptions } from '../../../../../../actions'
 import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
+import { PRE_PROPOSE_CONTRACT_NAMES } from '../../../constants'
 import { configSelector } from '../../../contracts/DaoPreProposeSingle.recoil'
 import {
   UpdatePreProposeConfigComponent,
@@ -285,6 +286,16 @@ export const makeUpdatePreProposeConfigActionMaker =
         },
       })
 
+      const isContract = useRecoilValue(
+        isUpdatePreProposeConfig
+          ? isContractSelector({
+              contractAddress: msg.wasm.execute.contract_addr,
+              names: PRE_PROPOSE_CONTRACT_NAMES,
+              chainId,
+            })
+          : constSelector(false)
+      )
+
       const configDepositInfo = msg.wasm?.execute?.msg?.update_config
         ?.deposit_info as UncheckedDepositInfo | null | undefined
 
@@ -294,7 +305,7 @@ export const makeUpdatePreProposeConfigActionMaker =
       const governanceToken = useCommonGovernanceTokenInfo?.()
 
       const token = useRecoilValue(
-        configDepositInfo && isUpdatePreProposeConfig
+        isContract && configDepositInfo && isUpdatePreProposeConfig
           ? 'voting_module_token' in configDepositInfo.denom
             ? constSelector(governanceToken)
             : genericTokenSelector({
@@ -311,7 +322,7 @@ export const makeUpdatePreProposeConfigActionMaker =
           : constSelector(undefined)
       )
 
-      if (!isUpdatePreProposeConfig) {
+      if (!isUpdatePreProposeConfig || !isContract) {
         return { match: false }
       }
 

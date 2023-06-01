@@ -9,11 +9,13 @@ import {
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, WidgetRendererProps } from '@dao-dao/types'
-import { loadableToLoadingData } from '@dao-dao/utils'
+import {
+  getDaoProposalSinglePrefill,
+  loadableToLoadingData,
+} from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../../../actions'
 import { ButtonLink, EntityDisplay, Trans } from '../../../../../components'
-import { useDaoProposalSinglePrefill } from '../../../../../hooks/useDaoProposalSinglePrefill'
 import { useMembership } from '../../../../../hooks/useMembership'
 import { VestingPaymentCard } from '../../components/VestingPaymentCard'
 import { VestingPaymentsData } from '../../types'
@@ -50,50 +52,12 @@ export const TabRenderer = ({
   const vestingAction = useActionForKey(ActionKey.ManageVesting)
   const vestingActionDefaults = vestingAction?.action.useDefaults()
 
-  const createVestingPaymentPrefill = useDaoProposalSinglePrefill({
-    actions: vestingAction
-      ? [
-          {
-            actionKey: vestingAction.action.key,
-            data: vestingActionDefaults,
-          },
-        ]
-      : [],
-  })
-
   // Vesting payments that need a slash registered.
   const vestingPaymentsNeedingSlashRegistration = vestingPaymentsLoading.loading
     ? []
     : vestingPaymentsLoading.data.filter(
         ({ hasUnregisteredSlashes }) => hasUnregisteredSlashes
       )
-  const registerSlashesPrefill = useDaoProposalSinglePrefill({
-    actions: vestingAction
-      ? vestingPaymentsNeedingSlashRegistration.flatMap(
-          ({ vestingContractAddress, slashes: validatorsWithSlashes }) =>
-            validatorsWithSlashes.flatMap(
-              ({ validatorOperatorAddress, slashes }) =>
-                slashes
-                  .filter((slash) => slash.unregisteredAmount > 0)
-                  .map((slash) => ({
-                    action: vestingAction,
-                    data: {
-                      ...vestingActionDefaults,
-                      mode: 'registerSlash',
-                      registerSlash: {
-                        address: vestingContractAddress,
-                        validator: validatorOperatorAddress,
-                        // Milliseconds to nanoseconds.
-                        time: (slash.timeMs * 1e6).toString(),
-                        amount: slash.unregisteredAmount.toString(),
-                        duringUnbonding: slash.duringUnbonding,
-                      },
-                    },
-                  }))
-            )
-        )
-      : [],
-  })
 
   return (
     <StatelessTabRenderer
@@ -102,17 +66,51 @@ export const TabRenderer = ({
       Trans={Trans}
       VestingPaymentCard={VestingPaymentCard}
       createVestingPaymentHref={
-        vestingAction && createVestingPaymentPrefill
+        vestingAction
           ? getDaoProposalPath(coreAddress, 'create', {
-              prefill: createVestingPaymentPrefill,
+              prefill: getDaoProposalSinglePrefill({
+                actions: [
+                  {
+                    actionKey: vestingAction.action.key,
+                    data: vestingActionDefaults,
+                  },
+                ],
+              }),
             })
           : undefined
       }
       isMember={isMember}
       registerSlashesHref={
-        vestingAction && registerSlashesPrefill
+        vestingAction && vestingPaymentsNeedingSlashRegistration.length > 0
           ? getDaoProposalPath(coreAddress, 'create', {
-              prefill: registerSlashesPrefill,
+              prefill: getDaoProposalSinglePrefill({
+                actions: vestingPaymentsNeedingSlashRegistration.flatMap(
+                  ({
+                    vestingContractAddress,
+                    slashes: validatorsWithSlashes,
+                  }) =>
+                    validatorsWithSlashes.flatMap(
+                      ({ validatorOperatorAddress, slashes }) =>
+                        slashes
+                          .filter((slash) => slash.unregisteredAmount > 0)
+                          .map((slash) => ({
+                            action: vestingAction,
+                            data: {
+                              ...vestingActionDefaults,
+                              mode: 'registerSlash',
+                              registerSlash: {
+                                address: vestingContractAddress,
+                                validator: validatorOperatorAddress,
+                                // Milliseconds to nanoseconds.
+                                time: (slash.timeMs * 1e6).toString(),
+                                amount: slash.unregisteredAmount.toString(),
+                                duringUnbonding: slash.duringUnbonding,
+                              },
+                            },
+                          }))
+                    )
+                ),
+              }),
             })
           : undefined
       }

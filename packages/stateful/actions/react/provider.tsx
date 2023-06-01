@@ -19,8 +19,13 @@ import {
 } from '../core'
 import { ActionsContext } from './context'
 
-export interface ActionsProviderProps {
+export type ActionsProviderProps = {
   children: ReactNode | ReactNode[]
+}
+
+export type WalletActionsProviderProps = ActionsProviderProps & {
+  // If passed, will override the connected wallet address.
+  address?: string
 }
 
 // Make sure this re-renders when the options change. You can do this by setting
@@ -137,8 +142,12 @@ export const BaseActionsProvider = ({
   )
 }
 
-export const WalletActionsProvider = ({ children }: ActionsProviderProps) => {
-  const { address } = useWallet()
+export const WalletActionsProvider = ({
+  address: overrideAddress,
+  children,
+}: WalletActionsProviderProps) => {
+  const { address: connectedAddress } = useWallet()
+  const address = overrideAddress || connectedAddress
 
   if (!address) {
     return <Loader />

@@ -41,6 +41,7 @@ export const StakingModal = ({
   loading,
   error,
   onAction,
+  actionPrefix,
   validatorPicker,
   visible = true,
   enableRestaking: restakingEnabled,
@@ -115,6 +116,7 @@ export const StakingModal = ({
               )
             }
           >
+            {actionPrefix}
             {t(`button.stakingMode.${mode}`)}
           </Button>
         </Tooltip>

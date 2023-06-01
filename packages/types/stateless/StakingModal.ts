@@ -46,6 +46,8 @@ export interface StakingModalProps {
     // funds from.
     fromValidator?: string
   ) => void
+  // Optional prefix added to the action button text.
+  actionPrefix?: string
   // If present, will control the visibility of the staking modal. If absent,
   // the modal will be visible always.
   visible?: boolean

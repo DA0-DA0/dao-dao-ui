@@ -18,6 +18,7 @@ import {
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
+import { CONTRACT_NAMES } from './constants'
 import { ThresholdVotingConfigItem, getInstantiateInfo } from './daoCreation'
 import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
 import {
@@ -35,14 +36,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
   NewProposalForm
 > = {
   id: DaoProposalSingleAdapterId,
-  contractNames: [
-    // V1
-    'cw-govmod-single',
-    'cw-proposal-single',
-    // V2
-    'cwd-proposal-single',
-    'dao-proposal-single',
-  ],
+  contractNames: CONTRACT_NAMES,
 
   loadCommon: (options) => {
     // Make here so we can pass into common hooks and components that need it.

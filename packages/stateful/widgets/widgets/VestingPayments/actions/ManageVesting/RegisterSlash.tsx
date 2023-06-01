@@ -60,9 +60,11 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
       )
 
   const onSelectSlash = (
+    address: string,
     validator: string,
     { timeMs, unregisteredAmount, duringUnbonding }: VestingValidatorSlash
   ) => {
+    setValue((fieldNamePrefix + 'address') as 'address', address)
     setValue((fieldNamePrefix + 'validator') as 'validator', validator)
     // Milliseconds to nanoseconds.
     setValue((fieldNamePrefix + 'time') as 'time', (timeMs * 1e6).toString())
@@ -112,8 +114,8 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
                   fieldNamePrefix={fieldNamePrefix}
                   info={info}
                   isCreating={isCreating}
-                  onSelectSlash={(slash) =>
-                    onSelectSlash(info.vestingContractAddress, slash)
+                  onSelectSlash={(validator, slash) =>
+                    onSelectSlash(info.vestingContractAddress, validator, slash)
                   }
                 />
               ))}
@@ -153,7 +155,7 @@ type RenderVestProps = {
   isCreating: boolean
   fieldNamePrefix: string
   selectedSlash?: VestingValidatorSlash
-  onSelectSlash?: (slash: VestingValidatorSlash) => void
+  onSelectSlash?: (validator: string, slash: VestingValidatorSlash) => void
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
@@ -201,7 +203,9 @@ const RenderVest = ({
             ({ validatorOperatorAddress, slash }, index) => [
               <SelectCircle
                 key={`${index}-select`}
-                onSelect={() => onSelectSlash?.(slash)}
+                onSelect={() =>
+                  onSelectSlash?.(validatorOperatorAddress, slash)
+                }
                 selected={
                   data.address === vestingContractAddress &&
                   data.time === (slash.timeMs * 1e6).toString() &&

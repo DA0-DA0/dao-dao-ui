@@ -33,6 +33,7 @@ const makeFeaturedDao = (): DaoCardInfo => ({
     coreVersion: ContractVersion.V2Alpha,
     name: 'parent',
     imageUrl: `/placeholders/${((id + 1) % 5) + 1}.svg`,
+    admin: 'parent',
     registeredSubDao: true,
   },
 

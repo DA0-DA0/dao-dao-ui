@@ -1,5 +1,3 @@
-import { ChainInfoID } from '@noahsaso/cosmodal'
-
 import { IndexerFormulaType, WithChainId } from '@dao-dao/types'
 import { INDEXER_URL, fetchWithTimeout } from '@dao-dao/utils'
 
@@ -66,10 +64,3 @@ export const queryIndexer = async <T = any>({
 
   return response.json()
 }
-
-export const queryFeaturedDaoDumpStatesFromIndexer = () =>
-  queryIndexer({
-    type: IndexerFormulaType.Generic,
-    formula: 'featuredDaos',
-    chainId: ChainInfoID.Juno1,
-  })

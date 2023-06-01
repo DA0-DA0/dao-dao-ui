@@ -39,6 +39,7 @@ export type DaoInfo = {
   polytoneProxies: PolytoneProxies
 
   parentDao: DaoParentInfo | null
+  admin: string
 }
 
 export type DaoParentInfo = {
@@ -47,6 +48,7 @@ export type DaoParentInfo = {
   name: string
   imageUrl?: string | null
   parentDao?: DaoParentInfo | null
+  admin: string
 
   // Whether or not this parent has registered its child as a SubDAO.
   registeredSubDao: boolean

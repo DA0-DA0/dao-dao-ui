@@ -34,7 +34,7 @@ export interface TreasuryAndNftsTabProps<
   nfts: LoadingData<N[]>
   NftCard: ComponentType<N>
   isMember: boolean
-  createCrossChainAccountPrefillHref?: string
+  createCrossChainAccountPrefillHref: string
   addCollectionHref?: string
   StargazeNftImportModal: ComponentType<Pick<ModalProps, 'onClose'>>
   FiatDepositModal?: ComponentType<Pick<ModalProps, 'onClose' | 'visible'>>
@@ -146,28 +146,28 @@ export const TreasuryAndNftsTab = <
                       )}
                     </div>
 
-                    {exists
-                      ? // Only show if defined, which indicates wallet connected, and only show for the current chain.
-                        FiatDepositModal &&
-                        chainId === CHAIN_ID && (
-                          <Button
-                            onClick={() => setShowDepositFiat(true)}
-                            variant="secondary"
-                          >
-                            {t('button.depositFiat')}
-                          </Button>
-                        )
-                      : createCrossChainAccountPrefillHref && (
-                          <ButtonLink
-                            href={createCrossChainAccountPrefillHref.replace(
-                              'CHAIN_ID',
-                              chainId
-                            )}
-                            variant="primary"
-                          >
-                            {t('button.createAccount')}
-                          </ButtonLink>
+                    {exists ? (
+                      // Only show if defined, which indicates wallet connected, and only show for the current chain.
+                      FiatDepositModal &&
+                      chainId === CHAIN_ID && (
+                        <Button
+                          onClick={() => setShowDepositFiat(true)}
+                          variant="secondary"
+                        >
+                          {t('button.depositFiat')}
+                        </Button>
+                      )
+                    ) : (
+                      <ButtonLink
+                        href={createCrossChainAccountPrefillHref.replace(
+                          'CHAIN_ID',
+                          chainId
                         )}
+                        variant="primary"
+                      >
+                        {t('button.createAccount')}
+                      </ButtonLink>
+                    )}
                   </div>
 
                   {exists && (

@@ -87,6 +87,7 @@ export const daoCardInfoSelector = selectorFamily<
           const { adminInfo } = dumpedState as IndexerDumpState
           if (adminInfo) {
             const {
+              admin: adminAdmin,
               info,
               config: { name, image_url },
               registeredSubDao = false,
@@ -99,6 +100,7 @@ export const daoCardInfoSelector = selectorFamily<
                 coreVersion,
                 name,
                 imageUrl: image_url || getFallbackImage(admin),
+                admin: adminAdmin ?? '',
                 registeredSubDao,
               }
             }
@@ -118,6 +120,13 @@ export const daoCardInfoSelector = selectorFamily<
             })
           )
         ) {
+          const adminAdmin = get(
+            DaoCoreV2Selectors.adminSelector({
+              contractAddress: admin,
+              chainId,
+              params: [],
+            })
+          )
           const { version } = get(
             DaoCoreV2Selectors.infoSelector({
               contractAddress: admin,
@@ -157,6 +166,7 @@ export const daoCardInfoSelector = selectorFamily<
               coreVersion: adminVersion,
               name,
               imageUrl: image_url || getFallbackImage(admin),
+              admin: adminAdmin ?? '',
               registeredSubDao,
             }
           }

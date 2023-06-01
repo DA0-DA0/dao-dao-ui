@@ -122,6 +122,8 @@ export const SEARCH_HOST = process.env.NEXT_PUBLIC_SEARCH_HOST as string
 export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
 export const SEARCH_DAOS_INDEX = process.env
   .NEXT_PUBLIC_SEARCH_DAOS_INDEX as string
+export const FEATURED_DAOS_INDEX = process.env
+  .NEXT_PUBLIC_FEATURED_DAOS_INDEX as string
 
 export const NFT_STORAGE_API_KEY = process.env.NFT_STORAGE_API_KEY as string
 
@@ -188,3 +190,8 @@ export const NFT_VIDEO_EXTENSIONS = ['mp4', 'webm', 'mov', 'avi']
 // Widgets
 // The namespace (prefix) of widgets stored in a DAO's core items list.
 export const DAO_WIDGET_ITEM_NAMESPACE = 'widget:'
+
+// The namespace (prefix) of cw721 contracts stored in a DAO's core items list.
+// This workaround is necessary for contracts that don't conform to the expected
+// contract info response.
+export const CW721_WORKAROUND_ITEM_KEY_PREFIX = 'cw721:'

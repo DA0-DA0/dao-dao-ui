@@ -18,11 +18,11 @@ import {
 import { ActionKey, ButtonPopupSection, TokenCardInfo } from '@dao-dao/types'
 import {
   StakeType,
+  getDaoProposalSinglePrefill,
   getDisplayNameForChainId,
   getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
-import { useDaoProposalSinglePrefill } from '../../hooks'
 import { tokenCardLazyInfoSelector } from '../../recoil'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { ButtonLink } from '../ButtonLink'
@@ -73,73 +73,66 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     : lazyInfo.data.stakingInfo?.stakes ?? []
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
 
-  // Does not get used if not native token.
-  const proposalPrefillClaim = useDaoProposalSinglePrefill({
-    actions: stakesWithRewards.map(({ validator: { address } }) => ({
-      actionKey: ActionKey.ManageStaking,
-      data: {
-        chainId: props.token.chainId,
-        stakeType: StakeType.WithdrawDelegatorReward,
-        validator: address,
-        // Default values, not needed for displaying this type of message.
-        amount: 1,
-        denom: props.token.denomOrAddress,
-      },
-    })),
-  })
-  // Does not get used if not native token.
-  const proposalPrefillStakeUnstake = useDaoProposalSinglePrefill({
-    // If has unstaked, show stake action by default.
-    actions:
-      props.unstakedBalance > 0
-        ? [
-            {
-              actionKey: ActionKey.ManageStaking,
-              data: {
-                chainId: props.token.chainId,
-                stakeType: StakeType.Delegate,
-                validator: '',
-                amount: props.unstakedBalance,
-                denom: props.token.denomOrAddress,
-              },
-            },
-          ]
-        : // If has only staked, show unstake actions by default.
-          lazyStakes.map(({ validator, amount }) => ({
-            actionKey: ActionKey.ManageStaking,
-            data: {
-              chainId: props.token.chainId,
-              stakeType: StakeType.Undelegate,
-              validator,
-              amount,
-              denom: props.token.denomOrAddress,
-            },
-          })),
-  })
-
   const nativeToken = getNativeTokenForChainId(props.token.chainId)
 
   // Prefill URLs valid...
   const proposeClaimHref =
-    // ...if there is something to claim,
+    // ...there is something to claim
     stakesWithRewards.length > 0 &&
-    // ...if there is a valid prefill (meaning proposal module adapter exists)
-    proposalPrefillClaim &&
+    // ...and this is the native token
     props.token.denomOrAddress === nativeToken.denomOrAddress
       ? getDaoProposalPath(coreAddress, 'create', {
-          prefill: proposalPrefillClaim,
+          prefill: getDaoProposalSinglePrefill({
+            actions: stakesWithRewards.map(({ validator: { address } }) => ({
+              actionKey: ActionKey.ManageStaking,
+              data: {
+                chainId: props.token.chainId,
+                stakeType: StakeType.WithdrawDelegatorReward,
+                validator: address,
+                // Default values, not needed for displaying this type of message.
+                amount: 1,
+                denom: props.token.denomOrAddress,
+              },
+            })),
+          }),
         })
       : undefined
 
-  // Prefill URLs valid...
+  // Prefill URL is valid if...
   const proposeStakeUnstakeHref =
-    // ...if there is something to stake or unstake,
+    // ...there is something to stake or unstake
     (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
-    // ...if there is a valid prefill (meaning proposal module adapter exists)
-    proposalPrefillStakeUnstake &&
+    // ...and this is the native token
     props.token.denomOrAddress === nativeToken.denomOrAddress
       ? getDaoProposalPath(coreAddress, 'create', {
-          prefill: proposalPrefillStakeUnstake,
+          prefill: getDaoProposalSinglePrefill({
+            // If has unstaked, show stake action by default.
+            actions:
+              props.unstakedBalance > 0
+                ? [
+                    {
+                      actionKey: ActionKey.ManageStaking,
+                      data: {
+                        chainId: props.token.chainId,
+                        stakeType: StakeType.Delegate,
+                        validator: '',
+                        amount: props.unstakedBalance,
+                        denom: props.token.denomOrAddress,
+                      },
+                    },
+                  ]
+                : // If has only staked, show unstake actions by default.
+                  lazyStakes.map(({ validator, amount }) => ({
+                    actionKey: ActionKey.ManageStaking,
+                    data: {
+                      chainId: props.token.chainId,
+                      stakeType: StakeType.Undelegate,
+                      validator,
+                      amount,
+                      denom: props.token.denomOrAddress,
+                    },
+                  })),
+          }),
         })
       : undefined
 

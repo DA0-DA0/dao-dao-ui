@@ -29,7 +29,14 @@ export interface UpgradeV1ToV2Data {
 }
 
 export interface UpgradeV1ToV2ComponentOptions {
+  // All SubDAOs of this DAO that are on v1 and can be upgraded.
   v1SubDaos: string[]
+  // If this DAO is a SubDAO (i.e. it has a parent), then the parent DAO must be
+  // the one to upgrade this. Add a message to the UI to indicate this.
+  hasParent: boolean
+  // If this DAO is on v1 still, it can be upgraded. Otherwise, it cannot. If it
+  // is not on v1 and there are no v1 SubDAOs, then nothing can be upgraded.
+  onV1: boolean
   // Used to render DAO profiles when selecting addresses.
   AddressInput: ComponentType<AddressInputProps<any>>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
@@ -41,7 +48,7 @@ export const UpgradeV1ToV2Component: ActionComponent<
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { v1SubDaos, AddressInput, EntityDisplay },
+  options: { v1SubDaos, hasParent, onV1, AddressInput, EntityDisplay },
 }) => {
   const { t } = useTranslation()
   const { register, control, setValue, watch } =
@@ -70,7 +77,15 @@ export const UpgradeV1ToV2Component: ActionComponent<
     return null
   }
 
-  return (
+  return isCreating && !onV1 && v1SubDaos.length === 0 ? (
+    <p className="body-text max-w-prose text-text-interactive-error">
+      {t('error.daoAndSubDaosAlreadyOnV2')}
+    </p>
+  ) : isCreating && hasParent && v1SubDaos.length === 0 ? (
+    <p className="body-text max-w-prose text-text-interactive-error">
+      {t('error.parentMustUpgradeToV2')}
+    </p>
+  ) : (
     <div className="flex flex-col gap-4">
       {isCreating && (
         <p className="body-text max-w-prose">

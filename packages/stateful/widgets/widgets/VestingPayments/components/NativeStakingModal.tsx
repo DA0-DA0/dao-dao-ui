@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import {
-  CwVestingSelectors,
   nativeUnstakingDurationSecondsSelector,
   refreshNativeTokenStakingInfoAtom,
   refreshVestingAtom,
@@ -18,11 +17,13 @@ import {
   StakingMode,
   useCachedLoadable,
   useChain,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { TokenStake } from '@dao-dao/types'
+import { ActionKey, TokenStake } from '@dao-dao/types'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  getDaoProposalSinglePrefill,
   getNativeTokenForChainId,
   processError,
 } from '@dao-dao/utils'
@@ -41,23 +42,22 @@ export type NativeStakingModalProps = Pick<
 > & {
   vestingInfo: VestingInfo
   stakes: TokenStake[] | undefined
+  recipientIsDao: boolean
 }
 
 export const NativeStakingModal = ({
-  vestingInfo: { vestingContractAddress, stakable },
+  vestingInfo: {
+    vestingContractAddress,
+    stakable,
+    vest: { recipient },
+  },
   stakes,
+  recipientIsDao,
   ...props
 }: NativeStakingModalProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-
-  const vestLoadable = useCachedLoadable(
-    CwVestingSelectors.infoSelector({
-      contractAddress: vestingContractAddress,
-      chainId,
-      params: [],
-    })
-  )
+  const { goToDaoProposal } = useDaoNavHelpers()
 
   const validatorsLoadable = useCachedLoadable(
     validatorsSelector({
@@ -100,10 +100,7 @@ export const NativeStakingModal = ({
     sender: walletAddress,
   })
 
-  if (
-    vestLoadable.state !== 'hasValue' ||
-    validatorsLoadable.state !== 'hasValue'
-  ) {
+  if (validatorsLoadable.state !== 'hasValue') {
     return null
   }
 
@@ -124,53 +121,134 @@ export const NativeStakingModal = ({
     setLoading(true)
     try {
       if (mode === StakingMode.Stake) {
-        await delegate({
+        const data = {
           amount: convertDenomToMicroDenomWithDecimals(
             amount,
             nativeToken.decimals
           ).toString(),
           validator,
-        })
+        }
+
+        if (recipientIsDao) {
+          await goToDaoProposal(recipient, 'create', {
+            prefill: getDaoProposalSinglePrefill({
+              actions: [
+                {
+                  actionKey: ActionKey.Execute,
+                  data: {
+                    address: vestingContractAddress,
+                    message: JSON.stringify(
+                      {
+                        delegate: data,
+                      },
+                      null,
+                      2
+                    ),
+                    funds: [],
+                    cw20: false,
+                  },
+                },
+              ],
+            }),
+          })
+        } else {
+          await delegate(data)
+        }
       } else if (mode === StakingMode.Unstake) {
-        await undelegate({
+        const data = {
           amount: convertDenomToMicroDenomWithDecimals(
             amount,
             nativeToken.decimals
           ).toString(),
           validator,
-        })
+        }
+
+        if (recipientIsDao) {
+          await goToDaoProposal(recipient, 'create', {
+            prefill: getDaoProposalSinglePrefill({
+              actions: [
+                {
+                  actionKey: ActionKey.Execute,
+                  data: {
+                    address: vestingContractAddress,
+                    message: JSON.stringify(
+                      {
+                        undelegate: data,
+                      },
+                      null,
+                      2
+                    ),
+                    funds: [],
+                    cw20: false,
+                  },
+                },
+              ],
+            }),
+          })
+        } else {
+          await undelegate(data)
+        }
       } else if (mode === StakingMode.Restake) {
         if (!fromValidator) {
           toast.error(t('error.noFromValidatorSelected'))
           return
         }
 
-        await redelegate({
+        const data = {
           amount: convertDenomToMicroDenomWithDecimals(
             amount,
             nativeToken.decimals
           ).toString(),
           dstValidator: validator,
           srcValidator: fromValidator,
-        })
+        }
+
+        if (recipientIsDao) {
+          await goToDaoProposal(recipient, 'create', {
+            prefill: getDaoProposalSinglePrefill({
+              actions: [
+                {
+                  actionKey: ActionKey.Execute,
+                  data: {
+                    address: vestingContractAddress,
+                    message: JSON.stringify(
+                      {
+                        redelegate: data,
+                      },
+                      null,
+                      2
+                    ),
+                    funds: [],
+                    cw20: false,
+                  },
+                },
+              ],
+            }),
+          })
+        } else {
+          await redelegate(data)
+        }
       }
 
-      // Wait a block for balances to update.
-      await awaitNextBlock()
-      setRefreshValidatorBalances((id) => id + 1)
-      setRefreshVesting((id) => id + 1)
-      setRefreshStaking((id) => id + 1)
+      if (!recipientIsDao) {
+        // Wait a block for balances to update.
+        await awaitNextBlock()
+        setRefreshValidatorBalances((id) => id + 1)
+        setRefreshVesting((id) => id + 1)
+        setRefreshStaking((id) => id + 1)
 
-      toast.success(
-        mode === StakingMode.Stake
-          ? t('success.staked')
-          : mode === StakingMode.Restake
-          ? t('success.restaked')
-          : mode === StakingMode.Unstake
-          ? t('success.unstaked')
-          : // Should never happen.
-            t('error.loadingData')
-      )
+        toast.success(
+          mode === StakingMode.Stake
+            ? t('success.staked')
+            : mode === StakingMode.Restake
+            ? t('success.restaked')
+            : mode === StakingMode.Unstake
+            ? t('success.unstaked')
+            : // Should never happen.
+              t('error.loadingData')
+        )
+      }
+
       props.onClose()
     } catch (err) {
       console.error(err)
@@ -182,6 +260,7 @@ export const NativeStakingModal = ({
 
   return (
     <StakingModal
+      actionPrefix={recipientIsDao ? t('button.propose') + ': ' : undefined}
       amount={amount}
       claimableTokens={
         // Tokens are claimable somewhere else.

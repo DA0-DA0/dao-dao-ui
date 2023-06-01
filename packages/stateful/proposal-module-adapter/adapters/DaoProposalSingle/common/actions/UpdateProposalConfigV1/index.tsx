@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { Cw20BaseSelectors } from '@dao-dao/state'
+import { Cw20BaseSelectors, isContractSelector } from '@dao-dao/state'
 import { BallotDepositEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -19,9 +19,11 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
+  objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
+import { CONTRACT_NAMES } from '../../../constants'
 import { configSelector } from '../../../contracts/CwProposalSingle.v1.recoil'
 import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
 
@@ -142,67 +144,6 @@ const Component: ActionComponent = (props) => {
       options={{ commonGovernanceTokenInfo }}
     />
   )
-}
-
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
-  msg: Record<string, any>
-) => {
-  const {
-    hooks: { useCommonGovernanceTokenInfo },
-  } = useVotingModuleAdapter()
-  const voteConversionDecimals = useCommonGovernanceTokenInfo?.().decimals ?? 0
-
-  return useMemo(() => {
-    if (
-      'wasm' in msg &&
-      'execute' in msg.wasm &&
-      'update_config' in msg.wasm.execute.msg &&
-      'threshold' in msg.wasm.execute.msg.update_config &&
-      ('threshold_quorum' in msg.wasm.execute.msg.update_config.threshold ||
-        'absolute_percentage' in
-          msg.wasm.execute.msg.update_config.threshold) &&
-      'max_voting_period' in msg.wasm.execute.msg.update_config &&
-      'only_members_execute' in msg.wasm.execute.msg.update_config &&
-      'allow_revoting' in msg.wasm.execute.msg.update_config &&
-      'dao' in msg.wasm.execute.msg.update_config
-    ) {
-      const config = msg.wasm.execute.msg.update_config
-      const onlyMembersExecute = config.only_members_execute
-      const depositRequired = !!config.deposit_info
-      const depositInfo = !!config.deposit_info
-        ? {
-            deposit: convertMicroDenomToDenomWithDecimals(
-              Number(config.deposit_info.deposit),
-              voteConversionDecimals
-            ),
-            refundFailedProposals: config.deposit_info.refund_failed_proposals,
-          }
-        : undefined
-
-      if (!('time' in config.max_voting_period)) {
-        return { match: false }
-      }
-
-      const proposalDuration = config.max_voting_period.time
-      const proposalDurationUnits = 'seconds'
-
-      const allowRevoting = !!config.allow_revoting
-
-      return {
-        data: {
-          onlyMembersExecute,
-          depositRequired,
-          depositInfo,
-          proposalDuration,
-          proposalDurationUnits,
-          allowRevoting,
-          ...thresholdToTQData(config.threshold),
-        },
-        match: true,
-      }
-    }
-    return { match: false }
-  }, [msg, voteConversionDecimals])
 }
 
 export const makeUpdateProposalConfigV1ActionMaker =
@@ -341,6 +282,81 @@ export const makeUpdateProposalConfigV1ActionMaker =
           }),
         [voteConversionDecimals, proposalModuleConfig.dao]
       )
+    }
+
+    const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
+      msg: Record<string, any>
+    ) => {
+      const {
+        hooks: { useCommonGovernanceTokenInfo },
+      } = useVotingModuleAdapter()
+      const voteConversionDecimals =
+        useCommonGovernanceTokenInfo?.().decimals ?? 0
+
+      const isUpdateConfig = objectMatchesStructure(msg, {
+        wasm: {
+          execute: {
+            contract_addr: {},
+            funds: {},
+            msg: {
+              update_config: {
+                threshold: {},
+                max_voting_period: {
+                  time: {},
+                },
+                only_members_execute: {},
+                allow_revoting: {},
+                dao: {},
+              },
+            },
+          },
+        },
+      })
+
+      const isContract = useRecoilValue(
+        isUpdateConfig
+          ? isContractSelector({
+              contractAddress: msg.wasm.execute.contract_addr,
+              names: CONTRACT_NAMES,
+              chainId,
+            })
+          : constSelector(false)
+      )
+
+      if (!isUpdateConfig || !isContract) {
+        return { match: false }
+      }
+
+      const config = msg.wasm.execute.msg.update_config
+      const onlyMembersExecute = config.only_members_execute
+      const depositRequired = !!config.deposit_info
+      const depositInfo = !!config.deposit_info
+        ? {
+            deposit: convertMicroDenomToDenomWithDecimals(
+              Number(config.deposit_info.deposit),
+              voteConversionDecimals
+            ),
+            refundFailedProposals: config.deposit_info.refund_failed_proposals,
+          }
+        : undefined
+
+      const proposalDuration = config.max_voting_period.time
+      const proposalDurationUnits = 'seconds'
+
+      const allowRevoting = !!config.allow_revoting
+
+      return {
+        match: true,
+        data: {
+          onlyMembersExecute,
+          depositRequired,
+          depositInfo,
+          proposalDuration,
+          proposalDurationUnits,
+          allowRevoting,
+          ...thresholdToTQData(config.threshold),
+        },
+      }
     }
 
     return {

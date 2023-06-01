@@ -29,6 +29,7 @@ export const makeDaoInfo = (): DaoInfo => ({
   items: {},
   polytoneProxies: {},
   parentDao: null,
+  admin: '',
 })
 
 export const DaoPageWrapperDecorator: DecoratorFn = (Story) => {
