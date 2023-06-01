@@ -453,9 +453,7 @@ const InnerProposalStatusAndInfo = ({
               Icon: Send,
               loading: actionLoading,
               doAction: () => openPolytoneRelay(loadingExecutionTxHash.data),
-              description:
-                // TODO(polytone): i18n
-                'The proposal was executed, but some or all of the cross-chain messages have not yet been relayed. You must relay them to complete the execution.',
+              description: t('error.polytoneExecutedNoRelay'),
             }
           : undefined
       }

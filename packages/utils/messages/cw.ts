@@ -12,7 +12,7 @@ import {
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
 
-import { POLYTONE_NOTES } from '../constants'
+import { POLYTONE_NOTES, POLYTONE_TIMEOUT_SECONDS } from '../constants'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import { parseEncodedMessage } from './encoding'
 import { decodeStargateMessage } from './protobuf'
@@ -261,8 +261,7 @@ export const makePolytoneExecuteMessage = (
         msg: {
           execute: {
             msgs: msg ? [msg] : [],
-            // 3 days
-            timeout_seconds: (3 * 24 * 60 * 60).toString(),
+            timeout_seconds: POLYTONE_TIMEOUT_SECONDS,
             callback: {
               msg: toBase64(toUtf8(uuidv4())),
               receiver: POLYTONE_NOTES[chainId]?.listener,

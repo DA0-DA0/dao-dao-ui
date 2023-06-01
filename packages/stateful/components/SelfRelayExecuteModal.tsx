@@ -10,6 +10,7 @@ import { ConnectedWallet, useConnectWalletToChain } from '@noahsaso/cosmodal'
 import uniq from 'lodash.uniq'
 import { Fragment, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useSetRecoilState, waitForAll } from 'recoil'
 
 import {
@@ -70,7 +71,6 @@ type Relayer = {
   polytoneNote?: PolytoneNote
 }
 
-// TODO(polytone): i18n
 export const SelfRelayExecuteModal = ({
   uniqueId,
   chainIds: _chainIds,
@@ -79,6 +79,7 @@ export const SelfRelayExecuteModal = ({
   onClose,
   visible,
 }: SelfRelayExecuteModalProps) => {
+  const { t } = useTranslation()
   const mnemonicKey = `relayer_mnemonic_${uniqueId}`
 
   // Current chain.
@@ -147,13 +148,12 @@ export const SelfRelayExecuteModal = ({
     }
 
     const listener = (event: BeforeUnloadEvent) => {
-      event.returnValue =
-        'Make sure you have completed the relaying process, or you may lose the tokens you sent to the relayers to pay fees.'
+      event.returnValue = t('info.completeRelayOrLoseFunds')
     }
 
     window.addEventListener('beforeunload', listener)
     return () => window.removeEventListener('beforeunload', listener)
-  }, [visible, status])
+  }, [visible, status, t])
 
   // Refresh balances for the wallet and relayer wallet.
   const refreshBalances = useRecoilCallback(

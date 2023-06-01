@@ -60,6 +60,8 @@ if (!(CHAIN_ID in PolytoneNotesPerChain)) {
   console.error(`Chain ID '${CHAIN_ID}' not found in Polytone Notes per Chain`)
 }
 export const POLYTONE_NOTES = PolytoneNotesPerChain[CHAIN_ID]!
+// 3 days
+export const POLYTONE_TIMEOUT_SECONDS = (3 * 24 * 60 * 60).toString()
 
 export const FACTORY_CONTRACT_ADDRESS = process.env
   .NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as string
