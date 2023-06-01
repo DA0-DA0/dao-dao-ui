@@ -25,6 +25,9 @@ export type ActionsProviderProps = {
 export type WalletActionsProviderProps = ActionsProviderProps & {
   // If passed, will override the connected wallet address.
   address?: string
+  // If passed, will override the connected wallet chain info.
+  chainId?: string
+  bech32Prefix?: string
 }
 
 // Make sure this re-renders when the options change. You can do this by setting
@@ -108,22 +111,27 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
 
 export const WalletActionsProvider = ({
   address: overrideAddress,
+  chainId: overrideChainId,
+  bech32Prefix: overrideBech32Prefix,
   children,
 }: WalletActionsProviderProps) => {
   const { t } = useTranslation()
   const { chainInfo, address: connectedAddress } = useWallet()
 
   const address = overrideAddress || connectedAddress
+  const chainId = overrideChainId || chainInfo?.chainId
+  const bech32Prefix =
+    overrideBech32Prefix || chainInfo?.bech32Config.bech32PrefixAccAddr
 
-  if (!chainInfo || !address) {
+  if (!address || !chainId || !bech32Prefix) {
     return <Loader />
   }
 
   const options: ActionOptions = {
     t,
-    chainId: chainInfo.chainId,
-    bech32Prefix: chainInfo.bech32Config.bech32PrefixAccAddr,
-    address: address,
+    chainId,
+    bech32Prefix,
+    address,
     context: {
       type: ActionContextType.Wallet,
     },
