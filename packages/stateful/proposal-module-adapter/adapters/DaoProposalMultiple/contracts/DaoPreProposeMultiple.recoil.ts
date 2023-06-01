@@ -115,14 +115,14 @@ export const configSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const dao = get(
+      const config = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoPreProposeMultiple/dao',
+          formula: 'daoPreProposeMultiple/config',
         })
       )
-      if (dao) {
-        return dao
+      if (config) {
+        return config
       }
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
@@ -139,14 +139,15 @@ export const depositInfoSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const dao = get(
+      const depositInfo = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoPreProposeMultiple/dao',
+          formula: 'daoPreProposeMultiple/depositInfo',
+          args: params[0],
         })
       )
-      if (dao) {
-        return dao
+      if (depositInfo) {
+        return depositInfo
       }
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
