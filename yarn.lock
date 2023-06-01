@@ -1293,20 +1293,20 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@chain-registry/juno@^1.11.0":
-  version "1.11.0"
-  resolved "https://registry.yarnpkg.com/@chain-registry/juno/-/juno-1.11.0.tgz#b9877a43d7f0f4ea5c74adc3e558e548ffa2998d"
-  integrity sha512-ngaMaQEw3Rd/x9kDbAgro2vEqO2PN35B1C04nF7rv2vOXqNWX5IBYw/CggB2pmEazomh5m0tt6YQgkCVi0kFPQ==
+"@chain-registry/juno@^1.15.0":
+  version "1.15.0"
+  resolved "https://registry.yarnpkg.com/@chain-registry/juno/-/juno-1.15.0.tgz#ed58d2db66e87b0e1ec52d3352a94150df36f064"
+  integrity sha512-/uHhF+t0IIwulOupeEJiPMQKeP8DMWfiq7auKy34Wg1x6E0JzW1tJuv078hFtyKYupFG2c5t2Pmef0SvaVm6uQ==
   dependencies:
-    "@babel/runtime" "^7.19.4"
-    "@chain-registry/types" "^0.14.0"
+    "@babel/runtime" "^7.21.0"
+    "@chain-registry/types" "^0.16.0"
 
-"@chain-registry/types@^0.14.0":
-  version "0.14.0"
-  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.14.0.tgz#43ea04992adabdee2a0f03f8a519b01722ab354b"
-  integrity sha512-TlIqc3CijT734no7RiYBfUvCG2fory0blwrBcK4XTYOCi2vANsxfDdiPLFQcaSETYDd14DdjhrdXwMocEeOnLQ==
+"@chain-registry/types@^0.16.0":
+  version "0.16.0"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.16.0.tgz#f76409186899a976d33693d7f458c33d71a66730"
+  integrity sha512-4j6vq2Vqn/nF+UBjvRPUVs6eM3+5rJ+dPmEWpd/OoNH3wTy1k6aoilcSTZRR//vGcI5EOVGsxhhJxUzo2qqweA==
   dependencies:
-    "@babel/runtime" "^7.19.4"
+    "@babel/runtime" "^7.21.0"
 
 "@chainsafe/as-sha256@^0.3.1":
   version "0.3.1"
