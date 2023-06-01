@@ -93,7 +93,7 @@ const InnerComponent: ActionComponent<InnerOptions> = (props) => {
 const InnerComponentWrapper: ActionComponent<
   InnerOptions & { address: string }
 > = (props) => {
-  const { bech32Prefix } = useActionOptions()
+  const { chainId, bech32Prefix } = useActionOptions()
   const {
     options: { address },
   } = props
@@ -120,7 +120,11 @@ const InnerComponentWrapper: ActionComponent<
       <InnerComponentLoading {...props} />
     )
   ) : isWalletAddress ? (
-    <WalletActionsProvider address={address}>
+    <WalletActionsProvider
+      address={address}
+      bech32Prefix={bech32Prefix}
+      chainId={chainId}
+    >
       <InnerComponent {...props} />
     </WalletActionsProvider>
   ) : (
