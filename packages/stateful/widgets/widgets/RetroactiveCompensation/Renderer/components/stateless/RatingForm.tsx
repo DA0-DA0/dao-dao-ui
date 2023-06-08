@@ -209,32 +209,30 @@ export const RatingForm = ({
                 className="flex flex-col rounded-md border border-border-primary bg-background-secondary"
               >
                 <div className="flex flex-col gap-2 p-4">
-                  <div className="flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
-                    <EntityDisplay address={contribution.contributor.address} />
-
-                    <div className="flex flex-row items-center gap-2">
-                      <Checkbox
-                        checked={allRatingsAbstain}
-                        onClick={toggleAbstain}
-                        size="sm"
-                      />
-
-                      <p
-                        className="body-text cursor-pointer text-xs"
-                        onClick={toggleAbstain}
-                      >
-                        {t('info.dontKnowNotSure')}
-                      </p>
-                    </div>
-                  </div>
+                  <EntityDisplay address={contribution.contributor.address} />
 
                   <MarkdownRenderer
-                    className="styled-scrollbar max-h-96 overflow-y-auto py-2 px-2"
+                    className="styled-scrollbar max-h-96 !max-w-full overflow-y-auto py-2 px-2"
                     markdown={contribution.content}
                   />
                 </div>
 
                 <div className="flex flex-col gap-2 border-t border-border-secondary py-4 px-6">
+                  <div className="mb-6 flex flex-row items-center gap-2">
+                    <Checkbox
+                      checked={allRatingsAbstain}
+                      onClick={toggleAbstain}
+                      size="sm"
+                    />
+
+                    <p
+                      className="body-text cursor-pointer text-xs"
+                      onClick={toggleAbstain}
+                    >
+                      {t('info.dontKnowNotSure')}
+                    </p>
+                  </div>
+
                   {survey.attributes.map(({ name }, attributeIndex) => (
                     <div
                       key={attributeIndex}
@@ -245,7 +243,7 @@ export const RatingForm = ({
 
                         {/* What they feel they should be rated */}
                         {contribution.ratings?.[attributeIndex] !== null && (
-                          <p className="caption-text">
+                          <p className="secondary-text">
                             {t('title.selfRating')}:{' '}
                             {contribution.ratings?.[attributeIndex]}
                           </p>
