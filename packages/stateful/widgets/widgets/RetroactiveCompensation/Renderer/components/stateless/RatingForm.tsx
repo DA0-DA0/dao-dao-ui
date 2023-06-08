@@ -244,7 +244,7 @@ export const RatingForm = ({
                         {/* What they feel they should be rated */}
                         {contribution.ratings?.[attributeIndex] !== null && (
                           <p className="secondary-text">
-                            {t('title.selfRating')}:{' '}
+                            {t('title.requestedRating')}:{' '}
                             {contribution.ratings?.[attributeIndex]}
                           </p>
                         )}
