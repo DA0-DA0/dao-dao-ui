@@ -9,6 +9,7 @@ import {
   Checkbox,
   InputErrorMessage,
   InputLabel,
+  InputThemedText,
   MarkdownRenderer,
   RangeInput,
   TokenAmountDisplay,
@@ -176,7 +177,7 @@ export const RatingForm = ({
             {t('title.projectedCompensation')}
           </p>
           <p className="rounded-tr-md border-l border-border-secondary bg-background-primary p-6 text-right">
-            {t('title.whatTheyWouldLike')}
+            {t('title.whatFeelTheyShouldBeRated')}
           </p>
 
           {data.contributions.map((contribution, contributionIndex) => {
@@ -209,49 +210,6 @@ export const RatingForm = ({
                   (tokenMap[denomOrAddress]?.usdPrice ?? 0) * amount
               )
               .reduce((acc, amount) => acc + amount, 0)
-
-            // Map token denom to amount they determined they said they want.
-            const selfRatedTokens = contribution.ratings?.every(
-              (rating) => rating !== null
-            )
-              ? survey.attributes
-                  .flatMap(({ nativeTokens, cw20Tokens }, attributeIndex) => [
-                    ...nativeTokens.map(({ denom, amount }) => ({
-                      denomOrAddress: denom,
-                      amount,
-                      rating: contribution.ratings?.[attributeIndex] ?? 0,
-                    })),
-                    ...cw20Tokens.map(({ address, amount }) => ({
-                      denomOrAddress: address,
-                      amount,
-                      rating: contribution.ratings?.[attributeIndex] ?? 0,
-                    })),
-                  ])
-                  .reduce(
-                    (acc, { denomOrAddress, amount, rating }) => ({
-                      ...acc,
-                      [denomOrAddress]:
-                        (acc[denomOrAddress] ?? 0) +
-                        convertMicroDenomToDenomWithDecimals(
-                          amount,
-                          tokenMap[denomOrAddress]?.token.decimals ?? 0
-                        ) *
-                          // Multiply by the proportion of the rating they
-                          // self-assigned.
-                          (rating / 100),
-                    }),
-                    {} as Record<string, number>
-                  )
-              : null
-
-            const selfRatedTotalUsdc = selfRatedTokens
-              ? Object.entries(selfRatedTokens)
-                  .map(
-                    ([denomOrAddress, amount]) =>
-                      (tokenMap[denomOrAddress]?.usdPrice ?? 0) * amount
-                  )
-                  .reduce((acc, amount) => acc + amount, 0)
-              : 0
 
             const attributeRatingsFieldName =
               `ratings.${contributionIndex}.attributes` as const
@@ -369,7 +327,7 @@ export const RatingForm = ({
                   )}
                 </div>
 
-                {/* What they would like */}
+                {/* What they feel they should be rated */}
                 <div
                   className={clsx(
                     'border-l border-border-secondary',
@@ -378,39 +336,25 @@ export const RatingForm = ({
                       'rounded-br-md'
                   )}
                 >
-                  {selfRatedTokens !== null && (
+                  {contribution.ratings?.some((rating) => rating !== null) ? (
                     <div className="flex h-full w-full flex-col items-end justify-center gap-1 bg-background-tertiary p-6">
-                      {Object.entries(selfRatedTokens).map(
-                        ([denomOrAddress, amount], index) => (
-                          <TokenAmountDisplay
-                            key={index}
-                            amount={amount}
-                            className="text-right"
-                            dateFetched={tokenMap[denomOrAddress]?.timestamp}
-                            decimals={
-                              tokenMap[denomOrAddress]?.token.decimals ?? 0
-                            }
-                            iconUrl={tokenMap[denomOrAddress]?.token.imageUrl}
-                            symbol={
-                              tokenMap[denomOrAddress]?.token.symbol ??
-                              denomOrAddress
-                            }
-                          />
-                        )
-                      )}
+                      {survey.attributes.map(
+                        ({ name }, attributeIndex) =>
+                          contribution.ratings?.[attributeIndex] !== null && (
+                            <div
+                              key={attributeIndex}
+                              className="flex flex-row flex-wrap items-center justify-between gap-6"
+                            >
+                              <InputLabel name={name} />
 
-                      <div className="mt-3">
-                        <TokenAmountDisplay
-                          amount={selfRatedTotalUsdc}
-                          className="caption-text text-right"
-                          dateFetched={tokenPrices[0]?.timestamp}
-                          estimatedUsdValue
-                          hideApprox
-                          prefix="= "
-                        />
-                      </div>
+                              <InputThemedText>
+                                {contribution.ratings?.[attributeIndex] ?? 0}
+                              </InputThemedText>
+                            </div>
+                          )
+                      )}
                     </div>
-                  )}
+                  ) : null}
                 </div>
               </Fragment>
             )
@@ -462,7 +406,6 @@ export const RatingForm = ({
             setValue={nominationSetValue as any}
             survey={survey}
             thirdPerson
-            tokenPrices={tokenPrices}
             watch={nominationWatch as any}
           />
 
