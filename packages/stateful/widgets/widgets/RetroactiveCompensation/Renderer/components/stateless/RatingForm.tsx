@@ -1,6 +1,5 @@
 import { Publish } from '@mui/icons-material'
-import clsx from 'clsx'
-import { ComponentType, Fragment, useEffect, useMemo } from 'react'
+import { ComponentType, useEffect, useMemo } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -9,7 +8,6 @@ import {
   Checkbox,
   InputErrorMessage,
   InputLabel,
-  InputThemedText,
   MarkdownRenderer,
   RangeInput,
   TokenAmountDisplay,
@@ -148,11 +146,11 @@ export const RatingForm = ({
       <MarkdownRenderer markdown={survey.ratingInstructions} />
 
       <form
-        className="flex flex-col gap-4 pb-10"
+        className="flex flex-col gap-8 pb-10"
         onSubmit={handleSubmit(onSubmit)}
       >
         <div
-          className="grid-rows-auto -mb-2 grid items-stretch justify-items-stretch overflow-x-auto pb-4"
+          className="flex flex-col gap-6 rounded-md"
           // Column for contributor, each attribute, what they would like, and
           // projected compenstaion.
           style={{
@@ -161,30 +159,7 @@ export const RatingForm = ({
               .join(' ')} auto`,
           }}
         >
-          <p className="rounded-tl-md bg-background-primary p-6">
-            {t('title.contributor')}
-          </p>
-          {/* Attribute labels */}
-          {survey.attributes.map(({ name }, attributeIndex) => (
-            <p
-              key={attributeIndex}
-              className="border-l border-border-secondary bg-background-primary p-6"
-            >
-              {name}
-            </p>
-          ))}
-          <p className="border-l border-border-secondary bg-background-primary p-6 text-right">
-            {t('title.projectedCompensation')}
-          </p>
-          <p className="rounded-tr-md border-l border-border-secondary bg-background-primary p-6 text-right">
-            {t('title.whatFeelTheyShouldBeRated')}
-          </p>
-
           {data.contributions.map((contribution, contributionIndex) => {
-            // Every other row.
-            const backgroundClassName =
-              contributionIndex % 2 !== 0 && 'bg-background-tertiary'
-
             const compensationForContribution =
               compensation[contributionIndex].compensationPerAttribute
             const projectedTokens = compensationForContribution
@@ -229,71 +204,79 @@ export const RatingForm = ({
                   )
 
             return (
-              <Fragment key={contribution.id}>
-                <div
-                  className={clsx(
-                    'min-w-[14rem] space-y-2 border-border-secondary p-6',
-                    backgroundClassName,
-                    contributionIndex === data.contributions.length - 1 &&
-                      'rounded-bl-md'
-                  )}
-                >
-                  <EntityDisplay address={contribution.contributor.address} />
+              <div
+                key={contribution.id}
+                className="flex flex-col rounded-md border border-border-primary bg-background-secondary"
+              >
+                <div className="flex flex-col gap-2 p-4">
+                  <div className="flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
+                    <EntityDisplay address={contribution.contributor.address} />
+
+                    <div className="flex flex-row items-center gap-2">
+                      <Checkbox
+                        checked={allRatingsAbstain}
+                        onClick={toggleAbstain}
+                        size="sm"
+                      />
+
+                      <p
+                        className="body-text cursor-pointer text-xs"
+                        onClick={toggleAbstain}
+                      >
+                        {t('info.dontKnowNotSure')}
+                      </p>
+                    </div>
+                  </div>
 
                   <MarkdownRenderer
-                    className="styled-scrollbar max-h-40 overflow-y-auto py-2 pr-2"
+                    className="styled-scrollbar max-h-96 overflow-y-auto py-2 px-2"
                     markdown={contribution.content}
                   />
-
-                  <div className="!mt-4 flex flex-row items-center gap-2">
-                    <Checkbox
-                      checked={allRatingsAbstain}
-                      onClick={toggleAbstain}
-                      size="sm"
-                    />
-
-                    <p
-                      className="body-text cursor-pointer text-xs"
-                      onClick={toggleAbstain}
-                    >
-                      {t('info.dontKnowNotSure')}
-                    </p>
-                  </div>
                 </div>
 
-                {survey.attributes.map((_, attributeIndex) => (
-                  <div
-                    key={attributeIndex}
-                    className={clsx(
-                      'flex flex-col justify-center border-l border-border-secondary p-6',
-                      backgroundClassName
-                    )}
-                  >
-                    <RangeInput
-                      className="!h-20 w-40"
-                      fieldName={`ratings.${contributionIndex}.attributes.${attributeIndex}`}
-                      max={100}
-                      min={0}
-                      onStartChange={
-                        // If starting to change, unset abstaining for
-                        // all.
-                        allRatingsAbstain ? toggleAbstain : undefined
-                      }
-                      setValue={setValue}
-                      watch={watch}
-                    />
-                  </div>
-                ))}
+                <div className="flex flex-col gap-2 border-t border-border-secondary py-4 px-6">
+                  {survey.attributes.map(({ name }, attributeIndex) => (
+                    <div
+                      key={attributeIndex}
+                      className="flex flex-row flex-wrap items-start justify-between gap-x-8 gap-y-4"
+                    >
+                      <div className="space-y-1">
+                        <p className="link-text">{name}</p>
+
+                        {/* What they feel they should be rated */}
+                        {contribution.ratings?.[attributeIndex] !== null && (
+                          <p className="caption-text">
+                            {t('title.selfRating')}:{' '}
+                            {contribution.ratings?.[attributeIndex]}
+                          </p>
+                        )}
+                      </div>
+
+                      <RangeInput
+                        className="!h-20 min-w-[min(10rem,100%)] max-w-2xl grow"
+                        fieldName={`ratings.${contributionIndex}.attributes.${attributeIndex}`}
+                        max={100}
+                        min={0}
+                        onStartChange={
+                          // If starting to change, unset abstaining for
+                          // all.
+                          allRatingsAbstain ? toggleAbstain : undefined
+                        }
+                        setValue={setValue}
+                        watch={watch}
+                      />
+                    </div>
+                  ))}
+                </div>
 
                 {/* Projected compensation */}
-                <div
-                  className={clsx(
-                    'flex flex-col items-end justify-center gap-1 border-l border-border-secondary p-6',
-                    backgroundClassName
-                  )}
-                >
-                  {!allRatingsAbstain && (
-                    <>
+                {!allRatingsAbstain && (
+                  <div className="flex flex-row flex-wrap items-start justify-between gap-x-8 gap-y-4 border-t border-border-secondary py-4 px-6">
+                    <p className="link-text">
+                      {t('title.projectedCompensation')}
+                    </p>
+
+                    <div className="flex flex-col gap-2">
                       {Object.entries(projectedTokens).map(
                         ([denomOrAddress, amount], index) => (
                           <TokenAmountDisplay
@@ -313,7 +296,7 @@ export const RatingForm = ({
                         )
                       )}
 
-                      <div className="mt-3">
+                      <div className="mt-1">
                         <TokenAmountDisplay
                           amount={projectedTotalUsdc}
                           className="caption-text text-right"
@@ -323,40 +306,10 @@ export const RatingForm = ({
                           prefix="= "
                         />
                       </div>
-                    </>
-                  )}
-                </div>
-
-                {/* What they feel they should be rated */}
-                <div
-                  className={clsx(
-                    'border-l border-border-secondary',
-                    backgroundClassName,
-                    contributionIndex === data.contributions.length - 1 &&
-                      'rounded-br-md'
-                  )}
-                >
-                  {contribution.ratings?.some((rating) => rating !== null) ? (
-                    <div className="flex h-full w-full flex-col items-end justify-center gap-1 bg-background-tertiary p-6">
-                      {survey.attributes.map(
-                        ({ name }, attributeIndex) =>
-                          contribution.ratings?.[attributeIndex] !== null && (
-                            <div
-                              key={attributeIndex}
-                              className="flex flex-row flex-wrap items-center justify-between gap-6"
-                            >
-                              <InputLabel name={name} />
-
-                              <InputThemedText>
-                                {contribution.ratings?.[attributeIndex] ?? 0}
-                              </InputThemedText>
-                            </div>
-                          )
-                      )}
                     </div>
-                  ) : null}
-                </div>
-              </Fragment>
+                  </div>
+                )}
+              </div>
             )
           })}
         </div>
