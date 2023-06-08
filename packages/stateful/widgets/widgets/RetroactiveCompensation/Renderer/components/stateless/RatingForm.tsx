@@ -146,11 +146,11 @@ export const RatingForm = ({
       <MarkdownRenderer markdown={survey.ratingInstructions} />
 
       <form
-        className="flex flex-col gap-8 pb-10"
+        className="flex flex-col gap-4 pb-6"
         onSubmit={handleSubmit(onSubmit)}
       >
         <div
-          className="flex flex-col gap-6 rounded-md"
+          className="flex flex-col gap-2 rounded-md"
           // Column for contributor, each attribute, what they would like, and
           // projected compenstaion.
           style={{
