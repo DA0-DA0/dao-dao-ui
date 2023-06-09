@@ -431,6 +431,7 @@ export const ProposalCreationForm = ({
           {showPreview && (
             <div className="mt-4 rounded-md border border-border-secondary p-6">
               <ProposalContentDisplay
+                EntityDisplay={EntityDisplay}
                 createdAt={new Date()}
                 creator={{
                   address: walletAddress,

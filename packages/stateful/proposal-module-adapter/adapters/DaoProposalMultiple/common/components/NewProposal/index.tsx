@@ -22,6 +22,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useLoadedActionsAndCategories } from '../../../../../../actions'
+import { EntityDisplay } from '../../../../../../components/EntityDisplay'
 import { SuspenseLoader } from '../../../../../../components/SuspenseLoader'
 import { useMembership } from '../../../../../../hooks'
 import { proposalSelector } from '../../../contracts/DaoProposalMultiple.recoil'
@@ -202,6 +203,7 @@ export const NewProposal = ({
 
   return (
     <StatelessNewProposal
+      EntityDisplay={EntityDisplay}
       SuspenseLoader={SuspenseLoader}
       anyoneCanPropose={anyoneCanPropose}
       categories={categories}

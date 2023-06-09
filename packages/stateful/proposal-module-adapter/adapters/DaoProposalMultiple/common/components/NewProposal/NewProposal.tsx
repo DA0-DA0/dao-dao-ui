@@ -35,6 +35,7 @@ import {
   ActionCategoryWithLabel,
   BaseNewProposalProps,
   LoadedActions,
+  StatefulEntityDisplayProps,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
 import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
@@ -83,6 +84,7 @@ export interface NewProposalProps
   loadedActions: LoadedActions
   simulationBypassExpiration?: Date
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
 export const NewProposal = ({
@@ -105,6 +107,7 @@ export const NewProposal = ({
   simulationBypassExpiration,
   proposalModuleSelector,
   SuspenseLoader,
+  EntityDisplay,
 }: NewProposalProps) => {
   const { t } = useTranslation()
 
@@ -409,6 +412,7 @@ export const NewProposal = ({
         {showPreview && (
           <div className="mt-4 rounded-md border border-border-secondary p-6">
             <ProposalContentDisplay
+              EntityDisplay={EntityDisplay}
               createdAt={new Date()}
               creator={{
                 address: walletAddress,
