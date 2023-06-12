@@ -67,6 +67,50 @@ export const ProposalCreationForm = ({
     [tokenPrices]
   )
 
+  // Markdown table of ratings by each rater for each contributor and attribute.
+  const ratingMarkdownTables =
+    '## Ratings\n\n' +
+    survey.attributes
+      .map(({ name }, attributeIndex) =>
+        [
+          // Attribute Title
+          '### ' + name,
+          // Table Header
+          [
+            '',
+            'Contributor',
+            ...completeRatings.ratings.map(({ rater }) => rater.address),
+            '',
+          ]
+            .join(' | ')
+            .trim(),
+          // Table Header Divider
+          ['', '---', ...completeRatings.ratings.map(() => '---'), '']
+            .join(' | ')
+            .trim(),
+          // Table Rows, per-contributor ratings.
+          ...completeRatings.contributions.map((contribution) =>
+            [
+              '',
+              // Contributor.
+              contribution.contributor.address,
+              // Rating by each rater for this contributor.
+              ...completeRatings.ratings.map(({ contributions }) => {
+                const rating = contributions.find(
+                  ({ id }) => id === contribution.id
+                )?.attributes[attributeIndex]
+
+                return typeof rating === 'number' ? rating : ''
+              }),
+              '',
+            ]
+              .join(' | ')
+              .trim()
+          ),
+        ].join('\n')
+      )
+      .join('\n\n')
+
   const [showPreview, setShowPreview] = useState(false)
   const {
     watch,
@@ -76,7 +120,7 @@ export const ProposalCreationForm = ({
   } = useForm<ProposalCreationFormData>({
     defaultValues: {
       title: '',
-      description: '',
+      description: ratingMarkdownTables,
     },
   })
   const proposalTitle = watch('title')
@@ -387,6 +431,7 @@ export const ProposalCreationForm = ({
           {showPreview && (
             <div className="mt-4 rounded-md border border-border-secondary p-6">
               <ProposalContentDisplay
+                EntityDisplay={EntityDisplay}
                 createdAt={new Date()}
                 creator={{
                   address: walletAddress,
