@@ -72,8 +72,8 @@ export const ContributionFormInput = ({
         <div className="flex flex-row flex-wrap items-center gap-6">
           <p className="primary-text text-text-body">
             {thirdPerson
-              ? t('info.whatTheyFeelTheyShouldBeRated')
-              : t('info.whatYouFeelYouShouldBeRated')}
+              ? t('info.whatDoTheyWantToBeRated')
+              : t('info.whatDoYouWantToBeRated')}
           </p>
 
           <div className="flex flex-row items-center gap-2">
