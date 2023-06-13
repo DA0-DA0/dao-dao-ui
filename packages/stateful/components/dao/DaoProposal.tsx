@@ -4,16 +4,6 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import {
-  DaoProposalPageWrapperProps,
-  IconButtonLink,
-  ProfileDisconnectedCard,
-  ProfileProposalCard,
-  SelfRelayExecuteModal,
-  SuspenseLoader,
-  useOnDaoWebSocketMessage,
-  walletProfileDataSelector,
-} from '@dao-dao/stateful'
 import { useActionsForMatching } from '@dao-dao/stateful/actions'
 import {
   ProposalModuleAdapterProvider,
@@ -34,6 +24,15 @@ import {
   ProposalStatus,
   SelfRelayExecuteModalProps,
 } from '@dao-dao/types'
+
+import { useOnDaoWebSocketMessage } from '../../hooks'
+import { walletProfileDataSelector } from '../../recoil'
+import { EntityDisplay } from '../EntityDisplay'
+import { IconButtonLink } from '../IconButtonLink'
+import { ProfileDisconnectedCard, ProfileProposalCard } from '../profile'
+import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'
+import { SuspenseLoader } from '../SuspenseLoader'
+import { DaoProposalPageWrapperProps } from './DaoPageWrapper'
 
 interface InnerDaoProposalProps {
   proposalInfo: CommonProposalInfo
@@ -214,6 +213,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   return (
     <>
       <Proposal
+        EntityDisplay={EntityDisplay}
         IconButtonLink={IconButtonLink}
         ProposalStatusAndInfo={CachedProposalStatusAndInfo}
         creator={{

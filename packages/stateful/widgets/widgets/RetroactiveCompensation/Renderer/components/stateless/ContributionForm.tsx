@@ -34,7 +34,6 @@ export const ContributionForm = ({
   onSubmit,
   loading,
   loadingEntity,
-  tokenPrices,
   EntityDisplay,
   ConnectWallet,
 }: ContributionFormProps) => {
@@ -116,7 +115,6 @@ export const ContributionForm = ({
                 register={register}
                 setValue={setValue}
                 survey={survey}
-                tokenPrices={tokenPrices}
                 watch={watch}
               />
 
