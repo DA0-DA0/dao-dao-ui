@@ -3,7 +3,11 @@ import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { IconButtonLinkProps, LoadingData } from '@dao-dao/types'
+import {
+  IconButtonLinkProps,
+  LoadingData,
+  StatefulEntityDisplayProps,
+} from '@dao-dao/types'
 import { formatDate } from '@dao-dao/utils'
 
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
@@ -23,6 +27,7 @@ export interface ProposalContentDisplayProps {
   refreshing?: boolean
   duplicateUrl?: string
   IconButtonLink?: ComponentType<IconButtonLinkProps>
+  EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
 }
 
 export const ProposalContentDisplay = ({
@@ -35,6 +40,7 @@ export const ProposalContentDisplay = ({
   refreshing,
   duplicateUrl,
   IconButtonLink,
+  EntityDisplay,
 }: ProposalContentDisplayProps) => {
   const { t } = useTranslation()
 
@@ -112,6 +118,7 @@ export const ProposalContentDisplay = ({
       </div>
 
       <MarkdownRenderer
+        EntityDisplay={EntityDisplay}
         addAnchors
         className="max-w-full"
         markdown={description}
