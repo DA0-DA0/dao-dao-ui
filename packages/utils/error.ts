@@ -101,6 +101,7 @@ export enum CommonError {
   TxPageOutOfRange = 'Transaction page is out of range.',
   AuthorizationNotFound = 'Authorization does not exist.',
   SignatureVerificationFailedLedger = 'Signature verification failed. If you are using a Ledger, this is likely due to some unsupported symbols, such as "&", "<", or ">". Remove these symbols from the proposal title or description and try again.',
+  IbcClientExpired = 'IBC client expired. Reach out to us for help.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
@@ -164,6 +165,12 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
       'unauthorized',
     ],
   ],
+  [CommonError.IbcClientExpired]: [
+    [
+      'failed to send packet: cannot send packet using client',
+      'Expired: client is not active',
+    ],
+  ],
 }
 const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
   CommonError,
@@ -177,4 +184,6 @@ const captureCommonErrorMap: Partial<Record<CommonError, boolean>> = {
   [CommonError.InvalidJSONResponse]: true,
   // Send to Sentry so we can tell how much this is happening.
   [CommonError.SignatureVerificationFailedLedger]: true,
+  // This should be reported to us.
+  [CommonError.IbcClientExpired]: true,
 }
