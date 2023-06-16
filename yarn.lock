@@ -1293,10 +1293,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@chain-registry/juno@^1.15.0":
+"@chain-registry/assets@^1.15.0":
   version "1.15.0"
-  resolved "https://registry.yarnpkg.com/@chain-registry/juno/-/juno-1.15.0.tgz#ed58d2db66e87b0e1ec52d3352a94150df36f064"
-  integrity sha512-/uHhF+t0IIwulOupeEJiPMQKeP8DMWfiq7auKy34Wg1x6E0JzW1tJuv078hFtyKYupFG2c5t2Pmef0SvaVm6uQ==
+  resolved "https://registry.yarnpkg.com/@chain-registry/assets/-/assets-1.15.0.tgz#3ba8a6a308cadbd48d0ebfdb28f67009ba9a00fd"
+  integrity sha512-BI03k2t2AcU6UZUJdGI5R5as34UDiVXAnxJk2jvAe3lg8ObJjqm7SjKzqjHo4p1YwaGTltsBn272kh5MiQhCVA==
   dependencies:
     "@babel/runtime" "^7.21.0"
     "@chain-registry/types" "^0.16.0"

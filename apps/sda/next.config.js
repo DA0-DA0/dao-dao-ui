@@ -61,12 +61,7 @@ const config = {
     },
     {
       source: '/:locale',
-      destination:
-        process.env.NEXT_PUBLIC_MAINNET === 'true'
-          ? // Redirect to DAO DAO DAO on mainnet.
-            '/juno10h0hc64jv006rr8qy0zhlu4jsxct8qwa0vtaleayh0ujz0zynf2s2r7v8q'
-          : // Redirect to Example DAO on testnet.
-            '/juno1vh0xndu9pj8g0lat6k3500mxusfduh804sf9hj7jpt4kgj0gmreq3jmqj4',
+      destination: process.env.NEXT_PUBLIC_SDA_DEFAULT_DAO_ADDRESS,
       permanent: false,
       locale: false,
     },

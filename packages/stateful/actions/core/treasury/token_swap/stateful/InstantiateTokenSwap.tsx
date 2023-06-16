@@ -14,7 +14,7 @@ import {
   CODE_ID_CONFIG,
   convertDenomToMicroDenomWithDecimals,
   getNativeTokenForChainId,
-  isValidAddress,
+  isValidBech32Address,
   isValidContractAddress,
   processError,
 } from '@dao-dao/utils'
@@ -228,7 +228,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
   // Load balances as loadables since they refresh automatically on a timer.
   const counterpartyTokenBalances = useCachedLoading(
     counterpartyAddress &&
-      isValidAddress(counterpartyAddress, bech32Prefix) &&
+      isValidBech32Address(counterpartyAddress, bech32Prefix) &&
       counterpartyDaoGovernanceTokenAddressLoadable.state !== 'loading'
       ? genericTokenBalancesSelector({
           address: counterpartyAddress,

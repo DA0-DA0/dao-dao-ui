@@ -23,8 +23,12 @@ const junoMainnet: PolytoneNotes = {
   },
 }
 
+// TODO (polytone): osmosis
+const osmosisMainnet: PolytoneNotes = {}
+
 export const PolytoneNotesPerChain: Record<string, PolytoneNotes | undefined> =
   {
     [ChainInfoID.Uni6]: junoTestnet,
     [ChainInfoID.Juno1]: junoMainnet,
+    [ChainInfoID.Osmosis1]: osmosisMainnet,
   }

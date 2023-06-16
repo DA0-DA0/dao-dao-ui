@@ -15,7 +15,7 @@ import {
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { isValidAddress, makeValidateAddress } from '@dao-dao/utils'
+import { isValidBech32Address, makeValidateAddress } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 
@@ -74,7 +74,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
         </>
       )}
 
-      {(isValidAddress(address, bech32Prefix) || !isCreating) && (
+      {(isValidBech32Address(address, bech32Prefix) || !isCreating) && (
         <>
           {isCreating ? (
             <>

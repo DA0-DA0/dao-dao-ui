@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 
 import { AddressInputProps } from '@dao-dao/types'
-import { isValidAddress } from '@dao-dao/utils'
+import { isValidBech32Address } from '@dao-dao/utils'
 
 import { useChain } from '../../hooks/useChainContext'
 import { useTrackDropdown } from '../../hooks/useTrackDropdown'
@@ -50,7 +50,9 @@ export const AddressInput = <
   const formValue = watch?.(fieldName)
 
   const showEntity =
-    EntityDisplay && !!formValue && isValidAddress(formValue, bech32Prefix)
+    EntityDisplay &&
+    !!formValue &&
+    isValidBech32Address(formValue, bech32Prefix)
 
   const inputRef = useRef<HTMLInputElement | null>(null)
   const { ref: registerRef, ...inputRegistration } = register(fieldName, {

@@ -45,7 +45,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   encodeMessageAsBase64,
   genericTokenToAssetInfo,
-  getJunoIbcUsdc,
+  getNativeIbcUsdc,
   getNativeTokenForChainId,
   makeWasmMessage,
   objectMatchesStructure,
@@ -72,7 +72,7 @@ const useDefaults: UseDefaults<WyndSwapData> = () => {
   } = useActionOptions()
 
   return {
-    tokenIn: getJunoIbcUsdc(),
+    tokenIn: getNativeIbcUsdc()!,
     tokenInAmount: 0,
     tokenOut: getNativeTokenForChainId(chainId),
     tokenOutAmount: 0,

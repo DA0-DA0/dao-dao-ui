@@ -35,7 +35,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
     \"pubkey\": {
       \"typeUrl\": \"/cosmos.crypto.ed25519.PubKey\",
       \"value\": {
-        \"key\": \"<the base64 public key of your node (junod tendermint show-validator)>\"
+        \"key\": \"<the base64 public key of your node (binary tendermint show-validator)>\"
       }
     },
     \"value\": {

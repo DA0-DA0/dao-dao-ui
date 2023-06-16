@@ -18,6 +18,7 @@ import {
   refreshNativeTokenStakingInfoAtom,
 } from '@dao-dao/state'
 import {
+  KADO_MODAL_ENABLED,
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
   useCachedLoading,
@@ -31,7 +32,7 @@ import {
   cwMsgToEncodeObject,
   getMeTxPrefillPath,
   getNativeTokenForChainId,
-  isJunoIbcUsdc,
+  isNativeIbcUsdc,
   processError,
 } from '@dao-dao/utils'
 
@@ -142,7 +143,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   const isUsdc =
     props.token.chainId === CHAIN_ID &&
     props.token.type === TokenType.Native &&
-    isJunoIbcUsdc(props.token.denomOrAddress)
+    isNativeIbcUsdc(props.token.denomOrAddress)
 
   // Set this to a value to show the fiat ramp modal defaulted to that option.
   const [fiatRampDefaultModeVisible, setFiatRampDefaultModeVisible] = useState<
@@ -284,7 +285,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
         }
       />
 
-      {isUsdc && (
+      {isUsdc && KADO_MODAL_ENABLED && (
         <WalletFiatRampModal
           defaultMode={fiatRampDefaultModeVisible}
           onClose={() => setFiatRampDefaultModeVisible(undefined)}

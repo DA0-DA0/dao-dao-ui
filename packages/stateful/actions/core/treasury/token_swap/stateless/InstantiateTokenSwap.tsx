@@ -10,7 +10,7 @@ import {
 import { ActionComponent } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
-  isValidAddress,
+  isValidBech32Address,
   makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils'
@@ -70,7 +70,8 @@ export const InstantiateTokenSwap: ActionComponent<
   const counterpartySymbol = counterpartyToken?.token.symbol ?? t('info.tokens')
 
   const counterpartyAddressValid =
-    !!counterparty.address && isValidAddress(counterparty.address, bech32Prefix)
+    !!counterparty.address &&
+    isValidBech32Address(counterparty.address, bech32Prefix)
 
   return (
     <div className="flex flex-col gap-4">

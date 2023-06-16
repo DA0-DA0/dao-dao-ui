@@ -68,12 +68,34 @@ export const cosmosValidatorToValidator = ({
   tokens: Number(tokens),
 })
 
-export const getImageUrlForChainId = (chainId: string): string | undefined =>
-  chainId === ChainInfoID.Juno1 || chainId === ChainInfoID.Uni6
-    ? '/juno.png'
-    : chainId === ChainInfoID.Stargaze1 || chainId === STARGAZE_TESTNET_CHAIN_ID
-    ? '/stargaze.png'
-    : undefined
+export const getImageUrlForChainId = (chainId: string): string | undefined => {
+  if (chainId === ChainInfoID.Juno1 || chainId === ChainInfoID.Uni6) {
+    return '/juno.png'
+  }
+
+  if (
+    chainId === ChainInfoID.Stargaze1 ||
+    chainId === STARGAZE_TESTNET_CHAIN_ID
+  ) {
+    return '/stargaze.png'
+  }
+
+  // Use chain logo if available.
+  const { logo_URIs, images } = getChainForChainId(chainId)
+  const image =
+    logo_URIs?.svg ??
+    logo_URIs?.png ??
+    logo_URIs?.jpeg ??
+    images?.[0]?.svg ??
+    images?.[0]?.png
+  if (image) {
+    return image
+  }
+
+  // Fallback to image of native token on chain.
+  const { imageUrl } = getNativeTokenForChainId(chainId)
+  return imageUrl
+}
 
 // Convert public key in hex format to a bech32 address.
 // https://github.com/cosmos/cosmos-sdk/blob/e09516f4795c637ab12b30bf732ce5d86da78424/crypto/keys/secp256k1/secp256k1.go#L152-L162
@@ -206,7 +228,7 @@ export const getTokenForChainIdAndDenom = (
           asset.denom_units.find(({ exponent }) => exponent > 0)?.exponent ??
           asset.denom_units[0]?.exponent ??
           0,
-        // Use local JUNO image.
+        // Use local Juno image for ujuno token prefix.
         imageUrl: denom.startsWith('ujuno')
           ? '/juno.png'
           : // Use asset images.

@@ -11,6 +11,7 @@ import {
 
 import { walletProfileDataSelector } from '../recoil'
 
+// Supports wallets from any chain and DAOs from the current chain.
 export const useEntity = (address: string): LoadingData<Entity> => {
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
@@ -26,7 +27,7 @@ export const useEntity = (address: string): LoadingData<Entity> => {
   )
 
   const walletProfileData = useRecoilValue(
-    address && isValidWalletAddress(address, bech32Prefix)
+    address && isValidWalletAddress(address)
       ? walletProfileDataSelector({
           address,
           chainId,

@@ -54,7 +54,35 @@ const junoMainnet: CodeIdConfig = {
   DaoVotingNativeStaked: 2466,
 }
 
+// TODO: Fill in.
+const osmosisMainnet: CodeIdConfig = {
+  // https://github.com/CosmWasm/cw-plus
+  Cw20Base: 999, // v0.16
+  Cw4Group: 999, // v0.16
+  // https://github.com/CosmWasm/cw-nfts
+  Cw721Base: 999, // v0.16
+
+  // ContractVersion.V210
+  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
+  Cw20Stake: 999,
+  CwAdminFactory: 999,
+  CwPayrollFactory: 999,
+  CwTokenSwap: 999,
+  CwVesting: 999,
+  DaoCore: 999,
+  DaoMigrator: 999,
+  DaoPreProposeMultiple: 999,
+  DaoPreProposeSingle: 999,
+  DaoProposalMultiple: 999,
+  DaoProposalSingle: 999,
+  DaoVotingCw20Staked: 999,
+  DaoVotingCw4: 999,
+  DaoVotingCw721Staked: 999,
+  DaoVotingNativeStaked: 999,
+}
+
 export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {
   [ChainInfoID.Uni6]: junoTestnet,
   [ChainInfoID.Juno1]: junoMainnet,
+  [ChainInfoID.Osmosis1]: osmosisMainnet,
 }

@@ -142,7 +142,6 @@
     "imageUrlTooltip": "圖片位址，例如：https://moonphase.is/image.svg",
     "initialSupply": "代幣供應總額",
     "instantiatedAddress": "已初始化地址",
-    "junoAddress": "Juno 地址",
     "membersAddress": "成員地址",
     "membersToAddOrUpdate": "要新增或修改的成員",
     "membersToRemove": "要移除的成員",

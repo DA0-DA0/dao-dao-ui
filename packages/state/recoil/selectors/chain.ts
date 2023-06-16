@@ -30,14 +30,15 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_ID,
-  JUNO_USDC_DENOM,
+  IBC_USDC_DENOM,
+  MAINNET,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
   decodeGovProposalContent,
   getAllRpcResponse,
   getNativeTokenForChainId,
   getRpcForChainId,
-  isJunoIbcUsdc,
+  isNativeIbcUsdc,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -161,14 +162,15 @@ export const nativeBalancesSelector = selectorFamily<
           denom: nativeToken.denomOrAddress,
         })
       }
-      // Add USDC if not present and on Juno mainnet.
+      // Add USDC if not present and on mainnet.
       if (
-        chainId === ChainInfoID.Juno1 &&
-        !balances.some(({ denom }) => isJunoIbcUsdc(denom))
+        MAINNET &&
+        IBC_USDC_DENOM &&
+        !balances.some(({ denom }) => isNativeIbcUsdc(denom))
       ) {
         balances.push({
           amount: '0',
-          denom: JUNO_USDC_DENOM,
+          denom: IBC_USDC_DENOM,
         })
       }
 

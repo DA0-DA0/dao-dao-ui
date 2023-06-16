@@ -1,7 +1,6 @@
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import { waitForAll } from 'recoil'
 
-import { indexerFeaturedMainnetDaosSelector } from '@dao-dao/state/recoil'
+import { indexerFeaturedDaosSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 import { CHAIN_ID } from '@dao-dao/utils'
@@ -39,13 +38,9 @@ export const useLoadingDaoCardInfos = (
 export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
   DaoCardInfo[]
 > => {
-  const featuredDaos = useCachedLoading(
-    indexerFeaturedMainnetDaosSelector,
-    undefined
-  )
+  const featuredDaos = useCachedLoading(indexerFeaturedDaosSelector, undefined)
   return useLoadingDaoCardInfos(
-    // Featured DAOs only exist on mainnet.
-    ChainInfoID.Juno1,
+    CHAIN_ID,
     featuredDaos.loading ? undefined : featuredDaos.data
   )
 }

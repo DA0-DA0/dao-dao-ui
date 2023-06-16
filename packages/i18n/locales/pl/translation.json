@@ -140,7 +140,6 @@
     "imageUrlTooltip": "Link do zdjęcia. Na przykład: https://moonphase.is/image.svg",
     "initialSupply": "Całkowite zasoby tokenu",
     "instantiatedAddress": "Utworzony adres",
-    "junoAddress": "Juno adres",
     "membersAddress": "Adres członka",
     "membersToAddOrUpdate": "Członkowie do dodania/uaktualnienia",
     "membersToRemove": "Członkowie do usunięcia",

@@ -112,7 +112,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
         pubkey: {
           typeUrl: '/cosmos.crypto.ed25519.PubKey',
           value: {
-            key: '<the base64 public key of your node (junod tendermint show-validator)>',
+            key: '<the base64 public key of your node (binary tendermint show-validator)>',
           },
         },
         value: {

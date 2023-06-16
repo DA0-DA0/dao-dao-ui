@@ -59,10 +59,6 @@ export type PolytoneNote = {
 // Map chain ID to polytone note that speaks with that chain.
 export type PolytoneNotes = Record<string, PolytoneNote>
 
-export interface ChainPrefixIdMap {
-  juno: string
-}
-
 export type ParametersExceptFirst<F> = F extends (
   arg0: any,
   ...rest: infer R

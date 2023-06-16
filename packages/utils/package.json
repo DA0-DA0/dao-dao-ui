@@ -8,7 +8,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@chain-registry/juno": "^1.15.0",
+    "@chain-registry/assets": "^1.15.0",
     "@cosmjs/cosmwasm-stargate": "^0.30.1",
     "@cosmjs/encoding": "^0.30.1",
     "@cosmjs/stargate": "^0.30.1",

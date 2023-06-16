@@ -22,6 +22,7 @@ import { CopyToClipboard } from '../../CopyToClipboard'
 import { GridCardContainer } from '../../GridCardContainer'
 import { DropdownIconButton } from '../../icon_buttons'
 import { Loader } from '../../logo/Loader'
+import { KADO_MODAL_ENABLED } from '../../modals/KadoModal'
 import { ModalProps } from '../../modals/Modal'
 import { NoContent } from '../../NoContent'
 
@@ -149,6 +150,7 @@ export const TreasuryAndNftsTab = <
                     {exists ? (
                       // Only show if defined, which indicates wallet connected, and only show for the current chain.
                       FiatDepositModal &&
+                      KADO_MODAL_ENABLED &&
                       chainId === CHAIN_ID && (
                         <Button
                           onClick={() => setShowDepositFiat(true)}
@@ -224,7 +226,7 @@ export const TreasuryAndNftsTab = <
         )}
       </div>
 
-      {FiatDepositModal && (
+      {FiatDepositModal && KADO_MODAL_ENABLED && (
         <FiatDepositModal
           onClose={() => setShowDepositFiat(false)}
           visible={showDepositFiat}

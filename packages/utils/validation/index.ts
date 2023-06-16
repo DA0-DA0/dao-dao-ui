@@ -2,12 +2,12 @@ import Ajv from 'ajv'
 import JSON5 from 'json5'
 import { TFunction } from 'react-i18next'
 
-import cosmosMsgSchema from '../cosmos_msg.json'
 import {
-  isValidAddress,
+  isValidBech32Address,
   isValidContractAddress,
   isValidValidatorAddress,
-} from '../isValidAddress'
+} from '../address'
+import cosmosMsgSchema from '../cosmos_msg.json'
 import { isValidUrl } from '../isValidUrl'
 
 export * from './makeValidateMsg'
@@ -34,7 +34,7 @@ export const makeValidateAddress =
   (bech32Prefix: string, required = true) =>
   (v: any) =>
     (!required && !v) ||
-    (v && typeof v === 'string' && isValidAddress(v, bech32Prefix)) ||
+    (v && typeof v === 'string' && isValidBech32Address(v, bech32Prefix)) ||
     'Invalid address'
 
 export const makeValidateValidatorAddress =

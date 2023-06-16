@@ -124,7 +124,6 @@
     "imageUrlTooltip": "图片的链接，例如: https://moonphase.is/image.svg",
     "initialSupply": "代币初始供应量",
     "instantiatedAddress": "实例化地址",
-    "junoAddress": "Juno 地址",
     "membersAddress": "成员地址",
     "membershipBasedDescription": "成员少的小组织。成员可以通过现有成员的投票增加和删除。",
     "membershipBasedTitle": "基于成员资格",

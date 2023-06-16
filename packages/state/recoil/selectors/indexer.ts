@@ -3,6 +3,7 @@ import { atom, selector, selectorFamily } from 'recoil'
 
 import { Expiration, IndexerFormulaType, WithChainId } from '@dao-dao/types'
 import {
+  CHAIN_ID,
   FEATURED_DAOS_INDEX,
   WEB_SOCKET_PUSHER_APP_KEY,
   WEB_SOCKET_PUSHER_HOST,
@@ -16,7 +17,6 @@ import {
   queryIndexer,
   searchDaos,
 } from '../../indexer'
-import priorityFeaturedDaos from '../../priority_featured_daos.json'
 import {
   refreshOpenProposalsAtom,
   refreshWalletProposalStatsAtom,
@@ -233,9 +233,17 @@ export const indexerMeilisearchClientSelector = selector({
 })
 
 // Top 10 featured DAOs by TVL with certain conditions.
-export const indexerFeaturedMainnetDaosSelector = selector({
-  key: 'indexerFeaturedMainnetDaos',
+export const indexerFeaturedDaosSelector = selector({
+  key: 'indexerFeaturedDaos',
   get: async ({ get }) => {
+    const priorityFeaturedDaos: string[] =
+      get(
+        queryGenericIndexerSelector({
+          chainId: CHAIN_ID,
+          formula: 'priorityFeaturedDaos',
+        })
+      ) || []
+
     const client = get(indexerMeilisearchClientSelector)
     const index = client.index(FEATURED_DAOS_INDEX)
     const results = await index.search<{ contractAddress: string }>(null, {
@@ -252,7 +260,7 @@ export const indexerFeaturedMainnetDaosSelector = selector({
       sort: ['value.tvl:desc'],
     })
 
-    // Insert hardcoded DAOs at the top.
+    // Insert priority DAOs first.
     const featuredDaos = [
       ...priorityFeaturedDaos,
       ...results.hits
