@@ -1,8 +1,10 @@
+import { ChainInfoID } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
 import { useTranslation } from 'react-i18next'
 
 import { CreateDaoContext } from '@dao-dao/types'
 import {
+  CHAIN_ID,
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
   validateRequired,
@@ -66,45 +68,50 @@ export const CreateDaoStart = ({
         </div>
       </div>
 
-      <p className="title-text my-6 text-text-body">
-        {t('title.chooseAStructure')}
-      </p>
+      {/* Osmosis only supports multisigs right now. */}
+      {CHAIN_ID !== ChainInfoID.Osmosis1 && (
+        <>
+          <p className="title-text my-6 text-text-body">
+            {t('title.chooseAStructure')}
+          </p>
 
-      <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
-        {availableVotingModuleAdapters.map(
-          ({
-            id,
-            daoCreation: {
-              displayInfo: {
-                Icon,
-                nameI18nKey,
-                descriptionI18nKey,
-                suppliesI18nKey,
-                membershipI18nKey,
-              },
-              defaultConfig,
-            },
-          }) => (
-            <DaoStructureCard
-              key={id}
-              Icon={Icon}
-              description={t(descriptionI18nKey)}
-              membership={t(membershipI18nKey)}
-              name={t(nameI18nKey)}
-              onSelect={() =>
-                resetField('votingModuleAdapter', {
-                  defaultValue: {
-                    id,
-                    data: cloneDeep(defaultConfig),
+          <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
+            {availableVotingModuleAdapters.map(
+              ({
+                id,
+                daoCreation: {
+                  displayInfo: {
+                    Icon,
+                    nameI18nKey,
+                    descriptionI18nKey,
+                    suppliesI18nKey,
+                    membershipI18nKey,
                   },
-                })
-              }
-              selected={watch('votingModuleAdapter.id') === id}
-              supplies={t(suppliesI18nKey)}
-            />
-          )
-        )}
-      </div>
+                  defaultConfig,
+                },
+              }) => (
+                <DaoStructureCard
+                  key={id}
+                  Icon={Icon}
+                  description={t(descriptionI18nKey)}
+                  membership={t(membershipI18nKey)}
+                  name={t(nameI18nKey)}
+                  onSelect={() =>
+                    resetField('votingModuleAdapter', {
+                      defaultValue: {
+                        id,
+                        data: cloneDeep(defaultConfig),
+                      },
+                    })
+                  }
+                  selected={watch('votingModuleAdapter.id') === id}
+                  supplies={t(suppliesI18nKey)}
+                />
+              )
+            )}
+          </div>
+        </>
+      )}
     </>
   )
 }
