@@ -123,8 +123,8 @@ export const CreateDaoForm = ({
     // been renamed a couple times.
     if (
       cached &&
-      cached.votingModuleAdapter &&
-      !getVotingModuleAdapterById(cached.votingModuleAdapter.id)
+      (!cached.votingModuleAdapter ||
+        !getVotingModuleAdapterById(cached.votingModuleAdapter.id))
     ) {
       cached.votingModuleAdapter = defaultNewDao.votingModuleAdapter
     }
