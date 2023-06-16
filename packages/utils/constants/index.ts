@@ -1,6 +1,7 @@
 import { CodeIdConfigs } from './codeIdConfigs'
 import { PolytoneNotesPerChain } from './polytone'
 
+export * from './chains'
 export * from './adapters'
 
 export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV

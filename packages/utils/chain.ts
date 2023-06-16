@@ -80,6 +80,10 @@ export const getImageUrlForChainId = (chainId: string): string | undefined => {
     return '/stargaze.png'
   }
 
+  if (chainId === ChainInfoID.Osmosis1) {
+    return '/osmosis.png'
+  }
+
   // Use chain logo if available.
   const { logo_URIs, images } = getChainForChainId(chainId)
   const image =

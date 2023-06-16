@@ -14,7 +14,10 @@ import {
   SortFn,
   TypedOption,
 } from '@dao-dao/types'
-import { STARGAZE_TESTNET_CHAIN_ID } from '@dao-dao/utils'
+import {
+  STARGAZE_TESTNET_CHAIN_ID,
+  getDisplayNameForChainId,
+} from '@dao-dao/utils'
 
 import {
   useButtonPopupFilter,
@@ -112,11 +115,11 @@ export const NftSelectionModal = <T extends NftCardInfo>({
     () =>
       [
         {
-          label: `${chain.pretty_name} and Stargaze`,
+          label: `${getDisplayNameForChainId(chain.chain_id)} and Stargaze`,
           value: () => true,
         },
         {
-          label: `Only ${chain.pretty_name}`,
+          label: `Only ${getDisplayNameForChainId(chain.chain_id)}`,
           value: (nft) => nft.chainId === chain.chain_id,
         },
         {
@@ -126,7 +129,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
             nft.chainId === STARGAZE_TESTNET_CHAIN_ID,
         },
       ] as TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>>[],
-    [chain.chain_id, chain.pretty_name]
+    [chain.chain_id]
   )
 
   const {

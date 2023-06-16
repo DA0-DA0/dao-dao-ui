@@ -35,6 +35,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   cwMsgToEncodeObject,
   getChainForChainId,
+  getDisplayNameForChainId,
   getImageUrlForChainId,
   getRpcForChainId,
   getTokenForChainIdAndDenom,
@@ -761,7 +762,7 @@ export const SelfRelayExecuteModal = ({
                   ].map(
                     (
                       {
-                        chain: { chain_id, pretty_name },
+                        chain: { chain_id },
                         chainImageUrl,
                         feeToken: { denom },
                       },
@@ -807,7 +808,7 @@ export const SelfRelayExecuteModal = ({
                             ></div>
 
                             <p className="primary-text shrink-0">
-                              {pretty_name}
+                              {getDisplayNameForChainId(chain_id)}
                             </p>
                           </div>
 
@@ -893,7 +894,11 @@ export const SelfRelayExecuteModal = ({
                 relaying && (
                   <FlyingAnimation
                     destination={
-                      <Tooltip title={relaying.relayer.chain.pretty_name}>
+                      <Tooltip
+                        title={getDisplayNameForChainId(
+                          relaying.relayer.chain.chain_id
+                        )}
+                      >
                         <div className="flex items-center justify-center rounded-l-full bg-background-base p-1">
                           <div
                             className="h-8 w-8 rounded-full bg-contain bg-center bg-no-repeat"
@@ -910,7 +915,11 @@ export const SelfRelayExecuteModal = ({
                     reversed={relaying.type === 'ack'}
                     source={
                       // First chain is current source chain.
-                      <Tooltip title={relayers[0].chain.pretty_name}>
+                      <Tooltip
+                        title={getDisplayNameForChainId(
+                          relayers[0].chain.chain_id
+                        )}
+                      >
                         <div className="flex items-center justify-center rounded-r-full bg-background-base p-1">
                           <div
                             className="h-8 w-8 rounded-full bg-contain bg-center bg-no-repeat"
@@ -949,7 +958,7 @@ export const SelfRelayExecuteModal = ({
                   ].map(
                     (
                       {
-                        chain: { chain_id, pretty_name },
+                        chain: { chain_id },
                         chainImageUrl,
                         feeToken: { denom },
                       },
@@ -981,7 +990,7 @@ export const SelfRelayExecuteModal = ({
                             ></div>
 
                             <p className="primary-text shrink-0">
-                              {pretty_name}
+                              {getDisplayNameForChainId(chain_id)}
                             </p>
                           </div>
 

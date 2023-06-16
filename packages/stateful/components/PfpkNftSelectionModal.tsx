@@ -25,6 +25,7 @@ import {
 import {
   CODE_ID_CONFIG,
   MAINNET,
+  getDisplayNameForChainId,
   processError,
   uploadNft,
 } from '@dao-dao/utils'
@@ -212,7 +213,7 @@ export const InnerPfpkNftSelectionModal = ({
         header={{
           title: t('title.chooseProfilePicture'),
           subtitle: t('info.chooseProfilePictureSubtitle', {
-            nativeChainName: chain.pretty_name,
+            nativeChainName: getDisplayNameForChainId(chain.chain_id),
           }),
         }}
         nfts={

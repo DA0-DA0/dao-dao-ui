@@ -12,7 +12,10 @@ import {
   TokenCardInfo,
   TypedOption,
 } from '@dao-dao/types'
-import { STARGAZE_TESTNET_CHAIN_ID } from '@dao-dao/utils'
+import {
+  STARGAZE_TESTNET_CHAIN_ID,
+  getDisplayNameForChainId,
+} from '@dao-dao/utils'
 
 import {
   Button,
@@ -35,17 +38,18 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   const { t } = useTranslation()
 
   const chain = useChain()
+  const nativeChainName = getDisplayNameForChainId(chain.chain_id)
   const nftFilterOptions = useMemo(
     () =>
       [
         {
           id: 'all',
-          label: `${chain.pretty_name} and Stargaze`,
+          label: `${nativeChainName} and Stargaze`,
           value: () => true,
         },
         {
           id: 'current',
-          label: `Only ${chain.pretty_name}`,
+          label: `Only ${nativeChainName}`,
           value: (nft) => nft.chainId === chain.chain_id,
         },
         {
@@ -58,7 +62,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
       ] as (TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>> & {
         id: string
       })[],
-    [chain.chain_id, chain.pretty_name]
+    [chain.chain_id, nativeChainName]
   )
 
   const {
@@ -186,7 +190,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
                 <p className="secondary-text break-words">
                   {t('info.meBalancesNftsDescription', {
                     context: selectedNftChainFilter,
-                    nativeChainName: chain.pretty_name,
+                    nativeChainName,
                   })}
                 </p>
               </div>

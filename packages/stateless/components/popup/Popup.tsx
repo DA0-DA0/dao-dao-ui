@@ -122,9 +122,14 @@ export const Popup = ({
   const { onDropdownRef, onTrackRef } = useTrackDropdown({
     // Offset for outline of Trigger.
     top: (rect) => rect.bottom + 4,
-    left: position === 'right' ? (rect) => rect.left - 2 : null,
+    left:
+      position === 'right' || position === 'full'
+        ? (rect) => rect.left - 2
+        : null,
     right:
-      position === 'left' ? (rect) => window.innerWidth - rect.right : null,
+      position === 'left' || position === 'full'
+        ? (rect) => window.innerWidth - rect.right - 2
+        : null,
     width: null,
   })
 
@@ -144,32 +149,33 @@ export const Popup = ({
       </div>
 
       {/* Popup */}
-      {createPortal(
-        <div
-          className={clsx(
-            'fixed z-50 flex flex-col rounded-lg border border-border-primary bg-component-dropdown shadow-dp8 transition-all',
-            // Open.
-            {
-              'pointer-events-none scale-95 opacity-0': !open,
-              'scale-100 opacity-100': open,
-            },
-            popupClassName
-          )}
-          ref={(ref) => {
-            dropdownRef.current = ref
-            onDropdownRef(ref)
-          }}
-        >
-          {headerContent && (
-            <div className="mb-4 border-b border-border-base">
-              <div className="p-4">{headerContent}</div>
-            </div>
-          )}
+      {typeof document !== 'undefined' &&
+        createPortal(
+          <div
+            className={clsx(
+              'fixed z-50 flex flex-col rounded-lg border border-border-primary bg-component-dropdown shadow-dp8 transition-all',
+              // Open.
+              {
+                'pointer-events-none scale-95 opacity-0': !open,
+                'scale-100 opacity-100': open,
+              },
+              popupClassName
+            )}
+            ref={(ref) => {
+              dropdownRef.current = ref
+              onDropdownRef(ref)
+            }}
+          >
+            {headerContent && (
+              <div className="mb-4 border-b border-border-base">
+                <div className="p-4">{headerContent}</div>
+              </div>
+            )}
 
-          {children}
-        </div>,
-        document.body
-      )}
+            {children}
+          </div>,
+          document.body
+        )}
     </>
   )
 }

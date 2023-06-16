@@ -53,3 +53,8 @@ export enum ContractVersion {
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
   V210 = '2.1.0',
 }
+
+export type SupportedChain = {
+  id: string
+  subdomain: string
+}

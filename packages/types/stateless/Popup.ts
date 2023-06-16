@@ -11,7 +11,7 @@ import { IconButtonProps } from './IconButtonifier'
 
 export interface PopupProps {
   trigger: PopupTrigger
-  position: 'left' | 'right'
+  position: 'left' | 'right' | 'full'
   children: ReactNode | ReactNode[]
   wrapperClassName?: string
   popupClassName?: string
