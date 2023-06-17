@@ -11,6 +11,7 @@ export interface DaoStructureCardProps {
   membership: string
   selected: boolean
   onSelect: () => void
+  underDevelopment?: boolean
 }
 
 export const DaoStructureCard = ({
@@ -21,34 +22,42 @@ export const DaoStructureCard = ({
   membership,
   selected,
   onSelect,
+  underDevelopment,
 }: DaoStructureCardProps) => {
   const { t } = useTranslation()
 
   return (
     <div
       className={clsx(
-        'relative cursor-pointer rounded-lg border-2 transition',
+        'relative overflow-hidden rounded-lg border-2 transition',
+        underDevelopment ? 'opacity-70' : 'cursor-pointer',
         selected
           ? 'border-border-interactive-focus bg-background-interactive-hover'
           : 'border-[transparent] bg-background-secondary'
       )}
-      onClick={onSelect}
+      onClick={underDevelopment ? undefined : onSelect}
     >
-      <div
-        className={clsx(
-          'absolute top-5 left-5 h-5 w-5 rounded-full border border-border-primary transition',
-          selected
-            ? 'flex items-center justify-center bg-component-pill'
-            : 'bg-background-primary'
-        )}
-      >
-        <Check
+      {underDevelopment ? (
+        <div className="absolute top-[1rem] left-[-6.5rem] flex w-60 -rotate-45 items-center justify-center bg-background-primary py-2 px-36">
+          <p className="primary-text grow text-center text-xs font-bold text-text-primary">
+            {t('title.underDevelopment')}
+          </p>
+        </div>
+      ) : (
+        <div
           className={clsx(
-            '!h-4 !w-4 text-icon-primary transition',
-            selected ? 'opacity-100' : 'opacity-0'
+            'absolute top-5 left-5 flex h-5 w-5 items-center justify-center rounded-full border border-border-primary transition',
+            selected ? 'bg-component-pill' : 'bg-background-primary'
           )}
-        />
-      </div>
+        >
+          <Check
+            className={clsx(
+              '!h-4 !w-4 text-icon-primary transition',
+              selected ? 'opacity-100' : 'opacity-0'
+            )}
+          />
+        </div>
+      )}
 
       <div className="flex h-40 items-center justify-center text-8xl">
         <Icon />
