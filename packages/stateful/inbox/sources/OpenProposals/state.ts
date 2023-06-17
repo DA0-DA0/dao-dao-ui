@@ -18,11 +18,11 @@ import { followingDaosWithProposalModulesSelector } from '../../../recoil'
 
 export const inboxOpenProposalsSelector = selectorFamily<
   InboxSourceDaoWithItems[],
-  WithChainId<{ walletAddress?: string }>
+  WithChainId<{ wallet?: { address: string; hexPublicKey: string } }>
 >({
   key: 'inboxOpenProposals',
   get:
-    ({ walletAddress, chainId }) =>
+    ({ wallet, chainId }) =>
     ({ get }) => {
       const blocksPerYear = get(
         blocksPerYearSelector({
@@ -36,10 +36,10 @@ export const inboxOpenProposalsSelector = selectorFamily<
       )
 
       // Need proposal modules for the proposal line props.
-      const followingDaosWithProposalModules = walletAddress
+      const followingDaosWithProposalModules = wallet
         ? get(
             followingDaosWithProposalModulesSelector({
-              walletAddress,
+              walletPublicKey: wallet.hexPublicKey,
               chainId,
             })
           )
@@ -50,7 +50,7 @@ export const inboxOpenProposalsSelector = selectorFamily<
           followingDaosWithProposalModules.map(({ coreAddress }) =>
             openProposalsSelector({
               coreAddress,
-              address: walletAddress,
+              address: wallet?.address,
               chainId,
             })
           )

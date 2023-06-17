@@ -77,6 +77,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { connect, connected, status, connectedWallet } = useWalletManager()
   const {
     walletAddress,
+    walletHexPublicKey,
     walletProfileData,
     refreshBalances: refreshWalletBalances,
   } = useWalletInfo()
@@ -148,10 +149,10 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
 
   //! Following DAOs
   const followingDaoDropdownInfos = useCachedLoading(
-    walletAddress
+    walletHexPublicKey
       ? followingDaoDropdownInfosSelector({
           chainId,
-          walletAddress,
+          walletPublicKey: walletHexPublicKey,
         })
       : undefined,
     []

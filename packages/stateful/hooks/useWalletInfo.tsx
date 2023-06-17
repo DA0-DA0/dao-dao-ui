@@ -26,6 +26,7 @@ import { walletProfileDataSelector } from '../recoil'
 
 export interface UseWalletReturn {
   walletAddress: string | undefined
+  walletHexPublicKey: string | undefined
   walletBalance: number | undefined
   walletStakedBalance: number | undefined
   dateBalancesFetched: Date | undefined
@@ -290,6 +291,7 @@ export const useWalletInfo = (): UseWalletReturn => {
 
   return {
     walletAddress: address,
+    walletHexPublicKey: publicKey?.hex,
     walletBalance,
     walletStakedBalance,
     dateBalancesFetched,

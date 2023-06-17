@@ -149,12 +149,15 @@ export const DISCORD_NOTIFIER_API_BASE = process.env
   .NEXT_PUBLIC_DISCORD_NOTIFIER_API_BASE as string
 export const DISCORD_NOTIFIER_SIGNATURE_TYPE = 'Discord Notifier'
 
+// KVPK API (https://github.com/DA0-DA0/kvpk)
+export const KVPK_API_BASE = process.env.NEXT_PUBLIC_KVPK_API_BASE as string
+
+// Following DAOs
+export const FOLLOWING_DAOS_PREFIX = 'following:'
+
 // Following API (https://github.com/DA0-DA0/following-daos-cf-worker)
 export const FOLLOWING_DAOS_API_BASE = process.env
   .NEXT_PUBLIC_FOLLOWING_DAOS_API_BASE as string
-
-// KVPK API (https://github.com/DA0-DA0/kvpk)
-export const KVPK_API_BASE = process.env.NEXT_PUBLIC_KVPK_API_BASE as string
 
 // The key for the item in the DAO core contract that contains the payroll
 // config.

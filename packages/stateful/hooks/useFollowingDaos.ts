@@ -8,7 +8,11 @@ import { useSetRecoilState } from 'recoil'
 import { refreshFollowingDaosAtom } from '@dao-dao/state'
 import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
-import { CHAIN_ID, FOLLOWING_DAOS_API_BASE, processError } from '@dao-dao/utils'
+import {
+  FOLLOWING_DAOS_PREFIX,
+  KVPK_API_BASE,
+  processError,
+} from '@dao-dao/utils'
 
 import {
   followingDaosSelector,
@@ -34,20 +38,20 @@ export type UseFollowingDaosReturn = {
 export const useFollowingDaos = (): UseFollowingDaosReturn => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { status, connected, address: walletAddress } = useWallet()
+  const { status, connected, publicKey } = useWallet()
 
   // Following API doesn't update right away, so this serves to keep track of
   // all successful updates for the current session. This will be reset on page
   // refresh.
   const setTemporary = useSetRecoilState(
-    temporaryFollowingDaosAtom(walletAddress ?? '')
+    temporaryFollowingDaosAtom(publicKey?.hex ?? '')
   )
 
   const followingDaosLoading = useCachedLoading(
-    walletAddress
+    publicKey
       ? followingDaosSelector({
           chainId,
-          walletAddress,
+          walletPublicKey: publicKey.hex,
         })
       : undefined,
     {
@@ -71,7 +75,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
   const [updating, setUpdating] = useState(false)
   const { ready, postRequest } = useCfWorkerAuthPostRequest(
-    FOLLOWING_DAOS_API_BASE,
+    KVPK_API_BASE,
     'Update Following'
   )
 
@@ -89,8 +93,11 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
       try {
         const daos = [coreAddressOrAddresses].flat()
-        await postRequest(`/follow/${CHAIN_ID}`, {
-          daos,
+        await postRequest('/setMany', {
+          data: daos.map((coreAddress) => ({
+            key: FOLLOWING_DAOS_PREFIX + `${chainId}:${coreAddress}`,
+            value: 1,
+          })),
         })
 
         setTemporary((prev) => ({
@@ -111,7 +118,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         setUpdating(false)
       }
     },
-    [postRequest, ready, refreshFollowing, setTemporary, t, updating]
+    [chainId, postRequest, ready, refreshFollowing, setTemporary, t, updating]
   )
 
   const setUnfollowing = useCallback(
@@ -128,8 +135,11 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
       try {
         const daos = [coreAddressOrAddresses].flat()
-        await postRequest(`/unfollow/${CHAIN_ID}`, {
-          daos,
+        await postRequest('/setMany', {
+          data: daos.map((coreAddress) => ({
+            key: FOLLOWING_DAOS_PREFIX + `${chainId}:${coreAddress}`,
+            value: null,
+          })),
         })
 
         setTemporary((prev) => ({
@@ -150,7 +160,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         setUpdating(false)
       }
     },
-    [postRequest, ready, refreshFollowing, setTemporary, t, updating]
+    [chainId, postRequest, ready, refreshFollowing, setTemporary, t, updating]
   )
 
   return {

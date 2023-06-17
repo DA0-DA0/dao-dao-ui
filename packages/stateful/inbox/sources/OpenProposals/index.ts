@@ -19,8 +19,7 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
   Renderer: ProposalLine,
   useData: () => {
     const { chain_id: chainId } = useChain()
-    const { address: walletAddress, status: walletConnectionStatus } =
-      useWallet()
+    const { address, publicKey, status: walletConnectionStatus } = useWallet()
 
     const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
@@ -34,7 +33,13 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
         ? undefined
         : inboxOpenProposalsSelector({
             chainId,
-            walletAddress,
+            wallet:
+              address && publicKey
+                ? {
+                    address,
+                    hexPublicKey: publicKey.hex,
+                  }
+                : undefined,
           })
     )
 
