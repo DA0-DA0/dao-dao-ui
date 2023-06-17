@@ -1,8 +1,6 @@
 import { ChainInfoID } from '@noahsaso/cosmodal'
 
-import { SupportedChain } from '@dao-dao/types'
-
-export const SupportedChains: SupportedChain[] = [
+export const SUPPORTED_CHAINS: { id: string; subdomain: string }[] = [
   {
     id: ChainInfoID.Juno1,
     subdomain: 'juno',

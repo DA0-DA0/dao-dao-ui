@@ -19,7 +19,7 @@ import { ButtonPopupSection } from '@dao-dao/types'
 import { DappNavigationProps } from '@dao-dao/types/stateless/DappNavigation'
 import {
   MAINNET,
-  SupportedChains,
+  SUPPORTED_CHAINS,
   getDisplayNameForChainId,
   getImageUrlForChainId,
 } from '@dao-dao/utils'
@@ -110,7 +110,7 @@ export const DappNavigation = ({
     )
     const chainSwitcherSections: ButtonPopupSection[] = [
       {
-        buttons: SupportedChains.map(({ id, subdomain }) => ({
+        buttons: SUPPORTED_CHAINS.map(({ id, subdomain }) => ({
           href: `https://${subdomain}.daodao.zone`,
           label: getDisplayNameForChainId(id),
           pressed: id === chain.chain_id,

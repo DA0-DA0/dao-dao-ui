@@ -55,6 +55,6 @@ export enum ContractVersion {
 }
 
 export type SupportedChain = {
-  id: string
+  chain: Chain
   subdomain: string
 }

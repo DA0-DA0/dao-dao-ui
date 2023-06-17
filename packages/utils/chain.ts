@@ -1,7 +1,7 @@
 import { Buffer } from 'buffer'
 
 import { Chain } from '@chain-registry/types'
-import { fromHex, toBech32 } from '@cosmjs/encoding'
+import { fromBech32, fromHex, toBech32 } from '@cosmjs/encoding'
 import { decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
 import { ChainInfoID, ChainInfoMap } from '@noahsaso/cosmodal'
 import { assets, chains } from 'chain-registry'
@@ -9,7 +9,12 @@ import { bondStatusToJSON } from 'cosmjs-types/cosmos/staking/v1beta1/staking'
 import { Validator as RpcValidator } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import RIPEMD160 from 'ripemd160'
 
-import { GenericToken, TokenType, Validator } from '@dao-dao/types'
+import {
+  GenericToken,
+  SupportedChain,
+  TokenType,
+  Validator,
+} from '@dao-dao/types'
 
 import {
   CHAIN_ID,
@@ -17,6 +22,7 @@ import {
   STARGAZE_RPC_ENDPOINT,
   STARGAZE_TESTNET_CHAIN_ID,
   STARGAZE_TESTNET_RPC_ENDPOINT,
+  SUPPORTED_CHAINS,
 } from './constants'
 import { getFallbackImage } from './getFallbackImage'
 import { ibcAssets } from './ibc'
@@ -37,17 +43,6 @@ export const getRpcForChainId = (chainId: string): string => {
   }
   return ChainInfoMap[chainId as keyof typeof ChainInfoMap].rpc
 }
-
-export const getUrlBaseForChainId = (chainId: string): string =>
-  // If on same chain, keep URL.
-  chainId === CHAIN_ID
-    ? ''
-    : // Otherwise use chain-specific one.
-    chainId === ChainInfoID.Juno1
-    ? 'https://daodao.zone'
-    : chainId === ChainInfoID.Uni6
-    ? 'https://testnet.daodao.zone'
-    : ''
 
 export const cosmosValidatorToValidator = ({
   operatorAddress: address,
@@ -259,4 +254,37 @@ export const getTokenForChainIdAndDenom = (
       throw err
     }
   }
+}
+
+export const getSupportedChains = (): SupportedChain[] =>
+  SUPPORTED_CHAINS.map(({ id, subdomain }) => ({
+    chain: getChainForChainId(id),
+    subdomain,
+  }))
+
+// Validates whether the address is for the current chain. If so, return
+// undefined. If not, return the correct subdomain.
+export const validateAddressOnCurrentChain = (
+  address: string
+): string | undefined => {
+  const supportedChains = getSupportedChains()
+
+  // Match supported chains from address prefix. There may be overlaps (testnets
+  // often use the same prefix as mainnets).
+  const { prefix } = fromBech32(address)
+  const chainsForAddress = supportedChains.filter(
+    ({ chain }) => chain.bech32_prefix === prefix
+  )
+
+  if (chainsForAddress.length === 0) {
+    throw new Error(`Unsupported chain: unrecognized prefix "${prefix}"`)
+  }
+
+  // If any chain matches the current chain, return undefined.
+  if (chainsForAddress.some(({ chain }) => chain.chain_id === CHAIN_ID)) {
+    return
+  }
+
+  // Otherwise return the subdomain of the first chain.
+  return `https://${chainsForAddress[0].subdomain}.daodao.zone`
 }

@@ -38,10 +38,10 @@ import {
   getDaoPath,
   getRpcForChainId,
   isValidWalletAddress,
-  makeValidateContractAddress,
   parseContractVersion,
   processError,
   toAccessibleImageUrl,
+  validateAddressOnCurrentChain,
 } from '@dao-dao/utils'
 import {
   CHAIN_ID,
@@ -113,14 +113,30 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     )
 
     const coreAddress = _coreAddress ?? context.params?.address
-    // If invalid address, display not found.
-    if (
-      !coreAddress ||
-      typeof coreAddress !== 'string' ||
-      makeValidateContractAddress(getChainForChainId(CHAIN_ID).bech32_prefix)(
-        coreAddress
-      ) !== true
-    ) {
+
+    // Validate supported chain for address and redirect if necessary.
+    try {
+      // If invalid address, display not found.
+      if (!coreAddress || typeof coreAddress !== 'string') {
+        throw new Error('Invalid address')
+      }
+
+      const switchToSubdomain = validateAddressOnCurrentChain(coreAddress)
+      if (switchToSubdomain) {
+        return {
+          redirect: {
+            destination:
+              switchToSubdomain + getDaoPath(DaoPageMode.Dapp, coreAddress),
+            permanent: false,
+          },
+        }
+      }
+
+      // Validation throws error if address prefix not recognized. Display not
+      // found in this case.
+    } catch (err) {
+      console.error(err)
+
       // Excluding `info` will render DAONotFound.
       return {
         props: {

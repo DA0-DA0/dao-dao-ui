@@ -16,7 +16,7 @@ import {
   CommandModalContextSection,
   CommandModalDaoInfo,
 } from '@dao-dao/types/command'
-import { CHAIN_ID, getUrlBaseForChainId } from '@dao-dao/utils'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { useFollowingDaos } from '../../../hooks'
 
@@ -40,9 +40,8 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
 
     const [navigatingToHref, setNavigatingToHref] =
       useRecoilState(navigatingToHrefAtom)
-    const daoPageHref = getUrlBaseForChainId(chainId) + getDaoPath(coreAddress)
-    const createProposalHref =
-      getUrlBaseForChainId(chainId) + getDaoProposalPath(coreAddress, 'create')
+    const daoPageHref = getDaoPath(coreAddress)
+    const createProposalHref = getDaoProposalPath(coreAddress, 'create')
 
     // Pre-fetch routes.
     useEffect(() => {
@@ -97,8 +96,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
             setCopied(true)
           },
         },
-        // Only allow following if on same chain. This prevents following
-        // featured mainnet DAOs on testnet.
+        // Only allow following if on same chain.
         ...(chainId === CHAIN_ID
           ? [
               {
