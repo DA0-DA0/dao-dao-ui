@@ -3,11 +3,14 @@ import { useTranslation } from 'react-i18next'
 
 import { Button } from '@dao-dao/stateless'
 
-import { useFollowingDaos } from '../../../hooks'
+import { useFollowingDaos, useInboxApi } from '../../../hooks'
+import { Data } from './types'
 
-export const Renderer = ({ coreAddress }: { coreAddress: string }) => {
+export const Renderer = ({ coreAddress, inboxItemId }: Data) => {
   const { t } = useTranslation()
   const { setFollowing, setUnfollowing, updatingFollowing } = useFollowingDaos()
+  const { clear } = useInboxApi()
+
   const [loadingFollowing, setLoadingFollowing] = useState(false)
 
   return (
@@ -22,7 +25,9 @@ export const Renderer = ({ coreAddress }: { coreAddress: string }) => {
           loading={updatingFollowing && loadingFollowing}
           onClick={() => {
             setLoadingFollowing(true)
-            setFollowing(coreAddress)
+            setFollowing(coreAddress).then(
+              (success) => success && clear(inboxItemId)
+            )
           }}
         >
           {t('button.follow')}
@@ -34,7 +39,9 @@ export const Renderer = ({ coreAddress }: { coreAddress: string }) => {
           loading={updatingFollowing && !loadingFollowing}
           onClick={() => {
             setLoadingFollowing(false)
-            setUnfollowing(coreAddress)
+            setUnfollowing(coreAddress).then(
+              (success) => success && clear(inboxItemId)
+            )
           }}
           variant="secondary"
         >

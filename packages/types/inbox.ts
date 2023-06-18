@@ -46,3 +46,26 @@ export type InboxState = {
   totalItemCount: number
   refresh: () => void
 }
+
+export type InboxApiLoadedItem = {
+  id: string
+  timestamp: string | undefined
+  chainId: string | undefined
+  data: unknown
+}
+
+// Items from the inbox API.
+export type InboxApiItem = {
+  id: string
+  timestamp: string | undefined
+  chainId: string | undefined
+} & {
+  type: InboxApiItemType.PendingFollow
+  data: {
+    dao: string
+  }
+}
+
+export enum InboxApiItemType {
+  PendingFollow = 'pending_follow',
+}

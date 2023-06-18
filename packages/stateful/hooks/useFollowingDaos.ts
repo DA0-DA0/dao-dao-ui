@@ -21,10 +21,7 @@ import {
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
 
 export type UseFollowingDaosReturn = {
-  daos: LoadingData<{
-    following: string[]
-    pending: string[]
-  }>
+  daos: LoadingData<string[]>
   refreshFollowing: () => void
   isFollowing: (coreAddress: string) => any
   setFollowing: (coreAddressOrAddresses: string | string[]) => Promise<boolean>
@@ -54,10 +51,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
           walletPublicKey: publicKey.hex,
         })
       : undefined,
-    {
-      following: [],
-      pending: [],
-    }
+    []
   )
 
   const setRefreshFollowingDaos = useSetRecoilState(refreshFollowingDaosAtom)
@@ -69,7 +63,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   const isFollowing = useCallback(
     (coreAddress: string) =>
       !followingDaosLoading.loading &&
-      followingDaosLoading.data.following.includes(coreAddress),
+      followingDaosLoading.data.includes(coreAddress),
     [followingDaosLoading]
   )
 

@@ -1,31 +1,69 @@
-import { InboxSource } from '@dao-dao/types'
+import { useWallet } from '@noahsaso/cosmodal'
+import { useCallback } from 'react'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { useFollowingDaos } from '../../../hooks'
+import {
+  inboxApiItemsSelector,
+  refreshInboxApiItemsAtom,
+} from '@dao-dao/state/recoil'
+import { useCachedLoading, useChain } from '@dao-dao/stateless'
+import { InboxApiItemType, InboxSource } from '@dao-dao/types'
+
+import { temporaryFollowingDaosAtom } from '../../../recoil/selectors/dao/following'
 import { Renderer } from './Renderer'
+import { Data } from './types'
 
-export const PendingFollowing: InboxSource<{ coreAddress: string }> = {
+export const PendingFollowing: InboxSource<Data> = {
   id: 'pending_following',
   Renderer,
   useData: () => {
-    const { daos, refreshFollowing: refresh } = useFollowingDaos()
+    const { chain_id: chainId } = useChain()
+    const { address, publicKey } = useWallet()
+
+    const temporary = useRecoilValue(
+      temporaryFollowingDaosAtom(publicKey?.hex ?? '')
+    )
+    const items = useCachedLoading(
+      address
+        ? inboxApiItemsSelector({
+            walletAddress: address,
+            chainId,
+            type: InboxApiItemType.PendingFollow,
+          })
+        : undefined,
+      []
+    )
+
+    const setRefresh = useSetRecoilState(refreshInboxApiItemsAtom)
+    const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
     return {
-      loading: daos.loading,
-      refreshing: !daos.loading && !!daos.updating,
-      daosWithItems: daos.loading
+      loading: items.loading,
+      refreshing: !items.loading && !!items.updating,
+      daosWithItems: items.loading
         ? []
-        : daos.data.pending.map((coreAddress) => ({
-            coreAddress,
-            items: [
-              {
-                props: { coreAddress },
-                // Order pending following items first in the inbox.
-                order: 0,
-                // All are pending.
-                pending: true,
-              },
-            ],
-          })),
+        : items.data
+            // Remove if followed or ignored/unfollowed the DAO.
+            .filter(
+              ({ data: { dao } }) =>
+                !temporary.following.includes(dao) &&
+                !temporary.unfollowing.includes(dao)
+            )
+            .map(({ id: inboxItemId, data: { dao: coreAddress } }) => ({
+              coreAddress,
+              items: [
+                {
+                  props: {
+                    coreAddress,
+                    inboxItemId,
+                  },
+                  // Order pending following items first in the inbox.
+                  order: 0,
+                  // All are pending.
+                  pending: true,
+                },
+              ],
+            })),
       refresh,
     }
   },

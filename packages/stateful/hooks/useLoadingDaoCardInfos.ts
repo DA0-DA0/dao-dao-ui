@@ -49,8 +49,5 @@ export const useLoadingFollowingDaoCardInfos = (): LoadingData<
   DaoCardInfo[]
 > => {
   const { daos } = useFollowingDaos()
-  return useLoadingDaoCardInfos(
-    CHAIN_ID,
-    daos.loading ? undefined : daos.data.following
-  )
+  return useLoadingDaoCardInfos(CHAIN_ID, daos.loading ? undefined : daos.data)
 }

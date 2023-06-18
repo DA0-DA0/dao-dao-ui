@@ -26,7 +26,7 @@ export const temporaryFollowingDaosAtom = atomFamily<
 })
 
 export const followingDaosSelector = selectorFamily<
-  { following: string[]; pending: string[] },
+  string[],
   WithChainId<{
     walletPublicKey: string
   }>
@@ -53,25 +53,13 @@ export const followingDaosSelector = selectorFamily<
         }
 
         const _following = items.map(({ key }) => key.split(':').slice(-1)[0])
-        // TODO: Get from following API.
-        const _pending: string[] = []
-
         const following = uniq(
           [..._following, ...temporary.following].filter(
             (address) => !temporary.unfollowing.includes(address)
           )
         )
 
-        const pending = _pending.filter(
-          (address) =>
-            !following.includes(address) &&
-            !temporary.unfollowing.includes(address)
-        )
-
-        return {
-          following,
-          pending,
-        }
+        return following
       } else {
         throw new Error(
           `Failed to fetch following daos: ${response.status}/${
@@ -90,7 +78,7 @@ export const followingDaoDropdownInfosSelector = selectorFamily<
   get:
     (params) =>
     ({ get }) => {
-      const { following } = get(followingDaosSelector(params))
+      const following = get(followingDaosSelector(params))
       return get(
         waitForAll(
           following.map((coreAddress) =>
@@ -115,7 +103,7 @@ export const followingDaosWithProposalModulesSelector = selectorFamily<
   get:
     (params) =>
     ({ get }) => {
-      const { following } = get(followingDaosSelector(params))
+      const following = get(followingDaosSelector(params))
       const proposalModules = get(
         waitForAll(
           following.map((coreAddress) =>
