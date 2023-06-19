@@ -60,14 +60,14 @@ export type InboxApiItem = {
   timestamp: string | undefined
   chainId: string | undefined
 } & {
-  type: InboxApiItemType.PendingFollow
+  type: InboxApiItemType.JoinedDao
   data: {
     dao: string
   }
 }
 
 export enum InboxApiItemType {
-  PendingFollow = 'pending_follow',
+  JoinedDao = 'joined_dao',
 }
 
 export enum InboxApiItemTypeMethod {

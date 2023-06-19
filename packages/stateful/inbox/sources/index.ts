@@ -1,2 +1,2 @@
 export * from './OpenProposals'
-export * from './PendingFollowing'
+export * from './JoinedDao'

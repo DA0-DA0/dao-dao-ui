@@ -586,7 +586,7 @@
     "votingPeriod": "Voting Period"
   },
   "inboxItemType": {
-    "pending_follow": {
+    "joined_dao": {
       "description": "Get notified when you're added to a DAO, with a reminder to follow it.",
       "title": "Joined DAO"
     }

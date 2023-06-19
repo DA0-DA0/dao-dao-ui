@@ -1,8 +1,7 @@
-# PendingFollowing
+# JoinedDao
 
-This is the inbox source for showing DAOs the wallet is pending following due to
-being added to the DAO. It uses a [Cloudflare
-Worker](https://github.com/DA0-DA0/following-daos-cf-worker) for its backend.
+This is the inbox source for showing DAOs the wallet has recently joined and
+suggests to follow them.
 
 ## Layout
 

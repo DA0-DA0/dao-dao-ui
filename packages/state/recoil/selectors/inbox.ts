@@ -58,7 +58,7 @@ export const inboxApiItemsSelector = selectorFamily<
 
             // Validate type and matching data format.
             switch (type) {
-              case InboxApiItemType.PendingFollow:
+              case InboxApiItemType.JoinedDao:
                 if (
                   !objectMatchesStructure(item.data, {
                     dao: {},

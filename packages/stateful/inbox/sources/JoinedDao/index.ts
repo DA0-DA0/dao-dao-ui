@@ -13,8 +13,8 @@ import { temporaryFollowingDaosAtom } from '../../../recoil/selectors/dao/follow
 import { Renderer } from './Renderer'
 import { Data } from './types'
 
-export const PendingFollowing: InboxSource<Data> = {
-  id: 'pending_following',
+export const JoinedDao: InboxSource<Data> = {
+  id: 'joined_dao',
   Renderer,
   useData: () => {
     const { chain_id: chainId } = useChain()
@@ -28,7 +28,7 @@ export const PendingFollowing: InboxSource<Data> = {
         ? inboxApiItemsSelector({
             walletAddress: address,
             chainId,
-            type: InboxApiItemType.PendingFollow,
+            type: InboxApiItemType.JoinedDao,
           })
         : undefined,
       []
