@@ -81,3 +81,10 @@ export const validateCosmosMsg = (msg: any) => ({
 export const validateTokenSymbol = (v: string) =>
   /^[a-zA-Z\-]{3,12}$/.test(v) ||
   'Invalid token symbol. Must be 3-12 characters long and contain only letters and hyphens.'
+
+export const validateEmail = (v: any) =>
+  (typeof v === 'string' &&
+    /([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|"([]!#-[^-~ \t]|(\\[\t -~]))+")@([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\[[\t -Z^-~]*])/.test(
+      v
+    )) ||
+  'Invalid email address.'

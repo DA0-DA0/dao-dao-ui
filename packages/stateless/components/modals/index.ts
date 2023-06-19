@@ -1,5 +1,6 @@
 export * from './BetaWarningModal'
 export * from './DiscordNotifierConfigureModal'
+export * from './InboxConfigModal'
 export * from './InstallKeplrModal'
 export * from './ItemCreatedModal'
 export * from './KadoModal'

@@ -12,6 +12,7 @@ import {
   ProfileDisconnectedCard,
   ProfileHomeCard,
   SuspenseLoader,
+  useInboxApi,
 } from '@dao-dao/stateful'
 import { Inbox, PageLoader, useAppContext } from '@dao-dao/stateless'
 import { SITE_URL } from '@dao-dao/utils'
@@ -26,9 +27,12 @@ const InnerInbox = () => {
     throw new Error(t('error.loadingData'))
   }
 
+  const api = useInboxApi()
+
   return (
     <Inbox
       LinkWrapper={LinkWrapper}
+      api={api}
       rightSidebarContent={
         connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }

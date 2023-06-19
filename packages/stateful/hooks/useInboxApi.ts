@@ -5,16 +5,12 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { temporaryClearedInboxApiItemsAtom } from '@dao-dao/state'
+import { InboxApi, InboxApiConfig, InboxApiUpdateConfig } from '@dao-dao/types'
 import { INBOX_API_BASE, processError } from '@dao-dao/utils'
 
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
 
-export type UseInboxApiReturn = {
-  clear: (idOrIds: string | string[]) => void
-  ready: boolean
-}
-
-export const useInboxApi = (): UseInboxApiReturn => {
+export const useInboxApi = (): InboxApi => {
   const { t } = useTranslation()
   const { address = '' } = useWallet()
 
@@ -28,8 +24,10 @@ export const useInboxApi = (): UseInboxApiReturn => {
   const [updating, setUpdating] = useState(false)
   const { ready, postRequest } = useCfWorkerAuthPostRequest(
     INBOX_API_BASE,
-    'Clear Inbox Items'
+    'Inbox'
   )
+
+  const [config, setConfig] = useState<InboxApiConfig>()
 
   const clear = useCallback(
     async (idOrIds: string | string[]) => {
@@ -45,9 +43,13 @@ export const useInboxApi = (): UseInboxApiReturn => {
 
       try {
         const ids = [idOrIds].flat()
-        await postRequest('/clear', {
-          ids,
-        })
+        await postRequest(
+          '/clear',
+          {
+            ids,
+          },
+          'Clear Inbox Items'
+        )
 
         setTemporary((prev) => [...prev, ...ids])
 
@@ -64,8 +66,114 @@ export const useInboxApi = (): UseInboxApiReturn => {
     [postRequest, ready, setTemporary, t, updating]
   )
 
+  const updateConfig = useCallback(
+    async (data: InboxApiUpdateConfig, signatureType = 'Save Inbox Config') => {
+      if (!ready) {
+        toast.error(t('error.logInToContinue'))
+        return false
+      }
+      if (updating) {
+        return false
+      }
+
+      setUpdating(true)
+
+      try {
+        const config = await postRequest<InboxApiConfig>(
+          '/config',
+          data,
+          signatureType
+        )
+        setConfig(config)
+
+        return true
+      } catch (err) {
+        console.error(err)
+        toast.error(processError(err))
+
+        return false
+      } finally {
+        setUpdating(false)
+      }
+    },
+    [postRequest, ready, t, updating]
+  )
+
+  const loadConfig = useCallback(
+    async () => updateConfig({}, 'Load Inbox Config'),
+    [updateConfig]
+  )
+
+  const resendVerificationEmail = useCallback(async () => {
+    if (!ready) {
+      toast.error(t('error.logInToContinue'))
+      return false
+    }
+    if (updating) {
+      return false
+    }
+
+    setUpdating(true)
+
+    try {
+      const config = await postRequest<InboxApiConfig>(
+        '/config',
+        { resend: true },
+        'Resend Inbox Verification Email'
+      )
+      setConfig(config)
+
+      return true
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+
+      return false
+    } finally {
+      setUpdating(false)
+    }
+  }, [postRequest, ready, t, updating])
+
+  const verify = useCallback(
+    async (code: string) => {
+      if (!ready) {
+        toast.error(t('error.logInToContinue'))
+        return false
+      }
+      if (updating) {
+        return false
+      }
+
+      setUpdating(true)
+
+      try {
+        await postRequest<InboxApiConfig>(
+          '/config',
+          { verify: code },
+          'Verify Inbox Email'
+        )
+
+        return true
+      } catch (err) {
+        console.error(err)
+        toast.error(processError(err))
+
+        return false
+      } finally {
+        setUpdating(false)
+      }
+    },
+    [postRequest, ready, t, updating]
+  )
+
   return {
-    clear,
     ready,
+    updating,
+    clear,
+    loadConfig,
+    updateConfig,
+    resendVerificationEmail,
+    verify,
+    config,
   }
 }

@@ -69,3 +69,39 @@ export type InboxApiItem = {
 export enum InboxApiItemType {
   PendingFollow = 'pending_follow',
 }
+
+export enum InboxApiItemTypeMethod {
+  Website = 1 << 0,
+  Email = 1 << 1,
+}
+
+export type InboxApiUpdateConfig = {
+  // Update email. If empty or null, remove email.
+  email?: string | null
+  // Update notification settings per-type.
+  types?: Record<string, number | null>
+  // If present, verify email.
+  verify?: string
+  // If present, resend verification email.
+  resend?: boolean
+}
+
+export type InboxApiConfig = {
+  email: string | null
+  verified: boolean
+  types: Record<string, number | null>
+}
+
+export type InboxApi = {
+  ready: boolean
+  updating: boolean
+  clear: (idOrIds: string | string[]) => Promise<boolean>
+  loadConfig: () => Promise<boolean>
+  updateConfig: (
+    data: InboxApiUpdateConfig,
+    signatureType?: string
+  ) => Promise<boolean>
+  resendVerificationEmail: () => Promise<boolean>
+  verify: (code: string) => Promise<boolean>
+  config: InboxApiConfig | undefined
+}
