@@ -1,14 +1,20 @@
 import { Refresh, Settings, WhereToVoteOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
+import { useRouter } from 'next/router'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { InboxApi, InboxState, LinkWrapperProps } from '@dao-dao/types'
+import {
+  InboxApi,
+  InboxPageSlug,
+  InboxState,
+  LinkWrapperProps,
+} from '@dao-dao/types'
 
 import {
   Collapsible,
   IconButton,
-  InboxConfigModal,
+  InboxSettingsModal,
   Loader,
   NoContent,
   PageHeaderContent,
@@ -21,6 +27,7 @@ export interface InboxProps {
   rightSidebarContent: ReactNode
   LinkWrapper: ComponentType<LinkWrapperProps>
   api: InboxApi
+  verify: () => void
 }
 
 export const Inbox = ({
@@ -28,9 +35,15 @@ export const Inbox = ({
   rightSidebarContent,
   LinkWrapper,
   api,
+  verify,
 }: InboxProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
+  const {
+    query: { slug: _slug },
+    isReady,
+    push,
+  } = useRouter()
 
   const [refreshSpinning, setRefreshSpinning] = useState(false)
   // Start spinning refresh icon if refreshing sets to true. Turn off once the
@@ -39,8 +52,10 @@ export const Inbox = ({
     refreshing && setRefreshSpinning(true)
   }, [refreshing])
 
-  const [emailConfigureModalVisible, setEmailConfigureModalVisible] =
-    useState(false)
+  const slug = _slug && Array.isArray(_slug) ? _slug[0] : undefined
+  const settingsModalVisible =
+    isReady &&
+    (slug === InboxPageSlug.Settings || slug === InboxPageSlug.Verify)
 
   return (
     <>
@@ -58,14 +73,10 @@ export const Inbox = ({
               Icon={Settings}
               circular
               disabled={!api.ready}
-              loading={emailConfigureModalVisible && api.updating}
-              onClick={async () => {
-                if (!api.config) {
-                  await api.loadConfig()
-                }
-
-                setEmailConfigureModalVisible(true)
-              }}
+              loading={settingsModalVisible && api.updating}
+              onClick={() =>
+                push('/inbox/settings', undefined, { shallow: true })
+              }
               variant="ghost"
             />
 
@@ -133,10 +144,11 @@ export const Inbox = ({
         )}
       </div>
 
-      <InboxConfigModal
+      <InboxSettingsModal
         api={api}
-        onClose={() => setEmailConfigureModalVisible(false)}
-        visible={emailConfigureModalVisible && !!api.config}
+        onClose={() => push('/inbox', undefined, { shallow: true })}
+        verify={slug === InboxPageSlug.Verify ? verify : undefined}
+        visible={settingsModalVisible}
       />
     </>
   )

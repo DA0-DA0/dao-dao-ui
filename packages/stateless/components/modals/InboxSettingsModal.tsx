@@ -1,5 +1,6 @@
 import { Check, Email, Language, WarningRounded } from '@mui/icons-material'
-import { useEffect } from 'react'
+import { useRouter } from 'next/router'
+import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -16,6 +17,7 @@ import { validateEmail } from '@dao-dao/utils'
 import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
 import { Checkbox, InputLabel, TextInput } from '../inputs'
+import { Loader } from '../logo'
 import { Tooltip } from '../tooltip'
 import { Modal } from './Modal'
 
@@ -24,20 +26,41 @@ const DEFAULT_TYPE = Object.values(InboxApiItemTypeMethod).reduce(
   0
 )
 
-export type InboxConfigModalProps = Pick<ModalProps, 'visible' | 'onClose'> & {
+export type InboxSettingsModalProps = Pick<
+  ModalProps,
+  'visible' | 'onClose'
+> & {
   api: InboxApi
+  // If defined, shows verify button.
+  verify?: () => void
 }
 
-export const InboxConfigModal = ({
-  api: { updating, config, updateConfig, resendVerificationEmail },
+export const InboxSettingsModal = ({
+  api: { updating, config, loadConfig, updateConfig, resendVerificationEmail },
+  verify,
   ...props
-}: InboxConfigModalProps) => {
+}: InboxSettingsModalProps) => {
   const { t } = useTranslation()
+  const { push } = useRouter()
 
   const { register, reset, setValue, getValues, watch } =
     useForm<InboxApiUpdateConfig>()
 
   const types = watch('types')
+
+  // Prompt to load config if not loaded yet.
+  const loadingRef = useRef(false)
+  useEffect(() => {
+    ;(async () => {
+      if (props.visible && !config && !loadingRef.current) {
+        loadingRef.current = true
+        // Load config. On failure, close modal.
+        if (!(await loadConfig())) {
+          push('/inbox')
+        }
+      }
+    })()
+  }, [props.visible, config, loadConfig, push])
 
   // Once config is loaded, populate form with config values.
   useEffect(() => {
@@ -56,7 +79,8 @@ export const InboxConfigModal = ({
       footerContainerClassName="flex flex-row justify-end"
       footerContent={
         <Button
-          loading={updating}
+          disabled={!config}
+          loading={!!config && updating}
           onClick={async () => {
             if (!config) {
               return
@@ -82,7 +106,7 @@ export const InboxConfigModal = ({
       }}
       titleClassName="mb-2"
     >
-      {config && (
+      {config ? (
         <>
           <div className="flex flex-col gap-2">
             <div className="flex flex-row items-center justify-between">
@@ -119,6 +143,19 @@ export const InboxConfigModal = ({
               validation={[validateEmail]}
             />
           </div>
+
+          {verify && !config.verified && (
+            <Button
+              center
+              className="mt-2"
+              loading={updating}
+              onClick={verify}
+              size="lg"
+            >
+              {t('button.verify')}
+              <Check className="!h-5 !w-5" />
+            </Button>
+          )}
 
           <p className="title-text mt-4">{t('title.preferences')}</p>
           <p className="caption-text">
@@ -185,6 +222,10 @@ export const InboxConfigModal = ({
             </div>
           ))}
         </>
+      ) : (
+        updating && (
+          <Loader className="h-60 w-[100vw] max-w-full" fill size={40} />
+        )
       )}
     </Modal>
   )

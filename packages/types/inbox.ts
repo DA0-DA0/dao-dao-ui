@@ -105,3 +105,8 @@ export type InboxApi = {
   verify: (code: string) => Promise<boolean>
   config: InboxApiConfig | undefined
 }
+
+export enum InboxPageSlug {
+  Settings = 'settings',
+  Verify = 'verify',
+}

@@ -8,7 +8,7 @@ import { Data } from './types'
 
 export const Renderer = ({ coreAddress, inboxItemId }: Data) => {
   const { t } = useTranslation()
-  const { setFollowing, setUnfollowing, updatingFollowing } = useFollowingDaos()
+  const { setFollowing, updatingFollowing } = useFollowingDaos()
   const { clear } = useInboxApi()
 
   const [loadingFollowing, setLoadingFollowing] = useState(false)
@@ -39,9 +39,7 @@ export const Renderer = ({ coreAddress, inboxItemId }: Data) => {
           loading={updatingFollowing && !loadingFollowing}
           onClick={() => {
             setLoadingFollowing(false)
-            setUnfollowing(coreAddress).then(
-              (success) => success && clear(inboxItemId)
-            )
+            clear(inboxItemId)
           }}
           variant="secondary"
         >

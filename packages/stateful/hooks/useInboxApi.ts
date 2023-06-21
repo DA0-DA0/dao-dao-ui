@@ -147,11 +147,12 @@ export const useInboxApi = (): InboxApi => {
       setUpdating(true)
 
       try {
-        await postRequest<InboxApiConfig>(
+        const config = await postRequest<InboxApiConfig>(
           '/config',
           { verify: code },
           'Verify Inbox Email'
         )
+        setConfig(config)
 
         return true
       } catch (err) {

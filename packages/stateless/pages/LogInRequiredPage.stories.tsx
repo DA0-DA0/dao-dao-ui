@@ -13,20 +13,21 @@ import {
 } from '../components'
 import { Default as ProfileDisconnectedCardStory } from '../components/profile/ProfileDisconnectedCard.stories'
 import { Default as ConnectWalletStory } from '../components/wallet/ConnectWallet.stories'
-import { MeDisconnected } from './MeDisconnected'
+import { LogInRequiredPage } from './LogInRequiredPage'
 
 export default {
-  title: 'DAO DAO / packages / stateless / pages / MeDisconnected',
-  component: MeDisconnected,
+  title: 'DAO DAO / packages / stateless / pages / LogInRequiredPage',
+  component: LogInRequiredPage,
   decorators: [WalletProviderDecorator, makeDappLayoutDecorator()],
-} as ComponentMeta<typeof MeDisconnected>
+} as ComponentMeta<typeof LogInRequiredPage>
 
-const Template: ComponentStory<typeof MeDisconnected> = (args) => (
-  <MeDisconnected {...args} />
+const Template: ComponentStory<typeof LogInRequiredPage> = (args) => (
+  <LogInRequiredPage {...args} />
 )
 
 export const Default = Template.bind({})
 Default.args = {
+  title: 'Some page',
   rightSidebarContent: (
     <ProfileDisconnectedCard
       {...(ProfileDisconnectedCardStory.args as ProfileDisconnectedCardProps)}

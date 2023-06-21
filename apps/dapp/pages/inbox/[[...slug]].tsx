@@ -4,12 +4,12 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { Me } from '@dao-dao/stateful'
-import { MeTabId } from '@dao-dao/types'
+import { Inbox } from '@dao-dao/stateful'
+import { InboxPageSlug } from '@dao-dao/types'
 
 // This is the dynamic Me page that allows specifying a tab. It can be accessed
 // via `/me/[tab]`.
-export default Me
+export default Inbox
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
@@ -18,10 +18,25 @@ export const getStaticProps: GetStaticProps = async ({ locale }) => ({
 })
 
 export const getStaticPaths: GetStaticPaths = () => ({
-  paths: Object.values(MeTabId).map((tab) => ({
-    params: {
-      tab,
+  paths: [
+    // Home inbox page.
+    {
+      params: {
+        slug: [],
+      },
     },
-  })),
+    // Notification settings open.
+    {
+      params: {
+        slug: [InboxPageSlug.Settings],
+      },
+    },
+    // Notification settings open and verifying email.
+    {
+      params: {
+        slug: [InboxPageSlug.Verify],
+      },
+    },
+  ],
   fallback: false,
 })

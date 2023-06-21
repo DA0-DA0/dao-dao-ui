@@ -730,6 +730,7 @@
     "meBalancesNftsDescription_all": "These are the NFTs you own on {{nativeChainName}} and Stargaze.",
     "meBalancesNftsDescription_current": "These are the NFTs you own on {{nativeChainName}}.",
     "meBalancesNftsDescription_stargaze": "These are the NFTs you own on Stargaze.",
+    "meDescription": "View your tokens and NFTs, and execute transactions from your wallet.",
     "members": "members",
     "membershipDaoNotMemberInfo_dao": "You are not a member of {{daoName}}. To become a member, existing members must vote to add you.",
     "membershipDaoNotMemberInfo_proposal": "You were not a member of {{daoName}} when this proposal was created, so you cannot vote on it.",
