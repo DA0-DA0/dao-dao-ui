@@ -14,11 +14,7 @@ const name = 'inbox-joined_dao'
 const subject = 'You joined {{name}}'
 const Template = () => (
   <EmailWrapper>
-    <Section
-      style={{
-        marginBottom: '1.25rem',
-      }}
-    >
+    <Section>
       <Row>
         <Column align="center">
           <div
@@ -66,6 +62,7 @@ const Template = () => (
     <Text
       style={{
         ...styles.text,
+        marginTop: '1.25rem',
         marginBottom: 0,
       }}
     >

@@ -76,6 +76,12 @@ export const text: TextProps['style'] = {
   margin: '1rem 0',
 }
 
+export const titleText: TextProps['style'] = {
+  ...text,
+  fontSize: '1.25rem',
+  fontWeight: 600,
+}
+
 export const buttonProps: ButtonProps = {
   style: {
     fontSize: '1rem',

@@ -6,11 +6,7 @@ const name = 'inbox-verify'
 const subject = 'DAO DAO Email Verification'
 const Template = () => (
   <EmailWrapper>
-    <Section
-      style={{
-        marginBottom: '1.25rem',
-      }}
-    >
+    <Section>
       <Row>
         <Column align="center">
           <Button href="{{url}}" {...styles.buttonProps}>
@@ -29,6 +25,7 @@ const Template = () => (
       style={{
         ...styles.text,
         color: styles.textColors.secondary,
+        marginTop: '1.25rem',
         marginBottom: 0,
       }}
     >

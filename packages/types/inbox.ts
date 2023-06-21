@@ -68,6 +68,7 @@ export type InboxApiItem = {
 
 export enum InboxApiItemType {
   JoinedDao = 'joined_dao',
+  ProposalCreated = 'proposal_created',
 }
 
 export enum InboxApiItemTypeMethod {

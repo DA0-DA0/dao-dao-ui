@@ -589,6 +589,10 @@
     "joined_dao": {
       "description": "Get notified when you're added to a DAO, with a reminder to follow it.",
       "title": "Joined DAO"
+    },
+    "proposal_created": {
+      "description": "Get notified when a proposal is created in a DAO you follow.",
+      "title": "Proposal created"
     }
   },
   "info": {

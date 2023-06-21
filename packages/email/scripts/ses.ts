@@ -16,8 +16,10 @@ const {
 } = dotenv.config()
 
 const program = new Command()
-program.option('-c, --create <name>', 'create a new template')
-program.option('-u, --update <name>', 'update an existing template')
+program.option(
+  '-s, --set <name>',
+  'create a new template or replace an existing one'
+)
 program.option('-l, --list', 'list all templates')
 program.option('-d, --delete <name>', 'delete a template')
 
@@ -25,6 +27,31 @@ program.parse(process.argv)
 const options = program.opts()
 
 const templatesFolder = path.join(__dirname, '..', 'templates')
+
+const listAllTemplates = async (ses: SESClient) => {
+  let nextToken: string | undefined
+  const templates: string[] = []
+  while (true) {
+    const response = await ses.send(
+      new ListTemplatesCommand({
+        NextToken: nextToken,
+      })
+    )
+
+    templates.push(
+      ...(response.TemplatesMetadata?.map((t) => t.Name || '').filter(
+        Boolean
+      ) ?? [])
+    )
+
+    nextToken = response.NextToken
+    if (!nextToken) {
+      break
+    }
+  }
+
+  return templates
+}
 
 ;(async () => {
   const ses = new SESClient({
@@ -35,52 +62,28 @@ const templatesFolder = path.join(__dirname, '..', 'templates')
     },
   })
 
-  if (options.create) {
+  if (options.set) {
+    const templates = await listAllTemplates(ses)
     const template: Template = await import(
-      path.join(templatesFolder, options.create + '.json')
+      path.join(templatesFolder, options.set + '.json')
     )
+    const exists =
+      template.TemplateName && templates.includes(template.TemplateName)
+
     await ses
       .send(
-        new CreateTemplateCommand({
-          Template: template,
-        })
+        exists
+          ? new UpdateTemplateCommand({ Template: template })
+          : new CreateTemplateCommand({ Template: template })
       )
-      .then(() => console.log(`Created ${template.TemplateName}`))
-      .catch(console.error)
-  } else if (options.update) {
-    const template: Template = await import(
-      path.join(templatesFolder, options.update + '.json')
-    )
-    await ses
-      .send(
-        new UpdateTemplateCommand({
-          Template: template,
-        })
+      .then(() =>
+        console.log(
+          `${exists ? 'Updated' : 'Created'} ${template.TemplateName}`
+        )
       )
-      .then(() => console.log(`Updated ${template.TemplateName}`))
       .catch(console.error)
   } else if (options.list) {
-    let nextToken: string | undefined
-    const templates: string[] = []
-    while (true) {
-      const response = await ses.send(
-        new ListTemplatesCommand({
-          NextToken: nextToken,
-        })
-      )
-
-      templates.push(
-        ...(response.TemplatesMetadata?.map((t) => t.Name || '').filter(
-          Boolean
-        ) ?? [])
-      )
-
-      nextToken = response.NextToken
-      if (!nextToken) {
-        break
-      }
-    }
-
+    const templates = await listAllTemplates(ses)
     console.log('\n' + templates.map((t) => '- ' + t).join('\n') + '\n')
   } else if (options.delete) {
     await ses

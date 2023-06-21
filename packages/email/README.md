@@ -26,13 +26,12 @@ $ yarn ses -h
 Usage: ses [options]
 
 Options:
-  -c, --create <name>  create a new template
-  -u, --update <name>  update an existing template
+  -s, --set <name>     create a new template or replace an existing one
   -l, --list           list all templates
   -d, --delete <name>  delete a template
   -h, --help           display help for command
 ```
 
-The name for `create` and `update` are the name of the file without the `.tsx`
-prefix in the `emails/` folder. The name for `delete` is the name of the
-template in AWS SES, which is defined inside the template.
+The name for `set` is the name of the file without the `.tsx` prefix in the
+`emails/` folder. The name for `delete` is the name of the template in AWS SES,
+which is defined inside the template.

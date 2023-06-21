@@ -58,6 +58,7 @@ export const InboxSettingsModal = ({
         if (!(await loadConfig())) {
           push('/inbox')
         }
+        loadingRef.current = false
       }
     })()
   }, [props.visible, config, loadConfig, push])
@@ -177,47 +178,57 @@ export const InboxSettingsModal = ({
               </div>
 
               <div className="flex flex-col gap-2">
-                <div className="flex flex-row gap-2">
-                  <Tooltip title={t('title.website')}>
-                    <Language className="!h-6 !w-6" />
-                  </Tooltip>
+                {(!TYPE_ALLOWED_METHODS[type] ||
+                  TYPE_ALLOWED_METHODS[type]?.includes(
+                    InboxApiItemTypeMethod.Website
+                  )) && (
+                  <div className="flex flex-row gap-2">
+                    <Tooltip title={t('title.website')}>
+                      <Language className="!h-6 !w-6" />
+                    </Tooltip>
 
-                  <Checkbox
-                    checked={
-                      ((types?.[type] ?? DEFAULT_TYPE) &
-                        InboxApiItemTypeMethod.Website) ===
-                      InboxApiItemTypeMethod.Website
-                    }
-                    onClick={() =>
-                      setValue(
-                        `types.${type}`,
-                        (types?.[type] ?? DEFAULT_TYPE) ^
-                          InboxApiItemTypeMethod.Website
-                      )
-                    }
-                  />
-                </div>
+                    <Checkbox
+                      checked={
+                        ((types?.[type] ?? DEFAULT_TYPE) &
+                          InboxApiItemTypeMethod.Website) ===
+                        InboxApiItemTypeMethod.Website
+                      }
+                      onClick={() =>
+                        setValue(
+                          `types.${type}`,
+                          (types?.[type] ?? DEFAULT_TYPE) ^
+                            InboxApiItemTypeMethod.Website
+                        )
+                      }
+                    />
+                  </div>
+                )}
 
-                <div className="flex flex-row gap-2">
-                  <Tooltip title={t('title.email')}>
-                    <Email className="!h-6 !w-6" />
-                  </Tooltip>
+                {(!TYPE_ALLOWED_METHODS[type] ||
+                  TYPE_ALLOWED_METHODS[type]?.includes(
+                    InboxApiItemTypeMethod.Email
+                  )) && (
+                  <div className="flex flex-row gap-2">
+                    <Tooltip title={t('title.email')}>
+                      <Email className="!h-6 !w-6" />
+                    </Tooltip>
 
-                  <Checkbox
-                    checked={
-                      ((types?.[type] ?? DEFAULT_TYPE) &
-                        InboxApiItemTypeMethod.Email) ===
-                      InboxApiItemTypeMethod.Email
-                    }
-                    onClick={() =>
-                      setValue(
-                        `types.${type}`,
-                        (types?.[type] ?? DEFAULT_TYPE) ^
-                          InboxApiItemTypeMethod.Email
-                      )
-                    }
-                  />
-                </div>
+                    <Checkbox
+                      checked={
+                        ((types?.[type] ?? DEFAULT_TYPE) &
+                          InboxApiItemTypeMethod.Email) ===
+                        InboxApiItemTypeMethod.Email
+                      }
+                      onClick={() =>
+                        setValue(
+                          `types.${type}`,
+                          (types?.[type] ?? DEFAULT_TYPE) ^
+                            InboxApiItemTypeMethod.Email
+                        )
+                      }
+                    />
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -229,4 +240,13 @@ export const InboxSettingsModal = ({
       )}
     </Modal>
   )
+}
+
+// If defined, only the listed methods are allowed for the given type.
+// Otherwise, all methods are allowed.
+const TYPE_ALLOWED_METHODS: Record<
+  string,
+  InboxApiItemTypeMethod[] | undefined
+> = {
+  [InboxApiItemType.ProposalCreated]: [InboxApiItemTypeMethod.Email],
 }
