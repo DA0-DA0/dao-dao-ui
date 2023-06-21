@@ -6,6 +6,16 @@ const name = 'inbox-verify'
 const subject = 'DAO DAO Email Verification'
 const Template = () => (
   <EmailWrapper>
+    <Text
+      style={{
+        ...styles.text,
+        marginTop: 0,
+      }}
+    >
+      To begin receiving notifications, verify within the next{' '}
+      {`{{expirationTime}}`}.
+    </Text>
+
     <Section>
       <Row>
         <Column align="center">
@@ -16,16 +26,10 @@ const Template = () => (
       </Row>
     </Section>
 
-    <Text style={styles.text}>
-      To begin receiving notifications, verify within the next{' '}
-      {`{{expirationTime}}`}.
-    </Text>
-
     <Text
       style={{
         ...styles.text,
         color: styles.textColors.secondary,
-        marginTop: '1.25rem',
         marginBottom: 0,
       }}
     >

@@ -82,6 +82,13 @@ export const titleText: TextProps['style'] = {
   fontWeight: 600,
 }
 
+export const headerText: TextProps['style'] = {
+  ...titleText,
+  textAlign: 'center',
+  fontSize: '1.5rem',
+  marginBottom: '2rem',
+}
+
 export const buttonProps: ButtonProps = {
   style: {
     fontSize: '1rem',

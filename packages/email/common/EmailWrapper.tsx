@@ -7,6 +7,7 @@ import {
   Html,
   Img,
   Link,
+  Preview,
   Row,
   Section,
 } from '@react-email/components'
@@ -15,10 +16,11 @@ import { ReactNode } from 'react'
 import * as styles from './styles'
 
 export type EmailWrapperProps = {
+  preview?: string
   children: ReactNode
 }
 
-export const EmailWrapper = ({ children }: EmailWrapperProps) => (
+export const EmailWrapper = ({ preview, children }: EmailWrapperProps) => (
   <Html lang="en">
     <Head>
       <Font
@@ -33,6 +35,8 @@ export const EmailWrapper = ({ children }: EmailWrapperProps) => (
       />
     </Head>
     <Body style={styles.body}>
+      {preview && <Preview>{preview}</Preview>}
+
       <Container style={styles.container}>{children}</Container>
 
       <Section

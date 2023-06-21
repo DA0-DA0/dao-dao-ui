@@ -11,9 +11,22 @@ import {
 import { EmailRenderer, EmailWrapper, styles } from '../common'
 
 const name = 'inbox-proposal_created'
-const subject = '[Proposed] Proposal {{proposalId}}: {{proposalTitle}}'
+const subject = 'Proposal {{proposalId}}: {{proposalTitle}}'
 const Template = () => (
-  <EmailWrapper>
+  <EmailWrapper preview="A new proposal is open for voting in {{daoName}}.">
+    <Row>
+      <Column align="center">
+        <Text
+          style={{
+            ...styles.headerText,
+            marginTop: 0,
+          }}
+        >
+          New Proposal
+        </Text>
+      </Column>
+    </Row>
+
     <Section>
       <Row>
         <Column align="center">

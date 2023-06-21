@@ -14,6 +14,16 @@ const name = 'inbox-joined_dao'
 const subject = 'You joined {{name}}'
 const Template = () => (
   <EmailWrapper>
+    <Text
+      style={{
+        ...styles.text,
+        marginTop: 0,
+        marginBottom: '1.5rem',
+      }}
+    >
+      {"You've"} been added to {`{{name}}`}. Follow it to receive updates.
+    </Text>
+
     <Section>
       <Row>
         <Column align="center">
@@ -58,16 +68,6 @@ const Template = () => (
         </Column>
       </Row>
     </Section>
-
-    <Text
-      style={{
-        ...styles.text,
-        marginTop: '1.25rem',
-        marginBottom: 0,
-      }}
-    >
-      {"You've"} been added to {`{{name}}`}. Follow it to receive updates.
-    </Text>
   </EmailWrapper>
 )
 
