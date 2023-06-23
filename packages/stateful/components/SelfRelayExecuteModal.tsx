@@ -664,9 +664,7 @@ export const SelfRelayExecuteModal = ({
           [chainId]: remainingTokensAfterFee,
         }))
       }
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
+      // Don't catch error. Throw to caller.
     } finally {
       refreshBalances(relayer)
     }
