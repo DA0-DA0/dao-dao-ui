@@ -50,6 +50,7 @@ enum RelayStatus {
   Executing,
   Relaying,
   Refunding,
+  RefundingErrored,
   Success,
   RelayErrored,
 }
@@ -585,6 +586,16 @@ export const SelfRelayExecuteModal = ({
       refreshPolytoneListenerResults()
     }
 
+    await refundAllRelayers()
+  }
+
+  // Refund all relayers that have remaining tokens.
+  const refundAllRelayers = async () => {
+    if (!relayers || !mnemonicKey) {
+      toast.error('Relayer not set up')
+      return
+    }
+
     // If relay was successful, refund remaining tokens from relayer wallet back
     // to user on all chains.
     setStatus(RelayStatus.Refunding)
@@ -599,6 +610,8 @@ export const SelfRelayExecuteModal = ({
 
       setStatus(RelayStatus.Success)
     } catch (err) {
+      setStatus(RelayStatus.RefundingErrored)
+
       console.error(err)
       toast.error(processError(err))
     }
@@ -700,7 +713,8 @@ export const SelfRelayExecuteModal = ({
             : status === RelayStatus.Relaying ||
               status === RelayStatus.RelayErrored
             ? 2
-            : status === RelayStatus.Refunding
+            : status === RelayStatus.Refunding ||
+              status === RelayStatus.RefundingErrored
             ? 3
             : 4
         }
@@ -1015,6 +1029,15 @@ export const SelfRelayExecuteModal = ({
                     }
                   )}
                 </div>
+
+                <Button
+                  className="self-end"
+                  loading={status === RelayStatus.Refunding}
+                  onClick={refundAllRelayers}
+                  size="sm"
+                >
+                  Retry
+                </Button>
               </div>
             ),
           },

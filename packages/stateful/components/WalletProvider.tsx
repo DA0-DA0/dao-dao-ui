@@ -33,6 +33,7 @@ import {
   STARGAZE_TESTNET_RPC_ENDPOINT,
   WC_ICON_PATH,
   WEB3AUTH_CLIENT_ID,
+  getChainForChainId,
   typesRegistry,
 } from '@dao-dao/utils'
 
@@ -111,18 +112,34 @@ export const WalletProvider = ({
         WalletType.Discord,
         WalletType.Twitter,
       ]}
-      getSigningCosmWasmClientOptions={(chainInfo) => ({
-        gasPrice: GasPrice.fromString(
-          '0.0025' + chainInfo.feeCurrencies[0].coinMinimalDenom
-        ),
-        registry: typesRegistry,
-      })}
-      getSigningStargateClientOptions={(chainInfo) => ({
-        gasPrice: GasPrice.fromString(
-          '0.0025' + chainInfo.feeCurrencies[0].coinMinimalDenom
-        ),
-        registry: typesRegistry,
-      })}
+      getSigningCosmWasmClientOptions={(chainInfo) => {
+        const feeToken = getChainForChainId(chainInfo.chainId).fees
+          ?.fee_tokens?.[0]
+        if (feeToken?.average_gas_price === undefined) {
+          throw new Error(`No fee token found for chain ${chainInfo.chainId}`)
+        }
+
+        return {
+          gasPrice: GasPrice.fromString(
+            feeToken.average_gas_price + feeToken.denom
+          ),
+          registry: typesRegistry,
+        }
+      }}
+      getSigningStargateClientOptions={(chainInfo) => {
+        const feeToken = getChainForChainId(chainInfo.chainId).fees
+          ?.fee_tokens?.[0]
+        if (feeToken?.average_gas_price === undefined) {
+          throw new Error(`No fee token found for chain ${chainInfo.chainId}`)
+        }
+
+        return {
+          gasPrice: GasPrice.fromString(
+            feeToken.average_gas_price + feeToken.denom
+          ),
+          registry: typesRegistry,
+        }
+      }}
       localStorageKey="connectedWalletId"
       walletConnectClientMeta={{
         name: t('meta.title'),

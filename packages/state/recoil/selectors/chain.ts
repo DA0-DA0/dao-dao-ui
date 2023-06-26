@@ -162,9 +162,10 @@ export const nativeBalancesSelector = selectorFamily<
           denom: nativeToken.denomOrAddress,
         })
       }
-      // Add USDC if not present and on mainnet.
+      // Add USDC if not present, on mainnet, and on current chain.
       if (
         MAINNET &&
+        chainId === CHAIN_ID &&
         IBC_USDC_DENOM &&
         !balances.some(({ denom }) => isNativeIbcUsdc(denom))
       ) {
