@@ -1,5 +1,6 @@
 import { GasPrice } from '@cosmjs/stargate'
-import { Bech32Config, ChainInfo, FeeCurrency } from '@keplr-wallet/types'
+import { Bech32Address } from '@keplr-wallet/cosmos'
+import { ChainInfo, FeeCurrency } from '@keplr-wallet/types'
 import {
   ChainInfoID,
   ChainInfoMap,
@@ -96,7 +97,7 @@ if ((Object.values(ChainInfoID) as string[]).includes(CHAIN_ID)) {
       alternativeBIP44s: chain.alternative_slip44s?.map((coinType) => ({
         coinType,
       })),
-      bech32Config: chain.bech32_config as Bech32Config,
+      bech32Config: Bech32Address.defaultBech32Config(chain.bech32_prefix),
       currencies: feeCurrencies,
       feeCurrencies,
     }
