@@ -73,6 +73,7 @@ type Relayer = {
   polytoneNote?: PolytoneNote
 }
 
+// TODO: i18n
 export const SelfRelayExecuteModal = ({
   uniqueId,
   chainIds: _chainIds,
@@ -897,7 +898,7 @@ export const SelfRelayExecuteModal = ({
 
                   <div className="flex grow flex-row justify-end">
                     <Button onClick={() => setStatus(RelayStatus.Funding)}>
-                      Retry
+                      {t('button.retry')}
                     </Button>
                   </div>
                 </div>
@@ -951,7 +952,7 @@ export const SelfRelayExecuteModal = ({
             // Show when this step is current or past. This makes sure the
             // refund balances are visible once the success step is reached.
             overrideShowStepContentStatuses: ['current', 'past'],
-            content: () => (
+            content: (stepStatus) => (
               <div className="flex flex-col gap-4">
                 <p>
                   Refund your wallet with the remaining tokens from the relayer
@@ -1030,14 +1031,16 @@ export const SelfRelayExecuteModal = ({
                   )}
                 </div>
 
-                <Button
-                  className="self-end"
-                  loading={status === RelayStatus.Refunding}
-                  onClick={refundAllRelayers}
-                  size="sm"
-                >
-                  Retry
-                </Button>
+                {stepStatus === 'current' && (
+                  <Button
+                    className="self-end"
+                    loading={status === RelayStatus.Refunding}
+                    onClick={refundAllRelayers}
+                    size="sm"
+                  >
+                    {t('button.retry')}
+                  </Button>
+                )}
               </div>
             ),
           },
@@ -1053,7 +1056,7 @@ export const SelfRelayExecuteModal = ({
                     onClose?.()
                   }}
                 >
-                  Close
+                  {t('button.close')}
                 </Button>
               </div>
             ),
