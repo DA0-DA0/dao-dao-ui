@@ -2,9 +2,9 @@ import { ChainInfoID } from '@noahsaso/cosmodal'
 
 import { PolytoneNotes } from '@dao-dao/types'
 
-const junoTestnet: PolytoneNotes = {
-  // [ChainInfoID.Juno1]: '',
-}
+import { OSMOSIS_TESTNET_CHAIN_ID } from './chains'
+
+const none: PolytoneNotes = {}
 
 const junoMainnet: PolytoneNotes = {
   [ChainInfoID.Uni6]: {
@@ -32,7 +32,8 @@ const osmosisMainnet: PolytoneNotes = {}
 
 export const PolytoneNotesPerChain: Record<string, PolytoneNotes | undefined> =
   {
-    [ChainInfoID.Uni6]: junoTestnet,
     [ChainInfoID.Juno1]: junoMainnet,
     [ChainInfoID.Osmosis1]: osmosisMainnet,
+    [ChainInfoID.Uni6]: none,
+    [OSMOSIS_TESTNET_CHAIN_ID]: none,
   }

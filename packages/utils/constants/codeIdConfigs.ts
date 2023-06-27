@@ -2,6 +2,8 @@ import { ChainInfoID } from '@noahsaso/cosmodal'
 
 import { CodeIdConfig } from '@dao-dao/types'
 
+import { OSMOSIS_TESTNET_CHAIN_ID } from './chains'
+
 const junoTestnet: CodeIdConfig = {
   // https://github.com/CosmWasm/cw-plus
   Cw20Base: 177,
@@ -81,8 +83,35 @@ const osmosisMainnet: CodeIdConfig = {
   DaoVotingNativeStaked: 999,
 }
 
+const osmosisTestnet: CodeIdConfig = {
+  // https://github.com/CosmWasm/cw-plus
+  Cw20Base: -1, // v0.16
+  Cw4Group: 1327, // v0.16
+  // https://github.com/CosmWasm/cw-nfts
+  Cw721Base: 1326, // v0.16
+
+  // ContractVersion.V210
+  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
+  Cw20Stake: -1,
+  CwAdminFactory: 1312,
+  CwPayrollFactory: 1313,
+  CwTokenSwap: 1314,
+  CwVesting: 1316,
+  DaoCore: 1318,
+  DaoMigrator: -1,
+  DaoPreProposeMultiple: 1319,
+  DaoPreProposeSingle: 1320,
+  DaoProposalMultiple: 1322,
+  DaoProposalSingle: 1323,
+  DaoVotingCw20Staked: -1,
+  DaoVotingCw4: 1324,
+  DaoVotingCw721Staked: -1,
+  DaoVotingNativeStaked: -1,
+}
+
 export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {
   [ChainInfoID.Uni6]: junoTestnet,
   [ChainInfoID.Juno1]: junoMainnet,
   [ChainInfoID.Osmosis1]: osmosisMainnet,
+  [OSMOSIS_TESTNET_CHAIN_ID]: osmosisTestnet,
 }

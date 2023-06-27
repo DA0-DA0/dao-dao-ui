@@ -19,6 +19,7 @@ import {
 import {
   CHAIN_ID,
   CHAIN_RPC_ENDPOINT,
+  OSMOSIS_TESTNET_CHAIN_ID,
   STARGAZE_RPC_ENDPOINT,
   STARGAZE_TESTNET_CHAIN_ID,
   STARGAZE_TESTNET_RPC_ENDPOINT,
@@ -75,7 +76,10 @@ export const getImageUrlForChainId = (chainId: string): string | undefined => {
     return '/stargaze.png'
   }
 
-  if (chainId === ChainInfoID.Osmosis1) {
+  if (
+    chainId === ChainInfoID.Osmosis1 ||
+    chainId === OSMOSIS_TESTNET_CHAIN_ID
+  ) {
     return '/osmosis.png'
   }
 

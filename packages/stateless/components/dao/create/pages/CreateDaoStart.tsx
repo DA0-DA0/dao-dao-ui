@@ -8,6 +8,7 @@ import {
   DaoVotingCw4AdapterId,
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
+  OSMOSIS_TESTNET_CHAIN_ID,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -106,7 +107,8 @@ export const CreateDaoStart = ({
               supplies={t(suppliesI18nKey)}
               underDevelopment={
                 // Osmosis only supports multisigs right now.
-                CHAIN_ID === ChainInfoID.Osmosis1 &&
+                (CHAIN_ID === ChainInfoID.Osmosis1 ||
+                  CHAIN_ID === OSMOSIS_TESTNET_CHAIN_ID) &&
                 id !== DaoVotingCw4AdapterId
               }
             />
