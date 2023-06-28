@@ -9,7 +9,7 @@ import {
 } from '@dao-dao/utils'
 
 import { InputErrorMessage, TextAreaInput, TextInput } from '../../../inputs'
-import { DaoStructureCard } from '../DaoStructureCard'
+import { DaoCreatorCard } from '../DaoCreatorCard'
 
 export const CreateDaoStart = ({
   form: {
@@ -18,7 +18,7 @@ export const CreateDaoStart = ({
     watch,
     resetField,
   },
-  availableVotingModuleCreators,
+  availableCreators,
 }: CreateDaoContext) => {
   const { t } = useTranslation()
 
@@ -71,7 +71,7 @@ export const CreateDaoStart = ({
       </p>
 
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-2 2xl:grid-cols-3">
-        {availableVotingModuleCreators.map(
+        {availableCreators.map(
           ({
             id,
             displayInfo: {
@@ -83,21 +83,21 @@ export const CreateDaoStart = ({
             },
             defaultConfig,
           }) => (
-            <DaoStructureCard
+            <DaoCreatorCard
               key={id}
               Icon={Icon}
               description={t(descriptionI18nKey)}
               membership={t(membershipI18nKey)}
               name={t(nameI18nKey)}
               onSelect={() =>
-                resetField('votingModuleCreator', {
+                resetField('creator', {
                   defaultValue: {
                     id,
                     data: cloneDeep(defaultConfig),
                   },
                 })
               }
-              selected={watch('votingModuleCreator.id') === id}
+              selected={watch('creator.id') === id}
               supplies={t(suppliesI18nKey)}
             />
           )

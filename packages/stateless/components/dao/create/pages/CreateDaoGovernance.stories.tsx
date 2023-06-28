@@ -1,12 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { DaoVotingTokenBasedCreator } from '@dao-dao/stateful/voting-module-adapter/creators/DaoVotingTokenBased'
+import { TokenBasedCreator } from '@dao-dao/stateful/creators/TokenBased'
 import {
   WalletProviderDecorator,
   makeCreateDaoFormDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import { DaoVotingTokenBasedCreatorId } from '@dao-dao/utils'
+import { TokenBasedCreatorId } from '@dao-dao/utils'
 
 import { CreateDaoGovernance } from './CreateDaoGovernance'
 
@@ -21,9 +21,9 @@ export default {
       description: "There are evil cows all over the place. Let's milk 'em!",
       imageUrl:
         'https://ipfs.stargaze.zone/ipfs/QmbGvE3wmxex8KiBbbvMjR8f9adR28s3XkiZSTuGmHoMHV/33.jpg',
-      votingModuleCreator: {
-        id: DaoVotingTokenBasedCreatorId,
-        data: DaoVotingTokenBasedCreator.defaultConfig,
+      creator: {
+        id: TokenBasedCreatorId,
+        data: TokenBasedCreator.defaultConfig,
       },
     }),
     makeDappLayoutDecorator(),

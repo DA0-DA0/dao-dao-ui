@@ -28,21 +28,21 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { AddressInput } from '../../../components/AddressInput'
-import { VotingModuleCreatorConfig } from './types'
+import { AddressInput } from '../../components/AddressInput'
+import { CreatorData } from './types'
 
 export interface TierCardProps {
-  data: VotingModuleCreatorConfig
+  data: CreatorData
   tierIndex: number
   // Display color dots next to each member instead of each tier.
   // When there is only one tier, all members are displayed on the chart,
   // so the colors correspond to members instead of tiers.
   showColorDotOnMember: boolean
-  control: Control<NewDao<VotingModuleCreatorConfig>>
-  register: UseFormRegister<NewDao<VotingModuleCreatorConfig>>
-  watch: UseFormWatch<NewDao<VotingModuleCreatorConfig>>
-  errors: FormState<NewDao<VotingModuleCreatorConfig>>['errors']
-  setValue: UseFormSetValue<NewDao<VotingModuleCreatorConfig>>
+  control: Control<NewDao<CreatorData>>
+  register: UseFormRegister<NewDao<CreatorData>>
+  watch: UseFormWatch<NewDao<CreatorData>>
+  errors: FormState<NewDao<CreatorData>>['errors']
+  setValue: UseFormSetValue<NewDao<CreatorData>>
   remove?: () => void
 }
 
@@ -70,7 +70,7 @@ export const TierCard = ({
     remove: removeMember,
   } = useFieldArray({
     control,
-    name: `votingModuleCreator.data.tiers.${tierIndex}.members`,
+    name: `creator.data.tiers.${tierIndex}.members`,
   })
 
   const tierColor =
@@ -117,15 +117,15 @@ export const TierCard = ({
           />
 
           <TextInput
-            error={errors.votingModuleCreator?.data?.tiers?.[tierIndex]?.name}
-            fieldName={`votingModuleCreator.data.tiers.${tierIndex}.name`}
+            error={errors.creator?.data?.tiers?.[tierIndex]?.name}
+            fieldName={`creator.data.tiers.${tierIndex}.name`}
             placeholder={t('form.tierNameTitle') + '...'}
             register={register}
             validation={[validateRequired]}
           />
 
           <InputErrorMessage
-            error={errors.votingModuleCreator?.data?.tiers?.[tierIndex]?.name}
+            error={errors.creator?.data?.tiers?.[tierIndex]?.name}
           />
         </div>
 
@@ -141,10 +141,8 @@ export const TierCard = ({
           <div className="flex flex-row items-center gap-2">
             <NumberInput
               containerClassName="grow"
-              error={
-                errors.votingModuleCreator?.data?.tiers?.[tierIndex]?.weight
-              }
-              fieldName={`votingModuleCreator.data.tiers.${tierIndex}.weight`}
+              error={errors.creator?.data?.tiers?.[tierIndex]?.weight}
+              fieldName={`creator.data.tiers.${tierIndex}.weight`}
               min={1 / 10 ** NEW_DAO_CW20_DECIMALS}
               register={register}
               setValue={setValue}
@@ -156,7 +154,7 @@ export const TierCard = ({
           </div>
 
           <InputErrorMessage
-            error={errors.votingModuleCreator?.data?.tiers?.[tierIndex]?.weight}
+            error={errors.creator?.data?.tiers?.[tierIndex]?.weight}
           />
         </div>
       </div>
@@ -191,10 +189,11 @@ export const TierCard = ({
                   <AddressInput
                     containerClassName="grow"
                     error={
-                      errors.votingModuleCreator?.data?.tiers?.[tierIndex]
-                        ?.members?.[memberIndex]?.address
+                      errors.creator?.data?.tiers?.[tierIndex]?.members?.[
+                        memberIndex
+                      ]?.address
                     }
-                    fieldName={`votingModuleCreator.data.tiers.${tierIndex}.members.${memberIndex}.address`}
+                    fieldName={`creator.data.tiers.${tierIndex}.members.${memberIndex}.address`}
                     placeholder={t('form.membersAddress')}
                     register={register}
                     setValue={setValue}
@@ -205,8 +204,9 @@ export const TierCard = ({
 
                 <InputErrorMessage
                   error={
-                    errors.votingModuleCreator?.data?.tiers?.[tierIndex]
-                      ?.members?.[memberIndex]?.address
+                    errors.creator?.data?.tiers?.[tierIndex]?.members?.[
+                      memberIndex
+                    ]?.address
                   }
                 />
               </div>
@@ -243,7 +243,7 @@ export const TierCard = ({
           </Button>
 
           <InputErrorMessage
-            error={errors.votingModuleCreator?.data?.tiers?.[tierIndex]?._error}
+            error={errors.creator?.data?.tiers?.[tierIndex]?._error}
           />
         </div>
       </div>

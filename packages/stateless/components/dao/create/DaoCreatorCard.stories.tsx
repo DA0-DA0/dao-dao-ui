@@ -2,20 +2,20 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
 import { HandshakeEmoji } from '../../emoji'
-import { DaoStructureCard } from './DaoStructureCard'
+import { DaoCreatorCard } from './DaoCreatorCard'
 
 export default {
   title:
-    'DAO DAO / packages / stateless / components / dao / create / DaoStructureCard',
-  component: DaoStructureCard,
-} as ComponentMeta<typeof DaoStructureCard>
+    'DAO DAO / packages / stateless / components / dao / create / DaoCreatorCard',
+  component: DaoCreatorCard,
+} as ComponentMeta<typeof DaoCreatorCard>
 
-const Template: ComponentStory<typeof DaoStructureCard> = (args) => {
+const Template: ComponentStory<typeof DaoCreatorCard> = (args) => {
   const [selected, setSelected] = useState(false)
 
   return (
     <div className="max-w-xs">
-      <DaoStructureCard
+      <DaoCreatorCard
         {...args}
         onSelect={() => setSelected((s) => !s)}
         selected={selected}

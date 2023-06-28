@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-export interface DaoStructureCardProps {
+export type DaoCreatorCardProps = {
   Icon: ComponentType
   name: string
   description: string
@@ -13,7 +13,7 @@ export interface DaoStructureCardProps {
   onSelect: () => void
 }
 
-export const DaoStructureCard = ({
+export const DaoCreatorCard = ({
   Icon,
   name,
   description,
@@ -21,7 +21,7 @@ export const DaoStructureCard = ({
   membership,
   selected,
   onSelect,
-}: DaoStructureCardProps) => {
+}: DaoCreatorCardProps) => {
   const { t } = useTranslation()
 
   return (

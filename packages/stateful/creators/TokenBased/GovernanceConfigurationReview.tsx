@@ -14,8 +14,8 @@ import {
 import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { EntityDisplay } from '../../../components'
-import { GovernanceTokenType, VotingModuleCreatorConfig } from './types'
+import { EntityDisplay } from '../../components/EntityDisplay'
+import { CreatorData, GovernanceTokenType } from './types'
 
 export const GovernanceConfigurationReview = ({
   data: {
@@ -25,7 +25,7 @@ export const GovernanceConfigurationReview = ({
     existingTokenType,
     existingTokenDenomOrAddress,
   },
-}: DaoCreationGovernanceConfigReviewProps<VotingModuleCreatorConfig>) => {
+}: DaoCreationGovernanceConfigReviewProps<CreatorData>) => {
   const { t } = useTranslation()
   const treasuryColor = `rgba(${useNamedThemeColor('light')}, 0.45)`
 

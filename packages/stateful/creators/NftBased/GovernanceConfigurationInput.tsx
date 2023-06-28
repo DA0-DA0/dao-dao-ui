@@ -16,7 +16,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { GovernanceTokenType, VotingModuleCreatorConfig } from './types'
+import { CreatorData, GovernanceTokenType } from './types'
 
 export const GovernanceConfigurationInput = ({
   data,
@@ -29,7 +29,7 @@ export const GovernanceConfigurationInput = ({
       clearErrors,
     },
   },
-}: DaoCreationGovernanceConfigInputProps<VotingModuleCreatorConfig>) => {
+}: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
 
   //! Validate existing governance token.
@@ -64,30 +64,28 @@ export const GovernanceConfigurationInput = ({
 
   useEffect(() => {
     setValue(
-      'votingModuleCreator.data.existingGovernanceTokenInfo',
+      'creator.data.existingGovernanceTokenInfo',
       existingGovernanceTokenInfoLoadable.state === 'hasValue'
         ? existingGovernanceTokenInfoLoadable.contents
         : undefined
     )
 
     if (existingGovernanceTokenInfoLoadable.state !== 'hasError') {
-      if (errors?.votingModuleCreator?.data?.existingGovernanceTokenInfo) {
-        clearErrors(
-          'votingModuleCreator.data.existingGovernanceTokenInfo._error'
-        )
+      if (errors?.creator?.data?.existingGovernanceTokenInfo) {
+        clearErrors('creator.data.existingGovernanceTokenInfo._error')
       }
       return
     }
 
-    if (!errors?.votingModuleCreator?.data?.existingGovernanceTokenInfo) {
-      setError('votingModuleCreator.data.existingGovernanceTokenInfo._error', {
+    if (!errors?.creator?.data?.existingGovernanceTokenInfo) {
+      setError('creator.data.existingGovernanceTokenInfo._error', {
         type: 'manual',
         message: t('error.failedToGetTokenInfo', { tokenType: 'CW721' }),
       })
     }
   }, [
     clearErrors,
-    errors?.votingModuleCreator?.data?.existingGovernanceTokenInfo,
+    errors?.creator?.data?.existingGovernanceTokenInfo,
     existingGovernanceTokenInfoLoadable,
     setError,
     setValue,
@@ -108,10 +106,9 @@ export const GovernanceConfigurationInput = ({
             <TextInput
               className="symbol-small-body-text font-mono text-text-secondary"
               error={
-                errors.votingModuleCreator?.data
-                  ?.existingGovernanceTokenDenomOrAddress
+                errors.creator?.data?.existingGovernanceTokenDenomOrAddress
               }
-              fieldName="votingModuleCreator.data.existingGovernanceTokenDenomOrAddress"
+              fieldName="creator.data.existingGovernanceTokenDenomOrAddress"
               ghost
               placeholder={CHAIN_BECH32_PREFIX + '...'}
               register={register}
@@ -119,10 +116,8 @@ export const GovernanceConfigurationInput = ({
             />
             <InputErrorMessage
               error={
-                errors.votingModuleCreator?.data
-                  ?.existingGovernanceTokenDenomOrAddress ||
-                errors.votingModuleCreator?.data?.existingGovernanceTokenInfo
-                  ?._error
+                errors.creator?.data?.existingGovernanceTokenDenomOrAddress ||
+                errors.creator?.data?.existingGovernanceTokenInfo?._error
               }
             />
           </div>

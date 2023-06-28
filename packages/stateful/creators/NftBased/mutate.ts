@@ -1,20 +1,19 @@
 import { Buffer } from 'buffer'
 
-import { DaoCreationGetInstantiateInfo } from '@dao-dao/types'
+import { DaoCreatorMutate } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import {
   CODE_ID_CONFIG,
-  DaoVotingNftBasedCreatorId,
+  NftBasedCreatorId,
   convertDurationWithUnitsToDuration,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
 import instantiateSchema from './instantiate_schema.json'
-import { VotingModuleCreatorConfig } from './types'
+import { CreatorData } from './types'
 
-export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
-  VotingModuleCreatorConfig
-> = (
+export const mutate: DaoCreatorMutate<CreatorData> = (
+  msg,
   { name: daoName },
   { existingGovernanceTokenDenomOrAddress, unstakingDuration },
   t
@@ -23,18 +22,26 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     throw new Error(t('error.missingGovernanceTokenAddress'))
   }
 
-  const msg: InstantiateMsg = {
+  const votingModuleAdapterInstantiateMsg: InstantiateMsg = {
     nft_address: existingGovernanceTokenDenomOrAddress,
     unstaking_duration: convertDurationWithUnitsToDuration(unstakingDuration),
   }
 
   // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<InstantiateMsg>(instantiateSchema, t)(msg)
+  makeValidateMsg<InstantiateMsg>(
+    instantiateSchema,
+    t
+  )(votingModuleAdapterInstantiateMsg)
 
-  return {
+  msg.voting_module_instantiate_info = {
     admin: { core_module: {} },
     code_id: CODE_ID_CONFIG.DaoVotingCw721Staked,
-    label: `DAO_${daoName}_${DaoVotingNftBasedCreatorId}`,
-    msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
+    label: `DAO_${daoName}_${NftBasedCreatorId}`,
+    msg: Buffer.from(
+      JSON.stringify(votingModuleAdapterInstantiateMsg),
+      'utf8'
+    ).toString('base64'),
   }
+
+  return msg
 }

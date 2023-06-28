@@ -7,7 +7,7 @@ export const CreateDaoGovernance = (context: CreateDaoContext) => {
 
   const {
     form: { watch },
-    votingModuleCreator: { governanceConfig },
+    creator: { governanceConfig },
   } = context
 
   return (
@@ -16,10 +16,7 @@ export const CreateDaoGovernance = (context: CreateDaoContext) => {
         {t('title.governanceConfiguration')}
       </p>
 
-      <governanceConfig.Input
-        context={context}
-        data={watch('votingModuleCreator.data')}
-      />
+      <governanceConfig.Input context={context} data={watch('creator.data')} />
     </>
   )
 }

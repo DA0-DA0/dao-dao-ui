@@ -5,11 +5,11 @@ import { Cw721BaseSelectors } from '@dao-dao/state'
 import { CopyToClipboard, FormattedJsonDisplay } from '@dao-dao/stateless'
 import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 
-import { VotingModuleCreatorConfig } from './types'
+import { CreatorData } from './types'
 
 export const GovernanceConfigurationReview = ({
   data: { existingGovernanceTokenDenomOrAddress },
-}: DaoCreationGovernanceConfigReviewProps<VotingModuleCreatorConfig>) => {
+}: DaoCreationGovernanceConfigReviewProps<CreatorData>) => {
   const { t } = useTranslation()
 
   const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(

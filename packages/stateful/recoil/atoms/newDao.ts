@@ -10,15 +10,15 @@ import {
 import {
   DaoProposalMultipleAdapterId,
   DaoProposalSingleAdapterId,
-  DaoVotingMembershipBasedCreatorId,
+  MembershipBasedCreatorId,
   NATIVE_TOKEN,
 } from '@dao-dao/utils'
 
+import { MembershipBasedCreator } from '../../creators/MembershipBased'
 import {
   DaoProposalMultipleAdapter,
   DaoProposalSingleAdapter,
 } from '../../proposal-module-adapter'
-import { DaoVotingMembershipBasedCreator } from '../../voting-module-adapter/creators'
 
 // Avoid cyclic dependencies issues with the adapter modules by using a lazy
 // maker function.
@@ -26,9 +26,9 @@ export const makeDefaultNewDao = (): NewDao => ({
   name: '',
   description: '',
   imageUrl: undefined,
-  votingModuleCreator: {
-    id: DaoVotingMembershipBasedCreatorId,
-    data: DaoVotingMembershipBasedCreator.defaultConfig,
+  creator: {
+    id: MembershipBasedCreatorId,
+    data: MembershipBasedCreator.defaultConfig,
   },
   // Default to single and multiple choice proposal configuration.
   proposalModuleAdapters: [

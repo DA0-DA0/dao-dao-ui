@@ -40,16 +40,21 @@ import {
   CHAIN_ID,
   CODE_ID_CONFIG,
   DaoProposalMultipleAdapterId,
-  DaoVotingTokenBasedCreatorId,
   FACTORY_CONTRACT_ADDRESS,
   NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
+  TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   makeValidateMsg,
   processError,
 } from '@dao-dao/utils'
 
+import { getCreatorById, getCreators } from '../../creators'
+import {
+  GovernanceTokenType,
+  CreatorData as TokenBasedCreatorData,
+} from '../../creators/TokenBased/types'
 import {
   CwAdminFactoryHooks,
   useAwaitNextBlock,
@@ -62,14 +67,6 @@ import {
   makeDefaultNewDao,
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
-import {
-  getCreatorById as getVotingModuleCreatorById,
-  getCreators as getVotingModuleCreators,
-} from '../../voting-module-adapter'
-import {
-  VotingModuleCreatorConfig as DaoVotingTokenBasedCreatorConfig,
-  GovernanceTokenType,
-} from '../../voting-module-adapter/creators/DaoVotingTokenBased/types'
 import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { Trans } from '../Trans'
@@ -118,11 +115,8 @@ export const CreateDaoForm = ({
 
     // Verify that the voting module adapter is still valid, since the IDs have
     // been renamed a couple times.
-    if (
-      !cached?.votingModuleCreator ||
-      !getVotingModuleCreatorById(cached.votingModuleCreator.id)
-    ) {
-      cached.votingModuleCreator = defaultNewDao.votingModuleCreator
+    if (!cached?.creator || !getCreatorById(cached.creator.id)) {
+      cached.creator = defaultNewDao.creator
     }
     // Verify that the proposal module adapters are still valid, since the IDs
     // have been renamed a couple times.
@@ -139,16 +133,14 @@ export const CreateDaoForm = ({
     }
 
     // Merge defaults in case there are any new fields.
-    const votingModuleCreator = getVotingModuleCreatorById(
-      cached.votingModuleCreator.id
-    )
+    const creator = getCreatorById(cached.creator.id)
     merge(
       // Merges into this object.
-      cached.votingModuleCreator.data,
+      cached.creator.data,
       // Start with defaults.
-      votingModuleCreator?.defaultConfig,
+      creator?.defaultConfig,
       // Overwrite with existing values.
-      cached.votingModuleCreator.data
+      cached.creator.data
     )
 
     cached.proposalModuleAdapters?.forEach((adapter) => {
@@ -194,10 +186,7 @@ export const CreateDaoForm = ({
     name,
     description,
     imageUrl,
-    votingModuleCreator: {
-      id: votingModuleCreatorId,
-      data: votingModuleCreatorData,
-    },
+    creator: { id: creatorId, data: creatorData },
     proposalModuleAdapters,
     votingConfig,
   } = newDao
@@ -254,16 +243,15 @@ export const CreateDaoForm = ({
 
   //! Adapters and message generators
 
-  // Get voting module creators.
-  const availableVotingModuleCreators: CreateDaoContext['availableVotingModuleCreators'] =
-    useMemo(() => getVotingModuleCreators(), [])
-
-  // Get selected voting module creator.
-  const votingModuleCreator = useMemo(
-    () => getVotingModuleCreatorById(votingModuleCreatorId),
-    [votingModuleCreatorId]
+  // Get available creators.
+  const availableCreators: CreateDaoContext['availableCreators'] = useMemo(
+    () => getCreators(),
+    []
   )
-  if (!votingModuleCreator) {
+
+  // Get selected creator.
+  const creator = useMemo(() => getCreatorById(creatorId), [creatorId])
+  if (!creator) {
     throw new Error(t('error.loadingData'))
   }
 
@@ -290,20 +278,13 @@ export const CreateDaoForm = ({
 
   // Generate instantiation message.
   const generateInstantiateMsg = useCallback(() => {
-    // Generate voting module adapter instantiation message.
-    const votingModuleInstantiateInfo = votingModuleCreator.getInstantiateInfo(
-      newDao,
-      votingModuleCreatorData,
-      t
-    )
-
     // Generate proposal module adapters' instantiation messages.
     const proposalModuleInstantiateInfos =
       proposalModuleDaoCreationAdapters.map(({ getInstantiateInfo }, index) =>
         getInstantiateInfo(newDao, proposalModuleAdapters[index].data, t)
       )
 
-    const instantiateMsg: DaoCoreV2InstantiateMsg = {
+    let instantiateMsg: DaoCoreV2InstantiateMsg = {
       // If parentDao exists, let's make a subDAO :D
       admin: parentDao?.coreAddress ?? null,
       automatically_add_cw20s: true,
@@ -312,8 +293,17 @@ export const CreateDaoForm = ({
       image_url: imageUrl ?? null,
       name,
       proposal_modules_instantiate_info: proposalModuleInstantiateInfos,
-      voting_module_instantiate_info: votingModuleInstantiateInfo,
+      // Placeholder. Should be replaced by creator's mutate function.
+      voting_module_instantiate_info: {
+        code_id: -1,
+        label: '',
+        msg: '',
+      },
     }
+
+    // Mutate instantiateMsg via creator. Voting module adapter should be set
+    // through this.
+    instantiateMsg = creator.mutate(instantiateMsg, newDao, creatorData, t)
 
     // Validate and throw error if invalid according to JSON schema.
     validateInstantiateMsg(instantiateMsg)
@@ -329,8 +319,8 @@ export const CreateDaoForm = ({
     proposalModuleDaoCreationAdapters,
     t,
     validateInstantiateMsg,
-    votingModuleCreator,
-    votingModuleCreatorData,
+    creator,
+    creatorData,
   ])
 
   //! Submit handlers
@@ -384,8 +374,8 @@ export const CreateDaoForm = ({
     useState<CreateDaoCustomValidator>()
 
   const daoVotingTokenBasedCreatorData =
-    votingModuleCreatorId === DaoVotingTokenBasedCreatorId
-      ? (votingModuleCreatorData as DaoVotingTokenBasedCreatorConfig)
+    creatorId === TokenBasedCreatorId
+      ? (creatorData as TokenBasedCreatorData)
       : undefined
 
   const awaitNextBlock = useAwaitNextBlock()
@@ -420,7 +410,7 @@ export const CreateDaoForm = ({
 
             // Get tokenSymbol and tokenBalance for DAO card.
             const { tokenSymbol, tokenBalance, tokenDecimals } =
-              votingModuleCreatorId === DaoVotingTokenBasedCreatorId &&
+              creatorId === TokenBasedCreatorId &&
               daoVotingTokenBasedCreatorData
                 ? //! Display governance token supply if using governance tokens.
                   {
@@ -539,7 +529,7 @@ export const CreateDaoForm = ({
       t,
       mode,
       refreshBalances,
-      votingModuleCreatorId,
+      creatorId,
       daoVotingTokenBasedCreatorData,
       setDaoCreatedCardProps,
       name,
@@ -597,17 +587,17 @@ export const CreateDaoForm = ({
       generateInstantiateMsg,
       setCustomValidator: (fn) => setCustomValidator(() => fn),
       commonVotingConfig: loadCommonVotingConfigItems(),
-      availableVotingModuleCreators,
-      votingModuleCreator,
+      availableCreators,
+      creator,
       proposalModuleDaoCreationAdapters,
       SuspenseLoader,
     }),
     [
-      availableVotingModuleCreators,
+      availableCreators,
       form,
       generateInstantiateMsg,
       proposalModuleDaoCreationAdapters,
-      votingModuleCreator,
+      creator,
     ]
   )
 

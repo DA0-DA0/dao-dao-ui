@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer'
 
-import { DaoCreationGetInstantiateInfo, TokenType } from '@dao-dao/types'
+import { DaoCreatorMutate, TokenType } from '@dao-dao/types'
 import {
   Cw20Coin,
   InstantiateMsg as DaoVotingCw20StakedInstantiateMsg,
@@ -8,8 +8,8 @@ import {
 import { InstantiateMsg as DaoVotingNativeStakedInstantiateMsg } from '@dao-dao/types/contracts/DaoVotingNativeStaked'
 import {
   CODE_ID_CONFIG,
-  DaoVotingTokenBasedCreatorId,
   NEW_DAO_CW20_DECIMALS,
+  TokenBasedCreatorId,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
 } from '@dao-dao/utils'
@@ -17,11 +17,10 @@ import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
 import cw20InstantiateSchema from './instantiate_schema_cw20.json'
 import nativeInstantiateSchema from './instantiate_schema_native.json'
-import { GovernanceTokenType, VotingModuleCreatorConfig } from './types'
+import { CreatorData, GovernanceTokenType } from './types'
 
-export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
-  VotingModuleCreatorConfig
-> = (
+export const mutate: DaoCreatorMutate<CreatorData> = (
+  msg,
   { name: daoName },
   {
     tiers,
@@ -37,7 +36,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     tokenType === GovernanceTokenType.NewCw20 ||
     existingTokenType === TokenType.Cw20
 
-  let msg:
+  let votingModuleAdapterInstantiateMsg:
     | DaoVotingCw20StakedInstantiateMsg
     | DaoVotingNativeStakedInstantiateMsg
 
@@ -64,7 +63,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       microInitialBalances.reduce((acc, { amount }) => acc + Number(amount), 0)
     ).toString()
 
-    msg = {
+    votingModuleAdapterInstantiateMsg = {
       token_info: {
         new: {
           code_id: CODE_ID_CONFIG.Cw20Base,
@@ -86,7 +85,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       throw new Error(t('error.missingGovernanceTokenAddress'))
     }
 
-    msg = {
+    votingModuleAdapterInstantiateMsg = {
       token_info: {
         existing: {
           address: existingTokenDenomOrAddress,
@@ -105,7 +104,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       throw new Error(t('error.missingGovernanceTokenAddress'))
     }
 
-    msg = {
+    votingModuleAdapterInstantiateMsg = {
       denom: existingTokenDenomOrAddress,
       owner: { core_module: {} },
       unstaking_duration:
@@ -121,16 +120,21 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   >(
     isCw20 ? cw20InstantiateSchema : nativeInstantiateSchema,
     t
-  )(msg)
+  )(votingModuleAdapterInstantiateMsg)
 
-  return {
+  msg.voting_module_instantiate_info = {
     admin: { core_module: {} },
     code_id: isCw20
       ? CODE_ID_CONFIG.DaoVotingCw20Staked
       : CODE_ID_CONFIG.DaoVotingNativeStaked,
-    label: `DAO_${daoName}_${DaoVotingTokenBasedCreatorId}_${
+    label: `DAO_${daoName}_${TokenBasedCreatorId}_${
       isCw20 ? 'cw20' : 'native'
     }`,
-    msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
+    msg: Buffer.from(
+      JSON.stringify(votingModuleAdapterInstantiateMsg),
+      'utf8'
+    ).toString('base64'),
   }
+
+  return msg
 }

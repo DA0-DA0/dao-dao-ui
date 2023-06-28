@@ -5,9 +5,9 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
-  VotingModuleCreatorConfig as DaoVotingTokenBasedCreatorConfig,
   GovernanceTokenType,
-} from '@dao-dao/stateful/voting-module-adapter/creators/DaoVotingTokenBased/types'
+  CreatorData as TokenBasedCreatorData,
+} from '@dao-dao/stateful/creators/TokenBased/types'
 import {
   AddressInput,
   FormSwitchCard,
@@ -30,9 +30,9 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_BECH32_PREFIX,
-  DaoVotingTokenBasedCreatorId,
   NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
+  TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
   ibcAssets,
   isValidContractAddress,
@@ -42,7 +42,7 @@ import {
 const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
 
 const ProposalDepositInput = ({
-  newDao: { votingModuleCreator },
+  newDao: { creator },
   data: {
     proposalDeposit: { enabled, type, denomOrAddress, token },
   },
@@ -53,24 +53,22 @@ const ProposalDepositInput = ({
 }: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithProposalDeposit>) => {
   const { t } = useTranslation()
 
-  const isDaoVotingTokenBasedCreator =
-    votingModuleCreator.id === DaoVotingTokenBasedCreatorId
-  const tokenBasedCreatorConfig =
-    votingModuleCreator.data as DaoVotingTokenBasedCreatorConfig
+  const isTokenBasedCreator = creator.id === TokenBasedCreatorId
+  const tokenBasedCreatorData = creator.data as TokenBasedCreatorData
 
   const governanceTokenLoadable = useRecoilValueLoadable(
-    isDaoVotingTokenBasedCreator
-      ? tokenBasedCreatorConfig.tokenType === GovernanceTokenType.NewCw20
+    isTokenBasedCreator
+      ? tokenBasedCreatorData.tokenType === GovernanceTokenType.NewCw20
         ? constSelector({
             type: TokenType.Cw20,
             denomOrAddress: '',
-            symbol: tokenBasedCreatorConfig.newInfo.symbol,
+            symbol: tokenBasedCreatorData.newInfo.symbol,
             decimals: NEW_DAO_CW20_DECIMALS,
-            imageUrl: tokenBasedCreatorConfig.newInfo.imageUrl,
+            imageUrl: tokenBasedCreatorData.newInfo.imageUrl,
           })
         : genericTokenSelector({
-            type: tokenBasedCreatorConfig.existingTokenType,
-            denomOrAddress: tokenBasedCreatorConfig.existingTokenDenomOrAddress,
+            type: tokenBasedCreatorData.existingTokenType,
+            denomOrAddress: tokenBasedCreatorData.existingTokenDenomOrAddress,
           })
       : constSelector(undefined)
   )
@@ -133,7 +131,7 @@ const ProposalDepositInput = ({
 
   const availableTokens: TokenInputOption[] = [
     // Governance token first.
-    ...(isDaoVotingTokenBasedCreator &&
+    ...(isTokenBasedCreator &&
     governanceTokenLoadable.state === 'hasValue' &&
     !!governanceTokenLoadable.contents
       ? [

@@ -13,7 +13,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { VotingModuleCreatorConfig } from './types'
+import { CreatorData } from './types'
 
 export const UnstakingDurationInput = ({
   data: { unstakingDuration },
@@ -21,7 +21,7 @@ export const UnstakingDurationInput = ({
   setValue,
   watch,
   errors,
-}: DaoCreationVotingConfigItemInputProps<VotingModuleCreatorConfig>) => {
+}: DaoCreationVotingConfigItemInputProps<CreatorData>) => {
   const { t } = useTranslation()
 
   return (
@@ -59,14 +59,14 @@ export const UnstakingDurationInput = ({
 
 export const UnstakingDurationReview = ({
   data: { unstakingDuration },
-}: DaoCreationVotingConfigItemReviewProps<VotingModuleCreatorConfig>) => {
+}: DaoCreationVotingConfigItemReviewProps<CreatorData>) => {
   const { t } = useTranslation()
   return (
     <>{convertDurationWithUnitsToHumanReadableString(t, unstakingDuration)}</>
   )
 }
 
-export const UnstakingDurationVotingConfigItem: DaoCreationVotingConfigItem<VotingModuleCreatorConfig> =
+export const UnstakingDurationVotingConfigItem: DaoCreationVotingConfigItem<CreatorData> =
   {
     Icon: ClockEmoji,
     nameI18nKey: 'form.unstakingDurationTitle',

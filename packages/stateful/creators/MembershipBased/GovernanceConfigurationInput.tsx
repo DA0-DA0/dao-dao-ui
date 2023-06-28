@@ -17,10 +17,10 @@ import {
   DaoCreationGovernanceConfigInputProps,
 } from '@dao-dao/types'
 
-import { EntityDisplay } from '../../../components/EntityDisplay'
-import { DaoVotingMembershipBasedCreator } from '../DaoVotingMembershipBased'
+import { MembershipBasedCreator } from '.'
+import { EntityDisplay } from '../../components/EntityDisplay'
 import { TierCard } from './TierCard'
-import { VotingModuleCreatorConfig } from './types'
+import { CreatorData } from './types'
 
 export const GovernanceConfigurationInput = ({
   data,
@@ -36,7 +36,7 @@ export const GovernanceConfigurationInput = ({
     },
     setCustomValidator,
   },
-}: DaoCreationGovernanceConfigInputProps<VotingModuleCreatorConfig>) => {
+}: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
   const { address: walletAddress } = useWallet()
 
@@ -46,14 +46,12 @@ export const GovernanceConfigurationInput = ({
     remove: removeTier,
   } = useFieldArray({
     control,
-    name: 'votingModuleCreator.data.tiers',
+    name: 'creator.data.tiers',
   })
 
   const addTierRef = useRef<HTMLButtonElement>(null)
   const addTier = useCallback(() => {
-    appendTier(
-      cloneDeep(DaoVotingMembershipBasedCreator.defaultConfig.tiers[0])
-    )
+    appendTier(cloneDeep(MembershipBasedCreator.defaultConfig.tiers[0]))
     // Scroll button to bottom of screen.
     addTierRef.current?.scrollIntoView({
       behavior: 'smooth',
@@ -77,12 +75,9 @@ export const GovernanceConfigurationInput = ({
     )
       return
 
-    setValue('votingModuleCreator.data.tiers.0.name', t('form.defaultTierName'))
+    setValue('creator.data.tiers.0.name', t('form.defaultTierName'))
     if (walletAddress) {
-      setValue(
-        'votingModuleCreator.data.tiers.0.members.0.address',
-        walletAddress
-      )
+      setValue('creator.data.tiers.0.members.0.address', walletAddress)
     }
   }, [data.tiers, loadedPage, setValue, t, walletAddress])
 
@@ -101,28 +96,26 @@ export const GovernanceConfigurationInput = ({
       // Ensure voting power has been given to at least one member.
       if (totalWeight === 0) {
         if (setNewErrors) {
-          setError('votingModuleCreator.data._tiersError', {
+          setError('creator.data._tiersError', {
             message: t('error.noVotingPower'),
           })
         }
         valid = false
-      } else if (errors?.votingModuleCreator?.data?._tiersError) {
-        clearErrors('votingModuleCreator.data._tiersError')
+      } else if (errors?.creator?.data?._tiersError) {
+        clearErrors('creator.data._tiersError')
       }
 
       // Ensure each tier has at least one member.
       data.tiers.forEach((tier, tierIndex) => {
         if (tier.members.length === 0) {
           if (setNewErrors) {
-            setError(`votingModuleCreator.data.tiers.${tierIndex}._error`, {
+            setError(`creator.data.tiers.${tierIndex}._error`, {
               message: t('error.noMembers'),
             })
           }
           valid = false
-        } else if (
-          errors?.votingModuleCreator?.data?.tiers?.[tierIndex]?._error
-        ) {
-          clearErrors(`votingModuleCreator.data.tiers.${tierIndex}._error`)
+        } else if (errors?.creator?.data?.tiers?.[tierIndex]?._error) {
+          clearErrors(`creator.data.tiers.${tierIndex}._error`)
         }
       })
 
@@ -131,8 +124,8 @@ export const GovernanceConfigurationInput = ({
     [
       clearErrors,
       data.tiers,
-      errors?.votingModuleCreator?.data?._tiersError,
-      errors?.votingModuleCreator?.data?.tiers,
+      errors?.creator?.data?._tiersError,
+      errors?.creator?.data?.tiers,
       setError,
       t,
     ]
@@ -208,9 +201,7 @@ export const GovernanceConfigurationInput = ({
             <p>{t('button.addTier')}</p>
           </Button>
 
-          <InputErrorMessage
-            error={errors.votingModuleCreator?.data?._tiersError}
-          />
+          <InputErrorMessage error={errors.creator?.data?._tiersError} />
         </div>
       </div>
     </>

@@ -5,7 +5,7 @@ export enum GovernanceTokenType {
   Existing,
 }
 
-export interface VotingModuleCreatorConfig {
+export interface CreatorData {
   tokenType: GovernanceTokenType
   existingGovernanceTokenDenomOrAddress: string
   // TokenInfoResponse

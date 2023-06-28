@@ -11,7 +11,7 @@ import { DaoCreateConfigReviewCard } from '../DaoCreateConfigReviewCard'
 export const CreateDaoReview = ({
   form: { watch },
   commonVotingConfig,
-  votingModuleCreator,
+  creator,
   proposalModuleDaoCreationAdapters,
   generateInstantiateMsg,
 }: CreateDaoContext) => {
@@ -19,7 +19,7 @@ export const CreateDaoReview = ({
 
   const newDao = watch()
   const {
-    votingModuleCreator: { data: votingModuleCreatorData },
+    creator: { data: creatorData },
     proposalModuleAdapters,
     votingConfig,
   } = newDao
@@ -116,18 +116,15 @@ export const CreateDaoReview = ({
         {t('title.governanceConfiguration')}
       </p>
 
-      <votingModuleCreator.governanceConfig.Review
-        data={votingModuleCreatorData}
-        newDao={newDao}
-      />
+      <creator.governanceConfig.Review data={creatorData} newDao={newDao} />
 
       <p className="title-text mt-9 mb-7 text-text-body">
         {t('title.votingConfiguration')}
       </p>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3">
-        {votingModuleCreator.votingConfig.items
-          .concat(votingModuleCreator.votingConfig.advancedItems ?? [])
+        {creator.votingConfig.items
+          .concat(creator.votingConfig.advancedItems ?? [])
           .map(
             (
               {
@@ -146,12 +143,8 @@ export const CreateDaoReview = ({
                   key={index}
                   Icon={Icon}
                   name={t(nameI18nKey)}
-                  review={
-                    <Review data={votingModuleCreatorData} newDao={newDao} />
-                  }
-                  reviewClassName={getReviewClassName?.(
-                    votingModuleCreatorData
-                  )}
+                  review={<Review data={creatorData} newDao={newDao} />}
+                  reviewClassName={getReviewClassName?.(creatorData)}
                   tooltip={tooltipI18nKey && t(tooltipI18nKey)}
                 />
               )

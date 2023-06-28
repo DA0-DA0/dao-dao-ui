@@ -46,11 +46,11 @@ import {
   validateTokenSymbol,
 } from '@dao-dao/utils'
 
-import { EntityDisplay } from '../../../components/EntityDisplay'
-import { Trans } from '../../../components/Trans'
-import { DaoVotingTokenBasedCreator } from '../DaoVotingTokenBased'
+import { TokenBasedCreator } from '.'
+import { EntityDisplay } from '../../components/EntityDisplay'
+import { Trans } from '../../components/Trans'
 import { TierCard } from './TierCard'
-import { GovernanceTokenType, VotingModuleCreatorConfig } from './types'
+import { CreatorData, GovernanceTokenType } from './types'
 
 export const GovernanceConfigurationInput = ({
   data,
@@ -66,7 +66,7 @@ export const GovernanceConfigurationInput = ({
     },
     setCustomValidator,
   },
-}: DaoCreationGovernanceConfigInputProps<VotingModuleCreatorConfig>) => {
+}: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
   const { address: walletAddress } = useWallet()
 
@@ -76,12 +76,12 @@ export const GovernanceConfigurationInput = ({
     remove: removeTier,
   } = useFieldArray({
     control,
-    name: 'votingModuleCreator.data.tiers',
+    name: 'creator.data.tiers',
   })
 
   const addTierRef = useRef<HTMLButtonElement>(null)
   const addTier = useCallback(() => {
-    appendTier(cloneDeep(DaoVotingTokenBasedCreator.defaultConfig.tiers[0]))
+    appendTier(cloneDeep(TokenBasedCreator.defaultConfig.tiers[0]))
     // Scroll button to bottom of screen.
     addTierRef.current?.scrollIntoView({
       behavior: 'smooth',
@@ -105,12 +105,9 @@ export const GovernanceConfigurationInput = ({
     )
       return
 
-    setValue('votingModuleCreator.data.tiers.0.name', t('form.defaultTierName'))
+    setValue('creator.data.tiers.0.name', t('form.defaultTierName'))
     if (walletAddress) {
-      setValue(
-        'votingModuleCreator.data.tiers.0.members.0.address',
-        walletAddress
-      )
+      setValue('creator.data.tiers.0.members.0.address', walletAddress)
     }
   }, [data.tiers, loadedPage, setValue, t, walletAddress])
 
@@ -129,28 +126,26 @@ export const GovernanceConfigurationInput = ({
       // Ensure voting power has been given to at least one member.
       if (totalWeight === 0) {
         if (setNewErrors) {
-          setError('votingModuleCreator.data._tiersError', {
+          setError('creator.data._tiersError', {
             message: t('error.noVotingPower'),
           })
         }
         valid = false
-      } else if (errors?.votingModuleCreator?.data?._tiersError) {
-        clearErrors('votingModuleCreator.data._tiersError')
+      } else if (errors?.creator?.data?._tiersError) {
+        clearErrors('creator.data._tiersError')
       }
 
       // Ensure each tier has at least one member.
       data.tiers.forEach((tier, tierIndex) => {
         if (tier.members.length === 0) {
           if (setNewErrors) {
-            setError(`votingModuleCreator.data.tiers.${tierIndex}._error`, {
+            setError(`creator.data.tiers.${tierIndex}._error`, {
               message: t('error.noMembers'),
             })
           }
           valid = false
-        } else if (
-          errors?.votingModuleCreator?.data?.tiers?.[tierIndex]?._error
-        ) {
-          clearErrors(`votingModuleCreator.data.tiers.${tierIndex}._error`)
+        } else if (errors?.creator?.data?.tiers?.[tierIndex]?._error) {
+          clearErrors(`creator.data.tiers.${tierIndex}._error`)
         }
       })
 
@@ -159,8 +154,8 @@ export const GovernanceConfigurationInput = ({
     [
       clearErrors,
       data.tiers,
-      errors?.votingModuleCreator?.data?._tiersError,
-      errors?.votingModuleCreator?.data?.tiers,
+      errors?.creator?.data?._tiersError,
+      errors?.creator?.data?.tiers,
       setError,
       t,
     ]
@@ -220,13 +215,13 @@ export const GovernanceConfigurationInput = ({
   )
   useEffect(() => {
     setValue(
-      'votingModuleCreator.data.existingToken',
+      'creator.data.existingToken',
       existingGovernanceTokenLoadable.state === 'hasValue'
         ? existingGovernanceTokenLoadable.contents
         : undefined
     )
     setValue(
-      'votingModuleCreator.data.existingTokenSupply',
+      'creator.data.existingTokenSupply',
       existingGovernanceTokenSupply.state === 'hasValue'
         ? typeof existingGovernanceTokenSupply.contents === 'number'
           ? existingGovernanceTokenSupply.contents.toString()
@@ -238,14 +233,14 @@ export const GovernanceConfigurationInput = ({
       existingGovernanceTokenLoadable.state !== 'hasError' &&
       existingGovernanceTokenSupply.state !== 'hasError'
     ) {
-      if (errors?.votingModuleCreator?.data?.existingToken?._error) {
-        clearErrors('votingModuleCreator.data.existingToken._error')
+      if (errors?.creator?.data?.existingToken?._error) {
+        clearErrors('creator.data.existingToken._error')
       }
       return
     }
 
-    if (!errors?.votingModuleCreator?.data?.existingToken?._error) {
-      setError('votingModuleCreator.data.existingToken._error', {
+    if (!errors?.creator?.data?.existingToken?._error) {
+      setError('creator.data.existingToken._error', {
         type: 'manual',
         message: existingGovernanceTokenIsCw20
           ? t('error.failedToGetTokenInfo', { tokenType: 'CW20' })
@@ -255,7 +250,7 @@ export const GovernanceConfigurationInput = ({
   }, [
     clearErrors,
     existingGovernanceTokenIsCw20,
-    errors?.votingModuleCreator?.data?.existingToken?._error,
+    errors?.creator?.data?.existingToken?._error,
     existingGovernanceTokenLoadable,
     setError,
     setValue,
@@ -303,9 +298,7 @@ export const GovernanceConfigurationInput = ({
     <>
       <SegmentedControls
         className="mt-8 mb-4 w-max"
-        onSelect={(tokenType) =>
-          setValue('votingModuleCreator.data.tokenType', tokenType)
-        }
+        onSelect={(tokenType) => setValue('creator.data.tokenType', tokenType)}
         selected={data.tokenType}
         tabs={[
           {
@@ -334,8 +327,8 @@ export const GovernanceConfigurationInput = ({
                   <InputLabel name={t('form.image')} />
                   <ImageSelector
                     Trans={Trans}
-                    error={errors.votingModuleCreator?.data?.newInfo?.imageUrl}
-                    fieldName="votingModuleCreator.data.newInfo.imageUrl"
+                    error={errors.creator?.data?.newInfo?.imageUrl}
+                    fieldName="creator.data.newInfo.imageUrl"
                     register={register}
                     setValue={setValue}
                     size={40}
@@ -350,10 +343,8 @@ export const GovernanceConfigurationInput = ({
                         $
                       </p>
                       <TextInput
-                        error={
-                          errors.votingModuleCreator?.data?.newInfo?.symbol
-                        }
-                        fieldName="votingModuleCreator.data.newInfo.symbol"
+                        error={errors.creator?.data?.newInfo?.symbol}
+                        fieldName="creator.data.newInfo.symbol"
                         placeholder={t('form.governanceTokenSymbolPlaceholder')}
                         register={register}
                         validation={[validateRequired, validateTokenSymbol]}
@@ -361,7 +352,7 @@ export const GovernanceConfigurationInput = ({
                     </div>
 
                     <InputErrorMessage
-                      error={errors.votingModuleCreator?.data?.newInfo?.symbol}
+                      error={errors.creator?.data?.newInfo?.symbol}
                     />
                   </div>
                 </div>
@@ -370,14 +361,14 @@ export const GovernanceConfigurationInput = ({
                 <InputLabel name={t('form.name')} />
                 <div className="flex flex-col">
                   <TextInput
-                    error={errors.votingModuleCreator?.data?.newInfo?.name}
-                    fieldName="votingModuleCreator.data.newInfo.name"
+                    error={errors.creator?.data?.newInfo?.name}
+                    fieldName="creator.data.newInfo.name"
                     placeholder={t('form.governanceTokenNamePlaceholder')}
                     register={register}
                     validation={[validateRequired]}
                   />
                   <InputErrorMessage
-                    error={errors.votingModuleCreator?.data?.newInfo?.name}
+                    error={errors.creator?.data?.newInfo?.name}
                   />
                 </div>
               </div>
@@ -393,10 +384,8 @@ export const GovernanceConfigurationInput = ({
                   <NumberInput
                     className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                     containerClassName="grow"
-                    error={
-                      errors.votingModuleCreator?.data?.newInfo?.initialSupply
-                    }
-                    fieldName="votingModuleCreator.data.newInfo.initialSupply"
+                    error={errors.creator?.data?.newInfo?.initialSupply}
+                    fieldName="creator.data.newInfo.initialSupply"
                     ghost
                     register={register}
                     step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
@@ -411,9 +400,7 @@ export const GovernanceConfigurationInput = ({
 
                 <InputErrorMessage
                   className="self-end"
-                  error={
-                    errors.votingModuleCreator?.data?.newInfo?.initialSupply
-                  }
+                  error={errors.creator?.data?.newInfo?.initialSupply}
                 />
               </div>
             </div>
@@ -430,10 +417,9 @@ export const GovernanceConfigurationInput = ({
                       className="symbol-small-body-text font-mono leading-5 text-text-secondary"
                       containerClassName="grow"
                       error={
-                        errors.votingModuleCreator?.data?.newInfo
-                          ?.initialTreasuryPercent
+                        errors.creator?.data?.newInfo?.initialTreasuryPercent
                       }
-                      fieldName="votingModuleCreator.data.newInfo.initialTreasuryPercent"
+                      fieldName="creator.data.newInfo.initialTreasuryPercent"
                       ghost
                       register={register}
                       step={0.0001}
@@ -452,9 +438,7 @@ export const GovernanceConfigurationInput = ({
 
                   <InputErrorMessage
                     className="self-end"
-                    error={
-                      errors.votingModuleCreator?.data?.newInfo?.initialSupply
-                    }
+                    error={errors.creator?.data?.newInfo?.initialSupply}
                   />
                 </div>
               </div>
@@ -523,9 +507,7 @@ export const GovernanceConfigurationInput = ({
                 <p>{t('button.addTier')}</p>
               </Button>
 
-              <InputErrorMessage
-                error={errors.votingModuleCreator?.data?._tiersError}
-              />
+              <InputErrorMessage error={errors.creator?.data?._tiersError} />
             </div>
           </div>
         </>
@@ -541,9 +523,9 @@ export const GovernanceConfigurationInput = ({
             {/* TODO(token factory): Uncomment when native/TF DAOs are allowed. */}
             {/* <SegmentedControls<TokenType.Cw20 | TokenType.Native>
               onSelect={(value) => {
-                setValue('votingModuleCreator.data.existingTokenType', value)
+                setValue('creator.data.existingTokenType', value)
                 setValue(
-                  'votingModuleCreator.data.existingTokenDenomOrAddress',
+                  'creator.data.existingTokenDenomOrAddress',
                   ''
                 )
               }}
@@ -565,10 +547,8 @@ export const GovernanceConfigurationInput = ({
             <div>
               <TextInput
                 className="symbol-small-body-text font-mono text-text-secondary"
-                error={
-                  errors.votingModuleCreator?.data?.existingTokenDenomOrAddress
-                }
-                fieldName="votingModuleCreator.data.existingTokenDenomOrAddress"
+                error={errors.creator?.data?.existingTokenDenomOrAddress}
+                fieldName="creator.data.existingTokenDenomOrAddress"
                 ghost
                 placeholder={
                   existingGovernanceTokenIsCw20
@@ -585,9 +565,8 @@ export const GovernanceConfigurationInput = ({
               />
               <InputErrorMessage
                 error={
-                  errors.votingModuleCreator?.data
-                    ?.existingTokenDenomOrAddress ||
-                  errors.votingModuleCreator?.data?.existingToken?._error
+                  errors.creator?.data?.existingTokenDenomOrAddress ||
+                  errors.creator?.data?.existingToken?._error
                 }
               />
             </div>

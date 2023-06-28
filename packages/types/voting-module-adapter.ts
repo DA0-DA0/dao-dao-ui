@@ -1,14 +1,7 @@
 import { ComponentType } from 'react'
-import { FieldValues } from 'react-hook-form'
 
 import { ActionCategoryMaker } from './actions'
-import {
-  DaoCreationGetInstantiateInfo,
-  DaoCreationGovernanceConfigInputProps,
-  DaoCreationGovernanceConfigReviewProps,
-  DaoCreationVotingConfigItem,
-  DaoTabWithComponent,
-} from './dao'
+import { DaoTabWithComponent } from './dao'
 import { DaoInfoBarItem, StakingMode } from './stateless'
 import { ProfileNewProposalCardAddress } from './stateless/ProfileNewProposalCard'
 import { GenericToken } from './token'
@@ -64,29 +57,4 @@ export interface IVotingModuleAdapterContext {
   id: string
   options: IVotingModuleAdapterOptions
   adapter: IVotingModuleAdapter
-}
-
-export type VotingModuleCreator<Config extends FieldValues = any> = {
-  id: string
-  defaultConfig: Config
-
-  displayInfo: {
-    Icon: ComponentType
-    nameI18nKey: string
-    descriptionI18nKey: string
-    suppliesI18nKey: string
-    membershipI18nKey: string
-  }
-
-  governanceConfig: {
-    Input: ComponentType<DaoCreationGovernanceConfigInputProps>
-    Review: ComponentType<DaoCreationGovernanceConfigReviewProps>
-  }
-  votingConfig: {
-    items: DaoCreationVotingConfigItem[]
-    advancedItems?: DaoCreationVotingConfigItem[]
-    advancedWarningI18nKeys?: string[]
-  }
-
-  getInstantiateInfo: DaoCreationGetInstantiateInfo<Config>
 }

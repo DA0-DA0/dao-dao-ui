@@ -7,12 +7,12 @@ import {
 import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
-import { EntityDisplay } from '../../../components/EntityDisplay'
-import { VotingModuleCreatorConfig } from './types'
+import { EntityDisplay } from '../../components/EntityDisplay'
+import { CreatorData } from './types'
 
 export const GovernanceConfigurationReview = ({
   data: { tiers },
-}: DaoCreationGovernanceConfigReviewProps<VotingModuleCreatorConfig>) => {
+}: DaoCreationGovernanceConfigReviewProps<CreatorData>) => {
   const totalWeight = tiers.reduce(
     // Multiply by member count since the tier's weight applies to each member.
     (acc, { weight, members }) => acc + weight * members.length,
