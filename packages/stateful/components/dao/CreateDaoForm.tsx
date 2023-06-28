@@ -113,8 +113,8 @@ export const CreateDaoForm = ({
 
     const cached = cloneDeep(_newDaoAtom)
 
-    // Verify that the voting module adapter is still valid, since the IDs have
-    // been renamed a couple times.
+    // Verify that the creator is still valid, since the IDs have been renamed a
+    // couple times.
     if (!cached?.creator || !getCreatorById(cached.creator.id)) {
       cached.creator = defaultNewDao.creator
     }
