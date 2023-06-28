@@ -19,7 +19,7 @@ export const CreateDaoVoting = ({
     items: commonVotingConfigItems,
     advancedItems: commonVotingConfigAdvancedItems,
   },
-  votingModuleDaoCreationAdapter,
+  creator,
   proposalModuleDaoCreationAdapters,
   SuspenseLoader,
 }: CreateDaoContext) => {
@@ -27,7 +27,7 @@ export const CreateDaoVoting = ({
 
   const newDao = watch()
   const {
-    votingModuleAdapter,
+    creator: { data: creatorData },
     proposalModuleAdapters,
     advancedVotingConfigEnabled,
     votingConfig,
@@ -39,8 +39,7 @@ export const CreateDaoVoting = ({
       // General warning.
       'info.advancedVotingConfigWarning',
       // Specific adapter warnings.
-      ...(votingModuleDaoCreationAdapter.votingConfig.advancedWarningI18nKeys ??
-        []),
+      ...(creator.votingConfig.advancedWarningI18nKeys ?? []),
       ...proposalModuleDaoCreationAdapters.flatMap(
         ({ extraVotingConfig: { advancedWarningI18nKeys = [] } = {} }) =>
           advancedWarningI18nKeys
@@ -48,7 +47,7 @@ export const CreateDaoVoting = ({
     ],
     [
       proposalModuleDaoCreationAdapters,
-      votingModuleDaoCreationAdapter.votingConfig.advancedWarningI18nKeys,
+      creator.votingConfig.advancedWarningI18nKeys,
     ]
   )
 
@@ -70,7 +69,7 @@ export const CreateDaoVoting = ({
         </p>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {votingModuleDaoCreationAdapter.votingConfig.items.map(
+          {creator.votingConfig.items.map(
             (
               {
                 onlyDisplayCondition,
@@ -90,23 +89,23 @@ export const CreateDaoVoting = ({
                   Icon={Icon}
                   SuspenseLoader={SuspenseLoader}
                   description={t(descriptionI18nKey)}
-                  error={getInputError(errors.votingModuleAdapter?.data)}
+                  error={getInputError(errors.creator?.data)}
                   input={
                     <Input
-                      data={votingModuleAdapter.data}
-                      errors={errors.votingModuleAdapter?.data}
+                      data={creatorData}
+                      errors={errors.creator?.data}
                       newDao={newDao}
                       register={(fieldName, options) =>
                         register(
-                          ('votingModuleAdapter.data.' +
-                            fieldName) as `votingModuleAdapter.data.${string}`,
+                          ('creator.data.' +
+                            fieldName) as `creator.data.${string}`,
                           options
                         )
                       }
                       setValue={(fieldName, value, options) =>
                         setValue(
-                          ('votingModuleAdapter.data.' +
-                            fieldName) as `votingModuleAdapter.data.${string}`,
+                          ('creator.data.' +
+                            fieldName) as `creator.data.${string}`,
                           value,
                           {
                             // Validate by default.
@@ -117,8 +116,8 @@ export const CreateDaoVoting = ({
                       }
                       watch={(fieldName) =>
                         watch(
-                          ('votingModuleAdapter.data.' +
-                            fieldName) as `votingModuleAdapter.data.${string}`
+                          ('creator.data.' +
+                            fieldName) as `creator.data.${string}`
                         )
                       }
                     />
@@ -296,7 +295,7 @@ export const CreateDaoVoting = ({
           )}
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {votingModuleDaoCreationAdapter.votingConfig.advancedItems?.map(
+            {creator.votingConfig.advancedItems?.map(
               (
                 {
                   onlyDisplayCondition,
@@ -316,23 +315,23 @@ export const CreateDaoVoting = ({
                     Icon={Icon}
                     SuspenseLoader={SuspenseLoader}
                     description={t(descriptionI18nKey)}
-                    error={getInputError(errors.votingModuleAdapter?.data)}
+                    error={getInputError(errors.creator?.data)}
                     input={
                       <Input
-                        data={votingModuleAdapter.data}
-                        errors={errors.votingModuleAdapter?.data}
+                        data={creatorData}
+                        errors={errors.creator?.data}
                         newDao={newDao}
                         register={(fieldName, options) =>
                           register(
-                            ('votingModuleAdapter.data.' +
-                              fieldName) as `votingModuleAdapter.data.${string}`,
+                            ('creator.data.' +
+                              fieldName) as `creator.data.${string}`,
                             options
                           )
                         }
                         setValue={(fieldName, value, options) =>
                           setValue(
-                            ('votingModuleAdapter.data.' +
-                              fieldName) as `votingModuleAdapter.data.${string}`,
+                            ('creator.data.' +
+                              fieldName) as `creator.data.${string}`,
                             value,
                             {
                               // Validate by default.
@@ -343,8 +342,8 @@ export const CreateDaoVoting = ({
                         }
                         watch={(fieldName) =>
                           watch(
-                            ('votingModuleAdapter.data.' +
-                              fieldName) as `votingModuleAdapter.data.${string}`
+                            ('creator.data.' +
+                              fieldName) as `creator.data.${string}`
                           )
                         }
                       />

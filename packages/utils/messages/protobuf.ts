@@ -40,7 +40,7 @@ import { MsgInstantiateContract2 } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { Any } from 'cosmjs-types/google/protobuf/any'
 import { Timestamp } from 'cosmjs-types/google/protobuf/timestamp'
 import { cosmos } from 'interchain-rpc'
-import { juno } from 'juno-network'
+import { juno, osmosis } from 'juno-network'
 import Long from 'long'
 
 import {
@@ -450,10 +450,12 @@ export const typesRegistry = new Registry([
 
   // Custom types not in default registry.
   ...([
+    ['/google.protobuf.Timestamp', Timestamp],
     ['/cosmos.slashing.v1beta1.MsgUnjail', MsgUnjail],
+    ['/cosmos.crypto.ed25519.PubKey', PubKey],
+    // Authz
     ['/cosmos.authz.v1beta1.GenericAuthorization', GenericAuthorization],
     ['/cosmos.authz.v1beta1.Grant', Grant],
-    ['/cosmos.crypto.ed25519.PubKey', PubKey],
     ['/cosmos.bank.v1beta1.SendAuthorization', SendAuthorization],
     ['/cosmwasm.wasm.v1.AcceptedMessageKeysFilter', AcceptedMessageKeysFilter],
     ['/cosmwasm.wasm.v1.AcceptedMessagesFilter', AcceptedMessagesFilter],
@@ -461,7 +463,6 @@ export const typesRegistry = new Registry([
     ['/cosmwasm.wasm.v1.CombinedLimit', CombinedLimit],
     ['/cosmwasm.wasm.v1.MaxCallsLimit', MaxCallsLimit],
     ['/cosmwasm.wasm.v1.MaxFundsLimit', MaxFundsLimit],
-    ['/google.protobuf.Timestamp', Timestamp],
     [
       '/cosmwasm.wasm.v1.ContractExecutionAuthorization',
       ContractExecutionAuthorization,
@@ -471,12 +472,22 @@ export const typesRegistry = new Registry([
       '/cosmwasm.wasm.v1.ContractMigrationAuthorization',
       ContractMigrationAuthorization,
     ],
+    // Fee share
     [
       '/juno.feeshare.v1.MsgRegisterFeeShare',
       juno.feeshare.v1.MsgRegisterFeeShare,
     ],
     ['/juno.feeshare.v1.MsgUpdateFeeShare', juno.feeshare.v1.MsgUpdateFeeShare],
     ['/cosmwasm.wasm.v1.MsgInstantiateContract2', MsgInstantiateContract2],
+    // Token factory
+    [
+      '/osmosis.tokenfactory.v1beta1.MsgCreateDenom',
+      osmosis.tokenfactory.v1beta1.MsgCreateDenom,
+    ],
+    [
+      '/osmosis.tokenfactory.v1beta1.MsgMint',
+      osmosis.tokenfactory.v1beta1.MsgMint,
+    ],
   ] as ReadonlyArray<[string, GeneratedType]>),
 ])
 

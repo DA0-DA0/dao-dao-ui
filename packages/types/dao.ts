@@ -15,6 +15,7 @@ import {
 import { ContractVersion } from './chain'
 import { DepositRefundPolicy, ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
+import { DaoCreator } from './creators'
 import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
@@ -22,7 +23,6 @@ import {
 import { DaoCardProps, SuspenseLoaderProps } from './stateless'
 import { GenericToken } from './token'
 import { DurationWithUnits } from './units'
-import { VotingModuleAdapter } from './voting-module-adapter'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
 export interface DaoInfo {
@@ -117,29 +117,24 @@ export interface ProposalDraft<FormData = any> {
 
 export type CreateDaoCustomValidator = (setNewErrors: boolean) => void
 
-export interface CreateDaoContext<
-  VotingModuleAdapterModuleData extends FieldValues = any
-> {
-  form: UseFormReturn<NewDao<VotingModuleAdapterModuleData>>
-  availableVotingModuleAdapters: Pick<
-    Required<VotingModuleAdapter>,
-    'id' | 'daoCreation'
-  >[]
+export interface CreateDaoContext<CreatorData extends FieldValues = any> {
+  form: UseFormReturn<NewDao<CreatorData>>
   commonVotingConfig: DaoCreationCommonVotingConfigItems
-  votingModuleDaoCreationAdapter: Required<VotingModuleAdapter>['daoCreation']
+  availableCreators: readonly DaoCreator[]
+  creator: DaoCreator
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
   generateInstantiateMsg: () => DaoCoreV2InstantiateMsg
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
-export interface NewDao<VotingModuleAdapterData extends FieldValues = any> {
+export interface NewDao<CreatorData extends FieldValues = any> {
   name: string
   description: string
   imageUrl?: string
-  votingModuleAdapter: {
+  creator: {
     id: string
-    data: VotingModuleAdapterData
+    data: CreatorData
   }
   proposalModuleAdapters: {
     id: string

@@ -11,18 +11,19 @@ import {
   CHAIN_BECH32_PREFIX,
   getFallbackImage,
   isValidContractAddress,
+  isValidTokenFactoryDenom,
   isValidWalletAddress,
   nativeTokenDecimals,
   nativeTokenLabel,
   nativeTokenLogoURI,
 } from '@dao-dao/utils'
 
-import { nativeBalanceSelector, nativeBalancesSelector } from './chain'
 import {
-  Cw20BaseSelectors,
-  Cw20StakeSelectors,
-  DaoCoreV2Selectors,
-} from './contracts'
+  denomMetadataSelector,
+  nativeBalanceSelector,
+  nativeBalancesSelector,
+} from './chain'
+import { Cw20BaseSelectors, DaoCoreV2Selectors } from './contracts'
 import { walletCw20BalancesSelector } from './wallet'
 import { wyndUsdPriceSelector } from './wynd'
 
@@ -41,7 +42,14 @@ export const genericTokenSelector = selectorFamily<
               chainId,
               params: [],
             })
-          : constSelector({
+          : // Native factory tokens.
+          isValidTokenFactoryDenom(denomOrAddress, CHAIN_BECH32_PREFIX)
+          ? factoryTokenInfoSelector({
+              denom: denomOrAddress,
+              chainId,
+            })
+          : // Native IBC tokens.
+            constSelector({
               decimals: nativeTokenDecimals(denomOrAddress) ?? 0,
               symbol: nativeTokenLabel(denomOrAddress),
             })
@@ -172,54 +180,31 @@ export const genericTokenBalanceSelector = selectorFamily<
     },
 })
 
-// Returns a list of DAOs that use the given cw20 token as their governance
-// token with the staked balance of the given wallet address for each.
-export const cw20TokenDaosWithStakedBalanceSelector = selectorFamily<
+export const factoryTokenInfoSelector = selectorFamily<
   {
-    coreAddress: string
-    stakingContractAddress: string
-    stakedBalance: number
-  }[],
-  WithChainId<{
-    cw20Address: string
-    walletAddress: string
-  }>
+    symbol: string
+    decimals: number
+  },
+  WithChainId<{ denom: string }>
 >({
-  key: 'cw20TokenDaosWithStakedBalance',
+  key: 'factoryTokenInfo',
   get:
-    ({ cw20Address, walletAddress, chainId }) =>
-    ({ get }) => {
-      const daos = get(
-        Cw20BaseSelectors.daosWithVotingAndStakingContractSelector({
-          contractAddress: cw20Address,
-          chainId,
-        })
-      )
+    (params) =>
+    async ({ get }) => {
+      const { base, denomUnits, symbol } = get(denomMetadataSelector(params))
 
-      const daosWalletStakedTokens = get(
-        waitForAll(
-          daos.map(({ stakingContractAddress }) =>
-            Cw20StakeSelectors.stakedValueSelector({
-              contractAddress: stakingContractAddress,
-              params: [
-                {
-                  address: walletAddress,
-                },
-              ],
-            })
-          )
-        )
-      )
+      // `display` field not yet updated to point to the correct denom unit, so
+      // use the first one with nonzero decimals if it exists, and the first
+      // otherwise.
+      const displayDenom =
+        denomUnits.find((unit) => unit.exponent > 0) || denomUnits[0]
+      if (!displayDenom) {
+        throw new Error('No denom unit found for token factory denom')
+      }
 
-      const daosWithBalances = daos
-        .map(({ coreAddress, stakingContractAddress }, index) => ({
-          coreAddress,
-          stakingContractAddress,
-          stakedBalance: Number(daosWalletStakedTokens[index].value),
-        }))
-        // Sort descending by staked tokens.
-        .sort((a, b) => b.stakedBalance - a.stakedBalance)
-
-      return daosWithBalances
+      return {
+        symbol: symbol || base,
+        decimals: displayDenom.exponent,
+      }
     },
 })

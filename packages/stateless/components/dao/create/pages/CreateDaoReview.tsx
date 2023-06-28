@@ -11,14 +11,18 @@ import { DaoCreateConfigReviewCard } from '../DaoCreateConfigReviewCard'
 export const CreateDaoReview = ({
   form: { watch },
   commonVotingConfig,
-  votingModuleDaoCreationAdapter,
+  creator,
   proposalModuleDaoCreationAdapters,
   generateInstantiateMsg,
 }: CreateDaoContext) => {
   const { t } = useTranslation()
 
   const newDao = watch()
-  const { votingModuleAdapter, proposalModuleAdapters, votingConfig } = newDao
+  const {
+    creator: { data: creatorData },
+    proposalModuleAdapters,
+    votingConfig,
+  } = newDao
 
   const [decodeModuleMessages, setDecodeModuleMessages] = useState(true)
   const togglePreviewRef = useRef<HTMLDivElement>(null)
@@ -112,20 +116,15 @@ export const CreateDaoReview = ({
         {t('title.governanceConfiguration')}
       </p>
 
-      <votingModuleDaoCreationAdapter.governanceConfig.Review
-        data={votingModuleAdapter.data}
-        newDao={newDao}
-      />
+      <creator.governanceConfig.Review data={creatorData} newDao={newDao} />
 
       <p className="title-text mt-9 mb-7 text-text-body">
         {t('title.votingConfiguration')}
       </p>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3">
-        {votingModuleDaoCreationAdapter.votingConfig.items
-          .concat(
-            votingModuleDaoCreationAdapter.votingConfig.advancedItems ?? []
-          )
+        {creator.votingConfig.items
+          .concat(creator.votingConfig.advancedItems ?? [])
           .map(
             (
               {
@@ -144,12 +143,8 @@ export const CreateDaoReview = ({
                   key={index}
                   Icon={Icon}
                   name={t(nameI18nKey)}
-                  review={
-                    <Review data={votingModuleAdapter.data} newDao={newDao} />
-                  }
-                  reviewClassName={getReviewClassName?.(
-                    votingModuleAdapter.data
-                  )}
+                  review={<Review data={creatorData} newDao={newDao} />}
+                  reviewClassName={getReviewClassName?.(creatorData)}
                   tooltip={tooltipI18nKey && t(tooltipI18nKey)}
                 />
               )
