@@ -11,6 +11,7 @@ import { Loader, useCachedLoading } from '@dao-dao/stateless'
 import { ActionComponent, TokenType } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
+  CHAIN_GAS_MULTIPLIER,
   CODE_ID_CONFIG,
   convertDenomToMicroDenomWithDecimals,
   getNativeTokenForChainId,
@@ -108,7 +109,7 @@ export const InstantiateTokenSwap: ActionComponent<
         CODE_ID_CONFIG.CwTokenSwap,
         instantiateMsg,
         'Token Swap',
-        'auto'
+        CHAIN_GAS_MULTIPLIER
       )
 
       // Update action form data with address.

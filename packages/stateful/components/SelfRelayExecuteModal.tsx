@@ -31,6 +31,7 @@ import {
 } from '@dao-dao/stateless'
 import { PolytoneNote, SelfRelayExecuteModalProps } from '@dao-dao/types'
 import {
+  CHAIN_GAS_MULTIPLIER,
   POLYTONE_NOTES,
   convertMicroDenomToDenomWithDecimals,
   cwMsgToEncodeObject,
@@ -370,7 +371,7 @@ export const SelfRelayExecuteModal = ({
           await relayer.wallet.signingStargateClient.signAndBroadcast(
             relayer.wallet.address,
             msgs,
-            'auto'
+            CHAIN_GAS_MULTIPLIER
           )
       }
 

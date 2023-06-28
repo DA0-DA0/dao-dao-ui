@@ -8,7 +8,11 @@ import { useTranslation } from 'react-i18next'
 import { Button, useDaoInfoContext } from '@dao-dao/stateless'
 import { WidgetEditorProps } from '@dao-dao/types'
 import { InstantiateMsg as VestingFactoryInstantiateMsg } from '@dao-dao/types/contracts/CwPayrollFactory'
-import { CODE_ID_CONFIG, processError } from '@dao-dao/utils'
+import {
+  CHAIN_GAS_MULTIPLIER,
+  CODE_ID_CONFIG,
+  processError,
+} from '@dao-dao/utils'
 
 import { VestingPaymentsData } from './types'
 
@@ -41,7 +45,7 @@ export const VestingPaymentsEditor = ({
           vesting_code_id: CODE_ID_CONFIG.CwVesting,
         } as VestingFactoryInstantiateMsg,
         `DAO_${name}_VestingPayrollFactory`,
-        'auto'
+        CHAIN_GAS_MULTIPLIER
       )
 
       setValue((fieldNamePrefix + 'factory') as 'factory', contractAddress)

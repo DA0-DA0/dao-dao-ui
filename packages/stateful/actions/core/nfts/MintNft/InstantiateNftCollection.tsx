@@ -5,7 +5,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { ActionComponent, ActionContextType, ActionKey } from '@dao-dao/types'
-import { CODE_ID_CONFIG, processError } from '@dao-dao/utils'
+import {
+  CHAIN_GAS_MULTIPLIER,
+  CODE_ID_CONFIG,
+  processError,
+} from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
 import { useActionOptions } from '../../../react'
@@ -39,7 +43,7 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
         CODE_ID_CONFIG.Cw721Base,
         instantiateMsg,
         'NFT Collection',
-        'auto'
+        CHAIN_GAS_MULTIPLIER
       )
 
       // Update action form data with address.

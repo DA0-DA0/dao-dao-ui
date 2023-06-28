@@ -15,6 +15,7 @@ import {
   NullableString,
   QueryRequestForEmpty,
 } from '@dao-dao/types/contracts/PolytoneNote'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface PolytoneNoteReadOnlyInterface {
   contractAddress: string
@@ -111,7 +112,7 @@ export class PolytoneNoteClient
       msgs: QueryRequestForEmpty[]
       timeoutSeconds: Uint64
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -142,7 +143,7 @@ export class PolytoneNoteClient
       onBehalfOf?: string
       timeoutSeconds: Uint64
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

@@ -25,6 +25,7 @@ import {
 } from '@dao-dao/stateless'
 import { ActionKey, TokenCardInfo, TokenType } from '@dao-dao/types'
 import {
+  CHAIN_GAS_MULTIPLIER,
   CHAIN_ID,
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
@@ -182,7 +183,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
               walletAddress
             )
         ),
-        'auto'
+        CHAIN_GAS_MULTIPLIER
       )
 
       // Wait for balances to update.

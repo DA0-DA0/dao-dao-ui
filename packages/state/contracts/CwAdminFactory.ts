@@ -2,6 +2,7 @@ import { Coin, StdFee } from '@cosmjs/amino'
 import { ExecuteResult, SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
 import { Binary } from '@dao-dao/types/contracts/common'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface CwAdminFactoryInterface {
   contractAddress: string
@@ -48,7 +49,7 @@ export class CwAdminFactoryClient implements CwAdminFactoryInterface {
       instantiateMsg: Binary
       label: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

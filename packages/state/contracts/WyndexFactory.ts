@@ -26,6 +26,7 @@ import {
   PairsResponse,
   PartialStakeConfig,
 } from '@dao-dao/types/contracts/WyndexFactory'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface WyndexFactoryReadOnlyInterface {
   contractAddress: string
@@ -299,7 +300,7 @@ export class WyndexFactoryClient
       onlyOwnerCanCreatePairs?: boolean
       tokenCodeId?: number
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -324,7 +325,7 @@ export class WyndexFactoryClient
     }: {
       config: PairConfig
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -355,7 +356,7 @@ export class WyndexFactoryClient
       stakingConfig?: PartialStakeConfig
       totalFeeBps?: number
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -384,7 +385,7 @@ export class WyndexFactoryClient
       assetInfos: AssetInfo[]
       feeConfig: FeeConfig
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -408,7 +409,7 @@ export class WyndexFactoryClient
     }: {
       assetInfos: AssetInfo[]
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -433,7 +434,7 @@ export class WyndexFactoryClient
       expiresIn: number
       owner: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -452,7 +453,7 @@ export class WyndexFactoryClient
     )
   }
   dropOwnershipProposal = async (
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -468,7 +469,7 @@ export class WyndexFactoryClient
     )
   }
   claimOwnership = async (
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -489,7 +490,7 @@ export class WyndexFactoryClient
     }: {
       pairs: string[]
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -522,7 +523,7 @@ export class WyndexFactoryClient
       stakingConfig?: PartialStakeConfig
       totalFeeBps?: number
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -554,7 +555,7 @@ export class WyndexFactoryClient
       assetInfos: AssetInfo[]
       rewards: number[][]
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

@@ -13,7 +13,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { NftCardInfo } from '@dao-dao/types'
-import { processError } from '@dao-dao/utils'
+import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { walletStargazeNftCardInfosSelector } from '../recoil/selectors/nft'
 import { SuspenseLoader } from './SuspenseLoader'
@@ -85,7 +85,7 @@ export const InnerStargazeNftImportModal = ({
                     ).toString('base64'),
                   },
                 },
-                'auto'
+                CHAIN_GAS_MULTIPLIER
               )
               .then(() => undefined)
               .catch(() => undefined)

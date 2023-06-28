@@ -13,6 +13,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoVotingCw4'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface DaoVotingCw4ReadOnlyInterface {
   contractAddress: string
@@ -127,7 +128,7 @@ export class DaoVotingCw4Client
     }: {
       diffs: MemberDiff[]
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

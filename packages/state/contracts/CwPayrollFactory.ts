@@ -11,6 +11,7 @@ import {
   InstantiateMsg,
   OwnershipForAddr,
 } from '@dao-dao/types/contracts/CwVesting'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface CwPayrollFactoryReadOnlyInterface {
   contractAddress: string
@@ -278,7 +279,7 @@ export class CwPayrollFactoryClient
       msg: Binary
       sender: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -305,7 +306,7 @@ export class CwPayrollFactoryClient
       instantiateMsg: InstantiateMsg
       label: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -329,7 +330,7 @@ export class CwPayrollFactoryClient
     }: {
       vestingCodeId: number
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -347,7 +348,7 @@ export class CwPayrollFactoryClient
     )
   }
   updateOwnership = async (
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

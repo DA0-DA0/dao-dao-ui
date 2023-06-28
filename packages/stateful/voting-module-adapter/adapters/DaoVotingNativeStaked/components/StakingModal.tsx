@@ -17,6 +17,7 @@ import {
 } from '@dao-dao/stateless'
 import { BaseStakingModalProps } from '@dao-dao/types'
 import {
+  CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   processError,
@@ -113,7 +114,7 @@ const InnerStakingModal = ({
 
         try {
           await doStake(
-            'auto',
+            CHAIN_GAS_MULTIPLIER,
             undefined,
             coins(
               convertDenomToMicroDenomWithDecimals(

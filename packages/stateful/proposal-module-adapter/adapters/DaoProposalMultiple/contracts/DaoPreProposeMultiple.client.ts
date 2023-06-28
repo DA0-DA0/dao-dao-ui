@@ -19,6 +19,7 @@ import {
   UncheckedDenom,
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 export interface DaoPreProposeMultipleReadOnlyInterface {
   contractAddress: string
   proposalModule: () => Promise<Addr>
@@ -183,7 +184,7 @@ export class DaoPreProposeMultipleClient
     }: {
       msg: ProposeMessage
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -208,7 +209,7 @@ export class DaoPreProposeMultipleClient
       depositInfo?: UncheckedDepositInfo
       openProposalSubmission: boolean
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -232,7 +233,7 @@ export class DaoPreProposeMultipleClient
     }: {
       denom?: UncheckedDenom
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -255,7 +256,7 @@ export class DaoPreProposeMultipleClient
     }: {
       msg: Empty
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -280,7 +281,7 @@ export class DaoPreProposeMultipleClient
       proposalId: number
       proposer: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -306,7 +307,7 @@ export class DaoPreProposeMultipleClient
       newStatus: ProposalStatus
       proposalId: number
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

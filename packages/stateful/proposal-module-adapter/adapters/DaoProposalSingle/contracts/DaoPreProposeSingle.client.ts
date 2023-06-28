@@ -17,6 +17,7 @@ import {
   UncheckedDenom,
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/DaoPreProposeSingle'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface CwPreProposeSingleReadOnlyInterface {
   contractAddress: string
@@ -186,7 +187,7 @@ export class CwPreProposeSingleClient
     }: {
       msg: ProposeMessage
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -211,7 +212,7 @@ export class CwPreProposeSingleClient
       depositInfo?: UncheckedDepositInfo
       openProposalSubmission: boolean
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -235,7 +236,7 @@ export class CwPreProposeSingleClient
     }: {
       denom?: UncheckedDenom
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -258,7 +259,7 @@ export class CwPreProposeSingleClient
     }: {
       msg: Empty
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -283,7 +284,7 @@ export class CwPreProposeSingleClient
       proposalId: number
       proposer: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -309,7 +310,7 @@ export class CwPreProposeSingleClient
       newStatus: Status
       proposalId: number
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

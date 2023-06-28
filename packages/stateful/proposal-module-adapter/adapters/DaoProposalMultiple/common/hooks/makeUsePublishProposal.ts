@@ -14,6 +14,7 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import {
+  CHAIN_GAS_MULTIPLIER,
   MAX_NUM_PROPOSAL_CHOICES,
   expirationExpired,
   processError,
@@ -316,11 +317,16 @@ export const makeUsePublishProposal =
                   propose: proposalData,
                 },
               },
-              'auto',
+              CHAIN_GAS_MULTIPLIER,
               undefined,
               proposeFunds
             )
-          : await doPropose(proposalData, 'auto', undefined, proposeFunds)
+          : await doPropose(
+              proposalData,
+              CHAIN_GAS_MULTIPLIER,
+              undefined,
+              proposeFunds
+            )
 
         if (proposeFunds?.length) {
           refreshBalances()

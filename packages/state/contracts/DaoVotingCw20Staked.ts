@@ -16,6 +16,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface DaoVotingCw20StakedReadOnlyInterface {
   contractAddress: string
@@ -154,7 +155,7 @@ export class DaoVotingCw20StakedClient
     }: {
       newThreshold?: ActiveThreshold
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

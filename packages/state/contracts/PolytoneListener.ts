@@ -10,6 +10,7 @@ import {
   Callback,
   ResultResponse,
 } from '@dao-dao/types/contracts/PolytoneListener'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface PolytoneListenerReadOnlyInterface {
   contractAddress: string
@@ -104,7 +105,7 @@ export class PolytoneListenerClient
       initiatorMsg: Binary
       result: Callback
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

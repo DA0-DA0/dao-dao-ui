@@ -182,8 +182,8 @@ export const WalletProvider = ({
         const feeToken = getChainForChainId(chainInfo.chainId).fees
           ?.fee_tokens?.[0]
         const gasPrice =
-          feeToken?.high_gas_price ??
           feeToken?.average_gas_price ??
+          feeToken?.high_gas_price ??
           feeToken?.low_gas_price
         if (!feeToken || gasPrice === undefined) {
           throw new Error(`No fee token found for chain ${chainInfo.chainId}`)
@@ -198,8 +198,8 @@ export const WalletProvider = ({
         const feeToken = getChainForChainId(chainInfo.chainId).fees
           ?.fee_tokens?.[0]
         const gasPrice =
-          feeToken?.high_gas_price ??
           feeToken?.average_gas_price ??
+          feeToken?.high_gas_price ??
           feeToken?.low_gas_price
         if (!feeToken || gasPrice === undefined) {
           throw new Error(`No fee token found for chain ${chainInfo.chainId}`)

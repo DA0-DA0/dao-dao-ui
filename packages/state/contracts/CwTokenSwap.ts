@@ -7,6 +7,7 @@ import {
 
 import { Binary, Uint128 } from '@dao-dao/types/contracts/common'
 import { StatusResponse } from '@dao-dao/types/contracts/CwTokenSwap'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface CwTokenSwapReadOnlyInterface {
   contractAddress: string
@@ -88,7 +89,7 @@ export class CwTokenSwapClient
       msg: Binary
       sender: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -108,7 +109,7 @@ export class CwTokenSwapClient
     )
   }
   fund = async (
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -124,7 +125,7 @@ export class CwTokenSwapClient
     )
   }
   withdraw = async (
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

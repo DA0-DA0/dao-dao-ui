@@ -19,6 +19,7 @@ import {
   useChainContext,
 } from '@dao-dao/stateless'
 import {
+  CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   cwMsgToEncodeObject,
@@ -124,7 +125,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
               walletAddress
             ),
           ],
-          'auto'
+          CHAIN_GAS_MULTIPLIER
         )
       } else if (mode === StakingMode.Unstake) {
         await signingCosmWasmClient.signAndBroadcast(
@@ -142,7 +143,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
               walletAddress
             ),
           ],
-          'auto'
+          CHAIN_GAS_MULTIPLIER
         )
       }
 

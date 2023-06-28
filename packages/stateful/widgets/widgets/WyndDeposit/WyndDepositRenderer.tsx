@@ -40,6 +40,7 @@ import {
 } from '@dao-dao/types'
 import { ExecuteSwapOperationsMsg } from '@dao-dao/types/contracts/WyndexMultiHop'
 import {
+  CHAIN_GAS_MULTIPLIER,
   CHAIN_TXN_URL_PREFIX,
   DAO_DAO_DAO_ADDRESS,
   WYND_MULTI_HOP_CONTRACT,
@@ -268,7 +269,7 @@ export const WyndDepositRenderer = ({
             walletAddress,
             outputAddress,
             coins(outputAmount, token.denomOrAddress),
-            'auto'
+            CHAIN_GAS_MULTIPLIER
           )
         } else {
           // Cw20
@@ -281,7 +282,7 @@ export const WyndDepositRenderer = ({
                 amount: outputAmount,
               },
             },
-            'auto'
+            CHAIN_GAS_MULTIPLIER
           )
         }
       } else {
@@ -303,7 +304,7 @@ export const WyndDepositRenderer = ({
             walletAddress,
             WYND_MULTI_HOP_CONTRACT,
             msg,
-            'auto',
+            CHAIN_GAS_MULTIPLIER,
             undefined,
             coins(requiredInput, token.denomOrAddress)
           )
@@ -319,7 +320,7 @@ export const WyndDepositRenderer = ({
                 msg: JSON.stringify(msg),
               },
             },
-            'auto'
+            CHAIN_GAS_MULTIPLIER
           )
         }
       }

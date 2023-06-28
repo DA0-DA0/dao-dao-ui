@@ -18,6 +18,7 @@ import {
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
+  CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   processError,
@@ -102,7 +103,7 @@ export const DaoTokenDepositModal = ({
             address,
             depositAddress,
             coins(microAmount, token.denomOrAddress),
-            'auto'
+            CHAIN_GAS_MULTIPLIER
           )
         } else if (token.type === 'cw20') {
           await transferCw20({
