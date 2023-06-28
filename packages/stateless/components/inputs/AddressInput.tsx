@@ -268,16 +268,12 @@ export const AddressInput = <
                   <StatelessEntityDisplay
                     address={entity.address}
                     className="!gap-3"
-                    copyToClipboardProps={{
-                      textClassName: 'no-underline',
-                      tooltip: entity.address,
-                    }}
                     loadingEntity={{
                       loading: false,
                       data: entity,
                     }}
                     noCopy
-                    noImageTooltip
+                    noUnderline
                   />
                 </div>
               ))}

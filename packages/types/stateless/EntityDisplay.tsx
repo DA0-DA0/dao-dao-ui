@@ -1,5 +1,4 @@
 import { LoadingData } from './common'
-import { CopyToClipboardProps } from './CopyToClipboard'
 
 export enum EntityType {
   Dao = 'dao',
@@ -7,24 +6,25 @@ export enum EntityType {
 }
 
 // DAO or wallet representation.
-export interface Entity {
+export type Entity = {
   type: EntityType
   address: string
   name: string | null
   imageUrl: string
 }
 
-export interface EntityDisplayProps {
+export type EntityDisplayProps = {
   address: string
   chainId?: string
   loadingEntity: LoadingData<Entity>
   imageSize?: number
   hideImage?: boolean
-  copyToClipboardProps?: Partial<Omit<CopyToClipboardProps, 'label' | 'value'>>
   size?: 'default' | 'lg'
   className?: string
-  noImageTooltip?: boolean
+  textClassName?: string
   noCopy?: boolean
+  noUnderline?: boolean
+  showFullAddress?: boolean
 }
 
 export type StatefulEntityDisplayProps = Omit<
