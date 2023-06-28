@@ -54,10 +54,8 @@ export const GovernanceConfigurationReview = ({
             <Loader />
           ) : (
             tokenLoadable.state === 'hasValue' && (
-              <p className="primary-text text-text-interactive-valid">
-                {t('info.foundSymbol', {
-                  symbol: tokenLoadable.contents?.symbol,
-                })}
+              <p className="primary-text pl-6 text-text-interactive-valid">
+                ${tokenLoadable.contents?.symbol}
               </p>
             )
           )}

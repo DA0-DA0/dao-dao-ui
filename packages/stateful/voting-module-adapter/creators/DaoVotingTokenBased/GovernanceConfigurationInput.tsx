@@ -512,8 +512,15 @@ export const GovernanceConfigurationInput = ({
         </>
       ) : data.tokenType === GovernanceTokenType.Existing ? (
         <div className="rounded-lg bg-background-tertiary">
-          <div className="flex flex-row border-b border-border-base p-4">
-            <SegmentedControls<TokenType.Cw20 | TokenType.Native>
+          {/* TODO(token factory): Remove h-14 when native/TF DAOs are allowed. */}
+          <div className="flex h-14 flex-row border-b border-border-base p-4">
+            {/* TODO(token factory): Replace title with selection input below. */}
+            <p className="primary-text text-text-body">
+              {t('form.tokenContractAddressTitle')}
+            </p>
+
+            {/* TODO(token factory): Uncomment when native/TF DAOs are allowed. */}
+            {/* <SegmentedControls<TokenType.Cw20 | TokenType.Native>
               onSelect={(value) => {
                 setValue('votingModuleCreator.data.existingTokenType', value)
                 setValue(
@@ -532,7 +539,7 @@ export const GovernanceConfigurationInput = ({
                   value: TokenType.Native,
                 },
               ]}
-            />
+            /> */}
           </div>
 
           <div className="space-y-2 p-4">
@@ -572,9 +579,7 @@ export const GovernanceConfigurationInput = ({
               existingGovernanceTokenLoadable.state === 'hasValue' &&
               !!existingGovernanceTokenLoadable.contents && (
                 <p className="primary-text text-text-interactive-valid">
-                  {t('info.foundSymbol', {
-                    symbol: existingGovernanceTokenLoadable.contents?.symbol,
-                  })}
+                  ${existingGovernanceTokenLoadable.contents?.symbol}
                 </p>
               )
             )}
