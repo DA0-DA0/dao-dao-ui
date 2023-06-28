@@ -7,7 +7,7 @@ import { LinkWrapperProps } from '@dao-dao/types'
 import { DaoParentInfo } from '@dao-dao/types/dao'
 import { getFallbackImage, toAccessibleImageUrl } from '@dao-dao/utils'
 
-import { useNavHelpers } from '../../hooks'
+import { useDaoNavHelpers } from '../../hooks'
 import { Tooltip } from '../tooltip'
 
 export interface DaoImageProps {
@@ -42,7 +42,7 @@ export const DaoImage = ({
   LinkWrapper,
 }: DaoImageProps) => {
   const { t } = useTranslation()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
 
   const sizeClassNames = clsx('overflow-hidden rounded-full', {
     // DaoCard

@@ -9,7 +9,7 @@ import {
   NoContent,
   Tooltip,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 import { VotingPowerAtHeightResponse } from '@dao-dao/types/contracts/DaoCore.v2'
@@ -51,7 +51,7 @@ export const TabRenderer = ({
 }: TabRendererProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
-  const { getDaoProposalPath } = useNavHelpers()
+  const { getDaoProposalPath } = useDaoNavHelpers()
 
   const [showCreate, setShowCreate] = useState(false)
   // Can create survey if member of DAO and there does not exist a current

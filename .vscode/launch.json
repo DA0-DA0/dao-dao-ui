@@ -5,20 +5,27 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Debug codegen",
-      "program": "${workspaceFolder}/tools/codegen.ts",
+      "name": "Next.js: debug server-side",
+      "type": "node-terminal",
       "request": "launch",
-      "preLaunchTask": "tsc: build - tsconfig.tools.json",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "pwa-node"
+      "command": "yarn dapp dev"
     },
     {
-      "type": "pwa-chrome",
+      "name": "Next.js: debug client-side",
+      "type": "chrome",
       "request": "launch",
-      "name": "Debug Frontend (localhost)",
-      "url": "http://localhost:3000",
-      "webRoot": "${workspaceFolder}",
-      "outFiles": ["${workspaceFolder}/out/**/*.js", "!**/node_modules/**"]
+      "url": "http://localhost:3000"
+    },
+    {
+      "name": "Next.js: debug full stack",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "yarn dapp dev",
+      "serverReadyAction": {
+        "pattern": "started server on .+, url: (https?://.+)",
+        "uriFormat": "%s",
+        "action": "debugWithChrome"
+      }
     },
     {
       "name": "Debug Unit Tests",

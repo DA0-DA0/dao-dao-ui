@@ -45,7 +45,7 @@ export const InstantiateTokenSwap: ActionComponent<
     }
 
     if (!walletAddress || !signingCosmWasmClient) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return
     }
 

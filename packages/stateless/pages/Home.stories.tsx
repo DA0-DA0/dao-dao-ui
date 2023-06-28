@@ -96,9 +96,7 @@ Disconnected.decorators = [
       walletConnected: false,
     },
     rightSidebarProps: {
-      wallet: (
-        <SidebarWallet connectedOrConnecting={false} onConnect={() => {}} />
-      ),
+      wallet: <SidebarWallet connected={false} onConnect={() => {}} />,
     },
   }),
 ]

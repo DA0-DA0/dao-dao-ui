@@ -11,4 +11,6 @@ export type DaoDappTabbedHomeProps = DaoSplashHeaderProps & {
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   LinkWrapper: ComponentType<LinkWrapperProps>
   tabs: DaoTabWithComponent[]
+  selectedTabId: string
+  onSelectTabId: (tab: string) => void
 }

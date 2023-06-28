@@ -1,6 +1,7 @@
 export * from './dao'
 export * from './pages'
 export * from './profile'
+export * from './wallet'
 
 export * from './AddressInput'
 export * from './AppContextProvider'

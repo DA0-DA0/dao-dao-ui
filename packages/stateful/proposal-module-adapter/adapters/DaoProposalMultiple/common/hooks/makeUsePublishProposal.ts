@@ -186,7 +186,7 @@ export const makeUsePublishProposal =
         { failedSimulationBypassSeconds = 0 } = {}
       ) => {
         if (!connected) {
-          throw new Error(t('error.connectWalletToContinue'))
+          throw new Error(t('error.logInToContinue'))
         }
         if (blockHeight === undefined) {
           throw new Error(t('error.loadingData'))

@@ -1,6 +1,7 @@
+import { CodeDetails } from '@cosmjs/cosmwasm-stargate'
 import { selectorFamily } from 'recoil'
 
-import { ContractVersion, WithChainId } from '@dao-dao/types'
+import { ContractVersion, InfoResponse, WithChainId } from '@dao-dao/types'
 import { parseContractVersion } from '@dao-dao/utils'
 
 import {
@@ -69,6 +70,19 @@ export const contractAdminSelector = selectorFamily<
     },
 })
 
+export const codeDetailsSelector = selectorFamily<
+  CodeDetails,
+  WithChainId<{ codeId: number }>
+>({
+  key: 'contractAdmin',
+  get:
+    ({ codeId, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmWasmClientForChainSelector(chainId))
+      return await client.getCodeDetails(codeId)
+    },
+})
+
 export const contractVersionSelector = selectorFamily<
   ContractVersion,
   WithChainId<{ contractAddress: string }>
@@ -96,6 +110,33 @@ export const contractVersionSelector = selectorFamily<
     },
 })
 
+export const contractInfoSelector = selectorFamily<
+  InfoResponse,
+  WithChainId<{ contractAddress: string }>
+>({
+  key: 'contractInfo',
+  get:
+    ({ contractAddress, chainId }) =>
+    async ({ get }) => {
+      const info = get(
+        queryContractIndexerSelector({
+          contractAddress,
+          chainId,
+          formula: 'info',
+        })
+      )
+      if (info) {
+        return { info }
+      }
+
+      // If indexer fails, fallback to querying chain.
+      const client = get(cosmWasmClientForChainSelector(chainId))
+      return await client.queryContractSmart(contractAddress, {
+        info: {},
+      })
+    },
+})
+
 export const isContractSelector = selectorFamily<
   boolean,
   WithChainId<
@@ -111,10 +152,9 @@ export const isContractSelector = selectorFamily<
         const {
           info: { contract },
         } = get(
-          DaoCoreV2Selectors.infoSelector({
+          contractInfoSelector({
             contractAddress,
             chainId,
-            params: [],
           })
         )
 

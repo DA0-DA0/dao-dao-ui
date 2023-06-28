@@ -28,7 +28,7 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
     }
 
     if (!signingCosmWasmClient || !walletAddress) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return
     }
 

@@ -13,7 +13,7 @@ import {
 } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
-import { SuspenseLoader } from '../../../../../../components'
+import { ConnectWallet, SuspenseLoader } from '../../../../../../components'
 import { useEntity } from '../../../../../../hooks'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
@@ -24,8 +24,11 @@ import { ContributionFormData } from '../stateless/ContributionFormInput'
 export const ContributionForm = () => {
   const { t } = useTranslation()
   const { coreAddress, chainId } = useDaoInfoContext()
-  const { address: walletAddress = '', publicKey: walletPublicKey } =
-    useWallet()
+  const {
+    connected,
+    address: walletAddress = '',
+    publicKey: walletPublicKey,
+  } = useWallet()
   const walletEntity = useEntity({
     address: walletAddress,
     chainId,
@@ -34,12 +37,10 @@ export const ContributionForm = () => {
   const postRequest = usePostRequest()
 
   const statusLoadable = useCachedLoadable(
-    walletPublicKey?.hex
-      ? statusSelector({
-          daoAddress: coreAddress,
-          walletPublicKey: walletPublicKey.hex,
-        })
-      : undefined
+    statusSelector({
+      daoAddress: coreAddress,
+      walletPublicKey: walletPublicKey?.hex ?? '_',
+    })
   )
   const setRefreshStatus = useSetRecoilState(
     refreshStatusAtom({
@@ -94,24 +95,23 @@ export const ContributionForm = () => {
     <SuspenseLoader
       fallback={<Loader />}
       forceFallback={
-        statusLoadable.state === 'loading' ||
-        walletEntity.loading ||
-        tokenPrices.state === 'loading'
+        statusLoadable.state === 'loading' || tokenPrices.state === 'loading'
       }
     >
       {statusLoadable.state === 'hasValue' &&
         !!statusLoadable.contents &&
-        !walletEntity.loading &&
         tokenPrices.state === 'hasValue' && (
           <StatelessContributionForm
+            ConnectWallet={ConnectWallet}
             EntityDisplay={() => (
               <EntityDisplay
                 address={walletAddress}
                 loadingEntity={walletEntity}
               />
             )}
-            entity={walletEntity.data}
+            connected={connected}
             loading={loading || statusLoadable.updating}
+            loadingEntity={walletEntity}
             onSubmit={onSubmit}
             status={statusLoadable.contents}
             tokenPrices={tokenPrices.contents}

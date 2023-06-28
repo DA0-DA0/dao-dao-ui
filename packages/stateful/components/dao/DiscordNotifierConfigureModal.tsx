@@ -131,9 +131,9 @@ export const DiscordNotifierConfigureModal = () => {
         toast.error(processError(err))
       } finally {
         setLoading(false)
-        // Remove query params.
+        // Remove query params and redirect to proposals.
         router.replace(
-          router.asPath.split('?')[0] + '#' + DaoTabId.Proposals,
+          router.asPath.split('?')[0] + '/' + DaoTabId.Proposals,
           undefined,
           {
             shallow: true,

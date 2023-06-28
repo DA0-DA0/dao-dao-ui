@@ -7,7 +7,7 @@ import { LinkWrapperProps } from '@dao-dao/types'
 export const LinkWrapper = forwardRef<HTMLDivElement, LinkWrapperProps>(
   function LinkWrapper(
     {
-      href,
+      href: _href,
       children,
       loading,
       disabled,
@@ -15,10 +15,19 @@ export const LinkWrapper = forwardRef<HTMLDivElement, LinkWrapperProps>(
       containerClassName,
       onClick,
       openInNewTab: _openInNewTab,
+      shallow,
       ...props
     },
     ref
   ) {
+    // Sanitize href. Must begin with http or /. This prevents XSS attacks by
+    // preventing links to javascript: or data:.
+    const href = !_href
+      ? undefined
+      : _href.startsWith('http') || _href.startsWith('/')
+      ? _href
+      : '#'
+
     const contentClassName = clsx(
       className,
       // If loading, disabled, or no href, disable touch interaction. Anchor
@@ -53,6 +62,7 @@ export const LinkWrapper = forwardRef<HTMLDivElement, LinkWrapperProps>(
             className={contentClassName}
             href={href ?? '#'}
             onClick={onClick}
+            shallow={shallow}
           >
             {children}
           </Link>

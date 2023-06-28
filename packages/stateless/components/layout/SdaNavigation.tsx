@@ -6,7 +6,6 @@ import {
   TagRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -14,7 +13,7 @@ import { DaoPageMode, DaoTabId } from '@dao-dao/types'
 import { SdaNavigationProps } from '@dao-dao/types/stateless/SdaNavigation'
 import { DAPP_URL_PREFIX, getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
 
-import { useDaoInfoContext, useNavHelpers } from '../../hooks'
+import { useDaoInfoContext, useDaoNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
 import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Tooltip } from '../tooltip/Tooltip'
@@ -58,7 +57,7 @@ export const SdaNavigation = ({
     getDaoProposalPath,
     getProposalIdFromPath,
     router: { asPath },
-  } = useNavHelpers()
+  } = useDaoNavHelpers()
   const {
     responsiveNavigation: {
       enabled: responsiveEnabled,
@@ -143,7 +142,7 @@ export const SdaNavigation = ({
       >
         <PageHeader
           centerNode={
-            <Link
+            <LinkWrapper
               className={clsx(
                 'flex flex-row items-center gap-2 overflow-hidden',
                 // Make room for rightNode switch button.
@@ -165,7 +164,7 @@ export const SdaNavigation = ({
                   <p className="header-text truncate">{daoInfo.name}</p>
                 </Tooltip>
               )}
-            </Link>
+            </LinkWrapper>
           }
           forceCenter={compact}
           noBorder={compact}
@@ -174,14 +173,14 @@ export const SdaNavigation = ({
         <div className={clsx(!compact && 'pt-2')}>
           {tabs.map((tab) => {
             const isOnProposalsTab =
-              tab.id === DaoTabId.Proposals && asPath.includes('/proposals')
+              tab.id === DaoTabId.Proposals && asPath.includes('/proposals/')
             const isCreatingProposal = asPath.startsWith(
               getDaoProposalPath(daoInfo.coreAddress, 'create')
             )
 
             const isCreatingSubDao =
-              tab.id === DaoTabId.Subdaos &&
-              asPath.startsWith(getDaoPath(daoInfo.coreAddress) + '/create')
+              tab.id === DaoTabId.SubDaos &&
+              asPath.startsWith(getDaoPath(daoInfo.coreAddress, 'create'))
 
             return (
               <Row
@@ -189,14 +188,8 @@ export const SdaNavigation = ({
                 LinkWrapper={LinkWrapper}
                 compact={compact}
                 forceExpanded
-                href={getDaoPath(daoInfo.coreAddress) + `#${tab.id}`}
-                selected={
-                  // When no hash is present, the home tab is selected. This is
-                  // an edge case since the hash can be present or not to show
-                  // the home.
-                  tab.id === DaoTabId.Home &&
-                  asPath === getDaoPath(daoInfo.coreAddress)
-                }
+                href={getDaoPath(daoInfo.coreAddress, tab.id)}
+                shallow
                 {...tab}
               >
                 {isOnProposalsTab && (

@@ -27,7 +27,14 @@ const config = {
     '@dao-dao/stateful',
     '@dao-dao/i18n',
     '@dao-dao/types',
+    '@noahsaso/cosmodal',
   ],
+  webpack: (config) => {
+    // @noahsaso/cosmodal uses @toruslabs/eccrypto, which uses `stream`. This
+    // needs to be polyfilled.
+    config.resolve.alias['stream'] = 'stream-browserify'
+    return config
+  },
   i18n,
   /*
     The reactStrictMode flag is set to false
@@ -66,22 +73,6 @@ const config = {
       locale: false,
     },
   ],
-  webpack: (config, options) => {
-    if (options.isServer) {
-      config.externals = ['@noahsaso/cosmodal', ...config.externals]
-    }
-
-    config.resolve.alias['@noahsaso/cosmodal'] = path.resolve(
-      __dirname,
-      '..',
-      '..',
-      'node_modules',
-      '@noahsaso',
-      'cosmodal'
-    )
-
-    return config
-  },
   // Only upload source maps to Sentry in CI action when token is provided.
   sentry: {
     disableServerWebpackPlugin:
@@ -95,6 +86,14 @@ const config = {
       'nftstorage.link',
       'img-proxy.ekez.workers.dev',
     ],
+  },
+  modularizeImports: {
+    '@mui/material': {
+      transform: '@mui/material/{{member}}',
+    },
+    '@mui/icons-material': {
+      transform: '@mui/icons-material/{{member}}',
+    },
   },
 }
 

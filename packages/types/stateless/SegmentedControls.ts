@@ -1,9 +1,14 @@
+import { MouseEvent as ReactMouseEvent } from 'react'
+
 import { TypedOption } from '../sortFilter'
 
 export type SegmentedControlsProps<T extends unknown> = {
   tabs: TypedOption<T>[]
   selected: T
-  onSelect: (value: T) => void
+  onSelect: (
+    value: T,
+    event: ReactMouseEvent<HTMLButtonElement, MouseEvent>
+  ) => void
   loading?: T
   className?: string
   disabled?: boolean

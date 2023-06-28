@@ -19,7 +19,6 @@ export type NestedActionsRendererProps = {
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
-// Expects `fieldNamePrefix` to point to
 export const NestedActionsRenderer = ({
   msgsFieldName,
   actionsForMatching,

@@ -121,7 +121,7 @@
     "governanceTokenSymbolPlaceholder": "Коротка назва для Акції латинкою (напр. \"MAKHNO\")",
     "governanceTokenSymbolTitle": "Коротка назва",
     "imageURLTitle": "URL Зображення",
-    "imageURLTooltip": "Посилання на зображення. Наприклад: https://moonphase.is/image.svg",
+    "imageUrlTooltip": "Посилання на зображення. Наприклад: https://moonphase.is/image.svg",
     "initialSupply": "Початкова кількість Акцій у Спілці",
     "instantiatedAddress": "Адреса Започаткованої Спілки",
     "junoAddress": "Адреса Junø",

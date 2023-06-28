@@ -7,6 +7,7 @@ import {
   DaoTabId,
   IconButtonLinkProps,
   LoadingData,
+  StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 
 import {
@@ -32,6 +33,7 @@ export interface ProposalProps {
   refreshing: boolean
   duplicateUrl: string | undefined
   IconButtonLink: ComponentType<IconButtonLinkProps>
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
 export const Proposal = ({
@@ -46,6 +48,7 @@ export const Proposal = ({
   refreshing,
   duplicateUrl,
   IconButtonLink,
+  EntityDisplay,
 }: ProposalProps) => {
   const { t } = useTranslation()
 
@@ -92,6 +95,7 @@ export const Proposal = ({
         <div className="no-scrollbar absolute top-0 right-0 bottom-0 left-0 z-[1] h-full overflow-y-auto pt-10 pb-6 mdlg:pl-[21rem]">
           <div className="mb-9">
             <ProposalContentDisplay
+              EntityDisplay={EntityDisplay}
               IconButtonLink={IconButtonLink}
               createdAt={
                 createdAtEpoch !== null ? new Date(createdAtEpoch) : undefined

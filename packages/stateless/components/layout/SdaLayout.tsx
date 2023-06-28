@@ -99,8 +99,8 @@ export const SdaLayout = ({
               <Tooltip
                 title={
                   connectHidden
-                    ? t('button.connectWallet')
-                    : t('button.hideConnectButton')
+                    ? t('button.logIn')
+                    : t('button.hideLogInButton')
                 }
               >
                 <div className="rounded-md bg-background-base shadow-dp8">

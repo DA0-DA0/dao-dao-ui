@@ -125,7 +125,7 @@
     "governanceTokenSymbolPlaceholder": "Un simbolo alfanumerico (e.g., \"DOG\")",
     "governanceTokenSymbolTitle": "Simbolo del token",
     "imageURLTitle": "URL dell'immagine",
-    "imageURLTooltip": "Link all'immagine, per esempio: https://moonphase.is/image.svg",
+    "imageUrlTooltip": "Link all'immagine, per esempio: https://moonphase.is/image.svg",
     "initialSupply": "Quantità iniziale di token",
     "instantiatedAddress": "Indirizzo instanziato",
     "junoAddress": "Indirizzo Juno",

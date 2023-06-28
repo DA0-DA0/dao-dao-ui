@@ -48,13 +48,16 @@ Default.args = {
       makeNftCardProps(),
     ],
   },
-  onAction: () => alert('action'),
+  action: {
+    loading: false,
+    label: 'Stake',
+    onClick: () => alert('action'),
+  },
   getIdForNft: (nft) => `${nft.collection.address}:${nft.tokenId}`,
   header: {
     title: 'Stake NFTs',
     subtitle: 'Select the NFTs you want to stake from the NFT collection.',
   },
-  actionLabel: 'Stake',
   visible: true,
 }
 

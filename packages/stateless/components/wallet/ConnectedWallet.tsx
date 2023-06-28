@@ -1,35 +1,25 @@
-import { Check, Close, Link, Wallet } from '@mui/icons-material'
+import { Settings, Wallet } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
 
-import { LoadingData } from '@dao-dao/types'
-
+import { CopyableAddress } from '../CopyableAddress'
 import { IconButton } from '../icon_buttons'
-import { TokenAmountDisplay } from '../token/TokenAmountDisplay'
-import { Tooltip } from '../tooltip/Tooltip'
 
 export interface ConnectedWalletProps {
-  data: LoadingData<{
-    walletName: string
-    walletAddress: string
-    tokenBalance: LoadingData<number>
-  }>
-  tokenDecimals: number
-  tokenSymbol: string
-  onDisconnect?: () => void
+  walletProviderImageUrl: string
+  walletName: string
+  walletAddress: string
+  openWalletModal: () => void
   className?: string
 }
 
 export const ConnectedWallet = ({
-  data,
-  tokenDecimals,
-  tokenSymbol,
-  onDisconnect,
+  walletProviderImageUrl,
+  walletName,
+  walletAddress,
+  openWalletModal,
   className,
 }: ConnectedWalletProps) => {
-  const { t } = useTranslation()
-
   const [copied, setCopied] = useState(false)
   // Debounce copy unset after 2 seconds.
   useEffect(() => {
@@ -39,65 +29,40 @@ export const ConnectedWallet = ({
 
   return (
     <div
-      className={clsx('flex flex-row items-center justify-between', className)}
+      className={clsx(
+        'flex flex-row items-center justify-between gap-4',
+        className
+      )}
     >
-      <div className="flex flex-row items-stretch gap-4">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full border-[2px] border-border-primary">
-          <Wallet className="!h-5 !w-5 text-icon-primary" />
-        </div>
-
-        <div className="flex flex-col justify-center gap-1">
-          <p
-            className={clsx(
-              'primary-text text-text-body',
-              data.loading && 'animate-pulse'
-            )}
-          >
-            {data.loading ? '...' : data.data.walletName}
-          </p>
-
-          <TokenAmountDisplay
-            amount={data.loading ? { loading: true } : data.data.tokenBalance}
-            className="legend-text font-mono"
-            decimals={tokenDecimals}
-            symbol={tokenSymbol}
-          />
-        </div>
-      </div>
-
-      <div className="flex flex-row items-center gap-2">
-        <Tooltip title={t('info.copyWalletAddressTooltip')}>
-          <IconButton
-            Icon={copied ? Check : Link}
-            className="text-icon-secondary"
-            disabled={data.loading}
-            onClick={() => {
-              if (data.loading) {
-                return
-              }
-
-              navigator.clipboard.writeText(data.data.walletAddress)
-              setTimeout(() => setCopied(false), 2000)
-              setCopied(true)
+      <div className="flex min-w-0 flex-row items-stretch gap-3">
+        <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-[2px] border-border-primary">
+          <div
+            className="h-6 w-6 bg-contain bg-center bg-no-repeat"
+            style={{
+              backgroundImage: `url(${walletProviderImageUrl})`,
             }}
-            size="sm"
-            variant="ghost"
           />
-        </Tooltip>
+        </div>
 
-        {onDisconnect && (
-          <Tooltip title={t('info.disconnectWalletTooltip')}>
-            <IconButton
-              Icon={Close}
-              className="text-icon-secondary"
-              disabled={data.loading}
-              onClick={onDisconnect}
-              size="sm"
-              variant="ghost"
-            />
-          </Tooltip>
-        )}
+        <div className="flex min-w-0 flex-col justify-center gap-1">
+          <p className="primary-text text-text-body">{walletName}</p>
+
+          <CopyableAddress
+            Icon={Wallet}
+            address={walletAddress}
+            iconClassName="!h-4 !w-4"
+            textClassName="!legend-text"
+          />
+        </div>
       </div>
+
+      <IconButton
+        Icon={Settings}
+        className="text-icon-secondary"
+        onClick={openWalletModal}
+        size="sm"
+        variant="ghost"
+      />
     </div>
   )
 }

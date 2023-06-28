@@ -35,7 +35,7 @@ export const CosmosMessageDisplay = ({
             json: true,
           },
           readOnly: true,
-          lineWrapping: false,
+          lineWrapping: true,
           tabSize: 2,
         }}
         value={value}

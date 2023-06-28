@@ -9,7 +9,7 @@ import {
 
 import { useAppContextIfAvailable } from '../components/layout/AppContext'
 
-export const useNavHelpers = (overrideMode?: DaoPageMode) => {
+export const useDaoNavHelpers = (overrideMode?: DaoPageMode) => {
   const router = useRouter()
 
   // On SDA, some pages, like 404 and discord redirect, render outside the app
@@ -23,14 +23,21 @@ export const useNavHelpers = (overrideMode?: DaoPageMode) => {
   }
 
   const getDaoPath = useCallback(
-    (coreAddress: string, params?: Record<string, unknown>, hash?: string) =>
-      _getDaoPath(mode, coreAddress, params, hash),
+    (coreAddress: string, path?: string, params?: Record<string, unknown>) =>
+      _getDaoPath(mode, coreAddress, path, params),
     [mode]
   )
 
   const goToDao = useCallback(
-    (...args: Parameters<typeof getDaoPath>) =>
-      router.push(getDaoPath(...args)),
+    (
+      coreAddress: string,
+      path?: string,
+      params?: Record<string, unknown>,
+      { shallow = false }: { shallow?: boolean } = {}
+    ) =>
+      router.push(getDaoPath(coreAddress, path, params), undefined, {
+        shallow,
+      }),
     [getDaoPath, router]
   )
 
@@ -38,9 +45,8 @@ export const useNavHelpers = (overrideMode?: DaoPageMode) => {
     (
       coreAddress: string,
       proposalId: string,
-      params?: Record<string, unknown>,
-      hash?: string
-    ) => _getDaoProposalPath(mode, coreAddress, proposalId, params, hash),
+      params?: Record<string, unknown>
+    ) => _getDaoProposalPath(mode, coreAddress, proposalId, params),
     [mode]
   )
 
@@ -50,29 +56,28 @@ export const useNavHelpers = (overrideMode?: DaoPageMode) => {
     [getDaoProposalPath, router]
   )
 
-  // Returns address of DAO if we're on a DAO subpath, or undefined.
-  const getCoreAddressFromPath = () =>
-    router.asPath.startsWith(getDaoPath('')) &&
-    !router.asPath.startsWith(getDaoPath('create'))
-      ? // Base of URL does not matter. It just lets us use relative paths.
-        new URL(router.asPath, 'http://localhost').pathname
-          .replace(getDaoPath(''), '')
-          .split('/')[0]
-      : undefined
-
   // Returns proposal ID if we're on a DAO proposal subpath, or undefined.
   const getProposalIdFromPath = () =>
     router.asPath.match(
       new RegExp('^' + getDaoProposalPath('.+', '([a-zA-Z0-9]+)'))
     )?.[1]
 
+  // Path components after the DAO's address.
+  const daoSubpathComponents = new URL(
+    router.asPath,
+    'http://localhost'
+  ).pathname
+    .replace(getDaoPath(''), '')
+    .split('/')
+    .slice(1)
+
   return {
     getDaoPath,
     goToDao,
     getDaoProposalPath,
     goToDaoProposal,
-    getCoreAddressFromPath,
     getProposalIdFromPath,
     router,
+    daoSubpathComponents,
   }
 }

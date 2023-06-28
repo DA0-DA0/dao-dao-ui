@@ -40,6 +40,7 @@ export interface DaoInfo {
   items: Record<string, string>
 
   parentDao: DaoParentInfo | null
+  admin: string
 }
 
 export interface DaoParentInfo {
@@ -48,6 +49,7 @@ export interface DaoParentInfo {
   name: string
   imageUrl?: string | null
   parentDao?: DaoParentInfo | null
+  admin: string
 
   // Whether or not this parent has registered its child as a SubDAO.
   registeredSubDao: boolean
@@ -282,13 +284,13 @@ export type DaoPayrollConfig = {
   data?: Record<string, unknown>
 }
 
+// Built-in DAO tabs. These do not include widget tabs.
 export enum DaoTabId {
-  Home = '',
+  Home = 'home',
   Proposals = 'proposals',
   Treasury = 'treasury',
-  Subdaos = 'subdaos',
+  SubDaos = 'subdaos',
   Members = 'members',
-  Payroll = 'payroll',
   Staked = 'staked',
   Collection = 'collection',
 }

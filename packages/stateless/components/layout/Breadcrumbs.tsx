@@ -1,6 +1,5 @@
 import { ArrowDropDown, ArrowForwardIos, Close } from '@mui/icons-material'
 import clsx from 'clsx'
-import Link from 'next/link'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -8,9 +7,10 @@ import { DaoPageMode } from '@dao-dao/types'
 import { BreadcrumbsProps } from '@dao-dao/types/stateless/Breadcrumbs'
 import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
-import { useDaoInfoContextIfAvailable, useNavHelpers } from '../../hooks'
+import { useDaoInfoContextIfAvailable, useDaoNavHelpers } from '../../hooks'
 import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
+import { LinkWrapper } from '../LinkWrapper'
 import { Tooltip } from '../tooltip'
 import { TopGradient } from '../TopGradient'
 import { useAppContext } from './AppContext'
@@ -27,7 +27,7 @@ export const Breadcrumbs = ({
   // Allow using Breadcrumbs outside of DaoPageWrapper.
   const daoInfo = useDaoInfoContextIfAvailable()
   const { mode } = useAppContext()
-  const { getDaoPath } = useNavHelpers()
+  const { getDaoPath } = useDaoNavHelpers()
 
   const [responsive, setResponsive] = useState(false)
 
@@ -42,12 +42,9 @@ export const Breadcrumbs = ({
                   ? []
                   : [
                       {
-                        href: getDaoPath(
-                          daoInfo.coreAddress,
-                          undefined,
+                        href:
                           // Link to home tab if available.
-                          homeTab?.id
-                        ),
+                          getDaoPath(daoInfo.coreAddress, homeTab?.id),
                         label: daoInfo.name,
                       },
                     ]),
@@ -59,12 +56,9 @@ export const Breadcrumbs = ({
             ? []
             : [
                 {
-                  href: getDaoPath(
-                    daoInfo.coreAddress,
-                    undefined,
+                  href:
                     // Link to home tab if available.
-                    homeTab?.id
-                  ),
+                    getDaoPath(daoInfo.coreAddress, homeTab?.id),
                   label: homeTab?.sdaLabel || t('title.home'),
                 },
               ]),
@@ -101,12 +95,12 @@ export const Breadcrumbs = ({
                       'max-w-[8rem]'
                   )}
                 >
-                  <Link
+                  <LinkWrapper
                     className="transition-opacity hover:opacity-80"
                     href={href}
                   >
                     {firstOrLast ? label : '...'}
-                  </Link>
+                  </LinkWrapper>
                 </div>
               </Tooltip>
 
@@ -172,9 +166,12 @@ export const Breadcrumbs = ({
                 top: responsive ? `${idx * 5}rem` : 0,
               }}
             >
-              <Link className="transition-opacity hover:opacity-80" href={href}>
+              <LinkWrapper
+                className="transition-opacity hover:opacity-80"
+                href={href}
+              >
                 {label}
-              </Link>
+              </LinkWrapper>
 
               <p>/</p>
             </div>

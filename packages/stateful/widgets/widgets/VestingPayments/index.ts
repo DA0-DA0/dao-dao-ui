@@ -8,12 +8,13 @@ import {
 } from '@dao-dao/types'
 
 import { makeManageVestingActionMaker } from './actions/ManageVesting'
+import { VESTING_PAYMENTS_WIDGET_ID } from './constants'
 import { Renderer } from './Renderer'
 import { VestingPaymentsData } from './types'
 import { VestingPaymentsEditor as Editor } from './VestingPaymentsEditor'
 
 export const VestingPaymentsWidget: Widget<VestingPaymentsData> = {
-  id: 'vesting',
+  id: VESTING_PAYMENTS_WIDGET_ID,
   Icon: PaidOutlined,
   location: WidgetLocation.Tab,
   visibilityContext: WidgetVisibilityContext.Always,

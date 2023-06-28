@@ -6,17 +6,25 @@ import {
   WalletType,
   useWallet,
 } from '@noahsaso/cosmodal'
+import { PromptSign } from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
 import { isMobile } from '@walletconnect/browser-utils'
-import { PropsWithChildren, ReactNode, useEffect } from 'react'
+import {
+  Dispatch,
+  PropsWithChildren,
+  ReactNode,
+  SetStateAction,
+  useEffect,
+} from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { signingCosmWasmClientAtom } from '@dao-dao/state'
-import { Loader } from '@dao-dao/stateless'
+import { Web3AuthPrompt } from '@dao-dao/types'
 import {
   CHAIN_ID,
   CHAIN_REST_ENDPOINT,
   CHAIN_RPC_ENDPOINT,
+  MAINNET,
   SITE_URL,
   STARGAZE_REST_ENDPOINT,
   STARGAZE_RPC_ENDPOINT,
@@ -24,6 +32,7 @@ import {
   STARGAZE_TESTNET_REST_ENDPOINT,
   STARGAZE_TESTNET_RPC_ENDPOINT,
   WC_ICON_PATH,
+  WEB3AUTH_CLIENT_ID,
   typesRegistry,
 } from '@dao-dao/utils'
 
@@ -32,17 +41,43 @@ if (!(Object.values(ChainInfoID) as string[]).includes(CHAIN_ID)) {
   throw new Error(`CHAIN_ID constant (${CHAIN_ID}) is an invalid chain ID.`)
 }
 
-export interface WalletProviderProps {
+export type WalletProviderProps = {
+  // This needs to be provided by the parent component and then passed to the
+  // AppContext that wraps the app. Since the AppContext uses the inbox which
+  // depends on the wallet, we need to pass the setter to the wallet provider so
+  // that the value can be passed to the AppContext, used by the
+  // Web3AuthPromptModal in the respective app layout (DappLayout or SdaLayout).
+  setWeb3AuthPrompt: Dispatch<SetStateAction<Web3AuthPrompt | undefined>>
   children: ReactNode
 }
 
-export const WalletProvider = ({ children }: WalletProviderProps) => {
+export const WalletProvider = ({
+  setWeb3AuthPrompt,
+  children,
+}: WalletProviderProps) => {
   const { t } = useTranslation()
+
+  const web3AuthWalletOptions = Object.freeze({
+    client: {
+      clientId: WEB3AUTH_CLIENT_ID,
+      web3AuthNetwork: MAINNET ? 'cyan' : 'testnet',
+    },
+    promptSign: (...params: Parameters<PromptSign>): Promise<boolean> =>
+      new Promise((resolve) =>
+        setWeb3AuthPrompt({
+          signData: params[1],
+          resolve: (approved) => {
+            setWeb3AuthPrompt(undefined)
+            resolve(approved)
+          },
+        })
+      ),
+  })
 
   return (
     <WalletManagerProvider
-      // Use environment variables to determine RPC/REST nodes.
       chainInfoOverrides={[
+        // Use environment variables to determine RPC/REST nodes.
         {
           // Typechecked above.
           ...ChainInfoMap[CHAIN_ID as ChainInfoID],
@@ -63,29 +98,18 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
           rest: STARGAZE_TESTNET_REST_ENDPOINT,
         },
       ]}
-      classNames={{
-        modalOverlay: '!backdrop-brightness-50 !backdrop-filter',
-        modalContent:
-          '!p-6 !max-w-md !bg-background-base !rounded-lg !border !border-border-secondary !shadow-dp8',
-        modalCloseButton:
-          '!p-1 !text-icon-tertiary bg-transparent hover:!bg-background-interactive-hover active:!bg-background-interactive-pressed !rounded-full !transition !absolute !top-2 !right-2',
-        modalHeader: '!header-text',
-        modalSubheader: '!title-text',
-        wallet:
-          '!rounded-lg !bg-background-secondary !p-4 !shadow-none transition-opacity opacity-100 hover:opacity-80 active:opacity-70',
-        walletImage: '!rounded-full',
-        walletName: '!primary-text',
-        walletDescription: '!caption-text',
-        textContent: '!body-text',
-      }}
       defaultChainId={CHAIN_ID}
+      disableDefaultUi
       enabledWalletTypes={[
-        WalletType.Keplr,
-        WalletType.Leap,
-        // Only allow WalletConnect on mainnet.
-        ...(CHAIN_ID === ChainInfoID.Juno1
-          ? [WalletType.WalletConnectKeplr]
-          : []),
+        // Only show extension wallets on desktop.
+        ...(!isMobile() ? [WalletType.Keplr, WalletType.Leap] : []),
+        // Only allow Keplr Mobile on mainnet since it can't use testnet.
+        ...(MAINNET ? [WalletType.KeplrMobile] : []),
+        // Web3Auth social logins.
+        WalletType.Google,
+        WalletType.Apple,
+        WalletType.Discord,
+        WalletType.Twitter,
       ]}
       getSigningCosmWasmClientOptions={(chainInfo) => ({
         gasPrice: GasPrice.fromString(
@@ -100,11 +124,6 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
         registry: typesRegistry,
       })}
       localStorageKey="connectedWalletId"
-      preselectedWalletType={
-        // If on a mobile device, default to WalletConnect.
-        isMobile() ? WalletType.WalletConnectKeplr : undefined
-      }
-      renderLoader={() => <Loader size={42} />}
       walletConnectClientMeta={{
         name: t('meta.title'),
         description: t('meta.description'),
@@ -113,6 +132,12 @@ export const WalletProvider = ({ children }: WalletProviderProps) => {
           (typeof window === 'undefined' ? SITE_URL : window.location.origin) +
             WC_ICON_PATH,
         ],
+      }}
+      walletOptions={{
+        [WalletType.Google]: web3AuthWalletOptions,
+        [WalletType.Apple]: web3AuthWalletOptions,
+        [WalletType.Discord]: web3AuthWalletOptions,
+        [WalletType.Twitter]: web3AuthWalletOptions,
       }}
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>

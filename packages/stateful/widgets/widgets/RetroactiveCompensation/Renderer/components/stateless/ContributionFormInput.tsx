@@ -1,4 +1,3 @@
-import { useMemo } from 'react'
 import {
   FormState,
   UseFormRegister,
@@ -13,13 +12,8 @@ import {
   InputLabel,
   RangeInput,
   TextAreaInput,
-  TokenAmountDisplay,
 } from '@dao-dao/stateless'
-import { GenericTokenWithUsdPrice } from '@dao-dao/types'
-import {
-  convertMicroDenomToDenomWithDecimals,
-  validateRequired,
-} from '@dao-dao/utils'
+import { validateRequired } from '@dao-dao/utils'
 
 import { Survey } from '../../types'
 
@@ -34,7 +28,6 @@ export type ContributionFormInputProps = {
   watch: UseFormWatch<ContributionFormData>
   setValue: UseFormSetValue<ContributionFormData>
   errors: FormState<ContributionFormData>['errors']
-  tokenPrices: GenericTokenWithUsdPrice[]
   thirdPerson?: boolean
 }
 
@@ -44,7 +37,6 @@ export const ContributionFormInput = ({
   watch,
   setValue,
   errors,
-  tokenPrices,
   thirdPerson,
 }: ContributionFormInputProps) => {
   const { t } = useTranslation()
@@ -61,19 +53,6 @@ export const ContributionFormInput = ({
           'ratings',
           [...Array(survey.attributes.length)].map(() => null)
         )
-
-  // Map token denom to price info.
-  const tokenMap = useMemo(
-    () =>
-      tokenPrices.reduce(
-        (acc, tokenInfo) => ({
-          ...acc,
-          [tokenInfo.token.denomOrAddress]: tokenInfo,
-        }),
-        {} as Record<string, GenericTokenWithUsdPrice>
-      ),
-    [tokenPrices]
-  )
 
   return (
     <>
@@ -93,8 +72,8 @@ export const ContributionFormInput = ({
         <div className="flex flex-row flex-wrap items-center gap-6">
           <p className="primary-text text-text-body">
             {thirdPerson
-              ? t('info.howWouldTheyLikeToBeCompensated')
-              : t('info.howWouldYouLikeToBeCompensated')}
+              ? t('info.whatDoTheyWantToBeRated')
+              : t('info.whatDoYouWantToBeRated')}
           </p>
 
           <div className="flex flex-row items-center gap-2">
@@ -114,95 +93,25 @@ export const ContributionFormInput = ({
         </div>
 
         <div className="flex flex-row items-stretch gap-4">
-          {survey.attributes.map(
-            ({ name, nativeTokens, cw20Tokens }, attributeIndex) => {
-              // Map token denom or address to amount to distribute.
-              const tokens =
-                [...nativeTokens, ...cw20Tokens].reduce(
-                  (acc, nativeOrCw20Token) => {
-                    const denomOrAddress =
-                      'denom' in nativeOrCw20Token
-                        ? nativeOrCw20Token.denom
-                        : nativeOrCw20Token.address
+          {survey.attributes.map(({ name }, attributeIndex) => (
+            <div key={attributeIndex}>
+              <InputLabel name={name} />
 
-                    return {
-                      ...acc,
-                      [denomOrAddress]:
-                        (acc[denomOrAddress] ?? 0) +
-                        convertMicroDenomToDenomWithDecimals(
-                          nativeOrCw20Token.amount,
-                          tokenMap[denomOrAddress]?.token.decimals ?? 0
-                        ) *
-                          // Multiply by the proportion of the rating they
-                          // set.
-                          ((ratings[attributeIndex] ?? 0) / 100),
-                    }
-                  },
-                  {} as Record<string, number>
-                ) ?? []
-
-              const totalUsdc = Object.entries(tokens)
-                .map(
-                  ([denomOrAddress, amount]) =>
-                    (tokenMap[denomOrAddress]?.usdPrice ?? 0) * amount
-                )
-                .reduce((acc, amount) => acc + amount, 0)
-
-              return (
-                <div key={attributeIndex}>
-                  <InputLabel name={name} />
-
-                  <RangeInput
-                    className="mt-1 !h-20 w-40"
-                    fieldName={`ratings.${attributeIndex}`}
-                    max={100}
-                    min={0}
-                    onStartChange={
-                      // If starting to change, unset abstaining for
-                      // all.
-                      allRatingsAbstain ? toggleAbstain : undefined
-                    }
-                    setValue={setValue}
-                    watch={watch}
-                  />
-
-                  {!allRatingsAbstain && (
-                    <div className="mt-4">
-                      {Object.entries(tokens).map(
-                        ([denomOrAddress, amount], index) => (
-                          <TokenAmountDisplay
-                            key={index}
-                            amount={amount}
-                            className="text-right"
-                            dateFetched={tokenMap[denomOrAddress]?.timestamp}
-                            decimals={
-                              tokenMap[denomOrAddress]?.token.decimals ?? 0
-                            }
-                            iconUrl={tokenMap[denomOrAddress]?.token.imageUrl}
-                            symbol={
-                              tokenMap[denomOrAddress]?.token.symbol ??
-                              denomOrAddress
-                            }
-                          />
-                        )
-                      )}
-
-                      <div className="mt-2">
-                        <TokenAmountDisplay
-                          amount={totalUsdc}
-                          className="caption-text text-right"
-                          dateFetched={tokenPrices[0]?.timestamp}
-                          estimatedUsdValue
-                          hideApprox
-                          prefix="= "
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              )
-            }
-          )}
+              <RangeInput
+                className="mt-1 !h-20 w-40"
+                fieldName={`ratings.${attributeIndex}`}
+                max={100}
+                min={0}
+                onStartChange={
+                  // If starting to change, unset abstaining for
+                  // all.
+                  allRatingsAbstain ? toggleAbstain : undefined
+                }
+                setValue={setValue}
+                watch={watch}
+              />
+            </div>
+          ))}
         </div>
       </div>
     </>

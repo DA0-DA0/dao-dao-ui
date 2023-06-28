@@ -22,7 +22,7 @@ import {
   RightSidebarContent,
   useAppContext,
   useCachedLoadable,
-  useNavHelpers,
+  useDaoNavHelpers,
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
@@ -97,7 +97,7 @@ export const CreateDaoForm = ({
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
-  const { goToDao } = useNavHelpers()
+  const { goToDao } = useDaoNavHelpers()
   const { setFollowing } = useFollowingDaos()
 
   const { mode } = useAppContext()
@@ -506,7 +506,7 @@ export const CreateDaoForm = ({
           // Don't stop creating on success, since we are navigating to a new
           // page and want to prevent creating duplicate DAOs.
         } else {
-          toast.error(t('error.connectWalletToCreate'))
+          toast.error(t('error.logInToCreate'))
         }
 
         return
@@ -626,7 +626,7 @@ export const CreateDaoForm = ({
           // Use the SubDAOs tab as the home breadcrumb if making a SubDAO.
           homeTab: makingSubDao
             ? {
-                id: DaoTabId.Subdaos,
+                id: DaoTabId.SubDaos,
                 sdaLabel: t('title.subDaos'),
               }
             : undefined,

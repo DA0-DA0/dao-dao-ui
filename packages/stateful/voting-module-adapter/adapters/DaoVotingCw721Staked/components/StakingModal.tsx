@@ -125,7 +125,7 @@ const InnerStakingModal = ({
 
   const onAction = async () => {
     if (!connected) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return
     }
 
@@ -242,14 +242,16 @@ const InnerStakingModal = ({
 
   return (
     <NftSelectionModal
-      actionLabel={
-        mode === StakingMode.Stake
-          ? t('button.stake')
-          : mode === StakingMode.Unstake
-          ? t('title.unstake')
-          : ''
-      }
-      actionLoading={stakingLoading}
+      action={{
+        loading: stakingLoading,
+        label:
+          mode === StakingMode.Stake
+            ? t('button.stake')
+            : mode === StakingMode.Unstake
+            ? t('title.unstake')
+            : '',
+        onClick: onAction,
+      }}
       getIdForNft={getIdForNft}
       header={{
         title: hasStake
@@ -286,7 +288,6 @@ const InnerStakingModal = ({
         ) : undefined
       }
       nfts={nfts}
-      onAction={onAction}
       onClose={onClose}
       onDeselectAll={onDeselectAll}
       onNftClick={onNftClick}

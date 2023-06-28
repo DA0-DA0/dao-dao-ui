@@ -59,6 +59,8 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
       rounded && '!rounded-full'
     )
 
+    const showingPlaceholder = !!imageUrl?.startsWith('/placeholders/')
+
     return (
       <div
         className={clsx(
@@ -83,7 +85,11 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         <div
           className={clsx(
             'absolute top-0 right-0 bottom-0 left-0 bg-cover bg-center',
-            onEdit && 'brightness-100 transition group-hover:brightness-[0.35]',
+            onEdit && [
+              'transition group-hover:brightness-[0.35]',
+              // If showing placeholder, dim even when not hovering.
+              showingPlaceholder ? 'brightness-[0.5]' : 'brightness-100',
+            ],
             sizingRoundingClassNames
           )}
           style={
@@ -105,12 +111,14 @@ export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(
         {onEdit && (
           <div
             className={clsx(
-              'absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100',
+              'absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center transition-opacity group-hover:opacity-100',
+              // If showing placeholder, show edit even when not hovering.
+              showingPlaceholder ? 'opacity-70' : 'opacity-0',
               sizingRoundingClassNames
             )}
             onClick={onEdit}
           >
-            <Edit className="!h-1/2 !w-1/2 text-icon-primary" />
+            <Edit className="!h-2/5 !w-2/5 text-icon-primary" />
           </div>
         )}
       </div>

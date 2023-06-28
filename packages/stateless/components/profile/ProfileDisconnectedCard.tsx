@@ -32,7 +32,7 @@ export const ProfileDisconnectedCard = ({
           </div>
 
           <div className="title-text mt-6 font-normal text-text-tertiary">
-            {t('title.disconnected')}
+            {t('title.loggedOut')}
           </div>
 
           <div className="my-5">{connectWallet}</div>

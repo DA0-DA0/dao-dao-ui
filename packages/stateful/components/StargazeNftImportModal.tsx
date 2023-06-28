@@ -41,7 +41,7 @@ export const InnerStargazeNftImportModal = ({
   const [loading, setLoading] = useState(false)
   const onAction = useCallback(async () => {
     if (!signingCosmWasmClient || !stargazeWalletAddress) {
-      toast.error(t('error.connectWalletToContinue'))
+      toast.error(t('error.logInToContinue'))
       return
     }
     if (!selected.length || nfts.loading || nfts.errored) {
@@ -109,15 +109,17 @@ export const InnerStargazeNftImportModal = ({
 
   return (
     <NftSelectionModal
-      actionLabel={t('button.import')}
-      actionLoading={loading}
+      action={{
+        loading,
+        label: t('button.import'),
+        onClick: onAction,
+      }}
       getIdForNft={getIdForNft}
       header={{
         title: t('title.depositNfts'),
         subtitle: t('info.depositNftsModalSubtitle', { daoName }),
       }}
       nfts={nfts}
-      onAction={onAction}
       onClose={onClose}
       onDeselectAll={() => setSelected([])}
       onNftClick={(nft) => {

@@ -8,5 +8,5 @@ export const makeCreateDaoFormDecorator: (
   defaults?: Partial<NewDao>
 ) => DecoratorFn = (pageIndex, defaults) =>
   function CreateDaoFormDecorator() {
-    return <CreateDaoForm override={defaults} initialPageIndex={pageIndex} />
+    return <CreateDaoForm initialPageIndex={pageIndex} override={defaults} />
   }

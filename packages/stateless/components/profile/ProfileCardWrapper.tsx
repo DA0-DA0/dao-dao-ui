@@ -55,7 +55,6 @@ export const ProfileCardWrapper = ({
             <div className="flex min-w-0 flex-col gap-1">
               <ProfileNameDisplayAndEditor
                 compact={compact}
-                editingContainerClassName="h-5"
                 updateProfileName={updateProfileName}
                 walletProfileData={walletProfileData}
               />
@@ -74,7 +73,6 @@ export const ProfileCardWrapper = ({
             <ProfileNameDisplayAndEditor
               className="mb-5"
               compact={compact}
-              editingContainerClassName="h-5"
               updateProfileName={updateProfileName}
               walletProfileData={walletProfileData}
             />

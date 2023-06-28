@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { Default as ProfileHomeCardStory } from '../profile/ProfileHomeCard.stories'
 import { SidebarWallet } from './SidebarWallet'
 
 export default {
@@ -14,28 +13,19 @@ const Template: ComponentStory<typeof SidebarWallet> = (args) => (
 
 export const Connected = Template.bind({})
 Connected.args = {
-  connectedOrConnecting: true,
-  data: {
-    loading: false,
-    data: {
-      tokenBalance: { loading: false, data: 2400.111111 },
-      walletAddress: 'juno123abc987zyx',
-      walletName: 'my_wallet',
-    },
-  },
-  tokenSymbol: ProfileHomeCardStory.args!.tokenSymbol!,
+  connected: true,
+  walletProviderImageUrl: '/daodao.png',
+  walletAddress: 'juno123abc987zyx',
+  walletName: 'my_wallet',
 }
 
 export const Connecting = Template.bind({})
 Connecting.args = {
-  connectedOrConnecting: true,
-  data: {
-    loading: true,
-  },
-  tokenSymbol: ProfileHomeCardStory.args!.tokenSymbol!,
+  connected: false,
+  loading: true,
 }
 
 export const Disconnected = Template.bind({})
 Disconnected.args = {
-  connectedOrConnecting: false,
+  connected: false,
 }

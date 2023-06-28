@@ -5,7 +5,7 @@ import { SEARCH_API_KEY, SEARCH_DAOS_INDEX, SEARCH_HOST } from '@dao-dao/utils'
 
 let _client: MeiliSearch | undefined
 
-const loadClient = async (): Promise<MeiliSearch> => {
+export const loadMeilisearchClient = async (): Promise<MeiliSearch> => {
   if (!_client) {
     _client = new MeiliSearch({
       host: SEARCH_HOST,
@@ -29,7 +29,7 @@ export const searchDaos = async (
   limit?: number,
   exclude?: string[]
 ) => {
-  const client = await loadClient()
+  const client = await loadMeilisearchClient()
   const index = client.index(SEARCH_DAOS_INDEX)
 
   const results = await index.search<DaoSearchResult>(query, {

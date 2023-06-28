@@ -25,6 +25,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { IconButtonLink } from '../IconButtonLink'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 interface DaoTreasuryHistoryProps {
@@ -252,14 +253,13 @@ const TransactionRenderer = ({
     <p className="flex flex-row items-center gap-4 text-right font-mono text-xs leading-6">
       {timestamp?.toLocaleString() ?? `${height} block`}
 
-      <a
+      <IconButtonLink
+        Icon={ArrowOutwardRounded}
         className="text-text-tertiary"
         href={CHAIN_TXN_URL_PREFIX + hash}
-        rel="noopener noreferrer"
-        target="_blank"
-      >
-        <ArrowOutwardRounded className="!h-4 !w-4" />
-      </a>
+        openInNewTab
+        variant="ghost"
+      />
     </p>
   </div>
 )

@@ -30,6 +30,7 @@ import {
   ButtonLinkProps,
   ButtonPopupSection,
   Entity,
+  EntityType,
   GenericToken,
   LoadingData,
   TokenCardLazyInfo,
@@ -136,15 +137,20 @@ export const VestingPaymentCard = ({
   // Can only withdraw if there is a distributable amount.
   const canWithdraw = distributableAmount > 0
 
+  const recipientIsDao =
+    !recipientEntity.loading && recipientEntity.data.type === EntityType.Dao
+
   const buttonPopupSections: ButtonPopupSection[] = useMemo(
     () => [
       // Only show payout actions if recipient is the currently connected
-      // wallet.
-      ...(recipientIsWallet &&
+      // wallet or the recipient is a DAO.
+      ...((recipientIsWallet || recipientIsDao) &&
       (canWithdraw || onManageStake || (onClaim && canClaimStakingRewards))
         ? [
             {
-              label: t('title.manage'),
+              label: recipientIsDao
+                ? t('title.propose') + '...'
+                : t('title.manage'),
               buttons: [
                 ...(canWithdraw
                   ? [
@@ -161,7 +167,7 @@ export const VestingPaymentCard = ({
                   ? [
                       {
                         Icon: ChartEmoji,
-                        label: t('title.manageStaking'),
+                        label: t('button.manageStaking'),
                         closeOnClick: true,
                         onClick: onManageStake,
                       },
@@ -222,13 +228,14 @@ export const VestingPaymentCard = ({
     ],
     [
       recipientIsWallet,
-      t,
+      recipientIsDao,
       canWithdraw,
-      onWithdraw,
-      withdrawing,
       onManageStake,
       onClaim,
       canClaimStakingRewards,
+      t,
+      onWithdraw,
+      withdrawing,
       claiming,
       cw20Address,
       onAddToken,

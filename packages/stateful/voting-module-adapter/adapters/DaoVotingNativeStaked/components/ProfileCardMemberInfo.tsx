@@ -85,7 +85,7 @@ export const ProfileCardMemberInfo = ({
   const awaitNextBlock = useAwaitNextBlock()
   const onClaim = useCallback(async () => {
     if (!connected) {
-      return toast.error(t('error.connectWalletToContinue'))
+      return toast.error(t('error.logInToContinue'))
     }
     if (!sumClaimsAvailable) {
       return toast.error(t('error.noClaimsAvailable'))

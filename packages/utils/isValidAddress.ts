@@ -1,4 +1,9 @@
-export const isValidWalletAddress = (address: string, chainPrefix: string) => {
+import { fromBech32 } from '@cosmjs/encoding'
+
+export function isValidWalletAddress(
+  address: string,
+  chainPrefix: string
+): boolean {
   if (!address?.length) {
     return false
   }
@@ -51,3 +56,22 @@ export const isValidTokenFactoryDenom = (
 export const isValidAddress = (address: string, chainPrefix: string) =>
   isValidWalletAddress(address, chainPrefix) ||
   isValidContractAddress(address, chainPrefix)
+
+// Validates any bech32 prefix, optionally requiring a specific prefix.
+export const isValidBech32Address = (
+  address: string,
+  // If passed, the prefix must match this value.
+  prefix?: string
+): boolean => {
+  try {
+    const decoded = fromBech32(address)
+
+    if (prefix && decoded.prefix !== prefix) {
+      return false
+    }
+
+    return true
+  } catch (err) {
+    return false
+  }
+}

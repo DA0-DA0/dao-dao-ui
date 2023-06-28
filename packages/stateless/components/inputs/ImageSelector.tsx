@@ -1,4 +1,4 @@
-import { Add, Check } from '@mui/icons-material'
+import { Add } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, useState } from 'react'
 import {
@@ -46,8 +46,12 @@ export interface ImageSelectorModalProps<
   watch: UseFormWatch<FV>
   setValue: UseFormSetValue<FV>
   error?: FieldError
-  onClose: () => void
+  onClose: (done: boolean) => void
+  loading?: boolean
   Trans: ComponentType<TransProps>
+  buttonLabel?: string
+  imageClassName?: string
+  visible?: boolean
 }
 
 export const ImageSelectorModal = <
@@ -60,7 +64,11 @@ export const ImageSelectorModal = <
   setValue,
   watch,
   onClose,
+  loading,
   Trans,
+  buttonLabel,
+  imageClassName,
+  visible = true,
 }: ImageSelectorModalProps<FV, StringFieldName>) => {
   const { t } = useTranslation()
   const imageUrl = watch(fieldName) ?? ''
@@ -70,12 +78,14 @@ export const ImageSelectorModal = <
   return (
     <Modal
       contentContainerClassName="gap-3 items-center"
-      onClose={onClose}
-      visible
+      onClose={() => onClose(false)}
+      visible={visible}
     >
       <div
-        aria-label={t('info.daosLogo')}
-        className="h-[95px] w-[95px] rounded-full border border-border-secondary bg-cover bg-center"
+        className={clsx(
+          'h-[95px] w-[95px] rounded-full border border-border-secondary bg-cover bg-center',
+          imageClassName
+        )}
         role="img"
         style={
           imageUrl
@@ -89,7 +99,7 @@ export const ImageSelectorModal = <
         <InputLabel
           mono
           name={t('form.enterImageUrl')}
-          tooltip={t('form.imageURLTooltip')}
+          tooltip={t('form.imageUrlTooltip')}
         />
         <TextInput
           // Auto focus does not work on mobile Safari by design
@@ -101,7 +111,7 @@ export const ImageSelectorModal = <
             // Prevent submitting form on enter.
             if (e.key === 'Enter') {
               e.preventDefault()
-              onClose()
+              onClose(true)
             }
           }}
           register={register}
@@ -126,8 +136,12 @@ export const ImageSelectorModal = <
         <InputErrorMessage error={uploadError} />
       </div>
 
-      <Button className="self-end" onClick={onClose} size="sm" type="button">
-        {t('button.done')} <Check className="!h-4 !w-4" />
+      <Button
+        className="self-end"
+        loading={loading}
+        onClick={() => onClose(true)}
+      >
+        {buttonLabel || t('button.done')}
       </Button>
     </Modal>
   )

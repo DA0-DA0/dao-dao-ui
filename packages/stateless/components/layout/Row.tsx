@@ -24,6 +24,7 @@ export const Row = ({
   loading = false,
   selected = false,
   LinkWrapper,
+  shallow,
   containerClassName,
 }: RowProps) => {
   const { asPath } = useRouter()
@@ -46,9 +47,15 @@ export const Row = ({
   const Icon = _Icon || ((props) => <div {...props} style={{ content: ' ' }} />)
   const ExpandButton = expanded ? UnfoldLess : UnfoldMore
 
+  // If no onClick or href, and has expandable children, set onClick to toggle
+  // expanded.
+  if (!onClick && !href && children && !loading) {
+    onClick = () => setExpanded((e) => !e)
+  }
+
   return compact ? (
     <div className={containerClassName}>
-      <RowWrapper LinkWrapper={LinkWrapper} href={href}>
+      <RowWrapper LinkWrapper={LinkWrapper} href={href} shallow={shallow}>
         <div
           className={clsx('body-text flex flex-row items-center py-2.5 px-6', {
             'cursor-pointer transition-opacity hover:opacity-70 active:opacity-60':
@@ -74,11 +81,11 @@ export const Row = ({
         </div>
       </RowWrapper>
 
-      <div>{children}</div>
+      <div className={clsx({ hidden: !expanded })}>{children}</div>
     </div>
   ) : (
     <div className={containerClassName}>
-      <RowWrapper LinkWrapper={LinkWrapper} href={href}>
+      <RowWrapper LinkWrapper={LinkWrapper} href={href} shallow={shallow}>
         <div
           className={clsx('body-text flex flex-row items-center gap-4 p-2', {
             'cursor-pointer transition-opacity hover:opacity-70 active:opacity-60':
@@ -130,13 +137,19 @@ export const Row = ({
 
 interface RowWrapperProps {
   LinkWrapper: ComponentType<LinkWrapperProps>
+  shallow?: boolean
   href?: string
   children: ReactNode
 }
 
-const RowWrapper = ({ LinkWrapper, href, children }: RowWrapperProps) =>
+const RowWrapper = ({
+  LinkWrapper,
+  children,
+  href,
+  shallow,
+}: RowWrapperProps) =>
   href ? (
-    <LinkWrapper className="block" href={href}>
+    <LinkWrapper className="block" href={href} shallow={shallow}>
       {children}
     </LinkWrapper>
   ) : (

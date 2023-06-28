@@ -14,10 +14,8 @@ import {
 import {
   betaWarningAcceptedAtom,
   commandModalVisibleAtom,
-  installWarningVisibleAtom,
   mountedInBrowserAtom,
   navigationCompactAtom,
-  noKeplrAccountAtom,
   proposalCreatedCardPropsAtom,
   refreshBlockHeightAtom,
   refreshTokenUsdcPriceAtom,
@@ -25,8 +23,6 @@ import {
 import {
   BetaWarningModal,
   DaoCreatedModal,
-  InstallKeplrModal,
-  NoKeplrAccountModal,
   ProposalCreatedModal,
   DappLayout as StatelessDappLayout,
   useAppContext,
@@ -44,18 +40,14 @@ import {
 import { ConnectWallet } from './ConnectWallet'
 import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
-import { PfpkNftSelectionModal } from './PfpkNftSelectionModal'
 import { SidebarWallet } from './SidebarWallet'
 import { SyncFollowingModal } from './SyncFollowingModal'
+import { WalletModals } from './wallet'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
   const router = useRouter()
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
-  const [installWarningVisible, setInstallWarningVisible] = useRecoilState(
-    installWarningVisibleAtom
-  )
-  const [noKeplrAccount, setNoKeplrAccount] = useRecoilState(noKeplrAccountAtom)
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
     betaWarningAcceptedAtom
   )
@@ -73,29 +65,18 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   const [proposalCreatedCardProps, setProposalCreatedCardProps] =
     useRecoilState(proposalCreatedCardPropsAtom)
 
-  const { rootCommandContextMaker, updateProfileNft, inbox } = useAppContext()
+  const { rootCommandContextMaker, inbox } = useAppContext()
   // Type-check, should always be loaded for dapp.
   if (!inbox) {
     throw new Error(t('error.loadingData'))
   }
 
-  //! WALLET CONNECTION ERROR MODALS
-  const { connect, connected, error, status, connectedWallet } =
-    useWalletManager()
+  const { connect, connected, status, connectedWallet } = useWalletManager()
   const {
     walletAddress,
     walletProfileData,
     refreshBalances: refreshWalletBalances,
   } = useWalletInfo()
-  useEffect(() => {
-    setInstallWarningVisible(
-      error instanceof Error &&
-        error.message === 'Failed to retrieve wallet client.'
-    )
-    setNoKeplrAccount(
-      error instanceof Error && error.message === "key doesn't exist"
-    )
-  }, [error, setInstallWarningVisible, setNoKeplrAccount])
 
   //! COMMAND MODAL
   // Hide modal when we nav away.
@@ -224,14 +205,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
 
       {/* Modals */}
 
-      <InstallKeplrModal
-        onClose={() => setInstallWarningVisible(false)}
-        visible={installWarningVisible}
-      />
-      <NoKeplrAccountModal
-        onClose={() => setNoKeplrAccount(false)}
-        visible={noKeplrAccount}
-      />
       <BetaWarningModal
         onClose={() => setBetaWarningAccepted(true)}
         visible={mountedInBrowser && !betaWarningAccepted}
@@ -244,10 +217,9 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         />
       )}
       <SyncFollowingModal />
-      <PfpkNftSelectionModal
-        onClose={updateProfileNft.toggle}
-        visible={updateProfileNft.visible}
-      />
+
+      {/* Wallet UI */}
+      <WalletModals />
 
       {daoCreatedCardProps && (
         <DaoCreatedModal

@@ -158,15 +158,16 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
         return
       }
 
-      // Use a consistent chain for the signer since the chain ID is part of the
-      // signature and PFPK needs to know what to expect.
-      const { address: signingAddress, walletClient: signingWalletClient } =
-        await connectWalletToChain(ChainInfoID.Juno1)
-
       // Set onUpdate handler.
       onUpdateRef.current = onUpdate
       setUpdatingNonce(walletProfile.nonce)
+
       try {
+        // Use a consistent chain for the signer since the chain ID is part of
+        // the signature and PFPK needs to know what to expect.
+        const { address: signingAddress, walletClient: signingWalletClient } =
+          await connectWalletToChain(ChainInfoID.Juno1)
+
         const profileUpdate: WalletProfileUpdate = {
           ...profile,
           nonce: walletProfile.nonce,

@@ -134,7 +134,7 @@
     "governanceTokenSymbolPlaceholder": "영숫자로 이루어진 문자 집합 (예 : \"DOG\")",
     "governanceTokenSymbolTitle": "토큰 심볼",
     "imageURLTitle": "이미지 주소",
-    "imageURLTooltip": "이미지 링크를 삽입하시오. 예: https://moonphase.is/image.svg",
+    "imageUrlTooltip": "이미지 링크를 삽입하시오. 예: https://moonphase.is/image.svg",
     "initialSupply": "총 토큰 공급량",
     "instantiatedAddress": "활성화된 주소",
     "junoAddress": "Juno 주소",

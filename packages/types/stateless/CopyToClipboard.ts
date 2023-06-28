@@ -8,7 +8,6 @@ export interface CopyToClipboardProps {
     end: number
   }
   takeAll?: true
-  loading?: boolean
   className?: string
   textClassName?: string
   onCopy?: () => void

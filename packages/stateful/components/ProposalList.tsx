@@ -5,7 +5,7 @@ import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
   ProposalList as StatelessProposalList,
   useDaoInfoContext,
-  useNavHelpers,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 
 import { useMembership, useOnDaoWebSocketMessage } from '../hooks'
@@ -20,7 +20,7 @@ const MIN_LOAD_PROPS = 100
 
 export const ProposalList = () => {
   const { chainId, coreAddress, proposalModules } = useDaoInfoContext()
-  const { getDaoProposalPath } = useNavHelpers()
+  const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership({
     coreAddress,
     chainId,

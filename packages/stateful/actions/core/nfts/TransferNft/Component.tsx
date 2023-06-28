@@ -170,14 +170,16 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
 
       {isCreating && (
         <NftSelectionModal
-          actionLabel={t('button.save')}
-          actionLoading={false}
+          action={{
+            loading: false,
+            label: t('button.save'),
+            onClick: () => setShowModal(false),
+          }}
           getIdForNft={getIdForNft}
           header={{
             title: t('title.selectNftToTransfer'),
           }}
           nfts={options}
-          onAction={() => setShowModal(false)}
           onClose={() => setShowModal(false)}
           onNftClick={(nft) => {
             if (getIdForNft(nft) === selected) {
