@@ -1,22 +1,20 @@
-import { ChainInfoID } from '@noahsaso/cosmodal'
+import { ChainId } from '@dao-dao/types'
 
-export const OSMOSIS_TESTNET_CHAIN_ID = 'osmo-test-5'
-
-export const SUPPORTED_CHAINS: { id: string; subdomain: string }[] = [
+export const SUPPORTED_CHAINS: { id: ChainId; subdomain: string }[] = [
   {
-    id: ChainInfoID.Juno1,
+    id: ChainId.JunoMainnet,
     subdomain: 'juno',
   },
   {
-    id: ChainInfoID.Osmosis1,
+    id: ChainId.OsmosisMainnet,
     subdomain: 'osmosis',
   },
   {
-    id: ChainInfoID.Uni6,
+    id: ChainId.JunoTestnet,
     subdomain: 'juno-testnet',
   },
   {
-    id: OSMOSIS_TESTNET_CHAIN_ID,
+    id: ChainId.OsmosisTestnet,
     subdomain: 'osmosis-testnet',
   },
 ]

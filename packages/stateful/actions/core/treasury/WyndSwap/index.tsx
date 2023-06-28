@@ -1,5 +1,4 @@
 import { coins } from '@cosmjs/amino'
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import {
@@ -24,6 +23,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   AmountWithTimestamp,
+  ChainId,
   GenericToken,
   LoadingData,
   TokenType,
@@ -727,7 +727,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<WyndSwapData> = (
 
 export const makeWyndSwapAction: ActionMaker<WyndSwapData> = ({ t, chain }) =>
   // WYND only exists on Juno mainnet.
-  chain.chain_id === ChainInfoID.Juno1
+  chain.chain_id === ChainId.JunoMainnet
     ? {
         key: ActionKey.WyndSwap,
         Icon: CycleEmoji,

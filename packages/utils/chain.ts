@@ -3,13 +3,15 @@ import { Buffer } from 'buffer'
 import { Chain } from '@chain-registry/types'
 import { fromBech32, fromHex, toBech32 } from '@cosmjs/encoding'
 import { decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
-import { ChainInfoID, ChainInfoMap } from '@noahsaso/cosmodal'
+import { Bech32Address } from '@keplr-wallet/cosmos'
+import { ChainInfo, FeeCurrency } from '@keplr-wallet/types'
 import { assets, chains } from 'chain-registry'
 import { bondStatusToJSON } from 'cosmjs-types/cosmos/staking/v1beta1/staking'
 import { Validator as RpcValidator } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import RIPEMD160 from 'ripemd160'
 
 import {
+  ChainId,
   GenericToken,
   SupportedChain,
   TokenType,
@@ -19,30 +21,28 @@ import {
 import {
   CHAIN_ID,
   CHAIN_RPC_ENDPOINT,
-  OSMOSIS_TESTNET_CHAIN_ID,
   STARGAZE_RPC_ENDPOINT,
-  STARGAZE_TESTNET_CHAIN_ID,
-  STARGAZE_TESTNET_RPC_ENDPOINT,
   SUPPORTED_CHAINS,
 } from './constants'
 import { getFallbackImage } from './getFallbackImage'
-import { ibcAssets } from './ibc'
+import { getIbcAssets } from './ibc'
 
 export const getRpcForChainId = (chainId: string): string => {
   // Override from environment variables. Matched in
   // @dao-dao/stateful/components/WalletProvider.tsx
   if (chainId === CHAIN_ID) {
     return CHAIN_RPC_ENDPOINT
-  } else if (chainId === ChainInfoID.Stargaze1) {
+  } else if (chainId === ChainId.StargazeMainnet) {
     return STARGAZE_RPC_ENDPOINT
-  } else if (chainId === STARGAZE_TESTNET_CHAIN_ID) {
-    return STARGAZE_TESTNET_RPC_ENDPOINT
   }
 
-  if (!(chainId in ChainInfoMap)) {
+  const chain = maybeGetChainForChainId(chainId)
+  const rpc = chain?.apis?.rpc?.[0].address
+  if (!rpc) {
     throw new Error(`Unknown chain ID "${chainId}"`)
   }
-  return ChainInfoMap[chainId as keyof typeof ChainInfoMap].rpc
+
+  return rpc
 }
 
 export const cosmosValidatorToValidator = ({
@@ -65,21 +65,18 @@ export const cosmosValidatorToValidator = ({
 })
 
 export const getImageUrlForChainId = (chainId: string): string | undefined => {
-  if (chainId === ChainInfoID.Juno1 || chainId === ChainInfoID.Uni6) {
+  if (chainId === ChainId.JunoMainnet || chainId === ChainId.JunoTestnet) {
     return '/juno.png'
   }
 
   if (
-    chainId === ChainInfoID.Stargaze1 ||
-    chainId === STARGAZE_TESTNET_CHAIN_ID
+    chainId === ChainId.StargazeMainnet ||
+    chainId === ChainId.StargazeTestnet
   ) {
     return '/stargaze.png'
   }
 
-  if (
-    chainId === ChainInfoID.Osmosis1 ||
-    chainId === OSMOSIS_TESTNET_CHAIN_ID
-  ) {
+  if (chainId === ChainId.JunoMainnet || chainId === ChainId.JunoTestnet) {
     return '/osmosis.png'
   }
 
@@ -198,8 +195,8 @@ export const getTokenForChainIdAndDenom = (
     const key = `${chainId}:${denom}`
     if (!cachedTokens[key]) {
       // If Juno mainnet, check IBC assets.
-      if (chainId === ChainInfoID.Juno1) {
-        const ibcAsset = ibcAssets.find(
+      if (chainId === ChainId.JunoMainnet) {
+        const ibcAsset = getIbcAssets().find(
           ({ denomOrAddress }) => denomOrAddress === denom
         )
 
@@ -291,4 +288,73 @@ export const validateAddressOnCurrentChain = (
 
   // Otherwise return the subdomain of the first chain.
   return `https://${chainsForAddress[0].subdomain}.daodao.zone`
+}
+
+// Construct Keplr chain info from chain registry.
+export const maybeGetKeplrChainInfo = (
+  chainId: string
+): ChainInfo | undefined => {
+  const chain = maybeGetChainForChainId(chainId)
+  const rpc = chain?.apis?.rpc?.[0].address
+  const rest = chain?.apis?.rest?.[0].address
+  const stakingDenom = chain?.staking?.staking_tokens[0].denom
+
+  if (!chain || !rpc || !rest || !stakingDenom) {
+    return
+  }
+
+  const stakeCurrency = getTokenForChainIdAndDenom(
+    chain.chain_id,
+    stakingDenom,
+    false
+  )
+
+  const feeCurrencies =
+    chain.fees?.fee_tokens?.map(
+      ({
+        denom,
+        low_gas_price,
+        average_gas_price,
+        high_gas_price,
+      }): FeeCurrency => {
+        const token = getTokenForChainIdAndDenom(chain.chain_id, denom, false)
+
+        return {
+          coinDenom: token.symbol,
+          coinMinimalDenom: token.denomOrAddress,
+          coinDecimals: token.decimals,
+          gasPriceStep:
+            low_gas_price !== undefined &&
+            average_gas_price !== undefined &&
+            high_gas_price !== undefined
+              ? {
+                  low: low_gas_price,
+                  average: average_gas_price,
+                  high: high_gas_price,
+                }
+              : undefined,
+        }
+      }
+    ) ?? []
+
+  return {
+    rpc,
+    rest,
+    chainId: chain.chain_id,
+    chainName: chain.pretty_name || chain.chain_name,
+    stakeCurrency: {
+      coinDenom: stakeCurrency.symbol,
+      coinMinimalDenom: stakeCurrency.denomOrAddress,
+      coinDecimals: stakeCurrency.decimals,
+    },
+    bip44: {
+      coinType: chain.slip44,
+    },
+    alternativeBIP44s: chain.alternative_slip44s?.map((coinType) => ({
+      coinType,
+    })),
+    bech32Config: Bech32Address.defaultBech32Config(chain.bech32_prefix),
+    currencies: feeCurrencies,
+    feeCurrencies,
+  }
 }

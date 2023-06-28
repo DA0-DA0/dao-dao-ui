@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer'
 
-import { ChainInfoID, useWallet } from '@noahsaso/cosmodal'
+import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -12,7 +12,7 @@ import {
   useCachedLoadingWithError,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { NftCardInfo } from '@dao-dao/types'
+import { ChainId, NftCardInfo } from '@dao-dao/types'
 import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { walletStargazeNftCardInfosSelector } from '../recoil/selectors/nft'
@@ -26,7 +26,7 @@ export const InnerStargazeNftImportModal = ({
   const { t } = useTranslation()
   const { coreAddress, name: daoName } = useDaoInfoContext()
   const { signingCosmWasmClient, address: stargazeWalletAddress } = useWallet(
-    ChainInfoID.Stargaze1
+    ChainId.StargazeMainnet
   )
   const [selected, setSelected] = useState<string[]>([])
   const getIdForNft = (nft: NftCardInfo) =>

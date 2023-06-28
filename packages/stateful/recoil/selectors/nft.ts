@@ -1,5 +1,4 @@
 import { fromBech32, toBech32 } from '@cosmjs/encoding'
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
@@ -10,13 +9,12 @@ import {
   refreshWalletBalancesIdAtom,
   refreshWalletStargazeNftsAtom,
 } from '@dao-dao/state'
-import { NftCardInfo, WithChainId } from '@dao-dao/types'
+import { ChainId, NftCardInfo, WithChainId } from '@dao-dao/types'
 import { StargazeNft } from '@dao-dao/types/nft'
 import {
   CHAIN_ID,
   MAINNET,
   STARGAZE_PROFILE_API_TEMPLATE,
-  STARGAZE_TESTNET_CHAIN_ID,
   STARGAZE_URL_BASE,
 } from '@dao-dao/utils'
 
@@ -63,8 +61,8 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
               tokenId,
               tokenUri,
               chainId: MAINNET
-                ? ChainInfoID.Stargaze1
-                : STARGAZE_TESTNET_CHAIN_ID,
+                ? ChainId.StargazeMainnet
+                : ChainId.StargazeTestnet,
             })
           )
         )
@@ -106,7 +104,7 @@ export const nftCardInfoWithUriSelector = selectorFamily<
         tokenId,
         externalLink:
           externalLink ||
-          (chainId === ChainInfoID.Stargaze1
+          (chainId === ChainId.StargazeMainnet
             ? {
                 href: `${STARGAZE_URL_BASE}/media/${collection}/${tokenId}`,
                 name: 'Stargaze',

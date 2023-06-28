@@ -1,13 +1,9 @@
-import { ChainInfoID } from '@noahsaso/cosmodal'
+import { ChainId, PolytoneNotes } from '@dao-dao/types'
 
-import { PolytoneNotes } from '@dao-dao/types'
-
-import { OSMOSIS_TESTNET_CHAIN_ID } from './chains'
-
-const none: PolytoneNotes = {}
+const NONE: PolytoneNotes = {}
 
 const junoMainnet: PolytoneNotes = {
-  [ChainInfoID.Uni6]: {
+  [ChainId.JunoTestnet]: {
     // juno-1
     note: 'juno13tamtu4qwe6d5lr5268rydalhlmcj79vaqr2ant4x6ejw3gpmncsyf8u62',
     // juno-1
@@ -30,10 +26,9 @@ const junoMainnet: PolytoneNotes = {
 // TODO (polytone): osmosis
 const osmosisMainnet: PolytoneNotes = {}
 
-export const PolytoneNotesPerChain: Record<string, PolytoneNotes | undefined> =
-  {
-    [ChainInfoID.Juno1]: junoMainnet,
-    [ChainInfoID.Osmosis1]: osmosisMainnet,
-    [ChainInfoID.Uni6]: none,
-    [OSMOSIS_TESTNET_CHAIN_ID]: none,
-  }
+export const PolytoneNotesPerChain: Partial<Record<ChainId, PolytoneNotes>> = {
+  [ChainId.JunoMainnet]: junoMainnet,
+  [ChainId.JunoTestnet]: NONE,
+  [ChainId.OsmosisMainnet]: osmosisMainnet,
+  [ChainId.OsmosisTestnet]: NONE,
+}

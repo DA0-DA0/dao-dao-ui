@@ -1,14 +1,12 @@
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
 import { useTranslation } from 'react-i18next'
 
-import { CreateDaoContext } from '@dao-dao/types'
+import { ChainId, CreateDaoContext } from '@dao-dao/types'
 import {
   CHAIN_ID,
   DaoVotingCw4AdapterId,
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
-  OSMOSIS_TESTNET_CHAIN_ID,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -107,8 +105,8 @@ export const CreateDaoStart = ({
               supplies={t(suppliesI18nKey)}
               underDevelopment={
                 // Osmosis only supports multisigs right now.
-                (CHAIN_ID === ChainInfoID.Osmosis1 ||
-                  CHAIN_ID === OSMOSIS_TESTNET_CHAIN_ID) &&
+                (CHAIN_ID === ChainId.OsmosisMainnet ||
+                  CHAIN_ID === ChainId.OsmosisTestnet) &&
                 id !== DaoVotingCw4AdapterId
               }
             />

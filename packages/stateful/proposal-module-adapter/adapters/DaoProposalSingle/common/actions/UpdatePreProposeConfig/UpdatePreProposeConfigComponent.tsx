@@ -21,8 +21,8 @@ import {
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
+  getIbcAssets,
   getNativeTokenForChainId,
-  ibcAssets,
   isValidContractAddress,
   makeValidateContractAddress,
   validateRequired,
@@ -102,7 +102,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         undefined,
     },
     // Then the IBC assets.
-    ...ibcAssets,
+    ...getIbcAssets(),
   ]
   const selectedToken = availableTokens.find(
     (token) =>

@@ -20,7 +20,6 @@
     "@dao-dao/utils": "2.2.0",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
-    "@keplr-wallet/cosmos": "^0.11.49",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.3",
     "@walletconnect/browser-utils": "^1.8.0",

@@ -1,9 +1,6 @@
 import { GasPrice } from '@cosmjs/stargate'
-import { Bech32Address } from '@keplr-wallet/cosmos'
-import { ChainInfo, FeeCurrency } from '@keplr-wallet/types'
+import { ChainInfo } from '@keplr-wallet/types'
 import {
-  ChainInfoID,
-  ChainInfoMap,
   WalletManagerProvider,
   WalletType,
   useWallet,
@@ -21,7 +18,7 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { signingCosmWasmClientAtom } from '@dao-dao/state'
-import { Web3AuthPrompt } from '@dao-dao/types'
+import { ChainId, Web3AuthPrompt } from '@dao-dao/types'
 import {
   CHAIN_ID,
   CHAIN_REST_ENDPOINT,
@@ -30,82 +27,25 @@ import {
   SITE_URL,
   STARGAZE_REST_ENDPOINT,
   STARGAZE_RPC_ENDPOINT,
-  STARGAZE_TESTNET_CHAIN_ID,
-  STARGAZE_TESTNET_REST_ENDPOINT,
-  STARGAZE_TESTNET_RPC_ENDPOINT,
   WC_ICON_PATH,
   WEB3AUTH_CLIENT_ID,
   getChainForChainId,
-  getTokenForChainIdAndDenom,
-  maybeGetChainForChainId,
+  maybeGetKeplrChainInfo,
   typesRegistry,
 } from '@dao-dao/utils'
 
-let currentChainInfo: ChainInfo | undefined
-// Get chain from cosmodal chain infos, falling back to chain-registry.
-if ((Object.values(ChainInfoID) as string[]).includes(CHAIN_ID)) {
-  currentChainInfo = ChainInfoMap[CHAIN_ID as ChainInfoID]
-} else {
-  const chain = maybeGetChainForChainId(CHAIN_ID)
-  if (chain) {
-    const stakeCurrency = getTokenForChainIdAndDenom(
-      chain.chain_id,
-      chain.staking?.staking_tokens[0].denom!,
-      false
-    )
-    const feeCurrencies =
-      chain.fees?.fee_tokens?.map(
-        ({
-          denom,
-          low_gas_price,
-          average_gas_price,
-          high_gas_price,
-        }): FeeCurrency => {
-          const token = getTokenForChainIdAndDenom(chain.chain_id, denom, false)
-
-          return {
-            coinDenom: token.symbol,
-            coinMinimalDenom: token.denomOrAddress,
-            coinDecimals: token.decimals,
-            gasPriceStep:
-              low_gas_price !== undefined &&
-              average_gas_price !== undefined &&
-              high_gas_price !== undefined
-                ? {
-                    low: low_gas_price,
-                    average: average_gas_price,
-                    high: high_gas_price,
-                  }
-                : undefined,
-          }
-        }
-      ) ?? []
-
-    currentChainInfo = {
-      rpc: CHAIN_RPC_ENDPOINT,
-      rest: CHAIN_REST_ENDPOINT,
-      chainId: chain.chain_id,
-      chainName: chain.pretty_name || chain.chain_name,
-      stakeCurrency: {
-        coinDenom: stakeCurrency.symbol,
-        coinMinimalDenom: stakeCurrency.denomOrAddress,
-        coinDecimals: stakeCurrency.decimals,
-      },
-      bip44: {
-        coinType: chain.slip44,
-      },
-      alternativeBIP44s: chain.alternative_slip44s?.map((coinType) => ({
-        coinType,
-      })),
-      bech32Config: Bech32Address.defaultBech32Config(chain.bech32_prefix),
-      currencies: feeCurrencies,
-      feeCurrencies,
-    }
-  }
-}
+const currentChainInfo: ChainInfo | undefined = maybeGetKeplrChainInfo(CHAIN_ID)
 // Fail build if chain info not found.
 if (!currentChainInfo) {
   throw new Error(`Chain info not found for CHAIN_ID: ${CHAIN_ID}`)
+}
+
+const stargazeMainnetChainInfo: ChainInfo | undefined = maybeGetKeplrChainInfo(
+  ChainId.StargazeMainnet
+)
+// Fail build if chain info not found.
+if (!stargazeMainnetChainInfo) {
+  throw new Error('Stargaze mainnet chain info not found')
 }
 
 export type WalletProviderProps = {
@@ -146,23 +86,14 @@ export const WalletProvider = ({
       chainInfoOverrides={[
         // Use environment variables to determine RPC/REST nodes.
         {
-          // Typechecked above.
-          ...currentChainInfo!,
+          ...currentChainInfo,
           rpc: CHAIN_RPC_ENDPOINT,
           rest: CHAIN_REST_ENDPOINT,
         },
         {
-          ...ChainInfoMap[ChainInfoID.Stargaze1],
+          ...stargazeMainnetChainInfo,
           rpc: STARGAZE_RPC_ENDPOINT,
           rest: STARGAZE_REST_ENDPOINT,
-        },
-        // Stargaze testnet.
-        {
-          ...ChainInfoMap[ChainInfoID.Stargaze1],
-          chainId: STARGAZE_TESTNET_CHAIN_ID,
-          chainName: 'Stargaze Testnet',
-          rpc: STARGAZE_TESTNET_RPC_ENDPOINT,
-          rest: STARGAZE_TESTNET_REST_ENDPOINT,
         },
       ]}
       defaultChainId={CHAIN_ID}

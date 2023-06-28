@@ -1,11 +1,10 @@
 import { WarningRounded } from '@mui/icons-material'
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import queryString from 'query-string'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { KadoModalProps } from '@dao-dao/types'
+import { ChainId, KadoModalProps } from '@dao-dao/types'
 import { CHAIN_ID, KADO_API_KEY } from '@dao-dao/utils'
 
 import { useChain } from '../../hooks'
@@ -15,7 +14,7 @@ import { Modal } from './Modal'
 
 // Only supports Juno and Osmosis.
 export const KADO_MODAL_ENABLED =
-  CHAIN_ID === ChainInfoID.Juno1 || CHAIN_ID === ChainInfoID.Osmosis1
+  CHAIN_ID === ChainId.JunoMainnet || CHAIN_ID === ChainId.OsmosisMainnet
 
 export const KadoModal = ({
   defaultMode = 'buy',
@@ -27,9 +26,9 @@ export const KadoModal = ({
 
   const { chain_id } = useChain()
   const network =
-    chain_id === ChainInfoID.Juno1
+    chain_id === ChainId.JunoMainnet
       ? 'JUNO'
-      : chain_id === ChainInfoID.Osmosis1
+      : chain_id === ChainId.OsmosisMainnet
       ? 'OSMO'
       : ''
 

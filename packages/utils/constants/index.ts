@@ -1,3 +1,5 @@
+import { ChainId } from '@dao-dao/types'
+
 import { CodeIdConfigs } from './codeIdConfigs'
 import { PolytoneNotesPerChain } from './polytone'
 
@@ -25,8 +27,11 @@ export const LEGACY_URL_PREFIX = process.env
 // True if on mainnet, false if on testnet.
 export const MAINNET = process.env.NEXT_PUBLIC_MAINNET === 'true'
 
-export const CHAIN_NAME = process.env.NEXT_PUBLIC_CHAIN_NAME as string
-export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as string
+export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as ChainId
+if (!CHAIN_ID || !Object.values(ChainId).includes(CHAIN_ID)) {
+  throw new Error(`Unexpected CHAIN_ID: ${CHAIN_ID}`)
+}
+
 export const CHAIN_TXN_URL_PREFIX = process.env
   .NEXT_PUBLIC_CHAIN_TXN_URL_PREFIX as string
 export const CHAIN_RPC_ENDPOINT = process.env
@@ -47,25 +52,17 @@ export const WEB3AUTH_CLIENT_ID = process.env
 // KVPK prefix for saved Me page transactions.
 export const ME_SAVED_TX_PREFIX = `${CHAIN_ID}:savedTx:`
 
-export const STARGAZE_TESTNET_CHAIN_ID = 'elgafar-1'
-export const STARGAZE_TESTNET_RPC_ENDPOINT =
-  'https://rpc.elgafar-1.stargaze-apis.com:443'
-export const STARGAZE_TESTNET_REST_ENDPOINT =
-  'https://rest.elgafar-1.stargaze-apis.com:443'
-
 export const CI = process.env.CI === 'true'
 
 // Code IDs
-if (!(CHAIN_ID in CodeIdConfigs)) {
-  console.error(`Chain ID '${CHAIN_ID}' not found in Code ID Configs`)
-}
 export const CODE_ID_CONFIG = CodeIdConfigs[CHAIN_ID]!
+if (!CODE_ID_CONFIG) {
+  throw new Error(`Chain_ID ${CHAIN_ID} not found in Code ID Configs`)
+}
 
 // Polytone Notes
-if (!(CHAIN_ID in PolytoneNotesPerChain)) {
-  console.error(`Chain ID '${CHAIN_ID}' not found in Polytone Notes per Chain`)
-}
-export const POLYTONE_NOTES = PolytoneNotesPerChain[CHAIN_ID]!
+export const POLYTONE_NOTES = PolytoneNotesPerChain[CHAIN_ID] || {}
+
 // 3 days
 export const POLYTONE_TIMEOUT_SECONDS = (3 * 24 * 60 * 60).toString()
 

@@ -1,9 +1,5 @@
 import { makeSignDoc } from '@cosmjs/amino'
-import {
-  ChainInfoID,
-  useConnectWalletToChain,
-  useWallet,
-} from '@noahsaso/cosmodal'
+import { useConnectWalletToChain, useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -16,7 +12,7 @@ import {
   refreshWalletProfileAtom,
 } from '@dao-dao/state'
 import { useCachedLoadable, useChainContext } from '@dao-dao/stateless'
-import { WalletProfileData, WalletProfileUpdate } from '@dao-dao/types'
+import { ChainId, WalletProfileData, WalletProfileUpdate } from '@dao-dao/types'
 import {
   PFPK_API_BASE,
   convertMicroDenomToDenomWithDecimals,
@@ -180,7 +176,7 @@ export const useWalletInfo = (): UseWalletReturn => {
         // Use a consistent chain for the signer since the chain ID is part of
         // the signature and PFPK needs to know what to expect.
         const { address: signingAddress, walletClient: signingWalletClient } =
-          await connectWalletToChain(ChainInfoID.Juno1)
+          await connectWalletToChain(ChainId.JunoMainnet)
 
         const profileUpdate: WalletProfileUpdate = {
           ...profile,
@@ -188,7 +184,9 @@ export const useWalletInfo = (): UseWalletReturn => {
         }
 
         const offlineSignerAmino =
-          await signingWalletClient.getOfflineSignerOnlyAmino(ChainInfoID.Juno1)
+          await signingWalletClient.getOfflineSignerOnlyAmino(
+            ChainId.JunoMainnet
+          )
         const signDocAmino = makeSignDoc(
           [
             {
@@ -208,7 +206,7 @@ export const useWalletInfo = (): UseWalletReturn => {
               },
             ],
           },
-          ChainInfoID.Juno1,
+          ChainId.JunoMainnet,
           '',
           0,
           0

@@ -1,7 +1,7 @@
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import { useCallback, useMemo } from 'react'
 
 import { GasEmoji } from '@dao-dao/stateless'
+import { ChainId } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionKey,
@@ -38,8 +38,8 @@ export const makeFeeShareAction: ActionMaker<FeeShareData> = ({
 }) => {
   // Only supported on Juno.
   if (
-    chain.chain_id !== ChainInfoID.Juno1 &&
-    chain.chain_id !== ChainInfoID.Uni6
+    chain.chain_id !== ChainId.JunoMainnet &&
+    chain.chain_id !== ChainId.JunoTestnet
   ) {
     return null
   }

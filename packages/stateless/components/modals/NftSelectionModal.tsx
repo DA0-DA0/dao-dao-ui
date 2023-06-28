@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import { Image, WarningRounded } from '@mui/icons-material'
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ChainId,
   FilterFn,
   LoadingDataWithError,
   ModalProps,
@@ -14,10 +14,7 @@ import {
   SortFn,
   TypedOption,
 } from '@dao-dao/types'
-import {
-  STARGAZE_TESTNET_CHAIN_ID,
-  getDisplayNameForChainId,
-} from '@dao-dao/utils'
+import { getDisplayNameForChainId } from '@dao-dao/utils'
 
 import {
   useButtonPopupFilter,
@@ -125,8 +122,8 @@ export const NftSelectionModal = <T extends NftCardInfo>({
         {
           label: 'Only Stargaze',
           value: (nft) =>
-            nft.chainId === ChainInfoID.Stargaze1 ||
-            nft.chainId === STARGAZE_TESTNET_CHAIN_ID,
+            nft.chainId === ChainId.StargazeMainnet ||
+            nft.chainId === ChainId.StargazeTestnet,
         },
       ] as TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>>[],
     [chain.chain_id]

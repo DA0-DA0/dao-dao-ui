@@ -1,34 +1,4 @@
-import { ChainInfoID } from '@noahsaso/cosmodal'
-
-import { CodeIdConfig } from '@dao-dao/types'
-
-import { OSMOSIS_TESTNET_CHAIN_ID } from './chains'
-
-const junoTestnet: CodeIdConfig = {
-  // https://github.com/CosmWasm/cw-plus
-  Cw20Base: 177,
-  Cw4Group: 178,
-  // https://github.com/CosmWasm/cw-nfts
-  Cw721Base: 179,
-
-  // ContractVersion.V210
-  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
-  Cw20Stake: 1247,
-  CwAdminFactory: 1250,
-  CwPayrollFactory: 1252,
-  CwTokenSwap: 1253,
-  CwVesting: 1254,
-  DaoCore: 1255,
-  DaoMigrator: 1256,
-  DaoPreProposeMultiple: 1258,
-  DaoPreProposeSingle: 1259,
-  DaoProposalMultiple: 1261,
-  DaoProposalSingle: 1262,
-  DaoVotingCw20Staked: 1263,
-  DaoVotingCw4: 1264,
-  DaoVotingCw721Staked: 1265,
-  DaoVotingNativeStaked: 1266,
-}
+import { ChainId, CodeIdConfig } from '@dao-dao/types'
 
 const junoMainnet: CodeIdConfig = {
   // https://github.com/CosmWasm/cw-plus
@@ -54,6 +24,32 @@ const junoMainnet: CodeIdConfig = {
   DaoVotingCw4: 2464,
   DaoVotingCw721Staked: 2465,
   DaoVotingNativeStaked: 2466,
+}
+
+const junoTestnet: CodeIdConfig = {
+  // https://github.com/CosmWasm/cw-plus
+  Cw20Base: 177,
+  Cw4Group: 178,
+  // https://github.com/CosmWasm/cw-nfts
+  Cw721Base: 179,
+
+  // ContractVersion.V210
+  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
+  Cw20Stake: 1247,
+  CwAdminFactory: 1250,
+  CwPayrollFactory: 1252,
+  CwTokenSwap: 1253,
+  CwVesting: 1254,
+  DaoCore: 1255,
+  DaoMigrator: 1256,
+  DaoPreProposeMultiple: 1258,
+  DaoPreProposeSingle: 1259,
+  DaoProposalMultiple: 1261,
+  DaoProposalSingle: 1262,
+  DaoVotingCw20Staked: 1263,
+  DaoVotingCw4: 1264,
+  DaoVotingCw721Staked: 1265,
+  DaoVotingNativeStaked: 1266,
 }
 
 // TODO: Fill in.
@@ -109,9 +105,9 @@ const osmosisTestnet: CodeIdConfig = {
   DaoVotingNativeStaked: -1,
 }
 
-export const CodeIdConfigs: Record<string, CodeIdConfig | undefined> = {
-  [ChainInfoID.Uni6]: junoTestnet,
-  [ChainInfoID.Juno1]: junoMainnet,
-  [ChainInfoID.Osmosis1]: osmosisMainnet,
-  [OSMOSIS_TESTNET_CHAIN_ID]: osmosisTestnet,
+export const CodeIdConfigs: Partial<Record<ChainId, CodeIdConfig>> = {
+  [ChainId.JunoMainnet]: junoMainnet,
+  [ChainId.JunoTestnet]: junoTestnet,
+  [ChainId.OsmosisMainnet]: osmosisMainnet,
+  [ChainId.OsmosisTestnet]: osmosisTestnet,
 }

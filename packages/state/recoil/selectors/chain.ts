@@ -6,7 +6,6 @@ import {
   StargateClient,
   decodeCosmosSdkDecFromProto,
 } from '@cosmjs/stargate'
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { cosmos, juno } from 'interchain-rpc'
 import {
@@ -19,6 +18,7 @@ import { selector, selectorFamily, waitForAll } from 'recoil'
 
 import {
   AmountWithTimestamp,
+  ChainId,
   Delegation,
   GenericTokenBalance,
   GovProposalWithDecodedContent,
@@ -30,12 +30,12 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_ID,
-  IBC_USDC_DENOM,
   MAINNET,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
   decodeGovProposalContent,
   getAllRpcResponse,
+  getNativeIbcUsdc,
   getNativeTokenForChainId,
   getRpcForChainId,
   isNativeIbcUsdc,
@@ -92,7 +92,7 @@ export const junoRpcClientSelector = selector({
   get: async () =>
     (
       await juno.ClientFactory.createRPCQueryClient({
-        rpcEndpoint: getRpcForChainId(ChainInfoID.Juno1),
+        rpcEndpoint: getRpcForChainId(ChainId.JunoMainnet),
       })
     ).juno,
   dangerouslyAllowMutability: true,
@@ -162,16 +162,18 @@ export const nativeBalancesSelector = selectorFamily<
           denom: nativeToken.denomOrAddress,
         })
       }
+
       // Add USDC if not present, on mainnet, and on current chain.
+      const nativeIbcUsdcDenom = getNativeIbcUsdc()?.denomOrAddress
       if (
         MAINNET &&
         chainId === CHAIN_ID &&
-        IBC_USDC_DENOM &&
+        nativeIbcUsdcDenom &&
         !balances.some(({ denom }) => isNativeIbcUsdc(denom))
       ) {
         balances.push({
           amount: '0',
-          denom: IBC_USDC_DENOM,
+          denom: nativeIbcUsdcDenom,
         })
       }
 
@@ -313,7 +315,7 @@ export const blocksPerYearSelector = selectorFamily<number, WithChainId<{}>>({
     ({ chainId }) =>
     async ({ get }) => {
       // If on juno mainnet or testnet, use juno RPC.
-      if (chainId === ChainInfoID.Juno1 || chainId === ChainInfoID.Uni6) {
+      if (chainId === ChainId.JunoMainnet || chainId === ChainId.JunoTestnet) {
         const client = get(junoRpcClientSelector)
         return (await client.mint.params()).params.blocksPerYear.toNumber()
       }

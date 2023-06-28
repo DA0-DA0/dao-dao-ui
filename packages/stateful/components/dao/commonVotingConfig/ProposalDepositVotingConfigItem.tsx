@@ -33,7 +33,7 @@ import {
   DaoVotingCw20StakedAdapterId,
   NEW_DAO_CW20_DECIMALS,
   convertMicroDenomToDenomWithDecimals,
-  ibcAssets,
+  getIbcAssets,
   isValidContractAddress,
   makeValidateContractAddress,
 } from '@dao-dao/utils'
@@ -180,7 +180,7 @@ const ProposalDepositInput = ({
       imageUrl: (type === TokenType.Cw20 && tokenLoaded?.imageUrl) || undefined,
     },
     // Then the IBC assets.
-    ...ibcAssets,
+    ...getIbcAssets(),
   ]
   const selectedToken = availableTokens.find(
     (token) =>

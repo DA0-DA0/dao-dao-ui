@@ -1,10 +1,10 @@
 import { Image } from '@mui/icons-material'
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ChainId,
   FilterFn,
   MeBalancesProps,
   NftCardInfo,
@@ -12,10 +12,7 @@ import {
   TokenCardInfo,
   TypedOption,
 } from '@dao-dao/types'
-import {
-  STARGAZE_TESTNET_CHAIN_ID,
-  getDisplayNameForChainId,
-} from '@dao-dao/utils'
+import { getDisplayNameForChainId } from '@dao-dao/utils'
 
 import {
   Button,
@@ -56,8 +53,8 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
           id: 'stargaze',
           label: 'Only Stargaze',
           value: (nft) =>
-            nft.chainId === ChainInfoID.Stargaze1 ||
-            nft.chainId === STARGAZE_TESTNET_CHAIN_ID,
+            nft.chainId === ChainId.StargazeMainnet ||
+            nft.chainId === ChainId.StargazeTestnet,
         },
       ] as (TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>> & {
         id: string
