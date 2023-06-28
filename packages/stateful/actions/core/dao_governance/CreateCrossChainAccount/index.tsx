@@ -48,21 +48,21 @@ export const makeCreateCrossChainAccountAction: ActionMaker<
     return null
   }
 
-  const useDefaults: UseDefaults<CreateCrossChainAccountData> = () => {
-    const missingChainIds = Object.keys(POLYTONE_NOTES).filter(
-      (chainId) => !(chainId in context.info.polytoneProxies)
-    )
+  const missingChainIds = Object.keys(POLYTONE_NOTES).filter(
+    (chainId) => !(chainId in context.info.polytoneProxies)
+  )
 
-    return {
-      chainId: missingChainIds[0],
-    }
-  }
+  const useDefaults: UseDefaults<CreateCrossChainAccountData> = () => ({
+    chainId: missingChainIds[0],
+  })
 
   return {
     key: ActionKey.CreateCrossChainAccount,
     Icon: ChainEmoji,
     label: t('title.createCrossChainAccount'),
     description: t('info.createCrossChainAccountDescription'),
+    // Don't show action if no accounts can be created.
+    disallowCreation: missingChainIds.length === 0,
     Component,
     useDefaults,
     useTransformToCosmos,
