@@ -181,28 +181,32 @@ export const WalletProvider = ({
       getSigningCosmWasmClientOptions={(chainInfo) => {
         const feeToken = getChainForChainId(chainInfo.chainId).fees
           ?.fee_tokens?.[0]
-        if (feeToken?.average_gas_price === undefined) {
+        const gasPrice =
+          feeToken?.high_gas_price ??
+          feeToken?.average_gas_price ??
+          feeToken?.low_gas_price
+        if (!feeToken || gasPrice === undefined) {
           throw new Error(`No fee token found for chain ${chainInfo.chainId}`)
         }
 
         return {
-          gasPrice: GasPrice.fromString(
-            feeToken.average_gas_price + feeToken.denom
-          ),
+          gasPrice: GasPrice.fromString(gasPrice + feeToken.denom),
           registry: typesRegistry,
         }
       }}
       getSigningStargateClientOptions={(chainInfo) => {
         const feeToken = getChainForChainId(chainInfo.chainId).fees
           ?.fee_tokens?.[0]
-        if (feeToken?.average_gas_price === undefined) {
+        const gasPrice =
+          feeToken?.high_gas_price ??
+          feeToken?.average_gas_price ??
+          feeToken?.low_gas_price
+        if (!feeToken || gasPrice === undefined) {
           throw new Error(`No fee token found for chain ${chainInfo.chainId}`)
         }
 
         return {
-          gasPrice: GasPrice.fromString(
-            feeToken.average_gas_price + feeToken.denom
-          ),
+          gasPrice: GasPrice.fromString(gasPrice + feeToken.denom),
           registry: typesRegistry,
         }
       }}
