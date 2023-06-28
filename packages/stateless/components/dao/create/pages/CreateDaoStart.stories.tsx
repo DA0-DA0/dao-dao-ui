@@ -1,16 +1,13 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { TokenBasedCreator } from '@dao-dao/stateful/creators/TokenBased'
 import { DaoProposalSingleAdapter } from '@dao-dao/stateful/proposal-module-adapter'
-import { DaoVotingCw20StakedAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   WalletProviderDecorator,
   makeCreateDaoFormDecorator,
   makeDappLayoutDecorator,
 } from '@dao-dao/storybook/decorators'
-import {
-  DaoProposalSingleAdapterId,
-  DaoVotingCw20StakedAdapterId,
-} from '@dao-dao/utils'
+import { DaoProposalSingleAdapterId, TokenBasedCreatorId } from '@dao-dao/utils'
 
 import { CreateDaoStart } from './CreateDaoStart'
 
@@ -21,12 +18,12 @@ export default {
   decorators: [
     // Direct ancestor of rendered story.
     makeCreateDaoFormDecorator(0, {
-      votingModuleAdapter: {
-        id: DaoVotingCw20StakedAdapterId,
+      creator: {
+        id: TokenBasedCreatorId,
         data: {
-          ...DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig,
+          ...TokenBasedCreator.defaultConfig,
           newInfo: {
-            ...DaoVotingCw20StakedAdapter.daoCreation!.defaultConfig.newInfo,
+            ...TokenBasedCreator.defaultConfig.newInfo,
             symbol: 'TST',
             name: 'Test Token',
           },

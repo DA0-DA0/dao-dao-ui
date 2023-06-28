@@ -1,9 +1,9 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   DaoVotingNativeStakedSelectors,
+  genericTokenSelector,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
   wyndUsdPriceSelector,
@@ -11,12 +11,6 @@ import {
 import { useCachedLoading } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
-import {
-  getFallbackImage,
-  nativeTokenDecimals,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
-} from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
@@ -29,7 +23,6 @@ export const useGovernanceTokenInfo = ({
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
-  const { t } = useTranslation()
   const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
@@ -40,16 +33,18 @@ export const useGovernanceTokenInfo = ({
     })
   )
 
-  const decimals = nativeTokenDecimals(denom)
-  if (decimals === undefined) {
-    throw new Error(t('error.loadingData'))
-  }
+  const token = useRecoilValue(
+    genericTokenSelector({
+      type: TokenType.Native,
+      denomOrAddress: denom,
+    })
+  )
 
   const supply = useRecoilValue(nativeSupplySelector({ denom }))
   const governanceTokenInfo: TokenInfoResponse = {
-    decimals,
-    name: nativeTokenLabel(denom),
-    symbol: nativeTokenLabel(denom),
+    decimals: token.decimals,
+    name: token.symbol,
+    symbol: token.symbol,
     total_supply: supply.toString(),
   }
 
@@ -89,13 +84,7 @@ export const useGovernanceTokenInfo = ({
     stakingContractAddress: '',
     governanceTokenAddress: denom,
     governanceTokenInfo,
-    token: {
-      type: TokenType.Native,
-      denomOrAddress: denom,
-      symbol: governanceTokenInfo.symbol,
-      decimals,
-      imageUrl: nativeTokenLogoURI(denom) || getFallbackImage(denom),
-    },
+    token,
     /// Optional
     // Wallet balance
     loadingWalletBalance: loadingWalletBalance.loading

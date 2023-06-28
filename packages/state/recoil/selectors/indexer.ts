@@ -66,7 +66,7 @@ export const queryContractIndexerSelector = selectorFamily<
 
 export const queryGenericIndexerSelector = selectorFamily<
   any,
-  Omit<QueryIndexerParams, 'type'>
+  Omit<QueryIndexerParams, 'type' | 'address'>
 >({
   key: 'queryGenericIndexer',
   get:
@@ -75,6 +75,7 @@ export const queryGenericIndexerSelector = selectorFamily<
       get(
         queryIndexerSelector({
           type: IndexerFormulaType.Generic,
+          address: '_',
           ...params,
         })
       ),
