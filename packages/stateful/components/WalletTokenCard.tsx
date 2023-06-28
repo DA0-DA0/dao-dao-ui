@@ -28,7 +28,6 @@ import {
   CHAIN_ID,
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
-  MAINNET,
   cwMsgToEncodeObject,
   getMeTxPrefillPath,
   getNativeTokenForChainId,
@@ -220,7 +219,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
                 },
               ]),
             },
-            ...(isUsdc && MAINNET
+            ...(isUsdc && KADO_MODAL_ENABLED
               ? [
                   {
                     Icon: Paid,

@@ -15,7 +15,7 @@ import { Modal } from './Modal'
 
 // Only supports Juno and Osmosis.
 export const KADO_MODAL_ENABLED =
-  CHAIN_ID !== ChainInfoID.Juno1 && CHAIN_ID !== ChainInfoID.Osmosis1
+  CHAIN_ID === ChainInfoID.Juno1 || CHAIN_ID === ChainInfoID.Osmosis1
 
 export const KadoModal = ({
   defaultMode = 'buy',
