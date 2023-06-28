@@ -1,9 +1,13 @@
-import { selectorFamily } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import {
-  cw20TokenDaosWithStakedBalanceSelector,
+  Cw20BaseSelectors,
+  Cw20StakeSelectors,
+  DaoCoreV2Selectors,
+  DaoVotingNativeStakedSelectors,
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
+  queryGenericIndexerSelector,
   wyndUsdPriceSelector,
 } from '@dao-dao/state'
 import {
@@ -11,6 +15,7 @@ import {
   TokenCardLazyInfo,
   TokenType,
   UnstakingTaskStatus,
+  WithChainId,
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -109,11 +114,12 @@ export const tokenCardLazyInfoSelector = selectorFamily<
         }
       }
 
-      if (token.type === TokenType.Cw20 && owner) {
+      if (owner) {
         daosGoverned = get(
-          cw20TokenDaosWithStakedBalanceSelector({
+          tokenDaosWithStakedBalanceSelector({
             chainId,
-            cw20Address: token.denomOrAddress,
+            type: token.type,
+            denomOrAddress: token.denomOrAddress,
             walletAddress: owner,
           })
         ).map(({ stakedBalance, ...rest }) => ({
@@ -156,5 +162,124 @@ export const tokenCardLazyInfoSelector = selectorFamily<
         totalBalance,
         daosGoverned,
       }
+    },
+})
+
+// Get DAOs that use this native token as their governance token from the
+// indexer, and load their dao-voting-native-staked contracts.
+export const daosWithNativeVotingContractSelector = selectorFamily<
+  {
+    coreAddress: string
+    votingModuleAddress: string
+  }[],
+  WithChainId<{
+    denom: string
+  }>
+>({
+  key: 'daosWithNativeVotingContract',
+  get:
+    ({ denom, chainId }) =>
+    ({ get }) => {
+      const daos: string[] =
+        get(
+          queryGenericIndexerSelector({
+            chainId,
+            formula: 'token/daos',
+            args: {
+              denom,
+            },
+          })
+        ) ?? []
+      const votingModuleAddresses = get(
+        waitForAll(
+          daos.map((contractAddress) =>
+            DaoCoreV2Selectors.votingModuleSelector({
+              contractAddress,
+              chainId,
+              params: [],
+            })
+          )
+        )
+      )
+
+      return daos.map((coreAddress, index) => ({
+        coreAddress,
+        votingModuleAddress: votingModuleAddresses[index],
+      }))
+    },
+})
+
+// Returns a list of DAOs that use the given cw20 token as their governance
+// token with the staked balance of the given wallet address for each.
+export const tokenDaosWithStakedBalanceSelector = selectorFamily<
+  {
+    coreAddress: string
+    stakingContractAddress: string
+    stakedBalance: number
+  }[],
+  WithChainId<{
+    type: TokenType
+    denomOrAddress: string
+    walletAddress: string
+  }>
+>({
+  key: 'tokenDaosWithStakedBalance',
+  get:
+    ({ type, denomOrAddress, walletAddress, chainId }) =>
+    ({ get }) => {
+      const daos =
+        type === TokenType.Cw20
+          ? get(
+              Cw20BaseSelectors.daosWithVotingAndStakingContractSelector({
+                contractAddress: denomOrAddress,
+                chainId,
+              })
+            )
+          : get(
+              daosWithNativeVotingContractSelector({
+                denom: denomOrAddress,
+                chainId,
+              })
+            ).map((daoWithContracts) => ({
+              ...daoWithContracts,
+              stakingContractAddress: daoWithContracts.votingModuleAddress,
+            }))
+
+      const daosWalletStakedTokens = get(
+        waitForAll(
+          daos.map(({ stakingContractAddress }) =>
+            type === TokenType.Cw20
+              ? Cw20StakeSelectors.stakedValueSelector({
+                  contractAddress: stakingContractAddress,
+                  chainId,
+                  params: [
+                    {
+                      address: walletAddress,
+                    },
+                  ],
+                })
+              : DaoVotingNativeStakedSelectors.votingPowerAtHeightSelector({
+                  contractAddress: stakingContractAddress,
+                  chainId,
+                  params: [
+                    {
+                      address: walletAddress,
+                    },
+                  ],
+                })
+          )
+        )
+      ).map((staked) => ('value' in staked ? staked.value : staked.power))
+
+      const daosWithBalances = daos
+        .map(({ coreAddress, stakingContractAddress }, index) => ({
+          coreAddress,
+          stakingContractAddress,
+          stakedBalance: Number(daosWalletStakedTokens[index]),
+        }))
+        // Sort descending by staked tokens.
+        .sort((a, b) => b.stakedBalance - a.stakedBalance)
+
+      return daosWithBalances
     },
 })

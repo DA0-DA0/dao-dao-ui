@@ -7,3 +7,8 @@ export const DaoVotingNativeStakedAdapterId = 'DaoVotingNativeStaked'
 // Proposal modules
 export const DaoProposalSingleAdapterId = 'DaoProposalSingle'
 export const DaoProposalMultipleAdapterId = 'DaoProposalMultiple'
+
+// Creators
+export const MembershipBasedCreatorId = 'MembershipBased'
+export const TokenBasedCreatorId = 'TokenBased'
+export const NftBasedCreatorId = 'NftBased'

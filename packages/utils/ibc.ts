@@ -2,7 +2,7 @@ import { asset_lists } from '@chain-registry/assets'
 
 import { GenericToken, TokenType } from '@dao-dao/types'
 
-import { getChainForChainId } from './chain'
+import { getChainForChainId, getNativeTokenForChainId } from './chain'
 import { CHAIN_ID } from './constants'
 import { concatAddressStartEnd } from './conversion'
 import { getFallbackImage } from './getFallbackImage'
@@ -49,6 +49,11 @@ export const getIbcAssets = () => {
   }
   return ibcAssets
 }
+
+// Native token exists if it is the native denom or any of the IBC assets.
+export const nativeTokenExists = (denom: string) =>
+  denom === getNativeTokenForChainId(CHAIN_ID).denomOrAddress ||
+  getIbcAssets().some(({ denomOrAddress }) => denomOrAddress === denom)
 
 export const getNativeIbcUsdc = () =>
   getIbcAssets().find(({ id }) => id === 'usdc')

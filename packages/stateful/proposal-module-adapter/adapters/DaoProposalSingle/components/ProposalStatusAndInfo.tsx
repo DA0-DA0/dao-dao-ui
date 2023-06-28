@@ -164,13 +164,7 @@ const InnerProposalStatusAndInfo = ({
       Icon: AccountCircleOutlined,
       label: t('title.creator'),
       Value: (props) => (
-        <EntityDisplay
-          address={proposal.proposer}
-          copyToClipboardProps={{
-            ...props,
-            success: t('info.copiedAddressToClipboard'),
-          }}
-        />
+        <EntityDisplay {...props} address={proposal.proposer} />
       ),
     },
     {

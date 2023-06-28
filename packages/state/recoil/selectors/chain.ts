@@ -8,11 +8,13 @@ import {
 } from '@cosmjs/stargate'
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { cosmos, juno } from 'interchain-rpc'
+import { Metadata } from 'interchain-rpc/types/codegen/cosmos/bank/v1beta1/bank'
 import {
   Proposal as GovProposal,
   WeightedVoteOption,
 } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
 import { Validator as RpcValidator } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
+import { osmosis } from 'juno-network'
 import Long from 'long'
 import { selector, selectorFamily, waitForAll } from 'recoil'
 
@@ -55,10 +57,10 @@ export const stargateClientForChainSelector = selectorFamily<
   string | undefined
 >({
   key: 'stargateClientForChain',
-  get: (chainId) => async () =>
-    await stargateClientRouter.connect(
-      chainId ? getRpcForChainId(chainId) : getRpcForChainId(CHAIN_ID)
-    ),
+  get:
+    (chainId: string = CHAIN_ID) =>
+    async () =>
+      await stargateClientRouter.connect(getRpcForChainId(chainId)),
   dangerouslyAllowMutability: true,
 })
 
@@ -67,23 +69,23 @@ export const cosmWasmClientForChainSelector = selectorFamily<
   string | undefined
 >({
   key: 'cosmWasmClientForChain',
-  get: (chainId) => async () =>
-    await cosmWasmClientRouter.connect(
-      chainId ? getRpcForChainId(chainId) : getRpcForChainId(CHAIN_ID)
-    ),
+  get:
+    (chainId = CHAIN_ID) =>
+    async () =>
+      await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
   dangerouslyAllowMutability: true,
 })
 
 export const cosmosRpcClientForChainSelector = selectorFamily({
   key: 'cosmosRpcClientForChain',
-  get: (chainId?: string) => async () =>
-    (
-      await cosmos.ClientFactory.createRPCQueryClient({
-        rpcEndpoint: chainId
-          ? getRpcForChainId(chainId)
-          : getRpcForChainId(CHAIN_ID),
-      })
-    ).cosmos,
+  get:
+    (chainId: string = CHAIN_ID) =>
+    async () =>
+      (
+        await cosmos.ClientFactory.createRPCQueryClient({
+          rpcEndpoint: getRpcForChainId(chainId),
+        })
+      ).cosmos,
   dangerouslyAllowMutability: true,
 })
 
@@ -95,6 +97,19 @@ export const junoRpcClientSelector = selector({
         rpcEndpoint: getRpcForChainId(ChainId.JunoMainnet),
       })
     ).juno,
+  dangerouslyAllowMutability: true,
+})
+
+export const osmosisRpcClientForChainSelector = selectorFamily({
+  key: 'osmosisRpcClientForChain',
+  get:
+    (chainId: string = CHAIN_ID) =>
+    async () =>
+      (
+        await osmosis.ClientFactory.createRPCQueryClient({
+          rpcEndpoint: getRpcForChainId(chainId),
+        })
+      ).osmosis,
   dangerouslyAllowMutability: true,
 })
 
@@ -655,4 +670,21 @@ export const validatorSlashesSelector = selectorFamily<
           formula: 'staking/slashes',
         })
       )) ?? [],
+})
+
+export const denomMetadataSelector = selectorFamily<
+  Metadata,
+  WithChainId<{ denom: string }>
+>({
+  key: 'denomMetadata',
+  get:
+    ({ denom, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+      return (
+        await client.bank.v1beta1.denomMetadata({
+          denom,
+        })
+      ).metadata
+    },
 })

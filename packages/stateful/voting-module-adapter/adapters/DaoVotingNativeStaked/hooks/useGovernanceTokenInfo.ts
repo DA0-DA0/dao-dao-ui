@@ -3,13 +3,14 @@ import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   DaoVotingNativeStakedSelectors,
+  genericTokenSelector,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
   wyndUsdPriceSelector,
 } from '@dao-dao/state'
 import { useCachedLoading, useChain } from '@dao-dao/stateless'
+import { TokenType } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
-import { getTokenForChainIdAndDenom } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
@@ -34,7 +35,13 @@ export const useGovernanceTokenInfo = ({
     })
   )
 
-  const token = getTokenForChainIdAndDenom(chainId, denom)
+  const token = useRecoilValue(
+    genericTokenSelector({
+      chainId,
+      type: TokenType.Native,
+      denomOrAddress: denom,
+    })
+  )
   const supply = useRecoilValue(
     nativeSupplySelector({
       chainId,

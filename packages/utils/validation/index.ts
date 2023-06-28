@@ -5,9 +5,11 @@ import { TFunction } from 'react-i18next'
 import {
   isValidBech32Address,
   isValidContractAddress,
+  isValidTokenFactoryDenom,
   isValidValidatorAddress,
 } from '../address'
 import cosmosMsgSchema from '../cosmos_msg.json'
+import { nativeTokenExists } from '../ibc'
 import { isValidUrl } from '../isValidUrl'
 
 export * from './makeValidateMsg'
@@ -60,6 +62,27 @@ export const makeValidateDate =
   (v: string | undefined) =>
     (v && !isNaN(Date.parse(v))) ||
     t(time ? 'error.invalidDateTime' : 'error.invalidDate')
+
+export const validateNativeDenom = (v: any, required = true) =>
+  (!required && !v) ||
+  (v && typeof v === 'string' && nativeTokenExists(v)) ||
+  'Invalid native denom. Ensure it is lower–cased.'
+
+export const makeValidateTokenFactoryDenom =
+  (bech32Prefix: string, required = true) =>
+  (v: any) =>
+    (!required && !v) ||
+    (v && typeof v === 'string' && isValidTokenFactoryDenom(v, bech32Prefix)) ||
+    'Invalid token factory denom. Ensure it is lower–cased.'
+
+export const makeValidateNativeOrFactoryTokenDenom =
+  (bech32Prefix: string, required = true) =>
+  (v: any) =>
+    (!required && !v) ||
+    (v &&
+      typeof v === 'string' &&
+      (nativeTokenExists(v) || isValidTokenFactoryDenom(v, bech32Prefix))) ||
+    'Invalid native token denom. Ensure it is lower–cased.'
 
 export const validateJSON = (v: string) => {
   try {

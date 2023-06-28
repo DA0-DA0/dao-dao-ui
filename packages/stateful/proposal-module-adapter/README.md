@@ -184,10 +184,6 @@ const MyProposalModuleAdapter: ProposalModuleAdapter = {
   functions: {
     ...
   },
-
-  daoCreation: {
-    ...
-  },
 }
 ```
 

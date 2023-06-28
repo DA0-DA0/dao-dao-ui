@@ -139,11 +139,8 @@ export const ProposalVotes = <Vote extends unknown = any>({
                 </p>
                 <EntityDisplay
                   address={voterAddress}
-                  copyToClipboardProps={{
-                    className: 'caption-text font-mono text-text-body',
-                    takeAll: true,
-                    takeStartEnd: undefined,
-                  }}
+                  showFullAddress
+                  textClassName="caption-text font-mono text-text-body"
                 />
                 <Tooltip title={rationale || undefined}>
                   <div>

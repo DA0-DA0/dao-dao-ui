@@ -40,3 +40,20 @@ export const isValidBech32Address = (
     return false
   }
 }
+
+export const isValidTokenFactoryDenom = (
+  denom: string,
+  // If passed, the prefix must match this value.
+  prefix?: string
+) => {
+  if (!denom?.length) {
+    return false
+  }
+
+  const [factory, owner, name] = denom.split('/')
+  return (
+    factory.toLowerCase() === 'factory' &&
+    isValidBech32Address(owner, prefix) &&
+    !!name
+  )
+}

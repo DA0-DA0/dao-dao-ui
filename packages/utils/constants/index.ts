@@ -23,6 +23,8 @@ export const CHAIN_GOV_PROPOSAL_URL_TEMPLATE = process.env
   .NEXT_PUBLIC_CHAIN_GOV_PROPOSAL_URL_TEMPLATE as string
 export const LEGACY_URL_PREFIX = process.env
   .NEXT_PUBLIC_LEGACY_URL_PREFIX as string
+export const WALLET_URL_PREFIX = process.env
+  .NEXT_PUBLIC_WALLET_URL_PREFIX as string
 
 // True if on mainnet, false if on testnet.
 export const MAINNET = process.env.NEXT_PUBLIC_MAINNET === 'true'
