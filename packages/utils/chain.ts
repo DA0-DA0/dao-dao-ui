@@ -13,7 +13,7 @@ import RIPEMD160 from 'ripemd160'
 import {
   ChainId,
   GenericToken,
-  SupportedChain,
+  HostChain,
   TokenType,
   Validator,
 } from '@dao-dao/types'
@@ -21,8 +21,8 @@ import {
 import {
   CHAIN_ID,
   CHAIN_RPC_ENDPOINT,
+  HOST_CHAIN_SUBDOMAINS,
   STARGAZE_RPC_ENDPOINT,
-  SUPPORTED_CHAINS,
 } from './constants'
 import { getFallbackImage } from './getFallbackImage'
 import { getIbcAssets } from './ibc'
@@ -257,8 +257,8 @@ export const getTokenForChainIdAndDenom = (
   }
 }
 
-export const getSupportedChains = (): SupportedChain[] =>
-  SUPPORTED_CHAINS.map(({ id, subdomain }) => ({
+export const getHostChains = (): HostChain[] =>
+  HOST_CHAIN_SUBDOMAINS.map(({ id, subdomain }) => ({
     chain: getChainForChainId(id),
     subdomain,
   }))
@@ -268,7 +268,7 @@ export const getSupportedChains = (): SupportedChain[] =>
 export const validateAddressOnCurrentChain = (
   address: string
 ): string | undefined => {
-  const supportedChains = getSupportedChains()
+  const supportedChains = getHostChains()
 
   // Match supported chains from address prefix. There may be overlaps (testnets
   // often use the same prefix as mainnets).

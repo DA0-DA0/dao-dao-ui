@@ -262,7 +262,7 @@ export const makePolytoneExecuteMessage = (
         msg: {
           execute: {
             msgs: msg ? [msg] : [],
-            timeout_seconds: POLYTONE_TIMEOUT_SECONDS,
+            timeout_seconds: POLYTONE_TIMEOUT_SECONDS.toString(),
             callback: {
               msg: toBase64(toUtf8(uuidv4())),
               receiver: POLYTONE_NOTES[chainId]?.listener,

@@ -18,8 +18,8 @@ import { useTranslation } from 'react-i18next'
 import { ButtonPopupSection } from '@dao-dao/types'
 import { DappNavigationProps } from '@dao-dao/types/stateless/DappNavigation'
 import {
+  HOST_CHAIN_SUBDOMAINS,
   MAINNET,
-  SUPPORTED_CHAINS,
   getDisplayNameForChainId,
   getImageUrlForChainId,
 } from '@dao-dao/utils'
@@ -110,7 +110,7 @@ export const DappNavigation = ({
     )
     const chainSwitcherSections: ButtonPopupSection[] = [
       {
-        buttons: SUPPORTED_CHAINS.map(({ id, subdomain }) => ({
+        buttons: HOST_CHAIN_SUBDOMAINS.map(({ id, subdomain }) => ({
           href: `https://${subdomain}.daodao.zone`,
           label: getDisplayNameForChainId(id),
           pressed: id === chain.chain_id,

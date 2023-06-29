@@ -1,6 +1,6 @@
-import { ChainId } from '@dao-dao/types'
+import { ChainId, HostChainSubdomain } from '@dao-dao/types'
 
-export const SUPPORTED_CHAINS: { id: ChainId; subdomain: string }[] = [
+export const HOST_CHAIN_SUBDOMAINS: HostChainSubdomain[] = [
   {
     id: ChainId.JunoMainnet,
     subdomain: 'juno',

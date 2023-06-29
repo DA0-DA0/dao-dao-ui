@@ -54,11 +54,6 @@ export enum ContractVersion {
   V210 = '2.1.0',
 }
 
-export type SupportedChain = {
-  chain: Chain
-  subdomain: string
-}
-
 export enum ChainId {
   JunoMainnet = 'juno-1',
   JunoTestnet = 'uni-6',
@@ -66,4 +61,14 @@ export enum ChainId {
   OsmosisTestnet = 'osmo-test-5',
   StargazeMainnet = 'stargaze-1',
   StargazeTestnet = 'elgafar-1',
+}
+
+export type HostChainSubdomain = {
+  id: ChainId
+  subdomain: string
+}
+
+export type HostChain = {
+  chain: Chain
+  subdomain: string
 }
