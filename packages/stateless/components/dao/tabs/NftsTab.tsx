@@ -1,29 +1,34 @@
 import { Image } from '@mui/icons-material'
-import { ComponentType } from 'react'
+import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData, NftCardInfo } from '@dao-dao/types'
+import { LoadingData } from '@dao-dao/types'
 
 import { GridCardContainer } from '../../GridCardContainer'
 import { Dropdown, DropdownProps } from '../../inputs/Dropdown'
 import { Loader } from '../../logo/Loader'
 import { NoContent } from '../../NoContent'
+import { PAGINATION_MIN_PAGE, Pagination } from '../../Pagination'
 
-export interface NftsTabProps<N extends NftCardInfo> {
-  nfts: LoadingData<(N & { OverrideNftCard?: ComponentType<N> })[]>
+export interface NftsTabProps<N = any> {
+  nfts: LoadingData<(N & { key: string })[]>
   NftCard: ComponentType<N>
   description?: string
   // If present, will show a dropdown to filter the NFTs.
   filterDropdownProps?: DropdownProps<any>
 }
 
-export const NftsTab = <N extends NftCardInfo>({
+const NFTS_PER_PAGE = 30
+
+export const NftsTab = <N extends object>({
   nfts,
   NftCard,
   description,
   filterDropdownProps,
 }: NftsTabProps<N>) => {
   const { t } = useTranslation()
+
+  const [page, setPage] = useState(PAGINATION_MIN_PAGE)
 
   return nfts.loading || nfts.data.length > 0 ? (
     <>
@@ -52,21 +57,23 @@ export const NftsTab = <N extends NftCardInfo>({
       {nfts.loading ? (
         <Loader fill={false} />
       ) : (
-        <GridCardContainer className="pb-6">
-          {nfts.data.map((props) =>
-            props.OverrideNftCard ? (
-              <props.OverrideNftCard
-                {...(props as N)}
-                key={props.collection.address + props.tokenId}
-              />
-            ) : (
-              <NftCard
-                {...(props as N)}
-                key={props.collection.address + props.tokenId}
-              />
-            )
-          )}
-        </GridCardContainer>
+        <>
+          <GridCardContainer className="pb-6">
+            {nfts.data
+              .slice((page - 1) * NFTS_PER_PAGE, page * NFTS_PER_PAGE)
+              .map((props) => (
+                <NftCard {...(props as N)} key={props.key} />
+              ))}
+          </GridCardContainer>
+
+          <Pagination
+            className="mx-auto mt-12"
+            page={page}
+            pageSize={NFTS_PER_PAGE}
+            setPage={setPage}
+            total={nfts.data.length}
+          />
+        </>
       )}
     </>
   ) : (
