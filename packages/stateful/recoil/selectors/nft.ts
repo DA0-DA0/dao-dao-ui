@@ -10,6 +10,7 @@ import {
   refreshWalletBalancesIdAtom,
   refreshWalletStargazeNftsAtom,
 } from '@dao-dao/state'
+import { stakerForNftSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoVotingCw721Staked'
 import { NftCardInfo, WithChainId } from '@dao-dao/types'
 import { StargazeNft } from '@dao-dao/types/nft'
 import {
@@ -307,5 +308,47 @@ export const walletStakedNftCardInfosSelector = selectorFamily<
           ...info,
           staked: true,
         }))
+    },
+})
+
+// Get owner of NFT, or staker if NFT is staked with the given staking contract.
+export const nftStakerOrOwnerSelector = selectorFamily<
+  {
+    staked: boolean
+    address: string
+  },
+  WithChainId<{
+    collectionAddress: string
+    tokenId: string
+    stakingContractAddress?: string
+  }>
+>({
+  key: 'nftStakerOrOwner',
+  get:
+    ({ collectionAddress, tokenId, stakingContractAddress, chainId }) =>
+    async ({ get }) => {
+      const { owner } = get(
+        Cw721BaseSelectors.ownerOfSelector({
+          contractAddress: collectionAddress,
+          params: [{ tokenId }],
+          chainId,
+        })
+      )
+
+      const staker =
+        stakingContractAddress && owner === stakingContractAddress
+          ? get(
+              stakerForNftSelector({
+                contractAddress: stakingContractAddress,
+                tokenId,
+                chainId,
+              })
+            )
+          : undefined
+
+      return {
+        staked: staker !== undefined,
+        address: staker || owner,
+      }
     },
 })
