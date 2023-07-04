@@ -138,7 +138,9 @@ export const getNativeTokenForChainId = (chainId: string): GenericToken => {
   if (!cachedNativeTokens[chainId]) {
     const chain = getChainForChainId(chainId)
 
-    const feeDenom = chain.fees?.fee_tokens[0].denom
+    const feeDenom = chain.fees?.fee_tokens.find(
+      ({ denom }) => !denom.startsWith('ibc/')
+    )?.denom
     if (!feeDenom) {
       throw new Error(`Chain ${chainId} has no fee token`)
     }

@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -9,6 +8,7 @@ import { InboxApi, InboxApiConfig, InboxApiUpdateConfig } from '@dao-dao/types'
 import { INBOX_API_BASE, processError } from '@dao-dao/utils'
 
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
+import { useWallet } from './useWallet'
 
 export const useInboxApi = (): InboxApi => {
   const { t } = useTranslation()

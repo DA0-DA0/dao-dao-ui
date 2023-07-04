@@ -1,6 +1,5 @@
 import { coins } from '@cosmjs/stargate'
 import { findAttribute } from '@cosmjs/stargate/build/logs'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
@@ -24,6 +23,7 @@ import {
   useAwaitNextBlock,
   useMembership,
   useSimulateCosmosMsgs,
+  useWallet,
 } from '../../../../../hooks'
 import { usePropose as useProposeV1 } from '../../contracts/CwProposalSingle.v1.hooks'
 import { usePropose as useProposePrePropose } from '../../contracts/DaoPreProposeSingle.hooks'
@@ -47,7 +47,7 @@ export const makeUsePublishProposal =
   }: MakeUsePublishProposalOptions): UsePublishProposal =>
   () => {
     const { t } = useTranslation()
-    const { connected, address: walletAddress } = useWallet()
+    const { isWalletConnected, address: walletAddress } = useWallet()
     const { isMember = false } = useMembership({
       coreAddress,
     })
@@ -195,7 +195,7 @@ export const makeUsePublishProposal =
         { title, description, msgs },
         { failedSimulationBypassSeconds = 0 } = {}
       ) => {
-        if (!connected) {
+        if (!isWalletConnected) {
           throw new Error(t('error.logInToContinue'))
         }
         if (blockHeight === undefined) {
@@ -339,7 +339,7 @@ export const makeUsePublishProposal =
         }
       },
       [
-        connected,
+        isWalletConnected,
         blockHeight,
         anyoneCanPropose,
         isMember,

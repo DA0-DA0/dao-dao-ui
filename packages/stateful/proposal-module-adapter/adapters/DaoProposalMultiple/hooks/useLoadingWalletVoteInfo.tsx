@@ -1,10 +1,9 @@
-import { useWallet } from '@noahsaso/cosmodal'
-
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { LoadingData, WalletVoteInfo } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
+import { useWallet } from '../../../../hooks/useWallet'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { getVoteSelector } from '../contracts/DaoProposalMultiple.recoil'
 import { useLoadingProposal } from './useLoadingProposal'

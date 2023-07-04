@@ -1,5 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
-
 import {
   DaoCard as StatelessDaoCard,
   useCachedLoading,
@@ -7,7 +5,7 @@ import {
 import { DaoCardInfo } from '@dao-dao/types/stateless/DaoCard'
 import { CHAIN_ID } from '@dao-dao/utils'
 
-import { useFollowingDaos } from '../../hooks'
+import { useFollowingDaos, useWallet } from '../../hooks'
 import { daoCardInfoLazyDataSelector } from '../../recoil'
 import { IconButtonLink } from '../IconButtonLink'
 import { LinkWrapper } from '../LinkWrapper'

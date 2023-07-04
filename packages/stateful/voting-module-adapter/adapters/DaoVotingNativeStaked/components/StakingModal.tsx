@@ -1,5 +1,4 @@
 import { coins } from '@cosmjs/stargate'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -27,6 +26,7 @@ import { SuspenseLoader } from '../../../../components'
 import {
   DaoVotingNativeStakedHooks,
   useAwaitNextBlock,
+  useWallet,
   useWalletInfo,
 } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -44,7 +44,7 @@ const InnerStakingModal = ({
   maxDeposit,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
-  const { address: walletAddress, connected } = useWallet()
+  const { address: walletAddress, isWalletConnected } = useWallet()
   const { refreshBalances } = useWalletInfo()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
@@ -101,7 +101,7 @@ const InnerStakingModal = ({
 
   const awaitNextBlock = useAwaitNextBlock()
   const onAction = async (mode: StakingMode, amount: number) => {
-    if (!connected) {
+    if (!isWalletConnected) {
       toast.error(t('error.logInToContinue'))
       return
     }

@@ -1,5 +1,7 @@
 import { atom } from 'recoil'
 
+import { Web3AuthPrompt } from '@dao-dao/types'
+
 import { localStorageEffectJSON } from '../effects'
 
 // Utility atom to store if the app is running in the browser
@@ -28,21 +30,11 @@ export const betaWarningAcceptedAtom = atom<boolean>({
   effects: [localStorageEffectJSON],
 })
 
-export const installWarningVisibleAtom = atom<boolean>({
-  key: 'installWarningVisible',
+export const updateProfileNftVisibleAtom = atom<boolean>({
+  key: 'updateProfileNftVisible',
   default: false,
 })
 
-export const noKeplrAccountAtom = atom<boolean>({
-  key: 'noKeplrAccountAtom',
-  default: false,
-})
-
-// If true, will display wallet modal. The wallet modal will always be visible
-// when connecting to a wallet. This atom is used to display the wallet modal
-// when not actively connecting to a wallet, likely to display the connected
-// wallet or switch to another one.
-export const walletModalVisibleAtom = atom<boolean>({
-  key: 'walletModalVisible',
-  default: false,
+export const web3AuthPromptAtom = atom<Web3AuthPrompt | undefined>({
+  key: 'web3AuthPrompt',
 })

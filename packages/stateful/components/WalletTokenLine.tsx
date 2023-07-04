@@ -1,11 +1,10 @@
-import { useWallet } from '@noahsaso/cosmodal'
-
 import {
   TokenLine as StatelessTokenLine,
   useCachedLoading,
 } from '@dao-dao/stateless'
 import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
 
+import { useWallet } from '../hooks/useWallet'
 import { tokenCardLazyInfoSelector } from '../recoil'
 import { WalletTokenCard } from './WalletTokenCard'
 

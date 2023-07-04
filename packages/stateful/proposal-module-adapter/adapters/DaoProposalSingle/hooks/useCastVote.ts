@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
@@ -6,6 +5,7 @@ import { ContractVersion } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { processError } from '@dao-dao/utils'
 
+import { useWallet } from '../../../../hooks/useWallet'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useVote as useVoteV1 } from '../contracts/CwProposalSingle.v1.hooks'
 import { useVote as useVoteV2 } from '../contracts/DaoProposalSingle.v2.hooks'
@@ -13,7 +13,7 @@ import { useLoadingWalletVoteInfo } from './useLoadingWalletVoteInfo'
 
 export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { connected, address: walletAddress = '' } = useWallet()
+  const { isWalletConnected, address: walletAddress = '' } = useWallet()
 
   const _castVote = (
     proposalModule.version === ContractVersion.V1 ? useVoteV1 : useVoteV2
@@ -37,7 +37,7 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
 
   const castVote = useCallback(
     async (vote: Vote) => {
-      if (!connected) return
+      if (!isWalletConnected) return
 
       setCastingVote(true)
 
@@ -58,7 +58,7 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
 
       // Loading will stop on success when vote data refreshes.
     },
-    [connected, setCastingVote, _castVote, proposalNumber, onSuccess]
+    [isWalletConnected, setCastingVote, _castVote, proposalNumber, onSuccess]
   )
 
   return {

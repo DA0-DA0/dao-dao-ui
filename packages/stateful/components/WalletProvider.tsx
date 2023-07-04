@@ -1,12 +1,12 @@
+import { Chain } from '@chain-registry/types'
 import { GasPrice } from '@cosmjs/stargate'
+import { SignerOptions } from '@cosmos-kit/core'
+import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
+import { wallets as keplrMobileWallets } from '@cosmos-kit/keplr-mobile'
+import { ChainProvider } from '@cosmos-kit/react-lite'
 import { ChainInfo } from '@keplr-wallet/types'
-import {
-  WalletManagerProvider,
-  WalletType,
-  useWallet,
-} from '@noahsaso/cosmodal'
 import { PromptSign } from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
-import { isMobile } from '@walletconnect/browser-utils'
+import { assets, chains } from 'chain-registry'
 import {
   Dispatch,
   PropsWithChildren,
@@ -29,10 +29,13 @@ import {
   STARGAZE_RPC_ENDPOINT,
   WC_ICON_PATH,
   WEB3AUTH_CLIENT_ID,
-  getChainForChainId,
+  getNativeTokenForChainId,
   maybeGetKeplrChainInfo,
   typesRegistry,
 } from '@dao-dao/utils'
+
+import { useWallet } from '../hooks/useWallet'
+import { WalletUi } from './wallet'
 
 const currentChainInfo: ChainInfo | undefined = maybeGetKeplrChainInfo(CHAIN_ID)
 // Fail build if chain info not found.
@@ -81,96 +84,105 @@ export const WalletProvider = ({
       ),
   })
 
+  const getSignerOptions = ({ chain_id, fees }: Chain) => {
+    let gasPrice
+    try {
+      const nativeToken = getNativeTokenForChainId(chain_id)
+      const feeToken = fees?.fee_tokens.find(
+        ({ denom }) => denom === nativeToken.denomOrAddress
+      )
+      const gasPriceAmount =
+        feeToken?.average_gas_price ??
+        feeToken?.high_gas_price ??
+        feeToken?.low_gas_price ??
+        feeToken?.fixed_min_gas_price
+
+      gasPrice =
+        feeToken && feeToken.denom.length >= 3 && gasPriceAmount !== undefined
+          ? GasPrice.fromString(gasPriceAmount + feeToken.denom)
+          : undefined
+    } catch {}
+
+    return {
+      gasPrice,
+      registry: typesRegistry,
+    }
+  }
+
+  const signerOptions: SignerOptions = {
+    signingStargate: getSignerOptions,
+    signingCosmwasm: getSignerOptions,
+  }
+
   return (
-    <WalletManagerProvider
-      chainInfoOverrides={[
-        // Use environment variables to determine RPC/REST nodes.
-        {
-          ...currentChainInfo,
-          rpc: CHAIN_RPC_ENDPOINT,
-          rest: CHAIN_REST_ENDPOINT,
+    <ChainProvider
+      assetLists={assets}
+      chains={chains}
+      endpointOptions={{
+        endpoints: {
+          // Use environment variables to determine RPC/REST nodes.
+          [currentChainInfo.chainName]: {
+            rpc: [CHAIN_RPC_ENDPOINT],
+            rest: [CHAIN_REST_ENDPOINT],
+          },
+          [stargazeMainnetChainInfo.chainName]: {
+            rpc: [STARGAZE_RPC_ENDPOINT],
+            rest: [STARGAZE_REST_ENDPOINT],
+          },
         },
-        {
-          ...stargazeMainnetChainInfo,
-          rpc: STARGAZE_RPC_ENDPOINT,
-          rest: STARGAZE_REST_ENDPOINT,
+      }}
+      signerOptions={signerOptions}
+      walletConnectOptions={{
+        signClient: {
+          projectId: '',
+          relayUrl: 'wss://relay.walletconnect.org',
+          metadata: {
+            name: t('meta.title'),
+            description: t('meta.description'),
+            url: SITE_URL,
+            icons: [
+              (typeof window === 'undefined'
+                ? SITE_URL
+                : window.location.origin) + WC_ICON_PATH,
+            ],
+          },
         },
-      ]}
-      defaultChainId={CHAIN_ID}
-      disableDefaultUi
-      enabledWalletTypes={[
-        // Only show extension wallets on desktop.
-        ...(!isMobile() ? [WalletType.Keplr, WalletType.Leap] : []),
+      }}
+      walletModal={WalletUi}
+      wallets={[
+        ...keplrExtensionWallets,
+        // TODO: Add all the other wallets.
         // Only allow Keplr Mobile on mainnet since it can't use testnet.
-        ...(MAINNET ? [WalletType.KeplrMobile] : []),
-        // Web3Auth social logins.
-        WalletType.Google,
-        WalletType.Apple,
-        WalletType.Discord,
-        WalletType.Twitter,
+        ...(MAINNET ? keplrMobileWallets : []),
+        // TODO: Add web3auth (Google, Apple, Discord, Twitter).
       ]}
-      getSigningCosmWasmClientOptions={(chainInfo) => {
-        const feeToken = getChainForChainId(chainInfo.chainId).fees
-          ?.fee_tokens?.[0]
-        const gasPrice =
-          feeToken?.average_gas_price ??
-          feeToken?.high_gas_price ??
-          feeToken?.low_gas_price
-        if (!feeToken || gasPrice === undefined) {
-          throw new Error(`No fee token found for chain ${chainInfo.chainId}`)
-        }
-
-        return {
-          gasPrice: GasPrice.fromString(gasPrice + feeToken.denom),
-          registry: typesRegistry,
-        }
-      }}
-      getSigningStargateClientOptions={(chainInfo) => {
-        const feeToken = getChainForChainId(chainInfo.chainId).fees
-          ?.fee_tokens?.[0]
-        const gasPrice =
-          feeToken?.average_gas_price ??
-          feeToken?.high_gas_price ??
-          feeToken?.low_gas_price
-        if (!feeToken || gasPrice === undefined) {
-          throw new Error(`No fee token found for chain ${chainInfo.chainId}`)
-        }
-
-        return {
-          gasPrice: GasPrice.fromString(gasPrice + feeToken.denom),
-          registry: typesRegistry,
-        }
-      }}
-      localStorageKey="connectedWalletId"
-      walletConnectClientMeta={{
-        name: t('meta.title'),
-        description: t('meta.description'),
-        url: SITE_URL,
-        icons: [
-          (typeof window === 'undefined' ? SITE_URL : window.location.origin) +
-            WC_ICON_PATH,
-        ],
-      }}
-      walletOptions={{
-        [WalletType.Google]: web3AuthWalletOptions,
-        [WalletType.Apple]: web3AuthWalletOptions,
-        [WalletType.Discord]: web3AuthWalletOptions,
-        [WalletType.Twitter]: web3AuthWalletOptions,
-      }}
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>
-    </WalletManagerProvider>
+    </ChainProvider>
   )
 }
 
 const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   const setSigningCosmWasmClient = useSetRecoilState(signingCosmWasmClientAtom)
-  const { signingCosmWasmClient, address } = useWallet()
+  const { getSigningCosmWasmClient, address, isWalletConnected } = useWallet()
 
   // Save address and client in recoil atom so it can be used by selectors.
   useEffect(() => {
-    setSigningCosmWasmClient(signingCosmWasmClient)
-  }, [setSigningCosmWasmClient, signingCosmWasmClient, address])
+    if (!isWalletConnected) {
+      setSigningCosmWasmClient(undefined)
+      return
+    }
+
+    ;(async () => {
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
+      setSigningCosmWasmClient(signingCosmWasmClient)
+    })()
+  }, [
+    setSigningCosmWasmClient,
+    address,
+    isWalletConnected,
+    getSigningCosmWasmClient,
+  ])
 
   return <>{children}</>
 }

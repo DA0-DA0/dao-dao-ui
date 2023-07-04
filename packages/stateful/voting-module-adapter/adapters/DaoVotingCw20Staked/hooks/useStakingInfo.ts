@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -16,6 +15,7 @@ import {
 } from '@dao-dao/stateless'
 import { claimAvailable } from '@dao-dao/utils'
 
+import { useWallet } from '../../../../hooks/useWallet'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
 

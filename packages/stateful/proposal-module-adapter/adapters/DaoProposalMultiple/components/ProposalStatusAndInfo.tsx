@@ -10,7 +10,6 @@ import {
   Send,
   Tag,
 } from '@mui/icons-material'
-import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import uniq from 'lodash.uniq'
 import { ComponentType, useCallback, useEffect, useMemo, useState } from 'react'
@@ -49,7 +48,7 @@ import {
 
 import { EntityDisplay, SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
-import { useAwaitNextBlock, useMembership } from '../../../../hooks'
+import { useAwaitNextBlock, useMembership, useWallet } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useClose, useExecute } from '../contracts/DaoProposalMultiple.hooks'
 import { configSelector } from '../contracts/DaoProposalMultiple.recoil'
@@ -114,7 +113,7 @@ const InnerProposalStatusAndInfo = ({
   const { name: daoName, coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { connected, address: walletAddress = '' } = useWallet()
+  const { isWalletConnected, address: walletAddress = '' } = useWallet()
   const { isMember = false } = useMembership({
     coreAddress,
   })
@@ -336,7 +335,7 @@ const InnerProposalStatusAndInfo = ({
     })
 
   const onExecute = useCallback(async () => {
-    if (!connected) {
+    if (!isWalletConnected) {
       return
     }
 
@@ -354,10 +353,10 @@ const InnerProposalStatusAndInfo = ({
     }
 
     // Loading will stop on success when status refreshes.
-  }, [connected, executeProposal, proposalNumber, onExecuteSuccess])
+  }, [isWalletConnected, executeProposal, proposalNumber, onExecuteSuccess])
 
   const onClose = useCallback(async () => {
-    if (!connected) {
+    if (!isWalletConnected) {
       return
     }
 
@@ -378,7 +377,7 @@ const InnerProposalStatusAndInfo = ({
     }
 
     // Loading will stop on success when status refreshes.
-  }, [connected, closeProposal, proposalNumber, onCloseSuccess])
+  }, [isWalletConnected, closeProposal, proposalNumber, onCloseSuccess])
 
   const awaitNextBlock = useAwaitNextBlock()
   // Refresh proposal and list of proposals (for list status) once voting ends.

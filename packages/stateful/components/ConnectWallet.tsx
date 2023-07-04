@@ -1,9 +1,9 @@
-import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
-
 import {
   ConnectWalletProps,
   ConnectWallet as StatelessConnectWallet,
 } from '@dao-dao/stateless'
+
+import { useWallet } from '../hooks/useWallet'
 
 export type StatefulConnectWalletProps = Omit<
   ConnectWalletProps,
@@ -11,15 +11,11 @@ export type StatefulConnectWalletProps = Omit<
 >
 
 export const ConnectWallet = (props: StatefulConnectWalletProps) => {
-  const { connect, status } = useWalletManager()
+  const { connect, isWalletConnecting } = useWallet()
 
   return (
     <StatelessConnectWallet
-      loading={
-        status === WalletConnectionStatus.Initializing ||
-        status === WalletConnectionStatus.AttemptingAutoConnection ||
-        status === WalletConnectionStatus.Connecting
-      }
+      loading={isWalletConnecting}
       onConnect={connect}
       variant="primary"
       {...props}

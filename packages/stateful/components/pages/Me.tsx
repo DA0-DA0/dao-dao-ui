@@ -1,4 +1,3 @@
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -12,6 +11,7 @@ import {
 } from '@dao-dao/stateless'
 import { SITE_URL } from '@dao-dao/utils'
 
+import { useWallet } from '../../hooks/useWallet'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { ConnectWallet } from '../ConnectWallet'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
@@ -22,7 +22,11 @@ import { MeTransactionBuilder } from './MeTransactionBuilder'
 export const Me: NextPage = () => {
   const { t } = useTranslation()
   const { asPath } = useRouter()
-  const { address: walletAddress = '', connected, status } = useWallet()
+  const {
+    address: walletAddress = '',
+    isWalletConnected,
+    isWalletConnecting,
+  } = useWallet()
   const { walletProfileData: profileData, updateProfileName } = useWalletInfo()
 
   return (
@@ -37,7 +41,7 @@ export const Me: NextPage = () => {
         title={t('title.me')}
       />
 
-      {connected ? (
+      {isWalletConnected ? (
         <WalletActionsProvider>
           {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
           <SuspenseLoader fallback={<Loader />}>
@@ -54,11 +58,7 @@ export const Me: NextPage = () => {
       ) : (
         <LogInRequiredPage
           connectWalletButton={<ConnectWallet />}
-          connecting={
-            status === WalletConnectionStatus.Initializing ||
-            status === WalletConnectionStatus.AttemptingAutoConnection ||
-            status === WalletConnectionStatus.Connecting
-          }
+          connecting={isWalletConnecting}
           rightSidebarContent={<ProfileDisconnectedCard />}
           title={t('title.me')}
         />

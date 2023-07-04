@@ -1,5 +1,4 @@
 import { toBase64, toUtf8 } from '@cosmjs/encoding'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
@@ -21,6 +20,7 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
+import { useWallet } from '../../../../hooks'
 import {
   nftCardInfoSelector,
   nftCardInfosForDaoSelector,

@@ -1,4 +1,3 @@
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { useSetRecoilState } from 'recoil'
 
@@ -11,7 +10,7 @@ import {
   ProposalLine,
   ProposalLineProps,
 } from '../../../components/ProposalLine'
-import { useOnWebSocketMessage } from '../../../hooks'
+import { useOnWebSocketMessage, useWallet } from '../../../hooks'
 import { inboxOpenProposalsSelector } from './state'
 
 export const OpenProposals: InboxSource<ProposalLineProps> = {
@@ -19,7 +18,7 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
   Renderer: ProposalLine,
   useData: () => {
     const { chain_id: chainId } = useChain()
-    const { address, publicKey, status: walletConnectionStatus } = useWallet()
+    const { address, hexPublicKey } = useWallet()
 
     const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
@@ -27,20 +26,17 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
     const daosWithItemsLoadable = useCachedLoadable(
       // Don't load without a wallet until we're no longer initializing. This
       // prevents duplicate queries when the page is first loading.
-      walletConnectionStatus === WalletConnectionStatus.Initializing ||
-        walletConnectionStatus ===
-          WalletConnectionStatus.AttemptingAutoConnection
-        ? undefined
-        : inboxOpenProposalsSelector({
-            chainId,
-            wallet:
-              address && publicKey
-                ? {
-                    address,
-                    hexPublicKey: publicKey.hex,
-                  }
-                : undefined,
-          })
+      // TODO(cosmos-kit): Check if there is an initializing state when cosmos-kit is autoconnecting
+      inboxOpenProposalsSelector({
+        chainId,
+        wallet:
+          address && !hexPublicKey.loading
+            ? {
+                address,
+                hexPublicKey: hexPublicKey.data,
+              }
+            : undefined,
+      })
     )
 
     // Refresh when any proposal or vote is updated for any of the DAOs. Once

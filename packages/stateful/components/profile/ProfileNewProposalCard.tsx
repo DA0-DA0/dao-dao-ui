@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next'
+import { useSetRecoilState } from 'recoil'
 
+import { updateProfileNftVisibleAtom } from '@dao-dao/state/recoil'
 import {
   ProfileNewProposalCard as StatelessProfileNewProposalCard,
-  useAppContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 
@@ -18,7 +19,9 @@ export interface ProfileNewProposalCardProps {
 export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
   const { name: daoName, coreAddress } = useDaoInfoContext()
   const { walletProfileData, updateProfileName } = useWalletInfo()
-  const { updateProfileNft } = useAppContext()
+  const setUpdateProfileNftVisible = useSetRecoilState(
+    updateProfileNftVisibleAtom
+  )
 
   return (
     <SuspenseLoader
@@ -27,7 +30,7 @@ export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
           daoName={daoName}
           info={{ loading: true }}
           isMember={{ loading: true }}
-          showUpdateProfileNft={updateProfileNft.toggle}
+          showUpdateProfileNft={() => setUpdateProfileNftVisible(true)}
           updateProfileName={updateProfileName}
           walletProfileData={walletProfileData}
         />
@@ -50,7 +53,9 @@ export const InnerProfileNewProposalCard = ({
   const { t } = useTranslation()
   const { name: daoName, coreAddress } = useDaoInfoContext()
   const { walletProfileData, updateProfileName } = useWalletInfo()
-  const { updateProfileNft } = useAppContext()
+  const setUpdateProfileNftVisible = useSetRecoilState(
+    updateProfileNftVisibleAtom
+  )
   const {
     hooks: { useProfileNewProposalCardAddresses },
   } = useVotingModuleAdapter()
@@ -83,7 +88,7 @@ export const InnerProfileNewProposalCard = ({
           ? { loading: true }
           : { loading: false, data: isMember }
       }
-      showUpdateProfileNft={updateProfileNft.toggle}
+      showUpdateProfileNft={() => setUpdateProfileNftVisible(true)}
       updateProfileName={updateProfileName}
       walletProfileData={walletProfileData}
     />

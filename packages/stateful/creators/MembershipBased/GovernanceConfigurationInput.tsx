@@ -1,5 +1,4 @@
 import { Add } from '@mui/icons-material'
-import { useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
@@ -19,6 +18,7 @@ import {
 
 import { MembershipBasedCreator } from '.'
 import { EntityDisplay } from '../../components/EntityDisplay'
+import { useWallet } from '../../hooks/useWallet'
 import { TierCard } from './TierCard'
 import { CreatorData } from './types'
 

@@ -1,4 +1,3 @@
-import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -32,7 +31,7 @@ import {
 } from '@dao-dao/stateless'
 
 import { CommandModal } from '../command'
-import { useFollowingDaos, useWalletInfo } from '../hooks'
+import { useFollowingDaos, useWallet, useWalletInfo } from '../hooks'
 import {
   daoCreatedCardPropsAtom,
   followingDaoDropdownInfosSelector,
@@ -74,7 +73,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     throw new Error(t('error.loadingData'))
   }
 
-  const { connect, connected, status, connectedWallet } = useWalletManager()
+  const { address, connect, isWalletConnected } = useWallet()
   const {
     walletAddress,
     walletHexPublicKey,
@@ -160,10 +159,10 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
 
   //! Wallet balances, load in background so they're ready.
   useRecoilValueLoadable(
-    connectedWallet
+    address
       ? walletTokenCardInfosSelector({
           chainId,
-          walletAddress: connectedWallet.address,
+          walletAddress: address,
         })
       : constSelector(undefined)
   )
@@ -172,9 +171,9 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     <StatelessDappLayout
       connect={connect}
       connectWalletButton={<ConnectWallet variant="secondary" />}
-      connected={connected}
+      connected={isWalletConnected}
       navigationProps={{
-        walletConnected: connected,
+        walletConnected: isWalletConnected,
         LinkWrapper,
         inboxCount:
           inbox.loading ||
@@ -200,11 +199,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
       rightSidebarProps={{
         wallet: <SidebarWallet />,
       }}
-      walletProfileData={
-        status === WalletConnectionStatus.Connected
-          ? walletProfileData
-          : undefined
-      }
+      walletProfileData={isWalletConnected ? walletProfileData : undefined}
     >
       {children}
 
@@ -222,9 +217,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         />
       )}
       <SyncFollowingModal />
-
-      {/* Wallet UI */}
-      <WalletModals />
 
       {daoCreatedCardProps && (
         <DaoCreatedModal
@@ -260,6 +252,8 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
           }}
         />
       )}
+
+      <WalletModals />
     </StatelessDappLayout>
   )
 }

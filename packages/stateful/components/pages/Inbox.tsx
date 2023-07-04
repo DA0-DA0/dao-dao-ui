@@ -1,4 +1,3 @@
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -13,7 +12,7 @@ import {
 } from '@dao-dao/stateless'
 import { SITE_URL } from '@dao-dao/utils'
 
-import { useInboxApi } from '../../hooks'
+import { useInboxApi, useWallet } from '../../hooks'
 import { ConnectWallet } from '../ConnectWallet'
 import { LinkWrapper } from '../LinkWrapper'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
@@ -27,7 +26,7 @@ export const Inbox: NextPage = () => {
     isReady,
     push,
   } = useRouter()
-  const { connected, status } = useWallet()
+  const { isWalletConnected, isWalletConnecting } = useWallet()
 
   const { inbox } = useAppContext()
   // Type-check, should always be loaded for dapp.
@@ -63,7 +62,7 @@ export const Inbox: NextPage = () => {
         title={t('title.inbox')}
       />
 
-      {connected ? (
+      {isWalletConnected ? (
         <StatelessInbox
           LinkWrapper={LinkWrapper}
           api={api}
@@ -74,11 +73,7 @@ export const Inbox: NextPage = () => {
       ) : (
         <LogInRequiredPage
           connectWalletButton={<ConnectWallet />}
-          connecting={
-            status === WalletConnectionStatus.Initializing ||
-            status === WalletConnectionStatus.AttemptingAutoConnection ||
-            status === WalletConnectionStatus.Connecting
-          }
+          connecting={isWalletConnecting}
           rightSidebarContent={<ProfileDisconnectedCard />}
           title={t('title.inbox')}
         />

@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -21,6 +20,7 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput, Trans } from '../../../../../components'
+import { useWallet } from '../../../../../hooks/useWallet'
 import { useTokenBalances } from '../../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../../react'
 import { InstantiateTokenSwap as StatelessInstantiateTokenSwap } from '../stateless/InstantiateTokenSwap'
@@ -34,7 +34,7 @@ export const InstantiateTokenSwap: ActionComponent<
   const { address: selfAddress } = useActionOptions()
 
   const { setValue } = useFormContext()
-  const { address: walletAddress, signingCosmWasmClient } = useWallet()
+  const { address: walletAddress, getSigningCosmWasmClient } = useWallet()
 
   const selfPartyTokenBalances = useTokenBalances()
 
@@ -47,10 +47,12 @@ export const InstantiateTokenSwap: ActionComponent<
       return
     }
 
-    if (!walletAddress || !signingCosmWasmClient) {
+    if (!walletAddress) {
       toast.error(t('error.logInToContinue'))
       return
     }
+
+    const signingCosmWasmClient = await getSigningCosmWasmClient()
 
     setInstantiating(true)
 
@@ -137,7 +139,7 @@ export const InstantiateTokenSwap: ActionComponent<
     props.fieldNamePrefix,
     selfAddress,
     setValue,
-    signingCosmWasmClient,
+    getSigningCosmWasmClient,
     t,
     walletAddress,
   ])

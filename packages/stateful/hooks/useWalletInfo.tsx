@@ -1,5 +1,4 @@
 import { makeSignDoc } from '@cosmjs/amino'
-import { useConnectWalletToChain, useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -19,6 +18,7 @@ import {
 } from '@dao-dao/utils'
 
 import { walletProfileDataSelector } from '../recoil'
+import { useWallet } from './useWallet'
 
 export interface UseWalletReturn {
   walletAddress: string | undefined
@@ -43,8 +43,9 @@ export const useWalletInfo = (): UseWalletReturn => {
     chain: { chain_id: chainId },
     nativeToken,
   } = useChainContext()
-  const { address, connected, publicKey } = useWallet()
-  const connectWalletToChain = useConnectWalletToChain()
+  const { address, isWalletConnected, hexPublicKey } = useWallet()
+  // TODO(cosmos-kit-dynamic-conn-fn): Replace this when cosmos-kit supports dynamic chain connection fn.
+  const junoWallet = useWallet(ChainId.JunoMainnet)
 
   // Fetch wallet balance.
   const {
@@ -158,9 +159,13 @@ export const useWalletInfo = (): UseWalletReturn => {
       profile: Omit<WalletProfileUpdate, 'nonce'>,
       onUpdate?: () => void
     ): Promise<void> => {
+      // Use a consistent chain for the signer since the chain ID is part of the
+      // signature and PFPK needs to know what to expect.
+      const { address: signer, signAmino } = junoWallet
       if (
-        !connected ||
-        !publicKey ||
+        !signer ||
+        !isWalletConnected ||
+        hexPublicKey.loading ||
         profileLoading ||
         // Disallow editing if we don't have correct nonce from server.
         walletProfile.nonce < 0
@@ -173,26 +178,17 @@ export const useWalletInfo = (): UseWalletReturn => {
       setUpdatingNonce(walletProfile.nonce)
 
       try {
-        // Use a consistent chain for the signer since the chain ID is part of
-        // the signature and PFPK needs to know what to expect.
-        const { address: signingAddress, walletClient: signingWalletClient } =
-          await connectWalletToChain(ChainId.JunoMainnet)
-
         const profileUpdate: WalletProfileUpdate = {
           ...profile,
           nonce: walletProfile.nonce,
         }
 
-        const offlineSignerAmino =
-          await signingWalletClient.getOfflineSignerOnlyAmino(
-            ChainId.JunoMainnet
-          )
         const signDocAmino = makeSignDoc(
           [
             {
               type: 'PFPK Verification',
               value: {
-                signer: signingAddress,
+                signer,
                 data: JSON.stringify(profileUpdate, undefined, 2),
               },
             },
@@ -213,9 +209,9 @@ export const useWalletInfo = (): UseWalletReturn => {
         )
         const {
           signature: { signature },
-        } = await offlineSignerAmino.signAmino(signingAddress, signDocAmino)
+        } = await signAmino(signer, signDocAmino)
 
-        const response = await fetch(PFPK_API_BASE + `/${publicKey.hex}`, {
+        const response = await fetch(PFPK_API_BASE + `/${hexPublicKey.data}`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -244,11 +240,11 @@ export const useWalletInfo = (): UseWalletReturn => {
       }
     },
     [
-      connected,
-      publicKey,
+      junoWallet,
+      isWalletConnected,
+      hexPublicKey,
       profileLoading,
       walletProfile.nonce,
-      connectWalletToChain,
       refreshWalletProfile,
     ]
   )
@@ -289,7 +285,7 @@ export const useWalletInfo = (): UseWalletReturn => {
 
   return {
     walletAddress: address,
-    walletHexPublicKey: publicKey?.hex,
+    walletHexPublicKey: hexPublicKey.loading ? undefined : hexPublicKey.data,
     walletBalance,
     walletStakedBalance,
     dateBalancesFetched,

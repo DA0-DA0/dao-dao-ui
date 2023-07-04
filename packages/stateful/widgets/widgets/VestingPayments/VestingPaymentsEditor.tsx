@@ -1,5 +1,4 @@
 import { Check } from '@mui/icons-material'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -14,6 +13,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { useWallet } from '../../../hooks/useWallet'
 import { VestingPaymentsData } from './types'
 
 export const VestingPaymentsEditor = ({
@@ -22,7 +22,7 @@ export const VestingPaymentsEditor = ({
   const { t } = useTranslation()
 
   const { name, coreAddress } = useDaoInfoContext()
-  const { address: walletAddress = '', signingCosmWasmClient } = useWallet()
+  const { address: walletAddress = '', getSigningCosmWasmClient } = useWallet()
 
   const { setValue, setError, clearErrors, watch } =
     useFormContext<VestingPaymentsData>()
@@ -30,10 +30,12 @@ export const VestingPaymentsEditor = ({
 
   const [instantiating, setInstantiating] = useState(false)
   const instantiateVestingFactory = async () => {
-    if (!walletAddress || !signingCosmWasmClient) {
+    if (!walletAddress) {
       toast.error(t('error.logInToContinue'))
       return
     }
+
+    const signingCosmWasmClient = await getSigningCosmWasmClient()
 
     setInstantiating(true)
     try {

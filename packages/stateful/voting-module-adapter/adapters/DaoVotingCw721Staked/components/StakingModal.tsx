@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -30,6 +29,7 @@ import {
   Cw721BaseHooks,
   DaoVotingCw721StakedHooks,
   useAwaitNextBlock,
+  useWallet,
 } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { useGovernanceCollectionInfo, useStakingInfo } from '../hooks'
@@ -46,7 +46,7 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { address: walletAddress, connected } = useWallet()
+  const { address: walletAddress, isWalletConnected } = useWallet()
   const { coreAddress } = useVotingModuleAdapterOptions()
 
   const setRefreshWalletNftsId = useSetRecoilState(
@@ -127,7 +127,7 @@ const InnerStakingModal = ({
   const awaitNextBlock = useAwaitNextBlock()
 
   const onAction = async () => {
-    if (!connected) {
+    if (!isWalletConnected) {
       toast.error(t('error.logInToContinue'))
       return
     }

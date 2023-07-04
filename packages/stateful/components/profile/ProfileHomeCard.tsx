@@ -1,4 +1,9 @@
-import { walletProposalStatsSelector } from '@dao-dao/state/recoil'
+import { useSetRecoilState } from 'recoil'
+
+import {
+  updateProfileNftVisibleAtom,
+  walletProposalStatsSelector,
+} from '@dao-dao/state/recoil'
 import {
   ProfileHomeCard as StatelessProfileHomeCard,
   useAppContext,
@@ -21,8 +26,11 @@ export const ProfileHomeCard = () => {
     dateBalancesFetched,
     updateProfileName,
   } = useWalletInfo()
-  const { updateProfileNft, inbox } = useAppContext()
+  const { inbox } = useAppContext()
 
+  const setUpdateProfileNftVisible = useSetRecoilState(
+    updateProfileNftVisibleAtom
+  )
   const walletProposalStatsLoadable = useCachedLoadable(
     walletAddress
       ? walletProposalStatsSelector({
@@ -65,7 +73,7 @@ export const ProfileHomeCard = () => {
                   : undefined,
             }
       }
-      showUpdateProfileNft={updateProfileNft.toggle}
+      showUpdateProfileNft={() => setUpdateProfileNftVisible(true)}
       tokenDecimals={nativeToken.decimals}
       tokenSymbol={nativeToken.symbol}
       updateProfileName={updateProfileName}

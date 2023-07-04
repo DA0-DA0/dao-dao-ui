@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
@@ -10,6 +9,7 @@ import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import { CHAIN_ID } from '@dao-dao/utils'
 
+import { useWallet } from '../../../../hooks/useWallet'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
   UseGovernanceTokenInfoOptions,

@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { waitForAllSettled } from 'recoil'
 
 import {
@@ -9,6 +8,7 @@ import {
 import { LoadingData, TokenCardInfo } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
 
+import { useWallet } from '../../hooks/useWallet'
 import {
   hiddenBalancesSelector,
   tokenCardLazyInfoSelector,
@@ -20,7 +20,7 @@ import { WalletTokenLine } from '../WalletTokenLine'
 
 export const MeBalances = () => {
   const { chain_id: chainId } = useChain()
-  const { address: walletAddress, publicKey } = useWallet()
+  const { address: walletAddress, hexPublicKey } = useWallet()
 
   const tokensWithoutLazyInfo = useCachedLoading(
     walletAddress
@@ -75,7 +75,9 @@ export const MeBalances = () => {
   )
 
   const hiddenTokens = useCachedLoading(
-    publicKey?.hex ? hiddenBalancesSelector(publicKey.hex) : undefined,
+    !hexPublicKey.loading
+      ? hiddenBalancesSelector(hexPublicKey.data)
+      : undefined,
     []
   )
 

@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
@@ -32,6 +31,7 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
+import { useWallet } from '../../../../hooks/useWallet'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
 import {

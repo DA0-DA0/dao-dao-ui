@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -10,6 +9,7 @@ import {
   IActionsContext,
 } from '@dao-dao/types'
 
+import { useWallet } from '../../hooks/useWallet'
 import { matchAndLoadCommon } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { useWidgets } from '../../widgets'

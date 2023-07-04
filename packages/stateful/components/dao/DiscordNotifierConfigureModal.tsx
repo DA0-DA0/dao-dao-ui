@@ -2,7 +2,6 @@ import {
   NotificationsActiveRounded,
   NotificationsNoneRounded,
 } from '@mui/icons-material'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -32,6 +31,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useCfWorkerAuthPostRequest } from '../../hooks/useCfWorkerAuthPostRequest'
+import { useWallet } from '../../hooks/useWallet'
 import { ConnectWallet } from '../ConnectWallet'
 
 export const DiscordNotifierConfigureModal = () => {
@@ -39,7 +39,7 @@ export const DiscordNotifierConfigureModal = () => {
   const router = useRouter()
   const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
-  const { connected, publicKey } = useWallet()
+  const { isWalletConnected, hexPublicKey } = useWallet()
 
   const [visible, setVisible] = useState(false)
 
@@ -57,7 +57,7 @@ export const DiscordNotifierConfigureModal = () => {
     refreshDiscordNotifierRegistrationsAtom({
       chainId,
       coreAddress,
-      walletPublicKey: publicKey?.hex ?? '',
+      walletPublicKey: hexPublicKey.loading ? '' : hexPublicKey.data,
     })
   )
 
@@ -82,11 +82,11 @@ export const DiscordNotifierConfigureModal = () => {
   }, [refreshRegistrationsLoop, setRefreshRegistrations])
 
   const registrationsLoadable = useCachedLoadable(
-    publicKey
+    !hexPublicKey.loading
       ? discordNotifierRegistrationsSelector({
           chainId,
           coreAddress,
-          walletPublicKey: publicKey.hex,
+          walletPublicKey: hexPublicKey.data,
         })
       : undefined
   )
@@ -204,7 +204,7 @@ export const DiscordNotifierConfigureModal = () => {
 
       <StatelessDiscordNotifierConfigureModal
         ConnectWallet={() => <ConnectWallet center />}
-        connected={connected}
+        connected={isWalletConnected}
         loading={loading}
         onClose={() => setVisible(false)}
         onDelete={unregister}

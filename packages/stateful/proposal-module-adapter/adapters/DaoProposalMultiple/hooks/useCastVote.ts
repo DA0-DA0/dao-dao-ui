@@ -1,17 +1,17 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { processError } from '@dao-dao/utils'
 
+import { useWallet } from '../../../../hooks/useWallet'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useVote } from '../contracts/DaoProposalMultiple.hooks'
 import { useLoadingWalletVoteInfo } from './useLoadingWalletVoteInfo'
 
 export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { connected, address: walletAddress = '' } = useWallet()
+  const { isWalletConnected, address: walletAddress = '' } = useWallet()
 
   const _castVote = useVote({
     contractAddress: proposalModule.address,
@@ -33,7 +33,7 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
 
   const castVote = useCallback(
     async (vote: MultipleChoiceVote) => {
-      if (!connected) return
+      if (!isWalletConnected) return
 
       setCastingVote(true)
 
@@ -54,7 +54,7 @@ export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
 
       // Loading will stop on success when vote data refreshes.
     },
-    [connected, setCastingVote, _castVote, proposalNumber, onSuccess]
+    [isWalletConnected, setCastingVote, _castVote, proposalNumber, onSuccess]
   )
 
   return {

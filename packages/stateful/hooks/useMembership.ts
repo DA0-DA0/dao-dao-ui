@@ -1,7 +1,7 @@
-import { useWallet } from '@noahsaso/cosmodal'
-
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { useCachedLoadable, useChain } from '@dao-dao/stateless'
+
+import { useWallet } from './useWallet'
 
 interface UseMembershipOptions {
   coreAddress: string

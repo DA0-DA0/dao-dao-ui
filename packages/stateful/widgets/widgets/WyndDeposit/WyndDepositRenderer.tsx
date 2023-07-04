@@ -1,6 +1,5 @@
 import { coins } from '@cosmjs/amino'
 import { ArrowDropDown, ArrowOutwardRounded } from '@mui/icons-material'
-import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -51,7 +50,7 @@ import {
 } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../../../components'
-import { useLoadingWyndReferralCommission } from '../../../hooks'
+import { useLoadingWyndReferralCommission, useWallet } from '../../../hooks'
 import { WyndDepositData } from './types'
 
 export const WyndDepositRenderer = ({
@@ -66,9 +65,9 @@ export const WyndDepositRenderer = ({
 }: WidgetRendererProps<WyndDepositData>) => {
   const { t } = useTranslation()
   const {
-    signingCosmWasmClient,
+    getSigningCosmWasmClient,
     address: walletAddress = '',
-    connected,
+    isWalletConnected,
   } = useWallet()
   const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
@@ -247,7 +246,7 @@ export const WyndDepositRenderer = ({
         swapSimulationInput > 0))
 
   const deposit = async () => {
-    if (!signingCosmWasmClient || !walletAddress) {
+    if (!walletAddress) {
       toast.error(t('error.logInToContinue'))
       return
     }
@@ -255,6 +254,8 @@ export const WyndDepositRenderer = ({
     if (!necessaryDataLoaded) {
       return
     }
+
+    const signingCosmWasmClient = await getSigningCosmWasmClient()
 
     setDepositing(true)
     setError('')
@@ -387,7 +388,7 @@ export const WyndDepositRenderer = ({
               disabled:
                 loadingWyndTokens.loading ||
                 walletBalances.loading ||
-                !connected,
+                !isWalletConnected,
               variant: 'ghost',
               children: (
                 <>

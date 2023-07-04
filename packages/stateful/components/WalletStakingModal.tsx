@@ -1,5 +1,4 @@
 import { coin } from '@cosmjs/stargate'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -26,7 +25,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useAwaitNextBlock, useWalletInfo } from '../hooks'
+import { useAwaitNextBlock, useWallet, useWalletInfo } from '../hooks'
 
 export type WalletStakingModalProps = Pick<
   StakingModalProps,
@@ -39,7 +38,7 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
     chain: { chain_id: chainId },
     nativeToken,
   } = useChainContext()
-  const { address: walletAddress = '', signingCosmWasmClient } = useWallet()
+  const { address: walletAddress = '', getSigningCosmWasmClient } = useWallet()
 
   const { walletBalance, refreshBalances } = useWalletInfo()
   // Refreshes validator balances.
@@ -97,10 +96,12 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
       toast.error(t('error.noValidatorSelected'))
       return
     }
-    if (!signingCosmWasmClient || !walletAddress) {
+    if (!walletAddress) {
       toast.error(t('error.logInToContinue'))
       return
     }
+
+    const signingCosmWasmClient = await getSigningCosmWasmClient()
 
     setLoading(true)
     try {

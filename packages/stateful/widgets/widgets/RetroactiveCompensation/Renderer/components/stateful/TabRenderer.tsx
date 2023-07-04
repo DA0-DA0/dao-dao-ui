@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { saveAs } from 'file-saver'
 import { unparse as jsonToCsv } from 'papaparse'
 import { useCallback, useState } from 'react'
@@ -14,7 +13,7 @@ import {
 import { secp256k1PublicKeyToBech32Address } from '@dao-dao/utils'
 
 import { IconButtonLink } from '../../../../../../components'
-import { useMembership } from '../../../../../../hooks'
+import { useMembership, useWallet } from '../../../../../../hooks'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { listCompletedSurveysSelector, statusSelector } from '../../selectors'
 import { CompletedSurvey, CompletedSurveyListing } from '../../types'
@@ -25,8 +24,7 @@ import { OpenSurveySection } from './OpenSurveySection'
 export const TabRenderer = () => {
   const { coreAddress } = useDaoInfoContext()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
-  const { address: walletAddress = '', publicKey: walletPublicKey } =
-    useWallet()
+  const { address: walletAddress = '', hexPublicKey } = useWallet()
   const { isMember = false } = useMembership({
     coreAddress,
   })
@@ -34,7 +32,7 @@ export const TabRenderer = () => {
   const loadingStatus = useCachedLoading(
     statusSelector({
       daoAddress: coreAddress,
-      walletPublicKey: walletPublicKey?.hex ?? '_',
+      walletPublicKey: !hexPublicKey.loading ? hexPublicKey.data : '_',
     }),
     undefined
   )

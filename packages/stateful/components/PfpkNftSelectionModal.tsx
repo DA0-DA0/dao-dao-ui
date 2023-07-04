@@ -1,10 +1,11 @@
 import { Image } from '@mui/icons-material'
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { useRecoilState } from 'recoil'
 
+import { updateProfileNftVisibleAtom } from '@dao-dao/state/recoil'
 import {
   ImageSelectorModal,
   ModalLoader,
@@ -13,7 +14,6 @@ import {
   NoContent,
   ProfileImage,
   Tooltip,
-  useAppContext,
   useCachedLoadingWithError,
   useChain,
 } from '@dao-dao/stateless'
@@ -30,7 +30,7 @@ import {
   uploadNft,
 } from '@dao-dao/utils'
 
-import { useInstantiateAndExecute, useWalletInfo } from '../hooks'
+import { useInstantiateAndExecute, useWallet, useWalletInfo } from '../hooks'
 import { walletNativeAndStargazeNftsSelector } from '../recoil'
 import { SuspenseLoader } from './SuspenseLoader'
 import { Trans } from './Trans'
@@ -47,8 +47,8 @@ export const InnerPfpkNftSelectionModal = ({
   const { t } = useTranslation()
   const {
     address: walletAddress,
-    status: walletStatus,
-    error: walletError,
+    isWalletError,
+    message: walletErrorMessage,
   } = useWallet()
   const chain = useChain()
 
@@ -217,9 +217,8 @@ export const InnerPfpkNftSelectionModal = ({
           }),
         }}
         nfts={
-          walletStatus === WalletConnectionStatus.ReadyForConnection &&
-          walletError
-            ? { loading: false, errored: true, error: walletError }
+          isWalletError && walletErrorMessage
+            ? { loading: false, errored: true, error: walletErrorMessage }
             : nfts
         }
         noneDisplay={
@@ -292,15 +291,16 @@ export const InnerPfpkNftSelectionModal = ({
 }
 
 export const PfpkNftSelectionModal = () => {
-  const { updateProfileNft } = useAppContext()
+  const [updateProfileNftVisible, setUpdateProfileNftVisible] = useRecoilState(
+    updateProfileNftVisibleAtom
+  )
+  const onClose = () => setUpdateProfileNftVisible(false)
 
   return (
-    <SuspenseLoader
-      fallback={<ModalLoader onClose={updateProfileNft.toggle} />}
-    >
+    <SuspenseLoader fallback={<ModalLoader onClose={onClose} />}>
       <InnerPfpkNftSelectionModal
-        onClose={updateProfileNft.toggle}
-        visible={updateProfileNft.visible}
+        onClose={onClose}
+        visible={updateProfileNftVisible}
       />
     </SuspenseLoader>
   )

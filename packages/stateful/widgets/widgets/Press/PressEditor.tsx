@@ -1,5 +1,4 @@
 import { Check } from '@mui/icons-material'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -14,6 +13,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { useWallet } from '../../../hooks/useWallet'
 import { PressData } from './types'
 
 export const PressEditor = ({
@@ -22,17 +22,19 @@ export const PressEditor = ({
   const { t } = useTranslation()
 
   const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { address: walletAddress = '', signingCosmWasmClient } = useWallet()
+  const { address: walletAddress = '', getSigningCosmWasmClient } = useWallet()
 
   const { setValue, setError, clearErrors, watch } = useFormContext<PressData>()
   const contract = watch((fieldNamePrefix + 'contract') as 'contract')
 
   const [instantiating, setInstantiating] = useState(false)
   const instantiate = async () => {
-    if (!walletAddress || !signingCosmWasmClient) {
+    if (!walletAddress) {
       toast.error(t('error.logInToContinue'))
       return
     }
+
+    const signingCosmWasmClient = await getSigningCosmWasmClient()
 
     setInstantiating(true)
     try {

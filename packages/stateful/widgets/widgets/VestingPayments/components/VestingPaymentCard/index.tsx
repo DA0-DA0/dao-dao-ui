@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -27,6 +26,7 @@ import { ButtonLink } from '../../../../../components/ButtonLink'
 import {
   useAwaitNextBlock,
   useEntity,
+  useWallet,
   useWalletInfo,
 } from '../../../../../hooks'
 import {

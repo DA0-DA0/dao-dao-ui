@@ -4,7 +4,6 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import { ComponentType, useCallback, useState } from 'react'
@@ -47,7 +46,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useWalletInfo } from '../../../../../../hooks'
+import { useWallet, useWalletInfo } from '../../../../../../hooks'
 import { NewProposalData, NewProposalForm } from '../../../types'
 
 enum ProposeSubmitValue {
@@ -119,7 +118,7 @@ export const NewProposal = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const { status: walletStatus } = useWallet()
+  const { isWalletConnecting } = useWallet()
   const { walletAddress = '', walletProfileData } = useWalletInfo()
 
   const proposalDescription = watch('description')
@@ -320,15 +319,11 @@ export const NewProposal = ({
           </div>
         </div>
 
-        {!anyoneCanPropose &&
-          !isMember &&
-          walletStatus !== WalletConnectionStatus.Initializing &&
-          walletStatus !== WalletConnectionStatus.AttemptingAutoConnection &&
-          walletStatus !== WalletConnectionStatus.Connecting && (
-            <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
-              {t('error.mustBeMemberToCreateProposal')}
-            </p>
-          )}
+        {!anyoneCanPropose && !isMember && !isWalletConnecting && (
+          <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
+            {t('error.mustBeMemberToCreateProposal')}
+          </p>
+        )}
 
         {simulationBypassExpiration && (
           <p className="secondary-text max-w-prose self-end text-right text-text-interactive-warning-body">

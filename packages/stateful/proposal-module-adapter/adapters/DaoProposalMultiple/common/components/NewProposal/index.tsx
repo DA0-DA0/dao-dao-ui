@@ -1,5 +1,4 @@
 import { FlagOutlined, Timelapse } from '@mui/icons-material'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -28,7 +27,7 @@ import {
 import { useLoadedActionsAndCategories } from '../../../../../../actions'
 import { EntityDisplay } from '../../../../../../components/EntityDisplay'
 import { SuspenseLoader } from '../../../../../../components/SuspenseLoader'
-import { useMembership } from '../../../../../../hooks'
+import { useMembership, useWallet } from '../../../../../../hooks'
 import { proposalSelector } from '../../../contracts/DaoProposalMultiple.recoil'
 import { makeGetProposalInfo } from '../../../functions'
 import {
@@ -57,7 +56,7 @@ export const NewProposal = ({
     imageUrl: daoImageUrl,
     coreAddress,
   } = useDaoInfoContext()
-  const { connected } = useWallet()
+  const { isWalletConnected } = useWallet()
 
   const { loadedActions, categories } = useLoadedActionsAndCategories()
 
@@ -109,7 +108,7 @@ export const NewProposal = ({
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
       async (newProposalData: NewProposalData) => {
-        if (!connected || blockHeight === undefined) {
+        if (!isWalletConnected || blockHeight === undefined) {
           toast.error(t('error.loadingData'))
           return
         }
@@ -209,7 +208,7 @@ export const NewProposal = ({
       processQ,
       publishProposal,
       t,
-      connected,
+      isWalletConnected,
       daoName,
       chainId,
     ]
@@ -221,7 +220,7 @@ export const NewProposal = ({
       SuspenseLoader={SuspenseLoader}
       anyoneCanPropose={anyoneCanPropose}
       categories={categories}
-      connected={connected}
+      connected={isWalletConnected}
       createProposal={createProposal}
       depositUnsatisfied={depositUnsatisfied}
       isMember={isMember}

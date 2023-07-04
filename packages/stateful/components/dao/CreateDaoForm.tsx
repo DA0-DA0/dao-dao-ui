@@ -2,7 +2,6 @@ import { Buffer } from 'buffer'
 
 import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { ArrowBack } from '@mui/icons-material'
-import { useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -60,6 +59,7 @@ import {
   CwAdminFactoryHooks,
   useAwaitNextBlock,
   useFollowingDaos,
+  useWallet,
   useWalletInfo,
 } from '../../hooks'
 import { getAdapterById as getProposalModuleAdapterById } from '../../proposal-module-adapter'
@@ -329,7 +329,7 @@ export const CreateDaoForm = ({
   //! Submit handlers
 
   const [creating, setCreating] = useState(false)
-  const { connected, address: walletAddress } = useWallet()
+  const { isWalletConnected, address: walletAddress } = useWallet()
   const { refreshBalances } = useWalletInfo()
 
   const instantiateWithFactory =
@@ -392,7 +392,7 @@ export const CreateDaoForm = ({
 
       // Create the DAO.
       if (submitterValue === CreateDaoSubmitValue.Create) {
-        if (connected) {
+        if (isWalletConnected) {
           setCreating(true)
           try {
             const coreAddress = await toast.promise(createDaoWithFactory(), {
@@ -529,7 +529,7 @@ export const CreateDaoForm = ({
       setNewDaoAtom,
       parseSubmitterValueDelta,
       pageIndex,
-      connected,
+      isWalletConnected,
       createDaoWithFactory,
       t,
       mode,

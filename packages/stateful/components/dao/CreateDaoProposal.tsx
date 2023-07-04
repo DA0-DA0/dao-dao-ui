@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
@@ -27,6 +26,7 @@ import {
 } from '@dao-dao/types'
 import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
+import { useWallet } from '../../hooks/useWallet'
 import {
   matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
@@ -39,7 +39,7 @@ export const CreateDaoProposal = () => {
   const { goToDaoProposal, router } = useDaoNavHelpers()
   const chain = useChain()
   const daoInfo = useDaoInfoContext()
-  const { connected } = useWallet()
+  const { isWalletConnected } = useWallet()
 
   const [selectedProposalModule, setSelectedProposalModule] = useState(
     // Default to single choice proposal module or first otherwise.
@@ -340,7 +340,7 @@ export const CreateDaoProposal = () => {
           </SuspenseLoader>
         }
         rightSidebarContent={
-          connected ? (
+          isWalletConnected ? (
             <ProfileNewProposalCard
               proposalModuleAdapterCommon={proposalModuleAdapterCommon}
             />
