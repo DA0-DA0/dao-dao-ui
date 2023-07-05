@@ -21,6 +21,7 @@ import {
 // should have a dependency chain that leads back to the matching functions
 // below, except the react provider, which we should only be used externally.
 // This is a problem to solve later.
+
 export const getAdapters = (): readonly VotingModuleAdapter[] => [
   DaoVotingCw4Adapter,
   DaoVotingCw20StakedAdapter,

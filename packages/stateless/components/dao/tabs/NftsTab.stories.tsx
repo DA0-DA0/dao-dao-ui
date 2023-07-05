@@ -26,7 +26,7 @@ Default.args = {
       makeNftCardProps(),
       makeNftCardProps(),
       makeNftCardProps(),
-    ],
+    ].map((props) => ({ ...props, key: props.tokenId })),
   },
   NftCard,
   description: 'This is the NFTs tab.',

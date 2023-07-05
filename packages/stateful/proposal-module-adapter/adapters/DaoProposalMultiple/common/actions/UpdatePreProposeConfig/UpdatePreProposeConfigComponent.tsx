@@ -78,7 +78,11 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
       ? [
           {
             ...governanceToken,
-            type: 'voting_module_token',
+            type:
+              governanceToken.type === TokenType.Cw20
+                ? // Only works for cw20.
+                  'voting_module_token'
+                : TokenType.Native,
             description: t('title.governanceToken'),
           },
         ]

@@ -58,12 +58,7 @@ export const VestingPaymentLine = ({
       )}
       onClick={onClick}
     >
-      <EntityDisplay
-        address={vest.recipient}
-        copyToClipboardProps={{
-          textClassName: '!no-underline',
-        }}
-      />
+      <EntityDisplay address={vest.recipient} noUnderline />
 
       {completed ? (
         <>

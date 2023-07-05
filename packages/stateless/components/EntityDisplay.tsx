@@ -1,18 +1,22 @@
 /* eslint-disable i18next/no-literal-string */
-import { ArrowOutwardRounded } from '@mui/icons-material'
+import { fromBech32 } from '@cosmjs/encoding'
+import { Check, CopyAllOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { EntityDisplayProps, EntityType } from '@dao-dao/types'
 import {
+  WALLET_URL_PREFIX,
+  concatAddressStartEnd,
   getFallbackImage,
   toAccessibleImageUrl,
   toBech32Hash,
 } from '@dao-dao/utils'
 
-import { useDaoNavHelpers } from '../hooks'
-import { CopyToClipboardUnderline } from './CopyToClipboard'
-import { IconButtonLink } from './icon_buttons'
+import { useDaoNavHelpers, useDetectTruncate } from '../hooks'
+import { ButtonLink } from './buttons'
+import { IconButton } from './icon_buttons'
 import { Tooltip } from './tooltip/Tooltip'
 
 export const EntityDisplay = ({
@@ -20,88 +24,115 @@ export const EntityDisplay = ({
   loadingEntity,
   imageSize,
   hideImage,
-  copyToClipboardProps,
   size = 'default',
   className,
-  noImageTooltip,
+  textClassName,
   noCopy,
+  noUnderline,
+  showFullAddress,
 }: EntityDisplayProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
 
   imageSize ??= size === 'lg' ? 28 : 24
 
+  const [copied, setCopied] = useState(false)
+  // Unset copied after 2 seconds.
+  useEffect(() => {
+    const timeout = setTimeout(() => setCopied(false), 2000)
+    // Cleanup on unmount.
+    return () => clearTimeout(timeout)
+  }, [copied])
+
+  const href = loadingEntity.loading
+    ? undefined
+    : loadingEntity.data.type === EntityType.Dao
+    ? getDaoPath(address)
+    : WALLET_URL_PREFIX + address
+
+  const { textRef, truncated } = useDetectTruncate()
+
+  // Use bech32 prefix length to determine how much to truncate from beginning.
+  let prefixLength
+  try {
+    prefixLength = fromBech32(address).prefix.length
+  } catch (e) {
+    // Conservative estimate.
+    prefixLength = 6
+  }
+
+  // If name exists, use it. Otherwise, fallback to address, potentially
+  // truncated.
+  const textDisplay =
+    !loadingEntity.loading && loadingEntity.data.name
+      ? loadingEntity.data.name
+      : showFullAddress
+      ? address
+      : concatAddressStartEnd(address, prefixLength + 3, 3)
+
   return (
     <div
       className={clsx('flex min-w-0 flex-row items-center gap-2', className)}
     >
-      {!hideImage && (
-        <Tooltip
-          title={
-            noImageTooltip
-              ? undefined
-              : !loadingEntity.loading && loadingEntity.data.name
-              ? loadingEntity.data.name
-              : address
-          }
-        >
-          <div
-            className="shrink-0 rounded-full bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${
-                loadingEntity.loading
-                  ? getFallbackImage(toBech32Hash(address))
-                  : toAccessibleImageUrl(loadingEntity.data.imageUrl)
-              })`,
-              width: imageSize,
-              height: imageSize,
-            }}
-          ></div>
-        </Tooltip>
-      )}
-
-      <CopyToClipboardUnderline
-        noCopy={noCopy}
-        takeStartEnd={{
-          start: 6,
-          end: 4,
-        }}
-        tooltip={
-          // If displaying name, show tooltip to copy address.
-          !loadingEntity.loading && loadingEntity.data.name && !noCopy
-            ? t('button.clickToCopyAddress')
-            : undefined
+      <Tooltip
+        title={
+          // Show text display tooltip if text is truncated.
+          truncated ? textDisplay : undefined
         }
-        {...{
-          ...copyToClipboardProps,
-          textClassName: clsx(
-            {
-              'text-sm': size === 'default',
-              'text-lg': size === 'lg',
-            },
-            copyToClipboardProps?.textClassName
-          ),
-        }}
-        className={clsx(
-          loadingEntity.loading && 'animate-pulse',
-          copyToClipboardProps?.className
-        )}
-        label={(!loadingEntity.loading && loadingEntity.data.name) || undefined}
-        // If name exists, use that. Otherwise, will fall back to truncated
-        // address display.
-        value={address}
-      />
-
-      {/* If entity is a DAO, add link to page. */}
-      {!loadingEntity.loading && loadingEntity.data.type === EntityType.Dao && (
-        <IconButtonLink
-          Icon={ArrowOutwardRounded}
-          href={getDaoPath(address)}
-          iconClassName="text-icon-tertiary"
+      >
+        <ButtonLink
+          className={clsx(loadingEntity.loading && 'animate-pulse')}
+          containerClassName="min-w-0"
+          href={href}
+          onClick={(e) => e.stopPropagation()}
           openInNewTab
-          size="xs"
-          variant="ghost"
-        />
+          variant={noUnderline ? 'none' : 'underline'}
+        >
+          {!hideImage && (
+            <div
+              className="shrink-0 rounded-full bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${
+                  loadingEntity.loading
+                    ? getFallbackImage(toBech32Hash(address))
+                    : toAccessibleImageUrl(loadingEntity.data.imageUrl)
+                })`,
+                width: imageSize,
+                height: imageSize,
+              }}
+            ></div>
+          )}
+
+          <p
+            className={clsx(
+              'min-w-0 truncate',
+              {
+                'text-sm': size === 'default',
+                'text-lg': size === 'lg',
+              },
+              textClassName
+            )}
+            ref={textRef}
+          >
+            {textDisplay}
+          </p>
+        </ButtonLink>
+      </Tooltip>
+
+      {!noCopy && (
+        <Tooltip title={t('button.copyAddress')}>
+          <IconButton
+            Icon={copied ? Check : CopyAllOutlined}
+            iconClassName="text-icon-tertiary"
+            onClick={(e) => {
+              e.stopPropagation()
+              navigator.clipboard.writeText(address)
+              setCopied(true)
+            }}
+            size="xs"
+            variant="ghost"
+          />
+        </Tooltip>
       )}
     </div>
   )

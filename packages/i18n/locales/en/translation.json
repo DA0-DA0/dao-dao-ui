@@ -59,6 +59,7 @@
     "continue": "Continue",
     "continueEditing": "Continue editing",
     "copy": "Copy",
+    "copyAddress": "Copy address",
     "copyAddressToClipboard": "Copy address to clipboard",
     "copyDaoAddress": "Copy DAO address",
     "copyToClipboard": "Copy to clipboard",
@@ -175,24 +176,24 @@
     "withdrawAvailableBalance": "Withdraw available balance",
     "withdrawFiat": "Withdraw fiat"
   },
-  "daoCreationAdapter": {
-    "DaoVotingCw20Staked": {
-      "description": "Fluid organization with many members who can join and leave as they wish. Members can alter their governance power and participation by exchanging tokens.",
-      "membership": "By staking tokens",
-      "name": "Token-based DAO",
-      "supplies": "Tokens"
-    },
-    "DaoVotingCw4": {
+  "daoCreator": {
+    "MembershipBased": {
       "description": "Small organization with a few members who are likely to stick around. Members can be added and removed by a vote of existing members.",
       "membership": "By invitation",
       "name": "Membership DAO (Multisig)",
       "supplies": "None"
     },
-    "DaoVotingCw721Staked": {
+    "NftBased": {
       "description": "Fluid organization with many members who can join and leave as they wish. Members can alter their governance power and participation by exchanging non-fungible tokens.",
       "membership": "By staking NFTs",
       "name": "Non-Fungible Token (NFT)-based DAO",
       "supplies": "Non-Fungible Tokens"
+    },
+    "TokenBased": {
+      "description": "Fluid organization with many members who can join and leave as they wish. Members can alter their governance power and participation by exchanging tokens.",
+      "membership": "By staking tokens",
+      "name": "Token-based DAO",
+      "supplies": "Tokens"
     }
   },
   "depositRefundPolicy": {
@@ -272,6 +273,7 @@
     "errorOccurredOnPage": "An error occurred on this page.",
     "failedParsingCoreVersion": "Failed to determine core version.",
     "failedToFindGovernanceProposal": "Failed to find governance proposal with ID {{id}}.",
+    "failedToGetFactoryTokenInfo": "Failed to get factory token info. Please enter a valid factory denom.",
     "failedToGetTokenInfo": "Failed to get token info. Please enter a valid {{tokenType}} contract address.",
     "failedToLoadMembersDescription": "Members failed to load. Check your internet connection or try again later.",
     "failedToLoadMembersTitle": "Failed to load members.",
@@ -292,6 +294,7 @@
     "logInToCreate": "Log in to create a DAO.",
     "logInToFollow": "Log in to follow a DAO.",
     "missingGovernanceTokenAddress": "Missing governance token address.",
+    "missingGovernanceTokenDenom": "Missing governance token denom.",
     "mustBeMemberToCreateCompensationCycle": "You must be a member of the DAO to create a compensation cycle.",
     "mustBeMemberToCreatePost": "You must be a member of the DAO to create a post.",
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
@@ -459,6 +462,7 @@
     "multipleChoiceOptionTitlePlaceholder": "Give your choice a title",
     "multipleChoiceTitle": "Multiple choice proposals",
     "name": "Name",
+    "nativeOrFactoryToken": "Native or factory token",
     "nftCollectionAddress": "NFT collection address",
     "nftMintInstructions": "Create a unique token ID for the NFT and enter the address of the initial owner below.",
     "nftUploadMetadataInstructions": "Input the NFT's metadata, and then press 'Upload' to store it on IPFS.",
@@ -854,6 +858,8 @@
     "token_one": "token",
     "token_other": "tokens",
     "tokens": "tokens",
+    "tokensWillBeSentToTreasury_dao": "These tokens will be sent to the DAO's treasury.",
+    "tokensWillBeSentToTreasury_wallet": "These tokens will be sent to your wallet.",
     "tokensWillBeSplitAmongContributors": "{{tokens}} will be split among contributors.",
     "tos": "DAO DAO TOOLING IS PROVIDED \"AS IS\", AT YOUR OWN RISK, AND WITHOUT WARRANTIES OF ANY KIND. No developer or entity involved in creating the DAO DAO UI or smart contracts will be liable for any claims or damages whatsoever associated with your use, inability to use, or your interaction with other users of DAO DAO tooling, including any direct, indirect, incidental, special, exemplary, punitive or consequential damages, or loss of profits, cryptocurrencies, tokens, or anything else of value.",
     "totalHoldings": "Total holdings",
@@ -885,7 +891,7 @@
     "upgradeToV2Explanation": "This upgrades your DAO's contracts to the latest audited version. Below you may register any SubDAOs that were created while this DAO was using v1. SubDAOs can use any version, but v2 is recommended.",
     "validatorActionsDescription": "Make transactions related to running a validator.",
     "verifyAddressMatches": "Verify that the following address matches the 'Send To' address in the widget below.",
-    "verifyingGovernanceToken": "Verifying CW20 token...",
+    "verifyingGovernanceToken": "Verifying governance token...",
     "vestingIsCancellableByOther": "This vesting payment can be cancelled by the following address after it's created.",
     "vestingIsCancellableByOwner_dao": "This vesting payment can be cancelled by the DAO after it's created.",
     "vestingIsCancellableByOwner_wallet": "You will be able to cancel this vesting payment after it's created.",
@@ -1067,6 +1073,7 @@
     "executeSmartContract": "Execute Smart Contract",
     "existingToken": "Existing token",
     "expires": "Expires",
+    "factoryToken": "Factory token",
     "featuredDaos": "Featured DAOs",
     "feeShare": "Fee share",
     "fiatOnOffRamp": "Fiat on/off ramp",

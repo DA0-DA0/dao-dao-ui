@@ -1,11 +1,18 @@
 import {
   AmountWithTimestampAndDenom,
   Duration,
+  DurationWithUnits,
   GenericToken,
   LoadingData,
 } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { Claim } from '@dao-dao/types/contracts/DaoVotingNativeStaked'
+
+export interface DaoCreationConfig {
+  denom: string
+  _tokenError?: string
+  unstakingDuration: DurationWithUnits
+}
 
 export interface UseStakingInfoOptions {
   fetchClaims?: boolean
