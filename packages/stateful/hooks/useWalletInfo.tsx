@@ -43,9 +43,13 @@ export const useWalletInfo = (): UseWalletReturn => {
     chain: { chain_id: chainId },
     nativeToken,
   } = useChainContext()
-  const { address, isWalletConnected, hexPublicKey } = useWallet()
+  const { address, isWalletConnected, hexPublicKey } = useWallet({
+    loadAccount: true,
+  })
   // TODO(cosmos-kit-dynamic-conn-fn): Replace this when cosmos-kit supports dynamic chain connection fn.
-  const junoWallet = useWallet(ChainId.JunoMainnet)
+  const junoWallet = useWallet({
+    chainId: ChainId.JunoMainnet,
+  })
 
   // Fetch wallet balance.
   const {

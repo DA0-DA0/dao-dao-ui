@@ -41,7 +41,9 @@ export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
-  const { hexPublicKey } = useWallet()
+  const { hexPublicKey } = useWallet({
+    loadAccount: true,
+  })
 
   const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))
   const postRequest = usePostRequest()

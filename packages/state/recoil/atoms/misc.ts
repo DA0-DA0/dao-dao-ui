@@ -37,4 +37,5 @@ export const updateProfileNftVisibleAtom = atom<boolean>({
 
 export const web3AuthPromptAtom = atom<Web3AuthPrompt | undefined>({
   key: 'web3AuthPrompt',
+  default: undefined,
 })

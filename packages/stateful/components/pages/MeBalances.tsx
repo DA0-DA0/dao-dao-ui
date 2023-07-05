@@ -20,7 +20,9 @@ import { WalletTokenLine } from '../WalletTokenLine'
 
 export const MeBalances = () => {
   const { chain_id: chainId } = useChain()
-  const { address: walletAddress, hexPublicKey } = useWallet()
+  const { address: walletAddress, hexPublicKey } = useWallet({
+    loadAccount: true,
+  })
 
   const tokensWithoutLazyInfo = useCachedLoading(
     walletAddress

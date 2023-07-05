@@ -234,7 +234,7 @@ const InnerStakingModal = ({
     <StatelessStakingModal
       amount={amount}
       claimableTokens={sumClaimsAvailable}
-      error={connected ? undefined : t('error.logInToContinue')}
+      error={isWalletConnected ? undefined : t('error.logInToContinue')}
       initialMode={initialMode}
       loading={stakingLoading}
       loadingStakableTokens={

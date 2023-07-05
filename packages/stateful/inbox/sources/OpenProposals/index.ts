@@ -18,7 +18,9 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
   Renderer: ProposalLine,
   useData: () => {
     const { chain_id: chainId } = useChain()
-    const { address, hexPublicKey } = useWallet()
+    const { address, hexPublicKey } = useWallet({
+      loadAccount: true,
+    })
 
     const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])

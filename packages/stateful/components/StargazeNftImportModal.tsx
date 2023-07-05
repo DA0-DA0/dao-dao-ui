@@ -26,7 +26,9 @@ export const InnerStargazeNftImportModal = ({
   const { t } = useTranslation()
   const { coreAddress, name: daoName } = useDaoInfoContext()
   const { getSigningCosmWasmClient, address: stargazeWalletAddress } =
-    useWallet(ChainId.StargazeMainnet)
+    useWallet({
+      chainId: ChainId.StargazeMainnet,
+    })
   const [selected, setSelected] = useState<string[]>([])
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`

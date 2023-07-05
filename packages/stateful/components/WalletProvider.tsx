@@ -27,7 +27,6 @@ import {
   SITE_URL,
   STARGAZE_REST_ENDPOINT,
   STARGAZE_RPC_ENDPOINT,
-  WC_ICON_PATH,
   WEB3AUTH_CLIENT_ID,
   getNativeTokenForChainId,
   maybeGetKeplrChainInfo,
@@ -119,6 +118,8 @@ export const WalletProvider = ({
       assetLists={assets}
       chains={chains}
       endpointOptions={{
+        // Disable endpoint validation.
+        isLazy: true,
         endpoints: {
           // Use environment variables to determine RPC/REST nodes.
           [currentChainInfo.chainName]: {
@@ -134,17 +135,14 @@ export const WalletProvider = ({
       signerOptions={signerOptions}
       walletConnectOptions={{
         signClient: {
-          projectId: '',
+          // https://cloud.walletconnect.com
+          projectId: '2021db728d55be8401efaf25f4e534cd',
           relayUrl: 'wss://relay.walletconnect.org',
           metadata: {
             name: t('meta.title'),
             description: t('meta.description'),
             url: SITE_URL,
-            icons: [
-              (typeof window === 'undefined'
-                ? SITE_URL
-                : window.location.origin) + WC_ICON_PATH,
-            ],
+            icons: ['https://daodao.zone/daodao.png'],
           },
         },
       }}

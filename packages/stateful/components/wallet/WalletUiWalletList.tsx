@@ -4,14 +4,24 @@ import { useTranslation } from 'react-i18next'
 
 import { Button, Tooltip, TooltipInfoIcon } from '@dao-dao/stateless'
 
-export const WalletUiWalletList = ({ walletRepo }: WalletModalProps) => {
+import { useWallet } from '../../hooks/useWallet'
+
+export type WalletUiWalletListProps = Pick<WalletModalProps, 'walletRepo'> & {
+  connect: (wallet: ChainWalletBase) => void
+}
+
+export const WalletUiWalletList = ({
+  walletRepo,
+  connect,
+}: WalletUiWalletListProps) => {
   const { t } = useTranslation()
+  const { isWalletConnecting } = useWallet()
 
   if (!walletRepo) {
     return null
   }
 
-  const { wallets, isWalletConnecting, current } = walletRepo
+  const { wallets, current } = walletRepo
 
   const web3AuthWallets = wallets.filter((wallet) =>
     wallet.walletName.startsWith('web3auth_')
@@ -34,7 +44,7 @@ export const WalletUiWalletList = ({ walletRepo }: WalletModalProps) => {
             // Disable if connecting to another wallet.
             isWalletConnecting && !isConnectingTo(wallet)
           }
-          onClick={() => wallet.connect()}
+          onClick={() => connect(wallet)}
           variant="secondary"
         >
           {!!wallet.walletInfo.logo && (
@@ -48,7 +58,15 @@ export const WalletUiWalletList = ({ walletRepo }: WalletModalProps) => {
 
           <div className="flex flex-col items-start gap-1">
             <p className="primary-text">{wallet.walletInfo.prettyName}</p>
-            <p className="caption-text">A Wallet</p>
+            <p className="caption-text">
+              {wallet.walletInfo.mode === 'extension'
+                ? t('title.extension')
+                : wallet.walletInfo.mode === 'wallet-connect'
+                ? t('title.walletConnect')
+                : wallet.walletInfo.mode === 'ledger'
+                ? t('title.ledger')
+                : ''}
+            </p>
           </div>
         </Button>
       ))}
@@ -89,7 +107,7 @@ export const WalletUiWalletList = ({ walletRepo }: WalletModalProps) => {
                     // Disable if connecting to another wallet.
                     isWalletConnecting && !isConnectingTo(wallet)
                   }
-                  onClick={() => wallet.connect()}
+                  onClick={() => connect(wallet)}
                   variant="secondary"
                 >
                   {!!wallet.walletInfo.logo && (

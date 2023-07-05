@@ -26,10 +26,11 @@ export const getPassthroughProps = <P extends ButtonifierProps>({
   focused: _focused,
   disabled,
   loading,
+  allowClickWhileLoading,
   ...props
 }: P) => ({
   ...props,
-  disabled: disabled || loading,
+  disabled: disabled || (!allowClickWhileLoading && loading),
 })
 
 export const getButtonifiedClassNames = ({
@@ -38,11 +39,12 @@ export const getButtonifiedClassNames = ({
   pressed,
   disabled,
   loading,
+  allowClickWhileLoading,
   circular,
   focused,
   className,
 }: ButtonifierProps) => {
-  const disabledOrLoading = disabled || loading
+  const disabledOrLoading = disabled || (!allowClickWhileLoading && loading)
 
   return clsx(
     'relative block transition-all focus:outline-2 focus:outline-background-button-disabled',

@@ -105,8 +105,12 @@ export const SelfRelayExecuteModal = ({
   // Call hook for every chain that needs to be relayed. These chains can never
   // change. The caller must enforce this.
   // TODO(cosmos-kit-dynamic-conn-fn): Remove this when cosmos-kit supports dynamic chain connection fn.
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  const wallets = chains.map((chain) => useWallet(chain.chain_id))
+  const wallets = chains.map((chain) =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useWallet({
+      chainId: chain.chain_id,
+    })
+  )
 
   const [status, setStatus] = useState<RelayStatus>(RelayStatus.Uninitialized)
   const [relayError, setRelayError] = useState<string>()

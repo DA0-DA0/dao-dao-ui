@@ -1,7 +1,7 @@
 // Constants NOT derived from environment variables.
 
 export const SITE_IMAGE = '/social.jpg'
-export const WC_ICON_PATH = '/walletconnect.png'
+export const WC_ICON_PATH = '/daodao.png'
 
 // 3 days
 export const POLYTONE_TIMEOUT_SECONDS = 3 * 24 * 60 * 60

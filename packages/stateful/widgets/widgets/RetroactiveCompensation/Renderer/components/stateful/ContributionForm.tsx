@@ -29,7 +29,9 @@ export const ContributionForm = () => {
     isWalletConnected,
     address: walletAddress = '',
     hexPublicKey,
-  } = useWallet()
+  } = useWallet({
+    loadAccount: true,
+  })
   const walletEntity = useEntity(walletAddress)
 
   const postRequest = usePostRequest()

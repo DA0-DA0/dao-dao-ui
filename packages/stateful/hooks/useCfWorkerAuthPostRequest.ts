@@ -11,7 +11,14 @@ export const useCfWorkerAuthPostRequest = (
   defaultSignatureType: string
 ) => {
   const { t } = useTranslation()
-  const { signAmino, chain, hexPublicKey, address: walletAddress } = useWallet()
+  const {
+    signAmino,
+    chain,
+    hexPublicKey,
+    address: walletAddress,
+  } = useWallet({
+    loadAccount: true,
+  })
 
   const ready = !hexPublicKey.loading && !!walletAddress
 

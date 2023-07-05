@@ -1,6 +1,9 @@
+import { useTranslation } from 'react-i18next'
+
 import {
   ConnectWalletProps,
   ConnectWallet as StatelessConnectWallet,
+  Tooltip,
 } from '@dao-dao/stateless'
 
 import { useWallet } from '../hooks/useWallet'
@@ -11,14 +14,20 @@ export type StatefulConnectWalletProps = Omit<
 >
 
 export const ConnectWallet = (props: StatefulConnectWalletProps) => {
-  const { connect, isWalletConnecting } = useWallet()
+  const { t } = useTranslation()
+  const { connect, disconnect, isWalletConnecting } = useWallet()
 
   return (
-    <StatelessConnectWallet
-      loading={isWalletConnecting}
-      onConnect={connect}
-      variant="primary"
-      {...props}
-    />
+    <Tooltip
+      title={isWalletConnecting ? t('button.stopConnecting') : undefined}
+    >
+      <StatelessConnectWallet
+        allowClickWhileLoading
+        loading={isWalletConnecting}
+        onConnect={isWalletConnecting ? disconnect : connect}
+        variant="primary"
+        {...props}
+      />
+    </Tooltip>
   )
 }

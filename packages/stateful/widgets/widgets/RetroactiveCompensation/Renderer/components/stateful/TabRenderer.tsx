@@ -24,7 +24,9 @@ import { OpenSurveySection } from './OpenSurveySection'
 export const TabRenderer = () => {
   const { coreAddress } = useDaoInfoContext()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
-  const { address: walletAddress = '', hexPublicKey } = useWallet()
+  const { address: walletAddress = '', hexPublicKey } = useWallet({
+    loadAccount: true,
+  })
   const { isMember = false } = useMembership({
     coreAddress,
   })

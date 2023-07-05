@@ -58,7 +58,10 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     address: walletAddress = '',
     hexPublicKey,
     getSigningCosmWasmClient,
-  } = useWallet(props.token.chainId)
+  } = useWallet({
+    chainId: props.token.chainId,
+    loadAccount: true,
+  })
 
   const { refreshBalances } = useWalletInfo()
 

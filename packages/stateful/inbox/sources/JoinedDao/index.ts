@@ -18,7 +18,9 @@ export const JoinedDao: InboxSource<Data> = {
   Renderer,
   useData: () => {
     const { chain_id: chainId } = useChain()
-    const { address, hexPublicKey } = useWallet()
+    const { address, hexPublicKey } = useWallet({
+      loadAccount: true,
+    })
 
     const temporary = useRecoilValue(
       temporaryFollowingDaosAtom(hexPublicKey.loading ? '' : hexPublicKey.data)

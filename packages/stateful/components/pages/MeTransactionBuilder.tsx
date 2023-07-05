@@ -40,7 +40,9 @@ export const MeTransactionBuilder = () => {
     address: walletAddress = '',
     hexPublicKey,
     getSigningCosmWasmClient,
-  } = useWallet()
+  } = useWallet({
+    loadAccount: true,
+  })
 
   const { loadedActions, categories } = useLoadedActionsAndCategories()
 

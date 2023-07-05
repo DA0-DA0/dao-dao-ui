@@ -23,6 +23,7 @@ export interface ButtonifierProps {
   center?: boolean
   circular?: boolean
   focused?: boolean
+  allowClickWhileLoading?: boolean
 }
 
 export type ButtonProps = ComponentPropsWithoutRef<'button'> & ButtonifierProps

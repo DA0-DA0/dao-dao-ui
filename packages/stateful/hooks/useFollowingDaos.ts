@@ -35,7 +35,9 @@ export type UseFollowingDaosReturn = {
 export const useFollowingDaos = (): UseFollowingDaosReturn => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { isWalletConnected, isWalletConnecting, hexPublicKey } = useWallet()
+  const { isWalletConnected, isWalletConnecting, hexPublicKey } = useWallet({
+    loadAccount: true,
+  })
 
   // Following API doesn't update right away, so this serves to keep track of
   // all successful updates for the current session. This will be reset on page
