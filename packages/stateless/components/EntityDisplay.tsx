@@ -1,4 +1,5 @@
 /* eslint-disable i18next/no-literal-string */
+import { fromBech32 } from '@cosmjs/encoding'
 import { Check, CopyAllOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
@@ -13,7 +14,7 @@ import {
   toBech32Hash,
 } from '@dao-dao/utils'
 
-import { useDaoNavHelpers } from '../hooks'
+import { useDaoNavHelpers, useDetectTruncate } from '../hooks'
 import { ButtonLink } from './buttons'
 import { IconButton } from './icon_buttons'
 import { Tooltip } from './tooltip/Tooltip'
@@ -49,58 +50,82 @@ export const EntityDisplay = ({
     ? getDaoPath(address)
     : WALLET_URL_PREFIX + address
 
+  const { textRef, truncated } = useDetectTruncate()
+
+  // Use bech32 prefix length to determine how much to truncate from beginning.
+  let prefixLength
+  try {
+    prefixLength = fromBech32(address).prefix.length
+  } catch (e) {
+    // Conservative estimate.
+    prefixLength = 6
+  }
+
+  // If name exists, use it. Otherwise, fallback to address, potentially
+  // truncated.
+  const textDisplay =
+    !loadingEntity.loading && loadingEntity.data.name
+      ? loadingEntity.data.name
+      : showFullAddress
+      ? address
+      : concatAddressStartEnd(address, prefixLength + 3, 3)
+
   return (
     <div
       className={clsx('flex min-w-0 flex-row items-center gap-2', className)}
     >
-      <ButtonLink
-        className={clsx(loadingEntity.loading && 'animate-pulse')}
-        href={href}
-        openInNewTab
-        variant={noUnderline ? 'none' : 'underline'}
+      <Tooltip
+        title={
+          // Show text display tooltip if text is truncated.
+          truncated ? textDisplay : undefined
+        }
       >
-        {!hideImage && (
-          <div
-            className="shrink-0 rounded-full bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${
-                loadingEntity.loading
-                  ? getFallbackImage(toBech32Hash(address))
-                  : toAccessibleImageUrl(loadingEntity.data.imageUrl)
-              })`,
-              width: imageSize,
-              height: imageSize,
-            }}
-          ></div>
-        )}
-
-        <p
-          className={clsx(
-            {
-              'text-sm': size === 'default',
-              'text-lg': size === 'lg',
-            },
-            textClassName
-          )}
+        <ButtonLink
+          className={clsx(loadingEntity.loading && 'animate-pulse')}
+          containerClassName="min-w-0"
+          href={href}
+          onClick={(e) => e.stopPropagation()}
+          openInNewTab
+          variant={noUnderline ? 'none' : 'underline'}
         >
-          {
-            // If name exists, use it. Otherwise, fall back to address,
-            // potentially truncated.
-            !loadingEntity.loading && loadingEntity.data.name
-              ? loadingEntity.data.name
-              : showFullAddress
-              ? address
-              : concatAddressStartEnd(address, 6, 4)
-          }
-        </p>
-      </ButtonLink>
+          {!hideImage && (
+            <div
+              className="shrink-0 rounded-full bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${
+                  loadingEntity.loading
+                    ? getFallbackImage(toBech32Hash(address))
+                    : toAccessibleImageUrl(loadingEntity.data.imageUrl)
+                })`,
+                width: imageSize,
+                height: imageSize,
+              }}
+            ></div>
+          )}
+
+          <p
+            className={clsx(
+              'min-w-0 truncate',
+              {
+                'text-sm': size === 'default',
+                'text-lg': size === 'lg',
+              },
+              textClassName
+            )}
+            ref={textRef}
+          >
+            {textDisplay}
+          </p>
+        </ButtonLink>
+      </Tooltip>
 
       {!noCopy && (
         <Tooltip title={t('button.copyAddress')}>
           <IconButton
             Icon={copied ? Check : CopyAllOutlined}
             iconClassName="text-icon-tertiary"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation()
               navigator.clipboard.writeText(address)
               setCopied(true)
             }}
