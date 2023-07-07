@@ -37,6 +37,7 @@ import {
   cwMsgToEncodeObject,
   getChainForChainId,
   getDisplayNameForChainId,
+  getFallbackImage,
   getImageUrlForChainId,
   getRpcForChainId,
   getTokenForChainIdAndDenom,
@@ -74,7 +75,6 @@ type Relayer = {
   polytoneNote?: PolytoneNote
 }
 
-// TODO: i18n
 export const SelfRelayExecuteModal = ({
   uniqueId,
   chainIds: _chainIds,
@@ -214,7 +214,7 @@ export const SelfRelayExecuteModal = ({
 
   const setupRelayer = async () => {
     if (status !== RelayStatus.Uninitialized) {
-      toast.error('Relayer already set up')
+      toast.error(t('error.relayerAlreadySetUp'))
       return
     }
 
@@ -227,21 +227,20 @@ export const SelfRelayExecuteModal = ({
 
       const relayers = await Promise.all(
         chains.map(async (chain): Promise<Relayer> => {
-          const chainImageUrl = getImageUrlForChainId(chain.chain_id)
-          if (!chainImageUrl) {
-            throw new Error('Chain image URL not found')
-          }
+          const chainImageUrl =
+            getImageUrlForChainId(chain.chain_id) ||
+            getFallbackImage(chain.chain_id)
 
           const feeToken = chain.fees?.fee_tokens[0]
           if (!feeToken) {
-            throw new Error('Fee token not found')
+            throw new Error(t('error.feeTokenNotFound'))
           }
 
           const polytoneNote = POLYTONE_NOTES[chain.chain_id]
           // Only the receiving chains need polytone notes. The current chain is
           // just responsible for sending.
           if (chain.chain_id !== currentChainId && !polytoneNote) {
-            throw new Error('Polytone note not found')
+            throw new Error(t('error.polytoneNoteNotFound'))
           }
 
           // Connect wallet to chain so we can send tokens.
@@ -296,24 +295,22 @@ export const SelfRelayExecuteModal = ({
   // Send fee tokens to relayer wallet.
   const fundRelayer = async (chainId: string, withExecuteRelay = false) => {
     if (!walletCanAffordAllRelayers) {
-      toast.error('Not enough funds in wallet')
+      toast.error(t('error.insufficientFunds'))
       return
     }
 
-    if (!relayers) {
-      toast.error('Relayer not set up')
-      return
-    }
-
-    const relayer = relayers.find(({ chain }) => chainId === chain.chain_id)
+    const relayer = relayers?.find(({ chain }) => chainId === chain.chain_id)
     if (!relayer) {
-      toast.error('Relayer not found')
+      toast.error(t('error.relayerNotSetUp'))
       return
     }
 
     // Should never happen, but just to be safe.
     if (withExecuteRelay && relayer.chain.chain_id !== currentChainId) {
-      toast.error('Relay can only happen when funding the current chain.')
+      toast.error(
+        t('error.unexpectedError') +
+          ' Relay can only happen when funding the current chain.'
+      )
       return
     }
 
@@ -393,7 +390,7 @@ export const SelfRelayExecuteModal = ({
         } else {
           const tx = await relayer.client.sign.getTx(transaction.hash)
           if (!tx) {
-            throw new Error('Transaction not found')
+            throw new Error(t('error.txNotFound'))
           }
 
           setExecuteTx(tx)
@@ -416,12 +413,12 @@ export const SelfRelayExecuteModal = ({
     const currentExecuteTx = _executeTx || executeTx
 
     if (!relayers || !mnemonicKey) {
-      toast.error('Relayer not set up')
+      toast.error(t('error.relayerNotSetUp'))
       return
     }
 
     if (!currentExecuteTx) {
-      toast.error('Execute TX not found')
+      toast.error(t('error.txNotFound'))
       return
     }
 
@@ -457,7 +454,7 @@ export const SelfRelayExecuteModal = ({
         // Type-check, should never happen since we slice off the first
         // (current chain) relayer, which is just responsible for sending.
         if (!polytoneNote) {
-          throw new Error('Polytone note not found')
+          throw new Error(t('error.polytoneNoteNotFound'))
         }
 
         // Get packets for this chain that need relaying.
@@ -513,9 +510,9 @@ export const SelfRelayExecuteModal = ({
             tries -= 1
 
             console.error(
-              `Failed to relay packets to ${chain.chain_id}.${
-                tries > 0 ? ' Trying again...' : ''
-              }`,
+              t('error.failedToRelayPackets', {
+                chain: chain.pretty_name,
+              }) + (tries > 0 ? ' ' + t('info.tryingAgain') : ''),
               err
             )
 
@@ -532,7 +529,7 @@ export const SelfRelayExecuteModal = ({
         // Type-check. Logic above should ensure it is defined or an error is
         // thrown.
         if (!acks) {
-          throw new Error('Failed to relay packets and get acks')
+          throw new Error(t('error.failedToRelayAndGetAcks'))
         }
 
         if (acks.length) {
@@ -554,9 +551,9 @@ export const SelfRelayExecuteModal = ({
               tries -= 1
 
               console.error(
-                `Failed to relay acks from ${chain.chain_id}.${
-                  tries > 0 ? ' Trying again...' : ''
-                }`,
+                t('error.failedToRelayAcks', {
+                  chain: chain.pretty_name,
+                }) + (tries > 0 ? ' ' + t('info.tryingAgain') : ''),
                 err
               )
 
@@ -594,7 +591,7 @@ export const SelfRelayExecuteModal = ({
   // Refund all relayers that have remaining tokens.
   const refundAllRelayers = async () => {
     if (!relayers || !mnemonicKey) {
-      toast.error('Relayer not set up')
+      toast.error(t('error.relayerNotSetUp'))
       return
     }
 
@@ -623,7 +620,7 @@ export const SelfRelayExecuteModal = ({
   const refundRelayer = async (chainId: string) => {
     const relayer = relayers?.find(({ chain }) => chain.chain_id === chainId)
     if (!relayer) {
-      toast.error('Relayer not found')
+      toast.error(t('error.relayerNotSetUp'))
       return
     }
 
@@ -631,7 +628,7 @@ export const SelfRelayExecuteModal = ({
 
     const feeDenom = chain.fees?.fee_tokens[0]?.denom
     if (!feeDenom) {
-      toast.error('Fee token not found')
+      toast.error(t('error.feeTokenNotFound'))
       return
     }
 
@@ -691,7 +688,7 @@ export const SelfRelayExecuteModal = ({
     <Modal
       containerClassName="w-full !max-w-lg"
       header={{
-        title: 'Relay',
+        title: t('title.relay'),
       }}
       onClose={
         // Only allow closing if execution and relaying has not begun. This
@@ -722,7 +719,7 @@ export const SelfRelayExecuteModal = ({
         }
         steps={[
           {
-            label: 'Start',
+            label: t('title.start'),
             content: () => (
               <div className="flex flex-col gap-4">
                 <p>
@@ -747,13 +744,13 @@ export const SelfRelayExecuteModal = ({
                   loading={status === RelayStatus.Initializing}
                   onClick={setupRelayer}
                 >
-                  Begin
+                  {t('button.begin')}
                 </Button>
               </div>
             ),
           },
           {
-            label: 'Fund and execute',
+            label: t('title.fundAndExecute'),
             // Show when this step is current or past. This makes sure the
             // funded balances are visible once the relayer is funded.
             overrideShowStepContentStatuses: ['current', 'past'],
@@ -846,18 +843,18 @@ export const SelfRelayExecuteModal = ({
                                 onClick={() => fundRelayer(chain_id, isExecute)}
                               >
                                 {walletCannotAfford
-                                  ? 'Insufficient funds'
+                                  ? t('error.insufficientFunds')
                                   : isExecute
                                   ? funded
                                     ? transaction.type === 'execute'
-                                      ? 'Execute'
-                                      : 'Relay'
+                                      ? t('button.execute')
+                                      : t('button.relay')
                                     : transaction.type === 'execute'
-                                    ? 'Fund and execute'
-                                    : 'Fund and relay'
+                                    ? t('button.fundAndExecute')
+                                    : t('button.fundAndRelay')
                                   : empty
-                                  ? 'Fund'
-                                  : 'Top up'}
+                                  ? t('button.fund')
+                                  : t('button.topUp')}
                               </Button>
                             </Tooltip>
                           ) : (
@@ -871,7 +868,7 @@ export const SelfRelayExecuteModal = ({
                                 symbol={feeToken.symbol}
                               />
 
-                              <Tooltip title="Funded">
+                              <Tooltip title={t('info.funded')}>
                                 <Check className="!h-4 !w-4 text-icon-interactive-valid" />
                               </Tooltip>
                             </div>
@@ -891,7 +888,7 @@ export const SelfRelayExecuteModal = ({
               status === RelayStatus.RelayErrored
                 ? '!bg-icon-interactive-error'
                 : undefined,
-            label: 'Relay',
+            label: t('title.relay'),
             content: () =>
               status === RelayStatus.RelayErrored ? (
                 <div className="flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
@@ -949,7 +946,7 @@ export const SelfRelayExecuteModal = ({
               ),
           },
           {
-            label: 'Refund',
+            label: t('title.refund'),
             // Show when this step is current or past. This makes sure the
             // refund balances are visible once the success step is reached.
             overrideShowStepContentStatuses: ['current', 'past'],
@@ -1046,7 +1043,7 @@ export const SelfRelayExecuteModal = ({
             ),
           },
           {
-            label: 'Success',
+            label: t('title.success'),
             content: () => (
               <div className="flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
                 <p>The execution and relay succeeded.</p>
