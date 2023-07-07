@@ -47,7 +47,6 @@ export const makeAppContextDecorator: (
             enabled: responsiveRightSidebarEnabled,
             toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
           },
-          web3AuthPrompt: undefined,
           pageHeaderRef,
           setPageHeaderRef,
           rightSidebarRef,

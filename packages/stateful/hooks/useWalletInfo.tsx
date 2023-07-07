@@ -20,7 +20,7 @@ import {
 import { walletProfileDataSelector } from '../recoil'
 import { useWallet } from './useWallet'
 
-export interface UseWalletReturn {
+export interface UseWalletInfoReturn {
   walletAddress: string | undefined
   walletHexPublicKey: string | undefined
   walletBalance: number | undefined
@@ -38,7 +38,7 @@ export interface UseWalletReturn {
   backupImageUrl: string
 }
 
-export const useWalletInfo = (): UseWalletReturn => {
+export const useWalletInfo = (): UseWalletInfoReturn => {
   const {
     chain: { chain_id: chainId },
     nativeToken,
