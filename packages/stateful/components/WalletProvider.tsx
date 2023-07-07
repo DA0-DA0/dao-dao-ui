@@ -1,11 +1,16 @@
 import { Chain } from '@chain-registry/types'
 import { GasPrice } from '@cosmjs/stargate'
 import { SignerOptions } from '@cosmos-kit/core'
+import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
 import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
 import { wallets as keplrMobileWallets } from '@cosmos-kit/keplr-mobile'
+import { wallets as leapWallets } from '@cosmos-kit/leap'
 import { ChainProvider } from '@cosmos-kit/react-lite'
+import { wallets as stationWallets } from '@cosmos-kit/station'
+import { wallets as trustWallets } from '@cosmos-kit/trust'
+import { wallets as vectisWallets } from '@cosmos-kit/vectis'
+import { PromptSign, makeWeb3AuthWallets } from '@cosmos-kit/web3auth'
 import { ChainInfo } from '@keplr-wallet/types'
-import { PromptSign } from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
 import { assets, chains } from 'chain-registry'
 import {
   Dispatch,
@@ -13,6 +18,7 @@ import {
   ReactNode,
   SetStateAction,
   useEffect,
+  useMemo,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
@@ -66,22 +72,52 @@ export const WalletProvider = ({
 }: WalletProviderProps) => {
   const { t } = useTranslation()
 
-  const web3AuthWalletOptions = Object.freeze({
-    client: {
-      clientId: WEB3AUTH_CLIENT_ID,
-      web3AuthNetwork: MAINNET ? 'cyan' : 'testnet',
-    },
-    promptSign: (...params: Parameters<PromptSign>): Promise<boolean> =>
-      new Promise((resolve) =>
-        setWeb3AuthPrompt({
-          signData: params[1],
-          resolve: (approved) => {
-            setWeb3AuthPrompt(undefined)
-            resolve(approved)
+  // Google, Apple, Discord, Twitter
+  const web3AuthWallets = useMemo(
+    () =>
+      makeWeb3AuthWallets({
+        loginMethods: [
+          {
+            provider: 'google',
+            name: 'Google',
+            logo: 'https://bafkreihcbb7vqxb3ee52kn5fnsf4rzqtjru5n6q2k4ungbw7k3ljpnhhvm.ipfs.nftstorage.link/',
           },
-        })
-      ),
-  })
+          {
+            provider: 'apple',
+            name: 'Apple',
+            logo: 'https://bafkreih5fbwcnzq4xmarrgcf5wkr5mpx5gfia2loj5fruaa542v7kwv5iq.ipfs.nftstorage.link/',
+          },
+          {
+            provider: 'discord',
+            name: 'Discord',
+            logo: 'https://bafkreifssoo7ljepiix4tvrpe4gbqlyhwx6vu6rtir4ou45pj7nv5mjnhm.ipfs.nftstorage.link/',
+          },
+          {
+            provider: 'twitter',
+            name: 'Twitter',
+            logo: 'https://bafkreibfs3mpmwmaxqakpkpss7pjoe4tl2td3ghxt2mi75pyvrm47qn4jy.ipfs.nftstorage.link/',
+          },
+        ],
+        client: {
+          clientId: WEB3AUTH_CLIENT_ID,
+          web3AuthNetwork: MAINNET ? 'cyan' : 'testnet',
+          chainConfig: {
+            chainNamespace: 'other',
+          },
+        },
+        promptSign: (...params: Parameters<PromptSign>): Promise<boolean> =>
+          new Promise((resolve) =>
+            setWeb3AuthPrompt({
+              signData: params[1],
+              resolve: (approved) => {
+                setWeb3AuthPrompt(undefined)
+                resolve(approved)
+              },
+            })
+          ),
+      }),
+    [setWeb3AuthPrompt]
+  )
 
   const getSignerOptions = ({ chain_id, fees }: Chain) => {
     let gasPrice
@@ -149,10 +185,15 @@ export const WalletProvider = ({
       walletModal={WalletUi}
       wallets={[
         ...keplrExtensionWallets,
-        // TODO: Add all the other wallets.
         // Only allow Keplr Mobile on mainnet since it can't use testnet.
         ...(MAINNET ? keplrMobileWallets : []),
-        // TODO: Add web3auth (Google, Apple, Discord, Twitter).
+        ...leapWallets,
+        ...stationWallets,
+        ...vectisWallets,
+        ...trustWallets,
+        ...cosmostationWallets,
+        // Google, Apple, Discord, Twitter
+        ...web3AuthWallets,
       ]}
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>
