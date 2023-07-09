@@ -3596,7 +3596,7 @@
   uid "190a96d6f2281340c9ac8f64b3433040390f476b"
   resolved "https://gitpkg.now.sh/NoahSaso/cosmos-kit/wallets/web3auth?dc9a72cc569503040fe9ba46538249e0f9ffcf23#190a96d6f2281340c9ac8f64b3433040390f476b"
   dependencies:
-    "@cosmos-kit/core" "^2.0.0"
+    "@cosmos-kit/core" "^1.7.1"
     "@solana/web3.js" "^1.77.3"
     "@toruslabs/eccrypto" "^2.1.1"
     "@web3auth/base" "^5.1.0"
