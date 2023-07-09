@@ -9,7 +9,7 @@
   "devDependencies": {
     "@chain-registry/types": "^0.16.0",
     "@cosmjs/cosmwasm-stargate": "^0.30.1",
-    "@cosmos-kit/web3auth": "https://gitpkg.now.sh/cosmology-tech/cosmos-kit/wallets/web3auth?2e7c120798b909e9d46c409d307f454cf769eb27",
+    "@cosmos-kit/web3auth": "https://gitpkg.now.sh/cosmology-tech/cosmos-kit/wallets/web3auth?789415ee20a9e7f619668d5b7274959c82145b4f",
     "@dao-dao/config": "2.2.0",
     "next-i18next": "^11.0.0",
     "pusher-js": "^7.6.0",
