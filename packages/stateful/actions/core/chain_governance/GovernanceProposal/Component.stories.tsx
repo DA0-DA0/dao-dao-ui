@@ -3,6 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 import { GovernanceProposalType } from '@dao-dao/types'
 
+import { AddressInput } from '../../../../components/AddressInput'
 import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
 import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
 import { GovernanceProposalComponent } from './Component'
@@ -34,7 +35,13 @@ Default.args = {
         denom: 'ujunox',
       },
     ],
-    amount: [],
+    spends: [
+      {
+        amount: '100000000',
+        denom: 'ujunox',
+      },
+    ],
+    spendRecipient: 'junoRecipient',
     parameterChanges: JSON.stringify([]),
     upgradePlan: JSON.stringify(
       {
@@ -54,5 +61,6 @@ Default.args = {
     minDeposits: { loading: false, data: [] },
     PayEntityDisplay,
     TokenAmountDisplay,
+    AddressInput,
   },
 }

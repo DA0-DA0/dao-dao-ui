@@ -18,7 +18,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodeGovProposalContent,
   encodeRawProtobufMsg,
@@ -27,6 +26,7 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { AddressInput } from '../../../../components/AddressInput'
 import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
 import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
 import { useActionOptions } from '../../../react'
@@ -79,6 +79,7 @@ const Component: ActionComponent<undefined, GovernanceProposalData> = (
               },
         PayEntityDisplay,
         TokenAmountDisplay,
+        AddressInput,
       }}
     />
   )
@@ -151,18 +152,16 @@ export const makeGovernanceProposalAction: ActionMaker<
               },
             ]
           : [],
-      amount:
+      spends:
         deposit && !minDeposits.loading
           ? [
               {
                 denom: deposit.denom,
-                amount: convertDenomToMicroDenomWithDecimals(
-                  1000,
-                  minDeposits.data[0].decimals
-                ).toString(),
+                amount: '1000',
               },
             ]
           : [],
+      spendRecipient: address,
       parameterChanges: defaultParameterChanges,
       upgradePlan: defaultPlan,
     }
@@ -177,7 +176,8 @@ export const makeGovernanceProposalAction: ActionMaker<
         title,
         description,
         deposit,
-        amount,
+        spends,
+        spendRecipient,
         parameterChanges,
         upgradePlan,
       }) => {
@@ -188,11 +188,11 @@ export const makeGovernanceProposalAction: ActionMaker<
               ? ({
                   title,
                   description,
-                  amount: amount.map(({ amount, denom }) => ({
+                  amount: spends.map(({ amount, denom }) => ({
                     denom,
                     amount: amount.toString(),
                   })),
-                  recipient: address,
+                  recipient: spendRecipient,
                 } as CommunityPoolSpendProposal)
               : type === GovernanceProposalType.ParameterChangeProposal
               ? ({
@@ -263,11 +263,16 @@ export const makeGovernanceProposalAction: ActionMaker<
         title: decodedContent.value.title,
         description: decodedContent.value.description,
         deposit: msg.stargate.value.initialDeposit,
-        amount:
+        spends:
           decodedContent.typeUrl ===
           GovernanceProposalType.CommunityPoolSpendProposal
             ? decodedContent.value.amount
             : [],
+        spendRecipient:
+          decodedContent.typeUrl ===
+          GovernanceProposalType.CommunityPoolSpendProposal
+            ? decodedContent.value.recipient
+            : address,
         parameterChanges:
           decodedContent.typeUrl ===
           GovernanceProposalType.ParameterChangeProposal

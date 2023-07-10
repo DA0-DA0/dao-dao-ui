@@ -492,6 +492,7 @@
     "proposalsDescriptionPlaceholder": "Give your proposal a description...",
     "proposalsName": "Proposal's name",
     "proposalsNamePlaceholder": "Give your proposal a name",
+    "proposedSpends": "Proposed spends",
     "quorumDescription": "The minimum percentage of voting power that must vote on a proposal for it to be considered. For example, in the US House of Representatives, 218 members must be present for a vote. If you have a DAO with many inactive members, setting this value too high may make it difficult to pass proposals.",
     "quorumTitle": "Quorum",
     "ratingInstructionsPlaceholder": "This is what DAO members will see when they are rating the contributions. Explain how they should rate.",

@@ -17,6 +17,7 @@ import {
   TokenInput,
 } from '@dao-dao/stateless'
 import {
+  AddressInputProps,
   GenericToken,
   GenericTokenBalance,
   GovernanceProposalType,
@@ -27,9 +28,9 @@ import {
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
   NATIVE_TOKEN,
-  convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   ibcAssets,
+  validateAddress,
   validateJSON,
   validateRequired,
 } from '@dao-dao/utils'
@@ -40,6 +41,7 @@ export type GovernanceProposalOptions = {
   minDeposits: LoadingData<GenericTokenBalance[]>
   PayEntityDisplay: ComponentType<StatefulPayEntityDisplayProps>
   TokenAmountDisplay: ComponentType<StatefulTokenAmountDisplayProps>
+  AddressInput: ComponentType<AddressInputProps<GovernanceProposalData>>
 }
 
 export type GovernanceProposalData = {
@@ -48,7 +50,8 @@ export type GovernanceProposalData = {
   description: string
   deposit: Coin[]
   // GovernanceProposalType.CommunityPoolSpendProposal
-  amount: Coin[]
+  spends: Coin[]
+  spendRecipient: string
   // GovernanceProposalType.ParameterChangeProposal
   parameterChanges: string
   // GovernanceProposalType.SoftwareUpgradeProposal
@@ -62,7 +65,7 @@ export const GovernanceProposalComponent: ActionComponent<
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { minDeposits, PayEntityDisplay, TokenAmountDisplay },
+  options: { minDeposits, PayEntityDisplay, TokenAmountDisplay, AddressInput },
   data,
 }) => {
   const { address } = useActionOptions()
@@ -77,12 +80,12 @@ export const GovernanceProposalComponent: ActionComponent<
       )
 
   const {
-    fields: amountFields,
-    append: appendCoin,
-    remove: removeCoin,
+    fields: spendFields,
+    append: appendSpend,
+    remove: removeSpend,
   } = useFieldArray({
     control,
-    name: (fieldNamePrefix + 'amount') as 'amount',
+    name: (fieldNamePrefix + 'spends') as 'spends',
   })
 
   const availableTokens: GenericToken[] = [
@@ -149,7 +152,7 @@ export const GovernanceProposalComponent: ActionComponent<
           <div className="space-y-1">
             <InputLabel name={t('form.initialDeposit')} />
             <TokenInput
-              amountError={errors?.amount}
+              amountError={errors?.deposit?.[0]?.amount}
               amountFieldName={
                 (fieldNamePrefix + 'deposit.0.amount') as 'deposit.0.amount'
               }
@@ -185,82 +188,94 @@ export const GovernanceProposalComponent: ActionComponent<
           </div>
 
           {data.type === GovernanceProposalType.CommunityPoolSpendProposal && (
-            <div className="flex flex-col gap-1">
-              <InputLabel name={t('form.funds')} />
+            <>
+              <div className="flex flex-col gap-1">
+                <InputLabel name={t('form.recipient')} />
+                <AddressInput
+                  disabled={!isCreating}
+                  error={errors?.spendRecipient}
+                  fieldName={
+                    (fieldNamePrefix + 'spendRecipient') as 'spendRecipient'
+                  }
+                  register={register}
+                  validation={[validateRequired, validateAddress]}
+                />
+                <InputErrorMessage error={errors?.spendRecipient} />
+              </div>
 
-              <div className="flex flex-row flex-wrap items-end justify-between gap-6">
-                <div className="flex grow flex-col gap-1">
-                  <div className="flex flex-col items-stretch gap-2">
-                    {amountFields.map(({ id, denom }, index) => {
-                      const selectedToken = availableTokens.find(
-                        ({ denomOrAddress }) => denomOrAddress === denom
-                      )
-                      if (!selectedToken) {
-                        return null
-                      }
+              <div className="flex flex-col gap-1">
+                <InputLabel name={t('form.proposedSpends')} />
 
-                      return (
-                        <div
-                          key={id}
-                          className="flex flex-row items-center justify-between gap-2"
-                        >
-                          <TokenInput
-                            amountError={errors?.depositInfo?.amount}
-                            amountFieldName={
-                              (fieldNamePrefix +
-                                `amount.${index}.amount`) as `amount.${number}.amount`
-                            }
-                            amountStep={convertMicroDenomToDenomWithDecimals(
-                              1,
-                              selectedToken.decimals
-                            )}
-                            containerClassName="grow"
-                            convertMicroDenom
-                            onSelectToken={({ denomOrAddress }) =>
-                              setValue(
-                                (fieldNamePrefix +
-                                  `amount.${index}.denom`) as `amount.${number}.denom`,
-                                denomOrAddress
-                              )
-                            }
-                            register={register}
-                            selectedToken={selectedToken}
-                            setValue={setValue}
-                            tokens={{ loading: false, data: availableTokens }}
-                            watch={watch}
-                          />
-
-                          <IconButton
-                            Icon={Close}
-                            onClick={() => removeCoin(index)}
-                            size="sm"
-                            variant="ghost"
-                          />
-                        </div>
-                      )
-                    })}
-
-                    {isCreating && (
-                      <Button
-                        className="self-start"
-                        onClick={() =>
-                          appendCoin({
-                            amount: convertDenomToMicroDenomWithDecimals(
-                              1,
-                              NATIVE_TOKEN.decimals
-                            ).toString(),
-                            denom: NATIVE_TOKEN.denomOrAddress,
-                          })
+                <div className="flex flex-row flex-wrap items-end justify-between gap-6">
+                  <div className="flex grow flex-col gap-1">
+                    <div className="flex flex-col items-stretch gap-2">
+                      {spendFields.map(({ id, denom }, index) => {
+                        const selectedToken = availableTokens.find(
+                          ({ denomOrAddress }) => denomOrAddress === denom
+                        )
+                        if (!selectedToken) {
+                          return null
                         }
-                        variant="secondary"
-                      >
-                        {t('button.addPayment')}
-                      </Button>
-                    )}
+
+                        return (
+                          <div
+                            key={id}
+                            className="flex flex-row items-center gap-2"
+                          >
+                            <TokenInput
+                              amountError={errors?.spends?.[index]?.amount}
+                              amountFieldName={
+                                (fieldNamePrefix +
+                                  `spends.${index}.amount`) as `spends.${number}.amount`
+                              }
+                              amountStep={convertMicroDenomToDenomWithDecimals(
+                                1,
+                                selectedToken.decimals
+                              )}
+                              convertMicroDenom
+                              onSelectToken={({ denomOrAddress }) =>
+                                setValue(
+                                  (fieldNamePrefix +
+                                    `spends.${index}.denom`) as `spends.${number}.denom`,
+                                  denomOrAddress
+                                )
+                              }
+                              register={register}
+                              selectedToken={selectedToken}
+                              setValue={setValue}
+                              tokens={{ loading: false, data: availableTokens }}
+                              watch={watch}
+                            />
+
+                            <IconButton
+                              Icon={Close}
+                              onClick={() => removeSpend(index)}
+                              size="sm"
+                              variant="ghost"
+                            />
+                          </div>
+                        )
+                      })}
+
+                      {isCreating && (
+                        <Button
+                          className="self-start"
+                          onClick={() =>
+                            appendSpend({
+                              amount: '1',
+                              denom: NATIVE_TOKEN.denomOrAddress,
+                            })
+                          }
+                          variant="secondary"
+                        >
+                          {t('button.addPayment')}
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </>
           )}
 
           {data.type === GovernanceProposalType.ParameterChangeProposal && (
