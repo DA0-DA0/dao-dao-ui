@@ -125,6 +125,10 @@ export const BallotDepositEmoji = () => (
   <EmojiWrapper emoji="🗳️" labelI18nKey="emoji.ballotBox" />
 )
 
+export const RaisedHandEmoji = () => (
+  <EmojiWrapper emoji="✋" labelI18nKey="emoji.raisedHand" />
+)
+
 export const HourglassEmoji = () => (
   <EmojiWrapper emoji="⏳" labelI18nKey="emoji.hourglass" />
 )

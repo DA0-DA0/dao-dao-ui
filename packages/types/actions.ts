@@ -42,6 +42,7 @@ export enum ActionKey {
   WithdrawTokenSwap = 'withdrawTokenSwap',
   ManageStorageItems = 'manageStorageItems',
   GovernanceVote = 'governanceVote',
+  GovernanceProposal = 'governanceProposal',
   UpgradeV1ToV2 = 'upgradeV1ToV2',
   EnableVestingPayments = 'enableVestingPayments',
   EnableRetroactiveCompensation = 'enableRetroactiveCompensation',
