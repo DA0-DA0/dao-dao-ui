@@ -92,10 +92,9 @@ export const GovernanceVoteComponent: ActionComponent<
                 value={proposal.proposalId.toString()}
               >
                 #{proposal.proposalId.toString()}
-                {!!proposal.decodedContent &&
-                  'title' in proposal.decodedContent &&
-                  typeof proposal.decodedContent.title === 'string' &&
-                  ' ' + proposal.decodedContent.title}
+                {'title' in proposal.decodedContent.value &&
+                  typeof proposal.decodedContent.value.title === 'string' &&
+                  ' ' + proposal.decodedContent.value.title}
               </option>
             ))}
           </SelectInput>
