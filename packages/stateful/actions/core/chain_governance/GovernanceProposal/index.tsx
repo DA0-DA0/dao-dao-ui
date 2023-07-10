@@ -18,6 +18,8 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  convertDenomToMicroDenomWithDecimals,
+  convertMicroDenomToDenomWithDecimals,
   decodeGovProposalContent,
   encodeRawProtobufMsg,
   isDecodedStargateMsg,
@@ -114,16 +116,53 @@ export const makeGovernanceProposalAction: ActionMaker<
       }),
       undefined
     )
+    const minDeposits = useCachedLoading(
+      govParams.loading || !govParams.data
+        ? undefined
+        : waitForAll(
+            govParams.data.depositParams.minDeposit.map(({ denom }) =>
+              genericTokenSelector({
+                type: TokenType.Native,
+                denomOrAddress: denom,
+              })
+            )
+          ),
+      []
+    )
+
+    const deposit =
+      minDeposits.loading || govParams.loading || !govParams.data
+        ? undefined
+        : govParams.data.depositParams.minDeposit[0]
 
     return {
       type: GovernanceProposalType.TextProposal,
       title: '',
       description: '',
       deposit:
-        govParams.loading || !govParams.data
-          ? []
-          : [{ ...govParams.data.depositParams.minDeposit[0] }],
-      amount: [],
+        deposit && !minDeposits.loading
+          ? [
+              {
+                denom: deposit.denom,
+                amount: convertMicroDenomToDenomWithDecimals(
+                  deposit.amount,
+                  minDeposits.data[0].decimals
+                ).toString(),
+              },
+            ]
+          : [],
+      amount:
+        deposit && !minDeposits.loading
+          ? [
+              {
+                denom: deposit.denom,
+                amount: convertDenomToMicroDenomWithDecimals(
+                  1000,
+                  minDeposits.data[0].decimals
+                ).toString(),
+              },
+            ]
+          : [],
       parameterChanges: defaultParameterChanges,
       upgradePlan: defaultPlan,
     }
@@ -142,51 +181,47 @@ export const makeGovernanceProposalAction: ActionMaker<
         parameterChanges,
         upgradePlan,
       }) => {
-        const content = encodeRawProtobufMsg(
-          type === GovernanceProposalType.CommunityPoolSpendProposal
-            ? {
-                typeUrl: type,
-                value: {
+        const content = encodeRawProtobufMsg({
+          typeUrl: type,
+          value:
+            type === GovernanceProposalType.CommunityPoolSpendProposal
+              ? ({
                   title,
                   description,
-                  amount,
+                  amount: amount.map(({ amount, denom }) => ({
+                    denom,
+                    amount: amount.toString(),
+                  })),
                   recipient: address,
-                } as CommunityPoolSpendProposal,
-              }
-            : type === GovernanceProposalType.ParameterChangeProposal
-            ? {
-                typeUrl: type,
-                value: {
+                } as CommunityPoolSpendProposal)
+              : type === GovernanceProposalType.ParameterChangeProposal
+              ? ({
                   title,
                   description,
                   changes: JSON.parse(parameterChanges),
-                } as ParameterChangeProposal,
-              }
-            : type === GovernanceProposalType.SoftwareUpgradeProposal
-            ? {
-                typeUrl: type,
-                value: {
+                } as ParameterChangeProposal)
+              : type === GovernanceProposalType.SoftwareUpgradeProposal
+              ? ({
                   title,
                   description,
                   plan: JSON.parse(upgradePlan),
-                } as SoftwareUpgradeProposal,
-              }
-            : // Default to text proposal.
-              {
-                typeUrl: type,
-                value: {
+                } as SoftwareUpgradeProposal)
+              : // Default to text proposal.
+                ({
                   title,
                   description,
-                } as TextProposal,
-              }
-        )
+                } as TextProposal),
+        })
 
         return makeStargateMessage({
           stargate: {
             typeUrl: SUBMIT_PROPOSAL_TYPE_URL,
             value: {
               content,
-              initialDeposit: deposit,
+              initialDeposit: deposit.map(({ amount, denom }) => ({
+                amount: amount.toString(),
+                denom,
+              })),
               proposer: address,
             } as MsgSubmitProposal,
           },
