@@ -170,7 +170,7 @@ export const GovernanceProposal = ({
           GovernanceProposalType.CommunityPoolSpendProposal && (
           <div className="space-y-3">
             <p className="text-text-tertiary">
-              {t('info.communityPoolSpendProposal')}
+              {t('govProposalType.CommunityPoolSpendProposal')}
             </p>
 
             <PayEntityDisplay
