@@ -36,6 +36,10 @@ export const TokenAmountDisplay = ({
           ? 0
           : loadingGenericToken.data.decimals
       }
+      iconUrl={
+        (!loadingGenericToken.loading && loadingGenericToken.data?.imageUrl) ||
+        undefined
+      }
       symbol={
         loadingGenericToken.loading || !loadingGenericToken.data
           ? '...'
