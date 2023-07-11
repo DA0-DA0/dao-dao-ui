@@ -352,7 +352,6 @@ export const GovernanceProposalComponent: ActionComponent<
             },
           }}
           deposit={data.deposit}
-          status="pending"
         />
       )}
     </>

@@ -190,7 +190,7 @@ export const makeGovernanceProposalAction: ActionMaker<
                   description,
                   amount: spends.map(({ amount, denom }) => ({
                     denom,
-                    amount: amount.toString(),
+                    amount: BigInt(amount).toString(),
                   })),
                   recipient: spendRecipient,
                 } as CommunityPoolSpendProposal)
@@ -219,7 +219,7 @@ export const makeGovernanceProposalAction: ActionMaker<
             value: {
               content,
               initialDeposit: deposit.map(({ amount, denom }) => ({
-                amount: amount.toString(),
+                amount: BigInt(amount).toString(),
                 denom,
               })),
               proposer: address,

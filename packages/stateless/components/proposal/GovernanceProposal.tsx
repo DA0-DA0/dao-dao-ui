@@ -34,7 +34,7 @@ import {
 export type GovernanceProposalProps = {
   // Defined if created. Adds external link to proposal and displays ID.
   id?: string
-  status: ProposalStatus | 'pending'
+  status?: ProposalStatus | 'pending'
   content: GovProposalWithDecodedContent['decodedContent']
   deposit: Coin[]
   startDate?: Date
@@ -69,6 +69,61 @@ export const GovernanceProposal = ({
       ? content.value.description
       : undefined
 
+  const info = [
+    ...(status
+      ? ([
+          {
+            Icon: RotateRightOutlined,
+            label: t('title.status'),
+            Value: (props) => (
+              <p {...props}>{t(PROPOSAL_STATUS_I18N_KEY_MAP[status])}</p>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : []),
+    ...(startDate
+      ? ([
+          {
+            Icon: TimelapseRounded,
+            label: t('title.votingOpened'),
+            Value: (props) => (
+              <p {...props}>
+                {typeof startDate === 'string'
+                  ? startDate
+                  : formatDateTimeTz(startDate)}
+              </p>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : []),
+    // If open for voting, show relative time until end.
+    ...(endDate
+      ? status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD ||
+        status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
+        ? ([
+            {
+              Icon: HourglassTopRounded,
+              label: t('title.timeLeft'),
+              Value: (props) => (
+                <Tooltip title={endDate}>
+                  <p {...props}>
+                    <TimeAgo date={endDate} formatter={timeAgoFormatter} />
+                  </p>
+                </Tooltip>
+              ),
+            },
+          ] as ProposalStatusAndInfoProps['info'])
+        : // If closed, show end date.
+          ([
+            {
+              Icon: TimerRounded,
+              label: t('title.votingClosed'),
+              Value: (props) => <p {...props}>{formatDateTimeTz(endDate)}</p>,
+            },
+          ] as ProposalStatusAndInfoProps['info'])
+      : []),
+  ]
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-row items-center gap-4">
@@ -86,65 +141,9 @@ export const GovernanceProposal = ({
         )}
       </div>
 
-      <ProposalStatusAndInfo
-        className="max-w-max"
-        info={[
-          {
-            Icon: RotateRightOutlined,
-            label: t('title.status'),
-            Value: (props) => (
-              <p {...props}>{t(PROPOSAL_STATUS_I18N_KEY_MAP[status])}</p>
-            ),
-          },
-          ...(startDate
-            ? ([
-                {
-                  Icon: TimelapseRounded,
-                  label: t('title.votingOpened'),
-                  Value: (props) => (
-                    <p {...props}>
-                      {typeof startDate === 'string'
-                        ? startDate
-                        : formatDateTimeTz(startDate)}
-                    </p>
-                  ),
-                },
-              ] as ProposalStatusAndInfoProps['info'])
-            : []),
-          // If open for voting, show relative time until end.
-          ...(endDate
-            ? status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD ||
-              status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
-              ? ([
-                  {
-                    Icon: HourglassTopRounded,
-                    label: t('title.timeLeft'),
-                    Value: (props) => (
-                      <Tooltip title={endDate}>
-                        <p {...props}>
-                          <TimeAgo
-                            date={endDate}
-                            formatter={timeAgoFormatter}
-                          />
-                        </p>
-                      </Tooltip>
-                    ),
-                  },
-                ] as ProposalStatusAndInfoProps['info'])
-              : // If closed, show end date.
-                ([
-                  {
-                    Icon: TimerRounded,
-                    label: t('title.votingClosed'),
-                    Value: (props) => (
-                      <p {...props}>{formatDateTimeTz(endDate)}</p>
-                    ),
-                  },
-                ] as ProposalStatusAndInfoProps['info'])
-            : []),
-        ]}
-        inline
-      />
+      {info.length > 0 && (
+        <ProposalStatusAndInfo className="max-w-max" info={info} inline />
+      )}
 
       {!!description && (
         <MarkdownRenderer
