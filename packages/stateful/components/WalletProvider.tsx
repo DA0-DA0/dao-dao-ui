@@ -1,4 +1,3 @@
-import { Chain } from '@chain-registry/types'
 import { GasPrice } from '@cosmjs/stargate'
 import { SignerOptions } from '@cosmos-kit/core'
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
@@ -119,7 +118,9 @@ export const WalletProvider = ({
     [setWeb3AuthPrompt]
   )
 
-  const getSignerOptions = ({ chain_id, fees }: Chain) => {
+  const getSignerOptions:
+    | SignerOptions['signingStargate']
+    | SignerOptions['signingCosmwasm'] = ({ chain_id, fees }) => {
     let gasPrice
     try {
       const nativeToken = getNativeTokenForChainId(chain_id)
