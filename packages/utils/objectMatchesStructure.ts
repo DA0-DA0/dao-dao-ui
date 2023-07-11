@@ -4,7 +4,7 @@ type Structure = {
 }
 
 // Check if object contains the expected structure.
-export const objectMatchesStructure = (
+export const objectMatchesStructure = <T extends Record<string, any>>(
   object: any | undefined | null,
   structure: Structure,
   options: {
@@ -13,7 +13,7 @@ export const objectMatchesStructure = (
   } = {
     ignoreNullUndefined: true,
   }
-): boolean => {
+): object is T => {
   if (!object || typeof object !== 'object' || Array.isArray(object)) {
     return false
   }

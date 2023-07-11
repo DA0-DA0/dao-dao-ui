@@ -616,3 +616,30 @@ export const isDecodedStargateMsg = (msg: any): msg is DecodedStargateMsg =>
       value: {},
     },
   }) && typeof msg.stargate.value === 'object'
+
+// Decode any nested protobufs into JSON.
+export const decodeNestedProtobufs = (msg: any): any =>
+  typeof msg !== 'object' || msg === null
+    ? msg
+    : Array.isArray(msg)
+    ? msg.map(decodeNestedProtobufs)
+    : Object.entries(msg).reduce((acc, [key, value]) => {
+        let decodedValue = value
+        try {
+          if (
+            objectMatchesStructure<Any>(value, {
+              typeUrl: {},
+              value: {},
+            }) &&
+            typeof value.typeUrl === 'string' &&
+            value.value instanceof Uint8Array
+          ) {
+            decodedValue = decodeRawProtobufMsg(value)
+          }
+        } catch {}
+
+        return {
+          ...acc,
+          [key]: decodeNestedProtobufs(decodedValue),
+        }
+      }, {} as Record<string, any>)
