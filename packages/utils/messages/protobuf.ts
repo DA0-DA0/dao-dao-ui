@@ -627,14 +627,14 @@ export const decodeNestedProtobufs = (msg: any): any =>
         let decodedValue = value
         try {
           if (
-            objectMatchesStructure<Any>(value, {
+            objectMatchesStructure(value, {
               typeUrl: {},
               value: {},
             }) &&
-            typeof value.typeUrl === 'string' &&
-            value.value instanceof Uint8Array
+            typeof (value as Any).typeUrl === 'string' &&
+            (value as Any).value instanceof Uint8Array
           ) {
-            decodedValue = decodeRawProtobufMsg(value)
+            decodedValue = decodeRawProtobufMsg(value as Any)
           }
         } catch {}
 
