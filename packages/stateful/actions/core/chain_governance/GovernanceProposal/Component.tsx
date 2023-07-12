@@ -306,7 +306,7 @@ export const GovernanceProposalComponent: ActionComponent<
 
           {data.type === GovernanceProposalType.SoftwareUpgradeProposal && (
             <div className="flex flex-col items-stretch gap-1">
-              <InputLabel name={t('form.parameterChanges')} />
+              <InputLabel name={t('form.plan')} />
               <CodeMirrorInput
                 control={control}
                 error={errors?.upgradePlan}

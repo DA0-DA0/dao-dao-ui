@@ -19,7 +19,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  convertMicroDenomToDenomWithDecimals,
   decodeGovProposalContent,
   encodeRawProtobufMsg,
   isDecodedStargateMsg,
@@ -141,27 +140,22 @@ export const makeGovernanceProposalAction: ActionMaker<
       type: GovernanceProposalType.TextProposal,
       title: '',
       description: '',
-      deposit:
-        deposit && !minDeposits.loading
-          ? [
-              {
-                denom: deposit.denom,
-                amount: convertMicroDenomToDenomWithDecimals(
-                  deposit.amount,
-                  minDeposits.data[0].decimals
-                ),
-              },
-            ]
-          : [],
-      spends:
-        deposit && !minDeposits.loading
-          ? [
-              {
-                denom: deposit.denom,
-                amount: 1000,
-              },
-            ]
-          : [],
+      deposit: deposit
+        ? [
+            {
+              denom: deposit.denom,
+              amount: Number(deposit.amount),
+            },
+          ]
+        : [],
+      spends: deposit
+        ? [
+            {
+              denom: deposit.denom,
+              amount: 1000,
+            },
+          ]
+        : [],
       spendRecipient: address,
       parameterChanges: defaultParameterChanges,
       upgradePlan: defaultPlan,
