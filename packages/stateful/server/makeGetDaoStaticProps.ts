@@ -190,15 +190,20 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       const polytoneProxies = (
         await Promise.all(
           Object.entries(POLYTONE_NOTES).map(async ([_chainId, { note }]) => {
-            let proxy = await queryIndexer<string>({
-              type: 'contract',
-              address: note,
-              formula: 'polytone/note/remoteAddress',
-              args: {
-                address: coreAddress,
-              },
-              chainId: CHAIN_ID,
-            })
+            let proxy
+            try {
+              proxy = await queryIndexer<string>({
+                type: 'contract',
+                address: note,
+                formula: 'polytone/note/remoteAddress',
+                args: {
+                  address: coreAddress,
+                },
+                chainId: CHAIN_ID,
+              })
+            } catch {
+              // Ignore error.
+            }
             if (!proxy) {
               const polytoneNoteClient = new PolytoneNoteQueryClient(
                 // Will not reconnect if already connected. Safe to lazily
