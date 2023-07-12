@@ -4,6 +4,7 @@ import { ParameterChangeProposal } from 'cosmjs-types/cosmos/params/v1beta1/para
 import { SoftwareUpgradeProposal } from 'cosmjs-types/cosmos/upgrade/v1beta1/upgrade'
 import { CommunityPoolSpendProposal } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
 import { TextProposal } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
+import Long from 'long'
 import { useCallback } from 'react'
 import { waitForAll } from 'recoil'
 
@@ -176,6 +177,7 @@ export const makeGovernanceProposalAction: ActionMaker<
         parameterChanges,
         upgradePlan,
       }) => {
+        const plan = JSON.parse(upgradePlan)
         const content = encodeRawProtobufMsg({
           typeUrl: type,
           value:
@@ -199,7 +201,12 @@ export const makeGovernanceProposalAction: ActionMaker<
               ? ({
                   title,
                   description,
-                  plan: JSON.parse(upgradePlan),
+                  plan: {
+                    ...plan,
+                    height: !isNaN(Number(plan.height))
+                      ? Long.fromValue(plan.height)
+                      : -1,
+                  },
                 } as SoftwareUpgradeProposal)
               : // Default to text proposal.
                 ({
