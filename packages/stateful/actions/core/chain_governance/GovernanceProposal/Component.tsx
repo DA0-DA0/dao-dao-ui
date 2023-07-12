@@ -1,4 +1,3 @@
-import { Coin } from '@cosmjs/amino'
 import { Check, Close } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
@@ -35,8 +34,6 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../react/context'
-
 export type GovernanceProposalOptions = {
   minDeposits: LoadingData<GenericTokenBalance[]>
   PayEntityDisplay: ComponentType<StatefulPayEntityDisplayProps>
@@ -48,9 +45,15 @@ export type GovernanceProposalData = {
   type: GovernanceProposalType
   title: string
   description: string
-  deposit: Coin[]
+  deposit: {
+    amount: number
+    denom: string
+  }[]
   // GovernanceProposalType.CommunityPoolSpendProposal
-  spends: Coin[]
+  spends: {
+    amount: number
+    denom: string
+  }[]
   spendRecipient: string
   // GovernanceProposalType.ParameterChangeProposal
   parameterChanges: string
@@ -68,7 +71,6 @@ export const GovernanceProposalComponent: ActionComponent<
   options: { minDeposits, PayEntityDisplay, TokenAmountDisplay, AddressInput },
   data,
 }) => {
-  const { address } = useActionOptions()
   const { t } = useTranslation()
   const { register, setValue, watch, control } =
     useFormContext<GovernanceProposalData>()
@@ -262,7 +264,7 @@ export const GovernanceProposalComponent: ActionComponent<
                           className="self-start"
                           onClick={() =>
                             appendSpend({
-                              amount: '1',
+                              amount: 1,
                               denom: NATIVE_TOKEN.denomOrAddress,
                             })
                           }
@@ -336,8 +338,8 @@ export const GovernanceProposalComponent: ActionComponent<
 
               ...(data.type ===
                 GovernanceProposalType.CommunityPoolSpendProposal && {
-                amount: data.deposit,
-                recipient: address,
+                amount: data.spends,
+                recipient: data.spendRecipient,
               }),
 
               ...(data.type ===
@@ -351,7 +353,10 @@ export const GovernanceProposalComponent: ActionComponent<
               }),
             },
           }}
-          deposit={data.deposit}
+          deposit={data.deposit.map(({ denom, amount }) => ({
+            denom,
+            amount: BigInt(amount).toString(),
+          }))}
         />
       )}
     </>

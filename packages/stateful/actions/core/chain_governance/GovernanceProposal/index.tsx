@@ -1,3 +1,4 @@
+import { Coin } from '@cosmjs/stargate'
 import { MsgSubmitProposal } from 'cosmjs-types/cosmos/gov/v1beta1/tx'
 import { ParameterChangeProposal } from 'cosmjs-types/cosmos/params/v1beta1/params'
 import { SoftwareUpgradeProposal } from 'cosmjs-types/cosmos/upgrade/v1beta1/upgrade'
@@ -148,7 +149,7 @@ export const makeGovernanceProposalAction: ActionMaker<
                 amount: convertMicroDenomToDenomWithDecimals(
                   deposit.amount,
                   minDeposits.data[0].decimals
-                ).toString(),
+                ),
               },
             ]
           : [],
@@ -157,7 +158,7 @@ export const makeGovernanceProposalAction: ActionMaker<
           ? [
               {
                 denom: deposit.denom,
-                amount: '1000',
+                amount: 1000,
               },
             ]
           : [],
@@ -266,7 +267,12 @@ export const makeGovernanceProposalAction: ActionMaker<
         spends:
           decodedContent.typeUrl ===
           GovernanceProposalType.CommunityPoolSpendProposal
-            ? decodedContent.value.amount
+            ? (decodedContent.value.amount as Coin[]).map(
+                ({ amount, denom }) => ({
+                  amount: Number(amount),
+                  denom,
+                })
+              )
             : [],
         spendRecipient:
           decodedContent.typeUrl ===

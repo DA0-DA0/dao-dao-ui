@@ -35,7 +35,10 @@ export const PayEntityDisplay = ({
     <StatelessPayEntityDisplay
       {...props}
       EntityDisplay={EntityDisplay}
-      tokens={tokenBalances.data}
+      tokens={tokenBalances.data.map(({ token }, index) => ({
+        token,
+        balance: coins[index].amount,
+      }))}
     />
   )
 }
