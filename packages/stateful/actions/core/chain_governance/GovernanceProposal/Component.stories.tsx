@@ -31,13 +31,13 @@ Default.args = {
       'Full details on the testnets github. Target binary is v10.0.0-alpha.2',
     deposit: [
       {
-        amount: '500000000',
+        amount: 100,
         denom: 'ujunox',
       },
     ],
     spends: [
       {
-        amount: '100000000',
+        amount: 1,
         denom: 'ujunox',
       },
     ],

@@ -159,7 +159,7 @@ export const GovernanceProposalComponent: ActionComponent<
                 (fieldNamePrefix + 'deposit.0.amount') as 'deposit.0.amount'
               }
               amountMin={convertMicroDenomToDenomWithDecimals(
-                selectedMinDepositToken?.balance ?? 0,
+                1,
                 selectedMinDepositToken?.token.decimals ?? 0
               )}
               amountStep={convertMicroDenomToDenomWithDecimals(
