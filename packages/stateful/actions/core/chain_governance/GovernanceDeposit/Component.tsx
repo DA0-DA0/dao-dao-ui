@@ -74,7 +74,6 @@ export const GovernanceDepositComponent: ActionComponent<
           />
         ) : (
           <SelectInput
-            containerClassName="mb-4"
             error={errors?.proposalId}
             fieldName={(fieldNamePrefix + 'proposalId') as 'proposalId'}
             register={register}
@@ -94,28 +93,7 @@ export const GovernanceDepositComponent: ActionComponent<
           </SelectInput>
         ))}
 
-      {proposalSelected ? (
-        <GovernanceProposal
-          PayEntityDisplay={PayEntityDisplay}
-          TokenAmountDisplay={TokenAmountDisplay}
-          className="rounded-md border border-border-primary p-4"
-          content={proposalSelected.decodedContent}
-          deposit={proposalSelected.totalDeposit}
-          endDate={proposalSelected.votingEndTime}
-          id={proposalSelected.proposalId.toString()}
-          startDate={proposalSelected.votingStartTime}
-          status={proposalSelected.status}
-        />
-      ) : (
-        // If not creating and no proposal selected, something went wrong.
-        !isCreating && (
-          <p className="text-text-interactive-error">
-            {t('error.failedToFindGovernanceProposal', { id: proposalId })}
-          </p>
-        )
-      )}
-
-      <div className="space-y-1">
+      <div className="mb-4 space-y-1">
         <InputLabel name={t('form.deposit')} />
         <TokenInput
           amountError={errors?.deposit?.[0]?.amount}
@@ -145,6 +123,27 @@ export const GovernanceDepositComponent: ActionComponent<
           watch={watch}
         />
       </div>
+
+      {proposalSelected ? (
+        <GovernanceProposal
+          PayEntityDisplay={PayEntityDisplay}
+          TokenAmountDisplay={TokenAmountDisplay}
+          className="rounded-md border border-border-secondary p-4"
+          content={proposalSelected.decodedContent}
+          deposit={proposalSelected.totalDeposit}
+          endDate={proposalSelected.votingEndTime}
+          id={proposalSelected.proposalId.toString()}
+          startDate={proposalSelected.votingStartTime}
+          status={proposalSelected.status}
+        />
+      ) : (
+        // If not creating and no proposal selected, something went wrong.
+        !isCreating && (
+          <p className="text-text-interactive-error">
+            {t('error.failedToFindGovernanceProposal', { id: proposalId })}
+          </p>
+        )
+      )}
     </>
   )
 }
