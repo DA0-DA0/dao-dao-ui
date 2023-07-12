@@ -5,6 +5,7 @@ import {
   TimelapseRounded,
   TimerRounded,
 } from '@mui/icons-material'
+import clsx from 'clsx'
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -44,6 +45,7 @@ export type GovernanceProposalProps = {
   TokenAmountDisplay: ComponentType<StatefulTokenAmountDisplayProps>
   // Needed to display CommunityPoolSpendProposal types.
   PayEntityDisplay?: ComponentType<StatefulPayEntityDisplayProps>
+  className?: string
 }
 
 export const GovernanceProposal = ({
@@ -55,6 +57,7 @@ export const GovernanceProposal = ({
   endDate,
   TokenAmountDisplay,
   PayEntityDisplay,
+  className,
 }: GovernanceProposalProps) => {
   const { t } = useTranslation()
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
@@ -81,7 +84,7 @@ export const GovernanceProposal = ({
           },
         ] as ProposalStatusAndInfoProps['info'])
       : []),
-    ...(startDate
+    ...(startDate && status !== ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
       ? ([
           {
             Icon: TimelapseRounded,
@@ -97,15 +100,14 @@ export const GovernanceProposal = ({
         ] as ProposalStatusAndInfoProps['info'])
       : []),
     // If open for voting, show relative time until end.
-    ...(endDate
-      ? status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD ||
-        status === ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
+    ...(endDate && status !== ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD
+      ? status === ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
         ? ([
             {
               Icon: HourglassTopRounded,
               label: t('title.timeLeft'),
               Value: (props) => (
-                <Tooltip title={endDate}>
+                <Tooltip title={formatDateTimeTz(endDate)}>
                   <p {...props}>
                     <TimeAgo date={endDate} formatter={timeAgoFormatter} />
                   </p>
@@ -125,7 +127,7 @@ export const GovernanceProposal = ({
   ]
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className={clsx('flex flex-col gap-6', className)}>
       <div className="flex flex-row items-center gap-4">
         <p className="header-text">
           {id ? `${id} ` : ''}

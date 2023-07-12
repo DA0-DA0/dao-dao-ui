@@ -55,6 +55,10 @@ export const MoneyWingsEmoji = () => (
   <EmojiWrapper emoji="💸" labelI18nKey="emoji.moneyWings" />
 )
 
+export const BankEmoji = () => (
+  <EmojiWrapper emoji="🏦" labelI18nKey="emoji.bank" />
+)
+
 export const DepositEmoji = () => (
   <EmojiWrapper emoji="📥" labelI18nKey="emoji.deposit" />
 )
