@@ -211,7 +211,11 @@ export const GovernanceProposalComponent: ActionComponent<
                 <div className="flex flex-row flex-wrap items-end justify-between gap-6">
                   <div className="flex grow flex-col gap-1">
                     <div className="flex flex-col items-stretch gap-2">
-                      {spendFields.map(({ id, denom }, index) => {
+                      {spendFields.map(({ id }, index) => {
+                        const denom = watch(
+                          (fieldNamePrefix +
+                            `spends.${index}.denom`) as `spends.${number}.denom`
+                        )
                         const selectedToken = availableTokens.find(
                           ({ denomOrAddress }) => denomOrAddress === denom
                         )
