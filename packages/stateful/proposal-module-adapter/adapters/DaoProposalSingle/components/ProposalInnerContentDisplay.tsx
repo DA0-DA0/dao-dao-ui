@@ -17,7 +17,7 @@ import {
 } from '@dao-dao/types'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-import { decodeMessages } from '@dao-dao/utils'
+import { decodeMessages, decodeNestedProtobufs } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import { useLoadingProposal } from '../hooks'
@@ -57,6 +57,10 @@ const InnerProposalInnerContentDisplay = ({
   const decodedMessages = useMemo(
     () => decodeMessages(proposal.msgs),
     [proposal.msgs]
+  )
+  const rawDecodedMessages = useMemo(
+    () => JSON.stringify(decodedMessages.map(decodeNestedProtobufs), null, 2),
+    [decodedMessages]
   )
 
   // If no msgs, set seen all action pages to true so that the user can vote.
@@ -134,11 +138,7 @@ const InnerProposalInnerContentDisplay = ({
         </p>
       </Button>
 
-      {showRaw && (
-        <CosmosMessageDisplay
-          value={JSON.stringify(decodedMessages, undefined, 2)}
-        />
-      )}
+      {showRaw && <CosmosMessageDisplay value={rawDecodedMessages} />}
     </div>
   ) : null
 }

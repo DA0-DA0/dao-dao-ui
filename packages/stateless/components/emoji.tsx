@@ -55,6 +55,10 @@ export const MoneyWingsEmoji = () => (
   <EmojiWrapper emoji="💸" labelI18nKey="emoji.moneyWings" />
 )
 
+export const BankEmoji = () => (
+  <EmojiWrapper emoji="🏦" labelI18nKey="emoji.bank" />
+)
+
 export const DepositEmoji = () => (
   <EmojiWrapper emoji="📥" labelI18nKey="emoji.deposit" />
 )
@@ -123,6 +127,10 @@ export const MegaphoneEmoji = () => (
 
 export const BallotDepositEmoji = () => (
   <EmojiWrapper emoji="🗳️" labelI18nKey="emoji.ballotBox" />
+)
+
+export const RaisedHandEmoji = () => (
+  <EmojiWrapper emoji="✋" labelI18nKey="emoji.raisedHand" />
 )
 
 export const HourglassEmoji = () => (

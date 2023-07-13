@@ -1,8 +1,7 @@
 import clsx from 'clsx'
-import { ComponentPropsWithoutRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LoadingData } from '@dao-dao/types'
+import { TokenAmountDisplayProps } from '@dao-dao/types'
 import {
   USDC_DECIMALS,
   formatTime,
@@ -33,51 +32,6 @@ import { Tooltip } from '../tooltip/Tooltip'
 const USD_ESTIMATE_DEFAULT_MAX_DECIMALS = 2
 // Maximum decimals to use in a large compacted value.
 const LARGE_COMPACT_MAX_DECIMALS = 2
-
-export type TokenAmountDisplayProps = Omit<
-  ComponentPropsWithoutRef<'p'>,
-  'children'
-> & {
-  amount: number | LoadingData<number>
-  prefix?: string
-  prefixClassName?: string
-  suffix?: string
-  suffixClassName?: string
-  // Max decimals to display.
-  maxDecimals?: number
-  // Don't show approximation indication (like a tilde).
-  hideApprox?: boolean
-  // Add to tooltip if present.
-  dateFetched?: Date
-  // Show full amount if true.
-  showFullAmount?: boolean
-  // If present, will add a rounded icon to the left.
-  iconUrl?: string
-  iconClassName?: string
-} & ( // If not USD estimate, require symbol and decimals.
-    | {
-        symbol: string
-        hideSymbol?: never
-        // Full decimal precision of the value.
-        decimals: number
-        estimatedUsdValue?: false
-      }
-    // Alow hiding symbol.
-    | {
-        symbol?: never
-        hideSymbol: true
-        // Full decimal precision of the value.
-        decimals: number
-        estimatedUsdValue?: false
-      }
-    // If USD estimate, disallow symbol and decimals since we'll use USDC's.
-    | {
-        symbol?: never
-        hideSymbol?: boolean
-        decimals?: never
-        estimatedUsdValue: true
-      }
-  )
 
 export const TokenAmountDisplay = ({
   amount: _amount,
