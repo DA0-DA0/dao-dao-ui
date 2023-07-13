@@ -77,6 +77,7 @@ export const configSelector = selectorFamily<Config, QueryClientParams>({
       if (config) {
         return config
       }
+      // If indexer query fails, fallback to chain.
       const client = get(queryClient(queryClientParams))
       return await client.config()
     },

@@ -205,6 +205,7 @@ export type CwVestingStakeHistory = {
   slashRegistrations: CwVestingSlashRegistration[]
 }
 
+// TODO: Use TX events indexer for this instead.
 export const stakeHistorySelector = selectorFamily<
   CwVestingStakeHistory | null,
   QueryClientParams & Pick<QueryIndexerParams, 'block'>
@@ -227,6 +228,7 @@ export const stakeHistorySelector = selectorFamily<
     },
 })
 
+// No query to get this value, so require it.
 export const unbondingDurationSecondsSelector = selectorFamily<
   number | null,
   QueryClientParams
@@ -240,6 +242,7 @@ export const unbondingDurationSecondsSelector = selectorFamily<
           contractAddress,
           formula: 'cwVesting/unbondingDurationSeconds',
           chainId,
+          required: true,
         })
       ),
 })

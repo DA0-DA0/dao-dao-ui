@@ -688,6 +688,7 @@ export type ValidatorSlash = {
   stakedTokensBurned: string
 }
 
+// TODO: Use TX events indexer for this instead.
 export const validatorSlashesSelector = selectorFamily<
   ValidatorSlash[],
   WithChainId<{ validatorOperatorAddress: string }>
