@@ -19,11 +19,13 @@ export const contractInstantiateTimeSelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     async ({ get }) => {
+      // TODO(indexer): Get from numia indexer.
       const instantiatedAt = get(
         queryContractIndexerSelector({
           contractAddress: address,
           chainId,
           formula: 'instantiatedAt',
+          required: true,
         })
       )
       // Null when indexer fails.

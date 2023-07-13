@@ -205,7 +205,7 @@ export type CwVestingStakeHistory = {
   slashRegistrations: CwVestingSlashRegistration[]
 }
 
-// TODO: Use TX events indexer for this instead.
+// TODO(indexer): Use TX events indexer for this instead.
 export const stakeHistorySelector = selectorFamily<
   CwVestingStakeHistory | null,
   QueryClientParams & Pick<QueryIndexerParams, 'block'>
