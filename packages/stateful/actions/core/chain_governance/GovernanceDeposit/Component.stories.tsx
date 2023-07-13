@@ -7,17 +7,17 @@ import { GovProposalWithDecodedContent } from '@dao-dao/types'
 
 import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
 import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
-import { GovernanceVoteComponent } from './Component'
+import { GovernanceDepositComponent } from './Component'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / actions / core / chain_governance / GovernanceVote',
-  component: GovernanceVoteComponent,
+    'DAO DAO / packages / stateful / actions / core / chain_governance / GovernanceDeposit',
+  component: GovernanceDepositComponent,
   decorators: [ReactHookFormDecorator],
-} as ComponentMeta<typeof GovernanceVoteComponent>
+} as ComponentMeta<typeof GovernanceDepositComponent>
 
-const Template: ComponentStory<typeof GovernanceVoteComponent> = (args) => (
-  <GovernanceVoteComponent {...args} />
+const Template: ComponentStory<typeof GovernanceDepositComponent> = (args) => (
+  <GovernanceDepositComponent {...args} />
 )
 
 const { ProposalStatus } = cosmos.gov.v1beta1
@@ -38,7 +38,7 @@ const makeProposal = (): GovProposalWithDecodedContent => ({
       upgraded_client_state: null,
     },
   } as any,
-  status: ProposalStatus.PROPOSAL_STATUS_PASSED,
+  status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
   finalTallyResult: {
     yes: '54076995000',
     abstain: '0',
@@ -62,11 +62,20 @@ Default.args = {
   fieldNamePrefix: '',
   allActionsWithData: [],
   index: 0,
-  data: {},
+  data: {
+    proposalId: '',
+    deposit: [
+      {
+        denom: 'JUNOX',
+        amount: 1,
+      },
+    ],
+  },
   isCreating: true,
   errors: {},
   options: {
     proposals: [makeProposal(), makeProposal(), makeProposal(), makeProposal()],
+    depositTokens: { loading: false, data: [] },
     PayEntityDisplay,
     TokenAmountDisplay,
   },
