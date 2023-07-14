@@ -1,56 +1,45 @@
 import { decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
 import {
-  ArrowOutwardRounded,
   Block,
   Check,
   CheckBoxOutlineBlankRounded,
   Close,
-  HourglassTopRounded,
-  RotateRightOutlined,
   Texture,
-  TimelapseRounded,
-  TimerRounded,
 } from '@mui/icons-material'
-import { ProposalStatus, VoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
+import { VoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { WeightedVoteOption } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
+import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import TimeAgo from 'react-timeago'
 
 import {
-  IconButtonLink,
-  MarkdownRenderer,
+  GovernanceProposal,
   NoContent,
-  ProposalStatusAndInfo,
-  ProposalStatusAndInfoProps,
   ProposalVoteButton,
   SelectInput,
-  Tooltip,
   TooltipInfoIcon,
-  useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
   GovProposalWithDecodedContent,
   LoadingData,
   ProposalVoteOption,
+  StatefulPayEntityDisplayProps,
+  StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionComponentProps,
   ActionContextType,
 } from '@dao-dao/types/actions'
-import {
-  CHAIN_GOV_PROPOSAL_URL_TEMPLATE,
-  formatDateTimeTz,
-  formatPercentOf100,
-  validateRequired,
-} from '@dao-dao/utils'
+import { formatPercentOf100, validateRequired } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 
 export interface GovernanceVoteOptions {
   proposals: GovProposalWithDecodedContent[]
   existingVotesLoading?: LoadingData<WeightedVoteOption[] | undefined>
+  PayEntityDisplay: ComponentType<StatefulPayEntityDisplayProps>
+  TokenAmountDisplay: ComponentType<StatefulTokenAmountDisplayProps>
 }
 
 export interface GovernanceVoteData {
@@ -64,7 +53,12 @@ export const GovernanceVoteComponent: ActionComponent<
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { proposals, existingVotesLoading },
+  options: {
+    proposals,
+    existingVotesLoading,
+    PayEntityDisplay,
+    TokenAmountDisplay,
+  },
 }) => {
   const { t } = useTranslation()
   const { register, watch } = useFormContext<GovernanceVoteData>()
@@ -74,8 +68,6 @@ export const GovernanceVoteComponent: ActionComponent<
   const proposalSelected = proposals.find(
     (p) => p.proposalId.toString() === proposalId
   )
-
-  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
 
   return (
     <>
@@ -100,111 +92,25 @@ export const GovernanceVoteComponent: ActionComponent<
                 value={proposal.proposalId.toString()}
               >
                 #{proposal.proposalId.toString()}
-                {!!proposal.decodedContent &&
-                  'title' in proposal.decodedContent &&
-                  typeof proposal.decodedContent.title === 'string' &&
-                  ' ' + proposal.decodedContent.title}
+                {'title' in proposal.decodedContent.value &&
+                  typeof proposal.decodedContent.value.title === 'string' &&
+                  ' ' + proposal.decodedContent.value.title}
               </option>
             ))}
           </SelectInput>
         ))}
 
       {proposalSelected ? (
-        <div className="flex flex-col gap-6">
-          <div className="flex flex-row items-center gap-4">
-            <p className="header-text">
-              #{proposalId}{' '}
-              {proposalSelected.decodedContent &&
-              'title' in proposalSelected.decodedContent &&
-              typeof proposalSelected.decodedContent.title === 'string'
-                ? proposalSelected.decodedContent.title
-                : t('title.noTitle')}
-            </p>
-
-            <IconButtonLink
-              Icon={ArrowOutwardRounded}
-              href={CHAIN_GOV_PROPOSAL_URL_TEMPLATE.replace('ID', proposalId)}
-              variant="ghost"
-            />
-          </div>
-
-          {proposalSelected.decodedContent && (
-            <>
-              <ProposalStatusAndInfo
-                className="max-w-max"
-                info={[
-                  {
-                    Icon: RotateRightOutlined,
-                    label: t('title.status'),
-                    Value: (props) => (
-                      <p {...props}>
-                        {t(
-                          PROPOSAL_STATUS_I18N_KEY_MAP[proposalSelected.status]
-                        )}
-                      </p>
-                    ),
-                  },
-                  {
-                    Icon: TimelapseRounded,
-                    label: t('title.votingOpened'),
-                    Value: (props) => (
-                      <p {...props}>
-                        {formatDateTimeTz(proposalSelected.votingStartTime)}
-                      </p>
-                    ),
-                  },
-                  // If open for voting, show relative time until end.
-                  ...(proposalSelected.status ===
-                  ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD
-                    ? ([
-                        {
-                          Icon: HourglassTopRounded,
-                          label: t('title.timeLeft'),
-                          Value: (props) => (
-                            <Tooltip
-                              title={formatDateTimeTz(
-                                proposalSelected.votingEndTime
-                              )}
-                            >
-                              <p {...props}>
-                                <TimeAgo
-                                  date={proposalSelected.votingEndTime}
-                                  formatter={timeAgoFormatter}
-                                />
-                              </p>
-                            </Tooltip>
-                          ),
-                        },
-                      ] as ProposalStatusAndInfoProps['info'])
-                    : ([
-                        {
-                          Icon: TimerRounded,
-                          label: t('title.votingClosed'),
-                          Value: (props) => (
-                            <p {...props}>
-                              {formatDateTimeTz(proposalSelected.votingEndTime)}
-                            </p>
-                          ),
-                        },
-                      ] as ProposalStatusAndInfoProps['info'])),
-                ]}
-                inline
-              />
-
-              {'description' in proposalSelected.decodedContent &&
-                typeof proposalSelected.decodedContent.description ===
-                  'string' && (
-                  <MarkdownRenderer
-                    className="styled-scrollbar -mr-4 max-h-[40vh] overflow-y-auto pr-4"
-                    markdown={proposalSelected.decodedContent.description.replace(
-                      /\\n/g,
-                      '\n'
-                    )}
-                  />
-                )}
-            </>
-          )}
-        </div>
+        <GovernanceProposal
+          PayEntityDisplay={PayEntityDisplay}
+          TokenAmountDisplay={TokenAmountDisplay}
+          content={proposalSelected.decodedContent}
+          deposit={proposalSelected.totalDeposit}
+          endDate={proposalSelected.votingEndTime}
+          id={proposalSelected.proposalId.toString()}
+          startDate={proposalSelected.votingStartTime}
+          status={proposalSelected.status}
+        />
       ) : (
         // If not creating and no proposal selected, something went wrong.
         !isCreating && (
@@ -361,16 +267,4 @@ const VoteFooter = ({
         )}
     </>
   )
-}
-
-const PROPOSAL_STATUS_I18N_KEY_MAP: Record<ProposalStatus, string> = {
-  [ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED]: 'govProposalStatus.unspecified',
-  [ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD]:
-    'govProposalStatus.depositPeriod',
-  [ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD]:
-    'govProposalStatus.votingPeriod',
-  [ProposalStatus.PROPOSAL_STATUS_PASSED]: 'govProposalStatus.passed',
-  [ProposalStatus.PROPOSAL_STATUS_REJECTED]: 'govProposalStatus.rejected',
-  [ProposalStatus.PROPOSAL_STATUS_FAILED]: 'govProposalStatus.failed',
-  [ProposalStatus.UNRECOGNIZED]: 'govProposalStatus.unrecognized',
 }

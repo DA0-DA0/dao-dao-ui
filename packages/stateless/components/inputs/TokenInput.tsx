@@ -160,6 +160,9 @@ export const TokenInput = <
     [amount, readOnly, selectedToken, t, tokenFallback]
   )
 
+  const selectDisabled = // Disable if there is only one token to choose from.
+    disabled || (!tokens.loading && tokens.data.length === 1)
+
   return (
     <div
       className={clsx(
@@ -223,7 +226,7 @@ export const TokenInput = <
                 className: 'min-w-[10rem] grow basis-[10rem]',
                 contentContainerClassName:
                   'justify-between text-icon-primary !gap-4',
-                disabled: disabled,
+                disabled: selectDisabled,
                 loading: tokens.loading,
                 size: 'lg',
                 variant: 'ghost_outline',
@@ -231,7 +234,7 @@ export const TokenInput = <
                   <>
                     {selectedTokenDisplay}
 
-                    {!disabled && <ArrowDropDown className="!h-6 !w-6" />}
+                    {!selectDisabled && <ArrowDropDown className="!h-6 !w-6" />}
                   </>
                 ),
               },

@@ -13,6 +13,7 @@ import {
   Proposal as GovProposal,
   WeightedVoteOption,
 } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
+import { QueryParamsResponse as GovQueryParamsResponse } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/query'
 import { Validator as RpcValidator } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import { osmosis } from 'juno-network'
 import Long from 'long'
@@ -35,7 +36,7 @@ import {
   MAINNET,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
-  decodeGovProposalContent,
+  decodeGovProposal,
   getAllRpcResponse,
   getNativeIbcUsdc,
   getNativeTokenForChainId,
@@ -412,7 +413,7 @@ export const govProposalsSelector = selectorFamily<
       }
 
       return proposals
-        .map((proposal) => decodeGovProposalContent(proposal))
+        .map((proposal) => decodeGovProposal(proposal))
         .sort((a, b) => a.votingEndTime.getTime() - b.votingEndTime.getTime())
     },
 })
@@ -434,7 +435,7 @@ export const govProposalSelector = selectorFamily<
         })
       )?.proposal
 
-      return proposal && decodeGovProposalContent(proposal)
+      return proposal && decodeGovProposal(proposal)
     },
 })
 
@@ -455,6 +456,38 @@ export const govProposalVoteSelector = selectorFamily<
           voter,
         })
       )?.vote.options
+    },
+})
+
+// Queries the chain for the minimum deposit required.
+export const govQueryParamsSelector = selectorFamily<
+  Required<GovQueryParamsResponse>,
+  WithChainId<{}>
+>({
+  key: 'govQueryParams',
+  get:
+    ({ chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+
+      const [{ votingParams }, { depositParams }, { tallyParams }] =
+        await Promise.all([
+          client.gov.v1beta1.params({
+            paramsType: 'voting',
+          }),
+          client.gov.v1beta1.params({
+            paramsType: 'deposit',
+          }),
+          client.gov.v1beta1.params({
+            paramsType: 'tallying',
+          }),
+        ])
+
+      return {
+        votingParams,
+        depositParams,
+        tallyParams,
+      }
     },
 })
 
