@@ -47,3 +47,4 @@ export const CW721_WORKAROUND_ITEM_KEY_PREFIX = 'cw721:'
 
 // Osmosis
 export const OSMOSIS_MAINNET_RPC = 'https://rpc.osmosis.zone'
+export const OSMOSIS_MAINNET_REST = 'https://lcd.osmosis.zone'
