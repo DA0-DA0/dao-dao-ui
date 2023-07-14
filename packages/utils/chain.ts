@@ -22,6 +22,7 @@ import {
   CHAIN_ID,
   CHAIN_RPC_ENDPOINT,
   HOST_CHAIN_SUBDOMAINS,
+  OSMOSIS_MAINNET_RPC,
   STARGAZE_RPC_ENDPOINT,
 } from './constants'
 import { getFallbackImage } from './getFallbackImage'
@@ -34,6 +35,8 @@ export const getRpcForChainId = (chainId: string): string => {
     return CHAIN_RPC_ENDPOINT
   } else if (chainId === ChainId.StargazeMainnet) {
     return STARGAZE_RPC_ENDPOINT
+  } else if (chainId === ChainId.OsmosisMainnet) {
+    return OSMOSIS_MAINNET_RPC
   }
 
   const chain = maybeGetChainForChainId(chainId)

@@ -44,3 +44,6 @@ export const DAO_WIDGET_ITEM_NAMESPACE = 'widget:'
 // This workaround is necessary for contracts that don't conform to the expected
 // contract info response.
 export const CW721_WORKAROUND_ITEM_KEY_PREFIX = 'cw721:'
+
+// Osmosis
+export const OSMOSIS_MAINNET_RPC = 'https://rpc.osmosis.zone'
