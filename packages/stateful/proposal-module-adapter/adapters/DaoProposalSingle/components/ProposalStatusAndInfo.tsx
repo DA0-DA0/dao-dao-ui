@@ -437,7 +437,7 @@ const InnerProposalStatusAndInfo = ({
         // Show if anyone can execute OR if the wallet is a member, once
         // polytone messages that need relaying are done loading.
         (!config.only_members_execute || isMember) &&
-        polytoneMessagesNeedingSelfRelay.loading
+        !polytoneMessagesNeedingSelfRelay.loading
           ? {
               label: t('button.execute'),
               Icon: Key,
