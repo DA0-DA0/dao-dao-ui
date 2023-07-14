@@ -6,6 +6,7 @@ import {
   DaoCoreV2Selectors,
   blockHeightTimestampSafeSelector,
   cosmWasmClientForChainSelector,
+  daoCorePolytoneProxiesSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
 } from '@dao-dao/state'
@@ -16,8 +17,6 @@ import {
   getNativeTokenForChainId,
   getTokenForChainIdAndDenom,
 } from '@dao-dao/utils'
-
-import { daoCorePolytoneProxiesSelector } from './dao'
 
 // lazyInfo must be loaded in the component separately, since it refreshes on a
 // timer and we don't want this whole selector to reevaluate and load when that

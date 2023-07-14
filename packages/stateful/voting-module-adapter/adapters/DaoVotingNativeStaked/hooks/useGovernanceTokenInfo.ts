@@ -6,7 +6,7 @@ import {
   genericTokenSelector,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
-  wyndUsdPriceSelector,
+  usdPriceSelector,
 } from '@dao-dao/state'
 import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
@@ -84,7 +84,10 @@ export const useGovernanceTokenInfo = ({
   // Price info
   const loadingPrice = useCachedLoading(
     fetchUsdcPrice && governanceTokenInfo
-      ? wyndUsdPriceSelector(denom)
+      ? usdPriceSelector({
+          chainId,
+          denomOrAddress: denom,
+        })
       : constSelector(undefined),
     undefined
   )

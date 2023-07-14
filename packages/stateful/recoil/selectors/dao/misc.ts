@@ -3,23 +3,21 @@ import { RecoilValueReadOnly, selectorFamily } from 'recoil'
 import {
   DaoCoreV2Selectors,
   DaoVotingCw20StakedSelectors,
-  PolytoneNoteSelectors,
   contractInstantiateTimeSelector,
   contractVersionSelector,
+  daoCorePolytoneProxiesSelector,
   queryContractIndexerSelector,
 } from '@dao-dao/state'
 import {
   ContractVersion,
   ContractVersionInfo,
   DaoInfo,
-  PolytoneProxies,
   ProposalModule,
   WithChainId,
 } from '@dao-dao/types'
 import {
   CHAIN_ID,
   DaoVotingCw20StakedAdapterId,
-  POLYTONE_NOTES,
   getChainForChainId,
   isValidContractAddress,
 } from '@dao-dao/utils'
@@ -47,46 +45,6 @@ export const daoCoreProposalModulesSelector = selectorFamily<
         coreAddress,
         coreVersion
       )
-    },
-})
-
-export const daoCorePolytoneProxiesSelector = selectorFamily<
-  PolytoneProxies,
-  WithChainId<{ coreAddress: string }>
->({
-  key: 'daoCorePolytoneProxies',
-  get:
-    ({ coreAddress, chainId }) =>
-    ({ get }) => {
-      // Get polytone proxies.
-      const polytoneProxies = Object.entries(POLYTONE_NOTES)
-        .map(([_chainId, { note }]) => ({
-          chainId: _chainId,
-          proxy: get(
-            PolytoneNoteSelectors.remoteAddressSelector({
-              contractAddress: note,
-              chainId,
-              params: [
-                {
-                  localAddress: coreAddress,
-                },
-              ],
-            })
-          ),
-        }))
-        .reduce(
-          (acc, { chainId, proxy }) => ({
-            ...acc,
-            ...(proxy
-              ? {
-                  [chainId]: proxy,
-                }
-              : {}),
-          }),
-          {} as PolytoneProxies
-        )
-
-      return polytoneProxies
     },
 })
 
