@@ -22,6 +22,7 @@ const junoMainnet: PolytoneNotes = {
     // localClient: '07-tendermint-0',
     // osmosis
     // remoteClient: '07-tendermint-1457',
+    needsSelfRelay: false,
   },
 }
 
@@ -45,6 +46,7 @@ const osmosisMainnet: PolytoneNotes = {
     // localClient: '07-tendermint-1457',
     // juno
     // remoteClient: '07-tendermint-0',
+    needsSelfRelay: false,
   },
 }
 

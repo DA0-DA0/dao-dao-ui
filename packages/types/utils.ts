@@ -54,6 +54,11 @@ export type PolytoneNote = {
   // IBC channel IDs
   localChannel: string
   remoteChannel: string
+  // Whether or not the user needs to self-relay an execution. This should be
+  // true if no relayers are running on the established connection. If using an
+  // existing active connection, the relayers will automatically perform the
+  // relay.
+  needsSelfRelay: boolean
 }
 
 // Map chain ID to polytone note that speaks with that chain.

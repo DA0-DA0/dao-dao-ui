@@ -284,7 +284,6 @@ const InnerProposalStatusAndInfo = ({
         .map((decoded) => decoded!),
     [proposal.msgs]
   )
-  const hasPolytoneMessages = polytoneMessages.length > 0
   // Callback results.
   const polytoneResults = useCachedLoading(
     waitForAllSettled(
@@ -303,8 +302,25 @@ const InnerProposalStatusAndInfo = ({
     ),
     []
   )
+  // Polytone messages that need self-relay are those whose polytone connections
+  // require self-relaying and are not yet relayed.
+  const polytoneMessagesNeedingSelfRelay = polytoneResults.loading
+    ? ({ loading: true } as const)
+    : {
+        loading: false,
+        data: polytoneMessages.filter(
+          ({ polytoneNote }, index) =>
+            // Needs self-relay.
+            polytoneNote.needsSelfRelay &&
+            // Not yet relayed.
+            polytoneResults.data[index].state === 'hasError'
+        ),
+      }
+  const hasPolytoneMessagesNeedingRelay =
+    !polytoneMessagesNeedingSelfRelay.loading &&
+    polytoneMessagesNeedingSelfRelay.data.length > 0
   const openPolytoneRelay = (transactionHash?: string) =>
-    hasPolytoneMessages &&
+    hasPolytoneMessagesNeedingRelay &&
     openSelfRelayExecute({
       uniqueId: `${chainId}:${proposalModule.address}:${proposalNumber}`,
       transaction: transactionHash
@@ -330,7 +346,9 @@ const InnerProposalStatusAndInfo = ({
               }),
             ],
           },
-      chainIds: uniq(polytoneMessages.map(({ chainId }) => chainId)),
+      chainIds: uniq(
+        polytoneMessagesNeedingSelfRelay.data.map(({ chainId }) => chainId)
+      ),
     })
 
   const onExecute = useCallback(async () => {
@@ -416,13 +434,15 @@ const InnerProposalStatusAndInfo = ({
       {...props}
       action={
         proposal.status === ProposalStatus.Passed &&
-        // Show if anyone can execute OR if the wallet is a member.
-        (!config.only_members_execute || isMember)
+        // Show if anyone can execute OR if the wallet is a member, once
+        // polytone messages that need relaying are done loading.
+        (!config.only_members_execute || isMember) &&
+        polytoneMessagesNeedingSelfRelay.loading
           ? {
               label: t('button.execute'),
               Icon: Key,
               loading: actionLoading,
-              doAction: hasPolytoneMessages
+              doAction: hasPolytoneMessagesNeedingRelay
                 ? () => openPolytoneRelay()
                 : onExecute,
             }
@@ -435,11 +455,7 @@ const InnerProposalStatusAndInfo = ({
             }
           : // If executed and has polytone messages that have not been relayed and has loaded TX hash.
           proposal.status === ProposalStatus.Executed &&
-            polytoneMessages.length > 0 &&
-            !polytoneResults.loading &&
-            polytoneResults.data.some(
-              (loadable) => loadable.state === 'hasError'
-            ) &&
+            hasPolytoneMessagesNeedingRelay &&
             !loadingExecutionTxHash.loading &&
             loadingExecutionTxHash.data
           ? {
