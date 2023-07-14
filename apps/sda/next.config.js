@@ -25,6 +25,7 @@ const config = {
     '@dao-dao/stateful',
     '@dao-dao/i18n',
     '@dao-dao/types',
+    '@cosmos-kit/web3auth',
   ],
   i18n,
   /*

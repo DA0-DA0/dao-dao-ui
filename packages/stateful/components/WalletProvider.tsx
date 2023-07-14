@@ -100,9 +100,6 @@ export const WalletProvider = ({
         client: {
           clientId: WEB3AUTH_CLIENT_ID,
           web3AuthNetwork: MAINNET ? 'cyan' : 'testnet',
-          chainConfig: {
-            chainNamespace: 'other',
-          },
         },
         promptSign: (...params: Parameters<PromptSign>): Promise<boolean> =>
           new Promise((resolve) =>

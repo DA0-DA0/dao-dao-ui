@@ -32,7 +32,11 @@ export const WalletUi = (props: WalletModalProps) => {
 
   // Set QR URL update actions so this component refreshes when QR state
   // changes.
-  if (current && 'qrUrl' in current.client && 'setActions' in current.client) {
+  if (
+    current?.client &&
+    'qrUrl' in current.client &&
+    'setActions' in current.client
+  ) {
     ;(current.client as any).setActions?.({
       qrUrl: {
         state: setQRState,
@@ -42,17 +46,18 @@ export const WalletUi = (props: WalletModalProps) => {
   }
 
   const showWalletConnectQr = isWalletConnecting && qrState === State.Done
-  const title = isWalletDisconnected
-    ? t('title.logInWith')
-    : isWalletConnecting
-    ? showWalletConnectQr
-      ? t('title.scanQrCode')
-      : current?.walletName.startsWith('web3auth_')
-      ? t('title.loggingInToService', { service: current.walletPrettyName })
-      : t('title.connectingToWallet', { wallet: current?.walletPrettyName })
-    : isWalletConnected
-    ? t('title.loggedIn')
-    : ''
+  const title =
+    isWalletDisconnected || isWalletError
+      ? t('title.logInWith')
+      : isWalletConnecting
+      ? showWalletConnectQr
+        ? t('title.scanQrCode')
+        : current?.walletName.startsWith('web3auth_')
+        ? t('title.loggingInToService', { service: current.walletPrettyName })
+        : t('title.connectingToWallet', { wallet: current?.walletPrettyName })
+      : isWalletConnected
+      ? t('title.loggedIn')
+      : ''
 
   return (
     <Modal
