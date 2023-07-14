@@ -110,7 +110,9 @@ export const DappNavigation = ({
     )
     const chainSwitcherSections: ButtonPopupSection[] = [
       {
-        buttons: HOST_CHAIN_SUBDOMAINS.map(({ id, subdomain }) => ({
+        buttons: HOST_CHAIN_SUBDOMAINS.filter(
+          ({ hideFromSwitcher }) => !hideFromSwitcher
+        ).map(({ id, subdomain }) => ({
           href: `https://${subdomain}.daodao.zone`,
           label: getDisplayNameForChainId(id),
           pressed: id === chain.chain_id,
