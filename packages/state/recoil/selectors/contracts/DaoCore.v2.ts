@@ -516,6 +516,7 @@ export const infoSelector = selectorFamily<
         return { info }
       }
 
+      // If indexer query fails, fallback to chain query.
       const client = get(queryClient(queryClientParams))
       return await client.info(...params)
     },

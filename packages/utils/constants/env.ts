@@ -86,6 +86,10 @@ export const PFPK_API_BASE = process.env.NEXT_PUBLIC_PFPK_API_BASE as string
 
 // Indexer
 export const INDEXER_URL = process.env.NEXT_PUBLIC_INDEXER_URL
+// Disables the indexer in place of RPC nodes. Either way, the indexer is still
+// used for the features that depend on it, like the inbox and vote timestamps.
+export const INDEXER_DISABLED =
+  process.env.NEXT_PUBLIC_INDEXER_DISABLED === 'true'
 
 // Search
 export const SEARCH_HOST = process.env.NEXT_PUBLIC_SEARCH_HOST as string

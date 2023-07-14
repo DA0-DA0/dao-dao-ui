@@ -122,6 +122,7 @@ export const daoPotentialSubDaosSelector = selectorFamily<
           chainId,
           contractAddress: coreAddress,
           formula: 'daoCore/potentialSubDaos',
+          required: true,
         })
       )
 

@@ -636,16 +636,16 @@ const daoCoreDumpState = async (
     throw new LegacyDaoError()
   }
 
-  const coreVersion = parseContractVersion(dumpedState.version.version)
+  const [coreVersion, { info: votingModuleInfo }] = await Promise.all([
+    parseContractVersion(dumpedState.version.version),
+    (await cwClient.queryContractSmart(dumpedState.voting_module, {
+      info: {},
+    })) as InfoResponse,
+  ])
+
   if (!coreVersion) {
     throw new Error(serverT('error.failedParsingCoreVersion'))
   }
-
-  const votingModuleInfo = (
-    (await cwClient.queryContractSmart(dumpedState.voting_module, {
-      info: {},
-    })) as InfoResponse
-  ).info
 
   const proposalModules = await fetchProposalModulesWithInfoFromChain(
     CHAIN_ID,
