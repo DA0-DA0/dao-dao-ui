@@ -613,6 +613,13 @@
     "unspecified": "Unspecified",
     "votingPeriod": "Voting Period"
   },
+  "govProposalType": {
+    "CancelSoftwareUpgradeProposal": "Cancel Software Upgrade",
+    "CommunityPoolSpendProposal": "Community Pool Spend",
+    "ParameterChangeProposal": "Parameter Change",
+    "SoftwareUpgradeProposal": "Software Upgrade",
+    "TextProposal": "Text"
+  },
   "inboxItemType": {
     "joined_dao": {
       "description": "Get notified when you're added to a DAO, with a reminder to follow it.",
@@ -622,13 +629,6 @@
       "description": "Get notified when a proposal is created in a DAO you follow.",
       "title": "Proposal created"
     }
-  },
-  "govProposalType": {
-    "CancelSoftwareUpgradeProposal": "Cancel Software Upgrade",
-    "CommunityPoolSpendProposal": "Community Pool Spend",
-    "ParameterChangeProposal": "Parameter Change",
-    "SoftwareUpgradeProposal": "Software Upgrade",
-    "TextProposal": "Text"
   },
   "info": {
     "abstainVote": "Abstain",
@@ -1288,8 +1288,8 @@
     "start": "Start",
     "status": "Status",
     "subDaos": "SubDAOs",
-    "success": "Success",
     "submitGovernanceProposal": "Submit Governance Proposal",
+    "success": "Success",
     "suggestions": "Suggestions",
     "summary": "Summary",
     "supplies": "Supplies",
