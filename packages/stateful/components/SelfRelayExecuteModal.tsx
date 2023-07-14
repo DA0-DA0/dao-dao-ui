@@ -289,6 +289,7 @@ export const SelfRelayExecuteModal = ({
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
+      setStatus(RelayStatus.Uninitialized)
     }
   }
 
