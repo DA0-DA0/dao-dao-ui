@@ -8,7 +8,7 @@ import { Modal, ModalProps } from './Modal'
 
 export type MigrateFollowingModalProps = Pick<ModalProps, 'visible'> & {
   onMigrate: () => void
-  syncing: boolean
+  migrating: boolean
   followedDaos: string[]
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
@@ -16,7 +16,7 @@ export type MigrateFollowingModalProps = Pick<ModalProps, 'visible'> & {
 export const MigrateFollowingModal = ({
   visible,
   onMigrate,
-  syncing,
+  migrating,
   followedDaos,
   EntityDisplay,
 }: MigrateFollowingModalProps) => {
@@ -26,7 +26,7 @@ export const MigrateFollowingModal = ({
     <Modal
       footerContent={
         <div className="flex flex-row items-stretch justify-end gap-2">
-          <Button loading={syncing} onClick={onMigrate}>
+          <Button loading={migrating} onClick={onMigrate}>
             {t('button.migrate')}
           </Button>
         </div>

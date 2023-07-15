@@ -1,16 +1,18 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 
 import { MigrateFollowingModal as StatelessMigrateFollowingModal } from '@dao-dao/stateless'
-import { CHAIN_ID } from '@dao-dao/utils'
+import { CHAIN_ID, processError } from '@dao-dao/utils'
 
-import { useFollowingDaos } from '../hooks'
+import { useCfWorkerAuthPostRequest, useFollowingDaos } from '../hooks'
 import { EntityDisplay } from './EntityDisplay'
 
 export const MigrateFollowingModal = () => {
   const { daos, setFollowing, ready, updatingFollowing } = useFollowingDaos()
 
   const [oldFollowing, setOldFollowing] = useState([] as string[])
+  const [loading, setLoading] = useState(false)
   const { address } = useWallet()
   useEffect(() => {
     if (!address) {
@@ -34,17 +36,33 @@ export const MigrateFollowingModal = () => {
     })()
   }, [address])
 
-  return ready &&
+  const { ready: postRequestReady, postRequest } = useCfWorkerAuthPostRequest(
+    'https://following.daodao.zone',
+    'Migrate Following'
+  )
+
+  return postRequestReady &&
+    ready &&
     !daos.loading &&
     daos.data.length === 0 &&
     oldFollowing.length > 0 ? (
     <StatelessMigrateFollowingModal
       EntityDisplay={EntityDisplay}
       followedDaos={oldFollowing}
-      onMigrate={async () =>
-        (await setFollowing(oldFollowing)) && setOldFollowing([])
-      }
-      syncing={updatingFollowing}
+      migrating={updatingFollowing || loading}
+      onMigrate={async () => {
+        setLoading(true)
+        try {
+          await setFollowing(oldFollowing)
+          await postRequest('/unfollow-all/' + CHAIN_ID)
+          setOldFollowing([])
+        } catch (err) {
+          console.error(err)
+          toast.error(processError(err))
+        } finally {
+          setLoading(false)
+        }
+      }}
       visible
     />
   ) : null

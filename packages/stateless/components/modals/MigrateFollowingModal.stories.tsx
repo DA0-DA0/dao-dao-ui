@@ -18,7 +18,7 @@ export const Default = Template.bind({})
 Default.args = {
   visible: true,
   onMigrate: () => alert('migrate'),
-  syncing: false,
+  migrating: false,
   followedDaos: [
     'juno10h0hc64jv006rr8qy0zhlu4jsxct8qwa0vtaleayh0ujz0zynf2s2r7v8q',
     'juno1xz54y0ktew0dcm00f9vjw0p7x29pa4j5p9rwq6zerkytugzg27qs4shxnt',
