@@ -92,7 +92,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   // On destination chain ID change, update address intelligently.
   useEffect(() => {
-    let newRecipient = ''
+    let newRecipient = recipient
     try {
       const { bech32_prefix: bech32Prefix } = getChainForChainId(toChainId)
 
