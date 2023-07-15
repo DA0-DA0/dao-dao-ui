@@ -1,7 +1,11 @@
 import MeiliSearch from 'meilisearch'
 
-import { IndexerDumpState } from '@dao-dao/types'
-import { SEARCH_API_KEY, SEARCH_DAOS_INDEX, SEARCH_HOST } from '@dao-dao/utils'
+import { IndexerDumpState, WithChainId } from '@dao-dao/types'
+import {
+  SEARCH_API_KEY,
+  SEARCH_HOST,
+  SearchDaosIndexPerChain,
+} from '@dao-dao/utils'
 
 let _client: MeiliSearch | undefined
 
@@ -16,7 +20,8 @@ export const loadMeilisearchClient = async (): Promise<MeiliSearch> => {
   return _client
 }
 
-export interface DaoSearchResult {
+export type DaoSearchResult = {
+  chainId: string
   contractAddress: string
   codeId: number
   blockHeight: number
@@ -24,15 +29,29 @@ export interface DaoSearchResult {
   value: IndexerDumpState
 }
 
-export const searchDaos = async (
-  query: string,
-  limit?: number,
+export type SearchDaosOptions = WithChainId<{
+  query: string
+  limit?: number
   exclude?: string[]
-) => {
-  const client = await loadMeilisearchClient()
-  const index = client.index(SEARCH_DAOS_INDEX)
+}>
 
-  const results = await index.search<DaoSearchResult>(query, {
+export const searchDaos = async ({
+  chainId,
+  query,
+  limit,
+  exclude,
+}: SearchDaosOptions): Promise<DaoSearchResult[]> => {
+  const client = await loadMeilisearchClient()
+
+  console.log(SearchDaosIndexPerChain)
+  if (!(chainId in SearchDaosIndexPerChain)) {
+    return []
+  }
+  const index = client.index(
+    SearchDaosIndexPerChain[chainId as keyof typeof SearchDaosIndexPerChain]!
+  )
+
+  const results = await index.search<Omit<DaoSearchResult, 'chainId'>>(query, {
     limit,
     filter: [
       // Only show DAOs with proposals to reduce clutter/spam.
@@ -51,5 +70,8 @@ export const searchDaos = async (
     sort: ['blockHeight:desc', 'value.proposalCount:desc'],
   })
 
-  return results.hits
+  return results.hits.map((hit) => ({
+    chainId,
+    ...hit,
+  }))
 }

@@ -6,7 +6,6 @@ import {
   DaoCoreV2Selectors,
   blockHeightTimestampSafeSelector,
   cosmWasmClientForChainSelector,
-  daoCorePolytoneProxiesSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
 } from '@dao-dao/state'
@@ -35,9 +34,9 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
     ({ get }) => {
       const polytoneProxies = Object.entries(
         get(
-          daoCorePolytoneProxiesSelector({
+          DaoCoreV2Selectors.polytoneProxiesSelector({
             chainId: CHAIN_ID,
-            coreAddress,
+            contractAddress: coreAddress,
           })
         )
       )

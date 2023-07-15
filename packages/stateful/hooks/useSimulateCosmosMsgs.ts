@@ -3,8 +3,8 @@ import { useCallback } from 'react'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import {
+  DaoCoreV2Selectors,
   cosmosRpcClientForChainSelector,
-  daoCorePolytoneProxiesSelector,
 } from '@dao-dao/state/recoil'
 import { useChain } from '@dao-dao/stateless'
 import { CosmosMsgFor_Empty } from '@dao-dao/types'
@@ -36,9 +36,9 @@ export const useSimulateCosmosMsgs = (senderAddress: string) => {
   )
   const polytoneProxies = useRecoilValue(
     isValidContractAddress(senderAddress, bech32Prefix)
-      ? daoCorePolytoneProxiesSelector({
-          coreAddress: senderAddress,
+      ? DaoCoreV2Selectors.polytoneProxiesSelector({
           chainId,
+          contractAddress: senderAddress,
         })
       : constSelector(undefined)
   )

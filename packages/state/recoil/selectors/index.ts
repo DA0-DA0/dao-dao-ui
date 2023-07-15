@@ -2,7 +2,6 @@ export * from './contracts'
 
 export * from './chain'
 export * from './contract'
-export * from './dao'
 export * from './discord'
 export * from './inbox'
 export * from './indexer'

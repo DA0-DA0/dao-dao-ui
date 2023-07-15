@@ -18,8 +18,10 @@ import { AddressInputProps, Entity, EntityType } from '@dao-dao/types'
 import {
   getFallbackImage,
   isValidBech32Address,
+  polytoneNoteProxyMapToChainIdMap,
   toBech32Hash,
 } from '@dao-dao/utils'
+import { PolytoneNotesPerChain } from '@dao-dao/utils/constants/polytone'
 
 import { walletProfileDataSelector } from '../recoil/selectors/profile'
 import { EntityDisplay } from './EntityDisplay'
@@ -30,7 +32,7 @@ export const AddressInput = <
 >(
   props: AddressInputProps<FV, FieldName>
 ) => {
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const currentChain = useChain()
   const { t } = useTranslation()
 
   // Null if not within a FormProvider.
@@ -42,22 +44,38 @@ export const AddressInput = <
     formValue &&
     formValue.length >= 3 &&
     // Don't search name if it's an address.
-    !isValidBech32Address(formValue, bech32Prefix)
+    !isValidBech32Address(formValue, currentChain.bech32_prefix)
 
   const searchProfilesLoadable = useCachedLoadable(
     hasFormValue && props.type !== 'contract'
       ? searchProfilesByNamePrefixSelector({
-          chainId,
+          chainId: currentChain.chain_id,
           namePrefix: formValue,
         })
       : undefined
   )
+  // Search DAOs on current chains and all polytone-connected chains so we can
+  // find polytone accounts.
   const searchDaosLoadable = useCachedLoadable(
     hasFormValue && props.type !== 'wallet'
-      ? searchDaosSelector({
-          query: formValue,
-          limit: 5,
-        })
+      ? waitForAll(
+          [
+            // Current chain.
+            currentChain.chain_id,
+            // Chains that have polytone connections with the current chain.
+            ...Object.entries(PolytoneNotesPerChain)
+              .filter(([, destChains]) =>
+                Object.keys(destChains).includes(currentChain.chain_id)
+              )
+              .map(([chainId]) => chainId),
+          ].map((chainId) =>
+            searchDaosSelector({
+              chainId,
+              query: formValue,
+              limit: 5,
+            })
+          )
+        )
       : undefined
   )
 
@@ -68,7 +86,7 @@ export const AddressInput = <
       ? waitForAll(
           searchProfilesLoadable.contents.map(({ address }) =>
             walletProfileDataSelector({
-              chainId,
+              chainId: currentChain.chain_id,
               address,
             })
           )
@@ -100,20 +118,40 @@ export const AddressInput = <
             : []),
           ...(searchDaosLoadable.state === 'hasValue'
             ? searchDaosLoadable.contents
+                .flat()
                 .filter(({ value }) => value?.config)
                 .map(
                   ({
+                    chainId,
                     contractAddress,
                     value: {
                       config: { name, image_url },
+                      polytoneProxies,
                     },
-                  }) => ({
-                    type: EntityType.Dao,
-                    address: contractAddress,
-                    name,
-                    imageUrl: image_url || getFallbackImage(contractAddress),
-                  })
+                  }) => {
+                    // Use address that corresponds to the current chain,
+                    // whether it's the DAOs core address or one of its polytone
+                    // proxies.
+                    const address =
+                      chainId === currentChain.chain_id
+                        ? contractAddress
+                        : polytoneNoteProxyMapToChainIdMap(
+                            chainId,
+                            polytoneProxies || {}
+                          )?.[currentChain.chain_id]
+                    if (!address) {
+                      return
+                    }
+
+                    return {
+                      type: EntityType.Dao,
+                      address,
+                      name,
+                      imageUrl: image_url || getFallbackImage(address),
+                    } as Entity
+                  }
                 )
+                .filter((entity): entity is Entity => !!entity)
             : []),
         ]
       : []

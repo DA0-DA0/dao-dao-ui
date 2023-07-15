@@ -13,7 +13,6 @@ import {
   cosmWasmClientForChainSelector,
 } from './chain'
 import { DaoCoreV2Selectors } from './contracts'
-import { daoCorePolytoneProxiesSelector } from './dao'
 import {
   genericTokenBalancesSelector,
   genericTokenDelegatedBalanceSelector,
@@ -181,9 +180,9 @@ export const daoTvlSelector = selectorFamily<
 
       const polytoneProxies = Object.entries(
         get(
-          daoCorePolytoneProxiesSelector({
+          DaoCoreV2Selectors.polytoneProxiesSelector({
             chainId,
-            coreAddress,
+            contractAddress: coreAddress,
           })
         )
       )

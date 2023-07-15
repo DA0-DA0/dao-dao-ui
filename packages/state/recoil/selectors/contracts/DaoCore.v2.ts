@@ -1,6 +1,11 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
-import { GenericTokenBalance, TokenType, WithChainId } from '@dao-dao/types'
+import {
+  GenericTokenBalance,
+  PolytoneProxies,
+  TokenType,
+  WithChainId,
+} from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
@@ -23,9 +28,17 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
-import { CW721_WORKAROUND_ITEM_KEY_PREFIX } from '@dao-dao/utils'
+import {
+  CW721_WORKAROUND_ITEM_KEY_PREFIX,
+  polytoneNoteProxyMapToChainIdMap,
+} from '@dao-dao/utils'
+import { PolytoneNotesPerChain } from '@dao-dao/utils/constants/polytone'
 
-import { Cw721BaseSelectors, DaoVotingCw20StakedSelectors } from '.'
+import {
+  Cw721BaseSelectors,
+  DaoVotingCw20StakedSelectors,
+  PolytoneNoteSelectors,
+} from '.'
 import {
   DaoCoreV2Client,
   DaoCoreV2QueryClient,
@@ -1009,5 +1022,68 @@ export const listAllItemsWithPrefixSelector = selectorFamily<
     async ({ get }) => {
       const items = get(listAllItemsSelector(queryClientParams))
       return items.filter(([key]) => key.startsWith(prefix))
+    },
+})
+
+export const polytoneProxiesSelector = selectorFamily<
+  PolytoneProxies,
+  QueryClientParams
+>({
+  key: 'daoCoreV2PolytoneProxies',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      // Mapping from polytone note contract to remote proxy address.
+      const noteToRemoteProxy: Record<string, string> = get(
+        queryContractIndexerSelector({
+          ...queryClientParams,
+          formula: 'daoCore/polytoneProxies',
+          args: {
+            address: queryClientParams.contractAddress,
+          },
+        })
+      )
+      if (noteToRemoteProxy) {
+        return polytoneNoteProxyMapToChainIdMap(
+          queryClientParams.chainId,
+          noteToRemoteProxy
+        )
+      }
+
+      // Get polytone notes on this chain.
+      const polytoneNotes =
+        queryClientParams.chainId in PolytoneNotesPerChain
+          ? PolytoneNotesPerChain[
+              queryClientParams.chainId as keyof typeof PolytoneNotesPerChain
+            ] || {}
+          : {}
+
+      // Fallback to contract query if indexer fails.
+      return Object.entries(polytoneNotes)
+        .map(([chainId, { note }]) => ({
+          chainId,
+          proxy: get(
+            PolytoneNoteSelectors.remoteAddressSelector({
+              contractAddress: note,
+              chainId: queryClientParams.chainId,
+              params: [
+                {
+                  localAddress: queryClientParams.contractAddress,
+                },
+              ],
+            })
+          ),
+        }))
+        .reduce(
+          (acc, { chainId, proxy }) => ({
+            ...acc,
+            ...(proxy
+              ? {
+                  [chainId]: proxy,
+                }
+              : {}),
+          }),
+          {} as PolytoneProxies
+        )
     },
 })

@@ -1,7 +1,5 @@
 import { ChainId, PolytoneNotes } from '@dao-dao/types'
 
-const NONE: PolytoneNotes = {}
-
 const junoMainnet: PolytoneNotes = {
   [ChainId.OsmosisMainnet]: {
     // juno
@@ -52,7 +50,5 @@ const osmosisMainnet: PolytoneNotes = {
 
 export const PolytoneNotesPerChain: Partial<Record<ChainId, PolytoneNotes>> = {
   [ChainId.JunoMainnet]: junoMainnet,
-  [ChainId.JunoTestnet]: NONE,
   [ChainId.OsmosisMainnet]: osmosisMainnet,
-  [ChainId.OsmosisTestnet]: NONE,
 }

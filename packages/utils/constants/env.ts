@@ -94,8 +94,6 @@ export const INDEXER_DISABLED =
 // Search
 export const SEARCH_HOST = process.env.NEXT_PUBLIC_SEARCH_HOST as string
 export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
-export const SEARCH_DAOS_INDEX = process.env
-  .NEXT_PUBLIC_SEARCH_DAOS_INDEX as string
 export const FEATURED_DAOS_INDEX = process.env
   .NEXT_PUBLIC_FEATURED_DAOS_INDEX as string
 

@@ -24,6 +24,7 @@ export type EntityDisplayProps = {
   noCopy?: boolean
   noUnderline?: boolean
   showFullAddress?: boolean
+  noLink?: boolean
 }
 
 export type StatefulEntityDisplayProps = Omit<

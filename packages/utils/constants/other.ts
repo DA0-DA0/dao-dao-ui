@@ -1,5 +1,7 @@
 // Constants NOT derived from environment variables.
 
+import { ChainId } from '@dao-dao/types'
+
 export const SITE_IMAGE = '/social.jpg'
 export const WC_ICON_PATH = '/walletconnect.png'
 
@@ -49,3 +51,11 @@ export const CW721_WORKAROUND_ITEM_KEY_PREFIX = 'cw721:'
 export const OSMOSIS_MAINNET_RPC = 'https://rpc.osmosis.zone'
 export const OSMOSIS_MAINNET_REST = 'https://lcd.osmosis.zone'
 export const OSMOSIS_API_BASE = 'https://api-osmosis.imperator.co'
+
+// Search
+export const SearchDaosIndexPerChain: Partial<Record<ChainId, string>> = {
+  [ChainId.JunoMainnet]: 'daos',
+  [ChainId.JunoTestnet]: 'testnet_daos',
+  [ChainId.OsmosisMainnet]: 'osmosis_daos',
+  [ChainId.OsmosisTestnet]: 'osmosis_testnet_daos',
+}

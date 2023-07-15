@@ -5,7 +5,6 @@ import {
   DaoVotingCw20StakedSelectors,
   contractInstantiateTimeSelector,
   contractVersionSelector,
-  daoCorePolytoneProxiesSelector,
   queryContractIndexerSelector,
 } from '@dao-dao/state'
 import {
@@ -212,7 +211,10 @@ export const daoInfoSelector: (param: {
       )
 
       const polytoneProxies = get(
-        daoCorePolytoneProxiesSelector({ coreAddress, chainId })
+        DaoCoreV2Selectors.polytoneProxiesSelector({
+          contractAddress: coreAddress,
+          chainId,
+        })
       )
 
       let parentDaoInfo

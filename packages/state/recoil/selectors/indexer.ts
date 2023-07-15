@@ -14,6 +14,7 @@ import {
 import {
   DaoSearchResult,
   QueryIndexerOptions,
+  SearchDaosOptions,
   loadMeilisearchClient,
   queryIndexer,
   searchDaos,
@@ -121,17 +122,10 @@ export const queryWalletIndexerSelector = selectorFamily<
 
 export const searchDaosSelector = selectorFamily<
   DaoSearchResult[],
-  {
-    query: string
-    limit?: number
-    exclude?: string[]
-  }
+  SearchDaosOptions
 >({
   key: 'searchDaos',
-  get:
-    ({ query, limit, exclude }) =>
-    async () =>
-      await searchDaos(query, limit, exclude),
+  get: (options) => async () => await searchDaos(options),
 })
 
 export const openProposalsSelector = selectorFamily<
