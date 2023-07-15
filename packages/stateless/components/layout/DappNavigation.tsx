@@ -112,13 +112,25 @@ export const DappNavigation = ({
       {
         buttons: HOST_CHAIN_SUBDOMAINS.filter(
           ({ hideFromSwitcher }) => !hideFromSwitcher
-        ).map(({ id, subdomain }) => ({
-          href: `https://${subdomain}.daodao.zone`,
-          label: getDisplayNameForChainId(id),
-          pressed: id === chain.chain_id,
-          Icon: makeChainIcon(id),
-          openInNewTab: false,
-        })),
+        )
+          .map(({ id, subdomain }) => ({
+            href: `https://${subdomain}.daodao.zone`,
+            label: getDisplayNameForChainId(id),
+            pressed: id === chain.chain_id,
+            Icon: makeChainIcon(id),
+            openInNewTab: false,
+          }))
+          .sort((a, b) => {
+            // Sort pressed to the top.
+            if (a.pressed && !b.pressed) {
+              return -1
+            } else if (!a.pressed && b.pressed) {
+              return 1
+            }
+
+            // Sort alphabetically by label.
+            return a.label.localeCompare(b.label)
+          }),
       },
     ]
 
