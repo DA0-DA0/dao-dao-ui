@@ -54,7 +54,7 @@ export const MigrateFollowingModal = () => {
         setLoading(true)
         try {
           await setFollowing(oldFollowing)
-          await postRequest('/unfollow-all/' + CHAIN_ID)
+          await postRequest('/unfollow-all')
           setOldFollowing([])
         } catch (err) {
           console.error(err)
