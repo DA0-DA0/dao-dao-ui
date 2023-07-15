@@ -20,6 +20,7 @@ import {
   useCw721CommonGovernanceTokenInfoIfExists,
   useNativeCommonGovernanceTokenInfoIfExists,
 } from '../../../voting-module-adapter'
+import { ButtonLink } from '../../ButtonLink'
 import { NftCard } from '../../NftCard'
 import { StargazeNftImportModal } from '../../StargazeNftImportModal'
 import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
@@ -41,7 +42,6 @@ export const TreasuryAndNftsTab = () => {
   const tokens = useCachedLoading(
     treasuryTokenCardInfosSelector({
       coreAddress: daoInfo.coreAddress,
-      chainId: daoInfo.chainId,
       cw20GovernanceTokenAddress,
       nativeGovernanceTokenDenom,
     }),
@@ -50,7 +50,6 @@ export const TreasuryAndNftsTab = () => {
   const nfts = useCachedLoading(
     nftCardInfosForDaoSelector({
       coreAddress: daoInfo.coreAddress,
-      chainId: daoInfo.chainId,
       governanceCollectionAddress: cw721GovernanceCollectionAddress,
     }),
     []
@@ -60,8 +59,20 @@ export const TreasuryAndNftsTab = () => {
   const addCw721Action = useActionForKey(ActionKey.ManageCw721)
   const addCw721ActionDefaults = addCw721Action?.action.useDefaults()
 
+  const createCrossChainAccountPrefill = getDaoProposalSinglePrefill({
+    actions: [
+      {
+        actionKey: ActionKey.CreateCrossChainAccount,
+        data: {
+          chainId: 'CHAIN_ID',
+        },
+      },
+    ],
+  })
+
   return (
     <StatelessTreasuryAndNftsTab
+      ButtonLink={ButtonLink}
       FiatDepositModal={connected ? DaoFiatDepositModal : undefined}
       NftCard={NftCard}
       StargazeNftImportModal={StargazeNftImportModal}
@@ -83,6 +94,13 @@ export const TreasuryAndNftsTab = () => {
             })
           : undefined
       }
+      createCrossChainAccountPrefillHref={getDaoProposalPath(
+        daoInfo.coreAddress,
+        'create',
+        {
+          prefill: createCrossChainAccountPrefill,
+        }
+      )}
       isMember={isMember}
       nfts={nfts}
       tokens={tokens}

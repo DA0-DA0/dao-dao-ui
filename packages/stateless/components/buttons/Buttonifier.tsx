@@ -155,7 +155,7 @@ export const ButtonifiedChildren = ({
       )}
     >
       {loading && variant !== PULSE_LOADING_VARIANTS && (
-        <Loader invert={variant === 'primary'} size={24} />
+        <Loader invert={variant === 'primary'} size={size === 'sm' ? 18 : 24} />
       )}
     </div>
     <div

@@ -5,20 +5,19 @@ import { useDaoInfoContext } from '@dao-dao/stateless'
 
 export const makeProposalModuleAdapterDecorator: (
   proposalId: string
-  // eslint-disable-next-line react/display-name
-) => DecoratorFn = (proposalId) => (Story) => {
-  const { chainId, coreAddress, proposalModules } = useDaoInfoContext()
+) => DecoratorFn = (proposalId) =>
+  function ProposalModuleAdapterDecorator(Story) {
+    const { coreAddress, proposalModules } = useDaoInfoContext()
 
-  return (
-    <ProposalModuleAdapterProvider
-      initialOptions={{
-        chainId,
-        coreAddress,
-      }}
-      proposalId={proposalId}
-      proposalModules={proposalModules}
-    >
-      <Story />
-    </ProposalModuleAdapterProvider>
-  )
-}
+    return (
+      <ProposalModuleAdapterProvider
+        initialOptions={{
+          coreAddress,
+        }}
+        proposalId={proposalId}
+        proposalModules={proposalModules}
+      >
+        <Story />
+      </ProposalModuleAdapterProvider>
+    )
+  }

@@ -4,22 +4,8 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-export type Admin =
-  | {
-      address: {
-        addr: string
-      }
-    }
-  | {
-      core_module: {}
-    }
-export type Duration =
-  | {
-      height: number
-    }
-  | {
-      time: number
-    }
+import { Addr, Admin, Binary, Duration, Expiration, Uint128 } from './common'
+
 export interface InstantiateMsg {
   nft_address: string
   owner?: Admin | null
@@ -53,7 +39,6 @@ export type ExecuteMsg =
         addr: string
       }
     }
-export type Binary = string
 export interface Cw721ReceiveMsg {
   msg: Binary
   sender: string
@@ -92,7 +77,6 @@ export type QueryMsg =
   | {
       info: {}
     }
-export type Addr = string
 export interface Config {
   nft_address: Addr
   owner?: Addr | null
@@ -101,25 +85,6 @@ export interface Config {
 export interface HooksResponse {
   hooks: string[]
 }
-export interface InfoResponse {
-  info: ContractVersion
-}
-export interface ContractVersion {
-  contract: string
-  version: string
-}
-export type Expiration =
-  | {
-      at_height: number
-    }
-  | {
-      at_time: Timestamp
-    }
-  | {
-      never: {}
-    }
-export type Timestamp = Uint64
-export type Uint64 = string
 export interface NftClaimsResponse {
   nft_claims: NftClaim[]
 }
@@ -128,7 +93,6 @@ export interface NftClaim {
   token_id: string
 }
 export type ArrayOfString = string[]
-export type Uint128 = string
 export interface TotalPowerAtHeightResponse {
   height: number
   power: Uint128

@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import removeMarkdown from 'remove-markdown'
 
 import { DaoCardProps } from '@dao-dao/types/stateless/DaoCard'
-import { formatDate, getUrlBaseForChainId } from '@dao-dao/utils'
+import { formatDate } from '@dao-dao/utils'
 
 import { useDaoNavHelpers } from '../../hooks'
 import { IconButton } from '../icon_buttons'
@@ -22,7 +22,6 @@ import { DaoImage } from './DaoImage'
 export * from '@dao-dao/types/stateless/DaoCard'
 
 export const DaoCard = ({
-  chainId,
   coreAddress,
   name,
   description,
@@ -50,7 +49,7 @@ export const DaoCard = ({
         'relative flex h-[328px] w-full flex-col items-center justify-between rounded-md bg-background-secondary py-7 px-6 ring-1 ring-inset ring-transparent transition-all hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus',
         className
       )}
-      href={getUrlBaseForChainId(chainId) + getDaoPath(coreAddress)}
+      href={getDaoPath(coreAddress)}
       onMouseLeave={onMouseLeave}
       onMouseOver={onMouseOver}
     >
@@ -73,10 +72,7 @@ export const DaoCard = ({
                 />
               )}
               className="text-icon-interactive-disabled"
-              href={
-                getUrlBaseForChainId(chainId) +
-                getDaoPath(parentDao.coreAddress)
-              }
+              href={getDaoPath(parentDao.coreAddress)}
               onClick={
                 // Don't click on DAO card.
                 (event) => event.stopPropagation()

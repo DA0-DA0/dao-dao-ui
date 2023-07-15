@@ -13,10 +13,10 @@ import {
   Tooltip,
   useCachedLoadable,
   useCachedLoading,
-  useDaoInfoContext,
+  useChain,
 } from '@dao-dao/stateless'
 import { WidgetRendererProps } from '@dao-dao/types'
-import { processError } from '@dao-dao/utils'
+import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { nftCardInfoSelector } from '../../../recoil'
 import { MintNftData } from './types'
@@ -29,12 +29,12 @@ export const MintNftRenderer = ({
   },
 }: WidgetRendererProps<MintNftData>) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const {
     address: walletAddress = '',
     signingCosmWasmClient,
     connected,
   } = useWallet()
-  const { chainId } = useDaoInfoContext()
 
   const [minting, setMinting] = useState(false)
 
@@ -72,7 +72,7 @@ export const MintNftRenderer = ({
         walletAddress,
         contract,
         JSON.parse(msg.replaceAll('{{wallet}}', walletAddress)),
-        'auto'
+        CHAIN_GAS_MULTIPLIER
       )
     } catch (err) {
       console.error(err)

@@ -12,7 +12,9 @@ import {
 } from '@dao-dao/stateless'
 import { ActionComponent, AddressInputProps } from '@dao-dao/types'
 import { SubDao } from '@dao-dao/types/contracts/DaoCore.v2'
-import { validateContractAddress, validateRequired } from '@dao-dao/utils'
+import { makeValidateContractAddress, validateRequired } from '@dao-dao/utils'
+
+import { useActionOptions } from '../../../react'
 
 export interface ManageSubDaosData {
   toAdd: SubDao[]
@@ -35,6 +37,9 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
   options: { currentSubDaos, AddressInput },
 }) => {
   const { t } = useTranslation()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { register, watch, control } = useFormContext<ManageSubDaosData>()
 
   const {
@@ -72,7 +77,7 @@ export const ManageSubDaosComponent: ActionComponent<ManageSubDaosOptions> = ({
                   register={register}
                   validation={[
                     validateRequired,
-                    validateContractAddress,
+                    makeValidateContractAddress(bech32Prefix),
                     (value) =>
                       currentSubDaos.every(
                         ({ address }) => address !== value

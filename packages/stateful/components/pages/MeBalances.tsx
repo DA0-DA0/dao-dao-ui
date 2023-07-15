@@ -4,6 +4,7 @@ import { waitForAllSettled } from 'recoil'
 import {
   MeBalances as StatelessMeBalances,
   useCachedLoading,
+  useChain,
 } from '@dao-dao/stateless'
 import { LoadingData, TokenCardInfo } from '@dao-dao/types'
 import { loadableToLoadingData } from '@dao-dao/utils'
@@ -18,13 +19,14 @@ import { WalletNftCard } from '../WalletNftCard'
 import { WalletTokenLine } from '../WalletTokenLine'
 
 export const MeBalances = () => {
-  const { address: walletAddress, publicKey, chainInfo } = useWallet()
+  const { chain_id: chainId } = useChain()
+  const { address: walletAddress, publicKey } = useWallet()
 
   const tokensWithoutLazyInfo = useCachedLoading(
     walletAddress
       ? walletTokenCardInfosSelector({
           walletAddress,
-          chainId: chainInfo?.chainId,
+          chainId,
         })
       : undefined,
     []
@@ -36,8 +38,7 @@ export const MeBalances = () => {
       ? waitForAllSettled(
           tokensWithoutLazyInfo.data.map(({ token, unstakedBalance }) =>
             tokenCardLazyInfoSelector({
-              walletAddress,
-              chainId: chainInfo?.chainId,
+              owner: walletAddress,
               token,
               unstakedBalance,
             })

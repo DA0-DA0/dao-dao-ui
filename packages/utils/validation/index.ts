@@ -2,15 +2,14 @@ import Ajv from 'ajv'
 import JSON5 from 'json5'
 import { TFunction } from 'react-i18next'
 
-import { CHAIN_BECH32_PREFIX } from '../constants'
-import cosmosMsgSchema from '../cosmos_msg.json'
-import { nativeTokenExists } from '../ibc'
 import {
-  isValidAddress,
+  isValidBech32Address,
   isValidContractAddress,
   isValidTokenFactoryDenom,
   isValidValidatorAddress,
-} from '../isValidAddress'
+} from '../address'
+import cosmosMsgSchema from '../cosmos_msg.json'
+import { nativeTokenExists } from '../ibc'
 import { isValidUrl } from '../isValidUrl'
 
 export * from './makeValidateMsg'
@@ -33,13 +32,23 @@ export const validatePercent = (v: string | number) => {
   return (!isNaN(p) && p <= 100 && p >= 0) || 'Invalid percentage'
 }
 
-export const validateAddress = (v: any, required = true) =>
-  (!required && !v) ||
-  (v && typeof v === 'string' && isValidAddress(v, CHAIN_BECH32_PREFIX)) ||
-  'Invalid address'
+export const makeValidateAddress =
+  (bech32Prefix: string, required = true) =>
+  (v: any) =>
+    (!required && !v) ||
+    (v && typeof v === 'string' && isValidBech32Address(v, bech32Prefix)) ||
+    'Invalid address'
 
-export const validateValidatorAddress = (v: string) =>
-  isValidValidatorAddress(v, CHAIN_BECH32_PREFIX) || 'Invalid address'
+export const makeValidateValidatorAddress =
+  (bech32Prefix: string) => (v: string) =>
+    isValidValidatorAddress(v, bech32Prefix) || 'Invalid address'
+
+export const makeValidateContractAddress =
+  (bech32Prefix: string, required = true) =>
+  (v: any) =>
+    (!required && !v) ||
+    (v && typeof v === 'string' && isValidContractAddress(v, bech32Prefix)) ||
+    'Invalid contract address'
 
 export const validateUrl = (v: string | undefined) =>
   (v && isValidUrl(v)) || 'Invalid image URL: must start with https.'
@@ -54,32 +63,26 @@ export const makeValidateDate =
     (v && !isNaN(Date.parse(v))) ||
     t(time ? 'error.invalidDateTime' : 'error.invalidDate')
 
-export const validateContractAddress = (v: any, required = true) =>
-  (!required && !v) ||
-  (v &&
-    typeof v === 'string' &&
-    isValidContractAddress(v, CHAIN_BECH32_PREFIX)) ||
-  'Invalid contract address.'
-
 export const validateNativeDenom = (v: any, required = true) =>
   (!required && !v) ||
   (v && typeof v === 'string' && nativeTokenExists(v)) ||
   'Invalid native denom. Ensure it is lower–cased.'
 
-export const validateTokenFactoryDenom = (v: any, required = true) =>
-  (!required && !v) ||
-  (v &&
-    typeof v === 'string' &&
-    isValidTokenFactoryDenom(v, CHAIN_BECH32_PREFIX)) ||
-  'Invalid token factory denom. Ensure it is lower–cased.'
+export const makeValidateTokenFactoryDenom =
+  (bech32Prefix: string, required = true) =>
+  (v: any) =>
+    (!required && !v) ||
+    (v && typeof v === 'string' && isValidTokenFactoryDenom(v, bech32Prefix)) ||
+    'Invalid token factory denom. Ensure it is lower–cased.'
 
-export const validateNativeOrFactoryTokenDenom = (v: any, required = true) =>
-  (!required && !v) ||
-  (v &&
-    typeof v === 'string' &&
-    (nativeTokenExists(v) ||
-      isValidTokenFactoryDenom(v, CHAIN_BECH32_PREFIX))) ||
-  'Invalid native token denom. Ensure it is lower–cased.'
+export const makeValidateNativeOrFactoryTokenDenom =
+  (bech32Prefix: string, required = true) =>
+  (v: any) =>
+    (!required && !v) ||
+    (v &&
+      typeof v === 'string' &&
+      (nativeTokenExists(v) || isValidTokenFactoryDenom(v, bech32Prefix))) ||
+    'Invalid native token denom. Ensure it is lower–cased.'
 
 export const validateJSON = (v: string) => {
   try {
@@ -101,3 +104,10 @@ export const validateCosmosMsg = (msg: any) => ({
 export const validateTokenSymbol = (v: string) =>
   /^[a-zA-Z\-]{3,12}$/.test(v) ||
   'Invalid token symbol. Must be 3-12 characters long and contain only letters and hyphens.'
+
+export const validateEmail = (v: any) =>
+  (typeof v === 'string' &&
+    /([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|"([]!#-[^-~ \t]|(\\[\t -~]))+")@([!#-'*+/-9=?A-Z^-~-]+(\.[!#-'*+/-9=?A-Z^-~-]+)*|\[[\t -Z^-~]*])/.test(
+      v
+    )) ||
+  'Invalid email address.'

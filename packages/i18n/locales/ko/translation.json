@@ -137,7 +137,6 @@
     "imageUrlTooltip": "이미지 링크를 삽입하시오. 예: https://moonphase.is/image.svg",
     "initialSupply": "총 토큰 공급량",
     "instantiatedAddress": "활성화된 주소",
-    "junoAddress": "Juno 주소",
     "membersAddress": "회원의 주소",
     "membersToAddOrUpdate": "추가/변경할 회원",
     "membersToRemove": "제거할 회원",

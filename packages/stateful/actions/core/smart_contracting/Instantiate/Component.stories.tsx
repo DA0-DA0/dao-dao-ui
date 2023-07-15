@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
-import { NATIVE_TOKEN } from '@dao-dao/utils'
+import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { InstantiateComponent } from './Component'
 
@@ -30,11 +30,12 @@ Default.args = {
       loading: false,
       data: [
         {
-          token: NATIVE_TOKEN,
+          token: getNativeTokenForChainId(CHAIN_ID),
           balance: '1231245124',
         },
         {
           token: {
+            chainId: CHAIN_ID,
             type: TokenType.Native,
             denomOrAddress: 'uatom',
             decimals: 6,

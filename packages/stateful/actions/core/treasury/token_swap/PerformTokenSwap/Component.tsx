@@ -1,4 +1,5 @@
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import { ActionComponent } from '@dao-dao/types'
 
@@ -7,7 +8,11 @@ import { useActionOptions } from '../../../../react'
 import { ExistingTokenSwap } from '../stateless/ExistingTokenSwap'
 
 export const PerformTokenSwapComponent: ActionComponent = (props) => {
-  const { address, chainId, t } = useActionOptions()
+  const { t } = useTranslation()
+  const {
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   const { watch } = useFormContext()
   const tokenSwapContractAddress: string | undefined = watch(

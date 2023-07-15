@@ -18,6 +18,8 @@ export enum TokenType {
 
 // A native or CW20 token.
 export type GenericToken = {
+  // What chain this token lives on.
+  chainId: string
   type: TokenType
   denomOrAddress: string
   symbol: string
@@ -35,6 +37,13 @@ export type GenericTokenBalance = {
   token: GenericToken
   balance: string
   isGovernanceToken?: boolean
+}
+
+export type LooseGenericToken = Pick<
+  GenericToken,
+  'chainId' | 'denomOrAddress'
+> & {
+  type: TokenType | string
 }
 
 export enum UnstakingTaskStatus {
@@ -84,6 +93,7 @@ export type TokenCardLazyInfo = {
 }
 
 export type TokenCardInfo = {
+  owner: string
   token: GenericToken
   isGovernanceToken: boolean
   subtitle?: string

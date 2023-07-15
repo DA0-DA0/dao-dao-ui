@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 export const useCfWorkerAuthPostRequest = (
   apiBase: string,
-  signatureType: string
+  defaultSignatureType: string
 ) => {
   const { t } = useTranslation()
   const {
@@ -20,7 +20,8 @@ export const useCfWorkerAuthPostRequest = (
   const postRequest = useCallback(
     async <R = any>(
       endpoint: string,
-      data?: Record<string, unknown>
+      data?: Record<string, unknown>,
+      signatureType = defaultSignatureType
     ): Promise<R> => {
       if (!ready) {
         throw new Error(t('error.logInToContinue'))
@@ -115,7 +116,7 @@ export const useCfWorkerAuthPostRequest = (
       apiBase,
       chainInfo,
       publicKey,
-      signatureType,
+      defaultSignatureType,
       t,
       walletAddress,
       walletClient,

@@ -32,10 +32,14 @@ const useDefaults: UseDefaults<ManageSubDaosData> = () => ({
 })
 
 const Component: ActionComponent = (props) => {
-  const { address } = useActionOptions()
+  const {
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   const subDaos = useRecoilValue(
     DaoCoreV2Selectors.allSubDaoConfigsSelector({
+      chainId,
       contractAddress: address,
     })
   )

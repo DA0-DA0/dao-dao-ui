@@ -4,10 +4,10 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 
 ## Sources
 
-| Adapter                                        | Summary                          |
-| ---------------------------------------------- | -------------------------------- |
-| [OpenProposals](./sources/OpenProposals)       | Open proposals in following DAOs |
-| [PendingFollowing](./sources/PendingFollowing) | Pending following DAOs           |
+| Adapter                                  | Summary                          |
+| ---------------------------------------- | -------------------------------- |
+| [OpenProposals](./sources/OpenProposals) | Open proposals in following DAOs |
+| [JoinedDao](./sources/JoinedDao)         | Joined DAO follow suggestions    |
 
 ## Layout
 

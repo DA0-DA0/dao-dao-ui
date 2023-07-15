@@ -1,6 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
+
 import { StakingModal, StakingMode } from './StakingModal'
 
 export default {
@@ -21,8 +23,7 @@ StakeUnstake.args = {
   initialMode: StakingMode.Stake,
   proposalDeposit: 5,
   loadingStakableTokens: { loading: false, data: 23456 },
-  tokenDecimals: 6,
-  tokenSymbol: 'TOKEN',
+  token: getNativeTokenForChainId(CHAIN_ID),
   loadingUnstakableTokens: { loading: false, data: 65432 },
   unstakingDuration: {
     time: 86400,
@@ -36,8 +37,7 @@ Claim.args = {
   initialMode: StakingMode.Claim,
   proposalDeposit: 5,
   loadingStakableTokens: { loading: false, data: 23456 },
-  tokenDecimals: 6,
-  tokenSymbol: 'TOKEN',
+  token: getNativeTokenForChainId(CHAIN_ID),
   loadingUnstakableTokens: { loading: false, data: 65432 },
   unstakingDuration: {
     time: 86400,

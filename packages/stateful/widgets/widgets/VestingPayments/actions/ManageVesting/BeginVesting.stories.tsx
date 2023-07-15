@@ -7,6 +7,7 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { BeginVesting } from './BeginVesting'
 
@@ -38,6 +39,7 @@ Default.args = {
     tokens: [
       {
         token: {
+          chainId: CHAIN_ID,
           type: TokenType.Native,
           denomOrAddress: 'ujuno',
           symbol: 'JUNO',
@@ -48,6 +50,7 @@ Default.args = {
       },
       {
         token: {
+          chainId: CHAIN_ID,
           type: TokenType.Cw20,
           denomOrAddress: 'junoCw20Dao',
           symbol: 'DAO',

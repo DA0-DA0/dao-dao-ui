@@ -120,68 +120,12 @@ const maxVotingInfoToCosmos = (
   }
 }
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
-  msg: Record<string, any>
-) => {
-  const isUpdateConfig = objectMatchesStructure(msg, {
-    wasm: {
-      execute: {
-        contract_addr: {},
-        funds: {},
-        msg: {
-          update_config: {
-            threshold: {},
-            max_voting_period: {
-              time: {},
-            },
-            only_members_execute: {},
-            allow_revoting: {},
-            dao: {},
-          },
-        },
-      },
-    },
-  })
-
-  const isContract = useRecoilValue(
-    isUpdateConfig
-      ? isContractSelector({
-          contractAddress: msg.wasm.execute.contract_addr,
-          names: CONTRACT_NAMES,
-        })
-      : constSelector(false)
-  )
-
-  if (!isUpdateConfig || !isContract) {
-    return { match: false }
-  }
-
-  const config = msg.wasm.execute.msg.update_config
-  const onlyMembersExecute = config.only_members_execute
-
-  const proposalDuration = config.max_voting_period.time
-  const proposalDurationUnits = 'seconds'
-
-  const allowRevoting = !!config.allow_revoting
-
-  return {
-    match: true,
-    data: {
-      onlyMembersExecute,
-      proposalDuration,
-      proposalDurationUnits,
-      allowRevoting,
-      ...thresholdToTQData(config.threshold),
-    },
-  }
-}
-
 export const makeUpdateProposalConfigV2ActionMaker =
   ({
     version,
     address: proposalModuleAddress,
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
-  ({ t, context }) => {
+  ({ t, context, chain: { chain_id: chainId } }) => {
     // Only v2.
     if (version === ContractVersion.V1) {
       return null
@@ -190,6 +134,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useRecoilValue(
         configSelector({
+          chainId,
           contractAddress: proposalModuleAddress,
         })
       )
@@ -217,6 +162,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
     > = () => {
       const proposalModuleConfig = useRecoilValue(
         configSelector({
+          chainId,
           contractAddress: proposalModuleAddress,
         })
       )
@@ -276,6 +222,63 @@ export const makeUpdateProposalConfigV2ActionMaker =
           proposalModuleConfig.min_voting_period,
         ]
       )
+    }
+
+    const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
+      msg: Record<string, any>
+    ) => {
+      const isUpdateConfig = objectMatchesStructure(msg, {
+        wasm: {
+          execute: {
+            contract_addr: {},
+            funds: {},
+            msg: {
+              update_config: {
+                threshold: {},
+                max_voting_period: {
+                  time: {},
+                },
+                only_members_execute: {},
+                allow_revoting: {},
+                dao: {},
+              },
+            },
+          },
+        },
+      })
+
+      const isContract = useRecoilValue(
+        isUpdateConfig
+          ? isContractSelector({
+              contractAddress: msg.wasm.execute.contract_addr,
+              names: CONTRACT_NAMES,
+              chainId,
+            })
+          : constSelector(false)
+      )
+
+      if (!isUpdateConfig || !isContract) {
+        return { match: false }
+      }
+
+      const config = msg.wasm.execute.msg.update_config
+      const onlyMembersExecute = config.only_members_execute
+
+      const proposalDuration = config.max_voting_period.time
+      const proposalDurationUnits = 'seconds'
+
+      const allowRevoting = !!config.allow_revoting
+
+      return {
+        match: true,
+        data: {
+          onlyMembersExecute,
+          proposalDuration,
+          proposalDurationUnits,
+          allowRevoting,
+          ...thresholdToTQData(config.threshold),
+        },
+      }
     }
 
     return {

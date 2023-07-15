@@ -26,7 +26,7 @@ export const Checkbox = ({
 }: CheckboxProps) => (
   <div
     className={clsx(
-      'group inline-flex items-center justify-center rounded outline outline-1 outline-border-primary transition-all',
+      'group inline-flex shrink-0 items-center justify-center rounded p-[0.125rem] outline outline-1 outline-border-primary transition-all',
       checked ? 'bg-component-pill' : 'bg-background-button',
       readOnly
         ? 'pointer-events-none'

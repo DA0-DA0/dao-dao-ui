@@ -22,6 +22,7 @@
     "storybook": "yarn workspace @dao-dao/storybook",
     "types": "yarn workspace @dao-dao/types",
     "utils": "yarn workspace @dao-dao/utils",
+    "email": "yarn workspace @dao-dao/email",
     "publish-all": "lerna publish --no-private from-package"
   },
   "devDependencies": {

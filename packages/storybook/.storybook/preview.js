@@ -4,6 +4,7 @@ import { MINIMAL_VIEWPORTS } from '@storybook/addon-viewport'
 
 import i18n from './i18next'
 import {
+  ChainDecorator,
   NotificationsDecorator,
   RecoilDecorator,
   ThemeDecorator,
@@ -52,6 +53,7 @@ export const parameters = {
 }
 
 export const decorators = [
+  ChainDecorator,
   ThemeDecorator,
   RecoilDecorator,
   NotificationsDecorator,

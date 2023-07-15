@@ -18,19 +18,21 @@ import {
   refreshNativeTokenStakingInfoAtom,
 } from '@dao-dao/state'
 import {
+  KADO_MODAL_ENABLED,
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
   useCachedLoading,
 } from '@dao-dao/stateless'
 import { ActionKey, TokenCardInfo, TokenType } from '@dao-dao/types'
 import {
+  CHAIN_GAS_MULTIPLIER,
+  CHAIN_ID,
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
-  MAINNET,
-  NATIVE_TOKEN,
   cwMsgToEncodeObject,
   getMeTxPrefillPath,
-  isJunoIbcUsdc,
+  getNativeTokenForChainId,
+  isNativeIbcUsdc,
   processError,
 } from '@dao-dao/utils'
 
@@ -51,20 +53,19 @@ import { WalletStakingModal } from './WalletStakingModal'
 
 export const WalletTokenCard = (props: TokenCardInfo) => {
   const { t } = useTranslation()
+  const nativeToken = getNativeTokenForChainId(props.token.chainId)
   const {
     address: walletAddress = '',
     publicKey,
     signingCosmWasmClient,
-    chainInfo,
-  } = useWallet()
+  } = useWallet(props.token.chainId)
 
   const { refreshBalances } = useWalletInfo()
 
   const lazyInfo = useCachedLoading(
     walletAddress
       ? tokenCardLazyInfoSelector({
-          walletAddress,
-          chainId: chainInfo?.chainId,
+          owner: walletAddress,
           token: props.token,
           unstakedBalance: props.unstakedBalance,
         })
@@ -138,10 +139,11 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
 
   const isNative =
     props.token.type === TokenType.Native &&
-    props.token.denomOrAddress === NATIVE_TOKEN.denomOrAddress
+    props.token.denomOrAddress === nativeToken.denomOrAddress
   const isUsdc =
+    props.token.chainId === CHAIN_ID &&
     props.token.type === TokenType.Native &&
-    isJunoIbcUsdc(props.token.denomOrAddress)
+    isNativeIbcUsdc(props.token.denomOrAddress)
 
   // Set this to a value to show the fiat ramp modal defaulted to that option.
   const [fiatRampDefaultModeVisible, setFiatRampDefaultModeVisible] = useState<
@@ -181,7 +183,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
               walletAddress
             )
         ),
-        'auto'
+        CHAIN_GAS_MULTIPLIER
       )
 
       // Wait for balances to update.
@@ -218,7 +220,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
                 },
               ]),
             },
-            ...(isUsdc && MAINNET
+            ...(isUsdc && KADO_MODAL_ENABLED
               ? [
                   {
                     Icon: Paid,
@@ -277,13 +279,13 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
         lazyInfo={lazyInfo}
         refreshUnstakingTasks={
           props.token.type === TokenType.Native &&
-          props.token.denomOrAddress === NATIVE_TOKEN.denomOrAddress
+          props.token.denomOrAddress === nativeToken.denomOrAddress
             ? refreshNativeTokenStakingInfo
             : undefined
         }
       />
 
-      {isUsdc && (
+      {isUsdc && KADO_MODAL_ENABLED && (
         <WalletFiatRampModal
           defaultMode={fiatRampDefaultModeVisible}
           onClose={() => setFiatRampDefaultModeVisible(undefined)}

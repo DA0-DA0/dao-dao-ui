@@ -14,14 +14,13 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodeRawProtobufMsg,
   encodeRawProtobufMsg,
+  getTokenForChainIdAndDenom,
   isDecodedStargateMsg,
   makeStargateMessage,
-  nativeTokenDecimals,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -78,6 +77,7 @@ const Component: ActionComponent = (props) => {
 export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
   t,
   address,
+  chain: { chain_id: chainId },
 }) => {
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzGrantRevokeData> = (
     msg: Record<string, any>
@@ -140,7 +140,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
               funds: spendLimit.map(({ denom, amount }: Coin) => ({
                 amount: convertMicroDenomToDenomWithDecimals(
                   amount,
-                  nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
+                  getTokenForChainIdAndDenom(chainId, denom).decimals
                 ),
                 denom,
               })),
@@ -187,7 +187,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
                 decodedLimit.value.amounts?.map(({ denom, amount }: Coin) => ({
                   amount: convertMicroDenomToDenomWithDecimals(
                     amount,
-                    nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
+                    getTokenForChainIdAndDenom(chainId, denom).decimals
                   ),
                   denom,
                 })) ?? [],
@@ -287,7 +287,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
                 amounts: funds.map(({ denom, amount }) => ({
                   amount: convertDenomToMicroDenomWithDecimals(
                     amount,
-                    nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
+                    getTokenForChainIdAndDenom(chainId, denom).decimals
                   ).toString(),
                   denom,
                 })),
@@ -309,7 +309,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
                 amounts: funds.map(({ denom, amount }) => ({
                   amount: convertDenomToMicroDenomWithDecimals(
                     amount,
-                    nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
+                    getTokenForChainIdAndDenom(chainId, denom).decimals
                   ).toString(),
                   denom,
                 })),
@@ -336,7 +336,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
                   spendLimit: funds.map(({ denom, amount }) => ({
                     amount: convertDenomToMicroDenomWithDecimals(
                       amount,
-                      nativeTokenDecimals(denom) ?? NATIVE_TOKEN.decimals
+                      getTokenForChainIdAndDenom(chainId, denom).decimals
                     ).toString(),
                     denom,
                   })),

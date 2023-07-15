@@ -3,12 +3,9 @@ import { useMemo } from 'react'
 
 import { DaoPageWrapper } from '@dao-dao/stateful'
 import { ContractVersion, DaoInfo, DaoInfoSerializable } from '@dao-dao/types'
-import { CHAIN_BECH32_PREFIX, CHAIN_ID } from '@dao-dao/utils'
 
 export const makeDaoInfo = (): DaoInfo => ({
-  chainId: CHAIN_ID,
-  bech32Prefix: CHAIN_BECH32_PREFIX,
-  coreAddress: CHAIN_BECH32_PREFIX + 'DaoCoreAddress',
+  coreAddress: 'junoDaoCoreAddress',
   coreVersion: ContractVersion.V2Alpha,
   votingModuleAddress: 'votingModuleAddress',
   votingModuleContractName: 'crates.io:dao-voting-cw20-staked',
@@ -30,6 +27,7 @@ export const makeDaoInfo = (): DaoInfo => ({
     Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000)
   ),
   items: {},
+  polytoneProxies: {},
   parentDao: null,
   admin: '',
 })

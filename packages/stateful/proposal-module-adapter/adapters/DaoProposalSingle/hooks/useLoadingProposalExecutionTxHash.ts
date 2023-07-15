@@ -11,6 +11,7 @@ export const useLoadingProposalExecutionTxHash = () => {
   const {
     proposalModule: { address: proposalModuleAddress },
     proposalNumber,
+    chain: { chain_id: chainId },
   } = useProposalModuleAdapterOptions()
 
   const loadingProposal = useLoadingProposal()
@@ -23,6 +24,7 @@ export const useLoadingProposalExecutionTxHash = () => {
         loadingProposal.data.status === ProposalStatus.ExecutionFailed
       ? // If in an execute state, load the execution TX hash.
         proposalExecutionTXHashSelector({
+          chainId,
           contractAddress: proposalModuleAddress,
           proposalId: proposalNumber,
         })

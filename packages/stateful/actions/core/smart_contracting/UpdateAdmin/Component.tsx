@@ -6,11 +6,12 @@ import {
   InputErrorMessage,
   InputLabel,
   IsAdminWarning,
+  useChain,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  validateAddress,
-  validateContractAddress,
+  makeValidateAddress,
+  makeValidateContractAddress,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -27,9 +28,10 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
   isCreating,
   options: { onContractChange, contractAdmin },
 }) => {
-  const { register } = useFormContext()
   const { t } = useTranslation()
   const { address } = useActionOptions()
+  const { bech32_prefix: bech32Prefix } = useChain()
+  const { register } = useFormContext()
 
   return (
     <>
@@ -46,7 +48,10 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
             fieldName={fieldNamePrefix + 'contract'}
             onChange={(e) => onContractChange(e.target.value)}
             register={register}
-            validation={[validateRequired, validateContractAddress]}
+            validation={[
+              validateRequired,
+              makeValidateContractAddress(bech32Prefix),
+            ]}
           />
           <InputErrorMessage error={errors?.tokenAddress} />
         </div>
@@ -57,7 +62,7 @@ export const UpdateAdminComponent: ActionComponent<UpdateAdminOptions> = ({
             error={errors?.newAdmin}
             fieldName={fieldNamePrefix + 'newAdmin'}
             register={register}
-            validation={[validateRequired, validateAddress]}
+            validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
           />
           <InputErrorMessage error={errors?.tokenAddress} />
         </div>

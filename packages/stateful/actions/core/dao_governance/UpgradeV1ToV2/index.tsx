@@ -38,7 +38,10 @@ import { useActionOptions } from '../../../react'
 import { UpgradeV1ToV2Component, UpgradeV1ToV2Data } from './Component'
 
 const useV1SubDaos = () => {
-  const { address, chainId } = useActionOptions()
+  const {
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   const potentialSubDaos = useRecoilValueLoadable(
     daoPotentialSubDaosSelector({
@@ -71,7 +74,10 @@ const useV1SubDaos = () => {
     potentialSubDaos.state === 'hasValue'
       ? waitForAllSettled(
           potentialSubDaos.contents.map((contractAddress) =>
-            contractVersionSelector({ contractAddress })
+            contractVersionSelector({
+              chainId,
+              contractAddress,
+            })
           )
         )
       : undefined
@@ -126,11 +132,11 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
+export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
   context,
   t,
   address,
-  chainId,
+  chain,
 }) => {
   if (context.type !== ActionContextType.Dao) {
     return null
@@ -140,7 +146,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
     const potentialSubDaos = useRecoilValueLoadable(
       daoPotentialSubDaosSelector({
         coreAddress: address,
-        chainId,
+        chainId: chain.chain_id,
       })
     )
 
@@ -167,7 +173,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
             v1SubDaos.data.map((coreAddress) =>
               daoCoreProposalModulesSelector({
                 coreAddress,
-                chainId,
+                chainId: chain.chain_id,
               })
             )
           )
@@ -179,7 +185,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
             v1SubDaos.data.map((contractAddress) =>
               DaoCoreV2Selectors.configSelector({
                 contractAddress,
-                chainId,
+                chainId: chain.chain_id,
                 params: [],
               })
             )
@@ -213,7 +219,7 @@ export const makeUpgradeV1ToV2: ActionMaker<UpgradeV1ToV2Data> = ({
         proposalModules.map(
           (proposalModule) =>
             matchAndLoadCommon(proposalModule, {
-              chainId,
+              chain,
               coreAddress,
             }).selectors.depositInfo
         )

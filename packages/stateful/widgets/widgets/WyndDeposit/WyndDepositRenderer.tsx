@@ -29,6 +29,7 @@ import {
   TokenAmountDisplay,
   useCachedLoadable,
   useCachedLoading,
+  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -39,12 +40,13 @@ import {
 } from '@dao-dao/types'
 import { ExecuteSwapOperationsMsg } from '@dao-dao/types/contracts/WyndexMultiHop'
 import {
+  CHAIN_GAS_MULTIPLIER,
   CHAIN_TXN_URL_PREFIX,
   DAO_DAO_DAO_ADDRESS,
-  NATIVE_TOKEN,
   WYND_MULTI_HOP_CONTRACT,
   convertMicroDenomToDenomWithDecimals,
   genericTokenToAssetInfo,
+  getNativeTokenForChainId,
   processError,
 } from '@dao-dao/utils'
 
@@ -68,7 +70,8 @@ export const WyndDepositRenderer = ({
     address: walletAddress = '',
     connected,
   } = useWallet()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
+  const { coreAddress } = useDaoInfoContext()
 
   // Default to the DAO's treasury if no output specified.
   const outputAddress = _outputAddress || coreAddress
@@ -119,6 +122,7 @@ export const WyndDepositRenderer = ({
       ? waitForAll(
           uniqueWyndPoolTokens.map((token) =>
             genericTokenSelector({
+              chainId,
               type: 'native' in token ? TokenType.Native : TokenType.Cw20,
               denomOrAddress: 'native' in token ? token.native : token.token,
             })
@@ -167,7 +171,9 @@ export const WyndDepositRenderer = ({
     [loadingWyndTokens, walletBalances, t]
   )
 
-  const [token, setToken] = useState<GenericToken>(NATIVE_TOKEN)
+  const [token, setToken] = useState<GenericToken>(() =>
+    getNativeTokenForChainId(chainId)
+  )
   const inTokenIsOutToken =
     token.type === _outputToken.type &&
     token.denomOrAddress === _outputToken.denomOrAddress
@@ -203,6 +209,7 @@ export const WyndDepositRenderer = ({
       outputToken &&
       !loadingMaxReferralCommission.loading
       ? WyndexMultiHopSelectors.simulateReverseSwapOperationsSelector({
+          chainId,
           contractAddress: WYND_MULTI_HOP_CONTRACT,
           params: [
             {
@@ -262,7 +269,7 @@ export const WyndDepositRenderer = ({
             walletAddress,
             outputAddress,
             coins(outputAmount, token.denomOrAddress),
-            'auto'
+            CHAIN_GAS_MULTIPLIER
           )
         } else {
           // Cw20
@@ -275,7 +282,7 @@ export const WyndDepositRenderer = ({
                 amount: outputAmount,
               },
             },
-            'auto'
+            CHAIN_GAS_MULTIPLIER
           )
         }
       } else {
@@ -297,7 +304,7 @@ export const WyndDepositRenderer = ({
             walletAddress,
             WYND_MULTI_HOP_CONTRACT,
             msg,
-            'auto',
+            CHAIN_GAS_MULTIPLIER,
             undefined,
             coins(requiredInput, token.denomOrAddress)
           )
@@ -313,7 +320,7 @@ export const WyndDepositRenderer = ({
                 msg: JSON.stringify(msg),
               },
             },
-            'auto'
+            CHAIN_GAS_MULTIPLIER
           )
         }
       }

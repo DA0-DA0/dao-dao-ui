@@ -13,19 +13,21 @@ import {
   NativeCoinSelector,
   NativeCoinSelectorProps,
   TokenInput,
+  useChain,
 } from '@dao-dao/stateless'
 import { GenericTokenBalance, LoadingData, TokenType } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
+  makeValidateContractAddress,
   makeWasmMessage,
-  validateContractAddress,
   validateCosmosMsg,
   validateRequired,
 } from '@dao-dao/utils'
 
 export interface ExecuteData {
+  chainId: string
   address: string
   message: string
   funds: { denom: string; amount: number }[]
@@ -40,13 +42,16 @@ export interface ExecuteOptions {
 }
 
 export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
-  const { t } = useTranslation()
   const {
     fieldNamePrefix,
     errors,
     isCreating,
     options: { balances },
   } = props
+
+  const { t } = useTranslation()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+
   const { register, control, watch, setValue } = useFormContext()
   const {
     fields: coins,
@@ -59,7 +64,10 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
 
   const cw20Tokens = balances.loading
     ? []
-    : balances.data.filter(({ token }) => token.type === TokenType.Cw20)
+    : balances.data.filter(
+        ({ token }) =>
+          token.chainId === chainId && token.type === TokenType.Cw20
+      )
   const cw20 = watch(fieldNamePrefix + 'cw20') as boolean
   const firstDenom = (
     watch(fieldNamePrefix + 'funds.0') as ExecuteData['funds'][0] | undefined
@@ -78,7 +86,10 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
           fieldName={fieldNamePrefix + 'address'}
           register={register}
           type="contract"
-          validation={[validateRequired, validateContractAddress]}
+          validation={[
+            validateRequired,
+            makeValidateContractAddress(bech32Prefix),
+          ]}
         />
         <InputErrorMessage error={errors?.address} />
       </div>
@@ -159,7 +170,9 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                     ? { loading: true }
                     : {
                         loading: false,
-                        data: cw20Tokens.map(({ token }) => token),
+                        data: cw20Tokens
+                          .filter(({ token }) => token.chainId === chainId)
+                          .map(({ token }) => token),
                       }
                 }
                 watch={watch}
@@ -177,7 +190,9 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                           : {
                               loading: false,
                               data: balances.data.filter(
-                                ({ token }) => token.type === TokenType.Native
+                                ({ token }) =>
+                                  token.chainId === chainId &&
+                                  token.type === TokenType.Native
                               ),
                             },
                       },
@@ -185,6 +200,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                         ? () => removeCoin(index)
                         : undefined,
                     } as NativeCoinSelectorProps)}
+                    chainId={chainId}
                     errors={errors?.funds?.[index]}
                     fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
                   />
@@ -200,7 +216,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                     onClick={() =>
                       appendCoin({
                         amount: 1,
-                        denom: NATIVE_TOKEN.denomOrAddress,
+                        denom: getNativeTokenForChainId(chainId).denomOrAddress,
                       })
                     }
                     variant="secondary"

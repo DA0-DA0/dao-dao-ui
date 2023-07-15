@@ -1,4 +1,13 @@
+import { Chain } from '@chain-registry/types'
+
 import { Coin } from './contracts'
+import { GenericToken } from './token'
+
+export type IChainContext = {
+  chainId: string
+  chain: Chain
+  nativeToken: GenericToken
+}
 
 export interface Validator {
   address: string
@@ -43,4 +52,24 @@ export enum ContractVersion {
   V203 = '2.0.3',
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
   V210 = '2.1.0',
+}
+
+export enum ChainId {
+  JunoMainnet = 'juno-1',
+  JunoTestnet = 'uni-6',
+  OsmosisMainnet = 'osmosis-1',
+  OsmosisTestnet = 'osmo-test-5',
+  StargazeMainnet = 'stargaze-1',
+  StargazeTestnet = 'elgafar-1',
+}
+
+export type HostChainSubdomain = {
+  id: ChainId
+  subdomain: string
+  // Whether or not this chain shows up in the chain switcher.
+  hideFromSwitcher?: boolean
+}
+
+export type HostChain = Omit<HostChainSubdomain, 'id'> & {
+  chain: Chain
 }

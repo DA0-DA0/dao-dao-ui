@@ -15,8 +15,10 @@ import { useTranslation } from 'react-i18next'
 import { GenericToken, LoadingData, TokenType } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
+  getDisplayNameForChainId,
   getFallbackImage,
   toAccessibleImageUrl,
+  tokensEqual,
   validateNonNegative,
   validatePositive,
   validateRequired,
@@ -54,7 +56,7 @@ export type TokenInputProps<
   // The pair of `type` and `denomOrAddress` must be unique for each token.
   tokens: LoadingData<T[]>
   onSelectToken: (token: T) => void
-  selectedToken: Pick<T, 'type' | 'denomOrAddress'> | undefined
+  selectedToken: Pick<T, 'chainId' | 'type' | 'denomOrAddress'> | undefined
   tokenFallback?: ReactNode
   disabled?: boolean
   readOnly?: boolean
@@ -109,7 +111,7 @@ export const TokenInput = <
   const selectedToken =
     tokens.loading || !_selectedToken
       ? undefined
-      : tokens.data.find((token) => token === _selectedToken)
+      : tokens.data.find((token) => tokensEqual(token, _selectedToken))
 
   const amount = convertMicroDenom
     ? convertMicroDenomToDenomWithDecimals(
@@ -117,6 +119,11 @@ export const TokenInput = <
         selectedToken?.decimals ?? 0
       )
     : Number(watch(amountFieldName))
+
+  // All tokens from same chain.
+  const allTokensOnSameChain =
+    !tokens.loading &&
+    tokens.data.every((token) => token.chainId === tokens.data[0].chainId)
 
   const selectedTokenDisplay = useMemo(
     () =>
@@ -202,6 +209,13 @@ export const TokenInput = <
                     iconUrl:
                       token.imageUrl || getFallbackImage(token.denomOrAddress),
                     ...token,
+                    rightNode: allTokensOnSameChain ? undefined : (
+                      <p className="caption-text">
+                        {getDisplayNameForChainId(token.chainId)}
+                      </p>
+                    ),
+                    iconClassName: '!h-8 !w-8',
+                    contentContainerClassName: '!gap-3',
                   }))
             }
             onSelect={(token) => onSelectToken(token as T)}

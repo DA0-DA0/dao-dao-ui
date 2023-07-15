@@ -46,3 +46,68 @@ export type InboxState = {
   totalItemCount: number
   refresh: () => void
 }
+
+export type InboxApiLoadedItem = {
+  id: string
+  timestamp: string | undefined
+  chainId: string | undefined
+  data: unknown
+}
+
+// Items from the inbox API.
+export type InboxApiItem = {
+  id: string
+  timestamp: string | undefined
+  chainId: string | undefined
+} & {
+  type: InboxApiItemType.JoinedDao
+  data: {
+    dao: string
+  }
+}
+
+export enum InboxApiItemType {
+  JoinedDao = 'joined_dao',
+  ProposalCreated = 'proposal_created',
+}
+
+export enum InboxApiItemTypeMethod {
+  Website = 1 << 0,
+  Email = 1 << 1,
+}
+
+export type InboxApiUpdateConfig = {
+  // Update email. If empty or null, remove email.
+  email?: string | null
+  // Update notification settings per-type.
+  types?: Record<string, number | null>
+  // If present, verify email.
+  verify?: string
+  // If present, resend verification email.
+  resend?: boolean
+}
+
+export type InboxApiConfig = {
+  email: string | null
+  verified: boolean
+  types: Record<string, number | null>
+}
+
+export type InboxApi = {
+  ready: boolean
+  updating: boolean
+  clear: (idOrIds: string | string[]) => Promise<boolean>
+  loadConfig: () => Promise<boolean>
+  updateConfig: (
+    data: InboxApiUpdateConfig,
+    signatureType?: string
+  ) => Promise<boolean>
+  resendVerificationEmail: () => Promise<boolean>
+  verify: (code: string) => Promise<boolean>
+  config: InboxApiConfig | undefined
+}
+
+export enum InboxPageSlug {
+  Settings = 'settings',
+  Verify = 'verify',
+}

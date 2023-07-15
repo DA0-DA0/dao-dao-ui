@@ -39,7 +39,7 @@ import {
 import {
   concatAddressStartEnd,
   formatDateTimeTz,
-  isJunoIbcUsdc,
+  isNativeIbcUsdc,
   secondsToWdhms,
 } from '@dao-dao/utils'
 
@@ -413,7 +413,7 @@ export const VestingPaymentCard = ({
                   symbol={token.symbol}
                 />
 
-                {!isJunoIbcUsdc(token.denomOrAddress) &&
+                {!isNativeIbcUsdc(token.denomOrAddress) &&
                   (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
@@ -455,7 +455,7 @@ export const VestingPaymentCard = ({
                   symbol={token.symbol}
                 />
 
-                {!isJunoIbcUsdc(token.denomOrAddress) &&
+                {!isNativeIbcUsdc(token.denomOrAddress) &&
                   (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
@@ -496,7 +496,7 @@ export const VestingPaymentCard = ({
                 symbol={token.symbol}
               />
 
-              {!isJunoIbcUsdc(token.denomOrAddress) &&
+              {!isNativeIbcUsdc(token.denomOrAddress) &&
                 (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
                   <div className="flex flex-row items-center gap-1">
                     <TokenAmountDisplay

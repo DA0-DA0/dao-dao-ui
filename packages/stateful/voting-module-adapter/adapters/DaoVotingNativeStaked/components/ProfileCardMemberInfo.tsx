@@ -9,7 +9,11 @@ import {
   blocksPerYearSelector,
   stakingLoadingAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
+import {
+  useCachedLoadable,
+  useChain,
+  useDaoInfoContext,
+} from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   UnstakingTask,
@@ -37,6 +41,7 @@ export const ProfileCardMemberInfo = ({
   ...props
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { name: daoName } = useDaoInfoContext()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletInfo()
@@ -129,8 +134,16 @@ export const ProfileCardMemberInfo = ({
     t,
   ])
 
-  const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
-  const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
+  const blockHeightLoadable = useCachedLoadable(
+    blockHeightSelector({
+      chainId,
+    })
+  )
+  const blocksPerYear = useRecoilValue(
+    blocksPerYearSelector({
+      chainId,
+    })
+  )
 
   const unstakingTasks: UnstakingTask[] = [
     ...(claimsPending ?? []).map(({ amount, release_at }) => ({

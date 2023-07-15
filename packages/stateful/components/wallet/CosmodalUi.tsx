@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState } from 'recoil'
 
 import { walletModalVisibleAtom } from '@dao-dao/state/recoil'
-import { Loader, Modal, Warning } from '@dao-dao/stateless'
+import { Loader, Modal, WarningCard } from '@dao-dao/stateless'
 import { processError } from '@dao-dao/utils'
 
 import { CosmodalConnected } from './CosmodalConnected'
@@ -61,7 +61,7 @@ export const CosmodalUi = () => {
     <Modal
       footerContent={
         error && (
-          <Warning content={processError(error, { forceCapture: false })} />
+          <WarningCard content={processError(error, { forceCapture: false })} />
         )
       }
       header={{

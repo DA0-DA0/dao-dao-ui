@@ -8,7 +8,11 @@ import { useTranslation } from 'react-i18next'
 import { Button, useDaoInfoContext } from '@dao-dao/stateless'
 import { WidgetEditorProps } from '@dao-dao/types'
 import { InstantiateMsg as Cw721InstantiateMsg } from '@dao-dao/types/contracts/Cw721Base'
-import { CODE_ID_CONFIG, processError } from '@dao-dao/utils'
+import {
+  CHAIN_GAS_MULTIPLIER,
+  CODE_ID_CONFIG,
+  processError,
+} from '@dao-dao/utils'
 
 import { PressData } from './types'
 
@@ -43,7 +47,7 @@ export const PressEditor = ({
           symbol: 'PRESS',
         } as Cw721InstantiateMsg,
         name,
-        'auto'
+        CHAIN_GAS_MULTIPLIER
       )
 
       setValue((fieldNamePrefix + 'contract') as 'contract', contractAddress)

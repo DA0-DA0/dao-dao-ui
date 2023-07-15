@@ -24,6 +24,7 @@ import {
   VOTING_POWER_DISTRIBUTION_COLORS,
   VotingPowerDistribution,
   VotingPowerDistributionEntry,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   CreateDaoCustomValidator,
@@ -32,14 +33,13 @@ import {
 } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
-  CHAIN_BECH32_PREFIX,
   NEW_DAO_CW20_DECIMALS,
   formatPercentOf100,
   isValidContractAddress,
   isValidTokenFactoryDenom,
+  makeValidateContractAddress,
+  makeValidateNativeOrFactoryTokenDenom,
   nativeTokenExists,
-  validateContractAddress,
-  validateNativeOrFactoryTokenDenom,
   validatePercent,
   validatePositive,
   validateRequired,
@@ -68,6 +68,7 @@ export const GovernanceConfigurationInput = ({
   },
 }: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
   const { address: walletAddress } = useWallet()
 
   const {
@@ -180,20 +181,15 @@ export const GovernanceConfigurationInput = ({
   const existingGovernanceTokenIsValid =
     (data.tokenType === GovernanceTokenType.Existing &&
       existingGovernanceTokenIsCw20 &&
-      isValidContractAddress(
-        data.existingTokenDenomOrAddress,
-        CHAIN_BECH32_PREFIX
-      )) ||
+      isValidContractAddress(data.existingTokenDenomOrAddress, bech32Prefix)) ||
     // Native token.
     nativeTokenExists(data.existingTokenDenomOrAddress) ||
     // Native factory token.
-    isValidTokenFactoryDenom(
-      data.existingTokenDenomOrAddress,
-      CHAIN_BECH32_PREFIX
-    )
+    isValidTokenFactoryDenom(data.existingTokenDenomOrAddress, bech32Prefix)
   const existingGovernanceTokenLoadable = useRecoilValueLoadable(
     existingGovernanceTokenIsValid
       ? genericTokenSelector({
+          chainId,
           type: data.existingTokenType,
           denomOrAddress: data.existingTokenDenomOrAddress,
         })
@@ -205,10 +201,12 @@ export const GovernanceConfigurationInput = ({
     existingGovernanceTokenIsValid
       ? existingGovernanceTokenIsCw20
         ? Cw20BaseSelectors.tokenInfoSelector({
+            chainId,
             contractAddress: data.existingTokenDenomOrAddress,
             params: [],
           })
         : nativeSupplySelector({
+            chainId,
             denom: data.existingTokenDenomOrAddress,
           })
       : constSelector(undefined)
@@ -552,15 +550,16 @@ export const GovernanceConfigurationInput = ({
                 ghost
                 placeholder={
                   existingGovernanceTokenIsCw20
-                    ? CHAIN_BECH32_PREFIX + '...'
-                    : `"denom" OR "factory/${CHAIN_BECH32_PREFIX}.../denom"`
+                    ? bech32Prefix + '...'
+                    : `"denom" OR "factory/${bech32Prefix}.../denom"`
                 }
                 register={register}
                 validation={[
                   validateRequired,
+                  makeValidateContractAddress(bech32Prefix),
                   ...(existingGovernanceTokenIsCw20
-                    ? [validateContractAddress]
-                    : [validateNativeOrFactoryTokenDenom]),
+                    ? [makeValidateContractAddress(bech32Prefix)]
+                    : [makeValidateNativeOrFactoryTokenDenom(bech32Prefix)]),
                 ]}
               />
               <InputErrorMessage

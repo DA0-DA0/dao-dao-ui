@@ -2,7 +2,10 @@ import {
   BreadcrumbCrumb,
   DaoParentInfo,
   DaoWebSocketChannelInfo,
+  PolytoneProxies,
 } from '@dao-dao/types'
+
+import { PolytoneNotesPerChain } from './constants/polytone'
 
 export const getParentDaoBreadcrumbs = (
   getDaoPath: (coreAddress: string) => string,
@@ -22,3 +25,31 @@ export const webSocketChannelNameForDao = ({
   chainId,
   coreAddress,
 }: DaoWebSocketChannelInfo) => `${chainId}_${coreAddress}`
+
+export const polytoneNoteProxyMapToChainIdMap = (
+  // Source chain
+  chainId: string,
+  // Map of polytone note on source chain to remote polytone proxies.
+  polytoneNoteProxyMap: Record<string, string>
+): PolytoneProxies => {
+  // Polytone note connections on the given chain.
+  const polytoneNotes =
+    chainId in PolytoneNotesPerChain
+      ? PolytoneNotesPerChain[chainId as keyof typeof PolytoneNotesPerChain] ||
+        {}
+      : {}
+
+  // Convert to chain ID to proxy map based on polytone note connections.
+  return Object.entries(polytoneNotes).reduce((acc, [chainId, { note }]) => {
+    const proxy = polytoneNoteProxyMap[note]
+
+    return {
+      ...acc,
+      ...(proxy
+        ? {
+            [chainId]: proxy,
+          }
+        : {}),
+    }
+  }, {} as PolytoneProxies)
+}

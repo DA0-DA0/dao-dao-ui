@@ -6,15 +6,18 @@ import {
   Key,
   Redo,
   RotateRightOutlined,
+  Send,
   Tag,
 } from '@mui/icons-material'
 import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
+import uniq from 'lodash.uniq'
+import { ComponentType, useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, waitForAllSettled } from 'recoil'
 
+import { PolytoneListenerSelectors } from '@dao-dao/state/recoil'
 import {
   CopyToClipboardUnderline,
   IconButtonLink,
@@ -22,6 +25,8 @@ import {
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
+  useCachedLoading,
+  useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
@@ -35,7 +40,10 @@ import {
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   CHAIN_TXN_URL_PREFIX,
+  decodeMessages,
+  decodePolytoneExecuteMsg,
   formatPercentOf100,
+  makeWasmMessage,
   processError,
 } from '@dao-dao/utils'
 
@@ -108,6 +116,7 @@ const InnerProposalStatusAndInfo = ({
   onVoteSuccess,
   onExecuteSuccess,
   onCloseSuccess,
+  openSelfRelayExecute,
   ...props
 }: BaseProposalStatusAndInfoProps & {
   proposal: ProposalWithMetadata
@@ -115,17 +124,18 @@ const InnerProposalStatusAndInfo = ({
   depositInfo: CheckedDepositInfo | undefined
 }) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
+  const { name: daoName, coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { connected, address: walletAddress = '' } = useWallet()
   const { isMember = false } = useMembership({
     coreAddress,
-    chainId,
   })
 
   const config = useRecoilValue(
     configSelector({
+      chainId,
       contractAddress: proposalModule.address,
     })
   )
@@ -262,15 +272,93 @@ const InnerProposalStatusAndInfo = ({
     setActionLoading(false)
   }, [proposal.status])
 
+  // Decoded polytone execute messages.
+  const polytoneMessages = useMemo(
+    () =>
+      proposal.msgs
+        .map((msg) =>
+          decodePolytoneExecuteMsg(decodeMessages([msg])[0], 'oneOrZero')
+        )
+        .map((decoded) => (decoded.match ? decoded : null))
+        .filter((decoded) => decoded !== null)
+        .map((decoded) => decoded!),
+    [proposal.msgs]
+  )
+  // Callback results.
+  const polytoneResults = useCachedLoading(
+    waitForAllSettled(
+      polytoneMessages.map(({ polytoneNote: { listener }, initiatorMsg }) =>
+        PolytoneListenerSelectors.resultSelector({
+          chainId,
+          contractAddress: listener,
+          params: [
+            {
+              initiator: coreAddress,
+              initiatorMsg,
+            },
+          ],
+        })
+      )
+    ),
+    []
+  )
+  // Polytone messages that need self-relay are those whose polytone connections
+  // require self-relaying and are not yet relayed.
+  const polytoneMessagesNeedingSelfRelay = polytoneResults.loading
+    ? ({ loading: true } as const)
+    : {
+        loading: false,
+        data: polytoneMessages.filter(
+          ({ polytoneNote }, index) =>
+            // Needs self-relay.
+            polytoneNote.needsSelfRelay &&
+            // Not yet relayed.
+            polytoneResults.data[index].state === 'hasError'
+        ),
+      }
+  const hasPolytoneMessagesNeedingRelay =
+    !polytoneMessagesNeedingSelfRelay.loading &&
+    polytoneMessagesNeedingSelfRelay.data.length > 0
+  const openPolytoneRelay = (transactionHash?: string) =>
+    hasPolytoneMessagesNeedingRelay &&
+    openSelfRelayExecute({
+      uniqueId: `${chainId}:${proposalModule.address}:${proposalNumber}`,
+      transaction: transactionHash
+        ? {
+            type: 'exists',
+            hash: transactionHash,
+          }
+        : {
+            type: 'execute',
+            msgs: [
+              makeWasmMessage({
+                wasm: {
+                  execute: {
+                    contract_addr: proposalModule.address,
+                    funds: [],
+                    msg: {
+                      execute: {
+                        proposal_id: proposalNumber,
+                      },
+                    },
+                  },
+                },
+              }),
+            ],
+          },
+      chainIds: uniq(
+        polytoneMessagesNeedingSelfRelay.data.map(({ chainId }) => chainId)
+      ),
+    })
+
   const onExecute = useCallback(async () => {
-    if (!connected) return
+    if (!connected) {
+      return
+    }
 
     setActionLoading(true)
-
     try {
-      await executeProposal({
-        proposalId: proposalNumber,
-      })
+      await executeProposal({ proposalId: proposalNumber })
 
       await onExecuteSuccess()
     } catch (err) {
@@ -285,7 +373,9 @@ const InnerProposalStatusAndInfo = ({
   }, [connected, executeProposal, proposalNumber, onExecuteSuccess])
 
   const onClose = useCallback(async () => {
-    if (!connected) return
+    if (!connected) {
+      return
+    }
 
     setActionLoading(true)
 
@@ -344,13 +434,17 @@ const InnerProposalStatusAndInfo = ({
       {...props}
       action={
         proposal.status === ProposalStatus.Passed &&
-        // Show if anyone can execute OR if the wallet is a member.
-        (!config.only_members_execute || isMember)
+        // Show if anyone can execute OR if the wallet is a member, once
+        // polytone messages that need relaying are done loading.
+        (!config.only_members_execute || isMember) &&
+        !polytoneMessagesNeedingSelfRelay.loading
           ? {
               label: t('button.execute'),
               Icon: Key,
               loading: actionLoading,
-              doAction: onExecute,
+              doAction: hasPolytoneMessagesNeedingRelay
+                ? () => openPolytoneRelay()
+                : onExecute,
             }
           : proposal.status === ProposalStatus.Rejected
           ? {
@@ -358,6 +452,18 @@ const InnerProposalStatusAndInfo = ({
               Icon: CancelOutlined,
               loading: actionLoading,
               doAction: onClose,
+            }
+          : // If executed and has polytone messages that have not been relayed and has loaded TX hash.
+          proposal.status === ProposalStatus.Executed &&
+            hasPolytoneMessagesNeedingRelay &&
+            !loadingExecutionTxHash.loading &&
+            loadingExecutionTxHash.data
+          ? {
+              label: t('button.relay'),
+              Icon: Send,
+              loading: actionLoading,
+              doAction: () => openPolytoneRelay(loadingExecutionTxHash.data),
+              description: t('error.polytoneExecutedNoRelay'),
             }
           : undefined
       }

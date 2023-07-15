@@ -1,5 +1,6 @@
 // eslint-disable-next-line regex/invalid
-import { ComponentType, FunctionComponent } from 'react'
+import { Chain } from '@chain-registry/types'
+import { ComponentType } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
@@ -55,6 +56,7 @@ export enum ActionKey {
   ManageMembers = 'manageMembers',
   Mint = 'mint',
   ManageVesting = 'manageVesting',
+  CreateCrossChainAccount = 'createCrossChainAccount',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',
@@ -126,7 +128,7 @@ export type ActionComponentProps<O = undefined, D = any> = {
   (O extends undefined ? {} : { options: O })
 
 // eslint-disable-next-line regex/invalid
-export type ActionComponent<O = undefined, D = any> = FunctionComponent<
+export type ActionComponent<O = undefined, D = any> = ComponentType<
   ActionComponentProps<O, D>
 >
 
@@ -209,8 +211,7 @@ export type ActionContext =
 
 export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
   t: TFunction
-  chainId: string
-  bech32Prefix: string
+  chain: Chain
   // coreAddress if context.type === Dao
   // walletAddress if context.type === Wallet
   address: string

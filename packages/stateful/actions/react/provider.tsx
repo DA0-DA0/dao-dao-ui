@@ -2,8 +2,9 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Loader, useDaoInfoContext } from '@dao-dao/stateless'
+import { Loader, useChain, useDaoInfoContext } from '@dao-dao/stateless'
 import {
+  ActionContext,
   ActionContextType,
   ActionOptions,
   IActionsContext,
@@ -25,9 +26,6 @@ export type ActionsProviderProps = {
 export type WalletActionsProviderProps = ActionsProviderProps & {
   // If passed, will override the connected wallet address.
   address?: string
-  // If passed, will override the connected wallet chain info.
-  chainId?: string
-  bech32Prefix?: string
 }
 
 // Make sure this re-renders when the options change. You can do this by setting
@@ -35,11 +33,11 @@ export type WalletActionsProviderProps = ActionsProviderProps & {
 // where this component is used for a usage example.
 export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   const { t } = useTranslation()
+  const chain = useChain()
   const info = useDaoInfoContext()
   const options: ActionOptions = {
     t,
-    chainId: info.chainId,
-    bech32Prefix: info.bech32Prefix,
+    chain,
     address: info.coreAddress,
     context: {
       type: ActionContextType.Dao,
@@ -69,11 +67,11 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
       info.proposalModules.flatMap(
         (proposalModule) =>
           matchAndLoadCommon(proposalModule, {
-            chainId: info.chainId,
+            chain,
             coreAddress: info.coreAddress,
           }).fields.actionCategoryMakers
       ),
-    [info]
+    [chain, info.coreAddress, info.proposalModules]
   )
 
   const loadingWidgets = useWidgets({
@@ -109,32 +107,22 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   )
 }
 
-export const WalletActionsProvider = ({
-  address: overrideAddress,
-  chainId: overrideChainId,
-  bech32Prefix: overrideBech32Prefix,
+export const BaseActionsProvider = ({
+  address,
+  context,
   children,
-}: WalletActionsProviderProps) => {
+}: ActionsProviderProps & {
+  address: string
+  context: ActionContext
+}) => {
   const { t } = useTranslation()
-  const { chainInfo, address: connectedAddress } = useWallet()
-
-  const address = overrideAddress || connectedAddress
-  const chainId = overrideChainId || chainInfo?.chainId
-  const bech32Prefix =
-    overrideBech32Prefix || chainInfo?.bech32Config.bech32PrefixAccAddr
-
-  if (!address || !chainId || !bech32Prefix) {
-    return <Loader />
-  }
+  const chain = useChain()
 
   const options: ActionOptions = {
     t,
-    chainId,
-    bech32Prefix,
+    chain,
     address,
-    context: {
-      type: ActionContextType.Wallet,
-    },
+    context,
   }
 
   const categories = makeActionCategoriesWithLabel(
@@ -142,14 +130,37 @@ export const WalletActionsProvider = ({
     options
   )
 
-  const context: IActionsContext = {
-    options,
-    categories,
+  return (
+    <ActionsContext.Provider
+      value={{
+        options,
+        categories,
+      }}
+    >
+      {children}
+    </ActionsContext.Provider>
+  )
+}
+
+export const WalletActionsProvider = ({
+  address: overrideAddress,
+  children,
+}: WalletActionsProviderProps) => {
+  const { address: connectedAddress } = useWallet()
+  const address = overrideAddress || connectedAddress
+
+  if (!address) {
+    return <Loader />
   }
 
   return (
-    <ActionsContext.Provider value={context}>
+    <BaseActionsProvider
+      address={address}
+      context={{
+        type: ActionContextType.Wallet,
+      }}
+    >
       {children}
-    </ActionsContext.Provider>
+    </BaseActionsProvider>
   )
 }

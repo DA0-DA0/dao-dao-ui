@@ -4,10 +4,11 @@ import { constSelector, useRecoilValue } from 'recoil'
 import {
   Cw20BaseSelectors,
   DaoVotingCw20StakedSelectors,
-  wyndUsdPriceSelector,
+  usdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
@@ -20,11 +21,13 @@ export const useGovernanceTokenInfo = ({
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
+  const { chain_id: chainId } = useChain()
   const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const stakingContractAddress = useRecoilValue(
     DaoVotingCw20StakedSelectors.stakingContractSelector({
+      chainId,
       contractAddress: votingModuleAddress,
       params: [],
     })
@@ -32,14 +35,22 @@ export const useGovernanceTokenInfo = ({
 
   const governanceTokenAddress = useRecoilValue(
     DaoVotingCw20StakedSelectors.tokenContractSelector({
+      chainId,
       contractAddress: votingModuleAddress,
       params: [],
     })
   )
   const governanceTokenInfo = useRecoilValue(
     Cw20BaseSelectors.tokenInfoSelector({
+      chainId,
       contractAddress: governanceTokenAddress,
       params: [],
+    })
+  )
+  const governanceTokenLogoUrl = useRecoilValue(
+    Cw20BaseSelectors.logoUrlSelector({
+      chainId,
+      contractAddress: governanceTokenAddress,
     })
   )
 
@@ -49,6 +60,7 @@ export const useGovernanceTokenInfo = ({
   const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
       ? Cw20BaseSelectors.balanceSelector({
+          chainId,
           contractAddress: governanceTokenAddress,
           params: [{ address: walletAddress }],
         })
@@ -60,6 +72,7 @@ export const useGovernanceTokenInfo = ({
   const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
       ? Cw20BaseSelectors.balanceSelector({
+          chainId,
           contractAddress: governanceTokenAddress,
           params: [{ address: coreAddress }],
         })
@@ -70,7 +83,10 @@ export const useGovernanceTokenInfo = ({
   // Price info
   const loadingPrice = useCachedLoading(
     fetchUsdcPrice
-      ? wyndUsdPriceSelector(governanceTokenAddress)
+      ? usdPriceSelector({
+          chainId,
+          denomOrAddress: governanceTokenAddress,
+        })
       : constSelector(undefined),
     undefined
   )
@@ -80,11 +96,12 @@ export const useGovernanceTokenInfo = ({
     governanceTokenAddress,
     governanceTokenInfo,
     token: {
+      chainId: CHAIN_ID,
       type: TokenType.Cw20,
       denomOrAddress: governanceTokenAddress,
       symbol: governanceTokenInfo.symbol,
       decimals: governanceTokenInfo.decimals,
-      imageUrl: undefined,
+      imageUrl: governanceTokenLogoUrl,
     },
     /// Optional
     // Wallet balance

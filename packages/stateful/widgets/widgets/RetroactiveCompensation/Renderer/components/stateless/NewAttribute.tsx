@@ -9,10 +9,10 @@ import {
   InputLabel,
   TextInput,
   TokenInput,
+  useChainContext,
 } from '@dao-dao/stateless'
 import { GenericToken } from '@dao-dao/types'
 import {
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
   validateRequired,
 } from '@dao-dao/utils'
@@ -31,6 +31,7 @@ export const NewAttribute = ({
   availableTokens,
 }: NewAttributeProps) => {
   const { t } = useTranslation()
+  const { nativeToken } = useChainContext()
   const {
     control,
     register,
@@ -167,7 +168,7 @@ export const NewAttribute = ({
           className="self-start"
           onClick={() =>
             appendToken({
-              denomOrAddress: NATIVE_TOKEN.denomOrAddress,
+              denomOrAddress: nativeToken.denomOrAddress,
             })
           }
           variant="ghost"

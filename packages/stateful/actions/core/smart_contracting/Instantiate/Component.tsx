@@ -14,13 +14,14 @@ import {
   NativeCoinSelectorProps,
   NumberInput,
   TextInput,
+  useChain,
 } from '@dao-dao/stateless'
 import { GenericTokenBalance, LoadingData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
+  getNativeTokenForChainId,
+  makeValidateAddress,
   makeWasmMessage,
-  validateAddress,
   validateCosmosMsg,
   validatePositive,
   validateRequired,
@@ -35,13 +36,16 @@ export interface InstantiateOptions {
 export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
   props
 ) => {
-  const { t } = useTranslation()
   const {
     fieldNamePrefix,
     errors,
     isCreating,
     options: { instantiatedAddress },
   } = props
+
+  const { t } = useTranslation()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+
   const { register, control } = useFormContext()
   const {
     fields: coins,
@@ -55,7 +59,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
   return (
     <>
       {instantiatedAddress && (
-        <div className="flex flex-row items-center gap-3 text-text-primary">
+        <div className="flex flex-row items-center gap-6 text-text-primary">
           <InputLabel name={t('form.instantiatedAddress') + ':'} />
           <CopyToClipboard
             takeStartEnd={{ start: instantiatedAddress.length, end: 0 }}
@@ -149,6 +153,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
                   ? () => removeCoin(index)
                   : undefined,
               } as NativeCoinSelectorProps)}
+              chainId={chainId}
               errors={errors?.funds?.[index]}
               fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
             />
@@ -162,7 +167,10 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
             <Button
               className="mb-2 self-start"
               onClick={() =>
-                appendCoin({ amount: 1, denom: NATIVE_TOKEN.denomOrAddress })
+                appendCoin({
+                  amount: 1,
+                  denom: getNativeTokenForChainId(chainId).denomOrAddress,
+                })
               }
               variant="secondary"
             >
@@ -181,7 +189,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           placeholder={!isCreating ? t('info.none') : undefined}
           register={register}
           type="contract"
-          validation={[(v: string) => validateAddress(v, false)]}
+          validation={[makeValidateAddress(bech32Prefix, false)]}
         />
         <InputErrorMessage error={errors?.admin} />
       </div>

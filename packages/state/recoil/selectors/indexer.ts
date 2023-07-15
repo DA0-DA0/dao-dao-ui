@@ -3,6 +3,8 @@ import { atom, selector, selectorFamily } from 'recoil'
 
 import { Expiration, IndexerFormulaType, WithChainId } from '@dao-dao/types'
 import {
+  CHAIN_ID,
+  CommonError,
   FEATURED_DAOS_INDEX,
   WEB_SOCKET_PUSHER_APP_KEY,
   WEB_SOCKET_PUSHER_HOST,
@@ -12,37 +14,38 @@ import {
 import {
   DaoSearchResult,
   QueryIndexerOptions,
+  SearchDaosOptions,
   loadMeilisearchClient,
   queryIndexer,
   searchDaos,
 } from '../../indexer'
-import priorityFeaturedDaos from '../../priority_featured_daos.json'
 import {
   refreshOpenProposalsAtom,
   refreshWalletProposalStatsAtom,
 } from '../atoms'
 
-export type QueryIndexerParams = {
-  type: `${IndexerFormulaType}`
-  address: string
-  formula: string
+export type QueryIndexerParams = QueryIndexerOptions & {
   // Refresh by changing this value.
   id?: number
-} & QueryIndexerOptions
+}
 
 export const queryIndexerSelector = selectorFamily<any, QueryIndexerParams>({
   key: 'queryIndexer',
-  get:
-    ({ type, address, formula, ...options }) =>
-    async () => {
-      try {
-        return await queryIndexer(type, address, formula, options)
-      } catch (err) {
-        // If the indexer fails, return null.
+  get: (options) => async () => {
+    try {
+      return await queryIndexer(options)
+    } catch (err) {
+      // If the indexer fails, return null.
+      if (
+        !(err instanceof Error) ||
+        err.message !== CommonError.IndexerDisabled
+      ) {
         console.error(err)
-        return null
       }
-    },
+
+      return null
+    }
+  },
 })
 
 export const queryContractIndexerSelector = selectorFamily<
@@ -75,7 +78,6 @@ export const queryGenericIndexerSelector = selectorFamily<
       get(
         queryIndexerSelector({
           type: IndexerFormulaType.Generic,
-          address: '_',
           ...params,
         })
       ),
@@ -120,17 +122,10 @@ export const queryWalletIndexerSelector = selectorFamily<
 
 export const searchDaosSelector = selectorFamily<
   DaoSearchResult[],
-  {
-    query: string
-    limit?: number
-    exclude?: string[]
-  }
+  SearchDaosOptions
 >({
   key: 'searchDaos',
-  get:
-    ({ query, limit, exclude }) =>
-    async () =>
-      await searchDaos(query, limit, exclude),
+  get: (options) => async () => await searchDaos(options),
 })
 
 export const openProposalsSelector = selectorFamily<
@@ -156,6 +151,7 @@ export const openProposalsSelector = selectorFamily<
           chainId,
           id,
           args: { address },
+          required: true,
         })
       )
       return openProposals ?? []
@@ -181,21 +177,27 @@ export const walletProposalStatsSelector = selectorFamily<
           formula: 'proposals/stats',
           chainId,
           id,
+          required: true,
         })
       )
       return stats ?? undefined
     },
 })
 
-export const walletAdminOfDaosSelector = selectorFamily<string[], string>({
+export const walletAdminOfDaosSelector = selectorFamily<
+  string[],
+  WithChainId<{ walletAddress: string }>
+>({
   key: 'walletAdminOfDaos',
   get:
-    (walletAddress) =>
+    ({ walletAddress, chainId }) =>
     ({ get }) => {
       const walletAdminOfDaos: string[] = get(
         queryWalletIndexerSelector({
+          chainId,
           walletAddress,
           formula: 'daos/adminOf',
+          required: true,
         })
       )
 
@@ -235,9 +237,18 @@ export const indexerMeilisearchClientSelector = selector({
 })
 
 // Top 10 featured DAOs by TVL with certain conditions.
-export const indexerFeaturedMainnetDaosSelector = selector({
-  key: 'indexerFeaturedMainnetDaos',
+export const indexerFeaturedDaosSelector = selector({
+  key: 'indexerFeaturedDaos',
   get: async ({ get }) => {
+    const priorityFeaturedDaos: string[] =
+      get(
+        queryGenericIndexerSelector({
+          chainId: CHAIN_ID,
+          formula: 'priorityFeaturedDaos',
+          required: true,
+        })
+      ) || []
+
     const client = get(indexerMeilisearchClientSelector)
     const index = client.index(FEATURED_DAOS_INDEX)
     const results = await index.search<{ contractAddress: string }>(null, {
@@ -254,7 +265,7 @@ export const indexerFeaturedMainnetDaosSelector = selector({
       sort: ['value.tvl:desc'],
     })
 
-    // Insert hardcoded DAOs at the top.
+    // Insert priority DAOs first.
     const featuredDaos = [
       ...priorityFeaturedDaos,
       ...results.hits

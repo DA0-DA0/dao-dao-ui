@@ -32,6 +32,7 @@ import {
   VotingModuleResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/CwCore.v1'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface CwCoreV1ReadOnlyInterface {
   contractAddress: string
@@ -422,7 +423,7 @@ export class CwCoreV1Client
     codeId: number,
     msg: InstantiateMsg,
     label: string,
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     options?: InstantiateOptions
   ): Promise<InstantiateResult> => {
     return await this.client.instantiate(
@@ -441,7 +442,7 @@ export class CwCoreV1Client
     }: {
       msgs: CosmosMsgForEmpty[]
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -464,7 +465,7 @@ export class CwCoreV1Client
     }: {
       msgs: CosmosMsgForEmpty[]
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -487,7 +488,7 @@ export class CwCoreV1Client
     }: {
       duration: Duration
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -505,7 +506,7 @@ export class CwCoreV1Client
     )
   }
   receive = async (
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -521,7 +522,7 @@ export class CwCoreV1Client
     )
   }
   receiveNft = async (
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -542,7 +543,7 @@ export class CwCoreV1Client
     }: {
       key: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -567,7 +568,7 @@ export class CwCoreV1Client
       addr: string
       key: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -591,7 +592,7 @@ export class CwCoreV1Client
     }: {
       admin?: Addr
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -614,7 +615,7 @@ export class CwCoreV1Client
     }: {
       config: Config
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -639,7 +640,7 @@ export class CwCoreV1Client
       toAdd: string[]
       toRemove: string[]
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -665,7 +666,7 @@ export class CwCoreV1Client
       toAdd: string[]
       toRemove: string[]
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -691,7 +692,7 @@ export class CwCoreV1Client
       toAdd: ModuleInstantiateInfo[]
       toRemove: string[]
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -715,7 +716,7 @@ export class CwCoreV1Client
     }: {
       module: ModuleInstantiateInfo
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {

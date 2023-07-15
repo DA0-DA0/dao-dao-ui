@@ -2,12 +2,7 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { TokenAmountDisplayProps } from '@dao-dao/types'
-import {
-  USDC_DECIMALS,
-  formatTime,
-  toAccessibleImageUrl,
-  toFixedDown,
-} from '@dao-dao/utils'
+import { formatTime, toAccessibleImageUrl, toFixedDown } from '@dao-dao/utils'
 
 import { Tooltip } from '../tooltip/Tooltip'
 
@@ -56,7 +51,9 @@ export const TokenAmountDisplay = ({
   const tokenTranslation = estimatedUsdValue
     ? 'format.estUsdValue'
     : 'format.token'
-  const decimals = estimatedUsdValue ? USDC_DECIMALS : _decimals
+  const decimals = estimatedUsdValue
+    ? USD_ESTIMATE_DEFAULT_MAX_DECIMALS
+    : _decimals
 
   const translateOrOmitSymbol = (translationKey: string, amount: string) =>
     hideSymbol

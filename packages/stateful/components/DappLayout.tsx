@@ -27,6 +27,7 @@ import {
   DappLayout as StatelessDappLayout,
   useAppContext,
   useCachedLoading,
+  useChain,
   usePlatform,
 } from '@dao-dao/stateless'
 
@@ -47,6 +48,8 @@ import { WalletModals } from './wallet'
 export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
   const router = useRouter()
+  const { chain_id: chainId } = useChain()
+
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
     betaWarningAcceptedAtom
@@ -74,6 +77,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { connect, connected, status, connectedWallet } = useWalletManager()
   const {
     walletAddress,
+    walletHexPublicKey,
     walletProfileData,
     refreshBalances: refreshWalletBalances,
   } = useWalletInfo()
@@ -145,9 +149,10 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
 
   //! Following DAOs
   const followingDaoDropdownInfos = useCachedLoading(
-    walletAddress
+    walletHexPublicKey
       ? followingDaoDropdownInfosSelector({
-          walletAddress,
+          chainId,
+          walletPublicKey: walletHexPublicKey,
         })
       : undefined,
     []
@@ -157,8 +162,8 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   useRecoilValueLoadable(
     connectedWallet
       ? walletTokenCardInfosSelector({
+          chainId,
           walletAddress: connectedWallet.address,
-          chainId: connectedWallet.chainInfo.chainId,
         })
       : constSelector(undefined)
   )

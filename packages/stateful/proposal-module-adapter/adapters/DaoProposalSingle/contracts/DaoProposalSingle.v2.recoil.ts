@@ -118,6 +118,8 @@ export const proposalSelector = selectorFamily<
             id: params[0].proposalId,
           },
           id,
+          // TODO(numia): Remove this once numia indexer provides timestamps.
+          required: true,
         })
       )
       if (proposalResponse) {
@@ -147,6 +149,8 @@ export const listProposalsSelector = selectorFamily<
           formula: 'daoProposalSingle/listProposals',
           args: params[0],
           id,
+          // TODO(numia): Remove this once numia indexer provides timestamps.
+          required: true,
         })
       )
       if (proposals) {
@@ -176,6 +180,8 @@ export const reverseProposalsSelector = selectorFamily<
           formula: 'daoProposalSingle/reverseProposals',
           args: params[0],
           id,
+          // TODO(numia): Remove this once numia indexer provides timestamps.
+          required: true,
         })
       )
       if (proposals) {

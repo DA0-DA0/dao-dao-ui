@@ -1,5 +1,7 @@
 import { toBase64, toUtf8 } from '@cosmjs/encoding'
+import { v4 as uuidv4 } from 'uuid'
 
+import { PolytoneNote } from '@dao-dao/types'
 import {
   BankMsg,
   CosmosMsgFor_Empty,
@@ -10,6 +12,7 @@ import {
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
 
+import { POLYTONE_NOTES, POLYTONE_TIMEOUT_SECONDS } from '../constants'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import { parseEncodedMessage } from './encoding'
 import { decodeStargateMessage } from './protobuf'
@@ -245,3 +248,101 @@ export const makeDistributeMessage = (
     },
   } as DistributionMsg,
 })
+
+export const makePolytoneExecuteMessage = (
+  chainId: string,
+  // Allow passing no message, which just creates an account.
+  msg?: CosmosMsgFor_Empty
+): CosmosMsgFor_Empty =>
+  makeWasmMessage({
+    wasm: {
+      execute: {
+        contract_addr: POLYTONE_NOTES[chainId]?.note,
+        funds: [],
+        msg: {
+          execute: {
+            msgs: msg ? [msg] : [],
+            timeout_seconds: POLYTONE_TIMEOUT_SECONDS.toString(),
+            callback: {
+              msg: toBase64(toUtf8(uuidv4())),
+              receiver: POLYTONE_NOTES[chainId]?.listener,
+            },
+          },
+        },
+      },
+    },
+  })
+
+// Checks if the message is a Polytone execute message and extract sthe chain
+// ID and msg.
+export const decodePolytoneExecuteMsg = (
+  decodedMsg: Record<string, any>,
+  // How many messages are expected.
+  type: 'one' | 'zero' | 'oneOrZero' = 'one'
+):
+  | {
+      match: false
+    }
+  | {
+      match: true
+      chainId: string
+      polytoneNote: PolytoneNote
+      msg: Record<string, any>
+      cosmosMsg: CosmosMsgFor_Empty | undefined
+      initiatorMsg: string
+    } => {
+  if (
+    !objectMatchesStructure(decodedMsg, {
+      wasm: {
+        execute: {
+          contract_addr: {},
+          funds: {},
+          msg: {
+            execute: {
+              msgs: {},
+              timeout_seconds: {},
+              callback: {
+                msg: {},
+                receiver: {},
+              },
+            },
+          },
+        },
+      },
+    }) ||
+    (type === 'zero' &&
+      decodedMsg.wasm.execute.msg.execute.msgs.length !== 0) ||
+    (type === 'one' && decodedMsg.wasm.execute.msg.execute.msgs.length !== 1) ||
+    (type === 'oneOrZero' &&
+      decodedMsg.wasm.execute.msg.execute.msgs.length > 1)
+  ) {
+    return {
+      match: false,
+    }
+  }
+
+  const entry = Object.entries(POLYTONE_NOTES).find(
+    ([, { note }]) => note === decodedMsg.wasm.execute.contract_addr
+  )
+  // Unrecognized polytone note.
+  if (!entry) {
+    return {
+      match: false,
+    }
+  }
+
+  return {
+    match: true,
+    chainId: entry[0],
+    polytoneNote: entry[1],
+    msg:
+      decodedMsg.wasm.execute.msg.execute.msgs.length === 0
+        ? {}
+        : decodeMessages(decodedMsg.wasm.execute.msg.execute.msgs)[0],
+    cosmosMsg:
+      decodedMsg.wasm.execute.msg.execute.msgs.length === 0
+        ? undefined
+        : decodedMsg.wasm.execute.msg.execute.msgs[0],
+    initiatorMsg: decodedMsg.wasm.execute.msg.execute.callback.msg,
+  }
+}

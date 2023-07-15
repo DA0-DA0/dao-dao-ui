@@ -44,6 +44,7 @@ import {
 import { MsgInstantiateContract2 } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { Any } from 'cosmjs-types/google/protobuf/any'
 import { Timestamp } from 'cosmjs-types/google/protobuf/timestamp'
+import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx'
 import { cosmos } from 'interchain-rpc'
 import { juno, osmosis } from 'juno-network'
 import Long from 'long'
@@ -510,6 +511,9 @@ export const typesRegistry = new Registry([
       '/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal',
       CancelSoftwareUpgradeProposal,
     ],
+
+    // IBC
+    ['/ibc.applications.transfer.v1.MsgTransfer', MsgTransfer],
   ] as ReadonlyArray<[string, GeneratedType]>),
 ])
 

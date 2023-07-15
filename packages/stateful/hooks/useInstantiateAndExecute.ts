@@ -9,9 +9,13 @@ import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import { codeDetailsSelector } from '@dao-dao/state/recoil'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoadable, useChain } from '@dao-dao/stateless'
 import { Coin, CosmosMsgFor_Empty } from '@dao-dao/types'
-import { cwMsgToEncodeObject, makeWasmMessage } from '@dao-dao/utils'
+import {
+  CHAIN_GAS_MULTIPLIER,
+  cwMsgToEncodeObject,
+  makeWasmMessage,
+} from '@dao-dao/utils'
 
 export type InstantiateAndExecuteOptions = {
   // Instantiate message to send to the contract.
@@ -50,11 +54,13 @@ export const useInstantiateAndExecute = (
   codeId: number
 ): UseInstantiateAndExecuteResult => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { signingCosmWasmClient, address, chainInfo } = useWallet()
 
   // Load checksum of the contract code.
   const codeDetailsLoadable = useCachedLoadable(
     codeDetailsSelector({
+      chainId,
       codeId,
     })
   )
@@ -108,7 +114,7 @@ export const useInstantiateAndExecute = (
       const response = await signingCosmWasmClient.signAndBroadcast(
         address,
         messages.map((msg) => cwMsgToEncodeObject(msg, address)),
-        'auto'
+        CHAIN_GAS_MULTIPLIER
       )
 
       return {

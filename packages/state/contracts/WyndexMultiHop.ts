@@ -18,6 +18,7 @@ import {
   SimulateSwapOperationsResponse,
   SwapOperation,
 } from '@dao-dao/types/contracts/WyndexMultiHop'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface WyndexMultiHopReadOnlyInterface {
   contractAddress: string
@@ -214,7 +215,7 @@ export class WyndexMultiHopClient
       msg: Binary
       sender: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -249,7 +250,7 @@ export class WyndexMultiHopClient
       referralAddress?: string
       referralCommission?: Decimal
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -287,7 +288,7 @@ export class WyndexMultiHopClient
       referralCommission?: Decimal
       single: boolean
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -321,7 +322,7 @@ export class WyndexMultiHopClient
       prevBalance: Uint128
       receiver: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

@@ -4,24 +4,23 @@ import {
   CwTokenSwapSelectors,
   genericTokenSelector,
 } from '@dao-dao/state/recoil'
-import { TokenSwapStatusProps, TokenType } from '@dao-dao/types'
+import { TokenSwapStatusProps, TokenType, WithChainId } from '@dao-dao/types'
 import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../components'
 
-export interface UseTokenSwapStatusInfoForContractOptions {
+export type UseTokenSwapStatusInfoForContractOptions = WithChainId<{
   contractAddress: string
-  chainId?: string
   selfPartyAddress: string
-}
+}>
 
 // Returns info for a given token swap, with the parties identified between self
 // and counter. Also collects the metadata into props for the TokenSwapStatus
 // stateless component. This hook is used in the PerformTokenSwap and
 // WithdrawTokenSwap stateful action components.
 export const useTokenSwapStatusInfoForContract = ({
-  contractAddress,
   chainId,
+  contractAddress,
   selfPartyAddress,
 }: UseTokenSwapStatusInfoForContractOptions) => {
   const tokenSwapStatus = useRecoilValue(

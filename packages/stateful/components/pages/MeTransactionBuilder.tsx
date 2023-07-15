@@ -26,6 +26,7 @@ import {
   MeTransactionSave,
 } from '@dao-dao/types'
 import {
+  CHAIN_GAS_MULTIPLIER,
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
   cwMsgToEncodeObject,
@@ -104,7 +105,7 @@ export const MeTransactionBuilder = () => {
         const tx = await signingCosmWasmClient.signAndBroadcast(
           walletAddress,
           encodeObjects,
-          'auto'
+          CHAIN_GAS_MULTIPLIER
         )
 
         toast.success(t('success.transactionExecuted'))

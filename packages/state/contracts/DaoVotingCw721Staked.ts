@@ -11,17 +11,16 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
+import { Binary, Duration, InfoResponse } from '@dao-dao/types/contracts/common'
 import {
   ArrayOfString,
-  Binary,
   Config,
-  Duration,
   HooksResponse,
-  InfoResponse,
   NftClaimsResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 export interface DaoVotingCw721StakedReadOnlyInterface {
   contractAddress: string
   config: () => Promise<Config>
@@ -238,7 +237,7 @@ export class DaoVotingCw721StakedClient
       sender: string
       tokenId: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -263,7 +262,7 @@ export class DaoVotingCw721StakedClient
     }: {
       tokenIds: string[]
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -281,7 +280,7 @@ export class DaoVotingCw721StakedClient
     )
   }
   claimNfts = async (
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -304,7 +303,7 @@ export class DaoVotingCw721StakedClient
       duration?: Duration
       owner?: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -328,7 +327,7 @@ export class DaoVotingCw721StakedClient
     }: {
       addr: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -351,7 +350,7 @@ export class DaoVotingCw721StakedClient
     }: {
       addr: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

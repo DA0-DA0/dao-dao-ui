@@ -11,10 +11,10 @@ import {
 } from '@dao-dao/state'
 import { TokenCardInfo, WithChainId } from '@dao-dao/types'
 import {
-  NATIVE_TOKEN,
+  CHAIN_ID,
   convertMicroDenomToDenomWithDecimals,
-  nativeTokenDecimals,
-  nativeTokenLabel,
+  getNativeTokenForChainId,
+  getTokenForChainIdAndDenom,
 } from '@dao-dao/utils'
 
 // lazyInfo must be loaded in the component separately, since it refreshes on a
@@ -22,65 +22,96 @@ import {
 // refreshes. Use `tokenCardLazyInfoSelector`.
 export const treasuryTokenCardInfosSelector = selectorFamily<
   TokenCardInfo[],
-  WithChainId<{
+  {
     coreAddress: string
     cw20GovernanceTokenAddress?: string
     nativeGovernanceTokenDenom?: string
-  }>
+  }
 >({
   key: 'treasuryTokenCardInfos',
   get:
-    ({
-      coreAddress,
-      cw20GovernanceTokenAddress,
-      nativeGovernanceTokenDenom,
-      chainId,
-    }) =>
+    ({ coreAddress, cw20GovernanceTokenAddress, nativeGovernanceTokenDenom }) =>
     ({ get }) => {
-      const nativeBalances = get(
-        nativeBalancesSelector({ address: coreAddress, chainId })
+      const polytoneProxies = Object.entries(
+        get(
+          DaoCoreV2Selectors.polytoneProxiesSelector({
+            chainId: CHAIN_ID,
+            contractAddress: coreAddress,
+          })
+        )
       )
+
+      const allNativeBalances = [
+        // Native.
+        {
+          owner: coreAddress,
+          chainId: CHAIN_ID,
+          balances: get(
+            nativeBalancesSelector({
+              address: coreAddress,
+              chainId: CHAIN_ID,
+            })
+          ),
+        },
+        // Polytone.
+        ...polytoneProxies.map(([chainId, proxy]) => ({
+          owner: proxy,
+          chainId,
+          balances: get(
+            nativeBalancesSelector({
+              address: proxy,
+              chainId,
+            })
+          ),
+        })),
+      ]
+
+      // Only cw20s on native chain.
       const cw20s = get(
         DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
           contractAddress: coreAddress,
-          chainId,
+          chainId: CHAIN_ID,
           governanceTokenAddress: cw20GovernanceTokenAddress,
         })
       )
 
       const infos: TokenCardInfo[] = [
-        ...nativeBalances.map(({ token, balance }) => {
-          const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-            balance,
-            token.decimals
-          )
+        ...allNativeBalances.flatMap(({ owner, chainId, balances }) =>
+          balances.map(({ token, balance }) => {
+            const unstakedBalance = convertMicroDenomToDenomWithDecimals(
+              balance,
+              token.decimals
+            )
 
-          // For now, stakingInfo only exists for native token, until ICA.
-          const hasStakingInfo =
-            token.denomOrAddress === NATIVE_TOKEN.denomOrAddress &&
-            // Check if anything staked.
-            Number(
-              get(
-                nativeDelegatedBalanceSelector({
-                  address: coreAddress,
-                  chainId,
-                })
-              ).amount
-            ) > 0
+            // Staking info only exists for native token.
+            const hasStakingInfo =
+              token.denomOrAddress ===
+                getNativeTokenForChainId(chainId).denomOrAddress &&
+              // Check if anything staked.
+              Number(
+                get(
+                  nativeDelegatedBalanceSelector({
+                    address: owner,
+                    chainId,
+                  })
+                ).amount
+              ) > 0
 
-          const info: TokenCardInfo = {
-            token,
-            // True if native token DAO and using this denom.
-            isGovernanceToken:
-              nativeGovernanceTokenDenom === token.denomOrAddress,
-            unstakedBalance,
-            hasStakingInfo,
+            const info: TokenCardInfo = {
+              owner,
+              token,
+              // True if native token DAO and using this denom.
+              isGovernanceToken:
+                nativeGovernanceTokenDenom === token.denomOrAddress,
+              unstakedBalance,
+              hasStakingInfo,
 
-            lazyInfo: { loading: true },
-          }
+              lazyInfo: { loading: true },
+            }
 
-          return info
-        }),
+            return info
+          })
+        ),
         ...cw20s.map(({ token, balance, isGovernanceToken }) => {
           const unstakedBalance = convertMicroDenomToDenomWithDecimals(
             balance,
@@ -88,6 +119,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
           )
 
           const info: TokenCardInfo = {
+            owner: coreAddress,
             token,
             isGovernanceToken: isGovernanceToken ?? false,
             unstakedBalance,
@@ -231,20 +263,7 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
             return
           }
 
-          const tokenDecimals = nativeTokenDecimals(coin.denom)
-          const tokenLabel = nativeTokenLabel(coin.denom)
-
-          // Only convert value and denom at the same time. If decimals are
-          // or vice versa, display value in non-converted decimals with
-          // non-converted denom.
-          const amountValue =
-            tokenDecimals !== undefined && tokenLabel !== undefined
-              ? convertMicroDenomToDenomWithDecimals(coin.amount, tokenDecimals)
-              : Number(coin.amount)
-          const denomLabel =
-            tokenDecimals !== undefined && tokenLabel !== undefined
-              ? tokenLabel
-              : coin.denom
+          const token = getTokenForChainIdAndDenom(params.chainId, coin.denom)
 
           return {
             hash,
@@ -252,8 +271,11 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
             timestamp,
             sender,
             recipient,
-            amount: amountValue,
-            denomLabel,
+            amount: convertMicroDenomToDenomWithDecimals(
+              coin.amount,
+              token.decimals
+            ),
+            denomLabel: token.symbol,
             outgoing: sender === params.address,
           }
         })

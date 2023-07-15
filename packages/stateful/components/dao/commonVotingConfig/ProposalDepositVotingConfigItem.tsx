@@ -19,6 +19,7 @@ import {
   TokenInput,
   TokenInputOption,
   useCachedLoadable,
+  useChainContext,
 } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
@@ -29,14 +30,12 @@ import {
   TokenType,
 } from '@dao-dao/types'
 import {
-  CHAIN_BECH32_PREFIX,
-  NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
-  ibcAssets,
+  getIbcAssets,
   isValidContractAddress,
-  validateContractAddress,
+  makeValidateContractAddress,
 } from '@dao-dao/utils'
 
 const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
@@ -52,6 +51,10 @@ const ProposalDepositInput = ({
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithProposalDeposit>) => {
   const { t } = useTranslation()
+  const {
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+    nativeToken,
+  } = useChainContext()
 
   const isTokenBasedCreator = creator.id === TokenBasedCreatorId
   const tokenBasedCreatorData = creator.data as TokenBasedCreatorData
@@ -60,6 +63,7 @@ const ProposalDepositInput = ({
     isTokenBasedCreator
       ? tokenBasedCreatorData.tokenType === GovernanceTokenType.NewCw20
         ? constSelector({
+            chainId,
             type: TokenType.Cw20,
             denomOrAddress: '',
             symbol: tokenBasedCreatorData.newInfo.symbol,
@@ -67,6 +71,7 @@ const ProposalDepositInput = ({
             imageUrl: tokenBasedCreatorData.newInfo.imageUrl,
           })
         : genericTokenSelector({
+            chainId,
             type: tokenBasedCreatorData.existingTokenType,
             denomOrAddress: tokenBasedCreatorData.existingTokenDenomOrAddress,
           })
@@ -76,13 +81,15 @@ const ProposalDepositInput = ({
   const tokenLoadable = useCachedLoadable(
     type === 'cw20' &&
       denomOrAddress &&
-      isValidContractAddress(denomOrAddress, CHAIN_BECH32_PREFIX)
+      isValidContractAddress(denomOrAddress, bech32Prefix)
       ? genericTokenSelector({
+          chainId,
           type: TokenType.Cw20,
           denomOrAddress,
         })
       : type === 'native'
       ? genericTokenSelector({
+          chainId,
           type: TokenType.Native,
           denomOrAddress,
         })
@@ -152,11 +159,10 @@ const ProposalDepositInput = ({
         ]
       : []),
     // Then native.
-    {
-      ...NATIVE_TOKEN,
-    },
+    nativeToken,
     // Then other CW20.
     {
+      chainId,
       type: TokenType.Cw20,
       denomOrAddress: 'other_cw20',
       symbol:
@@ -164,7 +170,7 @@ const ProposalDepositInput = ({
       imageUrl: (type === TokenType.Cw20 && tokenLoaded?.imageUrl) || undefined,
     },
     // Then the IBC assets.
-    ...ibcAssets,
+    ...getIbcAssets(),
   ]
   const selectedToken = availableTokens.find(
     (token) =>
@@ -216,7 +222,7 @@ const ProposalDepositInput = ({
               setValue={setValue}
               tokenFallback={
                 type === 'cw20'
-                  ? !isValidContractAddress(denomOrAddress, CHAIN_BECH32_PREFIX)
+                  ? !isValidContractAddress(denomOrAddress, bech32Prefix)
                     ? t('form.cw20Token')
                     : tokenLoadable.state === 'loading' && <Loader size={24} />
                   : undefined
@@ -240,7 +246,7 @@ const ProposalDepositInput = ({
                 placeholder={t('form.tokenAddress')}
                 register={register}
                 type="contract"
-                validation={[validateContractAddress]}
+                validation={[makeValidateContractAddress(bech32Prefix)]}
               />
 
               <InputErrorMessage

@@ -30,6 +30,7 @@ export const EntityDisplay = ({
   noCopy,
   noUnderline,
   showFullAddress,
+  noLink,
 }: EntityDisplayProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
@@ -47,8 +48,8 @@ export const EntityDisplay = ({
   const href = loadingEntity.loading
     ? undefined
     : loadingEntity.data.type === EntityType.Dao
-    ? getDaoPath(address)
-    : WALLET_URL_PREFIX + address
+    ? getDaoPath(loadingEntity.data.address)
+    : WALLET_URL_PREFIX + loadingEntity.data.address
 
   const { textRef, truncated } = useDetectTruncate()
 
@@ -83,8 +84,8 @@ export const EntityDisplay = ({
         <ButtonLink
           className={clsx(loadingEntity.loading && 'animate-pulse')}
           containerClassName="min-w-0"
-          href={href}
-          onClick={(e) => e.stopPropagation()}
+          href={noLink ? undefined : href}
+          onClick={(e) => !noLink && e.stopPropagation()}
           openInNewTab
           variant={noUnderline ? 'none' : 'underline'}
         >

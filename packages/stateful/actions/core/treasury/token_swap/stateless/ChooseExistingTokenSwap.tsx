@@ -8,8 +8,9 @@ import {
   InputLabel,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
-import { validateContractAddress, validateRequired } from '@dao-dao/utils'
+import { makeValidateContractAddress, validateRequired } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../react'
 import { ChooseExistingTokenSwapOptions } from '../types'
 
 // Displayed when entering an existing token swap.
@@ -21,6 +22,9 @@ export const ChooseExistingTokenSwap: ActionComponent<
   options: { chooseLoading, onChooseExistingContract },
 }) => {
   const { t } = useTranslation()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { register } = useFormContext()
 
   return (
@@ -35,7 +39,10 @@ export const ChooseExistingTokenSwap: ActionComponent<
           fieldName={fieldNamePrefix + 'tokenSwapContractAddress'}
           register={register}
           type="contract"
-          validation={[validateRequired, validateContractAddress]}
+          validation={[
+            validateRequired,
+            makeValidateContractAddress(bech32Prefix),
+          ]}
         />
 
         <InputErrorMessage error={errors?.tokenSwapContractAddress} />

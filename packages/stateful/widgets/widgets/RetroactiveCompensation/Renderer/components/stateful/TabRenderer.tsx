@@ -6,7 +6,11 @@ import toast from 'react-hot-toast'
 import { waitForAll } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
-import { useCachedLoading, useDaoInfoContext } from '@dao-dao/stateless'
+import {
+  useCachedLoading,
+  useChain,
+  useDaoInfoContext,
+} from '@dao-dao/stateless'
 import { secp256k1PublicKeyToBech32Address } from '@dao-dao/utils'
 
 import { IconButtonLink } from '../../../../../../components'
@@ -19,12 +23,12 @@ import { NewSurveyForm } from './NewSurveyForm'
 import { OpenSurveySection } from './OpenSurveySection'
 
 export const TabRenderer = () => {
-  const { chainId, coreAddress, bech32Prefix } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfoContext()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet()
   const { isMember = false } = useMembership({
     coreAddress,
-    chainId,
   })
 
   const loadingStatus = useCachedLoading(

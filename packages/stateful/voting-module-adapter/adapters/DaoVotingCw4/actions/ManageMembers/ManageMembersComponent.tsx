@@ -21,10 +21,12 @@ import {
 import { ActionComponent, AddressInputProps } from '@dao-dao/types'
 import { Member } from '@dao-dao/types/contracts/Cw4Group'
 import {
-  validateAddress,
+  makeValidateAddress,
   validateNonNegative,
   validateRequired,
 } from '@dao-dao/utils'
+
+import { useActionOptions } from '../../../../../actions'
 
 export interface ManageMembersData {
   toAdd: Member[]
@@ -47,6 +49,9 @@ export const ManageMembersComponent: ActionComponent<
   options: { currentMembers, AddressInput },
 }) => {
   const { t } = useTranslation()
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { register, setValue, watch, control } =
     useFormContext<ManageMembersData>()
 
@@ -137,7 +142,7 @@ export const ManageMembersComponent: ActionComponent<
                         register={register}
                         validation={[
                           validateRequired,
-                          validateAddress,
+                          makeValidateAddress(bech32Prefix),
                           (value) =>
                             toRemoveFields.every(
                               ({ addr }) => addr !== value
@@ -207,7 +212,7 @@ export const ManageMembersComponent: ActionComponent<
                   register={register}
                   validation={[
                     validateRequired,
-                    validateAddress,
+                    makeValidateAddress(bech32Prefix),
                     (value) =>
                       currentMembers.includes(value) ||
                       t('error.addressNotAMember'),

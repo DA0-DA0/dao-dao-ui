@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 import { ButtonPopupSection, TokenCardProps, TokenType } from '@dao-dao/types'
 import {
   getFallbackImage,
-  isJunoIbcUsdc,
+  isNativeIbcUsdc,
   secondsToWdhms,
   toAccessibleImageUrl,
   transformIbcSymbol,
@@ -217,7 +217,7 @@ export const TokenCard = ({
                   symbol={tokenSymbol}
                 />
 
-                {!isJunoIbcUsdc(token.denomOrAddress) &&
+                {!isNativeIbcUsdc(token.denomOrAddress) &&
                   lazyInfo.data.usdUnitPrice && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
@@ -253,7 +253,7 @@ export const TokenCard = ({
                   symbol={tokenSymbol}
                 />
 
-                {!isJunoIbcUsdc(token.denomOrAddress) &&
+                {!isNativeIbcUsdc(token.denomOrAddress) &&
                   (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay

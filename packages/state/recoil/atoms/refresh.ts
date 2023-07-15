@@ -106,3 +106,15 @@ export const refreshHiddenBalancesAtom = atom({
   key: 'refreshHiddenBalances',
   default: 0,
 })
+
+// Change this to refresh polytone listener results.
+export const refreshPolytoneListenerResultsAtom = atom({
+  key: 'refreshPolytoneListenerResults',
+  default: 0,
+})
+
+// Change this to refresh inbox items from the API.
+export const refreshInboxApiItemsAtom = atom({
+  key: 'refreshInboxApiItems',
+  default: 0,
+})

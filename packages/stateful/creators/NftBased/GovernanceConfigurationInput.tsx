@@ -7,12 +7,12 @@ import {
   FormattedJsonDisplay,
   InputErrorMessage,
   TextInput,
+  useChain,
 } from '@dao-dao/stateless'
 import { DaoCreationGovernanceConfigInputProps } from '@dao-dao/types'
 import {
-  CHAIN_BECH32_PREFIX,
   isValidContractAddress,
-  validateContractAddress,
+  makeValidateContractAddress,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -31,6 +31,7 @@ export const GovernanceConfigurationInput = ({
   },
 }: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
   //! Validate existing governance token.
   const existingGovernanceTokenDenomOrAddress =
@@ -41,9 +42,10 @@ export const GovernanceConfigurationInput = ({
     existingGovernanceTokenDenomOrAddress &&
       isValidContractAddress(
         existingGovernanceTokenDenomOrAddress,
-        CHAIN_BECH32_PREFIX
+        bech32Prefix
       )
       ? Cw721BaseSelectors.contractInfoSelector({
+          chainId,
           contractAddress: existingGovernanceTokenDenomOrAddress,
           params: [],
         })
@@ -53,9 +55,10 @@ export const GovernanceConfigurationInput = ({
     existingGovernanceTokenDenomOrAddress &&
       isValidContractAddress(
         existingGovernanceTokenDenomOrAddress,
-        CHAIN_BECH32_PREFIX
+        bech32Prefix
       )
       ? Cw721BaseSelectors.numTokensSelector({
+          chainId,
           contractAddress: existingGovernanceTokenDenomOrAddress,
           params: [],
         })
@@ -110,9 +113,12 @@ export const GovernanceConfigurationInput = ({
               }
               fieldName="creator.data.existingGovernanceTokenDenomOrAddress"
               ghost
-              placeholder={CHAIN_BECH32_PREFIX + '...'}
+              placeholder={bech32Prefix + '...'}
               register={register}
-              validation={[validateContractAddress, validateRequired]}
+              validation={[
+                validateRequired,
+                makeValidateContractAddress(bech32Prefix),
+              ]}
             />
             <InputErrorMessage
               error={

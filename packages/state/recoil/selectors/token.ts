@@ -1,6 +1,8 @@
 import { constSelector, selectorFamily, waitForAll } from 'recoil'
 
 import {
+  AmountWithTimestampAndDenom,
+  ChainId,
   GenericToken,
   GenericTokenBalance,
   GenericTokenWithUsdPrice,
@@ -8,22 +10,23 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHAIN_BECH32_PREFIX,
+  getChainForChainId,
   getFallbackImage,
+  getTokenForChainIdAndDenom,
   isValidContractAddress,
   isValidTokenFactoryDenom,
   isValidWalletAddress,
-  nativeTokenDecimals,
-  nativeTokenLabel,
-  nativeTokenLogoURI,
 } from '@dao-dao/utils'
 
 import {
   denomMetadataSelector,
   nativeBalanceSelector,
   nativeBalancesSelector,
+  nativeDelegatedBalanceSelector,
 } from './chain'
+import { isContractSelector } from './contract'
 import { Cw20BaseSelectors, DaoCoreV2Selectors } from './contracts'
+import { osmosisUsdPriceSelector } from './osmosis'
 import { walletCw20BalancesSelector } from './wallet'
 import { wyndUsdPriceSelector } from './wynd'
 
@@ -43,33 +46,57 @@ export const genericTokenSelector = selectorFamily<
               params: [],
             })
           : // Native factory tokens.
-          isValidTokenFactoryDenom(denomOrAddress, CHAIN_BECH32_PREFIX)
+          type === TokenType.Native &&
+            isValidTokenFactoryDenom(
+              denomOrAddress,
+              getChainForChainId(chainId).bech32_prefix
+            )
           ? factoryTokenInfoSelector({
               denom: denomOrAddress,
               chainId,
             })
-          : // Native IBC tokens.
-            constSelector({
-              decimals: nativeTokenDecimals(denomOrAddress) ?? 0,
-              symbol: nativeTokenLabel(denomOrAddress),
-            })
+          : // Native token or invalid type.
+            constSelector(undefined)
       )
+
+      if (!tokenInfo) {
+        return getTokenForChainIdAndDenom(chainId, denomOrAddress)
+      }
+
       const imageUrl =
-        get(
-          type === TokenType.Cw20
-            ? Cw20BaseSelectors.logoUrlSelector({
+        type === TokenType.Cw20
+          ? get(
+              Cw20BaseSelectors.logoUrlSelector({
                 contractAddress: denomOrAddress,
                 chainId,
               })
-            : constSelector(nativeTokenLogoURI(denomOrAddress) ?? '')
-        ) || getFallbackImage(denomOrAddress)
+            )
+          : getFallbackImage(denomOrAddress)
 
       return {
+        chainId,
         type,
         denomOrAddress,
         symbol: tokenInfo.symbol,
         decimals: tokenInfo.decimals,
         imageUrl,
+      }
+    },
+})
+
+export const usdPriceSelector = selectorFamily<
+  AmountWithTimestampAndDenom | undefined,
+  Pick<GenericToken, 'chainId' | 'denomOrAddress'>
+>({
+  key: 'usdPrice',
+  get:
+    ({ denomOrAddress, chainId }) =>
+    async ({ get }) => {
+      switch (chainId) {
+        case ChainId.JunoMainnet:
+          return get(wyndUsdPriceSelector(denomOrAddress))
+        case ChainId.OsmosisMainnet:
+          return get(osmosisUsdPriceSelector(denomOrAddress))
       }
     },
 })
@@ -83,12 +110,13 @@ export const genericTokenWithUsdPriceSelector = selectorFamily<
     (params) =>
     async ({ get }) => {
       const token = get(genericTokenSelector(params))
-      const { amount, timestamp } =
-        get(wyndUsdPriceSelector(token.denomOrAddress)) ?? {}
+
+      const { amount: usdPrice, timestamp } =
+        get(usdPriceSelector(params)) ?? {}
 
       return {
         token,
-        usdPrice: amount,
+        usdPrice,
         timestamp,
       }
     },
@@ -117,16 +145,37 @@ export const genericTokenBalancesSelector = selectorFamily<
             )
           : []
 
+      // TODO: Get polytone cw20s from some item prefix in the DAO.
       const cw20TokenBalances =
         !filter || filter === TokenType.Cw20
           ? get(
-              isValidContractAddress(address, CHAIN_BECH32_PREFIX)
+              isValidContractAddress(
+                address,
+                getChainForChainId(chainId).bech32_prefix
+              ) &&
+                // If is a DAO contract.
+                get(
+                  isContractSelector({
+                    contractAddress: address,
+                    chainId,
+                    names: [
+                      // V1
+                      'cw-core',
+                      // V2
+                      'cwd-core',
+                      'dao-core',
+                    ],
+                  })
+                )
                 ? DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
                     contractAddress: address,
                     governanceTokenAddress: cw20GovernanceTokenAddress,
                     chainId,
                   })
-                : isValidWalletAddress(address, CHAIN_BECH32_PREFIX)
+                : isValidWalletAddress(
+                    address,
+                    getChainForChainId(chainId).bech32_prefix
+                  )
                 ? walletCw20BalancesSelector({
                     walletAddress: address,
                     chainId,
@@ -172,6 +221,37 @@ export const genericTokenBalanceSelector = selectorFamily<
           })
         ).balance
       }
+
+      return {
+        token,
+        balance,
+      }
+    },
+})
+
+export const genericTokenDelegatedBalanceSelector = selectorFamily<
+  GenericTokenBalance,
+  WithChainId<{
+    walletAddress: string
+  }>
+>({
+  key: 'genericTokenDelegatedBalance',
+  get:
+    ({ walletAddress, chainId }) =>
+    async ({ get }) => {
+      const { denom, amount: balance } = get(
+        nativeDelegatedBalanceSelector({
+          chainId,
+          address: walletAddress,
+        })
+      )
+      const token = get(
+        genericTokenSelector({
+          type: TokenType.Native,
+          denomOrAddress: denom,
+          chainId,
+        })
+      )
 
       return {
         token,

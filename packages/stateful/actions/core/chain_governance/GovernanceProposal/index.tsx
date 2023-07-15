@@ -42,7 +42,9 @@ const SUBMIT_PROPOSAL_TYPE_URL = '/cosmos.gov.v1beta1.MsgSubmitProposal'
 const Component: ActionComponent<undefined, GovernanceProposalData> = (
   props
 ) => {
-  const { chainId } = useActionOptions()
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   const govParams = useCachedLoading(
     govQueryParamsSelector({
@@ -58,6 +60,7 @@ const Component: ActionComponent<undefined, GovernanceProposalData> = (
             genericTokenSelector({
               type: TokenType.Native,
               denomOrAddress: denom,
+              chainId,
             })
           )
         ),
@@ -111,7 +114,7 @@ const defaultPlan = JSON.stringify(
 
 export const makeGovernanceProposalAction: ActionMaker<
   GovernanceProposalData
-> = ({ t, address, chainId }) => {
+> = ({ t, address, chain: { chain_id: chainId } }) => {
   const useDefaults: UseDefaults<GovernanceProposalData> = () => {
     const govParams = useCachedLoading(
       govQueryParamsSelector({
@@ -127,6 +130,7 @@ export const makeGovernanceProposalAction: ActionMaker<
               genericTokenSelector({
                 type: TokenType.Native,
                 denomOrAddress: denom,
+                chainId,
               })
             )
           ),

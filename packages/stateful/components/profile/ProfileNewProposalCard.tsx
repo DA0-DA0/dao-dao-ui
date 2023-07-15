@@ -48,7 +48,7 @@ export const InnerProfileNewProposalCard = ({
   },
 }: ProfileNewProposalCardProps) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress, chainId } = useDaoInfoContext()
+  const { name: daoName, coreAddress } = useDaoInfoContext()
   const { walletProfileData, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppContext()
   const {
@@ -60,7 +60,6 @@ export const InnerProfileNewProposalCard = ({
 
   const { isMember } = useMembership({
     coreAddress,
-    chainId,
   })
 
   return (

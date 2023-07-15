@@ -29,11 +29,12 @@ export const fetchProposalModules = async (
   // Try indexer first.
   if (!activeProposalModules) {
     try {
-      activeProposalModules = await queryIndexer(
-        'contract',
-        coreAddress,
-        'daoCore/activeProposalModules'
-      )
+      activeProposalModules = await queryIndexer({
+        type: 'contract',
+        address: coreAddress,
+        formula: 'daoCore/activeProposalModules',
+        chainId,
+      })
     } catch (err) {
       // Ignore error.
       console.error(err)

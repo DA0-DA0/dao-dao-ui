@@ -10,7 +10,11 @@ import {
   blockHeightSelector,
   blocksPerYearSelector,
 } from '@dao-dao/state'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
+import {
+  useCachedLoadable,
+  useChain,
+  useDaoInfoContext,
+} from '@dao-dao/stateless'
 import {
   BaseNewProposalProps,
   IProposalModuleAdapterCommonOptions,
@@ -47,10 +51,10 @@ export const NewProposal = ({
   ...props
 }: NewProposalProps) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const {
     name: daoName,
     imageUrl: daoImageUrl,
-    chainId,
     coreAddress,
   } = useDaoInfoContext()
   const { connected } = useWallet()
@@ -59,7 +63,6 @@ export const NewProposal = ({
 
   const { isMember = false } = useMembership({
     coreAddress,
-    chainId,
   })
 
   const [loading, setLoading] = useState(false)
@@ -69,6 +72,7 @@ export const NewProposal = ({
   // re-renders.
   const pauseInfo = useCachedLoadable(
     DaoCoreV2Selectors.pauseInfoSelector({
+      chainId,
       contractAddress: coreAddress,
       params: [],
     })
@@ -77,7 +81,11 @@ export const NewProposal = ({
     pauseInfo.state === 'hasValue' &&
     ('paused' in pauseInfo.contents || 'Paused' in pauseInfo.contents)
 
-  const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
+  const blockHeightLoadable = useCachedLoadable(
+    blockHeightSelector({
+      chainId,
+    })
+  )
   const blockHeight =
     blockHeightLoadable.state === 'hasValue'
       ? blockHeightLoadable.contents
@@ -85,7 +93,11 @@ export const NewProposal = ({
 
   const processQ = useProcessQ()
 
-  const blocksPerYear = useRecoilValue(blocksPerYearSelector({}))
+  const blocksPerYear = useRecoilValue(
+    blocksPerYearSelector({
+      chainId,
+    })
+  )
 
   const {
     publishProposal,
@@ -129,6 +141,7 @@ export const NewProposal = ({
           const proposal = (
             await snapshot.getPromise(
               proposalSelector({
+                chainId,
                 contractAddress: options.proposalModule.address,
                 params: [
                   {
@@ -198,6 +211,7 @@ export const NewProposal = ({
       t,
       connected,
       daoName,
+      chainId,
     ]
   )
 

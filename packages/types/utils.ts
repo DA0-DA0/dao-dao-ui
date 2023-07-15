@@ -43,9 +43,28 @@ export interface CodeIdConfig {
   DaoVotingNativeStaked: number
 }
 
-export interface ChainPrefixIdMap {
-  juno: string
+export type PolytoneNote = {
+  // Contract address of note on the local/current chain.
+  note: string
+  // Contract address of the note's listener on the local/current chain.
+  listener: string
+  // Contract address of the note's voice on the remote chain.
+  voice: string
+  // IBC connection IDs
+  localConnection: string
+  remoteConnection: string
+  // IBC channel IDs
+  localChannel: string
+  remoteChannel: string
+  // Whether or not the user needs to self-relay an execution. This should be
+  // true if no relayers are running on the established connection. If using an
+  // existing active connection, the relayers will automatically perform the
+  // relay.
+  needsSelfRelay: boolean
 }
+
+// Map chain ID to polytone note that speaks with that chain.
+export type PolytoneNotes = Record<string, PolytoneNote>
 
 export type ParametersExceptFirst<F> = F extends (
   arg0: any,

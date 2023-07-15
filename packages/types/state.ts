@@ -20,7 +20,7 @@ export type CachedLoadable<T> =
     }
 
 export type WithChainId<T> = T & {
-  chainId?: string
+  chainId: string
 }
 
 export interface AmountWithTimestamp {

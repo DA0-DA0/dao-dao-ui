@@ -1,13 +1,13 @@
-import { AccountBalanceOutlined, Link } from '@mui/icons-material'
+import { AccountBalanceOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import { daoTvlSelector } from '@dao-dao/state'
 import {
-  CopyToClipboardUnderline,
   DaoInfoBarLoader,
   DaoInfoBar as StatelessDaoInfoBar,
   TokenAmountDisplay,
   useCachedLoading,
+  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 
@@ -25,11 +25,12 @@ export const DaoInfoBar = () => (
 
 const InnerDaoInfoBar = () => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const {
     hooks: { useDaoInfoBarItems },
   } = useVotingModuleAdapter()
   const votingModuleItems = useDaoInfoBarItems()
-  const { chainId, coreAddress } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfoContext()
 
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
@@ -50,21 +51,6 @@ const InnerDaoInfoBar = () => {
     <StatelessDaoInfoBar
       items={[
         // Common items.
-        {
-          Icon: Link,
-          label: t('title.daosAddress'),
-          value: (
-            <CopyToClipboardUnderline
-              // Inherit color and font size from parent.
-              className="text-[1em] text-inherit"
-              takeStartEnd={{
-                start: 6,
-                end: 4,
-              }}
-              value={coreAddress}
-            />
-          ),
-        },
         {
           Icon: AccountBalanceOutlined,
           label: t('title.daoTreasury'),

@@ -17,9 +17,10 @@ import {
 } from '@dao-dao/stateless'
 import { ActionKey, ButtonPopupSection, TokenCardInfo } from '@dao-dao/types'
 import {
-  NATIVE_TOKEN,
   StakeType,
   getDaoProposalSinglePrefill,
+  getDisplayNameForChainId,
+  getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
 import { tokenCardLazyInfoSelector } from '../../recoil'
@@ -31,13 +32,12 @@ import { DaoTokenDepositModal } from './DaoTokenDepositModal'
 export const DaoTokenCard = (props: TokenCardInfo) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
 
   const lazyInfo = useCachedLoading(
     tokenCardLazyInfoSelector({
-      walletAddress: coreAddress,
-      chainId,
+      owner: props.owner,
       token: props.token,
       unstakedBalance: props.unstakedBalance,
     }),
@@ -61,7 +61,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
 
   // Refresh staking info.
   const setRefreshNativeTokenStakingInfo = useSetRecoilState(
-    refreshNativeTokenStakingInfoAtom(coreAddress)
+    refreshNativeTokenStakingInfoAtom(props.owner)
   )
   const refreshNativeTokenStakingInfo = useCallback(
     () => setRefreshNativeTokenStakingInfo((id) => id + 1),
@@ -73,17 +73,20 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     : lazyInfo.data.stakingInfo?.stakes ?? []
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
 
-  // Prefill URL is valid if...
+  const nativeToken = getNativeTokenForChainId(props.token.chainId)
+
+  // Prefill URLs valid...
   const proposeClaimHref =
     // ...there is something to claim
     stakesWithRewards.length > 0 &&
     // ...and this is the native token
-    props.token.denomOrAddress === NATIVE_TOKEN.denomOrAddress
+    props.token.denomOrAddress === nativeToken.denomOrAddress
       ? getDaoProposalPath(coreAddress, 'create', {
           prefill: getDaoProposalSinglePrefill({
             actions: stakesWithRewards.map(({ validator: { address } }) => ({
               actionKey: ActionKey.ManageStaking,
               data: {
+                chainId: props.token.chainId,
                 stakeType: StakeType.WithdrawDelegatorReward,
                 validator: address,
                 // Default values, not needed for displaying this type of message.
@@ -100,7 +103,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     // ...there is something to stake or unstake
     (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
     // ...and this is the native token
-    props.token.denomOrAddress === NATIVE_TOKEN.denomOrAddress
+    props.token.denomOrAddress === nativeToken.denomOrAddress
       ? getDaoProposalPath(coreAddress, 'create', {
           prefill: getDaoProposalSinglePrefill({
             // If has unstaked, show stake action by default.
@@ -110,6 +113,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
                     {
                       actionKey: ActionKey.ManageStaking,
                       data: {
+                        chainId: props.token.chainId,
                         stakeType: StakeType.Delegate,
                         validator: '',
                         amount: props.unstakedBalance,
@@ -121,6 +125,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
                   lazyStakes.map(({ validator, amount }) => ({
                     actionKey: ActionKey.ManageStaking,
                     data: {
+                      chainId: props.token.chainId,
                       stakeType: StakeType.Undelegate,
                       validator,
                       amount,
@@ -207,6 +212,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
         lazyInfo={lazyInfo}
         onClaim={onClaim}
         refreshUnstakingTasks={refreshNativeTokenStakingInfo}
+        subtitle={getDisplayNameForChainId(props.token.chainId)}
       />
 
       {isCw20GovernanceToken && showCw20StakingModal && StakingModal && (

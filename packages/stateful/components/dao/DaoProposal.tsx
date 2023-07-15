@@ -14,6 +14,7 @@ import {
   Proposal,
   ProposalNotFound,
   ProposalProps,
+  useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
@@ -21,6 +22,7 @@ import {
   CommonProposalInfo,
   ProposalPrefill,
   ProposalStatus,
+  SelfRelayExecuteModalProps,
 } from '@dao-dao/types'
 
 import { useOnDaoWebSocketMessage } from '../../hooks'
@@ -28,6 +30,7 @@ import { walletProfileDataSelector } from '../../recoil'
 import { EntityDisplay } from '../EntityDisplay'
 import { IconButtonLink } from '../IconButtonLink'
 import { ProfileDisconnectedCard, ProfileProposalCard } from '../profile'
+import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { DaoProposalPageWrapperProps } from './DaoPageWrapper'
 
@@ -37,6 +40,7 @@ interface InnerDaoProposalProps {
 
 const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const daoInfo = useDaoInfoContext()
   const actionsForMatching = useActionsForMatching({ isCreating: false })
   const { getDaoProposalPath } = useDaoNavHelpers()
@@ -57,6 +61,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { profile: creatorProfile, loading: creatorProfileLoading } =
     useRecoilValue(
       walletProfileDataSelector({
+        chainId,
         address: proposalInfo.createdByAddress,
       })
     )
@@ -64,6 +69,11 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { refreshProposal, refreshProposalAndAll, refreshing } =
     useProposalRefreshers()
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
+
+  const [selfRelayExecuteProps, setSelfRelayExecuteProps] =
+    useState<
+      Pick<SelfRelayExecuteModalProps, 'uniqueId' | 'chainIds' | 'transaction'>
+    >()
 
   // Vote listener. Show alerts and refresh accordingly.
   const { listening: listeningForVote, fallback: onVoteSuccess } =
@@ -91,30 +101,40 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const {
     listening: listeningForProposal,
     fallback: onProposalUpdateFallback,
-  } = useOnDaoWebSocketMessage('proposal', async ({ status, proposalId }) => {
-    // If the current proposal updated...
-    if (proposalId === proposalInfo.id) {
-      refreshProposalAndAll()
-
-      // On execute, revalidate and refresh page.
-      if (status === ProposalStatus.Executed) {
-        // Show loading since page will reload shortly.
-        toast.loading(t('success.proposalExecuted'))
-
-        // Manually revalidate DAO static props.
-        await fetch(
-          `/api/revalidate?d=${daoInfo.coreAddress}&p=${proposalInfo.id}`
-        )
-
-        // Refresh entire app since any DAO config may have changed.
-        window.location.reload()
+  } = useOnDaoWebSocketMessage(
+    'proposal',
+    async ({ status, proposalId }, fallback) => {
+      // If using self-relay execute, don't show toast or reload page until
+      // manually called via fallback. Once the self-relay is complete, this
+      // will be called manually to show the toast and reload the page.
+      if (selfRelayExecuteProps && !fallback) {
+        return
       }
-      // On close, show success toast.
-      else if (status === ProposalStatus.Closed) {
-        toast.success(t('success.proposalClosed'))
+
+      // If the current proposal updated...
+      if (proposalId === proposalInfo.id) {
+        refreshProposalAndAll()
+
+        // On execute, revalidate and refresh page.
+        if (status === ProposalStatus.Executed) {
+          // Manually revalidate DAO static props.
+          await fetch(
+            `/api/revalidate?d=${daoInfo.coreAddress}&p=${proposalInfo.id}`
+          )
+
+          // Show loading since page will reload shortly.
+          toast.loading(t('success.proposalExecuted'))
+
+          // Refresh entire app since any DAO config may have changed.
+          window.location.reload()
+        }
+        // On close, show success toast.
+        else if (status === ProposalStatus.Closed) {
+          toast.success(t('success.proposalClosed'))
+        }
       }
     }
-  })
+  )
 
   // Fallback if the listener above is not listening.
   const onExecuteSuccess = useCallback(
@@ -160,6 +180,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         onCloseSuccess={onCloseSuccess}
         onExecuteSuccess={onExecuteSuccess}
         onVoteSuccess={onVoteSuccess}
+        openSelfRelayExecute={setSelfRelayExecuteProps}
         seenAllActionPages={seenAllActionPages}
       />
     ),
@@ -190,54 +211,82 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     : undefined
 
   return (
-    <Proposal
-      EntityDisplay={EntityDisplay}
-      IconButtonLink={IconButtonLink}
-      ProposalStatusAndInfo={CachedProposalStatusAndInfo}
-      creator={{
-        name: creatorProfileLoading
-          ? { loading: true }
-          : {
-              loading: false,
-              data: creatorProfile.name,
-            },
-        address: proposalInfo.createdByAddress,
-      }}
-      duplicateUrl={duplicateUrl}
-      onRefresh={refreshProposal}
-      proposalInfo={proposalInfo}
-      proposalInnerContentDisplay={
-        <SuspenseLoader fallback={<Loader />}>
-          <ProposalInnerContentDisplay
-            actionsForMatching={actionsForMatching}
-            setDuplicateFormData={setDuplicateFormData}
-            setSeenAllActionPages={
-              // Only set seen all action pages if the user can vote. This
-              // prevents the warning from appearing if the user can't vote.
-              loadingWalletVoteInfo &&
-              !loadingWalletVoteInfo.loading &&
-              loadingWalletVoteInfo.data.canVote
-                ? () => setSeenAllActionPages(true)
-                : undefined
-            }
-          />
-        </SuspenseLoader>
-      }
-      refreshing={refreshing}
-      rightSidebarContent={
-        connected ? (
-          <SuspenseLoader
-            fallback={<ProfileDisconnectedCard className="animate-pulse" />}
-          >
-            <ProfileProposalCard />
+    <>
+      <Proposal
+        EntityDisplay={EntityDisplay}
+        IconButtonLink={IconButtonLink}
+        ProposalStatusAndInfo={CachedProposalStatusAndInfo}
+        creator={{
+          name: creatorProfileLoading
+            ? { loading: true }
+            : {
+                loading: false,
+                data: creatorProfile.name,
+              },
+          address: proposalInfo.createdByAddress,
+        }}
+        duplicateUrl={duplicateUrl}
+        onRefresh={refreshProposal}
+        proposalInfo={proposalInfo}
+        proposalInnerContentDisplay={
+          <SuspenseLoader fallback={<Loader />}>
+            <ProposalInnerContentDisplay
+              actionsForMatching={actionsForMatching}
+              setDuplicateFormData={setDuplicateFormData}
+              setSeenAllActionPages={
+                // Only set seen all action pages if the user can vote. This
+                // prevents the warning from appearing if the user can't vote.
+                loadingWalletVoteInfo &&
+                !loadingWalletVoteInfo.loading &&
+                loadingWalletVoteInfo.data.canVote
+                  ? () => setSeenAllActionPages(true)
+                  : undefined
+              }
+            />
           </SuspenseLoader>
-        ) : (
-          <ProfileDisconnectedCard />
-        )
-      }
-      voteTally={<ProposalVoteTally />}
-      votesCast={<ProposalVotes />}
-    />
+        }
+        refreshing={refreshing}
+        rightSidebarContent={
+          connected ? (
+            <SuspenseLoader
+              fallback={<ProfileDisconnectedCard className="animate-pulse" />}
+            >
+              <ProfileProposalCard />
+            </SuspenseLoader>
+          ) : (
+            <ProfileDisconnectedCard />
+          )
+        }
+        voteTally={<ProposalVoteTally />}
+        votesCast={<ProposalVotes />}
+      />
+
+      <SelfRelayExecuteModal
+        // Placeholders that get overridden when the modal is opened.
+        chainIds={[]}
+        transaction={{
+          type: 'execute',
+          msgs: [],
+        }}
+        uniqueId=""
+        {...selfRelayExecuteProps}
+        onClose={() => setSelfRelayExecuteProps(undefined)}
+        onSuccess={() =>
+          onProposalUpdateFallback(
+            {
+              status: ProposalStatus.Executed,
+              proposalId: proposalInfo.id,
+            },
+            // Force call the fallback, and don't wait for a block to pass.
+            {
+              onlyIfNotListening: false,
+              skipWait: true,
+            }
+          )
+        }
+        visible={!!selfRelayExecuteProps}
+      />
+    </>
   )
 }
 
@@ -248,7 +297,6 @@ export const DaoProposal = ({
   proposalInfo && serializedInfo ? (
     <ProposalModuleAdapterProvider
       initialOptions={{
-        chainId: serializedInfo.chainId,
         coreAddress: serializedInfo.coreAddress,
       }}
       proposalId={proposalInfo.id}
