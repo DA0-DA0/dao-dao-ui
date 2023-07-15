@@ -125,6 +125,7 @@ export const contractInfoSelector = selectorFamily<
           contractAddress,
           chainId,
           formula: 'info',
+          // TODO(numia): Remove this once provided.
           required: true,
         })
       )

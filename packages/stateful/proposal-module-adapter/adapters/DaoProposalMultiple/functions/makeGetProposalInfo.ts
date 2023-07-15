@@ -66,6 +66,8 @@ export const makeGetProposalInfo =
           args: {
             id: proposalNumber,
           },
+          // TODO(numia): Remove this once numia indexer provides timestamps.
+          required: true,
         })
       } catch (err) {
         // Ignore error.

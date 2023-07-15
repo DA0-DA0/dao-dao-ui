@@ -514,6 +514,8 @@ const daoCoreDumpState = async (
       address: coreAddress,
       formula: 'daoCore/dumpState',
       chainId: CHAIN_ID,
+      // TODO(numia): Remove this once provided.
+      required: true,
     })
 
     // Use data from indexer if present.
