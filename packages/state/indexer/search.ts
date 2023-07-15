@@ -43,7 +43,6 @@ export const searchDaos = async ({
 }: SearchDaosOptions): Promise<DaoSearchResult[]> => {
   const client = await loadMeilisearchClient()
 
-  console.log(SearchDaosIndexPerChain)
   if (!(chainId in SearchDaosIndexPerChain)) {
     return []
   }

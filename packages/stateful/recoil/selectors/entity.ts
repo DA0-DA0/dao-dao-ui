@@ -1,4 +1,4 @@
-import { constSelector, selectorFamily, waitForAny } from 'recoil'
+import { constSelector, selectorFamily, waitForAllSettled } from 'recoil'
 
 import { Entity, EntityType, WithChainId } from '@dao-dao/types'
 import {
@@ -28,7 +28,7 @@ export const entitySelector = selectorFamily<
         daoInfoFromPolytoneProxyLoadable,
         walletProfileDataLoadable,
       ] = get(
-        waitForAny([
+        waitForAllSettled([
           // Try to load config assuming the address is a DAO.
           address && isValidContractAddress(address, bech32Prefix)
             ? daoInfoSelector({
