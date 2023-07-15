@@ -2,7 +2,7 @@ import Fuse from 'fuse.js'
 import { useMemo } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValueLoadable, waitForAll } from 'recoil'
+import { waitForAll } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
@@ -12,18 +12,14 @@ import {
 import {
   AddressInput as StatelessAddressInput,
   useCachedLoadable,
+  useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
-import { AddressInputProps, Entity, EntityType } from '@dao-dao/types'
-import {
-  getFallbackImage,
-  isValidBech32Address,
-  polytoneNoteProxyMapToChainIdMap,
-  toBech32Hash,
-} from '@dao-dao/utils'
+import { AddressInputProps } from '@dao-dao/types'
+import { isValidBech32Address } from '@dao-dao/utils'
 import { PolytoneNotesPerChain } from '@dao-dao/utils/constants/polytone'
 
-import { walletProfileDataSelector } from '../recoil/selectors/profile'
+import { entitySelector } from '../recoil'
 import { EntityDisplay } from './EntityDisplay'
 
 export const AddressInput = <
@@ -79,90 +75,34 @@ export const AddressInput = <
       : undefined
   )
 
-  // Get wallet profiles for the search results so we can use the correct images
-  // for consistency (the wallet profile selector handles fallback images).
-  const searchedProfilesLoadable = useRecoilValueLoadable(
-    searchProfilesLoadable.state === 'hasValue'
-      ? waitForAll(
-          searchProfilesLoadable.contents.map(({ address }) =>
-            walletProfileDataSelector({
-              chainId: currentChain.chain_id,
+  const loadingEntities = useCachedLoading(
+    waitForAll([
+      ...(searchProfilesLoadable.state === 'hasValue'
+        ? searchProfilesLoadable.contents.map(({ address }) =>
+            entitySelector({
               address,
+              chainId: currentChain.chain_id,
             })
           )
-        )
-      : constSelector(undefined)
+        : []),
+      ...(searchDaosLoadable.state === 'hasValue'
+        ? searchDaosLoadable.contents
+            .flat()
+            .map(({ chainId, contractAddress }) =>
+              entitySelector({
+                chainId,
+                address: contractAddress,
+              })
+            )
+        : []),
+    ]),
+    []
   )
 
-  // Combine profiles and DAOs into a single array of entities.
-  const entities: Entity[] =
-    searchProfilesLoadable.state === 'hasValue' ||
-    searchDaosLoadable.state === 'hasValue'
-      ? [
-          ...(searchProfilesLoadable.state === 'hasValue'
-            ? searchProfilesLoadable.contents.map(
-                ({ address, profile: { name, nft } }, index) => ({
-                  type: EntityType.Wallet,
-                  chainId: currentChain.chain_id,
-                  address,
-                  name,
-                  imageUrl:
-                    // Use loaded profile image if available, and fallback to
-                    // image from search, and fallback image otherwise.
-                    (searchedProfilesLoadable.state === 'hasValue' &&
-                      searchedProfilesLoadable.contents?.[index]?.profile
-                        .imageUrl) ||
-                    nft?.imageUrl ||
-                    getFallbackImage(toBech32Hash(address)),
-                })
-              )
-            : []),
-          ...(searchDaosLoadable.state === 'hasValue'
-            ? searchDaosLoadable.contents
-                .flat()
-                .filter(({ value }) => value?.config)
-                .map(
-                  ({
-                    chainId,
-                    contractAddress,
-                    value: {
-                      config: { name, image_url },
-                      polytoneProxies,
-                    },
-                  }) => {
-                    // Use address that corresponds to the current chain,
-                    // whether it's the DAOs core address or one of its polytone
-                    // proxies.
-                    const address =
-                      chainId === currentChain.chain_id
-                        ? contractAddress
-                        : polytoneNoteProxyMapToChainIdMap(
-                            chainId,
-                            polytoneProxies || {}
-                          )?.[currentChain.chain_id]
-                    if (!address) {
-                      return
-                    }
-
-                    return {
-                      type: EntityType.Dao,
-                      chainId,
-                      address,
-                      name,
-                      // Use main contract address, even if polytone account, so
-                      // fallback image stays consistent.
-                      imageUrl: image_url || getFallbackImage(contractAddress),
-                    } as Entity
-                  }
-                )
-                .filter((entity): entity is Entity => !!entity)
-            : []),
-        ]
-      : []
+  const entities = loadingEntities.loading ? [] : loadingEntities.data
 
   // Use Fuse to search combined profiles and DAOs by name so that is most
   // relevant (as opposed to just sticking DAOs after profiles).
-
   const fuse = useMemo(
     () => new Fuse(entities, { keys: ['name'] }),
     // Only reinstantiate fuse when entities deeply changes.
@@ -191,7 +131,9 @@ export const AddressInput = <
                 (props.type !== 'wallet' &&
                   (searchDaosLoadable.state === 'loading' ||
                     (searchDaosLoadable.state === 'hasValue' &&
-                      searchDaosLoadable.updating))),
+                      searchDaosLoadable.updating))) ||
+                loadingEntities.loading ||
+                !!loadingEntities.updating,
             }
           : undefined
       }

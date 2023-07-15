@@ -26,6 +26,8 @@ import {
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
+  Entity,
+  EntityType,
   GenericTokenBalance,
   LoadingData,
 } from '@dao-dao/types'
@@ -37,7 +39,6 @@ import {
   getChainForChainId,
   getChainForChainName,
   getImageUrlForChainId,
-  isValidWalletAddress,
   makeValidateAddress,
   toAccessibleImageUrl,
   validateRequired,
@@ -59,6 +60,7 @@ export interface SpendData {
 
 export interface SpendOptions {
   tokens: LoadingData<GenericTokenBalance[]>
+  currentEntity: Entity | undefined
   // Used to render pfpk or DAO profiles when selecting addresses.
   AddressInput: ComponentType<
     AddressInputProps<SpendData> & RefAttributes<HTMLDivElement>
@@ -69,14 +71,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { tokens, AddressInput },
+  options: { tokens, currentEntity, AddressInput },
 }) => {
   const { t } = useTranslation()
-  const {
-    address: coreAddress,
-    chain: currentChain,
-    context,
-  } = useActionOptions()
+  const { context } = useActionOptions()
 
   const { register, watch, setValue, setError, clearErrors } =
     useFormContext<SpendData>()
@@ -92,46 +90,47 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   // On destination chain ID change, update address intelligently.
   useEffect(() => {
-    let newRecipient = recipient
-    try {
-      const { bech32_prefix: bech32Prefix } = getChainForChainId(toChainId)
+    // If no current entity, or the loaded entity is different from entered
+    // recipient, do nothing. Only update address intelligently if we have
+    // loaded the entity for the entered recipient.
+    if (
+      !currentEntity ||
+      !recipient ||
+      // Wallet on current chain
+      (currentEntity.type === EntityType.Wallet ||
+      // DAO on native chain (core contract address).
+      !currentEntity.polytoneProxy
+        ? recipient !== currentEntity.address
+        : // DAO on other chain (polytone proxy address).
+          recipient !== currentEntity.polytoneProxy.address)
+    ) {
+      return
+    }
 
-      // Convert wallet address to destination chain's format.
-      if (
-        !recipient.startsWith(bech32Prefix) &&
-        isValidWalletAddress(recipient)
-      ) {
-        newRecipient = toBech32(bech32Prefix, fromBech32(recipient).data)
-      }
-      // Convert DAO address or its polytone proxy to appropriate address.
-      else if (
-        context.type === ActionContextType.Dao &&
-        (recipient === coreAddress ||
-          Object.values(context.info.polytoneProxies).includes(recipient))
-      ) {
-        newRecipient =
-          toChainId === currentChain.chain_id
-            ? coreAddress
-            : toChainId in context.info.polytoneProxies
-            ? context.info.polytoneProxies[toChainId]
-            : ''
-      }
-    } catch {
-      // Ignore error.
+    let newRecipient: string
+
+    // Convert wallet address to destination chain's format.
+    if (currentEntity.type === EntityType.Wallet) {
+      newRecipient = toBech32(
+        toChain.bech32_prefix,
+        fromBech32(currentEntity.address).data
+      )
+    }
+    // Get DAO core address or its corresponding polytone proxy. Clear if no
+    // account on the destination chain.
+    else {
+      newRecipient =
+        toChain.chain_id === currentEntity.chainId
+          ? currentEntity.address
+          : toChain.chain_id in currentEntity.daoInfo.polytoneProxies
+          ? currentEntity.daoInfo.polytoneProxies[toChain.chain_id]
+          : ''
     }
 
     if (newRecipient !== recipient) {
       setValue((fieldNamePrefix + 'to') as 'to', newRecipient)
     }
-  }, [
-    context,
-    coreAddress,
-    currentChain.chain_id,
-    fieldNamePrefix,
-    recipient,
-    setValue,
-    toChainId,
-  ])
+  }, [context, currentEntity, fieldNamePrefix, recipient, setValue, toChain])
 
   const possibleDestinationChains = useMemo(() => {
     const spendChain = getChainForChainId(spendChainId)

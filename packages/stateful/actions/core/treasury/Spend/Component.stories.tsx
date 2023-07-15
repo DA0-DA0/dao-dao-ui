@@ -67,6 +67,7 @@ Default.args = {
         },
       ],
     },
+    currentEntity: undefined,
     AddressInput,
   },
   isCreating: true,

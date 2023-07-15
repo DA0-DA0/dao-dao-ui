@@ -2,14 +2,15 @@ import { coin } from '@cosmjs/amino'
 import { useWallet } from '@noahsaso/cosmodal'
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx'
 import Long from 'long'
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
-import { MoneyEmoji } from '@dao-dao/stateless'
+import { MoneyEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   CosmosMsgForEmpty,
+  Entity,
   TokenType,
   UseDecodedCosmosMsg,
 } from '@dao-dao/types'
@@ -31,6 +32,7 @@ import {
   getIbcTransferInfoFromChainSource,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
+  isValidBech32Address,
   isValidContractAddress,
   makeBankMessage,
   makePolytoneExecuteMessage,
@@ -40,6 +42,7 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
+import { entitySelector } from '../../../../recoil'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
 import {
@@ -65,11 +68,13 @@ const useDefaults: UseDefaults<SpendData> = () => {
 }
 
 const Component: ActionComponent<undefined, SpendData> = (props) => {
-  // Get the selected token if not creating.
   const { watch } = useFormContext<SpendData>()
+
   const chainId =
     watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
   const denom = watch((props.fieldNamePrefix + 'denom') as 'denom')
+  const recipient = watch((props.fieldNamePrefix + 'to') as 'to')
+  const toChainId = watch((props.fieldNamePrefix + 'toChainId') as 'toChainId')
 
   const loadingTokens = useTokenBalances({
     // Load selected token when not creating, in case it is no longer returned
@@ -92,11 +97,34 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
     allChains: true,
   })
 
+  const [currentEntity, setCurrentEntity] = useState<Entity | undefined>()
+  const loadingEntity = useCachedLoadingWithError(
+    recipient &&
+      isValidBech32Address(
+        recipient,
+        getChainForChainId(toChainId).bech32_prefix
+      )
+      ? entitySelector({
+          address: recipient,
+          chainId: toChainId,
+        })
+      : undefined
+  )
+  // Cache last successfully loaded entity.
+  useEffect(() => {
+    if (loadingEntity.loading || loadingEntity.errored) {
+      return
+    }
+
+    setCurrentEntity(loadingEntity.data)
+  }, [loadingEntity])
+
   return (
     <StatelessSpendComponent
       {...props}
       options={{
         tokens: loadingTokens,
+        currentEntity,
         AddressInput,
       }}
     />
