@@ -6,39 +6,34 @@ import { StatefulEntityDisplayProps } from '@dao-dao/types'
 import { Button } from '../buttons'
 import { Modal, ModalProps } from './Modal'
 
-export type SyncFollowingModalProps = Pick<ModalProps, 'visible'> & {
-  onDelete: () => void
-  onSync: () => void
-  syncing: boolean
+export type MigrateFollowingModalProps = Pick<ModalProps, 'visible'> & {
+  onMigrate: () => void
+  migrating: boolean
   followedDaos: string[]
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
-export const SyncFollowingModal = ({
+export const MigrateFollowingModal = ({
   visible,
-  onDelete,
-  onSync,
-  syncing,
+  onMigrate,
+  migrating,
   followedDaos,
   EntityDisplay,
-}: SyncFollowingModalProps) => {
+}: MigrateFollowingModalProps) => {
   const { t } = useTranslation()
 
   return (
     <Modal
       footerContent={
         <div className="flex flex-row items-stretch justify-end gap-2">
-          <Button disabled={syncing} onClick={onDelete} variant="secondary">
-            {t('button.stopFollowing')}
-          </Button>
-          <Button loading={syncing} onClick={onSync}>
-            {t('button.sync')}
+          <Button loading={migrating} onClick={onMigrate}>
+            {t('button.migrate')}
           </Button>
         </div>
       }
       header={{
-        title: t('title.syncFollowing'),
-        subtitle: t('info.syncFollowingDescription'),
+        title: t('title.migrateFollowing'),
+        subtitle: t('info.migrateFollowingDescription'),
       }}
       visible={visible}
     >

@@ -41,8 +41,8 @@ import {
 import { ConnectWallet } from './ConnectWallet'
 import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
+import { MigrateFollowingModal } from './MigrateFollowingModal'
 import { SidebarWallet } from './SidebarWallet'
-import { SyncFollowingModal } from './SyncFollowingModal'
 import { WalletModals } from './wallet'
 
 export const DappLayout = ({ children }: { children: ReactNode }) => {
@@ -221,7 +221,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
           visible={commandModalVisible}
         />
       )}
-      <SyncFollowingModal />
+      <MigrateFollowingModal />
 
       {/* Wallet UI */}
       <WalletModals />
