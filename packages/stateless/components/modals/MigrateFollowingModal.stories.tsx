@@ -2,23 +2,22 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { EntityDisplay } from '@dao-dao/stateful'
 
-import { SyncFollowingModal } from './SyncFollowingModal'
+import { MigrateFollowingModal } from './MigrateFollowingModal'
 
 export default {
   title:
-    'DAO DAO / packages / stateless / components / modals / SyncFollowingModal',
-  component: SyncFollowingModal,
-} as ComponentMeta<typeof SyncFollowingModal>
+    'DAO DAO / packages / stateless / components / modals / MigrateFollowingModal',
+  component: MigrateFollowingModal,
+} as ComponentMeta<typeof MigrateFollowingModal>
 
-const Template: ComponentStory<typeof SyncFollowingModal> = (args) => (
-  <SyncFollowingModal {...args} />
+const Template: ComponentStory<typeof MigrateFollowingModal> = (args) => (
+  <MigrateFollowingModal {...args} />
 )
 
 export const Default = Template.bind({})
 Default.args = {
   visible: true,
-  onDelete: () => alert('delete'),
-  onSync: () => alert('sync'),
+  onMigrate: () => alert('migrate'),
   syncing: false,
   followedDaos: [
     'juno10h0hc64jv006rr8qy0zhlu4jsxct8qwa0vtaleayh0ujz0zynf2s2r7v8q',
