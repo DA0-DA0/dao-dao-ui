@@ -211,50 +211,15 @@ export const getTokenForChainIdAndDenom = (
 
     const key = `${chainId}:${denom}`
     if (!cachedTokens[key]) {
-      // If Juno mainnet, check IBC assets.
-      if (chainId === ChainId.JunoMainnet) {
-        const ibcAsset = getIbcAssets().find(
-          ({ denomOrAddress }) => denomOrAddress === denom
-        )
-
-        if (ibcAsset) {
-          cachedTokens[key] = ibcAsset
-          return ibcAsset
-        }
-      }
-
-      // Otherwise, check asset list.
-      const chain = getChainForChainId(chainId)
-
-      const assetList =
-        assets.find(({ chain_name }) => chain_name === chain.chain_name)
-          ?.assets ?? []
-      const asset = assetList.find(({ base }) => base === denom)
-      if (!asset) {
+      // Try IBC assets.
+      const ibcAsset = getIbcAssets().find(
+        ({ denomOrAddress }) => denomOrAddress === denom
+      )
+      if (!ibcAsset) {
         throw new Error(`Chain ${chainId} has no asset for token ${denom}`)
       }
 
-      cachedTokens[key] = Object.freeze({
-        chainId,
-        type: TokenType.Native,
-        denomOrAddress: denom,
-        symbol: asset.symbol,
-        decimals:
-          asset.denom_units.find(({ denom }) => denom === asset.display)
-            ?.exponent ??
-          asset.denom_units.find(({ exponent }) => exponent > 0)?.exponent ??
-          asset.denom_units[0]?.exponent ??
-          0,
-        // Use local Juno image for ujuno token prefix.
-        imageUrl: denom.startsWith('ujuno')
-          ? '/juno.png'
-          : // Use asset images.
-            asset.logo_URIs?.svg ??
-            asset.logo_URIs?.png ??
-            asset.logo_URIs?.jpeg ??
-            // Fallback.
-            getFallbackImage(denom),
-      })
+      cachedTokens[key] = ibcAsset
     }
 
     return cachedTokens[key]!
