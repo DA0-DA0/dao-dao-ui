@@ -106,19 +106,23 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       // Convert DAO address or its polytone proxy to appropriate address.
       else if (
         context.type === ActionContextType.Dao &&
-        (recipient === newRecipient ||
+        (recipient === coreAddress ||
           Object.values(context.info.polytoneProxies).includes(recipient))
       ) {
         newRecipient =
           toChainId === currentChain.chain_id
             ? coreAddress
-            : context.info.polytoneProxies[toChainId]
+            : toChainId in context.info.polytoneProxies
+            ? context.info.polytoneProxies[toChainId]
+            : ''
       }
     } catch {
       // Ignore error.
     }
 
-    setValue((fieldNamePrefix + 'to') as 'to', newRecipient)
+    if (newRecipient !== recipient) {
+      setValue((fieldNamePrefix + 'to') as 'to', newRecipient)
+    }
   }, [
     context,
     coreAddress,
