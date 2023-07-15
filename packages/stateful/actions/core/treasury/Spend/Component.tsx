@@ -37,6 +37,7 @@ import {
   getChainForChainId,
   getChainForChainName,
   getImageUrlForChainId,
+  isValidWalletAddress,
   makeValidateAddress,
   toAccessibleImageUrl,
   validateRequired,
@@ -71,7 +72,11 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   options: { tokens, AddressInput },
 }) => {
   const { t } = useTranslation()
-  const { context } = useActionOptions()
+  const {
+    address: coreAddress,
+    chain: currentChain,
+    context,
+  } = useActionOptions()
 
   const { register, watch, setValue, setError, clearErrors } =
     useFormContext<SpendData>()
@@ -85,22 +90,44 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   const toChainId = watch((fieldNamePrefix + 'toChainId') as 'toChainId')
   const toChain = getChainForChainId(toChainId)
 
-  // On destination chain ID change, try to convert address.
+  // On destination chain ID change, update address intelligently.
   useEffect(() => {
+    let newRecipient = ''
     try {
       const { bech32_prefix: bech32Prefix } = getChainForChainId(toChainId)
-      if (recipient.startsWith(bech32Prefix)) {
-        return
-      }
 
-      setValue(
-        (fieldNamePrefix + 'to') as 'to',
-        toBech32(bech32Prefix, fromBech32(recipient).data)
-      )
+      // Convert wallet address to destination chain's format.
+      if (
+        !recipient.startsWith(bech32Prefix) &&
+        isValidWalletAddress(recipient)
+      ) {
+        newRecipient = toBech32(bech32Prefix, fromBech32(recipient).data)
+      }
+      // Convert DAO address or its polytone proxy to appropriate address.
+      else if (
+        context.type === ActionContextType.Dao &&
+        (recipient === newRecipient ||
+          Object.values(context.info.polytoneProxies).includes(recipient))
+      ) {
+        newRecipient =
+          toChainId === currentChain.chain_id
+            ? coreAddress
+            : context.info.polytoneProxies[toChainId]
+      }
     } catch {
       // Ignore error.
     }
-  }, [fieldNamePrefix, recipient, setValue, toChainId])
+
+    setValue((fieldNamePrefix + 'to') as 'to', newRecipient)
+  }, [
+    context,
+    coreAddress,
+    currentChain.chain_id,
+    fieldNamePrefix,
+    recipient,
+    setValue,
+    toChainId,
+  ])
 
   const possibleDestinationChains = useMemo(() => {
     const spendChain = getChainForChainId(spendChainId)
