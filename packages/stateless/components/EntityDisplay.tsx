@@ -48,8 +48,8 @@ export const EntityDisplay = ({
   const href = loadingEntity.loading
     ? undefined
     : loadingEntity.data.type === EntityType.Dao
-    ? getDaoPath(address)
-    : WALLET_URL_PREFIX + address
+    ? getDaoPath(loadingEntity.data.address)
+    : WALLET_URL_PREFIX + loadingEntity.data.address
 
   const { textRef, truncated } = useDetectTruncate()
 
