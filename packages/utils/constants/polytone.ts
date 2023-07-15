@@ -7,7 +7,7 @@ const junoMainnet: PolytoneNotes = {
     // juno
     listener: 'juno1f2676a53wxnnp05ezch69hwp5lpxug5qm07lyeywlf57y9ghw46qylrshd',
     // osmosis
-    // voice: 'osmo1af93h8xcszszes2a0kjms5zpm5ns3fys4aez2f40fgz428hc8aws28klzs',
+    voice: 'osmo1af93h8xcszszes2a0kjms5zpm5ns3fys4aez2f40fgz428hc8aws28klzs',
     // juno
     localConnection: 'connection-0',
     // osmosis
@@ -31,7 +31,7 @@ const osmosisMainnet: PolytoneNotes = {
     // osmosis
     listener: 'osmo1jhwx9nunu4m3ajhvlm5vl2pltrhkltyawanp9c0qhxmxp940dessqh46k6',
     // juno
-    // voice: 'juno1mkq8ggvmr7kzu85c9muud30nmdcv98050uxyqrqmmftlmag044gs3e0d0u',
+    voice: 'juno1mkq8ggvmr7kzu85c9muud30nmdcv98050uxyqrqmmftlmag044gs3e0d0u',
     // osmosis
     localConnection: 'connection-1142',
     // juno

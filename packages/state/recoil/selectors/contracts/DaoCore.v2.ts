@@ -38,6 +38,7 @@ import {
   Cw721BaseSelectors,
   DaoVotingCw20StakedSelectors,
   PolytoneNoteSelectors,
+  PolytoneProxySelectors,
 } from '.'
 import {
   DaoCoreV2Client,
@@ -1085,5 +1086,92 @@ export const polytoneProxiesSelector = selectorFamily<
           }),
           {} as PolytoneProxies
         )
+    },
+})
+
+export const coreAddressForPolytoneProxy = selectorFamily<
+  string | undefined,
+  { chainId: string; voice: string; proxy: string }
+>({
+  key: 'daoCoreV2CoreAddressForPolytoneProxy',
+  get:
+    ({ chainId, voice, proxy }) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          chainId,
+          contractAddress: voice,
+          formula: 'polytone/voice/remoteController',
+          args: {
+            address: proxy,
+          },
+        })
+      ),
+})
+
+export const configFromPolytoneProxySelector = selectorFamily<
+  | {
+      chainId: string
+      coreAddress: string
+      config: ConfigResponse
+    }
+  | undefined,
+  WithChainId<{ proxy: string }>
+>({
+  key: 'daoCoreV2ConfigFromPolytoneProxy',
+  get:
+    ({ proxy, chainId }) =>
+    ({ get }) => {
+      // Get voice for this proxy on destination chain.
+      const voice = get(
+        PolytoneProxySelectors.instantiatorSelector({
+          chainId,
+          contractAddress: proxy,
+          params: [],
+        })
+      )
+      if (!voice) {
+        return
+      }
+
+      // Get source DAO core address for this voice.
+      const coreAddress = get(
+        coreAddressForPolytoneProxy({
+          chainId,
+          voice,
+          proxy,
+        })
+      )
+      if (!coreAddress) {
+        return
+      }
+
+      // Get source chain ID, where the note lives for this voice.
+      const srcChainId = Object.entries(PolytoneNotesPerChain).find(
+        ([, notes]) =>
+          Object.entries(notes).some(
+            ([destChainId, note]) =>
+              destChainId === chainId && note.voice === voice
+          )
+      )?.[0]
+      console.log(chainId, proxy, voice, coreAddress, chainId)
+      if (!srcChainId) {
+        return
+      }
+
+      // Get DAO config on source chain.
+      const config = get(
+        configSelector({
+          chainId: srcChainId,
+          contractAddress: coreAddress,
+          params: [],
+        })
+      )
+
+      return {
+        chainId: srcChainId,
+        coreAddress,
+        config,
+      }
     },
 })

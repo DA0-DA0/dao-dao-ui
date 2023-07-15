@@ -103,6 +103,7 @@ export const AddressInput = <
             ? searchProfilesLoadable.contents.map(
                 ({ address, profile: { name, nft } }, index) => ({
                   type: EntityType.Wallet,
+                  chainId: currentChain.chain_id,
                   address,
                   name,
                   imageUrl:
@@ -145,9 +146,12 @@ export const AddressInput = <
 
                     return {
                       type: EntityType.Dao,
+                      chainId,
                       address,
                       name,
-                      imageUrl: image_url || getFallbackImage(address),
+                      // Use main contract address, even if polytone account, so
+                      // fallback image stays consistent.
+                      imageUrl: image_url || getFallbackImage(contractAddress),
                     } as Entity
                   }
                 )

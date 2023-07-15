@@ -25,6 +25,7 @@ export {
   PolytoneListenerQueryClient,
 } from './PolytoneListener'
 export { PolytoneNoteClient, PolytoneNoteQueryClient } from './PolytoneNote'
+export { PolytoneProxyClient, PolytoneProxyQueryClient } from './PolytoneProxy'
 export { WyndexFactoryClient, WyndexFactoryQueryClient } from './WyndexFactory'
 export {
   WyndexMultiHopClient,

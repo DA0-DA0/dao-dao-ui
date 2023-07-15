@@ -48,6 +48,8 @@ export type PolytoneNote = {
   note: string
   // Contract address of the note's listener on the local/current chain.
   listener: string
+  // Contract address of the note's voice on the remote chain.
+  voice: string
   // IBC connection IDs
   localConnection: string
   remoteConnection: string

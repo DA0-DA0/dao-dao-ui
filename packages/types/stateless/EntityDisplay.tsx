@@ -8,6 +8,7 @@ export enum EntityType {
 // DAO or wallet representation.
 export type Entity = {
   type: EntityType
+  chainId: string
   address: string
   name: string | null
   imageUrl: string

@@ -125,6 +125,7 @@ export const contractInfoSelector = selectorFamily<
           contractAddress,
           chainId,
           formula: 'info',
+          required: true,
         })
       )
       if (info) {
