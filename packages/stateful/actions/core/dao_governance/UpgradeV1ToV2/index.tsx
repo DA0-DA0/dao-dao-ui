@@ -138,7 +138,11 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
   address,
   chain,
 }) => {
-  if (context.type !== ActionContextType.Dao) {
+  if (
+    context.type !== ActionContextType.Dao ||
+    // If no DAO migrator, don't show upgrade action.
+    CODE_ID_CONFIG.DaoMigrator > 0
+  ) {
     return null
   }
 
