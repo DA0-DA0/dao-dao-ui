@@ -1,4 +1,7 @@
+import { coin } from '@cosmjs/amino'
 import { useWallet } from '@noahsaso/cosmodal'
+import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx'
+import Long from 'long'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
@@ -23,10 +26,15 @@ import {
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   getChainForChainId,
+  getChainForChainName,
+  getIbcTransferInfoBetweenChains,
+  getIbcTransferInfoFromChainSource,
   getNativeTokenForChainId,
+  isDecodedStargateMsg,
   isValidContractAddress,
   makeBankMessage,
   makePolytoneExecuteMessage,
+  makeStargateMessage,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -39,6 +47,8 @@ import {
   SpendComponent as StatelessSpendComponent,
 } from './Component'
 
+const IBC_MSG_TRANSFER_TYPE_URL = '/ibc.applications.transfer.v1.MsgTransfer'
+
 const useDefaults: UseDefaults<SpendData> = () => {
   const {
     chain: { chain_id: chainId },
@@ -47,6 +57,7 @@ const useDefaults: UseDefaults<SpendData> = () => {
 
   return {
     chainId,
+    toChainId: chainId,
     to: walletAddress,
     amount: 1,
     denom: getNativeTokenForChainId(chainId).denomOrAddress,
@@ -93,7 +104,11 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
 }
 
 const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
-  const currentChainId = useActionOptions().chain.chain_id
+  const {
+    address,
+    chain: { chain_id: currentChainId },
+  } = useActionOptions()
+
   const loadingTokenBalances = useTokenBalances({
     allChains: true,
   })
@@ -112,21 +127,35 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
         throw new Error(`Unknown token: ${data.denom}`)
       }
 
+      const amount = BigInt(
+        convertDenomToMicroDenomWithDecimals(data.amount, token.decimals)
+      ).toString()
+
       let msg: CosmosMsgForEmpty | undefined
-      if (token.type === TokenType.Native) {
-        const amount = convertDenomToMicroDenomWithDecimals(
-          data.amount,
-          token.decimals
+      if (data.toChainId !== data.chainId) {
+        const { sourceChannel } = getIbcTransferInfoBetweenChains(
+          data.chainId,
+          data.toChainId
         )
+        msg = makeStargateMessage({
+          stargate: {
+            typeUrl: IBC_MSG_TRANSFER_TYPE_URL,
+            value: {
+              sourcePort: 'transfer',
+              sourceChannel,
+              token: coin(amount, data.denom),
+              sender: address,
+              receiver: data.to,
+              timeoutTimestamp: Long.MAX_VALUE,
+              memo: '',
+            } as MsgTransfer,
+          },
+        })
+      } else if (token.type === TokenType.Native) {
         msg = {
-          bank: makeBankMessage(amount.toString(), data.to, data.denom),
+          bank: makeBankMessage(amount, data.to, data.denom),
         }
       } else if (token.type === TokenType.Cw20) {
-        const amount = convertDenomToMicroDenomWithDecimals(
-          data.amount,
-          token.decimals
-        ).toString()
-
         msg = makeWasmMessage({
           wasm: {
             execute: {
@@ -153,7 +182,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
         return makePolytoneExecuteMessage(data.chainId, msg)
       }
     },
-    [currentChainId, loadingTokenBalances]
+    [address, currentChainId, loadingTokenBalances]
   )
 }
 
@@ -196,12 +225,26 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     },
   })
 
+  const isIbcTransfer =
+    isDecodedStargateMsg(msg) &&
+    msg.stargate.typeUrl === IBC_MSG_TRANSFER_TYPE_URL &&
+    objectMatchesStructure(msg.stargate.value, {
+      sourcePort: {},
+      sourceChannel: {},
+      token: {},
+      sender: {},
+      receiver: {},
+    }) &&
+    msg.stargate.value.sourcePort === 'transfer'
+
   const token = useRecoilValue(
-    isNative || isCw20
+    isNative || isCw20 || isIbcTransfer
       ? genericTokenSelector({
           chainId,
-          type: isNative ? TokenType.Native : TokenType.Cw20,
-          denomOrAddress: isNative
+          type: isNative || isIbcTransfer ? TokenType.Native : TokenType.Cw20,
+          denomOrAddress: isIbcTransfer
+            ? msg.stargate.value.token.denom
+            : isNative
             ? msg.bank.send.amount[0].denom
             : msg.wasm.execute.contract_addr,
         })
@@ -212,11 +255,31 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return { match: false }
   }
 
-  if (token.type === TokenType.Native) {
+  if (isIbcTransfer) {
+    const { destinationChain } = getIbcTransferInfoFromChainSource(
+      chainId,
+      msg.stargate.value.sourceChannel
+    )
+
     return {
       match: true,
       data: {
         chainId,
+        toChainId: getChainForChainName(destinationChain.chain_name).chain_id,
+        to: msg.stargate.value.receiver,
+        amount: convertMicroDenomToDenomWithDecimals(
+          msg.stargate.value.token.amount,
+          token.decimals
+        ),
+        denom: token.denomOrAddress,
+      },
+    }
+  } else if (token.type === TokenType.Native) {
+    return {
+      match: true,
+      data: {
+        chainId,
+        toChainId: chainId,
         to: msg.bank.send.to_address,
         amount: convertMicroDenomToDenomWithDecimals(
           msg.bank.send.amount[0].amount,
@@ -230,6 +293,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
       match: true,
       data: {
         chainId,
+        toChainId: chainId,
         to: msg.wasm.execute.msg.transfer.recipient,
         amount: convertMicroDenomToDenomWithDecimals(
           msg.wasm.execute.msg.transfer.amount,

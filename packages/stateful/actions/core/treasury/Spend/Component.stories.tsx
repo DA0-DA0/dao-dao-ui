@@ -17,6 +17,7 @@ export default {
   decorators: [
     makeReactHookFormDecorator<SpendData>({
       chainId: CHAIN_ID,
+      toChainId: CHAIN_ID,
       to: '',
       amount: 1,
       denom: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,

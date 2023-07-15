@@ -25,6 +25,7 @@
     "@walletconnect/browser-utils": "^1.8.0",
     "axios": "^0.26.1",
     "buffer": "^6.0.3",
+    "chain-registry": "^1.15.0",
     "clsx": "^1.1.1",
     "cosmjs-types": "^0.7.1",
     "file-saver": "^2.0.5",

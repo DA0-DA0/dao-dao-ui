@@ -1,11 +1,11 @@
 import { Buffer } from 'buffer'
 
-import { Chain } from '@chain-registry/types'
+import { Chain, IBCInfo } from '@chain-registry/types'
 import { fromBech32, fromHex, toBech32 } from '@cosmjs/encoding'
 import { decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
 import { Bech32Address } from '@keplr-wallet/cosmos'
 import { ChainInfo, FeeCurrency } from '@keplr-wallet/types'
-import { assets, chains } from 'chain-registry'
+import { assets, chains, ibc } from 'chain-registry'
 import { bondStatusToJSON } from 'cosmjs-types/cosmos/staking/v1beta1/staking'
 import { Validator as RpcValidator } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import RIPEMD160 from 'ripemd160'
@@ -67,7 +67,7 @@ export const cosmosValidatorToValidator = ({
   tokens: Number(tokens),
 })
 
-export const getImageUrlForChainId = (chainId: string): string | undefined => {
+export const getImageUrlForChainId = (chainId: string): string => {
   if (chainId === ChainId.JunoMainnet || chainId === ChainId.JunoTestnet) {
     return '/juno.png'
   }
@@ -97,7 +97,8 @@ export const getImageUrlForChainId = (chainId: string): string | undefined => {
 
   // Fallback to image of native token on chain.
   const { imageUrl } = getNativeTokenForChainId(chainId)
-  return imageUrl
+
+  return imageUrl || getFallbackImage(chainId)
 }
 
 // Convert public key in hex format to a bech32 address.
@@ -118,10 +119,12 @@ export const secp256k1PublicKeyToBech32Address = async (
   return toBech32(bech32Prefix, fromHex(ripemd160Hex))
 }
 
-const cachedChains: Record<string, Chain | undefined> = {}
+const cachedChainsById: Record<string, Chain | undefined> = {}
 export const maybeGetChainForChainId = (chainId: string): Chain | undefined => {
-  cachedChains[chainId] ||= chains.find(({ chain_id }) => chain_id === chainId)
-  return cachedChains[chainId]
+  cachedChainsById[chainId] ||= chains.find(
+    ({ chain_id }) => chain_id === chainId
+  )
+  return cachedChainsById[chainId]
 }
 
 export const getChainForChainId = (chainId: string): Chain => {
@@ -131,6 +134,17 @@ export const getChainForChainId = (chainId: string): Chain => {
   }
 
   return chain
+}
+
+const cachedChainsByName: Record<string, Chain | undefined> = {}
+export const getChainForChainName = (chainName: string): Chain => {
+  cachedChainsByName[chainName] ||= chains.find(
+    ({ chain_name }) => chain_name === chainName
+  )
+  if (!cachedChainsByName[chainName]) {
+    throw new Error(`Chain with name ${chainName} not found`)
+  }
+  return cachedChainsByName[chainName]!
 }
 
 export const getDisplayNameForChainId = (chainId: string): string =>
@@ -257,6 +271,124 @@ export const getTokenForChainIdAndDenom = (
     } else {
       throw err
     }
+  }
+}
+
+export const getIbcTransferInfoBetweenChains = (
+  srcChainId: string,
+  destChainId: string
+): {
+  sourceChannel: string
+  info: IBCInfo
+} => {
+  const { chain_name: srcChainName } = getChainForChainId(srcChainId)
+  const { chain_name: destChainName } = getChainForChainId(destChainId)
+
+  const info = ibc.find(
+    ({ chain_1, chain_2, channels }) =>
+      (chain_1.chain_name === srcChainName &&
+        chain_2.chain_name === destChainName) ||
+      (chain_1.chain_name === destChainName &&
+        chain_2.chain_name === srcChainName &&
+        channels.some(
+          ({ chain_1, chain_2, version }) =>
+            version === 'ics20-1' &&
+            chain_1.port_id === 'transfer' &&
+            chain_2.port_id === 'transfer'
+        ))
+  )
+  if (!info) {
+    throw new Error(
+      `Failed to find IBC channel from chain ${srcChainId} to chain ${destChainId}.`
+    )
+  }
+
+  const srcChainNumber = info.chain_1.chain_name === srcChainName ? 1 : 2
+  const channel = info.channels.find(
+    ({
+      [`chain_${srcChainNumber}` as `chain_${typeof srcChainNumber}`]: srcChain,
+      [`chain_${
+        srcChainNumber === 1 ? 2 : 1
+      }` as `chain_${typeof srcChainNumber}`]: destChain,
+      version,
+    }) =>
+      version === 'ics20-1' &&
+      srcChain.port_id === 'transfer' &&
+      destChain.port_id === 'transfer'
+  )
+  if (!channel) {
+    throw new Error(
+      `Failed to find IBC channel from chain ${srcChainId} to chain ${destChainId}.`
+    )
+  }
+
+  return {
+    sourceChannel:
+      channel[`chain_${srcChainNumber}` as `chain_${typeof srcChainNumber}`]
+        .channel_id,
+    info,
+  }
+}
+
+export const getIbcTransferInfoFromChainSource = (
+  chainId: string,
+  sourceChannel: string
+): {
+  destinationChain: IBCInfo['chain_1']
+  channel: IBCInfo['channels'][number]
+  info: IBCInfo
+} => {
+  const { chain_name } = getChainForChainId(chainId)
+
+  const info = ibc.find(
+    ({ chain_1, chain_2, channels }) =>
+      // Chain 1 is the source chain.
+      (chain_1.chain_name === chain_name &&
+        channels.some(
+          ({ chain_1, version }) =>
+            version === 'ics20-1' &&
+            chain_1.port_id === 'transfer' &&
+            chain_1.channel_id === sourceChannel
+        )) ||
+      // Chain 2 is the source chain.
+      (chain_2.chain_name === chain_name &&
+        channels.some(
+          ({ chain_2, version }) =>
+            version === 'ics20-1' &&
+            chain_2.port_id === 'transfer' &&
+            chain_2.channel_id === sourceChannel
+        ))
+  )
+  if (!info) {
+    throw new Error(
+      `Failed to find IBC channel for chain ${chainId} and source channel ${sourceChannel}.`
+    )
+  }
+
+  const thisChainNumber = info.chain_1.chain_name === chain_name ? 1 : 2
+  const otherChain = info[`chain_${thisChainNumber === 1 ? 2 : 1}`]
+  const channel = info.channels.find(
+    ({
+      [`chain_${thisChainNumber}` as `chain_${typeof thisChainNumber}`]: {
+        port_id,
+        channel_id,
+      },
+      version,
+    }) =>
+      version === 'ics20-1' &&
+      port_id === 'transfer' &&
+      channel_id === sourceChannel
+  )
+  if (!channel) {
+    throw new Error(
+      `Failed to find IBC channel for chain ${chainId} and source channel ${sourceChannel}.`
+    )
+  }
+
+  return {
+    destinationChain: otherChain,
+    channel,
+    info,
   }
 }
 

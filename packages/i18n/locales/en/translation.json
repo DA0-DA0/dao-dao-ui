@@ -873,6 +873,7 @@
     "reviewYourTransaction": "Review your transaction...",
     "saveTransactionDescription": "Save this transaction so you can reuse it later. Using an existing name will overwrite the previous save.",
     "searchDraftPlaceholder": "Find a draft...",
+    "searchForChain": "Search for a chain...",
     "searchForToken": "Search for a token...",
     "searchForWidget": "Search for a widget...",
     "searchNftsPlaceholder": "Find an NFT...",
