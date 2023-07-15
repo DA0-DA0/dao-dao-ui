@@ -1105,6 +1105,7 @@ export const coreAddressForPolytoneProxy = selectorFamily<
           args: {
             address: proxy,
           },
+          required: true,
         })
       ),
 })

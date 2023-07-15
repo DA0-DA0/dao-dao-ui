@@ -29,6 +29,7 @@ Default.args = {
     loading: false,
     data: {
       type: EntityType.Wallet,
+      chainId: CHAIN_ID,
       address: 'junoAbc123',
       name: 'A Very Real Person',
       imageUrl: '/placeholders/1.svg',
