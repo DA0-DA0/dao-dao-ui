@@ -143,7 +143,6 @@
     "imageUrlTooltip": "Un lien à une image. Par exemple: https://moonphase.is/image.svg",
     "initialSupply": "Offre totale de jetons",
     "instantiatedAddress": "Adresse instanciée",
-    "junoAddress": "Adresse Juno",
     "membersAddress": "Adresse du membre",
     "membersToAddOrUpdate": "Membres à ajouter/mettre à jour",
     "membersToRemove": "Membres à enlever",

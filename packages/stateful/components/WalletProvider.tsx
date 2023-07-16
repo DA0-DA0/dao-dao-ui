@@ -1,7 +1,6 @@
 import { GasPrice } from '@cosmjs/stargate'
+import { ChainInfo } from '@keplr-wallet/types'
 import {
-  ChainInfoID,
-  ChainInfoMap,
   WalletManagerProvider,
   WalletType,
   useWallet,
@@ -19,26 +18,44 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { signingCosmWasmClientAtom } from '@dao-dao/state'
-import { Web3AuthPrompt } from '@dao-dao/types'
+import { ChainId, Web3AuthPrompt } from '@dao-dao/types'
 import {
   CHAIN_ID,
   CHAIN_REST_ENDPOINT,
   CHAIN_RPC_ENDPOINT,
   MAINNET,
+  OSMOSIS_MAINNET_REST,
+  OSMOSIS_MAINNET_RPC,
   SITE_URL,
   STARGAZE_REST_ENDPOINT,
   STARGAZE_RPC_ENDPOINT,
-  STARGAZE_TESTNET_CHAIN_ID,
-  STARGAZE_TESTNET_REST_ENDPOINT,
-  STARGAZE_TESTNET_RPC_ENDPOINT,
   WC_ICON_PATH,
   WEB3AUTH_CLIENT_ID,
+  getChainForChainId,
+  maybeGetKeplrChainInfo,
   typesRegistry,
 } from '@dao-dao/utils'
 
-// Assert environment variable CHAIN_ID is a valid chain.
-if (!(Object.values(ChainInfoID) as string[]).includes(CHAIN_ID)) {
-  throw new Error(`CHAIN_ID constant (${CHAIN_ID}) is an invalid chain ID.`)
+const currentChainInfo: ChainInfo | undefined = maybeGetKeplrChainInfo(CHAIN_ID)
+// Fail build if chain info not found.
+if (!currentChainInfo) {
+  throw new Error(`Chain info not found for CHAIN_ID: ${CHAIN_ID}`)
+}
+
+const stargazeMainnetChainInfo: ChainInfo | undefined = maybeGetKeplrChainInfo(
+  ChainId.StargazeMainnet
+)
+// Fail build if chain info not found.
+if (!stargazeMainnetChainInfo) {
+  throw new Error('Stargaze mainnet chain info not found')
+}
+
+const osmosisMainnetChainInfo: ChainInfo | undefined = maybeGetKeplrChainInfo(
+  ChainId.OsmosisMainnet
+)
+// Fail build if chain info not found.
+if (!osmosisMainnetChainInfo) {
+  throw new Error('Osmosis mainnet chain info not found')
 }
 
 export type WalletProviderProps = {
@@ -79,23 +96,19 @@ export const WalletProvider = ({
       chainInfoOverrides={[
         // Use environment variables to determine RPC/REST nodes.
         {
-          // Typechecked above.
-          ...ChainInfoMap[CHAIN_ID as ChainInfoID],
+          ...currentChainInfo,
           rpc: CHAIN_RPC_ENDPOINT,
           rest: CHAIN_REST_ENDPOINT,
         },
         {
-          ...ChainInfoMap[ChainInfoID.Stargaze1],
+          ...stargazeMainnetChainInfo,
           rpc: STARGAZE_RPC_ENDPOINT,
           rest: STARGAZE_REST_ENDPOINT,
         },
-        // Stargaze testnet.
         {
-          ...ChainInfoMap[ChainInfoID.Stargaze1],
-          chainId: STARGAZE_TESTNET_CHAIN_ID,
-          chainName: 'Stargaze Testnet',
-          rpc: STARGAZE_TESTNET_RPC_ENDPOINT,
-          rest: STARGAZE_TESTNET_REST_ENDPOINT,
+          ...osmosisMainnetChainInfo,
+          rpc: OSMOSIS_MAINNET_RPC,
+          rest: OSMOSIS_MAINNET_REST,
         },
       ]}
       defaultChainId={CHAIN_ID}
@@ -111,18 +124,38 @@ export const WalletProvider = ({
         WalletType.Discord,
         WalletType.Twitter,
       ]}
-      getSigningCosmWasmClientOptions={(chainInfo) => ({
-        gasPrice: GasPrice.fromString(
-          '0.0025' + chainInfo.feeCurrencies[0].coinMinimalDenom
-        ),
-        registry: typesRegistry,
-      })}
-      getSigningStargateClientOptions={(chainInfo) => ({
-        gasPrice: GasPrice.fromString(
-          '0.0025' + chainInfo.feeCurrencies[0].coinMinimalDenom
-        ),
-        registry: typesRegistry,
-      })}
+      getSigningCosmWasmClientOptions={(chainInfo) => {
+        const feeToken = getChainForChainId(chainInfo.chainId).fees
+          ?.fee_tokens?.[0]
+        const gasPrice =
+          feeToken?.average_gas_price ??
+          feeToken?.high_gas_price ??
+          feeToken?.low_gas_price
+        if (!feeToken || gasPrice === undefined) {
+          throw new Error(`No fee token found for chain ${chainInfo.chainId}`)
+        }
+
+        return {
+          gasPrice: GasPrice.fromString(gasPrice + feeToken.denom),
+          registry: typesRegistry,
+        }
+      }}
+      getSigningStargateClientOptions={(chainInfo) => {
+        const feeToken = getChainForChainId(chainInfo.chainId).fees
+          ?.fee_tokens?.[0]
+        const gasPrice =
+          feeToken?.average_gas_price ??
+          feeToken?.high_gas_price ??
+          feeToken?.low_gas_price
+        if (!feeToken || gasPrice === undefined) {
+          throw new Error(`No fee token found for chain ${chainInfo.chainId}`)
+        }
+
+        return {
+          gasPrice: GasPrice.fromString(gasPrice + feeToken.denom),
+          registry: typesRegistry,
+        }
+      }}
       localStorageKey="connectedWalletId"
       walletConnectClientMeta={{
         name: t('meta.title'),

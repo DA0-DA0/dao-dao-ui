@@ -18,8 +18,8 @@ import {
   TransProps,
 } from '@dao-dao/types'
 import {
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../../../actions/react/context'
@@ -167,6 +167,10 @@ const RenderVest = ({
   EntityDisplay,
 }: RenderVestProps) => {
   const { t } = useTranslation()
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+  const nativeToken = getNativeTokenForChainId(chainId)
 
   const { watch } = useFormContext()
   const data = watch(fieldNamePrefix) as RegisterSlashData
@@ -213,11 +217,11 @@ const RenderVest = ({
                 key={`${index}-token`}
                 amount={convertMicroDenomToDenomWithDecimals(
                   slash.unregisteredAmount,
-                  NATIVE_TOKEN.decimals
+                  nativeToken.decimals
                 )}
-                decimals={NATIVE_TOKEN.decimals}
-                iconUrl={NATIVE_TOKEN.imageUrl}
-                symbol={NATIVE_TOKEN.symbol}
+                decimals={nativeToken.decimals}
+                iconUrl={nativeToken.imageUrl}
+                symbol={nativeToken.symbol}
               />,
             ]
           )}
@@ -240,11 +244,11 @@ const RenderVest = ({
               key="token"
               amount={convertMicroDenomToDenomWithDecimals(
                 data.amount,
-                NATIVE_TOKEN.decimals
+                nativeToken.decimals
               )}
-              decimals={NATIVE_TOKEN.decimals}
-              iconUrl={NATIVE_TOKEN.imageUrl}
-              symbol={NATIVE_TOKEN.symbol}
+              decimals={nativeToken.decimals}
+              iconUrl={nativeToken.imageUrl}
+              symbol={nativeToken.symbol}
             />
           </div>
         </>

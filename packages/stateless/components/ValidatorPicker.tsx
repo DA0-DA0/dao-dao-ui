@@ -19,7 +19,6 @@ import {
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
-  nativeTokenLabel,
 } from '@dao-dao/utils'
 
 export const ValidatorPicker = ({
@@ -28,8 +27,7 @@ export const ValidatorPicker = ({
   selectedAddress,
   readOnly = false,
   onSelect,
-  nativeDenom,
-  nativeDecimals,
+  token,
   displayClassName,
 }: ValidatorPickerProps) => {
   const { t } = useTranslation()
@@ -136,13 +134,13 @@ export const ValidatorPicker = ({
               <TokenAmountDisplay
                 amount={convertMicroDenomToDenomWithDecimals(
                   tokens,
-                  nativeDecimals
+                  token.decimals
                 )}
                 className="inline-block"
-                decimals={nativeDecimals}
+                decimals={token.decimals}
                 prefix={t('title.totalStaked') + ': '}
                 prefixClassName="font-semibold"
-                symbol={nativeTokenLabel(nativeDenom)}
+                symbol={token.symbol}
               />
 
               {details && <p>{details}</p>}

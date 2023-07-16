@@ -45,7 +45,9 @@ const Component: ActionComponent<undefined, GovernanceDepositData> = (
   props
 ) => {
   const { isCreating, fieldNamePrefix } = props
-  const { chainId } = useActionOptions()
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
   const { watch, setValue, setError, clearErrors } =
     useFormContext<GovernanceDepositData>()
 
@@ -134,6 +136,7 @@ const Component: ActionComponent<undefined, GovernanceDepositData> = (
         genericTokenSelector({
           type: TokenType.Native,
           denomOrAddress: denom,
+          chainId,
         })
       )
     ),

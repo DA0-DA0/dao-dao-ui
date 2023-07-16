@@ -16,9 +16,10 @@ import {
 import { TokenType, WidgetEditorProps, WyndPoolToken } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
-  validateAddress,
+  makeValidateAddress,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../actions'
 import { EntityDisplay } from '../../../components'
 import { WyndDepositData } from './types'
 
@@ -28,6 +29,9 @@ export const WyndDepositEditor = ({
   errors,
 }: WidgetEditorProps<WyndDepositData>) => {
   const { t } = useTranslation()
+  const {
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  } = useActionOptions()
 
   const { watch, register, setValue } = useFormContext<WyndDepositData>()
   const outputToken = watch((fieldNamePrefix + 'outputToken') as 'outputToken')
@@ -57,6 +61,7 @@ export const WyndDepositEditor = ({
       ? waitForAll(
           uniqueWyndPoolTokens.map((token) =>
             genericTokenSelector({
+              chainId,
               type: 'native' in token ? TokenType.Native : TokenType.Cw20,
               denomOrAddress: 'native' in token ? token.native : token.token,
             })
@@ -135,7 +140,7 @@ export const WyndDepositEditor = ({
           fieldName={(fieldNamePrefix + 'outputAddress') as 'outputAddress'}
           placeholder={t('title.daoTreasury')}
           register={register}
-          validation={[(v) => validateAddress(v, false)]}
+          validation={[makeValidateAddress(bech32Prefix, false)]}
         />
         <InputErrorMessage error={errors?.outputAddress} />
       </div>

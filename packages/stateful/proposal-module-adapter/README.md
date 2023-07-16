@@ -52,7 +52,7 @@ import { ProposalModuleAdapterProvider } from '@dao-dao/stateful/proposal-module
 const ProposalPage = () => (
   <ProposalModuleAdapterProvider
     initialOptions={{
-      chainId,
+      chain,
       coreAddress,
     }}
     proposalModules={proposalModules}

@@ -24,7 +24,7 @@ const useDefaults: UseDefaults<DeletePostData> = () => ({
 
 export const makeDeletePostActionMaker =
   ({ contract }: PressData): ActionMaker<DeletePostData> =>
-  ({ t, context, chainId }) => {
+  ({ t, context, chain: { chain_id: chainId } }) => {
     // Only available in DAO context.
     if (context.type !== ActionContextType.Dao) {
       return null

@@ -20,6 +20,7 @@ import {
   OwnerOfResponse,
   TokensResponse,
 } from '@dao-dao/types/contracts/Cw721Base'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface Cw721BaseReadOnlyInterface {
   contractAddress: string
@@ -382,7 +383,7 @@ export class Cw721BaseClient
       recipient: string
       tokenId: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -410,7 +411,7 @@ export class Cw721BaseClient
       msg: string
       tokenId: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -439,7 +440,7 @@ export class Cw721BaseClient
       msg: string
       tokenIds: string[]
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string
   ): Promise<ExecuteResult> => {
     let instructions: ExecuteInstruction[] = tokenIds.map((tokenId) => {
@@ -472,7 +473,7 @@ export class Cw721BaseClient
       spender: string
       tokenId: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -499,7 +500,7 @@ export class Cw721BaseClient
       spender: string
       tokenId: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -525,7 +526,7 @@ export class Cw721BaseClient
       expires?: Expiration
       operator: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -549,7 +550,7 @@ export class Cw721BaseClient
     }: {
       operator: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -578,7 +579,7 @@ export class Cw721BaseClient
       tokenId: string
       tokenUri?: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -604,7 +605,7 @@ export class Cw721BaseClient
     }: {
       tokenId: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {

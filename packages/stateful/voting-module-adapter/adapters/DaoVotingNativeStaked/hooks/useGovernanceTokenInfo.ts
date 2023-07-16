@@ -6,9 +6,9 @@ import {
   genericTokenSelector,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
-  wyndUsdPriceSelector,
+  usdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 
@@ -23,11 +23,13 @@ export const useGovernanceTokenInfo = ({
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
+  const { chain_id: chainId } = useChain()
   const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { denom } = useRecoilValue(
     DaoVotingNativeStakedSelectors.getConfigSelector({
+      chainId,
       contractAddress: votingModuleAddress,
       params: [],
     })
@@ -35,12 +37,17 @@ export const useGovernanceTokenInfo = ({
 
   const token = useRecoilValue(
     genericTokenSelector({
+      chainId,
       type: TokenType.Native,
       denomOrAddress: denom,
     })
   )
-
-  const supply = useRecoilValue(nativeSupplySelector({ denom }))
+  const supply = useRecoilValue(
+    nativeSupplySelector({
+      chainId,
+      denom,
+    })
+  )
   const governanceTokenInfo: TokenInfoResponse = {
     decimals: token.decimals,
     name: token.symbol,
@@ -54,6 +61,7 @@ export const useGovernanceTokenInfo = ({
   const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
       ? nativeDenomBalanceSelector({
+          chainId,
           walletAddress,
           denom,
         })
@@ -65,6 +73,7 @@ export const useGovernanceTokenInfo = ({
   const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
       ? nativeDenomBalanceSelector({
+          chainId,
           walletAddress: coreAddress,
           denom,
         })
@@ -75,7 +84,10 @@ export const useGovernanceTokenInfo = ({
   // Price info
   const loadingPrice = useCachedLoading(
     fetchUsdcPrice && governanceTokenInfo
-      ? wyndUsdPriceSelector(denom)
+      ? usdPriceSelector({
+          chainId,
+          denomOrAddress: denom,
+        })
       : constSelector(undefined),
     undefined
   )

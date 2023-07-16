@@ -35,7 +35,7 @@ import { SwapOperation } from '@dao-dao/types/contracts/WyndexMultiHop'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
-  validateAddress,
+  makeValidateAddress,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
@@ -74,7 +74,10 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
   },
 }) => {
   const { t } = useTranslation()
-  const { context } = useActionOptions()
+  const {
+    context,
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
 
   const { register, watch, setValue } = useFormContext()
   const tokenIn = watch(fieldNamePrefix + 'tokenIn') as GenericToken
@@ -383,7 +386,7 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
             fieldName={fieldNamePrefix + 'receiver'}
             register={register}
             setValue={setValue}
-            validation={[validateRequired, validateAddress]}
+            validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
             watch={watch}
           />
           <InputErrorMessage error={errors?.receiver} />

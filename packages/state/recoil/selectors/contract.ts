@@ -19,11 +19,13 @@ export const contractInstantiateTimeSelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     async ({ get }) => {
+      // TODO(indexer): Get from numia indexer.
       const instantiatedAt = get(
         queryContractIndexerSelector({
           contractAddress: address,
           chainId,
           formula: 'instantiatedAt',
+          required: true,
         })
       )
       // Null when indexer fails.
@@ -123,6 +125,8 @@ export const contractInfoSelector = selectorFamily<
           contractAddress,
           chainId,
           formula: 'info',
+          // TODO(numia): Remove this once provided.
+          required: true,
         })
       )
       if (info) {

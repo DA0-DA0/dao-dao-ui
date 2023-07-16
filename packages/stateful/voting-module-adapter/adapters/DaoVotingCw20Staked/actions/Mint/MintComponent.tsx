@@ -17,10 +17,12 @@ import {
   GenericToken,
 } from '@dao-dao/types'
 import {
-  validateAddress,
+  makeValidateAddress,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
+
+import { useActionOptions } from '../../../../../actions'
 
 export interface MintOptions {
   govToken: GenericToken
@@ -34,6 +36,9 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   isCreating,
   options: { govToken, AddressInput },
 }) => {
+  const {
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const { register, watch, setValue } = useFormContext()
 
   const { containerRef, childRef, wrapped } = useDetectWrap()
@@ -76,7 +81,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
             error={errors?.to}
             fieldName={fieldNamePrefix + 'to'}
             register={register}
-            validation={[validateRequired, validateAddress]}
+            validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
           />
         </div>
       </div>

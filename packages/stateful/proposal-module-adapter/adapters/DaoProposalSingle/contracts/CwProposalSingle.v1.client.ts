@@ -27,6 +27,7 @@ import {
   Vote,
   VoteResponse,
 } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface CwProposalSingleV1ReadOnlyInterface {
   contractAddress: string
@@ -340,7 +341,7 @@ export class CwProposalSingleV1Client
       msgs: CosmosMsgForEmpty[]
       title: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -367,7 +368,7 @@ export class CwProposalSingleV1Client
       proposalId: number
       vote: Vote
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -391,7 +392,7 @@ export class CwProposalSingleV1Client
     }: {
       proposalId: number
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -414,7 +415,7 @@ export class CwProposalSingleV1Client
     }: {
       proposalId: number
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -447,7 +448,7 @@ export class CwProposalSingleV1Client
       onlyMembersExecute: boolean
       threshold: Threshold
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -475,7 +476,7 @@ export class CwProposalSingleV1Client
     }: {
       address: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -498,7 +499,7 @@ export class CwProposalSingleV1Client
     }: {
       address: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -521,7 +522,7 @@ export class CwProposalSingleV1Client
     }: {
       address: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -544,7 +545,7 @@ export class CwProposalSingleV1Client
     }: {
       address: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {

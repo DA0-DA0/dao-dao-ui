@@ -1,15 +1,20 @@
 import { cosmos } from 'interchain-rpc'
 import { useCallback } from 'react'
-import { useRecoilValue } from 'recoil'
+import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
-import { cosmosRpcClientForChainSelector } from '@dao-dao/state/recoil'
+import {
+  DaoCoreV2Selectors,
+  cosmosRpcClientForChainSelector,
+} from '@dao-dao/state/recoil'
+import { useChain } from '@dao-dao/stateless'
 import { CosmosMsgFor_Empty } from '@dao-dao/types'
-import { cwMsgToEncodeObject, typesRegistry } from '@dao-dao/utils'
-
-export interface UseSimulateCosmosMsgsOptions {
-  senderAddress: string
-  chainId?: string
-}
+import {
+  cwMsgToEncodeObject,
+  decodeMessages,
+  decodePolytoneExecuteMsg,
+  isValidContractAddress,
+  typesRegistry,
+} from '@dao-dao/utils'
 
 const { SignMode } = cosmos.tx.signing.v1beta1
 const { AuthInfo, Fee, Tx, TxBody, SimulateRequest } = cosmos.tx.v1beta1
@@ -23,12 +28,27 @@ const { AuthInfo, Fee, Tx, TxBody, SimulateRequest } = cosmos.tx.v1beta1
 // We can copy this simulate function and leave out the wallet-specific fields
 // (i.e. sequence) and unnecessary fields (i.e. publicKey, memo) to simulate
 // these messages from a DAO address.
-export const useSimulateCosmosMsgs = ({
-  senderAddress,
-  chainId,
-}: UseSimulateCosmosMsgsOptions) => {
+export const useSimulateCosmosMsgs = (senderAddress: string) => {
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+
   const cosmosRpcClient = useRecoilValue(
     cosmosRpcClientForChainSelector(chainId)
+  )
+  const polytoneProxies = useRecoilValue(
+    isValidContractAddress(senderAddress, bech32Prefix)
+      ? DaoCoreV2Selectors.polytoneProxiesSelector({
+          chainId,
+          contractAddress: senderAddress,
+        })
+      : constSelector(undefined)
+  )
+  const polytoneChainIds = Object.keys(polytoneProxies ?? {})
+  const polytoneRpcClients = useRecoilValue(
+    waitForAll(
+      polytoneChainIds.map((chainId) =>
+        cosmosRpcClientForChainSelector(chainId)
+      )
+    )
   )
 
   const simulate = useCallback(
@@ -38,39 +58,98 @@ export const useSimulateCosmosMsgs = ({
         return
       }
 
-      const encodeObjects = msgs.map((msg) => {
-        const encoded = cwMsgToEncodeObject(msg, senderAddress)
-        return typesRegistry.encodeAsAny(encoded)
-      })
+      await doSimulation(cosmosRpcClient, msgs, senderAddress)
 
-      const tx = Tx.fromPartial({
-        authInfo: AuthInfo.fromPartial({
-          fee: Fee.fromPartial({}),
-          signerInfos: [
-            {
-              modeInfo: {
-                single: {
-                  mode: SignMode.SIGN_MODE_UNSPECIFIED,
-                },
-              },
-            },
+      if (!polytoneProxies) {
+        return
+      }
+
+      // Also simulate polytone messages on receiving chains.
+      const decodedPolytoneMessages = decodeMessages(msgs)
+        .map((msg) => {
+          const decoded = decodePolytoneExecuteMsg(msg, 'oneOrZero')
+          return decoded.match && decoded.cosmosMsg ? decoded : undefined
+        })
+        .filter(Boolean)
+        .map((decoded) => decoded!)
+
+      if (decodedPolytoneMessages.length === 0) {
+        return
+      }
+
+      const polytoneGroupedByChainId = polytoneChainIds.reduce(
+        (acc, chainId) => ({
+          ...acc,
+          [chainId]: [
+            ...(acc[chainId] ?? []),
+            ...decodedPolytoneMessages
+              .filter((decoded) => decoded.chainId === chainId)
+              .map(({ cosmosMsg }) => cosmosMsg!),
           ],
         }),
-        body: TxBody.fromPartial({
-          messages: encodeObjects,
-          memo: '',
-        }),
-        signatures: [new Uint8Array()],
-      })
+        {} as Record<string, CosmosMsgFor_Empty[] | undefined>
+      )
 
-      const request = SimulateRequest.fromPartial({
-        txBytes: Tx.encode(tx).finish(),
-      })
+      await Promise.all(
+        polytoneChainIds.map(async (chainId, index) => {
+          const msgs = polytoneGroupedByChainId[chainId]
+          const polytoneProxy = polytoneProxies[chainId]
+          const cosmosRpcClient = polytoneRpcClients[index]
+          if (!polytoneProxy || !msgs) {
+            return
+          }
 
-      await cosmosRpcClient.tx.v1beta1.simulate(request)
+          await doSimulation(cosmosRpcClient, msgs, polytoneProxy)
+        })
+      )
     },
-    [cosmosRpcClient.tx.v1beta1, senderAddress]
+    [
+      cosmosRpcClient,
+      polytoneChainIds,
+      polytoneProxies,
+      polytoneRpcClients,
+      senderAddress,
+    ]
   )
 
   return simulate
+}
+
+const doSimulation = async (
+  cosmosRpcClient: Awaited<
+    ReturnType<typeof cosmos.ClientFactory.createRPCQueryClient>
+  >['cosmos'],
+  msgs: CosmosMsgFor_Empty[],
+  senderAddress: string
+) => {
+  const encodeObjects = msgs.map((msg) => {
+    const encoded = cwMsgToEncodeObject(msg, senderAddress)
+    return typesRegistry.encodeAsAny(encoded)
+  })
+
+  const tx = Tx.fromPartial({
+    authInfo: AuthInfo.fromPartial({
+      fee: Fee.fromPartial({}),
+      signerInfos: [
+        {
+          modeInfo: {
+            single: {
+              mode: SignMode.SIGN_MODE_UNSPECIFIED,
+            },
+          },
+        },
+      ],
+    }),
+    body: TxBody.fromPartial({
+      messages: encodeObjects,
+      memo: '',
+    }),
+    signatures: [new Uint8Array()],
+  })
+
+  const request = SimulateRequest.fromPartial({
+    txBytes: Tx.encode(tx).finish(),
+  })
+
+  await cosmosRpcClient.tx.v1beta1.simulate(request)
 }

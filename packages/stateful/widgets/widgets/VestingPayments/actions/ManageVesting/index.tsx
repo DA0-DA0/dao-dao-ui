@@ -1,6 +1,7 @@
 import { coins } from '@cosmjs/amino'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
@@ -34,13 +35,12 @@ import {
 } from '@dao-dao/types/contracts/CwPayrollFactory'
 import { InstantiateMsg as VestingInstantiateMsg } from '@dao-dao/types/contracts/CwVesting'
 import {
-  CHAIN_BECH32_PREFIX,
-  NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   convertSecondsToDurationWithUnits,
   encodeMessageAsBase64,
+  getNativeTokenForChainId,
   isValidContractAddress,
   loadableToLoadingData,
   makeWasmMessage,
@@ -48,8 +48,8 @@ import {
   parseEncodedMessage,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../../actions'
 import { useTokenBalances } from '../../../../../actions/hooks/useTokenBalances'
-import { useActionOptions } from '../../../../../actions/react/context'
 import {
   AddressInput,
   EntityDisplay,
@@ -73,30 +73,36 @@ export type ManageVestingData = {
   registerSlash: RegisterSlashData
 }
 
-const useDefaults: UseDefaults<ManageVestingData> = () => ({
-  mode: 'begin',
-  begin: {
-    amount: 1,
-    denomOrAddress: NATIVE_DENOM,
-    recipient: '',
-    startDate: '',
-    title: '',
-    duration: {
-      value: 1,
-      units: DurationUnits.Years,
+const useDefaults: UseDefaults<ManageVestingData> = () => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+
+  return {
+    mode: 'begin',
+    begin: {
+      amount: 1,
+      denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
+      recipient: '',
+      startDate: '',
+      title: '',
+      duration: {
+        value: 1,
+        units: DurationUnits.Years,
+      },
     },
-  },
-  cancel: {
-    address: '',
-  },
-  registerSlash: {
-    address: '',
-    validator: '',
-    time: '',
-    amount: '',
-    duringUnbonding: false,
-  },
-})
+    cancel: {
+      address: '',
+    },
+    registerSlash: {
+      address: '',
+      validator: '',
+      time: '',
+      amount: '',
+      duringUnbonding: false,
+    },
+  }
+}
 
 const instantiateStructure = {
   instantiate_msg: {
@@ -115,6 +121,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
   msg: Record<string, any>
 ) => {
   const defaults = useDefaults()
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
   const isNativeBegin =
     objectMatchesStructure(msg, {
@@ -189,6 +198,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
   const tokenLoadable = useCachedLoadable(
     isBegin
       ? genericTokenSelector({
+          chainId,
           type: isNativeBegin ? TokenType.Native : TokenType.Cw20,
           denomOrAddress: isNativeBegin
             ? msg.wasm.execute.funds[0].denom
@@ -280,7 +290,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
 
 export const makeManageVestingActionMaker =
   ({ factory }: VestingPaymentsData): ActionMaker<ManageVestingData> =>
-  ({ t, context, chainId }) => {
+  ({
+    t,
+    context,
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  }) => {
     // Only available in DAO context.
     if (context.type !== ActionContextType.Dao) {
       return null
@@ -354,7 +368,8 @@ export const makeManageVestingActionMaker =
               total: amount,
               unbonding_duration_seconds:
                 token.type === TokenType.Native &&
-                token.denomOrAddress === NATIVE_DENOM
+                token.denomOrAddress ===
+                  getNativeTokenForChainId(chainId).denomOrAddress
                   ? nativeUnstakingDurationSecondsLoadable.contents
                   : 0,
               vesting_duration_seconds: convertDurationWithUnitsToSeconds(
@@ -438,11 +453,10 @@ export const makeManageVestingActionMaker =
       )
     }
 
-    // Memoize to prevent re-renders
     const Component: ActionComponent<undefined, ManageVestingData> = (
       props
     ) => {
-      const { t, chainId } = useActionOptions()
+      const { t } = useTranslation()
 
       const { setValue, watch, setError, clearErrors } =
         useFormContext<ManageVestingData>()
@@ -520,7 +534,7 @@ export const makeManageVestingActionMaker =
 
         if (
           !selectedAddress ||
-          !isValidContractAddress(selectedAddress, CHAIN_BECH32_PREFIX)
+          !isValidContractAddress(selectedAddress, bech32Prefix)
         ) {
           setError(
             (props.fieldNamePrefix +

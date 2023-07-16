@@ -1,9 +1,5 @@
 import { makeSignDoc } from '@cosmjs/amino'
-import {
-  ChainInfoID,
-  useConnectWalletToChain,
-  useWallet,
-} from '@noahsaso/cosmodal'
+import { useConnectWalletToChain, useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -15,10 +11,9 @@ import {
   refreshWalletBalancesIdAtom,
   refreshWalletProfileAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable } from '@dao-dao/stateless'
-import { WalletProfileData, WalletProfileUpdate } from '@dao-dao/types'
+import { useCachedLoadable, useChainContext } from '@dao-dao/stateless'
+import { ChainId, WalletProfileData, WalletProfileUpdate } from '@dao-dao/types'
 import {
-  NATIVE_TOKEN,
   PFPK_API_BASE,
   convertMicroDenomToDenomWithDecimals,
 } from '@dao-dao/utils'
@@ -27,6 +22,7 @@ import { walletProfileDataSelector } from '../recoil'
 
 export interface UseWalletReturn {
   walletAddress: string | undefined
+  walletHexPublicKey: string | undefined
   walletBalance: number | undefined
   walletStakedBalance: number | undefined
   dateBalancesFetched: Date | undefined
@@ -42,7 +38,11 @@ export interface UseWalletReturn {
   backupImageUrl: string
 }
 
-export const useWalletInfo = (chainId?: string): UseWalletReturn => {
+export const useWalletInfo = (): UseWalletReturn => {
+  const {
+    chain: { chain_id: chainId },
+    nativeToken,
+  } = useChainContext()
   const { address, connected, publicKey } = useWallet()
   const connectWalletToChain = useConnectWalletToChain()
 
@@ -62,7 +62,7 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
     walletNativeBalanceState === 'hasValue' && walletNativeBalanceContents
       ? convertMicroDenomToDenomWithDecimals(
           walletNativeBalanceContents.amount,
-          NATIVE_TOKEN.decimals
+          nativeToken.decimals
         )
       : undefined
 
@@ -71,14 +71,19 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
     state: walletStakedNativeBalanceState,
     contents: walletStakedNativeBalanceContents,
   } = useCachedLoadable(
-    address ? nativeDelegatedBalanceSelector({ address, chainId }) : undefined
+    address
+      ? nativeDelegatedBalanceSelector({
+          address,
+          chainId,
+        })
+      : undefined
   )
   const walletStakedBalance =
     walletStakedNativeBalanceState === 'hasValue' &&
     walletStakedNativeBalanceContents
       ? convertMicroDenomToDenomWithDecimals(
           walletStakedNativeBalanceContents.amount,
-          NATIVE_TOKEN.decimals
+          nativeToken.decimals
         )
       : undefined
 
@@ -87,7 +92,12 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
     state: nativeBalancesFetchedAtState,
     contents: nativeBalancesFetchedAtContents,
   } = useCachedLoadable(
-    address ? nativeBalancesFetchedAtSelector({ address, chainId }) : undefined
+    address
+      ? nativeBalancesFetchedAtSelector({
+          address,
+          chainId,
+        })
+      : undefined
   )
   const dateBalancesFetched =
     nativeBalancesFetchedAtState === 'hasValue'
@@ -166,7 +176,7 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
         // Use a consistent chain for the signer since the chain ID is part of
         // the signature and PFPK needs to know what to expect.
         const { address: signingAddress, walletClient: signingWalletClient } =
-          await connectWalletToChain(ChainInfoID.Juno1)
+          await connectWalletToChain(ChainId.JunoMainnet)
 
         const profileUpdate: WalletProfileUpdate = {
           ...profile,
@@ -174,7 +184,9 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
         }
 
         const offlineSignerAmino =
-          await signingWalletClient.getOfflineSignerOnlyAmino(ChainInfoID.Juno1)
+          await signingWalletClient.getOfflineSignerOnlyAmino(
+            ChainId.JunoMainnet
+          )
         const signDocAmino = makeSignDoc(
           [
             {
@@ -194,7 +206,7 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
               },
             ],
           },
-          ChainInfoID.Juno1,
+          ChainId.JunoMainnet,
           '',
           0,
           0
@@ -277,6 +289,7 @@ export const useWalletInfo = (chainId?: string): UseWalletReturn => {
 
   return {
     walletAddress: address,
+    walletHexPublicKey: publicKey?.hex,
     walletBalance,
     walletStakedBalance,
     dateBalancesFetched,

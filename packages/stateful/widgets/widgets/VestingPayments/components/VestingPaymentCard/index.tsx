@@ -11,14 +11,14 @@ import {
 import {
   useAddToken,
   useCachedLoadable,
-  useDaoInfoContext,
+  useChain,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, EntityType } from '@dao-dao/types'
 import {
-  NATIVE_DENOM,
   convertMicroDenomToDenomWithDecimals,
   getDaoProposalSinglePrefill,
+  getNativeTokenForChainId,
   loadableToLoadingData,
   processError,
 } from '@dao-dao/utils'
@@ -40,7 +40,7 @@ import { VestingPaymentCard as StatelessVestingPaymentCard } from './VestingPaym
 
 export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const { t } = useTranslation()
-  const { chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
   const { refreshBalances } = useWalletInfo()
 
@@ -55,19 +55,15 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     endDate,
   } = vestingInfo
 
-  const recipientEntity = useEntity({
-    address: vest.recipient,
-    chainId,
-  })
+  const recipientEntity = useEntity(vest.recipient)
   const recipientIsDao =
     !recipientEntity.loading && recipientEntity.data.type === EntityType.Dao
 
   const lazyInfoLoading = loadableToLoadingData(
     useCachedLoadable(
       tokenCardLazyInfoSelector({
-        walletAddress: vestingContractAddress,
+        owner: vestingContractAddress,
         token,
-        chainId,
         // Unused. We just want the USD price and staking info.
         unstakedBalance: 0,
       })
@@ -91,7 +87,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     setRefreshBalances((r) => r + 1)
   }
 
-  const awaitNextBlock = useAwaitNextBlock(chainId)
+  const awaitNextBlock = useAwaitNextBlock()
 
   const { address: walletAddress = '' } = useWallet()
   const distribute = useDistribute({
@@ -207,7 +203,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const recipientIsWallet = vest.recipient === walletAddress
   const canManageStaking =
     (recipientIsWallet || recipientIsDao) &&
-    token.denomOrAddress === NATIVE_DENOM
+    token.denomOrAddress === getNativeTokenForChainId(chainId).denomOrAddress
 
   const [showStakingModal, setShowStakingModal] = useState(false)
 

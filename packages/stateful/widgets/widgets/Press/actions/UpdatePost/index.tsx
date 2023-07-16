@@ -30,7 +30,7 @@ const useDefaults: UseDefaults<UpdatePostData> = () => ({
 
 export const makeUpdatePostActionMaker =
   ({ contract }: PressData): ActionMaker<UpdatePostData> =>
-  ({ t, context, address, chainId }) => {
+  ({ t, context, address, chain: { chain_id: chainId } }) => {
     // Only available in DAO context.
     if (context.type !== ActionContextType.Dao) {
       return null

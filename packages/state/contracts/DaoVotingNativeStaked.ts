@@ -15,6 +15,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoVotingNativeStaked'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface DaoVotingNativeStakedReadOnlyInterface {
   contractAddress: string
@@ -189,7 +190,7 @@ export class DaoVotingNativeStakedClient
   }
 
   stake = async (
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -210,7 +211,7 @@ export class DaoVotingNativeStakedClient
     }: {
       amount: Uint128
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -237,7 +238,7 @@ export class DaoVotingNativeStakedClient
       manager?: string
       owner?: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -257,7 +258,7 @@ export class DaoVotingNativeStakedClient
     )
   }
   claim = async (
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

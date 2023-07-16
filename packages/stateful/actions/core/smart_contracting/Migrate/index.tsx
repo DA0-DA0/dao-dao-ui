@@ -1,36 +1,56 @@
 import JSON5 from 'json5'
 import { useCallback, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
-import { WhaleEmoji } from '@dao-dao/stateless'
+import { ChainPickerInput, ChainProvider, WhaleEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  decodePolytoneExecuteMsg,
+  makePolytoneExecuteMessage,
+  makeWasmMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../react'
 import { MigrateContractComponent as StatelessMigrateContractComponent } from './Component'
 
 interface MigrateData {
+  chainId: string
   contract: string
   codeId: number
   msg: string
 }
 
-const useDefaults: UseDefaults<MigrateData> = () => ({
-  contract: '',
-  codeId: 0,
-  msg: '{}',
-})
+const useDefaults: UseDefaults<MigrateData> = () => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
 
-const useTransformToCosmos: UseTransformToCosmos<MigrateData> = () =>
-  useCallback(
+  return {
+    chainId,
+    contract: '',
+    codeId: 0,
+    msg: '{}',
+  }
+}
+
+const useTransformToCosmos: UseTransformToCosmos<MigrateData> = () => {
+  const currentChainId = useActionOptions().chain.chain_id
+
+  return useCallback(
     ({
+      chainId,
       contract: contract_addr,
       codeId: new_code_id,
       msg: msgString,
@@ -43,7 +63,7 @@ const useTransformToCosmos: UseTransformToCosmos<MigrateData> = () =>
         return
       }
 
-      return makeWasmMessage({
+      const migrateMsg = makeWasmMessage({
         wasm: {
           migrate: {
             contract_addr,
@@ -52,14 +72,28 @@ const useTransformToCosmos: UseTransformToCosmos<MigrateData> = () =>
           },
         },
       })
+
+      if (chainId === currentChainId) {
+        return migrateMsg
+      } else {
+        return makePolytoneExecuteMessage(chainId, migrateMsg)
+      }
     },
-    []
+    [currentChainId]
   )
+}
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
   msg: Record<string, any>
-) =>
-  objectMatchesStructure(msg, {
+) => {
+  let chainId = useActionOptions().chain.chain_id
+  const decodedPolytone = decodePolytoneExecuteMsg(msg)
+  if (decodedPolytone.match) {
+    chainId = decodedPolytone.chainId
+    msg = decodedPolytone.msg
+  }
+
+  return objectMatchesStructure(msg, {
     wasm: {
       migrate: {
         contract_addr: {},
@@ -71,6 +105,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
     ? {
         match: true,
         data: {
+          chainId,
           contract: msg.wasm.migrate.contract_addr,
           codeId: msg.wasm.migrate.new_code_id,
           msg: JSON.stringify(msg.wasm.migrate.msg, undefined, 2),
@@ -79,23 +114,44 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
     : {
         match: false,
       }
+}
 
 const Component: ActionComponent = (props) => {
+  const { context } = useActionOptions()
+  const { watch } = useFormContext<MigrateData>()
+  const chainId =
+    watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
+
   const [contract, setContract] = useState('')
 
   const admin = useRecoilValueLoadable(
-    contractAdminSelector({ contractAddress: contract })
+    contractAdminSelector({
+      chainId,
+      contractAddress: contract,
+    })
   )
 
   return (
-    <StatelessMigrateContractComponent
-      {...props}
-      options={{
-        contractAdmin:
-          admin.state === 'hasValue' ? admin.getValue() : undefined,
-        onContractChange: (contract: string) => setContract(contract),
-      }}
-    />
+    <>
+      {context.type === ActionContextType.Dao && (
+        <ChainPickerInput
+          className="mb-4"
+          disabled={!props.isCreating}
+          fieldName={props.fieldNamePrefix + 'chainId'}
+        />
+      )}
+
+      <ChainProvider chainId={chainId}>
+        <StatelessMigrateContractComponent
+          {...props}
+          options={{
+            contractAdmin:
+              admin.state === 'hasValue' ? admin.getValue() : undefined,
+            onContractChange: (contract: string) => setContract(contract),
+          }}
+        />
+      </ChainProvider>
+    </>
   )
 }
 

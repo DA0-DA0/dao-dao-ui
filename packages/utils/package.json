@@ -8,14 +8,16 @@
     "test": "jest"
   },
   "dependencies": {
-    "@chain-registry/juno": "^1.15.0",
+    "@chain-registry/assets": "^1.16.0",
     "@cosmjs/cosmwasm-stargate": "^0.30.1",
     "@cosmjs/encoding": "^0.30.1",
     "@cosmjs/stargate": "^0.30.1",
     "@cosmjs/tendermint-rpc": "^0.30.1",
+    "@keplr-wallet/cosmos": "^0.11.49",
     "@keplr-wallet/stores": "^0.11.49",
     "@sentry/nextjs": "^7.7.0",
     "ajv": "^8.11.0",
+    "chain-registry": "^1.15.0",
     "cosmjs-types": "^0.7.1",
     "json5": "^2.2.0",
     "juno-network": "^0.14.0",
@@ -24,9 +26,11 @@
     "query-string": "^7.1.3",
     "react-hot-toast": "^2.1.1",
     "react-i18next": "^11.0.0",
-    "ripemd160": "^2.0.2"
+    "ripemd160": "^2.0.2",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@chain-registry/types": "^0.16.0",
     "@cosmjs/proto-signing": "^0.30.1",
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",

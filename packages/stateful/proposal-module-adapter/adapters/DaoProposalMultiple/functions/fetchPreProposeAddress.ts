@@ -11,11 +11,14 @@ export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
   // Try indexer first.
   let creationPolicy
   try {
-    creationPolicy = await queryIndexer(
-      'contract',
-      proposalModuleAddress,
-      'daoProposalMultiple/creationPolicy'
-    )
+    creationPolicy = await queryIndexer({
+      type: 'contract',
+      address: proposalModuleAddress,
+      formula: 'daoProposalMultiple/creationPolicy',
+      chainId,
+      // TODO(numia): Remove this once provided.
+      required: true,
+    })
   } catch (err) {
     // Ignore error.
     console.error(err)

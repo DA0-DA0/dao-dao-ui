@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { EntityType, TokenType } from '@dao-dao/types'
-import { NATIVE_TOKEN } from '@dao-dao/utils'
+import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../../../../../../components'
 import { makeSurvey } from './ContributionForm.stories'
@@ -143,6 +143,7 @@ Default.args = {
   tokenPrices: [
     {
       token: {
+        chainId: CHAIN_ID,
         type: TokenType.Cw20,
         denomOrAddress: 'dao',
         symbol: 'DAO',
@@ -153,9 +154,7 @@ Default.args = {
       timestamp: new Date(),
     },
     {
-      token: {
-        ...NATIVE_TOKEN,
-      },
+      token: getNativeTokenForChainId(CHAIN_ID),
       usdPrice: 1,
       timestamp: new Date(),
     },
@@ -164,6 +163,7 @@ Default.args = {
     loading: false,
     data: {
       type: EntityType.Wallet,
+      chainId: CHAIN_ID,
       address: 'walletPerson',
       name: 'wallet Person!',
       imageUrl: '/placeholders/1.svg',

@@ -15,6 +15,7 @@ import {
   Tooltip,
   useAppContext,
   useCachedLoadingWithError,
+  useChain,
 } from '@dao-dao/stateless'
 import { NftCardInfo } from '@dao-dao/types'
 import {
@@ -24,6 +25,7 @@ import {
 import {
   CODE_ID_CONFIG,
   MAINNET,
+  getDisplayNameForChainId,
   processError,
   uploadNft,
 } from '@dao-dao/utils'
@@ -48,6 +50,7 @@ export const InnerPfpkNftSelectionModal = ({
     status: walletStatus,
     error: walletError,
   } = useWallet()
+  const chain = useChain()
 
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
@@ -209,7 +212,9 @@ export const InnerPfpkNftSelectionModal = ({
         getIdForNft={getIdForNft}
         header={{
           title: t('title.chooseProfilePicture'),
-          subtitle: t('info.chooseProfilePictureSubtitle'),
+          subtitle: t('info.chooseProfilePictureSubtitle', {
+            nativeChainName: getDisplayNameForChainId(chain.chain_id),
+          }),
         }}
         nfts={
           walletStatus === WalletConnectionStatus.ReadyForConnection &&
@@ -235,7 +240,7 @@ export const InnerPfpkNftSelectionModal = ({
           )
         }
         secondaryAction={
-          // Only Juno mainnet NFTs are supported in PFPK.
+          // Only mainnet NFTs are supported in PFPK. No testnets.
           MAINNET
             ? {
                 loading: !instantiateAndExecuteReady,
@@ -265,7 +270,7 @@ export const InnerPfpkNftSelectionModal = ({
         visible={visible}
       />
 
-      {/* Only Juno mainnet NFTs are supported in PFPK. */}
+      {/* Only mainnet NFTs are supported in PFPK. No testnets. */}
       {MAINNET && (
         <ImageSelectorModal
           Trans={Trans}

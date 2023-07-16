@@ -8,6 +8,7 @@ import { genericTokenWithUsdPriceSelector } from '@dao-dao/state/recoil'
 import {
   Loader,
   useCachedLoadable,
+  useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
@@ -34,8 +35,9 @@ interface ProposalCreationFormProps {
 
 export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
     useWallet()
 
@@ -116,12 +118,14 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
             ({ nativeTokens, cw20Tokens }) => [
               ...nativeTokens.map(({ denom }) =>
                 genericTokenWithUsdPriceSelector({
+                  chainId,
                   type: TokenType.Native,
                   denomOrAddress: denom,
                 })
               ),
               ...cw20Tokens.map(({ address }) =>
                 genericTokenWithUsdPriceSelector({
+                  chainId,
                   type: TokenType.Cw20,
                   denomOrAddress: address,
                 })
@@ -131,10 +135,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
         )
       : undefined
   )
-  const walletEntity = useEntity({
-    address: walletAddress,
-    chainId,
-  })
+  const walletEntity = useEntity(walletAddress)
 
   return (
     <SuspenseLoader

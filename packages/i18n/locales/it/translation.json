@@ -128,7 +128,6 @@
     "imageUrlTooltip": "Link all'immagine, per esempio: https://moonphase.is/image.svg",
     "initialSupply": "Quantità iniziale di token",
     "instantiatedAddress": "Indirizzo instanziato",
-    "junoAddress": "Indirizzo Juno",
     "membersAddress": "Indirizzo dei membri",
     "membershipBasedDescription": "Piccola organizzazione con pochi membri che probabilmente resteranno. I membri possono essere aggiunti e rimossi da un voto di membri esistenti.",
     "membershipBasedTitle": "Basato sui membri",

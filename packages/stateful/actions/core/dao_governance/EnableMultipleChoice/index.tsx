@@ -20,8 +20,8 @@ import {
 import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   DaoProposalMultipleAdapterId,
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -81,7 +81,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<EnableMultipleChoiceData> = (
 
 export const makeEnableMultipleChoiceAction: ActionMaker<
   EnableMultipleChoiceData
-> = ({ t, address, chainId, context }) => {
+> = ({ t, address, context, chain: { chain_id: chainId } }) => {
   // Only show for v2 DAOs. Disallows creation if multiple choice proposal
   // module already exists, down at the bottom of this function.
   if (
@@ -182,7 +182,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
             ? 'cw20' in depositInfo.denom
               ? depositInfo.denom.cw20
               : depositInfo.denom.native
-            : NATIVE_TOKEN.denomOrAddress,
+            : getNativeTokenForChainId(chainId).denomOrAddress,
           token: depositInfoToken,
           refundPolicy:
             depositInfo?.refund_policy ?? DepositRefundPolicy.OnlyPassed,

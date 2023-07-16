@@ -13,6 +13,7 @@ import {
   MemberResponse,
   TotalWeightResponse,
 } from '@dao-dao/types/contracts/Cw4Group'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface Cw4GroupReadOnlyInterface {
   contractAddress: string
@@ -167,7 +168,7 @@ export class Cw4GroupClient
     }: {
       admin?: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -192,7 +193,7 @@ export class Cw4GroupClient
       add: Member[]
       remove: string[]
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -216,7 +217,7 @@ export class Cw4GroupClient
     }: {
       addr: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {
@@ -239,7 +240,7 @@ export class Cw4GroupClient
     }: {
       addr: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: readonly Coin[]
   ): Promise<ExecuteResult> => {

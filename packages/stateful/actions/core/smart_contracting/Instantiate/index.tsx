@@ -1,12 +1,20 @@
 import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { constSelector } from 'recoil'
 
-import { BabyEmoji } from '@dao-dao/stateless'
-import { TokenType } from '@dao-dao/types'
+import { PolytoneListenerSelectors } from '@dao-dao/state/recoil'
+import {
+  BabyEmoji,
+  ChainPickerInput,
+  ChainProvider,
+  useCachedLoading,
+} from '@dao-dao/stateless'
+import { PolytoneNote, TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
@@ -14,58 +22,89 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
+  CHAIN_ID,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  decodePolytoneExecuteMsg,
+  getNativeTokenForChainId,
+  makePolytoneExecuteMessage,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { useExecutedProposalTxLoadable } from '../../../../hooks/useExecutedProposalTxLoadable'
 import { useTokenBalances } from '../../../hooks'
+import { useActionOptions } from '../../../react'
 import { InstantiateComponent as StatelessInstantiateComponent } from './Component'
 
 interface InstantiateData {
+  chainId: string
   admin: string
   codeId: number
   label: string
   message: string
   funds: { denom: string; amount: number }[]
+
+  // Loaded on transform once created if this is a polytone message.
+  _polytone?: {
+    chainId: string
+    note: PolytoneNote
+    initiatorMsg: string
+  }
 }
 
-const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () =>
-  useCallback(({ admin, codeId, label, message, funds }: InstantiateData) => {
-    let msg
-    try {
-      msg = JSON5.parse(message)
-    } catch (err) {
-      console.error(`internal error. unparsable message: (${message})`, err)
-      return
-    }
+const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () => {
+  const currentChainId = useActionOptions().chain.chain_id
 
-    return makeWasmMessage({
-      wasm: {
-        instantiate: {
-          admin: admin || null,
-          code_id: codeId,
-          funds: funds.map(({ denom, amount }) => ({
-            denom,
-            amount: convertDenomToMicroDenomWithDecimals(
-              amount,
-              NATIVE_TOKEN.decimals
-            ).toString(),
-          })),
-          label,
-          msg,
+  return useCallback(
+    ({ chainId, admin, codeId, label, message, funds }: InstantiateData) => {
+      let msg
+      try {
+        msg = JSON5.parse(message)
+      } catch (err) {
+        console.error(`internal error. unparsable message: (${message})`, err)
+        return
+      }
+
+      const instantiateMsg = makeWasmMessage({
+        wasm: {
+          instantiate: {
+            admin: admin || null,
+            code_id: codeId,
+            funds: funds.map(({ denom, amount }) => ({
+              denom,
+              amount: convertDenomToMicroDenomWithDecimals(
+                amount,
+                getNativeTokenForChainId(chainId).decimals
+              ).toString(),
+            })),
+            label,
+            msg,
+          },
         },
-      },
-    })
-  }, [])
+      })
+
+      if (chainId === currentChainId) {
+        return instantiateMsg
+      } else {
+        return makePolytoneExecuteMessage(chainId, instantiateMsg)
+      }
+    },
+    [currentChainId]
+  )
+}
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
   msg: Record<string, any>
-) =>
-  objectMatchesStructure(msg, {
+) => {
+  let chainId = useActionOptions().chain.chain_id
+  const decodedPolytone = decodePolytoneExecuteMsg(msg)
+  if (decodedPolytone.match) {
+    chainId = decodedPolytone.chainId
+    msg = decodedPolytone.msg
+  }
+
+  return objectMatchesStructure(msg, {
     wasm: {
       instantiate: {
         code_id: {},
@@ -78,6 +117,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
     ? {
         match: true,
         data: {
+          chainId,
           admin: msg.wasm.instantiate.admin ?? '',
           codeId: msg.wasm.instantiate.code_id,
           label: msg.wasm.instantiate.label,
@@ -88,21 +128,56 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
               amount: Number(
                 convertMicroDenomToDenomWithDecimals(
                   amount,
-                  NATIVE_TOKEN.decimals
+                  getNativeTokenForChainId(chainId).decimals
                 )
               ),
             })
           ),
+          _polytone: decodedPolytone.match
+            ? {
+                chainId: decodedPolytone.chainId,
+                note: decodedPolytone.polytoneNote,
+                initiatorMsg: decodedPolytone.initiatorMsg,
+              }
+            : undefined,
         },
       }
     : {
         match: false,
       }
+}
 
 const Component: ActionComponent = (props) => {
-  // Get the selected tokens if not creating.
-  const { watch } = useFormContext<InstantiateData>()
+  const {
+    context,
+    address,
+    chain: { chain_id: currentChainId },
+  } = useActionOptions()
+
+  const { watch, setValue } = useFormContext<InstantiateData>()
+  const chainId =
+    watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
   const funds = watch((props.fieldNamePrefix + 'funds') as 'funds')
+
+  // Once created, if this is a polytone message, this will be defined with
+  // polytone metadata that can be used to get the instantiated address.
+  const _polytone = watch((props.fieldNamePrefix + '_polytone') as '_polytone')
+  // Callback results.
+  const polytoneResult = useCachedLoading(
+    _polytone
+      ? PolytoneListenerSelectors.resultSelector({
+          chainId: currentChainId,
+          contractAddress: _polytone.note.listener,
+          params: [
+            {
+              initiator: address,
+              initiatorMsg: _polytone.initiatorMsg,
+            },
+          ],
+        })
+      : constSelector(undefined),
+    undefined
+  )
 
   const nativeBalances = useTokenBalances({
     filter: TokenType.Native,
@@ -112,9 +187,11 @@ const Component: ActionComponent = (props) => {
     additionalTokens: props.isCreating
       ? undefined
       : funds.map(({ denom }) => ({
+          chainId,
           type: TokenType.Native,
           denomOrAddress: denom,
         })),
+    allChains: true,
   })
 
   // If in DAO context, use executed proposal TX events to find instantiated
@@ -131,7 +208,27 @@ const Component: ActionComponent = (props) => {
   // mapping of instantiation actions to instantiated addresses, so we
   // can use the index of this action in all instantiation actions to
   // select the correct address.
-  const instantiatedAddress = useMemo(() => {
+  const getInstantiatedAddress = () => {
+    // If polytone, can get from the polytone execution results directly.
+    if (_polytone) {
+      if (
+        !polytoneResult.loading &&
+        polytoneResult.data &&
+        'execute' in polytoneResult.data.callback.result &&
+        'Ok' in polytoneResult.data.callback.result.execute
+      ) {
+        const instantiateEvent =
+          polytoneResult.data.callback.result.execute.Ok.result[0].events.find(
+            ({ type }) => type === 'instantiate'
+          )
+        return instantiateEvent?.attributes.find(
+          ({ key }) => key === '_contract_address'
+        )?.value
+      }
+
+      return
+    }
+
     if (
       executedTxLoadable.state !== 'hasValue' ||
       !executedTxLoadable.contents
@@ -181,24 +278,49 @@ const Component: ActionComponent = (props) => {
     }
 
     return instantiatedContracts[innerIndex]
-  }, [executedTxLoadable, props, codeId])
+  }
+  const instantiatedAddress = getInstantiatedAddress()
 
   return (
-    <StatelessInstantiateComponent
-      {...props}
-      options={{
-        nativeBalances,
-        instantiatedAddress,
-      }}
-    />
+    <>
+      {context.type === ActionContextType.Dao && (
+        <ChainPickerInput
+          className="mb-4"
+          disabled={!props.isCreating}
+          fieldName={props.fieldNamePrefix + 'chainId'}
+          onChange={(chainId) => {
+            // Reset funds and update admin when switching chain.
+            setValue((props.fieldNamePrefix + 'funds') as 'funds', [])
+            setValue(
+              (props.fieldNamePrefix + 'admin') as 'admin',
+              chainId === currentChainId
+                ? address
+                : context.info.polytoneProxies[chainId] ?? ''
+            )
+          }}
+        />
+      )}
+
+      <ChainProvider chainId={chainId}>
+        <StatelessInstantiateComponent
+          {...props}
+          options={{
+            nativeBalances,
+            instantiatedAddress,
+          }}
+        />
+      </ChainProvider>
+    </>
   )
 }
 
 export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
   t,
   address,
+  chain: { chain_id: chainId },
 }) => {
   const useDefaults: UseDefaults<InstantiateData> = () => ({
+    chainId,
     admin: address,
     codeId: 0,
     label: '',

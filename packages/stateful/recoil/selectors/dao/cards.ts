@@ -24,8 +24,7 @@ import {
   DumpStateResponse as DaoCoreV2DumpStateResponse,
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
-  CHAIN_BECH32_PREFIX,
-  CHAIN_ID,
+  getChainForChainId,
   getFallbackImage,
   isValidContractAddress,
   parseContractVersion,
@@ -43,7 +42,7 @@ export const daoCardInfoSelector = selectorFamily<
 >({
   key: 'daoCardInfo',
   get:
-    ({ coreAddress, chainId = CHAIN_ID }) =>
+    ({ coreAddress, chainId }) =>
     ({ get }) => {
       const dumpedState:
         | CwCoreV1DumpStateResponse
@@ -80,7 +79,7 @@ export const daoCardInfoSelector = selectorFamily<
         // A DAO without a parent DAO may be its own admin.
         admin !== coreAddress &&
         // Ensure address is a contract.
-        isValidContractAddress(admin, CHAIN_BECH32_PREFIX)
+        isValidContractAddress(admin, getChainForChainId(chainId).bech32_prefix)
       ) {
         // Indexer may return `adminInfo`, in which case don't query again. If
         // null, there is no admin to load. Otherwise. If not null, query chain.

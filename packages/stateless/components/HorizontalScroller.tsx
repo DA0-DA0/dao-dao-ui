@@ -1,3 +1,4 @@
+import { CheckBoxOutlineBlankRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import {
   ComponentType,
@@ -7,11 +8,13 @@ import {
   useRef,
   useState,
 } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useInView } from 'react-intersection-observer'
 
 import { LoadingData } from '@dao-dao/types'
 
 import { Loader } from './logo'
+import { NoContent } from './NoContent'
 
 export interface HorizontalScrollerProps<P extends {}> {
   Component: ComponentType<P>
@@ -28,6 +31,7 @@ export const HorizontalScroller = <P extends {}>({
   containerClassName,
   shadowClassName,
 }: HorizontalScrollerProps<P>) => {
+  const { t } = useTranslation()
   const [clonesWidth, setClonesWidth] = useState(0)
   const [autoscroll, setAutoscroll] = useState(true)
 
@@ -90,16 +94,27 @@ export const HorizontalScroller = <P extends {}>({
   return (
     <div className={clsx('relative', containerClassName)}>
       {/* Left shadow */}
-      <div
-        className={clsx('absolute top-0 bottom-0 left-0 z-10', shadowClassName)}
-        style={{
-          background:
-            'linear-gradient(to left, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 100%)',
-        }}
-      ></div>
+      {!items.loading && items.data.length > 0 && (
+        <div
+          className={clsx(
+            'absolute top-0 bottom-0 left-0 z-10 animate-fade-in',
+            shadowClassName
+          )}
+          style={{
+            background:
+              'linear-gradient(to left, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 100%)',
+          }}
+        ></div>
+      )}
 
       {items.loading ? (
         <Loader />
+      ) : items.data.length === 0 ? (
+        <NoContent
+          Icon={CheckBoxOutlineBlankRounded}
+          body={t('info.noFeaturedDaosYet')}
+          className="mx-6"
+        />
       ) : (
         <div
           className="no-scrollbar w-full overflow-scroll"
@@ -133,16 +148,18 @@ export const HorizontalScroller = <P extends {}>({
       )}
 
       {/* Right shadow */}
-      <div
-        className={clsx(
-          'absolute top-0 right-0 bottom-0 z-10',
-          shadowClassName
-        )}
-        style={{
-          background:
-            'linear-gradient(to right, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 100%)',
-        }}
-      ></div>
+      {!items.loading && items.data.length > 0 && (
+        <div
+          className={clsx(
+            'absolute top-0 right-0 bottom-0 z-10 animate-fade-in',
+            shadowClassName
+          )}
+          style={{
+            background:
+              'linear-gradient(to right, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 1) 100%)',
+          }}
+        ></div>
+      )}
     </div>
   )
 }

@@ -17,11 +17,12 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
+  CHAIN_ID,
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
 import {
@@ -160,7 +161,6 @@ type ContractWithBalance = {
   balance: string | undefined
 }
 
-// TODO: Standardize this with the treasury token cards.
 // lazyInfo must be loaded in the component separately, since it refreshes on a
 // timer and we don't want this whole selector to reevaluate and load when that
 // refreshes. Use `tokenCardLazyInfoSelector`.
@@ -177,7 +177,10 @@ export const walletTokenCardInfosSelector = selectorFamily<
       const id = get(refreshWalletBalancesIdAtom(walletAddress))
 
       const nativeBalances = get(
-        nativeBalancesSelector({ address: walletAddress, chainId })
+        nativeBalancesSelector({
+          address: walletAddress,
+          chainId,
+        })
       )
       const cw20Contracts: ContractWithBalance[] =
         get(
@@ -186,6 +189,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
             walletAddress,
             formula: 'tokens/list',
             id,
+            required: true,
           })
         ) ?? []
       const cw20s = get(
@@ -207,9 +211,10 @@ export const walletTokenCardInfosSelector = selectorFamily<
             token.decimals
           )
 
-          // For now, stakingInfo only exists for native token, until ICA.
+          // Staking info only exists for native token.
           const hasStakingInfo =
-            token.denomOrAddress === NATIVE_TOKEN.denomOrAddress &&
+            token.denomOrAddress ===
+              getNativeTokenForChainId(chainId).denomOrAddress &&
             // Check if anything staked.
             Number(
               get(
@@ -221,6 +226,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
             ) > 0
 
           const info: TokenCardInfo = {
+            owner: walletAddress,
             token,
             isGovernanceToken: false,
             unstakedBalance,
@@ -238,6 +244,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
           )
 
           const info: TokenCardInfo = {
+            owner: walletAddress,
             token,
             isGovernanceToken: false,
             unstakedBalance,
@@ -265,12 +272,14 @@ export const walletNativeAndStargazeNftsSelector = selectorFamily<
     ({ get }) => {
       const nativeNfts = get(
         walletNftCardInfos({
+          chainId: CHAIN_ID,
           walletAddress,
         })
       )
 
       const nativeStakedNfts = get(
         walletStakedNftCardInfosSelector({
+          chainId: CHAIN_ID,
           walletAddress,
         })
       )

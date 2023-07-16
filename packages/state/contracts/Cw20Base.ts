@@ -15,6 +15,7 @@ import {
   MinterResponse,
   TokenInfoResponse,
 } from '@dao-dao/types/contracts/Cw20Base'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface Cw20BaseReadOnlyInterface {
   contractAddress: string
@@ -270,7 +271,7 @@ export class Cw20BaseClient
           recipient,
         },
       },
-      'auto'
+      CHAIN_GAS_MULTIPLIER
     )
   }
   burn = async ({ amount }: { amount: Uint128 }): Promise<ExecuteResult> => {
@@ -282,7 +283,7 @@ export class Cw20BaseClient
           amount,
         },
       },
-      'auto'
+      CHAIN_GAS_MULTIPLIER
     )
   }
   send = async ({
@@ -304,7 +305,7 @@ export class Cw20BaseClient
           msg,
         },
       },
-      'auto'
+      CHAIN_GAS_MULTIPLIER
     )
   }
   increaseAllowance = async ({
@@ -326,7 +327,7 @@ export class Cw20BaseClient
           spender,
         },
       },
-      'auto'
+      CHAIN_GAS_MULTIPLIER
     )
   }
   decreaseAllowance = async ({
@@ -348,7 +349,7 @@ export class Cw20BaseClient
           spender,
         },
       },
-      'auto'
+      CHAIN_GAS_MULTIPLIER
     )
   }
   transferFrom = async ({
@@ -370,7 +371,7 @@ export class Cw20BaseClient
           recipient,
         },
       },
-      'auto'
+      CHAIN_GAS_MULTIPLIER
     )
   }
   sendFrom = async ({
@@ -395,7 +396,7 @@ export class Cw20BaseClient
           owner,
         },
       },
-      'auto'
+      CHAIN_GAS_MULTIPLIER
     )
   }
   burnFrom = async ({
@@ -414,7 +415,7 @@ export class Cw20BaseClient
           owner,
         },
       },
-      'auto'
+      CHAIN_GAS_MULTIPLIER
     )
   }
   mint = async ({
@@ -433,7 +434,7 @@ export class Cw20BaseClient
           recipient,
         },
       },
-      'auto'
+      CHAIN_GAS_MULTIPLIER
     )
   }
   updateMarketing = async ({
@@ -455,7 +456,7 @@ export class Cw20BaseClient
           project,
         },
       },
-      'auto'
+      CHAIN_GAS_MULTIPLIER
     )
   }
   uploadLogo = async (): Promise<ExecuteResult> => {
@@ -465,7 +466,7 @@ export class Cw20BaseClient
       {
         upload_logo: {},
       },
-      'auto'
+      CHAIN_GAS_MULTIPLIER
     )
   }
 }

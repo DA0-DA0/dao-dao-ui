@@ -20,6 +20,7 @@ import {
   StakingMode,
   StakingModal as StatelessStakingModal,
   useCachedLoadable,
+  useChain,
 } from '@dao-dao/stateless'
 import { BaseStakingModalProps } from '@dao-dao/types'
 import {
@@ -50,6 +51,7 @@ const InnerStakingModal = ({
   maxDeposit,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { address: walletAddress, connected } = useWallet()
   const { refreshBalances } = useWalletInfo()
   const { coreAddress } = useVotingModuleAdapterOptions()
@@ -57,8 +59,7 @@ const InnerStakingModal = ({
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 
   const {
-    governanceTokenAddress,
-    governanceTokenInfo,
+    token: governanceToken,
     loadingWalletBalance: loadingUnstakedBalance,
   } = useGovernanceTokenInfo({
     fetchWalletBalance: true,
@@ -77,6 +78,7 @@ const InnerStakingModal = ({
 
   const totalStakedBalance = useRecoilValue(
     Cw20StakeSelectors.totalStakedAtHeightSelector({
+      chainId,
       contractAddress: stakingContractAddress,
       params: [{}],
     })
@@ -85,6 +87,7 @@ const InnerStakingModal = ({
   const walletStakedBalanceLoadable = useCachedLoadable(
     walletAddress
       ? Cw20StakeSelectors.stakedBalanceAtHeightSelector({
+          chainId,
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })
@@ -98,6 +101,7 @@ const InnerStakingModal = ({
 
   const totalValue = useRecoilValue(
     Cw20StakeSelectors.totalValueSelector({
+      chainId,
       contractAddress: stakingContractAddress,
       params: [],
     })
@@ -114,7 +118,7 @@ const InnerStakingModal = ({
   const [amount, setAmount] = useState(0)
 
   const doStake = Cw20BaseHooks.useSend({
-    contractAddress: governanceTokenAddress,
+    contractAddress: governanceToken.denomOrAddress,
     sender: walletAddress ?? '',
   })
   const doUnstake = Cw20StakeHooks.useUnstake({
@@ -152,7 +156,7 @@ const InnerStakingModal = ({
           await doStake({
             amount: convertDenomToMicroDenomWithDecimals(
               amount,
-              governanceTokenInfo.decimals
+              governanceToken.decimals
             ).toString(),
             contract: stakingContractAddress,
             msg: btoa('{"stake": {}}'),
@@ -168,8 +172,8 @@ const InnerStakingModal = ({
           setAmount(0)
           toast.success(
             `Staked ${amount.toLocaleString(undefined, {
-              maximumFractionDigits: governanceTokenInfo.decimals,
-            })} $${governanceTokenInfo.symbol}`
+              maximumFractionDigits: governanceToken.decimals,
+            })} $${governanceToken.symbol}`
           )
 
           // Close once done.
@@ -210,13 +214,13 @@ const InnerStakingModal = ({
             walletStakedBalance -
               convertDenomToMicroDenomWithDecimals(
                 amountToUnstake,
-                governanceTokenInfo.decimals
+                governanceToken.decimals
               )
           ) <= 1
         ) {
           amountToUnstake = convertMicroDenomToDenomWithDecimals(
             walletStakedBalance,
-            governanceTokenInfo.decimals
+            governanceToken.decimals
           )
         }
 
@@ -224,7 +228,7 @@ const InnerStakingModal = ({
           await doUnstake({
             amount: convertDenomToMicroDenomWithDecimals(
               amountToUnstake,
-              governanceTokenInfo.decimals
+              governanceToken.decimals
             ).toString(),
           })
 
@@ -239,8 +243,8 @@ const InnerStakingModal = ({
           setAmount(0)
           toast.success(
             `Unstaked ${amount.toLocaleString(undefined, {
-              maximumFractionDigits: governanceTokenInfo.decimals,
-            })} $${governanceTokenInfo.symbol}`
+              maximumFractionDigits: governanceToken.decimals,
+            })} $${governanceToken.symbol}`
           )
 
           // Close once done.
@@ -275,10 +279,10 @@ const InnerStakingModal = ({
           toast.success(
             `Claimed ${convertMicroDenomToDenomWithDecimals(
               sumClaimsAvailable,
-              governanceTokenInfo.decimals
+              governanceToken.decimals
             ).toLocaleString(undefined, {
-              maximumFractionDigits: governanceTokenInfo.decimals,
-            })} $${governanceTokenInfo.symbol}`
+              maximumFractionDigits: governanceToken.decimals,
+            })} $${governanceToken.symbol}`
           )
 
           // Close once done.
@@ -311,7 +315,7 @@ const InnerStakingModal = ({
               loading: false,
               data: convertMicroDenomToDenomWithDecimals(
                 loadingUnstakedBalance.data,
-                governanceTokenInfo.decimals
+                governanceToken.decimals
               ),
             }
       }
@@ -322,7 +326,7 @@ const InnerStakingModal = ({
               loading: false,
               data: convertMicroDenomToDenomWithDecimals(
                 loadingWalletStakedValue.data,
-                governanceTokenInfo.decimals
+                governanceToken.decimals
               ),
             }
       }
@@ -332,14 +336,12 @@ const InnerStakingModal = ({
         maxDeposit
           ? convertMicroDenomToDenomWithDecimals(
               maxDeposit,
-              governanceTokenInfo.decimals
+              governanceToken.decimals
             )
           : undefined
       }
       setAmount={(newAmount) => setAmount(newAmount)}
-      tokenDecimals={governanceTokenInfo.decimals}
-      tokenDenom={governanceTokenAddress}
-      tokenSymbol={governanceTokenInfo.symbol}
+      token={governanceToken}
       unstakingDuration={unstakingDuration ?? null}
     />
   )

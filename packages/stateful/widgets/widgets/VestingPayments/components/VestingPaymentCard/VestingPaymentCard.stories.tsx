@@ -4,6 +4,7 @@ import { ButtonLink } from '@dao-dao/stateless'
 import { makeProps as makeTokenCardProps } from '@dao-dao/stateless/components/token/TokenCard.stories'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators/DaoPageWrapperDecorator'
 import { EntityType, TokenType } from '@dao-dao/types'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { VestingPaymentCard } from './VestingPaymentCard'
 
@@ -28,6 +29,7 @@ Default.args = {
     loading: false,
     data: {
       type: EntityType.Wallet,
+      chainId: CHAIN_ID,
       address: 'junoAbc123',
       name: 'A Very Real Person',
       imageUrl: '/placeholders/1.svg',
@@ -37,6 +39,7 @@ Default.args = {
   ButtonLink,
   lazyInfo: makeTokenCardProps().lazyInfo,
   token: {
+    chainId: CHAIN_ID,
     type: TokenType.Native,
     denomOrAddress: 'ujuno',
     symbol: 'JUNO',

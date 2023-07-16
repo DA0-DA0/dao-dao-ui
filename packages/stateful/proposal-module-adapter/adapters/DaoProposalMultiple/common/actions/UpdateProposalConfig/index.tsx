@@ -90,75 +90,15 @@ const maxVotingInfoToCosmos = (
   }
 }
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
-  msg: Record<string, any>
-) => {
-  const isUpdateConfig = objectMatchesStructure(msg, {
-    wasm: {
-      execute: {
-        contract_addr: {},
-        funds: {},
-        msg: {
-          update_config: {
-            allow_revoting: {},
-            close_proposal_on_execution_failure: {},
-            dao: {},
-            max_voting_period: {
-              time: {},
-            },
-            min_voting_period: {},
-            only_members_execute: {},
-            voting_strategy: {
-              single_choice: {
-                quorum: {},
-              },
-            },
-          },
-        },
-      },
-    },
-  })
-
-  const isContract = useRecoilValue(
-    isUpdateConfig
-      ? isContractSelector({
-          contractAddress: msg.wasm.execute.contract_addr,
-          names: CONTRACT_NAMES,
-        })
-      : constSelector(false)
-  )
-
-  if (!isUpdateConfig || !isContract) {
-    return { match: false }
-  }
-
-  const {
-    allow_revoting: allowRevoting,
-    only_members_execute: onlyMembersExecute,
-    max_voting_period: { time: proposalDuration },
-    voting_strategy: votingStrategy,
-  } = msg.wasm.execute.msg.update_config
-
-  return {
-    match: true,
-    data: {
-      allowRevoting,
-      onlyMembersExecute,
-      proposalDuration,
-      proposalDurationUnits: 'seconds',
-      ...votingStrategyToProcessedQuorum(votingStrategy),
-    },
-  }
-}
-
 export const makeUpdateProposalConfigActionMaker =
   ({
     address: proposalModuleAddress,
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
-  ({ t, context }) => {
+  ({ t, context, chain: { chain_id: chainId } }) => {
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useRecoilValue(
         configSelector({
+          chainId,
           contractAddress: proposalModuleAddress,
         })
       )
@@ -187,6 +127,7 @@ export const makeUpdateProposalConfigActionMaker =
     > = () => {
       const proposalModuleConfig = useRecoilValue(
         configSelector({
+          chainId,
           contractAddress: proposalModuleAddress,
         })
       )
@@ -233,6 +174,68 @@ export const makeUpdateProposalConfigActionMaker =
           proposalModuleConfig.min_voting_period,
         ]
       )
+    }
+
+    const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
+      msg: Record<string, any>
+    ) => {
+      const isUpdateConfig = objectMatchesStructure(msg, {
+        wasm: {
+          execute: {
+            contract_addr: {},
+            funds: {},
+            msg: {
+              update_config: {
+                allow_revoting: {},
+                close_proposal_on_execution_failure: {},
+                dao: {},
+                max_voting_period: {
+                  time: {},
+                },
+                min_voting_period: {},
+                only_members_execute: {},
+                voting_strategy: {
+                  single_choice: {
+                    quorum: {},
+                  },
+                },
+              },
+            },
+          },
+        },
+      })
+
+      const isContract = useRecoilValue(
+        isUpdateConfig
+          ? isContractSelector({
+              contractAddress: msg.wasm.execute.contract_addr,
+              names: CONTRACT_NAMES,
+              chainId,
+            })
+          : constSelector(false)
+      )
+
+      if (!isUpdateConfig || !isContract) {
+        return { match: false }
+      }
+
+      const {
+        allow_revoting: allowRevoting,
+        only_members_execute: onlyMembersExecute,
+        max_voting_period: { time: proposalDuration },
+        voting_strategy: votingStrategy,
+      } = msg.wasm.execute.msg.update_config
+
+      return {
+        match: true,
+        data: {
+          allowRevoting,
+          onlyMembersExecute,
+          proposalDuration,
+          proposalDurationUnits: 'seconds',
+          ...votingStrategyToProcessedQuorum(votingStrategy),
+        },
+      }
     }
 
     return {

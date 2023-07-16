@@ -6,9 +6,13 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { refreshFollowingDaosAtom } from '@dao-dao/state'
-import { useCachedLoading } from '@dao-dao/stateless'
+import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
-import { CHAIN_ID, FOLLOWING_DAOS_API_BASE, processError } from '@dao-dao/utils'
+import {
+  FOLLOWING_DAOS_PREFIX,
+  KVPK_API_BASE,
+  processError,
+} from '@dao-dao/utils'
 
 import {
   followingDaosSelector,
@@ -17,10 +21,7 @@ import {
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
 
 export type UseFollowingDaosReturn = {
-  daos: LoadingData<{
-    following: string[]
-    pending: string[]
-  }>
+  daos: LoadingData<string[]>
   refreshFollowing: () => void
   isFollowing: (coreAddress: string) => any
   setFollowing: (coreAddressOrAddresses: string | string[]) => Promise<boolean>
@@ -33,25 +34,24 @@ export type UseFollowingDaosReturn = {
 
 export const useFollowingDaos = (): UseFollowingDaosReturn => {
   const { t } = useTranslation()
-  const { status, connected, address: walletAddress } = useWallet()
+  const { chain_id: chainId } = useChain()
+  const { status, connected, publicKey } = useWallet()
 
   // Following API doesn't update right away, so this serves to keep track of
   // all successful updates for the current session. This will be reset on page
   // refresh.
   const setTemporary = useSetRecoilState(
-    temporaryFollowingDaosAtom(walletAddress ?? '')
+    temporaryFollowingDaosAtom(publicKey?.hex ?? '')
   )
 
   const followingDaosLoading = useCachedLoading(
-    walletAddress
+    publicKey
       ? followingDaosSelector({
-          walletAddress,
+          chainId,
+          walletPublicKey: publicKey.hex,
         })
       : undefined,
-    {
-      following: [],
-      pending: [],
-    }
+    []
   )
 
   const setRefreshFollowingDaos = useSetRecoilState(refreshFollowingDaosAtom)
@@ -63,13 +63,13 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
   const isFollowing = useCallback(
     (coreAddress: string) =>
       !followingDaosLoading.loading &&
-      followingDaosLoading.data.following.includes(coreAddress),
+      followingDaosLoading.data.includes(coreAddress),
     [followingDaosLoading]
   )
 
   const [updating, setUpdating] = useState(false)
   const { ready, postRequest } = useCfWorkerAuthPostRequest(
-    FOLLOWING_DAOS_API_BASE,
+    KVPK_API_BASE,
     'Update Following'
   )
 
@@ -87,8 +87,11 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
       try {
         const daos = [coreAddressOrAddresses].flat()
-        await postRequest(`/follow/${CHAIN_ID}`, {
-          daos,
+        await postRequest('/setMany', {
+          data: daos.map((coreAddress) => ({
+            key: FOLLOWING_DAOS_PREFIX + `${chainId}:${coreAddress}`,
+            value: 1,
+          })),
         })
 
         setTemporary((prev) => ({
@@ -109,7 +112,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         setUpdating(false)
       }
     },
-    [postRequest, ready, refreshFollowing, setTemporary, t, updating]
+    [chainId, postRequest, ready, refreshFollowing, setTemporary, t, updating]
   )
 
   const setUnfollowing = useCallback(
@@ -126,8 +129,11 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
 
       try {
         const daos = [coreAddressOrAddresses].flat()
-        await postRequest(`/unfollow/${CHAIN_ID}`, {
-          daos,
+        await postRequest('/setMany', {
+          data: daos.map((coreAddress) => ({
+            key: FOLLOWING_DAOS_PREFIX + `${chainId}:${coreAddress}`,
+            value: null,
+          })),
         })
 
         setTemporary((prev) => ({
@@ -148,7 +154,7 @@ export const useFollowingDaos = (): UseFollowingDaosReturn => {
         setUpdating(false)
       }
     },
-    [postRequest, ready, refreshFollowing, setTemporary, t, updating]
+    [chainId, postRequest, ready, refreshFollowing, setTemporary, t, updating]
   )
 
   return {

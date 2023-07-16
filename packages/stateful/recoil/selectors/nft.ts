@@ -1,5 +1,4 @@
 import { fromBech32, toBech32 } from '@cosmjs/encoding'
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
@@ -11,13 +10,12 @@ import {
   refreshWalletStargazeNftsAtom,
 } from '@dao-dao/state'
 import { stakerForNftSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoVotingCw721Staked'
-import { NftCardInfo, WithChainId } from '@dao-dao/types'
+import { ChainId, NftCardInfo, WithChainId } from '@dao-dao/types'
 import { StargazeNft } from '@dao-dao/types/nft'
 import {
   CHAIN_ID,
   MAINNET,
   STARGAZE_PROFILE_API_TEMPLATE,
-  STARGAZE_TESTNET_CHAIN_ID,
   STARGAZE_URL_BASE,
 } from '@dao-dao/utils'
 
@@ -62,8 +60,8 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
               tokenId,
               tokenUri,
               chainId: MAINNET
-                ? ChainInfoID.Stargaze1
-                : STARGAZE_TESTNET_CHAIN_ID,
+                ? ChainId.StargazeMainnet
+                : ChainId.StargazeTestnet,
             })
           )
         )
@@ -83,7 +81,7 @@ export const nftCardInfoWithUriSelector = selectorFamily<
 >({
   key: 'nftCardInfo',
   get:
-    ({ tokenId, collection, tokenUri, chainId = CHAIN_ID }) =>
+    ({ tokenId, collection, tokenUri, chainId }) =>
     async ({ get }) => {
       const collectionInfo = get(
         Cw721BaseSelectors.contractInfoSelector({
@@ -105,7 +103,7 @@ export const nftCardInfoWithUriSelector = selectorFamily<
         tokenId,
         externalLink:
           externalLink ||
-          (chainId === ChainInfoID.Stargaze1
+          (chainId === ChainId.StargazeMainnet
             ? {
                 href: `${STARGAZE_URL_BASE}/media/${collection}/${tokenId}`,
                 name: 'Stargaze',
@@ -153,57 +151,71 @@ export const nftCardInfoSelector = selectorFamily<
 
 export const nftCardInfosForDaoSelector = selectorFamily<
   NftCardInfo[],
-  WithChainId<{
+  {
     coreAddress: string
     // If DAO is using the cw721-staking voting module adapter, it will have an
     // NFT governance collection. If this is the case, passing it here makes
     // sure we include the collection if it is not in the DAO's cw721 token
     // list.
     governanceCollectionAddress?: string
-  }>
+  }
 >({
   key: 'nftCardInfosForDao',
   get:
-    ({ coreAddress, governanceCollectionAddress, chainId }) =>
+    ({ coreAddress, governanceCollectionAddress }) =>
     async ({ get }) => {
-      // Get all NFT collection addresses for the DAO.
-      const nftCollectionAddresses = get(
-        DaoCoreV2Selectors.allCw721TokenListSelector({
-          contractAddress: coreAddress,
-          chainId,
-          governanceCollectionAddress,
-        })
-      )
+      // TODO: Store NFT collections for polytone proxies with another prefix.
+      // const polytoneProxies = Object.entries(
+      //   get(
+      //     daoCorePolytoneProxiesSelector({
+      //       chainId: CHAIN_ID,
+      //       coreAddress,
+      //     })
+      //   )
+      // )
 
-      // Get all token IDs owned by the DAO for each collection.
-      const nftCollectionTokenIds = get(
-        waitForAll(
-          nftCollectionAddresses.map((collectionAddress) =>
-            Cw721BaseSelectors.allTokensForOwnerSelector({
-              contractAddress: collectionAddress,
+      return [[CHAIN_ID, coreAddress] /* ...polytoneProxies */].flatMap(
+        ([chainId, coreAddress]) => {
+          // Get all NFT collection addresses for the DAO.
+          const nftCollectionAddresses = get(
+            DaoCoreV2Selectors.allCw721TokenListSelector({
+              contractAddress: coreAddress,
               chainId,
-              owner: coreAddress,
+              governanceCollectionAddress,
             })
           )
-        )
-      )
 
-      // Get all cards for each collection.
-      const nftCardInfos = get(
-        waitForAll(
-          nftCollectionAddresses.flatMap((collectionAddress, index) =>
-            nftCollectionTokenIds[index].map((tokenId) =>
-              nftCardInfoSelector({
-                tokenId,
-                collection: collectionAddress,
-                chainId,
-              })
+          // Get all token IDs owned by the DAO for each collection.
+          const nftCollectionTokenIds = get(
+            waitForAll(
+              nftCollectionAddresses.map((collectionAddress) =>
+                Cw721BaseSelectors.allTokensForOwnerSelector({
+                  contractAddress: collectionAddress,
+                  chainId,
+                  owner: coreAddress,
+                })
+              )
             )
           )
-        )
-      )
 
-      return nftCardInfos
+          // Get all cards for each collection.
+          const nftCardInfos = get(
+            waitForAll(
+              nftCollectionAddresses.flatMap((collectionAddress, index) =>
+                nftCollectionTokenIds[index].map((tokenId) =>
+                  nftCardInfoSelector({
+                    tokenId,
+                    collection: collectionAddress,
+                    chainId,
+                  })
+                )
+              )
+            )
+          )
+
+          return nftCardInfos
+        }
+      )
     },
 })
 

@@ -25,7 +25,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const {
     proposalModule: { address: proposalModuleAddress, version },
     proposalNumber,
-    chainId,
+    chain: { chain_id: chainId },
   } = useProposalModuleAdapterOptions()
 
   const loadingProposalResponse = useCachedLoading(

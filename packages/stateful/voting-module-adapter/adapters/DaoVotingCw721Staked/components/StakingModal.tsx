@@ -16,6 +16,7 @@ import {
   SegmentedControls,
   StakingMode,
   useCachedLoadable,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   BaseStakingModalProps,
@@ -44,6 +45,7 @@ const InnerStakingModal = ({
   onClose,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const { address: walletAddress, connected } = useWallet()
   const { coreAddress } = useVotingModuleAdapterOptions()
 
@@ -88,6 +90,7 @@ const InnerStakingModal = ({
   const walletStakedBalanceLoadable = useCachedLoadable(
     walletAddress
       ? DaoVotingCw721StakedSelectors.votingPowerAtHeightSelector({
+          chainId,
           contractAddress: stakingContractAddress,
           params: [{ address: walletAddress }],
         })

@@ -4,7 +4,12 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { genericTokenBalancesSelector } from '@dao-dao/state'
-import { Loader, useCachedLoading, useDaoInfoContext } from '@dao-dao/stateless'
+import {
+  Loader,
+  useCachedLoading,
+  useChain,
+  useDaoInfoContext,
+} from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import { convertDenomToMicroDenomWithDecimals } from '@dao-dao/utils'
 
@@ -22,7 +27,8 @@ import { NewSurveyForm as StatelessNewSurveyForm } from '../stateless/NewSurveyF
 
 export const NewSurveyForm = () => {
   const { t } = useTranslation()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
+  const { coreAddress } = useDaoInfoContext()
 
   // Get CW20 governance token address from voting module adapter if exists, so
   // we can make sure to load it with all cw20 balances, even if it has not been

@@ -4,6 +4,7 @@ import { useSetRecoilState } from 'recoil'
 import { refreshVestingAtom } from '@dao-dao/state/recoil'
 import {
   useCachedLoadable,
+  useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
@@ -24,11 +25,11 @@ import { TabRenderer as StatelessTabRenderer } from './TabRenderer'
 export const TabRenderer = ({
   variables: { factory },
 }: WidgetRendererProps<VestingPaymentsData>) => {
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
+  const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership({
     coreAddress,
-    chainId,
   })
 
   const setRefresh = useSetRecoilState(refreshVestingAtom(''))

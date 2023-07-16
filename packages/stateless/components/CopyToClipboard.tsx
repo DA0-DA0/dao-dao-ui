@@ -1,6 +1,6 @@
 import { Check, CopyAll } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -23,9 +23,19 @@ export const CopyToClipboard = ({
   noCopy,
 }: CopyToClipboardProps) => {
   const { t } = useTranslation()
-  const [copied, setCopied] = useState(false)
 
-  const Icon = copied ? Check : CopyAll
+  // Unset copied after 2 seconds unless it gets clicked again, then reset.
+  const [copied, setCopied] = useState(0)
+  useEffect(() => {
+    if (!copied) {
+      return
+    }
+
+    const timeout = setTimeout(() => setCopied(0), 2000)
+    return () => clearTimeout(timeout)
+  }, [copied])
+
+  const Icon = copied > 0 ? Check : CopyAll
 
   return (
     <Tooltip title={tooltip}>
@@ -40,8 +50,7 @@ export const CopyToClipboard = ({
             ? undefined
             : () => {
                 navigator.clipboard.writeText(value)
-                setTimeout(() => setCopied(false), 2000)
-                setCopied(true)
+                setCopied((copied) => copied + 1)
                 toast.success(success || t('info.copiedToClipboard'))
                 onCopy?.()
               }

@@ -5,7 +5,11 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
-import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
+import {
+  useCachedLoadable,
+  useChain,
+  useDaoInfoContext,
+} from '@dao-dao/stateless'
 import {
   DaoWidget,
   LoadingData,
@@ -42,10 +46,10 @@ export const useWidgets = ({
   location,
 }: UseWidgetsOptions = {}): UseWidgetsResult => {
   const { t } = useTranslation()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
+  const { coreAddress } = useDaoInfoContext()
   const { isMember = false } = useMembership({
     coreAddress,
-    chainId,
   })
 
   const widgetItemsSelector = DaoCoreV2Selectors.listAllItemsWithPrefixSelector(

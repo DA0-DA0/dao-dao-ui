@@ -49,7 +49,8 @@ export const Me = ({
     })
   }, [router])
 
-  const tabPath = router.query.tab
+  const _tab = router.query.tab
+  const tabPath = _tab && Array.isArray(_tab) ? _tab[0] : undefined
   const selectedTabId =
     // If tabPath is not a valid tab, default to first tab. This ensures that
     // the default `/me` page will render the first tab, and also that an

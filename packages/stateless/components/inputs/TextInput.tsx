@@ -12,7 +12,7 @@ import {
 export interface TextInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
-> extends Omit<ComponentPropsWithoutRef<'input'>, 'type' | 'required'> {
+> extends Omit<ComponentPropsWithoutRef<'input'>, 'required'> {
   fieldName?: FieldName
   register?: UseFormRegister<FV>
   validation?: Validate<FieldPathValue<FV, FieldName>>[]
@@ -38,6 +38,7 @@ export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
   className,
   required,
   ghost,
+  type = 'text',
   ...rest
 }: TextInputProps<FV, FieldName>) => {
   const validate = validation?.reduce(
@@ -57,7 +58,7 @@ export const TextInput = <FV extends FieldValues, FieldName extends Path<FV>>({
           : 'ring-border-primary focus:ring-border-interactive-focus',
         className
       )}
-      type="text"
+      type={type}
       {...rest}
       {...(register &&
         fieldName &&

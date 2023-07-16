@@ -8,7 +8,7 @@ import {
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
   queryGenericIndexerSelector,
-  wyndUsdPriceSelector,
+  usdPriceSelector,
 } from '@dao-dao/state'
 import {
   GenericToken,
@@ -18,32 +18,45 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
 export const tokenCardLazyInfoSelector = selectorFamily<
   TokenCardLazyInfo,
-  WithChainId<{
-    walletAddress: string
+  {
+    owner: string
     token: GenericToken
     // For calculating totalBalance.
     unstakedBalance: number
-  }>
+  }
 >({
   key: 'tokenCardLazyInfo',
   get:
-    ({ walletAddress, token, chainId, unstakedBalance }) =>
+    ({ owner, token, unstakedBalance }) =>
     ({ get }) => {
+      const { chainId } = token
+
       let stakingInfo: TokenCardLazyInfo['stakingInfo'] = undefined
       let daosGoverned: TokenCardLazyInfo['daosGoverned'] = undefined
 
-      const usdUnitPrice = get(wyndUsdPriceSelector(token.denomOrAddress))
+      const usdUnitPrice = get(
+        usdPriceSelector({
+          chainId,
+          denomOrAddress: token.denomOrAddress,
+        })
+      )
 
-      // For now, stakingInfo only exists for native token, until ICA.
-      if (token.denomOrAddress === NATIVE_TOKEN.denomOrAddress) {
+      // Staking info only exists for native token.
+      if (
+        token.denomOrAddress ===
+        getNativeTokenForChainId(chainId).denomOrAddress
+      ) {
         const nativeDelegationInfo = get(
-          nativeDelegationInfoSelector({ address: walletAddress, chainId })
+          nativeDelegationInfoSelector({
+            address: owner,
+            chainId,
+          })
         )
 
         if (nativeDelegationInfo) {
@@ -106,12 +119,13 @@ export const tokenCardLazyInfoSelector = selectorFamily<
         }
       }
 
-      if (walletAddress) {
+      if (owner) {
         daosGoverned = get(
           tokenDaosWithStakedBalanceSelector({
+            chainId,
             type: token.type,
             denomOrAddress: token.denomOrAddress,
-            walletAddress,
+            walletAddress: owner,
           })
         ).map(({ stakedBalance, ...rest }) => ({
           ...rest,
@@ -179,6 +193,7 @@ export const daosWithNativeVotingContractSelector = selectorFamily<
             args: {
               denom,
             },
+            required: true,
           })
         ) ?? []
       const votingModuleAddresses = get(

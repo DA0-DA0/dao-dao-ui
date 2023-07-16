@@ -3,12 +3,16 @@ import {
   ProfileHomeCard as StatelessProfileHomeCard,
   useAppContext,
   useCachedLoadable,
+  useChainContext,
 } from '@dao-dao/stateless'
-import { NATIVE_TOKEN } from '@dao-dao/utils'
 
 import { useWalletInfo } from '../../hooks'
 
 export const ProfileHomeCard = () => {
+  const {
+    chain: { chain_id: chainId },
+    nativeToken,
+  } = useChainContext()
   const {
     walletAddress = '',
     walletProfileData,
@@ -22,6 +26,7 @@ export const ProfileHomeCard = () => {
   const walletProposalStatsLoadable = useCachedLoadable(
     walletAddress
       ? walletProposalStatsSelector({
+          chainId,
           address: walletAddress,
         })
       : undefined
@@ -61,8 +66,8 @@ export const ProfileHomeCard = () => {
             }
       }
       showUpdateProfileNft={updateProfileNft.toggle}
-      tokenDecimals={NATIVE_TOKEN.decimals}
-      tokenSymbol={NATIVE_TOKEN.symbol}
+      tokenDecimals={nativeToken.decimals}
+      tokenSymbol={nativeToken.symbol}
       updateProfileName={updateProfileName}
       walletProfileData={walletProfileData}
     />

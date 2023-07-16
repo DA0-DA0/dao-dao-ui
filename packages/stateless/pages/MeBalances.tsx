@@ -1,10 +1,10 @@
 import { Image } from '@mui/icons-material'
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ChainId,
   FilterFn,
   MeBalancesProps,
   NftCardInfo,
@@ -12,7 +12,7 @@ import {
   TokenCardInfo,
   TypedOption,
 } from '@dao-dao/types'
-import { STARGAZE_TESTNET_CHAIN_ID } from '@dao-dao/utils'
+import { getDisplayNameForChainId } from '@dao-dao/utils'
 
 import {
   Button,
@@ -23,7 +23,7 @@ import {
   NoContent,
   TooltipInfoIcon,
 } from '../components'
-import { useButtonPopupFilter, useButtonPopupSorter } from '../hooks'
+import { useButtonPopupFilter, useButtonPopupSorter, useChain } from '../hooks'
 
 export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   tokens,
@@ -33,6 +33,34 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   NftCard,
 }: MeBalancesProps<T, N>) => {
   const { t } = useTranslation()
+
+  const chain = useChain()
+  const nativeChainName = getDisplayNameForChainId(chain.chain_id)
+  const nftFilterOptions = useMemo(
+    () =>
+      [
+        {
+          id: 'all',
+          label: `${nativeChainName} and Stargaze`,
+          value: () => true,
+        },
+        {
+          id: 'current',
+          label: `Only ${nativeChainName}`,
+          value: (nft) => nft.chainId === chain.chain_id,
+        },
+        {
+          id: 'stargaze',
+          label: 'Only Stargaze',
+          value: (nft) =>
+            nft.chainId === ChainId.StargazeMainnet ||
+            nft.chainId === ChainId.StargazeTestnet,
+        },
+      ] as (TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>> & {
+        id: string
+      })[],
+    [chain.chain_id, nativeChainName]
+  )
 
   const {
     sortedData: sortedTokens,
@@ -159,6 +187,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
                 <p className="secondary-text break-words">
                   {t('info.meBalancesNftsDescription', {
                     context: selectedNftChainFilter,
+                    nativeChainName,
                   })}
                 </p>
               </div>
@@ -292,27 +321,4 @@ const nftSortOptions: TypedOption<
   //       ? -1
   //       : b.floorPrice.amount - a.floorPrice.amount,
   // },
-]
-
-const nftFilterOptions: (TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>> & {
-  id: string
-})[] = [
-  {
-    id: 'all',
-    label: 'Juno and Stargaze',
-    value: () => true,
-  },
-  {
-    id: 'juno',
-    label: 'Only Juno',
-    value: (nft) =>
-      nft.chainId === ChainInfoID.Juno1 || nft.chainId === ChainInfoID.Uni6,
-  },
-  {
-    id: 'stargaze',
-    label: 'Only Stargaze',
-    value: (nft) =>
-      nft.chainId === ChainInfoID.Stargaze1 ||
-      nft.chainId === STARGAZE_TESTNET_CHAIN_ID,
-  },
 ]

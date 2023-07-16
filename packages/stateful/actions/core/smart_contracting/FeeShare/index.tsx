@@ -1,6 +1,7 @@
 import { useCallback, useMemo } from 'react'
 
 import { GasEmoji } from '@dao-dao/stateless'
+import { ChainId } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionKey,
@@ -33,7 +34,16 @@ const Component: ActionComponent = (props) => (
 export const makeFeeShareAction: ActionMaker<FeeShareData> = ({
   t,
   address,
+  chain,
 }) => {
+  // Only supported on Juno.
+  if (
+    chain.chain_id !== ChainId.JunoMainnet &&
+    chain.chain_id !== ChainId.JunoTestnet
+  ) {
+    return null
+  }
+
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<FeeShareData> = (
     msg: Record<string, any>
   ) =>

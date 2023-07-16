@@ -29,12 +29,11 @@ import {
   LoadingData,
 } from '@dao-dao/types'
 import {
-  NATIVE_DECIMALS,
   convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
+  makeValidateAddress,
   makeValidateDate,
-  validateAddress,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
@@ -65,7 +64,11 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   options: { tokens, vestingFactoryOwner, AddressInput },
 }) => {
   const { t } = useTranslation()
-  const { address, context } = useActionOptions()
+  const {
+    context,
+    address,
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
 
   const { register, watch, setValue } = useFormContext()
 
@@ -89,7 +92,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   const selectedToken = tokens.find(
     ({ token: { denomOrAddress } }) => denomOrAddress === watchDenomOrAddress
   )
-  const selectedDecimals = selectedToken?.token.decimals ?? NATIVE_DECIMALS
+  const selectedDecimals = selectedToken?.token.decimals ?? 0
   const selectedMicroBalance = selectedToken?.balance ?? 0
   const selectedBalance = convertMicroDenomToDenomWithDecimals(
     selectedMicroBalance,
@@ -181,7 +184,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
               error={errors?.recipient}
               fieldName={fieldNamePrefix + 'recipient'}
               register={register}
-              validation={[validateRequired, validateAddress]}
+              validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
             />
           </div>
         </div>

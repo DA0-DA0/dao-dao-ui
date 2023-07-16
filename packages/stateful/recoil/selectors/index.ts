@@ -1,5 +1,6 @@
 export * from './dao'
 
+export * from './entity'
 export * from './nft'
 export * from './profile'
 export * from './token'

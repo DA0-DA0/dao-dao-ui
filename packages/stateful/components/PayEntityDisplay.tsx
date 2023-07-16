@@ -5,6 +5,7 @@ import {
   Loader,
   PayEntityDisplay as StatelessPayEntityDisplay,
   useCachedLoading,
+  useChain,
 } from '@dao-dao/stateless'
 import { StatefulPayEntityDisplayProps, TokenType } from '@dao-dao/types'
 
@@ -14,7 +15,7 @@ export const PayEntityDisplay = ({
   coins,
   ...props
 }: StatefulPayEntityDisplayProps) => {
-  // TODO: get chainId from useChain
+  const { chain_id: chainId } = useChain()
 
   const tokenBalances = useCachedLoading(
     waitForAll(
@@ -23,6 +24,7 @@ export const PayEntityDisplay = ({
           type: TokenType.Native,
           denomOrAddress: denom,
           walletAddress: props.recipient,
+          chainId,
         })
       )
     ),

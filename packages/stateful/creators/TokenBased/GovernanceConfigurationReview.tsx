@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next'
-import { useRecoilValueLoadable } from 'recoil'
+import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
@@ -9,6 +9,7 @@ import {
   Loader,
   TierDataEntry,
   VOTING_POWER_DISTRIBUTION_COLORS,
+  useChain,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
 import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
@@ -27,13 +28,17 @@ export const GovernanceConfigurationReview = ({
   },
 }: DaoCreationGovernanceConfigReviewProps<CreatorData>) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
   const treasuryColor = `rgba(${useNamedThemeColor('light')}, 0.45)`
 
   const tokenLoadable = useRecoilValueLoadable(
-    genericTokenSelector({
-      type: existingTokenType,
-      denomOrAddress: existingTokenDenomOrAddress,
-    })
+    tokenType === GovernanceTokenType.Existing && existingTokenDenomOrAddress
+      ? genericTokenSelector({
+          chainId,
+          type: existingTokenType,
+          denomOrAddress: existingTokenDenomOrAddress,
+        })
+      : constSelector(undefined)
   )
 
   // If existing token, just display the token info again since there are no

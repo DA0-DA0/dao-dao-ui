@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
 import { searchDaosSelector } from '@dao-dao/state/recoil'
-import { useCachedLoadable } from '@dao-dao/stateless'
+import { useCachedLoadable, useChain } from '@dao-dao/stateless'
 import {
   CommandModalContextSection,
   CommandModalContextSectionItem,
@@ -30,12 +30,14 @@ export const useFollowingAndFilteredDaosSections = ({
 }: UseFilteredDaosSectionOptions): CommandModalContextSection[] => {
   const { t } = useTranslation()
 
+  const { chain_id: chainId } = useChain()
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
   const followingDaosLoading = useLoadingFollowingDaoCardInfos()
 
   const queryResults = useCachedLoadable(
     options.filter
       ? searchDaosSelector({
+          chainId,
           query: options.filter,
           limit,
           // Exclude following DAOs from search since they show in a separate

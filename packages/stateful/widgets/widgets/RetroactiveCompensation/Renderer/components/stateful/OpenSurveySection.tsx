@@ -3,7 +3,11 @@ import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { useDaoInfoContext, useDaoNavHelpers } from '@dao-dao/stateless'
+import {
+  useChain,
+  useDaoInfoContext,
+  useDaoNavHelpers,
+} from '@dao-dao/stateless'
 import { CosmosMsgFor_Empty } from '@dao-dao/types'
 import {
   makeBankMessage,
@@ -36,7 +40,8 @@ export const OpenSurveySection = ({
   status,
 }: StatefulOpenSurveySectionProps) => {
   const { t } = useTranslation()
-  const { coreAddress, chainId, bech32Prefix } = useDaoInfoContext()
+  const { coreAddress } = useDaoInfoContext()
+  const { bech32_prefix: bech32Prefix } = useChain()
   const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
 
   // Show contribution form if `submit` subpath is present and the currently
@@ -64,7 +69,6 @@ export const OpenSurveySection = ({
   // this wallet has.
   const { isMember = false } = useMembership({
     coreAddress,
-    chainId,
     blockHeight: status.survey.createdAtBlockHeight,
   })
 

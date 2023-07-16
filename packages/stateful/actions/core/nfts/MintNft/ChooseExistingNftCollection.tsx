@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 import { useRecoilCallback } from 'recoil'
 
 import { Cw721BaseSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
@@ -11,7 +12,12 @@ import { useActionOptions } from '../../../react'
 import { ChooseExistingNftCollection as StatelessChooseExistingNftCollection } from './stateless/ChooseExistingNftCollection'
 
 export const ChooseExistingNftCollection: ActionComponent = (props) => {
-  const { context, address, chainId, t } = useActionOptions()
+  const { t } = useTranslation()
+  const {
+    context,
+    address,
+    chain: { chain_id: chainId },
+  } = useActionOptions()
   const { watch, setValue, setError, clearErrors, trigger } = useFormContext()
 
   const collectionAddress: string | undefined = watch(

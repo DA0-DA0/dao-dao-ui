@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { MintData } from '.'
 import { MintComponent } from './MintComponent'
@@ -30,6 +31,7 @@ Default.args = {
   isCreating: true,
   options: {
     govToken: {
+      chainId: CHAIN_ID,
       type: TokenType.Native,
       denomOrAddress: 'factory/wallet/subdenom',
       symbol: 'DENOM',

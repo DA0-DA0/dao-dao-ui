@@ -14,7 +14,7 @@ export interface ContextPillProps {
 export const ContextPill = ({ imageUrl, name, onClose }: ContextPillProps) => (
   <div
     className={clsx(
-      'animate-fadein flex shrink-0 flex-row items-center gap-1.5 rounded-full bg-component-badge-primary p-1',
+      'flex shrink-0 animate-fade-in flex-row items-center gap-1.5 rounded-full bg-component-badge-primary p-1',
       !imageUrl && 'pl-2',
       !onClose && 'pr-2'
     )}

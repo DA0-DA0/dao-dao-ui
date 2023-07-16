@@ -16,6 +16,7 @@ import {
   TotalStakedAtHeightResponse,
   TotalValueResponse,
 } from '@dao-dao/types/contracts/Cw20Stake'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
 export interface Cw20StakeReadOnlyInterface {
   contractAddress: string
@@ -244,7 +245,7 @@ export class Cw20StakeClient
       msg: Binary
       sender: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -269,7 +270,7 @@ export class Cw20StakeClient
     }: {
       amount: Uint128
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -287,7 +288,7 @@ export class Cw20StakeClient
     )
   }
   claim = async (
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -312,7 +313,7 @@ export class Cw20StakeClient
       manager?: string
       owner?: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -337,7 +338,7 @@ export class Cw20StakeClient
     }: {
       addr: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -360,7 +361,7 @@ export class Cw20StakeClient
     }: {
       addr: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

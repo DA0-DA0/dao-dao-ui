@@ -20,6 +20,7 @@ export const useLoadingDepositInfo = (): LoadingData<
   const {
     proposalModule: { address, version, preProposeAddress },
     proposalNumber,
+    chain: { chain_id: chainId },
   } = useProposalModuleAdapterOptions()
 
   const selectorValue = useCachedLoadable<
@@ -28,6 +29,7 @@ export const useLoadingDepositInfo = (): LoadingData<
     //! V1
     version === ContractVersion.V1
       ? proposalV1Selector({
+          chainId,
           contractAddress: address,
           params: [
             {
@@ -38,6 +40,7 @@ export const useLoadingDepositInfo = (): LoadingData<
       : //! V2
       preProposeAddress
       ? depositInfoV2Selector({
+          chainId,
           contractAddress: preProposeAddress,
           params: [
             {

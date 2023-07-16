@@ -24,7 +24,7 @@ import { WidgetEditorProps } from '@dao-dao/types'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
   isValidContractAddress,
-  validateContractAddress,
+  makeValidateContractAddress,
   validateJSON,
   validateRequired,
 } from '@dao-dao/utils'
@@ -38,7 +38,10 @@ export const MintNftEditor = ({
   errors,
 }: WidgetEditorProps<MintNftData>) => {
   const { t } = useTranslation()
-  const { address, chainId, bech32Prefix } = useActionOptions()
+  const {
+    address,
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  } = useActionOptions()
 
   const { watch, setValue, register, control } = useFormContext<MintNftData>()
   const tokenAddress = watch(
@@ -127,7 +130,7 @@ export const MintNftEditor = ({
             type="contract"
             validation={[
               validateRequired,
-              validateContractAddress,
+              makeValidateContractAddress(bech32Prefix),
               // Invalidate field if not a valid token contract.
               () =>
                 tokenInfoLoadable.state !== 'hasError' ||
@@ -162,7 +165,10 @@ export const MintNftEditor = ({
           fieldName={(fieldNamePrefix + 'mint.contract') as 'mint.contract'}
           register={register}
           type="contract"
-          validation={[validateRequired, validateContractAddress]}
+          validation={[
+            validateRequired,
+            makeValidateContractAddress(bech32Prefix),
+          ]}
         />
         <InputErrorMessage error={errors?.mint?.contract} />
       </div>

@@ -1,6 +1,4 @@
-import { ChainInfoID } from '@noahsaso/cosmodal'
-
-import { Widget } from '@dao-dao/types'
+import { ChainId, Widget } from '@dao-dao/types'
 import { CHAIN_ID } from '@dao-dao/utils'
 
 import {
@@ -19,7 +17,7 @@ export const getWidgets = (): readonly Widget[] => [
   PressWidget,
 
   // WYND only available on Juno mainnet.
-  ...(CHAIN_ID === ChainInfoID.Juno1 ? [WyndDepositWidget] : []),
+  ...(CHAIN_ID === ChainId.JunoMainnet ? [WyndDepositWidget] : []),
 ]
 
 export const getWidgetById = (id: string) =>

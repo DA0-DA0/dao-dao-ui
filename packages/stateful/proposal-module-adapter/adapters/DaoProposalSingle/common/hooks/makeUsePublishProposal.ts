@@ -13,7 +13,11 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { ContractVersion } from '@dao-dao/types'
-import { expirationExpired, processError } from '@dao-dao/utils'
+import {
+  CHAIN_GAS_MULTIPLIER,
+  expirationExpired,
+  processError,
+} from '@dao-dao/utils'
 
 import {
   Cw20BaseHooks,
@@ -34,7 +38,11 @@ import { anyoneCanProposeSelector } from '../selectors'
 
 export const makeUsePublishProposal =
   ({
-    options: { chainId, coreAddress, proposalModule },
+    options: {
+      chain: { chain_id: chainId },
+      coreAddress,
+      proposalModule,
+    },
     depositInfoSelector,
   }: MakeUsePublishProposalOptions): UsePublishProposal =>
   () => {
@@ -42,7 +50,6 @@ export const makeUsePublishProposal =
     const { connected, address: walletAddress } = useWallet()
     const { isMember = false } = useMembership({
       coreAddress,
-      chainId,
     })
 
     const anyoneCanPropose = useRecoilValue(
@@ -62,7 +69,11 @@ export const makeUsePublishProposal =
         ? depositInfo.denom.native
         : undefined
 
-    const blockHeightLoadable = useCachedLoadable(blockHeightSelector({}))
+    const blockHeightLoadable = useCachedLoadable(
+      blockHeightSelector({
+        chainId,
+      })
+    )
     const blockHeight =
       blockHeightLoadable.state === 'hasValue'
         ? blockHeightLoadable.contents
@@ -74,6 +85,7 @@ export const makeUsePublishProposal =
     const cw20DepositTokenAllowanceResponseLoadable = useCachedLoadable(
       depositInfoCw20TokenAddress && requiredProposalDeposit && walletAddress
         ? Cw20BaseSelectors.allowanceSelector({
+            chainId,
             contractAddress: depositInfoCw20TokenAddress,
             params: [
               {
@@ -95,6 +107,7 @@ export const makeUsePublishProposal =
     const cw20DepositTokenBalanceLoadable = useCachedLoadable(
       requiredProposalDeposit && walletAddress && depositInfoCw20TokenAddress
         ? Cw20BaseSelectors.balanceSelector({
+            chainId,
             contractAddress: depositInfoCw20TokenAddress,
             params: [{ address: walletAddress }],
           })
@@ -108,6 +121,7 @@ export const makeUsePublishProposal =
     const nativeDepositTokenBalanceLoadable = useCachedLoadable(
       requiredProposalDeposit && walletAddress && depositInfoNativeTokenDenom
         ? nativeDenomBalanceSelector({
+            chainId,
             walletAddress,
             denom: depositInfoNativeTokenDenom,
           })
@@ -158,11 +172,7 @@ export const makeUsePublishProposal =
     })
 
     const awaitNextBlock = useAwaitNextBlock()
-
-    const simulateMsgs = useSimulateCosmosMsgs({
-      senderAddress: coreAddress,
-      chainId,
-    })
+    const simulateMsgs = useSimulateCosmosMsgs(coreAddress)
 
     // If simulation fails and `failedSimulationBypassDuration` is defined,
     // allow bypassing for a period of time by setting this to a date in the
@@ -289,7 +299,7 @@ export const makeUsePublishProposal =
         if (proposalModule.version === ContractVersion.V1) {
           response = await doProposeV1(
             proposalData,
-            'auto',
+            CHAIN_GAS_MULTIPLIER,
             undefined,
             proposeFunds
           )
@@ -302,11 +312,16 @@ export const makeUsePublishProposal =
                     propose: proposalData,
                   },
                 },
-                'auto',
+                CHAIN_GAS_MULTIPLIER,
                 undefined,
                 proposeFunds
               )
-            : await doProposeV2(proposalData, 'auto', undefined, proposeFunds)
+            : await doProposeV2(
+                proposalData,
+                CHAIN_GAS_MULTIPLIER,
+                undefined,
+                proposeFunds
+              )
         }
 
         if (proposeFunds?.length) {

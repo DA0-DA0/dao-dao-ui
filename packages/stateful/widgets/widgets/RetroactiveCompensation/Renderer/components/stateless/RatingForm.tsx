@@ -11,6 +11,7 @@ import {
   MarkdownRenderer,
   RangeInput,
   TokenAmountDisplay,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
@@ -20,7 +21,7 @@ import {
 import {
   convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
-  validateAddress,
+  makeValidateAddress,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -70,6 +71,7 @@ export const RatingForm = ({
   loadingNominate,
 }: RatingFormProps) => {
   const { t } = useTranslation()
+  const { bech32_prefix: bech32Prefix } = useChain()
 
   const { watch, setValue, handleSubmit, reset } = useForm<RatingsFormData>({
     defaultValues: {
@@ -345,7 +347,7 @@ export const RatingForm = ({
               fieldName="contributor"
               register={nominationRegister}
               setValue={nominationSetValue}
-              validation={[validateRequired, validateAddress]}
+              validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
               watch={nominationWatch}
             />
             <InputErrorMessage error={nominationErrors?.contributor} />

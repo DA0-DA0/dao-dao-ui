@@ -26,13 +26,15 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_TOKEN,
   convertMicroDenomToDenomWithDecimals,
-  ibcAssets,
-  validateAddress,
+  getIbcAssets,
+  getNativeTokenForChainId,
+  makeValidateAddress,
   validateJSON,
   validateRequired,
 } from '@dao-dao/utils'
+
+import { useActionOptions } from '../../../react'
 
 export type GovernanceProposalOptions = {
   minDeposits: LoadingData<GenericTokenBalance[]>
@@ -75,6 +77,9 @@ export const GovernanceProposalComponent: ActionComponent<
   const { register, setValue, watch, control } =
     useFormContext<GovernanceProposalData>()
 
+  const { chain } = useActionOptions()
+  const nativeToken = getNativeTokenForChainId(chain.chain_id)
+
   const selectedMinDepositToken = minDeposits.loading
     ? undefined
     : minDeposits.data.find(
@@ -92,11 +97,9 @@ export const GovernanceProposalComponent: ActionComponent<
 
   const availableTokens: GenericToken[] = [
     // First native.
-    {
-      ...NATIVE_TOKEN,
-    },
+    nativeToken,
     // Then the IBC assets.
-    ...ibcAssets,
+    ...getIbcAssets(),
   ]
 
   return (
@@ -200,7 +203,10 @@ export const GovernanceProposalComponent: ActionComponent<
                     (fieldNamePrefix + 'spendRecipient') as 'spendRecipient'
                   }
                   register={register}
-                  validation={[validateRequired, validateAddress]}
+                  validation={[
+                    validateRequired,
+                    makeValidateAddress(chain.bech32_prefix),
+                  ]}
                 />
                 <InputErrorMessage error={errors?.spendRecipient} />
               </div>
@@ -211,7 +217,11 @@ export const GovernanceProposalComponent: ActionComponent<
                 <div className="flex flex-row flex-wrap items-end justify-between gap-6">
                   <div className="flex grow flex-col gap-1">
                     <div className="flex flex-col items-stretch gap-2">
-                      {spendFields.map(({ id, denom }, index) => {
+                      {spendFields.map(({ id }, index) => {
+                        const denom = watch(
+                          (fieldNamePrefix +
+                            `spends.${index}.denom`) as `spends.${number}.denom`
+                        )
                         const selectedToken = availableTokens.find(
                           ({ denomOrAddress }) => denomOrAddress === denom
                         )
@@ -265,7 +275,7 @@ export const GovernanceProposalComponent: ActionComponent<
                           onClick={() =>
                             appendSpend({
                               amount: 1,
-                              denom: NATIVE_TOKEN.denomOrAddress,
+                              denom: nativeToken.denomOrAddress,
                             })
                           }
                           variant="secondary"

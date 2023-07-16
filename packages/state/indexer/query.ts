@@ -1,21 +1,49 @@
 import { IndexerFormulaType, WithChainId } from '@dao-dao/types'
-import { CHAIN_ID, INDEXER_URL, fetchWithTimeout } from '@dao-dao/utils'
+import {
+  CommonError,
+  INDEXER_DISABLED,
+  INDEXER_URL,
+  fetchWithTimeout,
+} from '@dao-dao/utils'
 
-export type QueryIndexerOptions = WithChainId<{
-  args?: Record<string, any>
-  block?: {
-    height: number | string
-    // Most formulas do not need the time, so make it optional.
-    timeUnixMs?: number | string
+export type QueryIndexerOptions = WithChainId<
+  {
+    formula: string
+    args?: Record<string, any>
+    block?: {
+      height: number | string
+      // Most formulas do not need the time, so make it optional.
+      timeUnixMs?: number | string
+    }
+    // If true, ignores indexer disabled setting. This should be used by
+    // features that require the indexer. Most indexer queries are not required
+    // as they can fallback to the RPC.
+    required?: boolean
+  } & (
+    | {
+        type: `${IndexerFormulaType.Generic}`
+        address?: never
+      }
+    | {
+        type: `${Exclude<IndexerFormulaType, IndexerFormulaType.Generic>}`
+        address: string
+      }
+  )
+>
+
+export const queryIndexer = async <T = any>({
+  type,
+  address = '_',
+  formula,
+  args,
+  block,
+  chainId,
+  required = false,
+}: QueryIndexerOptions): Promise<T | undefined> => {
+  if (!required && INDEXER_DISABLED) {
+    throw new Error(CommonError.IndexerDisabled)
   }
-}>
 
-export const queryIndexer = async <T = any>(
-  type: `${IndexerFormulaType}`,
-  address: string,
-  formula: string,
-  { args, block, chainId = CHAIN_ID }: QueryIndexerOptions = {}
-): Promise<T | undefined> => {
   // Filter out undefined args.
   if (args) {
     args = Object.entries(args).reduce((acc, [key, value]) => {

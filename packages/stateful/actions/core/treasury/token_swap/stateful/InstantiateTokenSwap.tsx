@@ -2,6 +2,7 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
+import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { genericTokenBalancesSelector } from '@dao-dao/state'
@@ -10,11 +11,11 @@ import { Loader, useCachedLoading } from '@dao-dao/stateless'
 import { ActionComponent, TokenType } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
-  CHAIN_BECH32_PREFIX,
+  CHAIN_GAS_MULTIPLIER,
   CODE_ID_CONFIG,
-  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
-  isValidAddress,
+  getNativeTokenForChainId,
+  isValidBech32Address,
   isValidContractAddress,
   processError,
 } from '@dao-dao/utils'
@@ -29,7 +30,9 @@ export const InstantiateTokenSwap: ActionComponent<
   undefined,
   PerformTokenSwapData
 > = (props) => {
-  const { address: selfAddress, t } = useActionOptions()
+  const { t } = useTranslation()
+  const { address: selfAddress } = useActionOptions()
+
   const { setValue } = useFormContext()
   const { address: walletAddress, signingCosmWasmClient } = useWallet()
 
@@ -106,7 +109,7 @@ export const InstantiateTokenSwap: ActionComponent<
         CODE_ID_CONFIG.CwTokenSwap,
         instantiateMsg,
         'Token Swap',
-        'auto'
+        CHAIN_GAS_MULTIPLIER
       )
 
       // Update action form data with address.
@@ -158,7 +161,11 @@ export const InstantiateTokenSwap: ActionComponent<
 const InnerInstantiateTokenSwap: ActionComponent<
   Omit<InstantiateTokenSwapOptions, 'counterpartyTokenBalances'>
 > = (props) => {
-  const { chainId } = useActionOptions()
+  const {
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  } = useActionOptions()
+  const nativeToken = getNativeTokenForChainId(chainId)
+
   const { resetField, watch } = useFormContext()
 
   // Only set defaults once.
@@ -182,20 +189,20 @@ const InnerInstantiateTokenSwap: ActionComponent<
         type: selfPartyDefaultCw20 ? TokenType.Cw20 : TokenType.Native,
         denomOrAddress: selfPartyDefaultCw20
           ? selfPartyDefaultCw20.token.denomOrAddress
-          : NATIVE_TOKEN.denomOrAddress,
+          : nativeToken.denomOrAddress,
         amount: 0,
         decimals: selfPartyDefaultCw20
           ? selfPartyDefaultCw20.token.decimals
-          : NATIVE_TOKEN.decimals,
+          : nativeToken.decimals,
       },
     })
     resetField(props.fieldNamePrefix + 'counterparty', {
       defaultValue: {
         address: '',
         type: 'native',
-        denomOrAddress: NATIVE_TOKEN.denomOrAddress,
+        denomOrAddress: nativeToken.denomOrAddress,
         amount: 0,
-        decimals: NATIVE_TOKEN.decimals,
+        decimals: nativeToken.decimals,
       },
     })
 
@@ -211,7 +218,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
   // Try to retrieve governance token address, failing if not a cw20-based DAO.
   const counterpartyDaoGovernanceTokenAddressLoadable = useRecoilValueLoadable(
     counterpartyAddress &&
-      isValidContractAddress(counterpartyAddress, CHAIN_BECH32_PREFIX)
+      isValidContractAddress(counterpartyAddress, bech32Prefix)
       ? DaoCoreV2Selectors.tryFetchGovernanceTokenAddressSelector({
           contractAddress: counterpartyAddress,
           chainId,
@@ -222,7 +229,7 @@ const InnerInstantiateTokenSwap: ActionComponent<
   // Load balances as loadables since they refresh automatically on a timer.
   const counterpartyTokenBalances = useCachedLoading(
     counterpartyAddress &&
-      isValidAddress(counterpartyAddress, CHAIN_BECH32_PREFIX) &&
+      isValidBech32Address(counterpartyAddress, bech32Prefix) &&
       counterpartyDaoGovernanceTokenAddressLoadable.state !== 'loading'
       ? genericTokenBalancesSelector({
           address: counterpartyAddress,

@@ -6,27 +6,22 @@ import {
   StargateClient,
   decodeCosmosSdkDecFromProto,
 } from '@cosmjs/stargate'
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { cosmos, juno } from 'interchain-rpc'
 import { Metadata } from 'interchain-rpc/types/codegen/cosmos/bank/v1beta1/bank'
-import { DelegationDelegatorReward } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
 import {
   Proposal as GovProposal,
   WeightedVoteOption,
 } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
 import { QueryParamsResponse as GovQueryParamsResponse } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/query'
-import {
-  DelegationResponse,
-  UnbondingDelegation as RpcUnbondingDelegation,
-  Validator as RpcValidator,
-} from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
+import { Validator as RpcValidator } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import { osmosis } from 'juno-network'
 import Long from 'long'
 import { selector, selectorFamily, waitForAll } from 'recoil'
 
 import {
   AmountWithTimestamp,
+  ChainId,
   Delegation,
   GenericTokenBalance,
   GovProposalWithDecodedContent,
@@ -37,17 +32,16 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHAIN_BECH32_PREFIX,
   CHAIN_ID,
-  JUNO_USDC_DENOM,
   MAINNET,
-  NATIVE_TOKEN,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
   decodeGovProposal,
   getAllRpcResponse,
+  getNativeIbcUsdc,
+  getNativeTokenForChainId,
   getRpcForChainId,
-  isJunoIbcUsdc,
+  isNativeIbcUsdc,
   stargateClientRouter,
 } from '@dao-dao/utils'
 
@@ -101,7 +95,7 @@ export const junoRpcClientSelector = selector({
   get: async () =>
     (
       await juno.ClientFactory.createRPCQueryClient({
-        rpcEndpoint: getRpcForChainId(ChainInfoID.Juno1),
+        rpcEndpoint: getRpcForChainId(ChainId.JunoMainnet),
       })
     ).juno,
   dangerouslyAllowMutability: true,
@@ -177,19 +171,25 @@ export const nativeBalancesSelector = selectorFamily<
 
       const balances = [...(await client.getAllBalances(address))]
       // Add native denom if not present.
+      const nativeToken = getNativeTokenForChainId(chainId)
+      if (!balances.some(({ denom }) => denom === nativeToken.denomOrAddress)) {
+        balances.push({
+          amount: '0',
+          denom: nativeToken.denomOrAddress,
+        })
+      }
+
+      // Add USDC if not present, on mainnet, and on current chain.
+      const nativeIbcUsdcDenom = getNativeIbcUsdc()?.denomOrAddress
       if (
-        !balances.some(({ denom }) => denom === NATIVE_TOKEN.denomOrAddress)
+        MAINNET &&
+        chainId === CHAIN_ID &&
+        nativeIbcUsdcDenom &&
+        !balances.some(({ denom }) => isNativeIbcUsdc(denom))
       ) {
         balances.push({
           amount: '0',
-          denom: NATIVE_TOKEN.denomOrAddress,
-        })
-      }
-      // Add USDC if not present and on mainnet.
-      if (MAINNET && !balances.some(({ denom }) => isJunoIbcUsdc(denom))) {
-        balances.push({
-          amount: '0',
-          denom: JUNO_USDC_DENOM,
+          denom: nativeIbcUsdcDenom,
         })
       }
 
@@ -206,6 +206,7 @@ export const nativeBalancesSelector = selectorFamily<
       )
 
       return tokens.map((token, index) => ({
+        chainId,
         token,
         balance: balances[index].amount,
       }))
@@ -238,7 +239,10 @@ export const nativeBalanceSelector = selectorFamily<
 
       get(refreshWalletBalancesIdAtom(address))
 
-      return await client.getBalance(address, NATIVE_TOKEN.denomOrAddress)
+      return await client.getBalance(
+        address,
+        getNativeTokenForChainId(chainId).denomOrAddress
+      )
     },
 })
 
@@ -292,16 +296,12 @@ export const nativeDelegatedBalanceSelector = selectorFamily<
       get(refreshWalletBalancesIdAtom(address))
 
       const balance = await client.getBalanceStaked(address)
-
-      // Only allow native denom
-      if (!balance || balance.denom !== NATIVE_TOKEN.denomOrAddress) {
-        return {
+      return (
+        balance ?? {
           amount: '0',
-          denom: NATIVE_TOKEN.denomOrAddress,
+          denom: getNativeTokenForChainId(chainId).denomOrAddress,
         }
-      }
-
-      return balance
+      )
     },
 })
 
@@ -331,7 +331,7 @@ export const blocksPerYearSelector = selectorFamily<number, WithChainId<{}>>({
     ({ chainId }) =>
     async ({ get }) => {
       // If on juno mainnet or testnet, use juno RPC.
-      if (CHAIN_BECH32_PREFIX === 'juno') {
+      if (chainId === ChainId.JunoMainnet || chainId === ChainId.JunoTestnet) {
         const client = get(junoRpcClientSelector)
         return (await client.mint.params()).params.blocksPerYear.toNumber()
       }
@@ -521,7 +521,7 @@ export const validatorsSelector = selectorFamily<Validator[], WithChainId<{}>>({
 })
 
 export const nativeDelegationInfoSelector = selectorFamily<
-  NativeDelegationInfo | undefined,
+  NativeDelegationInfo,
   WithChainId<{ address: string }>
 >({
   key: 'nativeDelegationInfo',
@@ -532,41 +532,32 @@ export const nativeDelegationInfoSelector = selectorFamily<
 
       get(refreshNativeTokenStakingInfoAtom(delegatorAddr))
 
-      let delegations: DelegationResponse[]
-      let validators: RpcValidator[]
-      let rewards: DelegationDelegatorReward[]
-      let unbondingDelegations: RpcUnbondingDelegation[]
-      try {
-        delegations = await getAllRpcResponse(
-          client.staking.v1beta1.delegatorDelegations,
-          {
-            delegatorAddr,
-          },
-          'delegationResponses'
-        )
-        validators = await getAllRpcResponse(
-          client.staking.v1beta1.delegatorValidators,
-          {
-            delegatorAddr,
-          },
-          'validators'
-        )
-        rewards = (
-          await client.distribution.v1beta1.delegationTotalRewards({
-            delegatorAddress: delegatorAddr,
-          })
-        ).rewards
-        unbondingDelegations = await getAllRpcResponse(
-          client.staking.v1beta1.delegatorUnbondingDelegations,
-          {
-            delegatorAddr,
-          },
-          'unbondingResponses'
-        )
-      } catch (error) {
-        console.error(error)
-        return undefined
-      }
+      const delegations = await getAllRpcResponse(
+        client.staking.v1beta1.delegatorDelegations,
+        {
+          delegatorAddr,
+        },
+        'delegationResponses'
+      )
+      const validators = await getAllRpcResponse(
+        client.staking.v1beta1.delegatorValidators,
+        {
+          delegatorAddr,
+        },
+        'validators'
+      )
+      const rewards = (
+        await client.distribution.v1beta1.delegationTotalRewards({
+          delegatorAddress: delegatorAddr,
+        })
+      ).rewards
+      const unbondingDelegations = await getAllRpcResponse(
+        client.staking.v1beta1.delegatorUnbondingDelegations,
+        {
+          delegatorAddr,
+        },
+        'unbondingResponses'
+      )
 
       return {
         delegations: delegations
@@ -575,8 +566,10 @@ export const nativeDelegationInfoSelector = selectorFamily<
               delegation: { validatorAddress: address },
               balance: delegationBalance,
             }): Delegation | undefined => {
-              // Only allow NATIVE_TOKEN.denomOrAddress.
-              if (delegationBalance.denom !== NATIVE_TOKEN.denomOrAddress) {
+              if (
+                delegationBalance.denom !==
+                getNativeTokenForChainId(chainId).denomOrAddress
+              ) {
                 return
               }
 
@@ -586,7 +579,8 @@ export const nativeDelegationInfoSelector = selectorFamily<
               let pendingReward = rewards
                 .find(({ validatorAddress }) => validatorAddress === address)
                 ?.reward.find(
-                  ({ denom }) => denom === NATIVE_TOKEN.denomOrAddress
+                  ({ denom }) =>
+                    denom === getNativeTokenForChainId(chainId).denomOrAddress
                 )
 
               if (!validator || !pendingReward) {
@@ -632,7 +626,7 @@ export const nativeDelegationInfoSelector = selectorFamily<
                 validator,
                 balance: {
                   amount: balance,
-                  denom: NATIVE_TOKEN.denomOrAddress,
+                  denom: getNativeTokenForChainId(chainId).denomOrAddress,
                 },
                 startedAtHeight: creationHeight.toNumber(),
                 finishesAt: completionTime,
@@ -694,6 +688,7 @@ export type ValidatorSlash = {
   stakedTokensBurned: string
 }
 
+// TODO(indexer): Use TX events indexer for this instead.
 export const validatorSlashesSelector = selectorFamily<
   ValidatorSlash[],
   WithChainId<{ validatorOperatorAddress: string }>

@@ -5,25 +5,23 @@ import {
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
-import { NATIVE_TOKEN, getJunoIbcUsdc } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  getNativeIbcUsdc,
+  getNativeTokenForChainId,
+} from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
 import { WyndSwapComponent, WyndSwapData } from './Component'
-
-const usdc = getJunoIbcUsdc()
 
 export default {
   title: 'DAO DAO / packages / stateful / actions / core / treasury / WyndSwap',
   component: WyndSwapComponent,
   decorators: [
     makeReactHookFormDecorator<WyndSwapData>({
-      tokenIn: {
-        ...NATIVE_TOKEN,
-      },
+      tokenIn: getNativeTokenForChainId(CHAIN_ID),
       tokenInAmount: 0,
-      tokenOut: {
-        ...usdc,
-      },
+      tokenOut: getNativeIbcUsdc()!,
       tokenOutAmount: 0,
       minOutAmount: 0,
       swapOperations: undefined,

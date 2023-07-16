@@ -19,6 +19,7 @@ import {
   DiscordNotifierConfigureModal as StatelessDiscordNotifierConfigureModal,
   Tooltip,
   useCachedLoadable,
+  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { DaoTabId } from '@dao-dao/types'
@@ -36,7 +37,8 @@ import { ConnectWallet } from '../ConnectWallet'
 export const DiscordNotifierConfigureModal = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { chainId, coreAddress } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
+  const { coreAddress } = useDaoInfoContext()
   const { connected, publicKey } = useWallet()
 
   const [visible, setVisible] = useState(false)

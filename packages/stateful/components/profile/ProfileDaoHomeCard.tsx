@@ -16,6 +16,7 @@ import {
   ProfileNotMemberCard,
   useAppContext,
   useCachedLoadable,
+  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
@@ -23,6 +24,7 @@ import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 // This is the card shown when viewing a DAO's home page.
 export const ProfileDaoHomeCard = () => {
   const { connected } = useWallet()
+  const chain = useChain()
   const { walletProfileData, updateProfileName } = useWalletInfo()
   const { updateProfileNft } = useAppContext()
 
@@ -38,11 +40,11 @@ export const ProfileDaoHomeCard = () => {
       daoInfo.proposalModules.map(
         (proposalModule) =>
           matchAndLoadCommon(proposalModule, {
-            chainId: daoInfo.chainId,
+            chain,
             coreAddress: daoInfo.coreAddress,
           }).selectors.depositInfo
       ),
-    [daoInfo.chainId, daoInfo.coreAddress, daoInfo.proposalModules]
+    [chain, daoInfo.coreAddress, daoInfo.proposalModules]
   )
   const proposalModuleDepositInfosLoadable = useCachedLoadable(
     waitForAll(depositInfoSelectors)

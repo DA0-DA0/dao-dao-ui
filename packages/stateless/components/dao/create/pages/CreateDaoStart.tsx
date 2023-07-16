@@ -1,10 +1,12 @@
 import cloneDeep from 'lodash.clonedeep'
 import { useTranslation } from 'react-i18next'
 
-import { CreateDaoContext } from '@dao-dao/types'
+import { ChainId, CreateDaoContext } from '@dao-dao/types'
 import {
+  CHAIN_ID,
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
+  MembershipBasedCreatorId,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -99,6 +101,12 @@ export const CreateDaoStart = ({
               }
               selected={watch('creator.id') === id}
               supplies={t(suppliesI18nKey)}
+              underDevelopment={
+                // Osmosis only supports multisigs right now.
+                (CHAIN_ID === ChainId.OsmosisMainnet ||
+                  CHAIN_ID === ChainId.OsmosisTestnet) &&
+                id !== MembershipBasedCreatorId
+              }
             />
           )
         )}

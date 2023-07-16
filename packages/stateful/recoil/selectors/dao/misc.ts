@@ -1,9 +1,9 @@
-import { fromBech32 } from '@cosmjs/encoding'
 import { RecoilValueReadOnly, selectorFamily } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
   DaoVotingCw20StakedSelectors,
+  PolytoneProxySelectors,
   contractInstantiateTimeSelector,
   contractVersionSelector,
   queryContractIndexerSelector,
@@ -17,10 +17,11 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_ID,
-  CHAIN_PREFIX_ID_MAP,
   DaoVotingCw20StakedAdapterId,
+  getChainForChainId,
   isValidContractAddress,
 } from '@dao-dao/utils'
+import { PolytoneNotesPerChain } from '@dao-dao/utils/constants/polytone'
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
@@ -122,6 +123,7 @@ export const daoPotentialSubDaosSelector = selectorFamily<
           chainId,
           contractAddress: coreAddress,
           formula: 'daoCore/potentialSubDaos',
+          required: true,
         })
       )
 
@@ -144,25 +146,14 @@ export const daoPotentialSubDaosSelector = selectorFamily<
 })
 
 export const daoInfoSelector: (param: {
+  chainId: string
   coreAddress: string
   ignoreAdmins?: string[] | undefined
 }) => RecoilValueReadOnly<DaoInfo> = selectorFamily({
   key: 'daoInfo',
   get:
-    ({ coreAddress, ignoreAdmins }) =>
+    ({ chainId, coreAddress, ignoreAdmins }) =>
     ({ get }) => {
-      // Get chain for the DAO based on its address prefix.
-      const bech32Prefix = fromBech32(coreAddress).prefix
-
-      // If address prefix is not recognized, error. We'll retrieve the chain ID
-      // from the DAO's address prefix, so if the prefix is not recognized, we
-      // can't get the chain ID.
-      if (!(bech32Prefix in CHAIN_PREFIX_ID_MAP)) {
-        throw new Error(`DAO address prefix ${bech32Prefix} is not recognized.`)
-      }
-      const chainId =
-        CHAIN_PREFIX_ID_MAP[bech32Prefix as keyof typeof CHAIN_PREFIX_ID_MAP]
-
       const dumpState = get(
         DaoCoreV2Selectors.dumpStateSelector({
           contractAddress: coreAddress,
@@ -221,16 +212,27 @@ export const daoInfoSelector: (param: {
         {} as Record<string, string>
       )
 
+      const polytoneProxies = get(
+        DaoCoreV2Selectors.polytoneProxiesSelector({
+          contractAddress: coreAddress,
+          chainId,
+        })
+      )
+
       let parentDaoInfo
       let parentSubDaos
       if (
         dumpState.admin &&
         dumpState.admin !== coreAddress &&
-        isValidContractAddress(dumpState.admin, bech32Prefix) &&
+        isValidContractAddress(
+          dumpState.admin,
+          getChainForChainId(chainId).bech32_prefix
+        ) &&
         !ignoreAdmins?.includes(dumpState.admin)
       ) {
         parentDaoInfo = get(
           daoInfoSelector({
+            chainId,
             coreAddress: dumpState.admin,
             ignoreAdmins: [...(ignoreAdmins ?? []), coreAddress],
           })
@@ -248,8 +250,6 @@ export const daoInfoSelector: (param: {
       }
 
       return {
-        chainId,
-        bech32Prefix,
         coreAddress,
         coreVersion,
         votingModuleAddress: dumpState.voting_module,
@@ -260,6 +260,7 @@ export const daoInfoSelector: (param: {
         imageUrl: dumpState.config.image_url || null,
         created,
         items,
+        polytoneProxies,
         parentDao: parentDaoInfo
           ? {
               coreAddress: dumpState.admin,
@@ -272,6 +273,71 @@ export const daoInfoSelector: (param: {
             }
           : null,
         admin: dumpState.admin,
+      }
+    },
+})
+
+export const daoInfoFromPolytoneProxySelector = selectorFamily<
+  | {
+      chainId: string
+      coreAddress: string
+      info: DaoInfo
+    }
+  | undefined,
+  WithChainId<{ proxy: string }>
+>({
+  key: 'daoInfoFromPolytoneProxy',
+  get:
+    ({ proxy, chainId }) =>
+    ({ get }) => {
+      // Get voice for this proxy on destination chain.
+      const voice = get(
+        PolytoneProxySelectors.instantiatorSelector({
+          chainId,
+          contractAddress: proxy,
+          params: [],
+        })
+      )
+      if (!voice) {
+        return
+      }
+
+      // Get source DAO core address for this voice.
+      const coreAddress = get(
+        DaoCoreV2Selectors.coreAddressForPolytoneProxy({
+          chainId,
+          voice,
+          proxy,
+        })
+      )
+      if (!coreAddress) {
+        return
+      }
+
+      // Get source chain ID, where the note lives for this voice.
+      const srcChainId = Object.entries(PolytoneNotesPerChain).find(
+        ([, notes]) =>
+          Object.entries(notes).some(
+            ([destChainId, note]) =>
+              destChainId === chainId && note.voice === voice
+          )
+      )?.[0]
+      if (!srcChainId) {
+        return
+      }
+
+      // Get DAO info on source chain.
+      const info = get(
+        daoInfoSelector({
+          chainId: srcChainId,
+          coreAddress,
+        })
+      )
+
+      return {
+        chainId: srcChainId,
+        coreAddress,
+        info,
       }
     },
 })

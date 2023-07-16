@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { TokenType } from '@dao-dao/types'
-import { NATIVE_TOKEN } from '@dao-dao/utils'
+import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { AddressInput, EntityDisplay } from '../../../../../../components'
 import { makeSurvey } from './ContributionForm.stories'
@@ -60,6 +60,7 @@ Default.args = {
   tokenPrices: [
     {
       token: {
+        chainId: CHAIN_ID,
         type: TokenType.Cw20,
         denomOrAddress: 'dao',
         symbol: 'DAO',
@@ -70,9 +71,7 @@ Default.args = {
       timestamp: new Date(),
     },
     {
-      token: {
-        ...NATIVE_TOKEN,
-      },
+      token: getNativeTokenForChainId(CHAIN_ID),
       usdPrice: 1,
       timestamp: new Date(),
     },

@@ -17,6 +17,7 @@ import {
 } from '@dao-dao/stateless'
 import { BaseStakingModalProps } from '@dao-dao/types'
 import {
+  CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   processError,
@@ -50,8 +51,7 @@ const InnerStakingModal = ({
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 
   const {
-    governanceTokenAddress,
-    governanceTokenInfo,
+    token: governanceToken,
     loadingWalletBalance: loadingUnstakedBalance,
   } = useGovernanceTokenInfo({
     fetchWalletBalance: true,
@@ -114,14 +114,14 @@ const InnerStakingModal = ({
 
         try {
           await doStake(
-            'auto',
+            CHAIN_GAS_MULTIPLIER,
             undefined,
             coins(
               convertDenomToMicroDenomWithDecimals(
                 amount,
-                governanceTokenInfo.decimals
+                governanceToken.decimals
               ),
-              governanceTokenAddress
+              governanceToken.denomOrAddress
             )
           )
 
@@ -135,8 +135,8 @@ const InnerStakingModal = ({
           setAmount(0)
           toast.success(
             `Staked ${amount.toLocaleString(undefined, {
-              maximumFractionDigits: governanceTokenInfo.decimals,
-            })} $${governanceTokenInfo.symbol}`
+              maximumFractionDigits: governanceToken.decimals,
+            })} $${governanceToken.symbol}`
           )
 
           // Close once done.
@@ -157,7 +157,7 @@ const InnerStakingModal = ({
           await doUnstake({
             amount: convertDenomToMicroDenomWithDecimals(
               amount,
-              governanceTokenInfo.decimals
+              governanceToken.decimals
             ).toString(),
           })
 
@@ -172,8 +172,8 @@ const InnerStakingModal = ({
           setAmount(0)
           toast.success(
             `Unstaked ${amount.toLocaleString(undefined, {
-              maximumFractionDigits: governanceTokenInfo.decimals,
-            })} $${governanceTokenInfo.symbol}`
+              maximumFractionDigits: governanceToken.decimals,
+            })} $${governanceToken.symbol}`
           )
 
           // Close once done.
@@ -208,10 +208,10 @@ const InnerStakingModal = ({
           toast.success(
             `Claimed ${convertMicroDenomToDenomWithDecimals(
               sumClaimsAvailable,
-              governanceTokenInfo.decimals
+              governanceToken.decimals
             ).toLocaleString(undefined, {
-              maximumFractionDigits: governanceTokenInfo.decimals,
-            })} $${governanceTokenInfo.symbol}`
+              maximumFractionDigits: governanceToken.decimals,
+            })} $${governanceToken.symbol}`
           )
 
           // Close once done.
@@ -244,7 +244,7 @@ const InnerStakingModal = ({
               loading: false,
               data: convertMicroDenomToDenomWithDecimals(
                 loadingUnstakedBalance.data,
-                governanceTokenInfo.decimals
+                governanceToken.decimals
               ),
             }
       }
@@ -255,7 +255,7 @@ const InnerStakingModal = ({
               loading: false,
               data: convertMicroDenomToDenomWithDecimals(
                 loadingWalletStakedValue.data,
-                governanceTokenInfo.decimals
+                governanceToken.decimals
               ),
             }
       }
@@ -265,14 +265,12 @@ const InnerStakingModal = ({
         maxDeposit
           ? convertMicroDenomToDenomWithDecimals(
               maxDeposit,
-              governanceTokenInfo.decimals
+              governanceToken.decimals
             )
           : undefined
       }
       setAmount={(newAmount) => setAmount(newAmount)}
-      tokenDecimals={governanceTokenInfo.decimals}
-      tokenDenom={governanceTokenAddress}
-      tokenSymbol={governanceTokenInfo.symbol}
+      token={governanceToken}
       unstakingDuration={unstakingDuration ?? null}
     />
   )

@@ -1,12 +1,12 @@
 /* eslint-disable @next/next/no-img-element */
 import { Image, WarningRounded } from '@mui/icons-material'
-import { ChainInfoID } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { ReactNode, useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ChainId,
   FilterFn,
   LoadingDataWithError,
   ModalProps,
@@ -14,11 +14,12 @@ import {
   SortFn,
   TypedOption,
 } from '@dao-dao/types'
-import { STARGAZE_TESTNET_CHAIN_ID } from '@dao-dao/utils'
+import { getDisplayNameForChainId } from '@dao-dao/utils'
 
 import {
   useButtonPopupFilter,
   useButtonPopupSorter,
+  useChain,
   useSearchFilter,
 } from '../../hooks'
 import { Button } from '../buttons/Button'
@@ -74,6 +75,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   ...modalProps
 }: NftSelectionModalProps<T>) => {
   const { t } = useTranslation()
+  const chain = useChain()
 
   const showSelectAll =
     (onSelectAll || onDeselectAll) &&
@@ -105,6 +107,27 @@ export const NftSelectionModal = <T extends NftCardInfo>({
         24,
     })
   }, [nfts, firstSelectedRef, scrolledToFirst])
+
+  const filterOptions = useMemo(
+    () =>
+      [
+        {
+          label: `${getDisplayNameForChainId(chain.chain_id)} and Stargaze`,
+          value: () => true,
+        },
+        {
+          label: `Only ${getDisplayNameForChainId(chain.chain_id)}`,
+          value: (nft) => nft.chainId === chain.chain_id,
+        },
+        {
+          label: 'Only Stargaze',
+          value: (nft) =>
+            nft.chainId === ChainId.StargazeMainnet ||
+            nft.chainId === ChainId.StargazeTestnet,
+        },
+      ] as TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>>[],
+    [chain.chain_id]
+  )
 
   const {
     filteredData: filteredNfts,
@@ -282,22 +305,4 @@ const FILTERABLE_KEYS: Fuse.FuseOptionKey<NftCardInfo>[] = [
   'name',
   'description',
   'collection.address',
-]
-
-const filterOptions: TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>>[] = [
-  {
-    label: 'Juno and Stargaze',
-    value: () => true,
-  },
-  {
-    label: 'Only Juno',
-    value: (nft) =>
-      nft.chainId === ChainInfoID.Juno1 || nft.chainId === ChainInfoID.Uni6,
-  },
-  {
-    label: 'Only Stargaze',
-    value: (nft) =>
-      nft.chainId === ChainInfoID.Stargaze1 ||
-      nft.chainId === STARGAZE_TESTNET_CHAIN_ID,
-  },
 ]

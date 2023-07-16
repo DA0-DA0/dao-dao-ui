@@ -12,6 +12,7 @@ import {
 import {
   Loader,
   useCachedLoadable,
+  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
@@ -38,7 +39,8 @@ interface RatingFormProps {
 
 export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
   const { t } = useTranslation()
-  const { coreAddress, chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
+  const { coreAddress } = useDaoInfoContext()
   const { publicKey: walletPublicKey } = useWallet()
 
   const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))
@@ -85,12 +87,14 @@ export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
             ({ nativeTokens, cw20Tokens }) => [
               ...nativeTokens.map(({ denom }) =>
                 genericTokenWithUsdPriceSelector({
+                  chainId,
                   type: TokenType.Native,
                   denomOrAddress: denom,
                 })
               ),
               ...cw20Tokens.map(({ address }) =>
                 genericTokenWithUsdPriceSelector({
+                  chainId,
                   type: TokenType.Cw20,
                   denomOrAddress: address,
                 })

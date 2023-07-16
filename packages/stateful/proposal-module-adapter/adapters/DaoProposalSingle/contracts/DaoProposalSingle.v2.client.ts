@@ -29,6 +29,7 @@ import {
   ReverseProposalsResponse,
   VoteHooksResponse,
 } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
+import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 export interface DaoProposalSingleV2ReadOnlyInterface {
   contractAddress: string
   config: () => Promise<ConfigResponse>
@@ -370,7 +371,7 @@ export class DaoProposalSingleV2Client
       proposer?: string
       title: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -398,7 +399,7 @@ export class DaoProposalSingleV2Client
       proposalId: number
       vote: Vote
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -422,7 +423,7 @@ export class DaoProposalSingleV2Client
     }: {
       proposalId: number
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -445,7 +446,7 @@ export class DaoProposalSingleV2Client
     }: {
       proposalId: number
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -480,7 +481,7 @@ export class DaoProposalSingleV2Client
       onlyMembersExecute: boolean
       threshold: Threshold
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -509,7 +510,7 @@ export class DaoProposalSingleV2Client
     }: {
       info: PreProposeInfo
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -532,7 +533,7 @@ export class DaoProposalSingleV2Client
     }: {
       address: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -555,7 +556,7 @@ export class DaoProposalSingleV2Client
     }: {
       address: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -578,7 +579,7 @@ export class DaoProposalSingleV2Client
     }: {
       address: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {
@@ -601,7 +602,7 @@ export class DaoProposalSingleV2Client
     }: {
       address: string
     },
-    fee: number | StdFee | 'auto' = 'auto',
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
     memo?: string,
     funds?: Coin[]
   ): Promise<ExecuteResult> => {

@@ -11,31 +11,35 @@ import {
   InboxSourceItem,
   WithChainId,
 } from '@dao-dao/types'
-import {
-  CHAIN_ID,
-  convertExpirationToDate,
-  getDaoProposalPath,
-} from '@dao-dao/utils'
+import { convertExpirationToDate, getDaoProposalPath } from '@dao-dao/utils'
 
 import { ProposalLineProps } from '../../../components/ProposalLine'
 import { followingDaosWithProposalModulesSelector } from '../../../recoil'
 
 export const inboxOpenProposalsSelector = selectorFamily<
   InboxSourceDaoWithItems[],
-  WithChainId<{ walletAddress?: string }>
+  WithChainId<{ wallet?: { address: string; hexPublicKey: string } }>
 >({
   key: 'inboxOpenProposals',
   get:
-    ({ walletAddress, chainId }) =>
+    ({ wallet, chainId }) =>
     ({ get }) => {
-      const blocksPerYear = get(blocksPerYearSelector({}))
-      const currentBlockHeight = get(blockHeightSelector({}))
+      const blocksPerYear = get(
+        blocksPerYearSelector({
+          chainId,
+        })
+      )
+      const currentBlockHeight = get(
+        blockHeightSelector({
+          chainId,
+        })
+      )
 
       // Need proposal modules for the proposal line props.
-      const followingDaosWithProposalModules = walletAddress
+      const followingDaosWithProposalModules = wallet
         ? get(
             followingDaosWithProposalModulesSelector({
-              walletAddress,
+              walletPublicKey: wallet.hexPublicKey,
               chainId,
             })
           )
@@ -46,7 +50,7 @@ export const inboxOpenProposalsSelector = selectorFamily<
           followingDaosWithProposalModules.map(({ coreAddress }) =>
             openProposalsSelector({
               coreAddress,
-              address: walletAddress,
+              address: wallet?.address,
               chainId,
             })
           )
@@ -77,7 +81,6 @@ export const inboxOpenProposalsSelector = selectorFamily<
                       voted,
                     }): InboxSourceItem<ProposalLineProps> => ({
                       props: {
-                        chainId: CHAIN_ID,
                         coreAddress,
                         proposalId: `${proposalModule.prefix}${id}`,
                         proposalModules,

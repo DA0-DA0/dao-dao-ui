@@ -1,8 +1,4 @@
-import {
-  AnalyticsOutlined,
-  InfoOutlined,
-  WarningRounded,
-} from '@mui/icons-material'
+import { AnalyticsOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, Fragment, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -10,6 +6,8 @@ import { useTranslation } from 'react-i18next'
 import { ProposalVoteOption } from '@dao-dao/types'
 
 import { Button } from '../buttons'
+import { InfoCard } from '../InfoCard'
+import { WarningCard } from '../WarningCard'
 import { ProposalVoteButton } from './ProposalVoteButton'
 
 export interface ProposalStatusAndInfoProps<Vote extends unknown = unknown> {
@@ -22,6 +20,7 @@ export interface ProposalStatusAndInfoProps<Vote extends unknown = unknown> {
   inline?: boolean
   action?: {
     label: string
+    description?: string
     Icon: ComponentType<{ className: string }>
     loading: boolean
     doAction: () => void
@@ -122,28 +121,36 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
       </div>
 
       {action && (
-        <Button
-          center
-          className={inline ? 'm-6 mt-0' : 'mb-8'}
-          loading={action.loading}
-          onClick={action.doAction}
-          size="lg"
-          variant={
-            // If voting is not displaying, or voting is displaying but they
-            // already voted (i.e. they can revote), show primary variant to
-            // draw attention to this action. Otherwise, show dimmer secondary
-            // variant to encourage them to vote first.
-            !vote || vote.currentVote ? 'primary' : 'secondary'
-          }
+        <div
+          className={clsx(
+            'flex animate-fade-in flex-col gap-4',
+            inline ? 'm-6 mt-0' : 'mb-8'
+          )}
         >
-          <action.Icon className="!h-5 !w-5" /> {action.label}
-        </Button>
+          <Button
+            center
+            loading={action.loading}
+            onClick={action.doAction}
+            size="lg"
+            variant={
+              // If voting is not displaying, or voting is displaying but they
+              // already voted (i.e. they can revote), show primary variant to
+              // draw attention to this action. Otherwise, show dimmer secondary
+              // variant to encourage them to vote first.
+              !vote || vote.currentVote ? 'primary' : 'secondary'
+            }
+          >
+            <action.Icon className="!h-5 !w-5" /> {action.label}
+          </Button>
+
+          {action.description && <InfoCard content={action.description} />}
+        </div>
       )}
 
       {vote && (
         <div
           className={clsx(
-            'flex flex-col border-t border-border-secondary',
+            'flex flex-col gap-4 border-t border-border-secondary',
             inline ? 'p-6' : 'pt-8'
           )}
         >
@@ -151,24 +158,15 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
           {showUnseenActionPagesWarning &&
             !seenAllActionPages &&
             !vote.currentVote && (
-              <div className="mb-4 flex animate-fade-in flex-row items-center gap-3 rounded-md bg-background-secondary p-4">
-                <WarningRounded className="!h-10 !w-10 text-icon-interactive-warning" />
-
-                <p className="primary-text text-text-interactive-warning-body">
-                  {t('info.mustViewAllActionPagesBeforeVoting')}
-                </p>
-              </div>
+              <WarningCard
+                className="animate-fade-in"
+                content={t('info.mustViewAllActionPagesBeforeVoting')}
+              />
             )}
 
           {/* If proposal no longer open but voting is allowed, explain why. */}
           {!vote.proposalOpen && (
-            <div className="mb-4 flex flex-row items-center gap-3 rounded-md bg-background-tertiary p-4">
-              <InfoOutlined className="!h-6 !w-6 text-icon-secondary" />
-
-              <p className="secondary-text">
-                {t('info.voteUntilExpirationExplanation')}
-              </p>
-            </div>
+            <InfoCard content={t('info.voteUntilExpirationExplanation')} />
           )}
 
           <div className="flex flex-col gap-1">
@@ -185,7 +183,6 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
 
           <Button
             center
-            className="mt-4"
             disabled={
               // Disable when...
               //

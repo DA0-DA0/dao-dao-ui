@@ -50,7 +50,10 @@ export const useDefaults: UseDefaults<ManageCw721Data> = () => ({
 })
 
 const Component: ActionComponent = (props) => {
-  const { address, chainId, bech32Prefix } = useActionOptions()
+  const {
+    address,
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  } = useActionOptions()
 
   const { t } = useTranslation()
   const { fieldNamePrefix } = props

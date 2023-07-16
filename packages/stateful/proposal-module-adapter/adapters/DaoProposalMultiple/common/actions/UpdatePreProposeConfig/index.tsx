@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
 import { genericTokenSelector, isContractSelector } from '@dao-dao/state'
-import { GearEmoji, useDaoInfoContext } from '@dao-dao/stateless'
+import { GearEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
@@ -22,14 +22,15 @@ import {
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
 import {
-  NATIVE_TOKEN,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
   isValidContractAddress,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../../../actions'
 import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
 import { PRE_PROPOSE_CONTRACT_NAMES } from '../../../constants'
 import { configSelector } from '../../../contracts/DaoPreProposeMultiple.recoil'
@@ -40,7 +41,9 @@ import {
 
 export const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
-  const { bech32Prefix } = useDaoInfoContext()
+  const {
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  } = useActionOptions()
 
   const {
     hooks: { useCommonGovernanceTokenInfo },
@@ -60,11 +63,13 @@ export const Component: ActionComponent = (props) => {
       depositInfo.denomOrAddress &&
       isValidContractAddress(depositInfo.denomOrAddress, bech32Prefix)
       ? genericTokenSelector({
+          chainId,
           type: TokenType.Cw20,
           denomOrAddress: depositInfo.denomOrAddress,
         })
       : depositInfo.type === 'native'
       ? genericTokenSelector({
+          chainId,
           type: TokenType.Native,
           denomOrAddress: depositInfo.denomOrAddress,
         })
@@ -115,7 +120,7 @@ export const makeUpdatePreProposeConfigActionMaker =
   ({
     preProposeAddress,
   }: ProposalModule): ActionMaker<UpdatePreProposeConfigData> =>
-  ({ t, context }) => {
+  ({ t, context, chain: { chain_id: chainId } }) => {
     // Only when pre propose address present.
     if (!preProposeAddress) {
       return null
@@ -135,6 +140,7 @@ export const makeUpdatePreProposeConfigActionMaker =
 
       const config = useRecoilValue(
         configSelector({
+          chainId,
           contractAddress: preProposeAddress,
           params: [],
         })
@@ -146,6 +152,7 @@ export const makeUpdatePreProposeConfigActionMaker =
       const token = useRecoilValue(
         config.deposit_info
           ? genericTokenSelector({
+              chainId,
               type:
                 'native' in config.deposit_info.denom
                   ? TokenType.Native
@@ -188,7 +195,7 @@ export const makeUpdatePreProposeConfigActionMaker =
           : {
               amount: 1,
               type: 'native',
-              denomOrAddress: NATIVE_TOKEN.denomOrAddress,
+              denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
               token: undefined,
               refundPolicy: DepositRefundPolicy.OnlyPassed,
             }
@@ -284,6 +291,7 @@ export const makeUpdatePreProposeConfigActionMaker =
           ? isContractSelector({
               contractAddress: msg.wasm.execute.contract_addr,
               names: PRE_PROPOSE_CONTRACT_NAMES,
+              chainId,
             })
           : constSelector(false)
       )
@@ -301,6 +309,7 @@ export const makeUpdatePreProposeConfigActionMaker =
           ? 'voting_module_token' in configDepositInfo.denom
             ? constSelector(governanceToken)
             : genericTokenSelector({
+                chainId,
                 type:
                   'native' in configDepositInfo.denom.token.denom
                     ? TokenType.Native
@@ -327,7 +336,7 @@ export const makeUpdatePreProposeConfigActionMaker =
             depositInfo: {
               amount: 1,
               type: 'native',
-              denomOrAddress: NATIVE_TOKEN.denomOrAddress,
+              denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
               refundPolicy: DepositRefundPolicy.OnlyPassed,
             },
             anyoneCanPropose,

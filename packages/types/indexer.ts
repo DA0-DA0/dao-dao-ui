@@ -25,4 +25,6 @@ export interface IndexerDumpState
     registeredSubDao?: boolean
   } | null
   proposalCount?: number
+  // Map polytone note address to remote address.
+  polytoneProxies?: Record<string, string>
 }

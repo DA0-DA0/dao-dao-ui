@@ -17,7 +17,7 @@ import {
   SegmentedControlsTitle,
   SelectInput,
   TextInput,
-  Warning,
+  WarningCard,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
@@ -27,15 +27,16 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  NATIVE_DENOM,
+  getNativeTokenForChainId,
+  makeValidateAddress,
+  makeValidateContractAddress,
   makeWasmMessage,
-  validateAddress,
-  validateContractAddress,
   validateCosmosMsg,
   validateNonNegative,
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../react'
 import {
   AuthorizationTypeUrl,
   AuthzExecActionTypes,
@@ -53,6 +54,9 @@ export const AuthzGrantRevokeComponent: ActionComponent<
   AuthzGrantRevokeOptions
 > = (props) => {
   const { t } = useTranslation()
+  const {
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  } = useActionOptions()
   const {
     fieldNamePrefix,
     errors,
@@ -99,7 +103,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
         ]}
       />
 
-      {mode === 'grant' && <Warning content={t('info.authzWarning')} />}
+      {mode === 'grant' && <WarningCard content={t('info.authzWarning')} />}
 
       <div className="flex flex-col gap-1">
         <InputLabel
@@ -112,7 +116,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
           fieldName={(fieldNamePrefix + 'grantee') as 'grantee'}
           placeholder={!isCreating ? t('info.none') : undefined}
           register={register}
-          validation={[validateAddress]}
+          validation={[makeValidateAddress(bech32Prefix)]}
         />
         <InputErrorMessage error={errors?.grantee} />
       </div>
@@ -257,6 +261,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                     },
                     onRemove: isCreating ? () => removeCoin(index) : undefined,
                   } as NativeCoinSelectorProps)}
+                  chainId={chainId}
                   errors={errors?.funds?.[index]}
                   fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
                 />
@@ -271,7 +276,12 @@ export const AuthzGrantRevokeComponent: ActionComponent<
           {isCreating && (
             <Button
               className="mt-2 self-start"
-              onClick={() => appendCoin({ amount: 1, denom: NATIVE_DENOM })}
+              onClick={() =>
+                appendCoin({
+                  amount: 1,
+                  denom: getNativeTokenForChainId(chainId).denomOrAddress,
+                })
+              }
               variant="secondary"
             >
               {t('button.addAllowance')}
@@ -292,7 +302,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                 fieldName={(fieldNamePrefix + 'contract') as 'contract'}
                 register={register}
                 type="contract"
-                validation={[validateContractAddress]}
+                validation={[makeValidateContractAddress(bech32Prefix)]}
               />
               <InputErrorMessage error={errors?.contract} />
             </div>
@@ -469,6 +479,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                             ? () => removeCoin(index)
                             : undefined,
                         } as NativeCoinSelectorProps)}
+                        chainId={chainId}
                         errors={errors?.funds?.[index]}
                         fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
                       />
@@ -484,7 +495,10 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                   <Button
                     className="mt-2 self-start"
                     onClick={() =>
-                      appendCoin({ amount: 1, denom: NATIVE_DENOM })
+                      appendCoin({
+                        amount: 1,
+                        denom: getNativeTokenForChainId(chainId).denomOrAddress,
+                      })
                     }
                     variant="secondary"
                   >

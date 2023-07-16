@@ -8,6 +8,7 @@ import {
   TokenType,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { ButtonLink } from '../buttons/ButtonLink'
 import { TokenCard } from './TokenCard'
@@ -26,6 +27,7 @@ const Template: ComponentStory<typeof TokenCard> = (args) => (
 )
 
 export const token: GenericToken = {
+  chainId: CHAIN_ID,
   type: TokenType.Native,
   denomOrAddress: 'ujuno',
   symbol: 'JUNO',
@@ -115,6 +117,7 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
     ) ?? 0
 
   return {
+    owner: 'owner',
     token: {
       ...token,
       imageUrl: `/placeholders/${Math.floor(Math.random() * 5) + 1}.svg`,

@@ -22,6 +22,7 @@ import {
   RightSidebarContent,
   useAppContext,
   useCachedLoadable,
+  useChain,
   useDaoNavHelpers,
   useThemeContext,
 } from '@dao-dao/stateless'
@@ -41,11 +42,11 @@ import {
   CODE_ID_CONFIG,
   DaoProposalMultipleAdapterId,
   FACTORY_CONTRACT_ADDRESS,
-  NATIVE_TOKEN,
   NEW_DAO_CW20_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
+  getNativeTokenForChainId,
   makeValidateMsg,
   processError,
 } from '@dao-dao/utils'
@@ -94,6 +95,8 @@ export const CreateDaoForm = ({
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
+
   const { goToDao } = useDaoNavHelpers()
   const { setFollowing } = useFollowingDaos()
 
@@ -408,6 +411,8 @@ export const CreateDaoForm = ({
 
             //! Show DAO created modal.
 
+            const nativeToken = getNativeTokenForChainId(chainId)
+
             // Get tokenSymbol and tokenBalance for DAO card.
             const { tokenSymbol, tokenBalance, tokenDecimals } =
               creatorId === TokenBasedCreatorId &&
@@ -439,7 +444,7 @@ export const CreateDaoForm = ({
                         // 0, so use the native token here so this value is
                         // accurate.
                         !daoVotingTokenBasedCreatorData.existingToken
-                        ? NATIVE_TOKEN.symbol
+                        ? nativeToken.symbol
                         : daoVotingTokenBasedCreatorData.existingToken.symbol ||
                           t('info.token').toLocaleUpperCase(),
                     tokenDecimals:
@@ -455,8 +460,8 @@ export const CreateDaoForm = ({
                 : //! Otherwise display native token, which has a balance of 0 initially.
                   {
                     tokenBalance: 0,
-                    tokenSymbol: NATIVE_TOKEN.symbol,
-                    tokenDecimals: NATIVE_TOKEN.decimals,
+                    tokenSymbol: nativeToken.symbol,
+                    tokenDecimals: nativeToken.decimals,
                   }
 
             // Set card props to show modal.
@@ -528,7 +533,9 @@ export const CreateDaoForm = ({
       createDaoWithFactory,
       t,
       mode,
+      awaitNextBlock,
       refreshBalances,
+      chainId,
       creatorId,
       daoVotingTokenBasedCreatorData,
       setDaoCreatedCardProps,
@@ -537,7 +544,6 @@ export const CreateDaoForm = ({
       imageUrl,
       parentDao,
       goToDao,
-      awaitNextBlock,
       setFollowing,
     ]
   )

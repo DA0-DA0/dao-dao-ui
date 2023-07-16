@@ -18,6 +18,7 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
   t,
   address,
   context,
+  chain: { chain_id: chainId },
 }) => {
   // Only DAOs.
   if (context.type !== ActionContextType.Dao) {
@@ -27,6 +28,7 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
   const useDefaults: UseDefaults<UpdateInfoData> = () => {
     const config = useRecoilValue(
       DaoCoreV2Selectors.configSelector({
+        chainId,
         contractAddress: address,
         params: [],
       })

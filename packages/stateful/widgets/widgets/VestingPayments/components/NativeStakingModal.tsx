@@ -16,17 +16,15 @@ import {
   StakingModalProps,
   StakingMode,
   useCachedLoadable,
-  useDaoInfoContext,
+  useChain,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { ActionKey, TokenStake } from '@dao-dao/types'
 import {
-  NATIVE_DECIMALS,
-  NATIVE_DENOM,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getDaoProposalSinglePrefill,
-  nativeTokenLabel,
+  getNativeTokenForChainId,
   processError,
 } from '@dao-dao/utils'
 
@@ -58,7 +56,7 @@ export const NativeStakingModal = ({
   ...props
 }: NativeStakingModalProps) => {
   const { t } = useTranslation()
-  const { chainId } = useDaoInfoContext()
+  const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
 
   const validatorsLoadable = useCachedLoadable(
@@ -106,6 +104,8 @@ export const NativeStakingModal = ({
     return null
   }
 
+  const nativeToken = getNativeTokenForChainId(chainId)
+
   const onAction = async (
     mode: StakingMode,
     amount: number,
@@ -124,7 +124,7 @@ export const NativeStakingModal = ({
         const data = {
           amount: convertDenomToMicroDenomWithDecimals(
             amount,
-            NATIVE_DECIMALS
+            nativeToken.decimals
           ).toString(),
           validator,
         }
@@ -158,7 +158,7 @@ export const NativeStakingModal = ({
         const data = {
           amount: convertDenomToMicroDenomWithDecimals(
             amount,
-            NATIVE_DECIMALS
+            nativeToken.decimals
           ).toString(),
           validator,
         }
@@ -197,7 +197,7 @@ export const NativeStakingModal = ({
         const data = {
           amount: convertDenomToMicroDenomWithDecimals(
             amount,
-            NATIVE_DECIMALS
+            nativeToken.decimals
           ).toString(),
           dstValidator: validator,
           srcValidator: fromValidator,
@@ -271,13 +271,14 @@ export const NativeStakingModal = ({
       loading={loading}
       loadingStakableTokens={{
         loading: false,
-        data: convertMicroDenomToDenomWithDecimals(stakable, NATIVE_DECIMALS),
+        data: convertMicroDenomToDenomWithDecimals(
+          stakable,
+          nativeToken.decimals
+        ),
       }}
       onAction={onAction}
       setAmount={setAmount}
-      tokenDecimals={NATIVE_DECIMALS}
-      tokenDenom={NATIVE_DENOM}
-      tokenSymbol={nativeTokenLabel(NATIVE_DENOM)}
+      token={nativeToken}
       unstakingDuration={
         unstakingDurationLoadable.state === 'hasValue'
           ? { time: unstakingDurationLoadable.contents }

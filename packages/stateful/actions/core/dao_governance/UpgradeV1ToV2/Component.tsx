@@ -19,7 +19,7 @@ import {
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 import { SubDao } from '@dao-dao/types/contracts/DaoCore.v2'
-import { validateContractAddress, validateRequired } from '@dao-dao/utils'
+import { makeValidateContractAddress, validateRequired } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 
@@ -53,7 +53,11 @@ export const UpgradeV1ToV2Component: ActionComponent<
   const { t } = useTranslation()
   const { register, control, setValue, watch } =
     useFormContext<UpgradeV1ToV2Data>()
-  const { address, context } = useActionOptions()
+  const {
+    address,
+    context,
+    chain: { bech32_prefix: bech32Prefix },
+  } = useActionOptions()
 
   const targetAddress = watch(
     (fieldNamePrefix + 'targetAddress') as 'targetAddress'
@@ -134,7 +138,10 @@ export const UpgradeV1ToV2Component: ActionComponent<
                   }
                   register={register}
                   type="contract"
-                  validation={[validateRequired, validateContractAddress]}
+                  validation={[
+                    validateRequired,
+                    makeValidateContractAddress(bech32Prefix),
+                  ]}
                 />
                 <InputErrorMessage error={errors?.subDaos?.[index]?.addr} />
               </div>

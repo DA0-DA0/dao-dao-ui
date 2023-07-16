@@ -2,7 +2,11 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
-import { NATIVE_TOKEN, getFallbackImage } from '@dao-dao/utils'
+import {
+  CHAIN_ID,
+  getFallbackImage,
+  getNativeTokenForChainId,
+} from '@dao-dao/utils'
 
 import { ExecuteComponent } from './Component'
 
@@ -30,11 +34,12 @@ Default.args = {
       loading: false,
       data: [
         {
-          token: NATIVE_TOKEN,
+          token: getNativeTokenForChainId(CHAIN_ID),
           balance: '1231245124',
         },
         {
           token: {
+            chainId: CHAIN_ID,
             type: TokenType.Native,
             denomOrAddress: 'uatom',
             decimals: 6,
@@ -46,6 +51,7 @@ Default.args = {
         },
         {
           token: {
+            chainId: CHAIN_ID,
             type: TokenType.Cw20,
             denomOrAddress: 'junoCw20DaoAddress',
             decimals: 6,
@@ -56,6 +62,7 @@ Default.args = {
         },
         {
           token: {
+            chainId: CHAIN_ID,
             type: TokenType.Cw20,
             denomOrAddress: 'junoAnotherCw20',
             decimals: 6,
