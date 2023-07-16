@@ -539,6 +539,8 @@ const daoCoreDumpState = async (
           address: coreAddress,
           formula: 'daoCore/listItems',
           chainId: CHAIN_ID,
+          // TODO(numia): Remove this once provided.
+          required: true,
         })) ?? []
 
       const parentDaoInfo = await loadParentDaoInfo(
