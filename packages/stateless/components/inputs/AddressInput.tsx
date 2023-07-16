@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 
-import { AddressInputProps } from '@dao-dao/types'
+import { AddressInputProps, EntityType } from '@dao-dao/types'
 import { isValidBech32Address } from '@dao-dao/utils'
 
 import { useChain } from '../../hooks/useChainContext'
@@ -33,7 +33,7 @@ export const AddressInput = <
   placeholder,
   ...rest
 }: AddressInputProps<FV, FieldName>) => {
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
 
   const validate = validation?.reduce(
     (a, v) => ({ ...a, [v.toString()]: v }),
@@ -110,7 +110,17 @@ export const AddressInput = <
       }
 
       const selectedEntity = autofillEntities.entities[index]
-      setValue?.(fieldName, selectedEntity.address as any, {
+      // Get address on current chain.
+      const address =
+        selectedEntity.chainId === chainId
+          ? selectedEntity.address
+          : selectedEntity.type === EntityType.Dao &&
+            selectedEntity.daoInfo.polytoneProxies[chainId]
+      if (!address) {
+        return
+      }
+
+      setValue?.(fieldName, address as any, {
         shouldValidate: true,
         shouldDirty: true,
         shouldTouch: true,
@@ -118,7 +128,7 @@ export const AddressInput = <
 
       inputRef.current?.blur()
     },
-    [autofillEntities, fieldName, selectedEntityIndex, setValue]
+    [autofillEntities, chainId, fieldName, selectedEntityIndex, setValue]
   )
 
   // Navigate between selected entities with arrow keys.

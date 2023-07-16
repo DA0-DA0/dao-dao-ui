@@ -113,7 +113,6 @@ export const HorizontalScroller = <P extends {}>({
         <NoContent
           Icon={CheckBoxOutlineBlankRounded}
           body={t('info.noFeaturedDaosYet')}
-          className="mx-6"
         />
       ) : (
         <div

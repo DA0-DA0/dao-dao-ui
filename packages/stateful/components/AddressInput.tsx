@@ -2,7 +2,7 @@ import Fuse from 'fuse.js'
 import { useMemo } from 'react'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { waitForAll } from 'recoil'
+import { waitForNone } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
@@ -15,7 +15,7 @@ import {
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
-import { AddressInputProps } from '@dao-dao/types'
+import { AddressInputProps, Entity, EntityType } from '@dao-dao/types'
 import { isValidBech32Address } from '@dao-dao/utils'
 import { PolytoneNotesPerChain } from '@dao-dao/utils/constants/polytone'
 
@@ -54,7 +54,7 @@ export const AddressInput = <
   // find polytone accounts.
   const searchDaosLoadable = useCachedLoadable(
     hasFormValue && props.type !== 'wallet'
-      ? waitForAll(
+      ? waitForNone(
           [
             // Current chain.
             currentChain.chain_id,
@@ -76,7 +76,7 @@ export const AddressInput = <
   )
 
   const loadingEntities = useCachedLoading(
-    waitForAll([
+    waitForNone([
       ...(searchProfilesLoadable.state === 'hasValue'
         ? searchProfilesLoadable.contents.map(({ address }) =>
             entitySelector({
@@ -86,20 +86,34 @@ export const AddressInput = <
           )
         : []),
       ...(searchDaosLoadable.state === 'hasValue'
-        ? searchDaosLoadable.contents
-            .flat()
-            .map(({ chainId, contractAddress }) =>
-              entitySelector({
-                chainId,
-                address: contractAddress,
-              })
-            )
+        ? searchDaosLoadable.contents.flatMap((loadable) =>
+            loadable.state === 'hasValue'
+              ? loadable.contents.map(({ chainId, contractAddress }) =>
+                  entitySelector({
+                    chainId,
+                    address: contractAddress,
+                  })
+                )
+              : []
+          )
         : []),
     ]),
     []
   )
 
-  const entities = loadingEntities.loading ? [] : loadingEntities.data
+  const entities = loadingEntities.loading
+    ? []
+    : // Only show entities that are on the current chain or are DAOs with
+      // polytone accounts on the current chain.
+      loadingEntities.data
+        .filter(
+          (entity) =>
+            entity.state === 'hasValue' &&
+            (entity.contents.chainId === currentChain.chain_id ||
+              (entity.contents.type === EntityType.Dao &&
+                entity.contents.daoInfo.polytoneProxies[currentChain.chain_id]))
+        )
+        .map((entity) => entity.contents as Entity)
 
   // Use Fuse to search combined profiles and DAOs by name so that is most
   // relevant (as opposed to just sticking DAOs after profiles).
@@ -131,9 +145,15 @@ export const AddressInput = <
                 (props.type !== 'wallet' &&
                   (searchDaosLoadable.state === 'loading' ||
                     (searchDaosLoadable.state === 'hasValue' &&
-                      searchDaosLoadable.updating))) ||
+                      (searchDaosLoadable.updating ||
+                        searchDaosLoadable.contents.some(
+                          (loadable) => loadable.state === 'loading'
+                        ))))) ||
                 loadingEntities.loading ||
-                !!loadingEntities.updating,
+                !!loadingEntities.updating ||
+                loadingEntities.data.some(
+                  (loadable) => loadable.state === 'loading'
+                ),
             }
           : undefined
       }
