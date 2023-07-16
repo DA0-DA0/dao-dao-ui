@@ -48,7 +48,13 @@ export const Home = ({
         <HorizontalScroller
           {...featuredDaosProps}
           // Margin offsets container padding.
-          containerClassName="-mx-6 self-stretch px-[1px]"
+          containerClassName={clsx(
+            'self-stretch px-[1px]',
+            !featuredDaosProps.items.loading &&
+              featuredDaosProps.items.data.length === 0
+              ? maxWidth
+              : '-mx-6'
+          )}
           itemClassName="w-64"
           shadowClassName={widthOfSidePadding}
         />
