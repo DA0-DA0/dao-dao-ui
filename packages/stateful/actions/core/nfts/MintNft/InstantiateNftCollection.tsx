@@ -5,11 +5,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { ActionComponent, ActionContextType, ActionKey } from '@dao-dao/types'
-import {
-  CHAIN_GAS_MULTIPLIER,
-  CODE_ID_CONFIG,
-  processError,
-} from '@dao-dao/utils'
+import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
 import { useActionOptions } from '../../../react'
@@ -19,7 +15,12 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
   const { t } = useTranslation()
   const { address: walletAddress, signingCosmWasmClient } = useWallet()
   const { watch, setValue } = useFormContext()
-  const { context } = useActionOptions()
+  const {
+    context,
+    chainContext: {
+      config: { codeIds },
+    },
+  } = useActionOptions()
 
   const [instantiating, setInstantiating] = useState(false)
 
@@ -40,7 +41,7 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
     try {
       const { contractAddress } = await signingCosmWasmClient.instantiate(
         walletAddress,
-        CODE_ID_CONFIG.Cw721Base,
+        codeIds.Cw721Base,
         instantiateMsg,
         'NFT Collection',
         CHAIN_GAS_MULTIPLIER

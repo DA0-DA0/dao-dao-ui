@@ -10,7 +10,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import {
-  POLYTONE_NOTES,
   decodePolytoneExecuteMsg,
   makePolytoneExecuteMessage,
 } from '@dao-dao/utils'
@@ -20,41 +19,56 @@ import {
   CreateCrossChainAccountData,
 } from './Component'
 
-const useTransformToCosmos: UseTransformToCosmos<
-  CreateCrossChainAccountData
-> = () => useCallback(({ chainId }) => makePolytoneExecuteMessage(chainId), [])
-
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateCrossChainAccountData> = (
-  msg: Record<string, any>
-) => {
-  const decodedPolytone = decodePolytoneExecuteMsg(msg, 'zero')
-  return decodedPolytone.match
-    ? {
-        match: true,
-        data: {
-          chainId: decodedPolytone.chainId,
-        },
-      }
-    : {
-        match: false,
-      }
-}
-
 export const makeCreateCrossChainAccountAction: ActionMaker<
   CreateCrossChainAccountData
-> = ({ t, context }) => {
+> = ({
+  t,
+  context,
+  chain,
+  chainContext: {
+    config: { polytone },
+  },
+}) => {
   // Only allow using this action in DAOs.
   if (context.type !== ActionContextType.Dao) {
     return null
   }
 
-  const missingChainIds = Object.keys(POLYTONE_NOTES).filter(
+  const missingChainIds = Object.keys(polytone || {}).filter(
     (chainId) => !(chainId in context.info.polytoneProxies)
   )
 
   const useDefaults: UseDefaults<CreateCrossChainAccountData> = () => ({
     chainId: missingChainIds[0],
   })
+
+  const useTransformToCosmos: UseTransformToCosmos<
+    CreateCrossChainAccountData
+  > = () =>
+    useCallback(
+      ({ chainId }) => makePolytoneExecuteMessage(chain.chain_id, chainId),
+      []
+    )
+
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<
+    CreateCrossChainAccountData
+  > = (msg: Record<string, any>) => {
+    const decodedPolytone = decodePolytoneExecuteMsg(
+      chain.chain_id,
+      msg,
+      'zero'
+    )
+    return decodedPolytone.match
+      ? {
+          match: true,
+          data: {
+            chainId: decodedPolytone.chainId,
+          },
+        }
+      : {
+          match: false,
+        }
+  }
 
   return {
     key: ActionKey.CreateCrossChainAccount,

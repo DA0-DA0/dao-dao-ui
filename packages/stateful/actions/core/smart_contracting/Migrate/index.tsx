@@ -75,7 +75,7 @@ const useTransformToCosmos: UseTransformToCosmos<MigrateData> = () => {
       if (chainId === currentChainId) {
         return migrateMsg
       } else {
-        return makePolytoneExecuteMessage(chainId, migrateMsg)
+        return makePolytoneExecuteMessage(currentChainId, chainId, migrateMsg)
       }
     },
     [currentChainId]
@@ -86,7 +86,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
   msg: Record<string, any>
 ) => {
   let chainId = useActionOptions().chain.chain_id
-  const decodedPolytone = decodePolytoneExecuteMsg(msg)
+  const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
   if (decodedPolytone.match) {
     chainId = decodedPolytone.chainId
     msg = decodedPolytone.msg

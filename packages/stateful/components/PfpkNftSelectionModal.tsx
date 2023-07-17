@@ -15,7 +15,7 @@ import {
   Tooltip,
   useAppContext,
   useCachedLoadingWithError,
-  useChain,
+  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import { NftCardInfo } from '@dao-dao/types'
 import {
@@ -23,7 +23,6 @@ import {
   MintMsgForNullable_Empty,
 } from '@dao-dao/types/contracts/Cw721Base'
 import {
-  CODE_ID_CONFIG,
   MAINNET,
   getDisplayNameForChainId,
   processError,
@@ -51,7 +50,7 @@ export const InnerPfpkNftSelectionModal = ({
     status: walletStatus,
     error: walletError,
   } = useWallet()
-  const chain = useChain()
+  const { chain, config } = useSupportedChainContext()
 
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
@@ -143,7 +142,7 @@ export const InnerPfpkNftSelectionModal = ({
 
   const [uploadingImage, setUploadingImage] = useState(false)
   const { ready: instantiateAndExecuteReady, instantiateAndExecute } =
-    useInstantiateAndExecute(CODE_ID_CONFIG.Cw721Base)
+    useInstantiateAndExecute(config.codeIds.Cw721Base)
   const uploadImage = useCallback(async () => {
     if (!image) {
       toast.error(t('error.noImage'))

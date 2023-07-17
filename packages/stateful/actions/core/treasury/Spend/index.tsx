@@ -205,7 +205,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
       if (data.chainId === currentChainId) {
         return msg
       } else {
-        return makePolytoneExecuteMessage(data.chainId, msg)
+        return makePolytoneExecuteMessage(currentChainId, data.chainId, msg)
       }
     },
     [address, currentChainId, loadingTokenBalances]
@@ -216,7 +216,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   msg: Record<string, any>
 ) => {
   let chainId = useActionOptions().chain.chain_id
-  const decodedPolytone = decodePolytoneExecuteMsg(msg)
+  const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
   if (decodedPolytone.match) {
     chainId = decodedPolytone.chainId
     msg = decodedPolytone.msg

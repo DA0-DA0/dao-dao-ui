@@ -63,7 +63,7 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateAdminData> = () => {
       if (chainId === currentChainId) {
         return updateMsg
       } else {
-        return makePolytoneExecuteMessage(chainId, updateMsg)
+        return makePolytoneExecuteMessage(currentChainId, chainId, updateMsg)
       }
     },
     [currentChainId]
@@ -74,7 +74,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateAdminData> = (
   msg: Record<string, any>
 ) => {
   let chainId = useActionOptions().chain.chain_id
-  const decodedPolytone = decodePolytoneExecuteMsg(msg)
+  const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
   if (decodedPolytone.match) {
     chainId = decodedPolytone.chainId
     msg = decodedPolytone.msg

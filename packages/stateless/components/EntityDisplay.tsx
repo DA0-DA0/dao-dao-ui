@@ -7,14 +7,13 @@ import { useTranslation } from 'react-i18next'
 
 import { EntityDisplayProps, EntityType } from '@dao-dao/types'
 import {
-  WALLET_URL_PREFIX,
   concatAddressStartEnd,
   getFallbackImage,
   toAccessibleImageUrl,
   toBech32Hash,
 } from '@dao-dao/utils'
 
-import { useDaoNavHelpers, useDetectTruncate } from '../hooks'
+import { useChainContext, useDaoNavHelpers, useDetectTruncate } from '../hooks'
 import { ButtonLink } from './buttons'
 import { IconButton } from './icon_buttons'
 import { Tooltip } from './tooltip/Tooltip'
@@ -34,6 +33,7 @@ export const EntityDisplay = ({
 }: EntityDisplayProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
+  const { config } = useChainContext()
 
   imageSize ??= size === 'lg' ? 28 : 24
 
@@ -49,7 +49,10 @@ export const EntityDisplay = ({
     ? undefined
     : loadingEntity.data.type === EntityType.Dao
     ? getDaoPath(loadingEntity.data.address)
-    : WALLET_URL_PREFIX + loadingEntity.data.address
+    : config?.explorerUrlTemplates.wallet.replace(
+        'REPLACE',
+        loadingEntity.data.address
+      )
 
   const { textRef, truncated } = useDetectTruncate()
 

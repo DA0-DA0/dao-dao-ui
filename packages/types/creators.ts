@@ -9,6 +9,7 @@ import {
   DaoCreationVotingConfigItem,
   NewDao,
 } from './dao'
+import { CodeIdConfig } from './utils'
 
 export type DaoCreatorMutate<Data extends FieldValues = any> = (
   msg: InstantiateMsg,
@@ -16,7 +17,8 @@ export type DaoCreatorMutate<Data extends FieldValues = any> = (
   // in may not necessarily be the voting module adapter data. Must use `any`.
   newDao: NewDao<any>,
   data: Data,
-  t: TFunction
+  t: TFunction,
+  codeIds: CodeIdConfig
 ) => InstantiateMsg
 
 export type DaoCreator<Data extends FieldValues = any> = {

@@ -38,16 +38,14 @@ import {
   getChainIdForAddress,
   getDaoPath,
   getRpcForChainId,
+  getSupportedChainConfig,
   isValidWalletAddress,
   parseContractVersion,
   polytoneNoteProxyMapToChainIdMap,
   processError,
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
-import {
-  FAST_AVERAGE_COLOR_API_TEMPLATE,
-  POLYTONE_NOTES,
-} from '@dao-dao/utils/constants'
+import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
 
 import { DaoPageWrapperProps } from '../components'
 import {
@@ -669,34 +667,39 @@ const daoCoreDumpState = async (
   // Get DAO polytone proxies.
   const polytoneProxies = (
     await Promise.all(
-      Object.entries(POLYTONE_NOTES).map(async ([chainId, { note }]) => {
-        let proxy
-        try {
-          proxy = await queryIndexer<string>({
-            type: 'contract',
-            address: note,
-            formula: 'polytone/note/remoteAddress',
-            args: {
-              address: coreAddress,
-            },
-            chainId,
-          })
-        } catch {
-          // Ignore error.
-        }
-        if (!proxy) {
-          const polytoneNoteClient = new PolytoneNoteQueryClient(cwClient, note)
-          proxy =
-            (await polytoneNoteClient.remoteAddress({
-              localAddress: coreAddress,
-            })) || undefined
-        }
+      Object.entries(getSupportedChainConfig(chainId)?.polytone || {}).map(
+        async ([chainId, { note }]) => {
+          let proxy
+          try {
+            proxy = await queryIndexer<string>({
+              type: 'contract',
+              address: note,
+              formula: 'polytone/note/remoteAddress',
+              args: {
+                address: coreAddress,
+              },
+              chainId,
+            })
+          } catch {
+            // Ignore error.
+          }
+          if (!proxy) {
+            const polytoneNoteClient = new PolytoneNoteQueryClient(
+              cwClient,
+              note
+            )
+            proxy =
+              (await polytoneNoteClient.remoteAddress({
+                localAddress: coreAddress,
+              })) || undefined
+          }
 
-        return {
-          chainId,
-          proxy,
+          return {
+            chainId,
+            proxy,
+          }
         }
-      })
+      )
     )
   ).reduce(
     (acc, { chainId, proxy }) => ({

@@ -10,7 +10,6 @@ import {
   PercentageThreshold,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
-  CODE_ID_CONFIG,
   DaoProposalMultipleAdapterId,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
@@ -21,6 +20,7 @@ import instantiateSchema from './instantiate_schema.json'
 import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
+  codeIds,
   {
     name,
     votingConfig: {
@@ -31,6 +31,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
       allowRevoting,
     },
   },
+  _data,
   t
 ) => {
   const decimals = proposalDeposit.token?.decimals ?? 0
@@ -83,7 +84,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
       module_may_propose: {
         info: {
           admin: { core_module: {} },
-          code_id: CODE_ID_CONFIG.DaoPreProposeMultiple,
+          code_id: codeIds.DaoPreProposeMultiple,
           label: `DAO_${name}_pre-propose-${DaoProposalMultipleAdapterId}`,
           msg: Buffer.from(
             JSON.stringify(preProposeMultipleInstantiateMsg),
@@ -104,7 +105,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
 
   return {
     admin: { core_module: {} },
-    code_id: CODE_ID_CONFIG.DaoProposalMultiple,
+    code_id: codeIds.DaoProposalMultiple,
     label: `DAO_${name}_${DaoProposalMultipleAdapterId}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }

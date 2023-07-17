@@ -4,10 +4,10 @@ import { atom, selector, selectorFamily } from 'recoil'
 import { Expiration, IndexerFormulaType, WithChainId } from '@dao-dao/types'
 import {
   CommonError,
-  FEATURED_DAOS_INDEX,
   WEB_SOCKET_PUSHER_APP_KEY,
   WEB_SOCKET_PUSHER_HOST,
   WEB_SOCKET_PUSHER_PORT,
+  getSupportedChainConfig,
 } from '@dao-dao/utils'
 
 import {
@@ -241,6 +241,11 @@ export const indexerFeaturedDaosSelector = selectorFamily<string[], string>({
   get:
     (chainId) =>
     async ({ get }) => {
+      const config = getSupportedChainConfig(chainId)
+      if (!config) {
+        return []
+      }
+
       const priorityFeaturedDaos: string[] =
         get(
           queryGenericIndexerSelector({
@@ -251,7 +256,7 @@ export const indexerFeaturedDaosSelector = selectorFamily<string[], string>({
         ) || []
 
       const client = get(indexerMeilisearchClientSelector)
-      const index = client.index(FEATURED_DAOS_INDEX)
+      const index = client.index(config.indexes.featured)
       const results = await index.search<{ contractAddress: string }>(null, {
         limit: 10,
         filter: [

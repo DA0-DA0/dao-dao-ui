@@ -1,4 +1,7 @@
-import { WalletProfileData } from '@dao-dao/types'
+import { ChainId, WalletProfileData } from '@dao-dao/types'
+
+// Use Juno mainnet as storybook chains.
+export const CHAIN_ID = ChainId.JunoMainnet
 
 export const WALLET_PROFILE_DATA: WalletProfileData = {
   loading: false,

@@ -43,7 +43,7 @@ export interface CodeIdConfig {
   DaoVotingNativeStaked: number
 }
 
-export type PolytoneNote = {
+export type PolytoneConnection = {
   // Contract address of note on the local/current chain.
   note: string
   // Contract address of the note's listener on the local/current chain.
@@ -63,8 +63,8 @@ export type PolytoneNote = {
   needsSelfRelay: boolean
 }
 
-// Map chain ID to polytone note that speaks with that chain.
-export type PolytoneNotes = Record<string, PolytoneNote>
+// Map chain ID to polytone connection information.
+export type PolytoneConfig = Record<string, PolytoneConnection>
 
 export type ParametersExceptFirst<F> = F extends (
   arg0: any,

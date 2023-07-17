@@ -13,7 +13,8 @@ import RIPEMD160 from 'ripemd160'
 import {
   ChainId,
   GenericToken,
-  SupportedChainWithChain,
+  SupportedChain,
+  SupportedChainConfig,
   TokenType,
   Validator,
 } from '@dao-dao/types'
@@ -351,11 +352,24 @@ export const getIbcTransferInfoFromChainSource = (
   }
 }
 
-export const getSupportedChains = (): SupportedChainWithChain[] =>
-  SUPPORTED_CHAINS.map(({ id, mainnet }) => ({
-    chain: getChainForChainId(id),
-    mainnet,
-  }))
+export const getSupportedChainConfig = (
+  chainId: string
+): SupportedChainConfig | undefined =>
+  Object.values(ChainId).includes(chainId as any)
+    ? SUPPORTED_CHAINS[chainId as ChainId]
+    : undefined
+
+export const getSupportedChains = ({
+  mainnet = MAINNET,
+}: {
+  mainnet?: boolean
+} = {}): SupportedChain[] =>
+  Object.entries(SUPPORTED_CHAINS)
+    .filter(([, config]) => mainnet === undefined || config.mainnet === mainnet)
+    .map(([chainId, config]) => ({
+      chain: getChainForChainId(chainId),
+      ...config,
+    }))
 
 // Validates whether the address is for the current chain. If so, return
 // undefined. If not, return the correct subdomain.

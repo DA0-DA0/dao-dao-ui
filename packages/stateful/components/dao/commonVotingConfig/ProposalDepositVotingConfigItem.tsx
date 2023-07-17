@@ -170,7 +170,7 @@ const ProposalDepositInput = ({
       imageUrl: (type === TokenType.Cw20 && tokenLoaded?.imageUrl) || undefined,
     },
     // Then the IBC assets.
-    ...getIbcAssets(),
+    ...getIbcAssets(chainId),
   ]
   const selectedToken = availableTokens.find(
     (token) =>

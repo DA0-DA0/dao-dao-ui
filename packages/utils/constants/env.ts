@@ -1,9 +1,5 @@
 // Constants derived from environment variables.
 
-import { ChainId } from '@dao-dao/types'
-
-import { CodeIdConfigs } from './codeIdConfigs'
-
 export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV
 
 export const SITE_URL =
@@ -13,34 +9,12 @@ export const SITE_URL =
     : // Use vercel deployment URL if on preview or development vercel build.
       `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
 
-export const CHAIN_GOV_PROPOSAL_URL_TEMPLATE = process.env
-  .NEXT_PUBLIC_CHAIN_GOV_PROPOSAL_URL_TEMPLATE as string
 export const LEGACY_URL_PREFIX = process.env
   .NEXT_PUBLIC_LEGACY_URL_PREFIX as string
-export const WALLET_URL_PREFIX = process.env
-  .NEXT_PUBLIC_WALLET_URL_PREFIX as string
 
 // True if on mainnet, false if on testnet.
 export const MAINNET = process.env.NEXT_PUBLIC_MAINNET === 'true'
 
-export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as ChainId
-if (!CHAIN_ID || !Object.values(ChainId).includes(CHAIN_ID)) {
-  throw new Error(`Unexpected CHAIN_ID: ${CHAIN_ID}`)
-}
-
-// KVPK prefix for saved Me page transactions.
-export const ME_SAVED_TX_PREFIX = `${CHAIN_ID}:savedTx:`
-
-export const CHAIN_TXN_URL_PREFIX = process.env
-  .NEXT_PUBLIC_CHAIN_TXN_URL_PREFIX as string
-export const CHAIN_RPC_ENDPOINT = process.env
-  .NEXT_PUBLIC_CHAIN_RPC_ENDPOINT as string
-export const CHAIN_REST_ENDPOINT = process.env
-  .NEXT_PUBLIC_CHAIN_REST_ENDPOINT as string
-export const CHAIN_GAS_MULTIPLIER = parseInt(
-  process.env.NEXT_PUBLIC_CHAIN_GAS_MULTIPLIER || '2',
-  10
-)
 export const DAO_DAO_DAO_ADDRESS = process.env
   .NEXT_PUBLIC_DAO_DAO_DAO_ADDRESS as string
 
@@ -50,20 +24,7 @@ export const WEB3AUTH_CLIENT_ID = process.env
 
 export const CI = process.env.CI === 'true'
 
-// Code IDs
-export const CODE_ID_CONFIG = CodeIdConfigs[CHAIN_ID]!
-if (!CODE_ID_CONFIG) {
-  throw new Error(`Chain_ID ${CHAIN_ID} not found in Code ID Configs`)
-}
-
-export const FACTORY_CONTRACT_ADDRESS = process.env
-  .NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as string
-
 // Stargaze
-export const STARGAZE_RPC_ENDPOINT = process.env
-  .NEXT_PUBLIC_STARGAZE_RPC_ENDPOINT as string
-export const STARGAZE_REST_ENDPOINT = process.env
-  .NEXT_PUBLIC_STARGAZE_REST_ENDPOINT as string
 export const STARGAZE_PROFILE_API_TEMPLATE = process.env
   .NEXT_PUBLIC_STARGAZE_PROFILE_API_TEMPLATE as string
 export const STARGAZE_URL_BASE = process.env
@@ -82,8 +43,6 @@ export const INDEXER_DISABLED =
 // Search
 export const SEARCH_HOST = process.env.NEXT_PUBLIC_SEARCH_HOST as string
 export const SEARCH_API_KEY = process.env.NEXT_PUBLIC_SEARCH_API_KEY as string
-export const FEATURED_DAOS_INDEX = process.env
-  .NEXT_PUBLIC_FEATURED_DAOS_INDEX as string
 
 export const NFT_STORAGE_API_KEY = process.env.NFT_STORAGE_API_KEY as string
 

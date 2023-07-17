@@ -4,9 +4,8 @@ import {
   getDisplayNameForChainId,
   getNativeTokenForChainId,
 } from '@dao-dao/utils'
-import { PolytoneNotesPerChain } from '@dao-dao/utils/constants/polytone'
 
-import { useChain } from '../../hooks'
+import { useSupportedChainContext } from '../../hooks'
 import { RadioInput } from './RadioInput'
 
 export type ChainPickerInputProps = {
@@ -26,7 +25,10 @@ export const ChainPickerInput = ({
   onChange,
   className,
 }: ChainPickerInputProps) => {
-  const { chain_id: chainId } = useChain()
+  const {
+    chain: { chain_id: chainId },
+    config: { polytone },
+  } = useSupportedChainContext()
   const { watch, setValue } = useFormContext()
 
   return (
@@ -38,13 +40,7 @@ export const ChainPickerInput = ({
         options={[
           chainId,
           // Other chains with Polytone.
-          ...Object.keys(
-            (chainId in PolytoneNotesPerChain &&
-              PolytoneNotesPerChain[
-                chainId as keyof typeof PolytoneNotesPerChain
-              ]) ||
-              {}
-          ),
+          ...Object.keys(polytone || {}),
         ].map((chainId) => ({
           label:
             labelMode === 'chain'

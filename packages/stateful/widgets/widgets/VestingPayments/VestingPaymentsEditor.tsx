@@ -5,14 +5,14 @@ import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { Button, useDaoInfoContext } from '@dao-dao/stateless'
+import {
+  Button,
+  useDaoInfoContext,
+  useSupportedChainContext,
+} from '@dao-dao/stateless'
 import { WidgetEditorProps } from '@dao-dao/types'
 import { InstantiateMsg as VestingFactoryInstantiateMsg } from '@dao-dao/types/contracts/CwPayrollFactory'
-import {
-  CHAIN_GAS_MULTIPLIER,
-  CODE_ID_CONFIG,
-  processError,
-} from '@dao-dao/utils'
+import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { VestingPaymentsData } from './types'
 
@@ -23,6 +23,9 @@ export const VestingPaymentsEditor = ({
 
   const { name, coreAddress } = useDaoInfoContext()
   const { address: walletAddress = '', signingCosmWasmClient } = useWallet()
+  const {
+    config: { codeIds },
+  } = useSupportedChainContext()
 
   const { setValue, setError, clearErrors, watch } =
     useFormContext<VestingPaymentsData>()
@@ -39,10 +42,10 @@ export const VestingPaymentsEditor = ({
     try {
       const { contractAddress } = await signingCosmWasmClient.instantiate(
         walletAddress,
-        CODE_ID_CONFIG.CwPayrollFactory,
+        codeIds.CwPayrollFactory,
         {
           owner: coreAddress,
-          vesting_code_id: CODE_ID_CONFIG.CwVesting,
+          vesting_code_id: codeIds.CwVesting,
         } as VestingFactoryInstantiateMsg,
         `DAO_${name}_VestingPayrollFactory`,
         CHAIN_GAS_MULTIPLIER

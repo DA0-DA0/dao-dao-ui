@@ -1,15 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
+  CHAIN_ID,
   makeDaoInfo,
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
-} from '@dao-dao/storybook/decorators'
-import {
-  CHAIN_ID,
-  getNativeIbcUsdc,
-  getNativeTokenForChainId,
-} from '@dao-dao/utils'
+} from '@dao-dao/storybook'
+import { getNativeIbcUsdc, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
 import { WyndSwapComponent, WyndSwapData } from './Component'

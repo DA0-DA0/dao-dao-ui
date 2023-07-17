@@ -1,9 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { token } from '@dao-dao/stateless/components/token/TokenCard.stories'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { TokenStake } from '@dao-dao/types'
-import { CHAIN_ID, StakeType } from '@dao-dao/utils'
+import { StakeType } from '@dao-dao/utils'
 
 import { ManageStakingComponent, ManageStakingData } from './Component'
 

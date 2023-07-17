@@ -2,9 +2,9 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ButtonLink } from '@dao-dao/stateless'
 import { makeProps as makeTokenCardProps } from '@dao-dao/stateless/components/token/TokenCard.stories'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators/DaoPageWrapperDecorator'
 import { EntityType, TokenType } from '@dao-dao/types'
-import { CHAIN_ID } from '@dao-dao/utils'
 
 import { VestingPaymentCard } from './VestingPaymentCard'
 

@@ -106,7 +106,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         undefined,
     },
     // Then the IBC assets.
-    ...getIbcAssets(),
+    ...getIbcAssets(chainId),
   ]
   const selectedToken = availableTokens.find(
     (token) =>

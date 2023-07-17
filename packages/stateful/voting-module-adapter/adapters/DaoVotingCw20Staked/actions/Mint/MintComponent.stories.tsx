@@ -1,9 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { AddressInput } from '@dao-dao/stateless'
-import { makeReactHookFormDecorator } from '@dao-dao/storybook'
+import { CHAIN_ID, makeReactHookFormDecorator } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
-import { CHAIN_ID } from '@dao-dao/utils'
 
 import { MintData } from '.'
 import { MintComponent } from './MintComponent'

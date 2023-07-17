@@ -8,6 +8,7 @@ export type InboxSourceItem<Props extends unknown = any> = {
 }
 
 export type InboxSourceDaoWithItems<Props extends unknown = any> = {
+  chainId: string
   coreAddress: string
   items: InboxSourceItem<Props>[]
 }
@@ -31,6 +32,7 @@ export type InboxItem<Props extends unknown = any> = InboxSourceItem<Props> & {
 
 export type InboxDaoWithItems = {
   dao: {
+    chainId: string
     coreAddress: string
     name: string
     imageUrl: string
@@ -62,6 +64,7 @@ export type InboxApiItem = {
 } & {
   type: InboxApiItemType.JoinedDao
   data: {
+    chainId: string
     dao: string
   }
 }

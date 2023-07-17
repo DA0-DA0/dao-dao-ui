@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { DaoCard } from '@dao-dao/stateful'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { ContractVersion, DaoCardInfo } from '@dao-dao/types'
-import { CHAIN_ID } from '@dao-dao/utils'
 
 import { HorizontalScroller } from './HorizontalScroller'
 

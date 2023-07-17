@@ -1,13 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { AddressInput } from '@dao-dao/stateless'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import {
   makeDaoInfo,
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
 import { TokenType } from '@dao-dao/types'
-import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
+import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { SpendComponent, SpendData } from './Component'
 

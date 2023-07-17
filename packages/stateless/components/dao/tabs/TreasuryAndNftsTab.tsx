@@ -10,13 +10,12 @@ import {
   TokenCardInfo,
 } from '@dao-dao/types'
 import {
-  PolytoneNotesPerChain,
   getChainForChainId,
   getDisplayNameForChainId,
   isKadoEnabled,
 } from '@dao-dao/utils'
 
-import { useChain, useDaoInfoContext } from '../../../hooks'
+import { useDaoInfoContext, useSupportedChainContext } from '../../../hooks'
 import { Button } from '../../buttons'
 import { CopyToClipboard } from '../../CopyToClipboard'
 import { GridCardContainer } from '../../GridCardContainer'
@@ -56,7 +55,10 @@ export const TreasuryAndNftsTab = <
   ButtonLink,
 }: TreasuryAndNftsTabProps<T, N>) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const {
+    chain: { chain_id: chainId },
+    config: { polytone = {} },
+  } = useSupportedChainContext()
   const {
     chainId: daoChainId,
     coreAddress,
@@ -66,11 +68,7 @@ export const TreasuryAndNftsTab = <
   // Tokens and NFTs on the various Polytone-supported chains.
   const treasuries = [
     [chainId, coreAddress],
-    ...Object.entries(
-      (chainId in PolytoneNotesPerChain &&
-        PolytoneNotesPerChain[chainId as keyof typeof PolytoneNotesPerChain]) ||
-        {}
-    ).map(([chainId]): [string, string | undefined] => [
+    ...Object.keys(polytone).map((chainId): [string, string | undefined] => [
       chainId,
       polytoneProxies[chainId],
     ]),

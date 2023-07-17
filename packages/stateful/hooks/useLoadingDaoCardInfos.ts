@@ -4,7 +4,7 @@ import { waitForAll } from 'recoil'
 import { indexerFeaturedDaosSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
-import { MAINNET, SUPPORTED_CHAINS } from '@dao-dao/utils'
+import { getSupportedChains } from '@dao-dao/utils'
 
 import { daoCardInfoSelector, followingDaosSelector } from '../recoil'
 
@@ -42,9 +42,11 @@ export const useLoadingDaoCardInfos = (
 export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
   DaoCardInfo[]
 > => {
-  const chains = SUPPORTED_CHAINS.filter(({ mainnet }) => mainnet === MAINNET)
+  const chains = getSupportedChains()
   const featuredDaos = useCachedLoading(
-    waitForAll(chains.map(({ id }) => indexerFeaturedDaosSelector(id))),
+    waitForAll(
+      chains.map(({ chain }) => indexerFeaturedDaosSelector(chain.chain_id))
+    ),
     []
   )
 
@@ -53,9 +55,9 @@ export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
       ? { loading: true }
       : {
           loading: false,
-          data: chains.flatMap(({ id }, index) =>
+          data: chains.flatMap(({ chain }, index) =>
             featuredDaos.data[index].map((coreAddress) => ({
-              chainId: id,
+              chainId: chain.chain_id,
               coreAddress,
             }))
           ),
@@ -66,15 +68,15 @@ export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
 export const useLoadingFollowingDaoCardInfos = (): LoadingData<
   DaoCardInfo[]
 > => {
-  const chains = SUPPORTED_CHAINS.filter(({ mainnet }) => mainnet === MAINNET)
+  const chains = getSupportedChains()
 
   const { publicKey } = useWallet()
   const followingDaosLoading = useCachedLoading(
     publicKey
       ? waitForAll(
-          chains.map(({ id }) =>
+          chains.map(({ chain }) =>
             followingDaosSelector({
-              chainId: id,
+              chainId: chain.chain_id,
               walletPublicKey: publicKey.hex,
             })
           )
@@ -88,9 +90,9 @@ export const useLoadingFollowingDaoCardInfos = (): LoadingData<
       ? { loading: true }
       : {
           loading: false,
-          data: chains.flatMap(({ id }, index) =>
+          data: chains.flatMap(({ chain }, index) =>
             followingDaosLoading.data[index].map((coreAddress) => ({
-              chainId: id,
+              chainId: chain.chain_id,
               coreAddress,
             }))
           ),

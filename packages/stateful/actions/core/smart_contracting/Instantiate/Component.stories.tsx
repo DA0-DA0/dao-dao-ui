@@ -1,8 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ReactHookFormDecorator } from '@dao-dao/storybook'
+import { CHAIN_ID, ReactHookFormDecorator } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
-import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
+import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { InstantiateComponent } from './Component'
 

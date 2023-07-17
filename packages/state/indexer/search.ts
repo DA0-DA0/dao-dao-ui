@@ -4,7 +4,7 @@ import { IndexerDumpState, WithChainId } from '@dao-dao/types'
 import {
   SEARCH_API_KEY,
   SEARCH_HOST,
-  SearchDaosIndexPerChain,
+  getSupportedChainConfig,
 } from '@dao-dao/utils'
 
 let _client: MeiliSearch | undefined
@@ -43,12 +43,11 @@ export const searchDaos = async ({
 }: SearchDaosOptions): Promise<DaoSearchResult[]> => {
   const client = await loadMeilisearchClient()
 
-  if (!(chainId in SearchDaosIndexPerChain)) {
+  const config = getSupportedChainConfig(chainId)
+  if (!config) {
     return []
   }
-  const index = client.index(
-    SearchDaosIndexPerChain[chainId as keyof typeof SearchDaosIndexPerChain]!
-  )
+  const index = client.index(config.indexes.search)
 
   const results = await index.search<Omit<DaoSearchResult, 'chainId'>>(query, {
     limit,

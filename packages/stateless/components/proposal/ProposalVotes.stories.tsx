@@ -1,9 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { VoteDisplay } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ProposalVotes/VoteDisplay'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { EntityType } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { CHAIN_ID, getFallbackImage, toBech32Hash } from '@dao-dao/utils'
+import { getFallbackImage, toBech32Hash } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../EntityDisplay'
 import { ProposalVotes, ProposalVotesProps } from './ProposalVotes'

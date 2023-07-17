@@ -317,6 +317,7 @@ export const daoDropdownInfoSelector: (
             ).map(({ addr }) => addr)
 
       return {
+        chainId,
         coreAddress,
         imageUrl: config.image_url || getFallbackImage(coreAddress),
         name: config.name,

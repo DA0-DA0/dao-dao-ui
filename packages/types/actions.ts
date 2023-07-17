@@ -4,6 +4,7 @@ import { ComponentType } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
+import { SupportedChainContext } from './chain'
 import { CosmosMsgFor_Empty } from './contracts/common'
 import { DaoInfo } from './dao'
 
@@ -212,6 +213,7 @@ export type ActionContext =
 export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
   t: TFunction
   chain: Chain
+  chainContext: SupportedChainContext
   // coreAddress if context.type === Dao
   // walletAddress if context.type === Wallet
   address: string

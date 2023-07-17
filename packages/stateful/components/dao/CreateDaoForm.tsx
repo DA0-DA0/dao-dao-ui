@@ -22,8 +22,8 @@ import {
   RightSidebarContent,
   useAppContext,
   useCachedLoadable,
-  useChain,
   useDaoNavHelpers,
+  useSupportedChainContext,
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
@@ -38,9 +38,7 @@ import {
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
 import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_schema.json'
 import {
-  CODE_ID_CONFIG,
   DaoProposalMultipleAdapterId,
-  FACTORY_CONTRACT_ADDRESS,
   NEW_DAO_CW20_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
@@ -94,7 +92,10 @@ export const CreateDaoForm = ({
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const {
+    chain: { chain_id: chainId },
+    config: { factoryContractAddress, codeIds },
+  } = useSupportedChainContext()
 
   const { goToDao } = useDaoNavHelpers()
   const { setFollowing } = useFollowingDaos()
@@ -283,7 +284,12 @@ export const CreateDaoForm = ({
     // Generate proposal module adapters' instantiation messages.
     const proposalModuleInstantiateInfos =
       proposalModuleDaoCreationAdapters.map(({ getInstantiateInfo }, index) =>
-        getInstantiateInfo(newDao, proposalModuleAdapters[index].data, t)
+        getInstantiateInfo(
+          codeIds,
+          newDao,
+          proposalModuleAdapters[index].data,
+          t
+        )
       )
 
     let instantiateMsg: DaoCoreV2InstantiateMsg = {
@@ -305,24 +311,31 @@ export const CreateDaoForm = ({
 
     // Mutate instantiateMsg via creator. Voting module adapter should be set
     // through this.
-    instantiateMsg = creator.mutate(instantiateMsg, newDao, creatorData, t)
+    instantiateMsg = creator.mutate(
+      instantiateMsg,
+      newDao,
+      creatorData,
+      t,
+      codeIds
+    )
 
     // Validate and throw error if invalid according to JSON schema.
     validateInstantiateMsg(instantiateMsg)
 
     return instantiateMsg
   }, [
+    proposalModuleDaoCreationAdapters,
+    parentDao?.coreAddress,
     description,
     imageUrl,
     name,
-    newDao,
-    parentDao?.coreAddress,
-    proposalModuleAdapters,
-    proposalModuleDaoCreationAdapters,
-    t,
-    validateInstantiateMsg,
     creator,
+    newDao,
     creatorData,
+    t,
+    codeIds,
+    validateInstantiateMsg,
+    proposalModuleAdapters,
   ])
 
   //! Submit handlers
@@ -333,7 +346,7 @@ export const CreateDaoForm = ({
 
   const instantiateWithFactory =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({
-      contractAddress: FACTORY_CONTRACT_ADDRESS,
+      contractAddress: factoryContractAddress,
       sender: walletAddress ?? '',
     })
 
@@ -341,7 +354,7 @@ export const CreateDaoForm = ({
     const cwCoreInstantiateMsg = generateInstantiateMsg()
 
     const { logs } = await instantiateWithFactory({
-      codeId: CODE_ID_CONFIG.DaoCore,
+      codeId: codeIds.DaoCore,
       instantiateMsg: Buffer.from(
         JSON.stringify(cwCoreInstantiateMsg),
         'utf8'
@@ -354,7 +367,7 @@ export const CreateDaoForm = ({
       'set contract admin as itself'
     ).value
     return contractAddress
-  }, [generateInstantiateMsg, instantiateWithFactory])
+  }, [codeIds.DaoCore, generateInstantiateMsg, instantiateWithFactory])
 
   const parseSubmitterValueDelta = useCallback((value: string): number => {
     switch (value) {
