@@ -18,6 +18,7 @@ import {
 import { WalletNftCard } from '../WalletNftCard'
 import { WalletTokenLine } from '../WalletTokenLine'
 
+// TODO(chain-unify): Combine all chains.
 export const MeBalances = () => {
   const { chain_id: chainId } = useChain()
   const { address: walletAddress, publicKey } = useWallet()
@@ -67,9 +68,13 @@ export const MeBalances = () => {
           })),
         }
 
+  // TODO(chain-unify): Show NFTs from all.
   const nfts = useCachedLoading(
     walletAddress
-      ? walletNativeAndStargazeNftsSelector(walletAddress)
+      ? walletNativeAndStargazeNftsSelector({
+          chainId,
+          walletAddress,
+        })
       : undefined,
     []
   )

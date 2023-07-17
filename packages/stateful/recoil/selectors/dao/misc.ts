@@ -16,7 +16,6 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHAIN_ID,
   DaoVotingCw20StakedAdapterId,
   getChainForChainId,
   isValidContractAddress,
@@ -41,11 +40,7 @@ export const daoCoreProposalModulesSelector = selectorFamily<
         })
       )
 
-      return await fetchProposalModules(
-        chainId ?? CHAIN_ID,
-        coreAddress,
-        coreVersion
-      )
+      return await fetchProposalModules(chainId, coreAddress, coreVersion)
     },
 })
 
@@ -250,6 +245,7 @@ export const daoInfoSelector: (param: {
       }
 
       return {
+        chainId,
         coreAddress,
         coreVersion,
         votingModuleAddress: dumpState.voting_module,

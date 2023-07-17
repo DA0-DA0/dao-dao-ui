@@ -2,13 +2,13 @@ import { atom, atomFamily } from 'recoil'
 
 import { localStorageEffectJSON } from '@dao-dao/state/recoil/effects'
 import {
+  ChainId,
   DaoCreatedCardProps,
   DepositRefundPolicy,
   DurationUnits,
   NewDao,
 } from '@dao-dao/types'
 import {
-  CHAIN_ID,
   DaoProposalMultipleAdapterId,
   DaoProposalSingleAdapterId,
   MembershipBasedCreatorId,
@@ -24,6 +24,7 @@ import {
 // Avoid cyclic dependencies issues with the adapter modules by using a lazy
 // maker function.
 export const makeDefaultNewDao = (): NewDao => ({
+  chainId: ChainId.JunoMainnet,
   name: '',
   description: '',
   imageUrl: undefined,
@@ -57,7 +58,9 @@ export const makeDefaultNewDao = (): NewDao => ({
       enabled: false,
       amount: 10,
       type: 'native',
-      denomOrAddress: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,
+      // TODO(chain-unify): switch this when switching chain ID?
+      denomOrAddress: getNativeTokenForChainId(ChainId.JunoMainnet)
+        .denomOrAddress,
       token: undefined,
       refundPolicy: DepositRefundPolicy.OnlyPassed,
     },

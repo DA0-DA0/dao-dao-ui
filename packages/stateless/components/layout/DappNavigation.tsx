@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next'
 import { ButtonPopupSection } from '@dao-dao/types'
 import { DappNavigationProps } from '@dao-dao/types/stateless/DappNavigation'
 import {
-  HOST_CHAIN_SUBDOMAINS,
+  SUPPORTED_CHAINS,
   MAINNET,
   getDisplayNameForChainId,
   getImageUrlForChainId,
@@ -110,7 +110,7 @@ export const DappNavigation = ({
     )
     const chainSwitcherSections: ButtonPopupSection[] = [
       {
-        buttons: HOST_CHAIN_SUBDOMAINS.filter(
+        buttons: SUPPORTED_CHAINS.filter(
           ({ hideFromSwitcher }) => !hideFromSwitcher
         )
           .map(({ id, subdomain }) => ({

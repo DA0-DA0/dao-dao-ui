@@ -7,7 +7,6 @@ import {
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { WithChainId } from '@dao-dao/types'
-import { CHAIN_ID } from '@dao-dao/utils'
 
 import {
   nftCardInfoSelector,
@@ -67,7 +66,7 @@ export const LazyNftCard = ({
 
   return info.loading || info.errored ? (
     <NftCardToUse
-      chainId={chainId || CHAIN_ID}
+      chainId={chainId}
       className="animate-pulse"
       collection={{
         address: collectionAddress,

@@ -16,19 +16,18 @@ import {
   CommandModalContextSection,
   CommandModalDaoInfo,
 } from '@dao-dao/types/command'
-import { CHAIN_ID } from '@dao-dao/utils'
 
 import { useFollowingDaos } from '../../../hooks'
 
 export const makeGenericDaoContext: CommandModalContextMaker<{
   dao: CommandModalDaoInfo
-}> = ({ dao: { chainId = CHAIN_ID, coreAddress, name, imageUrl } }) => {
+}> = ({ dao: { chainId, coreAddress, name, imageUrl } }) => {
   const useSections = () => {
     const { t } = useTranslation()
     const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
 
     const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
-      useFollowingDaos()
+      useFollowingDaos(chainId)
     const following = isFollowing(coreAddress)
 
     const [copied, setCopied] = useState(false)
@@ -96,20 +95,13 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
             setCopied(true)
           },
         },
-        // Only allow following if on same chain.
-        ...(chainId === CHAIN_ID
-          ? [
-              {
-                name: following ? t('button.unfollow') : t('button.follow'),
-                Icon: CheckRounded,
-                onChoose: () =>
-                  following
-                    ? setUnfollowing(coreAddress)
-                    : setFollowing(coreAddress),
-                loading: updatingFollowing,
-              },
-            ]
-          : []),
+        {
+          name: following ? t('button.unfollow') : t('button.follow'),
+          Icon: CheckRounded,
+          onChoose: () =>
+            following ? setUnfollowing(coreAddress) : setFollowing(coreAddress),
+          loading: updatingFollowing,
+        },
       ],
     }
 

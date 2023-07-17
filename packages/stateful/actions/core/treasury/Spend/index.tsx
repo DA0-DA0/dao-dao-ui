@@ -22,7 +22,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  CHAIN_ID,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
@@ -70,8 +69,7 @@ const useDefaults: UseDefaults<SpendData> = () => {
 const Component: ActionComponent<undefined, SpendData> = (props) => {
   const { watch } = useFormContext<SpendData>()
 
-  const chainId =
-    watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const denom = watch((props.fieldNamePrefix + 'denom') as 'denom')
   const recipient = watch((props.fieldNamePrefix + 'to') as 'to')
   const toChainId = watch((props.fieldNamePrefix + 'toChainId') as 'toChainId')

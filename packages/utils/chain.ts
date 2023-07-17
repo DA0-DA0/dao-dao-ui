@@ -13,34 +13,28 @@ import RIPEMD160 from 'ripemd160'
 import {
   ChainId,
   GenericToken,
-  HostChain,
+  SupportedChainWithChain,
   TokenType,
   Validator,
 } from '@dao-dao/types'
 
-import {
-  CHAIN_ID,
-  CHAIN_RPC_ENDPOINT,
-  HOST_CHAIN_SUBDOMAINS,
-  OSMOSIS_MAINNET_RPC,
-  STARGAZE_RPC_ENDPOINT,
-} from './constants'
+import { CHAIN_ENDPOINTS, MAINNET, SUPPORTED_CHAINS } from './constants'
 import { getFallbackImage } from './getFallbackImage'
 import { getIbcAssets } from './ibc'
 
 export const getRpcForChainId = (chainId: string): string => {
-  // Override from environment variables. Matched in
-  // @dao-dao/stateful/components/WalletProvider.tsx
-  if (chainId === CHAIN_ID) {
-    return CHAIN_RPC_ENDPOINT
-  } else if (chainId === ChainId.StargazeMainnet) {
-    return STARGAZE_RPC_ENDPOINT
-  } else if (chainId === ChainId.OsmosisMainnet) {
-    return OSMOSIS_MAINNET_RPC
+  let rpc = (
+    (chainId in CHAIN_ENDPOINTS &&
+      CHAIN_ENDPOINTS[chainId as keyof typeof CHAIN_ENDPOINTS]) ||
+    {}
+  )?.rpc
+  if (rpc) {
+    return rpc
   }
 
+  // Fallback to chain registry.
   const chain = maybeGetChainForChainId(chainId)
-  const rpc = chain?.apis?.rpc?.[0].address
+  rpc = chain?.apis?.rpc?.[0].address
   if (!rpc) {
     throw new Error(`Unknown chain ID "${chainId}"`)
   }
@@ -212,7 +206,7 @@ export const getTokenForChainIdAndDenom = (
     const key = `${chainId}:${denom}`
     if (!cachedTokens[key]) {
       // Try IBC assets.
-      const ibcAsset = getIbcAssets().find(
+      const ibcAsset = getIbcAssets(chainId).find(
         ({ denomOrAddress }) => denomOrAddress === denom
       )
       if (!ibcAsset) {
@@ -357,37 +351,30 @@ export const getIbcTransferInfoFromChainSource = (
   }
 }
 
-export const getHostChains = (): HostChain[] =>
-  HOST_CHAIN_SUBDOMAINS.map(({ id, subdomain }) => ({
+export const getSupportedChains = (): SupportedChainWithChain[] =>
+  SUPPORTED_CHAINS.map(({ id, mainnet }) => ({
     chain: getChainForChainId(id),
-    subdomain,
+    mainnet,
   }))
 
 // Validates whether the address is for the current chain. If so, return
 // undefined. If not, return the correct subdomain.
-export const validateAddressOnCurrentChain = (
-  address: string
-): string | undefined => {
-  const supportedChains = getHostChains()
+export const getChainIdForAddress = (address: string): string => {
+  const supportedChains = getSupportedChains()
 
-  // Match supported chains from address prefix. There may be overlaps (testnets
-  // often use the same prefix as mainnets).
+  // Match supported chain from address prefix. Hopefully there is only one. Use
+  // the first.
   const { prefix } = fromBech32(address)
-  const chainsForAddress = supportedChains.filter(
-    ({ chain }) => chain.bech32_prefix === prefix
+  const chainForAddress = supportedChains.find(
+    ({ chain, mainnet }) =>
+      chain.bech32_prefix === prefix && mainnet === MAINNET
   )
 
-  if (chainsForAddress.length === 0) {
+  if (!chainForAddress) {
     throw new Error(`Unsupported chain: unrecognized prefix "${prefix}"`)
   }
 
-  // If any chain matches the current chain, return undefined.
-  if (chainsForAddress.some(({ chain }) => chain.chain_id === CHAIN_ID)) {
-    return
-  }
-
-  // Otherwise return the subdomain of the first chain.
-  return `https://${chainsForAddress[0].subdomain}.daodao.zone`
+  return chainForAddress.chain.chain_id
 }
 
 // Construct Keplr chain info from chain registry.
@@ -458,3 +445,7 @@ export const maybeGetKeplrChainInfo = (
     feeCurrencies,
   }
 }
+
+// Kado fiat modal only supports Juno and Osmosis.
+export const isKadoEnabled = (chainId: string) =>
+  chainId === ChainId.JunoMainnet || chainId === ChainId.OsmosisMainnet

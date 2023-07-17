@@ -3,7 +3,6 @@ import { atom, selector, selectorFamily } from 'recoil'
 
 import { Expiration, IndexerFormulaType, WithChainId } from '@dao-dao/types'
 import {
-  CHAIN_ID,
   CommonError,
   FEATURED_DAOS_INDEX,
   WEB_SOCKET_PUSHER_APP_KEY,
@@ -237,42 +236,44 @@ export const indexerMeilisearchClientSelector = selector({
 })
 
 // Top 10 featured DAOs by TVL with certain conditions.
-export const indexerFeaturedDaosSelector = selector({
+export const indexerFeaturedDaosSelector = selectorFamily<string[], string>({
   key: 'indexerFeaturedDaos',
-  get: async ({ get }) => {
-    const priorityFeaturedDaos: string[] =
-      get(
-        queryGenericIndexerSelector({
-          chainId: CHAIN_ID,
-          formula: 'priorityFeaturedDaos',
-          required: true,
-        })
-      ) || []
+  get:
+    (chainId) =>
+    async ({ get }) => {
+      const priorityFeaturedDaos: string[] =
+        get(
+          queryGenericIndexerSelector({
+            chainId,
+            formula: 'priorityFeaturedDaos',
+            required: true,
+          })
+        ) || []
 
-    const client = get(indexerMeilisearchClientSelector)
-    const index = client.index(FEATURED_DAOS_INDEX)
-    const results = await index.search<{ contractAddress: string }>(null, {
-      limit: 10,
-      filter: [
-        'value.daysSinceLastProposalPassed >= 0',
-        'value.daysSinceLastProposalPassed <= 90',
-        'value.giniCoefficient >= 0',
-        'value.giniCoefficient < 0.75',
-        'value.memberCount >= 3',
-        // Exclude priority.
-        `NOT contractAddress IN ["${priorityFeaturedDaos.join('", "')}"]`,
-      ],
-      sort: ['value.tvl:desc'],
-    })
+      const client = get(indexerMeilisearchClientSelector)
+      const index = client.index(FEATURED_DAOS_INDEX)
+      const results = await index.search<{ contractAddress: string }>(null, {
+        limit: 10,
+        filter: [
+          'value.daysSinceLastProposalPassed >= 0',
+          'value.daysSinceLastProposalPassed <= 90',
+          'value.giniCoefficient >= 0',
+          'value.giniCoefficient < 0.75',
+          'value.memberCount >= 3',
+          // Exclude priority.
+          `NOT contractAddress IN ["${priorityFeaturedDaos.join('", "')}"]`,
+        ],
+        sort: ['value.tvl:desc'],
+      })
 
-    // Insert priority DAOs first.
-    const featuredDaos = [
-      ...priorityFeaturedDaos,
-      ...results.hits
-        .map((hit) => hit.contractAddress)
-        .filter((address) => !priorityFeaturedDaos.includes(address)),
-    ]
+      // Insert priority DAOs first.
+      const featuredDaos = [
+        ...priorityFeaturedDaos,
+        ...results.hits
+          .map((hit) => hit.contractAddress)
+          .filter((address) => !priorityFeaturedDaos.includes(address)),
+      ]
 
-    return featuredDaos
-  },
+      return featuredDaos
+    },
 })

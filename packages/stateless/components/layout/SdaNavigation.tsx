@@ -11,10 +11,7 @@ import { useTranslation } from 'react-i18next'
 
 import { DaoPageMode, DaoTabId } from '@dao-dao/types'
 import { SdaNavigationProps } from '@dao-dao/types/stateless/SdaNavigation'
-import {
-  CURRENT_HOST_CHAIN_SUBDOMAIN,
-  getDaoPath as baseGetDaoPath,
-} from '@dao-dao/utils'
+import { getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
 
 import { useDaoInfoContext, useDaoNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
@@ -45,7 +42,7 @@ const getForceCompact = () =>
     ? true
     : undefined
 
-const DAPP_URL_PREFIX = `https://${CURRENT_HOST_CHAIN_SUBDOMAIN}.daodao.zone`
+const DAPP_URL_PREFIX = `https://daodao.zone`
 
 export const SdaNavigation = ({
   tabs,

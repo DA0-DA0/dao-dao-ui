@@ -2,9 +2,7 @@
 
 import { ChainId } from '@dao-dao/types'
 
-import { HOST_CHAIN_SUBDOMAINS } from './chains'
 import { CodeIdConfigs } from './codeIdConfigs'
-import { PolytoneNotesPerChain } from './polytone'
 
 export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV
 
@@ -28,13 +26,6 @@ export const MAINNET = process.env.NEXT_PUBLIC_MAINNET === 'true'
 export const CHAIN_ID = process.env.NEXT_PUBLIC_CHAIN_ID as ChainId
 if (!CHAIN_ID || !Object.values(ChainId).includes(CHAIN_ID)) {
   throw new Error(`Unexpected CHAIN_ID: ${CHAIN_ID}`)
-}
-
-export const CURRENT_HOST_CHAIN_SUBDOMAIN = HOST_CHAIN_SUBDOMAINS.find(
-  (subdomain) => subdomain.id === CHAIN_ID
-)?.subdomain!
-if (!CURRENT_HOST_CHAIN_SUBDOMAIN) {
-  throw new Error(`CHAIN_ID ${CHAIN_ID} not in HOST_CHAIN_SUBDOMAINS`)
 }
 
 // KVPK prefix for saved Me page transactions.
@@ -64,9 +55,6 @@ export const CODE_ID_CONFIG = CodeIdConfigs[CHAIN_ID]!
 if (!CODE_ID_CONFIG) {
   throw new Error(`Chain_ID ${CHAIN_ID} not found in Code ID Configs`)
 }
-
-// Polytone Notes
-export const POLYTONE_NOTES = PolytoneNotesPerChain[CHAIN_ID] || {}
 
 export const FACTORY_CONTRACT_ADDRESS = process.env
   .NEXT_PUBLIC_FACTORY_CONTRACT_ADDRESS as string

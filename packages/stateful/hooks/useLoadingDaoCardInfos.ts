@@ -1,22 +1,26 @@
+import { useWallet } from '@noahsaso/cosmodal'
 import { waitForAll } from 'recoil'
 
 import { indexerFeaturedDaosSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
-import { CHAIN_ID } from '@dao-dao/utils'
+import { MAINNET, SUPPORTED_CHAINS } from '@dao-dao/utils'
 
-import { daoCardInfoSelector } from '../recoil'
-import { useFollowingDaos } from './useFollowingDaos'
+import { daoCardInfoSelector, followingDaosSelector } from '../recoil'
 
 export const useLoadingDaoCardInfos = (
-  chainId: string,
-  coreAddresses?: string[]
+  daos: LoadingData<
+    {
+      chainId: string
+      coreAddress: string
+    }[]
+  >
 ): LoadingData<DaoCardInfo[]> => {
   // If `coreAddresses` is undefined, we're still loading DAOs.
   const daoCardInfosLoadable = useCachedLoadable(
-    coreAddresses
+    !daos.loading
       ? waitForAll(
-          coreAddresses.map((coreAddress) =>
+          daos.data.map(({ chainId, coreAddress }) =>
             daoCardInfoSelector({
               chainId,
               coreAddress,
@@ -38,16 +42,58 @@ export const useLoadingDaoCardInfos = (
 export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
   DaoCardInfo[]
 > => {
-  const featuredDaos = useCachedLoading(indexerFeaturedDaosSelector, undefined)
+  const chains = SUPPORTED_CHAINS.filter(({ mainnet }) => mainnet === MAINNET)
+  const featuredDaos = useCachedLoading(
+    waitForAll(chains.map(({ id }) => indexerFeaturedDaosSelector(id))),
+    []
+  )
+
   return useLoadingDaoCardInfos(
-    CHAIN_ID,
-    featuredDaos.loading ? undefined : featuredDaos.data
+    featuredDaos.loading
+      ? { loading: true }
+      : {
+          loading: false,
+          data: chains.flatMap(({ id }, index) =>
+            featuredDaos.data[index].map((coreAddress) => ({
+              chainId: id,
+              coreAddress,
+            }))
+          ),
+        }
   )
 }
 
 export const useLoadingFollowingDaoCardInfos = (): LoadingData<
   DaoCardInfo[]
 > => {
-  const { daos } = useFollowingDaos()
-  return useLoadingDaoCardInfos(CHAIN_ID, daos.loading ? undefined : daos.data)
+  const chains = SUPPORTED_CHAINS.filter(({ mainnet }) => mainnet === MAINNET)
+
+  const { publicKey } = useWallet()
+  const followingDaosLoading = useCachedLoading(
+    publicKey
+      ? waitForAll(
+          chains.map(({ id }) =>
+            followingDaosSelector({
+              chainId: id,
+              walletPublicKey: publicKey.hex,
+            })
+          )
+        )
+      : undefined,
+    []
+  )
+
+  return useLoadingDaoCardInfos(
+    followingDaosLoading.loading
+      ? { loading: true }
+      : {
+          loading: false,
+          data: chains.flatMap(({ id }, index) =>
+            followingDaosLoading.data[index].map((coreAddress) => ({
+              chainId: id,
+              coreAddress,
+            }))
+          ),
+        }
+  )
 }

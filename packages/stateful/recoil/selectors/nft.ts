@@ -13,7 +13,6 @@ import { stakerForNftSelector } from '@dao-dao/state/recoil/selectors/contracts/
 import { ChainId, NftCardInfo, WithChainId } from '@dao-dao/types'
 import { StargazeNft } from '@dao-dao/types/nft'
 import {
-  CHAIN_ID,
   MAINNET,
   STARGAZE_PROFILE_API_TEMPLATE,
   STARGAZE_URL_BASE,
@@ -151,30 +150,30 @@ export const nftCardInfoSelector = selectorFamily<
 
 export const nftCardInfosForDaoSelector = selectorFamily<
   NftCardInfo[],
-  {
+  WithChainId<{
     coreAddress: string
     // If DAO is using the cw721-staking voting module adapter, it will have an
     // NFT governance collection. If this is the case, passing it here makes
     // sure we include the collection if it is not in the DAO's cw721 token
     // list.
     governanceCollectionAddress?: string
-  }
+  }>
 >({
   key: 'nftCardInfosForDao',
   get:
-    ({ coreAddress, governanceCollectionAddress }) =>
+    ({ chainId, coreAddress, governanceCollectionAddress }) =>
     async ({ get }) => {
       // TODO: Store NFT collections for polytone proxies with another prefix.
       // const polytoneProxies = Object.entries(
       //   get(
       //     daoCorePolytoneProxiesSelector({
-      //       chainId: CHAIN_ID,
+      //       chainId,
       //       coreAddress,
       //     })
       //   )
       // )
 
-      return [[CHAIN_ID, coreAddress] /* ...polytoneProxies */].flatMap(
+      return [[chainId, coreAddress] /* ...polytoneProxies */].flatMap(
         ([chainId, coreAddress]) => {
           // Get all NFT collection addresses for the DAO.
           const nftCollectionAddresses = get(

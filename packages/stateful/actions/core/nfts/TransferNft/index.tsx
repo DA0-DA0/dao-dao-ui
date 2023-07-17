@@ -162,6 +162,7 @@ const Component: ActionComponent = (props) => {
     props.isCreating
       ? context.type === ActionContextType.Dao
         ? nftCardInfosForDaoSelector({
+            chainId,
             coreAddress: address,
             governanceCollectionAddress,
           })

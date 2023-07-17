@@ -11,7 +11,6 @@ import {
 } from '@dao-dao/state'
 import { TokenCardInfo, WithChainId } from '@dao-dao/types'
 import {
-  CHAIN_ID,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   getTokenForChainIdAndDenom,
@@ -22,20 +21,25 @@ import {
 // refreshes. Use `tokenCardLazyInfoSelector`.
 export const treasuryTokenCardInfosSelector = selectorFamily<
   TokenCardInfo[],
-  {
+  WithChainId<{
     coreAddress: string
     cw20GovernanceTokenAddress?: string
     nativeGovernanceTokenDenom?: string
-  }
+  }>
 >({
   key: 'treasuryTokenCardInfos',
   get:
-    ({ coreAddress, cw20GovernanceTokenAddress, nativeGovernanceTokenDenom }) =>
+    ({
+      chainId,
+      coreAddress,
+      cw20GovernanceTokenAddress,
+      nativeGovernanceTokenDenom,
+    }) =>
     ({ get }) => {
       const polytoneProxies = Object.entries(
         get(
           DaoCoreV2Selectors.polytoneProxiesSelector({
-            chainId: CHAIN_ID,
+            chainId,
             contractAddress: coreAddress,
           })
         )
@@ -45,11 +49,11 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
         // Native.
         {
           owner: coreAddress,
-          chainId: CHAIN_ID,
+          chainId,
           balances: get(
             nativeBalancesSelector({
               address: coreAddress,
-              chainId: CHAIN_ID,
+              chainId,
             })
           ),
         },
@@ -70,7 +74,7 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
       const cw20s = get(
         DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
           contractAddress: coreAddress,
-          chainId: CHAIN_ID,
+          chainId,
           governanceTokenAddress: cw20GovernanceTokenAddress,
         })
       )

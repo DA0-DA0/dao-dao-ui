@@ -41,6 +41,7 @@ export const TreasuryAndNftsTab = () => {
 
   const tokens = useCachedLoading(
     treasuryTokenCardInfosSelector({
+      chainId: daoInfo.chainId,
       coreAddress: daoInfo.coreAddress,
       cw20GovernanceTokenAddress,
       nativeGovernanceTokenDenom,
@@ -49,6 +50,7 @@ export const TreasuryAndNftsTab = () => {
   )
   const nfts = useCachedLoading(
     nftCardInfosForDaoSelector({
+      chainId: daoInfo.chainId,
       coreAddress: daoInfo.coreAddress,
       governanceCollectionAddress: cw721GovernanceCollectionAddress,
     }),

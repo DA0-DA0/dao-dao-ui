@@ -38,7 +38,6 @@ import {
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
 import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_schema.json'
 import {
-  CHAIN_ID,
   CODE_ID_CONFIG,
   DaoProposalMultipleAdapterId,
   FACTORY_CONTRACT_ADDRESS,
@@ -466,7 +465,7 @@ export const CreateDaoForm = ({
 
             // Set card props to show modal.
             setDaoCreatedCardProps({
-              chainId: CHAIN_ID,
+              chainId,
               coreAddress,
               name,
               description,

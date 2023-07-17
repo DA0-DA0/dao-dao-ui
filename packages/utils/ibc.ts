@@ -3,24 +3,25 @@ import { asset_lists } from '@chain-registry/assets'
 import { GenericToken, TokenType } from '@dao-dao/types'
 
 import { getChainForChainId, getNativeTokenForChainId } from './chain'
-import { CHAIN_ID } from './constants'
 import { concatAddressStartEnd } from './conversion'
 import { getFallbackImage } from './getFallbackImage'
 
 // Cache once loaded.
-let ibcAssets:
+const ibcAssetsMap: Record<
+  string,
   | (GenericToken & {
       id: string
       description?: string
     })[]
   | undefined
-export const getIbcAssets = () => {
-  if (!ibcAssets) {
-    ibcAssets =
+> = {}
+export const getIbcAssets = (chainId: string) => {
+  if (!ibcAssetsMap[chainId]) {
+    ibcAssetsMap[chainId] =
       asset_lists
         .find(
           ({ chain_name }) =>
-            chain_name === getChainForChainId(CHAIN_ID).chain_name
+            chain_name === getChainForChainId(chainId).chain_name
         )
         ?.assets.map(
           ({
@@ -31,7 +32,7 @@ export const getIbcAssets = () => {
             display,
             denom_units,
           }) => ({
-            chainId: CHAIN_ID,
+            chainId,
             id: display,
             type: TokenType.Native,
             denomOrAddress: base,
@@ -47,19 +48,21 @@ export const getIbcAssets = () => {
         )
         .sort((a, b) => a.symbol.localeCompare(b.symbol)) ?? []
   }
-  return ibcAssets
+
+  return ibcAssetsMap[chainId]!
 }
 
 // Native token exists if it is the native denom or any of the IBC assets.
-export const nativeTokenExists = (denom: string) =>
-  denom === getNativeTokenForChainId(CHAIN_ID).denomOrAddress ||
-  getIbcAssets().some(({ denomOrAddress }) => denomOrAddress === denom)
+export const nativeTokenExists = (chainId: string, denom: string) =>
+  denom === getNativeTokenForChainId(chainId).denomOrAddress ||
+  getIbcAssets(chainId).some(({ denomOrAddress }) => denomOrAddress === denom)
 
-export const getNativeIbcUsdc = () =>
-  getIbcAssets().find(({ id }) => id === 'usdc')
+export const getNativeIbcUsdc = (chainId: string) =>
+  getIbcAssets(chainId).find(({ id }) => id === 'usdc')
+
 // Returns true if this denom is the IBC denom for USDC on the current chain.
-export const isNativeIbcUsdc = (ibcDenom: string): boolean =>
-  ibcDenom === getNativeIbcUsdc()?.denomOrAddress
+export const isNativeIbcUsdc = (chainId: string, ibcDenom: string): boolean =>
+  ibcDenom === getNativeIbcUsdc(chainId)?.denomOrAddress
 
 // Processes symbol and converts into readable format (cut out middle and add
 // ellipses) if long IBC string. Used in `TokenCard` and `TokenDepositModal`.

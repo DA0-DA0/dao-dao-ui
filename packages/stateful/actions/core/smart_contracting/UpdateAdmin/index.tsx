@@ -18,7 +18,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  CHAIN_ID,
   decodePolytoneExecuteMsg,
   getChainForChainId,
   isValidContractAddress,
@@ -106,8 +105,7 @@ const Component: ActionComponent = (props) => {
   const { context } = useActionOptions()
   const { watch } = useFormContext<UpdateAdminData>()
 
-  const chainId =
-    watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
 
   const [contract, setContract] = useState('')

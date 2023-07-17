@@ -63,13 +63,13 @@ export enum ChainId {
   StargazeTestnet = 'elgafar-1',
 }
 
-export type HostChainSubdomain = {
+export type SupportedChain = {
   id: ChainId
-  subdomain: string
-  // Whether or not this chain shows up in the chain switcher.
-  hideFromSwitcher?: boolean
+  // If mainnet, will not show up in the chain switcher. Also used for address
+  // matching since testnets often use the same prefix as their mainnet.
+  mainnet: boolean
 }
 
-export type HostChain = Omit<HostChainSubdomain, 'id'> & {
+export type SupportedChainWithChain = Omit<SupportedChain, 'id'> & {
   chain: Chain
 }

@@ -17,7 +17,6 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHAIN_ID,
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
@@ -264,22 +263,22 @@ export const walletTokenCardInfosSelector = selectorFamily<
 
 export const walletNativeAndStargazeNftsSelector = selectorFamily<
   NftCardInfo[],
-  string
+  WithChainId<{ walletAddress: string }>
 >({
   key: 'walletNativeAndStargazeNfts',
   get:
-    (walletAddress) =>
+    ({ chainId, walletAddress }) =>
     ({ get }) => {
       const nativeNfts = get(
         walletNftCardInfos({
-          chainId: CHAIN_ID,
+          chainId,
           walletAddress,
         })
       )
 
       const nativeStakedNfts = get(
         walletStakedNftCardInfosSelector({
-          chainId: CHAIN_ID,
+          chainId,
           walletAddress,
         })
       )

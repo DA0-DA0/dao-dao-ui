@@ -1,6 +1,6 @@
 import { GasPrice } from '@cosmjs/stargate'
-import { ChainInfo } from '@keplr-wallet/types'
 import {
+  ChainInfoOverrides,
   WalletManagerProvider,
   WalletType,
   useWallet,
@@ -20,43 +20,15 @@ import { useSetRecoilState } from 'recoil'
 import { signingCosmWasmClientAtom } from '@dao-dao/state'
 import { ChainId, Web3AuthPrompt } from '@dao-dao/types'
 import {
-  CHAIN_ID,
-  CHAIN_REST_ENDPOINT,
-  CHAIN_RPC_ENDPOINT,
+  CHAIN_ENDPOINTS,
   MAINNET,
-  OSMOSIS_MAINNET_REST,
-  OSMOSIS_MAINNET_RPC,
   SITE_URL,
-  STARGAZE_REST_ENDPOINT,
-  STARGAZE_RPC_ENDPOINT,
   WC_ICON_PATH,
   WEB3AUTH_CLIENT_ID,
   getChainForChainId,
   maybeGetKeplrChainInfo,
   typesRegistry,
 } from '@dao-dao/utils'
-
-const currentChainInfo: ChainInfo | undefined = maybeGetKeplrChainInfo(CHAIN_ID)
-// Fail build if chain info not found.
-if (!currentChainInfo) {
-  throw new Error(`Chain info not found for CHAIN_ID: ${CHAIN_ID}`)
-}
-
-const stargazeMainnetChainInfo: ChainInfo | undefined = maybeGetKeplrChainInfo(
-  ChainId.StargazeMainnet
-)
-// Fail build if chain info not found.
-if (!stargazeMainnetChainInfo) {
-  throw new Error('Stargaze mainnet chain info not found')
-}
-
-const osmosisMainnetChainInfo: ChainInfo | undefined = maybeGetKeplrChainInfo(
-  ChainId.OsmosisMainnet
-)
-// Fail build if chain info not found.
-if (!osmosisMainnetChainInfo) {
-  throw new Error('Osmosis mainnet chain info not found')
-}
 
 export type WalletProviderProps = {
   // This needs to be provided by the parent component and then passed to the
@@ -91,27 +63,26 @@ export const WalletProvider = ({
       ),
   })
 
+  // Load all custom chain endpoints into wallet provider.
+  const chainInfoOverrides: ChainInfoOverrides = Object.entries(
+    CHAIN_ENDPOINTS
+  ).map(([chainId, { rpc, rest }]) => {
+    const chainInfo = maybeGetKeplrChainInfo(chainId)
+    if (!chainInfo) {
+      throw new Error(`Chain info not found for chain ID: ${chainId}`)
+    }
+
+    return {
+      ...chainInfo,
+      rpc,
+      rest,
+    }
+  })
+
   return (
     <WalletManagerProvider
-      chainInfoOverrides={[
-        // Use environment variables to determine RPC/REST nodes.
-        {
-          ...currentChainInfo,
-          rpc: CHAIN_RPC_ENDPOINT,
-          rest: CHAIN_REST_ENDPOINT,
-        },
-        {
-          ...stargazeMainnetChainInfo,
-          rpc: STARGAZE_RPC_ENDPOINT,
-          rest: STARGAZE_REST_ENDPOINT,
-        },
-        {
-          ...osmosisMainnetChainInfo,
-          rpc: OSMOSIS_MAINNET_RPC,
-          rest: OSMOSIS_MAINNET_REST,
-        },
-      ]}
-      defaultChainId={CHAIN_ID}
+      chainInfoOverrides={chainInfoOverrides}
+      defaultChainId={MAINNET ? ChainId.JunoMainnet : ChainId.JunoTestnet}
       disableDefaultUi
       enabledWalletTypes={[
         // Only show extension wallets on desktop.

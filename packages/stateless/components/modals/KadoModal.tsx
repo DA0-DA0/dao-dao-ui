@@ -5,16 +5,12 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ChainId, KadoModalProps } from '@dao-dao/types'
-import { CHAIN_ID, KADO_API_KEY } from '@dao-dao/utils'
+import { KADO_API_KEY } from '@dao-dao/utils'
 
 import { useChain } from '../../hooks'
 import { CopyToClipboard } from '../CopyToClipboard'
 import { Loader } from '../logo'
 import { Modal } from './Modal'
-
-// Only supports Juno and Osmosis.
-export const KADO_MODAL_ENABLED =
-  CHAIN_ID === ChainId.JunoMainnet || CHAIN_ID === ChainId.OsmosisMainnet
 
 export const KadoModal = ({
   defaultMode = 'buy',

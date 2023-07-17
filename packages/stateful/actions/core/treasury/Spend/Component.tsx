@@ -33,7 +33,6 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
-  CHAIN_ID,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getChainForChainId,
@@ -79,8 +78,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   const { register, watch, setValue, setError, clearErrors } =
     useFormContext<SpendData>()
 
-  const spendChainId =
-    watch((fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
+  const spendChainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
   const spendAmount = watch((fieldNamePrefix + 'amount') as 'amount')
   const spendDenom = watch((fieldNamePrefix + 'denom') as 'denom')
   const recipient = watch((fieldNamePrefix + 'to') as 'to')

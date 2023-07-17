@@ -3,13 +3,18 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
 import { MigrateFollowingModal as StatelessMigrateFollowingModal } from '@dao-dao/stateless'
-import { CHAIN_ID, processError } from '@dao-dao/utils'
+import { ChainId } from '@dao-dao/types'
+import { MAINNET, processError } from '@dao-dao/utils'
 
 import { useCfWorkerAuthPostRequest, useFollowingDaos } from '../hooks'
 import { EntityDisplay } from './EntityDisplay'
 
+const junoChainId = MAINNET ? ChainId.JunoMainnet : ChainId.JunoTestnet
+
+// Migrate followed Juno DAOs.
 export const MigrateFollowingModal = () => {
-  const { daos, setFollowing, ready, updatingFollowing } = useFollowingDaos()
+  const { daos, setFollowing, ready, updatingFollowing } =
+    useFollowingDaos(junoChainId)
 
   const [oldFollowing, setOldFollowing] = useState([] as string[])
   const [loading, setLoading] = useState(false)
@@ -23,7 +28,7 @@ export const MigrateFollowingModal = () => {
       try {
         const { following } = await (
           await fetch(
-            `https://following.daodao.zone/following/${CHAIN_ID}/${address}`
+            `https://following.daodao.zone/following/${junoChainId}/${address}`
           )
         ).json()
 

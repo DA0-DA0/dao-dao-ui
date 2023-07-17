@@ -22,7 +22,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  CHAIN_ID,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
@@ -155,8 +154,7 @@ const Component: ActionComponent = (props) => {
   } = useActionOptions()
 
   const { watch, setValue } = useFormContext<InstantiateData>()
-  const chainId =
-    watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const funds = watch((props.fieldNamePrefix + 'funds') as 'funds')
 
   // Once created, if this is a polytone message, this will be defined with

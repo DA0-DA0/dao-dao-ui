@@ -15,7 +15,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  CHAIN_ID,
   decodePolytoneExecuteMsg,
   makePolytoneExecuteMessage,
   makeWasmMessage,
@@ -119,8 +118,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MigrateData> = (
 const Component: ActionComponent = (props) => {
   const { context } = useActionOptions()
   const { watch } = useFormContext<MigrateData>()
-  const chainId =
-    watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
 
   const [contract, setContract] = useState('')
 

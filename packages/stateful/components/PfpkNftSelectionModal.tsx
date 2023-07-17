@@ -40,6 +40,7 @@ export type PfpkNftSelectionModalProps = Pick<
   'onClose' | 'visible'
 >
 
+// TODO(chain-unify): Show NFTs from all.
 export const InnerPfpkNftSelectionModal = ({
   onClose,
   visible,
@@ -58,7 +59,10 @@ export const InnerPfpkNftSelectionModal = ({
   const nfts = useCachedLoadingWithError(
     // Don't load NFTs until visible.
     walletAddress && visible
-      ? walletNativeAndStargazeNftsSelector(walletAddress)
+      ? walletNativeAndStargazeNftsSelector({
+          chainId: chain.chain_id,
+          walletAddress,
+        })
       : undefined
   )
 

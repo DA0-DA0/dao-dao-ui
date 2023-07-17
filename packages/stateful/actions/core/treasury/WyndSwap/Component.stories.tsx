@@ -21,7 +21,7 @@ export default {
     makeReactHookFormDecorator<WyndSwapData>({
       tokenIn: getNativeTokenForChainId(CHAIN_ID),
       tokenInAmount: 0,
-      tokenOut: getNativeIbcUsdc()!,
+      tokenOut: getNativeIbcUsdc(CHAIN_ID)!,
       tokenOutAmount: 0,
       minOutAmount: 0,
       swapOperations: undefined,

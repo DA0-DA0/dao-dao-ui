@@ -10,10 +10,10 @@ import {
   TokenCardInfo,
 } from '@dao-dao/types'
 import {
-  CHAIN_ID,
-  POLYTONE_NOTES,
+  PolytoneNotesPerChain,
   getChainForChainId,
   getDisplayNameForChainId,
+  isKadoEnabled,
 } from '@dao-dao/utils'
 
 import { useChain, useDaoInfoContext } from '../../../hooks'
@@ -22,7 +22,6 @@ import { CopyToClipboard } from '../../CopyToClipboard'
 import { GridCardContainer } from '../../GridCardContainer'
 import { DropdownIconButton } from '../../icon_buttons'
 import { Loader } from '../../logo/Loader'
-import { KADO_MODAL_ENABLED } from '../../modals/KadoModal'
 import { ModalProps } from '../../modals/Modal'
 import { NoContent } from '../../NoContent'
 
@@ -58,17 +57,23 @@ export const TreasuryAndNftsTab = <
 }: TreasuryAndNftsTabProps<T, N>) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { coreAddress, polytoneProxies } = useDaoInfoContext()
+  const {
+    chainId: daoChainId,
+    coreAddress,
+    polytoneProxies,
+  } = useDaoInfoContext()
 
   // Tokens and NFTs on the various Polytone-supported chains.
   const treasuries = [
     [chainId, coreAddress],
-    ...Object.entries(POLYTONE_NOTES).map(
-      ([chainId]): [string, string | undefined] => [
-        chainId,
-        polytoneProxies[chainId],
-      ]
-    ),
+    ...Object.entries(
+      (chainId in PolytoneNotesPerChain &&
+        PolytoneNotesPerChain[chainId as keyof typeof PolytoneNotesPerChain]) ||
+        {}
+    ).map(([chainId]): [string, string | undefined] => [
+      chainId,
+      polytoneProxies[chainId],
+    ]),
   ].map(([chainId, address]) => ({
     chainId,
     address,
@@ -93,6 +98,8 @@ export const TreasuryAndNftsTab = <
   const [chainsCollapsed, setChainsCollapsed] = useState(
     {} as Record<string, boolean | undefined>
   )
+
+  const kadoModalEnabled = isKadoEnabled(chainId)
 
   return (
     <>
@@ -148,10 +155,9 @@ export const TreasuryAndNftsTab = <
                     </div>
 
                     {exists ? (
-                      // Only show if defined, which indicates wallet connected, and only show for the current chain.
+                      // Only show if defined, which indicates wallet connected.
                       FiatDepositModal &&
-                      KADO_MODAL_ENABLED &&
-                      chainId === CHAIN_ID && (
+                      kadoModalEnabled && (
                         <Button
                           onClick={() => setShowDepositFiat(true)}
                           variant="secondary"
@@ -201,7 +207,7 @@ export const TreasuryAndNftsTab = <
 
                       {tokens.length === 0 &&
                         nfts.length === 0 &&
-                        (chainId === CHAIN_ID ? (
+                        (chainId === daoChainId ? (
                           <p className="secondary-text">
                             {t('info.nothingFound')}
                           </p>
@@ -226,7 +232,7 @@ export const TreasuryAndNftsTab = <
         )}
       </div>
 
-      {FiatDepositModal && KADO_MODAL_ENABLED && (
+      {FiatDepositModal && kadoModalEnabled && (
         <FiatDepositModal
           onClose={() => setShowDepositFiat(false)}
           visible={showDepositFiat}

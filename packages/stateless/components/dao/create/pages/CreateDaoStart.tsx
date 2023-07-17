@@ -3,13 +3,13 @@ import { useTranslation } from 'react-i18next'
 
 import { ChainId, CreateDaoContext } from '@dao-dao/types'
 import {
-  CHAIN_ID,
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
   MembershipBasedCreatorId,
   validateRequired,
 } from '@dao-dao/utils'
 
+import { useChain } from '../../../../hooks'
 import { InputErrorMessage, TextAreaInput, TextInput } from '../../../inputs'
 import { DaoCreatorCard } from '../DaoCreatorCard'
 
@@ -22,6 +22,7 @@ export const CreateDaoStart = ({
   },
   availableCreators,
 }: CreateDaoContext) => {
+  const { chain_id: chainId } = useChain()
   const { t } = useTranslation()
 
   return (
@@ -103,8 +104,8 @@ export const CreateDaoStart = ({
               supplies={t(suppliesI18nKey)}
               underDevelopment={
                 // Osmosis only supports multisigs right now.
-                (CHAIN_ID === ChainId.OsmosisMainnet ||
-                  CHAIN_ID === ChainId.OsmosisTestnet) &&
+                (chainId === ChainId.OsmosisMainnet ||
+                  chainId === ChainId.OsmosisTestnet) &&
                 id !== MembershipBasedCreatorId
               }
             />

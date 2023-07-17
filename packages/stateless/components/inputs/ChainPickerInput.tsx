@@ -1,12 +1,12 @@
 import { useFormContext } from 'react-hook-form'
 
 import {
-  CHAIN_ID,
-  POLYTONE_NOTES,
   getDisplayNameForChainId,
   getNativeTokenForChainId,
 } from '@dao-dao/utils'
+import { PolytoneNotesPerChain } from '@dao-dao/utils/constants/polytone'
 
+import { useChain } from '../../hooks'
 import { RadioInput } from './RadioInput'
 
 export type ChainPickerInputProps = {
@@ -26,6 +26,7 @@ export const ChainPickerInput = ({
   onChange,
   className,
 }: ChainPickerInputProps) => {
+  const { chain_id: chainId } = useChain()
   const { watch, setValue } = useFormContext()
 
   return (
@@ -35,9 +36,15 @@ export const ChainPickerInput = ({
         fieldName={fieldName}
         onChange={onChange}
         options={[
-          CHAIN_ID,
+          chainId,
           // Other chains with Polytone.
-          ...Object.keys(POLYTONE_NOTES),
+          ...Object.keys(
+            (chainId in PolytoneNotesPerChain &&
+              PolytoneNotesPerChain[
+                chainId as keyof typeof PolytoneNotesPerChain
+              ]) ||
+              {}
+          ),
         ].map((chainId) => ({
           label:
             labelMode === 'chain'
