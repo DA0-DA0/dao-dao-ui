@@ -38,6 +38,7 @@ export interface UseWalletReturn {
   backupImageUrl: string
 }
 
+// TODO(chain-unify): Make this not depend on current chain
 export const useWalletInfo = (): UseWalletReturn => {
   const {
     chain: { chain_id: chainId },

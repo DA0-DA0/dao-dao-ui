@@ -4,11 +4,10 @@ import { ReactNode, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import {
-  constSelector,
   useRecoilState,
   useRecoilValue,
-  useRecoilValueLoadable,
   useSetRecoilState,
+  waitForAll,
 } from 'recoil'
 
 import {
@@ -27,16 +26,15 @@ import {
   DappLayout as StatelessDappLayout,
   useAppContext,
   useCachedLoading,
-  useChain,
   usePlatform,
 } from '@dao-dao/stateless'
+import { getSupportedChains } from '@dao-dao/utils'
 
 import { CommandModal } from '../command'
 import { useFollowingDaos, useWalletInfo } from '../hooks'
 import {
   daoCreatedCardPropsAtom,
   followingDaoDropdownInfosSelector,
-  walletTokenCardInfosSelector,
 } from '../recoil'
 import { ConnectWallet } from './ConnectWallet'
 import { IconButtonLink } from './IconButtonLink'
@@ -48,7 +46,6 @@ import { WalletModals } from './wallet'
 export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { chain_id: chainId } = useChain()
 
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
@@ -74,13 +71,8 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     throw new Error(t('error.loadingData'))
   }
 
-  const { connect, connected, status, connectedWallet } = useWalletManager()
-  const {
-    walletAddress,
-    walletHexPublicKey,
-    walletProfileData,
-    refreshBalances: refreshWalletBalances,
-  } = useWalletInfo()
+  const { connect, connected, status } = useWalletManager()
+  const { walletHexPublicKey, walletProfileData } = useWalletInfo()
 
   //! COMMAND MODAL
   // Hide modal when we nav away.
@@ -135,37 +127,23 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     const interval = setInterval(() => {
       setRefreshBlockHeight((id) => id + 1)
       setRefreshUsdcPrices((id) => id + 1)
-      if (walletAddress) {
-        refreshWalletBalances()
-      }
     }, 60 * 1000)
     return () => clearInterval(interval)
-  }, [
-    refreshWalletBalances,
-    setRefreshBlockHeight,
-    setRefreshUsdcPrices,
-    walletAddress,
-  ])
+  }, [setRefreshBlockHeight, setRefreshUsdcPrices])
 
   //! Following DAOs
   const followingDaoDropdownInfos = useCachedLoading(
     walletHexPublicKey
-      ? followingDaoDropdownInfosSelector({
-          chainId,
-          walletPublicKey: walletHexPublicKey,
-        })
+      ? waitForAll(
+          getSupportedChains().map(({ chain }) =>
+            followingDaoDropdownInfosSelector({
+              chainId: chain.chain_id,
+              walletPublicKey: walletHexPublicKey,
+            })
+          )
+        )
       : undefined,
     []
-  )
-
-  //! Wallet balances, load in background so they're ready.
-  useRecoilValueLoadable(
-    connectedWallet
-      ? walletTokenCardInfosSelector({
-          chainId,
-          walletAddress: connectedWallet.address,
-        })
-      : constSelector(undefined)
   )
 
   return (
@@ -190,7 +168,12 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         setCommandModalVisible: () => setCommandModalVisible(true),
         version: '2.0',
         followingDaos: mountedInBrowser
-          ? followingDaoDropdownInfos
+          ? followingDaoDropdownInfos.loading
+            ? { loading: true }
+            : {
+                loading: false,
+                data: followingDaoDropdownInfos.data.flat(),
+              }
           : // Prevent hydration errors by loading until mounted.
             { loading: true },
         compact,
