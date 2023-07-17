@@ -15,7 +15,6 @@ import {
   Tooltip,
   useAppContext,
   useCachedLoadingWithError,
-  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import { NftCardInfo } from '@dao-dao/types'
 import {
@@ -24,13 +23,13 @@ import {
 } from '@dao-dao/types/contracts/Cw721Base'
 import {
   MAINNET,
-  getDisplayNameForChainId,
+  getSupportedChainConfig,
   processError,
   uploadNft,
 } from '@dao-dao/utils'
 
 import { useInstantiateAndExecute, useWalletInfo } from '../hooks'
-import { walletNativeAndStargazeNftsSelector } from '../recoil'
+import { allWalletNftsSelector } from '../recoil'
 import { SuspenseLoader } from './SuspenseLoader'
 import { Trans } from './Trans'
 
@@ -39,7 +38,6 @@ export type PfpkNftSelectionModalProps = Pick<
   'onClose' | 'visible'
 >
 
-// TODO(chain-unify): Show NFTs from all.
 export const InnerPfpkNftSelectionModal = ({
   onClose,
   visible,
@@ -49,8 +47,8 @@ export const InnerPfpkNftSelectionModal = ({
     address: walletAddress,
     status: walletStatus,
     error: walletError,
+    chainInfo,
   } = useWallet()
-  const { chain, config } = useSupportedChainContext()
 
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
@@ -58,8 +56,7 @@ export const InnerPfpkNftSelectionModal = ({
   const nfts = useCachedLoadingWithError(
     // Don't load NFTs until visible.
     walletAddress && visible
-      ? walletNativeAndStargazeNftsSelector({
-          chainId: chain.chain_id,
+      ? allWalletNftsSelector({
           walletAddress,
         })
       : undefined
@@ -142,7 +139,12 @@ export const InnerPfpkNftSelectionModal = ({
 
   const [uploadingImage, setUploadingImage] = useState(false)
   const { ready: instantiateAndExecuteReady, instantiateAndExecute } =
-    useInstantiateAndExecute(config.codeIds.Cw721Base)
+    useInstantiateAndExecute(
+      chainInfo?.chainId,
+      (chainInfo &&
+        getSupportedChainConfig(chainInfo.chainId)?.codeIds.Cw721Base) ||
+        -1
+    )
   const uploadImage = useCallback(async () => {
     if (!image) {
       toast.error(t('error.noImage'))
@@ -215,9 +217,7 @@ export const InnerPfpkNftSelectionModal = ({
         getIdForNft={getIdForNft}
         header={{
           title: t('title.chooseProfilePicture'),
-          subtitle: t('info.chooseProfilePictureSubtitle', {
-            nativeChainName: getDisplayNameForChainId(chain.chain_id),
-          }),
+          subtitle: t('info.chooseProfilePictureSubtitle'),
         }}
         nfts={
           walletStatus === WalletConnectionStatus.ReadyForConnection &&

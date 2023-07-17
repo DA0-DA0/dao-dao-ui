@@ -82,6 +82,7 @@ export const inboxOpenProposalsSelector = selectorFamily<
                       voted,
                     }): InboxSourceItem<ProposalLineProps> => ({
                       props: {
+                        chainId,
                         coreAddress,
                         proposalId: `${proposalModule.prefix}${id}`,
                         proposalModules,

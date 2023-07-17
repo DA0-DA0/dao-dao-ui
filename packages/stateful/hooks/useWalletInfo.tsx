@@ -1,4 +1,5 @@
 import { makeSignDoc } from '@cosmjs/amino'
+import { ChainInfo } from '@keplr-wallet/types'
 import { useConnectWalletToChain, useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
@@ -11,11 +12,12 @@ import {
   refreshWalletBalancesIdAtom,
   refreshWalletProfileAtom,
 } from '@dao-dao/state'
-import { useCachedLoadable, useChainContext } from '@dao-dao/stateless'
+import { useCachedLoadable } from '@dao-dao/stateless'
 import { ChainId, WalletProfileData, WalletProfileUpdate } from '@dao-dao/types'
 import {
   PFPK_API_BASE,
   convertMicroDenomToDenomWithDecimals,
+  getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
 import { walletProfileDataSelector } from '../recoil'
@@ -25,6 +27,7 @@ export interface UseWalletReturn {
   walletHexPublicKey: string | undefined
   walletBalance: number | undefined
   walletStakedBalance: number | undefined
+  walletChainInfo: ChainInfo | undefined
   dateBalancesFetched: Date | undefined
   refreshBalances: () => void
 
@@ -40,27 +43,27 @@ export interface UseWalletReturn {
 
 // TODO(chain-unify): Make this not depend on current chain
 export const useWalletInfo = (): UseWalletReturn => {
-  const {
-    chain: { chain_id: chainId },
-    nativeToken,
-  } = useChainContext()
-  const { address, connected, publicKey } = useWallet()
+  const { address, connected, publicKey, chainInfo } = useWallet()
   const connectWalletToChain = useConnectWalletToChain()
+
+  const nativeToken = chainInfo && getNativeTokenForChainId(chainInfo.chainId)
 
   // Fetch wallet balance.
   const {
     state: walletNativeBalanceState,
     contents: walletNativeBalanceContents,
   } = useCachedLoadable(
-    address
+    address && chainInfo
       ? nativeBalanceSelector({
           address,
-          chainId,
+          chainId: chainInfo.chainId,
         })
       : undefined
   )
   const walletBalance =
-    walletNativeBalanceState === 'hasValue' && walletNativeBalanceContents
+    walletNativeBalanceState === 'hasValue' &&
+    walletNativeBalanceContents &&
+    nativeToken
       ? convertMicroDenomToDenomWithDecimals(
           walletNativeBalanceContents.amount,
           nativeToken.decimals
@@ -72,16 +75,17 @@ export const useWalletInfo = (): UseWalletReturn => {
     state: walletStakedNativeBalanceState,
     contents: walletStakedNativeBalanceContents,
   } = useCachedLoadable(
-    address
+    address && chainInfo
       ? nativeDelegatedBalanceSelector({
           address,
-          chainId,
+          chainId: chainInfo.chainId,
         })
       : undefined
   )
   const walletStakedBalance =
     walletStakedNativeBalanceState === 'hasValue' &&
-    walletStakedNativeBalanceContents
+    walletStakedNativeBalanceContents &&
+    nativeToken
       ? convertMicroDenomToDenomWithDecimals(
           walletStakedNativeBalanceContents.amount,
           nativeToken.decimals
@@ -93,10 +97,10 @@ export const useWalletInfo = (): UseWalletReturn => {
     state: nativeBalancesFetchedAtState,
     contents: nativeBalancesFetchedAtContents,
   } = useCachedLoadable(
-    address
+    address && chainInfo
       ? nativeBalancesFetchedAtSelector({
           address,
-          chainId,
+          chainId: chainInfo.chainId,
         })
       : undefined
   )
@@ -127,7 +131,6 @@ export const useWalletInfo = (): UseWalletReturn => {
   const walletProfileDataValue = useRecoilValue(
     walletProfileDataSelector({
       address: address ?? '',
-      chainId,
     })
   )
 
@@ -293,6 +296,7 @@ export const useWalletInfo = (): UseWalletReturn => {
     walletHexPublicKey: publicKey?.hex,
     walletBalance,
     walletStakedBalance,
+    walletChainInfo: chainInfo,
     dateBalancesFetched,
     refreshBalances,
 

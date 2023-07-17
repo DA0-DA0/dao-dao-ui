@@ -52,3 +52,5 @@ export const OSMOSIS_API_BASE = 'https://api-osmosis.imperator.co'
 export const ME_SAVED_TX_PREFIX = 'savedTx:'
 
 export const CHAIN_GAS_MULTIPLIER = 2
+
+export const NUM_FEATURED_DAOS = 10

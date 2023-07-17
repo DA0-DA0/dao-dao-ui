@@ -145,7 +145,7 @@ const InnerDaoHome = () => {
   ])
 
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
-    useFollowingDaos()
+    useFollowingDaos(daoInfo.chainId)
   const following = isFollowing(daoInfo.coreAddress)
 
   // Add home tab with widgets if any widgets exist.

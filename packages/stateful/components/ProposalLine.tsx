@@ -1,4 +1,4 @@
-import { ProposalLineLoader } from '@dao-dao/stateless'
+import { ChainProvider, ProposalLineLoader } from '@dao-dao/stateless'
 import { ProposalModule } from '@dao-dao/types'
 
 import {
@@ -9,6 +9,8 @@ import { LinkWrapper } from './LinkWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export interface ProposalLineProps {
+  // This may be shown in the inbox, outside of the context of a DAO or chain.
+  chainId: string
   coreAddress: string
   proposalModules: ProposalModule[]
   proposalId: string
@@ -16,20 +18,23 @@ export interface ProposalLineProps {
 }
 
 export const ProposalLine = ({
+  chainId,
   coreAddress,
   proposalModules,
   proposalId,
   ...props
 }: ProposalLineProps) => (
-  <ProposalModuleAdapterProvider
-    initialOptions={{
-      coreAddress,
-    }}
-    proposalId={proposalId}
-    proposalModules={proposalModules}
-  >
-    <InnerProposalLine {...props} />
-  </ProposalModuleAdapterProvider>
+  <ChainProvider chainId={chainId}>
+    <ProposalModuleAdapterProvider
+      initialOptions={{
+        coreAddress,
+      }}
+      proposalId={proposalId}
+      proposalModules={proposalModules}
+    >
+      <InnerProposalLine {...props} />
+    </ProposalModuleAdapterProvider>
+  </ChainProvider>
 )
 
 type InnerProposalLineProps = Pick<ProposalLineProps, 'proposalViewUrl'>

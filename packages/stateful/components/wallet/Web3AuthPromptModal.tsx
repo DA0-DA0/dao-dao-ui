@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import {
   ActionsRenderer,
   Button,
+  ChainProvider,
   CosmosMessageDisplay,
   Modal,
   useAppContext,
@@ -54,6 +55,12 @@ export const Web3AuthPromptModal = () => {
     [decoded]
   )
 
+  const chainId =
+    prompt &&
+    (prompt.signData.type === 'direct'
+      ? prompt.signData.value.chainId
+      : prompt.signData.value.chain_id)
+
   return (
     <Modal
       containerClassName="!w-[48rem] !max-w-[90vw]"
@@ -87,22 +94,30 @@ export const Web3AuthPromptModal = () => {
           <p className="title-text font-normal text-text-secondary">
             {t('title.signingAs')}:
           </p>
-          {address && <EntityDisplay address={address} />}
+          {address && chainId && (
+            <ChainProvider chainId={chainId}>
+              <EntityDisplay address={address} />
+            </ChainProvider>
+          )}
         </div>
       }
       onClose={() => prompt?.resolve(false)}
       visible={!!prompt}
     >
-      {decoded &&
-        (decoded.type === 'cw' ? (
-          <WalletActionsProvider>
-            <WalletActionsRenderer />
-          </WalletActionsProvider>
-        ) : (
-          <CosmosMessageDisplay
-            value={JSON.stringify(decoded.messages, undefined, 2)}
-          />
-        ))}
+      {chainId && (
+        <ChainProvider chainId={chainId}>
+          {decoded &&
+            (decoded.type === 'cw' ? (
+              <WalletActionsProvider>
+                <WalletActionsRenderer />
+              </WalletActionsProvider>
+            ) : (
+              <CosmosMessageDisplay
+                value={JSON.stringify(decoded.messages, undefined, 2)}
+              />
+            ))}
+        </ChainProvider>
+      )}
     </Modal>
   )
 }

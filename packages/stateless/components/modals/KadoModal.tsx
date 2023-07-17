@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { ChainId, KadoModalProps } from '@dao-dao/types'
 import { KADO_API_KEY } from '@dao-dao/utils'
 
-import { useChain } from '../../hooks'
+import { useChainContextIfAvailable } from '../../hooks'
 import { CopyToClipboard } from '../CopyToClipboard'
 import { Loader } from '../logo'
 import { Modal } from './Modal'
@@ -20,11 +20,11 @@ export const KadoModal = ({
 }: KadoModalProps) => {
   const { t } = useTranslation()
 
-  const { chain_id } = useChain()
+  const chain = useChainContextIfAvailable()
   const network =
-    chain_id === ChainId.JunoMainnet
+    chain?.chainId === ChainId.JunoMainnet
       ? 'JUNO'
-      : chain_id === ChainId.OsmosisMainnet
+      : chain?.chainId === ChainId.OsmosisMainnet
       ? 'OSMO'
       : ''
 

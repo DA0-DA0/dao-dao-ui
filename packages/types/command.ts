@@ -66,7 +66,7 @@ export type CommandModalContextMaker<MakerOptions extends {} = {}> = (
 ) => CommandModalContext
 
 export interface CommandModalDaoInfo {
-  chainId: string | undefined
+  chainId: string
   coreAddress: string
   name: string
   imageUrl: string

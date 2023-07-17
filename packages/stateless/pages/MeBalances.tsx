@@ -2,9 +2,9 @@ import { Image } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
-  ChainId,
   FilterFn,
   MeBalancesProps,
   NftCardInfo,
@@ -12,7 +12,7 @@ import {
   TokenCardInfo,
   TypedOption,
 } from '@dao-dao/types'
-import { getDisplayNameForChainId } from '@dao-dao/utils'
+import { getChainForChainId } from '@dao-dao/utils'
 
 import {
   Button,
@@ -23,7 +23,7 @@ import {
   NoContent,
   TooltipInfoIcon,
 } from '../components'
-import { useButtonPopupFilter, useButtonPopupSorter, useChain } from '../hooks'
+import { useButtonPopupFilter, useButtonPopupSorter } from '../hooks'
 
 export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   tokens,
@@ -34,32 +34,31 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
 }: MeBalancesProps<T, N>) => {
   const { t } = useTranslation()
 
-  const chain = useChain()
-  const nativeChainName = getDisplayNameForChainId(chain.chain_id)
+  const uniqueChainIds = [
+    ...new Set(nfts.loading ? [] : nfts.data.map(({ chainId }) => chainId)),
+  ]
+  const nftChains = uniqueChainIds.map(getChainForChainId)
   const nftFilterOptions = useMemo(
-    () =>
-      [
-        {
-          id: 'all',
-          label: `${nativeChainName} and Stargaze`,
-          value: () => true,
-        },
-        {
-          id: 'current',
-          label: `Only ${nativeChainName}`,
+    () => [
+      {
+        id: 'all',
+        label: t('title.all'),
+        value: () => true,
+      },
+      ...nftChains.map(
+        (
+          chain
+        ): TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>> & {
+          id: string
+        } => ({
+          id: chain.chain_name,
+          label: chain.pretty_name,
           value: (nft) => nft.chainId === chain.chain_id,
-        },
-        {
-          id: 'stargaze',
-          label: 'Only Stargaze',
-          value: (nft) =>
-            nft.chainId === ChainId.StargazeMainnet ||
-            nft.chainId === ChainId.StargazeTestnet,
-        },
-      ] as (TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>> & {
-        id: string
-      })[],
-    [chain.chain_id, nativeChainName]
+        })
+      ),
+    ],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useDeepCompareMemoize(nftChains)
   )
 
   const {
@@ -186,8 +185,12 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
 
                 <p className="secondary-text break-words">
                   {t('info.meBalancesNftsDescription', {
-                    context: selectedNftChainFilter,
-                    nativeChainName,
+                    context: selectedNftChainFilter === 'all' ? 'all' : 'chain',
+                    chainName:
+                      selectedNftChainFilter === 'all'
+                        ? ''
+                        : getChainForChainId(selectedNftChainFilter)
+                            .pretty_name,
                   })}
                 </p>
               </div>

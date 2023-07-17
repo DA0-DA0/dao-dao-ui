@@ -4,8 +4,11 @@ import { IChainContext, SupportedChainContext } from '@dao-dao/types'
 
 export const ChainContext = createContext<IChainContext | null>(null)
 
+export const useChainContextIfAvailable = (): IChainContext | null =>
+  useContext(ChainContext)
+
 export const useChainContext = (): IChainContext => {
-  const context = useContext(ChainContext)
+  const context = useChainContextIfAvailable()
   if (!context) {
     throw new Error(
       'useChainContext can only be used in a descendant of ChainContext.Provider.'
@@ -16,12 +19,7 @@ export const useChainContext = (): IChainContext => {
 }
 
 export const useSupportedChainContext = (): SupportedChainContext => {
-  const context = useContext(ChainContext)
-  if (!context) {
-    throw new Error(
-      'useChainContext can only be used in a descendant of ChainContext.Provider.'
-    )
-  }
+  const context = useChainContext()
 
   // Make sure this is a supported chain.
   if (!context.config) {

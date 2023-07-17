@@ -4,7 +4,7 @@ import { waitForAll } from 'recoil'
 import { indexerFeaturedDaosSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable, useCachedLoading } from '@dao-dao/stateless'
 import { DaoCardInfo, LoadingData } from '@dao-dao/types'
-import { getSupportedChains } from '@dao-dao/utils'
+import { NUM_FEATURED_DAOS, getSupportedChains } from '@dao-dao/utils'
 
 import { daoCardInfoSelector, followingDaosSelector } from '../recoil'
 
@@ -14,7 +14,8 @@ export const useLoadingDaoCardInfos = (
       chainId: string
       coreAddress: string
     }[]
-  >
+  >,
+  alphabetize = false
 ): LoadingData<DaoCardInfo[]> => {
   // If `coreAddresses` is undefined, we're still loading DAOs.
   const daoCardInfosLoadable = useCachedLoadable(
@@ -35,7 +36,9 @@ export const useLoadingDaoCardInfos = (
     : {
         loading: false,
         updating: daoCardInfosLoadable.updating,
-        data: daoCardInfosLoadable.contents.filter(Boolean) as DaoCardInfo[],
+        data: (
+          daoCardInfosLoadable.contents.filter(Boolean) as DaoCardInfo[]
+        ).sort((a, b) => (alphabetize ? a.name.localeCompare(b.name) : 0)),
       }
 }
 
@@ -55,12 +58,16 @@ export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
       ? { loading: true }
       : {
           loading: false,
-          data: chains.flatMap(({ chain }, index) =>
-            featuredDaos.data[index].map((coreAddress) => ({
-              chainId: chain.chain_id,
-              coreAddress,
-            }))
-          ),
+          data: chains
+            .flatMap(({ chain }, index) =>
+              featuredDaos.data[index].map(({ address: coreAddress, tvl }) => ({
+                chainId: chain.chain_id,
+                coreAddress,
+                tvl,
+              }))
+            )
+            .sort((a, b) => b.tvl - a.tvl)
+            .slice(0, NUM_FEATURED_DAOS),
         }
   )
 }
@@ -96,6 +103,8 @@ export const useLoadingFollowingDaoCardInfos = (): LoadingData<
               coreAddress,
             }))
           ),
-        }
+        },
+    // Alphabetize.
+    true
   )
 }

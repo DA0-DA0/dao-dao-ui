@@ -98,7 +98,7 @@ export const CreateDaoForm = ({
   } = useSupportedChainContext()
 
   const { goToDao } = useDaoNavHelpers()
-  const { setFollowing } = useFollowingDaos()
+  const { setFollowing } = useFollowingDaos(chainId)
 
   const { mode } = useAppContext()
 

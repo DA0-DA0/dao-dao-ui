@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import { refreshFollowingDaosAtom } from '@dao-dao/state'
-import { useCachedLoading, useChain } from '@dao-dao/stateless'
+import { useCachedLoading } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 import {
   FOLLOWING_DAOS_PREFIX,
@@ -32,11 +32,8 @@ export type UseFollowingDaosReturn = {
   ready: boolean
 }
 
-export const useFollowingDaos = (chainId?: string): UseFollowingDaosReturn => {
+export const useFollowingDaos = (chainId: string): UseFollowingDaosReturn => {
   const { t } = useTranslation()
-
-  const currentChain = useChain()
-  chainId ||= currentChain.chain_id
 
   const { status, connected, publicKey } = useWallet(chainId)
 

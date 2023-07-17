@@ -21,7 +21,6 @@ import {
 } from '@dao-dao/state'
 import {
   BetaWarningModal,
-  DaoCreatedModal,
   ProposalCreatedModal,
   DappLayout as StatelessDappLayout,
   useAppContext,
@@ -31,13 +30,13 @@ import {
 import { getSupportedChains } from '@dao-dao/utils'
 
 import { CommandModal } from '../command'
-import { useFollowingDaos, useWalletInfo } from '../hooks'
+import { useWalletInfo } from '../hooks'
 import {
   daoCreatedCardPropsAtom,
   followingDaoDropdownInfosSelector,
 } from '../recoil'
 import { ConnectWallet } from './ConnectWallet'
-import { IconButtonLink } from './IconButtonLink'
+import { DaoCreatedModal } from './DaoCreatedModal'
 import { LinkWrapper } from './LinkWrapper'
 import { MigrateFollowingModal } from './MigrateFollowingModal'
 import { SidebarWallet } from './SidebarWallet'
@@ -57,8 +56,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   const [compact, setCompact] = useRecoilState(navigationCompactAtom)
   // DAO creation modal that persists when navigating from create page to DAO
   // page.
-  const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
-    useFollowingDaos()
   const [daoCreatedCardProps, setDaoCreatedCardProps] = useRecoilState(
     daoCreatedCardPropsAtom
   )
@@ -172,7 +169,10 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
             ? { loading: true }
             : {
                 loading: false,
-                data: followingDaoDropdownInfos.data.flat(),
+                data: followingDaoDropdownInfos.data
+                  .flat()
+                  // Alphabetize.
+                  .sort((a, b) => a.name.localeCompare(b.name)),
               }
           : // Prevent hydration errors by loading until mounted.
             { loading: true },
@@ -211,20 +211,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
 
       {daoCreatedCardProps && (
         <DaoCreatedModal
-          itemProps={{
-            ...daoCreatedCardProps,
-
-            follow: {
-              following: isFollowing(daoCreatedCardProps.coreAddress),
-              updatingFollowing,
-              onFollow: () =>
-                isFollowing(daoCreatedCardProps.coreAddress)
-                  ? setUnfollowing(daoCreatedCardProps.coreAddress)
-                  : setFollowing(daoCreatedCardProps.coreAddress),
-            },
-            LinkWrapper,
-            IconButtonLink,
-          }}
+          itemProps={daoCreatedCardProps}
           modalProps={{
             onClose: () => setDaoCreatedCardProps(undefined),
           }}
