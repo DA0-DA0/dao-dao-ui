@@ -1,14 +1,15 @@
 import { useTranslation } from 'react-i18next'
+import { waitForAll } from 'recoil'
 
 import { searchDaosSelector } from '@dao-dao/state/recoil'
-import { useCachedLoadable, useChain } from '@dao-dao/stateless'
+import { useCachedLoadable } from '@dao-dao/stateless'
 import {
   CommandModalContextSection,
   CommandModalContextSectionItem,
   CommandModalContextUseSectionsOptions,
   CommandModalDaoInfo,
 } from '@dao-dao/types'
-import { getFallbackImage } from '@dao-dao/utils'
+import { getFallbackImage, getSupportedChains } from '@dao-dao/utils'
 
 import {
   useLoadingFeaturedDaoCardInfos,
@@ -30,39 +31,45 @@ export const useFollowingAndFilteredDaosSections = ({
 }: UseFilteredDaosSectionOptions): CommandModalContextSection[] => {
   const { t } = useTranslation()
 
-  const { chain_id: chainId } = useChain()
+  const chains = getSupportedChains()
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
   const followingDaosLoading = useLoadingFollowingDaoCardInfos()
 
   const queryResults = useCachedLoadable(
     options.filter
-      ? searchDaosSelector({
-          chainId,
-          query: options.filter,
-          limit,
-          // Exclude following DAOs from search since they show in a separate
-          // section.
-          exclude: followingDaosLoading.loading
-            ? undefined
-            : followingDaosLoading.data.map(({ coreAddress }) => coreAddress),
-        })
+      ? waitForAll(
+          chains.map(({ chain }) =>
+            searchDaosSelector({
+              chainId: chain.chain_id,
+              query: options.filter,
+              limit,
+              // Exclude following DAOs from search since they show in a separate
+              // section.
+              exclude: followingDaosLoading.loading
+                ? undefined
+                : followingDaosLoading.data
+                    .filter(({ chainId }) => chainId === chain.chain_id)
+                    .map(({ coreAddress }) => coreAddress),
+            })
+          )
+        )
       : undefined
   )
 
   // Use query results if filter is present.
   const daos = options.filter
-    ? (queryResults.state !== 'hasValue' ? [] : queryResults.contents)
+    ? (queryResults.state !== 'hasValue' ? [] : queryResults.contents.flat())
         .filter(({ value }) => !!value?.config)
         .map(
           ({
+            chainId,
             contractAddress,
             value: {
               config: { name, image_url },
               proposalCount,
             },
           }): CommandModalContextSectionItem<CommandModalDaoInfo> => ({
-            // Nothing specific to set here yet, just uses default.
-            chainId: undefined,
+            chainId,
             coreAddress: contractAddress,
             name,
             imageUrl: image_url || getFallbackImage(contractAddress),
