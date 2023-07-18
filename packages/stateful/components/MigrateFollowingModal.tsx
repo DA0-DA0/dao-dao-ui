@@ -2,7 +2,10 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
-import { MigrateFollowingModal as StatelessMigrateFollowingModal } from '@dao-dao/stateless'
+import {
+  ChainProvider,
+  MigrateFollowingModal as StatelessMigrateFollowingModal,
+} from '@dao-dao/stateless'
 import { ChainId } from '@dao-dao/types'
 import { MAINNET, processError } from '@dao-dao/utils'
 
@@ -51,24 +54,26 @@ export const MigrateFollowingModal = () => {
     !daos.loading &&
     daos.data.length === 0 &&
     oldFollowing.length > 0 ? (
-    <StatelessMigrateFollowingModal
-      EntityDisplay={EntityDisplay}
-      followedDaos={oldFollowing}
-      migrating={updatingFollowing || loading}
-      onMigrate={async () => {
-        setLoading(true)
-        try {
-          await setFollowing(oldFollowing)
-          await postRequest('/unfollow-all')
-          setOldFollowing([])
-        } catch (err) {
-          console.error(err)
-          toast.error(processError(err))
-        } finally {
-          setLoading(false)
-        }
-      }}
-      visible
-    />
+    <ChainProvider chainId={junoChainId}>
+      <StatelessMigrateFollowingModal
+        EntityDisplay={EntityDisplay}
+        followedDaos={oldFollowing}
+        migrating={updatingFollowing || loading}
+        onMigrate={async () => {
+          setLoading(true)
+          try {
+            await setFollowing(oldFollowing)
+            await postRequest('/unfollow-all')
+            setOldFollowing([])
+          } catch (err) {
+            console.error(err)
+            toast.error(processError(err))
+          } finally {
+            setLoading(false)
+          }
+        }}
+        visible
+      />
+    </ChainProvider>
   ) : null
 }
