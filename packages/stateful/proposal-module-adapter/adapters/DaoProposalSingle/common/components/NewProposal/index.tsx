@@ -61,7 +61,7 @@ export const NewProposal = ({
 
   const { loadedActions, categories } = useLoadedActionsAndCategories()
 
-  const { isMember = false } = useMembership({
+  const { isMember = false, loading: membershipLoading } = useMembership({
     coreAddress,
   })
 
@@ -232,7 +232,11 @@ export const NewProposal = ({
       connected={connected}
       createProposal={createProposal}
       depositUnsatisfied={depositUnsatisfied}
-      isMember={isMember}
+      isMember={
+        membershipLoading
+          ? { loading: true }
+          : { loading: false, data: isMember }
+      }
       isPaused={isPaused}
       loadedActions={loadedActions}
       loading={loading}

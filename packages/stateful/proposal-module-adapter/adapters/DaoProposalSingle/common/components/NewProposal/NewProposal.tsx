@@ -4,7 +4,6 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import { ComponentType, useCallback, useState } from 'react'
@@ -37,6 +36,7 @@ import {
   ActionCategoryWithLabel,
   BaseNewProposalProps,
   LoadedActions,
+  LoadingData,
   StatefulEntityDisplayProps,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
@@ -71,7 +71,7 @@ export interface NewProposalProps
   createProposal: (newProposalData: NewProposalData) => Promise<void>
   loading: boolean
   isPaused: boolean
-  isMember: boolean
+  isMember: LoadingData<boolean>
   anyoneCanPropose: boolean
   depositUnsatisfied: boolean
   connected: boolean
@@ -121,7 +121,6 @@ export const NewProposal = ({
   const [submitError, setSubmitError] = useState('')
 
   const { chain_id: chainId } = useChain()
-  const { status: walletStatus } = useWallet(chainId)
   const { walletAddress = '', walletProfileData } = useWalletInfo(chainId)
 
   const proposalDescription = watch('description')
@@ -288,7 +287,7 @@ export const NewProposal = ({
               <Button
                 disabled={
                   !connected ||
-                  (!anyoneCanPropose && !isMember) ||
+                  (!anyoneCanPropose && !isMember.loading && !isMember.data) ||
                   depositUnsatisfied ||
                   isPaused
                 }
@@ -322,15 +321,11 @@ export const NewProposal = ({
           </div>
         </div>
 
-        {!anyoneCanPropose &&
-          !isMember &&
-          walletStatus !== WalletConnectionStatus.Initializing &&
-          walletStatus !== WalletConnectionStatus.AttemptingAutoConnection &&
-          walletStatus !== WalletConnectionStatus.Connecting && (
-            <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
-              {t('error.mustBeMemberToCreateProposal')}
-            </p>
-          )}
+        {!anyoneCanPropose && !isMember.loading && !isMember.data && (
+          <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
+            {t('error.mustBeMemberToCreateProposal')}
+          </p>
+        )}
 
         {simulationBypassExpiration && (
           <p className="secondary-text max-w-prose self-end text-right text-text-interactive-warning-body">
