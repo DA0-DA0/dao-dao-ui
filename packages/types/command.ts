@@ -39,6 +39,7 @@ export interface CommandModalContextSection<
   // lowest orders first. This only applies when a search is being applied.
   // Otherwise, the section order is used.
   searchOrder?: number
+  loading?: boolean
 }
 
 export interface CommandModalContextUseSectionsOptions {

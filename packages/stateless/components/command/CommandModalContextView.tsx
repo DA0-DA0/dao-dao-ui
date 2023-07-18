@@ -8,11 +8,13 @@ import {
   CommandModalContextSectionItem,
 } from '@dao-dao/types/command'
 
+import { Loader } from '../logo'
 import { NoContent } from '../NoContent'
 import { ItemRow } from './ItemRow'
 
 export interface CommandModalContextViewProps {
   sections: CommandModalContextSection[]
+  itemsLoading: boolean
   loading: boolean
   visible: boolean
 }
@@ -24,6 +26,7 @@ interface ItemWithSection {
 
 export const CommandModalContextView = ({
   sections,
+  itemsLoading,
   loading,
   visible,
 }: CommandModalContextViewProps) => {
@@ -178,6 +181,8 @@ export const CommandModalContextView = ({
             })}
           </Fragment>
         ))
+      ) : itemsLoading ? (
+        <Loader />
       ) : (
         <NoContent
           Icon={WarningRounded}
@@ -191,6 +196,7 @@ export const CommandModalContextView = ({
 
 export const CommandModalContextViewLoader = () => (
   <CommandModalContextView
+    itemsLoading={false}
     loading
     sections={[
       {

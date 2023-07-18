@@ -93,12 +93,14 @@ export const useFollowingAndFilteredDaosSections = ({
     // When a search is active, show above all other sections. This serves to
     // prioritize the DAOs you follow over all other DAOs you can search.
     searchOrder: 1,
+    loading: followingDaosLoading.loading || !!followingDaosLoading.updating,
   }
 
   const daosSection: CommandModalContextSection<CommandModalDaoInfo> = {
     name: t('title.daos'),
     onChoose,
     items: daos,
+    loading: queryResults.state === 'loading',
   }
 
   return [followingSection, daosSection]
