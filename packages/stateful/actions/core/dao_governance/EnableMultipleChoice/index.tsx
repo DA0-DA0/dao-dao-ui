@@ -158,7 +158,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     const info = DaoProposalMultipleAdapter.daoCreation.getInstantiateInfo(
       codeIds,
       {
-        ...makeDefaultNewDao(),
+        ...makeDefaultNewDao(chainId),
         // Only the name is used in this function to pick the contract label.
         name: context.info.name,
       },

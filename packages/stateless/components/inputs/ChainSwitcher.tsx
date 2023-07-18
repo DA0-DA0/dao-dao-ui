@@ -51,7 +51,7 @@ export const ChainSwitcher = ({
       <Row
         Icon={ChainIcon}
         LinkWrapper={LinkWrapper}
-        contentContainerClassName="gap-3"
+        contentContainerClassName="gap-3 bg-background-tertiary rounded-md"
         label={getDisplayNameForChainId(chain.chain_id)}
         onClick={onClick}
         rightNode={<ArrowDropDown className="ml-2 !h-5 !w-5" />}

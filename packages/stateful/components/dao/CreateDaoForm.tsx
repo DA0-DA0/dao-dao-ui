@@ -9,11 +9,13 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { averageColorSelector } from '@dao-dao/state/recoil'
+import { averageColorSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
   Button,
+  ChainProvider,
+  ChainSwitcher,
   CreateDaoPages,
   DaoCreateSidebarCard,
   DaoHeader,
@@ -44,6 +46,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getFallbackImage,
   getNativeTokenForChainId,
+  getSupportedChainConfig,
   makeValidateMsg,
   processError,
 } from '@dao-dao/utils'
@@ -86,16 +89,32 @@ export interface CreateDaoFormProps {
   initialPageIndex?: number
 }
 
-export const CreateDaoForm = ({
+export const CreateDaoForm = (props: CreateDaoFormProps) => {
+  const chainId = useRecoilValue(walletChainIdAtom)
+  const config = getSupportedChainConfig(chainId)
+  if (!config) {
+    throw new Error('Unsupported chain.')
+  }
+
+  return (
+    <ChainProvider key={chainId} chainId={chainId}>
+      <InnerCreateDaoForm {...props} />
+    </ChainProvider>
+  )
+}
+
+export const InnerCreateDaoForm = ({
   parentDao,
   override,
   initialPageIndex = 0,
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
+
   const {
-    chain: { chain_id: chainId },
+    chainId,
     config: { factoryContractAddress, codeIds },
   } = useSupportedChainContext()
+  const setChainId = useSetRecoilState(walletChainIdAtom)
 
   const { goToDao } = useDaoNavHelpers()
   const { setFollowing } = useFollowingDaos(chainId)
@@ -112,7 +131,7 @@ export const CreateDaoForm = ({
 
   // Verify cached value is still valid, and fix if not.
   const defaultForm = useMemo(() => {
-    const defaultNewDao = makeDefaultNewDao()
+    const defaultNewDao = makeDefaultNewDao(chainId)
 
     const cached = cloneDeep(_newDaoAtom)
 
@@ -177,7 +196,7 @@ export const CreateDaoForm = ({
       // Use overrides passed into component.
       override
     )
-  }, [_newDaoAtom, override])
+  }, [_newDaoAtom, chainId, override])
 
   const form = useForm<NewDao>({
     defaultValues: defaultForm,
@@ -193,6 +212,17 @@ export const CreateDaoForm = ({
     proposalModuleAdapters,
     votingConfig,
   } = newDao
+
+  // If chain ID changes, update form values.
+  useEffect(() => {
+    if (newDao.chainId !== chainId) {
+      form.setValue('chainId', chainId)
+      form.setValue(
+        'votingConfig.proposalDeposit.denomOrAddress',
+        getNativeTokenForChainId(chainId).denomOrAddress
+      )
+    }
+  }, [chainId, form, newDao.chainId])
 
   const makingSubDao = !!parentDao
 
@@ -465,8 +495,9 @@ export const CreateDaoForm = ({
                       daoVotingTokenBasedCreatorData.existingToken
                         ? daoVotingTokenBasedCreatorData.existingToken.decimals
                         : // If using existing token but no token info loaded
-                          // (should be impossible), the tokenBalance above will be
-                          // set to 0, so it doesn't matter that this is wrong.
+                          // (should be impossible), the tokenBalance above will
+                          // be set to 0, so it doesn't matter that this is
+                          // wrong.
                           NEW_DAO_CW20_DECIMALS,
                   }
                 : //! Otherwise display native token, which has a balance of 0 initially.
@@ -501,7 +532,7 @@ export const CreateDaoForm = ({
             })
 
             // Clear saved form data.
-            setNewDaoAtom(makeDefaultNewDao())
+            setNewDaoAtom(makeDefaultNewDao(chainId))
 
             // Navigate to DAO page (underneath the creation modal).
             goToDao(coreAddress)
@@ -587,8 +618,8 @@ export const CreateDaoForm = ({
       const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
       const pageDelta = parseSubmitterValueDelta(submitterValue)
 
-      // Validate here instead of in onSubmit since custom errors prevent
-      // form submission, and we still want to be able to move backwards.
+      // Validate here instead of in onSubmit since custom errors prevent form
+      // submission, and we still want to be able to move backwards.
       customValidator?.(
         // Only set new errors when progressing. If going back, don't.
         pageDelta > 0
@@ -611,11 +642,11 @@ export const CreateDaoForm = ({
       SuspenseLoader,
     }),
     [
-      availableCreators,
       form,
       generateInstantiateMsg,
-      proposalModuleDaoCreationAdapters,
+      availableCreators,
       creator,
+      proposalModuleDaoCreationAdapters,
     ]
   )
 
@@ -644,6 +675,12 @@ export const CreateDaoForm = ({
         }}
         className="mx-auto max-w-4xl"
         gradient
+        rightNode={
+          <ChainSwitcher
+            onSelect={({ chain_id }) => setChainId(chain_id)}
+            selected={chainId}
+          />
+        }
       />
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}

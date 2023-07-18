@@ -52,6 +52,7 @@ export const CreateDaoStart = ({
             <InputErrorMessage error={errors.name} />
           </div>
         </div>
+
         <div className="flex flex-col gap-4 p-6 pt-5">
           <p className="primary-text text-text-body">{t('form.description')}</p>
 

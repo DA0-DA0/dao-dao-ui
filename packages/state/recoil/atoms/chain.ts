@@ -1,8 +1,7 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { atom, atomFamily } from 'recoil'
 
-import { ChainId } from '@dao-dao/types'
-import { MAINNET } from '@dao-dao/utils'
+import { DEFAULT_CHAIN_ID } from '@dao-dao/utils'
 
 export const signingCosmWasmClientAtom = atomFamily<
   SigningCosmWasmClient | undefined,
@@ -14,5 +13,5 @@ export const signingCosmWasmClientAtom = atomFamily<
 
 export const walletChainIdAtom = atom<string>({
   key: 'walletChainId',
-  default: MAINNET ? ChainId.JunoMainnet : ChainId.JunoTestnet,
+  default: DEFAULT_CHAIN_ID,
 })
