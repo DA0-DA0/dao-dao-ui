@@ -100,7 +100,9 @@ export const useFollowingAndFilteredDaosSections = ({
     name: t('title.daos'),
     onChoose,
     items: daos,
-    loading: queryResults.state === 'loading',
+    loading:
+      queryResults.state === 'loading' ||
+      (queryResults.state === 'hasValue' && queryResults.updating),
   }
 
   return [followingSection, daosSection]
