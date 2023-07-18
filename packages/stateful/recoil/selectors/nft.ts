@@ -28,7 +28,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
     async ({ get }) => {
       const stargazeWalletAddress = transformBech32Address(
         walletAddress,
-        'stars'
+        MAINNET ? ChainId.StargazeMainnet : ChainId.StargazeTestnet
       )
 
       get(refreshWalletStargazeNftsAtom(stargazeWalletAddress))

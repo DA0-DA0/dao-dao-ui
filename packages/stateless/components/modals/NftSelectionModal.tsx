@@ -133,7 +133,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
       ),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useDeepCompareMemoize(nftChains)
+    useDeepCompareMemoize([nftChains])
   )
 
   const {

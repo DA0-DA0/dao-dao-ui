@@ -147,7 +147,7 @@ export const InnerPfpkNftSelectionModal = ({
     )
   const uploadImage = useCallback(async () => {
     if (!image) {
-      toast.error(t('error.noImage'))
+      toast.error(t('error.noImageSelected'))
     }
 
     setUploadingImage(true)
