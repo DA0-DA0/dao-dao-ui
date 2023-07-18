@@ -4901,10 +4901,10 @@
     jsbi "^3.1.5"
     sha.js "^2.4.11"
 
-"@noahsaso/cosmodal@0.11.1":
-  version "0.11.1"
-  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.11.1.tgz#8a9d1941ff2f814313b882403fbf589f051138a3"
-  integrity sha512-3mpaT5IA3nFBX/IARVhCDgipzyK+1bbICmhdg1o4z2Qv3YHL/ZwOJm/+nCrOfDblbPlcfItZuoFKjg24153vPQ==
+"@noahsaso/cosmodal@0.11.3":
+  version "0.11.3"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmodal/-/cosmodal-0.11.3.tgz#eac82e7614c6ac91d75cbf674d34a48af55283b6"
+  integrity sha512-tqZ52aYuTqaDdwSLoDdgQ5+jX53vG/p01h8R42r179rfNgBM8jiC/0fLFbyGmAuEuEAESpDTJ0iCntWmFglgVw==
   dependencies:
     "@toruslabs/eccrypto" "^2.1.1"
     "@walletconnect/client" "^1.7.8"
