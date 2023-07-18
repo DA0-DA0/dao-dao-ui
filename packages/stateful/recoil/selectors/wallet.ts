@@ -17,12 +17,13 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHAIN_ID,
   HIDDEN_BALANCE_PREFIX,
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
+  getSupportedChains,
+  transformBech32Address,
 } from '@dao-dao/utils'
 
 import {
@@ -262,27 +263,45 @@ export const walletTokenCardInfosSelector = selectorFamily<
     },
 })
 
-export const walletNativeAndStargazeNftsSelector = selectorFamily<
+// Get NFTs across all DAO DAO-supported chains.
+export const allWalletNftsSelector = selectorFamily<
   NftCardInfo[],
-  string
+  // Can be any wallet address.
+  { walletAddress: string }
 >({
-  key: 'walletNativeAndStargazeNfts',
+  key: 'allWalletNfts',
   get:
-    (walletAddress) =>
+    ({ walletAddress }) =>
     ({ get }) => {
+      const chains = getSupportedChains()
+
       const nativeNfts = get(
-        walletNftCardInfos({
-          chainId: CHAIN_ID,
-          walletAddress,
-        })
-      )
+        waitForAll(
+          chains.map(({ chain }) =>
+            walletNftCardInfos({
+              chainId: chain.chain_id,
+              walletAddress: transformBech32Address(
+                walletAddress,
+                chain.chain_id
+              ),
+            })
+          )
+        )
+      ).flat()
 
       const nativeStakedNfts = get(
-        walletStakedNftCardInfosSelector({
-          chainId: CHAIN_ID,
-          walletAddress,
-        })
-      )
+        waitForAll(
+          chains.map(({ chain }) =>
+            walletStakedNftCardInfosSelector({
+              chainId: chain.chain_id,
+              walletAddress: transformBech32Address(
+                walletAddress,
+                chain.chain_id
+              ),
+            })
+          )
+        )
+      ).flat()
 
       const stargazeNfts = get(
         walletStargazeNftCardInfosSelector(walletAddress)

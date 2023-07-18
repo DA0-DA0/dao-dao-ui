@@ -53,4 +53,5 @@ Default.args = {
     />
   ),
   profileData: WALLET_PROFILE_DATA,
+  setChainId: (chainId) => alert(chainId),
 }

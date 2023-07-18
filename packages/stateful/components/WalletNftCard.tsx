@@ -10,7 +10,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { ActionKey, ButtonPopupSection } from '@dao-dao/types'
-import { CHAIN_ID, getMeTxPrefillPath, processError } from '@dao-dao/utils'
+import { getMeTxPrefillPath, processError } from '@dao-dao/utils'
 
 import { useActionForKey } from '../actions'
 import { TransferNftData } from '../actions/core/nfts/TransferNft'
@@ -89,8 +89,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
           },
         ]
       : []),
-    ...(props.chainId === CHAIN_ID &&
-    transferActionDefaults &&
+    ...(transferActionDefaults &&
     // If the NFT is staked, don't show the transfer/burn buttons, since the
     // wallet does not have control.
     !props.staked

@@ -3,11 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { CopyToClipboard, RadioInput } from '@dao-dao/stateless'
 import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
-import {
-  POLYTONE_NOTES,
-  getDisplayNameForChainId,
-  getImageUrlForChainId,
-} from '@dao-dao/utils'
+import { getDisplayNameForChainId, getImageUrlForChainId } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 
@@ -26,12 +22,16 @@ export const CreateCrossChainAccountComponent: ActionComponent = ({
   const imageUrl = getImageUrlForChainId(chainId)
   const name = getDisplayNameForChainId(chainId)
 
-  const { context } = useActionOptions()
-  if (context.type !== ActionContextType.Dao) {
+  const { context, chainContext } = useActionOptions()
+  if (
+    context.type !== ActionContextType.Dao ||
+    // Type check.
+    !chainContext.config.polytone
+  ) {
     throw new Error('Invalid context for this action.')
   }
 
-  const missingChainIds = Object.keys(POLYTONE_NOTES).filter(
+  const missingChainIds = Object.keys(chainContext.config.polytone).filter(
     (chainId) => !(chainId in context.info.polytoneProxies)
   )
   const createdAddress = context.info.polytoneProxies[chainId]

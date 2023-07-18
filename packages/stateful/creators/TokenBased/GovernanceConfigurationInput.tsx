@@ -69,7 +69,7 @@ export const GovernanceConfigurationInput = ({
 }: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
-  const { address: walletAddress } = useWallet()
+  const { address: walletAddress } = useWallet(chainId)
 
   const {
     fields: tierFields,
@@ -183,7 +183,7 @@ export const GovernanceConfigurationInput = ({
       existingGovernanceTokenIsCw20 &&
       isValidContractAddress(data.existingTokenDenomOrAddress, bech32Prefix)) ||
     // Native token.
-    nativeTokenExists(data.existingTokenDenomOrAddress) ||
+    nativeTokenExists(chainId, data.existingTokenDenomOrAddress) ||
     // Native factory token.
     isValidTokenFactoryDenom(data.existingTokenDenomOrAddress, bech32Prefix)
   const existingGovernanceTokenLoadable = useRecoilValueLoadable(
@@ -559,7 +559,7 @@ export const GovernanceConfigurationInput = ({
                   makeValidateContractAddress(bech32Prefix),
                   ...(existingGovernanceTokenIsCw20
                     ? [makeValidateContractAddress(bech32Prefix)]
-                    : [makeValidateNativeOrFactoryTokenDenom(bech32Prefix)]),
+                    : [makeValidateNativeOrFactoryTokenDenom(chainId)]),
                 ]}
               />
               <InputErrorMessage

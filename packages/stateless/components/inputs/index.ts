@@ -1,5 +1,6 @@
 export * from './AddressInput'
 export * from './ChainPickerInput'
+export * from './ChainSwitcher'
 export * from './Checkbox'
 export * from './CodeMirrorInput'
 export * from './Dropdown'

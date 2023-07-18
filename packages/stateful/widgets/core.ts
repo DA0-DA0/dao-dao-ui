@@ -1,5 +1,4 @@
 import { ChainId, Widget } from '@dao-dao/types'
-import { CHAIN_ID } from '@dao-dao/utils'
 
 import {
   PressWidget,
@@ -9,7 +8,7 @@ import {
 } from './widgets'
 
 // Add widgets here.
-export const getWidgets = (): readonly Widget[] => [
+export const getWidgets = (chainId: string): readonly Widget[] => [
   // MintNftWidget,
 
   VestingPaymentsWidget,
@@ -17,8 +16,8 @@ export const getWidgets = (): readonly Widget[] => [
   PressWidget,
 
   // WYND only available on Juno mainnet.
-  ...(CHAIN_ID === ChainId.JunoMainnet ? [WyndDepositWidget] : []),
+  ...(chainId === ChainId.JunoMainnet ? [WyndDepositWidget] : []),
 ]
 
-export const getWidgetById = (id: string) =>
-  getWidgets().find((widget) => widget.id === id)
+export const getWidgetById = (chainId: string, id: string) =>
+  getWidgets(chainId).find((widget) => widget.id === id)

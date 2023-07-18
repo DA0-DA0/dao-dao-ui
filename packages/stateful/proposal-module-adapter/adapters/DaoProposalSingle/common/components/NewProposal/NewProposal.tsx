@@ -4,7 +4,6 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import { ComponentType, useCallback, useState } from 'react'
@@ -31,11 +30,13 @@ import {
   TextAreaInput,
   TextInput,
   Tooltip,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   ActionCategoryWithLabel,
   BaseNewProposalProps,
   LoadedActions,
+  LoadingData,
   StatefulEntityDisplayProps,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
@@ -70,7 +71,7 @@ export interface NewProposalProps
   createProposal: (newProposalData: NewProposalData) => Promise<void>
   loading: boolean
   isPaused: boolean
-  isMember: boolean
+  isMember: LoadingData<boolean>
   anyoneCanPropose: boolean
   depositUnsatisfied: boolean
   connected: boolean
@@ -119,8 +120,8 @@ export const NewProposal = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const { status: walletStatus } = useWallet()
-  const { walletAddress = '', walletProfileData } = useWalletInfo()
+  const { chain_id: chainId } = useChain()
+  const { walletAddress = '', walletProfileData } = useWalletInfo(chainId)
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -286,7 +287,7 @@ export const NewProposal = ({
               <Button
                 disabled={
                   !connected ||
-                  (!anyoneCanPropose && !isMember) ||
+                  (!anyoneCanPropose && !isMember.loading && !isMember.data) ||
                   depositUnsatisfied ||
                   isPaused
                 }
@@ -320,15 +321,11 @@ export const NewProposal = ({
           </div>
         </div>
 
-        {!anyoneCanPropose &&
-          !isMember &&
-          walletStatus !== WalletConnectionStatus.Initializing &&
-          walletStatus !== WalletConnectionStatus.AttemptingAutoConnection &&
-          walletStatus !== WalletConnectionStatus.Connecting && (
-            <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
-              {t('error.mustBeMemberToCreateProposal')}
-            </p>
-          )}
+        {!anyoneCanPropose && !isMember.loading && !isMember.data && (
+          <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
+            {t('error.mustBeMemberToCreateProposal')}
+          </p>
+        )}
 
         {simulationBypassExpiration && (
           <p className="secondary-text max-w-prose self-end text-right text-text-interactive-warning-body">

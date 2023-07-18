@@ -6,9 +6,9 @@ import { Button } from '@dao-dao/stateless'
 import { useFollowingDaos, useInboxApi } from '../../../hooks'
 import { Data } from './types'
 
-export const Renderer = ({ coreAddress, inboxItemId }: Data) => {
+export const Renderer = ({ chainId, coreAddress, inboxItemId }: Data) => {
   const { t } = useTranslation()
-  const { setFollowing, updatingFollowing } = useFollowingDaos()
+  const { setFollowing, updatingFollowing } = useFollowingDaos(chainId)
   const { clear } = useInboxApi()
 
   const [loadingFollowing, setLoadingFollowing] = useState(false)
@@ -32,6 +32,7 @@ export const Renderer = ({ coreAddress, inboxItemId }: Data) => {
         >
           {t('button.follow')}
         </Button>
+
         <Button
           center
           className="grow"

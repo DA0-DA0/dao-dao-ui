@@ -23,9 +23,11 @@ import {
 import { DaoCardProps, SuspenseLoaderProps } from './stateless'
 import { GenericToken } from './token'
 import { DurationWithUnits } from './units'
+import { CodeIdConfig } from './utils'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
 export type DaoInfo = {
+  chainId: string
   coreAddress: string
   coreVersion: ContractVersion
   votingModuleAddress: string
@@ -129,6 +131,7 @@ export interface CreateDaoContext<CreatorData extends FieldValues = any> {
 }
 
 export interface NewDao<CreatorData extends FieldValues = any> {
+  chainId: string
   name: string
   description: string
   imageUrl?: string
@@ -223,6 +226,7 @@ export type DaoCreationCommonVotingConfigItems = {
 export type DaoCreationGetInstantiateInfo<
   ModuleData extends FieldValues = any
 > = (
+  codeIds: CodeIdConfig,
   // Used within voting and proposal module adapters, so the data generic passed
   // in may not necessarily be the voting module adapter data. Must use `any`.
   newDao: NewDao<any>,

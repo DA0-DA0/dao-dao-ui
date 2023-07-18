@@ -22,7 +22,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  CHAIN_ID,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
@@ -56,7 +55,7 @@ const useDefaults: UseDefaults<SpendData> = () => {
   const {
     chain: { chain_id: chainId },
   } = useActionOptions()
-  const { address: walletAddress = '' } = useWallet()
+  const { address: walletAddress = '' } = useWallet(chainId)
 
   return {
     chainId,
@@ -70,8 +69,7 @@ const useDefaults: UseDefaults<SpendData> = () => {
 const Component: ActionComponent<undefined, SpendData> = (props) => {
   const { watch } = useFormContext<SpendData>()
 
-  const chainId =
-    watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const denom = watch((props.fieldNamePrefix + 'denom') as 'denom')
   const recipient = watch((props.fieldNamePrefix + 'to') as 'to')
   const toChainId = watch((props.fieldNamePrefix + 'toChainId') as 'toChainId')
@@ -207,7 +205,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
       if (data.chainId === currentChainId) {
         return msg
       } else {
-        return makePolytoneExecuteMessage(data.chainId, msg)
+        return makePolytoneExecuteMessage(currentChainId, data.chainId, msg)
       }
     },
     [address, currentChainId, loadingTokenBalances]
@@ -218,7 +216,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   msg: Record<string, any>
 ) => {
   let chainId = useActionOptions().chain.chain_id
-  const decodedPolytone = decodePolytoneExecuteMsg(msg)
+  const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
   if (decodedPolytone.match) {
     chainId = decodedPolytone.chainId
     msg = decodedPolytone.msg

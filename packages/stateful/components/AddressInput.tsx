@@ -16,8 +16,7 @@ import {
   useChain,
 } from '@dao-dao/stateless'
 import { AddressInputProps, Entity, EntityType } from '@dao-dao/types'
-import { isValidBech32Address } from '@dao-dao/utils'
-import { PolytoneNotesPerChain } from '@dao-dao/utils/constants/polytone'
+import { POLYTONE_CONFIG_PER_CHAIN, isValidBech32Address } from '@dao-dao/utils'
 
 import { entitySelector } from '../recoil'
 import { EntityDisplay } from './EntityDisplay'
@@ -59,11 +58,9 @@ export const AddressInput = <
             // Current chain.
             currentChain.chain_id,
             // Chains that have polytone connections with the current chain.
-            ...Object.entries(PolytoneNotesPerChain)
-              .filter(([, destChains]) =>
-                Object.keys(destChains).includes(currentChain.chain_id)
-              )
-              .map(([chainId]) => chainId),
+            ...POLYTONE_CONFIG_PER_CHAIN.filter(([, destChains]) =>
+              Object.keys(destChains).includes(currentChain.chain_id)
+            ).map(([chainId]) => chainId),
           ].map((chainId) =>
             searchDaosSelector({
               chainId,

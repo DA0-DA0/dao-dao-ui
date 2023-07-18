@@ -153,6 +153,7 @@ export const ProposalList = () => {
             const transformIntoProps = ({
               id,
             }: typeof newProposalInfos[number]): ProposalLineProps => ({
+              chainId: chain.chain_id,
               coreAddress,
               proposalModules,
               proposalId: id,

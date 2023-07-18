@@ -7,7 +7,6 @@ import {
 } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
 import { InstantiateMsg as DaoVotingNativeStakedInstantiateMsg } from '@dao-dao/types/contracts/DaoVotingNativeStaked'
 import {
-  CODE_ID_CONFIG,
   NEW_DAO_CW20_DECIMALS,
   TokenBasedCreatorId,
   convertDenomToMicroDenomWithDecimals,
@@ -30,7 +29,8 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     existingTokenDenomOrAddress,
     unstakingDuration,
   },
-  t
+  t,
+  codeIds
 ) => {
   const isCw20 =
     tokenType === GovernanceTokenType.NewCw20 ||
@@ -66,14 +66,14 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     votingModuleAdapterInstantiateMsg = {
       token_info: {
         new: {
-          code_id: CODE_ID_CONFIG.Cw20Base,
+          code_id: codeIds.Cw20Base,
           decimals: NEW_DAO_CW20_DECIMALS,
           initial_balances: microInitialBalances,
           initial_dao_balance: microInitialTreasuryBalance,
           label: name,
           marketing: imageUrl ? { logo: { url: imageUrl } } : null,
           name,
-          staking_code_id: CODE_ID_CONFIG.Cw20Stake,
+          staking_code_id: codeIds.Cw20Stake,
           symbol,
           unstaking_duration:
             convertDurationWithUnitsToDuration(unstakingDuration),
@@ -91,7 +91,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
           address: existingTokenDenomOrAddress,
           staking_contract: {
             new: {
-              staking_code_id: CODE_ID_CONFIG.Cw20Stake,
+              staking_code_id: codeIds.Cw20Stake,
               unstaking_duration:
                 convertDurationWithUnitsToDuration(unstakingDuration),
             },
@@ -125,8 +125,8 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   msg.voting_module_instantiate_info = {
     admin: { core_module: {} },
     code_id: isCw20
-      ? CODE_ID_CONFIG.DaoVotingCw20Staked
-      : CODE_ID_CONFIG.DaoVotingNativeStaked,
+      ? codeIds.DaoVotingCw20Staked
+      : codeIds.DaoVotingNativeStaked,
     label: `DAO_${daoName}_${TokenBasedCreatorId}_${
       isCw20 ? 'cw20' : 'native'
     }`,

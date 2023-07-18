@@ -1,14 +1,10 @@
 import { noWait, selectorFamily } from 'recoil'
 
-import {
-  keplrProfileImageSelector,
-  refreshWalletProfileAtom,
-} from '@dao-dao/state/recoil'
+import { refreshWalletProfileAtom } from '@dao-dao/state/recoil'
 import {
   PfpkWalletProfile,
   WalletProfile,
   WalletProfileData,
-  WithChainId,
 } from '@dao-dao/types'
 import { PFPK_API_BASE, getFallbackImage, toBech32Hash } from '@dao-dao/utils'
 
@@ -71,13 +67,11 @@ export const makeDefaultWalletProfileData = (
 // it.
 export const walletProfileDataSelector = selectorFamily<
   WalletProfileData,
-  WithChainId<{
-    address: string
-  }>
+  { address: string }
 >({
   key: 'walletProfileData',
   get:
-    ({ address, chainId }) =>
+    ({ address }) =>
     ({ get }) => {
       if (!address) {
         return makeDefaultWalletProfileData(address)
@@ -98,18 +92,7 @@ export const walletProfileDataSelector = selectorFamily<
         profile.nft = pfpkProfile.nft
       }
 
-      const keplrProfileImage = get(
-        noWait(
-          keplrProfileImageSelector({
-            address,
-            chainId,
-          })
-        )
-      )
-      const backupImageUrl =
-        (keplrProfileImage.state === 'hasValue' &&
-          keplrProfileImage.contents) ||
-        getFallbackImage(toBech32Hash(address))
+      const backupImageUrl = getFallbackImage(toBech32Hash(address))
 
       // Set `imageUrl` to PFPK image, defaulting to fallback image.
       profile.imageUrl = pfpkProfile?.nft?.imageUrl || backupImageUrl

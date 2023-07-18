@@ -19,7 +19,7 @@ export const useGovernanceCollectionInfo = ({
   fetchTreasuryBalance = false,
 }: UseGovernanceCollectionInfoOptions = {}): UseGovernanceCollectionInfoResponse => {
   const { chain_id: chainId } = useChain()
-  const { address: walletAddress } = useWallet()
+  const { address: walletAddress } = useWallet(chainId)
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { nft_address: collectionAddress } = useRecoilValue(

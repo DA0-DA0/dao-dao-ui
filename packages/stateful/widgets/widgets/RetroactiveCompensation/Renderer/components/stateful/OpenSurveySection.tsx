@@ -41,7 +41,7 @@ export const OpenSurveySection = ({
 }: StatefulOpenSurveySectionProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
-  const { bech32_prefix: bech32Prefix } = useChain()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
   const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
 
   // Show contribution form if `submit` subpath is present and the currently
@@ -64,7 +64,7 @@ export const OpenSurveySection = ({
     [coreAddress, goToDao]
   )
 
-  const { connected } = useWallet()
+  const { connected } = useWallet(chainId)
   // Voting power at time of survey creation, which determines what access level
   // this wallet has.
   const { isMember = false } = useMembership({

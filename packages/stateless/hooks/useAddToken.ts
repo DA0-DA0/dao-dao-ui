@@ -4,8 +4,11 @@ import { useTranslation } from 'react-i18next'
 
 import { MAINNET, suggestToken } from '@dao-dao/utils'
 
+import { useChain } from './useChainContext'
+
 export const useAddToken = () => {
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
 
   const addToken = useMemo(
     () =>
@@ -15,14 +18,14 @@ export const useAddToken = () => {
             const keplr = await (
               await import('@keplr-wallet/stores')
             ).getKeplrFromWindow()
-            if (keplr && (await suggestToken(keplr, address))) {
+            if (keplr && (await suggestToken(chainId, keplr, address))) {
               toast.success(t('success.addedToken'))
             } else {
               toast.error(t('error.logInToContinue'))
             }
           }
         : undefined,
-    [t]
+    [chainId, t]
   )
 
   return addToken

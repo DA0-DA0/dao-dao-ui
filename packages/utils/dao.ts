@@ -5,7 +5,7 @@ import {
   PolytoneProxies,
 } from '@dao-dao/types'
 
-import { PolytoneNotesPerChain } from './constants/polytone'
+import { getSupportedChainConfig } from './chain'
 
 export const getParentDaoBreadcrumbs = (
   getDaoPath: (coreAddress: string) => string,
@@ -32,15 +32,10 @@ export const polytoneNoteProxyMapToChainIdMap = (
   // Map of polytone note on source chain to remote polytone proxies.
   polytoneNoteProxyMap: Record<string, string>
 ): PolytoneProxies => {
-  // Polytone note connections on the given chain.
-  const polytoneNotes =
-    chainId in PolytoneNotesPerChain
-      ? PolytoneNotesPerChain[chainId as keyof typeof PolytoneNotesPerChain] ||
-        {}
-      : {}
-
-  // Convert to chain ID to proxy map based on polytone note connections.
-  return Object.entries(polytoneNotes).reduce((acc, [chainId, { note }]) => {
+  // Convert to chain ID to proxy map based on polytone connections.
+  return Object.entries(
+    getSupportedChainConfig(chainId)?.polytone || {}
+  ).reduce((acc, [chainId, { note }]) => {
     const proxy = polytoneNoteProxyMap[note]
 
     return {

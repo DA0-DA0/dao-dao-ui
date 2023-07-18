@@ -1,11 +1,15 @@
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
-import { useSetRecoilState } from 'recoil'
+import { useSetRecoilState, waitForAll } from 'recoil'
 
 import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
-import { useCachedLoadable, useChain } from '@dao-dao/stateless'
+import { useCachedLoadable } from '@dao-dao/stateless'
 import { InboxSource } from '@dao-dao/types'
-import { webSocketChannelNameForDao } from '@dao-dao/utils'
+import {
+  getSupportedChains,
+  transformBech32Address,
+  webSocketChannelNameForDao,
+} from '@dao-dao/utils'
 
 import {
   ProposalLine,
@@ -18,7 +22,6 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
   id: 'open_proposals',
   Renderer: ProposalLine,
   useData: () => {
-    const { chain_id: chainId } = useChain()
     const { address, publicKey, status: walletConnectionStatus } = useWallet()
 
     const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
@@ -31,16 +34,23 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
         walletConnectionStatus ===
           WalletConnectionStatus.AttemptingAutoConnection
         ? undefined
-        : inboxOpenProposalsSelector({
-            chainId,
-            wallet:
-              address && publicKey
-                ? {
-                    address,
-                    hexPublicKey: publicKey.hex,
-                  }
-                : undefined,
-          })
+        : waitForAll(
+            getSupportedChains().map(({ chain }) =>
+              inboxOpenProposalsSelector({
+                chainId: chain.chain_id,
+                wallet:
+                  address && publicKey
+                    ? {
+                        address: transformBech32Address(
+                          address,
+                          chain.chain_id
+                        ),
+                        hexPublicKey: publicKey.hex,
+                      }
+                    : undefined,
+              })
+            )
+          )
     )
 
     // Refresh when any proposal or vote is updated for any of the DAOs. Once
@@ -48,12 +58,14 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
     // count needs to be updated.
     useOnWebSocketMessage(
       daosWithItemsLoadable.state === 'hasValue'
-        ? daosWithItemsLoadable.contents.map(({ coreAddress }) =>
-            webSocketChannelNameForDao({
-              coreAddress,
-              chainId,
-            })
-          )
+        ? daosWithItemsLoadable.contents
+            .flat()
+            .map(({ chainId, coreAddress }) =>
+              webSocketChannelNameForDao({
+                coreAddress,
+                chainId,
+              })
+            )
         : [],
       ['proposal', 'vote'],
       refresh
@@ -66,7 +78,7 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
         daosWithItemsLoadable.updating,
       daosWithItems:
         daosWithItemsLoadable.state === 'hasValue'
-          ? daosWithItemsLoadable.contents
+          ? daosWithItemsLoadable.contents.flat()
           : [],
       refresh,
     }

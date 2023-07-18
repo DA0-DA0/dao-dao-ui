@@ -30,11 +30,13 @@ import {
   TextAreaInput,
   TextInput,
   Tooltip,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   ActionCategoryWithLabel,
   BaseNewProposalProps,
   LoadedActions,
+  LoadingData,
   StatefulEntityDisplayProps,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
@@ -76,7 +78,7 @@ export interface NewProposalProps
   createProposal: (newProposalData: NewProposalData) => Promise<void>
   loading: boolean
   isPaused: boolean
-  isMember: boolean
+  isMember: LoadingData<boolean>
   anyoneCanPropose: boolean
   depositUnsatisfied: boolean
   connected: boolean
@@ -125,8 +127,9 @@ export const NewProposal = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const { status: walletStatus } = useWallet()
-  const { walletAddress = '', walletProfileData } = useWalletInfo()
+  const { chain_id } = useChain()
+  const { status: walletStatus } = useWallet(chain_id)
+  const { walletAddress = '', walletProfileData } = useWalletInfo(chain_id)
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -345,7 +348,7 @@ export const NewProposal = ({
               <Button
                 disabled={
                   !connected ||
-                  (!anyoneCanPropose && !isMember) ||
+                  (!anyoneCanPropose && !isMember.loading && !isMember.data) ||
                   depositUnsatisfied ||
                   isPaused ||
                   choices.length < 2 ||
@@ -382,7 +385,8 @@ export const NewProposal = ({
         </div>
 
         {!anyoneCanPropose &&
-          !isMember &&
+          !isMember.loading &&
+          !isMember.data &&
           walletStatus !== WalletConnectionStatus.Initializing &&
           walletStatus !== WalletConnectionStatus.AttemptingAutoConnection &&
           walletStatus !== WalletConnectionStatus.Connecting && (

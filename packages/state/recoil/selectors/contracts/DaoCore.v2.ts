@@ -30,9 +30,9 @@ import {
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   CW721_WORKAROUND_ITEM_KEY_PREFIX,
+  getSupportedChainConfig,
   polytoneNoteProxyMapToChainIdMap,
 } from '@dao-dao/utils'
-import { PolytoneNotesPerChain } from '@dao-dao/utils/constants/polytone'
 
 import {
   Cw721BaseSelectors,
@@ -71,10 +71,10 @@ export const queryClient = selectorFamily<
   dangerouslyAllowMutability: true,
 })
 
-export type ExecuteClientParams = {
+export type ExecuteClientParams = WithChainId<{
   contractAddress: string
   sender: string
-}
+}>
 
 export const executeClient = selectorFamily<
   DaoCoreV2Client | undefined,
@@ -82,9 +82,9 @@ export const executeClient = selectorFamily<
 >({
   key: 'daoCoreV2ExecuteClient',
   get:
-    ({ contractAddress, sender }) =>
+    ({ chainId, contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientAtom)
+      const client = get(signingCosmWasmClientAtom({ chainId }))
       if (!client) return
 
       return new DaoCoreV2Client(client, sender, contractAddress)
@@ -1055,15 +1055,11 @@ export const polytoneProxiesSelector = selectorFamily<
       }
 
       // Get polytone notes on this chain.
-      const polytoneNotes =
-        queryClientParams.chainId in PolytoneNotesPerChain
-          ? PolytoneNotesPerChain[
-              queryClientParams.chainId as keyof typeof PolytoneNotesPerChain
-            ] || {}
-          : {}
+      const polytoneConnections =
+        getSupportedChainConfig(queryClientParams.chainId)?.polytone || {}
 
       // Fallback to contract query if indexer fails.
-      return Object.entries(polytoneNotes)
+      return Object.entries(polytoneConnections)
         .map(([chainId, { note }]) => ({
           chainId,
           proxy: get(

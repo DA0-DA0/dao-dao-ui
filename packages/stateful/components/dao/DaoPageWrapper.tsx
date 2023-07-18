@@ -1,7 +1,9 @@
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { PropsWithChildren, useEffect } from 'react'
+import { useRecoilState } from 'recoil'
 
+import { walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
   DaoNotFound,
   ErrorPage500,
@@ -44,6 +46,14 @@ export const DaoPageWrapper = ({
 }: DaoPageWrapperProps) => {
   const { isReady, isFallback } = useRouter()
   const { setAccentColor, theme } = useThemeContext()
+
+  const [walletChainId, setWalletChainId] = useRecoilState(walletChainIdAtom)
+  // Update walletChainId to whatever the current DAO is.
+  useEffect(() => {
+    if (serializedInfo && serializedInfo.chainId !== walletChainId) {
+      setWalletChainId(serializedInfo.chainId)
+    }
+  }, [serializedInfo, setWalletChainId, walletChainId])
 
   // Set theme's accentColor.
   useEffect(() => {

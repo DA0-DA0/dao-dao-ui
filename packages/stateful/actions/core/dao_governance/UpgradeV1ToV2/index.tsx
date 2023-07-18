@@ -19,11 +19,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import { PreProposeInfo } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-import {
-  CODE_ID_CONFIG,
-  makeWasmMessage,
-  objectMatchesStructure,
-} from '@dao-dao/utils'
+import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
 import { AddressInput, EntityDisplay } from '../../../../components'
 import {
@@ -137,11 +133,14 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
   t,
   address,
   chain,
+  chainContext: {
+    config: { codeIds },
+  },
 }) => {
   if (
     context.type !== ActionContextType.Dao ||
     // If no DAO migrator, don't show upgrade action.
-    CODE_ID_CONFIG.DaoMigrator > 0
+    codeIds.DaoMigrator > 0
   ) {
     return null
   }
@@ -274,7 +273,7 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
                 module_may_propose: {
                   info: {
                     admin: { core_module: {} },
-                    code_id: CODE_ID_CONFIG.DaoPreProposeSingle,
+                    code_id: codeIds.DaoPreProposeSingle,
                     label: `DAO_${name}_pre-propose-${DaoProposalSingleAdapter.id}`,
                     msg: Buffer.from(
                       JSON.stringify({
@@ -311,12 +310,12 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
           wasm: {
             migrate: {
               contract_addr: targetAddress,
-              new_code_id: CODE_ID_CONFIG.DaoCore,
+              new_code_id: codeIds.DaoCore,
               msg: {
                 from_v1: {
                   dao_uri: `https://daodao.zone/dao/${targetAddress}`,
                   params: {
-                    migrator_code_id: CODE_ID_CONFIG.DaoMigrator,
+                    migrator_code_id: codeIds.DaoMigrator,
                     params: {
                       sub_daos: subDaos,
                       migration_params: {
@@ -330,11 +329,11 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
                         cw20_staked_balances_voting: 431,
                       },
                       v2_code_ids: {
-                        proposal_single: CODE_ID_CONFIG.DaoProposalSingle,
-                        cw4_voting: CODE_ID_CONFIG.DaoVotingCw4,
-                        cw20_stake: CODE_ID_CONFIG.Cw20Stake,
+                        proposal_single: codeIds.DaoProposalSingle,
+                        cw4_voting: codeIds.DaoVotingCw4,
+                        cw20_stake: codeIds.Cw20Stake,
                         cw20_staked_balances_voting:
-                          CODE_ID_CONFIG.DaoVotingCw20Staked,
+                          codeIds.DaoVotingCw20Staked,
                       },
                     },
                   },

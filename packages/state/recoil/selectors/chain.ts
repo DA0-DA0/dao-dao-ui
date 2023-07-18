@@ -32,7 +32,6 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHAIN_ID,
   MAINNET,
   cosmWasmClientRouter,
   cosmosValidatorToValidator,
@@ -55,38 +54,32 @@ import { genericTokenSelector } from './token'
 
 export const stargateClientForChainSelector = selectorFamily<
   StargateClient,
-  string | undefined
+  string
 >({
   key: 'stargateClientForChain',
-  get:
-    (chainId: string = CHAIN_ID) =>
-    async () =>
-      await stargateClientRouter.connect(getRpcForChainId(chainId)),
+  get: (chainId) => async () =>
+    await stargateClientRouter.connect(getRpcForChainId(chainId)),
   dangerouslyAllowMutability: true,
 })
 
 export const cosmWasmClientForChainSelector = selectorFamily<
   CosmWasmClient,
-  string | undefined
+  string
 >({
   key: 'cosmWasmClientForChain',
-  get:
-    (chainId = CHAIN_ID) =>
-    async () =>
-      await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
+  get: (chainId) => async () =>
+    await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
   dangerouslyAllowMutability: true,
 })
 
 export const cosmosRpcClientForChainSelector = selectorFamily({
   key: 'cosmosRpcClientForChain',
-  get:
-    (chainId: string = CHAIN_ID) =>
-    async () =>
-      (
-        await cosmos.ClientFactory.createRPCQueryClient({
-          rpcEndpoint: getRpcForChainId(chainId),
-        })
-      ).cosmos,
+  get: (chainId: string) => async () =>
+    (
+      await cosmos.ClientFactory.createRPCQueryClient({
+        rpcEndpoint: getRpcForChainId(chainId),
+      })
+    ).cosmos,
   dangerouslyAllowMutability: true,
 })
 
@@ -103,14 +96,12 @@ export const junoRpcClientSelector = selector({
 
 export const osmosisRpcClientForChainSelector = selectorFamily({
   key: 'osmosisRpcClientForChain',
-  get:
-    (chainId: string = CHAIN_ID) =>
-    async () =>
-      (
-        await osmosis.ClientFactory.createRPCQueryClient({
-          rpcEndpoint: getRpcForChainId(chainId),
-        })
-      ).osmosis,
+  get: (chainId: string) => async () =>
+    (
+      await osmosis.ClientFactory.createRPCQueryClient({
+        rpcEndpoint: getRpcForChainId(chainId),
+      })
+    ).osmosis,
   dangerouslyAllowMutability: true,
 })
 
@@ -179,13 +170,12 @@ export const nativeBalancesSelector = selectorFamily<
         })
       }
 
-      // Add USDC if not present, on mainnet, and on current chain.
-      const nativeIbcUsdcDenom = getNativeIbcUsdc()?.denomOrAddress
+      // Add USDC if not present and on mainnet.
+      const nativeIbcUsdcDenom = getNativeIbcUsdc(chainId)?.denomOrAddress
       if (
         MAINNET &&
-        chainId === CHAIN_ID &&
         nativeIbcUsdcDenom &&
-        !balances.some(({ denom }) => isNativeIbcUsdc(denom))
+        !balances.some(({ denom }) => isNativeIbcUsdc(chainId, denom))
       ) {
         balances.push({
           amount: '0',

@@ -15,7 +15,6 @@ import {
   Tooltip,
   useAppContext,
   useCachedLoadingWithError,
-  useChain,
 } from '@dao-dao/stateless'
 import { NftCardInfo } from '@dao-dao/types'
 import {
@@ -23,15 +22,14 @@ import {
   MintMsgForNullable_Empty,
 } from '@dao-dao/types/contracts/Cw721Base'
 import {
-  CODE_ID_CONFIG,
   MAINNET,
-  getDisplayNameForChainId,
+  getSupportedChainConfig,
   processError,
   uploadNft,
 } from '@dao-dao/utils'
 
 import { useInstantiateAndExecute, useWalletInfo } from '../hooks'
-import { walletNativeAndStargazeNftsSelector } from '../recoil'
+import { allWalletNftsSelector } from '../recoil'
 import { SuspenseLoader } from './SuspenseLoader'
 import { Trans } from './Trans'
 
@@ -49,8 +47,8 @@ export const InnerPfpkNftSelectionModal = ({
     address: walletAddress,
     status: walletStatus,
     error: walletError,
+    chainInfo,
   } = useWallet()
-  const chain = useChain()
 
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
@@ -58,7 +56,9 @@ export const InnerPfpkNftSelectionModal = ({
   const nfts = useCachedLoadingWithError(
     // Don't load NFTs until visible.
     walletAddress && visible
-      ? walletNativeAndStargazeNftsSelector(walletAddress)
+      ? allWalletNftsSelector({
+          walletAddress,
+        })
       : undefined
   )
 
@@ -139,10 +139,15 @@ export const InnerPfpkNftSelectionModal = ({
 
   const [uploadingImage, setUploadingImage] = useState(false)
   const { ready: instantiateAndExecuteReady, instantiateAndExecute } =
-    useInstantiateAndExecute(CODE_ID_CONFIG.Cw721Base)
+    useInstantiateAndExecute(
+      chainInfo?.chainId,
+      (chainInfo &&
+        getSupportedChainConfig(chainInfo.chainId)?.codeIds.Cw721Base) ||
+        -1
+    )
   const uploadImage = useCallback(async () => {
     if (!image) {
-      toast.error(t('error.noImage'))
+      toast.error(t('error.noImageSelected'))
     }
 
     setUploadingImage(true)
@@ -212,9 +217,7 @@ export const InnerPfpkNftSelectionModal = ({
         getIdForNft={getIdForNft}
         header={{
           title: t('title.chooseProfilePicture'),
-          subtitle: t('info.chooseProfilePictureSubtitle', {
-            nativeChainName: getDisplayNameForChainId(chain.chain_id),
-          }),
+          subtitle: t('info.chooseProfilePictureSubtitle'),
         }}
         nfts={
           walletStatus === WalletConnectionStatus.ReadyForConnection &&

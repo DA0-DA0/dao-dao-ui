@@ -26,7 +26,7 @@ export const TabRenderer = () => {
   const { coreAddress } = useDaoInfoContext()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
-    useWallet()
+    useWallet(chainId)
   const { isMember = false } = useMembership({
     coreAddress,
   })

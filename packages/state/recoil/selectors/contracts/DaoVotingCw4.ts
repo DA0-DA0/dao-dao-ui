@@ -35,10 +35,10 @@ export const queryClient = selectorFamily<
   dangerouslyAllowMutability: true,
 })
 
-export type ExecuteClientParams = {
+export type ExecuteClientParams = WithChainId<{
   contractAddress: string
   sender: string
-}
+}>
 
 export const executeClient = selectorFamily<
   DaoVotingCw4Client | undefined,
@@ -46,9 +46,9 @@ export const executeClient = selectorFamily<
 >({
   key: 'daoVotingCw4ExecuteClient',
   get:
-    ({ contractAddress, sender }) =>
+    ({ chainId, contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientAtom)
+      const client = get(signingCosmWasmClientAtom({ chainId }))
       if (!client) return
       return new DaoVotingCw4Client(client, sender, contractAddress)
     },

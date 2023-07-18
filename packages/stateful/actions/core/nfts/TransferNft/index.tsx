@@ -41,7 +41,8 @@ export type TransferNftData = {
 }
 
 const useDefaults: UseDefaults<TransferNftData> = () => {
-  const { address: walletAddress = '' } = useWallet()
+  const { chain_id } = useActionOptions().chain
+  const { address: walletAddress = '' } = useWallet(chain_id)
 
   return {
     collection: '',
@@ -162,6 +163,7 @@ const Component: ActionComponent = (props) => {
     props.isCreating
       ? context.type === ActionContextType.Dao
         ? nftCardInfosForDaoSelector({
+            chainId,
             coreAddress: address,
             governanceCollectionAddress,
           })

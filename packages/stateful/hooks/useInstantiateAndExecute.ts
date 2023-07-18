@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
 
 import { codeDetailsSelector } from '@dao-dao/state/recoil'
-import { useCachedLoadable, useChain } from '@dao-dao/stateless'
+import { useCachedLoadable } from '@dao-dao/stateless'
 import { Coin, CosmosMsgFor_Empty } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
@@ -51,18 +51,20 @@ export type UseInstantiateAndExecuteResult = {
 // a single transaction by taking advantage of `instantiate2` which can
 // precompute contract addresses.
 export const useInstantiateAndExecute = (
+  chainId: string | undefined,
   codeId: number
 ): UseInstantiateAndExecuteResult => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
-  const { signingCosmWasmClient, address, chainInfo } = useWallet()
+  const { signingCosmWasmClient, address, chainInfo } = useWallet(chainId)
 
   // Load checksum of the contract code.
   const codeDetailsLoadable = useCachedLoadable(
-    codeDetailsSelector({
-      chainId,
-      codeId,
-    })
+    chainId
+      ? codeDetailsSelector({
+          chainId,
+          codeId,
+        })
+      : undefined
   )
 
   const instantiateAndExecute: InstantiateAndExecute = useCallback(

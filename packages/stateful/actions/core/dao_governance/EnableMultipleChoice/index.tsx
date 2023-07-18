@@ -81,7 +81,15 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<EnableMultipleChoiceData> = (
 
 export const makeEnableMultipleChoiceAction: ActionMaker<
   EnableMultipleChoiceData
-> = ({ t, address, context, chain: { chain_id: chainId } }) => {
+> = ({
+  t,
+  address,
+  context,
+  chain: { chain_id: chainId },
+  chainContext: {
+    config: { codeIds },
+  },
+}) => {
   // Only show for v2 DAOs. Disallows creation if multiple choice proposal
   // module already exists, down at the bottom of this function.
   if (
@@ -148,8 +156,9 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
           }
 
     const info = DaoProposalMultipleAdapter.daoCreation.getInstantiateInfo(
+      codeIds,
       {
-        ...makeDefaultNewDao(),
+        ...makeDefaultNewDao(chainId),
         // Only the name is used in this function to pick the contract label.
         name: context.info.name,
       },

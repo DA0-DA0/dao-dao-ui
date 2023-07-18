@@ -3,12 +3,12 @@ import { atom, selector, selectorFamily } from 'recoil'
 
 import { Expiration, IndexerFormulaType, WithChainId } from '@dao-dao/types'
 import {
-  CHAIN_ID,
   CommonError,
-  FEATURED_DAOS_INDEX,
+  NUM_FEATURED_DAOS,
   WEB_SOCKET_PUSHER_APP_KEY,
   WEB_SOCKET_PUSHER_HOST,
   WEB_SOCKET_PUSHER_PORT,
+  getSupportedChainConfig,
 } from '@dao-dao/utils'
 
 import {
@@ -159,11 +159,10 @@ export const openProposalsSelector = selectorFamily<
 })
 
 export const walletProposalStatsSelector = selectorFamily<
-  | {
-      created: number
-      votesCast: number
-    }
-  | undefined,
+  {
+    created: number
+    votesCast: number
+  },
   WithChainId<{ address: string }>
 >({
   key: 'walletProposalStats',
@@ -180,7 +179,13 @@ export const walletProposalStatsSelector = selectorFamily<
           required: true,
         })
       )
-      return stats ?? undefined
+
+      return (
+        stats || {
+          created: 0,
+          votesCast: 0,
+        }
+      )
     },
 })
 
@@ -237,42 +242,42 @@ export const indexerMeilisearchClientSelector = selector({
 })
 
 // Top 10 featured DAOs by TVL with certain conditions.
-export const indexerFeaturedDaosSelector = selector({
+export const indexerFeaturedDaosSelector = selectorFamily<
+  {
+    address: string
+    tvl: number
+  }[],
+  string
+>({
   key: 'indexerFeaturedDaos',
-  get: async ({ get }) => {
-    const priorityFeaturedDaos: string[] =
-      get(
-        queryGenericIndexerSelector({
-          chainId: CHAIN_ID,
-          formula: 'priorityFeaturedDaos',
-          required: true,
-        })
-      ) || []
+  get:
+    (chainId) =>
+    async ({ get }) => {
+      const config = getSupportedChainConfig(chainId)
+      if (!config) {
+        return []
+      }
 
-    const client = get(indexerMeilisearchClientSelector)
-    const index = client.index(FEATURED_DAOS_INDEX)
-    const results = await index.search<{ contractAddress: string }>(null, {
-      limit: 10,
-      filter: [
-        'value.daysSinceLastProposalPassed >= 0',
-        'value.daysSinceLastProposalPassed <= 90',
-        'value.giniCoefficient >= 0',
-        'value.giniCoefficient < 0.75',
-        'value.memberCount >= 3',
-        // Exclude priority.
-        `NOT contractAddress IN ["${priorityFeaturedDaos.join('", "')}"]`,
-      ],
-      sort: ['value.tvl:desc'],
-    })
+      const client = get(indexerMeilisearchClientSelector)
+      const index = client.index(config.indexes.featured)
+      const results = await index.search<{
+        contractAddress: string
+        value: { tvl: number }
+      }>(null, {
+        limit: NUM_FEATURED_DAOS,
+        filter: [
+          'value.daysSinceLastProposalPassed >= 0',
+          'value.daysSinceLastProposalPassed <= 90',
+          'value.giniCoefficient >= 0',
+          'value.giniCoefficient < 0.75',
+          'value.memberCount >= 3',
+        ],
+        sort: ['value.tvl:desc'],
+      })
 
-    // Insert priority DAOs first.
-    const featuredDaos = [
-      ...priorityFeaturedDaos,
-      ...results.hits
-        .map((hit) => hit.contractAddress)
-        .filter((address) => !priorityFeaturedDaos.includes(address)),
-    ]
-
-    return featuredDaos
-  },
+      return results.hits.map((hit) => ({
+        address: hit.contractAddress,
+        tvl: hit.value.tvl,
+      }))
+    },
 })

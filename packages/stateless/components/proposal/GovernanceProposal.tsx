@@ -18,12 +18,9 @@ import {
   StatefulPayEntityDisplayProps,
   StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
-import {
-  CHAIN_GOV_PROPOSAL_URL_TEMPLATE,
-  formatDateTimeTz,
-} from '@dao-dao/utils'
+import { formatDateTimeTz } from '@dao-dao/utils'
 
-import { useTranslatedTimeDeltaFormatter } from '../../hooks'
+import { useChainContext, useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { IconButtonLink } from '../icon_buttons'
 import { MarkdownRenderer } from '../MarkdownRenderer'
 import { Tooltip } from '../tooltip'
@@ -61,6 +58,7 @@ export const GovernanceProposal = ({
 }: GovernanceProposalProps) => {
   const { t } = useTranslation()
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
+  const { config } = useChainContext()
 
   const title =
     'title' in content.value && typeof content.value.title === 'string'
@@ -134,10 +132,10 @@ export const GovernanceProposal = ({
           {title}
         </p>
 
-        {id && (
+        {id && config && (
           <IconButtonLink
             Icon={ArrowOutwardRounded}
-            href={CHAIN_GOV_PROPOSAL_URL_TEMPLATE.replace('ID', id)}
+            href={config.explorerUrlTemplates.govProp.replace('REPLACE', id)}
             variant="ghost"
           />
         )}

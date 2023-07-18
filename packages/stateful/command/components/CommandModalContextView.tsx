@@ -33,9 +33,12 @@ export const InnerCommandModalContextView = ({
 }: CommandModalContextViewProps) => {
   const currentContext = contexts[contexts.length - 1]
   const sections = currentContext?.useSections?.({ filter })
-  const sortedSections: CommandModalContextSection[] = useMemo(() => {
+  const { sections: sortedSections, loading } = useMemo(() => {
     if (!sections) {
-      return []
+      return {
+        sections: [],
+        loading: false,
+      }
     }
 
     // Flatten sections so we can access both section and item at the same
@@ -86,11 +89,15 @@ export const InnerCommandModalContextView = ({
           .map(({ item: option }) => option),
       }))
 
-    return sectionsWithSortedItems
+    return {
+      sections: sectionsWithSortedItems,
+      loading: sections.some((section) => section.loading),
+    }
   }, [filter, sections])
 
   return (
     <StatelessCommandModalContextView
+      itemsLoading={loading}
       loading={false}
       sections={sortedSections}
       visible={visible}

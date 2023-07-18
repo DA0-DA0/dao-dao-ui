@@ -67,7 +67,7 @@ export const useSimulateCosmosMsgs = (senderAddress: string) => {
       // Also simulate polytone messages on receiving chains.
       const decodedPolytoneMessages = decodeMessages(msgs)
         .map((msg) => {
-          const decoded = decodePolytoneExecuteMsg(msg, 'oneOrZero')
+          const decoded = decodePolytoneExecuteMsg(chainId, msg, 'oneOrZero')
           return decoded.match && decoded.cosmosMsg ? decoded : undefined
         })
         .filter(Boolean)
@@ -104,6 +104,7 @@ export const useSimulateCosmosMsgs = (senderAddress: string) => {
       )
     },
     [
+      chainId,
       cosmosRpcClient,
       polytoneChainIds,
       polytoneProxies,

@@ -19,6 +19,7 @@ import {
 
 import { SuspenseLoader } from '../../../../components'
 import { getWidgets, useWidgets } from '../../../../widgets'
+import { useActionOptions } from '../../../react'
 import {
   ManageWidgetsData,
   ManageWidgetsComponent as StatelessManageWidgetsComponent,
@@ -31,7 +32,10 @@ const useDefaults: UseDefaults<ManageWidgetsData> = () => ({
 })
 
 const Component: ActionComponent = (props) => {
-  const availableWidgets = useMemo(() => getWidgets(), [])
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+  const availableWidgets = useMemo(() => getWidgets(chainId), [chainId])
   const loadingExistingWidgets = useWidgets()
 
   return (

@@ -1,12 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { makeReactHookFormDecorator } from '@dao-dao/storybook'
+import { CHAIN_ID, makeReactHookFormDecorator } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
-import {
-  CHAIN_ID,
-  getFallbackImage,
-  getNativeTokenForChainId,
-} from '@dao-dao/utils'
+import { getFallbackImage, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { NewAttribute, NewAttributeProps } from './NewAttribute'
 

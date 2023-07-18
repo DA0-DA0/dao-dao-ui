@@ -12,7 +12,7 @@ import { WalletTokenCard } from './WalletTokenCard'
 export const WalletTokenLine = <T extends TokenCardInfo>(
   props: Omit<TokenLineProps<T>, 'TokenCard'>
 ) => {
-  const { address: walletAddress } = useWallet()
+  const { address: walletAddress } = useWallet(props.token.chainId)
 
   const lazyInfo = useCachedLoading(
     walletAddress

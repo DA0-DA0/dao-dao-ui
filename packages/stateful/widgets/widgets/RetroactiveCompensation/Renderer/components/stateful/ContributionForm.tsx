@@ -30,7 +30,7 @@ export const ContributionForm = () => {
     connected,
     address: walletAddress = '',
     publicKey: walletPublicKey,
-  } = useWallet()
+  } = useWallet(chainId)
   const walletEntity = useEntity(walletAddress)
 
   const postRequest = usePostRequest()

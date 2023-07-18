@@ -42,7 +42,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
-  const { refreshBalances } = useWalletInfo()
+  const { refreshBalances } = useWalletInfo(chainId)
 
   const {
     vestingContractAddress,
@@ -89,7 +89,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
 
   const awaitNextBlock = useAwaitNextBlock()
 
-  const { address: walletAddress = '' } = useWallet()
+  const { address: walletAddress = '' } = useWallet(chainId)
   const distribute = useDistribute({
     contractAddress: vestingContractAddress,
     sender: walletAddress,

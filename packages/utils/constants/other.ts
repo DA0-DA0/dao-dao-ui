@@ -1,7 +1,5 @@
 // Constants NOT derived from environment variables.
 
-import { ChainId } from '@dao-dao/types'
-
 export const SITE_IMAGE = '/social.jpg'
 export const WC_ICON_PATH = '/walletconnect.png'
 
@@ -47,15 +45,12 @@ export const DAO_WIDGET_ITEM_NAMESPACE = 'widget:'
 // contract info response.
 export const CW721_WORKAROUND_ITEM_KEY_PREFIX = 'cw721:'
 
-// Osmosis
-export const OSMOSIS_MAINNET_RPC = 'https://rpc.osmosis.zone'
-export const OSMOSIS_MAINNET_REST = 'https://lcd.osmosis.zone'
+// Osmosis API
 export const OSMOSIS_API_BASE = 'https://api-osmosis.imperator.co'
 
-// Search
-export const SearchDaosIndexPerChain: Partial<Record<ChainId, string>> = {
-  [ChainId.JunoMainnet]: 'daos',
-  [ChainId.JunoTestnet]: 'testnet_daos',
-  [ChainId.OsmosisMainnet]: 'osmosis_daos',
-  [ChainId.OsmosisTestnet]: 'osmosis_testnet_daos',
-}
+// KVPK prefix for saved Me page transactions.
+export const ME_SAVED_TX_PREFIX = 'savedTx:'
+
+export const CHAIN_GAS_MULTIPLIER = 2
+
+export const NUM_FEATURED_DAOS = 10

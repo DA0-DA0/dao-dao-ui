@@ -2,12 +2,17 @@ import { Chain } from '@chain-registry/types'
 
 import { Coin } from './contracts'
 import { GenericToken } from './token'
+import { CodeIdConfig, PolytoneConfig } from './utils'
 
 export type IChainContext = {
   chainId: string
   chain: Chain
   nativeToken: GenericToken
+  // If defined, this is a supported chain.
+  config?: SupportedChainConfig
 }
+
+export type SupportedChainContext = Required<IChainContext>
 
 export interface Validator {
   address: string
@@ -63,13 +68,22 @@ export enum ChainId {
   StargazeTestnet = 'elgafar-1',
 }
 
-export type HostChainSubdomain = {
-  id: ChainId
-  subdomain: string
-  // Whether or not this chain shows up in the chain switcher.
-  hideFromSwitcher?: boolean
+export type SupportedChainConfig = {
+  mainnet: boolean
+  factoryContractAddress: string
+  indexes: {
+    search: string
+    featured: string
+  }
+  explorerUrlTemplates: {
+    tx: string
+    govProp: string
+    wallet: string
+  }
+  codeIds: CodeIdConfig
+  polytone?: PolytoneConfig
 }
 
-export type HostChain = Omit<HostChainSubdomain, 'id'> & {
+export type SupportedChain = SupportedChainConfig & {
   chain: Chain
 }

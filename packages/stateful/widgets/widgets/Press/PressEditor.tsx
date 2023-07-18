@@ -5,14 +5,14 @@ import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { Button, useDaoInfoContext } from '@dao-dao/stateless'
+import {
+  Button,
+  useDaoInfoContext,
+  useSupportedChainContext,
+} from '@dao-dao/stateless'
 import { WidgetEditorProps } from '@dao-dao/types'
 import { InstantiateMsg as Cw721InstantiateMsg } from '@dao-dao/types/contracts/Cw721Base'
-import {
-  CHAIN_GAS_MULTIPLIER,
-  CODE_ID_CONFIG,
-  processError,
-} from '@dao-dao/utils'
+import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { PressData } from './types'
 
@@ -21,8 +21,13 @@ export const PressEditor = ({
 }: WidgetEditorProps<PressData>) => {
   const { t } = useTranslation()
 
+  const {
+    chainId,
+    config: { codeIds },
+  } = useSupportedChainContext()
   const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { address: walletAddress = '', signingCosmWasmClient } = useWallet()
+  const { address: walletAddress = '', signingCosmWasmClient } =
+    useWallet(chainId)
 
   const { setValue, setError, clearErrors, watch } = useFormContext<PressData>()
   const contract = watch((fieldNamePrefix + 'contract') as 'contract')
@@ -40,7 +45,7 @@ export const PressEditor = ({
 
       const { contractAddress } = await signingCosmWasmClient.instantiate(
         walletAddress,
-        CODE_ID_CONFIG.Cw721Base,
+        codeIds.Cw721Base,
         {
           minter: coreAddress,
           name: name,

@@ -1,33 +1,42 @@
 import { useWallet } from '@noahsaso/cosmodal'
-import { waitForAllSettled } from 'recoil'
+import { waitForAll, waitForAllSettled } from 'recoil'
 
 import {
   MeBalances as StatelessMeBalances,
   useCachedLoading,
-  useChain,
 } from '@dao-dao/stateless'
 import { LoadingData, TokenCardInfo } from '@dao-dao/types'
-import { loadableToLoadingData } from '@dao-dao/utils'
+import {
+  getSupportedChains,
+  loadableToLoadingData,
+  transformBech32Address,
+} from '@dao-dao/utils'
 
 import {
+  allWalletNftsSelector,
   hiddenBalancesSelector,
   tokenCardLazyInfoSelector,
-  walletNativeAndStargazeNftsSelector,
   walletTokenCardInfosSelector,
 } from '../../recoil'
 import { WalletNftCard } from '../WalletNftCard'
 import { WalletTokenLine } from '../WalletTokenLine'
 
 export const MeBalances = () => {
-  const { chain_id: chainId } = useChain()
   const { address: walletAddress, publicKey } = useWallet()
 
   const tokensWithoutLazyInfo = useCachedLoading(
     walletAddress
-      ? walletTokenCardInfosSelector({
-          walletAddress,
-          chainId,
-        })
+      ? waitForAll(
+          getSupportedChains().map(({ chain }) =>
+            walletTokenCardInfosSelector({
+              chainId: chain.chain_id,
+              walletAddress: transformBech32Address(
+                walletAddress,
+                chain.chain_id
+              ),
+            })
+          )
+        )
       : undefined,
     []
   )
@@ -36,9 +45,9 @@ export const MeBalances = () => {
   const tokenLazyInfos = useCachedLoading(
     !tokensWithoutLazyInfo.loading && walletAddress
       ? waitForAllSettled(
-          tokensWithoutLazyInfo.data.map(({ token, unstakedBalance }) =>
+          tokensWithoutLazyInfo.data.flat().map(({ token, unstakedBalance }) =>
             tokenCardLazyInfoSelector({
-              owner: walletAddress,
+              owner: transformBech32Address(walletAddress, token.chainId),
               token,
               unstakedBalance,
             })
@@ -57,7 +66,7 @@ export const MeBalances = () => {
         }
       : {
           loading: false,
-          data: tokensWithoutLazyInfo.data.map((token, i) => ({
+          data: tokensWithoutLazyInfo.data.flat().map((token, i) => ({
             ...token,
             lazyInfo: loadableToLoadingData(tokenLazyInfos.data[i], {
               usdUnitPrice: undefined,
@@ -69,7 +78,9 @@ export const MeBalances = () => {
 
   const nfts = useCachedLoading(
     walletAddress
-      ? walletNativeAndStargazeNftsSelector(walletAddress)
+      ? allWalletNftsSelector({
+          walletAddress,
+        })
       : undefined,
     []
   )

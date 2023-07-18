@@ -2,12 +2,12 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { AddressInput } from '@dao-dao/stateless'
 import {
+  CHAIN_ID,
   makeDaoInfo,
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
-import { CHAIN_ID } from '@dao-dao/utils'
 
 import { BeginVesting } from './BeginVesting'
 

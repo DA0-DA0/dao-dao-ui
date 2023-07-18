@@ -37,9 +37,9 @@ export type MeProps = {
   rightSidebarContent: ReactNode
   MeBalances: ComponentType
   MeTransactionBuilder: ComponentType
-  walletAddress: string
   profileData: WalletProfileData
   updateProfileName: (name: string | null) => Promise<void>
+  setChainId: (chainId: string) => void
 }
 
 export type MeTransactionBuilderProps = {

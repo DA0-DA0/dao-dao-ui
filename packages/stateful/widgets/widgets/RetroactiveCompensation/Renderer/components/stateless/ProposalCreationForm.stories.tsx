@@ -1,7 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { EntityType, TokenType } from '@dao-dao/types'
-import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
+import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../../../../../../components'
 import { makeSurvey } from './ContributionForm.stories'

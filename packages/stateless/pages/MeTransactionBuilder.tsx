@@ -24,7 +24,6 @@ import {
   MeTransactionSave,
 } from '@dao-dao/types'
 import {
-  CHAIN_TXN_URL_PREFIX,
   convertActionsToMessages,
   processError,
   validateRequired,
@@ -44,6 +43,7 @@ import {
   TextInput,
   Tooltip,
 } from '../components'
+import { useChainContext } from '../hooks'
 
 enum SubmitValue {
   Preview = 'Preview',
@@ -65,6 +65,7 @@ export const MeTransactionBuilder = ({
   saving,
 }: MeTransactionBuilderProps) => {
   const { t } = useTranslation()
+  const { config } = useChainContext()
 
   const {
     control,
@@ -247,10 +248,18 @@ export const MeTransactionBuilder = ({
             <div className="flex flex-col items-end gap-2 self-end text-text-interactive-valid">
               <CopyToClipboard takeAll value={txHash} />
 
-              <ButtonLink href={CHAIN_TXN_URL_PREFIX + txHash} variant="ghost">
-                {t('button.openInChainExplorer')}{' '}
-                <ArrowOutwardRounded className="!h-4 !w-4" />
-              </ButtonLink>
+              {config && (
+                <ButtonLink
+                  href={config.explorerUrlTemplates.tx.replace(
+                    'REPLACE',
+                    txHash
+                  )}
+                  variant="ghost"
+                >
+                  {t('button.openInChainExplorer')}{' '}
+                  <ArrowOutwardRounded className="!h-4 !w-4" />
+                </ButtonLink>
+              )}
             </div>
           )}
 
