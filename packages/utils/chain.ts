@@ -74,7 +74,10 @@ export const getImageUrlForChainId = (chainId: string): string => {
     return '/stargaze.png'
   }
 
-  if (chainId === ChainId.JunoMainnet || chainId === ChainId.JunoTestnet) {
+  if (
+    chainId === ChainId.OsmosisMainnet ||
+    chainId === ChainId.OsmosisTestnet
+  ) {
     return '/osmosis.png'
   }
 
