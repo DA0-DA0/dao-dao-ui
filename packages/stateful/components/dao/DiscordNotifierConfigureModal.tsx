@@ -39,7 +39,7 @@ export const DiscordNotifierConfigureModal = () => {
   const router = useRouter()
   const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
-  const { connected, publicKey } = useWallet()
+  const { connected, publicKey } = useWallet(chainId)
 
   const [visible, setVisible] = useState(false)
 

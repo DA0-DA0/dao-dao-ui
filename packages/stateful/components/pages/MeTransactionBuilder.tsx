@@ -19,6 +19,7 @@ import { useLoadedActionsAndCategories } from '@dao-dao/stateful/actions'
 import {
   MeTransactionBuilder as StatelessMeTransactionBuilder,
   useCachedLoading,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   MeTransactionBuilderProps,
@@ -36,11 +37,12 @@ import {
 export const MeTransactionBuilder = () => {
   const { t } = useTranslation()
 
+  const { chain_id } = useChain()
   const {
     address: walletAddress = '',
     publicKey,
     signingCosmWasmClient,
-  } = useWallet()
+  } = useWallet(chain_id)
 
   const { loadedActions, categories } = useLoadedActionsAndCategories()
 

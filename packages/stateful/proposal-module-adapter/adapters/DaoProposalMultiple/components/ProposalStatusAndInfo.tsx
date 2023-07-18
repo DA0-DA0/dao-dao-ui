@@ -116,7 +116,7 @@ const InnerProposalStatusAndInfo = ({
   const { name: daoName, coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { connected, address: walletAddress = '' } = useWallet()
+  const { connected, address: walletAddress = '' } = useWallet(chainId)
   const { isMember = false } = useMembership({
     coreAddress,
   })

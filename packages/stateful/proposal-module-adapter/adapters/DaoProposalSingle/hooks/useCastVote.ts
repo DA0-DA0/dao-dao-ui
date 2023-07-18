@@ -12,8 +12,9 @@ import { useVote as useVoteV2 } from '../contracts/DaoProposalSingle.v2.hooks'
 import { useLoadingWalletVoteInfo } from './useLoadingWalletVoteInfo'
 
 export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
-  const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { connected, address: walletAddress = '' } = useWallet()
+  const { proposalModule, proposalNumber, chain } =
+    useProposalModuleAdapterOptions()
+  const { connected, address: walletAddress = '' } = useWallet(chain.chain_id)
 
   const _castVote = (
     proposalModule.version === ContractVersion.V1 ? useVoteV1 : useVoteV2

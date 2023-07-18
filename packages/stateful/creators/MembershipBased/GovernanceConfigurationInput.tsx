@@ -11,6 +11,7 @@ import {
   VOTING_POWER_DISTRIBUTION_COLORS,
   VotingPowerDistribution,
   VotingPowerDistributionEntry,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   CreateDaoCustomValidator,
@@ -38,7 +39,8 @@ export const GovernanceConfigurationInput = ({
   },
 }: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
-  const { address: walletAddress } = useWallet()
+  const { chain_id } = useChain()
+  const { address: walletAddress } = useWallet(chain_id)
 
   const {
     fields: tierFields,

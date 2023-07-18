@@ -13,14 +13,15 @@ import { InstantiateNftCollection as StatelessInstantiateNftCollection } from '.
 
 export const InstantiateNftCollection: ActionComponent = (props) => {
   const { t } = useTranslation()
-  const { address: walletAddress, signingCosmWasmClient } = useWallet()
   const { watch, setValue } = useFormContext()
   const {
     context,
     chainContext: {
+      chainId,
       config: { codeIds },
     },
   } = useActionOptions()
+  const { address: walletAddress, signingCosmWasmClient } = useWallet(chainId)
 
   const [instantiating, setInstantiating] = useState(false)
 

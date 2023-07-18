@@ -11,6 +11,7 @@ import {
   refreshNativeTokenStakingInfoAtom,
   refreshWalletBalancesIdAtom,
   refreshWalletProfileAtom,
+  walletChainIdAtom,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { ChainId, WalletProfileData, WalletProfileUpdate } from '@dao-dao/types'
@@ -41,21 +42,24 @@ export interface UseWalletReturn {
   backupImageUrl: string
 }
 
-export const useWalletInfo = (): UseWalletReturn => {
-  const { address, connected, publicKey, chainInfo } = useWallet()
+export const useWalletInfo = (chainId?: string): UseWalletReturn => {
+  const defaultChainId = useRecoilValue(walletChainIdAtom)
+  chainId ??= defaultChainId
+
+  const { address, connected, publicKey, chainInfo } = useWallet(chainId)
   const connectWalletToChain = useConnectWalletToChain()
 
-  const nativeToken = chainInfo && getNativeTokenForChainId(chainInfo.chainId)
+  const nativeToken = getNativeTokenForChainId(chainId)
 
   // Fetch wallet balance.
   const {
     state: walletNativeBalanceState,
     contents: walletNativeBalanceContents,
   } = useCachedLoadable(
-    address && chainInfo
+    address
       ? nativeBalanceSelector({
           address,
-          chainId: chainInfo.chainId,
+          chainId,
         })
       : undefined
   )
@@ -74,10 +78,10 @@ export const useWalletInfo = (): UseWalletReturn => {
     state: walletStakedNativeBalanceState,
     contents: walletStakedNativeBalanceContents,
   } = useCachedLoadable(
-    address && chainInfo
+    address
       ? nativeDelegatedBalanceSelector({
           address,
-          chainId: chainInfo.chainId,
+          chainId,
         })
       : undefined
   )
@@ -96,10 +100,10 @@ export const useWalletInfo = (): UseWalletReturn => {
     state: nativeBalancesFetchedAtState,
     contents: nativeBalancesFetchedAtContents,
   } = useCachedLoadable(
-    address && chainInfo
+    address
       ? nativeBalancesFetchedAtSelector({
           address,
-          chainId: chainInfo.chainId,
+          chainId,
         })
       : undefined
   )

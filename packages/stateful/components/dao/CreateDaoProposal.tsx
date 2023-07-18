@@ -39,7 +39,7 @@ export const CreateDaoProposal = () => {
   const { goToDaoProposal, router } = useDaoNavHelpers()
   const chain = useChain()
   const daoInfo = useDaoInfoContext()
-  const { connected } = useWallet()
+  const { connected } = useWallet(chain.chain_id)
 
   const [selectedProposalModule, setSelectedProposalModule] = useState(
     // Default to single choice proposal module or first otherwise.

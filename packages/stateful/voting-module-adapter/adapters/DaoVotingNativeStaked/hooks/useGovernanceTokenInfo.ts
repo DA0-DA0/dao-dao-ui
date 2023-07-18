@@ -24,7 +24,7 @@ export const useGovernanceTokenInfo = ({
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
   const { chain_id: chainId } = useChain()
-  const { address: walletAddress } = useWallet()
+  const { address: walletAddress } = useWallet(chainId)
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { denom } = useRecoilValue(

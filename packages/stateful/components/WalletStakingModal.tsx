@@ -39,9 +39,10 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
     chain: { chain_id: chainId },
     nativeToken,
   } = useChainContext()
-  const { address: walletAddress = '', signingCosmWasmClient } = useWallet()
+  const { address: walletAddress = '', signingCosmWasmClient } =
+    useWallet(chainId)
 
-  const { walletBalance, refreshBalances } = useWalletInfo()
+  const { walletBalance, refreshBalances } = useWalletInfo(chainId)
   // Refreshes validator balances.
   const setRefreshValidatorBalances = useSetRecoilState(
     refreshWalletBalancesIdAtom('')

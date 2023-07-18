@@ -21,11 +21,13 @@ export const PressEditor = ({
 }: WidgetEditorProps<PressData>) => {
   const { t } = useTranslation()
 
-  const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { address: walletAddress = '', signingCosmWasmClient } = useWallet()
   const {
+    chainId,
     config: { codeIds },
   } = useSupportedChainContext()
+  const { name: daoName, coreAddress } = useDaoInfoContext()
+  const { address: walletAddress = '', signingCosmWasmClient } =
+    useWallet(chainId)
 
   const { setValue, setError, clearErrors, watch } = useFormContext<PressData>()
   const contract = watch((fieldNamePrefix + 'contract') as 'contract')

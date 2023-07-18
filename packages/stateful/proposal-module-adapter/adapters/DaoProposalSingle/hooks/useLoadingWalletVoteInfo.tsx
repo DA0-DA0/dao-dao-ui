@@ -18,7 +18,7 @@ export const useLoadingWalletVoteInfo = ():
     proposalNumber,
     chain: { chain_id: chainId },
   } = useProposalModuleAdapterOptions()
-  const { address: walletAddress } = useWallet()
+  const { address: walletAddress } = useWallet(chainId)
 
   const loadingProposal = useLoadingProposal()
 

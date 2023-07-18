@@ -1,4 +1,3 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { waitForAll } from 'recoil'
 
 import { walletProposalStatsSelector } from '@dao-dao/state/recoil'
@@ -7,7 +6,11 @@ import {
   useAppContext,
   useCachedLoadable,
 } from '@dao-dao/stateless'
-import { getNativeTokenForChainId, getSupportedChains } from '@dao-dao/utils'
+import {
+  getNativeTokenForChainId,
+  getSupportedChains,
+  transformBech32Address,
+} from '@dao-dao/utils'
 
 import { useWalletInfo } from '../../hooks'
 
@@ -29,9 +32,9 @@ export const ProfileHomeCard = () => {
           getSupportedChains().map(({ chain }) =>
             walletProposalStatsSelector({
               chainId: chain.chain_id,
-              address: toBech32(
-                chain.bech32_prefix,
-                fromBech32(walletAddress).data
+              address: transformBech32Address(
+                walletAddress,
+                chain.bech32_prefix
               ),
             })
           )

@@ -22,7 +22,6 @@ import { SuspenseLoader } from '../SuspenseLoader'
 export const Web3AuthPromptModal = () => {
   const { t } = useTranslation()
   const { web3AuthPrompt: prompt } = useAppContext()
-  const { address } = useWallet()
 
   const decoded = useMemo(() => {
     if (!prompt) {
@@ -60,6 +59,7 @@ export const Web3AuthPromptModal = () => {
     (prompt.signData.type === 'direct'
       ? prompt.signData.value.chainId
       : prompt.signData.value.chain_id)
+  const { address } = useWallet(chainId)
 
   return (
     <Modal

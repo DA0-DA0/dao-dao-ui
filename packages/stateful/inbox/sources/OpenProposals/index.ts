@@ -1,4 +1,3 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { useSetRecoilState, waitForAll } from 'recoil'
@@ -6,7 +5,11 @@ import { useSetRecoilState, waitForAll } from 'recoil'
 import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { InboxSource } from '@dao-dao/types'
-import { getSupportedChains, webSocketChannelNameForDao } from '@dao-dao/utils'
+import {
+  getSupportedChains,
+  transformBech32Address,
+  webSocketChannelNameForDao,
+} from '@dao-dao/utils'
 
 import {
   ProposalLine,
@@ -38,9 +41,9 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
                 wallet:
                   address && publicKey
                     ? {
-                        address: toBech32(
-                          chain.bech32_prefix,
-                          fromBech32(address).data
+                        address: transformBech32Address(
+                          address,
+                          chain.chain_id
                         ),
                         hexPublicKey: publicKey.hex,
                       }

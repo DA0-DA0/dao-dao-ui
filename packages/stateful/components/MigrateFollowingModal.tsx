@@ -18,7 +18,7 @@ export const MigrateFollowingModal = () => {
 
   const [oldFollowing, setOldFollowing] = useState([] as string[])
   const [loading, setLoading] = useState(false)
-  const { address } = useWallet()
+  const { address } = useWallet(junoChainId)
   useEffect(() => {
     if (!address) {
       return

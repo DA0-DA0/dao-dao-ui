@@ -16,8 +16,8 @@ export interface ProfileNewProposalCardProps {
 }
 
 export const ProfileNewProposalCard = (props: ProfileNewProposalCardProps) => {
-  const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { walletProfileData, updateProfileName } = useWalletInfo()
+  const { chainId, name: daoName, coreAddress } = useDaoInfoContext()
+  const { walletProfileData, updateProfileName } = useWalletInfo(chainId)
   const { updateProfileNft } = useAppContext()
 
   return (
@@ -48,8 +48,8 @@ export const InnerProfileNewProposalCard = ({
   },
 }: ProfileNewProposalCardProps) => {
   const { t } = useTranslation()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { walletProfileData, updateProfileName } = useWalletInfo()
+  const { chainId, name: daoName, coreAddress } = useDaoInfoContext()
+  const { walletProfileData, updateProfileName } = useWalletInfo(chainId)
   const { updateProfileNft } = useAppContext()
   const {
     hooks: { useProfileNewProposalCardAddresses },

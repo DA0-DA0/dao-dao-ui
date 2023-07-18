@@ -57,7 +57,7 @@ export const NewProposal = ({
     imageUrl: daoImageUrl,
     coreAddress,
   } = useDaoInfoContext()
-  const { connected } = useWallet()
+  const { connected } = useWallet(chainId)
 
   const { loadedActions, categories } = useLoadedActionsAndCategories()
 

@@ -33,12 +33,13 @@ export const InstantiateTokenSwap: ActionComponent<
   const {
     address: selfAddress,
     chainContext: {
+      chainId,
       config: { codeIds },
     },
   } = useActionOptions()
 
   const { setValue } = useFormContext()
-  const { address: walletAddress, signingCosmWasmClient } = useWallet()
+  const { address: walletAddress, signingCosmWasmClient } = useWallet(chainId)
 
   const selfPartyTokenBalances = useTokenBalances()
 

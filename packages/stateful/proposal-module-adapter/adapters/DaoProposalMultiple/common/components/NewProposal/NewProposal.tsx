@@ -30,6 +30,7 @@ import {
   TextAreaInput,
   TextInput,
   Tooltip,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   ActionCategoryWithLabel,
@@ -125,8 +126,9 @@ export const NewProposal = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const { status: walletStatus } = useWallet()
-  const { walletAddress = '', walletProfileData } = useWalletInfo()
+  const { chain_id } = useChain()
+  const { status: walletStatus } = useWallet(chain_id)
+  const { walletAddress = '', walletProfileData } = useWalletInfo(chain_id)
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')

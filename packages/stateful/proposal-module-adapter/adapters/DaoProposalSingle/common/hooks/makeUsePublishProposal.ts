@@ -47,7 +47,7 @@ export const makeUsePublishProposal =
   }: MakeUsePublishProposalOptions): UsePublishProposal =>
   () => {
     const { t } = useTranslation()
-    const { connected, address: walletAddress } = useWallet()
+    const { connected, address: walletAddress } = useWallet(chainId)
     const { isMember = false } = useMembership({
       coreAddress,
     })

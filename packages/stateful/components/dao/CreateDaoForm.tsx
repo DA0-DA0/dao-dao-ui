@@ -341,8 +341,8 @@ export const CreateDaoForm = ({
   //! Submit handlers
 
   const [creating, setCreating] = useState(false)
-  const { connected, address: walletAddress } = useWallet()
-  const { refreshBalances } = useWalletInfo()
+  const { connected, address: walletAddress } = useWallet(chainId)
+  const { refreshBalances } = useWalletInfo(chainId)
 
   const instantiateWithFactory =
     CwAdminFactoryHooks.useInstantiateWithAdminFactory({

@@ -34,7 +34,7 @@ export const MintNftRenderer = ({
     address: walletAddress = '',
     signingCosmWasmClient,
     connected,
-  } = useWallet()
+  } = useWallet(chainId)
 
   const [minting, setMinting] = useState(false)
 

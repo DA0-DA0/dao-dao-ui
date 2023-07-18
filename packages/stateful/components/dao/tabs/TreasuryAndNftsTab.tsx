@@ -28,7 +28,7 @@ import { DaoTokenCard } from '../DaoTokenCard'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
-  const { connected } = useWallet()
+  const { connected } = useWallet(daoInfo.chainId)
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership(daoInfo)
 

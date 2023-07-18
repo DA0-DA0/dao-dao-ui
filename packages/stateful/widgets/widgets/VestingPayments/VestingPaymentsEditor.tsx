@@ -22,10 +22,12 @@ export const VestingPaymentsEditor = ({
   const { t } = useTranslation()
 
   const { name, coreAddress } = useDaoInfoContext()
-  const { address: walletAddress = '', signingCosmWasmClient } = useWallet()
   const {
+    chainId,
     config: { codeIds },
   } = useSupportedChainContext()
+  const { address: walletAddress = '', signingCosmWasmClient } =
+    useWallet(chainId)
 
   const { setValue, setError, clearErrors, watch } =
     useFormContext<VestingPaymentsData>()

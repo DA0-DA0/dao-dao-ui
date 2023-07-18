@@ -65,14 +65,14 @@ export const WyndDepositRenderer = ({
 }: WidgetRendererProps<WyndDepositData>) => {
   const { t } = useTranslation()
   const {
-    signingCosmWasmClient,
-    address: walletAddress = '',
-    connected,
-  } = useWallet()
-  const {
     chain: { chain_id: chainId },
     config: { explorerUrlTemplates },
   } = useSupportedChainContext()
+  const {
+    signingCosmWasmClient,
+    address: walletAddress = '',
+    connected,
+  } = useWallet(chainId)
   const { coreAddress } = useDaoInfoContext()
 
   // Default to the DAO's treasury if no output specified.

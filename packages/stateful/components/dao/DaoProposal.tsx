@@ -42,7 +42,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const daoInfo = useDaoInfoContext()
   const actionsForMatching = useActionsForMatching({ isCreating: false })
   const { getDaoProposalPath } = useDaoNavHelpers()
-  const { connected, address } = useWallet()
+  const { connected, address } = useWallet(daoInfo.chainId)
   const {
     id,
     adapter: {

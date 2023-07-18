@@ -55,7 +55,7 @@ const useDefaults: UseDefaults<SpendData> = () => {
   const {
     chain: { chain_id: chainId },
   } = useActionOptions()
-  const { address: walletAddress = '' } = useWallet()
+  const { address: walletAddress = '' } = useWallet(chainId)
 
   return {
     chainId,

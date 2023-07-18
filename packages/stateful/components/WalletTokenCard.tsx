@@ -59,7 +59,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     signingCosmWasmClient,
   } = useWallet(props.token.chainId)
 
-  const { refreshBalances } = useWalletInfo()
+  const { refreshBalances } = useWalletInfo(props.token.chainId)
 
   const lazyInfo = useCachedLoading(
     walletAddress

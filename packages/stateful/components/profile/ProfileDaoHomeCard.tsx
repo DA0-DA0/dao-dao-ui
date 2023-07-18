@@ -23,9 +23,9 @@ import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 
 // This is the card shown when viewing a DAO's home page.
 export const ProfileDaoHomeCard = () => {
-  const { connected } = useWallet()
   const chain = useChain()
-  const { walletProfileData, updateProfileName } = useWalletInfo()
+  const { connected } = useWallet(chain.chain_id)
+  const { walletProfileData, updateProfileName } = useWalletInfo(chain.chain_id)
   const { updateProfileNft } = useAppContext()
 
   const daoInfo = useDaoInfoContext()

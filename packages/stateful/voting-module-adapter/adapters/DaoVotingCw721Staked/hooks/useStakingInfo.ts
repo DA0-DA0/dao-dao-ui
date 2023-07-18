@@ -35,7 +35,7 @@ export const useStakingInfo = ({
   fetchWalletUnstakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
   const { chain_id: chainId } = useChain()
-  const { address: walletAddress } = useWallet()
+  const { address: walletAddress } = useWallet(chainId)
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { collectionAddress: governanceTokenAddress } =

@@ -7,7 +7,11 @@ import {
   useCachedLoading,
 } from '@dao-dao/stateless'
 import { LoadingData, TokenCardInfo } from '@dao-dao/types'
-import { getSupportedChains, loadableToLoadingData } from '@dao-dao/utils'
+import {
+  getChainForChainId,
+  getSupportedChains,
+  loadableToLoadingData,
+} from '@dao-dao/utils'
 
 import {
   allWalletNftsSelector,
@@ -44,7 +48,10 @@ export const MeBalances = () => {
       ? waitForAllSettled(
           tokensWithoutLazyInfo.data.flat().map(({ token, unstakedBalance }) =>
             tokenCardLazyInfoSelector({
-              owner: walletAddress,
+              owner: toBech32(
+                getChainForChainId(token.chainId).bech32_prefix,
+                fromBech32(walletAddress).data
+              ),
               token,
               unstakedBalance,
             })

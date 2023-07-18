@@ -41,7 +41,8 @@ export type TransferNftData = {
 }
 
 const useDefaults: UseDefaults<TransferNftData> = () => {
-  const { address: walletAddress = '' } = useWallet()
+  const { chain_id } = useActionOptions().chain
+  const { address: walletAddress = '' } = useWallet(chain_id)
 
   return {
     collection: '',
