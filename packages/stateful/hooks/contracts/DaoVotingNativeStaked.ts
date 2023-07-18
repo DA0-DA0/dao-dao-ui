@@ -12,12 +12,17 @@ import {
 import { useChain } from '@dao-dao/stateless'
 import { FunctionKeyOf } from '@dao-dao/types'
 
+import { useSyncWalletSigner } from '../useSyncWalletSigner'
+
 // This hook wrapper lets us easily make hooks out of all execution functions on
 // the contract clients, without having to fetch the `executeClient` selector as
 // a loadable and add `useCallback` hooks in all the components.
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
   (params: Omit<ExecuteClientParams, 'chainId'>) => {
+    // Make sure we have the signing client for this chain and wallet.
+    useSyncWalletSigner()
+
     const { chain_id: chainId } = useChain()
     const clientLoadable = useRecoilValueLoadable(
       executeClient({
@@ -36,7 +41,7 @@ const wrapExecuteHook =
               ...args: Parameters<ExecuteClient[T]>
             ) => Promise<ExecuteResult>
           )(...args)
-        throw new Error('Client undefined.')
+        throw new Error('Wallet signer not set up.')
       },
       [client]
     )

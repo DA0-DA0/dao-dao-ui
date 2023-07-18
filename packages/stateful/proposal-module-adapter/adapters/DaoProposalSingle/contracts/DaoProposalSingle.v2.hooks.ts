@@ -7,6 +7,7 @@ import { useRecoilValueLoadable } from 'recoil'
 import { useChain } from '@dao-dao/stateless'
 import { FunctionKeyOf } from '@dao-dao/types'
 
+import { useSyncWalletSigner } from '../../../../hooks'
 import { DaoProposalSingleV2Client as ExecuteClient } from './DaoProposalSingle.v2.client'
 import {
   ExecuteClientParams,
@@ -19,6 +20,9 @@ import {
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
   (params: Omit<ExecuteClientParams, 'chainId'>) => {
+    // Make sure we have the signing client for this chain and wallet.
+    useSyncWalletSigner()
+
     const { chain_id: chainId } = useChain()
     const clientLoadable = useRecoilValueLoadable(
       executeClient({
@@ -37,7 +41,7 @@ const wrapExecuteHook =
               ...args: Parameters<ExecuteClient[T]>
             ) => Promise<ExecuteResult>
           )(...args)
-        throw new Error('Client undefined.')
+        throw new Error('Wallet signer not set up.')
       },
       [client]
     )
