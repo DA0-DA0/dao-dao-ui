@@ -1,17 +1,21 @@
+import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
+import { useRecoilState } from 'recoil'
 
-import { WalletActionsProvider } from '@dao-dao/stateful/actions'
+import { walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
+  ChainProvider,
   Loader,
   LogInRequiredPage,
   Me as StatelessMe,
 } from '@dao-dao/stateless'
-import { SITE_URL } from '@dao-dao/utils'
+import { SITE_URL, getChainForChainId } from '@dao-dao/utils'
 
+import { WalletActionsProvider } from '../../actions/react/provider'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { ConnectWallet } from '../ConnectWallet'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
@@ -22,8 +26,14 @@ import { MeTransactionBuilder } from './MeTransactionBuilder'
 export const Me: NextPage = () => {
   const { t } = useTranslation()
   const { asPath } = useRouter()
-  const { address: walletAddress = '', connected, status } = useWallet()
-  const { walletProfileData: profileData, updateProfileName } = useWalletInfo()
+  const { connected, status } = useWallet()
+  const {
+    walletAddress,
+    walletProfileData: profileData,
+    updateProfileName,
+  } = useWalletInfo()
+
+  const [chainId, setChainId] = useRecoilState(walletChainIdAtom)
 
   return (
     <>
@@ -38,19 +48,32 @@ export const Me: NextPage = () => {
       />
 
       {connected ? (
-        <WalletActionsProvider>
-          {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
-          <SuspenseLoader fallback={<Loader />}>
-            <StatelessMe
-              MeBalances={MeBalances}
-              MeTransactionBuilder={MeTransactionBuilder}
-              profileData={profileData}
-              rightSidebarContent={<ProfileHomeCard />}
-              updateProfileName={updateProfileName}
-              walletAddress={walletAddress}
-            />
-          </SuspenseLoader>
-        </WalletActionsProvider>
+        // Refresh all children when chain changes since state varies by chain.
+        <ChainProvider key={chainId} chainId={chainId}>
+          <WalletActionsProvider
+            address={
+              // Convert address to prevent blink on chain switch.
+              walletAddress
+                ? toBech32(
+                    getChainForChainId(chainId).bech32_prefix,
+                    fromBech32(walletAddress).data
+                  )
+                : undefined
+            }
+          >
+            {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
+            <SuspenseLoader fallback={<Loader />}>
+              <StatelessMe
+                MeBalances={MeBalances}
+                MeTransactionBuilder={MeTransactionBuilder}
+                profileData={profileData}
+                rightSidebarContent={<ProfileHomeCard />}
+                setChainId={setChainId}
+                updateProfileName={updateProfileName}
+              />
+            </SuspenseLoader>
+          </WalletActionsProvider>
+        </ChainProvider>
       ) : (
         <LogInRequiredPage
           connectWalletButton={<ConnectWallet />}

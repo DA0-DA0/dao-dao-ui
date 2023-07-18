@@ -4,6 +4,7 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
+import { useChain } from '@dao-dao/stateless'
 import { FunctionKeyOf } from '@dao-dao/types'
 
 import { DaoProposalSingleV2Client as ExecuteClient } from './DaoProposalSingle.v2.client'
@@ -17,8 +18,14 @@ import {
 // a loadable and add `useCallback` hooks in all the components.
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
-  (params: ExecuteClientParams) => {
-    const clientLoadable = useRecoilValueLoadable(executeClient(params))
+  (params: Omit<ExecuteClientParams, 'chainId'>) => {
+    const { chain_id: chainId } = useChain()
+    const clientLoadable = useRecoilValueLoadable(
+      executeClient({
+        ...params,
+        chainId,
+      })
+    )
     const client =
       clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 

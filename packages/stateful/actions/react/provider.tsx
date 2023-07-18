@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Loader,
+  useChain,
   useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
@@ -153,7 +154,9 @@ export const WalletActionsProvider = ({
   address: overrideAddress,
   children,
 }: WalletActionsProviderProps) => {
-  const { address: connectedAddress } = useWallet()
+  const { chain_id: chainId } = useChain()
+  const { address: connectedAddress } = useWallet(chainId)
+
   const address = overrideAddress || connectedAddress
 
   if (!address) {

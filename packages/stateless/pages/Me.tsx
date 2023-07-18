@@ -7,7 +7,7 @@ import { averageColorSelector } from '@dao-dao/state/recoil'
 import { MeProps, MeTab, MeTabId, Theme } from '@dao-dao/types'
 
 import {
-  CopyToClipboard,
+  ChainSwitcher,
   PageHeaderContent,
   ProfileImage,
   ProfileNameDisplayAndEditor,
@@ -15,19 +15,20 @@ import {
   SegmentedControls,
   useAppContext,
 } from '../components'
-import { useCachedLoadable } from '../hooks'
+import { useCachedLoadable, useChain } from '../hooks'
 import { useThemeContext } from '../theme'
 
 export const Me = ({
   rightSidebarContent,
   MeBalances,
   MeTransactionBuilder,
-  walletAddress,
   profileData,
   updateProfileName,
+  setChainId,
 }: MeProps) => {
   const { t } = useTranslation()
   const router = useRouter()
+  const { chain_id: chainId } = useChain()
 
   const tabs: MeTab[] = [
     {
@@ -61,19 +62,6 @@ export const Me = ({
       ? (tabPath as MeTabId)
       : tabs[0].id
   const selectedTab = tabs.find(({ id }) => id === selectedTabId)
-
-  const tabSelector = (
-    <SegmentedControls
-      onSelect={(tab) =>
-        router.push(`/me/${tab}`, undefined, { shallow: true })
-      }
-      selected={selectedTabId}
-      tabs={tabs.map(({ id, label }) => ({
-        label,
-        value: id,
-      }))}
-    />
-  )
 
   const { setAccentColor, theme } = useThemeContext()
   // Get average color of image URL.
@@ -119,6 +107,26 @@ export const Me = ({
   const canEditProfile = !profileData.loading && profileData.profile.nonce >= 0
   const { updateProfileNft } = useAppContext()
 
+  const tabSelector = (
+    <div className="flex flex-row items-center justify-between gap-8">
+      <ChainSwitcher
+        onSelect={({ chain_id }) => setChainId(chain_id)}
+        selected={chainId}
+      />
+
+      <SegmentedControls
+        onSelect={(tab) =>
+          router.push(`/me/${tab}`, undefined, { shallow: true })
+        }
+        selected={selectedTabId}
+        tabs={tabs.map(({ id, label }) => ({
+          label,
+          value: id,
+        }))}
+      />
+    </div>
+  )
+
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
@@ -145,8 +153,6 @@ export const Me = ({
             updateProfileName={updateProfileName}
             walletProfileData={profileData}
           />
-
-          <CopyToClipboard takeAll value={walletAddress} />
         </div>
 
         <div className="mb-4 sm:hidden">{tabSelector}</div>

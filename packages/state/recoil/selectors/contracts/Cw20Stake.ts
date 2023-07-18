@@ -39,10 +39,10 @@ const queryClient = selectorFamily<Cw20StakeQueryClient, QueryClientParams>({
   dangerouslyAllowMutability: true,
 })
 
-export type ExecuteClientParams = {
+export type ExecuteClientParams = WithChainId<{
   contractAddress: string
   sender: string
-}
+}>
 
 export const executeClient = selectorFamily<
   Cw20StakeClient | undefined,
@@ -50,9 +50,9 @@ export const executeClient = selectorFamily<
 >({
   key: 'cw20StakeExecuteClient',
   get:
-    ({ contractAddress, sender }) =>
+    ({ chainId, contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientAtom)
+      const client = get(signingCosmWasmClientAtom({ chainId }))
       if (!client) return
 
       return new Cw20StakeClient(client, sender, contractAddress)

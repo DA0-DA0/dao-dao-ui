@@ -3,22 +3,15 @@ import {
   ChainInfoOverrides,
   WalletManagerProvider,
   WalletType,
-  useWallet,
 } from '@noahsaso/cosmodal'
 import { PromptSign } from '@noahsaso/cosmodal/dist/wallets/web3auth/types'
 import { isMobile } from '@walletconnect/browser-utils'
-import {
-  Dispatch,
-  PropsWithChildren,
-  ReactNode,
-  SetStateAction,
-  useEffect,
-} from 'react'
+import { Dispatch, PropsWithChildren, ReactNode, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
-import { signingCosmWasmClientAtom } from '@dao-dao/state'
-import { ChainId, Web3AuthPrompt } from '@dao-dao/types'
+import { walletChainIdAtom } from '@dao-dao/state'
+import { Web3AuthPrompt } from '@dao-dao/types'
 import {
   CHAIN_ENDPOINTS,
   MAINNET,
@@ -29,6 +22,8 @@ import {
   maybeGetKeplrChainInfo,
   typesRegistry,
 } from '@dao-dao/utils'
+
+import { useSyncWalletSigner } from '../hooks'
 
 export type WalletProviderProps = {
   // This needs to be provided by the parent component and then passed to the
@@ -45,6 +40,7 @@ export const WalletProvider = ({
   children,
 }: WalletProviderProps) => {
   const { t } = useTranslation()
+  const defaultChainId = useRecoilValue(walletChainIdAtom)
 
   const web3AuthWalletOptions = Object.freeze({
     client: {
@@ -82,7 +78,7 @@ export const WalletProvider = ({
   return (
     <WalletManagerProvider
       chainInfoOverrides={chainInfoOverrides}
-      defaultChainId={MAINNET ? ChainId.JunoMainnet : ChainId.JunoTestnet}
+      defaultChainId={defaultChainId}
       disableDefaultUi
       enabledWalletTypes={[
         // Only show extension wallets on desktop.
@@ -150,13 +146,7 @@ export const WalletProvider = ({
 }
 
 const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
-  const setSigningCosmWasmClient = useSetRecoilState(signingCosmWasmClientAtom)
-  const { signingCosmWasmClient, address } = useWallet()
-
-  // Save address and client in recoil atom so it can be used by selectors.
-  useEffect(() => {
-    setSigningCosmWasmClient(signingCosmWasmClient)
-  }, [setSigningCosmWasmClient, signingCosmWasmClient, address])
+  useSyncWalletSigner()
 
   return <>{children}</>
 }

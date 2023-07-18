@@ -105,13 +105,13 @@ export const NftSelectionModal = <T extends NftCardInfo>({
     })
   }, [nfts, firstSelectedRef, scrolledToFirst])
 
-  const uniqueChainIds = [
-    ...new Set(
+  const uniqueChainIds = Array.from(
+    new Set(
       nfts.loading || nfts.errored
         ? []
         : nfts.data.map(({ chainId }) => chainId)
-    ),
-  ]
+    )
+  )
   const nftChains = uniqueChainIds.map(getChainForChainId)
   const filterOptions = useMemo(
     () => [

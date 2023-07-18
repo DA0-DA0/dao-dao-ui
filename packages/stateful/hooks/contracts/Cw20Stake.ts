@@ -9,6 +9,7 @@ import {
   ExecuteClientParams,
   executeClient,
 } from '@dao-dao/state/recoil/selectors/contracts/Cw20Stake'
+import { useChain } from '@dao-dao/stateless'
 import { FunctionKeyOf } from '@dao-dao/types'
 
 // This hook wrapper lets us easily make hooks out of all execution functions on
@@ -16,8 +17,14 @@ import { FunctionKeyOf } from '@dao-dao/types'
 // a loadable and add `useCallback` hooks in all the components.
 const wrapExecuteHook =
   <T extends FunctionKeyOf<ExecuteClient>>(fn: T) =>
-  (params: ExecuteClientParams) => {
-    const clientLoadable = useRecoilValueLoadable(executeClient(params))
+  (params: Omit<ExecuteClientParams, 'chainId'>) => {
+    const { chain_id: chainId } = useChain()
+    const clientLoadable = useRecoilValueLoadable(
+      executeClient({
+        ...params,
+        chainId,
+      })
+    )
     const client =
       clientLoadable.state === 'hasValue' ? clientLoadable.contents : undefined
 

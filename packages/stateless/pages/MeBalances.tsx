@@ -34,9 +34,9 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
 }: MeBalancesProps<T, N>) => {
   const { t } = useTranslation()
 
-  const uniqueChainIds = [
-    ...new Set(nfts.loading ? [] : nfts.data.map(({ chainId }) => chainId)),
-  ]
+  const uniqueChainIds = Array.from(
+    new Set(nfts.loading ? [] : nfts.data.map(({ chainId }) => chainId))
+  )
   const nftChains = uniqueChainIds.map(getChainForChainId)
   const nftFilterOptions = useMemo(
     () => [
@@ -58,7 +58,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
       ),
     ],
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    useDeepCompareMemoize(nftChains)
+    useDeepCompareMemoize([nftChains])
   )
 
   const {
