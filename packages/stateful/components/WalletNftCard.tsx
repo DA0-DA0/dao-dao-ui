@@ -89,7 +89,6 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
           },
         ]
       : []),
-    // TODO(chain-unify): add multi-chain support for wallet TXs
     ...(transferActionDefaults &&
     // If the NFT is staked, don't show the transfer/burn buttons, since the
     // wallet does not have control.
