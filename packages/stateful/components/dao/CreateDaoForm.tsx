@@ -126,7 +126,10 @@ export const InnerCreateDaoForm = ({
   )
 
   const [_newDaoAtom, setNewDaoAtom] = useRecoilState(
-    newDaoAtom(parentDao?.coreAddress ?? '')
+    newDaoAtom({
+      chainId,
+      parentDaoAddress: parentDao?.coreAddress,
+    })
   )
 
   // Verify cached value is still valid, and fix if not.
@@ -216,13 +219,9 @@ export const InnerCreateDaoForm = ({
   // If chain ID changes, update form values.
   useEffect(() => {
     if (newDao.chainId !== chainId) {
-      form.setValue('chainId', chainId)
-      form.setValue(
-        'votingConfig.proposalDeposit.denomOrAddress',
-        getNativeTokenForChainId(chainId).denomOrAddress
-      )
+      form.reset(_newDaoAtom)
     }
-  }, [chainId, form, newDao.chainId])
+  }, [_newDaoAtom, chainId, form, newDao.chainId])
 
   const makingSubDao = !!parentDao
 

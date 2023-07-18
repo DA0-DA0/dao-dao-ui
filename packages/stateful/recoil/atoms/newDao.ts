@@ -8,7 +8,6 @@ import {
   NewDao,
 } from '@dao-dao/types'
 import {
-  DEFAULT_CHAIN_ID,
   DaoProposalMultipleAdapterId,
   DaoProposalSingleAdapterId,
   MembershipBasedCreatorId,
@@ -69,11 +68,15 @@ export const makeDefaultNewDao = (chainId: string): NewDao => ({
   advancedVotingConfigEnabled: false,
 })
 
-// Store each subDAO creation state separately. Main DAO creation state uses an
-// empty string.
-export const newDaoAtom = atomFamily<NewDao, string>({
+export const newDaoAtom = atomFamily<
+  NewDao,
+  {
+    chainId: string
+    parentDaoAddress?: string
+  }
+>({
   key: 'newDao',
-  default: () => makeDefaultNewDao(DEFAULT_CHAIN_ID),
+  default: ({ chainId }) => makeDefaultNewDao(chainId),
   effects: [localStorageEffectJSON],
 })
 
