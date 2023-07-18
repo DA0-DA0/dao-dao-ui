@@ -1,4 +1,3 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { useWallet } from '@noahsaso/cosmodal'
 import { waitForAll, waitForAllSettled } from 'recoil'
 
@@ -8,9 +7,9 @@ import {
 } from '@dao-dao/stateless'
 import { LoadingData, TokenCardInfo } from '@dao-dao/types'
 import {
-  getChainForChainId,
   getSupportedChains,
   loadableToLoadingData,
+  transformBech32Address,
 } from '@dao-dao/utils'
 
 import {
@@ -31,9 +30,9 @@ export const MeBalances = () => {
           getSupportedChains().map(({ chain }) =>
             walletTokenCardInfosSelector({
               chainId: chain.chain_id,
-              walletAddress: toBech32(
-                chain.bech32_prefix,
-                fromBech32(walletAddress).data
+              walletAddress: transformBech32Address(
+                walletAddress,
+                chain.chain_id
               ),
             })
           )
@@ -48,10 +47,7 @@ export const MeBalances = () => {
       ? waitForAllSettled(
           tokensWithoutLazyInfo.data.flat().map(({ token, unstakedBalance }) =>
             tokenCardLazyInfoSelector({
-              owner: toBech32(
-                getChainForChainId(token.chainId).bech32_prefix,
-                fromBech32(walletAddress).data
-              ),
+              owner: transformBech32Address(walletAddress, token.chainId),
               token,
               unstakedBalance,
             })

@@ -32,10 +32,7 @@ export const ProfileHomeCard = () => {
           getSupportedChains().map(({ chain }) =>
             walletProposalStatsSelector({
               chainId: chain.chain_id,
-              address: transformBech32Address(
-                walletAddress,
-                chain.bech32_prefix
-              ),
+              address: transformBech32Address(walletAddress, chain.chain_id),
             })
           )
         )

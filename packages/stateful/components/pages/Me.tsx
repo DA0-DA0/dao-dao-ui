@@ -1,4 +1,3 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
@@ -13,7 +12,7 @@ import {
   LogInRequiredPage,
   Me as StatelessMe,
 } from '@dao-dao/stateless'
-import { SITE_URL, getChainForChainId } from '@dao-dao/utils'
+import { SITE_URL, transformBech32Address } from '@dao-dao/utils'
 
 import { WalletActionsProvider } from '../../actions/react/provider'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
@@ -54,10 +53,7 @@ export const Me: NextPage = () => {
             address={
               // Convert address to prevent blink on chain switch.
               walletAddress
-                ? toBech32(
-                    getChainForChainId(chainId).bech32_prefix,
-                    fromBech32(walletAddress).data
-                  )
+                ? transformBech32Address(walletAddress, chainId)
                 : undefined
             }
           >

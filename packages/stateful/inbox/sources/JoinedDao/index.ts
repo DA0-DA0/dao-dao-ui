@@ -1,4 +1,3 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { useRecoilValue, useSetRecoilState, waitForAll } from 'recoil'
@@ -9,7 +8,7 @@ import {
 } from '@dao-dao/state/recoil'
 import { useCachedLoading } from '@dao-dao/stateless'
 import { InboxApiItemType, InboxSource } from '@dao-dao/types'
-import { getSupportedChains } from '@dao-dao/utils'
+import { getSupportedChains, transformBech32Address } from '@dao-dao/utils'
 
 import { temporaryFollowingDaosAtom } from '../../../recoil/selectors/dao/following'
 import { Renderer } from './Renderer'
@@ -29,10 +28,7 @@ export const JoinedDao: InboxSource<Data> = {
         ? waitForAll(
             getSupportedChains().map(({ chain }) =>
               inboxApiItemsSelector({
-                walletAddress: toBech32(
-                  chain.bech32_prefix,
-                  fromBech32(address).data
-                ),
+                walletAddress: transformBech32Address(address, chain.chain_id),
                 chainId: chain.chain_id,
                 type: InboxApiItemType.JoinedDao,
               })

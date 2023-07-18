@@ -1,4 +1,3 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { atomFamily, selectorFamily, waitForAll } from 'recoil'
 
 import {
@@ -24,6 +23,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   getSupportedChains,
+  transformBech32Address,
 } from '@dao-dao/utils'
 
 import {
@@ -280,9 +280,9 @@ export const allWalletNftsSelector = selectorFamily<
           chains.map(({ chain }) =>
             walletNftCardInfos({
               chainId: chain.chain_id,
-              walletAddress: toBech32(
-                chain.bech32_prefix,
-                fromBech32(walletAddress).data
+              walletAddress: transformBech32Address(
+                walletAddress,
+                chain.chain_id
               ),
             })
           )
@@ -294,9 +294,9 @@ export const allWalletNftsSelector = selectorFamily<
           chains.map(({ chain }) =>
             walletStakedNftCardInfosSelector({
               chainId: chain.chain_id,
-              walletAddress: toBech32(
-                chain.bech32_prefix,
-                fromBech32(walletAddress).data
+              walletAddress: transformBech32Address(
+                walletAddress,
+                chain.chain_id
               ),
             })
           )

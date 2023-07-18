@@ -1,4 +1,3 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
@@ -16,6 +15,7 @@ import {
   MAINNET,
   STARGAZE_PROFILE_API_TEMPLATE,
   STARGAZE_URL_BASE,
+  transformBech32Address,
 } from '@dao-dao/utils'
 
 export const walletStargazeNftCardInfosSelector = selectorFamily<
@@ -26,9 +26,9 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
   get:
     (walletAddress: string) =>
     async ({ get }) => {
-      const stargazeWalletAddress = toBech32(
-        'stars',
-        fromBech32(walletAddress).data
+      const stargazeWalletAddress = transformBech32Address(
+        walletAddress,
+        'stars'
       )
 
       get(refreshWalletStargazeNftsAtom(stargazeWalletAddress))

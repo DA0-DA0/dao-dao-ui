@@ -1,4 +1,3 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import {
   ArrowDropDown,
   ArrowRightAltRounded,
@@ -40,6 +39,7 @@ import {
   getImageUrlForChainId,
   makeValidateAddress,
   toAccessibleImageUrl,
+  transformBech32Address,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -109,9 +109,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
     // Convert wallet address to destination chain's format.
     if (currentEntity.type === EntityType.Wallet) {
-      newRecipient = toBech32(
-        toChain.bech32_prefix,
-        fromBech32(currentEntity.address).data
+      newRecipient = transformBech32Address(
+        currentEntity.address,
+        toChain.chain_id
       )
     }
     // Get DAO core address or its corresponding polytone proxy. Clear if no
