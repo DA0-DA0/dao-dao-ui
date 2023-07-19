@@ -141,54 +141,58 @@ export const DaoCard = ({
           {removeMarkdown(description)}
         </p>
 
-        <div
-          className={clsx(
-            'caption-text mb-2 flex flex-row items-center gap-2 font-mono',
-            lazyData.loading && 'animate-pulse'
-          )}
-        >
-          <AccountBalanceOutlined className="mr-1 !h-4 !w-4" />
+        {(lazyData.loading || !isNaN(lazyData.data.tokenBalance)) && (
+          <div
+            className={clsx(
+              'caption-text mb-2 flex flex-row items-center gap-2 font-mono',
+              lazyData.loading && 'animate-pulse'
+            )}
+          >
+            <AccountBalanceOutlined className="mr-1 !h-4 !w-4" />
 
-          <TokenAmountDisplay
-            amount={
-              lazyData.loading
-                ? { loading: true }
-                : { loading: false, data: lazyData.data.tokenBalance }
-            }
-            hideApprox
-            {...(showingEstimatedUsdValue
-              ? {
-                  estimatedUsdValue: true,
-                }
-              : {
-                  decimals: tokenDecimals,
-                  symbol: tokenSymbol,
-                })}
-          />
-
-          {showingEstimatedUsdValue && (
-            <TooltipInfoIcon
-              size="xs"
-              title={t('info.estimatedTreasuryUsdValueTooltip')}
+            <TokenAmountDisplay
+              amount={
+                lazyData.loading
+                  ? { loading: true }
+                  : { loading: false, data: lazyData.data.tokenBalance }
+              }
+              hideApprox
+              {...(showingEstimatedUsdValue
+                ? {
+                    estimatedUsdValue: true,
+                  }
+                : {
+                    decimals: tokenDecimals,
+                    symbol: tokenSymbol,
+                  })}
             />
-          )}
-        </div>
 
-        <div
-          className={clsx(
-            'caption-text flex flex-row items-center gap-3 font-mono',
-            lazyData.loading && 'animate-pulse'
-          )}
-        >
-          <DescriptionOutlined className="!h-4 !w-4" />
-          <p>
-            {lazyData.loading
-              ? '...'
-              : t('info.numProposals', {
-                  count: lazyData.data.proposalCount,
-                })}
-          </p>
-        </div>
+            {showingEstimatedUsdValue && (
+              <TooltipInfoIcon
+                size="xs"
+                title={t('info.estimatedTreasuryUsdValueTooltip')}
+              />
+            )}
+          </div>
+        )}
+
+        {(lazyData.loading || !isNaN(lazyData.data.proposalCount)) && (
+          <div
+            className={clsx(
+              'caption-text flex flex-row items-center gap-3 font-mono',
+              lazyData.loading && 'animate-pulse'
+            )}
+          >
+            <DescriptionOutlined className="!h-4 !w-4" />
+            <p>
+              {lazyData.loading
+                ? '...'
+                : t('info.numProposals', {
+                    count: lazyData.data.proposalCount,
+                  })}
+            </p>
+          </div>
+        )}
       </div>
     </LinkWrapper>
   )

@@ -258,6 +258,15 @@ export const indexerFeaturedDaosSelector = selectorFamily<
         return []
       }
 
+      const priorityFeaturedDaos: string[] =
+        get(
+          queryGenericIndexerSelector({
+            chainId,
+            formula: 'priorityFeaturedDaos',
+            required: true,
+          })
+        ) || []
+
       const client = get(indexerMeilisearchClientSelector)
       const index = client.index(config.indexes.featured)
       const results = await index.search<{
@@ -271,13 +280,25 @@ export const indexerFeaturedDaosSelector = selectorFamily<
           'value.giniCoefficient >= 0',
           'value.giniCoefficient < 0.75',
           'value.memberCount >= 3',
+          // Exclude priority.
+          `NOT contractAddress IN ["${priorityFeaturedDaos.join('", "')}"]`,
         ],
         sort: ['value.tvl:desc'],
       })
 
-      return results.hits.map((hit) => ({
-        address: hit.contractAddress,
-        tvl: hit.value.tvl,
-      }))
+      const featuredDaos = [
+        // Insert priority DAOs first.
+        ...priorityFeaturedDaos.map((address) => ({
+          address,
+          // Rank first.
+          tvl: Infinity,
+        })),
+        ...results.hits.map((hit) => ({
+          address: hit.contractAddress,
+          tvl: hit.value.tvl,
+        })),
+      ]
+
+      return featuredDaos
     },
 })
