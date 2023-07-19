@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoDappTabbedHomeProps, DaoPageMode } from '@dao-dao/types'
-import { getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
+import { MAINNET, getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
 
 import {
   IconButtonLink,
@@ -18,7 +18,7 @@ import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
 import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
 import { useDaoNavHelpers } from '../hooks/useDaoNavHelpers'
 
-const SDA_URL_PREFIX = `https://dao.daodao.zone`
+const SDA_URL_PREFIX = `https://dao.${MAINNET ? '' : 'testnet.'}daodao.zone`
 
 export const DaoDappTabbedHome = ({
   daoInfo,
