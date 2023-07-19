@@ -46,7 +46,7 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { address: walletAddress, connected } = useWallet()
+  const { address: walletAddress, connected } = useWallet(chainId)
   const { coreAddress } = useVotingModuleAdapterOptions()
 
   const setRefreshWalletNftsId = useSetRecoilState(

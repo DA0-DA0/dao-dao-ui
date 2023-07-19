@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 
 import { SuspenseLoader, makeDefaultNewDao } from '@dao-dao/stateful'
 import { VotingDurationInput } from '@dao-dao/stateful/components/dao/commonVotingConfig/VotingDurationVotingConfigItem'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { NewDao } from '@dao-dao/types'
 
 import { HourglassEmoji } from '../../emoji'
@@ -17,7 +18,7 @@ export default {
 
 const Template: ComponentStory<typeof DaoCreateConfigInputCard> = (args) => {
   const { register, watch, setValue } = useForm<NewDao>({
-    defaultValues: makeDefaultNewDao(),
+    defaultValues: makeDefaultNewDao(CHAIN_ID),
     mode: 'onChange',
   })
 

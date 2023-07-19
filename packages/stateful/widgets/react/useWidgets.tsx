@@ -92,7 +92,7 @@ export const useWidgets = ({
     return (
       parsedWidgets
         .map((daoWidget): LoadedWidget | undefined => {
-          const widget = getWidgetById(daoWidget.id)
+          const widget = getWidgetById(chainId, daoWidget.id)
           // Enforce location filter.
           if (!widget || (location && widget.location !== location)) {
             return
@@ -127,7 +127,7 @@ export const useWidgets = ({
         // Filter out any undefined widgets.
         .filter((widget): widget is LoadedWidget => !!widget)
     )
-  }, [widgetItemsLoadable, isMember, t, location])
+  }, [widgetItemsLoadable, isMember, t, location, chainId])
 
   return loadedWidgets
     ? {

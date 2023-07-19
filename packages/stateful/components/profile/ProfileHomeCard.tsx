@@ -1,23 +1,26 @@
+import { waitForAll } from 'recoil'
+
 import { walletProposalStatsSelector } from '@dao-dao/state/recoil'
 import {
   ProfileHomeCard as StatelessProfileHomeCard,
   useAppContext,
   useCachedLoadable,
-  useChainContext,
 } from '@dao-dao/stateless'
+import {
+  getNativeTokenForChainId,
+  getSupportedChains,
+  transformBech32Address,
+} from '@dao-dao/utils'
 
 import { useWalletInfo } from '../../hooks'
 
 export const ProfileHomeCard = () => {
   const {
-    chain: { chain_id: chainId },
-    nativeToken,
-  } = useChainContext()
-  const {
     walletAddress = '',
     walletProfileData,
     walletBalance,
     walletStakedBalance,
+    walletChainInfo,
     dateBalancesFetched,
     updateProfileName,
   } = useWalletInfo()
@@ -25,10 +28,14 @@ export const ProfileHomeCard = () => {
 
   const walletProposalStatsLoadable = useCachedLoadable(
     walletAddress
-      ? walletProposalStatsSelector({
-          chainId,
-          address: walletAddress,
-        })
+      ? waitForAll(
+          getSupportedChains().map(({ chain }) =>
+            walletProposalStatsSelector({
+              chainId: chain.chain_id,
+              address: transformBech32Address(walletAddress, chain.chain_id),
+            })
+          )
+        )
       : undefined
   )
 
@@ -59,15 +66,29 @@ export const ProfileHomeCard = () => {
                 walletProposalStatsLoadable.contents
                   ? {
                       proposalsCreated:
-                        walletProposalStatsLoadable.contents.created,
-                      votesCast: walletProposalStatsLoadable.contents.votesCast,
+                        walletProposalStatsLoadable.contents.reduce(
+                          (acc, { created }) => acc + created,
+                          0
+                        ),
+                      votesCast: walletProposalStatsLoadable.contents.reduce(
+                        (acc, { votesCast }) => acc + votesCast,
+                        0
+                      ),
                     }
                   : undefined,
             }
       }
       showUpdateProfileNft={updateProfileNft.toggle}
-      tokenDecimals={nativeToken.decimals}
-      tokenSymbol={nativeToken.symbol}
+      tokenDecimals={
+        walletChainInfo
+          ? getNativeTokenForChainId(walletChainInfo.chainId).decimals
+          : 0
+      }
+      tokenSymbol={
+        walletChainInfo
+          ? getNativeTokenForChainId(walletChainInfo.chainId).symbol
+          : ''
+      }
       updateProfileName={updateProfileName}
       walletProfileData={walletProfileData}
     />

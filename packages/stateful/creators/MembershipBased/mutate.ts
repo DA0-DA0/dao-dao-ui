@@ -2,7 +2,7 @@ import { Buffer } from 'buffer'
 
 import { DaoCreatorMutate } from '@dao-dao/types'
 import { InstantiateMsg, Member } from '@dao-dao/types/contracts/DaoVotingCw4'
-import { CODE_ID_CONFIG, MembershipBasedCreatorId } from '@dao-dao/utils'
+import { MembershipBasedCreatorId } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
 import instantiateSchema from './instantiate_schema.json'
@@ -12,7 +12,8 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   msg,
   { name },
   { tiers },
-  t
+  t,
+  codeIds
 ) => {
   const initialMembers: Member[] = tiers.flatMap(({ weight, members }) =>
     members.map(({ address }) => ({
@@ -22,7 +23,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   )
 
   const votingModuleAdapterInstantiateMsg: InstantiateMsg = {
-    cw4_group_code_id: CODE_ID_CONFIG.Cw4Group,
+    cw4_group_code_id: codeIds.Cw4Group,
     initial_members: initialMembers,
   }
 
@@ -34,7 +35,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
 
   msg.voting_module_instantiate_info = {
     admin: { core_module: {} },
-    code_id: CODE_ID_CONFIG.DaoVotingCw4,
+    code_id: codeIds.DaoVotingCw4,
     label: `DAO_${name}_${MembershipBasedCreatorId}`,
     msg: Buffer.from(
       JSON.stringify(votingModuleAdapterInstantiateMsg),

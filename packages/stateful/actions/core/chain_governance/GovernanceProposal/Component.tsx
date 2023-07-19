@@ -77,8 +77,10 @@ export const GovernanceProposalComponent: ActionComponent<
   const { register, setValue, watch, control } =
     useFormContext<GovernanceProposalData>()
 
-  const { chain } = useActionOptions()
-  const nativeToken = getNativeTokenForChainId(chain.chain_id)
+  const {
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  } = useActionOptions()
+  const nativeToken = getNativeTokenForChainId(chainId)
 
   const selectedMinDepositToken = minDeposits.loading
     ? undefined
@@ -99,7 +101,7 @@ export const GovernanceProposalComponent: ActionComponent<
     // First native.
     nativeToken,
     // Then the IBC assets.
-    ...getIbcAssets(),
+    ...getIbcAssets(chainId),
   ]
 
   return (
@@ -205,7 +207,7 @@ export const GovernanceProposalComponent: ActionComponent<
                   register={register}
                   validation={[
                     validateRequired,
-                    makeValidateAddress(chain.bech32_prefix),
+                    makeValidateAddress(bech32Prefix),
                   ]}
                 />
                 <InputErrorMessage error={errors?.spendRecipient} />

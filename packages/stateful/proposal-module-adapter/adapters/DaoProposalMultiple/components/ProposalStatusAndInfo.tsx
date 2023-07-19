@@ -27,9 +27,9 @@ import {
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   TooltipTruncatedText,
   useCachedLoading,
-  useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
+  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
@@ -39,7 +39,6 @@ import {
 } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
-  CHAIN_TXN_URL_PREFIX,
   decodeMessages,
   decodePolytoneExecuteMsg,
   formatPercentOf100,
@@ -110,11 +109,14 @@ const InnerProposalStatusAndInfo = ({
   depositInfo: CheckedDepositInfo | undefined
 }) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const {
+    chain: { chain_id: chainId },
+    config: { explorerUrlTemplates },
+  } = useSupportedChainContext()
   const { name: daoName, coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { connected, address: walletAddress = '' } = useWallet()
+  const { connected, address: walletAddress = '' } = useWallet(chainId)
   const { isMember = false } = useMembership({
     coreAddress,
   })
@@ -196,13 +198,15 @@ const InnerProposalStatusAndInfo = ({
                     value={loadingExecutionTxHash.data}
                     {...props}
                   />
-                  {!!CHAIN_TXN_URL_PREFIX && (
-                    <IconButtonLink
-                      Icon={ArrowOutward}
-                      href={CHAIN_TXN_URL_PREFIX + loadingExecutionTxHash.data}
-                      variant="ghost"
-                    />
-                  )}
+
+                  <IconButtonLink
+                    Icon={ArrowOutward}
+                    href={explorerUrlTemplates.tx.replace(
+                      'REPLACE',
+                      loadingExecutionTxHash.data
+                    )}
+                    variant="ghost"
+                  />
                 </div>
               ) : null,
           },
@@ -279,27 +283,32 @@ const InnerProposalStatusAndInfo = ({
     () =>
       winningChoice?.msgs
         .map((msg) =>
-          decodePolytoneExecuteMsg(decodeMessages([msg])[0], 'oneOrZero')
+          decodePolytoneExecuteMsg(
+            chainId,
+            decodeMessages([msg])[0],
+            'oneOrZero'
+          )
         )
         .map((decoded) => (decoded.match ? decoded : null))
         .filter((decoded) => decoded !== null)
         .map((decoded) => decoded!) ?? [],
-    [winningChoice?.msgs]
+    [chainId, winningChoice?.msgs]
   )
   // Callback results.
   const polytoneResults = useCachedLoading(
     waitForAllSettled(
-      polytoneMessages.map(({ polytoneNote: { listener }, initiatorMsg }) =>
-        PolytoneListenerSelectors.resultSelector({
-          chainId,
-          contractAddress: listener,
-          params: [
-            {
-              initiator: coreAddress,
-              initiatorMsg,
-            },
-          ],
-        })
+      polytoneMessages.map(
+        ({ polytoneConnection: { listener }, initiatorMsg }) =>
+          PolytoneListenerSelectors.resultSelector({
+            chainId,
+            contractAddress: listener,
+            params: [
+              {
+                initiator: coreAddress,
+                initiatorMsg,
+              },
+            ],
+          })
       )
     ),
     []
@@ -311,7 +320,7 @@ const InnerProposalStatusAndInfo = ({
     : {
         loading: false,
         data: polytoneMessages.filter(
-          ({ polytoneNote }, index) =>
+          ({ polytoneConnection: polytoneNote }, index) =>
             // Needs self-relay.
             polytoneNote.needsSelfRelay &&
             // Not yet relayed.

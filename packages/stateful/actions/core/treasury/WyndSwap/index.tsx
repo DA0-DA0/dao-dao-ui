@@ -72,7 +72,7 @@ const useDefaults: UseDefaults<WyndSwapData> = () => {
   } = useActionOptions()
 
   return {
-    tokenIn: getNativeIbcUsdc()!,
+    tokenIn: getNativeIbcUsdc(chainId)!,
     tokenInAmount: 0,
     tokenOut: getNativeTokenForChainId(chainId),
     tokenOutAmount: 0,

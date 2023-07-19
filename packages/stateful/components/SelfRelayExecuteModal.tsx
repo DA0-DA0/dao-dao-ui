@@ -27,12 +27,11 @@ import {
   TokenAmountDisplay,
   Tooltip,
   useCachedLoadingWithError,
-  useChain,
+  useSupportedChainContext,
 } from '@dao-dao/stateless'
-import { PolytoneNote, SelfRelayExecuteModalProps } from '@dao-dao/types'
+import { PolytoneConnection, SelfRelayExecuteModalProps } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
-  POLYTONE_NOTES,
   convertMicroDenomToDenomWithDecimals,
   cwMsgToEncodeObject,
   getChainForChainId,
@@ -72,7 +71,7 @@ type Relayer = {
   client: IbcClient
   // Will be loaded for receiving chains only. The current chain will not have a
   // polytone note since it is just responsible for sending packets.
-  polytoneNote?: PolytoneNote
+  polytoneConnection?: PolytoneConnection
 }
 
 export const SelfRelayExecuteModal = ({
@@ -87,7 +86,10 @@ export const SelfRelayExecuteModal = ({
   const mnemonicKey = `relayer_mnemonic_${uniqueId}`
 
   // Current chain.
-  const { chain_id: currentChainId } = useChain()
+  const {
+    chain: { chain_id: currentChainId },
+    config,
+  } = useSupportedChainContext()
 
   // All chains, including current.
   const chains = uniq([currentChainId, ..._chainIds]).map(getChainForChainId)
@@ -236,10 +238,10 @@ export const SelfRelayExecuteModal = ({
             throw new Error(t('error.feeTokenNotFound'))
           }
 
-          const polytoneNote = POLYTONE_NOTES[chain.chain_id]
+          const polytoneConnection = config.polytone?.[chain.chain_id]
           // Only the receiving chains need polytone notes. The current chain is
           // just responsible for sending.
-          if (chain.chain_id !== currentChainId && !polytoneNote) {
+          if (chain.chain_id !== currentChainId && !polytoneConnection) {
             throw new Error(t('error.polytoneNoteNotFound'))
           }
 
@@ -275,7 +277,7 @@ export const SelfRelayExecuteModal = ({
             wallet,
             relayerAddress,
             client,
-            polytoneNote,
+            polytoneConnection,
           }
         })
       )
@@ -450,20 +452,20 @@ export const SelfRelayExecuteModal = ({
         // Wait for previous chain to finish relaying packets.
         await prev
 
-        const { chain, client, polytoneNote } = relayer
+        const { chain, client, polytoneConnection } = relayer
 
         // Type-check, should never happen since we slice off the first
         // (current chain) relayer, which is just responsible for sending.
-        if (!polytoneNote) {
+        if (!polytoneConnection) {
           throw new Error(t('error.polytoneNoteNotFound'))
         }
 
         // Get packets for this chain that need relaying.
         const thesePackets = packets.filter(
           ({ packet }) =>
-            packet.sourcePort === `wasm.${polytoneNote.note}` &&
-            packet.sourceChannel === polytoneNote.localChannel &&
-            packet.destinationChannel === polytoneNote.remoteChannel
+            packet.sourcePort === `wasm.${polytoneConnection.note}` &&
+            packet.sourceChannel === polytoneConnection.localChannel &&
+            packet.destinationChannel === polytoneConnection.remoteChannel
         )
         if (!thesePackets.length) {
           return
@@ -478,8 +480,8 @@ export const SelfRelayExecuteModal = ({
           // First relayer is current chain sending packets.
           relayers[0].client,
           client,
-          polytoneNote.localConnection,
-          polytoneNote.remoteConnection
+          polytoneConnection.localConnection,
+          polytoneConnection.remoteConnection
         )
 
         // Relay packets and get acks. Try 5 times.

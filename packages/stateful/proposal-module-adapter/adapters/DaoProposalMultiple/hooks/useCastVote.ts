@@ -10,8 +10,9 @@ import { useVote } from '../contracts/DaoProposalMultiple.hooks'
 import { useLoadingWalletVoteInfo } from './useLoadingWalletVoteInfo'
 
 export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
-  const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { connected, address: walletAddress = '' } = useWallet()
+  const { proposalModule, proposalNumber, chain } =
+    useProposalModuleAdapterOptions()
+  const { connected, address: walletAddress = '' } = useWallet(chain.chain_id)
 
   const _castVote = useVote({
     contractAddress: proposalModule.address,

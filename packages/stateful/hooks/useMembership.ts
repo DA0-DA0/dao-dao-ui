@@ -1,4 +1,4 @@
-import { useWallet } from '@noahsaso/cosmodal'
+import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { useCachedLoadable, useChain } from '@dao-dao/stateless'
@@ -20,7 +20,7 @@ export const useMembership = ({
   blockHeight,
 }: UseMembershipOptions): UseMembershipResponse => {
   const { chain_id: chainId } = useChain()
-  const { address: walletAddress } = useWallet()
+  const { address: walletAddress, status: walletStatus } = useWallet(chainId)
 
   // Use loadable to prevent flickering loading states when wallet address
   // changes and on initial load if wallet is connecting.
@@ -69,6 +69,9 @@ export const useMembership = ({
     totalVotingWeight,
     loading:
       _walletVotingWeight.state === 'loading' ||
-      _totalVotingWeight.state === 'loading',
+      _totalVotingWeight.state === 'loading' ||
+      walletStatus === WalletConnectionStatus.Initializing ||
+      walletStatus === WalletConnectionStatus.AttemptingAutoConnection ||
+      walletStatus === WalletConnectionStatus.Connecting,
   }
 }

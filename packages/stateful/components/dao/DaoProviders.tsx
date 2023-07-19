@@ -1,6 +1,6 @@
 import { ReactNode } from 'react'
 
-import { DaoInfoContext } from '@dao-dao/stateless'
+import { ChainProvider, DaoInfoContext } from '@dao-dao/stateless'
 import { DaoInfo } from '@dao-dao/types'
 
 import { DaoActionsProvider } from '../../actions'
@@ -18,15 +18,17 @@ export const DaoProviders = ({ info, children }: DaoProvidersProps) => (
   // value passed below changes, somehow no re-render occurs... unless the `key`
   // prop is unique. See the issue below for more people compaining about this
   // to no avail. https://github.com/vercel/next.js/issues/9992
-  <DaoInfoContext.Provider key={info.coreAddress} value={info}>
-    <VotingModuleAdapterProvider
-      contractName={info.votingModuleContractName}
-      options={{
-        votingModuleAddress: info.votingModuleAddress,
-        coreAddress: info.coreAddress,
-      }}
-    >
-      <DaoActionsProvider>{children}</DaoActionsProvider>
-    </VotingModuleAdapterProvider>
-  </DaoInfoContext.Provider>
+  <ChainProvider chainId={info.chainId}>
+    <DaoInfoContext.Provider key={info.coreAddress} value={info}>
+      <VotingModuleAdapterProvider
+        contractName={info.votingModuleContractName}
+        options={{
+          votingModuleAddress: info.votingModuleAddress,
+          coreAddress: info.coreAddress,
+        }}
+      >
+        <DaoActionsProvider>{children}</DaoActionsProvider>
+      </VotingModuleAdapterProvider>
+    </DaoInfoContext.Provider>
+  </ChainProvider>
 )

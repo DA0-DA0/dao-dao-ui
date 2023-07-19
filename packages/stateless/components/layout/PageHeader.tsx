@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom'
 import { PageHeaderProps } from '@dao-dao/types/stateless/PageHeader'
 
 import { IconButton } from '../icon_buttons'
+import { PageLoader } from '../logo'
 import { TopGradient } from '../TopGradient'
 import { useAppContext, useAppContextIfAvailable } from './AppContext'
 import { Breadcrumbs } from './Breadcrumbs'
@@ -129,7 +130,9 @@ export const PageHeaderContent = (props: PageHeaderProps) => {
   return appContext ? (
     appContext.pageHeaderRef.current ? (
       createPortal(<PageHeader {...props} />, appContext.pageHeaderRef.current)
-    ) : null
+    ) : (
+      <PageLoader className="absolute top-0 right-0 bottom-0 left-0 z-50 bg-background-base" />
+    )
   ) : (
     <PageHeader {...props} />
   )

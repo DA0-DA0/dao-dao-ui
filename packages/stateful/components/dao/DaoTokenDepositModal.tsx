@@ -40,8 +40,10 @@ export const DaoTokenDepositModal = ({
   const { t } = useTranslation()
   const { chain_id: currentChainId } = useChain()
   const { name: daoName, coreAddress, polytoneProxies } = useDaoInfoContext()
-  const { connected, address, signingCosmWasmClient } = useWallet(token.chainId)
-  const { refreshBalances: refreshWalletBalances } = useWalletInfo()
+  const { connected, address, signingCosmWasmClient } =
+    useWallet(currentChainId)
+  const { refreshBalances: refreshWalletBalances } =
+    useWalletInfo(currentChainId)
 
   const depositAddress =
     token.chainId === currentChainId

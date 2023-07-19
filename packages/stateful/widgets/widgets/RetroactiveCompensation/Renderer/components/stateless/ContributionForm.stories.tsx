@@ -2,8 +2,9 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { EntityDisplay } from '@dao-dao/stateless/components/EntityDisplay'
 import { Default as ConnectWalletStory } from '@dao-dao/stateless/components/wallet/ConnectWallet.stories'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { EntityType, TokenType } from '@dao-dao/types'
-import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
+import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { Survey, SurveyStatus } from '../../types'
 import { ContributionForm } from './ContributionForm'

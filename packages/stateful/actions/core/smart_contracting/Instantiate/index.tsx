@@ -11,7 +11,7 @@ import {
   ChainProvider,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import { PolytoneNote, TokenType } from '@dao-dao/types'
+import { PolytoneConnection, TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -22,7 +22,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  CHAIN_ID,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
@@ -48,7 +47,7 @@ interface InstantiateData {
   // Loaded on transform once created if this is a polytone message.
   _polytone?: {
     chainId: string
-    note: PolytoneNote
+    note: PolytoneConnection
     initiatorMsg: string
   }
 }
@@ -87,7 +86,11 @@ const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () => {
       if (chainId === currentChainId) {
         return instantiateMsg
       } else {
-        return makePolytoneExecuteMessage(chainId, instantiateMsg)
+        return makePolytoneExecuteMessage(
+          currentChainId,
+          chainId,
+          instantiateMsg
+        )
       }
     },
     [currentChainId]
@@ -98,7 +101,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
   msg: Record<string, any>
 ) => {
   let chainId = useActionOptions().chain.chain_id
-  const decodedPolytone = decodePolytoneExecuteMsg(msg)
+  const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
   if (decodedPolytone.match) {
     chainId = decodedPolytone.chainId
     msg = decodedPolytone.msg
@@ -136,7 +139,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
           _polytone: decodedPolytone.match
             ? {
                 chainId: decodedPolytone.chainId,
-                note: decodedPolytone.polytoneNote,
+                note: decodedPolytone.polytoneConnection,
                 initiatorMsg: decodedPolytone.initiatorMsg,
               }
             : undefined,
@@ -155,8 +158,7 @@ const Component: ActionComponent = (props) => {
   } = useActionOptions()
 
   const { watch, setValue } = useFormContext<InstantiateData>()
-  const chainId =
-    watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const funds = watch((props.fieldNamePrefix + 'funds') as 'funds')
 
   // Once created, if this is a polytone message, this will be defined with

@@ -22,7 +22,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  CHAIN_ID,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
@@ -126,7 +125,7 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
       if (chainId === currentChainId) {
         return executeMsg
       } else {
-        return makePolytoneExecuteMessage(chainId, executeMsg)
+        return makePolytoneExecuteMessage(currentChainId, chainId, executeMsg)
       }
     },
     [currentChainId, t, tokenBalances]
@@ -137,7 +136,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
   msg: Record<string, any>
 ) => {
   let chainId = useActionOptions().chain.chain_id
-  const decodedPolytone = decodePolytoneExecuteMsg(msg)
+  const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
   if (decodedPolytone.match) {
     chainId = decodedPolytone.chainId
     msg = decodedPolytone.msg
@@ -227,8 +226,7 @@ const Component: ActionComponent = (props) => {
   const { context } = useActionOptions()
   const { watch, setValue } = useFormContext<ExecuteData>()
 
-  const chainId =
-    watch((props.fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const funds = watch((props.fieldNamePrefix + 'funds') as 'funds')
   const cw20 = watch((props.fieldNamePrefix + 'cw20') as 'cw20')
 

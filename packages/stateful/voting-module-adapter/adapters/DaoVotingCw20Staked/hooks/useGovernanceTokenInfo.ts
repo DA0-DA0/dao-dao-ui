@@ -8,7 +8,6 @@ import {
 } from '@dao-dao/state'
 import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
-import { CHAIN_ID } from '@dao-dao/utils'
 
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
@@ -22,7 +21,7 @@ export const useGovernanceTokenInfo = ({
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
   const { chain_id: chainId } = useChain()
-  const { address: walletAddress } = useWallet()
+  const { address: walletAddress } = useWallet(chainId)
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const stakingContractAddress = useRecoilValue(
@@ -96,7 +95,7 @@ export const useGovernanceTokenInfo = ({
     governanceTokenAddress,
     governanceTokenInfo,
     token: {
-      chainId: CHAIN_ID,
+      chainId,
       type: TokenType.Cw20,
       denomOrAddress: governanceTokenAddress,
       symbol: governanceTokenInfo.symbol,

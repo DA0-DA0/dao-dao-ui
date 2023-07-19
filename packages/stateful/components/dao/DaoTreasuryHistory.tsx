@@ -18,9 +18,9 @@ import {
   Loader,
   useChainContext,
   useDaoInfoContext,
+  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
-  CHAIN_TXN_URL_PREFIX,
   convertMicroDenomToDenomWithDecimals,
   processError,
 } from '@dao-dao/utils'
@@ -259,31 +259,35 @@ const TransactionRenderer = ({
     denomLabel,
     outgoing,
   },
-}: TransactionRendererProps) => (
-  <div className="flex flex-row items-start justify-between gap-4 xs:gap-12">
-    <div className="flex flex-row flex-wrap items-center gap-x-4 text-sm leading-6">
-      <CopyToClipboard value={outgoing ? recipient : sender} />
-      {/* Outgoing transactions are received by the address above, so point to the left. */}
-      {outgoing ? (
-        <West className="!h-4 !w-4" />
-      ) : (
-        <East className="!h-4 !w-4" />
-      )}
-      <p>
-        {amount} ${denomLabel}
+}: TransactionRendererProps) => {
+  const { config } = useSupportedChainContext()
+
+  return (
+    <div className="flex flex-row items-start justify-between gap-4 xs:gap-12">
+      <div className="flex flex-row flex-wrap items-center gap-x-4 text-sm leading-6">
+        <CopyToClipboard value={outgoing ? recipient : sender} />
+        {/* Outgoing transactions are received by the address above, so point to the left. */}
+        {outgoing ? (
+          <West className="!h-4 !w-4" />
+        ) : (
+          <East className="!h-4 !w-4" />
+        )}
+        <p>
+          {amount} ${denomLabel}
+        </p>
+      </div>
+
+      <p className="flex flex-row items-center gap-4 text-right font-mono text-xs leading-6">
+        {timestamp?.toLocaleString() ?? `${height} block`}
+
+        <IconButtonLink
+          Icon={ArrowOutwardRounded}
+          className="text-text-tertiary"
+          href={config.explorerUrlTemplates.tx.replace('REPLACE', hash)}
+          openInNewTab
+          variant="ghost"
+        />
       </p>
     </div>
-
-    <p className="flex flex-row items-center gap-4 text-right font-mono text-xs leading-6">
-      {timestamp?.toLocaleString() ?? `${height} block`}
-
-      <IconButtonLink
-        Icon={ArrowOutwardRounded}
-        className="text-text-tertiary"
-        href={CHAIN_TXN_URL_PREFIX + hash}
-        openInNewTab
-        variant="ghost"
-      />
-    </p>
-  </div>
-)
+  )
+}

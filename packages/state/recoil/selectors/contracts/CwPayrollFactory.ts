@@ -30,10 +30,10 @@ const queryClient = selectorFamily<
   dangerouslyAllowMutability: true,
 })
 
-export type ExecuteClientParams = {
+export type ExecuteClientParams = WithChainId<{
   contractAddress: string
   sender: string
-}
+}>
 
 export const executeClient = selectorFamily<
   CwPayrollFactoryClient | undefined,
@@ -41,9 +41,9 @@ export const executeClient = selectorFamily<
 >({
   key: 'cwPayrollFactoryExecuteClient',
   get:
-    ({ contractAddress, sender }) =>
+    ({ chainId, contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientAtom)
+      const client = get(signingCosmWasmClientAtom({ chainId }))
       if (!client) return
       return new CwPayrollFactoryClient(client, sender, contractAddress)
     },

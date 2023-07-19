@@ -16,12 +16,11 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  CHAIN_ID,
   DaoVotingCw20StakedAdapterId,
+  POLYTONE_CONFIG_PER_CHAIN,
   getChainForChainId,
   isValidContractAddress,
 } from '@dao-dao/utils'
-import { PolytoneNotesPerChain } from '@dao-dao/utils/constants/polytone'
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
@@ -41,11 +40,7 @@ export const daoCoreProposalModulesSelector = selectorFamily<
         })
       )
 
-      return await fetchProposalModules(
-        chainId ?? CHAIN_ID,
-        coreAddress,
-        coreVersion
-      )
+      return await fetchProposalModules(chainId, coreAddress, coreVersion)
     },
 })
 
@@ -250,6 +245,7 @@ export const daoInfoSelector: (param: {
       }
 
       return {
+        chainId,
         coreAddress,
         coreVersion,
         votingModuleAddress: dumpState.voting_module,
@@ -315,12 +311,11 @@ export const daoInfoFromPolytoneProxySelector = selectorFamily<
       }
 
       // Get source chain ID, where the note lives for this voice.
-      const srcChainId = Object.entries(PolytoneNotesPerChain).find(
-        ([, notes]) =>
-          Object.entries(notes).some(
-            ([destChainId, note]) =>
-              destChainId === chainId && note.voice === voice
-          )
+      const srcChainId = POLYTONE_CONFIG_PER_CHAIN.find(([, config]) =>
+        Object.entries(config).some(
+          ([destChainId, connection]) =>
+            destChainId === chainId && connection.voice === voice
+        )
       )?.[0]
       if (!srcChainId) {
         return

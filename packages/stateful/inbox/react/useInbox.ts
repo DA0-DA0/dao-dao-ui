@@ -2,15 +2,13 @@ import { useEffect, useMemo, useRef } from 'react'
 import { waitForAll } from 'recoil'
 
 import { configSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoCore.v2'
-import { useCachedLoadable, useChain } from '@dao-dao/stateless'
+import { useCachedLoadable } from '@dao-dao/stateless'
 import { InboxDaoWithItems, InboxState } from '@dao-dao/types'
 import { getFallbackImage } from '@dao-dao/utils'
 
 import { getSources } from '../core'
 
 export const useInbox = (): InboxState => {
-  const { chain_id: chainId } = useChain()
-
   const sources = getSources().map(({ Renderer, useData }) => ({
     Renderer,
     // Safe to disable since `getSources` is constant. The hooks are always
@@ -38,9 +36,10 @@ export const useInbox = (): InboxState => {
       // serves to filter out any DAOs with no items.
       const itemsWithDao = sources
         .flatMap(({ Renderer, data: { daosWithItems } }) =>
-          daosWithItems.flatMap(({ coreAddress, items }) =>
+          daosWithItems.flatMap(({ chainId, coreAddress, items }) =>
             items.map((item) => ({
               Renderer,
+              chainId,
               coreAddress,
               item,
             }))
@@ -48,28 +47,47 @@ export const useInbox = (): InboxState => {
         )
         .sort((a, b) => (a.item.order ?? Infinity) - (b.item.order ?? Infinity))
 
-      // Order DAOs by the order that one of their items first appears in list of
-      // all items.
+      // Order DAOs by the order that one of their items first appears in list
+      // of all items.
       const orderedDaos = itemsWithDao.reduce(
-        (acc, { coreAddress }) =>
-          acc.includes(coreAddress) ? acc : [...acc, coreAddress],
-        [] as string[]
+        (acc, { chainId, coreAddress }) =>
+          acc.some(
+            (existing) =>
+              existing.chainId === chainId &&
+              existing.coreAddress === coreAddress
+          )
+            ? acc
+            : [
+                ...acc,
+                {
+                  chainId,
+                  coreAddress,
+                },
+              ],
+        [] as { chainId: string; coreAddress: string }[]
       )
 
       // For each DAO, select from the sorted items (preserving order) only the
       // items that belong to that DAO. This also serves to combine/group items
       // from the various sources by DAO.
-      const sortedCombinedDaosWithItems = orderedDaos.map((coreAddress) => {
-        return {
-          coreAddress,
-          items: itemsWithDao
-            .filter((itemWithDao) => itemWithDao.coreAddress === coreAddress)
-            .map(({ Renderer, item }) => ({
-              Renderer,
-              ...item,
-            })),
+      const sortedCombinedDaosWithItems = orderedDaos.map(
+        ({ chainId, coreAddress }) => {
+          return {
+            chainId,
+            coreAddress,
+            items: itemsWithDao
+              .filter(
+                (itemWithDao) =>
+                  itemWithDao.chainId === chainId &&
+                  itemWithDao.coreAddress === coreAddress
+              )
+              .map(({ Renderer, item }) => ({
+                Renderer,
+                ...item,
+              })),
+          }
         }
-      })
+      )
 
       return {
         pendingItemCount: itemsWithDao.filter(
@@ -83,7 +101,7 @@ export const useInbox = (): InboxState => {
   // Get DAO configs for all DAOs found.
   const daoConfigs = useCachedLoadable(
     waitForAll(
-      sourceDaosWithItems.map(({ coreAddress }) =>
+      sourceDaosWithItems.map(({ chainId, coreAddress }) =>
         configSelector({
           chainId,
           contractAddress: coreAddress,
@@ -101,9 +119,13 @@ export const useInbox = (): InboxState => {
 
     return sourceDaosWithItems
       .map(
-        ({ coreAddress, items }, index): InboxDaoWithItems | undefined =>
+        (
+          { chainId, coreAddress, items },
+          index
+        ): InboxDaoWithItems | undefined =>
           daoConfigs.contents[index] && {
             dao: {
+              chainId,
               coreAddress,
               name: daoConfigs.contents[index].name,
               imageUrl:

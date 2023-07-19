@@ -5,7 +5,6 @@ import {
   useCachedLoading,
 } from '@dao-dao/stateless'
 import { DaoCardInfo } from '@dao-dao/types/stateless/DaoCard'
-import { CHAIN_ID } from '@dao-dao/utils'
 
 import { useFollowingDaos } from '../../hooks'
 import { daoCardInfoLazyDataSelector } from '../../recoil'
@@ -13,9 +12,9 @@ import { IconButtonLink } from '../IconButtonLink'
 import { LinkWrapper } from '../LinkWrapper'
 
 export const DaoCard = (props: DaoCardInfo) => {
-  const { address: walletAddress } = useWallet()
+  const { address: walletAddress } = useWallet(props.chainId)
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
-    useFollowingDaos()
+    useFollowingDaos(props.chainId)
 
   const lazyData = useCachedLoading(
     daoCardInfoLazyDataSelector({
@@ -35,22 +34,14 @@ export const DaoCard = (props: DaoCardInfo) => {
       {...props}
       IconButtonLink={IconButtonLink}
       LinkWrapper={LinkWrapper}
-      follow={
-        // Only allow following on same chain. This prevents following featured
-        // mainnet DAOs on testnet.
-        props.chainId === CHAIN_ID
-          ? {
-              following: isFollowing(props.coreAddress),
-              updatingFollowing,
-              onFollow: () =>
-                isFollowing(props.coreAddress)
-                  ? setUnfollowing(props.coreAddress)
-                  : setFollowing(props.coreAddress),
-            }
-          : {
-              hide: true,
-            }
-      }
+      follow={{
+        following: isFollowing(props.coreAddress),
+        updatingFollowing,
+        onFollow: () =>
+          isFollowing(props.coreAddress)
+            ? setUnfollowing(props.coreAddress)
+            : setFollowing(props.coreAddress),
+      }}
       lazyData={lazyData}
     />
   )

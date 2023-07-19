@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { makeAppContextDecorator } from '@dao-dao/storybook/decorators'
 
 import { LinkWrapper } from '../LinkWrapper'
@@ -34,26 +35,31 @@ export const DefaultArgs: DappNavigationProps = {
     loading: false,
     data: [
       {
+        chainId: CHAIN_ID,
         coreAddress: 'core1',
         name: 'Core 1',
         imageUrl: '/placeholders/1.svg',
       },
       {
+        chainId: CHAIN_ID,
         coreAddress: 'raw',
         name: 'Raw',
         imageUrl: '/placeholders/2.svg',
         subdaos: [
           {
+            chainId: CHAIN_ID,
             coreAddress: 'payroll',
             name: 'Payroll',
             imageUrl: '/placeholders/3.svg',
           },
           {
+            chainId: CHAIN_ID,
             coreAddress: 'pool',
             name: 'Pool distribution',
             imageUrl: '/placeholders/4.svg',
             subdaos: [
               {
+                chainId: CHAIN_ID,
                 coreAddress: 'native',
                 name: 'Native tokens',
                 imageUrl: '/placeholders/1.svg',
@@ -63,26 +69,31 @@ export const DefaultArgs: DappNavigationProps = {
         ],
       },
       {
+        chainId: CHAIN_ID,
         coreAddress: 'core2',
         name: 'Core 2',
         imageUrl: '/placeholders/3.svg',
       },
       {
+        chainId: CHAIN_ID,
         coreAddress: 'raw',
         name: 'Raw',
         imageUrl: '/placeholders/2.svg',
         subdaos: [
           {
+            chainId: CHAIN_ID,
             coreAddress: 'payroll',
             name: 'Payroll',
             imageUrl: '/placeholders/3.svg',
           },
           {
+            chainId: CHAIN_ID,
             coreAddress: 'pool',
             name: 'Pool distribution super duper long name',
             imageUrl: '/placeholders/4.svg',
             subdaos: [
               {
+                chainId: CHAIN_ID,
                 coreAddress: 'native',
                 name: 'Native tokens',
                 imageUrl: '/placeholders/1.svg',
@@ -92,26 +103,31 @@ export const DefaultArgs: DappNavigationProps = {
         ],
       },
       {
+        chainId: CHAIN_ID,
         coreAddress: 'core5',
         name: 'Core 5',
         imageUrl: '/placeholders/5.svg',
       },
       {
+        chainId: CHAIN_ID,
         coreAddress: 'raw',
         name: 'Raw',
         imageUrl: '/placeholders/2.svg',
         subdaos: [
           {
+            chainId: CHAIN_ID,
             coreAddress: 'payroll',
             name: 'Payroll',
             imageUrl: '/placeholders/3.svg',
           },
           {
+            chainId: CHAIN_ID,
             coreAddress: 'pool',
             name: 'Pool distribution',
             imageUrl: '/placeholders/4.svg',
             subdaos: [
               {
+                chainId: CHAIN_ID,
                 coreAddress: 'native',
                 name: 'Native tokens',
                 imageUrl: '/placeholders/1.svg',
@@ -121,11 +137,13 @@ export const DefaultArgs: DappNavigationProps = {
         ],
       },
       {
+        chainId: CHAIN_ID,
         coreAddress: 'core4',
         name: 'Core 4',
         imageUrl: '/placeholders/4.svg',
       },
       {
+        chainId: CHAIN_ID,
         coreAddress: 'animals',
         name: 'Animals',
         imageUrl: '/placeholders/5.svg',

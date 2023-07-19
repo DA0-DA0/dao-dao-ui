@@ -12,7 +12,6 @@ import { ActionComponent, TokenType } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
   CHAIN_GAS_MULTIPLIER,
-  CODE_ID_CONFIG,
   convertDenomToMicroDenomWithDecimals,
   getNativeTokenForChainId,
   isValidBech32Address,
@@ -31,10 +30,16 @@ export const InstantiateTokenSwap: ActionComponent<
   PerformTokenSwapData
 > = (props) => {
   const { t } = useTranslation()
-  const { address: selfAddress } = useActionOptions()
+  const {
+    address: selfAddress,
+    chainContext: {
+      chainId,
+      config: { codeIds },
+    },
+  } = useActionOptions()
 
   const { setValue } = useFormContext()
-  const { address: walletAddress, signingCosmWasmClient } = useWallet()
+  const { address: walletAddress, signingCosmWasmClient } = useWallet(chainId)
 
   const selfPartyTokenBalances = useTokenBalances()
 
@@ -106,7 +111,7 @@ export const InstantiateTokenSwap: ActionComponent<
 
       const { contractAddress } = await signingCosmWasmClient.instantiate(
         walletAddress,
-        CODE_ID_CONFIG.CwTokenSwap,
+        codeIds.CwTokenSwap,
         instantiateMsg,
         'Token Swap',
         CHAIN_GAS_MULTIPLIER
@@ -133,6 +138,7 @@ export const InstantiateTokenSwap: ActionComponent<
       setInstantiating(false)
     }
   }, [
+    codeIds.CwTokenSwap,
     props.data,
     props.fieldNamePrefix,
     selfAddress,

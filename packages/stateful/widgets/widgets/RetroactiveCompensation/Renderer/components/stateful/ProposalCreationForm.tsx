@@ -39,7 +39,7 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
   const { goToDaoProposal } = useDaoNavHelpers()
   const { coreAddress } = useDaoInfoContext()
   const { address: walletAddress = '', publicKey: walletPublicKey } =
-    useWallet()
+    useWallet(chainId)
 
   const postRequest = usePostRequest()
 

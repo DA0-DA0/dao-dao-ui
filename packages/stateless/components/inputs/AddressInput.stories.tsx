@@ -2,9 +2,9 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useFormContext } from 'react-hook-form'
 
 import { EntityDisplay } from '@dao-dao/stateful'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { EntityType } from '@dao-dao/types'
-import { CHAIN_ID } from '@dao-dao/utils'
 
 import { AddressInput } from './AddressInput'
 

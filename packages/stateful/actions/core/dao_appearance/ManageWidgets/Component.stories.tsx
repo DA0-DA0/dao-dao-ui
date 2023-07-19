@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 
 import { SuspenseLoader } from '../../../../components'
@@ -26,7 +27,7 @@ Default.args = {
   isCreating: true,
   errors: {},
   options: {
-    availableWidgets: getWidgets(),
+    availableWidgets: getWidgets(CHAIN_ID),
     existingWidgets: [
       {
         id: WyndDepositWidget.id,

@@ -8,11 +8,13 @@ import {
   CommandModalContextSectionItem,
 } from '@dao-dao/types/command'
 
+import { Loader } from '../logo'
 import { NoContent } from '../NoContent'
 import { ItemRow } from './ItemRow'
 
 export interface CommandModalContextViewProps {
   sections: CommandModalContextSection[]
+  itemsLoading: boolean
   loading: boolean
   visible: boolean
 }
@@ -24,6 +26,7 @@ interface ItemWithSection {
 
 export const CommandModalContextView = ({
   sections,
+  itemsLoading,
   loading,
   visible,
 }: CommandModalContextViewProps) => {
@@ -150,34 +153,47 @@ export const CommandModalContextView = ({
       className={clsx('flex grow flex-col gap-1', loading && 'animate-pulse')}
     >
       {sections.length > 0 ? (
-        sections.map(({ name, items, onChoose }, sectionIndex) => (
-          <Fragment key={sectionIndex}>
-            <p className="link-text h-7 py-1 pl-3 text-text-tertiary">{name}</p>
+        sections.map(
+          (
+            { name, items, onChoose, loading: sectionLoading },
+            sectionIndex
+          ) => (
+            <Fragment key={sectionIndex}>
+              <div className="flex flex-row justify-between gap-4">
+                <p className="link-text h-7 py-1 pl-3 text-text-tertiary">
+                  {name}
+                </p>
 
-            {items.map((item, itemIndex) => {
-              const selected =
-                !loading && selectedItemWithSection?.item === item
+                {sectionLoading && <Loader fill={false} size={18} />}
+              </div>
 
-              return (
-                <ItemRow
-                  key={itemIndex}
-                  className={
-                    loading
-                      ? 'pointer-events-none !bg-background-interactive-disabled'
-                      : undefined
-                  }
-                  item={item}
-                  onClick={() => onChoose(item)}
-                  ref={
-                    // Scroll into view when selected.
-                    selected ? onSelectedRef : undefined
-                  }
-                  selected={selected}
-                />
-              )
-            })}
-          </Fragment>
-        ))
+              {items.map((item, itemIndex) => {
+                const selected =
+                  !loading && selectedItemWithSection?.item === item
+
+                return (
+                  <ItemRow
+                    key={itemIndex}
+                    className={
+                      loading
+                        ? 'pointer-events-none !bg-background-interactive-disabled'
+                        : undefined
+                    }
+                    item={item}
+                    onClick={() => onChoose(item)}
+                    ref={
+                      // Scroll into view when selected.
+                      selected ? onSelectedRef : undefined
+                    }
+                    selected={selected}
+                  />
+                )
+              })}
+            </Fragment>
+          )
+        )
+      ) : itemsLoading ? (
+        <Loader />
       ) : (
         <NoContent
           Icon={WarningRounded}
@@ -191,6 +207,7 @@ export const CommandModalContextView = ({
 
 export const CommandModalContextViewLoader = () => (
   <CommandModalContextView
+    itemsLoading={false}
     loading
     sections={[
       {

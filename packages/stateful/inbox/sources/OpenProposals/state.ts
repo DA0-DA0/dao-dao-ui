@@ -66,6 +66,7 @@ export const inboxOpenProposalsSelector = selectorFamily<
           const proposalModulesWithOpenProposals = openProposalsPerDao[index]
 
           return {
+            chainId,
             coreAddress,
             items: proposalModules.flatMap(
               (proposalModule) =>
@@ -81,6 +82,7 @@ export const inboxOpenProposalsSelector = selectorFamily<
                       voted,
                     }): InboxSourceItem<ProposalLineProps> => ({
                       props: {
+                        chainId,
                         coreAddress,
                         proposalId: `${proposalModule.prefix}${id}`,
                         proposalModules,

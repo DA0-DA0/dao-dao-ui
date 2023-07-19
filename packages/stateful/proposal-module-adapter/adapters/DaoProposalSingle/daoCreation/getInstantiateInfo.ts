@@ -8,7 +8,6 @@ import { InstantiateMsg as CwPreProposeSingleInstantiateMsg } from '@dao-dao/typ
 import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
-  CODE_ID_CONFIG,
   DaoProposalSingleAdapterId,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
@@ -22,6 +21,7 @@ import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   DaoCreationExtraVotingConfig
 > = (
+  codeIds,
   {
     name,
     votingConfig: {
@@ -85,7 +85,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       module_may_propose: {
         info: {
           admin: { core_module: {} },
-          code_id: CODE_ID_CONFIG.DaoPreProposeSingle,
+          code_id: codeIds.DaoPreProposeSingle,
           label: `DAO_${name}_pre-propose-${DaoProposalSingleAdapterId}`,
           msg: Buffer.from(
             JSON.stringify(preProposeSingleInstantiateMsg),
@@ -108,7 +108,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 
   return {
     admin: { core_module: {} },
-    code_id: CODE_ID_CONFIG.DaoProposalSingle,
+    code_id: codeIds.DaoProposalSingle,
     label: `DAO_${name}_${DaoProposalSingleAdapterId}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
   }

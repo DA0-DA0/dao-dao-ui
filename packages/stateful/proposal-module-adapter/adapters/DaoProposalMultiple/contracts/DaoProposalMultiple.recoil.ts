@@ -42,10 +42,10 @@ export const queryClient = selectorFamily<
   dangerouslyAllowMutability: true,
 })
 
-export type ExecuteClientParams = {
+export type ExecuteClientParams = WithChainId<{
   contractAddress: string
   sender: string
-}
+}>
 
 export const executeClient = selectorFamily<
   DaoProposalMultipleClient | undefined,
@@ -53,9 +53,9 @@ export const executeClient = selectorFamily<
 >({
   key: 'daoProposalMultipleExecuteClient',
   get:
-    ({ contractAddress, sender }) =>
+    ({ chainId, contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientAtom)
+      const client = get(signingCosmWasmClientAtom({ chainId }))
       if (!client) return
 
       return new DaoProposalMultipleClient(client, sender, contractAddress)

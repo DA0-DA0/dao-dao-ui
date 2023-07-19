@@ -15,8 +15,6 @@ import {
   webSocketChannelNameForDao,
 } from '@dao-dao/utils'
 
-import { useAwaitNextBlock } from './useAwaitNextBlock'
-
 export const useWebSocket = () => {
   // Get pusher client once mounted in browser.
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
@@ -181,8 +179,6 @@ export const useOnWebSocketMessage = (
     }
   }, [channels, expectedTypeOrTypes])
 
-  const awaitNextBlock = useAwaitNextBlock()
-
   // Store listening in ref so the fallback function can access it within the
   // same instance of the function without re-rendering.
   const listeningRef = useRef(listening)
@@ -201,13 +197,14 @@ export const useOnWebSocketMessage = (
       }
 
       if (!skipWait) {
-        // Wait one block before executing the callback.
-        await awaitNextBlock()
+        // Wait a litle before executing the callback, to give time for the
+        // block to fithnalize and the indexer to update.
+        await new Promise((resolve) => setTimeout(resolve, 7000))
       }
 
       callbackRef.current(data ?? defaultFallbackDataRef.current ?? {}, true)
     },
-    [awaitNextBlock]
+    []
   )
 
   return {

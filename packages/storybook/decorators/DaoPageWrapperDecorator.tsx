@@ -2,9 +2,15 @@ import { DecoratorFn } from '@storybook/react'
 import { useMemo } from 'react'
 
 import { DaoPageWrapper } from '@dao-dao/stateful'
-import { ContractVersion, DaoInfo, DaoInfoSerializable } from '@dao-dao/types'
+import {
+  ChainId,
+  ContractVersion,
+  DaoInfo,
+  DaoInfoSerializable,
+} from '@dao-dao/types'
 
 export const makeDaoInfo = (): DaoInfo => ({
+  chainId: ChainId.JunoMainnet,
   coreAddress: 'junoDaoCoreAddress',
   coreVersion: ContractVersion.V2Alpha,
   votingModuleAddress: 'votingModuleAddress',

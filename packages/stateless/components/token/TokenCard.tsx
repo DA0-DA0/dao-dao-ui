@@ -217,7 +217,7 @@ export const TokenCard = ({
                   symbol={tokenSymbol}
                 />
 
-                {!isNativeIbcUsdc(token.denomOrAddress) &&
+                {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
                   lazyInfo.data.usdUnitPrice && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
@@ -253,7 +253,7 @@ export const TokenCard = ({
                   symbol={tokenSymbol}
                 />
 
-                {!isNativeIbcUsdc(token.denomOrAddress) &&
+                {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
                   (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay

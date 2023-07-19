@@ -26,6 +26,7 @@ export const Row = ({
   LinkWrapper,
   shallow,
   containerClassName,
+  contentContainerClassName,
 }: RowProps) => {
   const { asPath } = useRouter()
   const [expanded, setExpanded] = useState(
@@ -87,12 +88,16 @@ export const Row = ({
     <div className={containerClassName}>
       <RowWrapper LinkWrapper={LinkWrapper} href={href} shallow={shallow}>
         <div
-          className={clsx('body-text flex flex-row items-center gap-4 p-2', {
-            'cursor-pointer transition-opacity hover:opacity-70 active:opacity-60':
-              onClick || href,
-            'rounded-md bg-background-interactive-selected':
-              selected || (href && href === asPath),
-          })}
+          className={clsx(
+            'body-text flex flex-row items-center gap-4 p-2',
+            {
+              'cursor-pointer transition-opacity hover:opacity-70 active:opacity-60':
+                onClick || href,
+              'rounded-md bg-background-interactive-selected':
+                selected || (href && href === asPath),
+            },
+            contentContainerClassName
+          )}
           onClick={onClick}
         >
           <div className="relative flex h-6 w-6 items-center justify-center">

@@ -1,6 +1,5 @@
 import {
   Add,
-  ArrowDropDown,
   CheckRounded,
   HomeOutlined,
   InboxOutlined,
@@ -12,25 +11,16 @@ import {
 import { isMobile } from '@walletconnect/browser-utils'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ButtonPopupSection } from '@dao-dao/types'
 import { DappNavigationProps } from '@dao-dao/types/stateless/DappNavigation'
-import {
-  HOST_CHAIN_SUBDOMAINS,
-  MAINNET,
-  getDisplayNameForChainId,
-  getImageUrlForChainId,
-} from '@dao-dao/utils'
 
-import { useChain, usePlatform } from '../../hooks'
-import { ButtonLink } from '../buttons'
+import { usePlatform } from '../../hooks'
 import { DaoDropdown } from '../dao'
 import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { Logo } from '../logo/Logo'
-import { ButtonPopup } from '../popup'
 import { PricePercentChange } from '../token/PricePercentChange'
 import { Tooltip } from '../tooltip/Tooltip'
 import { useAppContext } from './AppContext'
@@ -82,64 +72,6 @@ export const DappNavigation = ({
     responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
   } = useAppContext()
   const { asPath } = useRouter()
-
-  const chain = useChain()
-  const { ChainSwitcherTrigger, chainSwitcherSections } = useMemo(() => {
-    const makeChainIcon = (chainId: string) =>
-      function ChainIcon({ className }: { className?: string }) {
-        return (
-          <div
-            className={clsx('shrink-0 bg-contain bg-center', className)}
-            style={{
-              backgroundImage: `url(${getImageUrlForChainId(chainId)})`,
-            }}
-          ></div>
-        )
-      }
-
-    const ChainIcon = makeChainIcon(chain.chain_id)
-    const ChainSwitcherTrigger = ({ onClick }: { onClick: () => void }) => (
-      <Row
-        Icon={ChainIcon}
-        LinkWrapper={LinkWrapper}
-        compact={compact}
-        label={getDisplayNameForChainId(chain.chain_id)}
-        onClick={onClick}
-        rightNode={<ArrowDropDown className="!h-5 !w-5" />}
-      />
-    )
-    const chainSwitcherSections: ButtonPopupSection[] = [
-      {
-        buttons: HOST_CHAIN_SUBDOMAINS.filter(
-          ({ hideFromSwitcher }) => !hideFromSwitcher
-        )
-          .map(({ id, subdomain }) => ({
-            href: `https://${subdomain}.daodao.zone`,
-            label: getDisplayNameForChainId(id),
-            pressed: id === chain.chain_id,
-            Icon: makeChainIcon(id),
-            openInNewTab: false,
-          }))
-          .sort((a, b) => {
-            // Sort pressed to the top.
-            if (a.pressed && !b.pressed) {
-              return -1
-            } else if (!a.pressed && b.pressed) {
-              return 1
-            }
-
-            // Sort alphabetically by label.
-            return a.label.localeCompare(b.label)
-          }),
-      },
-    ]
-
-    return {
-      ChainIcon,
-      ChainSwitcherTrigger,
-      chainSwitcherSections,
-    }
-  }, [LinkWrapper, chain.chain_id, compact])
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
@@ -241,25 +173,8 @@ export const DappNavigation = ({
           noBorder={compact}
         />
 
-        {/* If no chain switcher showing and not compact, add some spacing. */}
-        <div className={clsx(!MAINNET && !compact && 'pt-2')}>
-          {/* Show chain switcher on mainnet. */}
-          {MAINNET && !compact && (
-            <ButtonPopup
-              ButtonLink={ButtonLink}
-              position="full"
-              sections={chainSwitcherSections}
-              trigger={{
-                type: 'custom',
-                Renderer: ChainSwitcherTrigger,
-              }}
-              wrapperClassName={clsx(
-                '!block border-b border-border-secondary py-1',
-                compact && 'border-t'
-              )}
-            />
-          )}
-
+        {/* If not compact, add some spacing. */}
+        <div className={clsx(!compact && 'pt-2')}>
           <Row
             Icon={Search}
             LinkWrapper={LinkWrapper}

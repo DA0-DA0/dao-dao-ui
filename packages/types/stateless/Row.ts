@@ -21,4 +21,5 @@ export interface RowProps {
   // (https://nextjs.org/docs/routing/shallow-routing) for local links.
   shallow?: boolean
   containerClassName?: string
+  contentContainerClassName?: string
 }

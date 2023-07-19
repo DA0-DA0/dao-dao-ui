@@ -11,6 +11,7 @@ import {
   VOTING_POWER_DISTRIBUTION_COLORS,
   VotingPowerDistribution,
   VotingPowerDistributionEntry,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   CreateDaoCustomValidator,
@@ -38,7 +39,8 @@ export const GovernanceConfigurationInput = ({
   },
 }: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
-  const { address: walletAddress } = useWallet()
+  const { chain_id } = useChain()
+  const { address: walletAddress, connected } = useWallet(chain_id)
 
   const {
     fields: tierFields,
@@ -62,24 +64,20 @@ export const GovernanceConfigurationInput = ({
   // Fill in default first tier info if tiers not yet edited.
   const [loadedPage, setLoadedPage] = useState(false)
   useEffect(() => {
-    if (loadedPage) return
+    if (loadedPage || !connected) {
+      return
+    }
     setLoadedPage(true)
 
-    if (
-      !(
-        data.tiers.length === 1 &&
-        data.tiers[0].name === '' &&
-        data.tiers[0].members.length === 1 &&
-        data.tiers[0].members[0].address === ''
-      )
-    )
+    if (data.tiers.length !== 1 || data.tiers[0].members.length !== 1) {
       return
+    }
 
     setValue('creator.data.tiers.0.name', t('form.defaultTierName'))
     if (walletAddress) {
       setValue('creator.data.tiers.0.members.0.address', walletAddress)
     }
-  }, [data.tiers, loadedPage, setValue, t, walletAddress])
+  }, [chain_id, connected, data.tiers, loadedPage, setValue, t, walletAddress])
 
   //! Validate tiers.
   // Custom validation function for this page. Called upon attempt to navigate

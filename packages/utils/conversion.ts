@@ -12,6 +12,7 @@ import {
 } from '@dao-dao/types'
 import { Expiration } from '@dao-dao/types/contracts/common'
 
+import { getChainForChainId } from './chain'
 import { IPFS_GATEWAY_TEMPLATE } from './constants'
 
 export function convertMicroDenomToDenomWithDecimals(
@@ -306,3 +307,9 @@ export const concatAddressStartEnd = (
 
 export const concatAddressBoth = (address: string, takeN = 7): string =>
   address && concatAddressStartEnd(address, takeN, takeN)
+
+export const transformBech32Address = (address: string, toChainId: string) =>
+  toBech32(
+    getChainForChainId(toChainId).bech32_prefix,
+    fromBech32(address).data
+  )

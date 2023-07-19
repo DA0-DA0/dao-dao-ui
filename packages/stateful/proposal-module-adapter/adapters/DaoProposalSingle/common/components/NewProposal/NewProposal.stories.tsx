@@ -50,7 +50,7 @@ Default.args = {
   },
   loading: false,
   isPaused: false,
-  isMember: true,
+  isMember: { loading: false, data: true },
   depositUnsatisfied: false,
   connected: true,
   drafts: [],

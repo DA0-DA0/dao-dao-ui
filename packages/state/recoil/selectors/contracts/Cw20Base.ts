@@ -43,10 +43,10 @@ const queryClient = selectorFamily<Cw20BaseQueryClient, QueryClientParams>({
   dangerouslyAllowMutability: true,
 })
 
-export type ExecuteClientParams = {
+export type ExecuteClientParams = WithChainId<{
   contractAddress: string
   sender: string
-}
+}>
 
 export const executeClient = selectorFamily<
   Cw20BaseClient | undefined,
@@ -54,9 +54,9 @@ export const executeClient = selectorFamily<
 >({
   key: 'cw20BaseExecuteClient',
   get:
-    ({ contractAddress, sender }) =>
+    ({ chainId, contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientAtom)
+      const client = get(signingCosmWasmClientAtom({ chainId }))
       if (!client) return
       return new Cw20BaseClient(client, sender, contractAddress)
     },

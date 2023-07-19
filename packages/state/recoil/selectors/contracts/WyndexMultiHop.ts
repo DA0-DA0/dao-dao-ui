@@ -38,10 +38,10 @@ export const queryClient = selectorFamily<
   dangerouslyAllowMutability: true,
 })
 
-export type ExecuteClientParams = {
+export type ExecuteClientParams = WithChainId<{
   contractAddress: string
   sender: string
-}
+}>
 
 export const executeClient = selectorFamily<
   WyndexMultiHopClient | undefined,
@@ -49,9 +49,9 @@ export const executeClient = selectorFamily<
 >({
   key: 'wyndexMultiHopClient',
   get:
-    ({ contractAddress, sender }) =>
+    ({ chainId, contractAddress, sender }) =>
     ({ get }) => {
-      const client = get(signingCosmWasmClientAtom)
+      const client = get(signingCosmWasmClientAtom({ chainId }))
       if (!client) return
       return new WyndexMultiHopClient(client, sender, contractAddress)
     },

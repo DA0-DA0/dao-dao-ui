@@ -1,7 +1,7 @@
 import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { v4 as uuidv4 } from 'uuid'
 
-import { PolytoneNote } from '@dao-dao/types'
+import { PolytoneConnection } from '@dao-dao/types'
 import {
   BankMsg,
   CosmosMsgFor_Empty,
@@ -12,7 +12,8 @@ import {
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
 
-import { POLYTONE_NOTES, POLYTONE_TIMEOUT_SECONDS } from '../constants'
+import { getSupportedChainConfig } from '../chain'
+import { POLYTONE_TIMEOUT_SECONDS } from '../constants'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import { parseEncodedMessage } from './encoding'
 import { decodeStargateMessage } from './protobuf'
@@ -250,14 +251,18 @@ export const makeDistributeMessage = (
 })
 
 export const makePolytoneExecuteMessage = (
-  chainId: string,
+  srcChainId: string,
+  destChainId: string,
   // Allow passing no message, which just creates an account.
   msg?: CosmosMsgFor_Empty
-): CosmosMsgFor_Empty =>
-  makeWasmMessage({
+): CosmosMsgFor_Empty => {
+  const polytoneConnection =
+    getSupportedChainConfig(srcChainId)?.polytone?.[destChainId]
+
+  return makeWasmMessage({
     wasm: {
       execute: {
-        contract_addr: POLYTONE_NOTES[chainId]?.note,
+        contract_addr: polytoneConnection?.note,
         funds: [],
         msg: {
           execute: {
@@ -265,17 +270,19 @@ export const makePolytoneExecuteMessage = (
             timeout_seconds: POLYTONE_TIMEOUT_SECONDS.toString(),
             callback: {
               msg: toBase64(toUtf8(uuidv4())),
-              receiver: POLYTONE_NOTES[chainId]?.listener,
+              receiver: polytoneConnection?.listener,
             },
           },
         },
       },
     },
   })
+}
 
 // Checks if the message is a Polytone execute message and extract sthe chain
 // ID and msg.
 export const decodePolytoneExecuteMsg = (
+  srcChainId: string,
   decodedMsg: Record<string, any>,
   // How many messages are expected.
   type: 'one' | 'zero' | 'oneOrZero' = 'one'
@@ -286,7 +293,7 @@ export const decodePolytoneExecuteMsg = (
   | {
       match: true
       chainId: string
-      polytoneNote: PolytoneNote
+      polytoneConnection: PolytoneConnection
       msg: Record<string, any>
       cosmosMsg: CosmosMsgFor_Empty | undefined
       initiatorMsg: string
@@ -321,11 +328,11 @@ export const decodePolytoneExecuteMsg = (
     }
   }
 
-  const entry = Object.entries(POLYTONE_NOTES).find(
-    ([, { note }]) => note === decodedMsg.wasm.execute.contract_addr
-  )
-  // Unrecognized polytone note.
-  if (!entry) {
+  const polytoneConnection = Object.entries(
+    getSupportedChainConfig(srcChainId)?.polytone || {}
+  ).find(([, { note }]) => note === decodedMsg.wasm.execute.contract_addr)
+  // Unrecognized polytone connection.
+  if (!polytoneConnection) {
     return {
       match: false,
     }
@@ -333,8 +340,8 @@ export const decodePolytoneExecuteMsg = (
 
   return {
     match: true,
-    chainId: entry[0],
-    polytoneNote: entry[1],
+    chainId: polytoneConnection[0],
+    polytoneConnection: polytoneConnection[1],
     msg:
       decodedMsg.wasm.execute.msg.execute.msgs.length === 0
         ? {}

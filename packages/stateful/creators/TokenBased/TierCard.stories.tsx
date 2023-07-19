@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useForm } from 'react-hook-form'
 
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { NewDao } from '@dao-dao/types'
 import { TokenBasedCreatorId } from '@dao-dao/utils'
 
@@ -23,7 +24,7 @@ const Template: ComponentStory<typeof TierCard> = (args) => {
     watch,
   } = useForm<NewDao<CreatorData>>({
     defaultValues: {
-      ...makeDefaultNewDao(),
+      ...makeDefaultNewDao(CHAIN_ID),
       creator: {
         id: TokenBasedCreatorId,
         data: TokenBasedCreator.defaultConfig,

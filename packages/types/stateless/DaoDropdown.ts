@@ -3,6 +3,7 @@ import { ComponentType, ReactNode } from 'react'
 import { LinkWrapperProps } from './LinkWrapper'
 
 export interface DaoDropdownInfo {
+  chainId: string
   coreAddress: string
   imageUrl: string
   name: string

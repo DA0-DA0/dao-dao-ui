@@ -2,7 +2,12 @@ import { useWallet } from '@noahsaso/cosmodal'
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { Loader, useChain, useDaoInfoContext } from '@dao-dao/stateless'
+import {
+  Loader,
+  useChain,
+  useDaoInfoContext,
+  useSupportedChainContext,
+} from '@dao-dao/stateless'
 import {
   ActionContext,
   ActionContextType,
@@ -33,11 +38,13 @@ export type WalletActionsProviderProps = ActionsProviderProps & {
 // where this component is used for a usage example.
 export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   const { t } = useTranslation()
-  const chain = useChain()
+  const chainContext = useSupportedChainContext()
   const info = useDaoInfoContext()
+
   const options: ActionOptions = {
     t,
-    chain,
+    chain: chainContext.chain,
+    chainContext,
     address: info.coreAddress,
     context: {
       type: ActionContextType.Dao,
@@ -67,11 +74,11 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
       info.proposalModules.flatMap(
         (proposalModule) =>
           matchAndLoadCommon(proposalModule, {
-            chain,
+            chain: chainContext.chain,
             coreAddress: info.coreAddress,
           }).fields.actionCategoryMakers
       ),
-    [chain, info.coreAddress, info.proposalModules]
+    [chainContext.chain, info.coreAddress, info.proposalModules]
   )
 
   const loadingWidgets = useWidgets({
@@ -116,11 +123,12 @@ export const BaseActionsProvider = ({
   context: ActionContext
 }) => {
   const { t } = useTranslation()
-  const chain = useChain()
 
+  const chainContext = useSupportedChainContext()
   const options: ActionOptions = {
     t,
-    chain,
+    chain: chainContext.chain,
+    chainContext,
     address,
     context,
   }
@@ -146,7 +154,9 @@ export const WalletActionsProvider = ({
   address: overrideAddress,
   children,
 }: WalletActionsProviderProps) => {
-  const { address: connectedAddress } = useWallet()
+  const { chain_id: chainId } = useChain()
+  const { address: connectedAddress } = useWallet(chainId)
+
   const address = overrideAddress || connectedAddress
 
   if (!address) {

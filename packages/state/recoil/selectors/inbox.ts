@@ -77,8 +77,11 @@ export const inboxApiItemsSelector = selectorFamily<
                 return {
                   ...item,
                   type,
-                  data: item.data as {
-                    dao: string
+                  data: {
+                    chainId,
+                    ...(item.data as {
+                      dao: string
+                    }),
                   },
                 }
 

@@ -8,7 +8,6 @@ import {
   NewDao,
 } from '@dao-dao/types'
 import {
-  CHAIN_ID,
   DaoProposalMultipleAdapterId,
   DaoProposalSingleAdapterId,
   MembershipBasedCreatorId,
@@ -23,7 +22,8 @@ import {
 
 // Avoid cyclic dependencies issues with the adapter modules by using a lazy
 // maker function.
-export const makeDefaultNewDao = (): NewDao => ({
+export const makeDefaultNewDao = (chainId: string): NewDao => ({
+  chainId,
   name: '',
   description: '',
   imageUrl: undefined,
@@ -57,7 +57,7 @@ export const makeDefaultNewDao = (): NewDao => ({
       enabled: false,
       amount: 10,
       type: 'native',
-      denomOrAddress: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,
+      denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
       token: undefined,
       refundPolicy: DepositRefundPolicy.OnlyPassed,
     },
@@ -68,11 +68,15 @@ export const makeDefaultNewDao = (): NewDao => ({
   advancedVotingConfigEnabled: false,
 })
 
-// Store each subDAO creation state separately. Main DAO creation state uses an
-// empty string.
-export const newDaoAtom = atomFamily<NewDao, string>({
+export const newDaoAtom = atomFamily<
+  NewDao,
+  {
+    chainId: string
+    parentDaoAddress?: string
+  }
+>({
   key: 'newDao',
-  default: makeDefaultNewDao,
+  default: ({ chainId }) => makeDefaultNewDao(chainId),
   effects: [localStorageEffectJSON],
 })
 

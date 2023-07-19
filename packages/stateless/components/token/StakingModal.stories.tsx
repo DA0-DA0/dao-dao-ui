@@ -1,7 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { CHAIN_ID, getNativeTokenForChainId } from '@dao-dao/utils'
+import { CHAIN_ID } from '@dao-dao/storybook'
+import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { StakingModal, StakingMode } from './StakingModal'
 

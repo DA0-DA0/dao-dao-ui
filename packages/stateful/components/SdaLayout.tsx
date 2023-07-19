@@ -38,11 +38,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
     useRecoilState(proposalCreatedCardPropsAtom)
 
   const { connect, connected, status } = useWalletManager()
-  const {
-    walletAddress,
-    walletProfileData,
-    refreshBalances: refreshWalletBalances,
-  } = useWalletInfo()
+  const { walletAddress, walletProfileData } = useWalletInfo()
 
   //! Refresh every minute. Block height, USDC conversions, and wallet balances.
   const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
@@ -52,17 +48,9 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
     const interval = setInterval(() => {
       setRefreshBlockHeight((id) => id + 1)
       setRefreshUsdcPrices((id) => id + 1)
-      if (walletAddress) {
-        refreshWalletBalances()
-      }
     }, 60 * 1000)
     return () => clearInterval(interval)
-  }, [
-    refreshWalletBalances,
-    setRefreshBlockHeight,
-    setRefreshUsdcPrices,
-    walletAddress,
-  ])
+  }, [setRefreshBlockHeight, setRefreshUsdcPrices, walletAddress])
 
   const [daoCreatedCardProps, setDaoCreatedCardProps] = useRecoilState(
     daoCreatedCardPropsAtom

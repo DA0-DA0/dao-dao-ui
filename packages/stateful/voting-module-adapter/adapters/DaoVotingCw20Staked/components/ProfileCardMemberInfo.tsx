@@ -42,8 +42,8 @@ export const ProfileCardMemberInfo = ({
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { name: daoName } = useDaoInfoContext()
-  const { address: walletAddress, connected } = useWallet()
-  const { refreshBalances } = useWalletInfo()
+  const { address: walletAddress, connected } = useWallet(chainId)
+  const { refreshBalances } = useWalletInfo(chainId)
 
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [claimingLoading, setClaimingLoading] = useState(false)

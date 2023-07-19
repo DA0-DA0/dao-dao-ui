@@ -35,20 +35,17 @@ import {
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   cosmWasmClientRouter,
   getChainForChainId,
+  getChainIdForAddress,
   getDaoPath,
   getRpcForChainId,
+  getSupportedChainConfig,
   isValidWalletAddress,
   parseContractVersion,
   polytoneNoteProxyMapToChainIdMap,
   processError,
   toAccessibleImageUrl,
-  validateAddressOnCurrentChain,
 } from '@dao-dao/utils'
-import {
-  CHAIN_ID,
-  FAST_AVERAGE_COLOR_API_TEMPLATE,
-  POLYTONE_NOTES,
-} from '@dao-dao/utils/constants'
+import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
 
 import { DaoPageWrapperProps } from '../components'
 import {
@@ -115,23 +112,15 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
     const coreAddress = _coreAddress ?? context.params?.address
 
-    // Validate supported chain for address and redirect if necessary.
+    // Get chain ID for address based on prefix.
+    let chainId: string
     try {
       // If invalid address, display not found.
       if (!coreAddress || typeof coreAddress !== 'string') {
         throw new Error('Invalid address')
       }
 
-      const switchToSubdomain = validateAddressOnCurrentChain(coreAddress)
-      if (switchToSubdomain) {
-        return {
-          redirect: {
-            destination:
-              switchToSubdomain + getDaoPath(DaoPageMode.Dapp, coreAddress),
-            permanent: false,
-          },
-        }
-      }
+      chainId = getChainIdForAddress(coreAddress)
 
       // Validation throws error if address prefix not recognized. Display not
       // found in this case.
@@ -143,7 +132,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         props: {
           ...i18nProps,
           title: serverT('title.daoNotFound'),
-          description: '',
+          description: err instanceof Error ? err.message : `${err}`,
         },
       }
     }
@@ -161,7 +150,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         parentDao,
         items: _items,
         polytoneProxies,
-      } = await daoCoreDumpState(coreAddress, serverT)
+      } = await daoCoreDumpState(chainId, coreAddress, serverT)
       coreVersion = version
 
       // If no contract name, will display fallback voting module adapter.
@@ -173,7 +162,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
       // Get DAO proposal modules.
       const proposalModules = await fetchProposalModules(
-        CHAIN_ID,
+        chainId,
         coreAddress,
         coreVersion,
         activeProposalModules
@@ -203,7 +192,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           context,
           t: serverT,
           config,
-          chain: getChainForChainId(CHAIN_ID),
+          chain: getChainForChainId(chainId),
           coreAddress,
           coreVersion,
           proposalModules,
@@ -239,6 +228,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         description: overrideDescription ?? config.description,
         accentColor,
         serializedInfo: {
+          chainId,
           coreAddress,
           coreVersion,
           votingModuleAddress,
@@ -430,6 +420,7 @@ export class RedirectError {
 }
 
 const loadParentDaoInfo = async (
+  chainId: string,
   subDaoAddress: string,
   potentialParentAddress: string | null | undefined,
   serverT: TFunction,
@@ -443,7 +434,7 @@ const loadParentDaoInfo = async (
     potentialParentAddress === subDaoAddress ||
     isValidWalletAddress(
       potentialParentAddress,
-      getChainForChainId(CHAIN_ID).bech32_prefix
+      getChainForChainId(chainId).bech32_prefix
     ) ||
     previousParentAddresses?.includes(potentialParentAddress)
   ) {
@@ -456,7 +447,7 @@ const loadParentDaoInfo = async (
       version,
       config: { name, image_url },
       parentDao,
-    } = await daoCoreDumpState(potentialParentAddress, serverT, [
+    } = await daoCoreDumpState(chainId, potentialParentAddress, serverT, [
       ...(previousParentAddresses ?? []),
       potentialParentAddress,
     ])
@@ -503,6 +494,7 @@ interface DaoCoreDumpState {
 }
 
 const daoCoreDumpState = async (
+  chainId: string,
   coreAddress: string,
   serverT: TFunction,
   // Prevent cycles by ensuring admin has not already been seen.
@@ -513,7 +505,7 @@ const daoCoreDumpState = async (
       type: 'contract',
       address: coreAddress,
       formula: 'daoCore/dumpState',
-      chainId: CHAIN_ID,
+      chainId,
       // TODO(numia): Remove this once provided.
       required: true,
     })
@@ -538,12 +530,13 @@ const daoCoreDumpState = async (
           type: 'contract',
           address: coreAddress,
           formula: 'daoCore/listItems',
-          chainId: CHAIN_ID,
+          chainId,
           // TODO(numia): Remove this once provided.
           required: true,
         })) ?? []
 
       const parentDaoInfo = await loadParentDaoInfo(
+        chainId,
         coreAddress,
         indexerDumpedState.admin,
         serverT,
@@ -552,7 +545,7 @@ const daoCoreDumpState = async (
 
       // Convert to chainId -> proxy map.
       const polytoneProxies = polytoneNoteProxyMapToChainIdMap(
-        CHAIN_ID,
+        chainId,
         indexerDumpedState.polytoneProxies || {}
       )
 
@@ -591,9 +584,7 @@ const daoCoreDumpState = async (
     console.error(error, processError(error))
   }
 
-  const cwClient = await cosmWasmClientRouter.connect(
-    getRpcForChainId(CHAIN_ID)
-  )
+  const cwClient = await cosmWasmClientRouter.connect(getRpcForChainId(chainId))
   const daoCoreClient = new DaoCoreV2QueryClient(cwClient, coreAddress)
 
   const dumpedState = await daoCoreClient.dumpState()
@@ -613,7 +604,7 @@ const daoCoreDumpState = async (
   }
 
   const proposalModules = await fetchProposalModulesWithInfoFromChain(
-    CHAIN_ID,
+    chainId,
     coreAddress,
     coreVersion
   )
@@ -638,6 +629,7 @@ const daoCoreDumpState = async (
   }
 
   const parentDao = await loadParentDaoInfo(
+    chainId,
     coreAddress,
     dumpedState.admin,
     serverT,
@@ -675,34 +667,39 @@ const daoCoreDumpState = async (
   // Get DAO polytone proxies.
   const polytoneProxies = (
     await Promise.all(
-      Object.entries(POLYTONE_NOTES).map(async ([chainId, { note }]) => {
-        let proxy
-        try {
-          proxy = await queryIndexer<string>({
-            type: 'contract',
-            address: note,
-            formula: 'polytone/note/remoteAddress',
-            args: {
-              address: coreAddress,
-            },
-            chainId: CHAIN_ID,
-          })
-        } catch {
-          // Ignore error.
-        }
-        if (!proxy) {
-          const polytoneNoteClient = new PolytoneNoteQueryClient(cwClient, note)
-          proxy =
-            (await polytoneNoteClient.remoteAddress({
-              localAddress: coreAddress,
-            })) || undefined
-        }
+      Object.entries(getSupportedChainConfig(chainId)?.polytone || {}).map(
+        async ([chainId, { note }]) => {
+          let proxy
+          try {
+            proxy = await queryIndexer<string>({
+              type: 'contract',
+              address: note,
+              formula: 'polytone/note/remoteAddress',
+              args: {
+                address: coreAddress,
+              },
+              chainId,
+            })
+          } catch {
+            // Ignore error.
+          }
+          if (!proxy) {
+            const polytoneNoteClient = new PolytoneNoteQueryClient(
+              cwClient,
+              note
+            )
+            proxy =
+              (await polytoneNoteClient.remoteAddress({
+                localAddress: coreAddress,
+              })) || undefined
+          }
 
-        return {
-          chainId,
-          proxy,
+          return {
+            chainId,
+            proxy,
+          }
         }
-      })
+      )
     )
   ).reduce(
     (acc, { chainId, proxy }) => ({

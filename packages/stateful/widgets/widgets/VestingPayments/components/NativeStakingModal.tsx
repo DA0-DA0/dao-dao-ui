@@ -86,7 +86,7 @@ export const NativeStakingModal = ({
   const [amount, setAmount] = useState(0)
   const [loading, setLoading] = useState(false)
 
-  const { address: walletAddress = '' } = useWallet()
+  const { address: walletAddress = '' } = useWallet(chainId)
   const delegate = useDelegate({
     contractAddress: vestingContractAddress,
     sender: walletAddress,

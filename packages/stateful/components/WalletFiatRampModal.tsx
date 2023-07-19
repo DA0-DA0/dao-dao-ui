@@ -1,14 +1,15 @@
 import { useWallet } from '@noahsaso/cosmodal'
 import { useTranslation } from 'react-i18next'
 
-import { KadoModal } from '@dao-dao/stateless'
+import { KadoModal, useChain } from '@dao-dao/stateless'
 import { KadoModalProps, ModalProps } from '@dao-dao/types'
 
 export const WalletFiatRampModal = (
   props: Omit<ModalProps, 'header'> & Pick<KadoModalProps, 'defaultMode'>
 ) => {
   const { t } = useTranslation()
-  const { address } = useWallet()
+  const { chain_id } = useChain()
+  const { address } = useWallet(chain_id)
 
   return (
     <KadoModal

@@ -1,60 +1,9 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
-import {
-  KeplrWalletProfile,
-  ProfileSearchHit,
-  WithChainId,
-} from '@dao-dao/types'
-import {
-  PFPK_API_BASE,
-  getChainForChainId,
-  processError,
-  transformIpfsUrlToHttpsIfNecessary,
-} from '@dao-dao/utils'
+import { ProfileSearchHit, WithChainId } from '@dao-dao/types'
+import { PFPK_API_BASE, getChainForChainId, processError } from '@dao-dao/utils'
 
 import { refreshWalletProfileAtom } from '../atoms/refresh'
-import { walletHexPublicKeySelector } from './chain'
-
-export const keplrProfileImageSelector = selectorFamily<
-  string | undefined,
-  WithChainId<{ address: string }>
->({
-  key: 'keplrProfileImage',
-  get:
-    ({ address, chainId }) =>
-    async ({ get }) => {
-      const publicKey = address
-        ? get(
-            walletHexPublicKeySelector({
-              walletAddress: address,
-              chainId,
-            })
-          )
-        : undefined
-
-      if (!publicKey) {
-        return
-      }
-
-      try {
-        const response = await fetch(
-          `https://api.kube-uw2.keplr-prod.manythings.xyz/v1/user/${publicKey}/profile`
-        )
-        if (!response.ok) {
-          console.error(await response.text())
-          return
-        }
-
-        const { profile }: KeplrWalletProfile = await response.json()
-        if ('imageUrl' in profile) {
-          return transformIpfsUrlToHttpsIfNecessary(profile.imageUrl)
-        }
-      } catch (err) {
-        console.error(err)
-        // Fail silently.
-      }
-    },
-})
 
 export const searchProfilesByNamePrefixSelector = selectorFamily<
   ProfileSearchHit[],

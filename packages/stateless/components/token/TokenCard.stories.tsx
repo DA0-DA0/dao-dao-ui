@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { EntityDisplay } from '@dao-dao/stateful'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import {
   GenericToken,
   TokenCardProps,
@@ -8,7 +9,6 @@ import {
   TokenType,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
-import { CHAIN_ID } from '@dao-dao/utils'
 
 import { ButtonLink } from '../buttons/ButtonLink'
 import { TokenCard } from './TokenCard'

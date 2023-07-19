@@ -29,8 +29,8 @@ import {
   TokenAmountDisplay,
   useCachedLoadable,
   useCachedLoading,
-  useChain,
   useDaoInfoContext,
+  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
   GenericToken,
@@ -41,7 +41,6 @@ import {
 import { ExecuteSwapOperationsMsg } from '@dao-dao/types/contracts/WyndexMultiHop'
 import {
   CHAIN_GAS_MULTIPLIER,
-  CHAIN_TXN_URL_PREFIX,
   DAO_DAO_DAO_ADDRESS,
   WYND_MULTI_HOP_CONTRACT,
   convertMicroDenomToDenomWithDecimals,
@@ -66,11 +65,14 @@ export const WyndDepositRenderer = ({
 }: WidgetRendererProps<WyndDepositData>) => {
   const { t } = useTranslation()
   const {
+    chain: { chain_id: chainId },
+    config: { explorerUrlTemplates },
+  } = useSupportedChainContext()
+  const {
     signingCosmWasmClient,
     address: walletAddress = '',
     connected,
-  } = useWallet()
-  const { chain_id: chainId } = useChain()
+  } = useWallet(chainId)
   const { coreAddress } = useDaoInfoContext()
 
   // Default to the DAO's treasury if no output specified.
@@ -503,7 +505,10 @@ export const WyndDepositRenderer = ({
               value={txHash}
             />
 
-            <ButtonLink href={CHAIN_TXN_URL_PREFIX + txHash} variant="ghost">
+            <ButtonLink
+              href={explorerUrlTemplates.tx.replace('REPLACE', txHash)}
+              variant="ghost"
+            >
               {t('button.openInChainExplorer')}{' '}
               <ArrowOutwardRounded className="!h-4 !w-4" />
             </ButtonLink>

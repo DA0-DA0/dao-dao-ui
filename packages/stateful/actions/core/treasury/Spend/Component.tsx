@@ -1,4 +1,3 @@
-import { fromBech32, toBech32 } from '@cosmjs/encoding'
 import {
   ArrowDropDown,
   ArrowRightAltRounded,
@@ -33,7 +32,6 @@ import {
 } from '@dao-dao/types'
 import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
-  CHAIN_ID,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getChainForChainId,
@@ -41,6 +39,7 @@ import {
   getImageUrlForChainId,
   makeValidateAddress,
   toAccessibleImageUrl,
+  transformBech32Address,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -79,8 +78,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   const { register, watch, setValue, setError, clearErrors } =
     useFormContext<SpendData>()
 
-  const spendChainId =
-    watch((fieldNamePrefix + 'chainId') as 'chainId') || CHAIN_ID
+  const spendChainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
   const spendAmount = watch((fieldNamePrefix + 'amount') as 'amount')
   const spendDenom = watch((fieldNamePrefix + 'denom') as 'denom')
   const recipient = watch((fieldNamePrefix + 'to') as 'to')
@@ -111,9 +109,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
     // Convert wallet address to destination chain's format.
     if (currentEntity.type === EntityType.Wallet) {
-      newRecipient = toBech32(
-        toChain.bech32_prefix,
-        fromBech32(currentEntity.address).data
+      newRecipient = transformBech32Address(
+        currentEntity.address,
+        toChain.chain_id
       )
     }
     // Get DAO core address or its corresponding polytone proxy. Clear if no
