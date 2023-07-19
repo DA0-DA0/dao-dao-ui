@@ -281,7 +281,13 @@ export const indexerFeaturedDaosSelector = selectorFamily<
           'value.giniCoefficient < 0.75',
           'value.memberCount >= 3',
           // Exclude priority.
-          `NOT contractAddress IN ["${priorityFeaturedDaos.join('", "')}"]`,
+          ...(priorityFeaturedDaos.length > 0
+            ? [
+                `NOT contractAddress IN ["${priorityFeaturedDaos.join(
+                  '", "'
+                )}"]`,
+              ]
+            : []),
         ],
         sort: ['value.tvl:desc'],
       })
