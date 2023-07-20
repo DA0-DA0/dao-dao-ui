@@ -3,7 +3,7 @@ import { RecoilValueReadOnly, selectorFamily } from 'recoil'
 import {
   DaoCoreV2Selectors,
   DaoVotingCw20StakedSelectors,
-  PolytoneNoteSelectors,
+  PolytoneProxySelectors,
   contractInstantiateTimeSelector,
   contractVersionSelector,
   queryContractIndexerSelector,
@@ -12,17 +12,16 @@ import {
   ContractVersion,
   ContractVersionInfo,
   DaoInfo,
-  PolytoneProxies,
   ProposalModule,
   WithChainId,
 } from '@dao-dao/types'
 import {
   CHAIN_ID,
   DaoVotingCw20StakedAdapterId,
-  POLYTONE_NOTES,
   getChainForChainId,
   isValidContractAddress,
 } from '@dao-dao/utils'
+import { PolytoneNotesPerChain } from '@dao-dao/utils/constants/polytone'
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
@@ -47,46 +46,6 @@ export const daoCoreProposalModulesSelector = selectorFamily<
         coreAddress,
         coreVersion
       )
-    },
-})
-
-export const daoCorePolytoneProxiesSelector = selectorFamily<
-  PolytoneProxies,
-  WithChainId<{ coreAddress: string }>
->({
-  key: 'daoCorePolytoneProxies',
-  get:
-    ({ coreAddress, chainId }) =>
-    ({ get }) => {
-      // Get polytone proxies.
-      const polytoneProxies = Object.entries(POLYTONE_NOTES)
-        .map(([_chainId, { note }]) => ({
-          chainId: _chainId,
-          proxy: get(
-            PolytoneNoteSelectors.remoteAddressSelector({
-              contractAddress: note,
-              chainId,
-              params: [
-                {
-                  localAddress: coreAddress,
-                },
-              ],
-            })
-          ),
-        }))
-        .reduce(
-          (acc, { chainId, proxy }) => ({
-            ...acc,
-            ...(proxy
-              ? {
-                  [chainId]: proxy,
-                }
-              : {}),
-          }),
-          {} as PolytoneProxies
-        )
-
-      return polytoneProxies
     },
 })
 
@@ -164,6 +123,7 @@ export const daoPotentialSubDaosSelector = selectorFamily<
           chainId,
           contractAddress: coreAddress,
           formula: 'daoCore/potentialSubDaos',
+          required: true,
         })
       )
 
@@ -253,7 +213,10 @@ export const daoInfoSelector: (param: {
       )
 
       const polytoneProxies = get(
-        daoCorePolytoneProxiesSelector({ coreAddress, chainId })
+        DaoCoreV2Selectors.polytoneProxiesSelector({
+          contractAddress: coreAddress,
+          chainId,
+        })
       )
 
       let parentDaoInfo
@@ -310,6 +273,71 @@ export const daoInfoSelector: (param: {
             }
           : null,
         admin: dumpState.admin,
+      }
+    },
+})
+
+export const daoInfoFromPolytoneProxySelector = selectorFamily<
+  | {
+      chainId: string
+      coreAddress: string
+      info: DaoInfo
+    }
+  | undefined,
+  WithChainId<{ proxy: string }>
+>({
+  key: 'daoInfoFromPolytoneProxy',
+  get:
+    ({ proxy, chainId }) =>
+    ({ get }) => {
+      // Get voice for this proxy on destination chain.
+      const voice = get(
+        PolytoneProxySelectors.instantiatorSelector({
+          chainId,
+          contractAddress: proxy,
+          params: [],
+        })
+      )
+      if (!voice) {
+        return
+      }
+
+      // Get source DAO core address for this voice.
+      const coreAddress = get(
+        DaoCoreV2Selectors.coreAddressForPolytoneProxy({
+          chainId,
+          voice,
+          proxy,
+        })
+      )
+      if (!coreAddress) {
+        return
+      }
+
+      // Get source chain ID, where the note lives for this voice.
+      const srcChainId = Object.entries(PolytoneNotesPerChain).find(
+        ([, notes]) =>
+          Object.entries(notes).some(
+            ([destChainId, note]) =>
+              destChainId === chainId && note.voice === voice
+          )
+      )?.[0]
+      if (!srcChainId) {
+        return
+      }
+
+      // Get DAO info on source chain.
+      const info = get(
+        daoInfoSelector({
+          chainId: srcChainId,
+          coreAddress,
+        })
+      )
+
+      return {
+        chainId: srcChainId,
+        coreAddress,
+        info,
       }
     },
 })

@@ -5,6 +5,8 @@ import Long from 'long'
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 import { GovProposalWithDecodedContent } from '@dao-dao/types'
 
+import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
+import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
 import { GovernanceVoteComponent } from './Component'
 
 export default {
@@ -65,5 +67,7 @@ Default.args = {
   errors: {},
   options: {
     proposals: [makeProposal(), makeProposal(), makeProposal(), makeProposal()],
+    PayEntityDisplay,
+    TokenAmountDisplay,
   },
 }

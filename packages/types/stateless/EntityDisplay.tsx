@@ -1,3 +1,4 @@
+import { DaoInfo } from '../dao'
 import { LoadingData } from './common'
 
 export enum EntityType {
@@ -7,11 +8,24 @@ export enum EntityType {
 
 // DAO or wallet representation.
 export type Entity = {
-  type: EntityType
+  chainId: string
   address: string
   name: string | null
   imageUrl: string
-}
+} & (
+  | {
+      type: EntityType.Wallet
+    }
+  | {
+      type: EntityType.Dao
+      daoInfo: DaoInfo
+      // If loaded from a DAO's Polytone proxy, this will be set.
+      polytoneProxy?: {
+        chainId: string
+        address: string
+      }
+    }
+)
 
 export type EntityDisplayProps = {
   address: string
@@ -24,6 +38,7 @@ export type EntityDisplayProps = {
   noCopy?: boolean
   noUnderline?: boolean
   showFullAddress?: boolean
+  noLink?: boolean
 }
 
 export type StatefulEntityDisplayProps = Omit<

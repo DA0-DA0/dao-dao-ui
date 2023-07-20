@@ -12,9 +12,11 @@ export const HOST_CHAIN_SUBDOMAINS: HostChainSubdomain[] = [
   {
     id: ChainId.JunoTestnet,
     subdomain: 'juno-testnet',
+    hideFromSwitcher: true,
   },
   {
     id: ChainId.OsmosisTestnet,
     subdomain: 'osmosis-testnet',
+    hideFromSwitcher: true,
   },
 ]

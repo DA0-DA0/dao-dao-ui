@@ -2,7 +2,10 @@ import { cosmos } from 'interchain-rpc'
 import { useCallback } from 'react'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
-import { cosmosRpcClientForChainSelector } from '@dao-dao/state/recoil'
+import {
+  DaoCoreV2Selectors,
+  cosmosRpcClientForChainSelector,
+} from '@dao-dao/state/recoil'
 import { useChain } from '@dao-dao/stateless'
 import { CosmosMsgFor_Empty } from '@dao-dao/types'
 import {
@@ -12,8 +15,6 @@ import {
   isValidContractAddress,
   typesRegistry,
 } from '@dao-dao/utils'
-
-import { daoCorePolytoneProxiesSelector } from '../recoil'
 
 const { SignMode } = cosmos.tx.signing.v1beta1
 const { AuthInfo, Fee, Tx, TxBody, SimulateRequest } = cosmos.tx.v1beta1
@@ -35,9 +36,9 @@ export const useSimulateCosmosMsgs = (senderAddress: string) => {
   )
   const polytoneProxies = useRecoilValue(
     isValidContractAddress(senderAddress, bech32Prefix)
-      ? daoCorePolytoneProxiesSelector({
-          coreAddress: senderAddress,
+      ? DaoCoreV2Selectors.polytoneProxiesSelector({
           chainId,
+          contractAddress: senderAddress,
         })
       : constSelector(undefined)
   )

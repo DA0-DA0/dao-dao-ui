@@ -318,6 +318,7 @@ export const SelfRelayExecuteModal = ({
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
+      setStatus(RelayStatus.Uninitialized)
     }
   }
 
@@ -649,16 +650,14 @@ export const SelfRelayExecuteModal = ({
   const refundRelayer = async (chainId: string) => {
     const relayer = relayers?.find(({ chain }) => chain.chain_id === chainId)
     if (!relayer) {
-      toast.error(t('error.relayerNotSetUp'))
-      return
+      throw new Error(t('error.relayerNotSetUp'))
     }
 
     const { chain, client, relayerAddress, wallet } = relayer
 
     const feeDenom = chain.fees?.fee_tokens[0]?.denom
     if (!feeDenom) {
-      toast.error(t('error.feeTokenNotFound'))
-      return
+      throw new Error(t('error.feeTokenNotFound'))
     }
 
     try {
@@ -687,7 +686,10 @@ export const SelfRelayExecuteModal = ({
         ],
         undefined
       )
-      const fee = calculateFee(Math.round(gasUsed * 1.3), client.gasPrice)
+      const fee = calculateFee(
+        Math.round(gasUsed * CHAIN_GAS_MULTIPLIER),
+        client.gasPrice
+      )
       const remainingTokensAfterFee =
         Number(remainingTokens.amount) - Number(fee.amount[0].amount)
 

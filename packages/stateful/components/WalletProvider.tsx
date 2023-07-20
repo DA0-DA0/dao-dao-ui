@@ -29,6 +29,8 @@ import {
   CHAIN_REST_ENDPOINT,
   CHAIN_RPC_ENDPOINT,
   MAINNET,
+  OSMOSIS_MAINNET_REST,
+  OSMOSIS_MAINNET_RPC,
   SITE_URL,
   STARGAZE_REST_ENDPOINT,
   STARGAZE_RPC_ENDPOINT,
@@ -53,6 +55,14 @@ const stargazeMainnetChainInfo: ChainInfo | undefined = maybeGetKeplrChainInfo(
 // Fail build if chain info not found.
 if (!stargazeMainnetChainInfo) {
   throw new Error('Stargaze mainnet chain info not found')
+}
+
+const osmosisMainnetChainInfo: ChainInfo | undefined = maybeGetKeplrChainInfo(
+  ChainId.OsmosisMainnet
+)
+// Fail build if chain info not found.
+if (!osmosisMainnetChainInfo) {
+  throw new Error('Osmosis mainnet chain info not found')
 }
 
 export type WalletProviderProps = {
@@ -163,6 +173,10 @@ export const WalletProvider = ({
           [stargazeMainnetChainInfo.chainName]: {
             rpc: [STARGAZE_RPC_ENDPOINT],
             rest: [STARGAZE_REST_ENDPOINT],
+          },
+          [osmosisMainnetChainInfo.chainName]: {
+            rpc: [OSMOSIS_MAINNET_RPC],
+            rest: [OSMOSIS_MAINNET_REST],
           },
         },
       }}

@@ -69,6 +69,7 @@ Default.args = {
     loading: false,
     data: {
       type: EntityType.Wallet,
+      chainId: CHAIN_ID,
       address: 'walletPerson',
       name: 'wallet Person!',
       imageUrl: '/placeholders/1.svg',
@@ -100,6 +101,7 @@ Default.args = {
         loading: false,
         data: {
           type: EntityType.Wallet,
+          chainId: CHAIN_ID,
           address: 'walletPerson',
           name: 'wallet Person!',
           imageUrl: '/placeholders/1.svg',

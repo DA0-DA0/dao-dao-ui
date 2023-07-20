@@ -276,6 +276,7 @@ export const AddressInput = <
                       data: entity,
                     }}
                     noCopy
+                    noLink
                     noUnderline
                   />
                 </div>

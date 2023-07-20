@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { EntityDisplay } from '@dao-dao/stateful'
 import { ReactHookFormDecorator } from '@dao-dao/storybook/decorators'
 import { EntityType } from '@dao-dao/types'
+import { CHAIN_ID } from '@dao-dao/utils'
 
 import { AddressInput } from './AddressInput'
 
@@ -36,6 +37,7 @@ AutofillProfile.args = {
     entities: [
       {
         type: EntityType.Wallet,
+        chainId: CHAIN_ID,
         address: 'peepobaked',
         name: 'peepobaked',
         imageUrl:
@@ -43,6 +45,7 @@ AutofillProfile.args = {
       },
       {
         type: EntityType.Wallet,
+        chainId: CHAIN_ID,
         address: 'peepodab',
         name: 'peepodab',
         imageUrl:
@@ -50,12 +53,14 @@ AutofillProfile.args = {
       },
       {
         type: EntityType.Wallet,
+        chainId: CHAIN_ID,
         address: 'peeponothing',
         name: 'peeponothing',
         imageUrl: '/placeholder/1.svg',
       },
       {
         type: EntityType.Wallet,
+        chainId: CHAIN_ID,
         address: 'peepopraying',
         name: 'peepopraying',
         imageUrl:
@@ -63,6 +68,7 @@ AutofillProfile.args = {
       },
       {
         type: EntityType.Wallet,
+        chainId: CHAIN_ID,
         address: 'peepoturbo',
         name: 'peepoturbo',
         imageUrl:

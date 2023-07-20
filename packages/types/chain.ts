@@ -66,9 +66,10 @@ export enum ChainId {
 export type HostChainSubdomain = {
   id: ChainId
   subdomain: string
+  // Whether or not this chain shows up in the chain switcher.
+  hideFromSwitcher?: boolean
 }
 
-export type HostChain = {
+export type HostChain = Omit<HostChainSubdomain, 'id'> & {
   chain: Chain
-  subdomain: string
 }

@@ -52,31 +52,30 @@ const junoTestnet: CodeIdConfig = {
   DaoVotingNativeStaked: 1266,
 }
 
-// TODO: Fill in.
 const osmosisMainnet: CodeIdConfig = {
   // https://github.com/CosmWasm/cw-plus
-  Cw20Base: 999, // v0.16
-  Cw4Group: 999, // v0.16
+  Cw20Base: -1, // v0.16
+  Cw4Group: 123, // v0.16
   // https://github.com/CosmWasm/cw-nfts
-  Cw721Base: 999, // v0.16
+  Cw721Base: 124, // v0.16
 
   // ContractVersion.V210
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
-  Cw20Stake: 999,
-  CwAdminFactory: 999,
-  CwPayrollFactory: 999,
-  CwTokenSwap: 999,
-  CwVesting: 999,
-  DaoCore: 999,
-  DaoMigrator: 999,
-  DaoPreProposeMultiple: 999,
-  DaoPreProposeSingle: 999,
-  DaoProposalMultiple: 999,
-  DaoProposalSingle: 999,
-  DaoVotingCw20Staked: 999,
-  DaoVotingCw4: 999,
-  DaoVotingCw721Staked: 999,
-  DaoVotingNativeStaked: 999,
+  Cw20Stake: -1,
+  CwAdminFactory: 113,
+  CwPayrollFactory: 114,
+  CwTokenSwap: 115,
+  CwVesting: 116,
+  DaoCore: 117,
+  DaoMigrator: -1,
+  DaoPreProposeMultiple: 118,
+  DaoPreProposeSingle: 119,
+  DaoProposalMultiple: 120,
+  DaoProposalSingle: 121,
+  DaoVotingCw20Staked: -1,
+  DaoVotingCw4: 122,
+  DaoVotingCw721Staked: -1,
+  DaoVotingNativeStaked: -1,
 }
 
 const osmosisTestnet: CodeIdConfig = {

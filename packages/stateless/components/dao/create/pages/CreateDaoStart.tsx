@@ -4,9 +4,9 @@ import { useTranslation } from 'react-i18next'
 import { ChainId, CreateDaoContext } from '@dao-dao/types'
 import {
   CHAIN_ID,
-  DaoVotingCw4AdapterId,
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
+  MembershipBasedCreatorId,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -105,7 +105,7 @@ export const CreateDaoStart = ({
                 // Osmosis only supports multisigs right now.
                 (CHAIN_ID === ChainId.OsmosisMainnet ||
                   CHAIN_ID === ChainId.OsmosisTestnet) &&
-                id !== DaoVotingCw4AdapterId
+                id !== MembershipBasedCreatorId
               }
             />
           )

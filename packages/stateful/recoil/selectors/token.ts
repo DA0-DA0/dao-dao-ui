@@ -8,7 +8,7 @@ import {
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
   queryGenericIndexerSelector,
-  wyndUsdPriceSelector,
+  usdPriceSelector,
 } from '@dao-dao/state'
 import {
   GenericToken,
@@ -40,7 +40,12 @@ export const tokenCardLazyInfoSelector = selectorFamily<
       let stakingInfo: TokenCardLazyInfo['stakingInfo'] = undefined
       let daosGoverned: TokenCardLazyInfo['daosGoverned'] = undefined
 
-      const usdUnitPrice = get(wyndUsdPriceSelector(token.denomOrAddress))
+      const usdUnitPrice = get(
+        usdPriceSelector({
+          chainId,
+          denomOrAddress: token.denomOrAddress,
+        })
+      )
 
       // Staking info only exists for native token.
       if (
@@ -188,6 +193,7 @@ export const daosWithNativeVotingContractSelector = selectorFamily<
             args: {
               denom,
             },
+            required: true,
           })
         ) ?? []
       const votingModuleAddresses = get(

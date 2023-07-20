@@ -102,6 +102,7 @@ export enum CommonError {
   AuthorizationNotFound = 'Authorization does not exist.',
   SignatureVerificationFailedLedger = 'Signature verification failed. If you are using a Ledger, this is likely due to some unsupported symbols, such as "&", "<", or ">". Remove these symbols from the proposal title or description and try again.',
   IbcClientExpired = 'IBC client expired. Reach out to us for help.',
+  IndexerDisabled = 'Indexer disabled.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
@@ -171,6 +172,7 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
       'Expired: client is not active',
     ],
   ],
+  [CommonError.IndexerDisabled]: ['Indexer disabled.'],
 }
 const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
   CommonError,

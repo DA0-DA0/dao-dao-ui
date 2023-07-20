@@ -77,6 +77,7 @@ export const configSelector = selectorFamily<Config, QueryClientParams>({
       if (config) {
         return config
       }
+      // If indexer query fails, fallback to chain.
       const client = get(queryClient(queryClientParams))
       return await client.config()
     },
@@ -108,6 +109,8 @@ export const proposalSelector = selectorFamily<
             id: params[0].proposalId,
           },
           id,
+          // TODO(numia): Remove this once numia indexer provides timestamps.
+          required: true,
         })
       )
       if (proposalResponse) {

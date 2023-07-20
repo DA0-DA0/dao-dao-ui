@@ -25,7 +25,6 @@
   },
   "prettier": "@dao-dao/config/prettier",
   "dependencies": {
-    "chain-registry": "^1.15.0",
-    "interchain-rpc": "1.5.0"
+    "interchain-rpc": "^1.5.0"
   }
 }

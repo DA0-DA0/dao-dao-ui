@@ -24,7 +24,12 @@ import {
 import { SendAuthorization } from 'cosmjs-types/cosmos/bank/v1beta1/authz'
 import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
 import { VoteOption as CosmosGovVoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
+import { ParameterChangeProposal } from 'cosmjs-types/cosmos/params/v1beta1/params'
 import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
+import {
+  CancelSoftwareUpgradeProposal,
+  SoftwareUpgradeProposal,
+} from 'cosmjs-types/cosmos/upgrade/v1beta1/upgrade'
 import {
   AcceptedMessageKeysFilter,
   AcceptedMessagesFilter,
@@ -39,6 +44,7 @@ import {
 import { MsgInstantiateContract2 } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
 import { Any } from 'cosmjs-types/google/protobuf/any'
 import { Timestamp } from 'cosmjs-types/google/protobuf/timestamp'
+import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx'
 import { cosmos } from 'interchain-rpc'
 import { juno, osmosis } from 'juno-network'
 import Long from 'long'
@@ -47,6 +53,7 @@ import {
   CosmosMsgFor_Empty,
   DecodedStargateMsg,
   GovProposal,
+  GovProposalDecodedContent,
   GovProposalWithDecodedContent,
   StargateMsg,
   VoteOption,
@@ -488,6 +495,25 @@ export const typesRegistry = new Registry([
       '/osmosis.tokenfactory.v1beta1.MsgMint',
       osmosis.tokenfactory.v1beta1.MsgMint,
     ],
+
+    // Governance proposal types
+    ['/cosmos.gov.v1beta1.TextProposal', cosmos.gov.v1beta1.TextProposal],
+    [
+      '/cosmos.distribution.v1beta1.CommunityPoolSpendProposal',
+      cosmos.distribution.v1beta1.CommunityPoolSpendProposal,
+    ],
+    ['/cosmos.gov.v1beta1.ParameterChangeProposal', ParameterChangeProposal],
+    [
+      '/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal',
+      SoftwareUpgradeProposal,
+    ],
+    [
+      '/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal',
+      CancelSoftwareUpgradeProposal,
+    ],
+
+    // IBC
+    ['/ibc.applications.transfer.v1.MsgTransfer', MsgTransfer],
   ] as ReadonlyArray<[string, GeneratedType]>),
 ])
 
@@ -564,15 +590,27 @@ export const decodeStargateMessage = ({
 
 // Decode governance proposal content using a protobuf.
 export const decodeGovProposalContent = (
+  content: Any
+): GovProposalDecodedContent => {
+  try {
+    return decodeRawProtobufMsg(content)
+  } catch (err) {
+    // It seems as though all proposals can be decoded as a TextProposal, as
+    // they tend to start with `title` and `description` fields. If decoding as
+    // a specific type fails, try decoding as a TextProposal.
+    return {
+      typeUrl: '/cosmos.gov.v1beta1.TextProposal',
+      value: cosmos.gov.v1beta1.TextProposal.decode(content.value),
+    }
+  }
+}
+
+// Decode governance proposal content using a protobuf.
+export const decodeGovProposal = (
   govProposal: GovProposal
 ): GovProposalWithDecodedContent => ({
   ...govProposal,
-  // It seems as though all proposals can be decoded as a TextProposal, as they
-  // tend to start with `title` and `description` fields. This successfully
-  // decoded the first 80 proposals, so it's probably intentional.
-  decodedContent: cosmos.gov.v1beta1.TextProposal.decode(
-    govProposal.content.value
-  ),
+  decodedContent: decodeGovProposalContent(govProposal.content),
 })
 
 export const isDecodedStargateMsg = (msg: any): msg is DecodedStargateMsg =>
@@ -582,3 +620,30 @@ export const isDecodedStargateMsg = (msg: any): msg is DecodedStargateMsg =>
       value: {},
     },
   }) && typeof msg.stargate.value === 'object'
+
+// Decode any nested protobufs into JSON.
+export const decodeNestedProtobufs = (msg: any): any =>
+  typeof msg !== 'object' || msg === null
+    ? msg
+    : Array.isArray(msg)
+    ? msg.map(decodeNestedProtobufs)
+    : Object.entries(msg).reduce((acc, [key, value]) => {
+        let decodedValue = value
+        try {
+          if (
+            objectMatchesStructure(value, {
+              typeUrl: {},
+              value: {},
+            }) &&
+            typeof (value as Any).typeUrl === 'string' &&
+            (value as Any).value instanceof Uint8Array
+          ) {
+            decodedValue = decodeRawProtobufMsg(value as Any)
+          }
+        } catch {}
+
+        return {
+          ...acc,
+          [key]: decodeNestedProtobufs(decodedValue),
+        }
+      }, {} as Record<string, any>)

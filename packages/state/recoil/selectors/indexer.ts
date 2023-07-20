@@ -4,6 +4,7 @@ import { atom, selector, selectorFamily } from 'recoil'
 import { Expiration, IndexerFormulaType, WithChainId } from '@dao-dao/types'
 import {
   CHAIN_ID,
+  CommonError,
   FEATURED_DAOS_INDEX,
   WEB_SOCKET_PUSHER_APP_KEY,
   WEB_SOCKET_PUSHER_HOST,
@@ -13,6 +14,7 @@ import {
 import {
   DaoSearchResult,
   QueryIndexerOptions,
+  SearchDaosOptions,
   loadMeilisearchClient,
   queryIndexer,
   searchDaos,
@@ -34,7 +36,13 @@ export const queryIndexerSelector = selectorFamily<any, QueryIndexerParams>({
       return await queryIndexer(options)
     } catch (err) {
       // If the indexer fails, return null.
-      console.error(err)
+      if (
+        !(err instanceof Error) ||
+        err.message !== CommonError.IndexerDisabled
+      ) {
+        console.error(err)
+      }
+
       return null
     }
   },
@@ -114,17 +122,10 @@ export const queryWalletIndexerSelector = selectorFamily<
 
 export const searchDaosSelector = selectorFamily<
   DaoSearchResult[],
-  {
-    query: string
-    limit?: number
-    exclude?: string[]
-  }
+  SearchDaosOptions
 >({
   key: 'searchDaos',
-  get:
-    ({ query, limit, exclude }) =>
-    async () =>
-      await searchDaos(query, limit, exclude),
+  get: (options) => async () => await searchDaos(options),
 })
 
 export const openProposalsSelector = selectorFamily<
@@ -150,6 +151,7 @@ export const openProposalsSelector = selectorFamily<
           chainId,
           id,
           args: { address },
+          required: true,
         })
       )
       return openProposals ?? []
@@ -175,6 +177,7 @@ export const walletProposalStatsSelector = selectorFamily<
           formula: 'proposals/stats',
           chainId,
           id,
+          required: true,
         })
       )
       return stats ?? undefined
@@ -194,6 +197,7 @@ export const walletAdminOfDaosSelector = selectorFamily<
           chainId,
           walletAddress,
           formula: 'daos/adminOf',
+          required: true,
         })
       )
 
@@ -241,6 +245,7 @@ export const indexerFeaturedDaosSelector = selector({
         queryGenericIndexerSelector({
           chainId: CHAIN_ID,
           formula: 'priorityFeaturedDaos',
+          required: true,
         })
       ) || []
 

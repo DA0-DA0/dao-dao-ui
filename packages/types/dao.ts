@@ -36,6 +36,7 @@ export type DaoInfo = {
   imageUrl: string | null
   created: Date | undefined
   items: Record<string, string>
+  // Map chain ID to polytone proxy address.
   polytoneProxies: PolytoneProxies
 
   parentDao: DaoParentInfo | null

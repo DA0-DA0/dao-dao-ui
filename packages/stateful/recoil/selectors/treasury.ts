@@ -17,8 +17,6 @@ import {
   getTokenForChainIdAndDenom,
 } from '@dao-dao/utils'
 
-import { daoCorePolytoneProxiesSelector } from './dao'
-
 // lazyInfo must be loaded in the component separately, since it refreshes on a
 // timer and we don't want this whole selector to reevaluate and load when that
 // refreshes. Use `tokenCardLazyInfoSelector`.
@@ -36,9 +34,9 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
     ({ get }) => {
       const polytoneProxies = Object.entries(
         get(
-          daoCorePolytoneProxiesSelector({
+          DaoCoreV2Selectors.polytoneProxiesSelector({
             chainId: CHAIN_ID,
-            coreAddress,
+            contractAddress: coreAddress,
           })
         )
       )

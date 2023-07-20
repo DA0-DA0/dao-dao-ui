@@ -26,6 +26,8 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
+import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
 import { useActionOptions } from '../../../react'
 import {
   GovernanceVoteData,
@@ -112,6 +114,8 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
           ...(selectedProposal ? [selectedProposal] : []),
         ],
         existingVotesLoading,
+        PayEntityDisplay,
+        TokenAmountDisplay,
       }}
     />
   )

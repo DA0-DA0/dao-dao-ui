@@ -1,5 +1,10 @@
 import { IndexerFormulaType, WithChainId } from '@dao-dao/types'
-import { INDEXER_URL, fetchWithTimeout } from '@dao-dao/utils'
+import {
+  CommonError,
+  INDEXER_DISABLED,
+  INDEXER_URL,
+  fetchWithTimeout,
+} from '@dao-dao/utils'
 
 export type QueryIndexerOptions = WithChainId<
   {
@@ -10,6 +15,10 @@ export type QueryIndexerOptions = WithChainId<
       // Most formulas do not need the time, so make it optional.
       timeUnixMs?: number | string
     }
+    // If true, ignores indexer disabled setting. This should be used by
+    // features that require the indexer. Most indexer queries are not required
+    // as they can fallback to the RPC.
+    required?: boolean
   } & (
     | {
         type: `${IndexerFormulaType.Generic}`
@@ -29,7 +38,12 @@ export const queryIndexer = async <T = any>({
   args,
   block,
   chainId,
+  required = false,
 }: QueryIndexerOptions): Promise<T | undefined> => {
+  if (!required && INDEXER_DISABLED) {
+    throw new Error(CommonError.IndexerDisabled)
+  }
+
   // Filter out undefined args.
   if (args) {
     args = Object.entries(args).reduce((acc, [key, value]) => {

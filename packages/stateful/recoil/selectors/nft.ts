@@ -19,8 +19,6 @@ import {
   STARGAZE_URL_BASE,
 } from '@dao-dao/utils'
 
-import { daoCorePolytoneProxiesSelector } from './dao'
-
 export const walletStargazeNftCardInfosSelector = selectorFamily<
   NftCardInfo[],
   string
@@ -166,16 +164,17 @@ export const nftCardInfosForDaoSelector = selectorFamily<
   get:
     ({ coreAddress, governanceCollectionAddress }) =>
     async ({ get }) => {
-      const polytoneProxies = Object.entries(
-        get(
-          daoCorePolytoneProxiesSelector({
-            chainId: CHAIN_ID,
-            coreAddress,
-          })
-        )
-      )
+      // TODO: Store NFT collections for polytone proxies with another prefix.
+      // const polytoneProxies = Object.entries(
+      //   get(
+      //     daoCorePolytoneProxiesSelector({
+      //       chainId: CHAIN_ID,
+      //       coreAddress,
+      //     })
+      //   )
+      // )
 
-      return [[CHAIN_ID, coreAddress], ...polytoneProxies].flatMap(
+      return [[CHAIN_ID, coreAddress] /* ...polytoneProxies */].flatMap(
         ([chainId, coreAddress]) => {
           // Get all NFT collection addresses for the DAO.
           const nftCollectionAddresses = get(

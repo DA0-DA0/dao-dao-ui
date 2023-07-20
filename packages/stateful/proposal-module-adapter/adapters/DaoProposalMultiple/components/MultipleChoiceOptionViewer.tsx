@@ -1,6 +1,6 @@
 import { AnalyticsOutlined, Check } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useState } from 'react'
+import { ComponentType, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
@@ -14,6 +14,7 @@ import {
 } from '@dao-dao/stateless'
 import { SuspenseLoaderProps } from '@dao-dao/types'
 import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
+import { decodeNestedProtobufs } from '@dao-dao/utils'
 
 import { MultipleChoiceOptionData } from '../types'
 
@@ -54,6 +55,11 @@ export const MultipleChoiceOptionViewer = ({
       !noContent
   )
   const toggleExpanded = () => setExpanded((e) => !e)
+
+  const rawDecodedMessages = useMemo(
+    () => JSON.stringify(decodedMessages.map(decodeNestedProtobufs), null, 2),
+    [decodedMessages]
+  )
 
   return (
     <div
@@ -117,9 +123,7 @@ export const MultipleChoiceOptionViewer = ({
         {noMessages ? (
           <p className="caption-text italic">{t('info.optionInert')}</p>
         ) : (forceRaw === undefined && showRaw) || forceRaw ? (
-          <CosmosMessageDisplay
-            value={JSON.stringify(decodedMessages, undefined, 2)}
-          />
+          <CosmosMessageDisplay value={rawDecodedMessages} />
         ) : (
           <ActionsRenderer
             SuspenseLoader={SuspenseLoader}

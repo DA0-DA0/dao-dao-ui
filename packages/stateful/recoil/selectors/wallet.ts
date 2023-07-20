@@ -189,6 +189,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
             walletAddress,
             formula: 'tokens/list',
             id,
+            required: true,
           })
         ) ?? []
       const cw20s = get(

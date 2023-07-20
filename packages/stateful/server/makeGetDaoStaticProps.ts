@@ -39,6 +39,7 @@ import {
   getRpcForChainId,
   isValidWalletAddress,
   parseContractVersion,
+  polytoneNoteProxyMapToChainIdMap,
   processError,
   toAccessibleImageUrl,
   validateAddressOnCurrentChain,
@@ -159,6 +160,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         created,
         parentDao,
         items: _items,
+        polytoneProxies,
       } = await daoCoreDumpState(coreAddress, serverT)
       coreVersion = version
 
@@ -184,50 +186,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           [key]: value,
         }),
         {} as Record<string, string>
-      )
-
-      // Get DAO polytone proxies.
-      const polytoneProxies = (
-        await Promise.all(
-          Object.entries(POLYTONE_NOTES).map(async ([_chainId, { note }]) => {
-            let proxy = await queryIndexer<string>({
-              type: 'contract',
-              address: note,
-              formula: 'polytone/note/remoteAddress',
-              args: {
-                address: coreAddress,
-              },
-              chainId: CHAIN_ID,
-            })
-            if (!proxy) {
-              const polytoneNoteClient = new PolytoneNoteQueryClient(
-                // Will not reconnect if already connected. Safe to lazily
-                // evaluate here.
-                await cosmWasmClientRouter.connect(getRpcForChainId(CHAIN_ID)),
-                note
-              )
-              proxy =
-                (await polytoneNoteClient.remoteAddress({
-                  localAddress: coreAddress,
-                })) || undefined
-            }
-
-            return {
-              chainId: _chainId,
-              proxy,
-            }
-          })
-        )
-      ).reduce(
-        (acc, { chainId, proxy }) => ({
-          ...acc,
-          ...(proxy
-            ? {
-                [chainId]: proxy,
-              }
-            : {}),
-        }),
-        {} as PolytoneProxies
       )
 
       // Must be called after server side translations has been awaited, because
@@ -541,6 +499,7 @@ interface DaoCoreDumpState {
   created: Date | undefined
   parentDao: DaoParentInfo | null
   items: ListItemsResponse
+  polytoneProxies: PolytoneProxies
 }
 
 const daoCoreDumpState = async (
@@ -555,6 +514,8 @@ const daoCoreDumpState = async (
       address: coreAddress,
       formula: 'daoCore/dumpState',
       chainId: CHAIN_ID,
+      // TODO(numia): Remove this once provided.
+      required: true,
     })
 
     // Use data from indexer if present.
@@ -587,6 +548,12 @@ const daoCoreDumpState = async (
         [...(previousParentAddresses ?? []), coreAddress]
       )
 
+      // Convert to chainId -> proxy map.
+      const polytoneProxies = polytoneNoteProxyMapToChainIdMap(
+        CHAIN_ID,
+        indexerDumpedState.polytoneProxies || {}
+      )
+
       return {
         ...indexerDumpedState,
         version: coreVersion,
@@ -609,6 +576,7 @@ const daoCoreDumpState = async (
                 indexerDumpedState.adminInfo?.registeredSubDao ?? false,
             }
           : null,
+        polytoneProxies,
       }
     }
   } catch (error) {
@@ -631,16 +599,16 @@ const daoCoreDumpState = async (
     throw new LegacyDaoError()
   }
 
-  const coreVersion = parseContractVersion(dumpedState.version.version)
+  const [coreVersion, { info: votingModuleInfo }] = await Promise.all([
+    parseContractVersion(dumpedState.version.version),
+    (await cwClient.queryContractSmart(dumpedState.voting_module, {
+      info: {},
+    })) as InfoResponse,
+  ])
+
   if (!coreVersion) {
     throw new Error(serverT('error.failedParsingCoreVersion'))
   }
-
-  const votingModuleInfo = (
-    (await cwClient.queryContractSmart(dumpedState.voting_module, {
-      info: {},
-    })) as InfoResponse
-  ).info
 
   const proposalModules = await fetchProposalModulesWithInfoFromChain(
     CHAIN_ID,
@@ -702,6 +670,50 @@ const daoCoreDumpState = async (
     registeredSubDao = subdaoAddrs.includes(coreAddress)
   }
 
+  // Get DAO polytone proxies.
+  const polytoneProxies = (
+    await Promise.all(
+      Object.entries(POLYTONE_NOTES).map(async ([chainId, { note }]) => {
+        let proxy
+        try {
+          proxy = await queryIndexer<string>({
+            type: 'contract',
+            address: note,
+            formula: 'polytone/note/remoteAddress',
+            args: {
+              address: coreAddress,
+            },
+            chainId: CHAIN_ID,
+          })
+        } catch {
+          // Ignore error.
+        }
+        if (!proxy) {
+          const polytoneNoteClient = new PolytoneNoteQueryClient(cwClient, note)
+          proxy =
+            (await polytoneNoteClient.remoteAddress({
+              localAddress: coreAddress,
+            })) || undefined
+        }
+
+        return {
+          chainId,
+          proxy,
+        }
+      })
+    )
+  ).reduce(
+    (acc, { chainId, proxy }) => ({
+      ...acc,
+      ...(proxy
+        ? {
+            [chainId]: proxy,
+          }
+        : {}),
+    }),
+    {} as PolytoneProxies
+  )
+
   return {
     ...dumpedState,
     version: coreVersion,
@@ -720,6 +732,7 @@ const daoCoreDumpState = async (
           registeredSubDao,
         }
       : null,
+    polytoneProxies,
   }
 }
 
