@@ -184,7 +184,7 @@ export const ImageSelector = <
         className={clsx(
           'flex shrink-0 items-center justify-center rounded-full border border-border-secondary bg-background-secondary bg-cover bg-center transition',
           {
-            'hover:ring': !disabled,
+            'ring-border-interactive-active hover:ring': !disabled,
             'ring ring-border-interactive-error': error,
             'h-24 w-24': size === undefined,
           },
