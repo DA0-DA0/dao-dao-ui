@@ -5,7 +5,12 @@ import { ArrowBack } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
+import {
+  FormProvider,
+  SubmitErrorHandler,
+  SubmitHandler,
+  useForm,
+} from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
@@ -682,70 +687,72 @@ export const InnerCreateDaoForm = ({
         }
       />
 
-      {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
-      <form
-        className="relative z-[1] mx-auto flex max-w-4xl flex-col items-stretch"
-        onSubmit={formOnSubmit}
-      >
-        {/* Show image selector or DAO header depending on page. */}
-        {pageIndex === 0 ? (
-          <div className="flex flex-col items-center py-10">
-            <ImageSelector
-              Trans={Trans}
-              error={form.formState.errors.imageUrl}
-              fieldName="imageUrl"
-              register={form.register}
-              setValue={form.setValue}
-              watch={form.watch}
-            />
-
-            <p className="primary-text mt-6 text-text-tertiary">
-              {t('form.addAnImage')}
-            </p>
-          </div>
-        ) : (
-          <DaoHeader
-            LinkWrapper={LinkWrapper}
-            description={description}
-            established={t('info.today')}
-            imageUrl={imageUrl}
-            name={name}
-            parentDao={parentDao}
-          />
-        )}
-
-        {/* Divider line shown after first page. */}
-        {pageIndex > 0 && (
-          <div className="mb-7 h-[1px] w-full bg-border-base"></div>
-        )}
-
-        <div className="mb-14">
-          <Page {...createDaoContext} />
-        </div>
-
-        <div
-          className="flex flex-row items-center border-y border-border-secondary py-7"
-          // justify-end doesn't work in tailwind for some reason
-          style={{
-            justifyContent: showBack ? 'space-between' : 'flex-end',
-          }}
+      <FormProvider {...form}>
+        {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
+        <form
+          className="relative z-[1] mx-auto flex max-w-4xl flex-col items-stretch"
+          onSubmit={formOnSubmit}
         >
-          {showBack && (
-            <Button
-              disabled={creating}
-              type="submit"
-              value={CreateDaoSubmitValue.Back}
-              variant="secondary"
-            >
-              <ArrowBack className="!h-4 !w-4 text-icon-primary" />
-              <p>{t(CreateDaoSubmitValue.Back)}</p>
-            </Button>
+          {/* Show image selector or DAO header depending on page. */}
+          {pageIndex === 0 ? (
+            <div className="flex flex-col items-center py-10">
+              <ImageSelector
+                Trans={Trans}
+                error={form.formState.errors.imageUrl}
+                fieldName="imageUrl"
+                register={form.register}
+                setValue={form.setValue}
+                watch={form.watch}
+              />
+
+              <p className="primary-text mt-6 text-text-tertiary">
+                {t('form.addAnImage')}
+              </p>
+            </div>
+          ) : (
+            <DaoHeader
+              LinkWrapper={LinkWrapper}
+              description={description}
+              established={t('info.today')}
+              imageUrl={imageUrl}
+              name={name}
+              parentDao={parentDao}
+            />
           )}
-          <Button loading={creating} type="submit" value={submitValue}>
-            {submitLabel}
-          </Button>
-        </div>
-      </form>
+
+          {/* Divider line shown after first page. */}
+          {pageIndex > 0 && (
+            <div className="mb-7 h-[1px] w-full bg-border-base"></div>
+          )}
+
+          <div className="mb-14">
+            <Page {...createDaoContext} />
+          </div>
+
+          <div
+            className="flex flex-row items-center border-y border-border-secondary py-7"
+            // justify-end doesn't work in tailwind for some reason
+            style={{
+              justifyContent: showBack ? 'space-between' : 'flex-end',
+            }}
+          >
+            {showBack && (
+              <Button
+                disabled={creating}
+                type="submit"
+                value={CreateDaoSubmitValue.Back}
+                variant="secondary"
+              >
+                <ArrowBack className="!h-4 !w-4 text-icon-primary" />
+                <p>{t(CreateDaoSubmitValue.Back)}</p>
+              </Button>
+            )}
+            <Button loading={creating} type="submit" value={submitValue}>
+              {submitLabel}
+            </Button>
+          </div>
+        </form>
+      </FormProvider>
     </>
   )
 }

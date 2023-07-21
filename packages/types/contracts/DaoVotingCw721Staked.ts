@@ -4,13 +4,55 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { Addr, Admin, Binary, Duration, Expiration, Uint128 } from './common'
+import {
+  Addr,
+  Admin,
+  Binary,
+  Decimal,
+  Duration,
+  Empty,
+  Expiration,
+  Uint128,
+} from './common'
 
+export type NftContract =
+  | {
+      existing: {
+        address: string
+      }
+    }
+  | {
+      new: {
+        code_id: number
+        initial_nfts: NftMintMsg[]
+        label: string
+        name: string
+        symbol: string
+      }
+    }
+export interface NftMintMsg {
+  extension: Empty
+  owner: string
+  token_id: string
+  token_uri?: string | null
+}
 export interface InstantiateMsg {
-  nft_address: string
+  active_threshold?: ActiveThreshold | null
+  nft_contract: NftContract
   owner?: Admin | null
   unstaking_duration?: Duration | null
 }
+export type ActiveThreshold =
+  | {
+      absolute_count: {
+        count: Uint128
+      }
+    }
+  | {
+      percentage: {
+        percent: Decimal
+      }
+    }
 export type ExecuteMsg =
   | {
       receive_nft: Cw721ReceiveMsg
@@ -39,6 +81,11 @@ export type ExecuteMsg =
         addr: string
       }
     }
+  | {
+      update_active_threshold: {
+        new_threshold?: ActiveThreshold | null
+      }
+    }
 export interface Cw721ReceiveMsg {
   msg: Binary
   sender: string
@@ -64,6 +111,12 @@ export type QueryMsg =
       }
     }
   | {
+      active_threshold: {}
+    }
+  | {
+      is_active: {}
+    }
+  | {
       voting_power_at_height: {
         address: string
         height?: number | null
@@ -75,8 +128,14 @@ export type QueryMsg =
       }
     }
   | {
+      dao: {}
+    }
+  | {
       info: {}
     }
+export interface ActiveThresholdResponse {
+  active_threshold?: ActiveThreshold | null
+}
 export interface Config {
   nft_address: Addr
   owner?: Addr | null

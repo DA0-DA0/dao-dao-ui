@@ -20,6 +20,7 @@ import { LinkWrapper } from './LinkWrapper'
 
 export interface HorizontalNftCardProps extends NftCardInfo {
   className?: string
+  hideCollection?: boolean
 }
 
 export const HorizontalNftCard = forwardRef<
@@ -35,6 +36,7 @@ export const HorizontalNftCard = forwardRef<
     tokenId,
     chainId,
     className,
+    hideCollection,
   },
   ref
 ) {
@@ -169,17 +171,21 @@ export const HorizontalNftCard = forwardRef<
         <div className="flex grow flex-row items-center justify-between gap-8 py-4 px-6">
           {/* Collection */}
           <div className="flex flex-col items-stretch justify-between gap-1 overflow-hidden">
-            <CopyToClipboard
-              className="text-xs"
-              label={t('title.collection')}
-              textClassName="secondary-text"
-              tooltip={t('button.copyAddressToClipboard')}
-              value={collection.address}
-            />
+            {!hideCollection && (
+              <>
+                <CopyToClipboard
+                  className="text-xs"
+                  label={t('title.collection')}
+                  textClassName="secondary-text"
+                  tooltip={t('button.copyAddressToClipboard')}
+                  value={collection.address}
+                />
 
-            <p className="primary-text truncate font-normal">
-              {collection.name}
-            </p>
+                <p className="primary-text truncate font-normal">
+                  {collection.name}
+                </p>
+              </>
+            )}
           </div>
 
           {/* Source chain */}

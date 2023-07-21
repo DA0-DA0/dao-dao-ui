@@ -9,21 +9,52 @@ import {
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
 import instantiateSchema from './instantiate_schema.json'
-import { CreatorData } from './types'
+import { CreatorData, GovernanceTokenType } from './types'
 
 export const mutate: DaoCreatorMutate<CreatorData> = (
   msg,
   { name: daoName },
-  { existingGovernanceTokenDenomOrAddress, unstakingDuration },
+  {
+    tokenType,
+    newInfo,
+    existingGovernanceTokenDenomOrAddress,
+    unstakingDuration,
+  },
   t,
   codeIds
 ) => {
-  if (!existingGovernanceTokenDenomOrAddress) {
+  if (
+    tokenType === GovernanceTokenType.Existing &&
+    !existingGovernanceTokenDenomOrAddress
+  ) {
     throw new Error(t('error.missingGovernanceTokenAddress'))
   }
 
   const votingModuleAdapterInstantiateMsg: InstantiateMsg = {
-    nft_address: existingGovernanceTokenDenomOrAddress,
+    active_threshold: null,
+    nft_contract:
+      tokenType === GovernanceTokenType.New
+        ? {
+            new: {
+              code_id: codeIds.Cw721Base,
+              initial_nfts: newInfo.initialNfts.map(
+                ({ owner, token_uri }, index) => ({
+                  extension: {},
+                  owner,
+                  token_uri: token_uri || '',
+                  token_id: BigInt(index).toString(),
+                })
+              ),
+              label: newInfo.name,
+              name: newInfo.name,
+              symbol: newInfo.symbol,
+            },
+          }
+        : {
+            existing: {
+              address: existingGovernanceTokenDenomOrAddress,
+            },
+          },
     unstaking_duration: convertDurationWithUnitsToDuration(unstakingDuration),
   }
 

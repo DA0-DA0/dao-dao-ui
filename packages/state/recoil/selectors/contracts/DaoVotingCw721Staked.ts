@@ -1,7 +1,8 @@
 import { selectorFamily } from 'recoil'
 
-import { WithChainId } from '@dao-dao/types'
+import { Addr, WithChainId } from '@dao-dao/types'
 import {
+  ActiveThresholdResponse,
   ArrayOfString,
   Config,
   NftClaimsResponse,
@@ -105,6 +106,34 @@ export const stakedNftsSelector = selectorFamily<
       return await client.stakedNfts(...params)
     },
 })
+export const activeThresholdSelector = selectorFamily<
+  ActiveThresholdResponse,
+  QueryClientParams & {
+    params: Parameters<DaoVotingCw721StakedQueryClient['activeThreshold']>
+  }
+>({
+  key: 'daoVotingCw721StakedActiveThreshold',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.activeThreshold(...params)
+    },
+})
+export const isActiveSelector = selectorFamily<
+  Boolean,
+  QueryClientParams & {
+    params: Parameters<DaoVotingCw721StakedQueryClient['isActive']>
+  }
+>({
+  key: 'daoVotingCw721StakedIsActive',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.isActive(...params)
+    },
+})
 export const totalPowerAtHeightSelector = selectorFamily<
   TotalPowerAtHeightResponse,
   QueryClientParams & {
@@ -134,6 +163,20 @@ export const votingPowerAtHeightSelector = selectorFamily<
       const client = get(queryClient(queryClientParams))
       get(refreshWalletBalancesIdAtom(params[0].address))
       return await client.votingPowerAtHeight(...params)
+    },
+})
+export const daoSelector = selectorFamily<
+  Addr,
+  QueryClientParams & {
+    params: Parameters<DaoVotingCw721StakedQueryClient['dao']>
+  }
+>({
+  key: 'daoVotingCw721StakedDao',
+  get:
+    ({ params, ...queryClientParams }) =>
+    async ({ get }) => {
+      const client = get(queryClient(queryClientParams))
+      return await client.dao(...params)
     },
 })
 

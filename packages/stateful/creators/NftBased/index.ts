@@ -2,13 +2,13 @@ import { ImageEmoji } from '@dao-dao/stateless'
 import { DaoCreator, DurationUnits } from '@dao-dao/types'
 import { NftBasedCreatorId } from '@dao-dao/utils'
 
-import { GovernanceTokenType } from '../TokenBased/types'
 import { GovernanceConfigurationInput } from './GovernanceConfigurationInput'
 import { GovernanceConfigurationReview } from './GovernanceConfigurationReview'
 import { mutate } from './mutate'
+import { CreatorData, GovernanceTokenType } from './types'
 import { UnstakingDurationVotingConfigItem } from './UnstakingDurationVotingConfigItem'
 
-export const NftBasedCreator: DaoCreator = {
+export const NftBasedCreator: DaoCreator<CreatorData> = {
   id: NftBasedCreatorId,
   displayInfo: {
     Icon: ImageEmoji,
@@ -18,7 +18,13 @@ export const NftBasedCreator: DaoCreator = {
     membershipI18nKey: 'daoCreator.NftBased.membership',
   },
   defaultConfig: {
-    tokenType: GovernanceTokenType.Existing,
+    tokenType: GovernanceTokenType.New,
+    newInfo: {
+      initialNfts: [],
+      label: '',
+      name: '',
+      symbol: '',
+    },
     existingGovernanceTokenDenomOrAddress: '',
     unstakingDuration: {
       value: 2,
