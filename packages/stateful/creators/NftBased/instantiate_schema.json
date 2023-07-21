@@ -137,7 +137,6 @@
           "properties": {
             "height": {
               "type": "integer",
-              "format": "uint64",
               "minimum": 0.0
             }
           },
@@ -150,7 +149,6 @@
           "properties": {
             "time": {
               "type": "integer",
-              "format": "uint64",
               "minimum": 0.0
             }
           },
@@ -199,7 +197,6 @@
                 "code_id": {
                   "description": "Code ID for cw721 token contract.",
                   "type": "integer",
-                  "format": "uint64",
                   "minimum": 0.0
                 },
                 "initial_nfts": {

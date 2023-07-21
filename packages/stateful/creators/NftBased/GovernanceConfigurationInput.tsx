@@ -154,7 +154,7 @@ export const GovernanceConfigurationInput = ({
     address: member,
     // Backup if address is empty.
     label: t('form.membersAddress'),
-    votingPowerPercent: count,
+    votingPowerPercent: (count / data.newInfo.initialNfts.length) * 100,
     color:
       VOTING_POWER_DISTRIBUTION_COLORS[
         memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length

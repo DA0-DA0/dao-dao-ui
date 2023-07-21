@@ -13,7 +13,7 @@ import {
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
-import { NftCardInfo } from '@dao-dao/types'
+import { NewDao, NftCardInfo } from '@dao-dao/types'
 import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
 import { AddressInput } from '../../components/AddressInput'
@@ -43,10 +43,10 @@ export const NewInitialNftCard = ({
     setValue,
     register,
     formState: { errors },
-  } = useFormContext<CreatorData>()
+  } = useFormContext<NewDao<CreatorData>>()
 
-  const tokenUri = watch(`newInfo.initialNfts.${index}.token_uri`)
-  const collectionName = watch('newInfo.name')
+  const tokenUri = watch(`creator.data.newInfo.initialNfts.${index}.token_uri`)
+  const collectionName = watch('creator.data.newInfo.name')
   const tokenUriData = useCachedLoading(
     tokenUri ? nftUriDataSelector(tokenUri) : undefined,
     undefined
@@ -85,8 +85,11 @@ export const NewInitialNftCard = ({
                   <InputLabel name={t('form.recipient')} />
                   <AddressInput
                     containerClassName="grow"
-                    error={errors?.newInfo?.initialNfts?.[index]?.owner}
-                    fieldName={`newInfo.initialNfts.${index}.owner`}
+                    error={
+                      errors?.creator?.data?.newInfo?.initialNfts?.[index]
+                        ?.owner
+                    }
+                    fieldName={`creator.data.newInfo.initialNfts.${index}.owner`}
                     register={register}
                     validation={[
                       validateRequired,
@@ -94,7 +97,10 @@ export const NewInitialNftCard = ({
                     ]}
                   />
                   <InputErrorMessage
-                    error={errors?.newInfo?.initialNfts?.[index]?.owner}
+                    error={
+                      errors?.creator?.data?.newInfo?.initialNfts?.[index]
+                        ?.owner
+                    }
                   />
                 </div>
               </>
@@ -111,7 +117,10 @@ export const NewInitialNftCard = ({
               nameError={metadataForm.formState.errors?.name}
               nameFieldName="name"
               onUpload={(metadataUrl) =>
-                setValue(`newInfo.initialNfts.${index}.token_uri`, metadataUrl)
+                setValue(
+                  `creator.data.newInfo.initialNfts.${index}.token_uri`,
+                  metadataUrl
+                )
               }
               videoError={metadataForm.formState.errors?.video}
               videoFieldName="video"

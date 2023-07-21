@@ -1,11 +1,13 @@
 import { Loadable } from 'recoil'
 
+import { CachedLoadable } from '@dao-dao/types'
+
 import { InputLabel } from './inputs/InputLabel'
 import { Loader } from './logo/Loader'
 
 export interface FormattedJsonDisplayProps {
   title: string
-  jsonLoadable: Loadable<any>
+  jsonLoadable: Loadable<any> | CachedLoadable<any>
 }
 
 // Displays nothing if the loadable errored or loaded undefined data.

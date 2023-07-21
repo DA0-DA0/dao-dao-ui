@@ -31,7 +31,6 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   }
 
   const votingModuleAdapterInstantiateMsg: InstantiateMsg = {
-    active_threshold: null,
     nft_contract:
       tokenType === GovernanceTokenType.New
         ? {
@@ -42,7 +41,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
                   extension: {},
                   owner,
                   token_uri: token_uri || '',
-                  token_id: BigInt(index).toString(),
+                  token_id: BigInt(index + 1).toString(),
                 })
               ),
               label: newInfo.name,

@@ -41,7 +41,7 @@ export interface ChartDataEntry {
 }
 
 export interface TierDataEntry {
-  name: string
+  name?: string
   color?: string
   readableValue?: string
   members?: {
@@ -87,21 +87,23 @@ export const DaoCreateVotingPowerDistributionReviewCard = ({
             key={index}
             className={clsx('flex flex-col gap-1', !members?.length && '-mb-2')}
           >
-            <div className="mb-2 flex flex-row items-center justify-between gap-2">
-              <div className="flex flex-row items-center gap-3">
-                {color && (
-                  <div
-                    className="h-3 w-3 rounded-full"
-                    style={{ backgroundColor: color }}
-                  ></div>
-                )}
-                <p className="link-text text-text-secondary">{name}</p>
-              </div>
+            {!!name && (
+              <div className="mb-2 flex flex-row items-center justify-between gap-2">
+                <div className="flex flex-row items-center gap-3">
+                  {color && (
+                    <div
+                      className="h-3 w-3 rounded-full"
+                      style={{ backgroundColor: color }}
+                    ></div>
+                  )}
+                  <p className="link-text text-text-secondary">{name}</p>
+                </div>
 
-              <p className="caption-text text-right font-mono text-text-tertiary">
-                {readableValue}
-              </p>
-            </div>
+                <p className="caption-text text-right font-mono text-text-tertiary">
+                  {readableValue}
+                </p>
+              </div>
+            )}
 
             {members?.map(({ address, readableValue, color }, index) => (
               <div
