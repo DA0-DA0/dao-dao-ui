@@ -136,6 +136,7 @@ export const NativeStakingModal = ({
                 {
                   actionKey: ActionKey.Execute,
                   data: {
+                    chainId,
                     address: vestingContractAddress,
                     message: JSON.stringify(
                       {
@@ -170,6 +171,7 @@ export const NativeStakingModal = ({
                 {
                   actionKey: ActionKey.Execute,
                   data: {
+                    chainId,
                     address: vestingContractAddress,
                     message: JSON.stringify(
                       {
@@ -210,6 +212,7 @@ export const NativeStakingModal = ({
                 {
                   actionKey: ActionKey.Execute,
                   data: {
+                    chainId,
                     address: vestingContractAddress,
                     message: JSON.stringify(
                       {
