@@ -110,6 +110,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
               {
                 actionKey: ActionKey.Execute,
                 data: {
+                  chainId,
                   address: vestingContractAddress,
                   message: JSON.stringify(
                     {
@@ -160,6 +161,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
               actions: validators?.map((validator) => ({
                 actionKey: ActionKey.Execute,
                 data: {
+                  chainId,
                   address: vestingContractAddress,
                   message: JSON.stringify(
                     {
