@@ -28,6 +28,9 @@ const config = {
     '@cosmos-kit/web3auth',
   ],
   i18n,
+  experimental: {
+    esmExternals: 'loose',
+  },
   /*
     The reactStrictMode flag is set to false
     to allow for the proposal JSON editor to show.
