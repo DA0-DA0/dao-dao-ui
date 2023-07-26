@@ -1,4 +1,3 @@
-import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 import { ReactNode, useEffect } from 'react'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -18,7 +17,7 @@ import {
   SdaLayout as StatelessSdaLayout,
 } from '@dao-dao/stateless'
 
-import { useDaoTabs, useWalletInfo } from '../hooks'
+import { useDaoTabs, useWallet, useWalletInfo } from '../hooks'
 import { daoCreatedCardPropsAtom } from '../recoil/atoms/newDao'
 import { ConnectWallet } from './ConnectWallet'
 import { SdaDaoHome } from './dao'
@@ -37,7 +36,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
   const [proposalCreatedCardProps, setProposalCreatedCardProps] =
     useRecoilState(proposalCreatedCardPropsAtom)
 
-  const { connect, connected, status } = useWalletManager()
+  const { connect, isWalletConnected } = useWallet()
   const { walletAddress, walletProfileData } = useWalletInfo()
 
   //! Refresh every minute. Block height, USDC conversions, and wallet balances.
@@ -62,7 +61,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
     <StatelessSdaLayout
       connect={connect}
       connectWalletButton={<ConnectWallet variant="secondary" />}
-      connected={connected}
+      connected={isWalletConnected}
       navigationProps={{
         tabs,
         LinkWrapper,
@@ -74,11 +73,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
       rightSidebarProps={{
         wallet: <SidebarWallet />,
       }}
-      walletProfileData={
-        status === WalletConnectionStatus.Connected
-          ? walletProfileData
-          : undefined
-      }
+      walletProfileData={isWalletConnected ? walletProfileData : undefined}
     >
       <SuspenseLoader fallback={<PageLoader />}>{children}</SuspenseLoader>
 
@@ -88,9 +83,6 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
         onClose={() => setBetaWarningAccepted(true)}
         visible={mountedInBrowser && !betaWarningAccepted}
       />
-
-      {/* Wallet UI */}
-      <WalletModals />
 
       {daoCreatedCardProps && (
         <DaoCreatedModal
@@ -121,6 +113,8 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
           }}
         />
       )}
+
+      <WalletModals />
     </StatelessSdaLayout>
   )
 }

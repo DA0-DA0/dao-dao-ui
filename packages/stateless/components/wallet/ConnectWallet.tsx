@@ -1,4 +1,5 @@
 import { Sensors } from '@mui/icons-material'
+import { forwardRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ButtonProps } from '@dao-dao/types'
@@ -11,13 +12,15 @@ export interface ConnectWalletProps
   className?: string
 }
 
-export const ConnectWallet = ({ onConnect, ...props }: ConnectWalletProps) => {
-  const { t } = useTranslation()
+export const ConnectWallet = forwardRef<HTMLButtonElement, ConnectWalletProps>(
+  function ConnectWallet({ onConnect, ...props }, ref) {
+    const { t } = useTranslation()
 
-  return (
-    <Button {...props} onClick={onConnect} size="lg">
-      <Sensors className="!h-6 !w-6" />
-      <p>{t('button.logIn')}</p>
-    </Button>
-  )
-}
+    return (
+      <Button {...props} onClick={onConnect} ref={ref} size="lg">
+        <Sensors className="!h-6 !w-6" />
+        <p>{t('button.logIn')}</p>
+      </Button>
+    )
+  }
+)

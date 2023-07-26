@@ -1,10 +1,8 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
   Loader,
-  useChain,
   useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
@@ -15,6 +13,7 @@ import {
   IActionsContext,
 } from '@dao-dao/types'
 
+import { useWallet } from '../../hooks/useWallet'
 import { matchAndLoadCommon } from '../../proposal-module-adapter'
 import { useVotingModuleAdapter } from '../../voting-module-adapter'
 import { useWidgets } from '../../widgets'
@@ -154,8 +153,7 @@ export const WalletActionsProvider = ({
   address: overrideAddress,
   children,
 }: WalletActionsProviderProps) => {
-  const { chain_id: chainId } = useChain()
-  const { address: connectedAddress } = useWallet(chainId)
+  const { address: connectedAddress } = useWallet()
 
   const address = overrideAddress || connectedAddress
 

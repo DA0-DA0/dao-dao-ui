@@ -1,32 +1,31 @@
-import { useWallet } from '@noahsaso/cosmodal'
-import React, { useMemo } from 'react'
-import { waitForAll } from 'recoil'
+import { useMemo } from 'react'
+import { useSetRecoilState, waitForAll } from 'recoil'
 
-import {
-  ProfileDisconnectedCard,
-  SuspenseLoader,
-  useMembership,
-  useWalletInfo,
-} from '@dao-dao/stateful'
+import { updateProfileNftVisibleAtom } from '@dao-dao/state/recoil'
 import { matchAndLoadCommon } from '@dao-dao/stateful/proposal-module-adapter'
 import { useVotingModuleAdapter } from '@dao-dao/stateful/voting-module-adapter'
 import {
   Loader,
   ProfileMemberCard,
   ProfileNotMemberCard,
-  useAppContext,
   useCachedLoadable,
   useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import { CheckedDepositInfo } from '@dao-dao/types/contracts/common'
 
+import { useMembership, useWallet, useWalletInfo } from '../../hooks'
+import { SuspenseLoader } from '../SuspenseLoader'
+import { ProfileDisconnectedCard } from './ProfileDisconnectedCard'
+
 // This is the card shown when viewing a DAO's home page.
 export const ProfileDaoHomeCard = () => {
   const chain = useChain()
-  const { connected } = useWallet(chain.chain_id)
-  const { walletProfileData, updateProfileName } = useWalletInfo(chain.chain_id)
-  const { updateProfileNft } = useAppContext()
+  const { isWalletConnected } = useWallet()
+  const { walletProfileData, updateProfileName } = useWalletInfo()
+  const setUpdateProfileNftVisible = useSetRecoilState(
+    updateProfileNftVisibleAtom
+  )
 
   const daoInfo = useDaoInfoContext()
   const {
@@ -70,7 +69,7 @@ export const ProfileDaoHomeCard = () => {
           0
         )
 
-  return connected ? (
+  return isWalletConnected ? (
     // If membership not yet loaded, show loading skeleton.
     isMember === undefined ? (
       <ProfileDisconnectedCard className="animate-pulse" />
@@ -88,7 +87,7 @@ export const ProfileDaoHomeCard = () => {
             />
           </SuspenseLoader>
         }
-        showUpdateProfileNft={updateProfileNft.toggle}
+        showUpdateProfileNft={() => setUpdateProfileNftVisible(true)}
         updateProfileName={updateProfileName}
         walletProfileData={walletProfileData}
       />
@@ -106,7 +105,7 @@ export const ProfileDaoHomeCard = () => {
             />
           </SuspenseLoader>
         }
-        showUpdateProfileNft={updateProfileNft.toggle}
+        showUpdateProfileNft={() => setUpdateProfileNftVisible(true)}
         updateProfileName={updateProfileName}
         walletProfileData={walletProfileData}
       />

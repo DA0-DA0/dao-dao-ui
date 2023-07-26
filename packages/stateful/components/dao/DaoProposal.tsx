@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { ComponentProps, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -24,7 +23,7 @@ import {
   SelfRelayExecuteModalProps,
 } from '@dao-dao/types'
 
-import { useOnDaoWebSocketMessage } from '../../hooks'
+import { useOnDaoWebSocketMessage, useWallet } from '../../hooks'
 import { walletProfileDataSelector } from '../../recoil'
 import { EntityDisplay } from '../EntityDisplay'
 import { IconButtonLink } from '../IconButtonLink'
@@ -42,7 +41,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const daoInfo = useDaoInfoContext()
   const actionsForMatching = useActionsForMatching({ isCreating: false })
   const { getDaoProposalPath } = useDaoNavHelpers()
-  const { connected, address } = useWallet(daoInfo.chainId)
+  const { isWalletConnected, address } = useWallet()
   const {
     id,
     adapter: {
@@ -244,7 +243,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         }
         refreshing={refreshing}
         rightSidebarContent={
-          connected ? (
+          isWalletConnected ? (
             <SuspenseLoader
               fallback={<ProfileDisconnectedCard className="animate-pulse" />}
             >
@@ -267,6 +266,13 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         }}
         uniqueId=""
         {...selfRelayExecuteProps}
+        key={
+          // Re-render the modal when the unique ID changes, because the chain
+          // IDs may have changed. See comment above `useWallet` hook in the
+          // component for more information.
+          // TODO(cosmos-kit-dynamic-conn-fn): Remove this when cosmos-kit supports dynamic chain connection fn.
+          selfRelayExecuteProps?.uniqueId ?? ''
+        }
         onClose={() => setSelfRelayExecuteProps(undefined)}
         onSuccess={() =>
           onProposalUpdateFallback(

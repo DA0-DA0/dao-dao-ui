@@ -1,5 +1,4 @@
 import { toHex } from '@cosmjs/encoding'
-import { useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useState } from 'react'
@@ -9,17 +8,10 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 
 import { meTransactionAtom, refreshSavedTxsAtom } from '@dao-dao/state'
-import {
-  SuspenseLoader,
-  savedTxsSelector,
-  temporarySavedTxsAtom,
-  useCfWorkerAuthPostRequest,
-} from '@dao-dao/stateful'
 import { useLoadedActionsAndCategories } from '@dao-dao/stateful/actions'
 import {
   MeTransactionBuilder as StatelessMeTransactionBuilder,
   useCachedLoading,
-  useChain,
 } from '@dao-dao/stateless'
 import {
   MeTransactionBuilderProps,
@@ -34,15 +26,23 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { useCfWorkerAuthPostRequest, useWallet } from '../../hooks'
+import {
+  savedTxsSelector,
+  temporarySavedTxsAtom,
+} from '../../recoil/selectors/wallet'
+import { SuspenseLoader } from '../SuspenseLoader'
+
 export const MeTransactionBuilder = () => {
   const { t } = useTranslation()
 
-  const { chain_id } = useChain()
   const {
     address: walletAddress = '',
-    publicKey,
-    signingCosmWasmClient,
-  } = useWallet(chain_id)
+    hexPublicKey,
+    getSigningCosmWasmClient,
+  } = useWallet({
+    loadAccount: true,
+  })
 
   const { loadedActions, categories } = useLoadedActionsAndCategories()
 
@@ -91,10 +91,12 @@ export const MeTransactionBuilder = () => {
   const [txHash, setTxHash] = useState('')
   const execute: MeTransactionBuilderProps['execute'] = useCallback(
     async (data) => {
-      if (!signingCosmWasmClient || !walletAddress) {
+      if (!walletAddress) {
         setError(t('error.logInToContinue'))
         return
       }
+
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
 
       setLoading(true)
       setError('')
@@ -120,7 +122,7 @@ export const MeTransactionBuilder = () => {
         setLoading(false)
       }
     },
-    [signingCosmWasmClient, t, walletAddress]
+    [getSigningCosmWasmClient, t, walletAddress]
   )
 
   const { ready: txSavesReady, postRequest: postTxSavesRequest } =
@@ -133,10 +135,10 @@ export const MeTransactionBuilder = () => {
   )
 
   const setTemporarySaves = useSetRecoilState(
-    temporarySavedTxsAtom(publicKey?.hex ?? '')
+    temporarySavedTxsAtom(hexPublicKey.loading ? '' : hexPublicKey.data)
   )
   const savesLoading = useCachedLoading(
-    publicKey?.hex ? savedTxsSelector(publicKey.hex) : undefined,
+    !hexPublicKey.loading ? savedTxsSelector(hexPublicKey.data) : undefined,
     []
   )
   const [saving, setSaving] = useState(false)

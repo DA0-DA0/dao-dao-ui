@@ -1,47 +1,25 @@
-import {
-  WalletConnectionStatus,
-  useWallet,
-  useWalletManager,
-} from '@noahsaso/cosmodal'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
-
-import {
-  walletChainIdAtom,
-  walletModalVisibleAtom,
-} from '@dao-dao/state/recoil'
 import { SidebarWallet as OriginalSidebarWallet } from '@dao-dao/stateless'
 
+import { useWallet } from '../hooks'
 import { SuspenseLoader } from './SuspenseLoader'
 
 export const SidebarWallet = () => {
-  const { connect } = useWalletManager()
-
-  const walletChainId = useRecoilValue(walletChainIdAtom)
-  const { connected, status, address, name, wallet } = useWallet(walletChainId)
-
-  const setWalletModalVisible = useSetRecoilState(walletModalVisibleAtom)
-  const openWalletModal = () => setWalletModalVisible(true)
+  const { openView, isWalletConnected, address, username, wallet } = useWallet()
 
   return (
     <SuspenseLoader
       fallback={<OriginalSidebarWallet connected={false} loading />}
-      forceFallback={
-        // Prevent flickering to connect wallet button when no longer suspended
-        // but cosmodal hasn't started its first autoconnection attempt yet.
-        status === WalletConnectionStatus.Initializing ||
-        status === WalletConnectionStatus.AttemptingAutoConnection
-      }
     >
-      {connected && address && name && wallet ? (
+      {isWalletConnected && address && wallet ? (
         <OriginalSidebarWallet
           connected
-          openWalletModal={openWalletModal}
+          openWalletModal={openView}
           walletAddress={address}
-          walletName={name}
-          walletProviderImageUrl={wallet.imageUrl}
+          walletName={username || wallet?.prettyName}
+          walletProviderImageUrl={wallet.logo}
         />
       ) : (
-        <OriginalSidebarWallet connected={false} onConnect={connect} />
+        <OriginalSidebarWallet connected={false} onConnect={openView} />
       )}
     </SuspenseLoader>
   )

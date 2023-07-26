@@ -1,5 +1,4 @@
 import { Add } from '@mui/icons-material'
-import { useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -49,6 +48,7 @@ import {
 import { TokenBasedCreator } from '.'
 import { EntityDisplay } from '../../components/EntityDisplay'
 import { Trans } from '../../components/Trans'
+import { useWallet } from '../../hooks/useWallet'
 import { TierCard } from './TierCard'
 import { CreatorData, GovernanceTokenType } from './types'
 
@@ -69,7 +69,7 @@ export const GovernanceConfigurationInput = ({
 }: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
   const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
-  const { address: walletAddress } = useWallet(chainId)
+  const { address: walletAddress } = useWallet()
 
   const {
     fields: tierFields,

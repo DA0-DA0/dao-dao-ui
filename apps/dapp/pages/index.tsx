@@ -1,7 +1,6 @@
 // GNU AFFERO GENERAL PUBLIC LICENSE Version 3. Copyright (C) 2022 DAO DAO Contributors.
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
-import { useWallet } from '@noahsaso/cosmodal'
 import { GetStaticProps, NextPage } from 'next'
 import { useSetRecoilState } from 'recoil'
 
@@ -13,11 +12,12 @@ import {
   ProfileHomeCard,
   useLoadingFeaturedDaoCardInfos,
   useLoadingFollowingDaoCardInfos,
+  useWallet,
 } from '@dao-dao/stateful'
 import { Home } from '@dao-dao/stateless'
 
 const HomePage: NextPage = () => {
-  const { connected } = useWallet()
+  const { isWalletConnected } = useWallet()
 
   const setCommandModalVisible = useSetRecoilState(commandModalVisibleAtom)
 
@@ -26,7 +26,7 @@ const HomePage: NextPage = () => {
 
   return (
     <Home
-      connected={connected}
+      connected={isWalletConnected}
       featuredDaosProps={{
         Component: DaoCard,
         items: featuredDaosLoading,
@@ -37,7 +37,7 @@ const HomePage: NextPage = () => {
         followingDaos: followingDaosLoading,
       }}
       rightSidebarContent={
-        connected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
+        isWalletConnected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
       }
     />
   )

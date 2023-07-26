@@ -30,7 +30,6 @@ import {
   TextAreaInput,
   TextInput,
   Tooltip,
-  useChain,
 } from '@dao-dao/stateless'
 import {
   ActionCategoryWithLabel,
@@ -48,7 +47,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useWalletInfo } from '../../../../../../hooks'
+import { useWallet, useWalletInfo } from '../../../../../../hooks'
 import { NewProposalData, NewProposalForm } from '../../../types'
 
 enum ProposeSubmitValue {
@@ -120,8 +119,8 @@ export const NewProposal = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const { chain_id: chainId } = useChain()
-  const { walletAddress = '', walletProfileData } = useWalletInfo(chainId)
+  const { isWalletConnecting } = useWallet()
+  const { walletAddress = '', walletProfileData } = useWalletInfo()
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -321,11 +320,14 @@ export const NewProposal = ({
           </div>
         </div>
 
-        {!anyoneCanPropose && !isMember.loading && !isMember.data && (
-          <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
-            {t('error.mustBeMemberToCreateProposal')}
-          </p>
-        )}
+        {!anyoneCanPropose &&
+          !isMember.loading &&
+          !isMember.data &&
+          !isWalletConnecting && (
+            <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
+              {t('error.mustBeMemberToCreateProposal')}
+            </p>
+          )}
 
         {simulationBypassExpiration && (
           <p className="secondary-text max-w-prose self-end text-right text-text-interactive-warning-body">

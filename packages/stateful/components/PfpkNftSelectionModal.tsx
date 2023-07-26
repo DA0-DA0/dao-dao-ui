@@ -1,10 +1,11 @@
 import { Image } from '@mui/icons-material'
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import { useRecoilState } from 'recoil'
 
+import { updateProfileNftVisibleAtom } from '@dao-dao/state/recoil'
 import {
   ImageSelectorModal,
   ModalLoader,
@@ -13,7 +14,6 @@ import {
   NoContent,
   ProfileImage,
   Tooltip,
-  useAppContext,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { NftCardInfo } from '@dao-dao/types'
@@ -28,7 +28,7 @@ import {
   uploadNft,
 } from '@dao-dao/utils'
 
-import { useInstantiateAndExecute, useWalletInfo } from '../hooks'
+import { useInstantiateAndExecute, useWallet, useWalletInfo } from '../hooks'
 import { allWalletNftsSelector } from '../recoil'
 import { SuspenseLoader } from './SuspenseLoader'
 import { Trans } from './Trans'
@@ -45,9 +45,9 @@ export const InnerPfpkNftSelectionModal = ({
   const { t } = useTranslation()
   const {
     address: walletAddress,
-    status: walletStatus,
-    error: walletError,
-    chainInfo,
+    isWalletError,
+    message: walletErrorMessage,
+    chain,
   } = useWallet()
 
   const getIdForNft = (nft: NftCardInfo) =>
@@ -140,10 +140,8 @@ export const InnerPfpkNftSelectionModal = ({
   const [uploadingImage, setUploadingImage] = useState(false)
   const { ready: instantiateAndExecuteReady, instantiateAndExecute } =
     useInstantiateAndExecute(
-      chainInfo?.chainId,
-      (chainInfo &&
-        getSupportedChainConfig(chainInfo.chainId)?.codeIds.Cw721Base) ||
-        -1
+      chain.chain_id,
+      getSupportedChainConfig(chain.chain_id)?.codeIds.Cw721Base || -1
     )
   const uploadImage = useCallback(async () => {
     if (!image) {
@@ -220,9 +218,8 @@ export const InnerPfpkNftSelectionModal = ({
           subtitle: t('info.chooseProfilePictureSubtitle'),
         }}
         nfts={
-          walletStatus === WalletConnectionStatus.ReadyForConnection &&
-          walletError
-            ? { loading: false, errored: true, error: walletError }
+          isWalletError && walletErrorMessage
+            ? { loading: false, errored: true, error: walletErrorMessage }
             : nfts
         }
         noneDisplay={
@@ -295,15 +292,16 @@ export const InnerPfpkNftSelectionModal = ({
 }
 
 export const PfpkNftSelectionModal = () => {
-  const { updateProfileNft } = useAppContext()
+  const [updateProfileNftVisible, setUpdateProfileNftVisible] = useRecoilState(
+    updateProfileNftVisibleAtom
+  )
+  const onClose = () => setUpdateProfileNftVisible(false)
 
   return (
-    <SuspenseLoader
-      fallback={<ModalLoader onClose={updateProfileNft.toggle} />}
-    >
+    <SuspenseLoader fallback={<ModalLoader onClose={onClose} />}>
       <InnerPfpkNftSelectionModal
-        onClose={updateProfileNft.toggle}
-        visible={updateProfileNft.visible}
+        onClose={onClose}
+        visible={updateProfileNftVisible}
       />
     </SuspenseLoader>
   )

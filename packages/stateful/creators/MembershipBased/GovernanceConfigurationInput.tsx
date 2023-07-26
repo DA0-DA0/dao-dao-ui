@@ -1,5 +1,4 @@
 import { Add } from '@mui/icons-material'
-import { useWallet } from '@noahsaso/cosmodal'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useFieldArray } from 'react-hook-form'
@@ -11,7 +10,6 @@ import {
   VOTING_POWER_DISTRIBUTION_COLORS,
   VotingPowerDistribution,
   VotingPowerDistributionEntry,
-  useChain,
 } from '@dao-dao/stateless'
 import {
   CreateDaoCustomValidator,
@@ -20,6 +18,7 @@ import {
 
 import { MembershipBasedCreator } from '.'
 import { EntityDisplay } from '../../components/EntityDisplay'
+import { useWallet } from '../../hooks/useWallet'
 import { TierCard } from './TierCard'
 import { CreatorData } from './types'
 
@@ -39,8 +38,7 @@ export const GovernanceConfigurationInput = ({
   },
 }: DaoCreationGovernanceConfigInputProps<CreatorData>) => {
   const { t } = useTranslation()
-  const { chain_id } = useChain()
-  const { address: walletAddress, connected } = useWallet(chain_id)
+  const { address: walletAddress, isWalletConnected } = useWallet()
 
   const {
     fields: tierFields,
@@ -64,7 +62,7 @@ export const GovernanceConfigurationInput = ({
   // Fill in default first tier info if tiers not yet edited.
   const [loadedPage, setLoadedPage] = useState(false)
   useEffect(() => {
-    if (loadedPage || !connected) {
+    if (loadedPage || !isWalletConnected) {
       return
     }
     setLoadedPage(true)
@@ -77,7 +75,7 @@ export const GovernanceConfigurationInput = ({
     if (walletAddress) {
       setValue('creator.data.tiers.0.members.0.address', walletAddress)
     }
-  }, [chain_id, connected, data.tiers, loadedPage, setValue, t, walletAddress])
+  }, [isWalletConnected, data.tiers, loadedPage, setValue, t, walletAddress])
 
   //! Validate tiers.
   // Custom validation function for this page. Called upon attempt to navigate

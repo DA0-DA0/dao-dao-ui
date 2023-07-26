@@ -25,13 +25,10 @@ const config = {
     '@dao-dao/stateful',
     '@dao-dao/i18n',
     '@dao-dao/types',
-    '@noahsaso/cosmodal',
+    '@cosmos-kit/web3auth',
   ],
-  webpack: (config) => {
-    // @noahsaso/cosmodal uses @toruslabs/eccrypto, which uses `stream`. This
-    // needs to be polyfilled.
-    config.resolve.alias['stream'] = 'stream-browserify'
-    return config
+  experimental: {
+    esmExternals: 'loose',
   },
   i18n,
   /*
