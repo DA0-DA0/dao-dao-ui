@@ -302,7 +302,10 @@ export const SelfRelayExecuteModal = ({
             feeToken,
             wallet: {
               address: connectedWallet.address,
-              signingStargateClient,
+              // cosmos-kit has an older version of the package. This is a
+              // workaround.
+              signingStargateClient:
+                signingStargateClient as unknown as SigningStargateClient,
             },
             relayerAddress,
             client,

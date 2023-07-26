@@ -118,11 +118,12 @@ export const useInstantiateAndExecute = (
         ),
       ]
 
-      const response = await signingCosmWasmClient.signAndBroadcast(
+      const response = (await signingCosmWasmClient.signAndBroadcast(
         address,
         messages.map((msg) => cwMsgToEncodeObject(msg, address)),
         CHAIN_GAS_MULTIPLIER
-      )
+        // cosmos-kit has an older version of the package. This is a workaround.
+      )) as DeliverTxResponse
 
       return {
         contractAddress,

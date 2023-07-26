@@ -1,3 +1,4 @@
+import { Chain } from '@chain-registry/types'
 import { GasPrice } from '@cosmjs/stargate'
 import { Endpoints, SignerOptions } from '@cosmos-kit/core'
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
@@ -94,9 +95,7 @@ export const WalletProvider = ({
     [setWeb3AuthPrompt]
   )
 
-  const getSignerOptions:
-    | SignerOptions['signingStargate']
-    | SignerOptions['signingCosmwasm'] = ({ chain_id, fees }) => {
+  const getSignerOptions = ({ chain_id, fees }: Chain) => {
     let gasPrice
     try {
       const nativeToken = getNativeTokenForChainId(chain_id)
@@ -116,14 +115,18 @@ export const WalletProvider = ({
     } catch {}
 
     return {
-      gasPrice,
-      registry: typesRegistry,
+      // cosmos-kit has an older version of the package. This is a workaround.
+      gasPrice: gasPrice as any,
+      // cosmos-kit has an older version of the package. This is a workaround.
+      registry: typesRegistry as any,
     }
   }
 
   const signerOptions: SignerOptions = {
-    signingStargate: getSignerOptions,
-    signingCosmwasm: getSignerOptions,
+    // cosmos-kit has an older version of the package. This is a workaround.
+    signingStargate: getSignerOptions as SignerOptions['signingStargate'],
+    // cosmos-kit has an older version of the package. This is a workaround.
+    signingCosmwasm: getSignerOptions as SignerOptions['signingCosmwasm'],
   }
 
   return (
