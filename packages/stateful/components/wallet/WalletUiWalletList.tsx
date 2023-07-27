@@ -35,41 +35,37 @@ export const WalletUiWalletList = ({
 
   return (
     <div className="flex flex-col gap-2">
-      {otherWallets.map((wallet) => (
-        <Button
-          key={wallet.walletName}
-          className={clsx('!p-4', isConnectingTo(wallet) && 'animate-pulse')}
-          contentContainerClassName="!gap-3 text-left"
-          disabled={
-            // Disable if connecting to another wallet.
-            isWalletConnecting && !isConnectingTo(wallet)
-          }
-          onClick={() => connect(wallet)}
-          variant="secondary"
-        >
-          {!!wallet.walletInfo.logo && (
-            <div
-              className="h-12 w-12 bg-contain bg-center bg-no-repeat"
-              style={{
-                backgroundImage: `url(${wallet.walletInfo.logo})`,
-              }}
-            />
-          )}
+      <div className="grid grid-cols-2 gap-2">
+        {otherWallets.map((wallet) => (
+          <Button
+            key={wallet.walletName}
+            className={clsx(
+              'grow !p-4',
+              isConnectingTo(wallet) && 'animate-pulse'
+            )}
+            contentContainerClassName="flex-col !gap-3 justify-between items-center"
+            disabled={
+              // Disable if connecting to another wallet.
+              isWalletConnecting && !isConnectingTo(wallet)
+            }
+            onClick={() => connect(wallet)}
+            variant="secondary"
+          >
+            {!!wallet.walletInfo.logo && (
+              <div
+                className="h-12 w-12 bg-contain bg-center bg-no-repeat"
+                style={{
+                  backgroundImage: `url(${wallet.walletInfo.logo})`,
+                }}
+              />
+            )}
 
-          <div className="flex flex-col items-start gap-1">
-            <p className="primary-text">{wallet.walletInfo.prettyName}</p>
-            <p className="caption-text">
-              {wallet.walletInfo.mode === 'extension'
-                ? t('title.extension')
-                : wallet.walletInfo.mode === 'wallet-connect'
-                ? t('title.walletConnect')
-                : wallet.walletInfo.mode === 'ledger'
-                ? t('title.ledger')
-                : ''}
+            <p className="primary-text text-center">
+              {wallet.walletInfo.prettyName}
             </p>
-          </div>
-        </Button>
-      ))}
+          </Button>
+        ))}
+      </div>
 
       {web3AuthWallets.length > 0 && (
         <>
