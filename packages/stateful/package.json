@@ -23,7 +23,7 @@
     "@cosmos-kit/station": "^2.0.3",
     "@cosmos-kit/trust": "^2.0.3",
     "@cosmos-kit/vectis": "^2.0.3",
-    "@cosmos-kit/web3auth": "https://gitpkg.now.sh/NoahSaso/cosmos-kit/wallets/web3auth?c62c10ec9b46229ce4c3c40eda20722110c76e1d",
+    "@noahsaso/cosmos-kit-web3auth": "^2.0.3-beta.2",
     "@dao-dao/i18n": "2.2.0",
     "@dao-dao/state": "2.2.0",
     "@dao-dao/stateless": "2.2.0",

@@ -9,7 +9,7 @@ import { ChainProvider } from '@cosmos-kit/react-lite'
 import { wallets as stationWallets } from '@cosmos-kit/station'
 import { wallets as trustWallets } from '@cosmos-kit/trust'
 import { wallets as vectisWallets } from '@cosmos-kit/vectis'
-import { PromptSign, makeWeb3AuthWallets } from '@cosmos-kit/web3auth'
+import { PromptSign, makeWeb3AuthWallets } from '@noahsaso/cosmos-kit-web3auth'
 import { assets, chains } from 'chain-registry'
 import {
   Dispatch,

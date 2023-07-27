@@ -2713,24 +2713,6 @@
     "@walletconnect/utils" "^2.9.0"
     events "3.3.0"
 
-"@cosmos-kit/web3auth@https://gitpkg.now.sh/NoahSaso/cosmos-kit/wallets/web3auth?c62c10ec9b46229ce4c3c40eda20722110c76e1d":
-  version "2.0.3"
-  uid "8c167b1b01bd2cadffa95c94c6487fbd8a6f968c"
-  resolved "https://gitpkg.now.sh/NoahSaso/cosmos-kit/wallets/web3auth?c62c10ec9b46229ce4c3c40eda20722110c76e1d#8c167b1b01bd2cadffa95c94c6487fbd8a6f968c"
-  dependencies:
-    "@chain-registry/types" "0.13.1"
-    "@cosmos-kit/core" "^2.0.3"
-    "@solana/web3.js" "^1.77.3"
-    "@toruslabs/eccrypto" "^2.1.1"
-    "@web3auth/base" "^5.1.0"
-    "@web3auth/base-provider" "^6.1.4"
-    "@web3auth/ethereum-provider" "^6.1.5"
-    "@web3auth/no-modal" "^6.1.4"
-    "@web3auth/openlogin-adapter" "^6.1.4"
-    "@web3auth/solana-provider" "^6.1.4"
-    ethereum-cryptography "^2.1.2"
-    url "^0.11.1"
-
 "@cosmostation/extension-client@0.1.11":
   version "0.1.11"
   resolved "https://registry.yarnpkg.com/@cosmostation/extension-client/-/extension-client-0.1.11.tgz#d6b447cfd9cf7613ec485b57327819b14735cf13"
@@ -5215,6 +5197,24 @@
     crc "^3.8.0"
     jsbi "^3.1.5"
     sha.js "^2.4.11"
+
+"@noahsaso/cosmos-kit-web3auth@^2.0.3-beta.2":
+  version "2.0.3-beta.2"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmos-kit-web3auth/-/cosmos-kit-web3auth-2.0.3-beta.2.tgz#29cbc0517f01c64cd83f2dffde71b7e6d8cf590d"
+  integrity sha512-Tml4ozYTVI9qJjpHfoyh2zwYCk5DoUfi6oxkYvZDBE1r5LemCqbckwNRre1MLwcoqAQOQfYyVvk7kqgqvKJn8g==
+  dependencies:
+    "@chain-registry/types" "0.13.1"
+    "@cosmos-kit/core" "^2.0.3"
+    "@solana/web3.js" "^1.77.3"
+    "@toruslabs/eccrypto" "^2.1.1"
+    "@web3auth/base" "^5.1.0"
+    "@web3auth/base-provider" "^6.1.4"
+    "@web3auth/ethereum-provider" "^6.1.5"
+    "@web3auth/no-modal" "^6.1.4"
+    "@web3auth/openlogin-adapter" "^6.1.4"
+    "@web3auth/solana-provider" "^6.1.4"
+    ethereum-cryptography "^2.1.2"
+    url "^0.11.1"
 
 "@noble/curves@1.1.0", "@noble/curves@^1.0.0", "@noble/curves@~1.1.0":
   version "1.1.0"

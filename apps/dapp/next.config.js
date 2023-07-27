@@ -25,8 +25,9 @@ const config = {
     '@dao-dao/stateful',
     '@dao-dao/i18n',
     '@dao-dao/types',
-    '@cosmos-kit/web3auth',
+    '@noahsaso/cosmos-kit-web3auth',
   ],
+  // Because @noahsaso/cosmos-kit-web3auth uses a Worker ESM import.
   experimental: {
     esmExternals: 'loose',
   },
