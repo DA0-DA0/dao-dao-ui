@@ -2568,16 +2568,6 @@
   resolved "https://registry.yarnpkg.com/@cosmjs/utils/-/utils-0.30.1.tgz#6d92582341be3c2ec8d82090253cfa4b7f959edb"
   integrity sha512-KvvX58MGMWh7xA+N+deCfunkA/ZNDvFLw4YbOmX3f/XBIkqrVY7qlotfy2aNb1kgp6h4B6Yc8YawJPDTfvWX7g==
 
-"@cosmos-kit/core@^2.0.3":
-  version "2.0.3"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.0.3.tgz#ecd1f4ffedb5d6aef37721dbd7dc4a2ce1ae6b74"
-  integrity sha512-CZSCF3KVGr5kwTO35Add5E/mZjKre/ahv5wl/7/MsFSH6Iu1K5xq6Lq/+M1GDDx8ut87IEatzWFb5ZnvFfaqWg==
-  dependencies:
-    "@chain-registry/types" "0.13.0"
-    "@walletconnect/types" "2.7.2"
-    bowser "2.11.0"
-    events "3.3.0"
-
 "@cosmos-kit/core@^2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.1.0.tgz#f28c4a21c77e3a8143bd37ecc738204ec7b08915"
@@ -5208,13 +5198,13 @@
     jsbi "^3.1.5"
     sha.js "^2.4.11"
 
-"@noahsaso/cosmos-kit-web3auth@^2.0.3-beta.3":
-  version "2.0.3-beta.3"
-  resolved "https://registry.yarnpkg.com/@noahsaso/cosmos-kit-web3auth/-/cosmos-kit-web3auth-2.0.3-beta.3.tgz#f13ab410de9c3719b72b859db25b2f6f7c7adc38"
-  integrity sha512-8Q2UjAP4ERAF+IrN0dBSDyBqwsvKeSN0BTGapd/Ql/Qdf1wo8HTUZMWj5iGPXquGTlT0j0f7h3xWk3g/GAH1TQ==
+"@noahsaso/cosmos-kit-web3auth@^2.1.0-beta.0":
+  version "2.1.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmos-kit-web3auth/-/cosmos-kit-web3auth-2.1.0-beta.0.tgz#ca33ce8af47a40b984067e3283f412d18c8973c4"
+  integrity sha512-kOOV9o6vxTOSXPp0LVdD0ndnJxyeOUI8vidJuu5uSmWmJ2rkQ4fgduA9BLNnbA2lIDti3tLGIkbp/b6CPiTE3A==
   dependencies:
     "@chain-registry/types" "0.13.1"
-    "@cosmos-kit/core" "^2.0.3"
+    "@cosmos-kit/core" "^2.1.0"
     "@solana/web3.js" "^1.77.3"
     "@toruslabs/eccrypto" "^2.1.1"
     "@web3auth/base" "^5.1.0"
