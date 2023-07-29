@@ -77,7 +77,9 @@ export const useLoadingFollowingDaoCardInfos = (): LoadingData<
 > => {
   const chains = getSupportedChains()
 
-  const { hexPublicKey } = useWallet()
+  const { hexPublicKey } = useWallet({
+    loadAccount: true,
+  })
   const followingDaosLoading = useCachedLoading(
     !hexPublicKey.loading
       ? waitForAll(
