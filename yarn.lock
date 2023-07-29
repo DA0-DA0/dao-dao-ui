@@ -5198,10 +5198,10 @@
     jsbi "^3.1.5"
     sha.js "^2.4.11"
 
-"@noahsaso/cosmos-kit-web3auth@^2.0.3-beta.2":
-  version "2.0.3-beta.2"
-  resolved "https://registry.yarnpkg.com/@noahsaso/cosmos-kit-web3auth/-/cosmos-kit-web3auth-2.0.3-beta.2.tgz#29cbc0517f01c64cd83f2dffde71b7e6d8cf590d"
-  integrity sha512-Tml4ozYTVI9qJjpHfoyh2zwYCk5DoUfi6oxkYvZDBE1r5LemCqbckwNRre1MLwcoqAQOQfYyVvk7kqgqvKJn8g==
+"@noahsaso/cosmos-kit-web3auth@^2.0.3-beta.3":
+  version "2.0.3-beta.3"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmos-kit-web3auth/-/cosmos-kit-web3auth-2.0.3-beta.3.tgz#f13ab410de9c3719b72b859db25b2f6f7c7adc38"
+  integrity sha512-8Q2UjAP4ERAF+IrN0dBSDyBqwsvKeSN0BTGapd/Ql/Qdf1wo8HTUZMWj5iGPXquGTlT0j0f7h3xWk3g/GAH1TQ==
   dependencies:
     "@chain-registry/types" "0.13.1"
     "@cosmos-kit/core" "^2.0.3"

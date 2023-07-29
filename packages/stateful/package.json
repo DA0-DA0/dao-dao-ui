@@ -23,7 +23,7 @@
     "@cosmos-kit/station": "^2.0.3",
     "@cosmos-kit/trust": "^2.0.3",
     "@cosmos-kit/vectis": "^2.0.3",
-    "@noahsaso/cosmos-kit-web3auth": "^2.0.3-beta.2",
+    "@noahsaso/cosmos-kit-web3auth": "^2.0.3-beta.3",
     "@dao-dao/i18n": "2.2.0",
     "@dao-dao/state": "2.2.0",
     "@dao-dao/stateless": "2.2.0",

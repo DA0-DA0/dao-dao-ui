@@ -31,6 +31,12 @@ const config = {
   experimental: {
     esmExternals: 'loose',
   },
+  webpack: (config) => {
+    // @noahsaso/cosmos-kit-web3auth uses eccrypto, which uses `stream`. This
+    // needs to be polyfilled.
+    config.resolve.alias['stream'] = 'stream-browserify'
+    return config
+  },
   i18n,
   /*
     The reactStrictMode flag is set to false
