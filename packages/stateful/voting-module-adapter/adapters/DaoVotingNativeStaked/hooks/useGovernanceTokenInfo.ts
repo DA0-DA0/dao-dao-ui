@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
@@ -12,6 +11,7 @@ import { useCachedLoading, useChain } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 
+import { useWallet } from '../../../../hooks/useWallet'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import {
   UseGovernanceTokenInfoOptions,
@@ -24,7 +24,7 @@ export const useGovernanceTokenInfo = ({
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
   const { chain_id: chainId } = useChain()
-  const { address: walletAddress } = useWallet(chainId)
+  const { address: walletAddress } = useWallet()
   const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { denom } = useRecoilValue(

@@ -1,27 +1,28 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { TxBody } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValue } from 'recoil'
 
+import { web3AuthPromptAtom } from '@dao-dao/state/recoil'
 import {
   ActionsRenderer,
   Button,
   ChainProvider,
   CosmosMessageDisplay,
   Modal,
-  useAppContext,
 } from '@dao-dao/stateless'
 import { CategorizedActionAndData } from '@dao-dao/types'
 import { decodeMessages, protobufToCwMsg } from '@dao-dao/utils'
 
 import { useActionsForMatching } from '../../actions'
 import { WalletActionsProvider } from '../../actions/react/provider'
+import { useWallet } from '../../hooks/useWallet'
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export const Web3AuthPromptModal = () => {
   const { t } = useTranslation()
-  const { web3AuthPrompt: prompt } = useAppContext()
+  const prompt = useRecoilValue(web3AuthPromptAtom)
 
   const decoded = useMemo(() => {
     if (!prompt) {
@@ -59,7 +60,7 @@ export const Web3AuthPromptModal = () => {
     (prompt.signData.type === 'direct'
       ? prompt.signData.value.chainId
       : prompt.signData.value.chain_id)
-  const { address } = useWallet(chainId)
+  const { address } = useWallet({ chainId })
 
   return (
     <Modal

@@ -2,8 +2,12 @@ import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useSetRecoilState } from 'recoil'
 
-import { averageColorSelector } from '@dao-dao/state/recoil'
+import {
+  averageColorSelector,
+  updateProfileNftVisibleAtom,
+} from '@dao-dao/state/recoil'
 import { MeProps, MeTab, MeTabId, Theme } from '@dao-dao/types'
 
 import {
@@ -13,7 +17,6 @@ import {
   ProfileNameDisplayAndEditor,
   RightSidebarContent,
   SegmentedControls,
-  useAppContext,
 } from '../components'
 import { useCachedLoadable, useChain } from '../hooks'
 import { useThemeContext } from '../theme'
@@ -105,7 +108,9 @@ export const Me = ({
   ])
 
   const canEditProfile = !profileData.loading && profileData.profile.nonce >= 0
-  const { updateProfileNft } = useAppContext()
+  const setUpdateProfileNftVisible = useSetRecoilState(
+    updateProfileNftVisibleAtom
+  )
 
   const tabSelector = (
     <div className="flex flex-row items-center justify-between gap-8">
@@ -142,7 +147,11 @@ export const Me = ({
           <ProfileImage
             imageUrl={profileData.profile.imageUrl}
             loading={profileData.loading}
-            onEdit={canEditProfile ? updateProfileNft.toggle : undefined}
+            onEdit={
+              canEditProfile
+                ? () => setUpdateProfileNftVisible(true)
+                : undefined
+            }
             size="xl"
           />
 

@@ -1,18 +1,16 @@
-import { useWallet } from '@noahsaso/cosmodal'
-
 import {
   DaoCard as StatelessDaoCard,
   useCachedLoading,
 } from '@dao-dao/stateless'
 import { DaoCardInfo } from '@dao-dao/types/stateless/DaoCard'
 
-import { useFollowingDaos } from '../../hooks'
+import { useFollowingDaos, useWallet } from '../../hooks'
 import { daoCardInfoLazyDataSelector } from '../../recoil'
 import { IconButtonLink } from '../IconButtonLink'
 import { LinkWrapper } from '../LinkWrapper'
 
 export const DaoCard = (props: DaoCardInfo) => {
-  const { address: walletAddress } = useWallet(props.chainId)
+  const { address: walletAddress } = useWallet({ chainId: props.chainId })
   const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
     useFollowingDaos(props.chainId)
 

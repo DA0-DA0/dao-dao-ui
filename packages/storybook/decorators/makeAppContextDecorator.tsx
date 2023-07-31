@@ -15,7 +15,6 @@ export const makeAppContextDecorator: (
       useState(defaultResponsiveEnabled)
     const [responsiveRightSidebarEnabled, setResponsiveRightSidebarEnabled] =
       useState(false)
-    const [updateProfileVisible, setUpdateProfileVisible] = useState(false)
 
     // Page header.
     const [, setPageHeaderSet] = useState(false)
@@ -48,11 +47,6 @@ export const makeAppContextDecorator: (
             enabled: responsiveRightSidebarEnabled,
             toggle: () => setResponsiveRightSidebarEnabled((v) => !v),
           },
-          updateProfileNft: {
-            visible: updateProfileVisible,
-            toggle: () => setUpdateProfileVisible((v) => !v),
-          },
-          web3AuthPrompt: undefined,
           pageHeaderRef,
           setPageHeaderRef,
           rightSidebarRef,

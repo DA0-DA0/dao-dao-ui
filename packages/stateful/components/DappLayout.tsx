@@ -1,4 +1,3 @@
-import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
 import { useRouter } from 'next/router'
 import { ReactNode, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -30,7 +29,7 @@ import {
 import { getSupportedChains } from '@dao-dao/utils'
 
 import { CommandModal } from '../command'
-import { useWalletInfo } from '../hooks'
+import { useWallet, useWalletInfo } from '../hooks'
 import {
   daoCreatedCardPropsAtom,
   followingDaoDropdownInfosSelector,
@@ -68,7 +67,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     throw new Error(t('error.loadingData'))
   }
 
-  const { connect, connected, status } = useWalletManager()
+  const { connect, isWalletConnected } = useWallet()
   const { walletHexPublicKey, walletProfileData } = useWalletInfo()
 
   //! COMMAND MODAL
@@ -147,9 +146,9 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
     <StatelessDappLayout
       connect={connect}
       connectWalletButton={<ConnectWallet variant="secondary" />}
-      connected={connected}
+      connected={isWalletConnected}
       navigationProps={{
-        walletConnected: connected,
+        walletConnected: isWalletConnected,
         LinkWrapper,
         inboxCount:
           inbox.loading ||
@@ -183,11 +182,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
       rightSidebarProps={{
         wallet: <SidebarWallet />,
       }}
-      walletProfileData={
-        status === WalletConnectionStatus.Connected
-          ? walletProfileData
-          : undefined
-      }
+      walletProfileData={isWalletConnected ? walletProfileData : undefined}
     >
       {children}
 
@@ -205,9 +200,6 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
         />
       )}
       <MigrateFollowingModal />
-
-      {/* Wallet UI */}
-      <WalletModals />
 
       {daoCreatedCardProps && (
         <DaoCreatedModal
@@ -230,6 +222,8 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
           }}
         />
       )}
+
+      <WalletModals />
     </StatelessDappLayout>
   )
 }

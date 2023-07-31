@@ -1,5 +1,4 @@
 import { fromBase64, toHex } from '@cosmjs/encoding'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -22,6 +21,7 @@ import {
   EntityDisplay,
   SuspenseLoader,
 } from '../../../../../../components'
+import { useWallet } from '../../../../../../hooks/useWallet'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
@@ -41,16 +41,18 @@ export const RatingForm = ({ data, reloadData }: RatingFormProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
-  const { publicKey: walletPublicKey } = useWallet(chainId)
+  const { hexPublicKey } = useWallet({
+    loadAccount: true,
+  })
 
   const client = useRecoilValue(cosmWasmClientForChainSelector(chainId))
   const postRequest = usePostRequest()
 
   const statusLoadable = useCachedLoadable(
-    walletPublicKey?.hex
+    !hexPublicKey.loading
       ? statusSelector({
           daoAddress: coreAddress,
-          walletPublicKey: walletPublicKey.hex,
+          walletPublicKey: hexPublicKey.data,
         })
       : undefined
   )

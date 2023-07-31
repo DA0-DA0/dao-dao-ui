@@ -7,7 +7,6 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
 import { ComponentType, useCallback, useState } from 'react'
@@ -30,7 +29,6 @@ import {
   TextAreaInput,
   TextInput,
   Tooltip,
-  useChain,
 } from '@dao-dao/stateless'
 import {
   ActionCategoryWithLabel,
@@ -50,7 +48,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useWalletInfo } from '../../../../../../hooks'
+import { useWallet, useWalletInfo } from '../../../../../../hooks'
 import {
   MULTIPLE_CHOICE_OPTION_COLORS,
   MultipleChoiceOptionEditor,
@@ -127,9 +125,8 @@ export const NewProposal = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const { chain_id } = useChain()
-  const { status: walletStatus } = useWallet(chain_id)
-  const { walletAddress = '', walletProfileData } = useWalletInfo(chain_id)
+  const { isWalletConnecting } = useWallet()
+  const { walletAddress = '', walletProfileData } = useWalletInfo()
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -387,9 +384,7 @@ export const NewProposal = ({
         {!anyoneCanPropose &&
           !isMember.loading &&
           !isMember.data &&
-          walletStatus !== WalletConnectionStatus.Initializing &&
-          walletStatus !== WalletConnectionStatus.AttemptingAutoConnection &&
-          walletStatus !== WalletConnectionStatus.Connecting && (
+          !isWalletConnecting && (
             <p className="secondary-text max-w-prose self-end text-right text-text-interactive-error">
               {t('error.mustBeMemberToCreateProposal')}
             </p>

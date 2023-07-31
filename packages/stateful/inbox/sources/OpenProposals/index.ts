@@ -1,4 +1,3 @@
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { useSetRecoilState, waitForAll } from 'recoil'
 
@@ -15,42 +14,35 @@ import {
   ProposalLine,
   ProposalLineProps,
 } from '../../../components/ProposalLine'
-import { useOnWebSocketMessage } from '../../../hooks'
+import { useOnWebSocketMessage, useWallet } from '../../../hooks'
 import { inboxOpenProposalsSelector } from './state'
 
 export const OpenProposals: InboxSource<ProposalLineProps> = {
   id: 'open_proposals',
   Renderer: ProposalLine,
   useData: () => {
-    const { address, publicKey, status: walletConnectionStatus } = useWallet()
+    const { address, hexPublicKey } = useWallet({
+      loadAccount: true,
+    })
 
     const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
     const daosWithItemsLoadable = useCachedLoadable(
-      // Don't load without a wallet until we're no longer initializing. This
-      // prevents duplicate queries when the page is first loading.
-      walletConnectionStatus === WalletConnectionStatus.Initializing ||
-        walletConnectionStatus ===
-          WalletConnectionStatus.AttemptingAutoConnection
-        ? undefined
-        : waitForAll(
-            getSupportedChains().map(({ chain }) =>
-              inboxOpenProposalsSelector({
-                chainId: chain.chain_id,
-                wallet:
-                  address && publicKey
-                    ? {
-                        address: transformBech32Address(
-                          address,
-                          chain.chain_id
-                        ),
-                        hexPublicKey: publicKey.hex,
-                      }
-                    : undefined,
-              })
-            )
-          )
+      waitForAll(
+        getSupportedChains().map(({ chain }) =>
+          inboxOpenProposalsSelector({
+            chainId: chain.chain_id,
+            wallet:
+              address && !hexPublicKey.loading
+                ? {
+                    address: transformBech32Address(address, chain.chain_id),
+                    hexPublicKey: hexPublicKey.data,
+                  }
+                : undefined,
+          })
+        )
+      )
     )
 
     // Refresh when any proposal or vote is updated for any of the DAOs. Once

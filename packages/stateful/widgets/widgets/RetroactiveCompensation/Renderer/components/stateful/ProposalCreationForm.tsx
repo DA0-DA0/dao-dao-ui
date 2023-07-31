@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -18,6 +17,7 @@ import { EntityDisplay, SuspenseLoader } from '../../../../../../components'
 import {
   useDaoProposalSinglePublishProposal,
   useEntity,
+  useWallet,
 } from '../../../../../../hooks'
 import { NewProposalData } from '../../../../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { refreshStatusAtom } from '../../atoms'
@@ -38,16 +38,17 @@ export const ProposalCreationForm = ({ data }: ProposalCreationFormProps) => {
   const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
   const { coreAddress } = useDaoInfoContext()
-  const { address: walletAddress = '', publicKey: walletPublicKey } =
-    useWallet(chainId)
+  const { address: walletAddress = '', hexPublicKey } = useWallet({
+    loadAccount: true,
+  })
 
   const postRequest = usePostRequest()
 
   const statusLoadable = useCachedLoadable(
-    walletPublicKey?.hex
+    !hexPublicKey.loading
       ? statusSelector({
           daoAddress: coreAddress,
-          walletPublicKey: walletPublicKey.hex,
+          walletPublicKey: hexPublicKey.data,
         })
       : undefined
   )

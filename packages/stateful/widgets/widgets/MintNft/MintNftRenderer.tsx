@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -18,6 +17,7 @@ import {
 import { WidgetRendererProps } from '@dao-dao/types'
 import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
+import { useWallet } from '../../../hooks/useWallet'
 import { nftCardInfoSelector } from '../../../recoil'
 import { MintNftData } from './types'
 
@@ -32,9 +32,9 @@ export const MintNftRenderer = ({
   const { chain_id: chainId } = useChain()
   const {
     address: walletAddress = '',
-    signingCosmWasmClient,
-    connected,
-  } = useWallet(chainId)
+    getSigningCosmWasmClient,
+    isWalletConnected,
+  } = useWallet()
 
   const [minting, setMinting] = useState(false)
 
@@ -61,10 +61,12 @@ export const MintNftRenderer = ({
   )
 
   const onClick = async () => {
-    if (!signingCosmWasmClient || !walletAddress) {
+    if (!walletAddress) {
       toast.error(t('error.logInToContinue'))
       return
     }
+
+    const signingCosmWasmClient = await getSigningCosmWasmClient()
 
     setMinting(true)
     try {
@@ -102,10 +104,12 @@ export const MintNftRenderer = ({
         />
       )}
 
-      <Tooltip title={connected ? undefined : t('error.logInToContinue')}>
+      <Tooltip
+        title={isWalletConnected ? undefined : t('error.logInToContinue')}
+      >
         <Button
           center
-          disabled={!connected}
+          disabled={!isWalletConnected}
           loading={minting}
           onClick={onClick}
           size="lg"

@@ -7,7 +7,6 @@ import {
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -38,6 +37,7 @@ import {
 import {
   useAwaitNextBlock,
   useCfWorkerAuthPostRequest,
+  useWallet,
   useWalletInfo,
 } from '../hooks'
 import {
@@ -55,11 +55,15 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   const nativeToken = getNativeTokenForChainId(props.token.chainId)
   const {
     address: walletAddress = '',
-    publicKey,
-    signingCosmWasmClient,
-  } = useWallet(props.token.chainId)
-
-  const { refreshBalances } = useWalletInfo(props.token.chainId)
+    hexPublicKey,
+    getSigningCosmWasmClient,
+  } = useWallet({
+    chainId: props.token.chainId,
+    loadAccount: true,
+  })
+  const { refreshBalances } = useWalletInfo({
+    chainId: props.token.chainId,
+  })
 
   const lazyInfo = useCachedLoading(
     walletAddress
@@ -95,10 +99,12 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   )
 
   const setTemporaryHiddenBalances = useSetRecoilState(
-    temporaryHiddenBalancesAtom(publicKey?.hex ?? '')
+    temporaryHiddenBalancesAtom(hexPublicKey.loading ? '' : hexPublicKey.data)
   )
   const hiddenBalancesLoadable = useCachedLoadable(
-    publicKey?.hex ? hiddenBalancesSelector(publicKey.hex) : undefined
+    !hexPublicKey.loading
+      ? hiddenBalancesSelector(hexPublicKey.data)
+      : undefined
   )
   const isHidden =
     hiddenBalancesLoadable.state === 'hasValue'
@@ -159,10 +165,12 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     if (!claimReady) {
       return
     }
-    if (!signingCosmWasmClient || !walletAddress) {
+    if (!walletAddress) {
       toast.error(t('error.logInToContinue'))
       return
     }
+
+    const signingCosmWasmClient = await getSigningCosmWasmClient()
 
     setClaimLoading(true)
     try {

@@ -3,7 +3,6 @@ import {
   instantiate2Address,
 } from '@cosmjs/cosmwasm-stargate'
 import { fromHex, toUtf8 } from '@cosmjs/encoding'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
@@ -16,6 +15,8 @@ import {
   cwMsgToEncodeObject,
   makeWasmMessage,
 } from '@dao-dao/utils'
+
+import { useWallet } from './useWallet'
 
 export type InstantiateAndExecuteOptions = {
   // Instantiate message to send to the contract.
@@ -55,7 +56,9 @@ export const useInstantiateAndExecute = (
   codeId: number
 ): UseInstantiateAndExecuteResult => {
   const { t } = useTranslation()
-  const { signingCosmWasmClient, address, chainInfo } = useWallet(chainId)
+  const { getSigningCosmWasmClient, address, chain } = useWallet({
+    chainId,
+  })
 
   // Load checksum of the contract code.
   const codeDetailsLoadable = useCachedLoadable(
@@ -73,9 +76,11 @@ export const useInstantiateAndExecute = (
         throw new Error(t('error.loadingData'))
       }
 
-      if (!signingCosmWasmClient || !address || !chainInfo) {
+      if (!address || !chain) {
         throw new Error(t('error.logInToContinue'))
       }
+
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
 
       // Get the checksum of the contract code.
       const checksum = fromHex(codeDetailsLoadable.contents.checksum)
@@ -86,7 +91,7 @@ export const useInstantiateAndExecute = (
         checksum,
         address,
         toUtf8(salt),
-        chainInfo.bech32Config.bech32PrefixAccAddr
+        chain.bech32_prefix
       )
       const messages: CosmosMsgFor_Empty[] = [
         // Instantiate the contract.
@@ -113,18 +118,19 @@ export const useInstantiateAndExecute = (
         ),
       ]
 
-      const response = await signingCosmWasmClient.signAndBroadcast(
+      const response = (await signingCosmWasmClient.signAndBroadcast(
         address,
         messages.map((msg) => cwMsgToEncodeObject(msg, address)),
         CHAIN_GAS_MULTIPLIER
-      )
+        // cosmos-kit has an older version of the package. This is a workaround.
+      )) as DeliverTxResponse
 
       return {
         contractAddress,
         response,
       }
     },
-    [address, chainInfo, codeDetailsLoadable, codeId, signingCosmWasmClient, t]
+    [address, chain, codeDetailsLoadable, codeId, getSigningCosmWasmClient, t]
   )
 
   return {

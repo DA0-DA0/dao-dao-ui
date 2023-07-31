@@ -1,4 +1,3 @@
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
@@ -15,6 +14,7 @@ import {
 import { SITE_URL, transformBech32Address } from '@dao-dao/utils'
 
 import { WalletActionsProvider } from '../../actions/react/provider'
+import { useWallet } from '../../hooks/useWallet'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { ConnectWallet } from '../ConnectWallet'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
@@ -25,12 +25,13 @@ import { MeTransactionBuilder } from './MeTransactionBuilder'
 export const Me: NextPage = () => {
   const { t } = useTranslation()
   const { asPath } = useRouter()
-  const { connected, status } = useWallet()
+
   const {
-    walletAddress,
-    walletProfileData: profileData,
-    updateProfileName,
-  } = useWalletInfo()
+    address: walletAddress = '',
+    isWalletConnected,
+    isWalletConnecting,
+  } = useWallet()
+  const { walletProfileData: profileData, updateProfileName } = useWalletInfo()
 
   const [chainId, setChainId] = useRecoilState(walletChainIdAtom)
 
@@ -46,7 +47,7 @@ export const Me: NextPage = () => {
         title={t('title.me')}
       />
 
-      {connected ? (
+      {isWalletConnected ? (
         // Refresh all children when chain changes since state varies by chain.
         <ChainProvider key={chainId} chainId={chainId}>
           <WalletActionsProvider
@@ -73,11 +74,7 @@ export const Me: NextPage = () => {
       ) : (
         <LogInRequiredPage
           connectWalletButton={<ConnectWallet />}
-          connecting={
-            status === WalletConnectionStatus.Initializing ||
-            status === WalletConnectionStatus.AttemptingAutoConnection ||
-            status === WalletConnectionStatus.Connecting
-          }
+          connecting={isWalletConnecting}
           rightSidebarContent={<ProfileDisconnectedCard />}
           title={t('title.me')}
         />

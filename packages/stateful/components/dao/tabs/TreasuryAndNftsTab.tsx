@@ -1,5 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
-
 import {
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
   useCachedLoading,
@@ -10,7 +8,7 @@ import { ActionKey } from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../actions'
-import { useMembership } from '../../../hooks'
+import { useMembership, useWallet } from '../../../hooks'
 import {
   nftCardInfosForDaoSelector,
   treasuryTokenCardInfosSelector,
@@ -28,7 +26,7 @@ import { DaoTokenCard } from '../DaoTokenCard'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
-  const { connected } = useWallet(daoInfo.chainId)
+  const { isWalletConnected } = useWallet()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership(daoInfo)
 
@@ -75,7 +73,7 @@ export const TreasuryAndNftsTab = () => {
   return (
     <StatelessTreasuryAndNftsTab
       ButtonLink={ButtonLink}
-      FiatDepositModal={connected ? DaoFiatDepositModal : undefined}
+      FiatDepositModal={isWalletConnected ? DaoFiatDepositModal : undefined}
       NftCard={NftCard}
       StargazeNftImportModal={StargazeNftImportModal}
       TokenCard={DaoTokenCard}

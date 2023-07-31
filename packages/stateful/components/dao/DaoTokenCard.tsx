@@ -10,6 +10,7 @@ import { useSetRecoilState } from 'recoil'
 
 import { refreshNativeTokenStakingInfoAtom } from '@dao-dao/state'
 import {
+  ChainProvider,
   TokenCard as StatelessTokenCard,
   useCachedLoading,
   useDaoInfoContext,
@@ -177,7 +178,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
       : []
 
   return (
-    <>
+    <ChainProvider chainId={props.token.chainId}>
       <StatelessTokenCard
         {...props}
         ButtonLink={ButtonLink}
@@ -226,6 +227,6 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
           visible={depositVisible}
         />
       )}
-    </>
+    </ChainProvider>
   )
 }

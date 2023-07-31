@@ -1,18 +1,19 @@
-import { useWallet } from '@noahsaso/cosmodal'
-
 import {
   TokenLine as StatelessTokenLine,
   useCachedLoading,
 } from '@dao-dao/stateless'
 import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
 
+import { useWallet } from '../hooks/useWallet'
 import { tokenCardLazyInfoSelector } from '../recoil'
 import { WalletTokenCard } from './WalletTokenCard'
 
 export const WalletTokenLine = <T extends TokenCardInfo>(
   props: Omit<TokenLineProps<T>, 'TokenCard'>
 ) => {
-  const { address: walletAddress } = useWallet(props.token.chainId)
+  const { address: walletAddress } = useWallet({
+    chainId: props.token.chainId,
+  })
 
   const lazyInfo = useCachedLoading(
     walletAddress

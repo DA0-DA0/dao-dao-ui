@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
@@ -8,6 +7,7 @@ import { ActionComponent, ActionContextType, ActionKey } from '@dao-dao/types'
 import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
+import { useWallet } from '../../../../hooks'
 import { useActionOptions } from '../../../react'
 import { InstantiateNftCollection as StatelessInstantiateNftCollection } from './stateless/InstantiateNftCollection'
 
@@ -17,11 +17,10 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
   const {
     context,
     chainContext: {
-      chainId,
       config: { codeIds },
     },
   } = useActionOptions()
-  const { address: walletAddress, signingCosmWasmClient } = useWallet(chainId)
+  const { address: walletAddress, getSigningCosmWasmClient } = useWallet()
 
   const [instantiating, setInstantiating] = useState(false)
 
@@ -33,10 +32,12 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
       return
     }
 
-    if (!signingCosmWasmClient || !walletAddress) {
+    if (!walletAddress) {
       toast.error(t('error.logInToContinue'))
       return
     }
+
+    const signingCosmWasmClient = await getSigningCosmWasmClient()
 
     setInstantiating(true)
     try {

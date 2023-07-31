@@ -57,6 +57,10 @@ export const useDaoNavHelpers = (overrideMode?: DaoPageMode) => {
   )
 
   // Returns proposal ID if we're on a DAO proposal subpath, or undefined.
+  const getDaoFromPath = () =>
+    router.asPath.match(new RegExp('^' + getDaoPath('([a-zA-Z0-9]+)')))?.[1]
+
+  // Returns proposal ID if we're on a DAO proposal subpath, or undefined.
   const getProposalIdFromPath = () =>
     router.asPath.match(
       new RegExp('^' + getDaoProposalPath('.+', '([a-zA-Z0-9]+)'))
@@ -76,6 +80,7 @@ export const useDaoNavHelpers = (overrideMode?: DaoPageMode) => {
     goToDao,
     getDaoProposalPath,
     goToDaoProposal,
+    getDaoFromPath,
     getProposalIdFromPath,
     router,
     daoSubpathComponents,

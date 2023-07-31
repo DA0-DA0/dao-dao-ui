@@ -1,6 +1,5 @@
 import { Buffer } from 'buffer'
 
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -15,6 +14,7 @@ import {
 import { ChainId, NftCardInfo } from '@dao-dao/types'
 import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
+import { useWallet } from '../hooks'
 import { walletStargazeNftCardInfosSelector } from '../recoil/selectors/nft'
 import { SuspenseLoader } from './SuspenseLoader'
 
@@ -25,9 +25,10 @@ export const InnerStargazeNftImportModal = ({
 }: StargazeNftImportModalProps) => {
   const { t } = useTranslation()
   const { coreAddress, name: daoName } = useDaoInfoContext()
-  const { signingCosmWasmClient, address: stargazeWalletAddress } = useWallet(
-    ChainId.StargazeMainnet
-  )
+  const { getSigningCosmWasmClient, address: stargazeWalletAddress } =
+    useWallet({
+      chainId: ChainId.StargazeMainnet,
+    })
   const [selected, setSelected] = useState<string[]>([])
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
@@ -40,7 +41,7 @@ export const InnerStargazeNftImportModal = ({
 
   const [loading, setLoading] = useState(false)
   const onAction = useCallback(async () => {
-    if (!signingCosmWasmClient || !stargazeWalletAddress) {
+    if (!stargazeWalletAddress) {
       toast.error(t('error.logInToContinue'))
       return
     }
@@ -48,6 +49,8 @@ export const InnerStargazeNftImportModal = ({
       toast.error(t('error.noNftsSelected'))
       return
     }
+
+    const signingCosmWasmClient = await getSigningCosmWasmClient()
 
     setLoading(true)
     try {
@@ -102,7 +105,7 @@ export const InnerStargazeNftImportModal = ({
     coreAddress,
     nfts,
     selected,
-    signingCosmWasmClient,
+    getSigningCosmWasmClient,
     stargazeWalletAddress,
     t,
   ])

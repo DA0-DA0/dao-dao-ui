@@ -4,9 +4,14 @@ import { IbcClient } from '@confio/relayer/build/lib/ibcclient'
 import { Link } from '@confio/relayer/build/lib/link'
 import { parsePacketsFromTendermintEvents } from '@confio/relayer/build/lib/utils'
 import { DirectSecp256k1HdWallet, EncodeObject } from '@cosmjs/proto-signing'
-import { GasPrice, IndexedTx, calculateFee, coins } from '@cosmjs/stargate'
+import {
+  GasPrice,
+  IndexedTx,
+  SigningStargateClient,
+  calculateFee,
+  coins,
+} from '@cosmjs/stargate'
 import { Check, Close, Send, Verified } from '@mui/icons-material'
-import { ConnectedWallet, useConnectWalletToChain } from '@noahsaso/cosmodal'
 import uniq from 'lodash.uniq'
 import { Fragment, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -44,6 +49,8 @@ import {
   processError,
 } from '@dao-dao/utils'
 
+import { useWallet } from '../hooks'
+
 enum RelayStatus {
   Uninitialized,
   Initializing,
@@ -66,7 +73,10 @@ type Relayer = {
     denom: string
     average_gas_price?: number
   }
-  wallet: ConnectedWallet
+  wallet: {
+    address: string
+    signingStargateClient: SigningStargateClient
+  }
   relayerAddress: string
   client: IbcClient
   // Will be loaded for receiving chains only. The current chain will not have a
@@ -93,7 +103,16 @@ export const SelfRelayExecuteModal = ({
 
   // All chains, including current.
   const chains = uniq([currentChainId, ..._chainIds]).map(getChainForChainId)
-  const connectWalletToChain = useConnectWalletToChain()
+
+  // Call hook for every chain that needs to be relayed. These chains can never
+  // change. The caller must enforce this.
+  // TODO(cosmos-kit-dynamic-conn-fn): Remove this when cosmos-kit supports dynamic chain connection fn.
+  const wallets = chains.map((chain) =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useWallet({
+      chainId: chain.chain_id,
+    })
+  )
 
   const [status, setStatus] = useState<RelayStatus>(RelayStatus.Uninitialized)
   const [relayError, setRelayError] = useState<string>()
@@ -246,7 +265,14 @@ export const SelfRelayExecuteModal = ({
           }
 
           // Connect wallet to chain so we can send tokens.
-          const wallet = await connectWalletToChain(chain.chain_id)
+          const connectedWallet = wallets.find(
+            ({ chain: { chain_id } }) => chain_id === chain.chain_id
+          )
+          if (!connectedWallet?.address) {
+            throw new Error('Chain not connected')
+          }
+          const signingStargateClient =
+            await connectedWallet.getSigningStargateClient()
 
           // Create relayer signer.
           const signer = await DirectSecp256k1HdWallet.fromMnemonic(mnemonic, {
@@ -274,7 +300,13 @@ export const SelfRelayExecuteModal = ({
             chain,
             chainImageUrl,
             feeToken,
-            wallet,
+            wallet: {
+              address: connectedWallet.address,
+              // cosmos-kit has an older version of the package. This is a
+              // workaround.
+              signingStargateClient:
+                signingStargateClient as unknown as SigningStargateClient,
+            },
             relayerAddress,
             client,
             polytoneConnection,
