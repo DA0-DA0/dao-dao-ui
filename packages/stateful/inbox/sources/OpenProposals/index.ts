@@ -29,9 +29,6 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
     const daosWithItemsLoadable = useCachedLoadable(
-      // Don't load without a wallet until we're no longer initializing. This
-      // prevents duplicate queries when the page is first loading.
-      // TODO(cosmos-kit): Check if there is an initializing state when cosmos-kit is autoconnecting
       waitForAll(
         getSupportedChains().map(({ chain }) =>
           inboxOpenProposalsSelector({
