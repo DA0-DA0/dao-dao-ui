@@ -61,9 +61,13 @@ export const useWallet = ({
     // If connected and account not loaded, set state.
     if (account?.address !== walletChainRef.current.address) {
       ;(async () => {
-        const account = await walletChainRef.current.getAccount()
-        setAccount(account)
-        setHexPublicKeyData(toHex(account.pubkey))
+        try {
+          const account = await walletChainRef.current.getAccount()
+          setAccount(account)
+          setHexPublicKeyData(toHex(account.pubkey))
+        } catch (err) {
+          console.error('Wallet account loading error', err)
+        }
       })()
     }
   }, [

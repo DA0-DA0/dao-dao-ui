@@ -80,7 +80,7 @@ export const WalletUi = (props: WalletModalProps) => {
       }}
       onClose={() => {
         // If not connected, disconnect, to interrupt active connection.
-        if (!isWalletConnected) {
+        if (!isWalletConnected && walletRepo && walletRepo.current) {
           walletRepo.disconnect()
         }
 

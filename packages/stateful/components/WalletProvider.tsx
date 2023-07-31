@@ -5,7 +5,7 @@ import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
 import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
 import { wallets as keplrMobileWallets } from '@cosmos-kit/keplr-mobile'
 import { wallets as leapWallets } from '@cosmos-kit/leap'
-import { ChainProvider } from '@cosmos-kit/react-lite'
+import { ChainProvider, walletContext } from '@cosmos-kit/react-lite'
 import { wallets as stationWallets } from '@cosmos-kit/station'
 import { wallets as trustWallets } from '@cosmos-kit/trust'
 import { wallets as vectisWallets } from '@cosmos-kit/vectis'
@@ -16,6 +16,8 @@ import {
   PropsWithChildren,
   ReactNode,
   SetStateAction,
+  useContext,
+  useEffect,
   useMemo,
 } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -32,7 +34,7 @@ import {
   typesRegistry,
 } from '@dao-dao/utils'
 
-import { useSyncWalletSigner } from '../hooks'
+import { useSyncWalletSigner, useWallet } from '../hooks'
 import { WalletUi } from './wallet'
 
 export type WalletProviderProps = {
@@ -190,6 +192,17 @@ export const WalletProvider = ({
 
 const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   useSyncWalletSigner()
+
+  const { isWalletDisconnected, chain } = useWallet()
+  // Re-run account restore logic on wallet chain switch to ensure connected.
+  const { walletManager } = useContext(walletContext)
+  useEffect(() => {
+    if (isWalletDisconnected) {
+      // @ts-ignore
+      walletManager._restoreAccounts()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chain.chain_id, walletManager])
 
   return <>{children}</>
 }
