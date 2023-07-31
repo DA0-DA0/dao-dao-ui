@@ -1,4 +1,4 @@
-import { SignData } from '@noahsaso/cosmos-kit-web3auth'
+import { SignData } from '@cosmos-kit/web3auth'
 
 export type Web3AuthPrompt = {
   signData: SignData

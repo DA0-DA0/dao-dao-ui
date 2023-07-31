@@ -25,15 +25,15 @@ const config = {
     '@dao-dao/stateful',
     '@dao-dao/i18n',
     '@dao-dao/types',
-    '@noahsaso/cosmos-kit-web3auth',
+    '@cosmos-kit/web3auth',
   ],
-  // Because @noahsaso/cosmos-kit-web3auth uses a Worker ESM import.
+  // Because @cosmos-kit/web3auth uses a Worker ESM import.
   experimental: {
     esmExternals: 'loose',
   },
   webpack: (config) => {
-    // @noahsaso/cosmos-kit-web3auth uses eccrypto, which uses `stream`. This
-    // needs to be polyfilled.
+    // @cosmos-kit/web3auth uses eccrypto, which uses `stream`. This needs to be
+    // polyfilled.
     config.resolve.alias['stream'] = 'stream-browserify'
     return config
   },
