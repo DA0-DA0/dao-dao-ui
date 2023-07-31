@@ -66,7 +66,13 @@ export const useWallet = ({
         setHexPublicKeyData(toHex(account.pubkey))
       })()
     }
-  }, [account?.address, loadAccount])
+  }, [
+    account?.address,
+    loadAccount,
+    walletChainRef.current.address,
+    walletChainRef.current.chain.chain_id,
+    walletChainRef.current.status,
+  ])
 
   const response = useMemo(
     (): UseWalletReturn => ({
