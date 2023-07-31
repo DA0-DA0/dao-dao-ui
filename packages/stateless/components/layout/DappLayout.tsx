@@ -1,11 +1,11 @@
 import { ArrowRightRounded, SensorsRounded } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DappLayoutProps } from '@dao-dao/types/stateless/DappLayout'
 
+import { useDaoNavHelpers } from '../../hooks/useDaoNavHelpers'
 import { ErrorBoundary } from '../error/ErrorBoundary'
 import { IconButton } from '../icon_buttons'
 import { ProfileImage } from '../profile/ProfileImage'
@@ -26,13 +26,18 @@ export const DappLayout = ({
   connectWalletButton,
 }: DappLayoutProps) => {
   const { t } = useTranslation()
-  const router = useRouter()
+  const { router, getDaoPath, getDaoFromPath } = useDaoNavHelpers()
   const { responsiveNavigation, responsiveRightSidebar, setPageHeaderRef } =
     useAppContext()
 
   const scrollableContainerRef = useRef<HTMLDivElement>(null)
 
-  // On route change, close responsive bars and scroll to top.
+  // On DAO or non-DAO route change, close responsive bars and scroll to top.
+  // When staying on the same DAO page, likely switching between tabs, so no
+  // need to reset scroll to the top.
+  const scrollPathDelta = router.asPath.startsWith(getDaoPath(''))
+    ? getDaoFromPath()
+    : router.asPath
   useEffect(() => {
     responsiveNavigation.enabled && responsiveNavigation.toggle()
     responsiveRightSidebar.enabled && responsiveRightSidebar.toggle()
@@ -48,7 +53,7 @@ export const DappLayout = ({
 
     // Only toggle on route change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router.asPath])
+  }, [scrollPathDelta])
 
   const [connectHidden, setConnectHidden] = useState(false)
 
