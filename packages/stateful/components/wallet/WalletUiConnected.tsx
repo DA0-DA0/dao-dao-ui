@@ -35,10 +35,8 @@ export const WalletUiConnected = ({
     return null
   }
 
-  const { current, disconnect } = walletRepo
-
   const isWeb3Auth =
-    isWalletConnected && current?.walletName.startsWith('web3auth_')
+    isWalletConnected && walletRepo?.current?.walletName.startsWith('web3auth_')
 
   return (
     <div className="flex flex-col items-stretch gap-6">
@@ -62,10 +60,10 @@ export const WalletUiConnected = ({
             title={
               isWeb3Auth
                 ? t('info.signedInAs', {
-                    name: current.walletPrettyName,
+                    name: walletRepo?.current.walletPrettyName,
                   })
                 : t('info.connectedTo', {
-                    name: current.walletPrettyName,
+                    name: walletRepo?.current.walletPrettyName,
                   })
             }
           >
@@ -73,7 +71,7 @@ export const WalletUiConnected = ({
             <img
               alt=""
               className="object-no-repeat absolute -right-2 -bottom-2 h-6 w-6 object-contain object-center"
-              src={current.walletInfo.logo}
+              src={walletRepo?.current.walletInfo.logo}
               style={{
                 filter: 'drop-shadow(0px 2px 8px rgba(0, 0, 0, 1))',
               }}
@@ -87,17 +85,17 @@ export const WalletUiConnected = ({
           walletProfileData={walletProfileData}
         />
         {/* Address */}
-        <CopyableAddress address={current.address ?? ''} />
+        <CopyableAddress address={walletRepo?.current.address ?? ''} />
       </div>
 
       {/* In Keplr mobile web, the wallet is force connected and cannot be logged out of, so only show the log out button for all other options. */}
-      {(current.walletName !== keplrExtensionWallet.walletName ||
-        !(current.client instanceof KeplrClient) ||
-        current.client.client.mode !== 'mobile-web') && (
+      {(walletRepo?.current.walletName !== keplrExtensionWallet.walletName ||
+        !(walletRepo?.current.client instanceof KeplrClient) ||
+        walletRepo?.current.client.client.mode !== 'mobile-web') && (
         <Button
           center
           className="w-full"
-          onClick={() => disconnect()}
+          onClick={() => walletRepo?.disconnect?.()}
           size="lg"
           variant="secondary"
         >
