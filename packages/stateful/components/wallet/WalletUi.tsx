@@ -12,7 +12,6 @@ import { WalletUiWalletList } from './WalletUiWalletList'
 
 export const WalletUi = (props: WalletModalProps) => {
   const {
-    isWalletDisconnected,
     isWalletConnecting,
     isWalletConnected,
     isWalletError,
@@ -46,18 +45,15 @@ export const WalletUi = (props: WalletModalProps) => {
   }
 
   const showWalletConnectQr = isWalletConnecting && qrState === State.Done
-  const title =
-    isWalletDisconnected || isWalletError
-      ? t('title.logInWith')
-      : isWalletConnecting
-      ? showWalletConnectQr
-        ? t('title.scanQrCode')
-        : current?.walletName.startsWith('web3auth_')
-        ? t('title.loggingInToService', { service: current.walletPrettyName })
-        : t('title.connectingToWallet', { wallet: current?.walletPrettyName })
-      : isWalletConnected
-      ? t('title.loggedIn')
-      : ''
+  const title = isWalletConnecting
+    ? showWalletConnectQr
+      ? t('title.scanQrCode')
+      : current?.walletName.startsWith('web3auth_')
+      ? t('title.loggingInToService', { service: current.walletPrettyName })
+      : t('title.connectingToWallet', { wallet: current?.walletPrettyName })
+    : isWalletConnected
+    ? t('title.loggedIn')
+    : t('title.logInWith')
 
   return (
     <Modal

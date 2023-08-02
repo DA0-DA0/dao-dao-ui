@@ -44,11 +44,9 @@ export const WalletUiWalletList = ({
               isConnectingTo(wallet) && 'animate-pulse'
             )}
             contentContainerClassName="flex-col !gap-3 justify-between items-center"
-            disabled={
-              // Disable if connecting to another wallet.
-              isWalletConnecting && !isConnectingTo(wallet)
+            onClick={() =>
+              isConnectingTo(wallet) ? walletRepo.disconnect() : connect(wallet)
             }
-            onClick={() => connect(wallet)}
             variant="secondary"
           >
             {!!wallet.walletInfo.logo && (
@@ -99,11 +97,11 @@ export const WalletUiWalletList = ({
                     isConnectingTo(wallet) && 'animate-pulse'
                   )}
                   contentContainerClassName="flex justify-center items-center"
-                  disabled={
-                    // Disable if connecting to another wallet.
-                    isWalletConnecting && !isConnectingTo(wallet)
+                  onClick={() =>
+                    isConnectingTo(wallet)
+                      ? walletRepo.disconnect()
+                      : connect(wallet)
                   }
-                  onClick={() => connect(wallet)}
                   variant="secondary"
                 >
                   {!!wallet.walletInfo.logo && (
