@@ -5199,10 +5199,10 @@
     jsbi "^3.1.5"
     sha.js "^2.4.11"
 
-"@noahsaso/cosmos-kit-keplr-extension@^2.1.6-beta.0":
-  version "2.1.6-beta.0"
-  resolved "https://registry.yarnpkg.com/@noahsaso/cosmos-kit-keplr-extension/-/cosmos-kit-keplr-extension-2.1.6-beta.0.tgz#918cf8241a1c8dce38b66f5bf5948c700098d67d"
-  integrity sha512-pIn9zY8m+KD2PkXH19RDbn3AJFbcdVuw4bs1LfCgPZLQRqOG7YC8fE6Cy2rMzTuFkfZ66Ue7Om6ZC/Zw0VhKig==
+"@noahsaso/cosmos-kit-keplr-extension@^2.1.6-beta.1":
+  version "2.1.6-beta.1"
+  resolved "https://registry.yarnpkg.com/@noahsaso/cosmos-kit-keplr-extension/-/cosmos-kit-keplr-extension-2.1.6-beta.1.tgz#4f3e9de39db59e5121bd83578b6fd72bfa4dead1"
+  integrity sha512-pwCg3Cbbx880vAT9c4a6q6GNI57xOAKunjl1+T+6g9jUZhoiHp1wniauN+qqo0Ax817xZOA56h50Bjqw/c6Mig==
   dependencies:
     "@chain-registry/keplr" "1.8.0"
     "@cosmos-kit/core" "^2.2.0"
