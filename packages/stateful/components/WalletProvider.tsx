@@ -19,6 +19,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
 } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -193,7 +194,7 @@ export const WalletProvider = ({
 const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   useSyncWalletSigner()
 
-  const { isWalletDisconnected, chain } = useWallet()
+  const { isWalletDisconnected, chain, walletRepo } = useWallet()
   // Re-run account restore logic on wallet chain switch to ensure connected.
   const { walletManager } = useContext(walletContext)
   useEffect(() => {
@@ -203,6 +204,34 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chain.chain_id, walletManager])
+
+  // Auto-connect to Keplr mobile web if in that context.
+  const attemptedKeplrMobileWebConnectionRef = useRef(false)
+  useEffect(() => {
+    if (
+      typeof window === 'undefined' ||
+      !isWalletDisconnected ||
+      attemptedKeplrMobileWebConnectionRef.current
+    ) {
+      return
+    }
+
+    // Don't try again.
+    attemptedKeplrMobileWebConnectionRef.current = true
+
+    // Connect.
+    ;(async () => {
+      const keplr = await (
+        await import('@keplr-wallet/stores')
+      ).getKeplrFromWindow()
+      const keplrWallet = walletRepo.wallets.find(
+        (wallet) => wallet.walletInfo.name === 'keplr-extension'
+      )
+      if (keplr && keplrWallet && keplr.mode === 'mobile-web') {
+        keplrWallet.connect()
+      }
+    })()
+  }, [isWalletDisconnected, walletRepo])
 
   return <>{children}</>
 }
