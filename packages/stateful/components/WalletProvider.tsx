@@ -22,7 +22,9 @@ import {
   useRef,
 } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValue } from 'recoil'
 
+import { mountedInBrowserAtom } from '@dao-dao/state/recoil'
 import { Web3AuthPrompt } from '@dao-dao/types'
 import {
   CHAIN_ENDPOINTS,
@@ -206,10 +208,12 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   }, [chain.chain_id, walletManager])
 
   // Auto-connect to Keplr mobile web if in that context.
+  const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const connectingKeplrMobileWebConnectionRef = useRef(false)
   useEffect(() => {
     if (
       typeof window === 'undefined' ||
+      !mountedInBrowser ||
       !isWalletDisconnected ||
       connectingKeplrMobileWebConnectionRef.current
     ) {
@@ -238,7 +242,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
         connectingKeplrMobileWebConnectionRef.current = false
       }
     })()
-  }, [isWalletDisconnected, walletRepo])
+  }, [isWalletDisconnected, mountedInBrowser, walletRepo])
 
   return <>{children}</>
 }
