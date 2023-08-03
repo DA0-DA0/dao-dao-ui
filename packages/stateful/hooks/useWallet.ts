@@ -5,8 +5,14 @@ import { useChain as useWalletChain } from '@cosmos-kit/react-lite'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { walletChainIdAtom } from '@dao-dao/state/recoil'
-import { useChainContextIfAvailable } from '@dao-dao/stateless'
+import {
+  walletChainIdAtom,
+  walletHexPublicKeySelector,
+} from '@dao-dao/state/recoil'
+import {
+  useCachedLoading,
+  useChainContextIfAvailable,
+} from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 import { getChainForChainId } from '@dao-dao/utils'
 
@@ -47,6 +53,16 @@ export const useWallet = ({
   const [account, setAccount] = useState<WalletAccount>()
   const [hexPublicKeyData, setHexPublicKeyData] = useState<string>()
 
+  const hexPublicKeyFromChain = useCachedLoading(
+    _walletChain.address && loadAccount
+      ? walletHexPublicKeySelector({
+          walletAddress: _walletChain.address,
+          chainId: _walletChain.chain.chain_id,
+        })
+      : undefined,
+    undefined
+  )
+
   useEffect(() => {
     if (!loadAccount) {
       return
@@ -84,9 +100,11 @@ export const useWallet = ({
       // Use chain from our version of the chain-registry.
       chain: getChainForChainId(walletChainRef.current.chain.chain_id),
       account,
-      hexPublicKey: !hexPublicKeyData
-        ? { loading: true }
-        : { loading: false, data: hexPublicKeyData },
+      hexPublicKey: hexPublicKeyData
+        ? { loading: false, data: hexPublicKeyData }
+        : !hexPublicKeyFromChain.loading && hexPublicKeyFromChain.data
+        ? { loading: false, data: hexPublicKeyFromChain.data }
+        : { loading: true },
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
@@ -95,6 +113,7 @@ export const useWallet = ({
       walletChainRef.current.address,
       walletChainRef.current.chain.chain_id,
       walletChainRef.current.status,
+      hexPublicKeyFromChain,
     ]
   )
 

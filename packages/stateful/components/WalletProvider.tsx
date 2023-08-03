@@ -22,7 +22,9 @@ import {
   useRef,
 } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValue } from 'recoil'
 
+import { mountedInBrowserAtom } from '@dao-dao/state/recoil'
 import { Web3AuthPrompt } from '@dao-dao/types'
 import {
   CHAIN_ENDPOINTS,
@@ -206,32 +208,41 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   }, [chain.chain_id, walletManager])
 
   // Auto-connect to Keplr mobile web if in that context.
-  const attemptedKeplrMobileWebConnectionRef = useRef(false)
+  const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
+  const connectingKeplrMobileWebConnectionRef = useRef(false)
   useEffect(() => {
     if (
       typeof window === 'undefined' ||
+      !mountedInBrowser ||
       !isWalletDisconnected ||
-      attemptedKeplrMobileWebConnectionRef.current
+      connectingKeplrMobileWebConnectionRef.current
     ) {
       return
     }
 
-    // Don't try again.
-    attemptedKeplrMobileWebConnectionRef.current = true
+    // Only try once at a time.
+    connectingKeplrMobileWebConnectionRef.current = true
 
     // Connect.
     ;(async () => {
-      const keplr = await (
-        await import('@keplr-wallet/stores')
-      ).getKeplrFromWindow()
-      const keplrWallet = walletRepo.wallets.find(
-        (wallet) => wallet.walletInfo.name === 'keplr-extension'
-      )
-      if (keplr && keplrWallet && keplr.mode === 'mobile-web') {
-        keplrWallet.connect()
+      try {
+        const keplr = await (
+          await import('@keplr-wallet/stores')
+        ).getKeplrFromWindow()
+        const keplrWallet = walletRepo.wallets.find(
+          (wallet) =>
+            wallet.walletInfo.name === keplrExtensionWallets[0].walletInfo.name
+        )
+        if (keplr && keplrWallet && keplr.mode === 'mobile-web') {
+          await keplrWallet.connect()
+        }
+      } catch (err) {
+        console.error('Keplr mobile web connection failed', err)
+      } finally {
+        connectingKeplrMobileWebConnectionRef.current = false
       }
     })()
-  }, [isWalletDisconnected, walletRepo])
+  }, [isWalletDisconnected, mountedInBrowser, walletRepo])
 
   return <>{children}</>
 }

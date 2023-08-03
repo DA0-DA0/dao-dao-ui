@@ -89,7 +89,8 @@ export const WalletUiConnected = ({
       </div>
 
       {/* In Keplr mobile web, the wallet is force connected and cannot be logged out of, so only show the log out button for all other options. */}
-      {(walletRepo?.current.walletName !== keplrExtensionWallet.walletName ||
+      {(walletRepo?.current.walletInfo.name !==
+        keplrExtensionWallet.walletInfo.name ||
         !(walletRepo?.current.client instanceof KeplrClient) ||
         walletRepo?.current.client.client.mode !== 'mobile-web') && (
         <Button
