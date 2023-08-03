@@ -2,7 +2,6 @@ import { Chain } from '@chain-registry/types'
 import { GasPrice } from '@cosmjs/stargate'
 import { Endpoints, SignerOptions } from '@cosmos-kit/core'
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
-import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
 import { wallets as keplrMobileWallets } from '@cosmos-kit/keplr-mobile'
 import { wallets as leapWallets } from '@cosmos-kit/leap'
 import { ChainProvider, walletContext } from '@cosmos-kit/react-lite'
@@ -10,6 +9,7 @@ import { wallets as stationWallets } from '@cosmos-kit/station'
 import { wallets as trustWallets } from '@cosmos-kit/trust'
 import { wallets as vectisWallets } from '@cosmos-kit/vectis'
 import { PromptSign, makeWeb3AuthWallets } from '@cosmos-kit/web3auth'
+import { wallets as keplrExtensionWallets } from '@noahsaso/cosmos-kit-keplr-extension'
 import { assets, chains } from 'chain-registry'
 import {
   Dispatch,
@@ -19,12 +19,14 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
 } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { mountedInBrowserAtom } from '@dao-dao/state/recoil'
+import {
+  isKeplrMobileWebAtom,
+  mountedInBrowserAtom,
+} from '@dao-dao/state/recoil'
 import { Web3AuthPrompt } from '@dao-dao/types'
 import {
   CHAIN_ENDPOINTS,
@@ -134,6 +136,23 @@ export const WalletProvider = ({
     signingCosmwasm: getSignerOptions as SignerOptions['signingCosmwasm'],
   }
 
+  // Auto-connect to Keplr mobile web if in that context.
+  const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
+  const [isKeplrMobileWeb, setIsKeplrMobileWeb] =
+    useRecoilState(isKeplrMobileWebAtom)
+  useEffect(() => {
+    if (!mountedInBrowser) {
+      return
+    }
+
+    ;(async () => {
+      setIsKeplrMobileWeb(
+        (await (await import('@keplr-wallet/stores')).getKeplrFromWindow())
+          ?.mode === 'mobile-web'
+      )
+    })()
+  }, [mountedInBrowser, setIsKeplrMobileWeb])
+
   return (
     <ChainProvider
       assetLists={assets}
@@ -175,18 +194,24 @@ export const WalletProvider = ({
         },
       }}
       walletModal={WalletUi}
-      wallets={[
-        ...keplrExtensionWallets,
-        // Only allow Keplr Mobile on mainnet since it can't use testnet.
-        ...(MAINNET ? keplrMobileWallets : []),
-        ...leapWallets,
-        ...stationWallets,
-        ...vectisWallets,
-        ...trustWallets,
-        ...cosmostationWallets,
-        // Google, Apple, Discord, Twitter
-        ...web3AuthWallets,
-      ]}
+      wallets={
+        // If Keplr Mobile in-app browser, only allow Keplr Extension. Keplr
+        // Mobile wallet works via WalletConnect from a desktop, but not in-app.
+        isKeplrMobileWeb
+          ? keplrExtensionWallets
+          : [
+              ...keplrExtensionWallets,
+              // Only allow Keplr Mobile on mainnet since it can't use testnet.
+              ...(MAINNET ? keplrMobileWallets : []),
+              ...leapWallets,
+              ...stationWallets,
+              ...vectisWallets,
+              ...trustWallets,
+              ...cosmostationWallets,
+              // Google, Apple, Discord, Twitter
+              ...web3AuthWallets,
+            ]
+      }
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>
     </ChainProvider>
@@ -208,41 +233,14 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   }, [chain.chain_id, walletManager])
 
   // Auto-connect to Keplr mobile web if in that context.
-  const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
-  const connectingKeplrMobileWebConnectionRef = useRef(false)
+  const isKeplrMobileWeb = useRecoilValue(isKeplrMobileWebAtom)
   useEffect(() => {
-    if (
-      typeof window === 'undefined' ||
-      !mountedInBrowser ||
-      !isWalletDisconnected ||
-      connectingKeplrMobileWebConnectionRef.current
-    ) {
+    if (!isKeplrMobileWeb || !isWalletDisconnected) {
       return
     }
 
-    // Only try once at a time.
-    connectingKeplrMobileWebConnectionRef.current = true
-
-    // Connect.
-    ;(async () => {
-      try {
-        const keplr = await (
-          await import('@keplr-wallet/stores')
-        ).getKeplrFromWindow()
-        const keplrWallet = walletRepo.wallets.find(
-          (wallet) =>
-            wallet.walletInfo.name === keplrExtensionWallets[0].walletInfo.name
-        )
-        if (keplr && keplrWallet && keplr.mode === 'mobile-web') {
-          await walletRepo.connect(keplrWallet.walletName)
-        }
-      } catch (err) {
-        console.error('Keplr mobile web connection failed', err)
-      } finally {
-        connectingKeplrMobileWebConnectionRef.current = false
-      }
-    })()
-  }, [isWalletDisconnected, mountedInBrowser, walletRepo])
+    walletRepo.connect(keplrExtensionWallets[0].walletName)
+  }, [isKeplrMobileWeb, isWalletDisconnected, walletRepo])
 
   return <>{children}</>
 }
