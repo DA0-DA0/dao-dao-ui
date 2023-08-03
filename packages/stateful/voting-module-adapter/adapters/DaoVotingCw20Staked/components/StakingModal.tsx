@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -34,6 +33,7 @@ import {
   Cw20BaseHooks,
   Cw20StakeHooks,
   useAwaitNextBlock,
+  useWallet,
   useWalletInfo,
 } from '../../../../hooks'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
@@ -52,8 +52,8 @@ const InnerStakingModal = ({
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { address: walletAddress, connected } = useWallet(chainId)
-  const { refreshBalances } = useWalletInfo(chainId)
+  const { address: walletAddress, isWalletConnected } = useWallet()
+  const { refreshBalances } = useWalletInfo()
   const { coreAddress } = useVotingModuleAdapterOptions()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
@@ -141,7 +141,7 @@ const InnerStakingModal = ({
 
   const awaitNextBlock = useAwaitNextBlock()
   const onAction = async (mode: StakingMode, amount: number) => {
-    if (!connected) {
+    if (!isWalletConnected) {
       toast.error(t('error.logInToContinue'))
       return
     }
@@ -305,7 +305,7 @@ const InnerStakingModal = ({
     <StatelessStakingModal
       amount={amount}
       claimableTokens={sumClaimsAvailable}
-      error={connected ? undefined : t('error.logInToContinue')}
+      error={isWalletConnected ? undefined : t('error.logInToContinue')}
       initialMode={initialMode}
       loading={stakingLoading}
       loadingStakableTokens={

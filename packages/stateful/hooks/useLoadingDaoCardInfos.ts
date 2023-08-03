@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { waitForAll } from 'recoil'
 
 import { indexerFeaturedDaosSelector } from '@dao-dao/state/recoil'
@@ -7,6 +6,7 @@ import { DaoCardInfo, LoadingData } from '@dao-dao/types'
 import { NUM_FEATURED_DAOS, getSupportedChains } from '@dao-dao/utils'
 
 import { daoCardInfoSelector, followingDaosSelector } from '../recoil'
+import { useWallet } from './useWallet'
 
 export const useLoadingDaoCardInfos = (
   daos: LoadingData<
@@ -77,14 +77,16 @@ export const useLoadingFollowingDaoCardInfos = (): LoadingData<
 > => {
   const chains = getSupportedChains()
 
-  const { publicKey } = useWallet()
+  const { hexPublicKey } = useWallet({
+    loadAccount: true,
+  })
   const followingDaosLoading = useCachedLoading(
-    publicKey
+    !hexPublicKey.loading
       ? waitForAll(
           chains.map(({ chain }) =>
             followingDaosSelector({
               chainId: chain.chain_id,
-              walletPublicKey: publicKey.hex,
+              walletPublicKey: hexPublicKey.data,
             })
           )
         )

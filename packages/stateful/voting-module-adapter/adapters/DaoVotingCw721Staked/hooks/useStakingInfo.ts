@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import {
   constSelector,
@@ -23,6 +22,7 @@ import {
 import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import { claimAvailable } from '@dao-dao/utils'
 
+import { useWallet } from '../../../../hooks/useWallet'
 import { nftCardInfoSelector } from '../../../../recoil/selectors/nft'
 import { useVotingModuleAdapterOptions } from '../../../react/context'
 import { UseStakingInfoOptions, UseStakingInfoResponse } from '../types'
@@ -35,7 +35,7 @@ export const useStakingInfo = ({
   fetchWalletUnstakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
   const { chain_id: chainId } = useChain()
-  const { address: walletAddress } = useWallet(chainId)
+  const { address: walletAddress } = useWallet()
   const { votingModuleAddress } = useVotingModuleAdapterOptions()
 
   const { collectionAddress: governanceTokenAddress } =

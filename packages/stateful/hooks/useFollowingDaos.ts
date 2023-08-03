@@ -1,4 +1,3 @@
-import { WalletConnectionStatus, useWallet } from '@noahsaso/cosmodal'
 import uniq from 'lodash.uniq'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
@@ -19,6 +18,7 @@ import {
   temporaryFollowingDaosAtom,
 } from '../recoil/selectors/dao/following'
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
+import { useWallet } from './useWallet'
 
 export type UseFollowingDaosReturn = {
   daos: LoadingData<string[]>
@@ -34,21 +34,23 @@ export type UseFollowingDaosReturn = {
 
 export const useFollowingDaos = (chainId: string): UseFollowingDaosReturn => {
   const { t } = useTranslation()
-
-  const { status, connected, publicKey } = useWallet(chainId)
+  const { isWalletConnected, isWalletConnecting, hexPublicKey } = useWallet({
+    chainId,
+    loadAccount: true,
+  })
 
   // Following API doesn't update right away, so this serves to keep track of
   // all successful updates for the current session. This will be reset on page
   // refresh.
   const setTemporary = useSetRecoilState(
-    temporaryFollowingDaosAtom(publicKey?.hex ?? '')
+    temporaryFollowingDaosAtom(hexPublicKey.loading ? '' : hexPublicKey.data)
   )
 
   const followingDaosLoading = useCachedLoading(
-    publicKey
+    !hexPublicKey.loading
       ? followingDaosSelector({
           chainId,
-          walletPublicKey: publicKey.hex,
+          walletPublicKey: hexPublicKey.data,
         })
       : undefined,
     []
@@ -165,12 +167,11 @@ export const useFollowingDaos = (chainId: string): UseFollowingDaosReturn => {
     setUnfollowing,
     updatingFollowing:
       // If wallet connecting, following is not yet loaded.
-      status === WalletConnectionStatus.Initializing ||
-      status === WalletConnectionStatus.AttemptingAutoConnection ||
-      status === WalletConnectionStatus.Connecting ||
+      isWalletConnecting ||
       // Updating if wallet connected and following is loading or update is in
-      // progress.
-      (connected && (followingDaosLoading.loading || updating)),
+      // progress or hex public key not yet loaded.
+      (isWalletConnected &&
+        (!hexPublicKey || followingDaosLoading.loading || updating)),
     ready,
   }
 }

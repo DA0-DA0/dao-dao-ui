@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
-import { waitForAll } from 'recoil'
+import { useSetRecoilState, waitForAll } from 'recoil'
 
+import { updateProfileNftVisibleAtom } from '@dao-dao/state/recoil'
 import {
   Loader,
   ProfileCantVoteCard,
   ProfileVoteCard,
-  useAppContext,
   useCachedLoadable,
   useChain,
   useDaoInfoContext,
@@ -28,8 +28,10 @@ export interface ProfileProposalCardProps {
 export const ProfileProposalCard = () => {
   const chain = useChain()
   const { coreAddress, name: daoName, proposalModules } = useDaoInfoContext()
-  const { walletProfileData, updateProfileName } = useWalletInfo(chain.chain_id)
-  const { updateProfileNft } = useAppContext()
+  const { walletProfileData, updateProfileName } = useWalletInfo()
+  const setUpdateProfileNftVisible = useSetRecoilState(
+    updateProfileNftVisibleAtom
+  )
 
   const {
     hooks: { useLoadingWalletVoteInfo },
@@ -99,7 +101,7 @@ export const ProfileProposalCard = () => {
     votingPower: votingPowerPercent,
     daoName,
     walletProfileData,
-    showUpdateProfileNft: updateProfileNft.toggle,
+    showUpdateProfileNft: () => setUpdateProfileNftVisible(true),
     updateProfileName,
   }
 

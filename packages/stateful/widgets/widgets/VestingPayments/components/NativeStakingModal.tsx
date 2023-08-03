@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -28,7 +27,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useAwaitNextBlock } from '../../../../hooks'
+import { useAwaitNextBlock, useWallet } from '../../../../hooks'
 import {
   useDelegate,
   useRedelegate,
@@ -86,7 +85,7 @@ export const NativeStakingModal = ({
   const [amount, setAmount] = useState(0)
   const [loading, setLoading] = useState(false)
 
-  const { address: walletAddress = '' } = useWallet(chainId)
+  const { address: walletAddress = '' } = useWallet()
   const delegate = useDelegate({
     contractAddress: vestingContractAddress,
     sender: walletAddress,

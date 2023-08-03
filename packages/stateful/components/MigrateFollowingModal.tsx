@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 
@@ -9,7 +8,11 @@ import {
 import { ChainId } from '@dao-dao/types'
 import { MAINNET, processError } from '@dao-dao/utils'
 
-import { useCfWorkerAuthPostRequest, useFollowingDaos } from '../hooks'
+import {
+  useCfWorkerAuthPostRequest,
+  useFollowingDaos,
+  useWallet,
+} from '../hooks'
 import { EntityDisplay } from './EntityDisplay'
 
 const junoChainId = MAINNET ? ChainId.JunoMainnet : ChainId.JunoTestnet
@@ -21,7 +24,7 @@ export const MigrateFollowingModal = () => {
 
   const [oldFollowing, setOldFollowing] = useState([] as string[])
   const [loading, setLoading] = useState(false)
-  const { address } = useWallet(junoChainId)
+  const { address } = useWallet({ chainId: junoChainId })
   useEffect(() => {
     if (!address) {
       return

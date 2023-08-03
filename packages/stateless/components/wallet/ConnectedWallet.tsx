@@ -6,7 +6,7 @@ import { CopyableAddress } from '../CopyableAddress'
 import { IconButton } from '../icon_buttons'
 
 export interface ConnectedWalletProps {
-  walletProviderImageUrl: string
+  walletProviderImageUrl?: string
   walletName: string
   walletAddress: string
   openWalletModal: () => void
@@ -36,12 +36,14 @@ export const ConnectedWallet = ({
     >
       <div className="flex min-w-0 flex-row items-stretch gap-3">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-[2px] border-border-primary">
-          <div
-            className="h-6 w-6 bg-contain bg-center bg-no-repeat"
-            style={{
-              backgroundImage: `url(${walletProviderImageUrl})`,
-            }}
-          />
+          {walletProviderImageUrl && (
+            <div
+              className="h-6 w-6 bg-contain bg-center bg-no-repeat"
+              style={{
+                backgroundImage: `url(${walletProviderImageUrl})`,
+              }}
+            />
+          )}
         </div>
 
         <div className="flex min-w-0 flex-col justify-center gap-1">

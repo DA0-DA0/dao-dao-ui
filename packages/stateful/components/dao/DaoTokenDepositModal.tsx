@@ -1,5 +1,4 @@
 import { coins } from '@cosmjs/stargate'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -14,7 +13,6 @@ import {
   TokenDepositModal,
   TokenDepositModalProps,
   useCachedLoading,
-  useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
 import {
@@ -24,7 +22,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { Cw20BaseHooks, useWalletInfo } from '../../hooks'
+import { Cw20BaseHooks, useWallet, useWalletInfo } from '../../hooks'
 import { ConnectWallet } from '../ConnectWallet'
 
 export type DaoTokenDepositModalProps = Pick<
@@ -38,17 +36,23 @@ export const DaoTokenDepositModal = ({
   ...props
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
-  const { chain_id: currentChainId } = useChain()
-  const { name: daoName, coreAddress, polytoneProxies } = useDaoInfoContext()
-  const { connected, address, signingCosmWasmClient } =
-    useWallet(currentChainId)
-  const { refreshBalances: refreshWalletBalances } =
-    useWalletInfo(currentChainId)
+  const {
+    chainId: daoChainId,
+    name: daoName,
+    coreAddress,
+    polytoneProxies,
+  } = useDaoInfoContext()
+  const { isWalletConnected, address, getSigningCosmWasmClient } = useWallet({
+    chainId: token.chainId,
+  })
+  const { refreshBalances: refreshWalletBalances } = useWalletInfo({
+    chainId: token.chainId,
+  })
 
+  // Deposit address depends on if the token is on the DAO's native chain or one
+  // of its polytone chains.
   const depositAddress =
-    token.chainId === currentChainId
-      ? coreAddress
-      : polytoneProxies[token.chainId]
+    token.chainId === daoChainId ? coreAddress : polytoneProxies[token.chainId]
 
   const setRefreshDaoBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(depositAddress)
@@ -88,10 +92,12 @@ export const DaoTokenDepositModal = ({
 
   const onDeposit = useCallback(
     async (amount: number) => {
-      if (!signingCosmWasmClient || !address) {
+      if (!address) {
         toast.error(t('error.logInToContinue'))
         return
       }
+
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
 
       setLoading(true)
       try {
@@ -145,7 +151,7 @@ export const DaoTokenDepositModal = ({
       refreshDaoBalances,
       refreshWalletBalances,
       setAmount,
-      signingCosmWasmClient,
+      getSigningCosmWasmClient,
       t,
       token,
       transferCw20,
@@ -156,7 +162,7 @@ export const DaoTokenDepositModal = ({
     <TokenDepositModal
       ConnectWallet={ConnectWallet}
       amount={amount}
-      connected={connected}
+      connected={isWalletConnected}
       loading={loading}
       loadingBalance={
         loadingBalance.loading

@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -28,6 +27,7 @@ import {
 import {
   DaoVotingCw721StakedHooks,
   useAwaitNextBlock,
+  useWallet,
   useWalletInfo,
 } from '../../../../hooks'
 import { ProfileCardMemberInfoTokens } from '../../../components'
@@ -41,8 +41,8 @@ export const ProfileCardMemberInfo = ({
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { name: daoName } = useDaoInfoContext()
-  const { address: walletAddress, connected } = useWallet(chainId)
-  const { refreshBalances } = useWalletInfo(chainId)
+  const { address: walletAddress, isWalletConnected } = useWallet()
+  const { refreshBalances } = useWalletInfo()
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [claimingLoading, setClaimingLoading] = useState(false)
   const stakingLoading = useRecoilValue(stakingLoadingAtom)
@@ -86,7 +86,7 @@ export const ProfileCardMemberInfo = ({
 
   const awaitNextBlock = useAwaitNextBlock()
   const onClaim = useCallback(async () => {
-    if (!connected) {
+    if (!isWalletConnected) {
       return toast.error(t('error.logInToContinue'))
     }
     if (!sumClaimsAvailable) {
@@ -117,7 +117,7 @@ export const ProfileCardMemberInfo = ({
     }
   }, [
     awaitNextBlock,
-    connected,
+    isWalletConnected,
     doClaim,
     collectionInfo.symbol,
     refreshBalances,

@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -15,7 +14,7 @@ import {
 import { TokenType } from '@dao-dao/types'
 
 import { ConnectWallet, SuspenseLoader } from '../../../../../../components'
-import { useEntity } from '../../../../../../hooks'
+import { useEntity, useWallet } from '../../../../../../hooks'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import { statusSelector } from '../../selectors'
@@ -27,10 +26,12 @@ export const ContributionForm = () => {
   const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
   const {
-    connected,
+    isWalletConnected,
     address: walletAddress = '',
-    publicKey: walletPublicKey,
-  } = useWallet(chainId)
+    hexPublicKey,
+  } = useWallet({
+    loadAccount: true,
+  })
   const walletEntity = useEntity(walletAddress)
 
   const postRequest = usePostRequest()
@@ -38,7 +39,7 @@ export const ContributionForm = () => {
   const statusLoadable = useCachedLoadable(
     statusSelector({
       daoAddress: coreAddress,
-      walletPublicKey: walletPublicKey?.hex ?? '_',
+      walletPublicKey: !hexPublicKey.loading ? hexPublicKey.data : '_',
     })
   )
   const setRefreshStatus = useSetRecoilState(
@@ -110,7 +111,7 @@ export const ContributionForm = () => {
                 loadingEntity={walletEntity}
               />
             )}
-            connected={connected}
+            connected={isWalletConnected}
             loading={loading || statusLoadable.updating}
             loadingEntity={walletEntity}
             onSubmit={onSubmit}

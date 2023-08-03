@@ -1,9 +1,12 @@
-import { WalletConnectionStatus, useWalletManager } from '@noahsaso/cosmodal'
+import { useTranslation } from 'react-i18next'
 
 import {
   ConnectWalletProps,
   ConnectWallet as StatelessConnectWallet,
+  Tooltip,
 } from '@dao-dao/stateless'
+
+import { useWallet } from '../hooks/useWallet'
 
 export type StatefulConnectWalletProps = Omit<
   ConnectWalletProps,
@@ -11,18 +14,20 @@ export type StatefulConnectWalletProps = Omit<
 >
 
 export const ConnectWallet = (props: StatefulConnectWalletProps) => {
-  const { connect, status } = useWalletManager()
+  const { t } = useTranslation()
+  const { connect, disconnect, isWalletConnecting } = useWallet()
 
   return (
-    <StatelessConnectWallet
-      loading={
-        status === WalletConnectionStatus.Initializing ||
-        status === WalletConnectionStatus.AttemptingAutoConnection ||
-        status === WalletConnectionStatus.Connecting
-      }
-      onConnect={connect}
-      variant="primary"
-      {...props}
-    />
+    <Tooltip
+      title={isWalletConnecting ? t('button.stopConnecting') : undefined}
+    >
+      <StatelessConnectWallet
+        allowClickWhileLoading
+        loading={isWalletConnecting}
+        onConnect={isWalletConnecting ? disconnect : connect}
+        variant="primary"
+        {...props}
+      />
+    </Tooltip>
   )
 }

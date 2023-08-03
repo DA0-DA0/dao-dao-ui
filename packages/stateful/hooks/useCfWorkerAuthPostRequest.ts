@@ -1,7 +1,10 @@
 import { makeSignDoc } from '@cosmjs/amino'
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
+
+import { getNativeTokenForChainId } from '@dao-dao/utils'
+
+import { useWallet } from './useWallet'
 
 export const useCfWorkerAuthPostRequest = (
   apiBase: string,
@@ -9,13 +12,15 @@ export const useCfWorkerAuthPostRequest = (
 ) => {
   const { t } = useTranslation()
   const {
-    walletClient,
-    publicKey,
-    chainInfo,
+    signAmino,
+    chain,
+    hexPublicKey,
     address: walletAddress,
-  } = useWallet()
+  } = useWallet({
+    loadAccount: true,
+  })
 
-  const ready = !!walletClient && !!publicKey && !!chainInfo && !!walletAddress
+  const ready = !hexPublicKey.loading && !!walletAddress
 
   const postRequest = useCallback(
     async <R = any>(
@@ -29,13 +34,17 @@ export const useCfWorkerAuthPostRequest = (
 
       // Fetch nonce.
       const nonceResponse: { nonce: number } = await (
-        await fetch(`${apiBase}/nonce/${publicKey.hex}`)
+        await fetch(`${apiBase}/nonce/${hexPublicKey.data}`)
       ).json()
       if (
         !('nonce' in nonceResponse) ||
         typeof nonceResponse.nonce !== 'number'
       ) {
-        console.error('Failed to fetch nonce.', nonceResponse, publicKey.hex)
+        console.error(
+          'Failed to fetch nonce.',
+          nonceResponse,
+          hexPublicKey.data
+        )
         throw new Error(t('error.loadingData'))
       }
 
@@ -44,17 +53,15 @@ export const useCfWorkerAuthPostRequest = (
         auth: {
           type: signatureType,
           nonce: nonceResponse.nonce,
-          chainId: chainInfo.chainId,
-          chainFeeDenom: chainInfo.feeCurrencies[0].coinMinimalDenom,
-          chainBech32Prefix: chainInfo.bech32Config.bech32PrefixAccAddr,
-          publicKey: publicKey.hex,
+          chainId: chain.chain_id,
+          chainFeeDenom: getNativeTokenForChainId(chain.chain_id)
+            .denomOrAddress,
+          chainBech32Prefix: chain.bech32_prefix,
+          publicKey: hexPublicKey.data,
         },
       }
 
       // Sign data.
-      const offlineSignerAmino = await walletClient.getOfflineSignerOnlyAmino(
-        chainInfo.chainId
-      )
       const signDocAmino = makeSignDoc(
         [
           {
@@ -74,14 +81,14 @@ export const useCfWorkerAuthPostRequest = (
             },
           ],
         },
-        chainInfo.chainId,
+        chain.chain_id,
         '',
         0,
         0
       )
       const {
         signature: { signature },
-      } = await offlineSignerAmino.signAmino(walletAddress, signDocAmino)
+      } = await signAmino(walletAddress, signDocAmino)
 
       const body = {
         data: dataWithAuth,
@@ -113,14 +120,15 @@ export const useCfWorkerAuthPostRequest = (
       return await response.json()
     },
     [
-      apiBase,
-      chainInfo,
-      publicKey,
       defaultSignatureType,
-      t,
-      walletAddress,
-      walletClient,
       ready,
+      apiBase,
+      hexPublicKey,
+      chain.chain_id,
+      chain.bech32_prefix,
+      walletAddress,
+      signAmino,
+      t,
     ]
   )
 

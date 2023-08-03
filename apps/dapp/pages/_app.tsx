@@ -17,6 +17,7 @@ import {
   activeThemeAtom,
   mountedInBrowserAtom,
   navigatingToHrefAtom,
+  web3AuthPromptAtom,
 } from '@dao-dao/state'
 import {
   AppContextProvider,
@@ -29,7 +30,7 @@ import {
   ThemeProvider,
   ToastNotifications,
 } from '@dao-dao/stateless'
-import { DaoPageMode, Web3AuthPrompt } from '@dao-dao/types'
+import { DaoPageMode } from '@dao-dao/types'
 import { SITE_IMAGE, SITE_URL } from '@dao-dao/utils'
 
 const InnerApp = ({ Component, pageProps }: AppProps) => {
@@ -43,9 +44,7 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
   const [theme, setTheme] = useRecoilState(activeThemeAtom)
   const [themeChangeCount, setThemeChangeCount] = useState(0)
 
-  const [web3AuthPrompt, setWeb3AuthPrompt] = useState<
-    Web3AuthPrompt | undefined
-  >()
+  const setWeb3AuthPrompt = useSetRecoilState(web3AuthPromptAtom)
 
   // Indicate that we are mounted.
   useEffect(() => setMountedInBrowser(true), [setMountedInBrowser])
@@ -82,11 +81,8 @@ const InnerApp = ({ Component, pageProps }: AppProps) => {
         <PageLoader />
       ) : (
         <WalletProvider setWeb3AuthPrompt={setWeb3AuthPrompt}>
-          {/* AppContextProvider uses wallet context. */}
-          <AppContextProvider
-            mode={DaoPageMode.Dapp}
-            web3AuthPrompt={web3AuthPrompt}
-          >
+          {/* AppContextProvider uses wallet context via the inbox. */}
+          <AppContextProvider mode={DaoPageMode.Dapp}>
             <DappLayout>
               <Component {...pageProps} />
             </DappLayout>

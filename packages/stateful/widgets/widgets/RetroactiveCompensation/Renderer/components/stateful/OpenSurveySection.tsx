@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -15,7 +14,7 @@ import {
   secp256k1PublicKeyToBech32Address,
 } from '@dao-dao/utils'
 
-import { useMembership } from '../../../../../../hooks'
+import { useMembership, useWallet } from '../../../../../../hooks'
 import { RETROACTIVE_COMPENSATION_WIDGET_ID } from '../../../constants'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import {
@@ -41,7 +40,7 @@ export const OpenSurveySection = ({
 }: StatefulOpenSurveySectionProps) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
-  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
+  const { bech32_prefix: bech32Prefix } = useChain()
   const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
 
   // Show contribution form if `submit` subpath is present and the currently
@@ -64,7 +63,7 @@ export const OpenSurveySection = ({
     [coreAddress, goToDao]
   )
 
-  const { connected } = useWallet(chainId)
+  const { isWalletConnected } = useWallet()
   // Voting power at time of survey creation, which determines what access level
   // this wallet has.
   const { isMember = false } = useMembership({
@@ -282,7 +281,7 @@ export const OpenSurveySection = ({
     </div>
   ) : (
     <StatelessOpenSurveySection
-      connected={connected}
+      connected={isWalletConnected}
       isMember={isMember}
       loading={loading}
       onClick={onClick}

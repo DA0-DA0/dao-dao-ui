@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { waitForAll, waitForAllSettled } from 'recoil'
 
 import {
@@ -12,6 +11,7 @@ import {
   transformBech32Address,
 } from '@dao-dao/utils'
 
+import { useWallet } from '../../hooks/useWallet'
 import {
   allWalletNftsSelector,
   hiddenBalancesSelector,
@@ -22,7 +22,9 @@ import { WalletNftCard } from '../WalletNftCard'
 import { WalletTokenLine } from '../WalletTokenLine'
 
 export const MeBalances = () => {
-  const { address: walletAddress, publicKey } = useWallet()
+  const { address: walletAddress, hexPublicKey } = useWallet({
+    loadAccount: true,
+  })
 
   const tokensWithoutLazyInfo = useCachedLoading(
     walletAddress
@@ -86,7 +88,9 @@ export const MeBalances = () => {
   )
 
   const hiddenTokens = useCachedLoading(
-    publicKey?.hex ? hiddenBalancesSelector(publicKey.hex) : undefined,
+    !hexPublicKey.loading
+      ? hiddenBalancesSelector(hexPublicKey.data)
+      : undefined,
     []
   )
 

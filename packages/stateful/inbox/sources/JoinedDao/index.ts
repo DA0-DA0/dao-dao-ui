@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useCallback } from 'react'
 import { useRecoilValue, useSetRecoilState, waitForAll } from 'recoil'
 
@@ -10,6 +9,7 @@ import { useCachedLoading } from '@dao-dao/stateless'
 import { InboxApiItemType, InboxSource } from '@dao-dao/types'
 import { getSupportedChains, transformBech32Address } from '@dao-dao/utils'
 
+import { useWallet } from '../../../hooks/useWallet'
 import { temporaryFollowingDaosAtom } from '../../../recoil/selectors/dao/following'
 import { Renderer } from './Renderer'
 import { Data } from './types'
@@ -18,10 +18,12 @@ export const JoinedDao: InboxSource<Data> = {
   id: 'joined_dao',
   Renderer,
   useData: () => {
-    const { address, publicKey } = useWallet()
+    const { address, hexPublicKey } = useWallet({
+      loadAccount: true,
+    })
 
     const temporary = useRecoilValue(
-      temporaryFollowingDaosAtom(publicKey?.hex ?? '')
+      temporaryFollowingDaosAtom(hexPublicKey.loading ? '' : hexPublicKey.data)
     )
     const items = useCachedLoading(
       address

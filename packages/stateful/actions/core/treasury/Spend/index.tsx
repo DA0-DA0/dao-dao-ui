@@ -1,5 +1,4 @@
 import { coin } from '@cosmjs/amino'
-import { useWallet } from '@noahsaso/cosmodal'
 import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx'
 import Long from 'long'
 import { useCallback, useEffect, useState } from 'react'
@@ -41,6 +40,7 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
+import { useWallet } from '../../../../hooks/useWallet'
 import { entitySelector } from '../../../../recoil'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
@@ -55,7 +55,7 @@ const useDefaults: UseDefaults<SpendData> = () => {
   const {
     chain: { chain_id: chainId },
   } = useActionOptions()
-  const { address: walletAddress = '' } = useWallet(chainId)
+  const { address: walletAddress = '' } = useWallet()
 
   return {
     chainId,

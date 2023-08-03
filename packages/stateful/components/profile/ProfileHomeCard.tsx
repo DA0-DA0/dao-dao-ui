@@ -1,6 +1,9 @@
-import { waitForAll } from 'recoil'
+import { useSetRecoilState, waitForAll } from 'recoil'
 
-import { walletProposalStatsSelector } from '@dao-dao/state/recoil'
+import {
+  updateProfileNftVisibleAtom,
+  walletProposalStatsSelector,
+} from '@dao-dao/state/recoil'
 import {
   ProfileHomeCard as StatelessProfileHomeCard,
   useAppContext,
@@ -20,12 +23,15 @@ export const ProfileHomeCard = () => {
     walletProfileData,
     walletBalance,
     walletStakedBalance,
-    walletChainInfo,
+    walletChain,
     dateBalancesFetched,
     updateProfileName,
   } = useWalletInfo()
-  const { updateProfileNft, inbox } = useAppContext()
+  const { inbox } = useAppContext()
 
+  const setUpdateProfileNftVisible = useSetRecoilState(
+    updateProfileNftVisibleAtom
+  )
   const walletProposalStatsLoadable = useCachedLoadable(
     walletAddress
       ? waitForAll(
@@ -78,16 +84,14 @@ export const ProfileHomeCard = () => {
                   : undefined,
             }
       }
-      showUpdateProfileNft={updateProfileNft.toggle}
+      showUpdateProfileNft={() => setUpdateProfileNftVisible(true)}
       tokenDecimals={
-        walletChainInfo
-          ? getNativeTokenForChainId(walletChainInfo.chainId).decimals
+        walletChain
+          ? getNativeTokenForChainId(walletChain.chain_id).decimals
           : 0
       }
       tokenSymbol={
-        walletChainInfo
-          ? getNativeTokenForChainId(walletChainInfo.chainId).symbol
-          : ''
+        walletChain ? getNativeTokenForChainId(walletChain.chain_id).symbol : ''
       }
       updateProfileName={updateProfileName}
       walletProfileData={walletProfileData}

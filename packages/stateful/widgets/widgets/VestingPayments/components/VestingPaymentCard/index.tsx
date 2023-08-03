@@ -1,4 +1,3 @@
-import { useWallet } from '@noahsaso/cosmodal'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -27,6 +26,7 @@ import { ButtonLink } from '../../../../../components/ButtonLink'
 import {
   useAwaitNextBlock,
   useEntity,
+  useWallet,
   useWalletInfo,
 } from '../../../../../hooks'
 import {
@@ -42,7 +42,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()
-  const { refreshBalances } = useWalletInfo(chainId)
+  const { refreshBalances } = useWalletInfo()
 
   const {
     vestingContractAddress,
@@ -89,7 +89,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
 
   const awaitNextBlock = useAwaitNextBlock()
 
-  const { address: walletAddress = '' } = useWallet(chainId)
+  const { address: walletAddress = '' } = useWallet()
   const distribute = useDistribute({
     contractAddress: vestingContractAddress,
     sender: walletAddress,
