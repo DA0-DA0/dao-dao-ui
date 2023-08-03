@@ -21,16 +21,12 @@ export const WalletUiWalletList = ({
     return null
   }
 
-  const { wallets: _wallets, current, isMobile } = walletRepo
+  const { current, isMobile } = walletRepo
 
   // Filter out non-mobile wallets on mobile (probably extensions).
-  const wallets = _wallets.filter(
-    (w) =>
-      !isMobile ||
-      !(typeof w.walletInfo.mobileDisabled === 'boolean'
-        ? w.walletInfo.mobileDisabled
-        : w.walletInfo.mobileDisabled())
-  )
+  const wallets = isMobile
+    ? walletRepo.platformEnabledWallets
+    : walletRepo.wallets
 
   const web3AuthWallets = wallets.filter((wallet) =>
     wallet.walletName.startsWith('web3auth_')
