@@ -234,7 +234,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
             wallet.walletInfo.name === keplrExtensionWallets[0].walletInfo.name
         )
         if (keplr && keplrWallet && keplr.mode === 'mobile-web') {
-          await keplrWallet.connect()
+          await walletRepo.connect(keplrWallet.walletName)
         }
       } catch (err) {
         console.error('Keplr mobile web connection failed', err)
