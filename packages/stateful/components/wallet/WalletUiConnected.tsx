@@ -2,7 +2,7 @@ import { WalletModalProps } from '@cosmos-kit/core'
 import {
   KeplrClient,
   wallets as keplrExtensionWallets,
-} from '@cosmos-kit/keplr-extension'
+} from '@noahsaso/cosmos-kit-keplr-extension'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 

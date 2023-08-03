@@ -39,3 +39,9 @@ export const web3AuthPromptAtom = atom<Web3AuthPrompt | undefined>({
   key: 'web3AuthPrompt',
   default: undefined,
 })
+
+// Whether or not we are running in the Keplr Mobile in-app browser.
+export const isKeplrMobileWebAtom = atom({
+  key: 'isKeplrMobileWeb',
+  default: false,
+})
