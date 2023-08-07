@@ -1,15 +1,19 @@
 import { Chain } from '@chain-registry/types'
 import { GasPrice } from '@cosmjs/stargate'
+import { wallets as coin98Wallets } from '@cosmos-kit/coin98'
 import { Endpoints, SignerOptions } from '@cosmos-kit/core'
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
+import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
 import { wallets as keplrMobileWallets } from '@cosmos-kit/keplr-mobile'
 import { wallets as leapWallets } from '@cosmos-kit/leap'
+import { wallets as omniWallets } from '@cosmos-kit/omni'
 import { ChainProvider, walletContext } from '@cosmos-kit/react-lite'
+import { wallets as shellWallets } from '@cosmos-kit/shell'
 import { wallets as stationWallets } from '@cosmos-kit/station'
 import { wallets as trustWallets } from '@cosmos-kit/trust'
 import { wallets as vectisWallets } from '@cosmos-kit/vectis'
 import { PromptSign, makeWeb3AuthWallets } from '@cosmos-kit/web3auth'
-import { wallets as keplrExtensionWallets } from '@noahsaso/cosmos-kit-keplr-extension'
+import { wallets as xdefiWallets } from '@cosmos-kit/xdefi-extension'
 import { assets, chains } from 'chain-registry'
 import {
   Dispatch,
@@ -208,6 +212,10 @@ export const WalletProvider = ({
               ...vectisWallets,
               ...trustWallets,
               ...cosmostationWallets,
+              ...coin98Wallets,
+              ...omniWallets,
+              ...shellWallets,
+              ...xdefiWallets,
               // Google, Apple, Discord, Twitter
               ...web3AuthWallets,
             ]
