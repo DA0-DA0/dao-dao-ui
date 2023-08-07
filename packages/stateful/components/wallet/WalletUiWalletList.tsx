@@ -40,15 +40,15 @@ export const WalletUiWalletList = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-3 gap-1">
         {otherWallets.map((wallet) => (
           <Button
             key={wallet.walletName}
             className={clsx(
-              'grow !p-4',
+              'grow !p-3 !pt-4',
               isConnectingTo(wallet) && 'animate-pulse'
             )}
-            contentContainerClassName="flex-col !gap-3 justify-between items-center"
+            contentContainerClassName="flex-col !gap-3 justify-center items-center"
             onClick={() =>
               isConnectingTo(wallet) ? walletRepo.disconnect() : connect(wallet)
             }
@@ -56,14 +56,14 @@ export const WalletUiWalletList = ({
           >
             {!!wallet.walletInfo.logo && (
               <div
-                className="h-12 w-12 bg-contain bg-center bg-no-repeat"
+                className="h-10 w-10 bg-contain bg-center bg-no-repeat"
                 style={{
                   backgroundImage: `url(${wallet.walletInfo.logo})`,
                 }}
               />
             )}
 
-            <p className="primary-text text-center">
+            <p className="secondary-text text-center">
               {wallet.walletInfo.prettyName}
             </p>
           </Button>
@@ -111,7 +111,7 @@ export const WalletUiWalletList = ({
                 >
                   {!!wallet.walletInfo.logo && (
                     <div
-                      className="h-12 w-12 bg-contain bg-center  bg-no-repeat"
+                      className="h-10 w-10 bg-contain bg-center  bg-no-repeat"
                       style={{
                         backgroundImage: `url(${wallet.walletInfo.logo})`,
                       }}
