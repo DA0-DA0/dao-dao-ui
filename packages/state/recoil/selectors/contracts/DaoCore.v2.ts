@@ -525,8 +525,6 @@ export const infoSelector = selectorFamily<
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'info',
-          // TODO(numia): Remove this once provided.
-          required: true,
         })
       )
       if (info) {

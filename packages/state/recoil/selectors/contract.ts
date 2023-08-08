@@ -1,4 +1,5 @@
 import { CodeDetails } from '@cosmjs/cosmwasm-stargate'
+import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { selectorFamily } from 'recoil'
 
 import { ContractVersion, InfoResponse, WithChainId } from '@dao-dao/types'
@@ -120,24 +121,34 @@ export const contractInfoSelector = selectorFamily<
   get:
     ({ contractAddress, chainId }) =>
     async ({ get }) => {
-      const info = get(
-        queryContractIndexerSelector({
-          contractAddress,
-          chainId,
-          formula: 'info',
-          // TODO(numia): Remove this once provided.
-          required: true,
-        })
-      )
-      if (info) {
-        return { info }
-      }
+      // const info = get(
+      //   queryContractIndexerSelector({
+      //     contractAddress,
+      //     chainId,
+      //     formula: 'info',
+      //   })
+      // )
+      // if (info) {
+      //   return { info }
+      // }
 
       // If indexer fails, fallback to querying chain.
       const client = get(cosmWasmClientForChainSelector(chainId))
-      return await client.queryContractSmart(contractAddress, {
-        info: {},
-      })
+      const contractInfo = await client.queryContractRaw(
+        contractAddress,
+        toUtf8('contract_info')
+      )
+      if (contractInfo) {
+        const info: InfoResponse = {
+          info: JSON.parse(fromUtf8(contractInfo)),
+        }
+        console.log(info)
+        return info
+      }
+
+      throw new Error(
+        'Failed to query contract info for contract: ' + contractAddress
+      )
     },
 })
 
