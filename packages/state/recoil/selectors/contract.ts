@@ -121,16 +121,16 @@ export const contractInfoSelector = selectorFamily<
   get:
     ({ contractAddress, chainId }) =>
     async ({ get }) => {
-      // const info = get(
-      //   queryContractIndexerSelector({
-      //     contractAddress,
-      //     chainId,
-      //     formula: 'info',
-      //   })
-      // )
-      // if (info) {
-      //   return { info }
-      // }
+      const info = get(
+        queryContractIndexerSelector({
+          contractAddress,
+          chainId,
+          formula: 'info',
+        })
+      )
+      if (info) {
+        return { info }
+      }
 
       // If indexer fails, fallback to querying chain.
       const client = get(cosmWasmClientForChainSelector(chainId))
