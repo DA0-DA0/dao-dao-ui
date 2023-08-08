@@ -142,7 +142,6 @@ export const contractInfoSelector = selectorFamily<
         const info: InfoResponse = {
           info: JSON.parse(fromUtf8(contractInfo)),
         }
-        console.log(info)
         return info
       }
 
