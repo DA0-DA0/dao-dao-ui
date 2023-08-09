@@ -1,6 +1,11 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { StargateClient } from '@cosmjs/stargate'
-import { HttpBatchClient, Tendermint34Client } from '@cosmjs/tendermint-rpc'
+import {
+  HttpBatchClient,
+  Tendermint34Client,
+  Tendermint37Client,
+  TendermintClient,
+} from '@cosmjs/tendermint-rpc'
 
 type ChainClientRoutes<T> = {
   [rpcEndpoint: string]: T
@@ -56,10 +61,18 @@ class ChainClientRouter<T> {
 export const cosmWasmClientRouter = new ChainClientRouter({
   handleConnect: async (rpcEndpoint: string) => {
     const httpClient = new HttpBatchClient(rpcEndpoint)
-    const tmClient = await Tendermint34Client.create(httpClient)
-    // @ts-ignore
-    const cwClient = new CosmWasmClient(tmClient)
-    return cwClient
+
+    // Use default Tendermint 0.34/0.37 client auto-detection, and then recreate
+    // the correct Tendermint client with the http batch client.
+    const cwClient = await CosmWasmClient.connect(rpcEndpoint)
+    const autoDetectedTmClient: TendermintClient = cwClient['tmClient']
+    const tmClient: TendermintClient = await (
+      autoDetectedTmClient.constructor as
+        | typeof Tendermint34Client
+        | typeof Tendermint37Client
+    ).create(httpClient)
+
+    return await CosmWasmClient.create(tmClient)
   },
 })
 
@@ -69,9 +82,17 @@ export const cosmWasmClientRouter = new ChainClientRouter({
 export const stargateClientRouter = new ChainClientRouter({
   handleConnect: async (rpcEndpoint: string) => {
     const httpClient = new HttpBatchClient(rpcEndpoint)
-    const tmClient = await Tendermint34Client.create(httpClient)
-    // @ts-ignore
-    const sgClient = new StargateClient(tmClient, {})
-    return sgClient
+
+    // Use default Tendermint 0.34/0.37 client auto-detection, and then recreate
+    // the correct Tendermint client with the http batch client.
+    const cwClient = await CosmWasmClient.connect(rpcEndpoint)
+    const autoDetectedTmClient: TendermintClient = cwClient['tmClient']
+    const tmClient: TendermintClient = await (
+      autoDetectedTmClient.constructor as
+        | typeof Tendermint34Client
+        | typeof Tendermint37Client
+    ).create(httpClient)
+
+    return await StargateClient.create(tmClient, {})
   },
 })
