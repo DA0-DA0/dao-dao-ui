@@ -36,9 +36,9 @@ export const contractInstantiateTimeSelector = selectorFamily<
       // If indexer fails, fallback to querying chain.
 
       const client = get(cosmWasmClientForChainSelector(chainId))
-      const events = await client.searchTx({
-        tags: [{ key: 'instantiate._contract_address', value: address }],
-      })
+      const events = await client.searchTx([
+        { key: 'instantiate._contract_address', value: address },
+      ])
 
       if (events.length === 0) {
         return
