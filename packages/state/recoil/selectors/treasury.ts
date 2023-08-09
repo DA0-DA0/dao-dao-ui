@@ -48,13 +48,11 @@ export const treasuryTransactionsSelector = selectorFamily<
       const client = get(cosmWasmClientForChainSelector(chainId))
 
       const txs = await client.searchTx(
-        {
-          sentFromOrTo: address,
-        },
-        {
-          minHeight,
-          maxHeight,
-        }
+        [
+          `message.module='bank' AND (transfer.sender='${address}' OR transfer.recipient='${address}')`,
+          ...(minHeight !== undefined ? `tx.height>=${minHeight}` : []),
+          ...(maxHeight !== undefined ? `tx.height<=${maxHeight}` : []),
+        ].join('AND')
       )
 
       const txDates = get(

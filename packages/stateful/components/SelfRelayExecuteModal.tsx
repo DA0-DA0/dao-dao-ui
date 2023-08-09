@@ -290,6 +290,7 @@ export const SelfRelayExecuteModal = ({
               estimatedBlockTime: 3000,
               // How long it waits until looking for acks.
               estimatedIndexerTime: 3000,
+              // @ts-ignore
               gasPrice: GasPrice.fromString(
                 `${feeToken.average_gas_price ?? 0}${feeToken.denom}`
               ),
@@ -693,6 +694,7 @@ export const SelfRelayExecuteModal = ({
       )
       const fee = calculateFee(
         Math.round(gasUsed * CHAIN_GAS_MULTIPLIER),
+        // @ts-ignore
         client.gasPrice
       )
       const remainingTokensAfterFee =

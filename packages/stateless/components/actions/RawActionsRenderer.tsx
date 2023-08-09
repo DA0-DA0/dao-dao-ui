@@ -5,7 +5,11 @@ import {
   LoadedActions,
   PartialCategorizedActionKeyAndData,
 } from '@dao-dao/types'
-import { convertActionsToMessages, decodeNestedProtobufs } from '@dao-dao/utils'
+import {
+  convertActionsToMessages,
+  decodeMessages,
+  decodeNestedProtobufs,
+} from '@dao-dao/utils'
 
 import { CosmosMessageDisplay } from '../CosmosMessageDisplay'
 
@@ -26,9 +30,11 @@ export const RawActionsRenderer = ({
   const rawDecodedMessages = useMemo(
     () =>
       JSON.stringify(
-        convertActionsToMessages(loadedActions, actionData, {
-          throwErrors: false,
-        }).map(decodeNestedProtobufs),
+        decodeMessages(
+          convertActionsToMessages(loadedActions, actionData, {
+            throwErrors: false,
+          })
+        ).map(decodeNestedProtobufs),
         null,
         2
       ),

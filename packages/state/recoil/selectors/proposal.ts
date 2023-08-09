@@ -14,13 +14,11 @@ export const proposalExecutionTXHashSelector = selectorFamily<
     async ({ get }) => {
       const client = get(cosmWasmClientForChainSelector(chainId))
 
-      const events = await client.searchTx({
-        tags: [
-          { key: 'wasm._contract_address', value: contractAddress },
-          { key: 'wasm.proposal_id', value: proposalId.toString() },
-          { key: 'wasm.action', value: 'execute' },
-        ],
-      })
+      const events = await client.searchTx([
+        { key: 'wasm._contract_address', value: contractAddress },
+        { key: 'wasm.proposal_id', value: proposalId.toString() },
+        { key: 'wasm.action', value: 'execute' },
+      ])
 
       if (events.length > 1) {
         console.error('More than one execution', events)
