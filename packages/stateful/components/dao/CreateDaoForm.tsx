@@ -1,6 +1,5 @@
 import { Buffer } from 'buffer'
 
-import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { ArrowBack } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
@@ -43,6 +42,7 @@ import {
   NEW_DAO_CW20_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
+  findWasmAttributeValue,
   getFallbackImage,
   getNativeTokenForChainId,
   getSupportedChainConfig,
@@ -390,13 +390,17 @@ export const InnerCreateDaoForm = ({
       ).toString('base64'),
       label: cwCoreInstantiateMsg.name,
     })
-    const contractAddress = findAttribute(
+    return findWasmAttributeValue(
       logs,
-      'wasm',
+      factoryContractAddress,
       'set contract admin as itself'
-    ).value
-    return contractAddress
-  }, [codeIds.DaoCore, generateInstantiateMsg, instantiateWithFactory])
+    )!
+  }, [
+    codeIds.DaoCore,
+    factoryContractAddress,
+    generateInstantiateMsg,
+    instantiateWithFactory,
+  ])
 
   const parseSubmitterValueDelta = useCallback((value: string): number => {
     switch (value) {
