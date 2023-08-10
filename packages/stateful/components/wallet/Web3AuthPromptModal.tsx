@@ -1,8 +1,8 @@
-import { TxBody } from 'cosmjs-types/cosmos/tx/v1beta1/tx'
 import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { TxBody } from '@dao-dao/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import { web3AuthPromptAtom } from '@dao-dao/state/recoil'
 import {
   ActionsRenderer,

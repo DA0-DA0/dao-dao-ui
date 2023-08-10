@@ -31,7 +31,7 @@ export type DaoPageWrapperProps = PropsWithChildren<{
 }>
 
 export interface DaoProposalPageWrapperProps extends DaoPageWrapperProps {
-  proposalInfo: CommonProposalInfo | undefined
+  proposalInfo: CommonProposalInfo | null
 }
 
 export const DaoPageWrapper = ({

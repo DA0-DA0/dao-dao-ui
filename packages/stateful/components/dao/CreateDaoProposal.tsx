@@ -277,7 +277,7 @@ export const CreateDaoProposal = () => {
       setLatestProposalSave({})
 
       // Navigate to proposal (underneath the creation modal).
-      goToDaoProposal(info.dao.coreAddress, info.id)
+      goToDaoProposal(info.dao.coreAddressOrId, info.id)
     },
     [
       deleteDraft,

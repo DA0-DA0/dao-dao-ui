@@ -14,7 +14,7 @@ import {
 } from '@dao-dao/stateless'
 import { SuspenseLoaderProps } from '@dao-dao/types'
 import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { decodeNestedProtobufs } from '@dao-dao/utils'
+import { decodeRawMessagesForDisplay } from '@dao-dao/utils'
 
 import { MultipleChoiceOptionData } from '../types'
 
@@ -57,7 +57,8 @@ export const MultipleChoiceOptionViewer = ({
   const toggleExpanded = () => setExpanded((e) => !e)
 
   const rawDecodedMessages = useMemo(
-    () => JSON.stringify(decodedMessages.map(decodeNestedProtobufs), null, 2),
+    () =>
+      JSON.stringify(decodedMessages.map(decodeRawMessagesForDisplay), null, 2),
     [decodedMessages]
   )
 

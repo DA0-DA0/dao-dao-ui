@@ -232,9 +232,9 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
-    // Do not allow creating/using this action if the DAO already has a multiple
-    // choice proposal module setup.
-    disallowCreation: context.info.proposalModules.some(({ contractName }) =>
+    // Do not allow using this action if the DAO already has a multiple choice
+    // proposal module setup.
+    hideFromPicker: context.info.proposalModules.some(({ contractName }) =>
       DaoProposalMultipleAdapter.contractNames.some((name) =>
         contractName.includes(name)
       )

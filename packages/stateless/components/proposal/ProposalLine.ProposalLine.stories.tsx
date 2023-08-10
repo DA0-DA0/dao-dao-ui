@@ -3,8 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { formatDate, secondsToWdhms } from '@dao-dao/utils'
 
 import { LinkWrapper } from '../LinkWrapper'
-import { ProposalStatus, ProposalStatusMap } from '../ProposalStatus'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
+import { ProposalStatus, ProposalStatusMap } from './ProposalStatus'
 import {
   ProposalWalletVote,
   ProposalWalletVoteProps,

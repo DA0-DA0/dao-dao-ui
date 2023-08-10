@@ -5,7 +5,11 @@ import { useTranslation } from 'react-i18next'
 
 import { CodeMirrorInput } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
-import { makeWasmMessage, validateCosmosMsg } from '@dao-dao/utils'
+import {
+  makeStargateMessage,
+  makeWasmMessage,
+  validateCosmosMsg,
+} from '@dao-dao/utils'
 
 import { Trans } from '../../../../components/Trans'
 
@@ -34,7 +38,12 @@ export const CustomComponent: ActionComponent = ({
             } catch (e: any) {
               return e.message as string
             }
-            if (msg.wasm) msg = makeWasmMessage(msg)
+            if (msg.wasm) {
+              msg = makeWasmMessage(msg)
+            }
+            if (msg.stargate) {
+              msg = makeStargateMessage(msg)
+            }
             const validCosmos = validateCosmosMsg(msg)
 
             if (!validCosmos.valid) {

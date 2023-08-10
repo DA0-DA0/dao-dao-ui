@@ -30,8 +30,35 @@ export const getDaoProposalPath = (
   proposalId: string,
   params?: Record<string, unknown>
 ) => {
-  const dao = getDaoPath(mode, coreAddress)
-  const base = `${dao}/${DaoTabId.Proposals}/${proposalId}`
+  const base = getDaoPath(
+    mode,
+    coreAddress,
+    `${DaoTabId.Proposals}/${proposalId}`
+  )
+  const query = params ? `?${queryString.stringify(params)}` : ''
+
+  return base + query
+}
+
+// Create a path to a gov page.
+export const getGovPath = (
+  chain: string,
+  path?: string,
+  params?: Record<string, unknown>
+) => {
+  const base = `/gov/${chain}` + (path ? `/${path}` : '')
+  const query = params ? `?${queryString.stringify(params)}` : ''
+
+  return base + query
+}
+
+// Create a path to a gov proposal page.
+export const getGovProposalPath = (
+  chain: string,
+  proposalId: string,
+  params?: Record<string, unknown>
+) => {
+  const base = getGovPath(chain, `${DaoTabId.Proposals}/${proposalId}`)
   const query = params ? `?${queryString.stringify(params)}` : ''
 
   return base + query

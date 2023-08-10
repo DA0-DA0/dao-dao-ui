@@ -109,7 +109,6 @@ export const proposalSelector = selectorFamily<
             id: params[0].proposalId,
           },
           id,
-          // TODO(numia): Remove this once numia indexer provides timestamps.
           required: true,
         })
       )

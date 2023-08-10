@@ -4,7 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  GovernanceProposal,
+  GovernanceProposalFromProposal,
   InputLabel,
   NoContent,
   SelectInput,
@@ -12,9 +12,9 @@ import {
 } from '@dao-dao/stateless'
 import {
   GenericToken,
+  GovProposalActionDisplayProps,
   GovProposalWithDecodedContent,
   LoadingData,
-  StatefulPayEntityDisplayProps,
   StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -26,8 +26,8 @@ import {
 export type GovernanceDepositOptions = {
   proposals: GovProposalWithDecodedContent[]
   depositTokens: LoadingData<GenericToken[]>
-  PayEntityDisplay: ComponentType<StatefulPayEntityDisplayProps>
   TokenAmountDisplay: ComponentType<StatefulTokenAmountDisplayProps>
+  GovProposalActionDisplay: ComponentType<GovProposalActionDisplayProps>
 }
 
 export type GovernanceDepositData = {
@@ -45,16 +45,19 @@ export const GovernanceDepositComponent: ActionComponent<
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { depositTokens, proposals, PayEntityDisplay, TokenAmountDisplay },
+  options: {
+    proposals,
+    depositTokens,
+    TokenAmountDisplay,
+    GovProposalActionDisplay,
+  },
   data,
 }) => {
   const { t } = useTranslation()
   const { setValue, register, watch } = useFormContext<GovernanceDepositData>()
 
   const proposalId = watch((fieldNamePrefix + 'proposalId') as 'proposalId')
-  const proposalSelected = proposals.find(
-    (p) => p.proposalId.toString() === proposalId
-  )
+  const proposalSelected = proposals.find((p) => p.id.toString() === proposalId)
 
   const selectedDepositToken =
     depositTokens.loading || !data.deposit.length
@@ -81,13 +84,11 @@ export const GovernanceDepositComponent: ActionComponent<
           >
             {proposals.map((proposal) => (
               <option
-                key={proposal.proposalId.toString()}
-                value={proposal.proposalId.toString()}
+                key={proposal.id.toString()}
+                value={proposal.id.toString()}
               >
-                #{proposal.proposalId.toString()}
-                {'title' in proposal.decodedContent.value &&
-                  typeof proposal.decodedContent.value.title === 'string' &&
-                  ' ' + proposal.decodedContent.value.title}
+                #{proposal.id.toString()}
+                {' ' + proposal.title}
               </option>
             ))}
           </SelectInput>
@@ -125,16 +126,11 @@ export const GovernanceDepositComponent: ActionComponent<
       </div>
 
       {proposalSelected ? (
-        <GovernanceProposal
-          PayEntityDisplay={PayEntityDisplay}
+        <GovernanceProposalFromProposal
+          GovProposalActionDisplay={GovProposalActionDisplay}
           TokenAmountDisplay={TokenAmountDisplay}
           className="rounded-md border border-border-secondary p-4"
-          content={proposalSelected.decodedContent}
-          deposit={proposalSelected.totalDeposit}
-          endDate={proposalSelected.votingEndTime}
-          id={proposalSelected.proposalId.toString()}
-          startDate={proposalSelected.votingStartTime}
-          status={proposalSelected.status}
+          proposal={proposalSelected}
         />
       ) : (
         // If not creating and no proposal selected, something went wrong.

@@ -1,9 +1,11 @@
 import { constSelector, selectorFamily, waitForAllSettled } from 'recoil'
 
+import { moduleNameForAddressSelector } from '@dao-dao/state/recoil'
 import { Entity, EntityType, WithChainId } from '@dao-dao/types'
 import {
   getChainForChainId,
   getFallbackImage,
+  getImageUrlForChainId,
   isValidContractAddress,
   isValidWalletAddress,
 } from '@dao-dao/utils'
@@ -22,6 +24,24 @@ export const entitySelector = selectorFamily<
     ({ address, chainId }) =>
     ({ get }) => {
       const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
+
+      // Check if address is module account.
+      const moduleName = get(
+        moduleNameForAddressSelector({
+          chainId,
+          address,
+        })
+      )
+      if (moduleName) {
+        const entity: Entity = {
+          type: EntityType.Module,
+          chainId,
+          address,
+          name: moduleName,
+          imageUrl: getImageUrlForChainId(chainId),
+        }
+        return entity
+      }
 
       const [
         daoInfoLoadable,

@@ -355,10 +355,10 @@ export const ActionEditor = ({
           return (
             <div
               key={
-                // If _id empty, likely due to an old saved form state, use index
-                // and action as re-render key. Using a unique `key` ensures that
-                // the action does not re-render when other parts of the form
-                // change.
+                // If _id empty, likely due to an old saved form state, use
+                // index and action as re-render key. Using a unique `key`
+                // ensures that the action does not re-render when other parts
+                // of the form change.
                 _id || `${index}-${action.key}`
               }
               className="flex animate-fade-in flex-row items-start gap-4"
@@ -378,32 +378,40 @@ export const ActionEditor = ({
                 </SuspenseLoader>
               </div>
 
-              {/* Show remove button if action is resuable OR if there are more than one action. If there are more than one action, individual ones should be removable. But if there is only one, which is the intended state for an action configured as not reusable, don't show the remove button. */}
-              {(!action.notReusable || all.length > 1) && (
-                <Tooltip title={t('button.remove')}>
-                  <IconButton
-                    Icon={Remove}
-                    circular
-                    onClick={() => {
-                      // If only one action left, go back to category picker.
-                      if (all.length === 1) {
-                        goBackToCategoryPicker()
-                      } else {
-                        // Otherwise just remove this action.
-                        removeAction()
-                      }
-                    }}
-                    size="sm"
-                    variant="secondary"
-                  />
-                </Tooltip>
-              )}
+              {
+                // Never show remove button for programmatic actions. Show
+                // remove button if action is resuable OR if there are more than
+                // one action. If there are more than one action, individual
+                // ones should be removable. But if there is only one, which is
+                // the intended state for an action configured as not reusable,
+                // don't show the remove button.
+                !action.programmaticOnly &&
+                  (!action.notReusable || all.length > 1) && (
+                    <Tooltip title={t('button.remove')}>
+                      <IconButton
+                        Icon={Remove}
+                        circular
+                        onClick={() => {
+                          // If only one action left, go back to category picker.
+                          if (all.length === 1) {
+                            goBackToCategoryPicker()
+                          } else {
+                            // Otherwise just remove this action.
+                            removeAction()
+                          }
+                        }}
+                        size="sm"
+                        variant="secondary"
+                      />
+                    </Tooltip>
+                  )
+              }
             </div>
           )
         })}
 
-      {/* Don't show add button if action is not reusable. */}
-      {!action.notReusable && (
+      {/* Don't show add button if action is not reusable or if programmatic. */}
+      {!action.notReusable && !action.programmaticOnly && (
         <Tooltip
           title={t('button.addAnotherAction', {
             action: action.label,

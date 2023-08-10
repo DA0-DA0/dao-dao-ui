@@ -77,12 +77,14 @@ export const SdaNavigation = ({
 
   useEffect(() => {
     // Trigger dApp to cache page the user might switch to.
-    fetch(
-      DAPP_URL_PREFIX +
-        `/api/revalidate?d=${daoInfo.coreAddress}${
-          proposalIdFromPath ? `&p=${proposalIdFromPath}` : ''
-        }`
-    ).catch(console.error)
+    if (typeof window !== 'undefined') {
+      fetch(
+        DAPP_URL_PREFIX +
+          `/api/revalidate?d=${daoInfo.coreAddress}${
+            proposalIdFromPath ? `&p=${proposalIdFromPath}` : ''
+          }`
+      ).catch(console.error)
+    }
   }, [daoInfo.coreAddress, proposalIdFromPath])
 
   // Use screen resize to determine when compact should be forced on or off.

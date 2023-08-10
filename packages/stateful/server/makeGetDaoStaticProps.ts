@@ -205,7 +205,9 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           const response = await axios.get(
             FAST_AVERAGE_COLOR_API_TEMPLATE.replace(
               'URL',
-              toAccessibleImageUrl(config.image_url)
+              toAccessibleImageUrl(config.image_url, {
+                replaceRelative: true,
+              })
             ),
             { responseType: 'text' }
           )
@@ -352,7 +354,7 @@ export const makeGetDaoProposalStaticProps = ({
         return {
           followingTitle: t('title.proposalNotFound'),
           additionalProps: {
-            proposalInfo: undefined,
+            proposalInfo: null,
           },
         }
       }
@@ -408,7 +410,7 @@ export const makeGetDaoProposalStaticProps = ({
           proposalInfo?.description ?? ''
         ).slice(0, MAX_META_CHARS_PROPOSAL_DESCRIPTION),
         additionalProps: {
-          // If proposal does not exist, undefined indicates 404.
+          // If proposal does not exist, null indicates 404.
           proposalInfo,
         },
       }
@@ -506,7 +508,6 @@ const daoCoreDumpState = async (
       address: coreAddress,
       formula: 'daoCore/dumpState',
       chainId,
-      // TODO(numia): Remove this once provided.
       required: true,
     })
 
@@ -531,7 +532,6 @@ const daoCoreDumpState = async (
           address: coreAddress,
           formula: 'daoCore/listItems',
           chainId,
-          // TODO(numia): Remove this once provided.
           required: true,
         })) ?? []
 

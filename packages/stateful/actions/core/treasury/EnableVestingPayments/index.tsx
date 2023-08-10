@@ -75,9 +75,9 @@ export const makeEnableVestingPaymentsAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
-    // Do not allow creating/using this action if the DAO already has vesting
-    // payments enabled.
-    disallowCreation:
+    // Do not allow using this action if the DAO already has vesting payments
+    // enabled.
+    hideFromPicker:
       !!context.info.items[
         DAO_WIDGET_ITEM_NAMESPACE + VestingPaymentsWidget.id
       ],

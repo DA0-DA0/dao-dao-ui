@@ -101,9 +101,9 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   const selectedSymbol = selectedToken?.token?.symbol ?? t('info.tokens')
 
   const insufficientBalanceI18nKey =
-    context.type === ActionContextType.Dao
-      ? 'error.cantSpendMoreThanTreasury'
-      : 'error.insufficientWalletBalance'
+    context.type === ActionContextType.Wallet
+      ? 'error.insufficientWalletBalance'
+      : 'error.cantSpendMoreThanTreasury'
 
   return (
     <div className="flex flex-col gap-4">

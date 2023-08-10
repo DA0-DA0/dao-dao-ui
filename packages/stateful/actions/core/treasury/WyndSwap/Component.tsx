@@ -185,9 +185,9 @@ export const WyndSwapComponent: ActionComponent<WyndSwapOptions> = ({
   const tokenOutTrigger = makeTokenTrigger(tokenOut, tokenOutBalance)
 
   const insufficientBalanceI18nKey =
-    context.type === ActionContextType.Dao
-      ? 'error.cantSpendMoreThanTreasury'
-      : 'error.insufficientWalletBalance'
+    context.type === ActionContextType.Wallet
+      ? 'error.insufficientWalletBalance'
+      : 'error.cantSpendMoreThanTreasury'
 
   // When not creating, -1 indicates loading price from TX.
   const loadingOutputPriceFromExecution = !isCreating && tokenOutAmount === -1

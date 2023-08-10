@@ -1,8 +1,8 @@
-import { Any } from 'cosmjs-types/google/protobuf/any'
 import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
+import { MsgExec } from '@dao-dao/protobuf/codegen/cosmos/authz/v1beta1/tx'
 import { LockWithKeyEmoji, useChain } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -40,8 +40,6 @@ import {
   AuthzExecOptions,
   AuthzExecComponent as StatelessAuthzExecComponent,
 } from './Component'
-
-const TYPE_URL_MSG_EXEC = '/cosmos.authz.v1beta1.MsgExec'
 
 const useDefaults: UseDefaults<AuthzExecData> = () => ({
   address: '',
@@ -172,7 +170,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
     useMemo(() => {
       if (
         !isDecodedStargateMsg(msg) ||
-        msg.stargate.typeUrl !== TYPE_URL_MSG_EXEC ||
+        msg.stargate.typeUrl !== MsgExec.typeUrl ||
         !objectMatchesStructure(msg.stargate.value, {
           grantee: {},
           msgs: {},
@@ -184,8 +182,10 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
         return { match: false }
       }
 
+      const execMsg = msg.stargate.value as MsgExec
+
       // Group adjacent messages by sender, preserving message order.
-      const msgsPerSender = (msg.stargate.value.msgs as Any[])
+      const msgsPerSender = execMsg.msgs
         .map((msg) => protobufToCwMsg(msg))
         .reduce(
           (acc, { msg, sender }) => {
@@ -221,11 +221,11 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
       ({ address, msgs }) =>
         makeStargateMessage({
           stargate: {
-            typeUrl: TYPE_URL_MSG_EXEC,
+            typeUrl: MsgExec.typeUrl,
             value: {
               grantee,
               msgs: msgs.map((msg) => cwMsgToProtobuf(msg, address)),
-            },
+            } as MsgExec,
           },
         }),
       []

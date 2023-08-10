@@ -9,6 +9,8 @@ export type BreadcrumbCrumb = {
 
 export interface BreadcrumbsProps {
   home?: boolean
+  // If true, current is rendered outside of a p tag.
+  override?: boolean
   // Override the home crumb tab. For example, when viewing a proposal, we
   // probably want to link back to the proposals tab instead of home. On the
   // SDA, the specified label is used. On the dApp, the name of the DAO is used.

@@ -118,3 +118,9 @@ export const refreshInboxApiItemsAtom = atom({
   key: 'refreshInboxApiItems',
   default: 0,
 })
+
+// Change this to refresh the gov proposals from the given chain.
+export const refreshGovProposalsAtom = atomFamily<number, string>({
+  key: 'refreshGovProposals',
+  default: 0,
+})

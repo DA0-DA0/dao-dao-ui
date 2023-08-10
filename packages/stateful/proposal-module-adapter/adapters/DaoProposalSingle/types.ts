@@ -1,5 +1,3 @@
-import { ReactNode } from 'react'
-
 import {
   CategorizedActionAndData,
   DepositInfoSelector,
@@ -7,6 +5,7 @@ import {
   PartialCategorizedActionKeyAndData,
   PercentOrMajorityValue,
   ProcessedTQ,
+  ProposalTimestampInfo,
 } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
@@ -79,17 +78,8 @@ export type UsePublishProposal = () => {
   simulationBypassExpiration: Date | undefined
 }
 
-export interface TimestampInfo {
-  display?: {
-    label: string
-    tooltip?: string
-    content: ReactNode
-  }
-  expirationDate: Date
-}
-
 export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
-  timestampInfo: TimestampInfo | undefined
+  timestampInfo: ProposalTimestampInfo | undefined
   votingOpen: boolean
 }
 

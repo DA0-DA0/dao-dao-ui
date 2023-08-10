@@ -7,7 +7,12 @@ import {
   useCachedLoading,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
-import { ContractVersion, LoadingData, ProposalStatus } from '@dao-dao/types'
+import {
+  ContractVersion,
+  LoadingData,
+  ProposalStatus,
+  ProposalTimestampInfo,
+} from '@dao-dao/types'
 import {
   convertExpirationToDate,
   formatDate,
@@ -16,7 +21,7 @@ import {
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { proposalSelector } from '../contracts/DaoProposalSingle.common.recoil'
-import { ProposalWithMetadata, TimestampInfo } from '../types'
+import { ProposalWithMetadata } from '../types'
 
 // Returns a proposal wrapped in a LoadingData object to allow the UI to respond
 // to its loading state.
@@ -93,7 +98,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const executionDate = typeof executedAt === 'string' && new Date(executedAt)
   const closeDate = typeof closedAt === 'string' && new Date(closedAt)
 
-  const dateDisplay: TimestampInfo['display'] | undefined = votingOpen
+  const dateDisplay: ProposalTimestampInfo['display'] | undefined = votingOpen
     ? expirationDate && expirationDate.getTime() > Date.now()
       ? {
           label: t('title.timeLeft'),
@@ -134,7 +139,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
       }
     : undefined
 
-  const timestampInfo: TimestampInfo | undefined = expirationDate && {
+  const timestampInfo: ProposalTimestampInfo | undefined = expirationDate && {
     display: dateDisplay,
     expirationDate,
   }

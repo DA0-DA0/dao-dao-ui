@@ -1,5 +1,12 @@
 import clsx from 'clsx'
-import { ComponentType, Fragment, useEffect, useRef, useState } from 'react'
+import {
+  ComponentType,
+  Fragment,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 import { CSVLink } from 'react-csv'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
@@ -25,6 +32,8 @@ export interface ProposalVotesProps<Vote extends unknown = any> {
   VoteDisplay: ComponentType<{ vote: Vote }>
   // Only allows refreshing when voting is open.
   votingOpen: boolean
+  footer?: ReactNode
+  hideVotedAt?: boolean
 }
 
 export const ProposalVotes = <Vote extends unknown = any>({
@@ -32,11 +41,14 @@ export const ProposalVotes = <Vote extends unknown = any>({
   EntityDisplay,
   VoteDisplay,
   votingOpen,
+  footer,
+  hideVotedAt,
 }: ProposalVotesProps<Vote>) => {
   const { t } = useTranslation()
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: true })
 
+  const votesLoadingOrUpdating = votes.loading || !!votes.updating
   const votesWithDate = votes.loading
     ? []
     : votes.data.sort(
@@ -103,11 +115,18 @@ export const ProposalVotes = <Vote extends unknown = any>({
           )}
         </div>
 
-        <div className="grid-rows-auto grid grid-cols-[minmax(5rem,1fr)_auto_auto] items-center gap-x-8 gap-y-6 overflow-x-auto sm:grid-cols-[auto_minmax(5rem,1fr)_auto_auto]">
+        <div
+          className={clsx(
+            'grid-rows-auto grid grid-cols-[minmax(5rem,1fr)_auto_auto] items-center gap-x-8 gap-y-6 overflow-x-auto',
+            !hideVotedAt && 'sm:grid-cols-[auto_minmax(5rem,1fr)_auto_auto]'
+          )}
+        >
           {/* Titles */}
-          <p className="caption-text hidden font-mono font-normal text-text-secondary sm:block">
-            {t('title.when')}
-          </p>
+          {!hideVotedAt && (
+            <p className="caption-text hidden font-mono font-normal text-text-secondary sm:block">
+              {t('title.when')}
+            </p>
+          )}
           <p className="caption-text font-mono font-normal text-text-secondary">
             {t('title.voter')}
           </p>
@@ -125,35 +144,49 @@ export const ProposalVotes = <Vote extends unknown = any>({
               index
             ) => (
               <Fragment key={index}>
-                <p
-                  className={clsx(
-                    'caption-text hidden sm:block',
-                    votedAt ? 'text-text-body' : 'text-text-tertiary'
-                  )}
-                >
-                  {votedAt ? (
-                    <TimeAgo date={votedAt} formatter={timeAgoFormatter} />
-                  ) : (
-                    '?'
-                  )}
-                </p>
+                {!hideVotedAt && (
+                  <p
+                    className={clsx(
+                      'caption-text hidden sm:block',
+                      votedAt ? 'text-text-body' : 'text-text-tertiary'
+                    )}
+                  >
+                    {votedAt ? (
+                      <TimeAgo date={votedAt} formatter={timeAgoFormatter} />
+                    ) : (
+                      '?'
+                    )}
+                  </p>
+                )}
                 <EntityDisplay
                   address={voterAddress}
                   showFullAddress
-                  textClassName="caption-text font-mono text-text-body"
+                  textClassName={clsx(
+                    'caption-text font-mono text-text-body',
+                    votesLoadingOrUpdating && 'animate-pulse'
+                  )}
                 />
                 <Tooltip title={rationale || undefined}>
-                  <div>
+                  <div
+                    className={clsx(votesLoadingOrUpdating && 'animate-pulse')}
+                  >
                     <VoteDisplay vote={vote} />
                   </div>
                 </Tooltip>
-                <p className="caption-text justify-self-right text-right font-mono text-text-body">
+                <p
+                  className={clsx(
+                    'caption-text justify-self-right text-right font-mono text-text-body',
+                    votesLoadingOrUpdating && 'animate-pulse'
+                  )}
+                >
                   {formatPercentOf100(votingPowerPercent)}
                 </p>
               </Fragment>
             )
           )}
         </div>
+
+        {footer}
 
         <Button
           className="caption-text mt-6 self-end pr-1 text-right italic"

@@ -10,6 +10,7 @@ import {
 
 import {
   blockHeightTimestampSafeSelector,
+  communityPoolBalancesSelector,
   cosmWasmClientForChainSelector,
 } from './chain'
 import { DaoCoreV2Selectors } from './contracts'
@@ -239,6 +240,41 @@ export const daoTvlSelector = selectorFamily<
               price
           : 0
       })
+      const amount = prices.reduce((price, total) => price + total, 0)
+
+      return {
+        amount,
+        timestamp,
+      }
+    },
+})
+
+export const communityPoolTvlSelector = selectorFamily<
+  AmountWithTimestamp,
+  WithChainId<{}>
+>({
+  key: 'communityPoolTvl',
+  get:
+    ({ chainId }) =>
+    async ({ get }) => {
+      const timestamp = new Date()
+
+      const tokenBalances = get(communityPoolBalancesSelector({ chainId }))
+
+      const prices = tokenBalances.map(
+        ({ token: { chainId, denomOrAddress, decimals }, balance }) => {
+          const price = get(
+            usdPriceSelector({
+              denomOrAddress,
+              chainId,
+            })
+          )?.amount
+
+          return price
+            ? convertMicroDenomToDenomWithDecimals(balance, decimals) * price
+            : 0
+        }
+      )
       const amount = prices.reduce((price, total) => price + total, 0)
 
       return {

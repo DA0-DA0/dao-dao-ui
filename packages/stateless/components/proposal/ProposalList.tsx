@@ -17,7 +17,7 @@ export interface ProposalListProps<T extends { proposalId: string }> {
   loadMore: () => void
   loadingMore: boolean
   isMember: boolean
-  DiscordNotifierConfigureModal: ComponentType
+  DiscordNotifierConfigureModal: ComponentType | undefined
 }
 
 export const ProposalList = <T extends { proposalId: string }>({
@@ -40,7 +40,7 @@ export const ProposalList = <T extends { proposalId: string }>({
       <div className="mb-6 flex flex-row items-center justify-between gap-6">
         <p className="title-text text-text-body">{t('title.proposals')}</p>
 
-        <DiscordNotifierConfigureModal />
+        {DiscordNotifierConfigureModal && <DiscordNotifierConfigureModal />}
       </div>
 
       {!!openProposals.length && (

@@ -47,7 +47,6 @@ export const makeGetProposalInfo =
           address: proposalModule.address,
           formula: 'info',
           chainId,
-          // TODO(numia): Remove this once provided.
           required: true,
         })
       } catch (err) {
@@ -75,7 +74,6 @@ export const makeGetProposalInfo =
             id: proposalNumber,
           },
           chainId,
-          // TODO(numia): Remove this once provided.
           required: true,
         })
       } catch (err) {
@@ -131,7 +129,6 @@ export const makeGetProposalInfo =
           id,
         },
         chainId,
-        // TODO(numia): Remove this once provided.
         required: true,
       })
       // If indexer returned a value, assume it's a date.

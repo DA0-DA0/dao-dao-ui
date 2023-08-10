@@ -6,10 +6,12 @@ import { decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
 import { Bech32Address } from '@keplr-wallet/cosmos'
 import { ChainInfo, FeeCurrency } from '@keplr-wallet/types'
 import { assets, chains, ibc } from 'chain-registry'
-import { bondStatusToJSON } from 'cosmjs-types/cosmos/staking/v1beta1/staking'
-import { Validator as RpcValidator } from 'interchain-rpc/types/codegen/cosmos/staking/v1beta1/staking'
 import RIPEMD160 from 'ripemd160'
 
+import {
+  Validator as RpcValidator,
+  bondStatusToJSON,
+} from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/staking'
 import {
   ChainId,
   GenericToken,
@@ -45,7 +47,13 @@ export const getRpcForChainId = (chainId: string): string => {
 
 export const cosmosValidatorToValidator = ({
   operatorAddress: address,
-  description: { moniker, website, details },
+  description: { moniker, website, details } = {
+    moniker: '',
+    identity: '',
+    website: '',
+    securityContact: '',
+    details: '',
+  },
   commission,
   status,
   tokens,
@@ -55,18 +63,16 @@ export const cosmosValidatorToValidator = ({
   website:
     website && (website.startsWith('http') ? website : `https://${website}`),
   details,
-  commission: decodeCosmosSdkDecFromProto(
-    commission.commissionRates.rate
-  ).toFloatApproximation(),
+  commission: commission?.commissionRates
+    ? decodeCosmosSdkDecFromProto(
+        commission.commissionRates.rate
+      ).toFloatApproximation()
+    : -1,
   status: bondStatusToJSON(status),
   tokens: Number(tokens),
 })
 
 export const getImageUrlForChainId = (chainId: string): string => {
-  if (chainId === ChainId.JunoMainnet || chainId === ChainId.JunoTestnet) {
-    return '/juno.png'
-  }
-
   if (
     chainId === ChainId.StargazeMainnet ||
     chainId === ChainId.StargazeTestnet
@@ -84,11 +90,11 @@ export const getImageUrlForChainId = (chainId: string): string => {
   // Use chain logo if available.
   const { logo_URIs, images } = getChainForChainId(chainId)
   const image =
-    logo_URIs?.svg ??
     logo_URIs?.png ??
     logo_URIs?.jpeg ??
-    images?.[0]?.svg ??
-    images?.[0]?.png
+    logo_URIs?.svg ??
+    images?.[0]?.png ??
+    images?.[0]?.svg
   if (image) {
     return image
   }
@@ -179,15 +185,13 @@ export const getNativeTokenForChainId = (chainId: string): GenericToken => {
         asset.denom_units.find(({ exponent }) => exponent > 0)?.exponent ??
         asset.denom_units[0]?.exponent ??
         0,
-      // Use local JUNO image.
-      imageUrl: feeDenom.startsWith('ujuno')
-        ? '/juno.png'
-        : // Use asset images.
-          asset.logo_URIs?.svg ??
-          asset.logo_URIs?.png ??
-          asset.logo_URIs?.jpeg ??
-          // Fallback.
-          getFallbackImage(feeDenom),
+      // Use asset images.
+      imageUrl:
+        asset.logo_URIs?.png ??
+        asset.logo_URIs?.jpeg ??
+        asset.logo_URIs?.svg ??
+        // Fallback.
+        getFallbackImage(feeDenom),
     })
   }
 
@@ -468,3 +472,11 @@ export const maybeGetKeplrChainInfo = (
 // Kado fiat modal only supports Juno and Osmosis.
 export const isKadoEnabled = (chainId: string) =>
   chainId === ChainId.JunoMainnet || chainId === ChainId.OsmosisMainnet
+
+export const cosmosSdkVersionIs47OrHigher = (version: string) => {
+  const [major, minor, patch] = version.replace(/^v/, '').split('.')
+  return (
+    (Number(major) >= 0 && Number(minor) >= 47 && Number(patch) >= 0) ||
+    (Number(major) >= 1 && Number(minor) >= 0 && Number(patch) >= 0)
+  )
+}

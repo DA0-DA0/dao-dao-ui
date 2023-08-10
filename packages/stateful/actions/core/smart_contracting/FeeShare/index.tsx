@@ -1,5 +1,9 @@
 import { useCallback, useMemo } from 'react'
 
+import {
+  MsgRegisterFeeShare,
+  MsgUpdateFeeShare,
+} from '@dao-dao/protobuf/codegen/juno/feeshare/v1/tx'
 import { GasEmoji } from '@dao-dao/stateless'
 import { ChainId } from '@dao-dao/types'
 import {
@@ -13,10 +17,10 @@ import {
 import { isDecodedStargateMsg, makeStargateMessage } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components/AddressInput'
-import { FeeShareComponent, FeeShareData, FeeShareType } from './Component'
+import { FeeShareComponent, FeeShareData } from './Component'
 
 const useDefaults: UseDefaults<FeeShareData> = () => ({
-  typeUrl: FeeShareType.Register,
+  typeUrl: MsgRegisterFeeShare.typeUrl,
   contract: '',
   showWithdrawer: false,
   withdrawer: '',
@@ -50,8 +54,8 @@ export const makeFeeShareAction: ActionMaker<FeeShareData> = ({
     useMemo(() => {
       if (
         !isDecodedStargateMsg(msg) ||
-        (msg.stargate.typeUrl !== FeeShareType.Register &&
-          msg.stargate.typeUrl !== FeeShareType.Update)
+        (msg.stargate.typeUrl !== MsgRegisterFeeShare.typeUrl &&
+          msg.stargate.typeUrl !== MsgUpdateFeeShare.typeUrl)
       ) {
         return {
           match: false,

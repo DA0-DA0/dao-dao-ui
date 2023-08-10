@@ -39,7 +39,7 @@ export type MeProps = {
   MeTransactionBuilder: ComponentType
   profileData: WalletProfileData
   updateProfileName: (name: string | null) => Promise<void>
-  setChainId: (chainId: string) => void
+  ChainSwitcher: ComponentType<any>
 }
 
 export type MeTransactionBuilderProps = {

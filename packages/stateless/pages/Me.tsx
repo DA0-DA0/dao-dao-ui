@@ -11,14 +11,13 @@ import {
 import { MeProps, MeTab, MeTabId, Theme } from '@dao-dao/types'
 
 import {
-  ChainSwitcher,
   PageHeaderContent,
   ProfileImage,
   ProfileNameDisplayAndEditor,
   RightSidebarContent,
   SegmentedControls,
 } from '../components'
-import { useCachedLoadable, useChain } from '../hooks'
+import { useCachedLoadable } from '../hooks'
 import { useThemeContext } from '../theme'
 
 export const Me = ({
@@ -27,11 +26,10 @@ export const Me = ({
   MeTransactionBuilder,
   profileData,
   updateProfileName,
-  setChainId,
+  ChainSwitcher,
 }: MeProps) => {
   const { t } = useTranslation()
   const router = useRouter()
-  const { chain_id: chainId } = useChain()
 
   const tabs: MeTab[] = [
     {
@@ -114,10 +112,7 @@ export const Me = ({
 
   const tabSelector = (
     <div className="flex flex-row items-center justify-between gap-8">
-      <ChainSwitcher
-        onSelect={({ chain_id }) => setChainId(chain_id)}
-        selected={chainId}
-      />
+      <ChainSwitcher />
 
       <SegmentedControls
         onSelect={(tab) =>

@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@cosmjs/encoding": "^0.31.0",
+    "@dao-dao/protobuf": "2.2.0",
     "@dao-dao/types": "2.2.0",
     "@dao-dao/utils": "2.2.0",
     "@emotion/react": "^11.10.4",

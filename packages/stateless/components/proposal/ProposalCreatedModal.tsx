@@ -31,7 +31,10 @@ export const ProposalCreatedModal = (props: ProposalCreatedModalProps) => {
       }}
       url={
         SITE_URL +
-        getDaoProposalPath(props.itemProps.dao.coreAddress, props.itemProps.id)
+        getDaoProposalPath(
+          props.itemProps.dao.coreAddressOrId,
+          props.itemProps.id
+        )
       }
     />
   )

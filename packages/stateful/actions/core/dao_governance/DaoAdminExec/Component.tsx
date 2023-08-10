@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next'
 import {
   Loader,
   NestedActionsEditor,
-  NestedActionsEditorFormData,
   NestedActionsEditorOptions,
   NestedActionsRenderer,
   NestedActionsRendererProps,
@@ -14,6 +13,7 @@ import {
 import {
   AddressInputProps,
   LoadingData,
+  NestedActionsEditorFormData,
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'

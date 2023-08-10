@@ -13,7 +13,7 @@ import {
 import { Expiration } from '@dao-dao/types/contracts/common'
 
 import { getChainForChainId } from './chain'
-import { IPFS_GATEWAY_TEMPLATE } from './constants'
+import { IPFS_GATEWAY_TEMPLATE, SITE_URL } from './constants'
 
 export function convertMicroDenomToDenomWithDecimals(
   amount: number | string,
@@ -246,11 +246,14 @@ export const transformIpfsUrlToHttpsIfNecessary = (ipfsUrl: string) =>
 // that non-IPFS images are proxied through our whitelisted proxy domain).
 export const toAccessibleImageUrl = (
   url: string,
-  { proxy }: { proxy?: boolean } = { proxy: false }
+  { proxy, replaceRelative }: { proxy?: boolean; replaceRelative?: boolean } = {
+    proxy: false,
+    replaceRelative: false,
+  }
 ) => {
   // If hosted locally, passthrough (probably development/test env).
   if (url.startsWith('/')) {
-    return url
+    return replaceRelative ? SITE_URL + url : url
   }
 
   url = transformIpfsUrlToHttpsIfNecessary(url)

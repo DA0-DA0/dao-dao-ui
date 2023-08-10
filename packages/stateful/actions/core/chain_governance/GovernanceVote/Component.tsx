@@ -6,24 +6,26 @@ import {
   Close,
   Texture,
 } from '@mui/icons-material'
-import { VoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
-import { WeightedVoteOption } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
 import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  GovernanceProposal,
+  VoteOption,
+  WeightedVoteOption,
+} from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import {
+  GovernanceProposalFromProposal,
   NoContent,
   ProposalVoteButton,
   SelectInput,
   TooltipInfoIcon,
 } from '@dao-dao/stateless'
 import {
+  GovProposalActionDisplayProps,
   GovProposalWithDecodedContent,
   LoadingData,
   ProposalVoteOption,
-  StatefulPayEntityDisplayProps,
   StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
 import {
@@ -38,8 +40,8 @@ import { useActionOptions } from '../../../react'
 export interface GovernanceVoteOptions {
   proposals: GovProposalWithDecodedContent[]
   existingVotesLoading?: LoadingData<WeightedVoteOption[] | undefined>
-  PayEntityDisplay: ComponentType<StatefulPayEntityDisplayProps>
   TokenAmountDisplay: ComponentType<StatefulTokenAmountDisplayProps>
+  GovProposalActionDisplay: ComponentType<GovProposalActionDisplayProps>
 }
 
 export interface GovernanceVoteData {
@@ -56,18 +58,15 @@ export const GovernanceVoteComponent: ActionComponent<
   options: {
     proposals,
     existingVotesLoading,
-    PayEntityDisplay,
     TokenAmountDisplay,
+    GovProposalActionDisplay,
   },
 }) => {
   const { t } = useTranslation()
   const { register, watch } = useFormContext<GovernanceVoteData>()
 
   const proposalId = watch((fieldNamePrefix + 'proposalId') as 'proposalId')
-
-  const proposalSelected = proposals.find(
-    (p) => p.proposalId.toString() === proposalId
-  )
+  const proposalSelected = proposals.find((p) => p.id.toString() === proposalId)
 
   return (
     <>
@@ -88,28 +87,21 @@ export const GovernanceVoteComponent: ActionComponent<
           >
             {proposals.map((proposal) => (
               <option
-                key={proposal.proposalId.toString()}
-                value={proposal.proposalId.toString()}
+                key={proposal.id.toString()}
+                value={proposal.id.toString()}
               >
-                #{proposal.proposalId.toString()}
-                {'title' in proposal.decodedContent.value &&
-                  typeof proposal.decodedContent.value.title === 'string' &&
-                  ' ' + proposal.decodedContent.value.title}
+                #{proposal.id.toString()}
+                {' ' + proposal.title}
               </option>
             ))}
           </SelectInput>
         ))}
 
       {proposalSelected ? (
-        <GovernanceProposal
-          PayEntityDisplay={PayEntityDisplay}
+        <GovernanceProposalFromProposal
+          GovProposalActionDisplay={GovProposalActionDisplay}
           TokenAmountDisplay={TokenAmountDisplay}
-          content={proposalSelected.decodedContent}
-          deposit={proposalSelected.totalDeposit}
-          endDate={proposalSelected.votingEndTime}
-          id={proposalSelected.proposalId.toString()}
-          startDate={proposalSelected.votingStartTime}
-          status={proposalSelected.status}
+          proposal={proposalSelected}
         />
       ) : (
         // If not creating and no proposal selected, something went wrong.

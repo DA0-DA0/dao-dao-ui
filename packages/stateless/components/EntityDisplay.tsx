@@ -49,10 +49,12 @@ export const EntityDisplay = ({
     ? undefined
     : loadingEntity.data.type === EntityType.Dao
     ? getDaoPath(loadingEntity.data.address)
-    : config?.explorerUrlTemplates.wallet.replace(
+    : loadingEntity.data.type === EntityType.Wallet
+    ? config?.explorerUrlTemplates.wallet.replace(
         'REPLACE',
         loadingEntity.data.address
       )
+    : undefined
 
   const { textRef, truncated } = useDetectTruncate()
 
@@ -69,7 +71,9 @@ export const EntityDisplay = ({
   // truncated.
   const textDisplay =
     !loadingEntity.loading && loadingEntity.data.name
-      ? loadingEntity.data.name
+      ? loadingEntity.data.type === EntityType.Module
+        ? t('title.chainModule.' + loadingEntity.data.name)
+        : loadingEntity.data.name
       : showFullAddress
       ? address
       : concatAddressStartEnd(address, prefixLength + 3, 3)
@@ -90,7 +94,7 @@ export const EntityDisplay = ({
           href={noLink ? undefined : href}
           onClick={(e) => !noLink && e.stopPropagation()}
           openInNewTab
-          variant={noUnderline ? 'none' : 'underline'}
+          variant={noUnderline || noLink || !href ? 'none' : 'underline'}
         >
           {!hideImage && (
             <div

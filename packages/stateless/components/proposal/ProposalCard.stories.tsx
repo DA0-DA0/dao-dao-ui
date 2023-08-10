@@ -19,8 +19,9 @@ const Template: ComponentStory<typeof ProposalCard> = (args) => (
 
 export const makeProps = (): ProposalCardProps => ({
   dao: {
+    type: 'dao',
     name: 'DAO',
-    coreAddress: 'daoCoreAddress',
+    coreAddressOrId: 'daoCoreAddress',
     imageUrl: '/dog.jpg',
   },
   id: 'A13',

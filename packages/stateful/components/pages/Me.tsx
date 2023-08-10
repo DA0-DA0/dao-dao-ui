@@ -2,7 +2,7 @@ import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState } from 'recoil'
+import { useRecoilValue } from 'recoil'
 
 import { walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
@@ -16,6 +16,7 @@ import { SITE_URL, transformBech32Address } from '@dao-dao/utils'
 import { WalletActionsProvider } from '../../actions/react/provider'
 import { useWallet } from '../../hooks/useWallet'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
+import { ChainSwitcher } from '../ChainSwitcher'
 import { ConnectWallet } from '../ConnectWallet'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -33,7 +34,7 @@ export const Me: NextPage = () => {
   } = useWallet()
   const { walletProfileData: profileData, updateProfileName } = useWalletInfo()
 
-  const [chainId, setChainId] = useRecoilState(walletChainIdAtom)
+  const chainId = useRecoilValue(walletChainIdAtom)
 
   return (
     <>
@@ -61,11 +62,11 @@ export const Me: NextPage = () => {
             {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
             <SuspenseLoader fallback={<Loader />}>
               <StatelessMe
+                ChainSwitcher={ChainSwitcher}
                 MeBalances={MeBalances}
                 MeTransactionBuilder={MeTransactionBuilder}
                 profileData={profileData}
                 rightSidebarContent={<ProfileHomeCard />}
-                setChainId={setChainId}
                 updateProfileName={updateProfileName}
               />
             </SuspenseLoader>

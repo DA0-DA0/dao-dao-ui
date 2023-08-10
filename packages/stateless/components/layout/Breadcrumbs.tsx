@@ -3,11 +3,15 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoPageMode } from '@dao-dao/types'
+import { ContractVersion, DaoPageMode } from '@dao-dao/types'
 import { BreadcrumbsProps } from '@dao-dao/types/stateless/Breadcrumbs'
-import { getParentDaoBreadcrumbs } from '@dao-dao/utils'
+import { getGovPath, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
-import { useDaoInfoContextIfAvailable, useDaoNavHelpers } from '../../hooks'
+import {
+  useChainContextIfAvailable,
+  useDaoInfoContextIfAvailable,
+  useDaoNavHelpers,
+} from '../../hooks'
 import { Button } from '../buttons/Button'
 import { IconButton } from '../icon_buttons/IconButton'
 import { LinkWrapper } from '../LinkWrapper'
@@ -19,6 +23,7 @@ export * from '@dao-dao/types/stateless/Breadcrumbs'
 
 export const Breadcrumbs = ({
   home = false,
+  override = false,
   homeTab,
   current,
   className,
@@ -26,6 +31,7 @@ export const Breadcrumbs = ({
   const { t } = useTranslation()
   // Allow using Breadcrumbs outside of DaoPageWrapper.
   const daoInfo = useDaoInfoContextIfAvailable()
+  const chainContext = useChainContextIfAvailable()
   const { mode } = useAppContext()
   const { getDaoPath } = useDaoNavHelpers()
 
@@ -33,24 +39,35 @@ export const Breadcrumbs = ({
 
   const crumbs =
     mode === DaoPageMode.Dapp
-      ? [
-          { href: '/', label: t('title.home') },
-          ...(daoInfo
-            ? [
-                ...getParentDaoBreadcrumbs(getDaoPath, daoInfo.parentDao),
-                ...(home
-                  ? []
-                  : [
-                      {
-                        href:
-                          // Link to home tab if available.
-                          getDaoPath(daoInfo.coreAddress, homeTab?.id),
-                        label: daoInfo.name,
-                      },
-                    ]),
-              ]
-            : []),
-        ]
+      ? // Special handling for chain governance breadcrumbs.
+        daoInfo?.coreVersion === ContractVersion.Gov && chainContext?.config
+        ? home
+          ? []
+          : [
+              {
+                href: getGovPath(chainContext.config.name, homeTab?.id),
+                label: chainContext.chain.pretty_name,
+              },
+            ]
+        : // Non-chain governance breadcrumbs. Normal DAOs.
+          [
+            { href: '/', label: t('title.home') },
+            ...(daoInfo
+              ? [
+                  ...getParentDaoBreadcrumbs(getDaoPath, daoInfo.parentDao),
+                  ...(home
+                    ? []
+                    : [
+                        {
+                          href:
+                            // Link to home tab if available.
+                            getDaoPath(daoInfo.coreAddress, homeTab?.id),
+                          label: daoInfo.name,
+                        },
+                      ]),
+                ]
+              : []),
+          ]
       : [
           ...(home || !daoInfo
             ? []
@@ -109,28 +126,32 @@ export const Breadcrumbs = ({
           )
         })}
 
-        <Button
-          // Disable touch interaction when not responsive. Flex items have
-          // min-width set to auto by default, which prevents text ellipses
-          // since this will overflow its parent. Set min-width to 0 so this
-          // cannot overflow its parent, and the child text can truncate.
-          className={clsx(
-            'min-w-0 text-text-primary sm:pointer-events-none',
-            // Disable touch interaction when no crumbs.
-            !hasCrumbs && 'pointer-events-none'
-          )}
-          contentContainerClassName="justify-center"
-          onClick={() => setResponsive(true)}
-          size="none"
-          variant="none"
-        >
-          <p className="truncate">{current}</p>
+        {override ? (
+          current
+        ) : (
+          <Button
+            // Disable touch interaction when not responsive. Flex items have
+            // min-width set to auto by default, which prevents text ellipses
+            // since this will overflow its parent. Set min-width to 0 so this
+            // cannot overflow its parent, and the child text can truncate.
+            className={clsx(
+              'min-w-0 text-text-primary sm:pointer-events-none',
+              // Disable touch interaction when no crumbs.
+              !hasCrumbs && 'pointer-events-none'
+            )}
+            contentContainerClassName="justify-center"
+            onClick={() => setResponsive(true)}
+            size="none"
+            variant="none"
+          >
+            <p className="truncate">{current}</p>
 
-          {/* When no crumbs, no dropdown/arrow. */}
-          {hasCrumbs && (
-            <ArrowDropDown className="!h-6 !w-6 shrink-0 text-icon-primary sm:!hidden" />
-          )}
-        </Button>
+            {/* When no crumbs, no dropdown/arrow. */}
+            {hasCrumbs && (
+              <ArrowDropDown className="!h-6 !w-6 shrink-0 text-icon-primary sm:!hidden" />
+            )}
+          </Button>
+        )}
       </div>
 
       <div
