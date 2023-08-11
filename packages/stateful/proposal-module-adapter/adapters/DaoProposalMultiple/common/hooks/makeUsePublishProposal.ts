@@ -1,6 +1,5 @@
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { coins } from '@cosmjs/stargate'
-import { findAttribute } from '@cosmjs/stargate/build/logs'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
@@ -16,6 +15,7 @@ import {
   CHAIN_GAS_MULTIPLIER,
   MAX_NUM_PROPOSAL_CHOICES,
   expirationExpired,
+  findWasmAttributeValue,
   processError,
 } from '@dao-dao/utils'
 
@@ -335,8 +335,15 @@ export const makeUsePublishProposal =
         }
 
         const proposalNumber = Number(
-          findAttribute(response.logs, 'wasm', 'proposal_id').value
+          findWasmAttributeValue(
+            response.logs,
+            proposalModule.address,
+            'proposal_id'
+          ) ?? -1
         )
+        if (proposalNumber === -1) {
+          throw new Error(t('error.proposalIdNotFound'))
+        }
         const proposalId = `${proposalModule.prefix}${proposalNumber}`
 
         return {
