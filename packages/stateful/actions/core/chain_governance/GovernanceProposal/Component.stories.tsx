@@ -1,10 +1,15 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { SoftwareUpgradeProposal } from '@dao-dao/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
+import { Any } from '@dao-dao/protobuf/codegen/google/protobuf/any'
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
-import { GovernanceProposalType } from '@dao-dao/types'
+import { GovProposalVersion } from '@dao-dao/types'
 
+import {
+  GovProposalActionDisplay,
+  SuspenseLoader,
+} from '../../../../components'
 import { AddressInput } from '../../../../components/AddressInput'
-import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
 import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
 import { GovernanceProposalComponent } from './Component'
 
@@ -25,7 +30,7 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   data: {
-    type: GovernanceProposalType.SoftwareUpgradeProposal,
+    version: GovProposalVersion.V1_BETA_1,
     title: 'Upgrade to v10 Alpha 1',
     description:
       'Full details on the testnets github. Target binary is v10.0.0-alpha.2',
@@ -35,32 +40,44 @@ Default.args = {
         denom: 'ujunox',
       },
     ],
-    spends: [
-      {
-        amount: 1,
-        denom: 'ujunox',
-      },
-    ],
-    spendRecipient: 'junoRecipient',
-    parameterChanges: JSON.stringify([]),
-    upgradePlan: JSON.stringify(
-      {
-        name: 'v10',
-        time: '0001-01-01T00:00:00Z',
-        height: '20000',
-        info: '',
-        upgraded_client_state: null,
-      },
-      null,
-      2
-    ),
+    legacy: {
+      typeUrl: SoftwareUpgradeProposal.typeUrl,
+      spends: [
+        {
+          amount: 1,
+          denom: 'ujunox',
+        },
+      ],
+      spendRecipient: 'junoRecipient',
+      parameterChanges: JSON.stringify([]),
+      upgradePlan: JSON.stringify(
+        {
+          name: 'v10',
+          time: '0001-01-01T00:00:00Z',
+          height: '20000',
+          info: '',
+          upgraded_client_state: null,
+        },
+        null,
+        2
+      ),
+      custom: '',
+    },
+    legacyContent: Any.fromPartial({}),
+    msgs: [],
+    metadataCid: '',
   },
   isCreating: true,
   errors: {},
   options: {
+    govModuleAddress: '',
+    supportsV1GovProposals: true,
     minDeposits: { loading: false, data: [] },
-    PayEntityDisplay,
     TokenAmountDisplay,
     AddressInput,
+    GovProposalActionDisplay,
+    loadedActions: {},
+    categories: [],
+    SuspenseLoader,
   },
 }

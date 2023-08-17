@@ -4,15 +4,18 @@ import { ChainId, PolytoneConfig, SupportedChainConfig } from '@dao-dao/types'
 export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
   {
     [ChainId.JunoMainnet]: {
+      name: 'juno',
       mainnet: true,
       factoryContractAddress:
         'juno1eeqgsjyqxcscpxwa6ut36py8vfpu6hxrwy62n2vgu8ud72wa9pyqv38q7y',
+      supportsV1GovProposals: true,
       indexes: {
         search: 'daos',
         featured: 'featured_daos',
       },
       explorerUrlTemplates: {
         tx: 'https://ping.pub/juno/tx/REPLACE',
+        gov: 'https://ping.pub/juno/gov',
         govProp: 'https://ping.pub/juno/gov/REPLACE',
         wallet: 'https://ping.pub/juno/account/REPLACE',
       },
@@ -68,9 +71,11 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       },
     },
     [ChainId.OsmosisMainnet]: {
+      name: 'osmosis',
       mainnet: true,
       factoryContractAddress:
         'osmo102pg8quxtvhye3k4rcqwh7j5zwf5ekhcvlquafjjxjnarhu38qzstkdm6p',
+      supportsV1GovProposals: false,
       indexes: {
         search: 'osmosis_daos',
         // Use same as mainnet.
@@ -78,6 +83,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       },
       explorerUrlTemplates: {
         tx: 'https://ping.pub/osmosis/tx/REPLACE',
+        gov: 'https://ping.pub/osmosis/gov',
         govProp: 'https://ping.pub/osmosis/gov/REPLACE',
         wallet: 'https://ping.pub/osmosis/account/REPLACE',
       },
@@ -133,15 +139,18 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       },
     },
     [ChainId.JunoTestnet]: {
+      name: 'juno',
       mainnet: false,
       factoryContractAddress:
         'juno1dacj3j6pwr7jx0jeu99qdc4a2ylc2rxp4v3zap54sfrl3ntrhe8qkjfpku',
+      supportsV1GovProposals: true,
       indexes: {
         search: 'testnet_daos',
         featured: 'featured_daos',
       },
       explorerUrlTemplates: {
         tx: 'https://testnet.ping.pub/juno/tx/REPLACE',
+        gov: 'https://testnet.ping.pub/juno/gov',
         govProp: 'https://testnet.ping.pub/juno/gov/REPLACE',
         wallet: 'https://testnet.ping.pub/juno/account/REPLACE',
       },
@@ -172,9 +181,11 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       },
     },
     [ChainId.OsmosisTestnet]: {
+      name: 'osmosis',
       mainnet: false,
       factoryContractAddress:
         'osmo1v5k3527dt2vt67848h8jk0az9dyl8sunsqaapznf2j9tm4arxxfs7gwa0n',
+      supportsV1GovProposals: false,
       indexes: {
         search: 'osmosis_testnet_daos',
         // Use same as mainnet.
@@ -182,6 +193,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       },
       explorerUrlTemplates: {
         tx: 'https://testnet.ping.pub/osmosis/tx/REPLACE',
+        gov: 'https://testnet.ping.pub/osmosis/gov',
         govProp: 'https://testnet.ping.pub/osmosis/gov/REPLACE',
         wallet: 'https://testnet.ping.pub/osmosis/account/REPLACE',
       },
@@ -237,11 +249,11 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://uni-api.reece.sh',
   },
   [ChainId.OsmosisMainnet]: {
-    rpc: 'https://rpc.osmosis.zone',
+    rpc: 'https://osmosis-mainnet-rpc.indexer.zone',
     rest: 'https://lcd.osmosis.zone',
   },
   [ChainId.OsmosisTestnet]: {
-    rpc: 'https://rpc.testnet.osmosis.zone',
+    rpc: 'https://osmosis-testnet-rpc.indexer.zone',
     rest: 'https://lcd.testnet.osmosis.zone',
   },
   [ChainId.StargazeMainnet]: {

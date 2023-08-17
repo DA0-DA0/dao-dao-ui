@@ -7,13 +7,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
 import { averageColorSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
   Button,
   ChainProvider,
-  ChainSwitcher,
   CreateDaoPages,
   DaoCreateSidebarCard,
   DaoHeader,
@@ -68,6 +67,7 @@ import {
   makeDefaultNewDao,
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
+import { ChainSwitcher } from '../ChainSwitcher'
 import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { Trans } from '../Trans'
@@ -114,7 +114,6 @@ export const InnerCreateDaoForm = ({
     chainId,
     config: { factoryContractAddress, codeIds },
   } = useSupportedChainContext()
-  const setChainId = useSetRecoilState(walletChainIdAtom)
 
   const { goToDao } = useDaoNavHelpers()
   const { setFollowing } = useFollowingDaos(chainId)
@@ -678,12 +677,7 @@ export const InnerCreateDaoForm = ({
         }}
         className="mx-auto max-w-4xl"
         gradient
-        rightNode={
-          <ChainSwitcher
-            onSelect={({ chain_id }) => setChainId(chain_id)}
-            selected={chainId}
-          />
-        }
+        rightNode={<ChainSwitcher />}
       />
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}

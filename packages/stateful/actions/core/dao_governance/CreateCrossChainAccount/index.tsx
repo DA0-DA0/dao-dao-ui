@@ -76,7 +76,7 @@ export const makeCreateCrossChainAccountAction: ActionMaker<
     label: t('title.createCrossChainAccount'),
     description: t('info.createCrossChainAccountDescription'),
     // Don't show action if no accounts can be created.
-    disallowCreation: missingChainIds.length === 0,
+    hideFromPicker: missingChainIds.length === 0,
     Component,
     useDefaults,
     useTransformToCosmos,

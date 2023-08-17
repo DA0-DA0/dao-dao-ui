@@ -1,19 +1,19 @@
 import {
   PageRequest,
-  PageResponseSDKType,
-} from 'interchain-rpc/types/codegen/cosmos/base/query/v1beta1/pagination'
-import Long from 'long'
+  PageResponse,
+} from '@dao-dao/protobuf/codegen/cosmos/base/query/v1beta1/pagination'
 
 export const getAllRpcResponse = async <
   P extends { pagination?: PageRequest; [key: string]: any },
-  R extends { pagination?: PageResponseSDKType; [key: string]: any },
+  R extends { pagination?: PageResponse; [key: string]: any },
   K extends keyof R
 >(
   queryFn: (params: P) => Promise<R>,
   params: P,
-  key: K
+  key: K,
+  reverse = false
 ): Promise<R[K]> => {
-  let pagination: PageRequest | undefined
+  let pagination: Partial<PageRequest> | undefined
   const data = [] as any[]
 
   do {
@@ -22,14 +22,17 @@ export const getAllRpcResponse = async <
       pagination: {
         key: new Uint8Array(),
         ...pagination,
+        reverse,
         // Get all.
-        offset: Long.ZERO,
-        limit: Long.MAX_VALUE,
+        offset: 0n,
+        limit: BigInt(Number.MAX_SAFE_INTEGER),
       },
     })
 
-    pagination = response.pagination?.next_key?.length
-      ? { key: response.pagination.next_key }
+    pagination = response.pagination?.nextKey?.length
+      ? {
+          key: response.pagination.nextKey,
+        }
       : undefined
 
     const results = response[key] as any[]

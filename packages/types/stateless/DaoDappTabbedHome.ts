@@ -13,4 +13,6 @@ export type DaoDappTabbedHomeProps = DaoSplashHeaderProps & {
   tabs: DaoTabWithComponent[]
   selectedTabId: string
   onSelectTabId: (tab: string) => void
+  // If present, override current breadcrumb route with this node.
+  breadcrumbsOverride?: ReactNode
 }

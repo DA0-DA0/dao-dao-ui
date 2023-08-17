@@ -1,13 +1,14 @@
-import { toBase64 } from '@cosmjs/encoding'
-import { MsgWithdrawValidatorCommission } from 'cosmjs-types/cosmos/distribution/v1beta1/tx'
-import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
-import {
-  MsgCreateValidator,
-  MsgEditValidator,
-} from 'cosmjs-types/cosmos/staking/v1beta1/tx'
+import { fromBase64, toBase64 } from '@cosmjs/encoding'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useMemo } from 'react'
 
+import { PubKey } from '@dao-dao/protobuf/codegen/cosmos/crypto/ed25519/keys'
+import { MsgWithdrawValidatorCommission } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { MsgUnjail } from '@dao-dao/protobuf/codegen/cosmos/slashing/v1beta1/tx'
+import {
+  MsgCreateValidator,
+  MsgEditValidator,
+} from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/tx'
 import { PickEmoji } from '@dao-dao/stateless'
 import {
   ActionKey,
@@ -17,8 +18,6 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  decodeRawProtobufMsg,
-  encodeRawProtobufMsg,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
   makeStargateMessage,
@@ -27,14 +26,9 @@ import {
 
 import {
   ValidatorActionsComponent as Component,
-  ValidatorActionType,
+  VALIDATOR_ACTION_TYPES,
+  ValidatorActionsData,
 } from './Component'
-
-interface ValidatorActionsData {
-  validatorActionType: ValidatorActionType
-  createMsg: string
-  editMsg: string
-}
 
 export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
   t,
@@ -45,39 +39,45 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
 
   const useTransformToCosmos: UseTransformToCosmos<ValidatorActionsData> = () =>
     useCallback(
-      ({ validatorActionType, createMsg, editMsg }: ValidatorActionsData) => {
+      ({
+        validatorActionTypeUrl: validatorActionType,
+        createMsg,
+        editMsg,
+      }: ValidatorActionsData) => {
         switch (validatorActionType) {
-          case ValidatorActionType.WithdrawValidatorCommission:
+          case MsgWithdrawValidatorCommission.typeUrl:
             return makeStargateMessage({
               stargate: {
-                typeUrl: ValidatorActionType.WithdrawValidatorCommission,
+                typeUrl: MsgWithdrawValidatorCommission.typeUrl,
                 value: {
                   validatorAddress,
                 } as MsgWithdrawValidatorCommission,
               },
             })
-          case ValidatorActionType.CreateValidator:
+          case MsgCreateValidator.typeUrl:
             const parsed = JSON.parse(createMsg)
             return makeStargateMessage({
               stargate: {
-                typeUrl: ValidatorActionType.CreateValidator,
+                typeUrl: MsgCreateValidator.typeUrl,
                 value: {
                   ...parsed,
-                  pubkey: encodeRawProtobufMsg(parsed.pubkey),
+                  pubkey: PubKey.toProtoMsg({
+                    key: fromBase64(parsed.pubkey.value.key),
+                  }),
                 },
               },
             })
-          case ValidatorActionType.EditValidator:
+          case MsgEditValidator.typeUrl:
             return makeStargateMessage({
               stargate: {
-                typeUrl: ValidatorActionType.EditValidator,
+                typeUrl: MsgEditValidator.typeUrl,
                 value: JSON.parse(editMsg),
               },
             })
-          case ValidatorActionType.UnjailValidator:
+          case MsgUnjail.typeUrl:
             return makeStargateMessage({
               stargate: {
-                typeUrl: ValidatorActionType.UnjailValidator,
+                typeUrl: MsgUnjail.typeUrl,
                 value: {
                   validatorAddr: validatorAddress,
                 } as MsgUnjail,
@@ -91,7 +91,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
     )
 
   const useDefaults: UseDefaults<ValidatorActionsData> = () => ({
-    validatorActionType: ValidatorActionType.WithdrawValidatorCommission,
+    validatorActionTypeUrl: VALIDATOR_ACTION_TYPES[0].typeUrl,
     createMsg: JSON.stringify(
       {
         description: {
@@ -110,7 +110,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
         delegatorAddress: address,
         validatorAddress,
         pubkey: {
-          typeUrl: '/cosmos.crypto.ed25519.PubKey',
+          typeUrl: PubKey.typeUrl,
           value: {
             key: '<the base64 public key of your node (binary tendermint show-validator)>',
           },
@@ -155,7 +155,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
       // Check that the type URL is a validator message, set data accordingly.
       const decodedData = cloneDeep(data)
       switch (msg.stargate.typeUrl) {
-        case ValidatorActionType.WithdrawValidatorCommission:
+        case MsgWithdrawValidatorCommission.typeUrl:
           if (
             (msg.stargate.value as MsgWithdrawValidatorCommission)
               .validatorAddress !== validatorAddress
@@ -163,11 +163,11 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
             return { match: false }
           }
 
-          decodedData.validatorActionType =
-            ValidatorActionType.WithdrawValidatorCommission
+          decodedData.validatorActionTypeUrl =
+            MsgWithdrawValidatorCommission.typeUrl
           break
 
-        case ValidatorActionType.CreateValidator:
+        case MsgCreateValidator.typeUrl:
           if (
             (msg.stargate.value as MsgCreateValidator).delegatorAddress !==
               address ||
@@ -177,15 +177,17 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
             return { match: false }
           }
 
-          decodedData.validatorActionType = ValidatorActionType.CreateValidator
-          const decodedPubkey = decodeRawProtobufMsg(msg.stargate.value.pubkey)
+          decodedData.validatorActionTypeUrl = MsgCreateValidator.typeUrl
+          const decodedPubkey = PubKey.decode(
+            (msg.stargate.value as MsgCreateValidator).pubkey!.value
+          )
           decodedData.createMsg = JSON.stringify(
             {
               ...msg.stargate.value,
               pubkey: {
-                ...decodedPubkey,
+                typeUrl: msg.stargate.value.pubkey!.typeUrl,
                 value: {
-                  key: toBase64(decodedPubkey.value.key),
+                  key: toBase64(decodedPubkey.key),
                 },
               },
             },
@@ -194,7 +196,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
           )
           break
 
-        case ValidatorActionType.EditValidator:
+        case MsgEditValidator.typeUrl:
           if (
             (msg.stargate.value as MsgEditValidator).validatorAddress !==
             validatorAddress
@@ -202,18 +204,18 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
             return { match: false }
           }
 
-          decodedData.validatorActionType = ValidatorActionType.EditValidator
+          decodedData.validatorActionTypeUrl = MsgEditValidator.typeUrl
           decodedData.editMsg = JSON.stringify(msg.stargate.value, null, 2)
           break
 
-        case ValidatorActionType.UnjailValidator:
+        case MsgUnjail.typeUrl:
           if (
             (msg.stargate.value as MsgUnjail).validatorAddr !== validatorAddress
           ) {
             return { match: false }
           }
 
-          decodedData.validatorActionType = ValidatorActionType.UnjailValidator
+          decodedData.validatorActionTypeUrl = MsgUnjail.typeUrl
           break
 
         default:

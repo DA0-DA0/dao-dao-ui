@@ -37,14 +37,22 @@ export const ActionCard = ({
         <div className="flex flex-col items-start gap-x-4 gap-y-2 sm:flex-row sm:flex-wrap sm:items-center">
           <Button
             className={clsx(
-              !onCategoryClick && 'pointer-events-none !bg-background-secondary'
+              // Don't allow clicks for programmatic actions.
+              (!onCategoryClick || action?.programmaticOnly) &&
+                'pointer-events-none !bg-background-secondary'
             )}
-            onClick={onCategoryClick}
+            onClick={
+              // Don't allow clicks for programmatic actions.
+              !action?.programmaticOnly ? onCategoryClick : undefined
+            }
             variant="secondary"
           >
-            {!!onCategoryClick && !!action && (
-              <ArrowBackIosRounded className="!h-5 !w-5" />
-            )}
+            {
+              // Don't show back arrow for programmatic actions.
+              onCategoryClick && action && !action.programmaticOnly && (
+                <ArrowBackIosRounded className="!h-5 !w-5" />
+              )
+            }
 
             {category.label}
           </Button>
@@ -76,14 +84,17 @@ export const ActionCard = ({
           </div>
         </div>
 
-        {onRemove && (
-          <IconButton
-            Icon={Close}
-            onClick={onRemove}
-            size="sm"
-            variant="ghost"
-          />
-        )}
+        {
+          // Don't allow removing programmatic actions.
+          onRemove && !action?.programmaticOnly && (
+            <IconButton
+              Icon={Close}
+              onClick={onRemove}
+              size="sm"
+              variant="ghost"
+            />
+          )
+        }
       </div>
 
       <div

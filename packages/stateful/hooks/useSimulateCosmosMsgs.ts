@@ -1,7 +1,16 @@
-import { cosmos } from 'interchain-rpc'
 import { useCallback } from 'react'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
+import { cosmos } from '@dao-dao/protobuf'
+import { SignMode } from '@dao-dao/protobuf/codegen/cosmos/tx/signing/v1beta1/signing'
+import { SimulateRequest } from '@dao-dao/protobuf/codegen/cosmos/tx/v1beta1/service'
+import {
+  AuthInfo,
+  Fee,
+  Tx,
+  TxBody,
+} from '@dao-dao/protobuf/codegen/cosmos/tx/v1beta1/tx'
+import { Any } from '@dao-dao/protobuf/codegen/google/protobuf/any'
 import {
   DaoCoreV2Selectors,
   cosmosRpcClientForChainSelector,
@@ -15,9 +24,6 @@ import {
   isValidContractAddress,
   typesRegistry,
 } from '@dao-dao/utils'
-
-const { SignMode } = cosmos.tx.signing.v1beta1
-const { AuthInfo, Fee, Tx, TxBody, SimulateRequest } = cosmos.tx.v1beta1
 
 // Simulate executing Cosmos messages on-chain. We can't just use the simulate
 // function on SigningCosmWasmClient or SigningStargateClient because they
@@ -123,26 +129,46 @@ const doSimulation = async (
   msgs: CosmosMsgFor_Empty[],
   senderAddress: string
 ) => {
-  const encodeObjects = msgs.map((msg) => {
+  const encodedMsgs = msgs.map((msg) => {
     const encoded = cwMsgToEncodeObject(msg, senderAddress)
     return typesRegistry.encodeAsAny(encoded)
   })
 
+  // Simulate messages separately.
+  await encodedMsgs.reduce(async (p, encoded) => {
+    await p
+
+    console.log('Simulating:', encoded)
+    await simulateMessages(cosmosRpcClient, [encoded])
+  }, Promise.resolve())
+
+  // Simulate messages together.
+  console.log('Simulating all')
+  await simulateMessages(cosmosRpcClient, encodedMsgs)
+}
+
+const simulateMessages = async (
+  cosmosRpcClient: Awaited<
+    ReturnType<typeof cosmos.ClientFactory.createRPCQueryClient>
+  >['cosmos'],
+  messages: Any[]
+) => {
   const tx = Tx.fromPartial({
     authInfo: AuthInfo.fromPartial({
       fee: Fee.fromPartial({}),
       signerInfos: [
+        // @ts-ignore
         {
           modeInfo: {
             single: {
-              mode: SignMode.SIGN_MODE_UNSPECIFIED,
+              mode: SignMode.SIGN_MODE_DIRECT,
             },
           },
         },
       ],
     }),
     body: TxBody.fromPartial({
-      messages: encodeObjects,
+      messages,
       memo: '',
     }),
     signatures: [new Uint8Array()],

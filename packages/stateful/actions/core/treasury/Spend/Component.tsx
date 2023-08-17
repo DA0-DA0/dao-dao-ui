@@ -94,6 +94,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     if (
       !currentEntity ||
       !recipient ||
+      // Do nothing for module accounts as they only exist on the current chain.
+      currentEntity.type === EntityType.Module ||
       // Wallet on current chain
       (currentEntity.type === EntityType.Wallet ||
       // DAO on native chain (core contract address).
@@ -152,7 +154,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           const otherChain =
             chain_1.chain_name === spendChain.chain_name ? chain_2 : chain_1
           return getChainForChainName(otherChain.chain_name)
-        }),
+        })
+        // Remove nonexistent osmosis testnet chain.
+        .filter((chain) => chain.chain_id !== 'osmo-test-4'),
     ]
   }, [spendChainId])
 
@@ -163,9 +167,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       }
 
       const insufficientBalanceI18nKey =
-        context.type === ActionContextType.Dao
-          ? 'error.cantSpendMoreThanTreasury'
-          : 'error.insufficientWalletBalance'
+        context.type === ActionContextType.Wallet
+          ? 'error.insufficientWalletBalance'
+          : 'error.cantSpendMoreThanTreasury'
 
       const tokenBalance = tokens.data.find(
         ({ token }) =>

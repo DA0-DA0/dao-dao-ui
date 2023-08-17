@@ -16,7 +16,6 @@ export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
       address: proposalModuleAddress,
       formula: 'daoProposalMultiple/creationPolicy',
       chainId,
-      // TODO(numia): Remove this once provided.
       required: true,
     })
   } catch (err) {

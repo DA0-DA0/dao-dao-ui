@@ -216,16 +216,25 @@ export const NumberInput = <
           register(fieldName, {
             required: required && 'Required',
             validate,
-            setValueAs: (value) =>
+            setValueAs: (value) => {
               // If not a number AND not a string or an empty string, set NaN.
               // Empty strings get converted to 0 with the Number constructor,
               // which we don't want, because then the input can't be cleared.
-              typeof value !== 'number' &&
-              (typeof value !== 'string' || value.trim() === '')
-                ? NaN
-                : transformDecimals
-                ? convertDenomToMicroDenomWithDecimals(value, transformDecimals)
-                : Number(value),
+              const newValue =
+                typeof value !== 'number' &&
+                (typeof value !== 'string' || value.trim() === '')
+                  ? NaN
+                  : // On first load, setValueAs seems to be called with the first value, which is probably default loaded from a save. We
+                  // don't want to transform this first value.
+                  transformDecimals && value !== untransformedValue
+                  ? convertDenomToMicroDenomWithDecimals(
+                      value,
+                      transformDecimals
+                    )
+                  : Number(value)
+
+              return newValue
+            },
           }))}
       />
 

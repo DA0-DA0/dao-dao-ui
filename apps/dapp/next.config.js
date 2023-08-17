@@ -21,6 +21,7 @@ const config = {
   transpilePackages: [
     '@dao-dao/stateless',
     '@dao-dao/utils',
+    '@dao-dao/protobuf',
     '@dao-dao/state',
     '@dao-dao/stateful',
     '@dao-dao/i18n',
@@ -88,6 +89,7 @@ const config = {
       'ipfs.stargaze.zone',
       'nftstorage.link',
       'img-proxy.ekez.workers.dev',
+      'raw.githubusercontent.com',
     ],
   },
   modularizeImports: {

@@ -211,7 +211,6 @@ export interface ProposalListResponse {
 export interface ProposalResponse {
   id: number
   proposal: MultipleChoiceProposal
-  // TODO(indexer): Get these from numia indexer.
   // Indexer may return these.
   createdAt?: string
   completedAt?: string

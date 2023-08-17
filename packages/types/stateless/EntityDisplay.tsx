@@ -4,6 +4,8 @@ import { LoadingData } from './common'
 export enum EntityType {
   Dao = 'dao',
   Wallet = 'wallet',
+  // native chain module
+  Module = 'module',
 }
 
 // DAO or wallet representation.
@@ -15,6 +17,9 @@ export type Entity = {
 } & (
   | {
       type: EntityType.Wallet
+    }
+  | {
+      type: EntityType.Module
     }
   | {
       type: EntityType.Dao

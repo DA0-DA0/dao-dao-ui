@@ -6,19 +6,19 @@ import {
   TimerRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
+import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import {
   Coin,
+  GovProposalActionDisplayProps,
+  GovProposalDecodedContent,
   GovProposalWithDecodedContent,
-  GovernanceProposalType,
-  StatefulPayEntityDisplayProps,
   StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
-import { formatDateTimeTz } from '@dao-dao/utils'
+import { formatDateTimeTz, govProposalToDecodedContent } from '@dao-dao/utils'
 
 import { useChainContext, useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { IconButtonLink } from '../icon_buttons'
@@ -33,16 +33,15 @@ export type GovernanceProposalProps = {
   // Defined if created. Adds external link to proposal and displays ID.
   id?: string
   status?: ProposalStatus | 'pending'
-  content: GovProposalWithDecodedContent['decodedContent']
+  content: GovProposalDecodedContent
   deposit: Coin[]
   startDate?: Date
   // End of deposit period or voting period, depending on status.
   endDate?: Date
+  className?: string
 
   TokenAmountDisplay: ComponentType<StatefulTokenAmountDisplayProps>
-  // Needed to display CommunityPoolSpendProposal types.
-  PayEntityDisplay?: ComponentType<StatefulPayEntityDisplayProps>
-  className?: string
+  GovProposalActionDisplay: ComponentType<GovProposalActionDisplayProps>
 }
 
 export const GovernanceProposal = ({
@@ -52,23 +51,16 @@ export const GovernanceProposal = ({
   deposit,
   startDate,
   endDate,
-  TokenAmountDisplay,
-  PayEntityDisplay,
   className,
+  TokenAmountDisplay,
+  GovProposalActionDisplay,
 }: GovernanceProposalProps) => {
   const { t } = useTranslation()
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
   const { config } = useChainContext()
 
-  const title =
-    'title' in content.value && typeof content.value.title === 'string'
-      ? content.value.title
-      : t('title.noTitle')
-  const description =
-    'description' in content.value &&
-    typeof content.value.description === 'string'
-      ? content.value.description
-      : undefined
+  const title = content.title || t('title.noTitle')
+  const description = content.description || undefined
 
   const info = [
     ...(status
@@ -77,7 +69,7 @@ export const GovernanceProposal = ({
             Icon: RotateRightOutlined,
             label: t('title.status'),
             Value: (props) => (
-              <p {...props}>{t(PROPOSAL_STATUS_I18N_KEY_MAP[status])}</p>
+              <p {...props}>{t(GOV_PROPOSAL_STATUS_I18N_KEY_MAP[status])}</p>
             ),
           },
         ] as ProposalStatusAndInfoProps['info'])
@@ -164,36 +156,45 @@ export const GovernanceProposal = ({
         </div>
       )}
 
-      {PayEntityDisplay &&
-        !!content &&
-        content.typeUrl ===
-          GovernanceProposalType.CommunityPoolSpendProposal && (
-          <div className="space-y-3">
-            <p className="text-text-tertiary">
-              {t('govProposalType.CommunityPoolSpendProposal')}
-            </p>
-
-            <PayEntityDisplay
-              coins={content.value.amount}
-              recipient={content.value.recipient}
-            />
-          </div>
-        )}
+      <GovProposalActionDisplay content={content} hideCopyLink />
     </div>
   )
 }
 
-const PROPOSAL_STATUS_I18N_KEY_MAP: Record<ProposalStatus | 'pending', string> =
-  {
-    [ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED]:
-      'govProposalStatus.unspecified',
-    [ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD]:
-      'govProposalStatus.depositPeriod',
-    [ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD]:
-      'govProposalStatus.votingPeriod',
-    [ProposalStatus.PROPOSAL_STATUS_PASSED]: 'govProposalStatus.passed',
-    [ProposalStatus.PROPOSAL_STATUS_REJECTED]: 'govProposalStatus.rejected',
-    [ProposalStatus.PROPOSAL_STATUS_FAILED]: 'govProposalStatus.failed',
-    [ProposalStatus.UNRECOGNIZED]: 'govProposalStatus.unrecognized',
-    pending: 'govProposalStatus.pendingSubmission',
-  }
+export const GOV_PROPOSAL_STATUS_I18N_KEY_MAP: Record<
+  ProposalStatus | 'pending',
+  string
+> = {
+  [ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED]: 'govProposalStatus.unspecified',
+  [ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD]:
+    'govProposalStatus.depositPeriod',
+  [ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD]:
+    'govProposalStatus.votingPeriod',
+  [ProposalStatus.PROPOSAL_STATUS_PASSED]: 'govProposalStatus.passed',
+  [ProposalStatus.PROPOSAL_STATUS_REJECTED]: 'govProposalStatus.rejected',
+  [ProposalStatus.PROPOSAL_STATUS_FAILED]: 'govProposalStatus.failed',
+  [ProposalStatus.UNRECOGNIZED]: 'govProposalStatus.unrecognized',
+  pending: 'govProposalStatus.pendingSubmission',
+}
+
+export type GovernanceProposalFromProposalProps = Pick<
+  GovernanceProposalProps,
+  'GovProposalActionDisplay' | 'TokenAmountDisplay' | 'className'
+> & {
+  proposal: GovProposalWithDecodedContent
+}
+
+export const GovernanceProposalFromProposal = ({
+  proposal,
+  ...props
+}: GovernanceProposalFromProposalProps) => (
+  <GovernanceProposal
+    content={govProposalToDecodedContent(proposal)}
+    deposit={proposal.proposal.totalDeposit}
+    endDate={proposal.proposal.votingEndTime}
+    id={proposal.id.toString()}
+    startDate={proposal.proposal.votingStartTime}
+    status={proposal.proposal.status}
+    {...props}
+  />
+)

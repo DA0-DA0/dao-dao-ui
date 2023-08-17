@@ -1,6 +1,6 @@
 import { AnalyticsOutlined } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, Fragment, useEffect, useState } from 'react'
+import { ComponentType, Fragment, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ProposalVoteOption } from '@dao-dao/types'
@@ -19,6 +19,7 @@ export interface ProposalStatusAndInfoProps<Vote extends unknown = unknown> {
   }[]
   inline?: boolean
   action?: {
+    header?: ReactNode
     label: string
     description?: string
     Icon: ComponentType<{ className: string }>
@@ -127,6 +128,8 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
             inline ? 'm-6 mt-0' : 'mb-8'
           )}
         >
+          {action.header}
+
           <Button
             center
             loading={action.loading}

@@ -1,6 +1,7 @@
 import { Coin, coin } from '@cosmjs/stargate'
 import { useCallback, useMemo } from 'react'
 
+import { MsgMint } from '@dao-dao/protobuf/codegen/osmosis/tokenfactory/v1beta1/tx'
 import { HerbEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -25,8 +26,6 @@ export interface MintData {
   amount: number
 }
 
-const MINT_TYPE_URL = '/osmosis.tokenfactory.v1beta1.MsgMint'
-
 const useDefaults: UseDefaults<MintData> = () => ({
   amount: 1,
 })
@@ -44,11 +43,11 @@ const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
       )
       return makeStargateMessage({
         stargate: {
-          typeUrl: MINT_TYPE_URL,
+          typeUrl: MsgMint.typeUrl,
           value: {
             sender: address,
             amount: coin(amount, governanceTokenAddress),
-          },
+          } as MsgMint,
         },
       })
     },
@@ -65,7 +64,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
   } = useGovernanceTokenInfo()
 
   return useMemo(() => {
-    if (!isDecodedStargateMsg(msg) || msg.stargate.typeUrl !== MINT_TYPE_URL) {
+    if (
+      !isDecodedStargateMsg(msg) ||
+      msg.stargate.typeUrl !== MsgMint.typeUrl
+    ) {
       return {
         match: false,
       }

@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProposalStatusMap } from './ProposalStatus'
+import { ProposalStatusMap } from './proposal/ProposalStatus'
 import { StatusDisplay } from './StatusDisplay'
 
 export default {

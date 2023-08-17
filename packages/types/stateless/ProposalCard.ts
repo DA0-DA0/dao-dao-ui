@@ -4,8 +4,9 @@ import { LinkWrapperProps } from './LinkWrapper'
 
 export interface ProposalCardProps {
   dao: {
+    type: 'dao' | 'gov'
     name: string
-    coreAddress: string
+    coreAddressOrId: string
     imageUrl: string | undefined | null
   }
   id: string

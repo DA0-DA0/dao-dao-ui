@@ -8,7 +8,7 @@ import {
   ActionComponent,
   CosmosMsgFor_Empty,
   LoadedActions,
-  PartialCategorizedActionKeyAndData,
+  NestedActionsEditorFormData,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
 import { convertActionsToMessages } from '@dao-dao/utils'
@@ -21,13 +21,6 @@ export type NestedActionsEditorOptions = {
   categories: ActionCategoryWithLabel[]
   loadedActions: LoadedActions
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
-}
-
-export type NestedActionsEditorFormData = {
-  msgs: CosmosMsgFor_Empty[]
-
-  // Internal action data so that errors are added to main form.
-  _actionData?: PartialCategorizedActionKeyAndData[]
 }
 
 export const NestedActionsEditor: ActionComponent<

@@ -235,7 +235,6 @@ export const dumpStateSelector = selectorFamily<
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'daoCore/dumpState',
-          // TODO(numia): Remove this once extra parameters are provided.
           required: true,
         })
       )
@@ -525,7 +524,6 @@ export const infoSelector = selectorFamily<
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'info',
-          // TODO(numia): Remove this once provided.
           required: true,
         })
       )

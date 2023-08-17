@@ -1,6 +1,7 @@
 import {
   Add,
   CheckRounded,
+  GavelOutlined,
   HomeOutlined,
   InboxOutlined,
   KeyboardDoubleArrowLeft,
@@ -15,8 +16,9 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DappNavigationProps } from '@dao-dao/types/stateless/DappNavigation'
+import { getGovPath } from '@dao-dao/utils'
 
-import { usePlatform } from '../../hooks'
+import { usePlatform, useSupportedChainContext } from '../../hooks'
 import { DaoDropdown } from '../dao'
 import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
@@ -72,6 +74,7 @@ export const DappNavigation = ({
     responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
   } = useAppContext()
   const { asPath } = useRouter()
+  const { config: chainConfig } = useSupportedChainContext()
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
@@ -201,6 +204,15 @@ export const DappNavigation = ({
             compact={compact}
             href="/"
             label={t('title.home')}
+          />
+
+          <Row
+            Icon={GavelOutlined}
+            LinkWrapper={LinkWrapper}
+            compact={compact}
+            href={getGovPath(chainConfig.name)}
+            label={t('title.governance')}
+            selected={asPath.startsWith(getGovPath(''))}
           />
 
           {/* Only show me, inbox, and following when connected. */}

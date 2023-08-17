@@ -18,7 +18,7 @@ export interface ProposalContentDisplayProps {
   title: string
   description: string
   innerContentDisplay: ReactNode
-  creator: {
+  creator?: {
     address: string
     name: LoadingData<string | null>
   }
@@ -90,28 +90,30 @@ export const ProposalContentDisplay = ({
       </div>
 
       <div className="caption-text mb-4 flex flex-row items-center gap-1 font-mono">
-        <CopyToClipboardUnderline
-          className={clsx(
-            '!caption-text',
-            creator.name.loading && 'animate-pulse'
-          )}
-          // If name exists, use that. Otherwise, will fall back to
-          // truncated address display.
-          label={(!creator.name.loading && creator.name.data) || undefined}
-          success={t('info.copiedAddressToClipboard')}
-          tooltip={
-            // If displaying name, show tooltip to copy address.
-            !creator.name.loading && creator.name.data
-              ? t('button.clickToCopyAddress')
-              : undefined
-          }
-          value={creator.address}
-        />
+        {!!creator?.address && (
+          <CopyToClipboardUnderline
+            className={clsx(
+              '!caption-text',
+              creator.name.loading && 'animate-pulse'
+            )}
+            // If name exists, use that. Otherwise, will fall back to
+            // truncated address display.
+            label={(!creator.name.loading && creator.name.data) || undefined}
+            success={t('info.copiedAddressToClipboard')}
+            tooltip={
+              // If displaying name, show tooltip to copy address.
+              !creator.name.loading && creator.name.data
+                ? t('button.clickToCopyAddress')
+                : undefined
+            }
+            value={creator.address}
+          />
+        )}
 
         {!!createdAt && (
           <>
             {/* eslint-disable-next-line i18next/no-literal-string */}
-            <p> – </p>
+            {!!creator?.address && <p> – </p>}
             <p>{formatDate(createdAt)}</p>
           </>
         )}

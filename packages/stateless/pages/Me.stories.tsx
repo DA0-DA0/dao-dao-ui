@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ChainSwitcher } from '@dao-dao/stateful'
 import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
 import {
   WalletActionsProviderDecorator,
@@ -53,5 +54,5 @@ Default.args = {
     />
   ),
   profileData: WALLET_PROFILE_DATA,
-  setChainId: (chainId) => alert(chainId),
+  ChainSwitcher,
 }

@@ -9,7 +9,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { makeWasmMessage } from '@dao-dao/utils'
+import { makeStargateMessage, makeWasmMessage } from '@dao-dao/utils'
 
 import { CustomComponent as Component } from './Component'
 
@@ -34,7 +34,13 @@ const useTransformToCosmos: UseTransformToCosmos<CustomData> = () =>
       return
     }
     // Convert the wasm message component to base64
-    if (msg.wasm) msg = makeWasmMessage(msg)
+    if (msg.wasm) {
+      msg = makeWasmMessage(msg)
+    }
+    // Encode the stargate message
+    if (msg.stargate) {
+      msg = makeStargateMessage(msg)
+    }
     return msg
   }, [])
 

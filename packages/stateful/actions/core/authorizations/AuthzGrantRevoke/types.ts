@@ -1,44 +1,123 @@
+import { GenericAuthorization } from '@dao-dao/protobuf/codegen/cosmos/authz/v1beta1/authz'
+import { SendAuthorization } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/authz'
+import { MsgSend } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/tx'
+import { MsgWithdrawDelegatorReward } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { MsgVote } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import {
+  MsgBeginRedelegate,
+  MsgDelegate,
+  MsgUndelegate,
+} from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/tx'
+import {
+  AcceptedMessageKeysFilter,
+  AcceptedMessagesFilter,
+  AllowAllMessagesFilter,
+  CombinedLimit,
+  ContractExecutionAuthorization,
+  ContractMigrationAuthorization,
+  MaxCallsLimit,
+  MaxFundsLimit,
+} from '@dao-dao/protobuf/codegen/cosmwasm/wasm/v1/authz'
+import {
+  MsgExecuteContract,
+  MsgMigrateContract,
+} from '@dao-dao/protobuf/codegen/cosmwasm/wasm/v1/tx'
+
 export type AuthzGrantRevokeData = {
   mode: 'grant' | 'revoke'
-  authorizationTypeUrl: AuthorizationTypeUrl
+  authorizationTypeUrl: string
   customTypeUrl: boolean
   grantee: string
   contract: string
   funds: { denom: string; amount: number }[]
   msgTypeUrl: string
-  filterType: FilterTypes
+  filterTypeUrl: string
   filterKeys: string
   filterMsgs: string
-  limitType: LimitTypes
+  limitTypeUrl: string
   calls: number
 }
 
-export enum AuthzExecActionTypes {
-  Delegate = '/cosmos.staking.v1beta1.MsgDelegate',
-  Undelegate = '/cosmos.staking.v1beta1.MsgUndelegate',
-  Redelegate = '/cosmos.staking.v1beta1.MsgBeginRedelegate',
-  ClaimRewards = '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
-  Vote = '/cosmos.gov.v1beta1.MsgVote',
-  Spend = '/cosmos.bank.v1beta1.MsgSend',
-  Execute = '/cosmwasm.wasm.v1.MsgExecuteContract',
-  Migrate = '/cosmwasm.wasm.v1.MsgMigrateContract',
-}
+export const ACTION_TYPES = [
+  {
+    type: MsgDelegate,
+    i18nKey: 'info.stake',
+  },
+  {
+    type: MsgUndelegate,
+    i18nKey: 'info.unstake',
+  },
+  {
+    type: MsgBeginRedelegate,
+    i18nKey: 'info.redelegate',
+  },
+  {
+    type: MsgWithdrawDelegatorReward,
+    i18nKey: 'info.withdrawStakingRewards',
+  },
+  {
+    type: MsgVote,
+    i18nKey: 'title.vote',
+  },
+  {
+    type: MsgSend,
+    i18nKey: 'title.spend',
+  },
+  {
+    type: MsgExecuteContract,
+    i18nKey: 'title.executeSmartContract',
+  },
+  {
+    type: MsgMigrateContract,
+    i18nKey: 'title.migrateSmartContract',
+  },
+]
 
-export enum AuthorizationTypeUrl {
-  Generic = '/cosmos.authz.v1beta1.GenericAuthorization',
-  ContractExecution = '/cosmwasm.wasm.v1.ContractExecutionAuthorization',
-  ContractMigration = '/cosmwasm.wasm.v1.ContractMigrationAuthorization',
-  Spend = '/cosmos.bank.v1beta1.SendAuthorization',
-}
+export const AUTHORIZATION_TYPES = [
+  {
+    type: GenericAuthorization,
+    i18nKey: 'form.generic',
+  },
+  {
+    type: SendAuthorization,
+    i18nKey: 'title.send',
+  },
+  {
+    type: ContractExecutionAuthorization,
+    i18nKey: 'title.executeSmartContract',
+  },
+  {
+    type: ContractMigrationAuthorization,
+    i18nKey: 'title.migrateSmartContract',
+  },
+]
 
-export enum FilterTypes {
-  All = '/cosmwasm.wasm.v1.AllowAllMessagesFilter',
-  Keys = '/cosmwasm.wasm.v1.AcceptedMessageKeysFilter',
-  Msgs = '/cosmwasm.wasm.v1.AcceptedMessagesFilter',
-}
+export const FILTER_TYPES = [
+  {
+    type: AllowAllMessagesFilter,
+    i18nKey: 'title.all',
+  },
+  {
+    type: AcceptedMessageKeysFilter,
+    i18nKey: 'form.allowedMethods',
+  },
+  {
+    type: AcceptedMessagesFilter,
+    i18nKey: 'form.message',
+  },
+]
 
-export enum LimitTypes {
-  Combined = '/cosmwasm.wasm.v1.CombinedLimit',
-  Calls = '/cosmwasm.wasm.v1.MaxCallsLimit',
-  Funds = '/cosmwasm.wasm.v1.MaxFundsLimit',
-}
+export const LIMIT_TYPES = [
+  {
+    type: MaxCallsLimit,
+    i18nKey: 'form.calls',
+  },
+  {
+    type: MaxFundsLimit,
+    i18nKey: 'form.funds',
+  },
+  {
+    type: CombinedLimit,
+    i18nKey: 'form.combined',
+  },
+]

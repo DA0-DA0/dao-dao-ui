@@ -1,13 +1,12 @@
 import { toBase64, toUtf8 } from '@cosmjs/encoding'
+import { Coin } from '@cosmjs/proto-signing'
 import { v4 as uuidv4 } from 'uuid'
 
 import { PolytoneConnection } from '@dao-dao/types'
 import {
   BankMsg,
   CosmosMsgFor_Empty,
-  DistributionMsg,
   MintMsg,
-  StakingMsg,
   StargateMsg,
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
@@ -187,49 +186,75 @@ export const makeBankMessage = (
   },
 })
 
-export enum StakeType {
+export enum StakingActionType {
   Delegate = 'delegate',
   Undelegate = 'undelegate',
   Redelegate = 'redelegate',
   WithdrawDelegatorReward = 'withdraw_delegator_reward',
+  SetWithdrawAddress = 'set_withdraw_address',
 }
 
-export const makeStakingMessage = (
-  type: `${StakeType}`,
+export const makeStakingActionMessage = (
+  type: `${StakingActionType}`,
   amount: string,
   denom: string,
   validator: string,
-  toValidator = ''
+  toValidator = '',
+  withdrawAddress = ''
 ): CosmosMsgFor_Empty => {
   const coin = {
     amount,
     denom,
   }
 
-  let staking: StakingMsg
+  let msg: CosmosMsgFor_Empty
   switch (type) {
-    case StakeType.Delegate:
-      staking = {
-        delegate: {
-          amount: coin,
-          validator,
+    case StakingActionType.Delegate:
+      msg = {
+        staking: {
+          delegate: {
+            amount: coin,
+            validator,
+          },
         },
       }
       break
-    case StakeType.Undelegate:
-      staking = {
-        undelegate: {
-          amount: coin,
-          validator,
+    case StakingActionType.Undelegate:
+      msg = {
+        staking: {
+          undelegate: {
+            amount: coin,
+            validator,
+          },
         },
       }
       break
-    case StakeType.Redelegate:
-      staking = {
-        redelegate: {
-          amount: coin,
-          src_validator: validator,
-          dst_validator: toValidator,
+    case StakingActionType.Redelegate:
+      msg = {
+        staking: {
+          redelegate: {
+            amount: coin,
+            src_validator: validator,
+            dst_validator: toValidator,
+          },
+        },
+      }
+      break
+    case StakingActionType.WithdrawDelegatorReward:
+      msg = {
+        distribution: {
+          withdraw_delegator_reward: {
+            validator,
+          },
+        },
+      }
+      break
+    case StakingActionType.SetWithdrawAddress:
+      msg = {
+        distribution: {
+          set_withdraw_address: {
+            address: withdrawAddress,
+          },
         },
       }
       break
@@ -237,18 +262,8 @@ export const makeStakingMessage = (
       throw new Error('Unexpected staking type')
   }
 
-  return { staking }
+  return msg
 }
-
-export const makeDistributeMessage = (
-  validator: string
-): CosmosMsgFor_Empty => ({
-  distribution: {
-    withdraw_delegator_reward: {
-      validator,
-    },
-  } as DistributionMsg,
-})
 
 export const makePolytoneExecuteMessage = (
   srcChainId: string,
@@ -353,3 +368,32 @@ export const decodePolytoneExecuteMsg = (
     initiatorMsg: decodedMsg.wasm.execute.msg.execute.callback.msg,
   }
 }
+
+export const getFundsUsedInCwMessage = (msg: CosmosMsgFor_Empty): Coin[] =>
+  'bank' in msg
+    ? 'send' in msg.bank
+      ? msg.bank.send.amount
+      : 'burn' in msg.bank
+      ? msg.bank.burn.amount
+      : []
+    : 'staking' in msg
+    ? 'delegate' in msg.staking
+      ? [msg.staking.delegate.amount]
+      : 'undelegate' in msg.staking
+      ? [msg.staking.undelegate.amount]
+      : 'redelegate' in msg.staking
+      ? [msg.staking.redelegate.amount]
+      : []
+    : 'ibc' in msg
+    ? 'transfer' in msg.ibc
+      ? [msg.ibc.transfer.amount]
+      : []
+    : 'wasm' in msg
+    ? 'execute' in msg.wasm
+      ? msg.wasm.execute.funds
+      : 'instantiate' in msg.wasm
+      ? msg.wasm.instantiate.funds
+      : 'instantiate2' in msg.wasm
+      ? msg.wasm.instantiate2.funds
+      : []
+    : []

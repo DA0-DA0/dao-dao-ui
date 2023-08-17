@@ -15,20 +15,26 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ```json
 {
-  "stakeType": "<STAKE TYPE>",
+  "type": "<TYPE>",
   "validator": "<VALIDATOR ADDRESS>",
   // Only used when redelegating.
-  "toValidator": "<REDELEATE TO VALIDATOR ADDRESS>",
+  "toValidator": "<REDELEGATE TO VALIDATOR ADDRESS>",
+  // Only used when setting withdraw address.
+  "withdrawAddress": "<WITHDRAWER ADDRESS>",
   "amount": <AMOUNT>
 }
 ```
 
-`stakeType` can be one of the following:
+`type` can be one of the following:
 
 - `delegate`
 - `undelegate`
 - `redelegate`
 - `withdraw_delegator_reward`
+- `set_withdraw_address`
 
-`toValidator` is only required when `stakeType` is `redelegate`. Otherwise, it
-is ignored and can be omitted.
+`toValidator` is only required when `type` is `redelegate`. Otherwise, it is
+ignored and can be omitted.
+
+`withdrawAddress` is only required when `type` is `set_withdraw_address`.
+Otherwise, it is ignored and can be omitted.

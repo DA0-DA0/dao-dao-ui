@@ -1,10 +1,9 @@
 import { coin } from '@cosmjs/amino'
-import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx'
-import Long from 'long'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
+import { MsgTransfer } from '@dao-dao/protobuf/codegen/ibc/applications/transfer/v1/tx'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import { MoneyEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
@@ -48,8 +47,6 @@ import {
   SpendData,
   SpendComponent as StatelessSpendComponent,
 } from './Component'
-
-const IBC_MSG_TRANSFER_TYPE_URL = '/ibc.applications.transfer.v1.MsgTransfer'
 
 const useDefaults: UseDefaults<SpendData> = () => {
   const {
@@ -165,14 +162,14 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
         )
         msg = makeStargateMessage({
           stargate: {
-            typeUrl: IBC_MSG_TRANSFER_TYPE_URL,
+            typeUrl: MsgTransfer.typeUrl,
             value: {
               sourcePort: 'transfer',
               sourceChannel,
               token: coin(amount, data.denom),
               sender: address,
               receiver: data.to,
-              timeoutTimestamp: Long.MAX_VALUE,
+              timeoutTimestamp: BigInt(Number.MAX_SAFE_INTEGER),
               memo: '',
             } as MsgTransfer,
           },
@@ -253,7 +250,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
 
   const isIbcTransfer =
     isDecodedStargateMsg(msg) &&
-    msg.stargate.typeUrl === IBC_MSG_TRANSFER_TYPE_URL &&
+    msg.stargate.typeUrl === MsgTransfer.typeUrl &&
     objectMatchesStructure(msg.stargate.value, {
       sourcePort: {},
       sourceChannel: {},

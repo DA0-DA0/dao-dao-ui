@@ -43,6 +43,8 @@ export interface NativeDelegationInfo {
 }
 
 export enum ContractVersion {
+  // Used when referring to gov module.
+  Gov = 'gov',
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v1.0.0
   V1 = '0.1.0',
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.0-alpha
@@ -69,14 +71,22 @@ export enum ChainId {
 }
 
 export type SupportedChainConfig = {
+  // Unique name among chain configs with the same `mainnet` flag. This is used
+  // to identify the chain in the native governance UI.
+  name: string
   mainnet: boolean
   factoryContractAddress: string
+  // Supports new v1 gov proposals introduced in cosmos-sdk v47. Some chains
+  // that fork the SDK, like Osmosis, don't support v1 gov proposals even though
+  // they use cosmos-sdk v47 or higher, so we need a hardcoded flag.
+  supportsV1GovProposals: boolean
   indexes: {
     search: string
     featured: string
   }
   explorerUrlTemplates: {
     tx: string
+    gov: string
     govProp: string
     wallet: string
   }

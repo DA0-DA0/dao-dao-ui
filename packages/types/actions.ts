@@ -7,6 +7,7 @@ import { TFunction } from 'react-i18next'
 import { SupportedChainContext } from './chain'
 import { CosmosMsgFor_Empty } from './contracts/common'
 import { DaoInfo } from './dao'
+import { AllGovParams } from './gov'
 
 export enum ActionCategoryKey {
   Authorizations = 'authorizations',
@@ -23,6 +24,8 @@ export enum ActionCategoryKey {
 // TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
 export enum ActionKey {
   Spend = 'spend',
+  CommunityPoolTransfer = 'communityPoolTransfer',
+  CommunityPoolDeposit = 'communityPoolDeposit',
   ManageStaking = 'manageStaking',
   ManageCw20 = 'manageCw20',
   ManageCw721 = 'manageCw721',
@@ -163,8 +166,8 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   // action will not be shown in the list of actions to create, but it will
   // still match and render in existing contexts. This is used to conditionally
   // show the upgrade actions while still allowing them to render in existing
-  // proposals.
-  disallowCreation?: boolean
+  // proposals and be added programmatically during creation.
+  hideFromPicker?: boolean
   // Whether or not this action is reusable. Defaults to false. If true, when
   // editing the action, the add and remove button in the group will be removed,
   // and the action will be hidden from future category picker selections. Some
@@ -172,6 +175,13 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   // 'Update Info' or any configuration updater, should only be used once at a
   // time. We should prevent users from adding multiple of these actions.
   notReusable?: boolean
+  // Programmatic actions cannot be chosen or removed by the user. This is used
+  // for actions should only be controlled by code. The user should not be able
+  // to modify it at all, which also means the user cannot pick this action or
+  // go back to the category action picker. This includes both`hideFromPicker`
+  // and `notReusable`, while also preventing the user from going back to the
+  // category action picker or removing the action.
+  programmaticOnly?: boolean
   // Hook to get default fields for form display.
   useDefaults: UseDefaults<Data>
   // Hook to make function to convert action data to CosmosMsgFor_Empty.
@@ -199,6 +209,8 @@ export type ActionCategoryWithLabel = Omit<ActionCategory, 'label'> & {
 export enum ActionContextType {
   Dao = 'dao',
   Wallet = 'wallet',
+  // x/gov chain governance
+  Gov = 'gov',
 }
 
 export type ActionContext =
@@ -209,13 +221,19 @@ export type ActionContext =
   | {
       type: ActionContextType.Wallet
     }
+  | {
+      type: ActionContextType.Gov
+      params: AllGovParams
+    }
 
 export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
   t: TFunction
   chain: Chain
   chainContext: SupportedChainContext
-  // coreAddress if context.type === Dao
-  // walletAddress if context.type === Wallet
+  // The address of the sender/actor.
+  // DAO core address if context.type === Dao
+  // Wallet address if context.type === Wallet
+  // x/gov module address if context.type === Gov
   address: string
   context: ActionContext
 }
@@ -260,3 +278,10 @@ export type LoadedAction = {
   defaults: ReturnType<UseDefaults>
 }
 export type LoadedActions = Partial<Record<ActionKey, LoadedAction>>
+
+export type NestedActionsEditorFormData = {
+  msgs: CosmosMsgFor_Empty[]
+
+  // Internal action data so that errors are added to main form.
+  _actionData?: PartialCategorizedActionKeyAndData[]
+}

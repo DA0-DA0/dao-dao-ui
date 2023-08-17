@@ -1,8 +1,11 @@
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValue, waitForAll } from 'recoil'
 
+import { govParamsSelector, moduleAddressSelector } from '@dao-dao/state/recoil'
 import {
   Loader,
+  useChain,
   useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
@@ -31,6 +34,8 @@ export type WalletActionsProviderProps = ActionsProviderProps & {
   // If passed, will override the connected wallet address.
   address?: string
 }
+
+export type GovActionsProviderProps = ActionsProviderProps
 
 // Make sure this re-renders when the options change. You can do this by setting
 // a `key` on this component or one of its ancestors. See DaoPageWrapper.tsx
@@ -166,6 +171,33 @@ export const WalletActionsProvider = ({
       address={address}
       context={{
         type: ActionContextType.Wallet,
+      }}
+    >
+      {children}
+    </BaseActionsProvider>
+  )
+}
+
+export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
+  const { chain_id: chainId } = useChain()
+  const [govAddress, params] = useRecoilValue(
+    waitForAll([
+      moduleAddressSelector({
+        name: 'gov',
+        chainId,
+      }),
+      govParamsSelector({
+        chainId,
+      }),
+    ])
+  )
+
+  return (
+    <BaseActionsProvider
+      address={govAddress}
+      context={{
+        type: ActionContextType.Gov,
+        params,
       }}
     >
       {children}

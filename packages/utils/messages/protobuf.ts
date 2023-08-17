@@ -5,66 +5,82 @@ import {
   MsgMigrateContractEncodeObject,
   MsgUpdateAdminEncodeObject,
 } from '@cosmjs/cosmwasm-stargate'
-import { wasmTypes } from '@cosmjs/cosmwasm-stargate/build/modules'
-import { fromBase64, toBase64 } from '@cosmjs/encoding'
+import { fromBase64, fromUtf8, toBase64 } from '@cosmjs/encoding'
 import { EncodeObject, GeneratedType, Registry } from '@cosmjs/proto-signing'
 import {
+  AminoTypes,
   MsgBeginRedelegateEncodeObject,
   MsgDelegateEncodeObject,
   MsgSendEncodeObject,
   MsgUndelegateEncodeObject,
   MsgVoteEncodeObject,
   MsgWithdrawDelegatorRewardEncodeObject,
-  defaultRegistryTypes,
 } from '@cosmjs/stargate'
-import {
-  GenericAuthorization,
-  Grant,
-} from 'cosmjs-types/cosmos/authz/v1beta1/authz'
-import { SendAuthorization } from 'cosmjs-types/cosmos/bank/v1beta1/authz'
-import { PubKey } from 'cosmjs-types/cosmos/crypto/ed25519/keys'
-import { VoteOption as CosmosGovVoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
-import { ParameterChangeProposal } from 'cosmjs-types/cosmos/params/v1beta1/params'
-import { MsgUnjail } from 'cosmjs-types/cosmos/slashing/v1beta1/tx'
-import {
-  CancelSoftwareUpgradeProposal,
-  SoftwareUpgradeProposal,
-} from 'cosmjs-types/cosmos/upgrade/v1beta1/upgrade'
-import {
-  AcceptedMessageKeysFilter,
-  AcceptedMessagesFilter,
-  AllowAllMessagesFilter,
-  CombinedLimit,
-  ContractExecutionAuthorization,
-  ContractGrant,
-  ContractMigrationAuthorization,
-  MaxCallsLimit,
-  MaxFundsLimit,
-} from 'cosmjs-types/cosmwasm/wasm/v1/authz'
-import { MsgInstantiateContract2 } from 'cosmjs-types/cosmwasm/wasm/v1/tx'
-import { Any } from 'cosmjs-types/google/protobuf/any'
-import { Timestamp } from 'cosmjs-types/google/protobuf/timestamp'
-import { MsgTransfer } from 'cosmjs-types/ibc/applications/transfer/v1/tx'
-import { cosmos } from 'interchain-rpc'
-import { juno, osmosis } from 'juno-network'
 import Long from 'long'
 
+import {
+  cosmosAminoConverters,
+  cosmosProtoRegistry,
+  cosmwasmAminoConverters,
+  cosmwasmProtoRegistry,
+  google,
+  ibcAminoConverters,
+  ibcProtoRegistry,
+  junoAminoConverters,
+  junoProtoRegistry,
+  osmosisAminoConverters,
+  osmosisProtoRegistry,
+} from '@dao-dao/protobuf'
+import { MsgSend } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/tx'
+import {
+  MsgSetWithdrawAddress,
+  MsgWithdrawDelegatorReward,
+} from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { MsgExecLegacyContent } from '@dao-dao/protobuf/codegen/cosmos/gov/v1/tx'
+import { TextProposal } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgVote } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import {
+  MsgBeginRedelegate,
+  MsgDelegate,
+  MsgUndelegate,
+} from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/tx'
+import {
+  MsgClearAdmin,
+  MsgExecuteContract,
+  MsgInstantiateContract,
+  MsgMigrateContract,
+  MsgUpdateAdmin,
+} from '@dao-dao/protobuf/codegen/cosmwasm/wasm/v1/tx'
+import { Any } from '@dao-dao/protobuf/codegen/google/protobuf/any'
 import {
   CosmosMsgFor_Empty,
   DecodedStargateMsg,
   GovProposal,
-  GovProposalDecodedContent,
+  GovProposalV1,
+  GovProposalV1DecodedMessages,
+  GovProposalVersion,
   GovProposalWithDecodedContent,
   StargateMsg,
-  VoteOption,
 } from '@dao-dao/types'
 
+import {
+  cwVoteOptionToGovVoteOption,
+  govVoteOptionToCwVoteOption,
+} from '../gov'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 
+// Convert CosmWasm message to its encoded protobuf equivalent.
 export const cwMsgToProtobuf = (
   ...params: Parameters<typeof cwMsgToEncodeObject>
-): Any => encodeRawProtobufMsg(cwMsgToEncodeObject(...params))
+): Any => {
+  const { typeUrl, value } = cwMsgToEncodeObject(...params)
+  return {
+    typeUrl,
+    value: encodeProtobufValue(typeUrl, value),
+  }
+}
 
+// Convert protobuf to its CosmWasm message equivalent.
 export const protobufToCwMsg = (
   ...params: Parameters<typeof decodeRawProtobufMsg>
 ): {
@@ -143,8 +159,6 @@ export const cwMsgToEncodeObject = (
   if ('distribution' in msg) {
     const distributionMsg = msg.distribution
 
-    // set_withdraw_address does not exist?
-
     if ('withdraw_delegator_reward' in distributionMsg) {
       const encodeObject: MsgWithdrawDelegatorRewardEncodeObject = {
         typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
@@ -152,6 +166,17 @@ export const cwMsgToEncodeObject = (
           delegatorAddress: sender,
           validatorAddress: distributionMsg.withdraw_delegator_reward.validator,
         },
+      }
+      return encodeObject
+    }
+
+    if ('set_withdraw_address' in distributionMsg) {
+      const encodeObject = {
+        typeUrl: MsgSetWithdrawAddress.typeUrl,
+        value: MsgSetWithdrawAddress.fromPartial({
+          delegatorAddress: sender,
+          withdrawAddress: distributionMsg.set_withdraw_address.address,
+        }),
       }
       return encodeObject
     }
@@ -259,24 +284,12 @@ export const cwMsgToEncodeObject = (
     // CosmosMsgFor_Empty.
 
     if ('vote' in govMsg) {
-      const vote = govMsg.vote.vote
-      const voteOption: CosmosGovVoteOption =
-        vote === 'yes'
-          ? CosmosGovVoteOption.VOTE_OPTION_YES
-          : vote === 'abstain'
-          ? CosmosGovVoteOption.VOTE_OPTION_ABSTAIN
-          : vote === 'no'
-          ? CosmosGovVoteOption.VOTE_OPTION_NO
-          : vote === 'no_with_veto'
-          ? CosmosGovVoteOption.VOTE_OPTION_NO_WITH_VETO
-          : CosmosGovVoteOption.UNRECOGNIZED
-
       const encodeObject: MsgVoteEncodeObject = {
         typeUrl: '/cosmos.gov.v1beta1.MsgVote',
         value: {
           proposalId: Long.fromInt(govMsg.vote.proposal_id),
           voter: sender,
-          option: voteOption,
+          option: cwVoteOptionToGovVoteOption(govMsg.vote.vote),
         },
       }
       return encodeObject
@@ -297,9 +310,9 @@ export const decodedStargateMsgToCw = ({
   sender: string
 } => {
   let msg: CosmosMsgFor_Empty
-  let sender: string
+  let sender = ''
   switch (typeUrl) {
-    case '/cosmos.bank.v1beta1.MsgSend':
+    case MsgSend.typeUrl:
       msg = {
         bank: {
           send: {
@@ -310,7 +323,7 @@ export const decodedStargateMsgToCw = ({
       }
       sender = value.fromAddress
       break
-    case '/cosmos.staking.v1beta1.MsgDelegate':
+    case MsgDelegate.typeUrl:
       msg = {
         staking: {
           delegate: {
@@ -321,7 +334,7 @@ export const decodedStargateMsgToCw = ({
       }
       sender = value.delegatorAddress
       break
-    case '/cosmos.staking.v1beta1.MsgUndelegate':
+    case MsgUndelegate.typeUrl:
       msg = {
         staking: {
           undelegate: {
@@ -332,7 +345,7 @@ export const decodedStargateMsgToCw = ({
       }
       sender = value.delegatorAddress
       break
-    case '/cosmos.staking.v1beta1.MsgBeginRedelegate':
+    case MsgBeginRedelegate.typeUrl:
       msg = {
         staking: {
           redelegate: {
@@ -344,7 +357,7 @@ export const decodedStargateMsgToCw = ({
       }
       sender = value.delegatorAddress
       break
-    case '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward':
+    case MsgWithdrawDelegatorReward.typeUrl:
       msg = {
         distribution: {
           withdraw_delegator_reward: {
@@ -354,7 +367,7 @@ export const decodedStargateMsgToCw = ({
       }
       sender = value.delegatorAddress
       break
-    case '/cosmwasm.wasm.v1.MsgExecuteContract':
+    case MsgExecuteContract.typeUrl:
       msg = {
         wasm: {
           execute: {
@@ -366,12 +379,12 @@ export const decodedStargateMsgToCw = ({
       }
       sender = value.sender
       break
-    case '/cosmwasm.wasm.v1.MsgInstantiateContract':
+    case MsgInstantiateContract.typeUrl:
       msg = {
         wasm: {
           instantiate: {
             admin: value.admin,
-            code_id: Long.fromValue(value.codeId).toNumber(),
+            code_id: Number(value.codeId),
             label: value.label,
             msg: toBase64(value.msg),
             funds: value.funds,
@@ -380,19 +393,19 @@ export const decodedStargateMsgToCw = ({
       }
       sender = value.sender
       break
-    case '/cosmwasm.wasm.v1.MsgMigrateContract':
+    case MsgMigrateContract.typeUrl:
       msg = {
         wasm: {
           migrate: {
             contract_addr: value.contract,
-            new_code_id: Long.fromValue(value.codeId).toNumber(),
+            new_code_id: Number(value.codeId),
             msg: toBase64(value.msg),
           },
         },
       }
       sender = value.sender
       break
-    case '/cosmwasm.wasm.v1.MsgUpdateAdmin':
+    case MsgUpdateAdmin.typeUrl:
       msg = {
         wasm: {
           update_admin: {
@@ -403,7 +416,7 @@ export const decodedStargateMsgToCw = ({
       }
       sender = value.sender
       break
-    case '/cosmwasm.wasm.v1.MsgClearAdmin':
+    case MsgClearAdmin.typeUrl:
       msg = {
         wasm: {
           clear_admin: {
@@ -413,36 +426,25 @@ export const decodedStargateMsgToCw = ({
       }
       sender = value.sender
       break
-    case '/cosmos.gov.v1beta1.MsgVote':
-      const voteOption = value.option
-      const vote: VoteOption | undefined =
-        voteOption === CosmosGovVoteOption.VOTE_OPTION_YES
-          ? 'yes'
-          : voteOption === CosmosGovVoteOption.VOTE_OPTION_ABSTAIN
-          ? 'abstain'
-          : voteOption === CosmosGovVoteOption.VOTE_OPTION_NO
-          ? 'no'
-          : voteOption === CosmosGovVoteOption.VOTE_OPTION_NO_WITH_VETO
-          ? 'no_with_veto'
-          : undefined
-
-      if (!vote) {
-        throw new Error('Unsupported governance vote option.')
-      }
-
+    case MsgVote.typeUrl:
       msg = {
         gov: {
           vote: {
-            proposal_id: Long.fromValue(value.proposalId).toNumber(),
-            vote,
+            proposal_id: Number(value.proposalId),
+            vote: govVoteOptionToCwVoteOption(value.option),
           },
         },
       }
       sender = value.voter
       break
-
     default:
-      throw new Error('Unsupported type URL.')
+      msg = makeStargateMessage({
+        stargate: {
+          typeUrl,
+          value,
+        },
+      })
+      break
   }
 
   return {
@@ -452,70 +454,21 @@ export const decodedStargateMsgToCw = ({
 }
 
 export const typesRegistry = new Registry([
-  ...defaultRegistryTypes,
-  ...wasmTypes,
+  ...cosmosProtoRegistry,
+  ...cosmwasmProtoRegistry,
+  ['/google.protobuf.Timestamp', google.protobuf.Timestamp],
+  ...junoProtoRegistry,
+  ...osmosisProtoRegistry,
+  ...ibcProtoRegistry,
+] as ReadonlyArray<[string, GeneratedType]>)
 
-  // Custom types not in default registry.
-  ...([
-    ['/google.protobuf.Timestamp', Timestamp],
-    ['/cosmos.slashing.v1beta1.MsgUnjail', MsgUnjail],
-    ['/cosmos.crypto.ed25519.PubKey', PubKey],
-    // Authz
-    ['/cosmos.authz.v1beta1.GenericAuthorization', GenericAuthorization],
-    ['/cosmos.authz.v1beta1.Grant', Grant],
-    ['/cosmos.bank.v1beta1.SendAuthorization', SendAuthorization],
-    ['/cosmwasm.wasm.v1.AcceptedMessageKeysFilter', AcceptedMessageKeysFilter],
-    ['/cosmwasm.wasm.v1.AcceptedMessagesFilter', AcceptedMessagesFilter],
-    ['/cosmwasm.wasm.v1.AllowAllMessagesFilter', AllowAllMessagesFilter],
-    ['/cosmwasm.wasm.v1.CombinedLimit', CombinedLimit],
-    ['/cosmwasm.wasm.v1.MaxCallsLimit', MaxCallsLimit],
-    ['/cosmwasm.wasm.v1.MaxFundsLimit', MaxFundsLimit],
-    [
-      '/cosmwasm.wasm.v1.ContractExecutionAuthorization',
-      ContractExecutionAuthorization,
-    ],
-    ['/cosmwasm.wasm.v1.ContractGrant', ContractGrant],
-    [
-      '/cosmwasm.wasm.v1.ContractMigrationAuthorization',
-      ContractMigrationAuthorization,
-    ],
-    // Fee share
-    [
-      '/juno.feeshare.v1.MsgRegisterFeeShare',
-      juno.feeshare.v1.MsgRegisterFeeShare,
-    ],
-    ['/juno.feeshare.v1.MsgUpdateFeeShare', juno.feeshare.v1.MsgUpdateFeeShare],
-    ['/cosmwasm.wasm.v1.MsgInstantiateContract2', MsgInstantiateContract2],
-    // Token factory
-    [
-      '/osmosis.tokenfactory.v1beta1.MsgCreateDenom',
-      osmosis.tokenfactory.v1beta1.MsgCreateDenom,
-    ],
-    [
-      '/osmosis.tokenfactory.v1beta1.MsgMint',
-      osmosis.tokenfactory.v1beta1.MsgMint,
-    ],
-
-    // Governance proposal types
-    ['/cosmos.gov.v1beta1.TextProposal', cosmos.gov.v1beta1.TextProposal],
-    [
-      '/cosmos.distribution.v1beta1.CommunityPoolSpendProposal',
-      cosmos.distribution.v1beta1.CommunityPoolSpendProposal,
-    ],
-    ['/cosmos.gov.v1beta1.ParameterChangeProposal', ParameterChangeProposal],
-    [
-      '/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal',
-      SoftwareUpgradeProposal,
-    ],
-    [
-      '/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal',
-      CancelSoftwareUpgradeProposal,
-    ],
-
-    // IBC
-    ['/ibc.applications.transfer.v1.MsgTransfer', MsgTransfer],
-  ] as ReadonlyArray<[string, GeneratedType]>),
-])
+export const aminoTypes = new AminoTypes({
+  ...cosmosAminoConverters,
+  ...cosmwasmAminoConverters,
+  ...junoAminoConverters,
+  ...osmosisAminoConverters,
+  ...ibcAminoConverters,
+})
 
 // Encodes a protobuf message value from its JSON representation into a byte
 // array.
@@ -548,15 +501,6 @@ export const decodeProtobufValue = (
   return decodedValue
 }
 
-// Encodes a protobuf message in its JSON representation into a protobuf `Any`.
-export const encodeRawProtobufMsg = ({
-  typeUrl,
-  value,
-}: DecodedStargateMsg['stargate']): Any => ({
-  typeUrl,
-  value: encodeProtobufValue(typeUrl, value),
-})
-
 // Decodes a protobuf message from `Any` into its JSON representation.
 export const decodeRawProtobufMsg = ({
   typeUrl,
@@ -588,30 +532,59 @@ export const decodeStargateMessage = ({
   },
 })
 
-// Decode governance proposal content using a protobuf.
-export const decodeGovProposalContent = (
-  content: Any
-): GovProposalDecodedContent => {
-  try {
-    return decodeRawProtobufMsg(content)
-  } catch (err) {
-    // It seems as though all proposals can be decoded as a TextProposal, as
-    // they tend to start with `title` and `description` fields. If decoding as
-    // a specific type fails, try decoding as a TextProposal.
-    return {
-      typeUrl: '/cosmos.gov.v1beta1.TextProposal',
-      value: cosmos.gov.v1beta1.TextProposal.decode(content.value),
-    }
-  }
-}
+// Decode governance proposal v1 messages using a protobuf.
+export const decodeGovProposalV1Messages = (
+  messages: GovProposalV1['proposal']['messages']
+): GovProposalV1DecodedMessages =>
+  messages.map((msg) => protobufToCwMsg(msg).msg)
 
 // Decode governance proposal content using a protobuf.
 export const decodeGovProposal = (
   govProposal: GovProposal
-): GovProposalWithDecodedContent => ({
-  ...govProposal,
-  decodedContent: decodeGovProposalContent(govProposal.content),
-})
+): GovProposalWithDecodedContent => {
+  if (govProposal.version === GovProposalVersion.V1_BETA_1) {
+    let title = govProposal.proposal.content?.title || ''
+    let description = govProposal.proposal.content?.description || ''
+    // If content not decoded and stuck as Any, decode as TextProposal to get
+    // the title and description.
+    if (
+      govProposal.proposal.content?.$typeUrl === Any.typeUrl &&
+      govProposal.proposal.content.value instanceof Uint8Array
+    ) {
+      try {
+        const content = TextProposal.decode(govProposal.proposal.content.value)
+        title = content.title
+        description = content.description
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    return {
+      ...govProposal,
+      title,
+      description,
+      decodedContent: govProposal.proposal.content,
+    }
+  }
+
+  const decodedMessages = decodeGovProposalV1Messages(
+    govProposal.proposal.messages.filter(
+      ({ typeUrl }) => typeUrl !== MsgExecLegacyContent.typeUrl
+    )
+  )
+  const legacyContent = govProposal.proposal.messages
+    .filter(({ typeUrl }) => typeUrl === MsgExecLegacyContent.typeUrl)
+    .map((msg) => MsgExecLegacyContent.decode(msg.value).content)
+
+  return {
+    ...govProposal,
+    title: govProposal.proposal.title,
+    description: govProposal.proposal.summary,
+    decodedMessages,
+    legacyContent,
+  }
+}
 
 export const isDecodedStargateMsg = (msg: any): msg is DecodedStargateMsg =>
   objectMatchesStructure(msg, {
@@ -621,29 +594,38 @@ export const isDecodedStargateMsg = (msg: any): msg is DecodedStargateMsg =>
     },
   }) && typeof msg.stargate.value === 'object'
 
-// Decode any nested protobufs into JSON.
-export const decodeNestedProtobufs = (msg: any): any =>
+// Decode any nested protobufs into JSON. Also decodes longs since those show up
+// often.
+export const decodeRawMessagesForDisplay = (msg: any): any =>
   typeof msg !== 'object' || msg === null
     ? msg
     : Array.isArray(msg)
-    ? msg.map(decodeNestedProtobufs)
+    ? msg.map(decodeRawMessagesForDisplay)
+    : Long.isLong(msg)
+    ? msg.toString()
+    : msg instanceof Date
+    ? msg.toISOString()
+    : objectMatchesStructure(msg, {
+        typeUrl: {},
+        value: {},
+      }) &&
+      typeof (msg as Any).typeUrl === 'string' &&
+      (msg as Any).value instanceof Uint8Array
+    ? (() => {
+        try {
+          return decodeRawProtobufMsg(msg as Any)
+        } catch {
+          return msg
+        }
+      })()
     : Object.entries(msg).reduce((acc, [key, value]) => {
         let decodedValue = value
-        try {
-          if (
-            objectMatchesStructure(value, {
-              typeUrl: {},
-              value: {},
-            }) &&
-            typeof (value as Any).typeUrl === 'string' &&
-            (value as Any).value instanceof Uint8Array
-          ) {
-            decodedValue = decodeRawProtobufMsg(value as Any)
-          }
-        } catch {}
+        if (key === 'msg' && value instanceof Uint8Array) {
+          decodedValue = fromUtf8(value)
+        }
 
         return {
           ...acc,
-          [key]: decodeNestedProtobufs(decodedValue),
+          [key]: decodeRawMessagesForDisplay(decodedValue),
         }
       }, {} as Record<string, any>)

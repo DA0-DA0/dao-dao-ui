@@ -18,7 +18,7 @@ import {
 } from '@dao-dao/stateless'
 import { ActionKey, ButtonPopupSection, TokenCardInfo } from '@dao-dao/types'
 import {
-  StakeType,
+  StakingActionType,
   getDaoProposalSinglePrefill,
   getDisplayNameForChainId,
   getNativeTokenForChainId,
@@ -88,7 +88,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
               actionKey: ActionKey.ManageStaking,
               data: {
                 chainId: props.token.chainId,
-                stakeType: StakeType.WithdrawDelegatorReward,
+                stakeType: StakingActionType.WithdrawDelegatorReward,
                 validator: address,
                 // Default values, not needed for displaying this type of message.
                 amount: 1,
@@ -115,7 +115,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
                       actionKey: ActionKey.ManageStaking,
                       data: {
                         chainId: props.token.chainId,
-                        stakeType: StakeType.Delegate,
+                        stakeType: StakingActionType.Delegate,
                         validator: '',
                         amount: props.unstakedBalance,
                         denom: props.token.denomOrAddress,
@@ -127,7 +127,7 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
                     actionKey: ActionKey.ManageStaking,
                     data: {
                       chainId: props.token.chainId,
-                      stakeType: StakeType.Undelegate,
+                      stakeType: StakingActionType.Undelegate,
                       validator,
                       amount,
                       denom: props.token.denomOrAddress,
