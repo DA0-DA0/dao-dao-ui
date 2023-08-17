@@ -10,7 +10,7 @@ import {
 } from '../address'
 import { getChainForChainId } from '../chain'
 import cosmosMsgSchema from '../cosmos_msg.json'
-import { nativeTokenExists } from '../ibc'
+import { nativeTokenExists } from '../assets'
 import { isValidUrl } from '../isValidUrl'
 
 export * from './makeValidateMsg'

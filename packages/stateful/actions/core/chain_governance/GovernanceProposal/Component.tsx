@@ -45,8 +45,8 @@ import {
 } from '@dao-dao/types/actions'
 import {
   convertMicroDenomToDenomWithDecimals,
+  getChainAssets,
   getFundsUsedInCwMessage,
-  getIbcAssets,
   getNativeTokenForChainId,
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
@@ -115,8 +115,10 @@ export const GovernanceProposalComponent: ActionComponent<
   const availableTokens: GenericToken[] = [
     // First native.
     nativeToken,
-    // Then the IBC assets.
-    ...getIbcAssets(chainId),
+    // Then the chain assets.
+    ...getChainAssets(chainId).filter(
+      ({ denomOrAddress }) => denomOrAddress !== nativeToken.denomOrAddress
+    ),
   ]
 
   // V1 props need metadata uploaded to IPFS.

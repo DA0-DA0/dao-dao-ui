@@ -7,17 +7,18 @@ import { concatAddressStartEnd } from './conversion'
 import { getFallbackImage } from './getFallbackImage'
 
 // Cache once loaded.
-const ibcAssetsMap: Record<
+const chainAssetsMap: Record<
   string,
   | (GenericToken & {
       id: string
       description?: string
+      denomAliases?: string[]
     })[]
   | undefined
 > = {}
-export const getIbcAssets = (chainId: string) => {
-  if (!ibcAssetsMap[chainId]) {
-    ibcAssetsMap[chainId] =
+export const getChainAssets = (chainId: string) => {
+  if (!chainAssetsMap[chainId]) {
+    chainAssetsMap[chainId] =
       asset_lists
         .find(
           ({ chain_name }) =>
@@ -36,6 +37,8 @@ export const getIbcAssets = (chainId: string) => {
             id: display,
             type: TokenType.Native,
             denomOrAddress: base,
+            denomAliases:
+              denom_units.find(({ denom }) => denom === base)?.aliases ?? [],
             symbol,
             decimals:
               denom_units.find(({ denom }) => denom === display)?.exponent ??
@@ -49,16 +52,16 @@ export const getIbcAssets = (chainId: string) => {
         .sort((a, b) => a.symbol.localeCompare(b.symbol)) ?? []
   }
 
-  return ibcAssetsMap[chainId]!
+  return chainAssetsMap[chainId]!
 }
 
 // Native token exists if it is the native denom or any of the IBC assets.
 export const nativeTokenExists = (chainId: string, denom: string) =>
   denom === getNativeTokenForChainId(chainId).denomOrAddress ||
-  getIbcAssets(chainId).some(({ denomOrAddress }) => denomOrAddress === denom)
+  getChainAssets(chainId).some(({ denomOrAddress }) => denomOrAddress === denom)
 
 export const getNativeIbcUsdc = (chainId: string) =>
-  getIbcAssets(chainId).find(({ id }) => id === 'usdc')
+  getChainAssets(chainId).find(({ id }) => id === 'usdc')
 
 // Returns true if this denom is the IBC denom for USDC on the current chain.
 export const isNativeIbcUsdc = (chainId: string, ibcDenom: string): boolean =>

@@ -38,7 +38,7 @@ export const genericTokenSelector = selectorFamily<
   get:
     ({ type, denomOrAddress, chainId }) =>
     async ({ get }) => {
-      const tokenInfo = get(
+      let tokenInfo = get(
         type === TokenType.Cw20
           ? Cw20BaseSelectors.tokenInfoSelector({
               contractAddress: denomOrAddress,
@@ -51,7 +51,7 @@ export const genericTokenSelector = selectorFamily<
               denomOrAddress,
               getChainForChainId(chainId).bech32_prefix
             )
-          ? factoryTokenInfoSelector({
+          ? nativeDenomMetadataInfoSelector({
               denom: denomOrAddress,
               chainId,
             })
@@ -59,8 +59,24 @@ export const genericTokenSelector = selectorFamily<
             constSelector(undefined)
       )
 
+      // If native non-factory token, try to get the token from the asset list.
       if (!tokenInfo) {
-        return getTokenForChainIdAndDenom(chainId, denomOrAddress)
+        try {
+          return getTokenForChainIdAndDenom(chainId, denomOrAddress, false)
+        } catch {
+          // If that fails, try to fetch from chain.
+          tokenInfo = get(
+            nativeDenomMetadataInfoSelector({
+              denom: denomOrAddress,
+              chainId,
+            })
+          )
+
+          // If that fails, return placeholder token.
+          if (!tokenInfo) {
+            return getTokenForChainIdAndDenom(chainId, denomOrAddress)
+          }
+        }
       }
 
       const imageUrl =
@@ -260,31 +276,44 @@ export const genericTokenDelegatedBalanceSelector = selectorFamily<
     },
 })
 
-export const factoryTokenInfoSelector = selectorFamily<
-  {
-    symbol: string
-    decimals: number
-  },
+export const nativeDenomMetadataInfoSelector = selectorFamily<
+  | {
+      symbol: string
+      decimals: number
+    }
+  | undefined,
   WithChainId<{ denom: string }>
 >({
-  key: 'factoryTokenInfo',
+  key: 'nativeDenomMetadataInfo',
   get:
     (params) =>
     async ({ get }) => {
-      const { base, denomUnits, symbol } = get(denomMetadataSelector(params))
+      try {
+        const { base, denomUnits, symbol, display } = get(
+          denomMetadataSelector(params)
+        )
 
-      // `display` field not yet updated to point to the correct denom unit, so
-      // use the first one with nonzero decimals if it exists, and the first
-      // otherwise.
-      const displayDenom =
-        denomUnits.find((unit) => unit.exponent > 0) || denomUnits[0]
-      if (!displayDenom) {
-        throw new Error('No denom unit found for token factory denom')
-      }
+        const displayDenom =
+          denomUnits.find(({ denom }) => denom === display) ??
+          denomUnits.find(({ exponent }) => exponent > 0) ??
+          denomUnits[0]
 
-      return {
-        symbol: symbol || base,
-        decimals: displayDenom.exponent,
+        if (!displayDenom) {
+          throw new Error('No denom unit found for token factory denom')
+        }
+
+        return {
+          symbol: symbol || display || base,
+          decimals: displayDenom.exponent,
+        }
+      } catch (err) {
+        // If denom not found, return undefined.
+        if (err instanceof Error && err.message.includes('key not found')) {
+          return
+        }
+
+        // Rethrow other errors.
+        throw err
       }
     },
 })
