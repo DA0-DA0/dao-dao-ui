@@ -209,9 +209,13 @@ export const TokenInput = <
                     iconUrl:
                       token.imageUrl || getFallbackImage(token.denomOrAddress),
                     ...token,
-                    rightNode: allTokensOnSameChain ? undefined : (
+                    rightNode: (
                       <p className="caption-text">
-                        {getDisplayNameForChainId(token.chainId)}
+                        {allTokensOnSameChain
+                          ? token.denomOrAddress.startsWith('ibc/')
+                            ? token.denomOrAddress.slice(0, 9) + '...'
+                            : token.denomOrAddress
+                          : getDisplayNameForChainId(token.chainId)}
                       </p>
                     ),
                     iconClassName: '!h-8 !w-8',

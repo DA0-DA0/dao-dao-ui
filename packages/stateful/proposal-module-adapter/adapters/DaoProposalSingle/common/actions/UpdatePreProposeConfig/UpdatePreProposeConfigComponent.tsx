@@ -21,7 +21,7 @@ import {
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
-  getIbcAssets,
+  getChainAssets,
   getNativeTokenForChainId,
   isValidContractAddress,
   makeValidateContractAddress,
@@ -76,6 +76,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
     (fieldNamePrefix + 'anyoneCanPropose') as 'anyoneCanPropose'
   )
 
+  const nativeToken = getNativeTokenForChainId(chainId)
   const availableTokens: TokenInputOption[] = [
     // Governance token first.
     ...(governanceToken
@@ -92,7 +93,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         ]
       : []),
     // Then native.
-    getNativeTokenForChainId(chainId),
+    nativeToken,
     // Then other CW20.
     {
       chainId,
@@ -105,8 +106,10 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         (depositInfo.type === TokenType.Cw20 && depositInfo.token?.imageUrl) ||
         undefined,
     },
-    // Then the IBC assets.
-    ...getIbcAssets(chainId),
+    // Then the chain assets.
+    ...getChainAssets(chainId).filter(
+      ({ denomOrAddress }) => denomOrAddress !== nativeToken.denomOrAddress
+    ),
   ]
   const selectedToken = availableTokens.find(
     (token) =>

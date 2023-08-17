@@ -21,9 +21,9 @@ import {
   Validator,
 } from '@dao-dao/types'
 
+import { getChainAssets } from './assets'
 import { CHAIN_ENDPOINTS, MAINNET, SUPPORTED_CHAINS } from './constants'
 import { getFallbackImage } from './getFallbackImage'
-import { getIbcAssets } from './ibc'
 
 export const getRpcForChainId = (chainId: string): string => {
   let rpc = (
@@ -215,15 +215,16 @@ export const getTokenForChainIdAndDenom = (
 
     const key = `${chainId}:${denom}`
     if (!cachedTokens[key]) {
-      // Try IBC assets.
-      const ibcAsset = getIbcAssets(chainId).find(
-        ({ denomOrAddress }) => denomOrAddress === denom
+      // Try chain assets.
+      const asset = getChainAssets(chainId).find(
+        ({ denomOrAddress, denomAliases }) =>
+          denomOrAddress === denom || denomAliases?.includes(denom)
       )
-      if (!ibcAsset) {
+      if (!asset) {
         throw new Error(`Chain ${chainId} has no asset for token ${denom}`)
       }
 
-      cachedTokens[key] = ibcAsset
+      cachedTokens[key] = asset
     }
 
     return cachedTokens[key]!
