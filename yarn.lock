@@ -2922,10 +2922,10 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@chain-registry/assets@^1.16.0":
-  version "1.16.0"
-  resolved "https://registry.yarnpkg.com/@chain-registry/assets/-/assets-1.16.0.tgz#83e2aded68c6a8a8d41af07b34967c06b56a8587"
-  integrity sha512-elpDhBYrjl10xyqtLDG3iQr6e55kkV7Mk01JDlggLE1lzOzfGjKatx49PDqvrcRBp6+FZHDYj8U+JfNHt3Qyxg==
+"@chain-registry/assets@^1.20.0":
+  version "1.20.0"
+  resolved "https://registry.yarnpkg.com/@chain-registry/assets/-/assets-1.20.0.tgz#23f60adfc3512ff10da0849f51f7f8b3daa8bddc"
+  integrity sha512-wwhWBN/3nCAJpdu0aMHny/THDwTiYO1uYfd1QR8s7E2c7VGR0l8/3PNow/OLSEIvHsTW/1NgPLlYd0MdV4VzDw==
   dependencies:
     "@babel/runtime" "^7.21.0"
     "@chain-registry/types" "^0.16.0"
@@ -12156,10 +12156,10 @@ ccount@^2.0.0:
   resolved "https://registry.yarnpkg.com/ccount/-/ccount-2.0.1.tgz#17a3bf82302e0870d6da43a01311a8bc02a3ecf5"
   integrity sha512-eyrF0jiFpY+3drT6383f1qhkbGsLSifNAjA61IUjZjmLCWjItY6LB9ft9YhoDgwfmclB2zhu51Lc7+95b8NRAg==
 
-chain-registry@^1.15.0:
-  version "1.15.0"
-  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.15.0.tgz#60df8a9aa9d613d7a87a9c6416287afd5b4e7d36"
-  integrity sha512-nzmAGf6z4LDCkDrU/aQ/0itU74gWH6Gyc3wraVaw7E6cY3qWRAqJa+TG1QUL0fZOY1n25T2speFwlZoUWuHboQ==
+chain-registry@^1.19.0:
+  version "1.19.0"
+  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.19.0.tgz#6d2d56b56efebee0d15ced8f9bd8329a099ce04d"
+  integrity sha512-7Ax0cRurfS+I0Oru3Td8NqBY/2YRCv570XM555E5vu3ib3f/k5SELwxsSalTtQj+Furx6quEyKWuOjrNwPpcQg==
   dependencies:
     "@babel/runtime" "^7.21.0"
     "@chain-registry/types" "^0.16.0"
