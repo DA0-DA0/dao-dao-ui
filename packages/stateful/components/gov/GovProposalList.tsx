@@ -111,6 +111,10 @@ export const GovProposalList = () => {
     openGovProposalsVotingPeriod.loading ||
     loadingAllGovProposals.loading
 
+  const historyCount = loadingAllGovProposals.loading
+    ? 0
+    : loadingAllGovProposals.data.total - openProposals.length
+
   return (
     <>
       <div
@@ -126,6 +130,7 @@ export const GovProposalList = () => {
           ProposalLine={GovProposalLine}
           canLoadMore={false}
           createNewProposalHref={asPath + '/create'}
+          historyCount={historyCount}
           historyProposals={historyProposals}
           isMember={true}
           loadMore={() => {}}
@@ -141,7 +146,7 @@ export const GovProposalList = () => {
             page={page}
             pageSize={PROPSALS_PER_PAGE}
             setPage={setPage}
-            total={loadingAllGovProposals.data.total - openProposals.length}
+            total={historyCount}
           />
         )}
     </>

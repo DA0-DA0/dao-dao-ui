@@ -605,6 +605,8 @@ export const decodeRawMessagesForDisplay = (msg: any): any =>
     ? msg.toString()
     : msg instanceof Date
     ? msg.toISOString()
+    : msg instanceof Uint8Array
+    ? toBase64(msg)
     : objectMatchesStructure(msg, {
         typeUrl: {},
         value: {},

@@ -34,6 +34,7 @@ export interface ProposalVotesProps<Vote extends unknown = any> {
   votingOpen: boolean
   footer?: ReactNode
   hideVotedAt?: boolean
+  hideDownload?: boolean
 }
 
 export const ProposalVotes = <Vote extends unknown = any>({
@@ -43,6 +44,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
   votingOpen,
   footer,
   hideVotedAt,
+  hideDownload,
 }: ProposalVotesProps<Vote>) => {
   const { t } = useTranslation()
 
@@ -188,39 +190,43 @@ export const ProposalVotes = <Vote extends unknown = any>({
 
         {footer}
 
-        <Button
-          className="caption-text mt-6 self-end pr-1 text-right italic"
-          disabled={!csvLinkRef.current || votes.loading}
-          onClick={() => csvLinkRef.current?.click()}
-          variant="none"
-        >
-          {t('button.downloadVotesCsv')}
-        </Button>
+        {!hideDownload && (
+          <Button
+            className="caption-text mt-6 self-end pr-1 text-right italic"
+            disabled={!csvLinkRef.current || votes.loading}
+            onClick={() => csvLinkRef.current?.click()}
+            variant="none"
+          >
+            {t('button.downloadVotesCsv')}
+          </Button>
+        )}
       </div>
 
-      <CSVLink
-        className="hidden"
-        data={[
-          ['Timestamp', 'Voter', 'Voting Power', 'Vote', 'Rationale'],
-          ...votesWithDate.map(
-            ({
-              votedAt,
-              voterAddress,
-              votingPowerPercent,
-              vote,
-              rationale,
-            }) => [
-              votedAt?.toISOString() ?? '',
-              voterAddress,
-              votingPowerPercent,
-              vote,
-              rationale,
-            ]
-          ),
-        ]}
-        filename="votes.csv"
-        ref={(ref: any) => (csvLinkRef.current = ref?.link ?? undefined)}
-      />
+      {!hideDownload && (
+        <CSVLink
+          className="hidden"
+          data={[
+            ['Timestamp', 'Voter', 'Voting Power', 'Vote', 'Rationale'],
+            ...votesWithDate.map(
+              ({
+                votedAt,
+                voterAddress,
+                votingPowerPercent,
+                vote,
+                rationale,
+              }) => [
+                votedAt?.toISOString() ?? '',
+                voterAddress,
+                votingPowerPercent,
+                vote,
+                rationale,
+              ]
+            ),
+          ]}
+          filename="votes.csv"
+          ref={(ref: any) => (csvLinkRef.current = ref?.link ?? undefined)}
+        />
+      )}
     </>
   )
 }

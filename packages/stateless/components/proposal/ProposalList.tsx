@@ -12,6 +12,8 @@ export interface ProposalListProps<T extends { proposalId: string }> {
   ProposalLine: ComponentType<T>
   openProposals: T[]
   historyProposals: T[]
+  // Override array length as count.
+  historyCount?: number
   createNewProposalHref: string
   canLoadMore: boolean
   loadMore: () => void
@@ -24,6 +26,7 @@ export const ProposalList = <T extends { proposalId: string }>({
   ProposalLine,
   openProposals,
   historyProposals,
+  historyCount,
   createNewProposalHref,
   canLoadMore,
   loadMore,
@@ -61,7 +64,9 @@ export const ProposalList = <T extends { proposalId: string }>({
         <p>
           {/* eslint-disable-next-line i18next/no-literal-string */}
           {t('title.history')} •{' '}
-          {t('title.numProposals', { count: historyProposals.length })}
+          {t('title.numProposals', {
+            count: historyCount ?? historyProposals.length,
+          })}
         </p>
       </div>
 
