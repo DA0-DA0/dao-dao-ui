@@ -8,7 +8,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@chain-registry/assets": "^1.16.0",
+    "@chain-registry/assets": "^1.20.0",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
     "@cosmjs/encoding": "^0.31.0",
     "@cosmjs/stargate": "^0.31.0",
@@ -18,7 +18,7 @@
     "@keplr-wallet/stores": "^0.11.49",
     "@sentry/nextjs": "^7.7.0",
     "ajv": "^8.11.0",
-    "chain-registry": "^1.15.0",
+    "chain-registry": "^1.19.0",
     "json5": "^2.2.0",
     "long": "^5.2.1",
     "next-i18next": "^11.0.0",

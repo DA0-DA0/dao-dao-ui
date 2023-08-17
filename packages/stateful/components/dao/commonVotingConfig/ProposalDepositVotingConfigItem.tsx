@@ -33,7 +33,7 @@ import {
   NEW_DAO_CW20_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
-  getIbcAssets,
+  getChainAssets,
   isValidContractAddress,
   makeValidateContractAddress,
 } from '@dao-dao/utils'
@@ -169,8 +169,10 @@ const ProposalDepositInput = ({
         (type === TokenType.Cw20 && tokenLoaded?.symbol) || t('form.cw20Token'),
       imageUrl: (type === TokenType.Cw20 && tokenLoaded?.imageUrl) || undefined,
     },
-    // Then the IBC assets.
-    ...getIbcAssets(chainId),
+    // Then the chain assets.
+    ...getChainAssets(chainId).filter(
+      ({ denomOrAddress }) => denomOrAddress !== nativeToken.denomOrAddress
+    ),
   ]
   const selectedToken = availableTokens.find(
     (token) =>

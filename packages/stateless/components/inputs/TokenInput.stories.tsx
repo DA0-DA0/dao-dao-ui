@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook/decorators'
-import { getIbcAssets, getNativeTokenForChainId } from '@dao-dao/utils'
+import { getChainAssets, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { TokenInput } from './TokenInput'
 
@@ -41,7 +41,7 @@ Default.args = {
   amountStep: 0.000001,
   tokens: {
     loading: false,
-    data: [getNativeTokenForChainId(CHAIN_ID), ...getIbcAssets(CHAIN_ID)],
+    data: [getNativeTokenForChainId(CHAIN_ID), ...getChainAssets(CHAIN_ID)],
   },
 }
 
