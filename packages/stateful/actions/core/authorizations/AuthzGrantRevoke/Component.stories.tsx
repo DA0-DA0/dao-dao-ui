@@ -1,5 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { GenericAuthorization } from '@dao-dao/protobuf/codegen/cosmos/authz/v1beta1/authz'
+import { MsgDelegate } from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/tx'
+import {
+  AllowAllMessagesFilter,
+  MaxCallsLimit,
+} from '@dao-dao/protobuf/codegen/cosmwasm/wasm/v1/authz'
 import { AddressInput } from '@dao-dao/stateless'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import {
@@ -11,12 +17,7 @@ import { TokenType } from '@dao-dao/types'
 import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { AuthzGrantRevokeComponent } from './Component'
-import {
-  AuthorizationTypeUrl,
-  AuthzGrantRevokeData,
-  FilterTypes,
-  LimitTypes,
-} from './types'
+import { AuthzGrantRevokeData } from './types'
 
 export default {
   title:
@@ -25,16 +26,16 @@ export default {
   decorators: [
     makeReactHookFormDecorator<AuthzGrantRevokeData>({
       mode: 'grant',
-      authorizationTypeUrl: AuthorizationTypeUrl.Generic,
+      authorizationTypeUrl: GenericAuthorization.typeUrl,
       customTypeUrl: false,
       grantee: 'junoContract',
-      msgTypeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
+      msgTypeUrl: MsgDelegate.typeUrl,
       contract: '',
-      filterType: FilterTypes.All,
+      filterTypeUrl: AllowAllMessagesFilter.typeUrl,
       filterKeys: '',
       filterMsgs: '{}',
       funds: [],
-      limitType: LimitTypes.Calls,
+      limitTypeUrl: MaxCallsLimit.typeUrl,
       calls: 10,
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),

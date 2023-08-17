@@ -3,7 +3,6 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import {
-  nativeBalanceSelector,
   nativeDelegationInfoSelector,
   nativeUnstakingDurationSecondsSelector,
   validatorsSelector,
@@ -16,7 +15,7 @@ import {
   useCachedLoading,
   useChainContext,
 } from '@dao-dao/stateless'
-import { CosmosMsgForEmpty } from '@dao-dao/types'
+import { Coin, LoadingData, TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -27,18 +26,19 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  StakeType,
+  StakingActionType,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   getNativeTokenForChainId,
-  makeDistributeMessage,
   makePolytoneExecuteMessage,
-  makeStakingMessage,
+  makeStakingActionMessage,
 } from '@dao-dao/utils'
 
+import { AddressInput } from '../../../../components/AddressInput'
 import { SuspenseLoader } from '../../../../components/SuspenseLoader'
 import { useExecutedProposalTxLoadable } from '../../../../hooks'
+import { useTokenBalances } from '../../../hooks'
 import { useActionOptions } from '../../../react'
 import {
   ManageStakingData,
@@ -52,28 +52,25 @@ const useTransformToCosmos: UseTransformToCosmos<ManageStakingData> = () => {
   return useCallback(
     ({
       chainId,
-      stakeType,
+      type: stakeType,
       amount,
       validator,
       toValidator,
+      withdrawAddress,
     }: ManageStakingData) => {
-      let msg: CosmosMsgForEmpty | undefined
-      if (stakeType === StakeType.WithdrawDelegatorReward) {
-        msg = makeDistributeMessage(validator)
-      } else {
-        const nativeToken = getNativeTokenForChainId(chainId)
-        const microAmount = convertDenomToMicroDenomWithDecimals(
-          amount,
-          nativeToken.decimals
-        )
-        msg = makeStakingMessage(
-          stakeType,
-          microAmount.toString(),
-          nativeToken.denomOrAddress,
-          validator,
-          toValidator
-        )
-      }
+      const nativeToken = getNativeTokenForChainId(chainId)
+      const microAmount = convertDenomToMicroDenomWithDecimals(
+        amount,
+        nativeToken.decimals
+      )
+      const msg = makeStakingActionMessage(
+        stakeType,
+        microAmount.toString(),
+        nativeToken.denomOrAddress,
+        validator,
+        toValidator,
+        withdrawAddress
+      )
 
       if (chainId === currentChainId) {
         return msg
@@ -98,21 +95,39 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
   const stakeActions = useStakeActions()
   const nativeToken = getNativeTokenForChainId(chainId)
 
-  if (
-    'distribution' in msg &&
-    StakeType.WithdrawDelegatorReward in msg.distribution &&
-    'validator' in msg.distribution.withdraw_delegator_reward
-  ) {
-    return {
-      match: true,
-      data: {
-        chainId,
-        stakeType: StakeType.WithdrawDelegatorReward,
-        validator: msg.distribution.withdraw_delegator_reward.validator,
-        // Default values, not needed for displaying this type of message.
-        toValidator: '',
-        amount: 1,
-      },
+  if ('distribution' in msg) {
+    if (
+      StakingActionType.WithdrawDelegatorReward in msg.distribution &&
+      'validator' in msg.distribution.withdraw_delegator_reward
+    ) {
+      return {
+        match: true,
+        data: {
+          chainId,
+          type: StakingActionType.WithdrawDelegatorReward,
+          validator: msg.distribution.withdraw_delegator_reward.validator,
+          // Default values, not needed for displaying this type of message.
+          toValidator: '',
+          amount: 1,
+          withdrawAddress: '',
+        },
+      }
+    } else if (
+      StakingActionType.SetWithdrawAddress in msg.distribution &&
+      'withdraw_address' in msg.distribution.set_withdraw_address
+    ) {
+      return {
+        match: true,
+        data: {
+          chainId,
+          type: StakingActionType.SetWithdrawAddress,
+          withdrawAddress:
+            msg.distribution.set_withdraw_address.withdraw_address,
+          validator: '',
+          toValidator: '',
+          amount: 1,
+        },
+      }
     }
   } else if ('staking' in msg) {
     const stakeType = stakeActions
@@ -122,10 +137,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
 
     const data = msg.staking[stakeType]
     if (
-      ((stakeType === StakeType.Redelegate &&
+      ((stakeType === StakingActionType.Redelegate &&
         'src_validator' in data &&
         'dst_validator' in data) ||
-        (stakeType !== StakeType.Redelegate && 'validator' in data)) &&
+        (stakeType !== StakingActionType.Redelegate && 'validator' in data)) &&
       'amount' in data &&
       'amount' in data.amount &&
       'denom' in data.amount &&
@@ -137,17 +152,20 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
         match: true,
         data: {
           chainId,
-          stakeType,
+          type: stakeType,
           validator:
-            stakeType === StakeType.Redelegate
+            stakeType === StakingActionType.Redelegate
               ? data.src_validator
               : data.validator,
           toValidator:
-            stakeType === StakeType.Redelegate ? data.dst_validator : '',
+            stakeType === StakingActionType.Redelegate
+              ? data.dst_validator
+              : '',
           amount: convertMicroDenomToDenomWithDecimals(
             amount,
             nativeToken.decimals
           ),
+          withdrawAddress: '',
         },
       }
     }
@@ -174,13 +192,21 @@ const InnerComponent: ActionComponent = (props) => {
   // when this data updates on a schedule. Manually trigger a suspense loader
   // the first time when the initial data is still loading.
 
-  const loadingNativeBalance = useCachedLoading(
-    nativeBalanceSelector({
-      chainId,
-      address,
-    }),
-    coin(0, nativeToken.denomOrAddress)
-  )
+  const balances = useTokenBalances({
+    filter: TokenType.Native,
+  })
+  const loadingNativeBalance: LoadingData<Coin> = balances.loading
+    ? { loading: true }
+    : {
+        loading: false,
+        data: coin(
+          balances.data.find(
+            ({ token: { denomOrAddress } }) =>
+              denomOrAddress === nativeToken.denomOrAddress
+          )?.balance ?? 0,
+          nativeToken.denomOrAddress
+        ),
+      }
 
   const loadingNativeDelegationInfo = useCachedLoading(
     nativeDelegationInfoSelector({
@@ -216,7 +242,7 @@ const InnerComponent: ActionComponent = (props) => {
     executedTxLoadable.state === 'hasValue' &&
     executedTxLoadable.contents &&
     watch(props.fieldNamePrefix + 'stakeType') ===
-      StakeType.WithdrawDelegatorReward
+      StakingActionType.WithdrawDelegatorReward
   ) {
     const validator = watch(props.fieldNamePrefix + 'validator')
 
@@ -235,7 +261,7 @@ const InnerComponent: ActionComponent = (props) => {
         ({ actionKey, data }) =>
           actionKey === ActionKey.ManageStaking &&
           'stakeType' in data &&
-          data.stakeType === StakeType.WithdrawDelegatorReward &&
+          data.stakeType === StakingActionType.WithdrawDelegatorReward &&
           'validator' in data &&
           data.validator === validator
       )
@@ -318,6 +344,7 @@ const InnerComponent: ActionComponent = (props) => {
           nativeUnstakingDurationSeconds: nativeUnstakingDurationSeconds.loading
             ? 0
             : nativeUnstakingDurationSeconds.data,
+          AddressInput,
         }}
       />
     </SuspenseLoader>
@@ -360,7 +387,13 @@ export const makeManageStakingAction: ActionMaker<ManageStakingData> = ({
   t,
   chain: { chain_id: chainId },
   address,
+  context,
 }) => {
+  // x/gov cannot stake.
+  if (context.type === ActionContextType.Gov) {
+    return null
+  }
+
   const useDefaults: UseDefaults<ManageStakingData> = () => {
     const stakeActions = useStakeActions()
 
@@ -379,7 +412,7 @@ export const makeManageStakingAction: ActionMaker<ManageStakingData> = ({
 
     return {
       chainId,
-      stakeType: stakeActions[0].type,
+      type: stakeActions[0].type,
       // Default to first validator if exists.
       validator:
         (!loadingNativeDelegationInfo.loading &&
@@ -388,6 +421,7 @@ export const makeManageStakingAction: ActionMaker<ManageStakingData> = ({
         '',
       toValidator: '',
       amount: 1,
+      withdrawAddress: address,
     }
   }
 

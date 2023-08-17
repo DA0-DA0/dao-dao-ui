@@ -44,7 +44,7 @@ Default.args = {
           denomOrAddress: 'ujuno',
           symbol: 'JUNO',
           decimals: 6,
-          imageUrl: '/juno.png',
+          imageUrl: '/daodao.png',
         },
         balance: '1248281239056',
       },

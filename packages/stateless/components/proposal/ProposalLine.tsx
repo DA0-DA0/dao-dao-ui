@@ -1,8 +1,7 @@
 import clsx from 'clsx'
 import { ComponentType, ReactNode } from 'react'
 
-import { TimestampInfo } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/types'
-import { LinkWrapperProps } from '@dao-dao/types'
+import { LinkWrapperProps, ProposalTimestampInfo } from '@dao-dao/types'
 
 import { Tooltip } from '../tooltip'
 import { ProposalIdDisplay } from './ProposalIdDisplay'
@@ -11,7 +10,7 @@ export interface ProposalLineProps {
   proposalPrefix: string
   proposalNumber: number
   title: string
-  timestampDisplay: TimestampInfo['display']
+  timestampDisplay: ProposalTimestampInfo['display']
   Status: ComponentType<{ dimmed?: boolean }>
   vote: ReactNode
   votingOpen: boolean
@@ -85,6 +84,7 @@ export const ProposalLine = ({
               <p
                 className={clsx(
                   'link-text break-words text-center font-mono leading-5 text-text-tertiary',
+                  // Hide timestamp on small screens when voting is closed.
                   !votingOpen && 'hidden xs:inline-block'
                 )}
               >

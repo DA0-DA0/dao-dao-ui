@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import removeMarkdown from 'remove-markdown'
 
 import { ProposalCardProps } from '@dao-dao/types/stateless/ProposalCard'
+import { getGovProposalPath } from '@dao-dao/utils'
 
 import { useDaoNavHelpers } from '../../hooks'
 import { DaoImage } from '../dao/DaoImage'
@@ -9,7 +10,7 @@ import { DaoImage } from '../dao/DaoImage'
 export * from '@dao-dao/types/stateless/ProposalCard'
 
 export const ProposalCard = ({
-  dao: { name, coreAddress, imageUrl },
+  dao: { type, name, coreAddressOrId, imageUrl },
   id,
   title,
   description,
@@ -27,7 +28,13 @@ export const ProposalCard = ({
         'relative flex w-full flex-col rounded-md bg-background-secondary ring-1 ring-inset ring-transparent transition-all hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus',
         className
       )}
-      href={getDaoProposalPath(coreAddress, id)}
+      href={
+        type === 'dao'
+          ? getDaoProposalPath(coreAddressOrId, id)
+          : type === 'gov'
+          ? getGovProposalPath(coreAddressOrId, id)
+          : undefined
+      }
       onMouseLeave={onMouseLeave}
       onMouseOver={onMouseOver}
     >
@@ -36,7 +43,7 @@ export const ProposalCard = ({
           LinkWrapper={LinkWrapper}
           blur
           className="self-center"
-          coreAddress={coreAddress}
+          coreAddress={coreAddressOrId}
           daoName={name}
           imageClassName="!w-full !h-full"
           imageUrl={imageUrl}

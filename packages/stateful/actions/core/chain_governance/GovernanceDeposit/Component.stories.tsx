@@ -1,11 +1,14 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
-import { cosmos } from 'interchain-rpc'
-import Long from 'long'
 
+import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { SoftwareUpgradeProposal } from '@dao-dao/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
-import { GovProposalWithDecodedContent } from '@dao-dao/types'
+import {
+  GovProposalVersion,
+  GovProposalWithDecodedContent,
+} from '@dao-dao/types'
 
-import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
+import { GovProposalActionDisplay } from '../../../../components'
 import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
 import { GovernanceDepositComponent } from './Component'
 
@@ -14,19 +17,42 @@ export default {
     'DAO DAO / packages / stateful / actions / core / chain_governance / GovernanceDeposit',
   component: GovernanceDepositComponent,
   decorators: [ReactHookFormDecorator],
+  excludeStories: ['makeProposal'],
 } as ComponentMeta<typeof GovernanceDepositComponent>
 
 const Template: ComponentStory<typeof GovernanceDepositComponent> = (args) => (
   <GovernanceDepositComponent {...args} />
 )
 
-const { ProposalStatus } = cosmos.gov.v1beta1
-
-const makeProposal = (): GovProposalWithDecodedContent => ({
-  proposalId: Long.fromInt(1),
-  content: {} as any,
+export const makeProposal = (): GovProposalWithDecodedContent => ({
+  version: GovProposalVersion.V1_BETA_1,
+  id: 1n,
+  title: 'Upgrade to v10 Alpha 1',
+  description:
+    'Full details on the testnets github. Target binary is v10.0.0-alpha.2',
+  proposal: {
+    proposalId: 1n,
+    content: {} as any,
+    status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
+    finalTallyResult: {
+      yes: '54076995000',
+      abstain: '0',
+      no: '0',
+      noWithVeto: '0',
+    },
+    submitTime: new Date('2022-09-23T22:56:17.961690524Z'),
+    depositEndTime: new Date('2022-10-03T22:56:17.961690524Z'),
+    totalDeposit: [
+      {
+        denom: 'ujunox',
+        amount: '500000000',
+      },
+    ],
+    votingStartTime: new Date('2022-09-23T22:56:17.961690524Z'),
+    votingEndTime: new Date('2022-09-24T10:56:17.961690524Z'),
+  },
   decodedContent: {
-    '@type': '/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal',
+    '@type': SoftwareUpgradeProposal.typeUrl,
     title: 'Upgrade to v10 Alpha 1',
     description:
       'Full details on the testnets github. Target binary is v10.0.0-alpha.2',
@@ -38,23 +64,6 @@ const makeProposal = (): GovProposalWithDecodedContent => ({
       upgraded_client_state: null,
     },
   } as any,
-  status: ProposalStatus.PROPOSAL_STATUS_DEPOSIT_PERIOD,
-  finalTallyResult: {
-    yes: '54076995000',
-    abstain: '0',
-    no: '0',
-    noWithVeto: '0',
-  },
-  submitTime: new Date('2022-09-23T22:56:17.961690524Z'),
-  depositEndTime: new Date('2022-10-03T22:56:17.961690524Z'),
-  totalDeposit: [
-    {
-      denom: 'ujunox',
-      amount: '500000000',
-    },
-  ],
-  votingStartTime: new Date('2022-09-23T22:56:17.961690524Z'),
-  votingEndTime: new Date('2022-09-24T10:56:17.961690524Z'),
 })
 
 export const Default = Template.bind({})
@@ -76,7 +85,7 @@ Default.args = {
   options: {
     proposals: [makeProposal(), makeProposal(), makeProposal(), makeProposal()],
     depositTokens: { loading: false, data: [] },
-    PayEntityDisplay,
     TokenAmountDisplay,
+    GovProposalActionDisplay,
   },
 }

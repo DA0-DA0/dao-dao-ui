@@ -12,14 +12,18 @@ import {
 import {
   betaWarningAcceptedAtom,
   commandModalVisibleAtom,
+  govProposalCreatedCardPropsAtom,
   mountedInBrowserAtom,
   navigationCompactAtom,
   proposalCreatedCardPropsAtom,
   refreshBlockHeightAtom,
   refreshTokenUsdcPriceAtom,
+  walletChainIdAtom,
 } from '@dao-dao/state'
 import {
   BetaWarningModal,
+  ChainProvider,
+  GovProposalCreatedModal,
   ProposalCreatedModal,
   DappLayout as StatelessDappLayout,
   useAppContext,
@@ -45,6 +49,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   const { t } = useTranslation()
   const router = useRouter()
 
+  const chainId = useRecoilValue(walletChainIdAtom)
   const mountedInBrowser = useRecoilValue(mountedInBrowserAtom)
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
     betaWarningAcceptedAtom
@@ -60,6 +65,8 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   )
   const [proposalCreatedCardProps, setProposalCreatedCardProps] =
     useRecoilState(proposalCreatedCardPropsAtom)
+  const [govProposalCreatedCardProps, setGovProposalCreatedCardProps] =
+    useRecoilState(govProposalCreatedCardPropsAtom)
 
   const { rootCommandContextMaker, inbox } = useAppContext()
   // Type-check, should always be loaded for dapp.
@@ -143,87 +150,103 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   )
 
   return (
-    <StatelessDappLayout
-      connect={connect}
-      connectWalletButton={<ConnectWallet variant="secondary" />}
-      connected={isWalletConnected}
-      navigationProps={{
-        walletConnected: isWalletConnected,
-        LinkWrapper,
-        inboxCount:
-          inbox.loading ||
-          // Prevent hydration errors by loading until mounted.
-          !mountedInBrowser
-            ? {
-                loading: true,
-              }
-            : {
-                loading: false,
-                data: inbox.pendingItemCount,
-              },
-        setCommandModalVisible: () => setCommandModalVisible(true),
-        version: '2.0',
-        followingDaos: mountedInBrowser
-          ? followingDaoDropdownInfos.loading
-            ? { loading: true }
-            : {
-                loading: false,
-                data: followingDaoDropdownInfos.data
-                  .flat()
-                  // Alphabetize.
-                  .sort((a, b) => a.name.localeCompare(b.name)),
-              }
-          : // Prevent hydration errors by loading until mounted.
-            { loading: true },
-        compact,
-        setCompact,
-        mountedInBrowser,
-      }}
-      rightSidebarProps={{
-        wallet: <SidebarWallet />,
-      }}
-      walletProfileData={isWalletConnected ? walletProfileData : undefined}
-    >
-      {children}
+    // Default wrap Dapp in chain provider. Used in DappNavigation for default
+    // governance tab.
+    <ChainProvider chainId={chainId}>
+      <StatelessDappLayout
+        connect={connect}
+        connectWalletButton={<ConnectWallet variant="secondary" />}
+        connected={isWalletConnected}
+        navigationProps={{
+          walletConnected: isWalletConnected,
+          LinkWrapper,
+          inboxCount:
+            inbox.loading ||
+            // Prevent hydration errors by loading until mounted.
+            !mountedInBrowser
+              ? {
+                  loading: true,
+                }
+              : {
+                  loading: false,
+                  data: inbox.pendingItemCount,
+                },
+          setCommandModalVisible: () => setCommandModalVisible(true),
+          version: '2.0',
+          followingDaos: mountedInBrowser
+            ? followingDaoDropdownInfos.loading
+              ? { loading: true }
+              : {
+                  loading: false,
+                  data: followingDaoDropdownInfos.data
+                    .flat()
+                    // Alphabetize.
+                    .sort((a, b) => a.name.localeCompare(b.name)),
+                }
+            : // Prevent hydration errors by loading until mounted.
+              { loading: true },
+          compact,
+          setCompact,
+          mountedInBrowser,
+        }}
+        rightSidebarProps={{
+          wallet: <SidebarWallet />,
+        }}
+        walletProfileData={isWalletConnected ? walletProfileData : undefined}
+      >
+        {children}
 
-      {/* Modals */}
+        {/* Modals */}
 
-      <BetaWarningModal
-        onClose={() => setBetaWarningAccepted(true)}
-        visible={mountedInBrowser && !betaWarningAccepted}
-      />
-      {rootCommandContextMaker && (
-        <CommandModal
-          makeRootContext={rootCommandContextMaker}
-          setVisible={setCommandModalVisible}
-          visible={commandModalVisible}
+        <BetaWarningModal
+          onClose={() => setBetaWarningAccepted(true)}
+          visible={mountedInBrowser && !betaWarningAccepted}
         />
-      )}
-      <MigrateFollowingModal />
+        {rootCommandContextMaker && (
+          <CommandModal
+            makeRootContext={rootCommandContextMaker}
+            setVisible={setCommandModalVisible}
+            visible={commandModalVisible}
+          />
+        )}
+        <MigrateFollowingModal />
 
-      {daoCreatedCardProps && (
-        <DaoCreatedModal
-          itemProps={daoCreatedCardProps}
-          modalProps={{
-            onClose: () => setDaoCreatedCardProps(undefined),
-          }}
-          subDao={!!daoCreatedCardProps.parentDao}
-        />
-      )}
+        {daoCreatedCardProps && (
+          <DaoCreatedModal
+            itemProps={daoCreatedCardProps}
+            modalProps={{
+              onClose: () => setDaoCreatedCardProps(undefined),
+            }}
+            subDao={!!daoCreatedCardProps.parentDao}
+          />
+        )}
 
-      {proposalCreatedCardProps && (
-        <ProposalCreatedModal
-          itemProps={{
-            ...proposalCreatedCardProps,
-            LinkWrapper,
-          }}
-          modalProps={{
-            onClose: () => setProposalCreatedCardProps(undefined),
-          }}
-        />
-      )}
+        {proposalCreatedCardProps && (
+          <ProposalCreatedModal
+            itemProps={{
+              ...proposalCreatedCardProps,
+              LinkWrapper,
+            }}
+            modalProps={{
+              onClose: () => setProposalCreatedCardProps(undefined),
+            }}
+          />
+        )}
 
-      <WalletModals />
-    </StatelessDappLayout>
+        {govProposalCreatedCardProps && (
+          <GovProposalCreatedModal
+            itemProps={{
+              ...govProposalCreatedCardProps,
+              LinkWrapper,
+            }}
+            modalProps={{
+              onClose: () => setGovProposalCreatedCardProps(undefined),
+            }}
+          />
+        )}
+
+        <WalletModals />
+      </StatelessDappLayout>
+    </ChainProvider>
   )
 }

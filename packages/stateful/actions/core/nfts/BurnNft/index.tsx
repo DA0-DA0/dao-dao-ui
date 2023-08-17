@@ -87,15 +87,15 @@ const Component: ActionComponent = (props) => {
 
   const options = useCachedLoadingWithError(
     props.isCreating
-      ? context.type === ActionContextType.Dao
-        ? nftCardInfosForDaoSelector({
+      ? context.type === ActionContextType.Wallet
+        ? walletNftCardInfos({
+            walletAddress: address,
+            chainId,
+          })
+        : nftCardInfosForDaoSelector({
             chainId,
             coreAddress: address,
             governanceCollectionAddress,
-          })
-        : walletNftCardInfos({
-            walletAddress: address,
-            chainId,
           })
       : undefined
   )

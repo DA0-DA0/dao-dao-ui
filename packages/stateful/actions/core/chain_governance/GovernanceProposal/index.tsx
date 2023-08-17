@@ -1,62 +1,92 @@
 import { Coin } from '@cosmjs/stargate'
-import { MsgSubmitProposal } from 'cosmjs-types/cosmos/gov/v1beta1/tx'
-import { ParameterChangeProposal } from 'cosmjs-types/cosmos/params/v1beta1/params'
-import { SoftwareUpgradeProposal } from 'cosmjs-types/cosmos/upgrade/v1beta1/upgrade'
-import { CommunityPoolSpendProposal } from 'interchain-rpc/types/codegen/cosmos/distribution/v1beta1/distribution'
-import { TextProposal } from 'interchain-rpc/types/codegen/cosmos/gov/v1beta1/gov'
-import Long from 'long'
 import { useCallback } from 'react'
-import { waitForAll } from 'recoil'
+import { useRecoilValue, waitForAll } from 'recoil'
 
-import { genericTokenSelector, govQueryParamsSelector } from '@dao-dao/state'
-import { RaisedHandEmoji, useCachedLoading } from '@dao-dao/stateless'
-import { GovernanceProposalType, TokenType } from '@dao-dao/types'
+import { CommunityPoolSpendProposal } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
+import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/protobuf/codegen/cosmos/gov/v1/tx'
+import { TextProposal } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import { ParameterChangeProposal } from '@dao-dao/protobuf/codegen/cosmos/params/v1beta1/params'
+import { SoftwareUpgradeProposal } from '@dao-dao/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
+import { Any } from '@dao-dao/protobuf/codegen/google/protobuf/any'
+import {
+  genericTokenSelector,
+  govParamsSelector,
+  moduleAddressSelector,
+} from '@dao-dao/state'
+import { Loader, RaisedHandEmoji, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
   ActionMaker,
+  GOVERNANCE_PROPOSAL_TYPES,
+  GovProposalVersion,
+  GovernanceProposalActionData,
+  TokenType,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
-} from '@dao-dao/types/actions'
+} from '@dao-dao/types'
 import {
-  convertMicroDenomToDenomWithDecimals,
-  decodeGovProposalContent,
-  encodeRawProtobufMsg,
+  convertDenomToMicroDenomWithDecimals,
+  cwMsgToProtobuf,
+  decodeGovProposalV1Messages,
+  getNativeTokenForChainId,
   isDecodedStargateMsg,
   makeStargateMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { GovProposalActionDisplay } from '../../../../components'
 import { AddressInput } from '../../../../components/AddressInput'
-import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
+import { SuspenseLoader } from '../../../../components/SuspenseLoader'
 import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
-import { useActionOptions } from '../../../react'
 import {
-  GovernanceProposalData,
-  GovernanceProposalComponent as StatelessGovernanceProposalComponent,
-} from './Component'
+  GovActionsProvider,
+  useActionOptions,
+  useLoadedActionsAndCategories,
+} from '../../../react'
+import { GovernanceProposalComponent as StatelessGovernanceProposalComponent } from './Component'
 
-const SUBMIT_PROPOSAL_TYPE_URL = '/cosmos.gov.v1beta1.MsgSubmitProposal'
-
-const Component: ActionComponent<undefined, GovernanceProposalData> = (
+const Component: ActionComponent<undefined, GovernanceProposalActionData> = (
   props
-) => {
+) => (
+  <SuspenseLoader fallback={<Loader />}>
+    <GovActionsProvider>
+      <InnerComponent {...props} />
+    </GovActionsProvider>
+  </SuspenseLoader>
+)
+
+const InnerComponent: ActionComponent<
+  undefined,
+  GovernanceProposalActionData
+> = (props) => {
   const {
     chain: { chain_id: chainId },
+    chainContext: {
+      config: { supportsV1GovProposals },
+    },
   } = useActionOptions()
 
+  const govModuleAddress = useRecoilValue(
+    moduleAddressSelector({
+      name: 'gov',
+      chainId,
+    })
+  )
   const govParams = useCachedLoading(
-    govQueryParamsSelector({
+    govParamsSelector({
       chainId,
     }),
     undefined
   )
+
   const minDeposits = useCachedLoading(
     govParams.loading || !govParams.data
       ? undefined
       : waitForAll(
-          govParams.data.depositParams.minDeposit.map(({ denom }) =>
+          govParams.data.minDeposit.map(({ denom }) =>
             genericTokenSelector({
               type: TokenType.Native,
               denomOrAddress: denom,
@@ -67,10 +97,16 @@ const Component: ActionComponent<undefined, GovernanceProposalData> = (
     []
   )
 
+  const { categories, loadedActions } = useLoadedActionsAndCategories({
+    isCreating: props.isCreating,
+  })
+
   return (
     <StatelessGovernanceProposalComponent
       {...props}
       options={{
+        govModuleAddress,
+        supportsV1GovProposals,
         minDeposits:
           minDeposits.loading || govParams.loading || !govParams.data
             ? { loading: true }
@@ -78,13 +114,15 @@ const Component: ActionComponent<undefined, GovernanceProposalData> = (
                 loading: false,
                 data: minDeposits.data.map((token, index) => ({
                   token,
-                  balance:
-                    govParams.data!.depositParams.minDeposit[index].amount,
+                  balance: govParams.data!.minDeposit[index].amount,
                 })),
               },
-        PayEntityDisplay,
+        categories,
+        loadedActions,
         TokenAmountDisplay,
         AddressInput,
+        SuspenseLoader,
+        GovProposalActionDisplay,
       }}
     />
   )
@@ -112,21 +150,42 @@ const defaultPlan = JSON.stringify(
   2
 )
 
+const defaultCustom = JSON.stringify(
+  {
+    type: 'cosmos-sdk/...',
+    value: {
+      title: '[AUTOMATICALLY INSERTED]',
+      description: '[AUTOMATICALLY INSERTED]',
+      key1: 'value1',
+      key2: 'value2',
+    },
+  },
+  null,
+  2
+)
+
 export const makeGovernanceProposalAction: ActionMaker<
-  GovernanceProposalData
-> = ({ t, address, chain: { chain_id: chainId } }) => {
-  const useDefaults: UseDefaults<GovernanceProposalData> = () => {
+  GovernanceProposalActionData
+> = ({
+  t,
+  address,
+  chain: { chain_id: chainId },
+  chainContext: {
+    config: { supportsV1GovProposals },
+  },
+}) => {
+  const useDefaults: UseDefaults<GovernanceProposalActionData> = () => {
     const govParams = useCachedLoading(
-      govQueryParamsSelector({
+      govParamsSelector({
         chainId,
       }),
       undefined
     )
-    const minDeposits = useCachedLoading(
+    const minDepositTokens = useCachedLoading(
       govParams.loading || !govParams.data
         ? undefined
         : waitForAll(
-            govParams.data.depositParams.minDeposit.map(({ denom }) =>
+            govParams.data.minDeposit.map(({ denom }) =>
               genericTokenSelector({
                 type: TokenType.Native,
                 denomOrAddress: denom,
@@ -138,118 +197,124 @@ export const makeGovernanceProposalAction: ActionMaker<
     )
 
     const deposit =
-      minDeposits.loading || govParams.loading || !govParams.data
+      govParams.loading || !govParams.data
         ? undefined
-        : govParams.data.depositParams.minDeposit[0]
+        : govParams.data.minDeposit[0]
+    const depositToken = minDepositTokens.loading
+      ? undefined
+      : minDepositTokens.data[0]
 
     return {
-      type: GovernanceProposalType.TextProposal,
+      version: supportsV1GovProposals
+        ? GovProposalVersion.V1
+        : GovProposalVersion.V1_BETA_1,
       title: '',
       description: '',
-      deposit:
-        deposit && !minDeposits.loading
+      deposit: deposit
+        ? [
+            {
+              denom: deposit.denom,
+              amount: Number(deposit.amount),
+            },
+          ]
+        : [
+            {
+              denom: getNativeTokenForChainId(chainId).denomOrAddress,
+              amount: 0,
+            },
+          ],
+      legacy: {
+        typeUrl: TextProposal.typeUrl,
+        spends: deposit
           ? [
               {
                 denom: deposit.denom,
-                amount: convertMicroDenomToDenomWithDecimals(
-                  deposit.amount,
-                  minDeposits.data[0].decimals
+                amount: convertDenomToMicroDenomWithDecimals(
+                  1000,
+                  depositToken?.decimals ?? 0
                 ),
               },
             ]
           : [],
-      spends: deposit
-        ? [
-            {
-              denom: deposit.denom,
-              amount: 1000,
-            },
-          ]
-        : [],
-      spendRecipient: address,
-      parameterChanges: defaultParameterChanges,
-      upgradePlan: defaultPlan,
+        spendRecipient: address,
+        parameterChanges: defaultParameterChanges,
+        upgradePlan: defaultPlan,
+        custom: defaultCustom,
+      },
+      legacyContent: Any.fromPartial({}) as any,
+      msgs: [],
+      metadataCid: '',
     }
   }
 
   const useTransformToCosmos: UseTransformToCosmos<
-    GovernanceProposalData
-  > = () =>
-    useCallback(
+    GovernanceProposalActionData
+  > = () => {
+    const govModuleAddress = useRecoilValue(
+      moduleAddressSelector({
+        name: 'gov',
+        chainId,
+      })
+    )
+
+    return useCallback(
       ({
-        type,
+        version,
         title,
         description,
         deposit,
-        spends,
-        spendRecipient,
-        parameterChanges,
-        upgradePlan,
+        legacyContent,
+        msgs,
+        metadataCid,
       }) => {
-        const plan = JSON.parse(upgradePlan)
-        const content = encodeRawProtobufMsg({
-          typeUrl: type,
-          value:
-            type === GovernanceProposalType.CommunityPoolSpendProposal
-              ? ({
-                  title,
-                  description,
-                  amount: spends.map(({ amount, denom }) => ({
-                    denom,
-                    amount: BigInt(amount).toString(),
-                  })),
-                  recipient: spendRecipient,
-                } as CommunityPoolSpendProposal)
-              : type === GovernanceProposalType.ParameterChangeProposal
-              ? ({
-                  title,
-                  description,
-                  changes: JSON.parse(parameterChanges),
-                } as ParameterChangeProposal)
-              : type === GovernanceProposalType.SoftwareUpgradeProposal
-              ? ({
-                  title,
-                  description,
-                  plan: {
-                    ...plan,
-                    height: !isNaN(Number(plan.height))
-                      ? Long.fromValue(plan.height)
-                      : -1,
-                  },
-                } as SoftwareUpgradeProposal)
-              : // Default to text proposal.
-                ({
-                  title,
-                  description,
-                } as TextProposal),
-        })
-
-        return makeStargateMessage({
-          stargate: {
-            typeUrl: SUBMIT_PROPOSAL_TYPE_URL,
-            value: {
-              content,
-              initialDeposit: deposit.map(({ amount, denom }) => ({
-                amount: BigInt(amount).toString(),
-                denom,
-              })),
-              proposer: address,
-            } as MsgSubmitProposal,
-          },
-        })
+        if (version === GovProposalVersion.V1_BETA_1) {
+          return makeStargateMessage({
+            stargate: {
+              typeUrl: MsgSubmitProposalV1Beta1.typeUrl,
+              value: {
+                content: legacyContent,
+                initialDeposit: deposit.map(({ amount, denom }) => ({
+                  amount: BigInt(amount).toString(),
+                  denom,
+                })),
+                proposer: address,
+              } as MsgSubmitProposalV1Beta1,
+            },
+          })
+        } else {
+          return makeStargateMessage({
+            stargate: {
+              typeUrl: MsgSubmitProposalV1.typeUrl,
+              value: {
+                messages: msgs.map((msg) =>
+                  cwMsgToProtobuf(msg, govModuleAddress)
+                ),
+                initialDeposit: deposit.map(({ amount, denom }) => ({
+                  amount: BigInt(amount).toString(),
+                  denom,
+                })),
+                proposer: address,
+                metadata: `ipfs://${metadataCid}`,
+                title,
+                summary: description,
+                expedited: false,
+              } as MsgSubmitProposalV1,
+            },
+          })
+        }
       },
-      []
+      [govModuleAddress]
     )
+  }
 
-  const useDecodedCosmosMsg: UseDecodedCosmosMsg<GovernanceProposalData> = (
-    msg: Record<string, any>
-  ) => {
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<
+    GovernanceProposalActionData
+  > = (msg: Record<string, any>) => {
+    const defaults = useDefaults()
+
     if (
       !isDecodedStargateMsg(msg) ||
-      msg.stargate.typeUrl !== SUBMIT_PROPOSAL_TYPE_URL ||
       !objectMatchesStructure(msg.stargate.value, {
-        content: {},
-        initialDeposit: {},
         proposer: {},
       }) ||
       msg.stargate.value.proposer !== address
@@ -259,47 +324,93 @@ export const makeGovernanceProposalAction: ActionMaker<
       }
     }
 
-    const decodedContent = decodeGovProposalContent(msg.stargate.value.content)
-    const type = decodedContent.typeUrl as GovernanceProposalType
-    if (!Object.values(GovernanceProposalType).includes(type)) {
+    if (
+      msg.stargate.typeUrl === MsgSubmitProposalV1Beta1.typeUrl &&
+      msg.stargate.value.content
+    ) {
+      const proposal = msg.stargate.value as MsgSubmitProposalV1Beta1
+      const type = proposal.content?.typeUrl
+      if (
+        !proposal.content ||
+        !type ||
+        !GOVERNANCE_PROPOSAL_TYPES.some(({ typeUrl }) => typeUrl === type)
+      ) {
+        return {
+          match: false,
+        }
+      }
+
+      // Try to stringify all proposal content for custom field, but ignore
+      // failures in case something can't be serialized.
+      let customContent = '{}'
+      try {
+        customContent = JSON.stringify(proposal.content, null, 2)
+      } catch {}
+
       return {
-        match: false,
+        match: true,
+        data: {
+          ...defaults,
+          version: GovProposalVersion.V1_BETA_1,
+          title: proposal.content.title,
+          description: proposal.content.description,
+          deposit: proposal.initialDeposit.map(({ amount, ...coin }) => ({
+            ...coin,
+            amount: Number(amount),
+          })),
+          legacy: {
+            typeUrl: type,
+            spends:
+              proposal.content.typeUrl === CommunityPoolSpendProposal.typeUrl
+                ? (proposal.content.amount as Coin[]).map(
+                    ({ amount, denom }) => ({
+                      amount: Number(amount),
+                      denom,
+                    })
+                  )
+                : [],
+            spendRecipient:
+              proposal.content.typeUrl === CommunityPoolSpendProposal.typeUrl
+                ? proposal.content.recipient
+                : address,
+            parameterChanges:
+              proposal.content.typeUrl === ParameterChangeProposal.typeUrl
+                ? JSON.stringify(proposal.content.changes, null, 2)
+                : defaultParameterChanges,
+            upgradePlan:
+              proposal.content.typeUrl === SoftwareUpgradeProposal.typeUrl
+                ? JSON.stringify(proposal.content.plan, null, 2)
+                : defaultPlan,
+            custom: customContent,
+          },
+          legacyContent: proposal.content,
+        },
+      }
+    }
+
+    if (msg.stargate.typeUrl === MsgSubmitProposalV1.typeUrl) {
+      const proposal = msg.stargate.value as MsgSubmitProposalV1
+      const decodedMessages = decodeGovProposalV1Messages(proposal.messages)
+
+      return {
+        match: true,
+        data: {
+          ...defaults,
+          version: GovProposalVersion.V1,
+          title: proposal.title,
+          description: proposal.summary,
+          deposit: proposal.initialDeposit.map(({ amount, ...coin }) => ({
+            ...coin,
+            amount: Number(amount),
+          })),
+          msgs: decodedMessages,
+          metadataCid: proposal.metadata.replace('ipfs://', ''),
+        },
       }
     }
 
     return {
-      match: true,
-      data: {
-        type,
-        title: decodedContent.value.title,
-        description: decodedContent.value.description,
-        deposit: msg.stargate.value.initialDeposit,
-        spends:
-          decodedContent.typeUrl ===
-          GovernanceProposalType.CommunityPoolSpendProposal
-            ? (decodedContent.value.amount as Coin[]).map(
-                ({ amount, denom }) => ({
-                  amount: Number(amount),
-                  denom,
-                })
-              )
-            : [],
-        spendRecipient:
-          decodedContent.typeUrl ===
-          GovernanceProposalType.CommunityPoolSpendProposal
-            ? decodedContent.value.recipient
-            : address,
-        parameterChanges:
-          decodedContent.typeUrl ===
-          GovernanceProposalType.ParameterChangeProposal
-            ? JSON.stringify(decodedContent.value.changes, null, 2)
-            : defaultParameterChanges,
-        upgradePlan:
-          decodedContent.typeUrl ===
-          GovernanceProposalType.SoftwareUpgradeProposal
-            ? JSON.stringify(decodedContent.value.plan, null, 2)
-            : defaultPlan,
-      },
+      match: false,
     }
   }
 

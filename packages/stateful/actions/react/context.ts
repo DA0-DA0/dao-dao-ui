@@ -36,13 +36,14 @@ export const useActionCategories = ({
     () =>
       categories
         .map((c) =>
-          // Filter out actions which are not allowed to be created. This is used to
-          // hide the upgrade actions from the list of actions to create.
+          // Filter out actions which are not allowed to be manually chosen.
           !isCreating
             ? c
             : {
                 ...c,
-                actions: c.actions.filter((action) => !action.disallowCreation),
+                actions: c.actions.filter(
+                  (action) => !action.hideFromPicker && !action.programmaticOnly
+                ),
               }
         )
         // Filter out categories with no actions.
@@ -95,18 +96,23 @@ export const useLoadedActionsAndCategories = (
   const categories = useActionCategories(...args)
   // Load actions by calling hooks necessary to using the action. This calls the
   // hooks in the same order every time, as action categories do not change, so
-  // this is a safe use of hooks.
-  const loadedActions = categories.reduce((acc, category) => {
-    category.actions.forEach((action) => {
-      acc[action.key] = {
-        category,
-        action,
-        transform: action.useTransformToCosmos(),
-        defaults: action.useDefaults(),
-      }
-    })
-    return acc
-  }, {} as LoadedActions)
+  // this is a safe use of hooks. Get all action categories, even those
+  // hidden from the picker, since we still want to be able to render them if
+  // they're added programatically.
+  const loadedActions = useActionCategories({ isCreating: false }).reduce(
+    (acc, category) => {
+      category.actions.forEach((action) => {
+        acc[action.key] = {
+          category,
+          action,
+          transform: action.useTransformToCosmos(),
+          defaults: action.useDefaults(),
+        }
+      })
+      return acc
+    },
+    {} as LoadedActions
+  )
 
   return {
     loadedActions,

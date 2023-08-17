@@ -1,18 +1,17 @@
 import { Coin } from '@cosmjs/stargate'
-import { ProposalStatus } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
-import { MsgDeposit } from 'cosmjs-types/cosmos/gov/v1beta1/tx'
-import Long from 'long'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
+import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgDeposit } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import {
   genericTokenSelector,
+  govParamsSelector,
   govProposalSelector,
   govProposalsSelector,
-  govQueryParamsSelector,
 } from '@dao-dao/state'
-import { BankEmoji, useCachedLoading } from '@dao-dao/stateless'
+import { BankEmoji, Loader, useCachedLoading } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -28,9 +27,10 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
+import { GovProposalActionDisplay } from '../../../../components'
+import { SuspenseLoader } from '../../../../components/SuspenseLoader'
 import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
-import { useActionOptions } from '../../../react'
+import { GovActionsProvider, useActionOptions } from '../../../react'
 import {
   GovernanceDepositData,
   GovernanceDepositComponent as StatelessGovernanceDepositComponent,
@@ -42,6 +42,16 @@ const useDefaults: UseDefaults<GovernanceDepositData> = () => ({
 })
 
 const Component: ActionComponent<undefined, GovernanceDepositData> = (
+  props
+) => (
+  <SuspenseLoader fallback={<Loader />}>
+    <GovActionsProvider>
+      <InnerComponent {...props} />
+    </GovActionsProvider>
+  </SuspenseLoader>
+)
+
+const InnerComponent: ActionComponent<undefined, GovernanceDepositData> = (
   props
 ) => {
   const { isCreating, fieldNamePrefix } = props
@@ -66,7 +76,7 @@ const Component: ActionComponent<undefined, GovernanceDepositData> = (
 
   // Prevent action from being submitted if there are no open proposals.
   useEffect(() => {
-    if (proposalOptions && proposalOptions.length === 0) {
+    if (proposalOptions && proposalOptions.proposals.length === 0) {
       setError((fieldNamePrefix + 'proposalId') as 'proposalId', {
         type: 'manual',
       })
@@ -87,7 +97,7 @@ const Component: ActionComponent<undefined, GovernanceDepositData> = (
   )
 
   const govParams = useRecoilValue(
-    govQueryParamsSelector({
+    govParamsSelector({
       chainId,
     })
   )
@@ -96,16 +106,16 @@ const Component: ActionComponent<undefined, GovernanceDepositData> = (
   useEffect(() => {
     const proposalSelected =
       proposalId &&
-      proposalOptions?.find((p) => p.proposalId.toString() === proposalId)
+      proposalOptions?.proposals.find((p) => p.id.toString() === proposalId)
     if (!proposalSelected) {
       return
     }
 
-    const minDeposit = govParams.depositParams.minDeposit[0]
+    const minDeposit = govParams.minDeposit[0]
     const missingDeposit =
       BigInt(minDeposit.amount) -
       BigInt(
-        proposalSelected.totalDeposit.find(
+        proposalSelected.proposal.totalDeposit.find(
           ({ denom }) => minDeposit.denom === denom
         )?.amount ?? 0
       )
@@ -122,17 +132,17 @@ const Component: ActionComponent<undefined, GovernanceDepositData> = (
 
   // Select first proposal once loaded if nothing selected.
   useEffect(() => {
-    if (isCreating && proposalOptions?.length && !proposalId) {
+    if (isCreating && proposalOptions?.proposals.length && !proposalId) {
       setValue(
         (fieldNamePrefix + 'proposalId') as 'proposalId',
-        proposalOptions[0].proposalId.toString()
+        proposalOptions.proposals[0].id.toString()
       )
     }
   }, [isCreating, proposalOptions, proposalId, setValue, fieldNamePrefix])
 
   const depositTokens = useCachedLoading(
     waitForAll(
-      govParams.depositParams.minDeposit.map(({ denom }) =>
+      govParams.minDeposit.map(({ denom }) =>
         genericTokenSelector({
           type: TokenType.Native,
           denomOrAddress: denom,
@@ -149,11 +159,11 @@ const Component: ActionComponent<undefined, GovernanceDepositData> = (
       options={{
         depositTokens,
         proposals: [
-          ...(proposalOptions ?? []),
+          ...(proposalOptions?.proposals ?? []),
           ...(selectedProposal ? [selectedProposal] : []),
         ],
-        PayEntityDisplay,
         TokenAmountDisplay,
+        GovProposalActionDisplay,
       }}
     />
   )
@@ -169,9 +179,9 @@ export const makeGovernanceDepositAction: ActionMaker<
       ({ proposalId, deposit }) =>
         makeStargateMessage({
           stargate: {
-            typeUrl: '/cosmos.gov.v1beta1.MsgDeposit',
+            typeUrl: MsgDeposit.typeUrl,
             value: {
-              proposalId: Long.fromString(proposalId || '-1'),
+              proposalId: BigInt(proposalId || '-1'),
               depositor: address,
               amount: deposit.map(({ denom, amount }) => ({
                 denom,
@@ -193,7 +203,7 @@ export const makeGovernanceDepositAction: ActionMaker<
       amount: {},
     }) &&
     // Make sure this is a deposit message.
-    msg.stargate.typeUrl === '/cosmos.gov.v1beta1.MsgDeposit' &&
+    msg.stargate.typeUrl === MsgDeposit.typeUrl &&
     msg.stargate.value.depositor === address
       ? {
           match: true,

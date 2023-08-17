@@ -85,8 +85,8 @@ export const stargateClientRouter = new ChainClientRouter({
 
     // Use default Tendermint 0.34/0.37 client auto-detection, and then recreate
     // the correct Tendermint client with the http batch client.
-    const cwClient = await CosmWasmClient.connect(rpcEndpoint)
-    const autoDetectedTmClient: TendermintClient = cwClient['tmClient']
+    const stargateClient = await StargateClient.connect(rpcEndpoint)
+    const autoDetectedTmClient: TendermintClient = stargateClient['tmClient']
     const tmClient: TendermintClient = await (
       autoDetectedTmClient.constructor as
         | typeof Tendermint34Client

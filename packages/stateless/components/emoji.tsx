@@ -208,3 +208,11 @@ export const TrashEmoji = () => (
 export const ChainEmoji = () => (
   <EmojiWrapper emoji="⛓️" labelI18nKey="emoji.chains" />
 )
+
+export const CurvedDownArrowEmoji = () => (
+  <EmojiWrapper emoji="⤵️" labelI18nKey="emoji.curvedDownArrow" />
+)
+
+export const DownArrowEmoji = () => (
+  <EmojiWrapper emoji="⬇️" labelI18nKey="emoji.downArrow" />
+)

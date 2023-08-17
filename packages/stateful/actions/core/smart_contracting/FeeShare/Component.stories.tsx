@@ -1,9 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { MsgRegisterFeeShare } from '@dao-dao/protobuf/codegen/juno/feeshare/v1/tx'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
 
 import { AddressInput } from '../../../../components/AddressInput'
-import { FeeShareComponent, FeeShareData, FeeShareType } from './Component'
+import { FeeShareComponent, FeeShareData } from './Component'
 
 export default {
   title:
@@ -13,7 +14,7 @@ export default {
     makeReactHookFormDecorator<FeeShareData>({
       contract: '',
       showWithdrawer: false,
-      typeUrl: FeeShareType.Register,
+      typeUrl: MsgRegisterFeeShare.typeUrl,
       withdrawer: '',
     }),
   ],

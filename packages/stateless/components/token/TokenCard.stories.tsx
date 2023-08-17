@@ -32,7 +32,7 @@ export const token: GenericToken = {
   denomOrAddress: 'ujuno',
   symbol: 'JUNO',
   decimals: 6,
-  imageUrl: '/juno.png',
+  imageUrl: '/daodao.png',
 }
 
 export const makeProps = (isGovernanceToken = false): TokenCardProps => {

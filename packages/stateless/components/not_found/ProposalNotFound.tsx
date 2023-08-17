@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 
-import { DaoTabId } from '@dao-dao/types'
+import { ContractVersion, DaoTabId } from '@dao-dao/types'
+import { getGovPath } from '@dao-dao/utils'
 
 import { useDaoInfoContext } from '../../hooks'
 import { useDaoNavHelpers } from '../../hooks/useDaoNavHelpers'
@@ -10,7 +11,7 @@ import { PageHeaderContent } from '../layout'
 
 export const ProposalNotFound = () => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreVersion, coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()
 
   return (
@@ -19,7 +20,10 @@ export const ProposalNotFound = () => {
 
       <ErrorPage title={t('error.couldntFindProposal')}>
         <ButtonLink
-          href={getDaoPath(coreAddress, DaoTabId.Proposals)}
+          href={(coreVersion === ContractVersion.Gov ? getGovPath : getDaoPath)(
+            coreAddress,
+            DaoTabId.Proposals
+          )}
           variant="secondary"
         >
           {t('button.viewProposals')}

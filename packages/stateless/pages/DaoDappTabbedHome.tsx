@@ -3,7 +3,11 @@ import clsx from 'clsx'
 import { useEffect, useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DaoDappTabbedHomeProps, DaoPageMode } from '@dao-dao/types'
+import {
+  ContractVersion,
+  DaoDappTabbedHomeProps,
+  DaoPageMode,
+} from '@dao-dao/types'
 import { MAINNET, getDaoPath as baseGetDaoPath } from '@dao-dao/utils'
 
 import {
@@ -15,7 +19,7 @@ import {
   Tooltip,
 } from '../components'
 import { DaoSplashHeader } from '../components/dao/DaoSplashHeader'
-import { useDaoInfoContext } from '../hooks/useDaoInfoContext'
+import { useChainContext } from '../hooks'
 import { useDaoNavHelpers } from '../hooks/useDaoNavHelpers'
 
 const SDA_URL_PREFIX = `https://dao.${MAINNET ? '' : 'testnet.'}daodao.zone`
@@ -30,9 +34,10 @@ export const DaoDappTabbedHome = ({
   tabs,
   selectedTabId,
   onSelectTabId,
+  breadcrumbsOverride,
 }: DaoDappTabbedHomeProps) => {
   const { t } = useTranslation()
-  const { coreAddress } = useDaoInfoContext()
+  const { config: chainConfig } = useChainContext()
 
   const {
     getDaoPath,
@@ -46,11 +51,18 @@ export const DaoDappTabbedHome = ({
   )
 
   useEffect(() => {
+    // Don't run if viewing native governance.
+    if (daoInfo.coreVersion === ContractVersion.Gov) {
+      return
+    }
+
     // Trigger SDA to cache page the user might switch to.
-    fetch(SDA_URL_PREFIX + `/api/revalidate?d=${coreAddress}`).catch(
-      console.error
-    )
-  }, [coreAddress])
+    if (typeof window !== 'undefined') {
+      fetch(SDA_URL_PREFIX + `/api/revalidate?d=${daoInfo.coreAddress}`).catch(
+        console.error
+      )
+    }
+  }, [daoInfo.coreAddress, daoInfo.coreVersion])
 
   const tabContainerRef = useRef<HTMLDivElement>(null)
 
@@ -60,19 +72,31 @@ export const DaoDappTabbedHome = ({
       <PageHeaderContent
         breadcrumbs={{
           home: true,
-          current: daoInfo.name,
+          override: !!breadcrumbsOverride,
+          current: breadcrumbsOverride || daoInfo.name,
         }}
         className="mx-auto max-w-5xl"
         gradient
         rightNode={
-          // Go to SDA.
-          <Tooltip title={t('button.viewDaosPage')}>
-            <IconButtonLink
-              Icon={ArrowOutwardRounded}
-              href={SDA_URL_PREFIX + singleDaoPath}
-              variant="ghost"
-            />
-          </Tooltip>
+          daoInfo.coreVersion === ContractVersion.Gov ? (
+            chainConfig ? (
+              // Go to governance page of chain explorer.
+              <IconButtonLink
+                Icon={ArrowOutwardRounded}
+                href={chainConfig.explorerUrlTemplates.gov}
+                variant="ghost"
+              />
+            ) : undefined
+          ) : (
+            // Go to SDA.
+            <Tooltip title={t('button.viewDaosPage')}>
+              <IconButtonLink
+                Icon={ArrowOutwardRounded}
+                href={SDA_URL_PREFIX + singleDaoPath}
+                variant="ghost"
+              />
+            </Tooltip>
+          )
         }
       />
 

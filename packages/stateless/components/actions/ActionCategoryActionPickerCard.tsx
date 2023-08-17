@@ -33,8 +33,11 @@ export const ActionCategoryActionPickerCard = ({
   >
     {category.actions
       .filter(
-        // Show if reusable or not already used.
-        (action) => !action.notReusable || !usedActionKeys.includes(action.key)
+        (action) =>
+          // Never show programmatic actions.
+          !action.programmaticOnly &&
+          // Show if reusable or not already used.
+          (!action.notReusable || !usedActionKeys.includes(action.key))
       )
       .map((action) => (
         <Button

@@ -144,7 +144,7 @@ export const TokenInput = <
               amount.toLocaleString(undefined, {
                 // Show as many decimals as possible (max is 20).
                 maximumFractionDigits: 20,
-              }) + ' '}
+              }) + ' $'}
             {selectedToken.symbol}
           </p>
         </div>

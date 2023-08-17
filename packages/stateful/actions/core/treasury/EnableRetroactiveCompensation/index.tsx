@@ -69,9 +69,9 @@ export const makeEnableRetroactiveCompensationAction: ActionMaker = (
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
-    // Do not allow creating/using this action if the DAO already has
-    // retroactive compensation enabled.
-    disallowCreation:
+    // Do not allow using this action if the DAO already has retroactive
+    // compensation enabled.
+    hideFromPicker:
       !!context.info.items[
         DAO_WIDGET_ITEM_NAMESPACE + RetroactiveCompensationWidget.id
       ],

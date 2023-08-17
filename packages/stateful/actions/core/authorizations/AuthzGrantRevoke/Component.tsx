@@ -4,6 +4,17 @@ import { ComponentType } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { GenericAuthorization } from '@dao-dao/protobuf/codegen/cosmos/authz/v1beta1/authz'
+import { SendAuthorization } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/authz'
+import {
+  AcceptedMessageKeysFilter,
+  AcceptedMessagesFilter,
+  CombinedLimit,
+  ContractExecutionAuthorization,
+  ContractMigrationAuthorization,
+  MaxCallsLimit,
+  MaxFundsLimit,
+} from '@dao-dao/protobuf/codegen/cosmwasm/wasm/v1/authz'
 import {
   Button,
   CodeMirrorInput,
@@ -38,11 +49,11 @@ import {
 
 import { useActionOptions } from '../../../react'
 import {
-  AuthorizationTypeUrl,
-  AuthzExecActionTypes,
+  ACTION_TYPES,
+  AUTHORIZATION_TYPES,
   AuthzGrantRevokeData,
-  FilterTypes,
-  LimitTypes,
+  FILTER_TYPES,
+  LIMIT_TYPES,
 } from './types'
 
 export type AuthzGrantRevokeOptions = {
@@ -83,8 +94,12 @@ export const AuthzGrantRevokeComponent: ActionComponent<
   const customTypeUrl = watch(
     (fieldNamePrefix + 'customTypeUrl') as 'customTypeUrl'
   )
-  const filterType = watch((fieldNamePrefix + 'filterType') as 'filterType')
-  const limitType = watch((fieldNamePrefix + 'limitType') as 'limitType')
+  const filterTypeUrl = watch(
+    (fieldNamePrefix + 'filterTypeUrl') as 'filterTypeUrl'
+  )
+  const limitTypeUrl = watch(
+    (fieldNamePrefix + 'limitTypeUrl') as 'limitTypeUrl'
+  )
 
   return (
     <>
@@ -135,23 +150,16 @@ export const AuthzGrantRevokeComponent: ActionComponent<
             }
             register={register}
           >
-            <option value={AuthorizationTypeUrl.Generic}>
-              {t('form.generic')}
-            </option>
-            <option value={AuthorizationTypeUrl.Spend}>
-              {t('title.spend')}
-            </option>
-            <option value={AuthorizationTypeUrl.ContractExecution}>
-              {t('title.executeSmartContract')}
-            </option>
-            <option value={AuthorizationTypeUrl.ContractMigration}>
-              {t('title.migrateSmartContract')}
-            </option>
+            {AUTHORIZATION_TYPES.map(({ type: { typeUrl }, i18nKey }) => (
+              <option key={typeUrl} value={typeUrl}>
+                {t(i18nKey)}
+              </option>
+            ))}
           </SelectInput>
         </div>
       )}
 
-      {(authorizationTypeUrl === AuthorizationTypeUrl.Generic ||
+      {(authorizationTypeUrl === GenericAuthorization.typeUrl ||
         mode === 'revoke') && (
         <>
           {!customTypeUrl ? (
@@ -165,30 +173,11 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                 fieldName={(fieldNamePrefix + 'msgTypeUrl') as 'msgTypeUrl'}
                 register={register}
               >
-                <option value={AuthzExecActionTypes.Delegate}>
-                  {t('info.stake')}
-                </option>
-                <option value={AuthzExecActionTypes.Undelegate}>
-                  {t('info.unstake')}
-                </option>
-                <option value={AuthzExecActionTypes.Redelegate}>
-                  {t('info.redelegate')}
-                </option>
-                <option value={AuthzExecActionTypes.ClaimRewards}>
-                  {t('info.withdrawStakingRewards')}
-                </option>
-                <option value={AuthzExecActionTypes.Vote}>
-                  {t('title.vote')}
-                </option>
-                <option value={AuthzExecActionTypes.Spend}>
-                  {t('title.spend')}
-                </option>
-                <option value={AuthzExecActionTypes.Execute}>
-                  {t('title.executeSmartContract')}
-                </option>
-                <option value={AuthzExecActionTypes.Migrate}>
-                  {t('title.migrateSmartContract')}
-                </option>
+                {ACTION_TYPES.map(({ type: { typeUrl }, i18nKey }) => (
+                  <option key={typeUrl} value={typeUrl}>
+                    {t(i18nKey)}
+                  </option>
+                ))}
               </SelectInput>
             </div>
           ) : (
@@ -214,12 +203,12 @@ export const AuthzGrantRevokeComponent: ActionComponent<
               fieldName={(fieldNamePrefix + 'customTypeUrl') as 'customTypeUrl'}
               label={t('form.authzUseCustomMessageType')}
               onToggle={
-                // Set message type URL back to delegate if customTypeUrl is disabled.
+                // Reset message type URL if customTypeUrl is disabled.
                 (customTypeUrl) =>
                   !customTypeUrl &&
                   setValue(
                     (fieldNamePrefix + 'msgTypeUrl') as 'msgTypeUrl',
-                    AuthzExecActionTypes.Delegate
+                    ACTION_TYPES[0].type.typeUrl
                   )
               }
               readOnly={!isCreating}
@@ -235,7 +224,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
         </>
       )}
 
-      {authorizationTypeUrl === AuthorizationTypeUrl.Spend && mode === 'grant' && (
+      {authorizationTypeUrl === SendAuthorization.typeUrl && mode === 'grant' && (
         <div className="flex flex-col gap-1">
           <InputLabel
             name={t('form.spendingAllowance')}
@@ -290,8 +279,8 @@ export const AuthzGrantRevokeComponent: ActionComponent<
         </div>
       )}
 
-      {(authorizationTypeUrl === AuthorizationTypeUrl.ContractExecution ||
-        authorizationTypeUrl === AuthorizationTypeUrl.ContractMigration) &&
+      {(authorizationTypeUrl === ContractExecutionAuthorization.typeUrl ||
+        authorizationTypeUrl === ContractMigrationAuthorization.typeUrl) &&
         mode === 'grant' && (
           <>
             <div className="flex flex-col gap-1">
@@ -315,21 +304,19 @@ export const AuthzGrantRevokeComponent: ActionComponent<
 
               <RadioInput
                 disabled={!isCreating}
-                fieldName={(fieldNamePrefix + 'filterType') as 'filterType'}
-                options={[
-                  { label: t('title.all'), value: FilterTypes.All },
-                  { label: t('form.allowedMethods'), value: FilterTypes.Keys },
-                  {
-                    label: t('form.message'),
-                    value: FilterTypes.Msgs,
-                  },
-                ]}
+                fieldName={
+                  (fieldNamePrefix + 'filterTypeUrl') as 'filterTypeUrl'
+                }
+                options={FILTER_TYPES.map(({ type: { typeUrl }, i18nKey }) => ({
+                  label: t(i18nKey),
+                  value: typeUrl,
+                }))}
                 setValue={setValue}
                 watch={watch}
               />
             </div>
 
-            {filterType === FilterTypes.Keys && (
+            {filterTypeUrl === AcceptedMessageKeysFilter.typeUrl && (
               <div className="flex flex-col gap-1">
                 <InputLabel
                   name={t('form.allowedMethods')}
@@ -348,7 +335,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
               </div>
             )}
 
-            {filterType === FilterTypes.Msgs && (
+            {filterTypeUrl === AcceptedMessagesFilter.typeUrl && (
               <div className="flex flex-col gap-1">
                 <InputLabel
                   name={t('form.smartContractMessage')}
@@ -411,22 +398,18 @@ export const AuthzGrantRevokeComponent: ActionComponent<
 
               <RadioInput
                 disabled={!isCreating}
-                fieldName={(fieldNamePrefix + 'limitType') as 'limitType'}
-                options={[
-                  { label: t('form.calls'), value: LimitTypes.Calls },
-                  { label: t('form.funds'), value: LimitTypes.Funds },
-                  {
-                    label: t('form.combined'),
-                    value: LimitTypes.Combined,
-                  },
-                ]}
+                fieldName={(fieldNamePrefix + 'limitTypeUrl') as 'limitTypeUrl'}
+                options={LIMIT_TYPES.map(({ type: { typeUrl }, i18nKey }) => ({
+                  label: t(i18nKey),
+                  value: typeUrl,
+                }))}
                 setValue={setValue}
                 watch={watch}
               />
             </div>
 
-            {(limitType === LimitTypes.Calls ||
-              limitType === LimitTypes.Combined) && (
+            {(limitTypeUrl === MaxCallsLimit.typeUrl ||
+              limitTypeUrl === CombinedLimit.typeUrl) && (
               <div className="flex flex-col gap-1">
                 <InputLabel
                   name={t('form.calls')}
@@ -449,8 +432,8 @@ export const AuthzGrantRevokeComponent: ActionComponent<
               </div>
             )}
 
-            {(limitType === LimitTypes.Funds ||
-              limitType === LimitTypes.Combined) && (
+            {(limitTypeUrl === MaxFundsLimit.typeUrl ||
+              limitTypeUrl === CombinedLimit.typeUrl) && (
               <div className="flex flex-col gap-1">
                 <InputLabel
                   name={t('form.spendingAllowance')}

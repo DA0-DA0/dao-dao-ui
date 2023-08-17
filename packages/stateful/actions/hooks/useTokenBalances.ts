@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { waitForAll } from 'recoil'
 
 import {
+  communityPoolBalancesSelector,
   genericTokenBalanceSelector,
   genericTokenBalancesSelector,
 } from '@dao-dao/state'
@@ -46,23 +47,30 @@ export const useTokenBalances = ({
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
 
   const balances = useCachedLoading(
-    genericTokenBalancesSelector({
-      address,
-      cw20GovernanceTokenAddress: governanceTokenAddress,
-      chainId,
-      filter,
-    }),
+    context.type === ActionContextType.Gov
+      ? // Get gov module balances from community pool query.
+        communityPoolBalancesSelector({
+          chainId,
+        })
+      : genericTokenBalancesSelector({
+          address,
+          cw20GovernanceTokenAddress: governanceTokenAddress,
+          chainId,
+          filter,
+        }),
     []
   )
 
   const additionalBalances = useCachedLoading(
     waitForAll(
-      additionalTokens?.map((token) =>
-        genericTokenBalanceSelector({
-          ...token,
-          walletAddress: address,
-        })
-      ) ?? []
+      context.type === ActionContextType.Gov
+        ? []
+        : additionalTokens?.map((token) =>
+            genericTokenBalanceSelector({
+              ...token,
+              walletAddress: address,
+            })
+          ) ?? []
     ),
     []
   )

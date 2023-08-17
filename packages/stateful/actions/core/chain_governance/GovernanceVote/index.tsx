@@ -1,16 +1,18 @@
-import { VoteOption } from 'cosmjs-types/cosmos/gov/v1beta1/gov'
-import { MsgVote } from 'cosmjs-types/cosmos/gov/v1beta1/tx'
-import Long from 'long'
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
 import {
+  ProposalStatus,
+  VoteOption,
+} from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgVote } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import {
   govProposalSelector,
   govProposalVoteSelector,
   govProposalsSelector,
 } from '@dao-dao/state'
-import { BallotDepositEmoji } from '@dao-dao/stateless'
+import { BallotDepositEmoji, Loader } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -20,15 +22,17 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  cwVoteOptionToGovVoteOption,
+  govVoteOptionToCwVoteOption,
   isDecodedStargateMsg,
   loadableToLoadingData,
-  makeStargateMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
+import { GovProposalActionDisplay } from '../../../../components'
+import { SuspenseLoader } from '../../../../components/SuspenseLoader'
 import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
-import { useActionOptions } from '../../../react'
+import { GovActionsProvider, useActionOptions } from '../../../react'
 import {
   GovernanceVoteData,
   GovernanceVoteComponent as StatelessGovernanceVoteComponent,
@@ -39,7 +43,17 @@ const useDefaults: UseDefaults<GovernanceVoteData> = () => ({
   vote: VoteOption.VOTE_OPTION_ABSTAIN,
 })
 
-const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
+const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => (
+  <SuspenseLoader fallback={<Loader />}>
+    <GovActionsProvider>
+      <InnerComponent {...props} />
+    </GovActionsProvider>
+  </SuspenseLoader>
+)
+
+const InnerComponent: ActionComponent<undefined, GovernanceVoteData> = (
+  props
+) => {
   const { isCreating, fieldNamePrefix } = props
   const {
     address,
@@ -55,6 +69,7 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
   const openProposals = useRecoilValue(
     isCreating
       ? govProposalsSelector({
+          status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
           chainId,
         })
       : constSelector(undefined)
@@ -62,7 +77,7 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
 
   // Prevent action from being submitted if there are no open proposals.
   useEffect(() => {
-    if (openProposals && openProposals.length === 0) {
+    if (openProposals && openProposals.proposals.length === 0) {
       setError((fieldNamePrefix + 'proposalId') as 'proposalId', {
         type: 'manual',
       })
@@ -97,10 +112,10 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
 
   // Select first proposal once loaded if nothing selected.
   useEffect(() => {
-    if (isCreating && openProposals?.length && !proposalId) {
+    if (isCreating && openProposals?.proposals.length && !proposalId) {
       setValue(
         (fieldNamePrefix + 'proposalId') as 'proposalId',
-        openProposals[0].proposalId.toString()
+        openProposals.proposals[0].id.toString()
       )
     }
   }, [isCreating, openProposals, proposalId, setValue, fieldNamePrefix])
@@ -110,12 +125,12 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
       {...props}
       options={{
         proposals: [
-          ...(openProposals ?? []),
+          ...(openProposals?.proposals ?? []),
           ...(selectedProposal ? [selectedProposal] : []),
         ],
         existingVotesLoading,
-        PayEntityDisplay,
         TokenAmountDisplay,
+        GovProposalActionDisplay,
       }}
     />
   )
@@ -123,21 +138,17 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
 
 export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
   t,
-  address,
 }) => {
   const useTransformToCosmos: UseTransformToCosmos<GovernanceVoteData> = () =>
     useCallback(
-      ({ proposalId, vote }) =>
-        makeStargateMessage({
-          stargate: {
-            typeUrl: '/cosmos.gov.v1beta1.MsgVote',
-            value: {
-              proposalId: Long.fromString(proposalId || '-1'),
-              voter: address,
-              option: vote,
-            } as MsgVote,
+      ({ proposalId, vote }) => ({
+        gov: {
+          vote: {
+            proposal_id: Number(proposalId || '-1'),
+            vote: govVoteOptionToCwVoteOption(vote),
           },
-        }),
+        },
+      }),
       []
     )
 
@@ -151,12 +162,27 @@ export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
       option: {},
     }) &&
     // Make sure this is a vote message.
-    msg.stargate.typeUrl === '/cosmos.gov.v1beta1.MsgVote'
+    msg.stargate.typeUrl === MsgVote.typeUrl
       ? {
           match: true,
           data: {
             proposalId: msg.stargate.value.proposalId.toString(),
             vote: msg.stargate.value.option,
+          },
+        }
+      : objectMatchesStructure(msg, {
+          gov: {
+            vote: {
+              proposal_id: {},
+              vote: {},
+            },
+          },
+        })
+      ? {
+          match: true,
+          data: {
+            proposalId: msg.gov.vote.proposal_id.toString(),
+            vote: cwVoteOptionToGovVoteOption(msg.gov.vote.vote),
           },
         }
       : {

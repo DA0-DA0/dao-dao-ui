@@ -2,8 +2,6 @@ import { ComponentType, ReactNode, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
-  BaseProposalStatusAndInfoProps,
-  CommonProposalInfo,
   DaoTabId,
   IconButtonLinkProps,
   LoadingData,
@@ -17,14 +15,15 @@ import {
 } from '../components'
 
 export interface ProposalProps {
-  proposalInfo: CommonProposalInfo
+  id: string
+  title: string
+  description: string
+  createdAt?: Date
   voteTally: ReactNode
   votesCast: ReactNode
-  ProposalStatusAndInfo: ComponentType<
-    Pick<BaseProposalStatusAndInfoProps, 'inline'>
-  >
+  ProposalStatusAndInfo: ComponentType<{ inline: boolean }>
   proposalInnerContentDisplay: ReactNode
-  creator: {
+  creator?: {
     address: string
     name: LoadingData<string | null>
   }
@@ -37,7 +36,10 @@ export interface ProposalProps {
 }
 
 export const Proposal = ({
-  proposalInfo: { id, title, description, createdAtEpoch },
+  id,
+  title,
+  description,
+  createdAt,
   voteTally,
   votesCast,
   ProposalStatusAndInfo,
@@ -97,9 +99,7 @@ export const Proposal = ({
             <ProposalContentDisplay
               EntityDisplay={EntityDisplay}
               IconButtonLink={IconButtonLink}
-              createdAt={
-                createdAtEpoch !== null ? new Date(createdAtEpoch) : undefined
-              }
+              createdAt={createdAt}
               creator={creator}
               description={description}
               duplicateUrl={duplicateUrl}

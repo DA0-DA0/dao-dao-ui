@@ -2,41 +2,39 @@ import { Check, Close } from '@mui/icons-material'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
+import { MsgWithdrawValidatorCommission } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { MsgUnjail } from '@dao-dao/protobuf/codegen/cosmos/slashing/v1beta1/tx'
+import {
+  MsgCreateValidator,
+  MsgEditValidator,
+} from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/tx'
 import { CodeMirrorInput, InputLabel, SelectInput } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { validateJSON } from '@dao-dao/utils'
 
-export enum ValidatorActionType {
-  CreateValidator = '/cosmos.staking.v1beta1.MsgCreateValidator',
-  EditValidator = '/cosmos.staking.v1beta1.MsgEditValidator',
-  UnjailValidator = '/cosmos.slashing.v1beta1.MsgUnjail',
-  WithdrawValidatorCommission = '/cosmos.distribution.v1beta1.MsgWithdrawValidatorCommission',
-}
+export const VALIDATOR_ACTION_TYPES = [
+  {
+    typeUrl: MsgWithdrawValidatorCommission.typeUrl,
+    i18nKey: 'title.withdrawValidatorCommission',
+  },
+  {
+    typeUrl: MsgCreateValidator.typeUrl,
+    i18nKey: 'title.createValidator',
+  },
+  {
+    typeUrl: MsgEditValidator.typeUrl,
+    i18nKey: 'title.editValidator',
+  },
+  {
+    typeUrl: MsgUnjail.typeUrl,
+    i18nKey: 'title.unjailValidator',
+  },
+]
 
-export const useValidatorActions = (): {
-  type: ValidatorActionType
-  name: string
-}[] => {
-  const { t } = useTranslation()
-
-  return [
-    {
-      type: ValidatorActionType.WithdrawValidatorCommission,
-      name: t('title.withdrawValidatorCommission'),
-    },
-    {
-      type: ValidatorActionType.CreateValidator,
-      name: t('title.createValidator'),
-    },
-    {
-      type: ValidatorActionType.EditValidator,
-      name: t('title.editValidator'),
-    },
-    {
-      type: ValidatorActionType.UnjailValidator,
-      name: t('title.unjailValidator'),
-    },
-  ]
+export type ValidatorActionsData = {
+  validatorActionTypeUrl: string
+  createMsg: string
+  editMsg: string
 }
 
 export const ValidatorActionsComponent: ActionComponent = ({
@@ -45,28 +43,31 @@ export const ValidatorActionsComponent: ActionComponent = ({
   isCreating,
 }) => {
   const { t } = useTranslation()
-  const { control, register, watch } = useFormContext()
-  const validatorActions = useValidatorActions()
+  const { control, register, watch } = useFormContext<ValidatorActionsData>()
 
-  const validatorActionType = watch(fieldNamePrefix + 'validatorActionType')
+  const validatorActionTypeUrl = watch(
+    (fieldNamePrefix + 'validatorActionTypeUrl') as 'validatorActionTypeUrl'
+  )
 
   return (
     <>
       <SelectInput
-        defaultValue={validatorActions[0].type}
         disabled={!isCreating}
-        error={errors?.validatorActionType}
-        fieldName={fieldNamePrefix + 'validatorActionType'}
+        error={errors?.validatorActionTypeUrl}
+        fieldName={
+          (fieldNamePrefix +
+            'validatorActionTypeUrl') as 'validatorActionTypeUrl'
+        }
         register={register}
       >
-        {validatorActions.map(({ name, type }, idx) => (
-          <option key={idx} value={type}>
-            {name}
+        {VALIDATOR_ACTION_TYPES.map(({ typeUrl, i18nKey }) => (
+          <option key={typeUrl} value={typeUrl}>
+            {t(i18nKey)}
           </option>
         ))}
       </SelectInput>
 
-      {validatorActionType === ValidatorActionType.CreateValidator && (
+      {validatorActionTypeUrl === MsgCreateValidator.typeUrl && (
         <div className="flex flex-col items-stretch gap-1">
           <InputLabel
             name={t('form.createValidatorMessage')}
@@ -75,7 +76,7 @@ export const ValidatorActionsComponent: ActionComponent = ({
           <CodeMirrorInput
             control={control}
             error={errors?.createMsg}
-            fieldName={fieldNamePrefix + 'createMsg'}
+            fieldName={(fieldNamePrefix + 'createMsg') as 'createMsg'}
             readOnly={!isCreating}
             validation={[validateJSON]}
           />
@@ -92,7 +93,7 @@ export const ValidatorActionsComponent: ActionComponent = ({
         </div>
       )}
 
-      {validatorActionType === ValidatorActionType.EditValidator && (
+      {validatorActionTypeUrl === MsgEditValidator.typeUrl && (
         <div className="flex flex-col items-stretch gap-1">
           <InputLabel
             name={t('form.editValidatorMessage')}
@@ -101,7 +102,7 @@ export const ValidatorActionsComponent: ActionComponent = ({
           <CodeMirrorInput
             control={control}
             error={errors?.editMsg}
-            fieldName={fieldNamePrefix + 'editMsg'}
+            fieldName={(fieldNamePrefix + 'editMsg') as 'editMsg'}
             readOnly={!isCreating}
             validation={[validateJSON]}
           />

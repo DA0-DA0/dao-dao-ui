@@ -3,6 +3,10 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  MsgRegisterFeeShare,
+  MsgUpdateFeeShare,
+} from '@dao-dao/protobuf/codegen/juno/feeshare/v1/tx'
+import {
   FormSwitchCard,
   InputErrorMessage,
   InputLabel,
@@ -17,13 +21,8 @@ import {
 
 import { useActionOptions } from '../../../react'
 
-export enum FeeShareType {
-  Register = '/juno.feeshare.v1.MsgRegisterFeeShare',
-  Update = '/juno.feeshare.v1.MsgUpdateFeeShare',
-}
-
 export type FeeShareData = {
-  typeUrl: FeeShareType
+  typeUrl: string
   contract: string
   showWithdrawer: boolean
   withdrawer?: string
@@ -59,11 +58,11 @@ export const FeeShareComponent: ActionComponent<FeeShareOptions> = ({
           tabs={[
             {
               label: t('info.register'),
-              value: FeeShareType.Register,
+              value: MsgRegisterFeeShare.typeUrl,
             },
             {
               label: t('button.update'),
-              value: FeeShareType.Update,
+              value: MsgUpdateFeeShare.typeUrl,
             },
           ]}
         />

@@ -212,6 +212,11 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         EntityDisplay={EntityDisplay}
         IconButtonLink={IconButtonLink}
         ProposalStatusAndInfo={CachedProposalStatusAndInfo}
+        createdAt={
+          proposalInfo.createdAtEpoch !== null
+            ? new Date(proposalInfo.createdAtEpoch)
+            : undefined
+        }
         creator={{
           name: creatorProfileLoading
             ? { loading: true }
@@ -221,9 +226,10 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
               },
           address: proposalInfo.createdByAddress,
         }}
+        description={proposalInfo.description}
         duplicateUrl={duplicateUrl}
+        id={proposalInfo.id}
         onRefresh={refreshProposal}
-        proposalInfo={proposalInfo}
         proposalInnerContentDisplay={
           <SuspenseLoader fallback={<Loader />}>
             <ProposalInnerContentDisplay
@@ -253,6 +259,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
             <ProfileDisconnectedCard />
           )
         }
+        title={proposalInfo.title}
         voteTally={<ProposalVoteTally />}
         votesCast={<ProposalVotes />}
       />

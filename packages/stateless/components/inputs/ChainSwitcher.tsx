@@ -12,8 +12,6 @@ import {
 } from '@dao-dao/utils'
 
 import { ButtonLink } from '../buttons'
-import { Row } from '../layout/Row'
-import { LinkWrapper } from '../LinkWrapper'
 import { ButtonPopup } from '../popup'
 
 export type ChainSwitcherProps = Omit<
@@ -21,6 +19,7 @@ export type ChainSwitcherProps = Omit<
   'ButtonLink' | 'position' | 'sections' | 'trigger'
 > & {
   position?: ButtonPopupProps['position']
+  loading?: boolean
 
   onSelect: (chain: Chain) => void
   selected: string
@@ -29,11 +28,13 @@ export type ChainSwitcherProps = Omit<
 export const ChainSwitcher = ({
   onSelect,
   selected,
+  loading,
+  wrapperClassName,
   ...props
 }: ChainSwitcherProps) => {
   const chain = getChainForChainId(selected)
 
-  const { ChainSwitcherTrigger, chainSwitcherSections } = useMemo(() => {
+  const { chainSwitcherTriggerContent, chainSwitcherSections } = useMemo(() => {
     const makeChainIcon = (chainId: string) =>
       function ChainIcon({ className }: { className?: string }) {
         return (
@@ -47,15 +48,12 @@ export const ChainSwitcher = ({
       }
 
     const ChainIcon = makeChainIcon(chain.chain_id)
-    const ChainSwitcherTrigger = ({ onClick }: { onClick: () => void }) => (
-      <Row
-        Icon={ChainIcon}
-        LinkWrapper={LinkWrapper}
-        contentContainerClassName="gap-3 bg-background-tertiary rounded-md"
-        label={getDisplayNameForChainId(chain.chain_id)}
-        onClick={onClick}
-        rightNode={<ArrowDropDown className="ml-2 !h-5 !w-5" />}
-      />
+    const chainSwitcherTriggerContent = (
+      <>
+        <ChainIcon className="!h-6 !w-6" />
+        <p>{getDisplayNameForChainId(chain.chain_id)}</p>
+        <ArrowDropDown className="ml-2 !h-5 !w-5" />
+      </>
     )
     const chainSwitcherSections = [
       {
@@ -88,7 +86,7 @@ export const ChainSwitcher = ({
 
     return {
       ChainIcon,
-      ChainSwitcherTrigger,
+      chainSwitcherTriggerContent,
       chainSwitcherSections,
     }
   }, [chain.chain_id, selected])
@@ -105,10 +103,15 @@ export const ChainSwitcher = ({
         })),
       }))}
       trigger={{
-        type: 'custom',
-        Renderer: ChainSwitcherTrigger,
+        type: 'button',
+        props: {
+          children: chainSwitcherTriggerContent,
+          loading,
+          variant: 'secondary',
+          contentContainerClassName: '!gap-3',
+        },
       }}
-      wrapperClassName="min-w-[8rem]"
+      wrapperClassName={clsx(wrapperClassName, 'min-w-[8rem]')}
       {...props}
     />
   )

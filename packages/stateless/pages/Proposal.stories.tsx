@@ -50,25 +50,12 @@ Default.args = {
       {...props}
     />
   ),
-  proposalInfo: {
-    id: 'B2',
-    title: 'Enable liquidity rewards for Junoswap LPs',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed diam eget risus varius blandit sit amet non magna. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla sed consectetur. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.\n\nAenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Cras mattis consectetur purus sit amet fermentum. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Maecenas sed diam eget risus varius blandit sit amet non magna.',
-    // Random date in the past 5 days.
-    createdAtEpoch: new Date(
-      Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000
-    ).getTime(),
-    // Random date in the next 5 days.
-    // Nanoseconds
-    expiration: {
-      at_time: (
-        (Date.now() + Math.random() * 5 * 24 * 60 * 60 * 1000) *
-        1000000
-      ).toString(),
-    },
-    createdByAddress: 'juno789def000ghi',
-  },
+  id: 'B2',
+  title: 'Enable liquidity rewards for Junoswap LPs',
+  description:
+    'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas sed diam eget risus varius blandit sit amet non magna. Duis mollis, est non commodo luctus, nisi erat porttitor ligula, eget lacinia odio sem nec elit. Vivamus sagittis lacus vel augue laoreet rutrum faucibus dolor auctor. Aenean lacinia bibendum nulla sed consectetur. Integer posuere erat a ante venenatis dapibus posuere velit aliquet.\n\nAenean eu leo quam. Pellentesque ornare sem lacinia quam venenatis vestibulum. Cras mattis consectetur purus sit amet fermentum. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Maecenas sed diam eget risus varius blandit sit amet non magna.',
+  // Random date in the past 5 days.
+  createdAt: new Date(Date.now() - Math.random() * 5 * 24 * 60 * 60 * 1000),
   voteTally: (
     <ProposalVoteTally
       {...(ProposalVoteTallyStory.args as ProposalVoteTallyProps)}

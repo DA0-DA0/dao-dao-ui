@@ -37,6 +37,7 @@ import {
   MAINNET,
   SITE_URL,
   WEB3AUTH_CLIENT_ID,
+  aminoTypes,
   getChainForChainId,
   getNativeTokenForChainId,
   maybeGetKeplrChainInfo,
@@ -126,14 +127,14 @@ export const WalletProvider = ({
     } catch {}
 
     return {
-      // cosmos-kit has an older version of the package. This is a workaround.
-      gasPrice: gasPrice as any,
-      // cosmos-kit has an older version of the package. This is a workaround.
-      registry: typesRegistry as any,
+      gasPrice,
+      registry: typesRegistry,
+      aminoTypes,
     }
   }
 
   const signerOptions: SignerOptions = {
+    preferredSignType: () => 'direct',
     // cosmos-kit has an older version of the package. This is a workaround.
     signingStargate: getSignerOptions as SignerOptions['signingStargate'],
     // cosmos-kit has an older version of the package. This is a workaround.

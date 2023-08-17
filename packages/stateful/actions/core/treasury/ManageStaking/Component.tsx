@@ -1,4 +1,5 @@
-import { useCallback, useEffect } from 'react'
+import clsx from 'clsx'
+import { ComponentType, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -11,37 +12,45 @@ import {
   ValidatorPicker,
   useChainContext,
 } from '@dao-dao/stateless'
-import { TokenStake, Validator } from '@dao-dao/types'
+import { AddressInputProps, TokenStake, Validator } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
-  StakeType,
+  StakingActionType,
   convertMicroDenomToDenomWithDecimals,
   isValidValidatorAddress,
+  makeValidateAddress,
   makeValidateValidatorAddress,
   secondsToWdhms,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
 
-export const useStakeActions = (): { type: StakeType; name: string }[] => {
+export const useStakeActions = (): {
+  type: StakingActionType
+  name: string
+}[] => {
   const { t } = useTranslation()
 
   return [
     {
-      type: StakeType.Delegate,
+      type: StakingActionType.Delegate,
       name: t('title.stake'),
     },
     {
-      type: StakeType.Undelegate,
+      type: StakingActionType.Undelegate,
       name: t('title.unstake'),
     },
     {
-      type: StakeType.Redelegate,
+      type: StakingActionType.Redelegate,
       name: t('title.restake'),
     },
     {
-      type: StakeType.WithdrawDelegatorReward,
+      type: StakingActionType.WithdrawDelegatorReward,
       name: t('title.claimRewards'),
+    },
+    {
+      type: StakingActionType.SetWithdrawAddress,
+      name: t('title.setWithdrawAddress'),
     },
   ]
 }
@@ -53,15 +62,20 @@ export interface ManageStakingOptions {
   executed: boolean
   claimedRewards?: number
   nativeUnstakingDurationSeconds: number
+  AddressInput: ComponentType<AddressInputProps<ManageStakingData>>
 }
 
 export interface ManageStakingData {
   chainId: string
-  stakeType: StakeType
+  type: StakingActionType
   validator: string
   // For use when redelegating.
   toValidator: string
+  // For use when setting withdraw address.
+  withdrawAddress: string
   amount: number
+
+  _error?: string
 }
 
 export const ManageStakingComponent: ActionComponent<
@@ -78,22 +92,24 @@ export const ManageStakingComponent: ActionComponent<
     executed,
     claimedRewards,
     nativeUnstakingDurationSeconds,
+    AddressInput,
   },
 }) => {
   const { t } = useTranslation()
 
-  const { register, watch, setError, clearErrors, setValue } = useFormContext()
+  const { register, watch, setError, clearErrors, setValue } =
+    useFormContext<ManageStakingData>()
   const stakeActions = useStakeActions()
 
   const stakedValidatorAddresses = new Set(
     stakes.map((s) => s.validator.address)
   )
 
-  const stakeType = watch(fieldNamePrefix + 'stakeType')
-  const validator = watch(fieldNamePrefix + 'validator')
+  const type = watch((fieldNamePrefix + 'type') as 'type')
+  const validator = watch((fieldNamePrefix + 'validator') as 'validator')
   // For use when redelegating.
-  const toValidator = watch(fieldNamePrefix + 'toValidator')
-  const amount = watch(fieldNamePrefix + 'amount')
+  const toValidator = watch((fieldNamePrefix + 'toValidator') as 'toValidator')
+  const amount = watch((fieldNamePrefix + 'amount') as 'amount')
 
   const {
     chain: { bech32_prefix: bech32Prefix },
@@ -122,7 +138,7 @@ export const ManageStakingComponent: ActionComponent<
   // undelegating and redelegating), maxAmount is the staked amount for the
   // source validator.
   const maxAmount =
-    stakeType === StakeType.Delegate
+    type === StakingActionType.Delegate
       ? convertMicroDenomToDenomWithDecimals(
           nativeBalance,
           nativeToken.decimals
@@ -131,6 +147,11 @@ export const ManageStakingComponent: ActionComponent<
 
   // Manually validate based on context.
   const validate = useCallback((): string | boolean => {
+    // No validation for setting withdraw address.
+    if (type === StakingActionType.SetWithdrawAddress) {
+      return true
+    }
+
     if (!validator) {
       return t('error.noValidatorFound')
     }
@@ -143,7 +164,7 @@ export const ManageStakingComponent: ActionComponent<
     }
 
     // No further validation for claiming rewards.
-    if (stakeType === StakeType.WithdrawDelegatorReward) {
+    if (type === StakingActionType.WithdrawDelegatorReward) {
       return true
     }
 
@@ -152,7 +173,7 @@ export const ManageStakingComponent: ActionComponent<
     })
 
     // Logic for delegating.
-    if (stakeType === StakeType.Delegate) {
+    if (type === StakingActionType.Delegate) {
       return (
         Number(amount) <= maxAmount ||
         (maxAmount === 0
@@ -166,7 +187,7 @@ export const ManageStakingComponent: ActionComponent<
       )
     }
     // Logic for undelegating.
-    else if (stakeType === StakeType.Undelegate) {
+    else if (type === StakingActionType.Undelegate) {
       return (
         Number(amount) <= sourceValidatorStaked ||
         (sourceValidatorStaked === 0
@@ -178,7 +199,7 @@ export const ManageStakingComponent: ActionComponent<
       )
     }
     // Logic for redelegating.
-    else if (stakeType === StakeType.Redelegate) {
+    else if (type === StakingActionType.Redelegate) {
       // Validate toValidator address.
       if (!toValidator) {
         return t('error.noValidatorFound')
@@ -204,7 +225,7 @@ export const ManageStakingComponent: ActionComponent<
   }, [
     validator,
     bech32Prefix,
-    stakeType,
+    type,
     maxAmount,
     t,
     amount,
@@ -216,15 +237,15 @@ export const ManageStakingComponent: ActionComponent<
   // Perform validation.
   useEffect(() => {
     if (!amount) {
-      clearErrors(fieldNamePrefix + '_error')
+      clearErrors((fieldNamePrefix + '_error') as '_error')
       return
     }
 
     const validation = validate()
     if (validation === true) {
-      clearErrors(fieldNamePrefix + '_error')
+      clearErrors((fieldNamePrefix + '_error') as '_error')
     } else if (typeof validation === 'string') {
-      setError(fieldNamePrefix + '_error', {
+      setError((fieldNamePrefix + '_error') as '_error', {
         type: 'custom',
         message: validation,
       })
@@ -237,21 +258,24 @@ export const ManageStakingComponent: ActionComponent<
         <div className="flex flex-col gap-2 xs:flex-row">
           {/* Choose type of stake operation. */}
           <SelectInput
-            containerClassName="shrink-0"
+            containerClassName={clsx(
+              'shrink-0',
+              type === StakingActionType.SetWithdrawAddress && 'grow'
+            )}
             defaultValue={stakeActions[0].type}
             disabled={!isCreating}
-            error={errors?.stakeType}
-            fieldName={fieldNamePrefix + 'stakeType'}
+            error={errors?.type}
+            fieldName={(fieldNamePrefix + 'type') as 'type'}
             onChange={(value) => {
               // If setting to non-delegate stake type and currently set
               // validator is not one we are staked to, set back to first staked
               // validator in list.
               if (
-                value !== StakeType.Delegate &&
+                value !== StakingActionType.Delegate &&
                 !stakedValidatorAddresses.has(validator)
               ) {
                 setValue(
-                  fieldNamePrefix + 'validator',
+                  (fieldNamePrefix + 'validator') as 'validator',
                   stakes.length > 0 ? stakes[0].validator.address : ''
                 )
               }
@@ -265,79 +289,102 @@ export const ManageStakingComponent: ActionComponent<
             ))}
           </SelectInput>
 
-          {/* Choose source validator. */}
-          <ValidatorPicker
-            displayClassName="grow min-w-0"
-            onSelect={({ address }) =>
-              setValue(fieldNamePrefix + 'validator', address)
-            }
-            readOnly={!isCreating}
-            selectedAddress={validator}
-            stakes={stakes}
-            token={nativeToken}
-            validators={
-              stakeType === StakeType.Delegate
-                ? validators
-                : // If not delegating, source validator must be one we are staked with.
-                  stakes.map(({ validator }) => validator)
-            }
-          />
+          {type !== StakingActionType.SetWithdrawAddress && (
+            // Choose source validator.
+            <ValidatorPicker
+              displayClassName="grow min-w-0"
+              onSelect={({ address }) =>
+                setValue(
+                  (fieldNamePrefix + 'validator') as 'validator',
+                  address
+                )
+              }
+              readOnly={!isCreating}
+              selectedAddress={validator}
+              stakes={stakes}
+              token={nativeToken}
+              validators={
+                type === StakingActionType.Delegate
+                  ? validators
+                  : // If not delegating, source validator must be one we are staked with.
+                    stakes.map(({ validator }) => validator)
+              }
+            />
+          )}
         </div>
 
-        {/* If not claiming (i.e. withdrawing reward), show amount input. */}
-        {stakeType !== StakeType.WithdrawDelegatorReward && (
-          <NumberInput
-            containerClassName="grow"
-            disabled={!isCreating}
-            error={errors?.amount}
-            fieldName={fieldNamePrefix + 'amount'}
-            max={maxAmount}
-            min={minAmount}
-            register={register}
-            setValue={setValue}
-            step={minAmount}
-            unit={'$' + nativeToken.symbol}
-            validation={[validateRequired, validatePositive]}
-            watch={watch}
-          />
-        )}
+        {/* If not withdrawing reward or updating withdraw address, show amount input. */}
+        {type !== StakingActionType.WithdrawDelegatorReward &&
+          type !== StakingActionType.SetWithdrawAddress && (
+            <NumberInput
+              containerClassName="grow"
+              disabled={!isCreating}
+              error={errors?.amount}
+              fieldName={(fieldNamePrefix + 'amount') as 'amount'}
+              max={maxAmount}
+              min={minAmount}
+              register={register}
+              setValue={setValue}
+              step={minAmount}
+              unit={'$' + nativeToken.symbol}
+              validation={[validateRequired, validatePositive]}
+              watch={watch}
+            />
+          )}
       </div>
 
-      {(stakeType !== StakeType.WithdrawDelegatorReward ||
-        // If claiming rewards, show pending rewards if not executed, and
-        // claimed rewards if executed.
-        (executed && !!claimedRewards) ||
-        (!executed && sourceValidatorPendingRewards > 0)) && (
-        <div className="flex flex-row items-center gap-2">
-          <p className="secondary-text font-semibold">
-            {stakeType === StakeType.Delegate
-              ? t('title.balance')
-              : stakeType === StakeType.WithdrawDelegatorReward
-              ? executed
-                ? t('info.claimedRewards')
-                : t('info.pendingRewards')
-              : // stakeType === StakeType.Undelegate || stakeType === StakeType.Redelegate
-                t('title.staked')}
-            :
-          </p>
-
-          <TokenAmountDisplay
-            amount={
-              stakeType === StakeType.WithdrawDelegatorReward
-                ? executed
-                  ? claimedRewards ?? 0
-                  : sourceValidatorPendingRewards
-                : maxAmount
+      {type === StakingActionType.SetWithdrawAddress && (
+        <div className="flex flex-col gap-1">
+          <InputLabel name={t('form.withdrawAddress')} />
+          <AddressInput
+            disabled={!isCreating}
+            error={errors?.withdrawAddress}
+            fieldName={
+              (fieldNamePrefix + 'withdrawAddress') as 'withdrawAddress'
             }
-            decimals={nativeToken.decimals}
-            iconUrl={nativeToken.imageUrl}
-            showFullAmount
-            symbol={nativeToken.symbol}
+            register={register}
+            validation={[makeValidateAddress(bech32Prefix)]}
           />
+          <InputErrorMessage error={errors?.withdrawAddress} />
         </div>
       )}
 
-      {stakeType === StakeType.Undelegate && isCreating && (
+      {type !== StakingActionType.SetWithdrawAddress &&
+        (type !== StakingActionType.WithdrawDelegatorReward ||
+          // If claiming rewards, show pending rewards if not executed, and
+          // claimed rewards if executed.
+          (executed && !!claimedRewards) ||
+          (!executed && sourceValidatorPendingRewards > 0)) && (
+          <div className="flex flex-row items-center gap-2">
+            <p className="secondary-text font-semibold">
+              {type === StakingActionType.Delegate
+                ? t('title.balance')
+                : type === StakingActionType.WithdrawDelegatorReward
+                ? executed
+                  ? t('info.claimedRewards')
+                  : t('info.pendingRewards')
+                : // type === StakingActionType.Undelegate || type === StakingActionType.Redelegate
+                  t('title.staked')}
+              :
+            </p>
+
+            <TokenAmountDisplay
+              amount={
+                type === StakingActionType.WithdrawDelegatorReward
+                  ? executed
+                    ? claimedRewards ?? 0
+                    : sourceValidatorPendingRewards
+                  : maxAmount
+              }
+              decimals={nativeToken.decimals}
+              iconUrl={nativeToken.imageUrl}
+              showFullAmount
+              symbol={nativeToken.symbol}
+            />
+          </div>
+        )}
+
+      {type === StakingActionType.Undelegate && isCreating && (
         <p className="caption-text">
           {nativeUnstakingDurationSeconds
             ? t('info.unstakingDurationExplanation', {
@@ -348,12 +395,15 @@ export const ManageStakingComponent: ActionComponent<
       )}
 
       {/* If redelegating, show selection for destination validator. */}
-      {stakeType === StakeType.Redelegate && (
+      {type === StakingActionType.Redelegate && (
         <div className="flex flex-col items-start gap-1">
           <InputLabel name={t('form.toValidator')} />
           <ValidatorPicker
             onSelect={({ address }) =>
-              setValue(fieldNamePrefix + 'toValidator', address)
+              setValue(
+                (fieldNamePrefix + 'toValidator') as 'toValidator',
+                address
+              )
             }
             readOnly={!isCreating}
             selectedAddress={toValidator}

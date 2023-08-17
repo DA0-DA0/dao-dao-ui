@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 
 import {
   NestedActionsEditor,
-  NestedActionsEditorFormData,
   NestedActionsEditorOptions,
   NestedActionsRenderer,
   NestedActionsRendererProps,
@@ -12,6 +11,7 @@ import {
 import {
   AddressInputProps,
   CosmosMsgFor_Empty,
+  NestedActionsEditorFormData,
   StatefulEntityDisplayProps,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
