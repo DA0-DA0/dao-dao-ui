@@ -2,6 +2,7 @@ import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/proto-signing'
 import { v4 as uuidv4 } from 'uuid'
 
+import { MsgTransfer } from '@dao-dao/protobuf/codegen/ibc/applications/transfer/v1/tx'
 import { PolytoneConnection } from '@dao-dao/types'
 import {
   BankMsg,
@@ -396,4 +397,21 @@ export const getFundsUsedInCwMessage = (msg: CosmosMsgFor_Empty): Coin[] =>
       : 'instantiate2' in msg.wasm
       ? msg.wasm.instantiate2.funds
       : []
+    : isCosmWasmStargateMsg(msg)
+    ? (() => {
+        try {
+          const decoded = decodeStargateMessage(msg).stargate
+          switch (decoded.typeUrl) {
+            // Support IBC spends.
+            case MsgTransfer.typeUrl: {
+              const data = decoded.value as MsgTransfer
+              if (data.token) {
+                return [data.token]
+              }
+            }
+          }
+        } catch {}
+
+        return []
+      })()
     : []

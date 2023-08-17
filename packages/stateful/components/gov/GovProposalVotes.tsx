@@ -67,6 +67,7 @@ const InnerGovProposalVotes = ({ proposalId }: GovProposalVotesProps) => {
     <PaginatedProposalVotes
       EntityDisplay={EntityDisplay}
       VoteDisplay={GovProposalVoteDisplay}
+      hideDownload
       hideVotedAt
       pagination={{
         page,
