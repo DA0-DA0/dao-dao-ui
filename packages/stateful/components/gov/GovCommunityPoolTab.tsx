@@ -13,7 +13,7 @@ import {
 
 import { GovTokenCard } from './GovTokenCard'
 
-export const GovTreasuryAndNftsTab = () => {
+export const GovCommunityPoolTab = () => {
   const { chain_id: chainId } = useChain()
 
   const tokenBalances = useCachedLoading(
