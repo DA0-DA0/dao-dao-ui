@@ -1,5 +1,6 @@
 import { fromBase64 } from '@cosmjs/encoding'
 import { EncodeObject } from '@cosmjs/proto-signing'
+import { SigningStargateClient } from '@cosmjs/stargate'
 import {
   BookOutlined,
   Close,
@@ -76,6 +77,7 @@ import {
   formatTime,
   getGovProposalPath,
   getImageUrlForChainId,
+  getSignerOptions,
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
   processError,
@@ -100,7 +102,8 @@ export const NewGovProposal = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const chainContext = useSupportedChainContext()
-  const { isWalletConnected, getSigningStargateClient } = useWallet()
+  const { isWalletConnected, getOfflineSignerDirect, chain, chainWallet } =
+    useWallet()
 
   const [loading, setLoading] = useState(false)
 
@@ -215,7 +218,7 @@ export const NewGovProposal = () => {
             return
           }
 
-          if (!isWalletConnected) {
+          if (!isWalletConnected || !chainWallet) {
             toast.error(t('error.logInToContinue'))
             return
           }
@@ -282,7 +285,14 @@ export const NewGovProposal = () => {
 
           setLoading(true)
           try {
-            const stargateClient = await getSigningStargateClient()
+            // TODO: Fix amino support.
+            const offlineSignerDirect = await getOfflineSignerDirect()
+            const stargateClient =
+              await SigningStargateClient.connectWithSigner(
+                await chainWallet.getRpcEndpoint(),
+                offlineSignerDirect,
+                getSignerOptions(chain)
+              )
 
             const { events } = await stargateClient.signAndBroadcast(
               walletAddress,
@@ -378,10 +388,12 @@ export const NewGovProposal = () => {
         },
       [
         isWalletConnected,
+        chain,
+        chainWallet,
         t,
         transformGovernanceProposalActionDataToCosmos,
         walletAddress,
-        getSigningStargateClient,
+        getOfflineSignerDirect,
         chainContext.chainId,
         chainContext.chain.pretty_name,
         chainContext.config.name,

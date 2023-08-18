@@ -1,5 +1,3 @@
-import { Chain } from '@chain-registry/types'
-import { GasPrice } from '@cosmjs/stargate'
 import { wallets as coin98Wallets } from '@cosmos-kit/coin98'
 import { Endpoints, SignerOptions } from '@cosmos-kit/core'
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
@@ -37,11 +35,9 @@ import {
   MAINNET,
   SITE_URL,
   WEB3AUTH_CLIENT_ID,
-  aminoTypes,
   getChainForChainId,
-  getNativeTokenForChainId,
+  getSignerOptions,
   maybeGetKeplrChainInfo,
-  typesRegistry,
 } from '@dao-dao/utils'
 
 import { useSyncWalletSigner, useWallet } from '../hooks'
@@ -106,32 +102,6 @@ export const WalletProvider = ({
       }),
     [setWeb3AuthPrompt]
   )
-
-  const getSignerOptions = ({ chain_id, fees }: Chain) => {
-    let gasPrice
-    try {
-      const nativeToken = getNativeTokenForChainId(chain_id)
-      const feeToken = fees?.fee_tokens.find(
-        ({ denom }) => denom === nativeToken.denomOrAddress
-      )
-      const gasPriceAmount =
-        feeToken?.average_gas_price ??
-        feeToken?.high_gas_price ??
-        feeToken?.low_gas_price ??
-        feeToken?.fixed_min_gas_price
-
-      gasPrice =
-        feeToken && feeToken.denom.length >= 3 && gasPriceAmount !== undefined
-          ? GasPrice.fromString(gasPriceAmount + feeToken.denom)
-          : undefined
-    } catch {}
-
-    return {
-      gasPrice,
-      registry: typesRegistry,
-      aminoTypes,
-    }
-  }
 
   const signerOptions: SignerOptions = {
     // cosmos-kit has an older version of the package. This is a workaround.
