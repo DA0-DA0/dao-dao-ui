@@ -14,11 +14,11 @@ import { useSetRecoilState } from 'recoil'
 import { walletChainIdAtom } from '@dao-dao/state'
 import {
   ChainSwitcher,
+  GovCommunityPoolTab,
   GovInfoBar,
   GovPageWrapper,
   GovPageWrapperProps,
   GovProposalsTab,
-  GovTreasuryAndNftsTab,
   LinkWrapper,
   ProfileHomeCard,
   SuspenseLoader,
@@ -57,8 +57,8 @@ const InnerGovHome = () => {
     },
     {
       id: DaoTabId.Treasury,
-      label: t('title.treasuryAndNfts'),
-      Component: GovTreasuryAndNftsTab,
+      label: t('title.communityPool'),
+      Component: GovCommunityPoolTab,
       Icon: AccountBalanceWalletOutlined,
     },
   ]).current
