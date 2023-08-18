@@ -150,6 +150,7 @@ export const useWalletInfo = ({
   const walletProfileDataValue = useRecoilValue(
     walletProfileDataSelector({
       address: address ?? '',
+      chainId,
     })
   )
 

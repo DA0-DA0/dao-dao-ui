@@ -41,6 +41,7 @@ export const makeProps = (): DaoMemberCardProps => ({
     address: 'juno1abczhsdyechxcjz90y',
     profile: {
       name: 'Modern-Edamame',
+      nameSource: 'pfpk',
       imageUrl: '/noah.jpg',
       nft: null,
       nonce: 0,
@@ -67,6 +68,7 @@ Loading.args = {
     address: Default.args.address!,
     profile: {
       name: '',
+      nameSource: 'pfpk',
       imageUrl: '',
       nft: null,
       nonce: 0,
