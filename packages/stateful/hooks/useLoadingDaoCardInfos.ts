@@ -42,10 +42,14 @@ export const useLoadingDaoCardInfos = (
       }
 }
 
-export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
-  DaoCardInfo[]
-> => {
-  const chains = getSupportedChains()
+export const useLoadingFeaturedDaoCardInfos = (
+  // If passed, will only load DAOs from this chain. Otherwise, will load
+  // from all chains.
+  chainId?: string
+): LoadingData<DaoCardInfo[]> => {
+  const chains = getSupportedChains().filter(
+    ({ chain: { chain_id } }) => !chainId || chain_id === chainId
+  )
   const featuredDaos = useCachedLoading(
     waitForAll(
       chains.map(({ chain }) => indexerFeaturedDaosSelector(chain.chain_id))
@@ -72,10 +76,14 @@ export const useLoadingFeaturedDaoCardInfos = (): LoadingData<
   )
 }
 
-export const useLoadingFollowingDaoCardInfos = (): LoadingData<
-  DaoCardInfo[]
-> => {
-  const chains = getSupportedChains()
+export const useLoadingFollowingDaoCardInfos = (
+  // If passed, will only load DAOs from this chain. Otherwise, will load
+  // from all chains.
+  chainId?: string
+): LoadingData<DaoCardInfo[]> => {
+  const chains = getSupportedChains().filter(
+    ({ chain: { chain_id } }) => !chainId || chain_id === chainId
+  )
 
   const { hexPublicKey } = useWallet({
     loadAccount: true,
