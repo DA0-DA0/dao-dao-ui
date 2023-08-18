@@ -134,7 +134,6 @@ export const WalletProvider = ({
   }
 
   const signerOptions: SignerOptions = {
-    preferredSignType: () => 'direct',
     // cosmos-kit has an older version of the package. This is a workaround.
     signingStargate: getSignerOptions as SignerOptions['signingStargate'],
     // cosmos-kit has an older version of the package. This is a workaround.
