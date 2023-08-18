@@ -2,7 +2,7 @@ import { Buffer } from 'buffer'
 
 import { Chain, IBCInfo } from '@chain-registry/types'
 import { fromBech32, fromHex, toBech32 } from '@cosmjs/encoding'
-import { decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
+import { GasPrice, decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
 import { Bech32Address } from '@keplr-wallet/cosmos'
 import { ChainInfo, FeeCurrency } from '@keplr-wallet/types'
 import { assets, chains, ibc } from 'chain-registry'
@@ -24,6 +24,7 @@ import {
 import { getChainAssets } from './assets'
 import { CHAIN_ENDPOINTS, MAINNET, SUPPORTED_CHAINS } from './constants'
 import { getFallbackImage } from './getFallbackImage'
+import { aminoTypes, typesRegistry } from './messages/protobuf'
 
 export const getRpcForChainId = (chainId: string): string => {
   let rpc = (
@@ -480,4 +481,30 @@ export const cosmosSdkVersionIs47OrHigher = (version: string) => {
     (Number(major) >= 0 && Number(minor) >= 47 && Number(patch) >= 0) ||
     (Number(major) >= 1 && Number(minor) >= 0 && Number(patch) >= 0)
   )
+}
+
+export const getSignerOptions = ({ chain_id, fees }: Chain) => {
+  let gasPrice
+  try {
+    const nativeToken = getNativeTokenForChainId(chain_id)
+    const feeToken = fees?.fee_tokens.find(
+      ({ denom }) => denom === nativeToken.denomOrAddress
+    )
+    const gasPriceAmount =
+      feeToken?.average_gas_price ??
+      feeToken?.high_gas_price ??
+      feeToken?.low_gas_price ??
+      feeToken?.fixed_min_gas_price
+
+    gasPrice =
+      feeToken && feeToken.denom.length >= 3 && gasPriceAmount !== undefined
+        ? GasPrice.fromString(gasPriceAmount + feeToken.denom)
+        : undefined
+  } catch {}
+
+  return {
+    gasPrice,
+    registry: typesRegistry,
+    aminoTypes,
+  }
 }
