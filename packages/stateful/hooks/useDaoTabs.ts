@@ -3,13 +3,19 @@ import {
   FiberSmartRecordOutlined,
   HomeOutlined,
   HowToVoteOutlined,
+  WebOutlined,
 } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { DaoTabId, DaoTabWithComponent, WidgetLocation } from '@dao-dao/types'
 
-import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '../components'
+import {
+  BrowserTab,
+  ProposalsTab,
+  SubDaosTab,
+  TreasuryAndNftsTab,
+} from '../components'
 import { useVotingModuleAdapter } from '../voting-module-adapter'
 import { useWidgets } from '../widgets'
 
@@ -74,6 +80,12 @@ export const useDaoTabs = ({
       label: t('title.subDaos'),
       Component: SubDaosTab,
       Icon: FiberSmartRecordOutlined,
+    },
+    {
+      id: DaoTabId.Browser,
+      label: t('title.browser'),
+      Component: BrowserTab,
+      Icon: WebOutlined,
     },
     ...(extraTabs?.map(({ labelI18nKey, ...tab }) => ({
       label: t(labelI18nKey),
