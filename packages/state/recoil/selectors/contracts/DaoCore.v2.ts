@@ -1040,9 +1040,6 @@ export const polytoneProxiesSelector = selectorFamily<
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'daoCore/polytoneProxies',
-          args: {
-            address: queryClientParams.contractAddress,
-          },
         })
       )
       if (noteToRemoteProxy) {
