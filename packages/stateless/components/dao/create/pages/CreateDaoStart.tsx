@@ -104,10 +104,10 @@ export const CreateDaoStart = ({
               selected={watch('creator.id') === id}
               supplies={t(suppliesI18nKey)}
               underDevelopment={
-                // Osmosis only supports multisigs right now.
-                (chainId === ChainId.OsmosisMainnet ||
-                  chainId === ChainId.OsmosisTestnet) &&
-                id !== MembershipBasedCreatorId
+                id !== MembershipBasedCreatorId &&
+                // Only Juno supports non-multisigs right now.
+                chainId !== ChainId.JunoMainnet &&
+                chainId !== ChainId.JunoTestnet
               }
             />
           )

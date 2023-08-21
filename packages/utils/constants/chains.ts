@@ -223,6 +223,50 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoVotingNativeStaked: -1,
       },
     },
+    [ChainId.StargazeTestnet]: {
+      name: 'stargaze',
+      mainnet: false,
+      factoryContractAddress:
+        'stars1ajrde5kky0c3xspjthqncxd72qmyu5trfsspn6ndk892gyqwakzsdjmegx',
+      supportsV1GovProposals: false,
+      indexes: {
+        search: 'stargaze_testnet_daos',
+        // Use same as mainnet.
+        featured: 'stargaze_featured_daos',
+      },
+      explorerUrlTemplates: {
+        tx: 'https://testnet.ping.pub/stargaze/tx/REPLACE',
+        gov: 'https://testnet.ping.pub/stargaze/gov',
+        govProp: 'https://testnet.ping.pub/stargaze/gov/REPLACE',
+        wallet: 'https://testnet.ping.pub/stargaze/account/REPLACE',
+      },
+      codeIds: {
+        // https://github.com/CosmWasm/cw-plus
+        Cw20Base: -1, // v0.16
+        Cw4Group: 2887, // v0.16
+        // https://github.com/CosmWasm/cw-nfts
+        // TODO: sg721?
+        Cw721Base: -1, // v0.16
+
+        // ContractVersion.V210
+        // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
+        Cw20Stake: -1,
+        CwAdminFactory: 2888,
+        CwPayrollFactory: 2889,
+        CwTokenSwap: 2890,
+        CwVesting: 2891,
+        DaoCore: 2892,
+        DaoMigrator: -1,
+        DaoPreProposeMultiple: 2882,
+        DaoPreProposeSingle: 2883,
+        DaoProposalMultiple: 2884,
+        DaoProposalSingle: 2885,
+        DaoVotingCw20Staked: -1,
+        DaoVotingCw4: 2886,
+        DaoVotingCw721Staked: -1,
+        DaoVotingNativeStaked: -1,
+      },
+    },
   }
 
 export const POLYTONE_CONFIG_PER_CHAIN: [ChainId, PolytoneConfig][] =
@@ -259,5 +303,9 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.StargazeMainnet]: {
     rpc: 'https://rpc.stargaze-apis.com',
     rest: 'https://rest.stargaze-apis.com',
+  },
+  [ChainId.StargazeTestnet]: {
+    rpc: 'https://rpc.elgafar-1.stargaze-apis.com',
+    rest: 'https://rest.elgafar-1.stargaze-apis.com',
   },
 }
