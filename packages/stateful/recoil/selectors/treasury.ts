@@ -1,11 +1,11 @@
-import { noWait, selectorFamily } from 'recoil'
+import { noWait, selectorFamily, waitForAny } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
 } from '@dao-dao/state'
-import { TokenCardInfo, WithChainId } from '@dao-dao/types'
+import { GenericTokenBalance, TokenCardInfo, WithChainId } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
@@ -40,30 +40,43 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
         )
       )
 
-      const allNativeBalances = [
+      const allNativeBalancesToLoad = [
         // Native.
         {
           owner: coreAddress,
           chainId,
-          balances: get(
-            nativeBalancesSelector({
-              address: coreAddress,
-              chainId,
-            })
-          ),
+          balancesSelector: nativeBalancesSelector({
+            address: coreAddress,
+            chainId,
+          }),
         },
         // Polytone.
         ...polytoneProxies.map(([chainId, proxy]) => ({
           owner: proxy,
           chainId,
-          balances: get(
-            nativeBalancesSelector({
-              address: proxy,
-              chainId,
-            })
-          ),
+          balancesSelector: nativeBalancesSelector({
+            address: proxy,
+            chainId,
+          }),
         })),
       ]
+      const allNativeBalancesValues = get(
+        waitForAny(
+          allNativeBalancesToLoad.map(
+            ({ balancesSelector }) => balancesSelector
+          )
+        )
+      )
+      const allNativeBalances = allNativeBalancesToLoad.map(
+        ({ balancesSelector: _, ...params }, index) => ({
+          ...params,
+          balances:
+            allNativeBalancesValues[index].state === 'hasValue'
+              ? (allNativeBalancesValues[index]
+                  .contents as GenericTokenBalance[])
+              : [],
+        })
+      )
 
       // Only cw20s on native chain.
       const cw20sLoadable = get(

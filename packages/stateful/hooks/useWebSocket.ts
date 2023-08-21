@@ -198,7 +198,7 @@ export const useOnWebSocketMessage = (
 
       if (!skipWait) {
         // Wait a litle before executing the callback, to give time for the
-        // block to fithnalize and the indexer to update.
+        // block to finalize and the indexer to update.
         await new Promise((resolve) => setTimeout(resolve, 7000))
       }
 
