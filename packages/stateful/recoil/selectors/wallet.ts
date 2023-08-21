@@ -189,7 +189,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
           chainId,
         })
       )
-      const cw20ContractsLoadable: Loadable<ContractWithBalance[]> =
+      const cw20ContractsLoadable: Loadable<ContractWithBalance[] | undefined> =
         get(
           noWait(
             queryWalletIndexerSelector({
@@ -200,10 +200,10 @@ export const walletTokenCardInfosSelector = selectorFamily<
               required: true,
             })
           )
-        ) ?? []
+        )
       const cw20Contracts =
         cw20ContractsLoadable.state === 'hasValue'
-          ? cw20ContractsLoadable.contents
+          ? cw20ContractsLoadable.contents ?? []
           : []
       const cw20s = get(
         waitForAll(
