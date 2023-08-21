@@ -1,4 +1,4 @@
-import { selectorFamily } from 'recoil'
+import { noWait, selectorFamily } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
@@ -66,13 +66,17 @@ export const treasuryTokenCardInfosSelector = selectorFamily<
       ]
 
       // Only cw20s on native chain.
-      const cw20s = get(
-        DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
-          contractAddress: coreAddress,
-          chainId,
-          governanceTokenAddress: cw20GovernanceTokenAddress,
-        })
+      const cw20sLoadable = get(
+        noWait(
+          DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
+            contractAddress: coreAddress,
+            chainId,
+            governanceTokenAddress: cw20GovernanceTokenAddress,
+          })
+        )
       )
+      const cw20s =
+        cw20sLoadable.state === 'hasValue' ? cw20sLoadable.contents : []
 
       const infos: TokenCardInfo[] = [
         ...allNativeBalances.flatMap(({ owner, chainId, balances }) =>
