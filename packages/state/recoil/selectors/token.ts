@@ -1,4 +1,4 @@
-import { constSelector, selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll } from 'recoil'
 
 import {
   AmountWithTimestampAndDenom,
@@ -37,40 +37,45 @@ export const genericTokenSelector = selectorFamily<
   key: 'genericToken',
   get:
     ({ type, denomOrAddress, chainId }) =>
-    async ({ get }) => {
-      let tokenInfo = get(
+    ({ get }) => {
+      let tokenInfo =
         type === TokenType.Cw20
-          ? Cw20BaseSelectors.tokenInfoSelector({
-              contractAddress: denomOrAddress,
-              chainId,
-              params: [],
-            })
+          ? get(
+              Cw20BaseSelectors.tokenInfoSelector({
+                contractAddress: denomOrAddress,
+                chainId,
+                params: [],
+              })
+            )
           : // Native factory tokens.
           type === TokenType.Native &&
             isValidTokenFactoryDenom(
               denomOrAddress,
               getChainForChainId(chainId).bech32_prefix
             )
-          ? nativeDenomMetadataInfoSelector({
-              denom: denomOrAddress,
-              chainId,
-            })
+          ? get(
+              nativeDenomMetadataInfoSelector({
+                denom: denomOrAddress,
+                chainId,
+              })
+            )
           : // Native token or invalid type.
-            constSelector(undefined)
-      )
+            undefined
 
       // If native non-factory token, try to get the token from the asset list.
       if (!tokenInfo) {
         try {
           return getTokenForChainIdAndDenom(chainId, denomOrAddress, false)
         } catch {
-          // If that fails, try to fetch from chain.
-          tokenInfo = get(
-            nativeDenomMetadataInfoSelector({
-              denom: denomOrAddress,
-              chainId,
-            })
-          )
+          // If that fails, try to fetch from chain if not IBC asset.
+          tokenInfo = denomOrAddress.startsWith('ibc/')
+            ? undefined
+            : get(
+                nativeDenomMetadataInfoSelector({
+                  denom: denomOrAddress,
+                  chainId,
+                })
+              )
 
           // If that fails, return placeholder token.
           if (!tokenInfo) {

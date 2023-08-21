@@ -1,4 +1,10 @@
-import { atomFamily, selectorFamily, waitForAll } from 'recoil'
+import {
+  Loadable,
+  atomFamily,
+  noWait,
+  selectorFamily,
+  waitForAll,
+} from 'recoil'
 
 import {
   genericTokenSelector,
@@ -183,16 +189,22 @@ export const walletTokenCardInfosSelector = selectorFamily<
           chainId,
         })
       )
-      const cw20Contracts: ContractWithBalance[] =
+      const cw20ContractsLoadable: Loadable<ContractWithBalance[] | undefined> =
         get(
-          queryWalletIndexerSelector({
-            chainId,
-            walletAddress,
-            formula: 'tokens/list',
-            id,
-            required: true,
-          })
-        ) ?? []
+          noWait(
+            queryWalletIndexerSelector({
+              chainId,
+              walletAddress,
+              formula: 'tokens/list',
+              id,
+              required: true,
+            })
+          )
+        )
+      const cw20Contracts =
+        cw20ContractsLoadable.state === 'hasValue'
+          ? cw20ContractsLoadable.contents ?? []
+          : []
       const cw20s = get(
         waitForAll(
           cw20Contracts.map((c) =>
