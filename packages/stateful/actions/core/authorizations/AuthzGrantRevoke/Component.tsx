@@ -369,10 +369,18 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                           })
                       )
 
-                      return (
-                        msgs.every((msg) => validateCosmosMsg(msg).valid) ||
-                        t('error.invalidExecuteMessage')
-                      )
+                      msgs.forEach((msg, index) => {
+                        try {
+                          validateCosmosMsg(msg)
+                        } catch (err) {
+                          return (
+                            `Message ${index + 1}: ` +
+                            (err instanceof Error ? err.message : `${err}`)
+                          )
+                        }
+                      })
+
+                      return true
                     },
                   ]}
                 />

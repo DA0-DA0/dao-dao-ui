@@ -8,6 +8,7 @@ export class AjvInvalidMessageError extends Error {
     errors: ErrorObject<string, Record<string, any>, unknown>[],
     t?: TFunction
   ) {
+    console.log(errors)
     super(
       (t?.('error.invalidMessage') ?? 'Invalid message') +
         ': ' +
@@ -16,8 +17,7 @@ export class AjvInvalidMessageError extends Error {
             ({ instancePath, message }) =>
               instancePath && message && `${instancePath} ${message}`
           )
-          .filter(Boolean)
-          .join(', ')
+          .filter(Boolean)[0]
     )
     this.name = 'InvalidMessageError'
     this.errors = errors
