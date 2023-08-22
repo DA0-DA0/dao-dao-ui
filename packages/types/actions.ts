@@ -154,6 +154,8 @@ export type UseDecodedCosmosMsg<D extends {} = any> = (
   msg: Record<string, any>
 ) => DecodeCosmosMsgNoMatch | DecodeCosmosMsgMatch<D>
 
+export type UseHideFromPicker = () => boolean
+
 export interface Action<Data extends {} = any, Options extends {} = any> {
   key: ActionKey
   Icon: ComponentType
@@ -188,6 +190,12 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   useTransformToCosmos: UseTransformToCosmos<Data>
   // Hook to make function to convert decoded msg to form display fields.
   useDecodedCosmosMsg: UseDecodedCosmosMsg<Data>
+  // Hook to determine whether or not the action should be hidden from the
+  // creation picker. If true, the action will not be shown in the list of
+  // actions to create, but it will still match and render in existing contexts.
+  // This is a hook version of the `hideFromPicker` option above. If either is
+  // true, it will be hidden.
+  useHideFromPicker?: UseHideFromPicker
 }
 
 export type ActionCategory = {

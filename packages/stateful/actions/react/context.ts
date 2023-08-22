@@ -1,4 +1,5 @@
 import { createContext, useContext, useMemo } from 'react'
+import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
   ActionCategoryWithLabel,
@@ -30,7 +31,14 @@ const useActionsContext = (): IActionsContext => {
 export const useActionCategories = ({
   isCreating = true,
 }: UseActionsOptions = {}): ActionCategoryWithLabel[] => {
-  const categories = useActionsContext().categories
+  const categories = useActionsContext().categories.map((category) => ({
+    ...category,
+    actions: category.actions.map((action) => ({
+      ...action,
+      // Add hook to `hideFromPicker` property.
+      hideFromPicker: !!action.useHideFromPicker?.() || action.hideFromPicker,
+    })),
+  }))
 
   return useMemo(
     () =>
@@ -48,16 +56,15 @@ export const useActionCategories = ({
         )
         // Filter out categories with no actions.
         .filter((c) => c.actions.length > 0),
-    [categories, isCreating]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    useDeepCompareMemoize([categories, isCreating])
   )
 }
 
-// Get flatten list of actions from categories ordered for matching messages to
-// actions.
-export const useActionsForMatching = (
-  ...args: Parameters<typeof useActionCategories>
-) => {
-  const categories = useActionCategories(...args)
+// Get flattened list of actions from categories ordered for matching messages
+// to actions.
+export const useActionsForMatching = () => {
+  const categories = useActionCategories({ isCreating: false })
 
   return useMemo(
     () =>
@@ -94,6 +101,7 @@ export const useLoadedActionsAndCategories = (
   categories: ActionCategoryWithLabel[]
 } => {
   const categories = useActionCategories(...args)
+
   // Load actions by calling hooks necessary to using the action. This calls the
   // hooks in the same order every time, as action categories do not change, so
   // this is a safe use of hooks. Get all action categories, even those

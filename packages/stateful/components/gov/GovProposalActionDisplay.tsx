@@ -47,9 +47,7 @@ const InnerGovProposalActionDisplay = ({
 }: GovProposalActionDisplayProps) => {
   const { t } = useTranslation()
 
-  const actionsForMatching = useActionsForMatching({
-    isCreating: false,
-  })
+  const actionsForMatching = useActionsForMatching()
 
   const decodedMessages = useMemo(
     () =>
