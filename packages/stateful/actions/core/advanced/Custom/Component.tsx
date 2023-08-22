@@ -11,10 +11,6 @@ import {
   validateCosmosMsg,
 } from '@dao-dao/utils'
 
-import { Trans } from '../../../../components/Trans'
-
-const INVALID_COSMOS_MSG = 'INVALID_COSMOS_MSG'
-
 export const CustomComponent: ActionComponent = ({
   fieldNamePrefix,
   errors,
@@ -44,36 +40,35 @@ export const CustomComponent: ActionComponent = ({
             if (msg.stargate) {
               msg = makeStargateMessage(msg)
             }
-            const validCosmos = validateCosmosMsg(msg)
 
-            if (!validCosmos.valid) {
-              return INVALID_COSMOS_MSG
-            } else {
-              return true
+            try {
+              validateCosmosMsg(msg)
+            } catch (err) {
+              return err instanceof Error ? err.message : `${err}`
             }
+
+            return true
           },
         ]}
       />
 
       {errors?.message ? (
-        <p className="flex items-center gap-1 text-sm text-text-interactive-error">
-          <Close className="!h-5 !w-5" />{' '}
-          {errors.message.message === INVALID_COSMOS_MSG ? (
-            <Trans i18nKey="error.invalidCosmosMessage">
-              Invalid{' '}
-              <a
-                className="link underline"
-                href="https://github.com/CosmWasm/cosmwasm/blob/d4505011e35a8877fb95e7d14357f2b8693c57bb/packages/std/schema/cosmos_msg.json"
-                rel="noreferrer"
-                target="_blank"
-              >
-                Cosmos message
-              </a>
-            </Trans>
-          ) : (
+        <div className="flex flex-col gap-1">
+          <p className="flex items-center gap-1 text-sm text-text-interactive-error">
+            <Close className="!h-5 !w-5" />{' '}
             <span>{errors.message.message}</span>
-          )}
-        </p>
+          </p>
+
+          <a
+            className="link ml-6 underline"
+            href="https://github.com/CosmWasm/cosmwasm/blob/d4505011e35a8877fb95e7d14357f2b8693c57bb/packages/std/schema/cosmos_msg.json"
+            rel="noreferrer"
+            target="_blank"
+            // eslint-disable-next-line i18next/no-literal-string
+          >
+            Cosmos message format
+          </a>
+        </div>
       ) : (
         <p className="flex items-center gap-1 text-sm text-text-interactive-valid">
           <Check className="!h-5 !w-5" /> {t('info.jsonIsValid')}
