@@ -6,7 +6,12 @@ import {
   contractVersionSelector,
   isContractSelector,
 } from '@dao-dao/state/recoil'
-import { Loader, UnicornEmoji, useCachedLoadable } from '@dao-dao/stateless'
+import {
+  Loader,
+  UnicornEmoji,
+  useCachedLoadable,
+  useCachedLoading,
+} from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionContextType,
@@ -16,6 +21,7 @@ import {
   LoadingData,
   UseDecodedCosmosMsg,
   UseDefaults,
+  UseHideFromPicker,
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import { PreProposeInfo } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
@@ -146,24 +152,27 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
   }
 
   const useDefaults: UseDefaults<UpgradeV1ToV2Data> = () => {
-    const potentialSubDaos = useRecoilValueLoadable(
-      daoPotentialSubDaosSelector({
-        coreAddress: address,
-        chainId: chain.chain_id,
-      })
+    // Load sub DAOs for registering as the current DAO upgrades to v2. If this
+    // DAO is not on v1, there are no SubDAOs to load.
+    const potentialSubDaos = useCachedLoading(
+      context.info.coreVersion === ContractVersion.V1
+        ? daoPotentialSubDaosSelector({
+            coreAddress: address,
+            chainId: chain.chain_id,
+          })
+        : undefined,
+      []
     )
 
     return {
       targetAddress:
         // If DAO is not on v1, don't default to the DAO address.
         context.info.coreVersion === ContractVersion.V1 ? address : '',
-      subDaos:
-        context.info.coreVersion === ContractVersion.V1 &&
-        potentialSubDaos.state === 'hasValue'
-          ? potentialSubDaos.contents.map((addr) => ({
-              addr,
-            }))
-          : [],
+      subDaos: !potentialSubDaos.loading
+        ? potentialSubDaos.data.map((addr) => ({
+            addr,
+          }))
+        : [],
     }
   }
 
@@ -394,6 +403,18 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
           match: false,
         }
 
+  // Hide from picker if the current DAO is not on v1 and there are no SubDAOs
+  // on v1. Thus, there is nothing to upgrade.
+  const useHideFromPicker: UseHideFromPicker = () => {
+    const v1SubDaos = useV1SubDaos()
+
+    return (
+      context.info.coreVersion !== ContractVersion.V1 &&
+      !v1SubDaos.loading &&
+      v1SubDaos.data.length === 0
+    )
+  }
+
   return {
     key: ActionKey.UpgradeV1ToV2,
     Icon: UnicornEmoji,
@@ -404,5 +425,6 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
+    useHideFromPicker,
   }
 }
