@@ -108,21 +108,24 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
 
     // Get accent color.
     let accentColor: string | null = null
-    try {
-      const response = await axios.get(
-        FAST_AVERAGE_COLOR_API_TEMPLATE.replace(
-          'URL',
-          toAccessibleImageUrl(getImageUrlForChainId(chain.chain_id), {
-            replaceRelative: true,
-          })
-        ),
-        { responseType: 'text' }
-      )
+    const imageUrl = toAccessibleImageUrl(
+      getImageUrlForChainId(chain.chain_id),
+      {
+        replaceRelative: true,
+      }
+    )
+    if (!imageUrl.endsWith('svg')) {
+      try {
+        const response = await axios.get(
+          FAST_AVERAGE_COLOR_API_TEMPLATE.replace('URL', imageUrl),
+          { responseType: 'text' }
+        )
 
-      accentColor = response.data
-    } catch (error) {
-      // If fail to load image or get color, don't prevent page render.
-      console.error(error)
+        accentColor = response.data
+      } catch (error) {
+        // If fail to load image or get color, don't prevent page render.
+        console.error(error)
+      }
     }
 
     const props: GovPageWrapperProps = {

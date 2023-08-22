@@ -200,7 +200,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
 
       // Get DAO accent color.
       let accentColor: string | null = null
-      if (config.image_url) {
+      if (config.image_url && !config.image_url.endsWith('svg')) {
         try {
           const response = await axios.get(
             FAST_AVERAGE_COLOR_API_TEMPLATE.replace(

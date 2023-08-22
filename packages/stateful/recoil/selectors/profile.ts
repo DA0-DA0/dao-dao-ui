@@ -89,9 +89,7 @@ export const stargazeNameSelector = selectorFamily<string | undefined, string>({
         return await client.queryContractSmart(STARGAZE_NAMES_CONTRACT, {
           name: { address: stargazeWalletAddress },
         })
-      } catch (err) {
-        console.error(err)
-      }
+      } catch {}
     },
 })
 
