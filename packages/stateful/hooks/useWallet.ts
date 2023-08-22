@@ -1,7 +1,12 @@
 import { Chain } from '@chain-registry/types'
 import { toHex } from '@cosmjs/encoding'
-import { ChainContext, WalletAccount } from '@cosmos-kit/core'
-import { useChain as useWalletChain } from '@cosmos-kit/react-lite'
+import {
+  ChainContext,
+  ChainWalletContext,
+  WalletAccount,
+} from '@cosmos-kit/core'
+import { useChain } from '@cosmos-kit/react-lite'
+import { getChainWalletContext } from '@cosmos-kit/react-lite/cjs/utils'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
@@ -34,30 +39,48 @@ export const useWallet = ({
   loadAccount = false,
 }: UseWalletOptions = {}): UseWalletReturn => {
   const walletChainId = useRecoilValue(walletChainIdAtom)
-  const { chain } = useChainContextIfAvailable() ?? {}
+  const { chain: currentChain } = useChainContextIfAvailable() ?? {}
 
   // If chainId passed, use that. Otherwise, use current chain context. If not
   // in a chain context, fallback to global wallet chain setting.
-  const _walletChain = useWalletChain(
-    chainId
-      ? getChainForChainId(chainId).chain_name
-      : chain
-      ? chain.chain_name
-      : getChainForChainId(walletChainId).chain_name
+  const chain = chainId
+    ? getChainForChainId(chainId)
+    : currentChain || getChainForChainId(walletChainId)
+
+  // Make sure to enable chain on currently connected wallet.
+  // TODO this is hacky cosmos-kit should have a better solution
+  const connectedWallet = useChain(getChainForChainId(walletChainId).chain_name)
+  const chainWallet = connectedWallet.chainWallet?.mainWallet.getChainWallet(
+    chain.chain_name
   )
+  chainWallet?.activate()
+
+  const triedToConnect = useRef(false)
+  if (
+    connectedWallet.isWalletConnected &&
+    chainWallet &&
+    !chainWallet.isWalletConnected &&
+    !triedToConnect.current
+  ) {
+    triedToConnect.current = true
+    chainWallet.connect().catch(console.error)
+  }
+
   // Memoize wallet chain since it changes every render. The hook above forces
   // re-render when address changes, so this is safe.
-  const walletChainRef = useRef(_walletChain)
-  walletChainRef.current = _walletChain
+  const walletChainRef = useRef<ChainWalletContext | undefined>(undefined)
+  walletChainRef.current = chainWallet
+    ? getChainWalletContext(chain.chain_id, chainWallet)
+    : undefined
 
   const [account, setAccount] = useState<WalletAccount>()
   const [hexPublicKeyData, setHexPublicKeyData] = useState<string>()
 
   const hexPublicKeyFromChain = useCachedLoading(
-    _walletChain.address && loadAccount
+    walletChainRef.current?.address && loadAccount
       ? walletHexPublicKeySelector({
-          walletAddress: _walletChain.address,
-          chainId: _walletChain.chain.chain_id,
+          walletAddress: walletChainRef.current.address,
+          chainId: walletChainRef.current.chain.chain_id,
         })
       : undefined,
     undefined
@@ -68,7 +91,7 @@ export const useWallet = ({
       return
     }
 
-    if (!walletChainRef.current.isWalletConnected) {
+    if (!walletChainRef.current?.isWalletConnected) {
       setAccount(undefined)
       setHexPublicKeyData(undefined)
       return
@@ -78,9 +101,9 @@ export const useWallet = ({
     if (account?.address !== walletChainRef.current.address) {
       ;(async () => {
         try {
-          const account = await walletChainRef.current.getAccount()
+          const account = await walletChainRef.current?.getAccount()
           setAccount(account)
-          setHexPublicKeyData(toHex(account.pubkey))
+          setHexPublicKeyData(account && toHex(account.pubkey))
         } catch (err) {
           console.error('Wallet account loading error', err)
         }
@@ -89,16 +112,17 @@ export const useWallet = ({
   }, [
     account?.address,
     loadAccount,
-    walletChainRef.current.address,
-    walletChainRef.current.chain.chain_id,
-    walletChainRef.current.status,
+    walletChainRef.current?.address,
+    walletChainRef.current?.chain.chain_id,
+    walletChainRef.current?.status,
   ])
 
   const response = useMemo(
     (): UseWalletReturn => ({
+      ...connectedWallet,
       ...walletChainRef.current,
       // Use chain from our version of the chain-registry.
-      chain: getChainForChainId(walletChainRef.current.chain.chain_id),
+      chain,
       account,
       hexPublicKey: hexPublicKeyData
         ? { loading: false, data: hexPublicKeyData }
@@ -109,10 +133,11 @@ export const useWallet = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
       account,
+      chain,
       hexPublicKeyData,
-      walletChainRef.current.address,
-      walletChainRef.current.chain.chain_id,
-      walletChainRef.current.status,
+      walletChainRef.current?.address,
+      walletChainRef.current?.chain.chain_id,
+      walletChainRef.current?.status,
       hexPublicKeyFromChain,
     ]
   )
