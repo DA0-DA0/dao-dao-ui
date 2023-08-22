@@ -1138,7 +1138,7 @@ export const validatorSlashesSelector = selectorFamily<
 })
 
 export const denomMetadataSelector = selectorFamily<
-  Metadata,
+  Metadata | undefined,
   WithChainId<{ denom: string }>
 >({
   key: 'denomMetadata',
@@ -1146,12 +1146,20 @@ export const denomMetadataSelector = selectorFamily<
     ({ denom, chainId }) =>
     async ({ get }) => {
       const client = get(cosmosRpcClientForChainSelector(chainId))
-      const { metadata } = await client.bank.v1beta1.denomMetadata({
-        denom,
-      })
-      if (!metadata) {
-        throw new Error('Denom metadata not found')
+
+      try {
+        const { metadata } = await client.bank.v1beta1.denomMetadata({
+          denom,
+        })
+        return metadata
+      } catch (err) {
+        // If denom not found, return undefined.
+        if (err instanceof Error && err.message.includes('key not found')) {
+          return
+        }
+
+        // Rethrow other errors.
+        throw err
       }
-      return metadata
     },
 })

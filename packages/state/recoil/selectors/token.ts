@@ -68,14 +68,22 @@ export const genericTokenSelector = selectorFamily<
           return getTokenForChainIdAndDenom(chainId, denomOrAddress, false)
         } catch {
           // If that fails, try to fetch from chain if not IBC asset.
-          tokenInfo = denomOrAddress.startsWith('ibc/')
-            ? undefined
-            : get(
-                nativeDenomMetadataInfoSelector({
-                  denom: denomOrAddress,
-                  chainId,
-                })
-              )
+          try {
+            tokenInfo = denomOrAddress.startsWith('ibc/')
+              ? undefined
+              : get(
+                  nativeDenomMetadataInfoSelector({
+                    denom: denomOrAddress,
+                    chainId,
+                  })
+                )
+          } catch (err) {
+            // If not an error, rethrow. This may be a promise, which is how
+            // recoil waits for the `get` to resolve.
+            if (!(err instanceof Error)) {
+              throw err
+            }
+          }
 
           // If that fails, return placeholder token.
           if (!tokenInfo) {
@@ -293,32 +301,25 @@ export const nativeDenomMetadataInfoSelector = selectorFamily<
   get:
     (params) =>
     async ({ get }) => {
-      try {
-        const { base, denomUnits, symbol, display } = get(
-          denomMetadataSelector(params)
-        )
+      const metadata = get(denomMetadataSelector(params))
+      if (!metadata) {
+        return
+      }
 
-        const displayDenom =
-          denomUnits.find(({ denom }) => denom === display) ??
-          denomUnits.find(({ exponent }) => exponent > 0) ??
-          denomUnits[0]
+      const { base, denomUnits, symbol, display } = metadata
 
-        if (!displayDenom) {
-          throw new Error('No denom unit found for token factory denom')
-        }
+      const displayDenom =
+        denomUnits.find(({ denom }) => denom === display) ??
+        denomUnits.find(({ exponent }) => exponent > 0) ??
+        denomUnits[0]
 
-        return {
-          symbol: symbol || display || base,
-          decimals: displayDenom.exponent,
-        }
-      } catch (err) {
-        // If denom not found, return undefined.
-        if (err instanceof Error && err.message.includes('key not found')) {
-          return
-        }
+      if (!displayDenom) {
+        throw new Error('No denom unit found for token factory denom')
+      }
 
-        // Rethrow other errors.
-        throw err
+      return {
+        symbol: symbol || display || base,
+        decimals: displayDenom.exponent,
       }
     },
 })
