@@ -1,15 +1,26 @@
 import { DarkMode, LightMode } from '@mui/icons-material'
 import { forwardRef } from 'react'
 
+import { IconButtonProps } from '@dao-dao/types'
+
 import { Theme, useThemeContext } from '../../theme'
 import { IconButton } from './IconButton'
 
-export interface ThemeToggleProps {
+export type ThemeToggleProps = Omit<
+  IconButtonProps,
+  | 'Icon'
+  | 'circular'
+  | 'className'
+  | 'iconClassName'
+  | 'onClick'
+  | 'size'
+  | 'variant'
+> & {
   compact?: boolean
 }
 
 export const ThemeToggle = forwardRef<HTMLButtonElement, ThemeToggleProps>(
-  function ThemeToggle({ compact = false }: ThemeToggleProps, ref) {
+  function ThemeToggle({ compact = false, ...props }, ref) {
     const { theme, updateTheme } = useThemeContext()
 
     return (
@@ -24,6 +35,7 @@ export const ThemeToggle = forwardRef<HTMLButtonElement, ThemeToggleProps>(
         ref={ref}
         size="custom"
         variant="secondary"
+        {...props}
       />
     )
   }

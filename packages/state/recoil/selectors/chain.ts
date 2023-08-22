@@ -335,7 +335,7 @@ export const nativeSupplySelector = selectorFamily<
           await client.bank.v1beta1.supplyOf({
             denom,
           })
-        ).amount?.amount || '0'
+        ).amount?.amount ?? -1
       )
     },
 })
@@ -357,8 +357,15 @@ export const blocksPerYearSelector = selectorFamily<number, WithChainId<{}>>({
           (await client.mint.v1beta1.params()).params?.blocksPerYear ?? -1
         )
       } catch (err) {
-        console.error(err)
-        return 0
+        if (
+          err instanceof Error &&
+          err.message.includes('unknown query path')
+        ) {
+          return -1
+        }
+
+        // Rethrow other errors.
+        throw err
       }
     },
 })
