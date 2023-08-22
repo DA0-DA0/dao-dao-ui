@@ -122,9 +122,14 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
                   },
                 },
               })
-              return (
-                validateCosmosMsg(msg).valid || 'Invalid instantiate message'
-              )
+
+              try {
+                validateCosmosMsg(msg)
+              } catch (err) {
+                return err instanceof Error ? err.message : `${err}`
+              }
+
+              return true
             },
           ]}
         />

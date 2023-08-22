@@ -134,17 +134,28 @@ const doSimulation = async (
     return typesRegistry.encodeAsAny(encoded)
   })
 
-  // Simulate messages separately.
-  await encodedMsgs.reduce(async (p, encoded) => {
-    await p
-
-    console.log('Simulating:', encoded)
-    await simulateMessages(cosmosRpcClient, [encoded])
-  }, Promise.resolve())
-
   // Simulate messages together.
-  console.log('Simulating all')
-  await simulateMessages(cosmosRpcClient, encodedMsgs)
+  try {
+    await simulateMessages(cosmosRpcClient, encodedMsgs)
+  } catch (err) {
+    // Simulate messages separately and log any errors, but don't throw them.
+    // This helps debug which message is causing an error if they all fail
+    // together. But we only care about the result of simulating all messages
+    // since they may depend on each other.
+    await encodedMsgs.reduce(async (p, encoded) => {
+      await p
+
+      console.log('Simulating:', encoded)
+      try {
+        await simulateMessages(cosmosRpcClient, [encoded])
+      } catch (err) {
+        console.error(err)
+      }
+    }, Promise.resolve())
+
+    // Rethrow original error.
+    throw err
+  }
 }
 
 const simulateMessages = async (

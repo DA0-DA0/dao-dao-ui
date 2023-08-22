@@ -59,9 +59,7 @@ const InnerComponent: ActionComponent<InnerOptions> = (props) => {
   const { categories, loadedActions } = useLoadedActionsAndCategories({
     isCreating: props.isCreating,
   })
-  const actionsForMatching = useActionsForMatching({
-    isCreating: props.isCreating,
-  })
+  const actionsForMatching = useActionsForMatching()
 
   return (
     <StatelessDaoAdminExecComponent

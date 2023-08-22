@@ -126,7 +126,7 @@ export const Web3AuthPromptModal = () => {
 const makeWalletActionsRenderer = (messages: Record<string, any>[]) =>
   function WalletActionsRenderer() {
     const { t } = useTranslation()
-    const actionsForMatching = useActionsForMatching({ isCreating: false })
+    const actionsForMatching = useActionsForMatching()
 
     // Call relevant action hooks in the same order every time.
     const actionData: CategorizedActionAndData[] = messages.map((message) => {

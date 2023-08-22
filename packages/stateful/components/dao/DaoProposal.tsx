@@ -39,7 +39,7 @@ interface InnerDaoProposalProps {
 const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { t } = useTranslation()
   const daoInfo = useDaoInfoContext()
-  const actionsForMatching = useActionsForMatching({ isCreating: false })
+  const actionsForMatching = useActionsForMatching()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { isWalletConnected, address } = useWallet()
   const {

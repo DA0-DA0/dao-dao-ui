@@ -118,9 +118,14 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                   },
                 },
               })
-              return (
-                validateCosmosMsg(msg).valid || t('error.invalidExecuteMessage')
-              )
+
+              try {
+                validateCosmosMsg(msg)
+              } catch (err) {
+                return err instanceof Error ? err.message : `${err}`
+              }
+
+              return true
             },
           ]}
         />
