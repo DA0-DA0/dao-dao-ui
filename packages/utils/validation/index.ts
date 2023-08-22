@@ -1,4 +1,3 @@
-import Ajv from 'ajv'
 import JSON5 from 'json5'
 import { TFunction } from 'react-i18next'
 
@@ -12,6 +11,7 @@ import { nativeTokenExists } from '../assets'
 import { getChainForChainId } from '../chain'
 import cosmosMsgSchema from '../cosmos_msg.json'
 import { isValidUrl } from '../isValidUrl'
+import { makeValidateMsg } from './makeValidateMsg'
 
 export * from './makeValidateMsg'
 
@@ -100,13 +100,7 @@ export const validateJSON = (v: string) => {
   }
 }
 
-const ajv = new Ajv()
-const _validateCosmosMsg = ajv.compile(cosmosMsgSchema)
-
-export const validateCosmosMsg = (msg: any) => ({
-  valid: _validateCosmosMsg(msg),
-  errors: _validateCosmosMsg.errors,
-})
+export const validateCosmosMsg = makeValidateMsg(cosmosMsgSchema)
 
 export const validateTokenSymbol = (v: string) =>
   /^[a-zA-Z\-]{3,12}$/.test(v) ||
