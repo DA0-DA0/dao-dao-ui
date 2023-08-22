@@ -54,7 +54,7 @@ export const useLoadingFeaturedDaoCardInfos = (
     waitForAll(
       chains.map(({ chain }) => indexerFeaturedDaosSelector(chain.chain_id))
     ),
-    []
+    chains.map(() => [])
   )
 
   return useLoadingDaoCardInfos(

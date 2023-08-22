@@ -37,7 +37,6 @@ import {
   WEB3AUTH_CLIENT_ID,
   getChainForChainId,
   getSignerOptions,
-  maybeGetKeplrChainInfo,
 } from '@dao-dao/utils'
 
 import { useSyncWalletSigner, useWallet } from '../hooks'
@@ -136,20 +135,13 @@ export const WalletProvider = ({
         isLazy: true,
         // Load all custom chain endpoints into wallet provider.
         endpoints: Object.entries(CHAIN_ENDPOINTS).reduce(
-          (acc, [chainId, { rpc, rest }]) => {
-            const chainInfo = maybeGetKeplrChainInfo(chainId)
-            if (!chainInfo) {
-              throw new Error(`Chain info not found for chain ID: ${chainId}`)
-            }
-
-            return {
-              ...acc,
-              [getChainForChainId(chainId).chain_name]: {
-                rpc: [rpc],
-                rest: [rest],
-              },
-            }
-          },
+          (acc, [chainId, { rpc, rest }]) => ({
+            ...acc,
+            [getChainForChainId(chainId).chain_name]: {
+              rpc: [rpc],
+              rest: [rest],
+            },
+          }),
           {} as Record<string, Endpoints>
         ),
       }}

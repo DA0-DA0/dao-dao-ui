@@ -3,8 +3,6 @@ import { Buffer } from 'buffer'
 import { Chain, IBCInfo } from '@chain-registry/types'
 import { fromBech32, fromHex, toBech32 } from '@cosmjs/encoding'
 import { GasPrice, decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
-import { Bech32Address } from '@keplr-wallet/cosmos'
-import { ChainInfo, FeeCurrency } from '@keplr-wallet/types'
 import { assets, chains, ibc } from 'chain-registry'
 import RIPEMD160 from 'ripemd160'
 
@@ -400,75 +398,6 @@ export const getChainIdForAddress = (address: string): string => {
   }
 
   return chainForAddress.chain.chain_id
-}
-
-// Construct Keplr chain info from chain registry.
-export const maybeGetKeplrChainInfo = (
-  chainId: string
-): ChainInfo | undefined => {
-  const chain = maybeGetChainForChainId(chainId)
-  const rpc = chain?.apis?.rpc?.[0].address
-  const rest = chain?.apis?.rest?.[0].address
-  const stakingDenom = chain?.staking?.staking_tokens[0].denom
-
-  if (!chain || !rpc || !rest || !stakingDenom) {
-    return
-  }
-
-  const stakeCurrency = getTokenForChainIdAndDenom(
-    chain.chain_id,
-    stakingDenom,
-    false
-  )
-
-  const feeCurrencies =
-    chain.fees?.fee_tokens?.map(
-      ({
-        denom,
-        low_gas_price,
-        average_gas_price,
-        high_gas_price,
-      }): FeeCurrency => {
-        const token = getTokenForChainIdAndDenom(chain.chain_id, denom, false)
-
-        return {
-          coinDenom: token.symbol,
-          coinMinimalDenom: token.denomOrAddress,
-          coinDecimals: token.decimals,
-          gasPriceStep:
-            low_gas_price !== undefined &&
-            average_gas_price !== undefined &&
-            high_gas_price !== undefined
-              ? {
-                  low: low_gas_price,
-                  average: average_gas_price,
-                  high: high_gas_price,
-                }
-              : undefined,
-        }
-      }
-    ) ?? []
-
-  return {
-    rpc,
-    rest,
-    chainId: chain.chain_id,
-    chainName: chain.pretty_name || chain.chain_name,
-    stakeCurrency: {
-      coinDenom: stakeCurrency.symbol,
-      coinMinimalDenom: stakeCurrency.denomOrAddress,
-      coinDecimals: stakeCurrency.decimals,
-    },
-    bip44: {
-      coinType: chain.slip44,
-    },
-    alternativeBIP44s: chain.alternative_slip44s?.map((coinType) => ({
-      coinType,
-    })),
-    bech32Config: Bech32Address.defaultBech32Config(chain.bech32_prefix),
-    currencies: feeCurrencies,
-    feeCurrencies,
-  }
 }
 
 // Kado fiat modal only supports Juno and Osmosis.
