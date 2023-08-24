@@ -55,14 +55,17 @@ export const useWallet = ({
   )
   chainWallet?.activate()
 
-  const triedToConnect = useRef(false)
+  // Only try to connect once per wallet address. If address changes, try to
+  // connect again.
+  const triedToConnect = useRef<string | undefined>(undefined)
   if (
     connectedWallet.isWalletConnected &&
     chainWallet &&
     !chainWallet.isWalletConnected &&
-    !triedToConnect.current
+    (!triedToConnect.current ||
+      triedToConnect.current === connectedWallet.address)
   ) {
-    triedToConnect.current = true
+    triedToConnect.current = connectedWallet.address
     chainWallet.connect().catch(console.error)
   }
 
