@@ -347,7 +347,7 @@ export const GovernanceProposalComponent: ActionComponent<
               })),
               recipient: spendRecipient,
               // ParameterChangeProposal
-              changes: JSON.parse(parameterChanges),
+              changes: JSON5.parse(parameterChanges),
               // SoftwareUpgradeProposal
               plan: {
                 ...parsedUpgradePlan,
