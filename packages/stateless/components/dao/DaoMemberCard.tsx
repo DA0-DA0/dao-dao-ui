@@ -1,11 +1,14 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
+import { ChainId } from '@dao-dao/types'
 import { DaoMemberCardProps } from '@dao-dao/types/stateless/DaoMemberCard'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
+import { ChainLogo } from '../ChainLogo'
 import { CopyableAddress } from '../CopyableAddress'
 import { ProfileImage } from '../profile'
+import { Tooltip } from '../tooltip'
 
 export const DaoMemberCard = ({
   address,
@@ -24,15 +27,25 @@ export const DaoMemberCard = ({
           loading={profileLoading}
           size="lg"
         />
+
         {/* Name */}
-        <p
-          className={clsx(
-            'title-text mt-4 mb-1 text-text-body',
-            profileLoading && 'animate-pulse'
+        <div className="mt-4 mb-2 flex flex-row items-center gap-2">
+          {!profileLoading && profile.nameSource === 'stargaze' && (
+            <Tooltip title={t('title.stargazeNames')}>
+              <ChainLogo chainId={ChainId.StargazeMainnet} />
+            </Tooltip>
           )}
-        >
-          {profileLoading ? '...' : profile.name}
-        </p>
+
+          <p
+            className={clsx(
+              'title-text text-text-body',
+              profileLoading && 'animate-pulse'
+            )}
+          >
+            {profileLoading ? '...' : profile.name}
+          </p>
+        </div>
+
         {/* Address */}
         <CopyableAddress address={address} />
       </div>

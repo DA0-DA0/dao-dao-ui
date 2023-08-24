@@ -1,12 +1,25 @@
 import { noWait, selectorFamily } from 'recoil'
 
-import { refreshWalletProfileAtom } from '@dao-dao/state/recoil'
 import {
+  cosmWasmClientForChainSelector,
+  refreshWalletProfileAtom,
+} from '@dao-dao/state/recoil'
+import {
+  ChainId,
   PfpkWalletProfile,
   WalletProfile,
   WalletProfileData,
+  WithChainId,
 } from '@dao-dao/types'
-import { PFPK_API_BASE, getFallbackImage, toBech32Hash } from '@dao-dao/utils'
+import {
+  MAINNET,
+  PFPK_API_BASE,
+  STARGAZE_NAMES_CONTRACT,
+  getChainForChainId,
+  getFallbackImage,
+  toBech32Hash,
+  transformBech32Address,
+} from '@dao-dao/utils'
 
 import { nftCardInfoSelector } from './nft'
 
@@ -14,6 +27,7 @@ export const EMPTY_WALLET_PROFILE: WalletProfile = {
   // Disallows editing if we don't have correct nonce from server.
   nonce: -1,
   name: null,
+  nameSource: 'pfpk',
   imageUrl: '',
   nft: null,
 }
@@ -50,6 +64,35 @@ export const pfpkProfileSelector = selectorFamily<
     },
 })
 
+// Get name for address from Stargaze Names.
+export const stargazeNameSelector = selectorFamily<string | undefined, string>({
+  key: 'stargazeName',
+  get:
+    (walletAddress) =>
+    async ({ get }) => {
+      if (!walletAddress) {
+        return
+      }
+
+      const chainId = MAINNET
+        ? ChainId.StargazeMainnet
+        : ChainId.StargazeTestnet
+      const stargazeWalletAddress = transformBech32Address(
+        walletAddress,
+        chainId
+      )
+      get(refreshWalletProfileAtom(stargazeWalletAddress))
+
+      const client = get(cosmWasmClientForChainSelector(chainId))
+
+      try {
+        return await client.queryContractSmart(STARGAZE_NAMES_CONTRACT, {
+          name: { address: stargazeWalletAddress },
+        })
+      } catch {}
+    },
+})
+
 export const makeDefaultWalletProfileData = (
   address: string,
   loading = false
@@ -67,11 +110,11 @@ export const makeDefaultWalletProfileData = (
 // it.
 export const walletProfileDataSelector = selectorFamily<
   WalletProfileData,
-  { address: string }
+  WithChainId<{ address: string }>
 >({
   key: 'walletProfileData',
   get:
-    ({ address }) =>
+    ({ address, chainId }) =>
     ({ get }) => {
       if (!address) {
         return makeDefaultWalletProfileData(address)
@@ -116,6 +159,16 @@ export const walletProfileDataSelector = selectorFamily<
           nftInfoLoadable.contents?.imageUrl
         ) {
           profile.imageUrl = nftInfoLoadable.contents.imageUrl
+        }
+      }
+
+      // Load Stargaze name as backup if no PFPK set.
+      if (!profile.name) {
+        const stargazeName = get(stargazeNameSelector(address))
+        if (stargazeName) {
+          profile.name =
+            stargazeName + '.' + getChainForChainId(chainId).bech32_prefix
+          profile.nameSource = 'stargaze'
         }
       }
 

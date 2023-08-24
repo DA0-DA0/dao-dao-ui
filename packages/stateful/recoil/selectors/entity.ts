@@ -68,6 +68,7 @@ export const entitySelector = selectorFamily<
           address && isValidWalletAddress(address, bech32Prefix)
             ? walletProfileDataSelector({
                 address,
+                chainId,
               })
             : constSelector(undefined),
         ])

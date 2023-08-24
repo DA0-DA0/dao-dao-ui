@@ -269,28 +269,39 @@ export const indexerFeaturedDaosSelector = selectorFamily<
 
       const client = get(indexerMeilisearchClientSelector)
       const index = client.index(config.indexes.featured)
-      const results = await index.search<{
+
+      let hits: {
         contractAddress: string
         value: { tvl: number }
-      }>(null, {
-        limit: NUM_FEATURED_DAOS,
-        filter: [
-          'value.daysSinceLastProposalPassed >= 0',
-          'value.daysSinceLastProposalPassed <= 90',
-          'value.giniCoefficient >= 0',
-          'value.giniCoefficient < 0.75',
-          'value.memberCount >= 3',
-          // Exclude priority.
-          ...(priorityFeaturedDaos.length > 0
-            ? [
-                `NOT contractAddress IN ["${priorityFeaturedDaos.join(
-                  '", "'
-                )}"]`,
-              ]
-            : []),
-        ],
-        sort: ['value.tvl:desc'],
-      })
+      }[] = []
+      try {
+        hits = (
+          await index.search<{
+            contractAddress: string
+            value: { tvl: number }
+          }>(null, {
+            limit: NUM_FEATURED_DAOS,
+            filter: [
+              'value.daysSinceLastProposalPassed >= 0',
+              'value.daysSinceLastProposalPassed <= 90',
+              'value.giniCoefficient >= 0',
+              'value.giniCoefficient < 0.75',
+              'value.memberCount >= 3',
+              // Exclude priority.
+              ...(priorityFeaturedDaos.length > 0
+                ? [
+                    `NOT contractAddress IN ["${priorityFeaturedDaos.join(
+                      '", "'
+                    )}"]`,
+                  ]
+                : []),
+            ],
+            sort: ['value.tvl:desc'],
+          })
+        ).hits
+      } catch (err) {
+        console.error(err)
+      }
 
       const featuredDaos = [
         // Insert priority DAOs first.
@@ -299,7 +310,7 @@ export const indexerFeaturedDaosSelector = selectorFamily<
           // Rank first.
           tvl: Infinity,
         })),
-        ...results.hits.map((hit) => ({
+        ...hits.map((hit) => ({
           address: hit.contractAddress,
           tvl: hit.value.tvl,
         })),

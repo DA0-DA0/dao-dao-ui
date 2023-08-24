@@ -26,6 +26,7 @@ import {
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
+  ChainId,
   CreateDaoContext,
   CreateDaoCustomValidator,
   DaoPageMode,
@@ -739,7 +740,15 @@ export const InnerCreateDaoForm = ({
               <p>{t(CreateDaoSubmitValue.Back)}</p>
             </Button>
           )}
-          <Button loading={creating} type="submit" value={submitValue}>
+          <Button
+            disabled={
+              // TODO(stargaze): remove when mainnet contracts deployed
+              chainId === ChainId.StargazeMainnet
+            }
+            loading={creating}
+            type="submit"
+            value={submitValue}
+          >
             {submitLabel}
           </Button>
         </div>

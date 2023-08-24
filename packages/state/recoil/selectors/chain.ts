@@ -335,7 +335,7 @@ export const nativeSupplySelector = selectorFamily<
           await client.bank.v1beta1.supplyOf({
             denom,
           })
-        ).amount?.amount || '0'
+        ).amount?.amount ?? -1
       )
     },
 })
@@ -357,8 +357,15 @@ export const blocksPerYearSelector = selectorFamily<number, WithChainId<{}>>({
           (await client.mint.v1beta1.params()).params?.blocksPerYear ?? -1
         )
       } catch (err) {
-        console.error(err)
-        return 0
+        if (
+          err instanceof Error &&
+          err.message.includes('unknown query path')
+        ) {
+          return -1
+        }
+
+        // Rethrow other errors.
+        throw err
       }
     },
 })
@@ -1131,7 +1138,7 @@ export const validatorSlashesSelector = selectorFamily<
 })
 
 export const denomMetadataSelector = selectorFamily<
-  Metadata,
+  Metadata | undefined,
   WithChainId<{ denom: string }>
 >({
   key: 'denomMetadata',
@@ -1139,12 +1146,20 @@ export const denomMetadataSelector = selectorFamily<
     ({ denom, chainId }) =>
     async ({ get }) => {
       const client = get(cosmosRpcClientForChainSelector(chainId))
-      const { metadata } = await client.bank.v1beta1.denomMetadata({
-        denom,
-      })
-      if (!metadata) {
-        throw new Error('Denom metadata not found')
+
+      try {
+        const { metadata } = await client.bank.v1beta1.denomMetadata({
+          denom,
+        })
+        return metadata
+      } catch (err) {
+        // If denom not found, return undefined.
+        if (err instanceof Error && err.message.includes('key not found')) {
+          return
+        }
+
+        // Rethrow other errors.
+        throw err
       }
-      return metadata
     },
 })

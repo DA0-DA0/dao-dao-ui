@@ -46,6 +46,7 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
     proposal.version === GovProposalVersion.V1 && proposal.proposal.proposer
       ? walletProfileDataSelector({
           address: proposal.proposal.proposer,
+          chainId,
         })
       : constSelector(undefined)
   )

@@ -9,10 +9,14 @@ export interface PfpkWalletProfile {
   } | null
 }
 
+export type WalletProfileNameSource = 'pfpk' | 'stargaze'
+
 // Move `imageUrl` out of `NFT` in case we use the Keplr profile image API or a
 // fallback image as backup.
 export interface WalletProfile extends PfpkWalletProfile {
   imageUrl: string
+  // Whether or not the name is loaded from PFPK or Stargaze names.
+  nameSource: WalletProfileNameSource
 }
 
 export interface WalletProfileUpdate {
