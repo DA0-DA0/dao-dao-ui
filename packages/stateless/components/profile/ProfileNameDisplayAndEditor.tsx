@@ -137,11 +137,12 @@ export const ProfileNameDisplayAndEditor = ({
           }
           variant="none"
         >
-          {walletProfileData.profile.nameSource === 'stargaze' && (
-            <Tooltip title={t('title.stargazeNames')}>
-              <ChainLogo chainId={ChainId.StargazeMainnet} />
-            </Tooltip>
-          )}
+          {!walletProfileData.loading &&
+            walletProfileData.profile.nameSource === 'stargaze' && (
+              <Tooltip title={t('title.stargazeNames')}>
+                <ChainLogo chainId={ChainId.StargazeMainnet} />
+              </Tooltip>
+            )}
 
           <p
             className={clsx(
