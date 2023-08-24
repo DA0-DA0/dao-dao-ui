@@ -138,49 +138,49 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         },
       },
     },
-    // [ChainId.StargazeMainnet]: {
-    //   name: 'stargaze',
-    //   mainnet: true,
-    //   // TODO
-    //   factoryContractAddress: '',
-    //   supportsV1GovProposals: false,
-    //   indexes: {
-    //     search: 'stargaze_daos',
-    //     featured: 'stargaze_featured_daos',
-    //   },
-    //   explorerUrlTemplates: {
-    //     tx: 'https://ping.pub/stargaze/tx/REPLACE',
-    //     gov: 'https://ping.pub/stargaze/gov',
-    //     govProp: 'https://ping.pub/stargaze/gov/REPLACE',
-    //     wallet: 'https://ping.pub/stargaze/account/REPLACE',
-    //   },
-    //   codeIds: {
-    //     // https://github.com/CosmWasm/cw-plus
-    //     Cw20Base: -1, // v0.16
-    //     Cw4Group: 000, // v0.16
-    //     // https://github.com/CosmWasm/cw-nfts
-    //     // TODO: sg721?
-    //     Cw721Base: -1, // v0.16
+    [ChainId.StargazeMainnet]: {
+      name: 'stargaze',
+      mainnet: true,
+      // TODO
+      factoryContractAddress: '',
+      supportsV1GovProposals: false,
+      indexes: {
+        search: 'stargaze_daos',
+        featured: 'stargaze_featured_daos',
+      },
+      explorerUrlTemplates: {
+        tx: 'https://ping.pub/stargaze/tx/REPLACE',
+        gov: 'https://ping.pub/stargaze/gov',
+        govProp: 'https://ping.pub/stargaze/gov/REPLACE',
+        wallet: 'https://ping.pub/stargaze/account/REPLACE',
+      },
+      codeIds: {
+        // https://github.com/CosmWasm/cw-plus
+        Cw20Base: -1, // v0.16
+        Cw4Group: 9999999, // v0.16
+        // https://github.com/CosmWasm/cw-nfts
+        // TODO: sg721?
+        Cw721Base: -1, // v0.16
 
-    //     // ContractVersion.V210
-    //     // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
-    //     Cw20Stake: -1,
-    //     CwAdminFactory: 000,
-    //     CwPayrollFactory: 000,
-    //     CwTokenSwap: 000,
-    //     CwVesting: 000,
-    //     DaoCore: 000,
-    //     DaoMigrator: -1,
-    //     DaoPreProposeMultiple: 000,
-    //     DaoPreProposeSingle: 000,
-    //     DaoProposalMultiple: 000,
-    //     DaoProposalSingle: 000,
-    //     DaoVotingCw20Staked: -1,
-    //     DaoVotingCw4: 000,
-    //     DaoVotingCw721Staked: -1,
-    //     DaoVotingNativeStaked: -1,
-    //   },
-    // },
+        // ContractVersion.V210
+        // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
+        Cw20Stake: -1,
+        CwAdminFactory: 9999999,
+        CwPayrollFactory: 9999999,
+        CwTokenSwap: 9999999,
+        CwVesting: 9999999,
+        DaoCore: 9999999,
+        DaoMigrator: -1,
+        DaoPreProposeMultiple: 9999999,
+        DaoPreProposeSingle: 9999999,
+        DaoProposalMultiple: 9999999,
+        DaoProposalSingle: 9999999,
+        DaoVotingCw20Staked: -1,
+        DaoVotingCw4: 9999999,
+        DaoVotingCw721Staked: -1,
+        DaoVotingNativeStaked: -1,
+      },
+    },
     [ChainId.JunoTestnet]: {
       name: 'juno',
       mainnet: false,
