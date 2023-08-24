@@ -141,7 +141,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
     [ChainId.StargazeMainnet]: {
       name: 'stargaze',
       mainnet: true,
-      // TODO
+      // TODO(stargaze)
       factoryContractAddress: '',
       supportsV1GovProposals: false,
       indexes: {
@@ -159,7 +159,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         Cw20Base: -1, // v0.16
         Cw4Group: 9999999, // v0.16
         // https://github.com/CosmWasm/cw-nfts
-        // TODO: sg721?
+        // TODO(stargaze): sg721?
         Cw721Base: -1, // v0.16
 
         // ContractVersion.V210
@@ -288,7 +288,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         Cw20Base: -1, // v0.16
         Cw4Group: 2887, // v0.16
         // https://github.com/CosmWasm/cw-nfts
-        // TODO: sg721?
+        // TODO(stargaze): sg721?
         Cw721Base: -1, // v0.16
 
         // ContractVersion.V210
