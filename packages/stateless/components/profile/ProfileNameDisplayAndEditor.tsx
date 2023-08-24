@@ -4,13 +4,15 @@ import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { WalletProfileData } from '@dao-dao/types'
+import { ChainId, WalletProfileData } from '@dao-dao/types'
 import { processError } from '@dao-dao/utils'
 
 import { Button } from '../buttons'
+import { ChainLogo } from '../ChainLogo'
 import { IconButton } from '../icon_buttons'
 import { TextInput } from '../inputs'
 import { Loader } from '../logo'
+import { Tooltip } from '../tooltip'
 
 export type ProfileNameDisplayAndEditorProps = {
   walletProfileData: WalletProfileData
@@ -124,10 +126,24 @@ export const ProfileNameDisplayAndEditor = ({
           disabled={!canEdit}
           onClick={() =>
             !walletProfileData.loading &&
-            setEditingName(walletProfileData.profile.name ?? '')
+            setEditingName(
+              // Prefill name editor with current name from PFPK. If name from
+              // other name service, allow overriding name, but default to
+              // empty.
+              walletProfileData.profile.nameSource === 'pfpk'
+                ? walletProfileData.profile.name ?? ''
+                : ''
+            )
           }
           variant="none"
         >
+          {!walletProfileData.loading &&
+            walletProfileData.profile.nameSource === 'stargaze' && (
+              <Tooltip title={t('title.stargazeNames')}>
+                <ChainLogo chainId={ChainId.StargazeMainnet} />
+              </Tooltip>
+            )}
+
           <p
             className={clsx(
               walletProfileData.loading && 'animate-pulse',

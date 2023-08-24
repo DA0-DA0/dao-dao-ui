@@ -59,6 +59,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     useRecoilValue(
       walletProfileDataSelector({
         address: proposalInfo.createdByAddress,
+        chainId: daoInfo.chainId,
       })
     )
 

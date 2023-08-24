@@ -1342,6 +1342,7 @@
       "unstake": "Unstake NFTs",
       "unstakeHeaderSubtitle": "Select the NFTs you want to unstake from the NFT collection."
     },
+    "stargazeNames": "Stargaze Names",
     "start": "Start",
     "status": "Status",
     "subDaos": "SubDAOs",

@@ -9,7 +9,7 @@ export const averageColorSelector = selectorFamily({
   key: 'averageColor',
   get: (url: string) => async () => {
     // Don't attempt to get average color for local images (development server).
-    if (!url || url.startsWith('http://localhost')) {
+    if (!url || url.startsWith('http://localhost') || url.endsWith('svg')) {
       return undefined
     }
 
