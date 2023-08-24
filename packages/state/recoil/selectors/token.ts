@@ -125,6 +125,8 @@ export const usdPriceSelector = selectorFamily<
         case ChainId.JunoMainnet:
           return get(wyndUsdPriceSelector(denomOrAddress))
         case ChainId.OsmosisMainnet:
+        // TODO(stargaze): get osmosis denoms for stargaze assets
+        case ChainId.StargazeMainnet:
           return get(osmosisUsdPriceSelector(denomOrAddress))
       }
     },
