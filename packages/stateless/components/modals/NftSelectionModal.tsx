@@ -212,7 +212,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
             {headerDisplay}
 
             <SearchBar
-              autoFocus
+              autoFocus={modalProps.visible}
               placeholder={t('info.searchNftsPlaceholder')}
               {...searchBarProps}
             />

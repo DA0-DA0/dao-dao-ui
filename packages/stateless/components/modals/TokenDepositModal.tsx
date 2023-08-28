@@ -111,7 +111,7 @@ export const TokenDepositModal = ({
       <NumberInput
         // Auto focus does not work on mobile Safari by design
         // (https://bugs.webkit.org/show_bug.cgi?id=195884#c4).
-        autoFocus
+        autoFocus={modalProps.visible}
         max={loadingBalance.loading ? undefined : loadingBalance.data.amount}
         min={min}
         onInput={(event) =>
