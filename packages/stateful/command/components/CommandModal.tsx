@@ -25,12 +25,18 @@ export const CommandModal = ({
   // and each useSections hook is different, we need to tell the component to
   // re-render as if it's a new component.
   const [contextChangeCount, setContextChangeCount] = useState(0)
-  const setContexts: typeof _setContexts = useCallback((...args) => {
-    setContextChangeCount((count) => count + 1)
-    _setContexts(...args)
-    // Focus input when adding new context.
-    searchBarRef.current?.focus()
-  }, [])
+  const setContexts: typeof _setContexts = useCallback(
+    (...args) => {
+      setContextChangeCount((count) => count + 1)
+      _setContexts(...args)
+
+      // Focus input when adding new context if visible.
+      if (props.visible) {
+        searchBarRef.current?.focus()
+      }
+    },
+    [props.visible]
+  )
 
   // Reset with new root context whenever makeRootContext changes. Also
   // initializes first time.
