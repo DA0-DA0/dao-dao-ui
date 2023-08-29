@@ -104,12 +104,10 @@ export const CreateDaoStart = ({
               selected={watch('creator.id') === id}
               supplies={t(suppliesI18nKey)}
               underDevelopment={
-                (id !== MembershipBasedCreatorId &&
-                  // Only Juno supports non-multisigs right now.
-                  chainId !== ChainId.JunoMainnet &&
-                  chainId !== ChainId.JunoTestnet) ||
-                // TODO(stargaze): remove when mainnet contracts deployed
-                chainId === ChainId.StargazeMainnet
+                id !== MembershipBasedCreatorId &&
+                // Only Juno supports non-multisigs right now.
+                chainId !== ChainId.JunoMainnet &&
+                chainId !== ChainId.JunoTestnet
               }
             />
           )
