@@ -73,6 +73,8 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
+    } finally {
+      setInstantiating(false)
     }
   }
 
