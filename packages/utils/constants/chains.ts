@@ -141,8 +141,8 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
     [ChainId.StargazeMainnet]: {
       name: 'stargaze',
       mainnet: true,
-      // TODO(stargaze)
-      factoryContractAddress: '',
+      factoryContractAddress:
+        'stars175zvu8psmyxlszsxaa5thz26gjm4y6l24cr9ctgs09g90755tpmqmskl4t',
       supportsV1GovProposals: false,
       indexes: {
         search: 'stargaze_daos',
@@ -157,26 +157,26 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       codeIds: {
         // https://github.com/CosmWasm/cw-plus
         Cw20Base: -1, // v0.16
-        Cw4Group: 9999999, // v0.16
-        // https://github.com/CosmWasm/cw-nfts
-        // TODO(stargaze): sg721?
-        Cw721Base: -1, // v0.16
+        Cw4Group: 83, // v0.16
+        // https://github.com/public-awesome/launchpad/tree/main/contracts/collections/sg721-base
+        // https://github.com/public-awesome/stargaze-tools/blob/main/config.example.js
+        Sg721Base: 41,
 
         // ContractVersion.V210
         // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
         Cw20Stake: -1,
-        CwAdminFactory: 9999999,
-        CwPayrollFactory: 9999999,
-        CwTokenSwap: 9999999,
-        CwVesting: 9999999,
-        DaoCore: 9999999,
+        CwAdminFactory: 84,
+        CwPayrollFactory: 85,
+        CwTokenSwap: 86,
+        CwVesting: 87,
+        DaoCore: 88,
         DaoMigrator: -1,
-        DaoPreProposeMultiple: 9999999,
-        DaoPreProposeSingle: 9999999,
-        DaoProposalMultiple: 9999999,
-        DaoProposalSingle: 9999999,
+        DaoPreProposeMultiple: 89,
+        DaoPreProposeSingle: 90,
+        DaoProposalMultiple: 91,
+        DaoProposalSingle: 92,
         DaoVotingCw20Staked: -1,
-        DaoVotingCw4: 9999999,
+        DaoVotingCw4: 93,
         DaoVotingCw721Staked: -1,
         DaoVotingNativeStaked: -1,
       },
@@ -287,9 +287,9 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         // https://github.com/CosmWasm/cw-plus
         Cw20Base: -1, // v0.16
         Cw4Group: 2887, // v0.16
-        // https://github.com/CosmWasm/cw-nfts
-        // TODO(stargaze): sg721?
-        Cw721Base: -1, // v0.16
+        // https://github.com/public-awesome/launchpad/tree/main/contracts/collections/sg721-base
+        // https://github.com/public-awesome/stargaze-tools/blob/main/config.example.js
+        Sg721Base: 2595,
 
         // ContractVersion.V210
         // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
