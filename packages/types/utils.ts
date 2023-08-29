@@ -23,7 +23,9 @@ export interface CodeIdConfig {
   Cw20Base: number
   Cw4Group: number
   // https://github.com/CosmWasm/cw-nfts
-  Cw721Base: number
+  Cw721Base?: number
+  // https://github.com/public-awesome/launchpad/tree/main/contracts/collections/sg721-base
+  Sg721Base?: number
 
   // https://github.com/DA0-DA0/dao-contracts
   Cw20Stake: number

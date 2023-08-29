@@ -164,10 +164,12 @@ export const walletProfileDataSelector = selectorFamily<
 
       // Load Stargaze name as backup if no PFPK set.
       if (!profile.name) {
-        const stargazeName = get(stargazeNameSelector(address))
-        if (stargazeName) {
+        const stargazeNameLoadable = get(noWait(stargazeNameSelector(address)))
+        if (stargazeNameLoadable.state === 'hasValue') {
           profile.name =
-            stargazeName + '.' + getChainForChainId(chainId).bech32_prefix
+            stargazeNameLoadable.contents +
+            '.' +
+            getChainForChainId(chainId).bech32_prefix
           profile.nameSource = 'stargaze'
         }
       }

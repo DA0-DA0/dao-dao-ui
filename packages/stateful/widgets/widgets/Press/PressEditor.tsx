@@ -11,6 +11,7 @@ import {
 } from '@dao-dao/stateless'
 import { WidgetEditorProps } from '@dao-dao/types'
 import { InstantiateMsg as Cw721InstantiateMsg } from '@dao-dao/types/contracts/Cw721Base'
+import { InstantiateMsg as Sg721InstantiateMsg } from '@dao-dao/types/contracts/Sg721Base'
 import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
 
 import { useWallet } from '../../../hooks/useWallet'
@@ -43,17 +44,42 @@ export const PressEditor = ({
     try {
       const name = `${daoName}'s Press`
 
-      const { contractAddress } = await signingCosmWasmClient.instantiate(
-        walletAddress,
-        codeIds.Cw721Base,
-        {
-          minter: coreAddress,
-          name: name,
-          symbol: 'PRESS',
-        } as Cw721InstantiateMsg,
-        name,
-        CHAIN_GAS_MULTIPLIER
-      )
+      const { contractAddress } = codeIds.Cw721Base
+        ? await signingCosmWasmClient.instantiate(
+            walletAddress,
+            codeIds.Cw721Base,
+            {
+              minter: coreAddress,
+              name: name,
+              symbol: 'PRESS',
+            } as Cw721InstantiateMsg,
+            name,
+            CHAIN_GAS_MULTIPLIER
+          )
+        : codeIds.Sg721Base
+        ? // TODO(stargaze): test this
+          await signingCosmWasmClient.instantiate(
+            walletAddress,
+            codeIds.Sg721Base,
+            {
+              collection_info: {
+                creator: coreAddress,
+                description: `${name} on DAO DAO`,
+                image: '',
+              },
+              minter: coreAddress,
+              name: name,
+              symbol: 'PRESS',
+            } as Sg721InstantiateMsg,
+            name,
+            CHAIN_GAS_MULTIPLIER
+          )
+        : { contractAddress: undefined }
+
+      // Should never happen.
+      if (!contractAddress) {
+        throw new Error(t('error.loadingData'))
+      }
 
       setValue((fieldNamePrefix + 'contract') as 'contract', contractAddress)
 
