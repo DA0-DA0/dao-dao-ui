@@ -158,9 +158,9 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         // https://github.com/CosmWasm/cw-plus
         Cw20Base: -1, // v0.16
         Cw4Group: 83, // v0.16
-        // https://github.com/CosmWasm/cw-nfts
-        // TODO(stargaze): sg721?
-        Cw721Base: -1, // v0.16
+        // https://github.com/public-awesome/launchpad/tree/main/contracts/collections/sg721-base
+        // https://github.com/public-awesome/stargaze-tools/blob/main/config.example.js
+        Cw721Base: 41,
 
         // ContractVersion.V210
         // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
@@ -287,9 +287,9 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         // https://github.com/CosmWasm/cw-plus
         Cw20Base: -1, // v0.16
         Cw4Group: 2887, // v0.16
-        // https://github.com/CosmWasm/cw-nfts
-        // TODO(stargaze): sg721?
-        Cw721Base: -1, // v0.16
+        // https://github.com/public-awesome/launchpad/tree/main/contracts/collections/sg721-base
+        // https://github.com/public-awesome/stargaze-tools/blob/main/config.example.js
+        Cw721Base: 2595,
 
         // ContractVersion.V210
         // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
