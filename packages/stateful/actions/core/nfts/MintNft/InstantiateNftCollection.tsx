@@ -41,13 +41,28 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
 
     setInstantiating(true)
     try {
-      const { contractAddress } = await signingCosmWasmClient.instantiate(
-        walletAddress,
-        codeIds.Cw721Base,
-        instantiateMsg,
-        'NFT Collection',
-        CHAIN_GAS_MULTIPLIER
-      )
+      const { contractAddress } = codeIds.Cw721Base
+        ? await signingCosmWasmClient.instantiate(
+            walletAddress,
+            codeIds.Cw721Base,
+            instantiateMsg,
+            'NFT Collection',
+            CHAIN_GAS_MULTIPLIER
+          )
+        : codeIds.Sg721Base
+        ? await signingCosmWasmClient.instantiate(
+            walletAddress,
+            codeIds.Sg721Base,
+            instantiateMsg,
+            'NFT Collection',
+            CHAIN_GAS_MULTIPLIER
+          )
+        : { contractAddress: undefined }
+
+      // Should never happen.
+      if (!contractAddress) {
+        throw new Error(t('error.loadingData'))
+      }
 
       // Update action form data with address.
       setValue(props.fieldNamePrefix + 'collectionAddress', contractAddress, {

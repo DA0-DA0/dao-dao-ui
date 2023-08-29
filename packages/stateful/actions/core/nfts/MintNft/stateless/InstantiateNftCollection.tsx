@@ -68,6 +68,8 @@ export const InstantiateNftCollection: ActionComponent<
         <InputErrorMessage error={errors?.instantiateMsg?.symbol} />
       </div>
 
+      {/* TODO(stargaze): Add Stargaze collection info field on for sg721. */}
+
       <Button
         className="self-end"
         loading={instantiating}

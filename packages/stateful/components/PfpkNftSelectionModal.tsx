@@ -138,6 +138,7 @@ export const InnerPfpkNftSelectionModal = ({
   const image = watch('image')
 
   const [uploadingImage, setUploadingImage] = useState(false)
+  // TODO(stargaze): support sg721 or prevent from instantiating on stargaze?
   const { ready: instantiateAndExecuteReady, instantiateAndExecute } =
     useInstantiateAndExecute(
       chain.chain_id,
