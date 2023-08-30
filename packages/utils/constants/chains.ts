@@ -183,6 +183,54 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoVotingCw721Staked: -1,
         DaoVotingNativeStaked: -1,
       },
+      polytone: {
+        [ChainId.OsmosisMainnet]: {
+          // stargaze
+          note: 'stars1p4f96xz9pz8264ccgapz2l6xu82l5cj0jvvng0ltlm3dw2sxqdrs43acfl',
+          // stargaze
+          listener:
+            'stars1cu9nkty3wrg997qnmsdtpcy0m448zu5zj6kxmjfuze7jj2t6m3ns3f7ry5',
+          // osmosis
+          voice:
+            'osmo13w3073l43gwxw77tv2np2katn3jrvet87unyfevg8nrj755m3x7q0aaw63',
+          // stargaze
+          localConnection: 'connection-0',
+          // osmosis
+          remoteConnection: 'connection-1223',
+          // stargaze
+          localChannel: 'channel-198',
+          // osmosis
+          remoteChannel: 'channel-2642',
+          // stargaze
+          // localClient: '07-tendermint-0',
+          // osmosis
+          // remoteClient: '07-tendermint-1562',
+          needsSelfRelay: false,
+        },
+        [ChainId.JunoMainnet]: {
+          // stargaze
+          note: 'stars17vst9ew3vhddgj4je82vdn0evv3dc9gyf0yapjydt9fzqn8c4ecqyunk79',
+          // stargaze
+          listener:
+            'stars18mw7avlq5t0anxsavca5ch7ju0w6mjwu0jz55exfnhp0wz7rchasxurdf8',
+          // juno
+          voice:
+            'juno13yxra87ltv7gva3z35ktxt0nx3n5tp8ngtkj2p2zxj0qg6n906fs00wgvf',
+          // stargaze
+          localConnection: 'connection-11',
+          // juno
+          remoteConnection: 'connection-30',
+          // stargaze
+          localChannel: 'channel-199',
+          // juno
+          remoteChannel: 'channel-304',
+          // stargaze
+          // localClient: '07-tendermint-13',
+          // juno
+          // remoteClient: '07-tendermint-44',
+          needsSelfRelay: false,
+        },
+      },
     },
     [ChainId.JunoTestnet]: {
       name: 'juno',
