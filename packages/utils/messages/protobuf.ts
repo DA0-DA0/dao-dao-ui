@@ -517,7 +517,7 @@ export const makeStargateMessage = ({
 }: DecodedStargateMsg): StargateMsg => ({
   stargate: {
     type_url: typeUrl,
-    value: toBase64(encodeProtobufValue(typeUrl, value)),
+    value: toBase64(encodeProtobufValue(typeUrl, prepareProtobufJson(value))),
   },
 })
 
@@ -631,3 +631,24 @@ export const decodeRawMessagesForDisplay = (msg: any): any =>
           [key]: decodeRawMessagesForDisplay(decodedValue),
         }
       }, {} as Record<string, any>)
+
+// Prepare JSON for protobuf encoding. Some fields, like Dates, need special
+// handling so that any protobuf type can be encoded.
+//
+// Rules:
+//   (1) Strings with the 'DATE:' prefix are converted to Dates.
+export const prepareProtobufJson = (msg: any): any =>
+  Array.isArray(msg)
+    ? msg.map(prepareProtobufJson)
+    : // Rule (1)
+    typeof msg === 'string' && msg.startsWith('DATE:')
+    ? new Date(msg.replace('DATE:', ''))
+    : typeof msg !== 'object' || msg === null
+    ? msg
+    : Object.entries(msg).reduce(
+        (acc, [key, value]) => ({
+          ...acc,
+          [key]: prepareProtobufJson(value),
+        }),
+        {} as Record<string, any>
+      )

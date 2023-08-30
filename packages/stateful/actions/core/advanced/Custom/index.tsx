@@ -37,7 +37,7 @@ const useTransformToCosmos: UseTransformToCosmos<CustomData> = () =>
     if (msg.wasm) {
       msg = makeWasmMessage(msg)
     }
-    // Encode the stargate message
+    // Encode the stargate message.
     if (msg.stargate) {
       msg = makeStargateMessage(msg)
     }
