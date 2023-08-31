@@ -69,6 +69,29 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // remoteClient: '07-tendermint-1457',
           needsSelfRelay: false,
         },
+        [ChainId.StargazeMainnet]: {
+          // juno
+          note: 'juno1vupyxq9q2mmg5jjcd4cl0ujav8a3xn0a9ahyhtmj0zjaje2gfejsyvyf3z',
+          // juno
+          listener:
+            'juno1w9q8dgfl0n59gpuagn2r8j89w6y5ad4z8yvct096zawksaevx2nqzw3x9q',
+          // stargaze
+          voice:
+            'stars1g9u4zmjj3xmu2me3vq07fqedqp7t0d9xjp3tqff9r2awwc2k8wvq7d39he',
+          // juno
+          localConnection: 'connection-30',
+          // stargaze
+          remoteConnection: 'connection-11',
+          // juno
+          localChannel: 'channel-305',
+          // stargaze
+          remoteChannel: 'channel-201',
+          // juno
+          // localClient: '07-tendermint-44',
+          // stargaze
+          // remoteClient: '07-tendermint-13',
+          needsSelfRelay: false,
+        },
       },
     },
     [ChainId.OsmosisMainnet]: {
@@ -135,6 +158,29 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // osmosis
           // localClient: '07-tendermint-1457',
           // juno
+          // remoteClient: '07-tendermint-0',
+          needsSelfRelay: false,
+        },
+        [ChainId.StargazeMainnet]: {
+          // osmosis
+          note: 'osmo1u44zc3vq37npnctdwd35n7ms3wtagfhdvdnpscq86pk6h9rmzpcsdqe992',
+          // osmosis
+          listener:
+            'osmo1d00cmsk7uym7mtrsrcnhhdza8mpu346klhrpufkzzxkvy9wlegeqw2my6l',
+          // stargaze
+          voice:
+            'stars1fr7ccflazj6mfmpt8z2st424kxkpc6uw7t65sx80q5rp0s8kug6sj34avq',
+          // osmosis
+          localConnection: 'connection-1223',
+          // stargaze
+          remoteConnection: 'connection-0',
+          // osmosis
+          localChannel: 'channel-2659',
+          // stargaze
+          remoteChannel: 'channel-202',
+          // osmosis
+          // localClient: '07-tendermint-1562',
+          // stargaze
           // remoteClient: '07-tendermint-0',
           needsSelfRelay: false,
         },
