@@ -915,6 +915,7 @@
     "searchForWidget": "Search for a widget...",
     "searchNftsPlaceholder": "Find an NFT...",
     "searchValidatorsPlaceholder": "Find a validator...",
+    "selfRelayDescription": "One or more transactions in this proposal require self-relaying across chains since automatic relayers do not exist or are inactive right now.",
     "setUpDiscordNotificationsTooltip": "Set up Discord notifications",
     "signedInAs": "Signed in as {{name}}",
     "socialLoginWarning": "Social logins may be less secure than a self-managed wallet. We recommend the self-managed wallets, above, if you plan on storing large amounts of money.",

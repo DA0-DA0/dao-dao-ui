@@ -657,7 +657,17 @@ export const SelfRelayExecuteModal = ({
 
               break
             } catch (err) {
-              tries -= 1
+              // If header failed validation, it is likely that a relayer is in
+              // the process of relaying these acks already. In that case, keep
+              // retrying indefinitely until it's done. The ack relayer above
+              // tries to check which acks have not yet been received, so if a
+              // relayer takes care of the acks, we will safely continue.
+              if (
+                !(err instanceof Error) ||
+                !err.message.includes('header failed basic validation')
+              ) {
+                tries -= 1
+              }
 
               console.error(
                 t('error.failedToRelayAcks', {
@@ -675,17 +685,14 @@ export const SelfRelayExecuteModal = ({
               await new Promise((resolve) =>
                 setTimeout(
                   resolve,
-                  // If header failed validation or redundnat packets detected,
-                  // it is likely that a relayer is in the process of relaying
-                  // these acks already. In that case, wait a bit longer to let
-                  // it finish. The ack relayer above tries to check which acks
+                  // If redundant packets detected, a relayer already relayed
+                  // these acks. In that case, wait a bit longer to let it
+                  // finish. The ack relayer above tries to check which acks
                   // have not yet been received, so if a relayer takes care of
                   // the acks, we will safely continue.
-                  err instanceof Error &&
-                    (err.message.includes('header failed basic validation') ||
-                      err.message.includes('redundant'))
-                    ? 15000
-                    : 5000
+                  err instanceof Error && err.message.includes('redundant')
+                    ? 15 * 1000
+                    : 5 * 1000
                 )
               )
             }
@@ -815,6 +822,7 @@ export const SelfRelayExecuteModal = ({
       containerClassName="w-full !max-w-lg"
       header={{
         title: t('title.relay'),
+        subtitle: t('info.selfRelayDescription'),
       }}
       onClose={
         // Only allow closing if execution and relaying has not begun. This
@@ -1020,7 +1028,9 @@ export const SelfRelayExecuteModal = ({
             content: () =>
               status === RelayStatus.RelayErrored ? (
                 <div className="flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
-                  <p className="text-text-interactive-error">{relayError}</p>
+                  <p className="break-all text-text-interactive-error">
+                    {relayError}
+                  </p>
 
                   <div className="flex grow flex-row justify-end">
                     <Button onClick={() => setStatus(RelayStatus.Funding)}>
