@@ -179,13 +179,13 @@ const InnerComponent: ActionComponent = (props) => {
   const { watch } = useFormContext()
 
   const {
-    chain: { chain_id: chainId },
+    chain: { chain_id: currentChainId },
     nativeToken,
   } = useChainContext()
 
   const address =
-    context.type === ActionContextType.Dao && chainId !== chain.chain_id
-      ? context.info.polytoneProxies[chainId] || ''
+    context.type === ActionContextType.Dao && currentChainId !== chain.chain_id
+      ? context.info.polytoneProxies[currentChainId] || ''
       : _address
 
   // These need to be loaded via cached loadables to avoid displaying a loader
@@ -194,6 +194,7 @@ const InnerComponent: ActionComponent = (props) => {
 
   const balances = useTokenBalances({
     filter: TokenType.Native,
+    allChains: true,
   })
   const loadingNativeBalance: LoadingData<Coin> = balances.loading
     ? { loading: true }
@@ -201,7 +202,8 @@ const InnerComponent: ActionComponent = (props) => {
         loading: false,
         data: coin(
           balances.data.find(
-            ({ token: { denomOrAddress } }) =>
+            ({ token: { chainId, denomOrAddress } }) =>
+              chainId === nativeToken.chainId &&
               denomOrAddress === nativeToken.denomOrAddress
           )?.balance ?? 0,
           nativeToken.denomOrAddress
@@ -210,7 +212,7 @@ const InnerComponent: ActionComponent = (props) => {
 
   const loadingNativeDelegationInfo = useCachedLoading(
     nativeDelegationInfoSelector({
-      chainId,
+      chainId: currentChainId,
       address,
     }),
     {
@@ -221,14 +223,14 @@ const InnerComponent: ActionComponent = (props) => {
 
   const loadingValidators = useCachedLoading(
     validatorsSelector({
-      chainId,
+      chainId: currentChainId,
     }),
     []
   )
 
   const nativeUnstakingDurationSeconds = useCachedLoading(
     nativeUnstakingDurationSecondsSelector({
-      chainId,
+      chainId: currentChainId,
     }),
     -1
   )
