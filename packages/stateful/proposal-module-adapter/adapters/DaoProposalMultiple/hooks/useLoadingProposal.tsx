@@ -138,6 +138,8 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
       ...proposal,
       timestampInfo,
       votingOpen,
+      executedAt:
+        typeof executedAt === 'string' ? new Date(executedAt) : undefined,
     },
   }
 }

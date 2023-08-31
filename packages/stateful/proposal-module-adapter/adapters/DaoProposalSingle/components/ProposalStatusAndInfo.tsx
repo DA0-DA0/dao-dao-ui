@@ -310,25 +310,29 @@ const InnerProposalStatusAndInfo = ({
     ),
     []
   )
-  // Polytone messages that need self-relay are those whose polytone connections
-  // require self-relaying and are not yet relayed.
+  const executedOverOneMinuteAgo =
+    proposal.status === ProposalStatus.Executed &&
+    proposal.executedAt !== undefined &&
+    // If executed over 1 minute ago...
+    proposal.executedAt.getTime() - new Date().getTime() < 60 * 1000
   const polytoneMessagesNeedingSelfRelay = polytoneResults.loading
     ? ({ loading: true } as const)
     : {
         loading: false,
         data: polytoneMessages.filter(
           ({ polytoneConnection: polytoneNote }, index) =>
-            // Needs self-relay.
-            polytoneNote.needsSelfRelay &&
+            // Needs self-relay or does not need self-relay but was executed
+            // over a minute ago and still has not been relayed.
+            (polytoneNote.needsSelfRelay || executedOverOneMinuteAgo) &&
             // Not yet relayed.
             polytoneResults.data[index].state === 'hasError'
         ),
       }
-  const hasPolytoneMessagesNeedingRelay =
+  const hasPolytoneMessagesNeedingSelfRelay =
     !polytoneMessagesNeedingSelfRelay.loading &&
     polytoneMessagesNeedingSelfRelay.data.length > 0
   const openPolytoneRelay = (transactionHash?: string) =>
-    hasPolytoneMessagesNeedingRelay &&
+    hasPolytoneMessagesNeedingSelfRelay &&
     openSelfRelayExecute({
       uniqueId: `${chainId}:${proposalModule.address}:${proposalNumber}`,
       transaction: transactionHash
@@ -450,7 +454,7 @@ const InnerProposalStatusAndInfo = ({
               label: t('button.execute'),
               Icon: Key,
               loading: actionLoading,
-              doAction: hasPolytoneMessagesNeedingRelay
+              doAction: hasPolytoneMessagesNeedingSelfRelay
                 ? () => openPolytoneRelay()
                 : onExecute,
             }
@@ -463,7 +467,7 @@ const InnerProposalStatusAndInfo = ({
             }
           : // If executed and has polytone messages that have not been relayed and has loaded TX hash.
           proposal.status === ProposalStatus.Executed &&
-            hasPolytoneMessagesNeedingRelay &&
+            hasPolytoneMessagesNeedingSelfRelay &&
             !loadingExecutionTxHash.loading &&
             loadingExecutionTxHash.data
           ? {
