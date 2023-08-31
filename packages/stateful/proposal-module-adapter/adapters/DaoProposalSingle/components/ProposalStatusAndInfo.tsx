@@ -310,11 +310,11 @@ const InnerProposalStatusAndInfo = ({
     ),
     []
   )
-  const executedOverOneMinuteAgo =
+  const executedOverThreeMinutesAgo =
     proposal.status === ProposalStatus.Executed &&
     proposal.executedAt !== undefined &&
-    // If executed over 1 minute ago...
-    Date.now() - proposal.executedAt.getTime() > 60 * 1000
+    // If executed over 3 minutes ago...
+    Date.now() - proposal.executedAt.getTime() > 3 * 60 * 1000
   const polytoneMessagesNeedingSelfRelay = polytoneResults.loading
     ? ({ loading: true } as const)
     : {
@@ -322,8 +322,8 @@ const InnerProposalStatusAndInfo = ({
         data: polytoneMessages.filter(
           ({ polytoneConnection: polytoneNote }, index) =>
             // Needs self-relay or does not need self-relay but was executed
-            // over a minute ago and still has not been relayed.
-            (polytoneNote.needsSelfRelay || executedOverOneMinuteAgo) &&
+            // over 3 minutes ago and still has not been relayed.
+            (polytoneNote.needsSelfRelay || executedOverThreeMinutesAgo) &&
             // Not yet relayed.
             polytoneResults.data[index].state === 'hasError'
         ),
