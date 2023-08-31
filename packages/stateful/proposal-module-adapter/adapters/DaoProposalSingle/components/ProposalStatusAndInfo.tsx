@@ -314,7 +314,7 @@ const InnerProposalStatusAndInfo = ({
     proposal.status === ProposalStatus.Executed &&
     proposal.executedAt !== undefined &&
     // If executed over 1 minute ago...
-    proposal.executedAt.getTime() - new Date().getTime() < 60 * 1000
+    Date.now() - proposal.executedAt.getTime() > 60 * 1000
   const polytoneMessagesNeedingSelfRelay = polytoneResults.loading
     ? ({ loading: true } as const)
     : {
@@ -465,7 +465,7 @@ const InnerProposalStatusAndInfo = ({
               loading: actionLoading,
               doAction: onClose,
             }
-          : // If executed and has polytone messages that have not been relayed and has loaded TX hash.
+          : // If executed and has polytone messages that need relaying...
           proposal.status === ProposalStatus.Executed &&
             hasPolytoneMessagesNeedingSelfRelay &&
             !loadingExecutionTxHash.loading &&
