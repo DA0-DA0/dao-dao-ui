@@ -83,6 +83,10 @@ export const BabyEmoji = () => (
   <EmojiWrapper emoji="👶" labelI18nKey="emoji.baby" />
 )
 
+export const BabyAngelEmoji = () => (
+  <EmojiWrapper emoji="👼" labelI18nKey="emoji.babyAngel" />
+)
+
 export const WhaleEmoji = () => (
   <EmojiWrapper emoji="🐋" labelI18nKey="emoji.whale" />
 )

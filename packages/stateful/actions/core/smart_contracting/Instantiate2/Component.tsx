@@ -27,13 +27,12 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-export interface InstantiateOptions {
+export type Instantiate2Options = {
   nativeBalances: LoadingData<GenericTokenBalance[]>
-  // Only present once executed.
   instantiatedAddress?: string
 }
 
-export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
+export const Instantiate2Component: ActionComponent<Instantiate2Options> = (
   props
 ) => {
   const {
@@ -58,7 +57,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 
   return (
     <>
-      {instantiatedAddress && (
+      {!!instantiatedAddress && (
         <div className="flex flex-row items-center gap-6 text-text-primary">
           <InputLabel name={t('form.instantiatedAddress') + ':'} />
           <CopyToClipboard

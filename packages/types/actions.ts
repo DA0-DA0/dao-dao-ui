@@ -35,6 +35,7 @@ export enum ActionKey {
   ManageSubDaos = 'manageSubDaos',
   UpdateInfo = 'updateInfo',
   Instantiate = 'instantiate',
+  Instantiate2 = 'instantiate2',
   Execute = 'execute',
   Migrate = 'migrate',
   UpdateAdmin = 'updateAdmin',

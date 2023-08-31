@@ -57,7 +57,7 @@ export const PressEditor = ({
             } as Cw721InstantiateMsg
           )
         : codeIds.Sg721Base
-        ? // TODO(stargaze): test this
+        ? // TODO(stargaze): fix this by instantiating sg721-base with instantiate2 instead of wallet ahead of time (add a flag to actions to make them programmaticOnly)
           await instantiateSmartContract(
             signingCosmWasmClient,
             walletAddress,

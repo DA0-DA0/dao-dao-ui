@@ -227,6 +227,7 @@
   },
   "emoji": {
     "baby": "Baby",
+    "babyAngel": "Baby Angel",
     "ballotBox": "Ballot box",
     "bank": "Bank",
     "bee": "Bee",
@@ -806,6 +807,7 @@
     "inboxEmailTooltip": "Receive inbox notifications in your email.",
     "installKeplrMobileOrScanQrCode": "If you don't have Keplr Mobile installed, <2>click here to install it</2> or scan the QR code at the bottom with another device.",
     "instantiateSmartContractActionDescription": "Instantiate a smart contract.",
+    "instantiatePredictableSmartContractActionDescription": "Instantiate a smart contract with a predictable address.",
     "intakeClosesAt": "Intake closes at {{date}}.",
     "intakeOpensAt": "Intake opens at {{date}}.",
     "intakeOpensAtAndClosesAt": "Intake opens at {{openDate}} and closes at {{closeDate}}.",
@@ -1261,6 +1263,7 @@
     "inboxWithCount": "Inbox ({{count}})",
     "initialTokenDistribution": "Initial Token Distribution",
     "instantiateSmartContract": "Instantiate Smart Contract",
+    "instantiatePredictableSmartContract": "Instantiate Predictable Smart Contract",
     "lastUpdated": "Last updated",
     "ledger": "Ledger",
     "logInWith": "Log in with...",
