@@ -274,7 +274,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // localClient: '07-tendermint-13',
           // juno
           // remoteClient: '07-tendermint-44',
-          needsSelfRelay: false,
+          needsSelfRelay: true,
         },
       },
     },
