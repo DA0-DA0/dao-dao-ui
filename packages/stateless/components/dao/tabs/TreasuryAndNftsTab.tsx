@@ -8,10 +8,12 @@ import {
   LoadingData,
   NftCardInfo,
   TokenCardInfo,
+  TokenType,
 } from '@dao-dao/types'
 import {
   getChainForChainId,
   getDisplayNameForChainId,
+  getNativeTokenForChainId,
   isKadoEnabled,
 } from '@dao-dao/utils'
 
@@ -28,7 +30,11 @@ export interface TreasuryAndNftsTabProps<
   T extends TokenCardInfo,
   N extends NftCardInfo
 > {
-  tokens: LoadingData<T[]>
+  tokens: LoadingData<{
+    infos: T[]
+    // Map chain ID to loading state.
+    loading: Record<string, boolean>
+  }>
   TokenCard: ComponentType<T>
   nfts: LoadingData<N[]>
   NftCard: ComponentType<N>
@@ -72,25 +78,61 @@ export const TreasuryAndNftsTab = <
       chainId,
       polytoneProxies[chainId],
     ]),
-  ].map(([chainId, address]) => ({
-    chainId,
-    address,
-    tokens: tokens.loading
-      ? []
-      : tokens.data
-          .filter(({ token }) => token.chainId === chainId)
-          // Sort governance token first.
-          .sort((a, b) =>
-            !!a.isGovernanceToken === !!b.isGovernanceToken
-              ? 0
-              : a.isGovernanceToken
-              ? -1
-              : 1
-          ),
-    nfts: nfts.loading
-      ? []
-      : nfts.data.filter((nft) => nft.chainId === chainId),
-  }))
+  ].map(
+    ([chainId, address]): {
+      chainId: string
+      address: string | undefined
+      tokens: LoadingData<T[]>
+      nfts: LoadingData<N[]>
+    } => ({
+      chainId,
+      address,
+      tokens:
+        tokens.loading || tokens.data.loading[chainId]
+          ? { loading: true }
+          : {
+              loading: false,
+              updating: tokens.updating,
+              data: tokens.data.infos
+                .filter(({ token }) => token.chainId === chainId)
+                // Sort governance token first, then native currency, then by
+                // balance.
+                .sort((a, b) => {
+                  const aValue = a.isGovernanceToken
+                    ? -2
+                    : a.token.type === TokenType.Native &&
+                      a.token.denomOrAddress ===
+                        getNativeTokenForChainId(chainId).denomOrAddress
+                    ? -1
+                    : a.lazyInfo.loading
+                    ? a.unstakedBalance
+                    : a.lazyInfo.data.totalBalance
+                  const bValue = b.isGovernanceToken
+                    ? -2
+                    : b.token.type === TokenType.Native &&
+                      b.token.denomOrAddress ===
+                        getNativeTokenForChainId(chainId).denomOrAddress
+                    ? -1
+                    : b.lazyInfo.loading
+                    ? b.unstakedBalance
+                    : b.lazyInfo.data.totalBalance
+
+                  // Put smaller value first if either is negative (prioritized
+                  // token), otherwise sort balances descending.
+                  return aValue < 0 || bValue < 0
+                    ? aValue - bValue
+                    : bValue - aValue
+                }),
+            },
+      nfts: nfts.loading
+        ? nfts
+        : {
+            loading: false,
+            updating: nfts.updating,
+            data: nfts.data.filter((nft) => nft.chainId === chainId),
+          },
+    })
+  )
 
   const [showDepositFiat, setShowDepositFiat] = useState(false)
   const [chainsCollapsed, setChainsCollapsed] = useState(
@@ -104,7 +146,7 @@ export const TreasuryAndNftsTab = <
       <div className="mb-9">
         {tokens.loading || !tokens.data ? (
           <Loader className="mt-6" fill={false} />
-        ) : tokens.data.length ? (
+        ) : tokens.data.infos.length ? (
           <div className="flex flex-col gap-4">
             {treasuries.map(({ chainId, address, tokens, nfts }) => {
               const bech32Prefix = getChainForChainId(chainId).bech32_prefix
@@ -183,28 +225,38 @@ export const TreasuryAndNftsTab = <
                         chainsCollapsed[chainId] ? 'h-0' : 'h-auto'
                       )}
                     >
-                      {tokens.length > 0 && (
-                        <GridCardContainer cardType="wide">
-                          {tokens.map((props, index) => (
-                            <TokenCard {...props} key={index} />
-                          ))}
-                        </GridCardContainer>
-                      )}
-
-                      {nfts.length > 0 && (
-                        <>
-                          <p className="title-text mt-4">{t('title.nfts')}</p>
-
-                          <GridCardContainer>
-                            {nfts.map((props, index) => (
-                              <NftCard {...(props as N)} key={index} />
+                      {tokens.loading ? (
+                        <Loader />
+                      ) : (
+                        tokens.data.length > 0 && (
+                          <GridCardContainer cardType="wide">
+                            {tokens.data.map((props, index) => (
+                              <TokenCard {...props} key={index} />
                             ))}
                           </GridCardContainer>
-                        </>
+                        )
                       )}
 
-                      {tokens.length === 0 &&
-                        nfts.length === 0 &&
+                      {nfts.loading ? (
+                        <Loader />
+                      ) : (
+                        nfts.data.length > 0 && (
+                          <>
+                            <p className="title-text mt-4">{t('title.nfts')}</p>
+
+                            <GridCardContainer>
+                              {nfts.data.map((props, index) => (
+                                <NftCard {...(props as N)} key={index} />
+                              ))}
+                            </GridCardContainer>
+                          </>
+                        )
+                      )}
+
+                      {!tokens.loading &&
+                        tokens.data.length === 0 &&
+                        !nfts.loading &&
+                        nfts.data.length === 0 &&
                         (chainId === daoChainId ? (
                           <p className="secondary-text">
                             {t('info.nothingFound')}
