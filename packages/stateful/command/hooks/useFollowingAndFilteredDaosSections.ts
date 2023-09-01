@@ -67,12 +67,14 @@ export const useFollowingAndFilteredDaosSections = ({
             value: {
               config: { name, image_url },
               proposalCount,
+              polytoneProxies,
             },
           }): CommandModalContextSectionItem<CommandModalDaoInfo> => ({
             chainId,
             coreAddress: contractAddress,
             name,
             imageUrl: image_url || getFallbackImage(contractAddress),
+            polytoneProxies: Object.values(polytoneProxies || {}),
             // If DAO has no proposals, make it less visible and give it a
             // tooltip to indicate that it may not be active.
             ...(proposalCount === 0 && {

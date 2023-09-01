@@ -53,8 +53,8 @@ export const InnerCommandModalContextView = ({
     // Filter if possible.
     if (filter) {
       const fuse = new Fuse(itemsWithSection, {
-        // Allow filtering by DAO coreAddress if present.
-        keys: ['item.name', 'item.coreAddress'],
+        // Allow filtering by DAO's name, coreAddress, and polytone proxies.
+        keys: ['item.name', 'item.coreAddress', 'item.polytoneProxies'],
       })
       itemsWithSection = fuse.search(filter).map((o) => o.item)
     }
