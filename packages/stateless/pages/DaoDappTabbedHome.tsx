@@ -1,6 +1,6 @@
 import { ArrowOutwardRounded } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -49,20 +49,6 @@ export const DaoDappTabbedHome = ({
     getDaoPath(''),
     baseGetDaoPath(DaoPageMode.Sda, '')
   )
-
-  useEffect(() => {
-    // Don't run if viewing native governance.
-    if (daoInfo.coreVersion === ContractVersion.Gov) {
-      return
-    }
-
-    // Trigger SDA to cache page the user might switch to.
-    if (typeof window !== 'undefined') {
-      fetch(SDA_URL_PREFIX + `/api/revalidate?d=${daoInfo.coreAddress}`).catch(
-        console.error
-      )
-    }
-  }, [daoInfo.coreAddress, daoInfo.coreVersion])
 
   const tabContainerRef = useRef<HTMLDivElement>(null)
 

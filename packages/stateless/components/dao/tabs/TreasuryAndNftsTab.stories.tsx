@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { DaoFiatDepositModal } from '@dao-dao/stateful'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 import { TokenCardProps } from '@dao-dao/types'
 
@@ -25,7 +26,12 @@ export const Default = Template.bind({})
 Default.args = {
   tokens: {
     loading: false,
-    data: [makeTokenCardProps(true), makeTokenCardProps()],
+    data: {
+      infos: [makeTokenCardProps(true), makeTokenCardProps()],
+      loading: {
+        [CHAIN_ID]: false,
+      },
+    },
   },
   TokenCard,
   nfts: {
