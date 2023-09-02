@@ -71,4 +71,5 @@ export interface CommandModalDaoInfo {
   coreAddress: string
   name: string
   imageUrl: string
+  polytoneProxies?: string[]
 }

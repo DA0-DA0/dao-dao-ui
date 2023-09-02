@@ -6,7 +6,7 @@ import {
   StargateClient,
   decodeCosmosSdkDecFromProto,
 } from '@cosmjs/stargate'
-import { selector, selectorFamily, waitForAll } from 'recoil'
+import { selector, selectorFamily, waitForAll, waitForAny } from 'recoil'
 
 import { cosmos, juno } from '@dao-dao/protobuf'
 import { ModuleAccount } from '@dao-dao/protobuf/codegen/cosmos/auth/v1beta1/auth'
@@ -173,6 +173,20 @@ export const chainAtOrAboveCosmosSdk47Selector = selectorFamily<
     },
 })
 
+export const justNativeBalancesSelector = selectorFamily<
+  readonly Coin[],
+  WithChainId<{ address: string }>
+>({
+  key: 'justNativeBalances',
+  get:
+    ({ address, chainId }) =>
+    async ({ get }) => {
+      const client = get(stargateClientForChainSelector(chainId))
+      get(refreshWalletBalancesIdAtom(address))
+      return await client.getAllBalances(address)
+    },
+})
+
 export const nativeBalancesSelector = selectorFamily<
   GenericTokenBalance[],
   WithChainId<{ address: string }>
@@ -180,12 +194,12 @@ export const nativeBalancesSelector = selectorFamily<
   key: 'nativeBalances',
   get:
     ({ address, chainId }) =>
-    async ({ get }) => {
-      const client = get(stargateClientForChainSelector(chainId))
-
+    ({ get }) => {
       get(refreshWalletBalancesIdAtom(address))
 
-      const balances = [...(await client.getAllBalances(address))]
+      const balances = [
+        ...get(justNativeBalancesSelector({ address, chainId })),
+      ]
       // Add native denom if not present.
       const nativeToken = getNativeTokenForChainId(chainId)
       if (!balances.some(({ denom }) => denom === nativeToken.denomOrAddress)) {
@@ -194,7 +208,6 @@ export const nativeBalancesSelector = selectorFamily<
           denom: nativeToken.denomOrAddress,
         })
       }
-
       // Add USDC if not present and on mainnet.
       const nativeIbcUsdcDenom = getNativeIbcUsdc(chainId)?.denomOrAddress
       if (
@@ -208,8 +221,8 @@ export const nativeBalancesSelector = selectorFamily<
         })
       }
 
-      const tokens = get(
-        waitForAll(
+      const tokenLoadables = get(
+        waitForAny(
           balances.map(({ denom }) =>
             genericTokenSelector({
               type: TokenType.Native,
@@ -220,11 +233,13 @@ export const nativeBalancesSelector = selectorFamily<
         )
       )
 
-      return tokens.map((token, index) => ({
-        chainId,
-        token,
-        balance: balances[index].amount,
-      }))
+      return tokenLoadables
+        .map((token, index) => ({
+          chainId,
+          token: token.state === 'hasValue' ? token.contents : undefined,
+          balance: balances[index].amount,
+        }))
+        .filter(({ token }) => token !== undefined) as GenericTokenBalance[]
     },
 })
 
