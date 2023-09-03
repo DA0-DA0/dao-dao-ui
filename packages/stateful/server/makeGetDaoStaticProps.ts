@@ -137,7 +137,44 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       }
     }
 
-    // TODO(polytone): if polytone proxy, redirect to main DAO
+    // If address is polytone proxy, redirect to DAO on native chain.
+    const addressInfo = await queryIndexer<ContractVersionInfo>({
+      type: 'contract',
+      chainId,
+      address: coreAddress,
+      formula: 'info',
+      required: true,
+    })
+    if (addressInfo && addressInfo.contract === 'crates.io:polytone-proxy') {
+      // Get voice for this proxy on destination chain.
+      const voice = await queryIndexer({
+        type: 'contract',
+        chainId,
+        // proxy
+        address: coreAddress,
+        formula: 'polytone/proxy/instantiator',
+        required: true,
+      })
+
+      const dao = await queryIndexer({
+        type: 'contract',
+        chainId,
+        address: voice,
+        formula: 'polytone/voice/remoteController',
+        args: {
+          // proxy
+          address: coreAddress,
+        },
+        required: true,
+      })
+
+      return {
+        redirect: {
+          destination: getDaoPath(appMode, dao),
+          permanent: true,
+        },
+      }
+    }
 
     // Add to Sentry error tags if error occurs.
     let coreVersion: ContractVersion | undefined
