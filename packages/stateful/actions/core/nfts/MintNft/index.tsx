@@ -67,10 +67,9 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
 
   return (
     <>
-      {context.type === ActionContextType.Dao && (
+      {context.type === ActionContextType.Dao && props.isCreating && (
         <ChainPickerInput
           className="mb-4"
-          disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
           onChange={(chainId) => {
             // Update minter and recipient to correct address.

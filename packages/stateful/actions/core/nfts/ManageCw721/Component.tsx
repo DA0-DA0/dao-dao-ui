@@ -64,11 +64,12 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
 
   return (
     <>
-      <ChainPickerInput
-        className="mb-4"
-        disabled={!isCreating}
-        fieldName={fieldNamePrefix + 'chainId'}
-      />
+      {isCreating && (
+        <ChainPickerInput
+          className="mb-4"
+          fieldName={fieldNamePrefix + 'chainId'}
+        />
+      )}
 
       <div className="flex flex-col gap-1">
         <SegmentedControlsTitle
