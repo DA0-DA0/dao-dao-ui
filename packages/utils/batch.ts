@@ -27,9 +27,8 @@ const defaultHttpBatchClientOptions = {
 
 export class BatchClient {
   protected readonly url: string
-  protected readonly headers: Record<string, string> | undefined
   protected readonly options: BatchClientOptions
-  private timer: NodeJS.Timer | undefined
+  private timer: NodeJS.Timer | number | undefined
   private readonly queue: QueueItem[]
 
   constructor(endpoint: string, options: Partial<BatchClientOptions> = {}) {
