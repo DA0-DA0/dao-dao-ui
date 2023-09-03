@@ -29,6 +29,7 @@ import {
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   CI,
+  DAO_CORE_ACCENT_ITEM_KEY,
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
@@ -244,7 +245,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             .filter(Boolean)
             .join(' | '),
         description: overrideDescription ?? config.description,
-        accentColor: items.accentColor || null,
+        accentColor: items[DAO_CORE_ACCENT_ITEM_KEY] || null,
         serializedInfo: {
           chainId,
           coreAddress,

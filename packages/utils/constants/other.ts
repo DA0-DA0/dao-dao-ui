@@ -27,6 +27,8 @@ export const FOLLOWING_DAOS_PREFIX = 'following:'
 // The key for the item in the DAO core contract that contains the payroll
 // config.
 export const DAO_CORE_PAYROLL_CONFIG_ITEM_KEY = 'payroll'
+// The key for the item in the DAO core contract that contains the accent color.
+export const DAO_CORE_ACCENT_ITEM_KEY = 'accent'
 
 // Me balances page
 export const HIDDEN_BALANCE_PREFIX = 'hiddenBalance:'
