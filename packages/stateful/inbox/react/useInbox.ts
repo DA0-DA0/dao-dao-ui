@@ -71,22 +71,20 @@ export const useInbox = (): InboxState => {
       // items that belong to that DAO. This also serves to combine/group items
       // from the various sources by DAO.
       const sortedCombinedDaosWithItems = orderedDaos.map(
-        ({ chainId, coreAddress }) => {
-          return {
-            chainId,
-            coreAddress,
-            items: itemsWithDao
-              .filter(
-                (itemWithDao) =>
-                  itemWithDao.chainId === chainId &&
-                  itemWithDao.coreAddress === coreAddress
-              )
-              .map(({ Renderer, item }) => ({
-                Renderer,
-                ...item,
-              })),
-          }
-        }
+        ({ chainId, coreAddress }) => ({
+          chainId,
+          coreAddress,
+          items: itemsWithDao
+            .filter(
+              (itemWithDao) =>
+                itemWithDao.chainId === chainId &&
+                itemWithDao.coreAddress === coreAddress
+            )
+            .map(({ Renderer, item }) => ({
+              Renderer,
+              ...item,
+            })),
+        })
       )
 
       return {
