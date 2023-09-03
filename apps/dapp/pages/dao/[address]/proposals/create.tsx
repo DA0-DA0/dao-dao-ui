@@ -31,6 +31,7 @@ export const getStaticPaths: GetStaticPaths = () => ({
 })
 
 export const getStaticProps = makeGetDaoStaticProps({
+  appMode: DaoPageMode.Dapp,
   getProps: ({ t, coreAddress }) => ({
     url: SITE_URL + getDaoProposalPath(DaoPageMode.Dapp, coreAddress, 'create'),
     followingTitle: t('title.createAProposal'),

@@ -1,5 +1,4 @@
 import { Chain } from '@chain-registry/types'
-import axios from 'axios'
 import type { GetStaticProps, Redirect } from 'next'
 import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
@@ -43,9 +42,7 @@ import {
   parseContractVersion,
   polytoneNoteProxyMapToChainIdMap,
   processError,
-  toAccessibleImageUrl,
 } from '@dao-dao/utils'
-import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
 
 import { DaoPageWrapperProps } from '../components'
 import {
@@ -68,6 +65,7 @@ interface GetDaoStaticPropsMakerProps {
 }
 
 interface GetDaoStaticPropsMakerOptions {
+  appMode: DaoPageMode
   coreAddress?: string
   getProps?: (options: {
     context: Parameters<GetStaticProps>[0]
@@ -85,7 +83,7 @@ interface GetDaoStaticPropsMakerOptions {
 }
 
 type GetDaoStaticPropsMaker = (
-  options?: GetDaoStaticPropsMakerOptions
+  options: GetDaoStaticPropsMakerOptions
 ) => GetStaticProps<DaoPageWrapperProps>
 
 export class LegacyDaoError extends Error {
@@ -97,7 +95,7 @@ export class LegacyDaoError extends Error {
 
 // Computes DaoPageWrapperProps for the DAO with optional alterations.
 export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
-  ({ coreAddress: _coreAddress, getProps } = {}) =>
+  ({ appMode, coreAddress: _coreAddress, getProps }) =>
   async (context) => {
     // Don't query chain if running in CI.
     if (CI) {
@@ -237,27 +235,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           proposalModules,
         })) ?? {}
 
-      // Get DAO accent color.
-      let accentColor: string | null = null
-      if (config.image_url && !config.image_url.endsWith('svg')) {
-        try {
-          const response = await axios.get(
-            FAST_AVERAGE_COLOR_API_TEMPLATE.replace(
-              'URL',
-              toAccessibleImageUrl(config.image_url, {
-                replaceRelative: true,
-              })
-            ),
-            { responseType: 'text' }
-          )
-
-          accentColor = response.data
-        } catch (error) {
-          // If fail to load image or get color, don't prevent page render.
-          console.error(error)
-        }
-      }
-
       const props: DaoPageWrapperProps = {
         ...i18nProps,
         url: url ?? null,
@@ -267,7 +244,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             .filter(Boolean)
             .join(' | '),
         description: overrideDescription ?? config.description,
-        accentColor,
+        accentColor: items.accentColor || null,
         serializedInfo: {
           chainId,
           coreAddress,
