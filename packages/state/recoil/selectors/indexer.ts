@@ -133,7 +133,7 @@ export const openProposalsSelector = selectorFamily<
     proposalModuleAddress: string
     proposals: {
       id: number
-      proposal: { expiration: Expiration }
+      proposal: { start_height: number; expiration: Expiration }
       voted?: boolean
     }[]
   }[],

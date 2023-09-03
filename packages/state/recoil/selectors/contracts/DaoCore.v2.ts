@@ -1,4 +1,4 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll, waitForAny } from 'recoil'
 
 import {
   GenericTokenBalance,
@@ -30,12 +30,13 @@ import {
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   CW721_WORKAROUND_ITEM_KEY_PREFIX,
+  POLYTONE_CW721_ITEM_KEY_PREFIX,
   getSupportedChainConfig,
   polytoneNoteProxyMapToChainIdMap,
 } from '@dao-dao/utils'
 
 import {
-  Cw721BaseSelectors,
+  CommonNftSelectors,
   DaoVotingCw20StakedSelectors,
   PolytoneNoteSelectors,
 } from '.'
@@ -203,7 +204,7 @@ export const _cw20TokenListSelector = selectorFamily<
       return await client.cw20TokenList(...params)
     },
 })
-// Use allCw721TokenListSelector as it uses the indexer and implements
+// Use allNativeCw721TokenListSelector as it uses the indexer and implements
 // pagination for chain queries.
 export const _cw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse,
@@ -734,13 +735,13 @@ export const allCw20TokensWithBalancesSelector = selectorFamily<
 })
 
 const CW721_TOKEN_LIST_LIMIT = 30
-export const allCw721TokenListSelector = selectorFamily<
+export const allNativeCw721TokenListSelector = selectorFamily<
   Cw721TokenListResponse,
   QueryClientParams & {
     governanceCollectionAddress?: string
   }
 >({
-  key: 'daoCoreV2AllCw721TokenList',
+  key: 'daoCoreV2AllNativeCw721TokenList',
   get:
     ({ governanceCollectionAddress, ...queryClientParams }) =>
     async ({ get }) => {
@@ -809,57 +810,185 @@ export const allCw721TokenListSelector = selectorFamily<
     },
 })
 
-// Get all CW721 collections in the DAO's list, filtered by the DAO being the
-// minter.
+// Get all cw721 collections stored in the items list for polytone proxies
+// across all chains.
+export const allPolytoneCw721CollectionsSelector = selectorFamily<
+  Record<
+    string,
+    {
+      proxy: string
+      collectionAddresses: string[]
+    }
+  >,
+  QueryClientParams
+>({
+  key: 'daoCoreV2AllPolytoneCw721Collections',
+  get:
+    (queryClientParams) =>
+    ({ get }) => {
+      const polytoneProxies = get(polytoneProxiesSelector(queryClientParams))
+      const polytoneCw721Keys = get(
+        listAllItemsWithPrefixSelector({
+          ...queryClientParams,
+          prefix: POLYTONE_CW721_ITEM_KEY_PREFIX,
+        })
+      )
+
+      const collectionsByChain = polytoneCw721Keys.reduce(
+        (acc, [key]) => {
+          const [, chainId, collectionAddress] = key.split(':')
+          // If no polytone proxy for this chain, skip it. This should only
+          // happen if a key is manually set for a chain that does not have a
+          // polytone proxy.
+          if (!(chainId in polytoneProxies)) {
+            return acc
+          }
+
+          if (!acc[chainId]) {
+            acc[chainId] = {
+              proxy: polytoneProxies[chainId],
+              collectionAddresses: [],
+            }
+          }
+          acc[chainId].collectionAddresses.push(collectionAddress)
+
+          return acc
+        },
+        {} as Record<
+          string,
+          {
+            proxy: string
+            collectionAddresses: string[]
+          }
+        >
+      )
+
+      return collectionsByChain
+    },
+})
+
+// Combine native and polytone NFT collections.
+export const allCw721CollectionsSelector = selectorFamily<
+  Record<
+    string,
+    {
+      owner: string
+      collectionAddresses: string[]
+    }
+  >,
+  QueryClientParams & {
+    governanceCollectionAddress?: string
+  }
+>({
+  key: 'daoCoreV2AllCw721Collections',
+  get:
+    (queryClientParams) =>
+    ({ get }) => {
+      const nativeCw721TokenList = get(
+        allNativeCw721TokenListSelector(queryClientParams)
+      )
+      const polytoneCw721Collections = get(
+        allPolytoneCw721CollectionsSelector(queryClientParams)
+      )
+
+      // Start with native NFTs.
+      let allNfts: Record<
+        string,
+        {
+          owner: string
+          collectionAddresses: string[]
+        }
+      > = {
+        [queryClientParams.chainId]: {
+          owner: queryClientParams.contractAddress,
+          collectionAddresses: nativeCw721TokenList,
+        },
+      }
+
+      // Add polytone NFTs.
+      Object.entries(polytoneCw721Collections).forEach(
+        ([chainId, { proxy, collectionAddresses }]) => {
+          allNfts[chainId] = {
+            owner: proxy,
+            collectionAddresses,
+          }
+        }
+      )
+
+      return allNfts
+    },
+})
+
+// Get all CW721 collections, filtered by the DAO being the minter.
 export const allCw721CollectionsWithDaoAsMinterSelector = selectorFamily<
-  ({ address: string } & ContractInfoResponse)[],
+  ({
+    address: string
+    // DAO's address or polytone proxy that is the minter.
+    minter: string
+    chainId: string
+  } & ContractInfoResponse)[],
   QueryClientParams
 >({
   key: 'daoCoreV2AllCw721CollectionsWithDaoAsMinter',
   get:
     (queryClientParams) =>
-    async ({ get }) => {
-      const tokenList: Cw721TokenListResponse = get(
-        allCw721TokenListSelector(queryClientParams)
+    ({ get }) => {
+      // Flatten dictionary of chainId -> { owner, collectionAddresses } into
+      // list of each collection.
+      const collections = Object.entries(
+        get(allCw721CollectionsSelector(queryClientParams))
+      ).flatMap(([chainId, { owner, collectionAddresses }]) =>
+        collectionAddresses.map((collectionAddress) => ({
+          owner,
+          collectionAddress,
+          chainId,
+        }))
       )
-      const minterResponses = get(
-        waitForAll(
-          tokenList.map((token) =>
-            Cw721BaseSelectors.minterSelector({
-              // Copies over chainId and any future additions to client params.
-              ...queryClientParams,
 
-              contractAddress: token,
+      // Get the minter for each collection.
+      const minterResponses = get(
+        waitForAny(
+          collections.map(({ chainId, collectionAddress }) =>
+            CommonNftSelectors.minterSelector({
+              contractAddress: collectionAddress,
+              chainId,
               params: [],
             })
           )
         )
       )
-
       // Filter out collections that don't have the DAO as the minter.
-      const collectionsWithDaoAsMinter = tokenList.filter(
-        (_, idx) =>
-          minterResponses[idx].minter === queryClientParams.contractAddress
+      const collectionsWithDaoAsMinter = collections.filter(
+        ({ owner }, idx) =>
+          minterResponses[idx].state === 'hasValue' &&
+          minterResponses[idx].contents.minter === owner
       )
 
       const collectionInfos = get(
-        waitForAll(
-          collectionsWithDaoAsMinter.map((collection) =>
-            Cw721BaseSelectors.contractInfoSelector({
-              // Copies over chainId and any future additions to client params.
-              ...queryClientParams,
-
-              contractAddress: collection,
+        waitForAny(
+          collectionsWithDaoAsMinter.map(({ chainId, collectionAddress }) =>
+            CommonNftSelectors.contractInfoSelector({
+              contractAddress: collectionAddress,
+              chainId,
               params: [],
             })
           )
         )
       )
 
-      return collectionsWithDaoAsMinter.map((collection, idx) => ({
-        address: collection,
-        ...collectionInfos[idx],
-      }))
+      return collectionsWithDaoAsMinter.flatMap(
+        ({ chainId, owner, collectionAddress }, idx) =>
+          collectionInfos[idx].state === 'hasValue'
+            ? [
+                {
+                  chainId,
+                  minter: owner,
+                  address: collectionAddress,
+                  ...collectionInfos[idx].contents!,
+                },
+              ]
+            : []
+      )
     },
 })
 

@@ -4,19 +4,28 @@ import { useTranslation } from 'react-i18next'
 
 import {
   CameraWithFlashEmoji,
+  ChainPickerInput,
+  ChainProvider,
   InputErrorMessage,
   SegmentedControls,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  decodePolytoneExecuteMsg,
+  makePolytoneExecuteMessage,
+  makeWasmMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../react'
 import { ChooseExistingNftCollection } from './ChooseExistingNftCollection'
 import { InstantiateNftCollection } from './InstantiateNftCollection'
 import { MintNft } from './MintNft'
@@ -25,69 +34,109 @@ import { MintNftData } from './types'
 
 const Component: ActionComponent<undefined, MintNftData> = (props) => {
   const { t } = useTranslation()
-  const { watch, register } = useFormContext()
+  const {
+    context,
+    address,
+    chain: { chain_id: currentChainId },
+  } = useActionOptions()
+  const { watch, register, setValue } = useFormContext<MintNftData>()
 
-  const contractChosen = watch(props.fieldNamePrefix + 'contractChosen')
-  const tokenUri = watch(props.fieldNamePrefix + 'mintMsg.token_uri')
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
+  const contractChosen = watch(
+    (props.fieldNamePrefix + 'contractChosen') as 'contractChosen'
+  )
+  const tokenUri = watch(
+    (props.fieldNamePrefix + 'mintMsg.token_uri') as 'mintMsg.token_uri'
+  )
 
   const [creatingNew, setCreatingNew] = useState(false)
 
   // Manually validate to ensure contract has been chosen and token URI has
   // been set.
   useEffect(() => {
-    register(props.fieldNamePrefix + 'contractChosen', {
+    register((props.fieldNamePrefix + 'contractChosen') as 'contractChosen', {
       validate: (value) => !!value || t('error.nftCollectionNotChosen'),
     })
-    register(props.fieldNamePrefix + 'mintMsg.token_uri', {
-      validate: (value) => !!value || t('error.nftMetadataNotUploaded'),
-    })
+    register(
+      (props.fieldNamePrefix + 'mintMsg.token_uri') as 'mintMsg.token_uri',
+      {
+        validate: (value) => !!value || t('error.nftMetadataNotUploaded'),
+      }
+    )
   }, [props.fieldNamePrefix, register, t])
 
   return (
     <>
-      {contractChosen ? (
-        // The steps are:
-        // 1. Choose existing collection or create new collection.
-        // 2. Upload NFT metadata.
-        // 3. Display final Mint NFT action details.
-        //
-        // The first two steps are only relevant when creating a new proposal.
-        // When viewing an existing proposal, the first two steps are skipped
-        // and the user is taken directly to the final step. Specifically,
-        // once token URI is set, we don't need to upload metadata, so display
-        // the final `MintNft` action. When viewing an already-created
-        // proposal, this value is decoded from the cosmos message and is
-        // ready right away. When creating a new proposal, this value is set
-        // by the `UploadNftMetadata` component once the metadata is uploaded.
-        tokenUri ? (
-          <MintNft {...props} />
-        ) : (
-          <UploadNftMetadata {...props} />
-        )
-      ) : (
-        <>
-          <SegmentedControls<boolean>
-            onSelect={setCreatingNew}
-            selected={creatingNew}
-            tabs={[
-              {
-                label: t('form.useExistingCollection'),
-                value: false,
-              },
-              {
-                label: t('form.createNewCollection'),
-                value: true,
-              },
-            ]}
-          />
+      {context.type === ActionContextType.Dao && props.isCreating && (
+        <ChainPickerInput
+          className="mb-4"
+          fieldName={props.fieldNamePrefix + 'chainId'}
+          onChange={(chainId) => {
+            // Update minter and recipient to correct address.
+            const newAddress =
+              chainId === currentChainId
+                ? address
+                : // Use DAO's polytone proxy if exists.
+                  context.info.polytoneProxies[chainId] || ''
 
-          {creatingNew ? (
-            <InstantiateNftCollection {...props} />
-          ) : (
-            <ChooseExistingNftCollection {...props} />
-          )}
-        </>
+            setValue(
+              (props.fieldNamePrefix +
+                'instantiateMsg.minter') as 'instantiateMsg.minter',
+              newAddress
+            )
+            setValue(
+              (props.fieldNamePrefix + 'mintMsg.owner') as 'mintMsg.owner',
+              newAddress
+            )
+          }}
+        />
       )}
+
+      <ChainProvider chainId={chainId}>
+        {contractChosen ? (
+          // The steps are:
+          // 1. Choose existing collection or create new collection.
+          // 2. Upload NFT metadata.
+          // 3. Display final Mint NFT action details.
+          //
+          // The first two steps are only relevant when creating a new proposal.
+          // When viewing an existing proposal, the first two steps are skipped
+          // and the user is taken directly to the final step. Specifically,
+          // once token URI is set, we don't need to upload metadata, so display
+          // the final `MintNft` action. When viewing an already-created
+          // proposal, this value is decoded from the cosmos message and is
+          // ready right away. When creating a new proposal, this value is set
+          // by the `UploadNftMetadata` component once the metadata is uploaded.
+          tokenUri ? (
+            <MintNft {...props} />
+          ) : (
+            <UploadNftMetadata {...props} />
+          )
+        ) : (
+          <>
+            <SegmentedControls<boolean>
+              onSelect={setCreatingNew}
+              selected={creatingNew}
+              tabs={[
+                {
+                  label: t('form.useExistingCollection'),
+                  value: false,
+                },
+                {
+                  label: t('form.createNewCollection'),
+                  value: true,
+                },
+              ]}
+            />
+
+            {creatingNew ? (
+              <InstantiateNftCollection {...props} />
+            ) : (
+              <ChooseExistingNftCollection {...props} />
+            )}
+          </>
+        )}
+      </ChainProvider>
 
       <div className="flex flex-col items-end gap-2 self-end text-right">
         <InputErrorMessage error={props.errors?.contractChosen} />
@@ -97,8 +146,13 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
   )
 }
 
-export const makeMintNftAction: ActionMaker<MintNftData> = ({ t, address }) => {
+export const makeMintNftAction: ActionMaker<MintNftData> = ({
+  t,
+  address,
+  chain: { chain_id: currentChainId },
+}) => {
   const useDefaults: UseDefaults<MintNftData> = () => ({
+    chainId: currentChainId,
     contractChosen: false,
     collectionAddress: undefined,
 
@@ -122,13 +176,13 @@ export const makeMintNftAction: ActionMaker<MintNftData> = ({ t, address }) => {
   })
 
   const useTransformToCosmos: UseTransformToCosmos<MintNftData> = () =>
-    useCallback(({ collectionAddress, mintMsg }: MintNftData) => {
+    useCallback(({ chainId, collectionAddress, mintMsg }: MintNftData) => {
       // Should never happen if form validation is working correctly.
       if (!collectionAddress) {
         throw new Error(t('error.loadingData'))
       }
 
-      return makeWasmMessage({
+      const msg = makeWasmMessage({
         wasm: {
           execute: {
             contract_addr: collectionAddress,
@@ -139,45 +193,53 @@ export const makeMintNftAction: ActionMaker<MintNftData> = ({ t, address }) => {
           },
         },
       })
+
+      return chainId === currentChainId
+        ? msg
+        : makePolytoneExecuteMessage(currentChainId, chainId, msg)
     }, [])
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintNftData> = (
     msg: Record<string, any>
   ) => {
-    // Native
-    if (
-      objectMatchesStructure(msg, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              mint: {
-                owner: {},
-                token_id: {},
-                token_uri: {},
-              },
+    let chainId = currentChainId
+    const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+    if (decodedPolytone.match) {
+      chainId = decodedPolytone.chainId
+      msg = decodedPolytone.msg
+    }
+
+    return objectMatchesStructure(msg, {
+      wasm: {
+        execute: {
+          contract_addr: {},
+          funds: {},
+          msg: {
+            mint: {
+              owner: {},
+              token_id: {},
+              token_uri: {},
             },
           },
         },
-      }) &&
-      msg.wasm.execute.msg.mint.token_uri
-    ) {
-      return {
-        match: true,
-        data: {
-          contractChosen: true,
-          collectionAddress: msg.wasm.execute.contract_addr,
-          mintMsg: {
-            owner: msg.wasm.execute.msg.mint.owner,
-            token_id: msg.wasm.execute.msg.mint.token_id,
-            token_uri: msg.wasm.execute.msg.mint.token_uri,
+      },
+    }) && msg.wasm.execute.msg.mint.token_uri
+      ? {
+          match: true,
+          data: {
+            chainId,
+            contractChosen: true,
+            collectionAddress: msg.wasm.execute.contract_addr,
+            mintMsg: {
+              owner: msg.wasm.execute.msg.mint.owner,
+              token_id: msg.wasm.execute.msg.mint.token_id,
+              token_uri: msg.wasm.execute.msg.mint.token_uri,
+            },
           },
-        },
-      }
-    }
-
-    return { match: false }
+        }
+      : {
+          match: false,
+        }
   }
 
   return {

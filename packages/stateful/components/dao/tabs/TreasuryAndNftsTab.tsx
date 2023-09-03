@@ -68,7 +68,7 @@ export const TreasuryAndNftsTab = () => {
       coreAddress: daoInfo.coreAddress,
       governanceCollectionAddress: cw721GovernanceCollectionAddress,
     }),
-    []
+    {}
   )
 
   // ManageCw721 action defaults to adding
@@ -118,7 +118,7 @@ export const TreasuryAndNftsTab = () => {
         }
       )}
       isMember={isMember}
-      nfts={nfts}
+      nfts={nfts.loading ? {} : nfts.data}
       tokens={
         tokens.loading
           ? {

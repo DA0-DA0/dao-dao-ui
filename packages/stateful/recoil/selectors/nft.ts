@@ -1,7 +1,12 @@
-import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
+import {
+  selectorFamily,
+  waitForAll,
+  waitForAllSettled,
+  waitForNone,
+} from 'recoil'
 
 import {
-  Cw721BaseSelectors,
+  CommonNftSelectors,
   DaoCoreV2Selectors,
   nftUriDataSelector,
   queryWalletIndexerSelector,
@@ -10,7 +15,7 @@ import {
 } from '@dao-dao/state'
 import { stakerForNftSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoVotingCw721Staked'
 import { ChainId, NftCardInfo, WithChainId } from '@dao-dao/types'
-import { StargazeNft } from '@dao-dao/types/nft'
+import { LoadingNfts, StargazeNft } from '@dao-dao/types/nft'
 import {
   MAINNET,
   STARGAZE_PROFILE_API_TEMPLATE,
@@ -83,7 +88,7 @@ export const nftCardInfoWithUriSelector = selectorFamily<
     ({ tokenId, collection, tokenUri, chainId }) =>
     async ({ get }) => {
       const collectionInfo = get(
-        Cw721BaseSelectors.contractInfoSelector({
+        CommonNftSelectors.contractInfoSelector({
           contractAddress: collection,
           chainId,
           params: [],
@@ -130,7 +135,7 @@ export const nftCardInfoSelector = selectorFamily<
     ({ tokenId, collection, chainId }) =>
     async ({ get }) => {
       const tokenInfo = get(
-        Cw721BaseSelectors.nftInfoSelector({
+        CommonNftSelectors.nftInfoSelector({
           contractAddress: collection,
           chainId,
           params: [{ tokenId }],
@@ -149,7 +154,8 @@ export const nftCardInfoSelector = selectorFamily<
 })
 
 export const nftCardInfosForDaoSelector = selectorFamily<
-  NftCardInfo[],
+  // Map chain ID to DAO-owned NFTs on that chain.
+  LoadingNfts,
   WithChainId<{
     coreAddress: string
     // If DAO is using the cw721-staking voting module adapter, it will have an
@@ -163,35 +169,26 @@ export const nftCardInfosForDaoSelector = selectorFamily<
   get:
     ({ chainId, coreAddress, governanceCollectionAddress }) =>
     async ({ get }) => {
-      // TODO: Store NFT collections for polytone proxies with another prefix.
-      // const polytoneProxies = Object.entries(
-      //   get(
-      //     daoCorePolytoneProxiesSelector({
-      //       chainId,
-      //       coreAddress,
-      //     })
-      //   )
-      // )
+      const allNfts = get(
+        DaoCoreV2Selectors.allCw721CollectionsSelector({
+          contractAddress: coreAddress,
+          chainId,
+          governanceCollectionAddress,
+        })
+      )
 
-      return [[chainId, coreAddress] /* ...polytoneProxies */].flatMap(
-        ([chainId, coreAddress]) => {
-          // Get all NFT collection addresses for the DAO.
-          const nftCollectionAddresses = get(
-            DaoCoreV2Selectors.allCw721TokenListSelector({
-              contractAddress: coreAddress,
-              chainId,
-              governanceCollectionAddress,
-            })
-          )
+      return Object.entries(allNfts).reduce(
+        (acc, [chainId, { owner, collectionAddresses }]) => {
+          collectionAddresses = Array.from(new Set(collectionAddresses))
 
           // Get all token IDs owned by the DAO for each collection.
           const nftCollectionTokenIds = get(
-            waitForAll(
-              nftCollectionAddresses.map((collectionAddress) =>
-                Cw721BaseSelectors.allTokensForOwnerSelector({
+            waitForNone(
+              collectionAddresses.map((collectionAddress) =>
+                CommonNftSelectors.allTokensForOwnerSelector({
                   contractAddress: collectionAddress,
                   chainId,
-                  owner: coreAddress,
+                  owner,
                 })
               )
             )
@@ -199,21 +196,44 @@ export const nftCardInfosForDaoSelector = selectorFamily<
 
           // Get all cards for each collection.
           const nftCardInfos = get(
-            waitForAll(
-              nftCollectionAddresses.flatMap((collectionAddress, index) =>
-                nftCollectionTokenIds[index].map((tokenId) =>
-                  nftCardInfoSelector({
-                    tokenId,
-                    collection: collectionAddress,
-                    chainId,
-                  })
-                )
+            waitForNone(
+              collectionAddresses.flatMap((collectionAddress, index) =>
+                nftCollectionTokenIds[index].state === 'hasValue'
+                  ? (nftCollectionTokenIds[index].contents as string[]).map(
+                      (tokenId) =>
+                        nftCardInfoSelector({
+                          tokenId,
+                          collection: collectionAddress,
+                          chainId,
+                        })
+                    )
+                  : []
               )
             )
           )
 
-          return nftCardInfos
-        }
+          return {
+            ...acc,
+            [chainId]:
+              nftCardInfos.length > 0 &&
+              nftCardInfos.every((loadable) => loadable.state === 'loading')
+                ? {
+                    loading: true,
+                    errored: false,
+                  }
+                : {
+                    loading: false,
+                    errored: false,
+                    updating: nftCardInfos.some(
+                      (loadable) => loadable.state === 'loading'
+                    ),
+                    data: nftCardInfos.flatMap((loadable) =>
+                      loadable.state === 'hasValue' ? [loadable.contents] : []
+                    ),
+                  },
+          }
+        },
+        {} as LoadingNfts
       )
     },
 })
@@ -225,7 +245,7 @@ type CollectionWithTokens = {
 
 // Retrieve all NFTs for a given wallet address using the indexer.
 export const walletNftCardInfos = selectorFamily<
-  NftCardInfo[],
+  LoadingNfts,
   WithChainId<{
     walletAddress: string
   }>
@@ -245,7 +265,13 @@ export const walletNftCardInfos = selectorFamily<
         })
       )
       if (!collections || !Array.isArray(collections)) {
-        return []
+        return {
+          [chainId]: {
+            loading: false,
+            errored: false,
+            data: [],
+          },
+        }
       }
 
       const nftCardInfos = get(
@@ -262,11 +288,17 @@ export const walletNftCardInfos = selectorFamily<
         )
       )
 
-      return nftCardInfos
-        .map((loadable) =>
-          loadable.state === 'hasValue' ? loadable.contents : undefined
-        )
-        .filter((info): info is NftCardInfo => info !== undefined)
+      return {
+        [chainId]: {
+          loading: false,
+          errored: false,
+          data: nftCardInfos
+            .map((loadable) =>
+              loadable.state === 'hasValue' ? loadable.contents : undefined
+            )
+            .filter((info): info is NftCardInfo => info !== undefined),
+        },
+      }
     },
 })
 
@@ -339,7 +371,7 @@ export const nftStakerOrOwnerSelector = selectorFamily<
     ({ collectionAddress, tokenId, stakingContractAddress, chainId }) =>
     async ({ get }) => {
       const { owner } = get(
-        Cw721BaseSelectors.ownerOfSelector({
+        CommonNftSelectors.ownerOfSelector({
           contractAddress: collectionAddress,
           params: [{ tokenId }],
           chainId,

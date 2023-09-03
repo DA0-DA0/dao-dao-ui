@@ -73,13 +73,6 @@ export const cosmosValidatorToValidator = ({
 
 export const getImageUrlForChainId = (chainId: string): string => {
   if (
-    chainId === ChainId.StargazeMainnet ||
-    chainId === ChainId.StargazeTestnet
-  ) {
-    return '/stargaze.png'
-  }
-
-  if (
     chainId === ChainId.OsmosisMainnet ||
     chainId === ChainId.OsmosisTestnet
   ) {

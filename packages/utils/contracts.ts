@@ -1,4 +1,12 @@
+import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
+import { toBase64, toUtf8 } from '@cosmjs/encoding'
+import { Coin, SigningStargateClient } from '@cosmjs/stargate'
+import { findAttribute, parseRawLog } from '@cosmjs/stargate/build/logs'
+
 import { ContractVersion } from '@dao-dao/types'
+
+import { CHAIN_GAS_MULTIPLIER } from './constants'
+import { cwMsgToEncodeObject } from './messages'
 
 const CONTRACT_VERSIONS = Object.values(ContractVersion)
 
@@ -25,3 +33,47 @@ export const indexToProposalModulePrefix = (index: number) => {
 // Normalize for comparisons.
 export const normalizeContractName = (contractName: string) =>
   contractName.replace('crates.io:', '').trim()
+
+// Use our custom instantiate encoder since CosmJS is unreliable due to the SDK
+// version (47+) change that improperly handles the optional admin field as an
+// empty string. The normal signing client `instantiate` function is thus no
+// longer reliable.
+export const instantiateSmartContract = async (
+  client: SigningCosmWasmClient | SigningStargateClient,
+  sender: string,
+  codeId: number,
+  label: string,
+  msg: unknown,
+  funds?: Coin[],
+  admin?: string | null
+): Promise<string> => {
+  const { rawLog } = await client.signAndBroadcast(
+    sender,
+    [
+      cwMsgToEncodeObject(
+        {
+          wasm: {
+            instantiate: {
+              code_id: codeId,
+              msg: toBase64(toUtf8(JSON.stringify(msg))),
+              funds: funds || [],
+              label,
+              // Replace empty string with undefined.
+              admin: admin || undefined,
+            },
+          },
+        },
+        sender
+      ),
+    ],
+    CHAIN_GAS_MULTIPLIER
+  )
+
+  const contractAddress = findAttribute(
+    parseRawLog(rawLog),
+    'instantiate',
+    '_contract_address'
+  ).value
+
+  return contractAddress
+}

@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { Cw721BaseSelectors } from '@dao-dao/state'
+import { CommonNftSelectors } from '@dao-dao/state'
 import {
   FormattedJsonDisplay,
   InputErrorMessage,
@@ -44,7 +44,7 @@ export const GovernanceConfigurationInput = ({
         existingGovernanceTokenDenomOrAddress,
         bech32Prefix
       )
-      ? Cw721BaseSelectors.contractInfoSelector({
+      ? CommonNftSelectors.contractInfoSelector({
           chainId,
           contractAddress: existingGovernanceTokenDenomOrAddress,
           params: [],
@@ -57,7 +57,7 @@ export const GovernanceConfigurationInput = ({
         existingGovernanceTokenDenomOrAddress,
         bech32Prefix
       )
-      ? Cw721BaseSelectors.numTokensSelector({
+      ? CommonNftSelectors.numTokensSelector({
           chainId,
           contractAddress: existingGovernanceTokenDenomOrAddress,
           params: [],

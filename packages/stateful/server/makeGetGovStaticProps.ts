@@ -1,5 +1,4 @@
 import { Chain } from '@chain-registry/types'
-import axios from 'axios'
 import type { GetStaticProps } from 'next'
 import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
@@ -14,7 +13,6 @@ import {
 import {
   CI,
   DAO_STATIC_PROPS_CACHE_SECONDS,
-  FAST_AVERAGE_COLOR_API_TEMPLATE,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
   SITE_URL,
   cosmosSdkVersionIs47OrHigher,
@@ -24,7 +22,6 @@ import {
   getRpcForChainId,
   getSupportedChains,
   processError,
-  toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
 import { GovPageWrapperProps } from '../components'
@@ -87,7 +84,7 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
       }
     }
 
-    const { chain } = supportedChain
+    const { chain, accentColor } = supportedChain
 
     // Must be called after server side translations has been awaited, because
     // props may use the `t` function, and it won't be available until after.
@@ -105,28 +102,6 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
         chainName: context.params!.chain as string,
         chain,
       })) ?? {}
-
-    // Get accent color.
-    let accentColor: string | null = null
-    const imageUrl = toAccessibleImageUrl(
-      getImageUrlForChainId(chain.chain_id),
-      {
-        replaceRelative: true,
-      }
-    )
-    if (!imageUrl.endsWith('svg')) {
-      try {
-        const response = await axios.get(
-          FAST_AVERAGE_COLOR_API_TEMPLATE.replace('URL', imageUrl),
-          { responseType: 'text' }
-        )
-
-        accentColor = response.data
-      } catch (error) {
-        // If fail to load image or get color, don't prevent page render.
-        console.error(error)
-      }
-    }
 
     const props: GovPageWrapperProps = {
       ...i18nProps,

@@ -8,11 +8,19 @@ import {
   ActionContextType,
   ActionKey,
   ActionMaker,
+  LoadingDataWithError,
+  NftCardInfo,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  combineLoadingDataWithErrors,
+  decodePolytoneExecuteMsg,
+  makePolytoneExecuteMessage,
+  makeWasmMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
 import {
   nftCardInfoSelector,
@@ -23,15 +31,14 @@ import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../../voting-mo
 import { useActionOptions } from '../../../react'
 import { BurnNft, BurnNftData } from './Component'
 
-const useDefaults: UseDefaults<BurnNftData> = () => ({
-  collection: '',
-  tokenId: '',
-})
+const useTransformToCosmos: UseTransformToCosmos<BurnNftData> = () => {
+  const {
+    chain: { chain_id: currentChainId },
+  } = useActionOptions()
 
-const useTransformToCosmos: UseTransformToCosmos<BurnNftData> = () =>
-  useCallback(
-    ({ collection, tokenId }: BurnNftData) =>
-      makeWasmMessage({
+  return useCallback(
+    ({ chainId, collection, tokenId }: BurnNftData) => {
+      const msg = makeWasmMessage({
         wasm: {
           execute: {
             contract_addr: collection,
@@ -43,14 +50,27 @@ const useTransformToCosmos: UseTransformToCosmos<BurnNftData> = () =>
             },
           },
         },
-      }),
-    []
+      })
+
+      return chainId === currentChainId
+        ? msg
+        : makePolytoneExecuteMessage(currentChainId, chainId, msg)
+    },
+    [currentChainId]
   )
+}
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<BurnNftData> = (
   msg: Record<string, any>
-) =>
-  objectMatchesStructure(msg, {
+) => {
+  let chainId = useActionOptions().chain.chain_id
+  const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+  if (decodedPolytone.match) {
+    chainId = decodedPolytone.chainId
+    msg = decodedPolytone.msg
+  }
+
+  return objectMatchesStructure(msg, {
     wasm: {
       execute: {
         contract_addr: {},
@@ -66,34 +86,41 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<BurnNftData> = (
     ? {
         match: true,
         data: {
+          chainId,
           collection: msg.wasm.execute.contract_addr,
           tokenId: msg.wasm.execute.msg.burn.token_id,
         },
       }
-    : { match: false }
+    : {
+        match: false,
+      }
+}
 
 const Component: ActionComponent = (props) => {
   const {
     context,
     address,
-    chain: { chain_id: chainId },
+    chain: { chain_id: currentChainId },
   } = useActionOptions()
-  const { watch } = useFormContext()
+  const { watch } = useFormContext<BurnNftData>()
   const { denomOrAddress: governanceCollectionAddress } =
     useCw721CommonGovernanceTokenInfoIfExists() ?? {}
 
-  const tokenId = watch(props.fieldNamePrefix + 'tokenId')
-  const collection = watch(props.fieldNamePrefix + 'collection')
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
+  const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
+  const collection = watch(
+    (props.fieldNamePrefix + 'collection') as 'collection'
+  )
 
   const options = useCachedLoadingWithError(
     props.isCreating
       ? context.type === ActionContextType.Wallet
         ? walletNftCardInfos({
             walletAddress: address,
-            chainId,
+            chainId: currentChainId,
           })
         : nftCardInfosForDaoSelector({
-            chainId,
+            chainId: currentChainId,
             coreAddress: address,
             governanceCollectionAddress,
           })
@@ -105,24 +132,44 @@ const Component: ActionComponent = (props) => {
       : constSelector(undefined)
   )
 
+  const allChainOptions =
+    options.loading || options.errored
+      ? options
+      : combineLoadingDataWithErrors(
+          ...Object.values(options.data).filter(
+            (data): data is LoadingDataWithError<NftCardInfo[]> => !!data
+          )
+        )
+
   return (
     <BurnNft
       {...props}
       options={{
-        options,
+        options: allChainOptions,
         nftInfo,
       }}
     />
   )
 }
 
-export const makeBurnNftAction: ActionMaker<BurnNftData> = ({ t }) => ({
-  key: ActionKey.BurnNft,
-  Icon: FireEmoji,
-  label: t('title.burnNft'),
-  description: t('info.burnNftDescription'),
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
-})
+export const makeBurnNftAction: ActionMaker<BurnNftData> = ({
+  t,
+  chain: { chain_id: chainId },
+}) => {
+  const useDefaults: UseDefaults<BurnNftData> = () => ({
+    chainId,
+    collection: '',
+    tokenId: '',
+  })
+
+  return {
+    key: ActionKey.BurnNft,
+    Icon: FireEmoji,
+    label: t('title.burnNft'),
+    description: t('info.burnNftDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
+}

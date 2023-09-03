@@ -6,11 +6,11 @@ import {
   Button,
   InputErrorMessage,
   InputLabel,
+  useChain,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 import { makeValidateContractAddress, validateRequired } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../react'
 import { ChooseExistingNftCollectionOptions } from '../types'
 
 // Displayed when entering an existing NFT collection address.
@@ -22,9 +22,7 @@ export const ChooseExistingNftCollection: ActionComponent<
   options: { chooseLoading, onChooseExistingContract, existingCollections },
 }) => {
   const { t } = useTranslation()
-  const {
-    chain: { bech32_prefix: bech32Prefix },
-  } = useActionOptions()
+  const { bech32_prefix: bech32Prefix } = useChain()
   const { register, watch, setValue } = useFormContext()
 
   const collectionAddress = watch(fieldNamePrefix + 'collectionAddress')

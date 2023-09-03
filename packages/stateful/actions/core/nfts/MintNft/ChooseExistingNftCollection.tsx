@@ -3,25 +3,29 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback } from 'recoil'
 
-import { Cw721BaseSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { CommonNftSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { ActionComponent, ActionContextType } from '@dao-dao/types'
 import { objectMatchesStructure, processError } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
 import { ChooseExistingNftCollection as StatelessChooseExistingNftCollection } from './stateless/ChooseExistingNftCollection'
+import { MintNftData } from './types'
 
 export const ChooseExistingNftCollection: ActionComponent = (props) => {
   const { t } = useTranslation()
   const {
     context,
     address,
-    chain: { chain_id: chainId },
+    chain: { chain_id: currentChainId },
   } = useActionOptions()
-  const { watch, setValue, setError, clearErrors, trigger } = useFormContext()
 
+  const { watch, setValue, setError, clearErrors, trigger } =
+    useFormContext<MintNftData>()
+
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const collectionAddress: string | undefined = watch(
-    props.fieldNamePrefix + 'collectionAddress'
+    (props.fieldNamePrefix + 'collectionAddress') as 'collectionAddress'
   )
 
   // If in DAO context, get cw721 collections for which the DAO is the minter.
@@ -31,7 +35,7 @@ export const ChooseExistingNftCollection: ActionComponent = (props) => {
     context.type === ActionContextType.Dao
       ? DaoCoreV2Selectors.allCw721CollectionsWithDaoAsMinterSelector({
           contractAddress: address,
-          chainId,
+          chainId: currentChainId,
         })
       : undefined
   )
@@ -42,11 +46,13 @@ export const ChooseExistingNftCollection: ActionComponent = (props) => {
       async () => {
         setChooseLoading(true)
         try {
-          clearErrors(props.fieldNamePrefix + 'collectionAddress')
+          clearErrors(
+            (props.fieldNamePrefix + 'collectionAddress') as 'collectionAddress'
+          )
 
           // Manually validate the contract address.
           const valid = await trigger(
-            props.fieldNamePrefix + 'collectionAddress'
+            (props.fieldNamePrefix + 'collectionAddress') as 'collectionAddress'
           )
           if (!valid) {
             // Error will be set by trigger.
@@ -62,7 +68,7 @@ export const ChooseExistingNftCollection: ActionComponent = (props) => {
           let info
           try {
             info = await snapshot.getPromise(
-              Cw721BaseSelectors.contractInfoSelector({
+              CommonNftSelectors.contractInfoSelector({
                 contractAddress: collectionAddress,
                 chainId,
                 params: [],
@@ -95,20 +101,32 @@ export const ChooseExistingNftCollection: ActionComponent = (props) => {
           }
 
           // Indicate contract is ready and store name/symbol for display.
-          setValue(props.fieldNamePrefix + 'instantiateMsg', {
-            // Clone to avoid mutating original.
-            ...info,
-          })
-          setValue(props.fieldNamePrefix + 'contractChosen', true, {
-            shouldValidate: true,
-          })
+          setValue(
+            (props.fieldNamePrefix + 'instantiateMsg') as 'instantiateMsg',
+            {
+              // Clone to avoid mutating original.
+              ...info,
+              minter: '',
+            }
+          )
+          setValue(
+            (props.fieldNamePrefix + 'contractChosen') as 'contractChosen',
+            true,
+            {
+              shouldValidate: true,
+            }
+          )
         } catch (err) {
           console.error(err)
-          setError(props.fieldNamePrefix + 'collectionAddress', {
-            type: 'custom',
-            message:
-              err instanceof Error ? err.message : `${processError(err)}`,
-          })
+          setError(
+            (props.fieldNamePrefix +
+              'collectionAddress') as 'collectionAddress',
+            {
+              type: 'custom',
+              message:
+                err instanceof Error ? err.message : `${processError(err)}`,
+            }
+          )
           return
         } finally {
           setChooseLoading(false)
@@ -133,7 +151,9 @@ export const ChooseExistingNftCollection: ActionComponent = (props) => {
         onChooseExistingContract,
         existingCollections:
           existingCollectionsLoadable.state === 'hasValue'
-            ? existingCollectionsLoadable.contents
+            ? existingCollectionsLoadable.contents.filter(
+                (collection) => collection.chainId === chainId
+              )
             : [],
       }}
     />

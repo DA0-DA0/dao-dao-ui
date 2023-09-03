@@ -10,9 +10,9 @@ import { Loader, useCachedLoading } from '@dao-dao/stateless'
 import { ActionComponent, TokenType } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
-  CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomWithDecimals,
   getNativeTokenForChainId,
+  instantiateSmartContract,
   isValidBech32Address,
   isValidContractAddress,
   processError,
@@ -110,12 +110,12 @@ export const InstantiateTokenSwap: ActionComponent<
         },
       }
 
-      const { contractAddress } = await signingCosmWasmClient.instantiate(
+      const contractAddress = await instantiateSmartContract(
+        signingCosmWasmClient,
         walletAddress,
         codeIds.CwTokenSwap,
-        instantiateMsg,
         'Token Swap',
-        CHAIN_GAS_MULTIPLIER
+        instantiateMsg
       )
 
       // Update action form data with address.

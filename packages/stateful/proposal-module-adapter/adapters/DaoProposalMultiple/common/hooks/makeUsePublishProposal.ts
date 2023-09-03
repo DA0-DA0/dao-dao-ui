@@ -6,7 +6,6 @@ import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
 import {
   Cw20BaseSelectors,
-  blockHeightSelector,
   nativeDenomBalanceSelector,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state'
@@ -47,7 +46,11 @@ export const makeUsePublishProposal =
   }: MakeUsePublishProposalOptions): UsePublishProposal =>
   () => {
     const { t } = useTranslation()
-    const { isWalletConnected, address: walletAddress } = useWallet({
+    const {
+      isWalletConnected,
+      address: walletAddress,
+      getStargateClient,
+    } = useWallet({
       chainId,
     })
     const { isMember = false } = useMembership({
@@ -69,16 +72,6 @@ export const makeUsePublishProposal =
     const depositInfoNativeTokenDenom =
       depositInfo?.denom && 'native' in depositInfo.denom
         ? depositInfo.denom.native
-        : undefined
-
-    const blockHeightLoadable = useCachedLoadable(
-      blockHeightSelector({
-        chainId,
-      })
-    )
-    const blockHeight =
-      blockHeightLoadable.state === 'hasValue'
-        ? blockHeightLoadable.contents
         : undefined
 
     const requiredProposalDeposit = Number(depositInfo?.amount ?? '0')
@@ -197,9 +190,6 @@ export const makeUsePublishProposal =
         if (!isWalletConnected) {
           throw new Error(t('error.logInToContinue'))
         }
-        if (blockHeight === undefined) {
-          throw new Error(t('error.loadingData'))
-        }
         if (!anyoneCanPropose && !isMember) {
           throw new Error(t('error.mustBeMemberToCreateProposal'))
         }
@@ -267,7 +257,7 @@ export const makeUsePublishProposal =
             // If allowance expired, none.
             (expirationExpired(
               cw20DepositTokenAllowanceResponse.expires,
-              blockHeight
+              (await (await getStargateClient()).getBlock()).header.height
             )
               ? 0
               : Number(cw20DepositTokenAllowanceResponse.allowance))
@@ -353,7 +343,6 @@ export const makeUsePublishProposal =
       },
       [
         isWalletConnected,
-        blockHeight,
         anyoneCanPropose,
         isMember,
         depositUnsatisfied,
@@ -361,14 +350,15 @@ export const makeUsePublishProposal =
         requiredProposalDeposit,
         depositInfoCw20TokenAddress,
         depositInfoNativeTokenDenom,
+        doProposePrePropose,
+        doPropose,
         t,
         simulateMsgs,
         cw20DepositTokenAllowanceResponse,
+        getStargateClient,
         increaseCw20DepositAllowance,
         awaitNextBlock,
         refreshBalances,
-        doProposePrePropose,
-        doPropose,
       ]
     )
 

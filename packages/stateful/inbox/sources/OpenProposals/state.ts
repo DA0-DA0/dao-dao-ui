@@ -1,6 +1,7 @@
 import { selectorFamily, waitForAll } from 'recoil'
 
 import {
+  DaoCoreV2Selectors,
   blockHeightSelector,
   blocksPerYearSelector,
   openProposalsSelector,
@@ -57,6 +58,42 @@ export const inboxOpenProposalsSelector = selectorFamily<
         )
       )
 
+      const daosWithVotingPowerAtHeightsSelectors = wallet
+        ? followingDaosWithProposalModules.flatMap(({ coreAddress }, index) =>
+            openProposalsPerDao[index].flatMap(({ proposals }) =>
+              proposals.map(({ proposal: { start_height } }) => ({
+                coreAddress,
+                height: start_height,
+                selector: DaoCoreV2Selectors.votingPowerAtHeightSelector({
+                  contractAddress: coreAddress,
+                  chainId,
+                  params: [
+                    {
+                      address: wallet.address,
+                      height: start_height,
+                    },
+                  ],
+                }),
+              }))
+            )
+          )
+        : []
+      const votingPowerValues = get(
+        waitForAll(
+          daosWithVotingPowerAtHeightsSelectors.map(({ selector }) => selector)
+        )
+      )
+      // Map DAO and height to whether or not the wallet has voting power.
+      const hasVotingPowerForDaoAtHeight =
+        daosWithVotingPowerAtHeightsSelectors.reduce(
+          (acc, { coreAddress, height }, index) => ({
+            ...acc,
+            [`${coreAddress}:${height}`]:
+              votingPowerValues[index].power !== '0',
+          }),
+          {} as Record<string, boolean | undefined>
+        )
+
       // Match up open proposals per DAO with their proposal modules.
       return followingDaosWithProposalModules.map(
         (
@@ -78,7 +115,7 @@ export const inboxOpenProposalsSelector = selectorFamily<
                   ?.proposals.map(
                     ({
                       id,
-                      proposal: { expiration },
+                      proposal: { expiration, start_height },
                       voted,
                     }): InboxSourceItem<ProposalLineProps> => ({
                       props: {
@@ -92,7 +129,11 @@ export const inboxOpenProposalsSelector = selectorFamily<
                           `${proposalModule.prefix}${id}`
                         ),
                       },
-                      pending: !voted,
+                      pending:
+                        !voted &&
+                        !!hasVotingPowerForDaoAtHeight[
+                          `${coreAddress}:${start_height}`
+                        ],
                       order: convertExpirationToDate(
                         blocksPerYear,
                         expiration,

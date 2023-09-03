@@ -9,11 +9,16 @@ import {
   ActionContextType,
   ActionKey,
   ActionMaker,
+  LoadingDataWithError,
+  NftCardInfo,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import {
+  combineLoadingDataWithErrors,
+  decodePolytoneExecuteMsg,
+  makePolytoneExecuteMessage,
   makeWasmMessage,
   objectMatchesStructure,
   parseEncodedMessage,
@@ -28,22 +33,16 @@ import {
 } from '../../../../recoil/selectors/nft'
 import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../../voting-module-adapter'
 import { useActionOptions } from '../../../react'
-import { TransferNftComponent } from './Component'
-
-export type TransferNftData = {
-  collection: string
-  tokenId: string
-  recipient: string
-
-  // When true, uses `send` instead of `transfer_nft` to transfer the NFT.
-  executeSmartContract: boolean
-  smartContractMsg: string
-}
+import { TransferNftComponent, TransferNftData } from './Component'
 
 const useDefaults: UseDefaults<TransferNftData> = () => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
   const { address: walletAddress = '' } = useWallet()
 
   return {
+    chainId,
     collection: '',
     tokenId: '',
     recipient: walletAddress,
@@ -53,16 +52,21 @@ const useDefaults: UseDefaults<TransferNftData> = () => {
   }
 }
 
-const useTransformToCosmos: UseTransformToCosmos<TransferNftData> = () =>
-  useCallback(
+const useTransformToCosmos: UseTransformToCosmos<TransferNftData> = () => {
+  const {
+    chain: { chain_id: currentChainId },
+  } = useActionOptions()
+
+  return useCallback(
     ({
+      chainId,
       collection,
       tokenId,
       recipient,
       executeSmartContract,
       smartContractMsg,
-    }: TransferNftData) =>
-      makeWasmMessage({
+    }: TransferNftData) => {
+      const msg = makeWasmMessage({
         wasm: {
           execute: {
             contract_addr: collection,
@@ -83,14 +87,27 @@ const useTransformToCosmos: UseTransformToCosmos<TransferNftData> = () =>
                 },
           },
         },
-      }),
-    []
+      })
+
+      return chainId === currentChainId
+        ? msg
+        : makePolytoneExecuteMessage(currentChainId, chainId, msg)
+    },
+    [currentChainId]
   )
+}
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
   msg: Record<string, any>
-) =>
-  objectMatchesStructure(msg, {
+) => {
+  let chainId = useActionOptions().chain.chain_id
+  const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+  if (decodedPolytone.match) {
+    chainId = decodedPolytone.chainId
+    msg = decodedPolytone.msg
+  }
+
+  return objectMatchesStructure(msg, {
     wasm: {
       execute: {
         contract_addr: {},
@@ -107,6 +124,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
     ? {
         match: true,
         data: {
+          chainId,
           collection: msg.wasm.execute.contract_addr,
           tokenId: msg.wasm.execute.msg.transfer_nft.token_id,
           recipient: msg.wasm.execute.msg.transfer_nft.recipient,
@@ -133,6 +151,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
     ? {
         match: true,
         data: {
+          chainId,
           collection: msg.wasm.execute.contract_addr,
           tokenId: msg.wasm.execute.msg.send_nft.token_id,
           recipient: msg.wasm.execute.msg.send_nft.contract,
@@ -144,29 +163,33 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
         },
       }
     : { match: false }
+}
 
 const Component: ActionComponent = (props) => {
   const {
     context,
     address,
-    chain: { chain_id: chainId },
+    chain: { chain_id: currentChainId },
   } = useActionOptions()
-  const { watch } = useFormContext()
+  const { watch } = useFormContext<TransferNftData>()
   const { denomOrAddress: governanceCollectionAddress } =
     useCw721CommonGovernanceTokenInfoIfExists() ?? {}
 
-  const tokenId = watch(props.fieldNamePrefix + 'tokenId')
-  const collection = watch(props.fieldNamePrefix + 'collection')
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
+  const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
+  const collection = watch(
+    (props.fieldNamePrefix + 'collection') as 'collection'
+  )
 
   const options = useCachedLoadingWithError(
     props.isCreating
       ? context.type === ActionContextType.Wallet
         ? walletNftCardInfos({
             walletAddress: address,
-            chainId,
+            chainId: currentChainId,
           })
         : nftCardInfosForDaoSelector({
-            chainId,
+            chainId: currentChainId,
             coreAddress: address,
             governanceCollectionAddress,
           })
@@ -178,10 +201,23 @@ const Component: ActionComponent = (props) => {
       : constSelector(undefined)
   )
 
+  const allChainOptions =
+    options.loading || options.errored
+      ? options
+      : combineLoadingDataWithErrors(
+          ...Object.values(options.data).filter(
+            (data): data is LoadingDataWithError<NftCardInfo[]> => !!data
+          )
+        )
+
   return (
     <TransferNftComponent
       {...props}
-      options={{ options, nftInfo, AddressInput }}
+      options={{
+        options: allChainOptions,
+        nftInfo,
+        AddressInput,
+      }}
     />
   )
 }
