@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import {
   ButtonLinkProps,
   LoadingData,
+  LoadingNfts,
   NftCardInfo,
   TokenCardInfo,
   TokenType,
@@ -36,7 +37,7 @@ export interface TreasuryAndNftsTabProps<
     loading: Record<string, boolean>
   }>
   TokenCard: ComponentType<T>
-  nfts: LoadingData<N[]>
+  nfts: LoadingNfts<N>
   NftCard: ComponentType<N>
   isMember: boolean
   createCrossChainAccountPrefillHref: string
@@ -84,54 +85,56 @@ export const TreasuryAndNftsTab = <
       address: string | undefined
       tokens: LoadingData<T[]>
       nfts: LoadingData<N[]>
-    } => ({
-      chainId,
-      address,
-      tokens:
-        tokens.loading || tokens.data.loading[chainId]
-          ? { loading: true }
-          : {
-              loading: false,
-              updating: tokens.updating,
-              data: tokens.data.infos
-                .filter(({ token }) => token.chainId === chainId)
-                // Sort governance token first, then native currency, then by
-                // balance.
-                .sort((a, b) => {
-                  const aValue = a.isGovernanceToken
-                    ? -2
-                    : a.token.type === TokenType.Native &&
-                      a.token.denomOrAddress ===
-                        getNativeTokenForChainId(chainId).denomOrAddress
-                    ? -1
-                    : a.lazyInfo.loading
-                    ? a.unstakedBalance
-                    : a.lazyInfo.data.totalBalance
-                  const bValue = b.isGovernanceToken
-                    ? -2
-                    : b.token.type === TokenType.Native &&
-                      b.token.denomOrAddress ===
-                        getNativeTokenForChainId(chainId).denomOrAddress
-                    ? -1
-                    : b.lazyInfo.loading
-                    ? b.unstakedBalance
-                    : b.lazyInfo.data.totalBalance
+    } => {
+      const chainNfts = nfts[chainId]
 
-                  // Put smaller value first if either is negative (prioritized
-                  // token), otherwise sort balances descending.
-                  return aValue < 0 || bValue < 0
-                    ? aValue - bValue
-                    : bValue - aValue
-                }),
-            },
-      nfts: nfts.loading
-        ? nfts
-        : {
-            loading: false,
-            updating: nfts.updating,
-            data: nfts.data.filter((nft) => nft.chainId === chainId),
-          },
-    })
+      return {
+        chainId,
+        address,
+        tokens:
+          tokens.loading || tokens.data.loading[chainId]
+            ? { loading: true }
+            : {
+                loading: false,
+                updating: tokens.updating,
+                data: tokens.data.infos
+                  .filter(({ token }) => token.chainId === chainId)
+                  // Sort governance token first, then native currency, then by
+                  // balance.
+                  .sort((a, b) => {
+                    const aValue = a.isGovernanceToken
+                      ? -2
+                      : a.token.type === TokenType.Native &&
+                        a.token.denomOrAddress ===
+                          getNativeTokenForChainId(chainId).denomOrAddress
+                      ? -1
+                      : a.lazyInfo.loading
+                      ? a.unstakedBalance
+                      : a.lazyInfo.data.totalBalance
+                    const bValue = b.isGovernanceToken
+                      ? -2
+                      : b.token.type === TokenType.Native &&
+                        b.token.denomOrAddress ===
+                          getNativeTokenForChainId(chainId).denomOrAddress
+                      ? -1
+                      : b.lazyInfo.loading
+                      ? b.unstakedBalance
+                      : b.lazyInfo.data.totalBalance
+
+                    // Put smaller value first if either is negative (prioritized
+                    // token), otherwise sort balances descending.
+                    return aValue < 0 || bValue < 0
+                      ? aValue - bValue
+                      : bValue - aValue
+                  }),
+              },
+        nfts: !chainNfts
+          ? { loading: false, data: [] }
+          : chainNfts.loading || chainNfts.errored
+          ? { loading: true }
+          : chainNfts,
+      }
+    }
   )
 
   const [showDepositFiat, setShowDepositFiat] = useState(false)
@@ -238,7 +241,7 @@ export const TreasuryAndNftsTab = <
                       )}
 
                       {nfts.loading ? (
-                        <Loader />
+                        <Loader className="mt-6" />
                       ) : (
                         nfts.data.length > 0 && (
                           <>

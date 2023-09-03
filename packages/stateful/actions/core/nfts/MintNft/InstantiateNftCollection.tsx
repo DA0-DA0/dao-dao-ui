@@ -3,28 +3,32 @@ import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { useSupportedChainContext } from '@dao-dao/stateless'
 import { ActionComponent, ActionContextType, ActionKey } from '@dao-dao/types'
-import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
+import { instantiateSmartContract, processError } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
 import { useWallet } from '../../../../hooks'
 import { useActionOptions } from '../../../react'
 import { InstantiateNftCollection as StatelessInstantiateNftCollection } from './stateless/InstantiateNftCollection'
+import { MintNftData } from './types'
 
 export const InstantiateNftCollection: ActionComponent = (props) => {
   const { t } = useTranslation()
-  const { watch, setValue } = useFormContext()
-  const {
-    context,
-    chainContext: {
-      config: { codeIds },
-    },
-  } = useActionOptions()
+  const { watch, setValue } = useFormContext<MintNftData>()
+  const { context } = useActionOptions()
   const { address: walletAddress, getSigningCosmWasmClient } = useWallet()
 
   const [instantiating, setInstantiating] = useState(false)
 
-  const instantiateMsg = watch(props.fieldNamePrefix + 'instantiateMsg')
+  const {
+    chainId,
+    config: { codeIds },
+  } = useSupportedChainContext()
+
+  const instantiateMsg = watch(
+    (props.fieldNamePrefix + 'instantiateMsg') as 'instantiateMsg'
+  )
 
   const onInstantiate = async () => {
     if (!instantiateMsg) {
@@ -41,37 +45,30 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
 
     setInstantiating(true)
     try {
-      const { contractAddress } = codeIds.Cw721Base
-        ? await signingCosmWasmClient.instantiate(
-            walletAddress,
-            codeIds.Cw721Base,
-            instantiateMsg,
-            'NFT Collection',
-            CHAIN_GAS_MULTIPLIER
-          )
-        : codeIds.Sg721Base
-        ? await signingCosmWasmClient.instantiate(
-            walletAddress,
-            codeIds.Sg721Base,
-            instantiateMsg,
-            'NFT Collection',
-            CHAIN_GAS_MULTIPLIER
-          )
-        : { contractAddress: undefined }
-
-      // Should never happen.
-      if (!contractAddress) {
-        throw new Error(t('error.loadingData'))
-      }
+      const contractAddress = await instantiateSmartContract(
+        signingCosmWasmClient,
+        walletAddress,
+        codeIds.Cw721Base ? codeIds.Cw721Base : codeIds.Sg721Base ?? -1,
+        'NFT Collection',
+        instantiateMsg
+      )
 
       // Update action form data with address.
-      setValue(props.fieldNamePrefix + 'collectionAddress', contractAddress, {
-        shouldValidate: true,
-      })
+      setValue(
+        (props.fieldNamePrefix + 'collectionAddress') as 'collectionAddress',
+        contractAddress,
+        {
+          shouldValidate: true,
+        }
+      )
       // Indicate that contract is ready.
-      setValue(props.fieldNamePrefix + 'contractChosen', true, {
-        shouldValidate: true,
-      })
+      setValue(
+        (props.fieldNamePrefix + 'contractChosen') as 'contractChosen',
+        true,
+        {
+          shouldValidate: true,
+        }
+      )
       // Display success.
       toast.success(t('success.nftCollectionContractInstantiated'))
 
@@ -80,6 +77,7 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
         props.addAction({
           actionKey: ActionKey.ManageCw721,
           data: {
+            chainId,
             adding: true,
             address: contractAddress,
           },

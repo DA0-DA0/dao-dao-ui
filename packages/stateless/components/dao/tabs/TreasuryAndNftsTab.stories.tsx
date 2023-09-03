@@ -35,14 +35,17 @@ Default.args = {
   },
   TokenCard,
   nfts: {
-    loading: false,
-    data: [
-      makeNftCardProps(),
-      makeNftCardProps(),
-      makeNftCardProps(),
-      makeNftCardProps(),
-      makeNftCardProps(),
-    ],
+    [CHAIN_ID]: {
+      loading: false,
+      errored: false,
+      data: [
+        makeNftCardProps(),
+        makeNftCardProps(),
+        makeNftCardProps(),
+        makeNftCardProps(),
+        makeNftCardProps(),
+      ],
+    },
   },
   NftCard,
   isMember: true,
@@ -54,7 +57,7 @@ export const Loading = Template.bind({})
 Loading.args = {
   tokens: { loading: true },
   TokenCard,
-  nfts: { loading: true },
+  nfts: { [CHAIN_ID]: { loading: true, errored: false } },
   NftCard,
   isMember: true,
   addCollectionHref: '#',

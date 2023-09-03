@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { Cw721BaseSelectors } from '@dao-dao/state'
+import { CommonNftSelectors } from '@dao-dao/state'
 import {
   CopyToClipboard,
   FormattedJsonDisplay,
@@ -18,7 +18,7 @@ export const GovernanceConfigurationReview = ({
   const { chain_id: chainId } = useChain()
 
   const existingGovernanceTokenInfoLoadable = useRecoilValueLoadable(
-    Cw721BaseSelectors.contractInfoSelector({
+    CommonNftSelectors.contractInfoSelector({
       chainId,
       contractAddress: existingGovernanceTokenDenomOrAddress,
       params: [],
@@ -26,7 +26,7 @@ export const GovernanceConfigurationReview = ({
   )
 
   const numOfTokensLoadable = useRecoilValueLoadable(
-    Cw721BaseSelectors.numTokensSelector({
+    CommonNftSelectors.numTokensSelector({
       chainId,
       contractAddress: existingGovernanceTokenDenomOrAddress,
       params: [],

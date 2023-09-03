@@ -1,6 +1,6 @@
 import { constSelector, selectorFamily, waitForAll } from 'recoil'
 
-import { Cw721BaseSelectors, nftUriDataSelector } from '@dao-dao/state/recoil'
+import { CommonNftSelectors, nftUriDataSelector } from '@dao-dao/state/recoil'
 import { WithChainId } from '@dao-dao/types'
 
 import { Post, PostVersion } from './types'
@@ -14,7 +14,7 @@ export const postsSelector = selectorFamily<
     ({ contractAddress, chainId }) =>
     ({ get }) => {
       const tokenIds = get(
-        Cw721BaseSelectors.allTokensSelector({
+        CommonNftSelectors.allTokensSelector({
           contractAddress,
           chainId,
         })
@@ -23,7 +23,7 @@ export const postsSelector = selectorFamily<
       const tokenInfos = get(
         waitForAll(
           tokenIds.map((tokenId) =>
-            Cw721BaseSelectors.nftInfoSelector({
+            CommonNftSelectors.nftInfoSelector({
               contractAddress,
               chainId,
               params: [

@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/stateless'
 import { WidgetEditorProps } from '@dao-dao/types'
 import { InstantiateMsg as VestingFactoryInstantiateMsg } from '@dao-dao/types/contracts/CwPayrollFactory'
-import { CHAIN_GAS_MULTIPLIER, processError } from '@dao-dao/utils'
+import { instantiateSmartContract, processError } from '@dao-dao/utils'
 
 import { useWallet } from '../../../hooks/useWallet'
 import { VestingPaymentsData } from './types'
@@ -38,19 +38,17 @@ export const VestingPaymentsEditor = ({
       return
     }
 
-    const signingCosmWasmClient = await getSigningCosmWasmClient()
-
     setInstantiating(true)
     try {
-      const { contractAddress } = await signingCosmWasmClient.instantiate(
+      const contractAddress = await instantiateSmartContract(
+        await getSigningCosmWasmClient(),
         walletAddress,
         codeIds.CwPayrollFactory,
+        `DAO_${name}_VestingPayrollFactory`,
         {
           owner: coreAddress,
           vesting_code_id: codeIds.CwVesting,
-        } as VestingFactoryInstantiateMsg,
-        `DAO_${name}_VestingPayrollFactory`,
-        CHAIN_GAS_MULTIPLIER
+        } as VestingFactoryInstantiateMsg
       )
 
       setValue((fieldNamePrefix + 'factory') as 'factory', contractAddress)

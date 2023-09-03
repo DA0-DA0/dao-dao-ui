@@ -1,4 +1,6 @@
+import { ChainId } from './chain'
 import { ContractInfoResponse } from './contracts/Cw721Base'
+import { LoadingDataWithError } from './stateless'
 
 export interface StargazeNft {
   name: string
@@ -47,3 +49,35 @@ export type NftUriData = {
   externalLink: { href: string; name: string } | undefined
   [key: string]: any
 }
+
+export type NftCardInfo = {
+  chainId: string
+  collection: {
+    address: string
+    name: string
+  }
+  tokenId: string
+  owner?: string
+  externalLink?: {
+    href: string
+    name: string
+  }
+  imageUrl?: string
+  // Metadata loaded from the token URI.
+  metadata?: Record<string, any>
+  floorPrice?: {
+    amount: number
+    denom: string
+  }
+  name: string
+  description: string | undefined
+
+  // This indicates whether or not the NFT is staked in a DAO. It is manually
+  // set in `walletStakedNftCardInfosSelector`.
+  staked?: boolean
+}
+
+// Map chain ID to loading NFTs on that chain.
+export type LoadingNfts<N extends NftCardInfo = NftCardInfo> = Partial<
+  Record<ChainId | string, LoadingDataWithError<N[]>>
+>

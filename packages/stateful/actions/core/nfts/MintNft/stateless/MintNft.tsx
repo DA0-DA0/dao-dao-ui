@@ -11,12 +11,12 @@ import {
   InputErrorMessage,
   InputLabel,
   TextInput,
+  useChain,
   useDetectWrap,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../react'
 import { MintNftOptions } from '../types'
 
 // Form displayed when the user is minting a new NFT.
@@ -27,9 +27,7 @@ export const MintNft: ActionComponent<MintNftOptions> = ({
   options: { nftInfo, AddressInput },
 }) => {
   const { t } = useTranslation()
-  const {
-    chain: { bech32_prefix: bech32Prefix },
-  } = useActionOptions()
+  const { bech32_prefix: bech32Prefix } = useChain()
 
   const { register } = useFormContext()
 

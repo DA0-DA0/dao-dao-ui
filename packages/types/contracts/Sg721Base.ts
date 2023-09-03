@@ -151,10 +151,10 @@ export interface CollectionInfoForRoyaltyInfoResponse {
   start_trading_time?: Timestamp | null
 }
 export interface MinterResponse {
-  minter?: string | null
+  minter: string
 }
 export interface NftInfoResponse {
-  extension: Empty
+  extension?: Empty | null
   token_uri?: string | null
 }
 export interface NumTokensResponse {

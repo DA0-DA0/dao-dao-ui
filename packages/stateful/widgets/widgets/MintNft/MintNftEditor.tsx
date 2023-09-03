@@ -6,10 +6,10 @@ import {
   constSelector,
   useRecoilValue,
   useRecoilValueLoadable,
-  waitForAll,
+  waitForAny,
 } from 'recoil'
 
-import { Cw721BaseSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { CommonNftSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import {
   AddressInput,
   Button,
@@ -50,7 +50,7 @@ export const MintNftEditor = ({
 
   const tokenInfoLoadable = useRecoilValueLoadable(
     tokenAddress && isValidContractAddress(tokenAddress, bech32Prefix)
-      ? Cw721BaseSelectors.contractInfoSelector({
+      ? CommonNftSelectors.contractInfoSelector({
           contractAddress: tokenAddress,
           chainId,
           params: [],
@@ -59,15 +59,15 @@ export const MintNftEditor = ({
   )
 
   const existingTokenAddresses = useRecoilValue(
-    DaoCoreV2Selectors.allCw721TokenListSelector({
+    DaoCoreV2Selectors.allCw721CollectionsSelector({
       contractAddress: address,
       chainId,
     })
-  )
+  )[chainId]?.collectionAddresses
   const existingTokenInfos = useRecoilValue(
-    waitForAll(
+    waitForAny(
       existingTokenAddresses?.map((token) =>
-        Cw721BaseSelectors.contractInfoSelector({
+        CommonNftSelectors.contractInfoSelector({
           contractAddress: token,
           chainId,
           params: [],
@@ -77,16 +77,15 @@ export const MintNftEditor = ({
   )
   const existingTokens = useMemo(
     () =>
-      (existingTokenAddresses
-        .map((address, idx) => ({
-          address,
-          info: existingTokenInfos[idx],
-        }))
-        // If undefined token info response, ignore the token.
-        .filter(({ info }) => !!info) ?? []) as {
-        address: string
-        info: ContractInfoResponse
-      }[],
+      (existingTokenAddresses || []).flatMap((address, idx) =>
+        existingTokenInfos[idx].state === 'hasValue' &&
+        existingTokenInfos[idx].contents
+          ? {
+              address,
+              info: existingTokenInfos[idx].contents as ContractInfoResponse,
+            }
+          : []
+      ),
     [existingTokenAddresses, existingTokenInfos]
   )
 

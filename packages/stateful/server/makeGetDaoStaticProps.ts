@@ -137,6 +137,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
       }
     }
 
+    // TODO(polytone): if polytone proxy, redirect to main DAO
+
     // Add to Sentry error tags if error occurs.
     let coreVersion: ContractVersion | undefined
     try {

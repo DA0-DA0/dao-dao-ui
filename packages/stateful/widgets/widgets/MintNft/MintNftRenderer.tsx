@@ -3,7 +3,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { waitForAll } from 'recoil'
 
-import { Cw721BaseSelectors } from '@dao-dao/state/recoil'
+import { CommonNftSelectors } from '@dao-dao/state/recoil'
 import {
   Button,
   HorizontalScroller,
@@ -39,7 +39,7 @@ export const MintNftRenderer = ({
   const [minting, setMinting] = useState(false)
 
   const allTokensLoadable = useCachedLoadable(
-    Cw721BaseSelectors.allTokensSelector({
+    CommonNftSelectors.allTokensSelector({
       contractAddress: nftCollection,
       chainId,
     })

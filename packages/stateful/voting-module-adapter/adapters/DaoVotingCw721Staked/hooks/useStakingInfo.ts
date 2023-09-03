@@ -7,7 +7,7 @@ import {
 } from 'recoil'
 
 import {
-  Cw721BaseSelectors,
+  CommonNftSelectors,
   DaoVotingCw721StakedSelectors,
   blockHeightSelector,
   refreshClaimsIdAtom,
@@ -157,7 +157,7 @@ export const useStakingInfo = ({
 
   const loadingWalletUnstakedNftsLoadable = useCachedLoadingWithError(
     fetchWalletUnstakedValue && walletAddress && governanceTokenAddress
-      ? Cw721BaseSelectors.allTokensForOwnerSelector({
+      ? CommonNftSelectors.allTokensForOwnerSelector({
           chainId,
           contractAddress: governanceTokenAddress,
           owner: walletAddress,

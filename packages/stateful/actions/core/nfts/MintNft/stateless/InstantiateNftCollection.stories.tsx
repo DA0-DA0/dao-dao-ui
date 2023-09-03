@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { AddressInput } from '@dao-dao/stateless'
 import {
+  CHAIN_ID,
   makeDaoInfo,
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
@@ -16,6 +17,7 @@ export default {
   component: InstantiateNftCollection,
   decorators: [
     makeReactHookFormDecorator<MintNftData>({
+      chainId: CHAIN_ID,
       contractChosen: false,
       mintMsg: {
         owner: '',

@@ -299,7 +299,15 @@ export const allWalletNftsSelector = selectorFamily<
             })
           )
         )
-      ).flat()
+      ).reduce(
+        (acc, nftCardInfos) => [
+          ...acc,
+          ...Object.values(nftCardInfos).flatMap((data) =>
+            !data || data.loading || data.errored ? [] : data.data
+          ),
+        ],
+        [] as NftCardInfo[]
+      )
 
       const nativeStakedNfts = get(
         waitForAll(

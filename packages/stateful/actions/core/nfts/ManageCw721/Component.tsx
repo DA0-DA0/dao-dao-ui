@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 import {
   AddressInput,
   Button,
+  ChainPickerInput,
+  ChainProvider,
   FormattedJsonDisplay,
   FormattedJsonDisplayProps,
   InputErrorMessage,
@@ -12,12 +14,23 @@ import {
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
+import { getChainForChainId } from '@dao-dao/utils'
 import {
   makeValidateContractAddress,
   validateRequired,
 } from '@dao-dao/utils/validation'
 
-import { useActionOptions } from '../../../react'
+export type ManageCw721Data = {
+  chainId: string
+  adding: boolean
+  address: string
+  // The core contract validates that the submitted contract is a CW721
+  // (https://github.com/DA0-DA0/dao-contracts/blob/main/contracts/dao-core/src/contract.rs#L442-L447),
+  // but unfortunately it is too restrictive. It only succeeds if the contract
+  // has the cw721-base ContractInfo response. To allow other NFT contracts to
+  // be added, we can manually use storage items.
+  workaround: boolean
+}
 
 interface Token {
   address: string
@@ -41,16 +54,22 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
   },
 }) => {
   const { t } = useTranslation()
-  const {
-    chain: { bech32_prefix: bech32Prefix },
-  } = useActionOptions()
-  const { register, setValue, watch } = useFormContext()
+  const { register, setValue, watch } = useFormContext<ManageCw721Data>()
 
-  const addingNew = watch(fieldNamePrefix + 'adding')
-  const tokenAddress = watch(fieldNamePrefix + 'address')
+  const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
+  const chain = getChainForChainId(chainId)
+
+  const addingNew = watch((fieldNamePrefix + 'adding') as 'adding')
+  const tokenAddress = watch((fieldNamePrefix + 'address') as 'address')
 
   return (
     <>
+      <ChainPickerInput
+        className="mb-4"
+        disabled={!isCreating}
+        fieldName={fieldNamePrefix + 'chainId'}
+      />
+
       <div className="flex flex-col gap-1">
         <SegmentedControlsTitle
           className="mb-4"
@@ -77,7 +96,12 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
                   key={address}
                   center
                   disabled={!isCreating}
-                  onClick={() => setValue(fieldNamePrefix + 'address', address)}
+                  onClick={() =>
+                    setValue(
+                      (fieldNamePrefix + 'address') as 'address',
+                      address
+                    )
+                  }
                   pressed={tokenAddress === address}
                   size="sm"
                   type="button"
@@ -98,19 +122,21 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
               : t('info.removeCw721FromTreasuryActionDescription')
           }
         />
-        <AddressInput
-          disabled={!isCreating}
-          error={errors?.address}
-          fieldName={fieldNamePrefix + 'address'}
-          register={register}
-          type="contract"
-          validation={[
-            validateRequired,
-            makeValidateContractAddress(bech32Prefix),
-            // Invalidate field if additional error is present.
-            () => additionalAddressError || true,
-          ]}
-        />
+        <ChainProvider chainId={chainId}>
+          <AddressInput
+            disabled={!isCreating}
+            error={errors?.address}
+            fieldName={(fieldNamePrefix + 'address') as 'address'}
+            register={register}
+            type="contract"
+            validation={[
+              validateRequired,
+              makeValidateContractAddress(chain.bech32_prefix),
+              // Invalidate field if additional error is present.
+              () => additionalAddressError || true,
+            ]}
+          />
+        </ChainProvider>
         <InputErrorMessage
           error={
             errors?.address ||
