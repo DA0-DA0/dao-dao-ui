@@ -26,7 +26,10 @@ import {
   Sg721BaseClient,
   Sg721BaseQueryClient,
 } from '../../../contracts/Sg721Base'
-import { signingCosmWasmClientAtom } from '../../atoms'
+import {
+  refreshWalletBalancesIdAtom,
+  signingCosmWasmClientAtom,
+} from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
 
 type QueryClientParams = WithChainId<{
@@ -190,6 +193,7 @@ export const tokensSelector = selectorFamily<
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
+      get(refreshWalletBalancesIdAtom(params[0].owner))
       return await client.tokens(...params)
     },
 })
@@ -233,5 +237,49 @@ export const collectionInfoSelector = selectorFamily<
     async ({ get }) => {
       const client = get(queryClient(queryClientParams))
       return await client.collectionInfo(...params)
+    },
+})
+
+const ALL_TOKENS_FOR_OWNER_LIMIT = 30
+export const allTokensForOwnerSelector = selectorFamily<
+  TokensResponse['tokens'],
+  QueryClientParams & {
+    owner: string
+  }
+>({
+  key: 'sg721BaseAllTokensForOwner',
+  get:
+    ({ owner, ...queryClientParams }) =>
+    async ({ get }) => {
+      get(refreshWalletBalancesIdAtom(owner))
+
+      const tokens: TokensResponse['tokens'] = []
+      while (true) {
+        const response = await get(
+          tokensSelector({
+            ...queryClientParams,
+            params: [
+              {
+                owner,
+                startAfter: tokens[tokens.length - 1],
+                limit: ALL_TOKENS_FOR_OWNER_LIMIT,
+              },
+            ],
+          })
+        )?.tokens
+
+        if (!response?.length) {
+          break
+        }
+
+        tokens.push(...response)
+
+        // If we have less than the limit of items, we've exhausted them.
+        if (response.length < ALL_TOKENS_FOR_OWNER_LIMIT) {
+          break
+        }
+      }
+
+      return tokens
     },
 })

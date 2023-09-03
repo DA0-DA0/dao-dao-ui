@@ -7,7 +7,7 @@ import {
   PartialCategorizedActionKeyAndData,
 } from './actions'
 import { CosmosMsgFor_Empty } from './contracts'
-import { NftCardInfo } from './dao'
+import { NftCardInfo } from './nft'
 import { WalletProfileData } from './profile'
 import { LoadingData, SuspenseLoaderProps } from './stateless'
 import { TokenCardInfo } from './token'

@@ -5,11 +5,10 @@ import {
   constSelector,
   useRecoilValue,
   useRecoilValueLoadable,
-  waitForAll,
+  waitForAny,
 } from 'recoil'
 
-import { Cw721BaseSelectors } from '@dao-dao/state'
-import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
+import { CommonNftSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { ImageEmoji } from '@dao-dao/stateless'
 import { ContractVersion } from '@dao-dao/types'
 import {
@@ -24,48 +23,53 @@ import {
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
   CW721_WORKAROUND_ITEM_KEY_PREFIX,
+  POLYTONE_CW721_ITEM_KEY_PREFIX,
+  getChainForChainId,
   isValidContractAddress,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
-import { ManageCw721Component as StatelessManageCw721Component } from './Component'
+import {
+  ManageCw721Data,
+  ManageCw721Component as StatelessManageCw721Component,
+} from './Component'
 
-interface ManageCw721Data {
-  adding: boolean
-  address: string
-  // The core contract validates that the submitted contract is a CW721
-  // (https://github.com/DA0-DA0/dao-contracts/blob/main/contracts/dao-core/src/contract.rs#L442-L447),
-  // but unfortunately it is too restrictive. It only succeeds if the contract
-  // has the cw721-base ContractInfo response. To allow other NFT contracts to
-  // be added, we can manually use storage items.
-  workaround: boolean
+export const useDefaults: UseDefaults<ManageCw721Data> = () => {
+  const {
+    chain: { chain_id: chainId },
+  } = useActionOptions()
+
+  return {
+    chainId,
+    adding: true,
+    address: '',
+    workaround: false,
+  }
 }
-
-export const useDefaults: UseDefaults<ManageCw721Data> = () => ({
-  adding: true,
-  address: '',
-  workaround: false,
-})
 
 const Component: ActionComponent = (props) => {
   const {
     address,
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+    chain: { chain_id: currentChainId },
   } = useActionOptions()
 
   const { t } = useTranslation()
   const { fieldNamePrefix } = props
 
   const { watch, setValue } = useFormContext()
+
+  const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
+  const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
+
   const adding = watch(fieldNamePrefix + 'adding')
   const tokenAddress = watch(fieldNamePrefix + 'address')
   const workaround = watch(fieldNamePrefix + 'workaround')
 
   const tokenInfoLoadable = useRecoilValueLoadable(
     tokenAddress && isValidContractAddress(tokenAddress, bech32Prefix)
-      ? Cw721BaseSelectors.contractInfoSelector({
+      ? CommonNftSelectors.contractInfoSelector({
           contractAddress: tokenAddress,
           chainId,
           params: [],
@@ -98,15 +102,15 @@ const Component: ActionComponent = (props) => {
   }, [fieldNamePrefix, setValue, tokenInfoLoadable, workaround])
 
   const existingTokenAddresses = useRecoilValue(
-    DaoCoreV2Selectors.allCw721TokenListSelector({
+    DaoCoreV2Selectors.allCw721CollectionsSelector({
       contractAddress: address,
-      chainId,
+      chainId: currentChainId,
     })
-  )
+  )[chainId]?.collectionAddresses
   const existingTokenInfos = useRecoilValue(
-    waitForAll(
+    waitForAny(
       existingTokenAddresses?.map((token) =>
-        Cw721BaseSelectors.contractInfoSelector({
+        CommonNftSelectors.contractInfoSelector({
           contractAddress: token,
           chainId,
           params: [],
@@ -116,16 +120,15 @@ const Component: ActionComponent = (props) => {
   )
   const existingTokens = useMemo(
     () =>
-      (existingTokenAddresses
-        .map((address, idx) => ({
-          address,
-          info: existingTokenInfos[idx],
-        }))
-        // If undefined token info response, ignore the token.
-        .filter(({ info }) => !!info) ?? []) as {
-        address: string
-        info: ContractInfoResponse
-      }[],
+      (existingTokenAddresses || []).flatMap((address, idx) =>
+        existingTokenInfos[idx].state === 'hasValue' &&
+        existingTokenInfos[idx].contents
+          ? {
+              address,
+              info: existingTokenInfos[idx].contents as ContractInfoResponse,
+            }
+          : []
+      ),
     [existingTokenAddresses, existingTokenInfos]
   )
 
@@ -178,6 +181,7 @@ export const makeManageCw721Action: ActionMaker<ManageCw721Data> = ({
   t,
   address,
   context,
+  chain: { chain_id: chainId },
 }) => {
   // Only DAOs.
   if (context.type !== ActionContextType.Dao) {
@@ -199,25 +203,51 @@ export const makeManageCw721Action: ActionMaker<ManageCw721Data> = ({
             execute: {
               contract_addr: address,
               funds: [],
-              msg: data.workaround
-                ? data.adding
-                  ? {
-                      set_item: {
-                        key: CW721_WORKAROUND_ITEM_KEY_PREFIX + data.address,
-                        [storageItemValueKey]: '1',
-                      },
-                    }
+              msg:
+                // If adding for polytone proxy (on other chain), use items
+                // instead of the core contract message, like the workaround
+                // below.
+                data.chainId !== chainId
+                  ? data.adding
+                    ? {
+                        set_item: {
+                          key:
+                            POLYTONE_CW721_ITEM_KEY_PREFIX +
+                            data.chainId +
+                            ':' +
+                            data.address,
+                          [storageItemValueKey]: '1',
+                        },
+                      }
+                    : {
+                        remove_item: {
+                          key:
+                            POLYTONE_CW721_ITEM_KEY_PREFIX +
+                            data.chainId +
+                            ':' +
+                            data.address,
+                        },
+                      }
+                  : // If workaround, set item instead of using core contract message. This is necessary if the contract does not perfectly fit the expected NFT format. See the comment in `./Component.tsx` for more information.
+                  data.workaround
+                  ? data.adding
+                    ? {
+                        set_item: {
+                          key: CW721_WORKAROUND_ITEM_KEY_PREFIX + data.address,
+                          [storageItemValueKey]: '1',
+                        },
+                      }
+                    : {
+                        remove_item: {
+                          key: CW721_WORKAROUND_ITEM_KEY_PREFIX + data.address,
+                        },
+                      }
                   : {
-                      remove_item: {
-                        key: CW721_WORKAROUND_ITEM_KEY_PREFIX + data.address,
+                      update_cw721_list: {
+                        to_add: data.adding ? [data.address] : [],
+                        to_remove: !data.adding ? [data.address] : [],
                       },
-                    }
-                : {
-                    update_cw721_list: {
-                      to_add: data.adding ? [data.address] : [],
-                      to_remove: !data.adding ? [data.address] : [],
                     },
-                  },
             },
           },
         }),
@@ -254,6 +284,7 @@ export const makeManageCw721Action: ActionMaker<ManageCw721Data> = ({
       return {
         match: true,
         data: {
+          chainId,
           adding: msg.wasm.execute.msg.update_cw721_list.to_add.length === 1,
           address:
             msg.wasm.execute.msg.update_cw721_list.to_add.length === 1
@@ -283,17 +314,28 @@ export const makeManageCw721Action: ActionMaker<ManageCw721Data> = ({
         (adding
           ? msg.wasm.execute.msg.set_item.key
           : msg.wasm.execute.msg.remove_item.key) ?? ''
-      if (!key.startsWith(CW721_WORKAROUND_ITEM_KEY_PREFIX)) {
-        return { match: false }
-      }
 
-      return {
-        match: true,
-        data: {
-          adding,
-          address: key.substring(CW721_WORKAROUND_ITEM_KEY_PREFIX.length),
-          workaround: true,
-        },
+      if (key.startsWith(CW721_WORKAROUND_ITEM_KEY_PREFIX)) {
+        return {
+          match: true,
+          data: {
+            chainId,
+            adding,
+            address: key.substring(CW721_WORKAROUND_ITEM_KEY_PREFIX.length),
+            workaround: true,
+          },
+        }
+      } else if (key.startsWith(POLYTONE_CW721_ITEM_KEY_PREFIX)) {
+        // format is `prefix:[chainId]:[address]`
+        return {
+          match: true,
+          data: {
+            chainId: key.split(':')[1],
+            adding,
+            address: key.split(':')[2],
+            workaround: false,
+          },
+        }
       }
     }
 

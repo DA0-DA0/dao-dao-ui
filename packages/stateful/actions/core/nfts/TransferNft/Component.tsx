@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   Button,
+  ChainProvider,
   CodeMirrorInput,
   FormSwitchCard,
   HorizontalNftCard,
@@ -20,13 +21,23 @@ import {
   NftCardInfo,
 } from '@dao-dao/types'
 import {
+  getChainForChainId,
   makeValidateAddress,
   makeValidateContractAddress,
   validateJSON,
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../react'
+export type TransferNftData = {
+  chainId: string
+  collection: string
+  tokenId: string
+  recipient: string
+
+  // When true, uses `send` instead of `transfer_nft` to transfer the NFT.
+  executeSmartContract: boolean
+  smartContractMsg: string
+}
 
 export interface TransferNftOptions {
   // The set of NFTs that may be transfered as part of this action.
@@ -34,7 +45,7 @@ export interface TransferNftOptions {
   // Information about the NFT currently selected.
   nftInfo: NftCardInfo | undefined
 
-  AddressInput: ComponentType<AddressInputProps>
+  AddressInput: ComponentType<AddressInputProps<TransferNftData>>
 }
 
 export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
@@ -44,28 +55,30 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
   options: { options, nftInfo, AddressInput },
 }) => {
   const { t } = useTranslation()
-  const {
-    chain: { bech32_prefix: bech32Prefix },
-  } = useActionOptions()
   const { control, watch, setValue, setError, register, clearErrors } =
-    useFormContext()
+    useFormContext<TransferNftData>()
 
-  const tokenId = watch(fieldNamePrefix + 'tokenId')
-  const collection = watch(fieldNamePrefix + 'collection')
-  const executeSmartContract = watch(fieldNamePrefix + 'executeSmartContract')
+  const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
+  const chain = getChainForChainId(chainId)
 
-  const selected = `${collection}${tokenId}`
+  const tokenId = watch((fieldNamePrefix + 'tokenId') as 'tokenId')
+  const collection = watch((fieldNamePrefix + 'collection') as 'collection')
+  const executeSmartContract = watch(
+    (fieldNamePrefix + 'executeSmartContract') as 'executeSmartContract'
+  )
+
+  const selected = `${chainId}:${collection}:${tokenId}`
   const getIdForNft = (nft: NftCardInfo) =>
-    `${nft.collection.address}${nft.tokenId}`
+    `${nft.chainId}:${nft.collection.address}:${nft.tokenId}`
 
   useEffect(() => {
     if (!selected) {
-      setError(fieldNamePrefix + 'collection', {
+      setError((fieldNamePrefix + 'collection') as 'collection', {
         type: 'required',
         message: t('error.noNftSelected'),
       })
     } else {
-      clearErrors(fieldNamePrefix + 'collection')
+      clearErrors((fieldNamePrefix + 'collection') as 'collection')
     }
   }, [selected, setError, clearErrors, t, fieldNamePrefix])
 
@@ -83,20 +96,22 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
                 : t('form.recipient')}
             </p>
 
-            <AddressInput
-              disabled={!isCreating}
-              error={errors?.recipient}
-              fieldName={fieldNamePrefix + 'recipient'}
-              register={register}
-              validation={[
-                validateRequired,
-                // If executing smart contract, ensure recipient is smart
-                // contract.
-                (executeSmartContract
-                  ? makeValidateContractAddress
-                  : makeValidateAddress)(bech32Prefix),
-              ]}
-            />
+            <ChainProvider chainId={chainId}>
+              <AddressInput
+                disabled={!isCreating}
+                error={errors?.recipient}
+                fieldName={(fieldNamePrefix + 'recipient') as 'recipient'}
+                register={register}
+                validation={[
+                  validateRequired,
+                  // If executing smart contract, ensure recipient is smart
+                  // contract.
+                  (executeSmartContract
+                    ? makeValidateContractAddress
+                    : makeValidateAddress)(chain.bech32_prefix),
+                ]}
+              />
+            </ChainProvider>
             <InputErrorMessage error={errors?.recipient} />
           </div>
 
@@ -105,17 +120,25 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
             <div className="flex flex-col gap-1">
               <FormSwitchCard
                 containerClassName="self-start"
-                fieldName={fieldNamePrefix + 'executeSmartContract'}
+                fieldName={
+                  (fieldNamePrefix +
+                    'executeSmartContract') as 'executeSmartContract'
+                }
                 label={t('form.executeSmartContract')}
                 onToggle={() => {
                   // Recipient validation changes as a function of this value,
                   // so reset errors on change and they will get revalidated
                   // later.
-                  clearErrors(fieldNamePrefix + 'recipient')
+                  clearErrors((fieldNamePrefix + 'recipient') as 'recipient')
                   // Reset to valid empty JSON object.
-                  setValue(fieldNamePrefix + 'smartContractMsg', '{}', {
-                    shouldValidate: true,
-                  })
+                  setValue(
+                    (fieldNamePrefix +
+                      'smartContractMsg') as 'smartContractMsg',
+                    '{}',
+                    {
+                      shouldValidate: true,
+                    }
+                  )
                 }}
                 readOnly={!isCreating}
                 setValue={setValue}
@@ -132,7 +155,10 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
                   <CodeMirrorInput
                     control={control}
                     error={errors?.smartContractMsg}
-                    fieldName={fieldNamePrefix + 'smartContractMsg'}
+                    fieldName={
+                      (fieldNamePrefix +
+                        'smartContractMsg') as 'smartContractMsg'
+                    }
                     readOnly={!isCreating}
                     validation={[validateJSON]}
                   />
@@ -188,11 +214,16 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
           onClose={() => setShowModal(false)}
           onNftClick={(nft) => {
             if (getIdForNft(nft) === selected) {
-              setValue(fieldNamePrefix + 'tokenId', '')
-              setValue(fieldNamePrefix + 'collection', '')
+              // No need to clear chain when deselecting.
+              setValue((fieldNamePrefix + 'tokenId') as 'tokenId', '')
+              setValue((fieldNamePrefix + 'collection') as 'collection', '')
             } else {
-              setValue(fieldNamePrefix + 'tokenId', nft.tokenId)
-              setValue(fieldNamePrefix + 'collection', nft.collection.address)
+              setValue((fieldNamePrefix + 'chainId') as 'chainId', nft.chainId)
+              setValue((fieldNamePrefix + 'tokenId') as 'tokenId', nft.tokenId)
+              setValue(
+                (fieldNamePrefix + 'collection') as 'collection',
+                nft.collection.address
+              )
             }
           }}
           selectedIds={selected ? [selected] : []}

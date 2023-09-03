@@ -4,11 +4,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
 
-import {
-  DaoCoreV2Selectors,
-  blockHeightSelector,
-  blocksPerYearSelector,
-} from '@dao-dao/state'
+import { DaoCoreV2Selectors, blocksPerYearSelector } from '@dao-dao/state'
 import {
   useCachedLoadable,
   useChain,
@@ -56,7 +52,7 @@ export const NewProposal = ({
     imageUrl: daoImageUrl,
     coreAddress,
   } = useDaoInfoContext()
-  const { isWalletConnected } = useWallet()
+  const { isWalletConnected, getStargateClient } = useWallet()
 
   const { loadedActions, categories } = useLoadedActionsAndCategories()
 
@@ -80,16 +76,6 @@ export const NewProposal = ({
     pauseInfo.state === 'hasValue' &&
     ('paused' in pauseInfo.contents || 'Paused' in pauseInfo.contents)
 
-  const blockHeightLoadable = useCachedLoadable(
-    blockHeightSelector({
-      chainId,
-    })
-  )
-  const blockHeight =
-    blockHeightLoadable.state === 'hasValue'
-      ? blockHeightLoadable.contents
-      : undefined
-
   const processTQ = useProcessTQ()
 
   const blocksPerYear = useRecoilValue(
@@ -108,8 +94,8 @@ export const NewProposal = ({
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
       async (newProposalData: NewProposalData) => {
-        if (blockHeight === undefined) {
-          toast.error(t('error.loadingData'))
+        if (!isWalletConnected) {
+          toast.error(t('error.logInToContinue'))
           return
         }
 
@@ -135,7 +121,7 @@ export const NewProposal = ({
             convertExpirationToDate(
               blocksPerYear,
               proposalInfo.expiration,
-              blockHeight
+              (await (await getStargateClient()).getBlock()).header.height
             )
 
           const proposal = (
@@ -210,17 +196,18 @@ export const NewProposal = ({
         }
       },
     [
-      blockHeight,
-      blocksPerYear,
-      coreAddress,
-      daoImageUrl,
-      onCreateSuccess,
-      options,
-      processTQ,
+      isWalletConnected,
       publishProposal,
+      options,
+      blocksPerYear,
+      getStargateClient,
+      chainId,
+      processTQ,
+      onCreateSuccess,
       t,
       daoName,
-      chainId,
+      coreAddress,
+      daoImageUrl,
     ]
   )
 

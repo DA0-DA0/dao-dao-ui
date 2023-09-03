@@ -1,7 +1,7 @@
 import { useRecoilValue } from 'recoil'
 
 import {
-  Cw721BaseSelectors,
+  CommonNftSelectors,
   DaoVotingCw721StakedSelectors,
 } from '@dao-dao/state/recoil'
 import { useChain } from '@dao-dao/stateless'
@@ -22,7 +22,7 @@ export const useCommonGovernanceTokenInfo = (): GenericToken => {
   )
 
   const contractInfo = useRecoilValue(
-    Cw721BaseSelectors.contractInfoSelector({
+    CommonNftSelectors.contractInfoSelector({
       chainId,
       contractAddress: collectionAddress,
       params: [],

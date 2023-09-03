@@ -1,5 +1,4 @@
 import { Chain } from '@chain-registry/types'
-import axios from 'axios'
 import type { GetStaticProps, Redirect } from 'next'
 import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
@@ -30,6 +29,7 @@ import {
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   CI,
+  DAO_CORE_ACCENT_ITEM_KEY,
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
@@ -43,9 +43,7 @@ import {
   parseContractVersion,
   polytoneNoteProxyMapToChainIdMap,
   processError,
-  toAccessibleImageUrl,
 } from '@dao-dao/utils'
-import { FAST_AVERAGE_COLOR_API_TEMPLATE } from '@dao-dao/utils/constants'
 
 import { DaoPageWrapperProps } from '../components'
 import {
@@ -68,6 +66,7 @@ interface GetDaoStaticPropsMakerProps {
 }
 
 interface GetDaoStaticPropsMakerOptions {
+  appMode: DaoPageMode
   coreAddress?: string
   getProps?: (options: {
     context: Parameters<GetStaticProps>[0]
@@ -85,7 +84,7 @@ interface GetDaoStaticPropsMakerOptions {
 }
 
 type GetDaoStaticPropsMaker = (
-  options?: GetDaoStaticPropsMakerOptions
+  options: GetDaoStaticPropsMakerOptions
 ) => GetStaticProps<DaoPageWrapperProps>
 
 export class LegacyDaoError extends Error {
@@ -97,7 +96,7 @@ export class LegacyDaoError extends Error {
 
 // Computes DaoPageWrapperProps for the DAO with optional alterations.
 export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
-  ({ coreAddress: _coreAddress, getProps } = {}) =>
+  ({ appMode, coreAddress: _coreAddress, getProps }) =>
   async (context) => {
     // Don't query chain if running in CI.
     if (CI) {
@@ -133,6 +132,45 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           ...i18nProps,
           title: serverT('title.daoNotFound'),
           description: err instanceof Error ? err.message : `${err}`,
+        },
+      }
+    }
+
+    // If address is polytone proxy, redirect to DAO on native chain.
+    const addressInfo = await queryIndexer<ContractVersionInfo>({
+      type: 'contract',
+      chainId,
+      address: coreAddress,
+      formula: 'info',
+      required: true,
+    })
+    if (addressInfo && addressInfo.contract === 'crates.io:polytone-proxy') {
+      // Get voice for this proxy on destination chain.
+      const voice = await queryIndexer({
+        type: 'contract',
+        chainId,
+        // proxy
+        address: coreAddress,
+        formula: 'polytone/proxy/instantiator',
+        required: true,
+      })
+
+      const dao = await queryIndexer({
+        type: 'contract',
+        chainId,
+        address: voice,
+        formula: 'polytone/voice/remoteController',
+        args: {
+          // proxy
+          address: coreAddress,
+        },
+        required: true,
+      })
+
+      return {
+        redirect: {
+          destination: getDaoPath(appMode, dao),
+          permanent: true,
         },
       }
     }
@@ -198,27 +236,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           proposalModules,
         })) ?? {}
 
-      // Get DAO accent color.
-      let accentColor: string | null = null
-      if (config.image_url && !config.image_url.endsWith('svg')) {
-        try {
-          const response = await axios.get(
-            FAST_AVERAGE_COLOR_API_TEMPLATE.replace(
-              'URL',
-              toAccessibleImageUrl(config.image_url, {
-                replaceRelative: true,
-              })
-            ),
-            { responseType: 'text' }
-          )
-
-          accentColor = response.data
-        } catch (error) {
-          // If fail to load image or get color, don't prevent page render.
-          console.error(error)
-        }
-      }
-
       const props: DaoPageWrapperProps = {
         ...i18nProps,
         url: url ?? null,
@@ -228,7 +245,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             .filter(Boolean)
             .join(' | '),
         description: overrideDescription ?? config.description,
-        accentColor,
+        accentColor: items[DAO_CORE_ACCENT_ITEM_KEY] || null,
         serializedInfo: {
           chainId,
           coreAddress,

@@ -6,6 +6,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
     [ChainId.JunoMainnet]: {
       name: 'juno',
       mainnet: true,
+      accentColor: '#f74a49',
       factoryContractAddress:
         'juno1eeqgsjyqxcscpxwa6ut36py8vfpu6hxrwy62n2vgu8ud72wa9pyqv38q7y',
       supportsV1GovProposals: true,
@@ -73,6 +74,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
     [ChainId.OsmosisMainnet]: {
       name: 'osmosis',
       mainnet: true,
+      accentColor: '#5604e8',
       factoryContractAddress:
         'osmo102pg8quxtvhye3k4rcqwh7j5zwf5ekhcvlquafjjxjnarhu38qzstkdm6p',
       supportsV1GovProposals: false,
@@ -141,6 +143,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
     [ChainId.StargazeMainnet]: {
       name: 'stargaze',
       mainnet: true,
+      accentColor: '#8ac3cc',
       factoryContractAddress:
         'stars175zvu8psmyxlszsxaa5thz26gjm4y6l24cr9ctgs09g90755tpmqmskl4t',
       supportsV1GovProposals: false,
@@ -184,6 +187,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
     [ChainId.JunoTestnet]: {
       name: 'juno',
       mainnet: false,
+      accentColor: '#f74a49',
       factoryContractAddress:
         'juno1dacj3j6pwr7jx0jeu99qdc4a2ylc2rxp4v3zap54sfrl3ntrhe8qkjfpku',
       supportsV1GovProposals: true,
@@ -226,6 +230,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
     [ChainId.OsmosisTestnet]: {
       name: 'osmosis',
       mainnet: false,
+      accentColor: '#5604e8',
       factoryContractAddress:
         'osmo1v5k3527dt2vt67848h8jk0az9dyl8sunsqaapznf2j9tm4arxxfs7gwa0n',
       supportsV1GovProposals: false,
@@ -269,6 +274,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
     [ChainId.StargazeTestnet]: {
       name: 'stargaze',
       mainnet: false,
+      accentColor: '#8ac3cc',
       factoryContractAddress:
         'stars1ajrde5kky0c3xspjthqncxd72qmyu5trfsspn6ndk892gyqwakzsdjmegx',
       supportsV1GovProposals: false,

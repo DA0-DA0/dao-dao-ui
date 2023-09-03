@@ -6,11 +6,11 @@ import {
   InputErrorMessage,
   InputLabel,
   TextInput,
+  useChain,
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types'
 import { makeValidateAddress, validateRequired } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../react'
 import { InstantiateNftCollectionOptions } from '../types'
 
 // Form displayed when the user is instantiating a new NFT collection.
@@ -22,9 +22,7 @@ export const InstantiateNftCollection: ActionComponent<
   options: { onInstantiate, instantiating, AddressInput },
 }) => {
   const { t } = useTranslation()
-  const {
-    chain: { bech32_prefix: bech32Prefix },
-  } = useActionOptions()
+  const { bech32_prefix: bech32Prefix } = useChain()
   const { register, trigger } = useFormContext()
 
   return (

@@ -181,6 +181,42 @@ export const loadableToLoadingData = <T>(
       }
 }
 
+// Combine many data loaders into one.
+export const combineLoadingDatas = <T>(
+  ...loadables: LoadingData<T[]>[]
+): LoadingData<T[]> =>
+  loadables.some((l) => l.loading)
+    ? {
+        loading: true,
+      }
+    : {
+        loading: false,
+        data: loadables.flatMap((l) => (l.loading ? [] : l.data)),
+      }
+
+// Combine many data with error loaders into one.
+export const combineLoadingDataWithErrors = <T>(
+  ...loadables: LoadingDataWithError<T[]>[]
+): LoadingDataWithError<T[]> =>
+  loadables.some((l) => l.loading)
+    ? {
+        loading: true,
+        errored: false,
+      }
+    : loadables.some((l) => l.errored)
+    ? {
+        loading: false,
+        errored: true,
+        error: loadables
+          .map((l) => (l.errored ? l.error : undefined))
+          .find((err): err is unknown => !!err),
+      }
+    : {
+        loading: false,
+        errored: false,
+        data: loadables.flatMap((l) => (l.loading || l.errored ? [] : l.data)),
+      }
+
 // Convert Recoil loadable into our generic data loader with error type. See the
 // comment above the LoadingData type for more details.
 export const loadableToLoadingDataWithError = <T>(

@@ -1,7 +1,7 @@
 import { constSelector, useRecoilValue } from 'recoil'
 
 import {
-  Cw721BaseSelectors,
+  CommonNftSelectors,
   DaoVotingCw721StakedSelectors,
 } from '@dao-dao/state'
 import { useCachedLoading, useChain } from '@dao-dao/stateless'
@@ -31,7 +31,7 @@ export const useGovernanceCollectionInfo = ({
   )
 
   const contractInfo = useRecoilValue(
-    Cw721BaseSelectors.contractInfoSelector({
+    CommonNftSelectors.contractInfoSelector({
       chainId,
       contractAddress: collectionAddress,
       params: [],
@@ -39,7 +39,7 @@ export const useGovernanceCollectionInfo = ({
   )
 
   const tokenSupplyInfo = useRecoilValue(
-    Cw721BaseSelectors.numTokensSelector({
+    CommonNftSelectors.numTokensSelector({
       chainId,
       contractAddress: collectionAddress,
       params: [],
@@ -51,7 +51,7 @@ export const useGovernanceCollectionInfo = ({
   // Wallet balance
   const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
-      ? Cw721BaseSelectors.allTokensForOwnerSelector({
+      ? CommonNftSelectors.allTokensForOwnerSelector({
           chainId,
           contractAddress: collectionAddress,
           owner: walletAddress,
@@ -63,7 +63,7 @@ export const useGovernanceCollectionInfo = ({
   // Treasury balance
   const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
-      ? Cw721BaseSelectors.allTokensForOwnerSelector({
+      ? CommonNftSelectors.allTokensForOwnerSelector({
           chainId,
           contractAddress: collectionAddress,
           owner: coreAddress,

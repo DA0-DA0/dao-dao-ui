@@ -75,6 +75,7 @@ export type SupportedChainConfig = {
   // to identify the chain in the native governance UI.
   name: string
   mainnet: boolean
+  accentColor: string
   factoryContractAddress: string
   // Supports new v1 gov proposals introduced in cosmos-sdk v47. Some chains
   // that fork the SDK, like Osmosis, don't support v1 gov proposals even though

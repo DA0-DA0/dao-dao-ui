@@ -65,33 +65,6 @@ export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
   created: string | null
 }
 
-export interface NftCardInfo {
-  collection: {
-    address: string
-    name: string
-  }
-  tokenId: string
-  owner?: string
-  externalLink?: {
-    href: string
-    name: string
-  }
-  imageUrl?: string
-  // Metadata loaded from the token URI.
-  metadata?: Record<string, any>
-  floorPrice?: {
-    amount: number
-    denom: string
-  }
-  name: string
-  description: string | undefined
-  chainId: string
-
-  // This indicates whether or not the NFT is staked in a DAO. It is manually
-  // set in `walletStakedNftCardInfosSelector`.
-  staked?: boolean
-}
-
 export interface ProposalModule {
   contractName: string
   version: ContractVersion | null

@@ -7,6 +7,7 @@ import {
 } from '@dao-dao/types/contracts/Cw721Base'
 
 export interface MintNftData {
+  chainId: string
   // Whether or not the contract has been chosen. When this is `false`, shows
   // form allowing user to create a new collection or enter an existing address.
   // When `true`, it shows the minting UI. `collectionAddress` should be defined

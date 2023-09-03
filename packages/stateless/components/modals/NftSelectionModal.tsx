@@ -14,7 +14,7 @@ import {
   SortFn,
   TypedOption,
 } from '@dao-dao/types'
-import { getChainForChainId } from '@dao-dao/utils'
+import { getChainForChainId, getDisplayNameForChainId } from '@dao-dao/utils'
 
 import {
   useButtonPopupFilter,
@@ -127,7 +127,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
           id: string
         } => ({
           id: chain.chain_name,
-          label: chain.pretty_name,
+          label: getDisplayNameForChainId(chain.chain_id),
           value: (nft) => nft.chainId === chain.chain_id,
         })
       ),

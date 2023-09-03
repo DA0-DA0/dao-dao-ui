@@ -27,6 +27,8 @@ export const FOLLOWING_DAOS_PREFIX = 'following:'
 // The key for the item in the DAO core contract that contains the payroll
 // config.
 export const DAO_CORE_PAYROLL_CONFIG_ITEM_KEY = 'payroll'
+// The key for the item in the DAO core contract that contains the accent color.
+export const DAO_CORE_ACCENT_ITEM_KEY = 'accent'
 
 // Me balances page
 export const HIDDEN_BALANCE_PREFIX = 'hiddenBalance:'
@@ -43,6 +45,10 @@ export const DAO_WIDGET_ITEM_NAMESPACE = 'widget:'
 // This workaround is necessary for contracts that don't conform to the expected
 // contract info response.
 export const CW721_WORKAROUND_ITEM_KEY_PREFIX = 'cw721:'
+// The namespace (prefix) of cw721 contracts for polytone accounts stored in a
+// DAO's core items list. Polytone proxies cannot register cw721 like the DAO
+// core contract can, so we need to store this separately.
+export const POLYTONE_CW721_ITEM_KEY_PREFIX = 'polytone_cw721:'
 
 // Osmosis API
 export const OSMOSIS_API_BASE = 'https://api-osmosis.imperator.co'

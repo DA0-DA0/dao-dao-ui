@@ -16,7 +16,8 @@ import {
   NftCardInfo,
 } from '@dao-dao/types'
 
-export interface BurnNftData {
+export type BurnNftData = {
+  chainId: string
   collection: string
   tokenId: string
 }
@@ -35,14 +36,16 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
   options: { options, nftInfo },
 }) => {
   const { t } = useTranslation()
-  const { watch, setValue, setError, clearErrors } = useFormContext()
+  const { watch, setValue, setError, clearErrors } =
+    useFormContext<BurnNftData>()
 
-  const tokenId = watch(fieldNamePrefix + 'tokenId')
-  const collection = watch(fieldNamePrefix + 'collection')
+  const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
+  const tokenId = watch((fieldNamePrefix + 'tokenId') as 'tokenId')
+  const collection = watch((fieldNamePrefix + 'collection') as 'collection')
 
-  const selected = `${collection}${tokenId}`
+  const selected = `${chainId}:${collection}:${tokenId}`
   const getIdForNft = (nft: NftCardInfo) =>
-    `${nft.collection.address}${nft.tokenId}`
+    `${nft.chainId}:${nft.collection.address}:${nft.tokenId}`
 
   useEffect(() => {
     if (
@@ -52,14 +55,26 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
         !options.errored &&
         !options.data.some((nft) => getIdForNft(nft) === selected))
     ) {
-      setError(fieldNamePrefix + 'collection', {
-        type: 'required',
-        message: t('error.noNftSelected'),
-      })
+      if (!errors?.collection) {
+        setError((fieldNamePrefix + 'collection') as 'collection', {
+          type: 'required',
+          message: t('error.noNftSelected'),
+        })
+      }
     } else {
-      clearErrors(fieldNamePrefix + 'collection')
+      if (errors?.collection) {
+        clearErrors((fieldNamePrefix + 'collection') as 'collection')
+      }
     }
-  }, [selected, setError, clearErrors, t, fieldNamePrefix, options])
+  }, [
+    selected,
+    setError,
+    clearErrors,
+    t,
+    fieldNamePrefix,
+    options,
+    errors?.collection,
+  ])
 
   // Show modal initially if creating and no NFT already selected.
   const [showModal, setShowModal] = useState<boolean>(isCreating && !selected)
@@ -112,11 +127,16 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
           onClose={() => setShowModal(false)}
           onNftClick={(nft) => {
             if (getIdForNft(nft) === selected) {
-              setValue(fieldNamePrefix + 'tokenId', '')
-              setValue(fieldNamePrefix + 'collection', '')
+              // No need to clear chain when deselecting.
+              setValue((fieldNamePrefix + 'tokenId') as 'tokenId', '')
+              setValue((fieldNamePrefix + 'collection') as 'collection', '')
             } else {
-              setValue(fieldNamePrefix + 'tokenId', nft.tokenId)
-              setValue(fieldNamePrefix + 'collection', nft.collection.address)
+              setValue((fieldNamePrefix + 'chainId') as 'chainId', nft.chainId)
+              setValue((fieldNamePrefix + 'tokenId') as 'tokenId', nft.tokenId)
+              setValue(
+                (fieldNamePrefix + 'collection') as 'collection',
+                nft.collection.address
+              )
             }
           }}
           selectedIds={selected ? [selected] : []}

@@ -3,7 +3,7 @@ import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
-  Cw721BaseSelectors,
+  CommonNftSelectors,
   DaoCoreV2Selectors,
   nftUriDataSelector,
 } from '@dao-dao/state/recoil'
@@ -14,7 +14,7 @@ import {
   ActionKey,
   NftCardInfo,
 } from '@dao-dao/types'
-import { isValidContractAddress } from '@dao-dao/utils'
+import { getChainForChainId, isValidContractAddress } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
 import { nftCardInfoWithUriSelector } from '../../../../recoil'
@@ -26,15 +26,17 @@ export const MintNft: ActionComponent = (props) => {
   const {
     context,
     address,
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+    chain: { chain_id: currentChainId },
   } = useActionOptions()
   const { watch } = useFormContext()
 
   const {
+    chainId,
     contractChosen,
     collectionAddress = '',
     mintMsg,
   }: MintNftData = watch(props.fieldNamePrefix)
+  const { bech32_prefix: bech32Prefix } = getChainForChainId(chainId)
 
   const nftInfoLoading = useCachedLoading<NftCardInfo | undefined>(
     // Nothing to load if creating.
@@ -61,7 +63,7 @@ export const MintNft: ActionComponent = (props) => {
     props.isCreating &&
       contractChosen &&
       isValidContractAddress(collectionAddress, bech32Prefix)
-      ? Cw721BaseSelectors.contractInfoSelector({
+      ? CommonNftSelectors.contractInfoSelector({
           contractAddress: collectionAddress,
           chainId,
           params: [],
@@ -96,9 +98,9 @@ export const MintNft: ActionComponent = (props) => {
   // Get all collections in DAO.
   const daoCollections = useRecoilValueLoadable(
     props.isCreating && context.type === ActionContextType.Dao
-      ? DaoCoreV2Selectors.allCw721TokenListSelector({
+      ? DaoCoreV2Selectors.allCw721CollectionsSelector({
           contractAddress: address,
-          chainId,
+          chainId: currentChainId,
         })
       : constSelector(undefined)
   )
@@ -117,8 +119,10 @@ export const MintNft: ActionComponent = (props) => {
       context.type === ActionContextType.Dao &&
       // Ensure the collection is not already in the DAO.
       daoCollections.state === 'hasValue' &&
-      daoCollections.contents &&
-      !daoCollections.contents.includes(collectionAddress)
+      daoCollections.contents?.[chainId] &&
+      !daoCollections.contents[chainId].collectionAddresses.includes(
+        collectionAddress
+      )
     ) {
       setAdded(true)
 
@@ -127,6 +131,7 @@ export const MintNft: ActionComponent = (props) => {
         props.allActionsWithData.some(
           ({ actionKey, data }) =>
             actionKey === ActionKey.ManageCw721 &&
+            data.chainId === chainId &&
             data.address === collectionAddress &&
             data.adding
         )
@@ -151,6 +156,7 @@ export const MintNft: ActionComponent = (props) => {
       props.addAction({
         actionKey: ActionKey.ManageCw721,
         data: {
+          chainId,
           adding: true,
           address: collectionAddress,
         },
@@ -158,6 +164,7 @@ export const MintNft: ActionComponent = (props) => {
     }
   }, [
     added,
+    chainId,
     collectionAddress,
     context.type,
     daoCollections.contents,

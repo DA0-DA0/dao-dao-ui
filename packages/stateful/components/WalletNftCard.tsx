@@ -13,7 +13,7 @@ import { ActionKey, ButtonPopupSection } from '@dao-dao/types'
 import { getMeTxPrefillPath, processError } from '@dao-dao/utils'
 
 import { useActionForKey } from '../actions'
-import { TransferNftData } from '../actions/core/nfts/TransferNft'
+import { TransferNftData } from '../actions/core/nfts/TransferNft/Component'
 import { useWalletInfo } from '../hooks'
 import { ButtonLink } from './ButtonLink'
 import { NftCard } from './NftCard'

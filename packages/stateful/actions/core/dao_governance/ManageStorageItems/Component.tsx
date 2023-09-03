@@ -13,6 +13,7 @@ import {
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
+  DAO_CORE_ACCENT_ITEM_KEY,
   DAO_CORE_PAYROLL_CONFIG_ITEM_KEY,
   validateRequired,
 } from '@dao-dao/utils'
@@ -202,7 +203,10 @@ export const ManageStorageItemsComponent: ActionComponent<
   )
 }
 
-const SUGGESTED_KEYS = [DAO_CORE_PAYROLL_CONFIG_ITEM_KEY]
+const SUGGESTED_KEYS = [
+  DAO_CORE_PAYROLL_CONFIG_ITEM_KEY,
+  DAO_CORE_ACCENT_ITEM_KEY,
+]
 
 const SUGGESTED_VALUES_FOR_KEYS: Record<string, string[] | undefined> = {
   [DAO_CORE_PAYROLL_CONFIG_ITEM_KEY]: ['retroactive'],

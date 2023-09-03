@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { Cw721BaseSelectors } from '@dao-dao/state/recoil'
+import { CommonNftSelectors } from '@dao-dao/state/recoil'
 import { NftsTab, useCachedLoading, useChain } from '@dao-dao/stateless'
 
 import { LazyNftCard } from '../../../../components'
@@ -13,7 +13,7 @@ export const NftCollectionTab = () => {
     useGovernanceCollectionInfo()
 
   const allTokens = useCachedLoading(
-    Cw721BaseSelectors.allTokensSelector({
+    CommonNftSelectors.allTokensSelector({
       chainId,
       contractAddress: collectionAddress,
     }),

@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import {
+  CHAIN_ID,
   makeDaoInfo,
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
@@ -15,6 +16,7 @@ export default {
   component: UploadNftMetadata,
   decorators: [
     makeReactHookFormDecorator<MintNftData>({
+      chainId: CHAIN_ID,
       contractChosen: true,
       collectionAddress: 'junoNftCollection',
       mintMsg: {
