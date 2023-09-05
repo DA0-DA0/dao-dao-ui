@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ButtonLinkProps,
+  DaoFiatDepositModalProps,
   LoadingData,
   LoadingNfts,
   NftCardInfo,
@@ -15,7 +16,7 @@ import {
   getChainForChainId,
   getDisplayNameForChainId,
   getNativeTokenForChainId,
-  isKadoEnabled,
+  getSupportedChainConfig,
 } from '@dao-dao/utils'
 
 import { useDaoInfoContext, useSupportedChainContext } from '../../../hooks'
@@ -31,6 +32,7 @@ export interface TreasuryAndNftsTabProps<
   T extends TokenCardInfo,
   N extends NftCardInfo
 > {
+  connected: boolean
   tokens: LoadingData<{
     infos: T[]
     // Map chain ID to loading state.
@@ -43,7 +45,7 @@ export interface TreasuryAndNftsTabProps<
   createCrossChainAccountPrefillHref: string
   addCollectionHref?: string
   StargazeNftImportModal: ComponentType<Pick<ModalProps, 'onClose'>>
-  FiatDepositModal?: ComponentType<Pick<ModalProps, 'onClose' | 'visible'>>
+  FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
   ButtonLink: ComponentType<ButtonLinkProps>
 }
 
@@ -51,6 +53,7 @@ export const TreasuryAndNftsTab = <
   T extends TokenCardInfo,
   N extends NftCardInfo
 >({
+  connected,
   tokens,
   TokenCard,
   nfts,
@@ -137,12 +140,12 @@ export const TreasuryAndNftsTab = <
     }
   )
 
-  const [showDepositFiat, setShowDepositFiat] = useState(false)
+  const [depositFiatChainId, setDepositFiatChainId] = useState<
+    string | undefined
+  >()
   const [chainsCollapsed, setChainsCollapsed] = useState(
     {} as Record<string, boolean | undefined>
   )
-
-  const kadoModalEnabled = isKadoEnabled(chainId)
 
   return (
     <>
@@ -198,11 +201,10 @@ export const TreasuryAndNftsTab = <
                     </div>
 
                     {exists ? (
-                      // Only show if defined, which indicates wallet connected.
-                      FiatDepositModal &&
-                      kadoModalEnabled && (
+                      connected &&
+                      !!getSupportedChainConfig(chainId)?.kadoNetwork && (
                         <Button
-                          onClick={() => setShowDepositFiat(true)}
+                          onClick={() => setDepositFiatChainId(chainId)}
                           variant="secondary"
                         >
                           {t('button.depositFiat')}
@@ -285,10 +287,11 @@ export const TreasuryAndNftsTab = <
         )}
       </div>
 
-      {FiatDepositModal && kadoModalEnabled && (
+      {connected && (
         <FiatDepositModal
-          onClose={() => setShowDepositFiat(false)}
-          visible={showDepositFiat}
+          chainId={depositFiatChainId || chainId}
+          onClose={() => setDepositFiatChainId(undefined)}
+          visible={!!depositFiatChainId}
         />
       )}
     </>

@@ -89,7 +89,7 @@ export const TreasuryAndNftsTab = () => {
   return (
     <StatelessTreasuryAndNftsTab
       ButtonLink={ButtonLink}
-      FiatDepositModal={isWalletConnected ? DaoFiatDepositModal : undefined}
+      FiatDepositModal={DaoFiatDepositModal}
       NftCard={NftCard}
       StargazeNftImportModal={StargazeNftImportModal}
       TokenCard={DaoTokenCard}
@@ -110,6 +110,7 @@ export const TreasuryAndNftsTab = () => {
             })
           : undefined
       }
+      connected={isWalletConnected}
       createCrossChainAccountPrefillHref={getDaoProposalPath(
         daoInfo.coreAddress,
         'create',
