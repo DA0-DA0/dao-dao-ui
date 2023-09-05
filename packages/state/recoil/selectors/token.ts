@@ -142,10 +142,12 @@ export const usdPriceSelector = selectorFamily<
               ).denomTrace
             : undefined
 
+          let sourceChainId = chainId
+          let baseDenom = denomOrAddress
+
           // If trace exists, resolve IBC denom and then get its Osmosis IBC
           // denom to find its price.
           if (trace) {
-            console.log(trace)
             let channels = trace.path.split('transfer/').slice(1)
             // Trim trailing slash from all but last channel.
             channels = channels.map((channel, index) =>
@@ -153,7 +155,7 @@ export const usdPriceSelector = selectorFamily<
             )
             if (channels.length) {
               // Retrace channel paths to find source chain of denom.
-              const sourceChainId = channels.reduce(
+              sourceChainId = channels.reduce(
                 (currentChainId, channel) =>
                   getChainForChainName(
                     getIbcTransferInfoFromChainSource(currentChainId, channel)
@@ -161,29 +163,30 @@ export const usdPriceSelector = selectorFamily<
                   ).chain_id,
                 chainId
               )
-
-              // If source chain is Osmosis, the denom is the base denom.
-              if (sourceChainId === ChainId.OsmosisMainnet) {
-                chainId = ChainId.OsmosisMainnet
-                denomOrAddress = trace.baseDenom
-              } else {
-                // Get the Osmosis denom.
-                const osmosisIbc = get(
-                  ibcRpcClientForChainSelector(ChainId.OsmosisMainnet)
-                )
-                const { sourceChannel } = getIbcTransferInfoBetweenChains(
-                  ChainId.OsmosisMainnet,
-                  sourceChainId
-                )
-                const { hash: osmosisDenomIbcHash } =
-                  await osmosisIbc.applications.transfer.v1.denomHash({
-                    trace: `transfer/${sourceChannel}/${trace.baseDenom}`,
-                  })
-
-                chainId = ChainId.OsmosisMainnet
-                denomOrAddress = 'ibc/' + osmosisDenomIbcHash
-              }
+              baseDenom = trace.baseDenom
             }
+          }
+
+          // If source chain is Osmosis, the denom is the base denom.
+          if (sourceChainId === ChainId.OsmosisMainnet) {
+            chainId = ChainId.OsmosisMainnet
+            denomOrAddress = baseDenom
+          } else {
+            // Otherwise get the Osmosis IBC denom.
+            const osmosisIbc = get(
+              ibcRpcClientForChainSelector(ChainId.OsmosisMainnet)
+            )
+            const { sourceChannel } = getIbcTransferInfoBetweenChains(
+              ChainId.OsmosisMainnet,
+              sourceChainId
+            )
+            const { hash: osmosisDenomIbcHash } =
+              await osmosisIbc.applications.transfer.v1.denomHash({
+                trace: `transfer/${sourceChannel}/${baseDenom}`,
+              })
+
+            chainId = ChainId.OsmosisMainnet
+            denomOrAddress = 'ibc/' + osmosisDenomIbcHash
           }
         }
       } catch (err) {
