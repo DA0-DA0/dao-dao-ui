@@ -256,6 +256,20 @@ export const walletNftCardInfos = selectorFamily<
     async ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(walletAddress))
 
+      // Use Stargaze's API if we're on the Stargaze chain.
+      if (
+        chainId === ChainId.StargazeMainnet ||
+        chainId === ChainId.StargazeTestnet
+      ) {
+        return {
+          [chainId]: {
+            loading: false,
+            errored: false,
+            data: get(walletStargazeNftCardInfosSelector(walletAddress)),
+          },
+        }
+      }
+
       const collections: CollectionWithTokens[] = get(
         queryWalletIndexerSelector({
           chainId,

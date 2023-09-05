@@ -156,7 +156,7 @@ export const MeTransactionBuilder = ({
   }
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="-mt-2 flex flex-col gap-8">
       <p className="secondary-text">
         {t('info.transactionBuilderDescription')}
       </p>

@@ -43,11 +43,15 @@ export const MeBalances = () => {
     []
   )
 
+  const flattenedTokensWithoutLazyInfo = tokensWithoutLazyInfo.loading
+    ? []
+    : tokensWithoutLazyInfo.data.flat()
+
   // Load separately so they cache separately.
   const tokenLazyInfos = useCachedLoading(
     !tokensWithoutLazyInfo.loading && walletAddress
       ? waitForAllSettled(
-          tokensWithoutLazyInfo.data.flat().map(({ token, unstakedBalance }) =>
+          flattenedTokensWithoutLazyInfo.map(({ token, unstakedBalance }) =>
             tokenCardLazyInfoSelector({
               owner: transformBech32Address(walletAddress, token.chainId),
               token,
@@ -60,15 +64,13 @@ export const MeBalances = () => {
   )
 
   const tokens: LoadingData<TokenCardInfo[]> =
-    tokensWithoutLazyInfo.loading ||
-    tokenLazyInfos.loading ||
-    tokensWithoutLazyInfo.data.length !== tokenLazyInfos.data.length
+    tokensWithoutLazyInfo.loading || tokenLazyInfos.loading
       ? {
           loading: true,
         }
       : {
           loading: false,
-          data: tokensWithoutLazyInfo.data.flat().map((token, i) => ({
+          data: flattenedTokensWithoutLazyInfo.map((token, i) => ({
             ...token,
             lazyInfo: loadableToLoadingData(tokenLazyInfos.data[i], {
               usdUnitPrice: undefined,

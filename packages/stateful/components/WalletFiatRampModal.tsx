@@ -9,10 +9,11 @@ export const WalletFiatRampModal = (
   props: Omit<ModalProps, 'header'> & Pick<KadoModalProps, 'defaultMode'>
 ) => {
   const { t } = useTranslation()
-  const { address } = useWallet()
+  const { address, chain } = useWallet()
 
   return (
     <KadoModal
+      chainId={chain.chain_id}
       header={{
         title: t('title.fiatOnOffRamp'),
         subtitle: t('info.fiatOnOffRampDescription'),

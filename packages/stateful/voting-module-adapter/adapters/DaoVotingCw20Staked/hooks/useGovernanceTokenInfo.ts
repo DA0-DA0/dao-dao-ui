@@ -83,6 +83,7 @@ export const useGovernanceTokenInfo = ({
   const loadingPrice = useCachedLoading(
     fetchUsdcPrice
       ? usdPriceSelector({
+          type: TokenType.Cw20,
           chainId,
           denomOrAddress: governanceTokenAddress,
         })

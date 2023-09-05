@@ -12,7 +12,7 @@ import {
   TokenCardInfo,
   TypedOption,
 } from '@dao-dao/types'
-import { getChainForChainId } from '@dao-dao/utils'
+import { getChainForChainId, getDisplayNameForChainId } from '@dao-dao/utils'
 
 import {
   Button,
@@ -51,7 +51,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
         ): TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>> & {
           id: string
         } => ({
-          id: chain.chain_name,
+          id: chain.chain_id,
           label: chain.pretty_name,
           value: (nft) => nft.chainId === chain.chain_id,
         })
@@ -100,7 +100,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
   const [showingHidden, setShowingHidden] = useState(false)
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 pt-4 sm:pt-0">
       <div>
         {tokens.loading || hiddenTokens.loading ? (
           <Loader fill={false} />
@@ -189,8 +189,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
                     chainName:
                       selectedNftChainFilter === 'all'
                         ? ''
-                        : getChainForChainId(selectedNftChainFilter)
-                            .pretty_name,
+                        : getDisplayNameForChainId(selectedNftChainFilter),
                   })}
                 </p>
               </div>

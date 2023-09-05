@@ -72,8 +72,14 @@ export const isoStringForLocalDateString = (dateString: string) =>
   new Date(dateString).toISOString()
 
 // Select number of decimal digits, rounding down / truncating.
-export const toFixedDown = (value: Number, digits: Number) => {
+export const toFixedDown = (value: number, digits: number) => {
+  // If contains scientific notation, truncate and use BigInt to get rid of it.
+  let stringifiedValue = value.toString()
+  if (stringifiedValue.includes('e')) {
+    stringifiedValue = BigInt(Math.floor(value)).toString()
+  }
+
   const re = new RegExp('(\\d+\\.\\d{' + digits + '})(\\d)')
-  const matches = value.toString().match(re)
-  return matches ? parseFloat(matches[1]) : value.valueOf()
+  const matches = stringifiedValue.match(re)
+  return matches ? parseFloat(matches[1]) : value
 }

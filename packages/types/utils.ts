@@ -62,7 +62,7 @@ export type PolytoneConnection = {
   // true if no relayers are running on the established connection. If using an
   // existing active connection, the relayers will automatically perform the
   // relay.
-  needsSelfRelay: boolean
+  needsSelfRelay?: boolean
 }
 
 // Map chain ID to polytone connection information.

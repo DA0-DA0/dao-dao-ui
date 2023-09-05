@@ -4,7 +4,6 @@ import {
   HttpBatchClient,
   Tendermint34Client,
   Tendermint37Client,
-  TendermintClient,
 } from '@cosmjs/tendermint-rpc'
 
 type ChainClientRoutes<T> = {
@@ -61,15 +60,10 @@ class ChainClientRouter<T> {
 export const cosmWasmClientRouter = new ChainClientRouter({
   handleConnect: async (rpcEndpoint: string) => {
     const httpClient = new HttpBatchClient(rpcEndpoint)
-
-    // Use default Tendermint 0.34/0.37 client auto-detection, and then recreate
-    // the correct Tendermint client with the http batch client.
-    const cwClient = await CosmWasmClient.connect(rpcEndpoint)
-    const autoDetectedTmClient: TendermintClient = cwClient['tmClient']
-    const tmClient: TendermintClient = await (
-      autoDetectedTmClient.constructor as
-        | typeof Tendermint34Client
-        | typeof Tendermint37Client
+    const tmClient = await (
+      (
+        await connectTendermintClient(rpcEndpoint)
+      ).constructor as typeof Tendermint34Client | typeof Tendermint37Client
     ).create(httpClient)
 
     return await CosmWasmClient.create(tmClient)
@@ -82,15 +76,10 @@ export const cosmWasmClientRouter = new ChainClientRouter({
 export const stargateClientRouter = new ChainClientRouter({
   handleConnect: async (rpcEndpoint: string) => {
     const httpClient = new HttpBatchClient(rpcEndpoint)
-
-    // Use default Tendermint 0.34/0.37 client auto-detection, and then recreate
-    // the correct Tendermint client with the http batch client.
-    const stargateClient = await StargateClient.connect(rpcEndpoint)
-    const autoDetectedTmClient: TendermintClient = stargateClient['tmClient']
-    const tmClient: TendermintClient = await (
-      autoDetectedTmClient.constructor as
-        | typeof Tendermint34Client
-        | typeof Tendermint37Client
+    const tmClient = await (
+      (
+        await connectTendermintClient(rpcEndpoint)
+      ).constructor as typeof Tendermint34Client | typeof Tendermint37Client
     ).create(httpClient)
 
     return await StargateClient.create(tmClient, {})
@@ -116,4 +105,20 @@ export const findWasmAttributeValue = (
         attributes.some(({ key }) => key === attributeKey)
     )
   return wasmEvent?.attributes.find(({ key }) => key === attributeKey)!.value
+}
+
+// Connect the correct tendermint client based on the node's version.
+export const connectTendermintClient = async (endpoint: string) => {
+  // Tendermint/CometBFT 0.34/0.37 auto-detection. Starting with 0.37 we seem to
+  // get reliable versions again 🎉 Using 0.34 as the fallback.
+  let tmClient
+  const tm37Client = await Tendermint37Client.connect(endpoint)
+  const version = (await tm37Client.status()).nodeInfo.version
+  if (version.startsWith('0.37.')) {
+    tmClient = tm37Client
+  } else {
+    tm37Client.disconnect()
+    tmClient = await Tendermint34Client.connect(endpoint)
+  }
+  return tmClient
 }

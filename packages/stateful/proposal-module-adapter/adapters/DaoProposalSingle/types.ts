@@ -81,6 +81,7 @@ export type UsePublishProposal = () => {
 export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
   timestampInfo: ProposalTimestampInfo | undefined
   votingOpen: boolean
+  executedAt?: Date
 }
 
 export type MessagesWithActionData = {

@@ -35,13 +35,14 @@ export const tokenCardLazyInfoSelector = selectorFamily<
   get:
     ({ owner, token, unstakedBalance }) =>
     ({ get }) => {
-      const { chainId } = token
+      const { chainId, type } = token
 
       let stakingInfo: TokenCardLazyInfo['stakingInfo'] = undefined
       let daosGoverned: TokenCardLazyInfo['daosGoverned'] = undefined
 
       const usdUnitPrice = get(
         usdPriceSelector({
+          type,
           chainId,
           denomOrAddress: token.denomOrAddress,
         })

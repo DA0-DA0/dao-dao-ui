@@ -274,13 +274,6 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         }}
         uniqueId=""
         {...selfRelayExecuteProps}
-        key={
-          // Re-render the modal when the unique ID changes, because the chain
-          // IDs may have changed. See comment above `useWallet` hook in the
-          // component for more information.
-          // TODO(cosmos-kit-dynamic-conn-fn): Remove this when cosmos-kit supports dynamic chain connection fn.
-          selfRelayExecuteProps?.uniqueId ?? ''
-        }
         onClose={() => setSelfRelayExecuteProps(undefined)}
         onSuccess={() =>
           onProposalUpdateFallback(

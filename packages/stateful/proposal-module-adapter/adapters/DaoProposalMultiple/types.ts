@@ -105,6 +105,7 @@ export interface TimestampInfo {
 export type ProposalWithMetadata = MultipleChoiceProposal & {
   timestampInfo: TimestampInfo | undefined
   votingOpen: boolean
+  executedAt?: Date
 }
 
 export type MultipleChoiceOptionData = {

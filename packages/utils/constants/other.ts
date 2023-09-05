@@ -10,8 +10,7 @@ export const MIN_DAO_NAME_LENGTH = 3
 export const MAX_DAO_NAME_LENGTH = 50
 export const MAX_META_CHARS_PROPOSAL_DESCRIPTION = 200
 
-// 5 minutes
-export const DAO_STATIC_PROPS_CACHE_SECONDS = 60 * 5
+export const DAO_STATIC_PROPS_CACHE_SECONDS = 60
 
 export const NEW_DAO_CW20_DECIMALS = 6
 

@@ -1,5 +1,5 @@
 import { Check, Link, WarningRounded } from '@mui/icons-material'
-import { ComponentType, useEffect, useMemo, useState } from 'react'
+import { ComponentType, Fragment, useEffect, useMemo, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
@@ -256,15 +256,21 @@ export const ActionRenderer = ({
             // `dataIndex` matches the index in the `data` array of the form.
             dataIndex >= minIndex &&
             dataIndex < maxIndex && (
-              <SuspenseLoader key={index} fallback={<Loader size={36} />}>
-                <action.Component
-                  allActionsWithData={allActionsWithData}
-                  data={data}
-                  fieldNamePrefix={`data.${dataIndex}.`}
-                  index={index}
-                  isCreating={false}
-                />
-              </SuspenseLoader>
+              <Fragment key={index}>
+                <SuspenseLoader fallback={<Loader size={36} />}>
+                  <action.Component
+                    allActionsWithData={allActionsWithData}
+                    data={data}
+                    fieldNamePrefix={`data.${dataIndex}.`}
+                    index={index}
+                    isCreating={false}
+                  />
+                </SuspenseLoader>
+
+                {dataIndex < all.length - 1 && (
+                  <div className="h-[1px] w-[calc(100%+1rem)] self-center bg-border-secondary"></div>
+                )}
+              </Fragment>
             )
         )}
 

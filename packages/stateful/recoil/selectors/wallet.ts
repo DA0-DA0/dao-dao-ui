@@ -32,11 +32,7 @@ import {
   transformBech32Address,
 } from '@dao-dao/utils'
 
-import {
-  walletNftCardInfos,
-  walletStakedNftCardInfosSelector,
-  walletStargazeNftCardInfosSelector,
-} from './nft'
+import { walletNftCardInfos, walletStakedNftCardInfosSelector } from './nft'
 
 // This doesn't update right away due to Cloudflare KV Store latency, so this
 // serves to keep track of all successful updates for the current session. This
@@ -323,10 +319,6 @@ export const allWalletNftsSelector = selectorFamily<
         )
       ).flat()
 
-      const stargazeNfts = get(
-        walletStargazeNftCardInfosSelector(walletAddress)
-      )
-
-      return [...nativeNfts, ...nativeStakedNfts, ...stargazeNfts]
+      return [...nativeNfts, ...nativeStakedNfts]
     },
 })

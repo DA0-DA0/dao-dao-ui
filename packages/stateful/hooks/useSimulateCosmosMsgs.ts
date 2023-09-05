@@ -101,7 +101,7 @@ export const useSimulateCosmosMsgs = (senderAddress: string) => {
           const msgs = polytoneGroupedByChainId[chainId]
           const polytoneProxy = polytoneProxies[chainId]
           const cosmosRpcClient = polytoneRpcClients[index]
-          if (!polytoneProxy || !msgs) {
+          if (!polytoneProxy || !msgs?.length) {
             return
           }
 
