@@ -17,7 +17,7 @@ export default {
   component: SpendComponent,
   decorators: [
     makeReactHookFormDecorator<SpendData>({
-      chainId: CHAIN_ID,
+      fromChainId: CHAIN_ID,
       toChainId: CHAIN_ID,
       to: '',
       amount: 1,

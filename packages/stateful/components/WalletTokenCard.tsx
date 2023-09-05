@@ -29,7 +29,7 @@ import {
   cwMsgToEncodeObject,
   getMeTxPrefillPath,
   getNativeTokenForChainId,
-  isKadoEnabled,
+  getSupportedChainConfig,
   isNativeIbcUsdc,
   processError,
 } from '@dao-dao/utils'
@@ -203,7 +203,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     }
   }
 
-  const kadoModalEnabled = isKadoEnabled(props.token.chainId)
+  const kadoModalEnabled = !!getSupportedChainConfig(props.token.chainId)?.kado
 
   return (
     <>

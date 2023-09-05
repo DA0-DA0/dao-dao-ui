@@ -393,10 +393,6 @@ export const getChainIdForAddress = (address: string): string => {
   return chainForAddress.chain.chain_id
 }
 
-// Kado fiat modal only supports Juno and Osmosis.
-export const isKadoEnabled = (chainId: string) =>
-  chainId === ChainId.JunoMainnet || chainId === ChainId.OsmosisMainnet
-
 export const cosmosSdkVersionIs47OrHigher = (version: string) => {
   const [major, minor, patch] = version.replace(/^v/, '').split('.')
   return (

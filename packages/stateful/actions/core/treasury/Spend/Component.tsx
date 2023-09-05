@@ -46,7 +46,7 @@ import {
 import { useActionOptions } from '../../../react'
 
 export interface SpendData {
-  chainId: string
+  fromChainId: string
   // If same as chainId, then normal spend or CW20 transfer. Otherwise, IBC
   // transfer.
   toChainId: string
@@ -78,7 +78,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   const { register, watch, setValue, setError, clearErrors } =
     useFormContext<SpendData>()
 
-  const spendChainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
+  const spendChainId = watch((fieldNamePrefix + 'fromChainId') as 'fromChainId')
   const spendAmount = watch((fieldNamePrefix + 'amount') as 'amount')
   const spendDenom = watch((fieldNamePrefix + 'denom') as 'denom')
   const recipient = watch((fieldNamePrefix + 'to') as 'to')
@@ -289,13 +289,17 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               setValue((fieldNamePrefix + 'toChainId') as 'toChainId', chainId)
             }
 
-            setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
+            setValue(
+              (fieldNamePrefix + 'fromChainId') as 'fromChainId',
+              chainId
+            )
             setValue((fieldNamePrefix + 'denom') as 'denom', denomOrAddress)
           }}
           readOnly={!isCreating}
           register={register}
           selectedToken={selectedToken?.token}
           setValue={setValue}
+          showChainImage
           tokens={
             tokens.loading
               ? { loading: true }

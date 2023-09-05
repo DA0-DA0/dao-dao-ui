@@ -8,7 +8,7 @@ import {
 } from '@cosmjs/stargate'
 import { selector, selectorFamily, waitForAll, waitForAny } from 'recoil'
 
-import { cosmos, juno } from '@dao-dao/protobuf'
+import { cosmos, ibc, juno } from '@dao-dao/protobuf'
 import { ModuleAccount } from '@dao-dao/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { Metadata } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/bank'
 import {
@@ -55,6 +55,7 @@ import {
   refreshBlockHeightAtom,
   refreshGovProposalsAtom,
   refreshNativeTokenStakingInfoAtom,
+  refreshUnreceivedIbcDataAtom,
   refreshWalletBalancesIdAtom,
 } from '../atoms/refresh'
 import { queryValidatorIndexerSelector } from './indexer'
@@ -88,6 +89,17 @@ export const cosmosRpcClientForChainSelector = selectorFamily({
         rpcEndpoint: getRpcForChainId(chainId),
       })
     ).cosmos,
+  dangerouslyAllowMutability: true,
+})
+
+export const ibcRpcClientForChainSelector = selectorFamily({
+  key: 'ibcRpcClientForChain',
+  get: (chainId: string) => async () =>
+    (
+      await ibc.ClientFactory.createRPCQueryClient({
+        rpcEndpoint: getRpcForChainId(chainId),
+      })
+    ).ibc,
   dangerouslyAllowMutability: true,
 })
 
@@ -920,9 +932,11 @@ export const communityPoolBalancesSelector = selectorFamily<
       const balances = tokens.map(
         (token, i): GenericTokenBalance => ({
           token,
-          balance: decodeCosmosSdkDecFromProto(pool[i].amount)
-            .toFloatApproximation()
-            .toFixed(0),
+          balance: BigInt(
+            decodeCosmosSdkDecFromProto(pool[i].amount)
+              .floor()
+              .toFloatApproximation()
+          ).toString(),
         })
       )
 
@@ -1088,7 +1102,7 @@ export const transactionSelector = selectorFamily<
   IndexedTx | undefined,
   WithChainId<{ txHash: string }>
 >({
-  key: 'transactionEvents',
+  key: 'transaction',
   get:
     ({ txHash, chainId }) =>
     async ({ get }) => {
@@ -1176,5 +1190,55 @@ export const denomMetadataSelector = selectorFamily<
         // Rethrow other errors.
         throw err
       }
+    },
+})
+
+export const ibcUnreceivedPacketsSelector = selectorFamily<
+  // Returns unreceived IBC packet sequences.
+  number[],
+  WithChainId<{
+    portId: string
+    channelId: string
+    packetCommitmentSequences: number[]
+  }>
+>({
+  key: 'ibcUnreceivedPackets',
+  get:
+    ({ chainId, portId, channelId, packetCommitmentSequences }) =>
+    async ({ get }) => {
+      get(refreshUnreceivedIbcDataAtom(chainId))
+      const ibcClient = get(ibcRpcClientForChainSelector(chainId))
+      const { sequences } = await ibcClient.core.channel.v1.unreceivedPackets({
+        portId,
+        channelId,
+        packetCommitmentSequences: packetCommitmentSequences.map((v) =>
+          BigInt(v)
+        ),
+      })
+      return sequences.map((s) => Number(s))
+    },
+})
+
+export const ibcUnreceivedAcksSelector = selectorFamily<
+  // Returns unreceived IBC packet acknowledgement sequences.
+  number[],
+  WithChainId<{
+    portId: string
+    channelId: string
+    packetAckSequences: number[]
+  }>
+>({
+  key: 'ibcUnreceivedAcks',
+  get:
+    ({ chainId, portId, channelId, packetAckSequences }) =>
+    async ({ get }) => {
+      get(refreshUnreceivedIbcDataAtom(chainId))
+      const ibcClient = get(ibcRpcClientForChainSelector(chainId))
+      const { sequences } = await ibcClient.core.channel.v1.unreceivedAcks({
+        portId,
+        channelId,
+        packetAckSequences: packetAckSequences.map((v) => BigInt(v)),
+      })
+      return sequences.map((s) => Number(s))
     },
 })

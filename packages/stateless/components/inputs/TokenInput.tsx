@@ -24,7 +24,9 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
+import { ChainLogo } from '../ChainLogo'
 import { FilterableItemPopup } from '../popup'
+import { Tooltip } from '../tooltip'
 import { NumberInput } from './NumberInput'
 
 export type TokenInputOption = Omit<GenericToken, 'type' | 'decimals'> & {
@@ -62,6 +64,7 @@ export type TokenInputProps<
   readOnly?: boolean
   required?: boolean
   containerClassName?: string
+  showChainImage?: boolean
 }
 
 /**
@@ -105,6 +108,7 @@ export const TokenInput = <
   required = true,
   // Optional additional class names for the container.
   containerClassName,
+  showChainImage,
 }: TokenInputProps<T, FV, FieldName>) => {
   const { t } = useTranslation()
 
@@ -129,15 +133,33 @@ export const TokenInput = <
     () =>
       selectedToken ? (
         <div className="flex flex-row items-center gap-2">
-          <div
-            className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${toAccessibleImageUrl(
-                selectedToken.imageUrl ||
-                  getFallbackImage(selectedToken.denomOrAddress)
-              )})`,
-            }}
-          />
+          <Tooltip
+            title={t('info.tokenOnChain', {
+              token: selectedToken.symbol,
+              chain: getDisplayNameForChainId(selectedToken.chainId),
+            })}
+          >
+            <div
+              className={clsx(
+                'h-6 w-6 shrink-0 rounded-full bg-cover bg-center',
+                showChainImage && 'relative'
+              )}
+              style={{
+                backgroundImage: `url(${toAccessibleImageUrl(
+                  selectedToken.imageUrl ||
+                    getFallbackImage(selectedToken.denomOrAddress)
+                )})`,
+              }}
+            >
+              {showChainImage && (
+                <ChainLogo
+                  chainId={selectedToken.chainId}
+                  className="absolute -bottom-1 -right-1"
+                  size={14}
+                />
+              )}
+            </div>
+          </Tooltip>
 
           <p>
             {readOnly &&
@@ -157,7 +179,7 @@ export const TokenInput = <
           </p>
         )
       ),
-    [amount, readOnly, selectedToken, t, tokenFallback]
+    [amount, readOnly, selectedToken, showChainImage, t, tokenFallback]
   )
 
   const selectDisabled = // Disable if there is only one token to choose from.

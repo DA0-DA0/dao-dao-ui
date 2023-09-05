@@ -354,7 +354,9 @@ export const ManageStakingComponent: ActionComponent<
           // If claiming rewards, show pending rewards if not executed, and
           // claimed rewards if executed.
           (executed && !!claimedRewards) ||
-          (!executed && sourceValidatorPendingRewards > 0)) && (
+          (!executed && sourceValidatorPendingRewards > 0)) &&
+        // Only show balance when delegating if creating.
+        (type !== StakingActionType.Delegate || isCreating) && (
           <div className="flex flex-row items-center gap-2">
             <p className="secondary-text font-semibold">
               {type === StakingActionType.Delegate

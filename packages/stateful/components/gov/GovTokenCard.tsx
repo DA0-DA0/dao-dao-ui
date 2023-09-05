@@ -12,6 +12,7 @@ import { EntityDisplay } from '../EntityDisplay'
 export const GovTokenCard = (props: TokenCardInfo) => {
   const loadingPrice = useCachedLoading(
     usdPriceSelector({
+      type: props.token.type,
       chainId: props.token.chainId,
       denomOrAddress: props.token.denomOrAddress,
     }),

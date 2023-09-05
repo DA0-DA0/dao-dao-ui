@@ -73,7 +73,11 @@ export const TokenAmountDisplay = ({
   }
 
   // Extract amount from loaded value.
-  const amount = typeof _amount === 'number' ? _amount : _amount.data
+  let amount = typeof _amount === 'number' ? _amount : _amount.data
+  // If USD amount too small, set to 0.
+  if (estimatedUsdValue && amount < 0.01) {
+    amount = 0
+  }
 
   const options: Intl.NumberFormatOptions & { roundingPriority: string } = {
     maximumFractionDigits: decimals,

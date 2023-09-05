@@ -59,8 +59,7 @@ export const useWalletInfo = ({
   })
   chainId ||= walletChain.chain_id
 
-  // TODO(cosmos-kit-dynamic-conn-fn): Replace this when cosmos-kit supports
-  // dynamic chain connection fn.
+  // PFPK uses Juno signatures for signing.
   const junoWallet = useWallet({
     chainId: ChainId.JunoMainnet,
   })
@@ -182,8 +181,7 @@ export const useWalletInfo = ({
       profile: Omit<WalletProfileUpdate, 'nonce'>,
       onUpdate?: () => void
     ): Promise<void> => {
-      // Use a consistent chain for the signer since the chain ID is part of the
-      // signature and PFPK needs to know what to expect.
+      // PFPK uses Juno signatures for signing.
       const { address: signer, signAmino } = junoWallet
       if (
         !signer ||

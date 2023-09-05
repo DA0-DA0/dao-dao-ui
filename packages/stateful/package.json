@@ -9,7 +9,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@confio/relayer": "^0.9.0",
+    "@confio/relayer": "^0.10.0",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
     "@cosmjs/encoding": "^0.31.0",
     "@cosmjs/proto-signing": "^0.31.0",
@@ -21,7 +21,7 @@
     "@cosmos-kit/keplr-mobile": "^2.3.3",
     "@cosmos-kit/leap": "^2.3.3",
     "@cosmos-kit/omni": "^2.3.3",
-    "@cosmos-kit/react-lite": "^2.4.4",
+    "@cosmos-kit/react-lite": "^2.4.5",
     "@cosmos-kit/shell": "^2.3.3",
     "@cosmos-kit/station": "^2.3.3",
     "@cosmos-kit/trust": "^2.3.3",

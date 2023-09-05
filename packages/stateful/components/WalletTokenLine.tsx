@@ -3,6 +3,10 @@ import {
   useCachedLoading,
 } from '@dao-dao/stateless'
 import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
+import {
+  getDisplayNameForChainId,
+  transformBech32Address,
+} from '@dao-dao/utils'
 
 import { useWallet } from '../hooks/useWallet'
 import { tokenCardLazyInfoSelector } from '../recoil'
@@ -11,14 +15,13 @@ import { WalletTokenCard } from './WalletTokenCard'
 export const WalletTokenLine = <T extends TokenCardInfo>(
   props: Omit<TokenLineProps<T>, 'TokenCard'>
 ) => {
-  const { address: walletAddress } = useWallet({
-    chainId: props.token.chainId,
-  })
+  // In case
+  const { address: walletAddress } = useWallet()
 
   const lazyInfo = useCachedLoading(
     walletAddress
       ? tokenCardLazyInfoSelector({
-          owner: walletAddress,
+          owner: transformBech32Address(walletAddress, props.token.chainId),
           token: props.token,
           unstakedBalance: props.unstakedBalance,
         })
@@ -35,6 +38,7 @@ export const WalletTokenLine = <T extends TokenCardInfo>(
       {...props}
       TokenCard={WalletTokenCard}
       lazyInfo={lazyInfo}
+      subtitle={getDisplayNameForChainId(props.token.chainId)}
     />
   )
 }

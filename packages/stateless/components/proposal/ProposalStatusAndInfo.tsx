@@ -36,6 +36,7 @@ export interface ProposalStatusAndInfoProps<Vote extends unknown = unknown> {
     // allowed, explain that the user can vote up until expiration.
     proposalOpen: boolean
   }
+  footer?: ReactNode
   // Whether or not the user has viewed all action pages. If they haven't, they
   // can't vote.
   seenAllActionPages?: boolean
@@ -48,6 +49,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
   inline = false,
   action,
   vote,
+  footer,
   // If undefined, assume the user has seen all action pages.
   seenAllActionPages = true,
   className,
@@ -106,7 +108,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
       <div
         className={clsx(
           'grid grid-cols-2 items-center gap-3',
-          inline ? 'p-6' : action ? 'pt-8 pb-6' : 'py-8'
+          inline ? 'p-6' : action || footer ? 'pt-8 pb-6' : 'py-8'
         )}
       >
         {info.map(({ Icon, label, Value }, index) => (
@@ -154,7 +156,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
         <div
           className={clsx(
             'flex flex-col gap-4 border-t border-border-secondary',
-            inline ? 'p-6' : 'pt-8'
+            inline ? 'p-6' : footer ? 'pt-8 pb-6' : 'py-8'
           )}
         >
           {/* If has not seen all action pages, and has not yet cast a vote, show warning. */}
@@ -211,6 +213,17 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
               ? t('button.changeYourVote')
               : t('button.castYourVote')}
           </Button>
+        </div>
+      )}
+
+      {footer && (
+        <div
+          className={clsx(
+            'animate-fade-in',
+            inline && 'border-t border-border-secondary p-6'
+          )}
+        >
+          {footer}
         </div>
       )}
     </div>

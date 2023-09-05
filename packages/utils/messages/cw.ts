@@ -3,7 +3,7 @@ import { Coin } from '@cosmjs/proto-signing'
 import { v4 as uuidv4 } from 'uuid'
 
 import { MsgTransfer } from '@dao-dao/protobuf/codegen/ibc/applications/transfer/v1/tx'
-import { PolytoneConnection } from '@dao-dao/types'
+import { DecodedPolytoneMsg } from '@dao-dao/types'
 import {
   BankMsg,
   CosmosMsgFor_Empty,
@@ -302,18 +302,7 @@ export const decodePolytoneExecuteMsg = (
   decodedMsg: Record<string, any>,
   // How many messages are expected.
   type: 'one' | 'zero' | 'oneOrZero' = 'one'
-):
-  | {
-      match: false
-    }
-  | {
-      match: true
-      chainId: string
-      polytoneConnection: PolytoneConnection
-      msg: Record<string, any>
-      cosmosMsg: CosmosMsgFor_Empty | undefined
-      initiatorMsg: string
-    } => {
+): DecodedPolytoneMsg => {
   if (
     !objectMatchesStructure(decodedMsg, {
       wasm: {

@@ -4,15 +4,15 @@ import queryString from 'query-string'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ChainId, KadoModalProps } from '@dao-dao/types'
-import { KADO_API_KEY } from '@dao-dao/utils'
+import { KadoModalProps } from '@dao-dao/types'
+import { KADO_API_KEY, getSupportedChainConfig } from '@dao-dao/utils'
 
-import { useChainContextIfAvailable } from '../../hooks'
 import { CopyToClipboard } from '../CopyToClipboard'
 import { Loader } from '../logo'
 import { Modal } from './Modal'
 
 export const KadoModal = ({
+  chainId,
   defaultMode = 'buy',
   toAddress,
   containerClassName,
@@ -20,13 +20,10 @@ export const KadoModal = ({
 }: KadoModalProps) => {
   const { t } = useTranslation()
 
-  const chain = useChainContextIfAvailable()
-  const network =
-    chain?.chainId === ChainId.JunoMainnet
-      ? 'JUNO'
-      : chain?.chainId === ChainId.OsmosisMainnet
-      ? 'OSMO'
-      : ''
+  const kado = getSupportedChainConfig(chainId)?.kado
+  if (!kado) {
+    throw new Error(`Unsupported chainId: ${chainId}`)
+  }
 
   // iframe hijacks clicks on mobile Safari even when pointer-events are set to
   // none (which happens on the modal when visible=false), so we need to
@@ -86,12 +83,12 @@ export const KadoModal = ({
               apiKey: KADO_API_KEY,
               onRevCurrency: 'USDC',
               offPayCurrency: 'USDC',
-              offRevCurrency: 'USDC',
+              offRevCurrency: 'USD',
               product: defaultMode?.toUpperCase(),
               onToAddress: toAddress,
-              network,
+              network: kado.network,
               cryptoList: 'USDC',
-              networkList: network,
+              networkList: kado.network,
             })}`}
           />
         )}

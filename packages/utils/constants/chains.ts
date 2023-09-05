@@ -10,6 +10,9 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       factoryContractAddress:
         'juno1eeqgsjyqxcscpxwa6ut36py8vfpu6hxrwy62n2vgu8ud72wa9pyqv38q7y',
       supportsV1GovProposals: true,
+      kado: {
+        network: 'JUNO',
+      },
       indexes: {
         search: 'daos',
         featured: 'featured_daos',
@@ -67,7 +70,29 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // localClient: '07-tendermint-0',
           // osmosis
           // remoteClient: '07-tendermint-1457',
-          needsSelfRelay: false,
+        },
+        [ChainId.StargazeMainnet]: {
+          // juno
+          note: 'juno1vupyxq9q2mmg5jjcd4cl0ujav8a3xn0a9ahyhtmj0zjaje2gfejsyvyf3z',
+          // juno
+          listener:
+            'juno1w9q8dgfl0n59gpuagn2r8j89w6y5ad4z8yvct096zawksaevx2nqzw3x9q',
+          // stargaze
+          voice:
+            'stars1g9u4zmjj3xmu2me3vq07fqedqp7t0d9xjp3tqff9r2awwc2k8wvq7d39he',
+          // juno
+          localConnection: 'connection-30',
+          // stargaze
+          remoteConnection: 'connection-11',
+          // juno
+          localChannel: 'channel-305',
+          // stargaze
+          remoteChannel: 'channel-201',
+          // juno
+          // localClient: '07-tendermint-44',
+          // stargaze
+          // remoteClient: '07-tendermint-13',
+          needsSelfRelay: true,
         },
       },
     },
@@ -78,6 +103,9 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       factoryContractAddress:
         'osmo102pg8quxtvhye3k4rcqwh7j5zwf5ekhcvlquafjjxjnarhu38qzstkdm6p',
       supportsV1GovProposals: false,
+      kado: {
+        network: 'OSMOSIS',
+      },
       indexes: {
         search: 'osmosis_daos',
         // Use same as mainnet.
@@ -136,7 +164,28 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // localClient: '07-tendermint-1457',
           // juno
           // remoteClient: '07-tendermint-0',
-          needsSelfRelay: false,
+        },
+        [ChainId.StargazeMainnet]: {
+          // osmosis
+          note: 'osmo1u44zc3vq37npnctdwd35n7ms3wtagfhdvdnpscq86pk6h9rmzpcsdqe992',
+          // osmosis
+          listener:
+            'osmo1d00cmsk7uym7mtrsrcnhhdza8mpu346klhrpufkzzxkvy9wlegeqw2my6l',
+          // stargaze
+          voice:
+            'stars1fr7ccflazj6mfmpt8z2st424kxkpc6uw7t65sx80q5rp0s8kug6sj34avq',
+          // osmosis
+          localConnection: 'connection-1223',
+          // stargaze
+          remoteConnection: 'connection-0',
+          // osmosis
+          localChannel: 'channel-2659',
+          // stargaze
+          remoteChannel: 'channel-202',
+          // osmosis
+          // localClient: '07-tendermint-1562',
+          // stargaze
+          // remoteClient: '07-tendermint-0',
         },
       },
     },
@@ -182,6 +231,53 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoVotingCw4: 93,
         DaoVotingCw721Staked: -1,
         DaoVotingNativeStaked: -1,
+      },
+      polytone: {
+        [ChainId.OsmosisMainnet]: {
+          // stargaze
+          note: 'stars1p4f96xz9pz8264ccgapz2l6xu82l5cj0jvvng0ltlm3dw2sxqdrs43acfl',
+          // stargaze
+          listener:
+            'stars1cu9nkty3wrg997qnmsdtpcy0m448zu5zj6kxmjfuze7jj2t6m3ns3f7ry5',
+          // osmosis
+          voice:
+            'osmo13w3073l43gwxw77tv2np2katn3jrvet87unyfevg8nrj755m3x7q0aaw63',
+          // stargaze
+          localConnection: 'connection-0',
+          // osmosis
+          remoteConnection: 'connection-1223',
+          // stargaze
+          localChannel: 'channel-198',
+          // osmosis
+          remoteChannel: 'channel-2642',
+          // stargaze
+          // localClient: '07-tendermint-0',
+          // osmosis
+          // remoteClient: '07-tendermint-1562',
+        },
+        [ChainId.JunoMainnet]: {
+          // stargaze
+          note: 'stars17vst9ew3vhddgj4je82vdn0evv3dc9gyf0yapjydt9fzqn8c4ecqyunk79',
+          // stargaze
+          listener:
+            'stars18mw7avlq5t0anxsavca5ch7ju0w6mjwu0jz55exfnhp0wz7rchasxurdf8',
+          // juno
+          voice:
+            'juno13yxra87ltv7gva3z35ktxt0nx3n5tp8ngtkj2p2zxj0qg6n906fs00wgvf',
+          // stargaze
+          localConnection: 'connection-11',
+          // juno
+          remoteConnection: 'connection-30',
+          // stargaze
+          localChannel: 'channel-199',
+          // juno
+          remoteChannel: 'channel-304',
+          // stargaze
+          // localClient: '07-tendermint-13',
+          // juno
+          // remoteClient: '07-tendermint-44',
+          needsSelfRelay: true,
+        },
       },
     },
     [ChainId.JunoTestnet]: {

@@ -1,10 +1,17 @@
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-import { Modal, TokenAmountDisplay } from '@dao-dao/stateless'
+import {
+  ChainLogo,
+  Modal,
+  TokenAmountDisplay,
+  Tooltip,
+} from '@dao-dao/stateless'
 import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
 import {
+  getDisplayNameForChainId,
   getFallbackImage,
   toAccessibleImageUrl,
   transformIbcSymbol,
@@ -14,6 +21,7 @@ export const TokenLine = <T extends TokenCardInfo>(
   props: TokenLineProps<T>
 ) => {
   const { TokenCard, token, transparentBackground, lazyInfo } = props
+  const { t } = useTranslation()
 
   const { tokenSymbol } = transformIbcSymbol(token.symbol)
 
@@ -34,14 +42,27 @@ export const TokenLine = <T extends TokenCardInfo>(
         onClick={() => setCardVisible(true)}
       >
         <div className="flex flex-row items-center gap-2">
-          <div
-            className="h-6 w-6 rounded-full bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${toAccessibleImageUrl(
-                token.imageUrl || getFallbackImage(token.denomOrAddress)
-              )})`,
-            }}
-          ></div>
+          <Tooltip
+            title={t('info.tokenOnChain', {
+              token: tokenSymbol,
+              chain: getDisplayNameForChainId(token.chainId),
+            })}
+          >
+            <div
+              className="relative h-8 w-8 rounded-full bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${toAccessibleImageUrl(
+                  token.imageUrl || getFallbackImage(token.denomOrAddress)
+                )})`,
+              }}
+            >
+              <ChainLogo
+                chainId={token.chainId}
+                className="absolute -bottom-1 -right-1"
+                size={16}
+              />
+            </div>
+          </Tooltip>
 
           <p className="title-text">${tokenSymbol}</p>
         </div>

@@ -16,7 +16,7 @@ import {
   Tooltip,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { NftCardInfo } from '@dao-dao/types'
+import { ChainId, NftCardInfo } from '@dao-dao/types'
 import {
   InstantiateMsg,
   MintMsgForNullable_Empty,
@@ -48,7 +48,12 @@ export const InnerPfpkNftSelectionModal = ({
     isWalletError,
     message: walletErrorMessage,
     chain,
-  } = useWallet()
+  } = useWallet({
+    // This determines where uploaded NFTs are created. Explicitly use Juno
+    // because wallets cannot create Stargaze NFTs directly, and Juno is
+    // permissionless so it's a good place to create NFTs.
+    chainId: MAINNET ? ChainId.JunoMainnet : ChainId.JunoTestnet,
+  })
 
   const getIdForNft = (nft: NftCardInfo) =>
     `${nft.collection.address}:${nft.tokenId}`
@@ -138,7 +143,6 @@ export const InnerPfpkNftSelectionModal = ({
   const image = watch('image')
 
   const [uploadingImage, setUploadingImage] = useState(false)
-  // TODO(stargaze): support sg721 or prevent from instantiating on stargaze?
   const { ready: instantiateAndExecuteReady, instantiateAndExecute } =
     useInstantiateAndExecute(
       chain.chain_id,
