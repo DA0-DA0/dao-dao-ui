@@ -5,7 +5,7 @@ import {
   constSelector,
   useRecoilValue,
   useRecoilValueLoadable,
-  waitForAny,
+  waitForNone,
 } from 'recoil'
 
 import { CommonNftSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
@@ -108,7 +108,7 @@ const Component: ActionComponent = (props) => {
     })
   )[chainId]?.collectionAddresses
   const existingTokenInfos = useRecoilValue(
-    waitForAny(
+    waitForNone(
       existingTokenAddresses?.map((token) =>
         CommonNftSelectors.contractInfoSelector({
           contractAddress: token,
