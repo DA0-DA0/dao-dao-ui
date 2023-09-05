@@ -10,8 +10,12 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
+  MAINNET,
   getChainForChainId,
+  getChainForChainName,
   getFallbackImage,
+  getIbcTransferInfoBetweenChains,
+  getIbcTransferInfoFromChainSource,
   getTokenForChainIdAndDenom,
   isValidContractAddress,
   isValidTokenFactoryDenom,
@@ -20,6 +24,7 @@ import {
 
 import {
   denomMetadataSelector,
+  ibcRpcClientForChainSelector,
   nativeBalanceSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
@@ -115,18 +120,88 @@ export const genericTokenSelector = selectorFamily<
 
 export const usdPriceSelector = selectorFamily<
   AmountWithTimestampAndDenom | undefined,
-  Pick<GenericToken, 'chainId' | 'denomOrAddress'>
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
   key: 'usdPrice',
   get:
-    ({ denomOrAddress, chainId }) =>
+    ({ type, denomOrAddress, chainId }) =>
     async ({ get }) => {
+      if (!MAINNET) {
+        return undefined
+      }
+
+      // Try to reverse engineer denom and get the osmosis price.
+      try {
+        if (type === TokenType.Native) {
+          const ibc = get(ibcRpcClientForChainSelector(chainId))
+          const trace = denomOrAddress.startsWith('ibc/')
+            ? (
+                await ibc.applications.transfer.v1.denomTrace({
+                  hash: denomOrAddress,
+                })
+              ).denomTrace
+            : undefined
+
+          // If trace exists, resolve IBC denom and then get its Osmosis IBC
+          // denom to find its price.
+          if (trace) {
+            console.log(trace)
+            let channels = trace.path.split('transfer/').slice(1)
+            // Trim trailing slash from all but last channel.
+            channels = channels.map((channel, index) =>
+              index === channels.length - 1 ? channel : channel.slice(0, -1)
+            )
+            if (channels.length) {
+              // Retrace channel paths to find source chain of denom.
+              const sourceChainId = channels.reduce(
+                (currentChainId, channel) =>
+                  getChainForChainName(
+                    getIbcTransferInfoFromChainSource(currentChainId, channel)
+                      .destinationChain.chain_name
+                  ).chain_id,
+                chainId
+              )
+
+              // If source chain is Osmosis, the denom is the base denom.
+              if (sourceChainId === ChainId.OsmosisMainnet) {
+                chainId = ChainId.OsmosisMainnet
+                denomOrAddress = trace.baseDenom
+              } else {
+                // Get the Osmosis denom.
+                const osmosisIbc = get(
+                  ibcRpcClientForChainSelector(ChainId.OsmosisMainnet)
+                )
+                const { sourceChannel } = getIbcTransferInfoBetweenChains(
+                  ChainId.OsmosisMainnet,
+                  sourceChainId
+                )
+                const { hash: osmosisDenomIbcHash } =
+                  await osmosisIbc.applications.transfer.v1.denomHash({
+                    trace: `transfer/${sourceChannel}/${trace.baseDenom}`,
+                  })
+
+                chainId = ChainId.OsmosisMainnet
+                denomOrAddress = 'ibc/' + osmosisDenomIbcHash
+              }
+            }
+          }
+        }
+      } catch (err) {
+        // If not error, rethrow. This may be a promise, which is how
+        // recoil waits for the `get` to resolve.
+        if (!(err instanceof Error)) {
+          throw err
+        }
+
+        // On failure, do nothing.
+      }
+
       switch (chainId) {
-        case ChainId.JunoMainnet:
-          return get(wyndUsdPriceSelector(denomOrAddress))
         case ChainId.OsmosisMainnet:
           return get(osmosisUsdPriceSelector(denomOrAddress))
-        // TODO(stargaze): get osmosis denoms for stargaze assets
+        // On Juno, use WYND DEX as backup. Likely for CW20s.
+        case ChainId.JunoMainnet:
+          return get(wyndUsdPriceSelector(denomOrAddress))
       }
     },
 })

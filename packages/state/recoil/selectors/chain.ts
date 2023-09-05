@@ -2,16 +2,13 @@ import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { fromBase64, toHex } from '@cosmjs/encoding'
 import {
   Coin,
-  IbcExtension,
   IndexedTx,
-  QueryClient,
   StargateClient,
   decodeCosmosSdkDecFromProto,
-  setupIbcExtension,
 } from '@cosmjs/stargate'
 import { selector, selectorFamily, waitForAll, waitForAny } from 'recoil'
 
-import { cosmos, juno } from '@dao-dao/protobuf'
+import { cosmos, ibc, juno } from '@dao-dao/protobuf'
 import { ModuleAccount } from '@dao-dao/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { Metadata } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/bank'
 import {
@@ -42,7 +39,6 @@ import {
 } from '@dao-dao/types'
 import {
   MAINNET,
-  connectTendermintClient,
   cosmWasmClientRouter,
   cosmosSdkVersionIs47OrHigher,
   cosmosValidatorToValidator,
@@ -96,6 +92,17 @@ export const cosmosRpcClientForChainSelector = selectorFamily({
   dangerouslyAllowMutability: true,
 })
 
+export const ibcRpcClientForChainSelector = selectorFamily({
+  key: 'ibcRpcClientForChain',
+  get: (chainId: string) => async () =>
+    (
+      await ibc.ClientFactory.createRPCQueryClient({
+        rpcEndpoint: getRpcForChainId(chainId),
+      })
+    ).ibc,
+  dangerouslyAllowMutability: true,
+})
+
 export const junoRpcClientSelector = selector({
   key: 'junoRpcClient',
   get: async () =>
@@ -105,17 +112,6 @@ export const junoRpcClientSelector = selector({
       })
     ).juno,
   dangerouslyAllowMutability: true,
-})
-
-export const ibcQueryClientSelector = selectorFamily<
-  QueryClient & IbcExtension,
-  string
->({
-  key: 'ibcQueryClient',
-  get: (chainId) => async () => {
-    const tmClient = await connectTendermintClient(getRpcForChainId(chainId))
-    return QueryClient.withExtensions(tmClient, setupIbcExtension)
-  },
 })
 
 export const blockHeightSelector = selectorFamily<number, WithChainId<{}>>({
@@ -1209,13 +1205,15 @@ export const ibcUnreceivedPacketsSelector = selectorFamily<
     ({ chainId, portId, channelId, packetCommitmentSequences }) =>
     async ({ get }) => {
       get(refreshUnreceivedIbcDataAtom(chainId))
-      const ibcClient = get(ibcQueryClientSelector(chainId))
-      const { sequences } = await ibcClient.ibc.channel.unreceivedPackets(
+      const ibcClient = get(ibcRpcClientForChainSelector(chainId))
+      const { sequences } = await ibcClient.core.channel.v1.unreceivedPackets({
         portId,
         channelId,
-        packetCommitmentSequences
-      )
-      return sequences.map((s) => s.toInt())
+        packetCommitmentSequences: packetCommitmentSequences.map((v) =>
+          BigInt(v)
+        ),
+      })
+      return sequences.map((s) => Number(s))
     },
 })
 
@@ -1233,12 +1231,12 @@ export const ibcUnreceivedAcksSelector = selectorFamily<
     ({ chainId, portId, channelId, packetAckSequences }) =>
     async ({ get }) => {
       get(refreshUnreceivedIbcDataAtom(chainId))
-      const ibcClient = get(ibcQueryClientSelector(chainId))
-      const { sequences } = await ibcClient.ibc.channel.unreceivedAcks(
+      const ibcClient = get(ibcRpcClientForChainSelector(chainId))
+      const { sequences } = await ibcClient.core.channel.v1.unreceivedAcks({
         portId,
         channelId,
-        packetAckSequences
-      )
-      return sequences.map((s) => s.toInt())
+        packetAckSequences: packetAckSequences.map((v) => BigInt(v)),
+      })
+      return sequences.map((s) => Number(s))
     },
 })

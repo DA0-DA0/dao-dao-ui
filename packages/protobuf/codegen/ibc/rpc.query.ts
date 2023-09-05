@@ -54,6 +54,11 @@ export const createRPCQueryClient = async ({
         transfer: {
           v1: (await import("./applications/transfer/v1/query.rpc.Query")).createRpcQueryExtension(client)
         }
+      },
+      core: {
+        channel: {
+          v1: (await import("./core/channel/v1/query.rpc.Query")).createRpcQueryExtension(client)
+        }
       }
     }
   };
