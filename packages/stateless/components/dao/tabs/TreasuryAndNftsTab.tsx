@@ -287,11 +287,11 @@ export const TreasuryAndNftsTab = <
         )}
       </div>
 
-      {connected && (
+      {connected && !!depositFiatChainId && (
         <FiatDepositModal
-          chainId={depositFiatChainId || chainId}
+          chainId={depositFiatChainId}
           onClose={() => setDepositFiatChainId(undefined)}
-          visible={!!depositFiatChainId}
+          visible
         />
       )}
     </>
