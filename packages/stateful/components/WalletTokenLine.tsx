@@ -3,6 +3,7 @@ import {
   useCachedLoading,
 } from '@dao-dao/stateless'
 import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
+import { getDisplayNameForChainId } from '@dao-dao/utils'
 
 import { useWallet } from '../hooks/useWallet'
 import { tokenCardLazyInfoSelector } from '../recoil'
@@ -35,6 +36,7 @@ export const WalletTokenLine = <T extends TokenCardInfo>(
       {...props}
       TokenCard={WalletTokenCard}
       lazyInfo={lazyInfo}
+      subtitle={getDisplayNameForChainId(props.token.chainId)}
     />
   )
 }

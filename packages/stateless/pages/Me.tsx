@@ -111,9 +111,7 @@ export const Me = ({
   )
 
   const tabSelector = (
-    <div className="flex flex-row items-center justify-between gap-8">
-      <ChainSwitcher />
-
+    <div className="flex flex-row items-center justify-center">
       <SegmentedControls
         onSelect={(tab) =>
           router.push(`/me/${tab}`, undefined, { shallow: true })
@@ -159,8 +157,14 @@ export const Me = ({
           />
         </div>
 
-        <div className="mb-4 sm:hidden">{tabSelector}</div>
-        <p className="header-text hidden sm:block">{selectedTab?.label}</p>
+        <div className="flex flex-col items-center gap-10 sm:flex-row sm:items-end sm:justify-between sm:gap-0">
+          <div>
+            <div className="sm:hidden">{tabSelector}</div>
+            <p className="header-text hidden sm:block">{selectedTab?.label}</p>
+          </div>
+
+          {selectedTabId === MeTabId.TransactionBuilder && <ChainSwitcher />}
+        </div>
 
         {tabs.map(({ id, Component }) => (
           <div key={id} className={clsx(selectedTabId !== id && 'hidden')}>
