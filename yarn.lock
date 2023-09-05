@@ -3402,10 +3402,10 @@
   dependencies:
     "@cosmos-kit/omni-mobile" "^2.3.3"
 
-"@cosmos-kit/react-lite@^2.4.4":
-  version "2.4.4"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/react-lite/-/react-lite-2.4.4.tgz#8c0cb9688c94ebec7a87c0ede92bb886effb2efa"
-  integrity sha512-00bmwcTI4aVoVSdNjWMcDpScxYKKeZiIpIggiqGdGxJIccrrHyCbOendV8nWHMjBAhj01rVozNJvKUy6TByZng==
+"@cosmos-kit/react-lite@^2.4.5":
+  version "2.4.5"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/react-lite/-/react-lite-2.4.5.tgz#7efbce761d6654828d6a9943b7f05e9cea279724"
+  integrity sha512-Mhpa2+8fPQAkSiwlYQc/ltQ8GnfCgs3iGb7HWC57rTB+5OQ12JPkGRY12f/qgPWG1caGxwf1qUrPe/lxl8GAwQ==
   dependencies:
     "@chain-registry/types" "0.13.1"
     "@cosmos-kit/core" "^2.5.3"

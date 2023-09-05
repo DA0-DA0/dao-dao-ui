@@ -125,27 +125,15 @@ export const SelfRelayExecuteModal = ({
   const chainIds = [currentChainId, ..._chainIds]
   const chains = uniq(chainIds).map(getChainForChainId)
 
-  const chainNames = chains.map(({ chain_name }) => chain_name)
-  const wallets = useChains(chainNames)
+  const wallets = useChains(chains.map(({ chain_name }) => chain_name))
   // Connect other chains.
   useDeepCompareEffect(() => {
-    const currentWallet = wallets[currentChainName]
-    if (!currentWallet?.wallet || !currentWallet.isWalletConnected) {
+    if (!wallets[currentChainName]?.isWalletConnected) {
       return
     }
-    // Connect wallet to other chains.
-    chainNames.forEach((chainName) => {
-      if (chainName === currentChainName) {
-        return
-      }
-      wallets[chainName]?.walletRepo.connect(currentWallet.wallet!.name)
-    })
-  }, [
-    currentChainName,
-    t,
-    chainNames,
-    wallets[currentChainName]?.isWalletConnected,
-  ])
+    // Connect other chain wallets.
+    Object.values(wallets).forEach((wallet) => wallet.connect())
+  }, [currentChainName, t, wallets[currentChainName]?.isWalletConnected])
 
   const [status, setStatus] = useState<RelayStatus>(RelayStatus.Uninitialized)
   const [relayError, setRelayError] = useState<string>()
