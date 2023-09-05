@@ -591,8 +591,8 @@ export const SelfRelayExecuteModal = ({
           polytoneConnection.remoteConnection
         )
 
-        // Relay packets. Try 5 times.
-        let tries = 5
+        // Relay packets. Try 10 times.
+        let tries = 10
         while (tries) {
           try {
             const unrelayedPackets =
@@ -643,8 +643,8 @@ export const SelfRelayExecuteModal = ({
         const sourcePort = thesePackets[0].packet.sourcePort
         const sourceChannel = thesePackets[0].packet.sourceChannel
 
-        // Relay acks. Try 5 times.
-        tries = 5
+        // Relay acks. Try 10 times.
+        tries = 10
         while (tries) {
           try {
             // Find acks that need relaying.
