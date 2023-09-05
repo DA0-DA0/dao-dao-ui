@@ -1,11 +1,12 @@
 import { Chain } from '@chain-registry/types'
-import { AckWithMetadata } from '@confio/relayer/build/lib/endpoint'
-import {
-  IbcClient,
-  IbcClientOptions,
-} from '@confio/relayer/build/lib/ibcclient'
+import { AckWithMetadata } from '@confio/relayer'
+import { IbcClient } from '@confio/relayer/build/lib/ibcclient'
 import { Link } from '@confio/relayer/build/lib/link'
-import { parsePacketsFromTendermintEvents } from '@confio/relayer/build/lib/utils'
+import {
+  parseAcksFromTxEvents,
+  parsePacketsFromTendermintEvents,
+} from '@confio/relayer/build/lib/utils'
+import { toHex } from '@cosmjs/encoding'
 import { DirectSecp256k1HdWallet, EncodeObject } from '@cosmjs/proto-signing'
 import {
   GasPrice,
@@ -13,20 +14,28 @@ import {
   SigningStargateClient,
   calculateFee,
   coins,
+  fromTendermintEvent,
 } from '@cosmjs/stargate'
-import { TendermintClient } from '@cosmjs/tendermint-rpc'
 import { useChains } from '@cosmos-kit/react-lite'
 import { Check, Close, Send, Verified } from '@mui/icons-material'
+import { MsgGrant as MsgGrantEncoder } from 'cosmjs-types/cosmos/authz/v1beta1/tx'
 import uniq from 'lodash.uniq'
+import Long from 'long'
 import { Fragment, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilCallback, useSetRecoilState, waitForAll } from 'recoil'
-import useDeepCompareEffect from 'use-deep-compare-effect'
+import { useRecoilCallback, waitForAll } from 'recoil'
+import useDeepCompareEffect, {
+  useDeepCompareMemoize,
+} from 'use-deep-compare-effect'
 
+import { MsgGrant } from '@dao-dao/protobuf/codegen/cosmos/authz/v1beta1/tx'
+import { SendAuthorization } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/authz'
+import { toTimestamp } from '@dao-dao/protobuf/codegen/helpers'
 import {
   nativeDenomBalanceSelector,
   refreshPolytoneListenerResultsAtom,
+  refreshUnreceivedIbcDataAtom,
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
@@ -113,7 +122,8 @@ export const SelfRelayExecuteModal = ({
   } = useSupportedChainContext()
 
   // All chains, including current.
-  const chains = uniq([currentChainId, ..._chainIds]).map(getChainForChainId)
+  const chainIds = [currentChainId, ..._chainIds]
+  const chains = uniq(chainIds).map(getChainForChainId)
 
   const chainNames = chains.map(({ chain_name }) => chain_name)
   const wallets = useChains(chainNames)
@@ -159,13 +169,6 @@ export const SelfRelayExecuteModal = ({
   const [refundedAmount, setRefundedAmount] = useState<
     Record<string, number | undefined>
   >({})
-
-  // Refresher for polytone listener results.
-  const setRefreshPolytoneListenerResults = useSetRecoilState(
-    refreshPolytoneListenerResultsAtom
-  )
-  const refreshPolytoneListenerResults = () =>
-    setRefreshPolytoneListenerResults((id) => id + 1)
 
   // When the modal is closed, reset state.
   useEffect(() => {
@@ -291,13 +294,13 @@ export const SelfRelayExecuteModal = ({
           // Only the receiving chains need polytone notes. The current chain is
           // just responsible for sending.
           if (chain.chain_id !== currentChainId && !polytoneConnection) {
-            throw new Error(t('error.polytoneNoteNotFound'))
+            throw new Error(t('error.polytoneConnectionNotFound'))
           }
 
           // Connect wallet to chain so we can send tokens.
           const connectedWallet = wallets[chain.chain_name]
           if (!connectedWallet?.address) {
-            throw new Error('Chain not connected')
+            throw new Error(t('error.chainNotConnected'))
           }
           const signingStargateClient =
             await connectedWallet.getSigningStargateClient()
@@ -308,46 +311,20 @@ export const SelfRelayExecuteModal = ({
           })
           const relayerAddress = (await signer.getAccounts())[0].address
 
-          const ibcClientOptions: IbcClientOptions = {
-            // How long it waits in between checking for a new block.
-            estimatedBlockTime: 3000,
-            // How long it waits until looking for acks.
-            estimatedIndexerTime: 3000,
-            // @ts-ignore
-            gasPrice: GasPrice.fromString(
-              `${feeToken.average_gas_price ?? 0}${feeToken.denom}`
-            ),
-          }
           // Create IBC client with newly created signer.
-          const endpoint = getRpcForChainId(chain.chain_id)
-          let client = await IbcClient.connectWithSigner(
-            endpoint,
+          const client = await IbcClient.connectWithSigner(
+            getRpcForChainId(chain.chain_id),
             signer,
             relayerAddress,
-            ibcClientOptions
-          )
-
-          // Use default Tendermint 0.34/0.37 client auto-detection from
-          // SigningStargateClient, and then recreate the IBC client with the
-          // correct clients.
-          const relayerSigningStargateClient =
-            await SigningStargateClient.connectWithSigner(endpoint, signer, {
-              // Use IBC registry.
-              // @ts-ignore
-              registry: client.sign.registry,
-              // @ts-ignore
-              gasPrice: ibcClientOptions.gasPrice,
-            })
-          const autoDetectedTmClient: TendermintClient =
-            relayerSigningStargateClient['tmClient']
-
-          // @ts-ignore
-          client = new IbcClient(
-            relayerSigningStargateClient,
-            autoDetectedTmClient,
-            relayerAddress,
-            chain.chain_id,
-            ibcClientOptions
+            {
+              // How long it waits in between checking for a new block.
+              estimatedBlockTime: 3000,
+              // How long it waits until looking for acks.
+              estimatedIndexerTime: 3000,
+              gasPrice: GasPrice.fromString(
+                `${feeToken.average_gas_price ?? 0}${feeToken.denom}`
+              ),
+            }
           )
 
           return {
@@ -419,7 +396,9 @@ export const SelfRelayExecuteModal = ({
       )
 
       const fundsNeeded =
-        (RELAYER_FUNDS_NEEDED[chainId] ?? 0) - Number(currentBalance.amount)
+        // Give a little extra to cover the authz tx fee.
+        (RELAYER_FUNDS_NEEDED[chainId] ?? 0) * 1.3 -
+        Number(currentBalance.amount)
 
       let msgs: EncodeObject[] =
         fundsNeeded > 0
@@ -463,14 +442,56 @@ export const SelfRelayExecuteModal = ({
       }
 
       // Get new balance of relayer wallet.
-      const newBalance = await relayer.client.query.bank.balance(
-        relayer.relayerAddress,
-        relayer.feeToken.denom
+      const newBalance = Number(
+        (
+          await relayer.client.query.bank.balance(
+            relayer.relayerAddress,
+            relayer.feeToken.denom
+          )
+        ).amount
       )
       setFundedAmount((prev) => ({
         ...prev,
-        [chainId]: Number(newBalance.amount),
+        [chainId]: newBalance,
       }))
+
+      // Authorize the user's wallet to be able to send funds on behalf of the
+      // relayer wallet, in case anything goes wrong, so they can recover the
+      // funds.
+
+      // Set expiration to 10 years.
+      const expiration = new Date()
+      expiration.setFullYear(expiration.getFullYear() + 10)
+      // Encoder needs a whole number of seconds.
+      expiration.setMilliseconds(0)
+      const expirationTimestamp = toTimestamp(expiration)
+
+      await relayer.client.sign.signAndBroadcast(
+        relayer.relayerAddress,
+        [
+          {
+            typeUrl: MsgGrant.typeUrl,
+            value: {
+              granter: relayer.relayerAddress,
+              grantee: relayer.wallet.address,
+              grant: {
+                authorization: SendAuthorization.toProtoMsg(
+                  SendAuthorization.fromPartial({
+                    spendLimit: coins(newBalance, relayer.feeToken.denom),
+                  })
+                ),
+                expiration: {
+                  seconds: Long.fromString(
+                    expirationTimestamp.seconds.toString()
+                  ),
+                  nanos: expirationTimestamp.nanos,
+                },
+              },
+            } as MsgGrantEncoder,
+          },
+        ],
+        CHAIN_GAS_MULTIPLIER
+      )
 
       // Begin relay.
       if (withExecuteRelay) {
@@ -498,6 +519,17 @@ export const SelfRelayExecuteModal = ({
       refreshBalances(relayer)
     }
   }
+
+  const refreshPolytoneResults = useRecoilCallback(
+    ({ set }) =>
+      () => {
+        chainIds.forEach((chainId) =>
+          set(refreshUnreceivedIbcDataAtom(chainId), (id) => id + 1)
+        )
+        set(refreshPolytoneListenerResultsAtom, (id) => id + 1)
+      },
+    useDeepCompareMemoize([chainIds])
+  )
 
   const relay = async (_executeTx?: typeof executeTx) => {
     const currentExecuteTx = _executeTx || executeTx
@@ -541,8 +573,8 @@ export const SelfRelayExecuteModal = ({
 
         const { chain, client, polytoneConnection } = relayer
 
-        // Type-check, should never happen since we slice off the first
-        // (current chain) relayer, which is just responsible for sending.
+        // Type-check, should never happen since we slice off the first (current
+        // chain) relayer, which is just responsible for sending.
         if (!polytoneConnection) {
           throw new Error(t('error.polytoneNoteNotFound'))
         }
@@ -557,6 +589,9 @@ export const SelfRelayExecuteModal = ({
         if (!thesePackets.length) {
           return
         }
+        const packetSequences = thesePackets.map(({ packet }) =>
+          packet.sequence.toNumber()
+        )
 
         setRelaying({
           type: 'packet',
@@ -571,17 +606,15 @@ export const SelfRelayExecuteModal = ({
           polytoneConnection.remoteConnection
         )
 
-        // Relay packets and get acks. Try 5 times.
-        let acks: AckWithMetadata[] | undefined
+        // Relay packets. Try 5 times.
         let tries = 5
         while (tries) {
           try {
-            // Find packets that need relaying.
             const unrelayedPackets =
               await client.query.ibc.channel.unreceivedPackets(
                 thesePackets[0].packet.destinationPort,
                 thesePackets[0].packet.destinationChannel,
-                thesePackets.map(({ packet }) => packet.sequence.toNumber())
+                packetSequences
               )
 
             const packetsNeedingRelay = thesePackets.filter(({ packet }) =>
@@ -589,11 +622,7 @@ export const SelfRelayExecuteModal = ({
             )
 
             // Relay only the packets that need relaying.
-            if (packetsNeedingRelay.length) {
-              acks = await link.relayPackets('A', packetsNeedingRelay)
-            } else {
-              acks = []
-            }
+            await link.relayPackets('A', packetsNeedingRelay)
 
             break
           } catch (err) {
@@ -616,86 +645,93 @@ export const SelfRelayExecuteModal = ({
           }
         }
 
-        // Type-check. Logic above should ensure it is defined or an error is
-        // thrown.
-        if (!acks) {
-          throw new Error(t('error.failedToRelayAndGetAcks'))
-        }
+        // Wait a few seconds for the packets to be indexed.
+        await new Promise((resolve) => setTimeout(resolve, 5000))
 
-        if (acks.length) {
-          // Wait a few seconds for the packets to be indexed.
-          await new Promise((resolve) => setTimeout(resolve, 5000))
+        setRelaying({
+          type: 'ack',
+          relayer,
+        })
 
-          setRelaying({
-            type: 'ack',
-            relayer,
-          })
+        const sourcePort = thesePackets[0].packet.sourcePort
+        const sourceChannel = thesePackets[0].packet.sourceChannel
 
-          // Relay acks. Try 5 times.
-          tries = 5
-          while (tries) {
-            try {
-              // Find acks that need relaying.
-              const unrelayedAcks =
-                // First relayer is current chain sending packets/getting acks.
-                await relayers[0].client.query.ibc.channel.unreceivedAcks(
-                  thesePackets[0].packet.sourcePort,
-                  thesePackets[0].packet.sourceChannel,
-                  thesePackets.map(({ packet }) => packet.sequence.toNumber())
-                )
+        // Relay acks. Try 5 times.
+        tries = 5
+        while (tries) {
+          try {
+            // Find acks that need relaying.
+            const smallestSequenceNumber = Math.min(...packetSequences)
+            const largestSequenceNumber = Math.max(...packetSequences)
+            const search = await link.endB.client.tm.txSearchAll({
+              query: `write_acknowledgement.packet_connection='${polytoneConnection.remoteConnection}' AND write_acknowledgement.packet_src_port='${sourcePort}' AND write_acknowledgement.packet_src_channel='${sourceChannel}' AND write_acknowledgement.packet_sequence>=${smallestSequenceNumber} AND write_acknowledgement.packet_sequence<=${largestSequenceNumber}`,
+            })
 
-              const acksNeedingRelay = acks.filter(({ originalPacket }) =>
-                unrelayedAcks.sequences.some((seq) =>
-                  seq.eq(originalPacket.sequence)
-                )
+            const allAcks = search.txs.flatMap(({ height, result, hash }) => {
+              const events = result.events.map(fromTendermintEvent)
+              return parseAcksFromTxEvents(events).map(
+                (ack): AckWithMetadata => ({
+                  height,
+                  txHash: toHex(hash).toUpperCase(),
+                  txEvents: events,
+                  ...ack,
+                })
               )
+            })
 
-              // Acknowledge only the packets that need relaying.
-              if (acksNeedingRelay.length) {
-                await link.relayAcks('B', acksNeedingRelay)
-              }
-
-              break
-            } catch (err) {
-              // If header failed validation, it is likely that a relayer is in
-              // the process of relaying these acks already. In that case, keep
-              // retrying indefinitely until it's done. The ack relayer above
-              // tries to check which acks have not yet been received, so if a
-              // relayer takes care of the acks, we will safely continue.
-              if (
-                !(err instanceof Error) ||
-                !err.message.includes('header failed basic validation')
-              ) {
-                tries -= 1
-              }
-
-              console.error(
-                t('error.failedToRelayAcks', {
-                  chain: chain.pretty_name,
-                }) + (tries > 0 ? ' ' + t('info.tryingAgain') : ''),
-                err
-              )
-
-              // If no more tries, rethrow error.
-              if (tries === 0) {
-                throw err
-              }
-
-              // Wait a few seconds before trying again.
-              await new Promise((resolve) =>
-                setTimeout(
-                  resolve,
-                  // If redundant packets detected, a relayer already relayed
-                  // these acks. In that case, wait a bit longer to let it
-                  // finish. The ack relayer above tries to check which acks
-                  // have not yet been received, so if a relayer takes care of
-                  // the acks, we will safely continue.
-                  err instanceof Error && err.message.includes('redundant')
-                    ? 15 * 1000
-                    : 5 * 1000
+            const unrelayedAcks =
+              // First relayer is current chain sending packets/getting acks.
+              await relayers[0].client.query.ibc.channel.unreceivedAcks(
+                sourcePort,
+                sourceChannel,
+                allAcks.map(({ originalPacket }) =>
+                  originalPacket.sequence.toNumber()
                 )
               )
+
+            const acksNeedingRelay = allAcks.filter(({ originalPacket }) =>
+              unrelayedAcks.sequences.some((seq) =>
+                seq.eq(originalPacket.sequence)
+              )
+            )
+
+            // Acknowledge only the packets that need relaying.
+            if (acksNeedingRelay.length) {
+              await link.relayAcks('B', acksNeedingRelay)
             }
+
+            break
+          } catch (err) {
+            tries -= 1
+
+            console.error(
+              t('error.failedToRelayAcks', {
+                chain: chain.pretty_name,
+              }) + (tries > 0 ? ' ' + t('info.tryingAgain') : ''),
+              err
+            )
+
+            // If no more tries, rethrow error.
+            if (tries === 0) {
+              throw err
+            }
+
+            // Wait a few seconds before trying again.
+            await new Promise((resolve) =>
+              setTimeout(
+                resolve,
+                // If redundant packets detected, a relayer already relayed
+                // these acks. In that case, wait a bit longer to let it
+                // finish. The ack relayer above tries to check which acks
+                // have not yet been received, so if a relayer takes care of
+                // the acks, we will safely continue.
+                err instanceof Error &&
+                  (err.message.includes('redundant') ||
+                    err.message.includes('header failed basic validation'))
+                  ? 15 * 1000
+                  : 5 * 1000
+              )
+            )
           }
         }
       }, Promise.resolve())
@@ -712,8 +748,8 @@ export const SelfRelayExecuteModal = ({
       // Refresh all balances.
       relayers.map(refreshBalances)
 
-      // Refresh all polytone listener results.
-      refreshPolytoneListenerResults()
+      // Refresh all polytone results.
+      refreshPolytoneResults()
     }
 
     await refundAllRelayers()

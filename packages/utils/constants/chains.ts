@@ -67,7 +67,6 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // localClient: '07-tendermint-0',
           // osmosis
           // remoteClient: '07-tendermint-1457',
-          needsSelfRelay: false,
         },
         [ChainId.StargazeMainnet]: {
           // juno
@@ -159,7 +158,6 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // localClient: '07-tendermint-1457',
           // juno
           // remoteClient: '07-tendermint-0',
-          needsSelfRelay: false,
         },
         [ChainId.StargazeMainnet]: {
           // osmosis
@@ -182,7 +180,6 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // localClient: '07-tendermint-1562',
           // stargaze
           // remoteClient: '07-tendermint-0',
-          needsSelfRelay: false,
         },
       },
     },
@@ -251,7 +248,6 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // localClient: '07-tendermint-0',
           // osmosis
           // remoteClient: '07-tendermint-1562',
-          needsSelfRelay: false,
         },
         [ChainId.JunoMainnet]: {
           // stargaze
