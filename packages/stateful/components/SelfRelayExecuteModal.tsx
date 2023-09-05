@@ -622,7 +622,9 @@ export const SelfRelayExecuteModal = ({
             )
 
             // Relay only the packets that need relaying.
-            await link.relayPackets('A', packetsNeedingRelay)
+            if (packetsNeedingRelay.length) {
+              await link.relayPackets('A', packetsNeedingRelay)
+            }
 
             break
           } catch (err) {
@@ -725,10 +727,8 @@ export const SelfRelayExecuteModal = ({
                 // finish. The ack relayer above tries to check which acks
                 // have not yet been received, so if a relayer takes care of
                 // the acks, we will safely continue.
-                err instanceof Error &&
-                  (err.message.includes('redundant') ||
-                    err.message.includes('header failed basic validation'))
-                  ? 15 * 1000
+                err instanceof Error && err.message.includes('redundant')
+                  ? 10 * 1000
                   : 5 * 1000
               )
             )

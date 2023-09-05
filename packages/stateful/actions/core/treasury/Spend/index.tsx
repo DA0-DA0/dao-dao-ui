@@ -14,6 +14,7 @@ import {
 } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDefaults,
@@ -36,6 +37,7 @@ import {
   makeStargateMessage,
   makeWasmMessage,
   objectMatchesStructure,
+  transformBech32Address,
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components'
@@ -55,7 +57,7 @@ const useDefaults: UseDefaults<SpendData> = () => {
   const { address: walletAddress = '' } = useWallet()
 
   return {
-    chainId,
+    fromChainId: chainId,
     toChainId: chainId,
     to: walletAddress,
     amount: 1,
@@ -66,7 +68,9 @@ const useDefaults: UseDefaults<SpendData> = () => {
 const Component: ActionComponent<undefined, SpendData> = (props) => {
   const { watch } = useFormContext<SpendData>()
 
-  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
+  const fromChainId = watch(
+    (props.fieldNamePrefix + 'fromChainId') as 'fromChainId'
+  )
   const denom = watch((props.fieldNamePrefix + 'denom') as 'denom')
   const recipient = watch((props.fieldNamePrefix + 'to') as 'to')
   const toChainId = watch((props.fieldNamePrefix + 'toChainId') as 'toChainId')
@@ -78,11 +82,11 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
       ? undefined
       : [
           {
-            chainId,
+            chainId: fromChainId,
             // Cw20 denoms are contract addresses, native denoms are not.
             type: isValidContractAddress(
               denom,
-              getChainForChainId(chainId).bech32_prefix
+              getChainForChainId(fromChainId).bech32_prefix
             )
               ? TokenType.Cw20
               : TokenType.Native,
@@ -129,6 +133,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
 const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
   const {
     address,
+    context,
     chain: { chain_id: currentChainId },
   } = useActionOptions()
 
@@ -137,56 +142,67 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
   })
 
   return useCallback(
-    (data: SpendData) => {
+    ({ fromChainId, toChainId, to, amount: _amount, denom }: SpendData) => {
       if (loadingTokenBalances.loading) {
         return
       }
 
       const token = loadingTokenBalances.data.find(
         ({ token }) =>
-          token.chainId === data.chainId && token.denomOrAddress === data.denom
+          token.chainId === fromChainId && token.denomOrAddress === denom
       )?.token
       if (!token) {
-        throw new Error(`Unknown token: ${data.denom}`)
+        throw new Error(`Unknown token: ${denom}`)
       }
 
       const amount = BigInt(
-        convertDenomToMicroDenomWithDecimals(data.amount, token.decimals)
+        convertDenomToMicroDenomWithDecimals(_amount, token.decimals)
       ).toString()
 
       let msg: CosmosMsgForEmpty | undefined
-      if (data.toChainId !== data.chainId) {
+      if (toChainId !== fromChainId) {
         const { sourceChannel } = getIbcTransferInfoBetweenChains(
-          data.chainId,
-          data.toChainId
+          fromChainId,
+          toChainId
         )
+        const sender =
+          fromChainId === currentChainId
+            ? address
+            : context.type === ActionContextType.Dao
+            ? context.info.polytoneProxies[fromChainId]
+            : transformBech32Address(address, fromChainId)
         msg = makeStargateMessage({
           stargate: {
             typeUrl: MsgTransfer.typeUrl,
             value: {
               sourcePort: 'transfer',
               sourceChannel,
-              token: coin(amount, data.denom),
-              sender: address,
-              receiver: data.to,
-              timeoutTimestamp: BigInt(Number.MAX_SAFE_INTEGER),
+              token: coin(amount, denom),
+              sender,
+              receiver: to,
+              // Timeout after 1 year. Needs to survive voting period and
+              // execution delay.
+              timeoutTimestamp: BigInt(
+                // Nanoseconds.
+                (Date.now() + 1000 * 60 * 60 * 24 * 365) * 1e6
+              ),
               memo: '',
             } as MsgTransfer,
           },
         })
       } else if (token.type === TokenType.Native) {
         msg = {
-          bank: makeBankMessage(amount, data.to, data.denom),
+          bank: makeBankMessage(amount, to, denom),
         }
       } else if (token.type === TokenType.Cw20) {
         msg = makeWasmMessage({
           wasm: {
             execute: {
-              contract_addr: data.denom,
+              contract_addr: denom,
               funds: [],
               msg: {
                 transfer: {
-                  recipient: data.to,
+                  recipient: to,
                   amount,
                 },
               },
@@ -199,13 +215,13 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
         throw new Error(`Unknown token type: ${token.type}`)
       }
 
-      if (data.chainId === currentChainId) {
+      if (fromChainId === currentChainId) {
         return msg
       } else {
-        return makePolytoneExecuteMessage(currentChainId, data.chainId, msg)
+        return makePolytoneExecuteMessage(currentChainId, fromChainId, msg)
       }
     },
-    [address, currentChainId, loadingTokenBalances]
+    [address, context, currentChainId, loadingTokenBalances]
   )
 }
 
@@ -287,7 +303,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
-        chainId,
+        fromChainId: chainId,
         toChainId: getChainForChainName(destinationChain.chain_name).chain_id,
         to: msg.stargate.value.receiver,
         amount: convertMicroDenomToDenomWithDecimals(
@@ -301,7 +317,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
-        chainId,
+        fromChainId: chainId,
         toChainId: chainId,
         to: msg.bank.send.to_address,
         amount: convertMicroDenomToDenomWithDecimals(
@@ -315,7 +331,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     return {
       match: true,
       data: {
-        chainId,
+        fromChainId: chainId,
         toChainId: chainId,
         to: msg.wasm.execute.msg.transfer.recipient,
         amount: convertMicroDenomToDenomWithDecimals(
