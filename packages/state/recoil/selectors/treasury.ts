@@ -228,6 +228,11 @@ export const daoTvlSelector = selectorFamily<
       ]
 
       const prices = allBalances.map(({ token, balance }) => {
+        // Don't calculate price if could not load token decimals correctly.
+        if (token.decimals === 0) {
+          return 0
+        }
+
         const price = get(
           usdPriceSelector({
             type: token.type,
@@ -264,6 +269,11 @@ export const communityPoolTvlSelector = selectorFamily<
 
       const prices = tokenBalances.map(
         ({ token: { chainId, type, denomOrAddress, decimals }, balance }) => {
+          // Don't calculate price if could not load token decimals correctly.
+          if (decimals === 0) {
+            return 0
+          }
+
           const price = get(
             usdPriceSelector({
               type,

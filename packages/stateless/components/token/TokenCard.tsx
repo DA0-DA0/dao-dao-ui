@@ -218,7 +218,10 @@ export const TokenCard = ({
                 />
 
                 {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                  lazyInfo.data.usdUnitPrice && (
+                  lazyInfo.data.usdUnitPrice &&
+                  // Don't calculate price if could not load token decimals
+                  // correctly.
+                  token.decimals > 0 && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
                         amount={
@@ -254,7 +257,10 @@ export const TokenCard = ({
                 />
 
                 {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                  (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
+                  (lazyInfo.loading || lazyInfo.data.usdUnitPrice) &&
+                  // Don't calculate price if could not load token decimals
+                  // correctly.
+                  token.decimals > 0 && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
                         amount={

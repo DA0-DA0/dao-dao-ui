@@ -39,6 +39,7 @@ import {
 } from '@dao-dao/types'
 import {
   MAINNET,
+  convertDenomToMicroDenomWithDecimals,
   cosmWasmClientRouter,
   cosmosSdkVersionIs47OrHigher,
   cosmosValidatorToValidator,
@@ -932,9 +933,17 @@ export const communityPoolBalancesSelector = selectorFamily<
       const balances = tokens.map(
         (token, i): GenericTokenBalance => ({
           token,
-          balance: decodeCosmosSdkDecFromProto(pool[i].amount)
-            .toFloatApproximation()
-            .toFixed(0),
+          balance: BigInt(
+            // If this is a token with 18 decimals, its balance is still
+            // returned with 6 decimals.
+            // TODO: Figure out why ? Just happens with DAI.
+            convertDenomToMicroDenomWithDecimals(
+              decodeCosmosSdkDecFromProto(pool[i].amount)
+                .floor()
+                .toFloatApproximation(),
+              token.decimals === 18 ? 18 - 6 : 0
+            )
+          ).toString(),
         })
       )
 

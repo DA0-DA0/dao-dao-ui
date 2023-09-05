@@ -219,8 +219,9 @@ export const genericTokenWithUsdPriceSelector = selectorFamily<
     async ({ get }) => {
       const token = get(genericTokenSelector(params))
 
+      // Don't calculate price if could not load token decimals correctly.
       const { amount: usdPrice, timestamp } =
-        get(usdPriceSelector(params)) ?? {}
+        (token.decimals > 0 && get(usdPriceSelector(params))) || {}
 
       return {
         token,
