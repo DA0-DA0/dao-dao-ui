@@ -81,9 +81,10 @@ export type SupportedChainConfig = {
   // that fork the SDK, like Osmosis, don't support v1 gov proposals even though
   // they use cosmos-sdk v47 or higher, so we need a hardcoded flag.
   supportsV1GovProposals: boolean
-  // If defined, it means Kado supports fiat deposit on this chain. The string
-  // contains the name of the network for the Kado iframe.
-  kadoNetwork?: string
+  // If defined, it means Kado supports fiat deposit on this chain.
+  kado?: {
+    network: string
+  }
   indexes: {
     search: string
     featured: string

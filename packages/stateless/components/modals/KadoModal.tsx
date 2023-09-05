@@ -20,8 +20,8 @@ export const KadoModal = ({
 }: KadoModalProps) => {
   const { t } = useTranslation()
 
-  const network = getSupportedChainConfig(chainId)?.kadoNetwork
-  if (!network) {
+  const kado = getSupportedChainConfig(chainId)?.kado
+  if (!kado) {
     throw new Error(`Unsupported chainId: ${chainId}`)
   }
 
@@ -48,7 +48,7 @@ export const KadoModal = ({
       {...modalProps}
     >
       {toAddress && (
-        <div className="mb-4 flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
+        <div className="bg-background-secondary mb-4 flex flex-row items-center gap-4 rounded-md p-4">
           <WarningRounded className="!h-10 !w-10" />
 
           <div className="min-w-0 space-y-2">
@@ -83,12 +83,12 @@ export const KadoModal = ({
               apiKey: KADO_API_KEY,
               onRevCurrency: 'USDC',
               offPayCurrency: 'USDC',
-              offRevCurrency: 'USDC',
+              offRevCurrency: 'USD',
               product: defaultMode?.toUpperCase(),
               onToAddress: toAddress,
-              network,
+              network: kado.network,
               cryptoList: 'USDC',
-              networkList: network,
+              networkList: kado.network,
             })}`}
           />
         )}

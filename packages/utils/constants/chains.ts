@@ -10,7 +10,9 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       factoryContractAddress:
         'juno1eeqgsjyqxcscpxwa6ut36py8vfpu6hxrwy62n2vgu8ud72wa9pyqv38q7y',
       supportsV1GovProposals: true,
-      kadoNetwork: 'JUNO',
+      kado: {
+        network: 'JUNO',
+      },
       indexes: {
         search: 'daos',
         featured: 'featured_daos',
@@ -101,7 +103,9 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       factoryContractAddress:
         'osmo102pg8quxtvhye3k4rcqwh7j5zwf5ekhcvlquafjjxjnarhu38qzstkdm6p',
       supportsV1GovProposals: false,
-      kadoNetwork: 'OSMO',
+      kado: {
+        network: 'OSMOSIS',
+      },
       indexes: {
         search: 'osmosis_daos',
         // Use same as mainnet.

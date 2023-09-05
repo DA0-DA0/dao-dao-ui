@@ -202,7 +202,7 @@ export const TreasuryAndNftsTab = <
 
                     {exists ? (
                       connected &&
-                      !!getSupportedChainConfig(chainId)?.kadoNetwork && (
+                      !!getSupportedChainConfig(chainId)?.kado && (
                         <Button
                           onClick={() => setDepositFiatChainId(chainId)}
                           variant="secondary"

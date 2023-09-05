@@ -203,8 +203,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
     }
   }
 
-  const kadoModalEnabled = !!getSupportedChainConfig(props.token.chainId)
-    ?.kadoNetwork
+  const kadoModalEnabled = !!getSupportedChainConfig(props.token.chainId)?.kado
 
   return (
     <>
