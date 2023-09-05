@@ -48,7 +48,7 @@ export const KadoModal = ({
       {...modalProps}
     >
       {toAddress && (
-        <div className="bg-background-secondary mb-4 flex flex-row items-center gap-4 rounded-md p-4">
+        <div className="mb-4 flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
           <WarningRounded className="!h-10 !w-10" />
 
           <div className="min-w-0 space-y-2">

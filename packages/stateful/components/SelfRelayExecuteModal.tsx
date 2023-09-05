@@ -25,9 +25,7 @@ import { Fragment, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, waitForAll } from 'recoil'
-import useDeepCompareEffect, {
-  useDeepCompareMemoize,
-} from 'use-deep-compare-effect'
+import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import { MsgGrant } from '@dao-dao/protobuf/codegen/cosmos/authz/v1beta1/tx'
 import { SendAuthorization } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/authz'
@@ -117,23 +115,17 @@ export const SelfRelayExecuteModal = ({
 
   // Current chain.
   const {
-    chain: { chain_name: currentChainName, chain_id: currentChainId },
+    chain: { chain_id: currentChainId },
     config,
   } = useSupportedChainContext()
 
   // All chains, including current.
   const chainIds = [currentChainId, ..._chainIds]
   const chains = uniq(chainIds).map(getChainForChainId)
-
   const wallets = useChains(chains.map(({ chain_name }) => chain_name))
-  // Connect other chains.
-  useDeepCompareEffect(() => {
-    if (!wallets[currentChainName]?.isWalletConnected) {
-      return
-    }
-    // Connect other chain wallets.
-    Object.values(wallets).forEach((wallet) => wallet.connect())
-  }, [currentChainName, t, wallets[currentChainName]?.isWalletConnected])
+  const allWalletsConnected = Object.values(wallets).every(
+    (wallet) => wallet.isWalletConnected
+  )
 
   const [status, setStatus] = useState<RelayStatus>(RelayStatus.Uninitialized)
   const [relayError, setRelayError] = useState<string>()
@@ -257,6 +249,11 @@ export const SelfRelayExecuteModal = ({
   const setupRelayer = async () => {
     if (status !== RelayStatus.Uninitialized) {
       toast.error(t('error.relayerAlreadySetUp'))
+      return
+    }
+
+    if (!allWalletsConnected) {
+      toast.error(t('error.chainNotConnected'))
       return
     }
 
@@ -900,9 +897,16 @@ export const SelfRelayExecuteModal = ({
                 <Button
                   className="self-end"
                   loading={status === RelayStatus.Initializing}
-                  onClick={setupRelayer}
+                  onClick={
+                    allWalletsConnected
+                      ? setupRelayer
+                      : // Connect all wallets by connecting one.
+                        () => Object.values(wallets)[0]?.connect()
+                  }
                 >
-                  {t('button.begin')}
+                  {allWalletsConnected
+                    ? t('button.begin')
+                    : t('button.connect')}
                 </Button>
               </div>
             ),
