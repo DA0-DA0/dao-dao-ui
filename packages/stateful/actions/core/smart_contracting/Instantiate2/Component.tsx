@@ -95,6 +95,18 @@ export const Instantiate2Component: ActionComponent<Instantiate2Options> = (
         </div>
       </div>
 
+      <div className="flex grow flex-col items-stretch gap-1">
+        <InputLabel name={t('form.salt')} />
+        <TextInput
+          disabled={!isCreating}
+          error={errors?.salt}
+          fieldName={fieldNamePrefix + 'salt'}
+          register={register}
+          validation={[validateRequired]}
+        />
+        <InputErrorMessage error={errors?.salt} />
+      </div>
+
       <div className="flex flex-col gap-1">
         <InputLabel name={t('form.message')} />
         <CodeMirrorInput

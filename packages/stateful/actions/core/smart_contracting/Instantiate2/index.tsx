@@ -37,6 +37,8 @@ import { useTokenBalances } from '../../../hooks'
 import { useActionOptions } from '../../../react'
 import { Instantiate2Component as StatelessInstantiate2Component } from './Component'
 
+// TODO(instantiate2): fix pre-propose msg issue
+
 type Instantiate2Data = {
   chainId: string
   admin: string

@@ -78,9 +78,12 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
       return
     }
 
-    if (mode === 'set') {
+    if (mode === 'set' && !widgetId) {
       selectWidget(availableWidgets[0])
-    } else if (mode === 'delete') {
+    } else if (
+      mode === 'delete' &&
+      !existingWidgetsRef.current.some(({ id }) => id === widgetId)
+    ) {
       setValue(
         (fieldNamePrefix + 'id') as 'id',
         existingWidgetsRef.current[0]?.id ?? ''
@@ -93,6 +96,7 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
     selectWidget,
     availableWidgets,
     isCreating,
+    widgetId,
   ])
 
   return (
@@ -182,6 +186,7 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
               <div className="flex flex-col gap-4">
                 <widget.Editor
                   {...props}
+                  data={props.data.values}
                   errors={errors?.values}
                   fieldNamePrefix={fieldNamePrefix + 'values.'}
                 />
@@ -205,6 +210,7 @@ export const ManageWidgetsComponent: ActionComponent<ManageWidgetsOptions> = (
               <div className="flex flex-col gap-4">
                 <widget.Editor
                   {...props}
+                  data={props.data.values}
                   fieldNamePrefix={fieldNamePrefix + 'values.'}
                 />
               </div>

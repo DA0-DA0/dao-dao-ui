@@ -118,7 +118,9 @@ export type ActionComponentProps<O = undefined, D = any> = {
       errors: FieldErrors
       // Adds a new action to the form.
       addAction: (
-        action: Omit<PartialCategorizedActionKeyAndData, '_id'>
+        action: Partial<PartialCategorizedActionKeyAndData>,
+        // If omitted, the action will be appened to the end of the list.
+        insertIndex?: number
       ) => void
       // Removes this action from the form.
       remove: () => void
