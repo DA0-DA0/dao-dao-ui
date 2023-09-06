@@ -92,7 +92,6 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // localClient: '07-tendermint-44',
           // stargaze
           // remoteClient: '07-tendermint-13',
-          needsSelfRelay: true,
         },
       },
     },
@@ -276,7 +275,6 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // localClient: '07-tendermint-13',
           // juno
           // remoteClient: '07-tendermint-44',
-          needsSelfRelay: true,
         },
       },
     },
