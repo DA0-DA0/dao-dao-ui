@@ -3,9 +3,13 @@ import clsx from 'clsx'
 import { ComponentType, ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LinkWrapperProps } from '@dao-dao/types'
+import { ContractVersion, LinkWrapperProps } from '@dao-dao/types'
 import { DaoParentInfo } from '@dao-dao/types/dao'
-import { getFallbackImage, toAccessibleImageUrl } from '@dao-dao/utils'
+import {
+  getFallbackImage,
+  getGovPath,
+  toAccessibleImageUrl,
+} from '@dao-dao/utils'
 
 import { useDaoNavHelpers } from '../../hooks'
 import { Tooltip } from '../tooltip'
@@ -18,7 +22,7 @@ export interface DaoImageProps {
   coreAddress?: string
   parentDao?: Pick<
     DaoParentInfo,
-    'name' | 'coreAddress' | 'imageUrl' | 'registeredSubDao'
+    'name' | 'coreAddress' | 'coreVersion' | 'imageUrl' | 'registeredSubDao'
   > | null
   className?: string
   imageClassName?: string
@@ -88,7 +92,8 @@ export const DaoImage = ({
       {parentDao && (
         <Tooltip
           title={t(
-            parentDao.registeredSubDao
+            parentDao.registeredSubDao ||
+              parentDao.coreVersion === ContractVersion.Gov
               ? 'info.subDaoRegistered'
               : 'info.subDaoNeedsAdding',
             {
@@ -100,13 +105,15 @@ export const DaoImage = ({
           <LinkWrapper
             className="block h-full w-full"
             containerClassName={clsx(
-              'absolute right-0 bottom-0 rounded-full bg-cover bg-center shadow-dp4',
+              'absolute -top-2 -left-2 rounded-full bg-cover bg-center shadow-dp4',
               {
                 'h-8 w-8': size === 'sm',
                 'h-10 w-10': size === 'lg',
               }
             )}
-            href={getDaoPath(parentDao.coreAddress)}
+            href={(parentDao.coreVersion === ContractVersion.Gov
+              ? getGovPath
+              : getDaoPath)(parentDao.coreAddress)}
             onClick={(e) => e.stopPropagation()}
             style={{
               backgroundImage: `url(${
@@ -117,16 +124,17 @@ export const DaoImage = ({
             }}
           >
             {/* Show gray overlay with question mark if parent has not registered this SubDAO. */}
-            {!parentDao.registeredSubDao && (
-              <div className="absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full bg-background-overlay">
-                <QuestionMark
-                  className={clsx('text-text-secondary', {
-                    '!h-5 !w-5': size === 'sm',
-                    '!h-6 !w-6': size === 'lg',
-                  })}
-                />
-              </div>
-            )}
+            {!parentDao.registeredSubDao &&
+              parentDao.coreVersion !== ContractVersion.Gov && (
+                <div className="absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center rounded-full bg-background-overlay">
+                  <QuestionMark
+                    className={clsx('text-text-secondary', {
+                      '!h-5 !w-5': size === 'sm',
+                      '!h-6 !w-6': size === 'lg',
+                    })}
+                  />
+                </div>
+              )}
           </LinkWrapper>
         </Tooltip>
       )}

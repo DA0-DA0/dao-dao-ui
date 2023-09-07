@@ -4,8 +4,10 @@ import {
   DaoCoreV2Selectors,
   DaoVotingCw20StakedSelectors,
   PolytoneProxySelectors,
+  addressIsModuleSelector,
   contractInstantiateTimeSelector,
   contractVersionSelector,
+  isContractSelector,
   queryContractIndexerSelector,
 } from '@dao-dao/state'
 import {
@@ -19,6 +21,9 @@ import {
   DaoVotingCw20StakedAdapterId,
   POLYTONE_CONFIG_PER_CHAIN,
   getChainForChainId,
+  getDisplayNameForChainId,
+  getImageUrlForChainId,
+  getSupportedChainConfig,
   isValidContractAddress,
 } from '@dao-dao/utils'
 
@@ -216,31 +221,62 @@ export const daoInfoSelector: (param: {
 
       let parentDaoInfo
       let parentSubDaos
-      if (
-        dumpState.admin &&
-        dumpState.admin !== coreAddress &&
-        isValidContractAddress(
-          dumpState.admin,
-          getChainForChainId(chainId).bech32_prefix
-        ) &&
-        !ignoreAdmins?.includes(dumpState.admin)
-      ) {
-        parentDaoInfo = get(
-          daoInfoSelector({
-            chainId,
-            coreAddress: dumpState.admin,
-            ignoreAdmins: [...(ignoreAdmins ?? []), coreAddress],
-          })
-        )
-
-        // Only v2 DAOs can have SubDAOs.
-        if (parentDaoInfo.coreVersion !== ContractVersion.V1) {
-          parentSubDaos = get(
-            DaoCoreV2Selectors.listAllSubDaosSelector({
+      if (dumpState.admin && dumpState.admin !== coreAddress) {
+        if (
+          isValidContractAddress(
+            dumpState.admin,
+            getChainForChainId(chainId).bech32_prefix
+          ) &&
+          get(
+            isContractSelector({
               contractAddress: dumpState.admin,
               chainId,
+              names: [
+                // V1
+                'cw-core',
+                // V2
+                'cwd-core',
+                'dao-core',
+              ],
             })
-          ).map(({ addr }) => addr)
+          ) &&
+          !ignoreAdmins?.includes(dumpState.admin)
+        ) {
+          parentDaoInfo = get(
+            daoInfoSelector({
+              chainId,
+              coreAddress: dumpState.admin,
+              ignoreAdmins: [...(ignoreAdmins ?? []), coreAddress],
+            })
+          )
+
+          // Only v2 DAOs can have SubDAOs.
+          if (parentDaoInfo.coreVersion !== ContractVersion.V1) {
+            parentSubDaos = get(
+              DaoCoreV2Selectors.listAllSubDaosSelector({
+                contractAddress: dumpState.admin,
+                chainId,
+              })
+            ).map(({ addr }) => addr)
+          }
+        } else if (
+          get(
+            addressIsModuleSelector({
+              chainId,
+              address: dumpState.admin,
+            })
+          )
+        ) {
+          // Chain module account.
+          const chainConfig = getSupportedChainConfig(chainId)
+          parentDaoInfo = chainConfig && {
+            coreAddress: chainConfig.name,
+            coreVersion: ContractVersion.Gov,
+            name: getDisplayNameForChainId(chainId),
+            imageUrl: getImageUrlForChainId(chainId),
+            admin: '',
+            registeredSubDao: false,
+          }
         }
       }
 
@@ -259,7 +295,7 @@ export const daoInfoSelector: (param: {
         polytoneProxies,
         parentDao: parentDaoInfo
           ? {
-              coreAddress: dumpState.admin,
+              coreAddress: parentDaoInfo.coreAddress,
               coreVersion: parentDaoInfo.coreVersion,
               name: parentDaoInfo.name,
               imageUrl: parentDaoInfo.imageUrl || null,

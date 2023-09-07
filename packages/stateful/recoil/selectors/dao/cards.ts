@@ -2,6 +2,7 @@ import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
+  addressIsModuleSelector,
   contractInstantiateTimeSelector,
   contractVersionSelector,
   daoTvlSelector,
@@ -25,7 +26,10 @@ import {
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   getChainForChainId,
+  getDisplayNameForChainId,
   getFallbackImage,
+  getImageUrlForChainId,
+  getSupportedChainConfig,
   isValidContractAddress,
   parseContractVersion,
 } from '@dao-dao/utils'
@@ -77,27 +81,99 @@ export const daoCardInfoSelector = selectorFamily<
       if (
         admin &&
         // A DAO without a parent DAO may be its own admin.
-        admin !== coreAddress &&
-        // Ensure address is a contract.
-        isValidContractAddress(admin, getChainForChainId(chainId).bech32_prefix)
+        admin !== coreAddress
       ) {
-        // Indexer may return `adminInfo`, in which case don't query again. If
-        // null, there is no admin to load. Otherwise. If not null, query chain.
-        if ('adminInfo' in dumpedState) {
-          const { adminInfo } = dumpedState as IndexerDumpState
-          if (adminInfo) {
-            const {
-              admin: adminAdmin,
-              info,
-              config: { name, image_url },
-              registeredSubDao = false,
-            } = adminInfo
-            const coreVersion = info && parseContractVersion(info.version)
+        if (
+          // If address is a DAO contract.
+          isValidContractAddress(
+            admin,
+            getChainForChainId(chainId).bech32_prefix
+          )
+        ) {
+          // Indexer may return `adminInfo`, in which case don't query again. If
+          // null, there is no admin to load. Otherwise. If not null, query
+          // chain.
+          if ('adminInfo' in dumpedState) {
+            const { adminInfo } = dumpedState as IndexerDumpState
+            if (adminInfo) {
+              const {
+                admin: adminAdmin,
+                info,
+                config: { name, image_url },
+                registeredSubDao = false,
+              } = adminInfo
+              const coreVersion = info && parseContractVersion(info.version)
 
-            if (coreVersion) {
+              if (coreVersion) {
+                parentDao = {
+                  coreAddress: admin,
+                  coreVersion,
+                  name,
+                  imageUrl: image_url || getFallbackImage(admin),
+                  admin: adminAdmin ?? '',
+                  registeredSubDao,
+                }
+              }
+            }
+          } else if (
+            get(
+              isContractSelector({
+                contractAddress: admin,
+                chainId,
+                names: [
+                  // V1
+                  'cw-core',
+                  // V2
+                  'cwd-core',
+                  'dao-core',
+                ],
+              })
+            )
+          ) {
+            const adminAdmin = get(
+              DaoCoreV2Selectors.adminSelector({
+                contractAddress: admin,
+                chainId,
+                params: [],
+              })
+            )
+            const { version } = get(
+              DaoCoreV2Selectors.infoSelector({
+                contractAddress: admin,
+                chainId,
+                params: [],
+              })
+            ).info
+            const adminVersion = parseContractVersion(version)
+
+            if (adminVersion) {
+              const {
+                name,
+                image_url,
+              }: CwCoreV1ConfigResponse | DaoCoreV2ConfigResponse = get(
+                // Both v1 and v2 have a config query.
+                DaoCoreV2Selectors.configSelector({
+                  contractAddress: admin,
+                  chainId,
+                  params: [],
+                })
+              )
+
+              // Check if admin has registered the current DAO as a SubDAO.
+              const registeredSubDao =
+                adminVersion !== ContractVersion.V1
+                  ? get(
+                      DaoCoreV2Selectors.listAllSubDaosSelector({
+                        contractAddress: admin,
+                        chainId,
+                      })
+                    ).some(({ addr }) => addr === coreAddress)
+                  : // V1 cannot have SubDAOs.
+                    false
+
               parentDao = {
                 coreAddress: admin,
-                coreVersion,
+                coreVersion: adminVersion,
                 name,
                 imageUrl: image_url || getFallbackImage(admin),
                 admin: adminAdmin ?? '',
@@ -107,68 +183,21 @@ export const daoCardInfoSelector = selectorFamily<
           }
         } else if (
           get(
-            isContractSelector({
-              contractAddress: admin,
+            addressIsModuleSelector({
               chainId,
-              names: [
-                // V1
-                'cw-core',
-                // V2
-                'cwd-core',
-                'dao-core',
-              ],
+              address: admin,
             })
           )
         ) {
-          const adminAdmin = get(
-            DaoCoreV2Selectors.adminSelector({
-              contractAddress: admin,
-              chainId,
-              params: [],
-            })
-          )
-          const { version } = get(
-            DaoCoreV2Selectors.infoSelector({
-              contractAddress: admin,
-              chainId,
-              params: [],
-            })
-          ).info
-          const adminVersion = parseContractVersion(version)
-
-          if (adminVersion) {
-            const {
-              name,
-              image_url,
-            }: CwCoreV1ConfigResponse | DaoCoreV2ConfigResponse = get(
-              // Both v1 and v2 have a config query.
-              DaoCoreV2Selectors.configSelector({
-                contractAddress: admin,
-                chainId,
-                params: [],
-              })
-            )
-
-            // Check if admin has registered the current DAO as a SubDAO.
-            const registeredSubDao =
-              adminVersion !== ContractVersion.V1
-                ? get(
-                    DaoCoreV2Selectors.listAllSubDaosSelector({
-                      contractAddress: admin,
-                      chainId,
-                    })
-                  ).some(({ addr }) => addr === coreAddress)
-                : // V1 cannot have SubDAOs.
-                  false
-
-            parentDao = {
-              coreAddress: admin,
-              coreVersion: adminVersion,
-              name,
-              imageUrl: image_url || getFallbackImage(admin),
-              admin: adminAdmin ?? '',
-              registeredSubDao,
-            }
+          // Chain module account.
+          const chainConfig = getSupportedChainConfig(chainId)
+          parentDao = chainConfig && {
+            coreAddress: chainConfig.name,
+            coreVersion: ContractVersion.Gov,
+            name: getDisplayNameForChainId(chainId),
+            imageUrl: getImageUrlForChainId(chainId),
+            admin: '',
+            registeredSubDao: false,
           }
         }
       }

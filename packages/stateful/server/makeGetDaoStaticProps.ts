@@ -4,6 +4,7 @@ import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
 
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
+import { cosmos } from '@dao-dao/protobuf'
 import {
   DaoCoreV2QueryClient,
   PolytoneNoteQueryClient,
@@ -33,13 +34,16 @@ import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
+  addressIsModule,
   cosmWasmClientRouter,
   getChainForChainId,
   getChainIdForAddress,
   getDaoPath,
+  getDisplayNameForChainId,
+  getImageUrlForChainId,
   getRpcForChainId,
   getSupportedChainConfig,
-  isValidWalletAddress,
+  isValidContractAddress,
   parseContractVersion,
   polytoneNoteProxyMapToChainIdMap,
   processError,
@@ -451,16 +455,42 @@ const loadParentDaoInfo = async (
   if (
     !potentialParentAddress ||
     potentialParentAddress === subDaoAddress ||
-    isValidWalletAddress(
-      potentialParentAddress,
-      getChainForChainId(chainId).bech32_prefix
-    ) ||
     previousParentAddresses?.includes(potentialParentAddress)
   ) {
     return null
   }
 
   try {
+    // Check if address is chain module account.
+    const cosmosClient = (
+      await cosmos.ClientFactory.createRPCQueryClient({
+        rpcEndpoint: getRpcForChainId(chainId),
+      })
+    ).cosmos
+    // If chain module account...
+    if (await addressIsModule(cosmosClient, potentialParentAddress)) {
+      const chainConfig = getSupportedChainConfig(chainId)
+      return chainConfig
+        ? {
+            coreAddress: chainConfig.name,
+            coreVersion: ContractVersion.Gov,
+            name: getDisplayNameForChainId(chainId),
+            imageUrl: getImageUrlForChainId(chainId),
+            parentDao: null,
+            admin: '',
+          }
+        : null
+    }
+
+    if (
+      !isValidContractAddress(
+        potentialParentAddress,
+        getChainForChainId(chainId).bech32_prefix
+      )
+    ) {
+      return null
+    }
+
     const {
       admin,
       version,
@@ -655,7 +685,11 @@ const daoCoreDumpState = async (
   let registeredSubDao = false
   // If parent DAO exists, check if this DAO is a SubDAO of the parent. Only V2
   // DAOs have SubDAOs.
-  if (parentDao && parentDao.coreVersion !== ContractVersion.V1) {
+  if (
+    parentDao &&
+    parentDao.coreVersion !== ContractVersion.V1 &&
+    parentDao.coreVersion !== ContractVersion.Gov
+  ) {
     const parentDaoCoreClient = new DaoCoreV2QueryClient(
       cwClient,
       dumpedState.admin
