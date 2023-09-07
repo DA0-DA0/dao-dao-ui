@@ -268,7 +268,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           items,
           polytoneProxies,
           parentDao,
-          admin,
+          admin: admin ?? null,
         },
         ...additionalProps,
       }
@@ -511,7 +511,7 @@ const loadParentDaoInfo = async (
       name: name,
       imageUrl: image_url ?? null,
       parentDao,
-      admin,
+      admin: admin ?? null,
     }
   } catch (err) {
     // If contract not found, ignore error. Otherwise, log it.
@@ -586,10 +586,12 @@ const daoCoreDumpState = async (
           required: true,
         })) ?? []
 
+      const { admin } = indexerDumpedState
+
       const parentDaoInfo = await loadParentDaoInfo(
         chainId,
         coreAddress,
-        indexerDumpedState.admin,
+        admin,
         serverT,
         [...(previousParentAddresses ?? []), coreAddress]
       )
@@ -679,10 +681,11 @@ const daoCoreDumpState = async (
     }
   }
 
+  const { admin } = dumpedState
   const parentDao = await loadParentDaoInfo(
     chainId,
     coreAddress,
-    dumpedState.admin,
+    admin,
     serverT,
     [...(previousParentAddresses ?? []), coreAddress]
   )
@@ -694,10 +697,7 @@ const daoCoreDumpState = async (
     parentDao.coreVersion !== ContractVersion.V1 &&
     parentDao.coreVersion !== ContractVersion.Gov
   ) {
-    const parentDaoCoreClient = new DaoCoreV2QueryClient(
-      cwClient,
-      dumpedState.admin
-    )
+    const parentDaoCoreClient = new DaoCoreV2QueryClient(cwClient, admin)
 
     // Get all SubDAOs.
     const subdaoAddrs: string[] = []

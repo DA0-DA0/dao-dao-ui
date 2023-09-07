@@ -1,4 +1,4 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
   Cw20BaseSelectors,
@@ -53,12 +53,19 @@ export const tokenCardLazyInfoSelector = selectorFamily<
         token.denomOrAddress ===
         getNativeTokenForChainId(chainId).denomOrAddress
       ) {
-        const nativeDelegationInfo = get(
-          nativeDelegationInfoSelector({
-            address: owner,
-            chainId,
-          })
-        )
+        // Neutron does not have staking so this may error. Ignore if so.
+        const nativeDelegationInfoLoadable = get(
+          waitForAllSettled([
+            nativeDelegationInfoSelector({
+              address: owner,
+              chainId,
+            }),
+          ])
+        )[0]
+        const nativeDelegationInfo =
+          nativeDelegationInfoLoadable.state === 'hasValue'
+            ? nativeDelegationInfoLoadable.contents
+            : undefined
 
         if (nativeDelegationInfo) {
           const unstakingDurationSeconds = get(

@@ -12,7 +12,7 @@ import {
   PageLoader,
   useThemeContext,
 } from '@dao-dao/stateless'
-import { DaoInfo, DaoInfoSerializable } from '@dao-dao/types'
+import { ChainId, DaoInfo, DaoInfoSerializable } from '@dao-dao/types'
 import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 
 import { GovActionsProvider } from '../../actions'
@@ -118,7 +118,12 @@ export const GovPageWrapper = ({
           <ChainProvider chainId={info.chainId}>
             <DaoInfoContext.Provider key={info.chainId} value={info}>
               <SuspenseLoader fallback={<PageLoader />}>
-                <GovActionsProvider>{children}</GovActionsProvider>
+                {/* Neutron does not have the typical governance setup. */}
+                {info.chainId !== ChainId.NeutronMainnet ? (
+                  <GovActionsProvider>{children}</GovActionsProvider>
+                ) : (
+                  children
+                )}
               </SuspenseLoader>
             </DaoInfoContext.Provider>
           </ChainProvider>

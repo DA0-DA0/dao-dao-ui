@@ -219,17 +219,19 @@ export const daoInfoSelector: (param: {
         })
       )
 
+      const { admin } = dumpState
+
       let parentDaoInfo
       let parentSubDaos
-      if (dumpState.admin && dumpState.admin !== coreAddress) {
+      if (admin && admin !== coreAddress) {
         if (
           isValidContractAddress(
-            dumpState.admin,
+            admin,
             getChainForChainId(chainId).bech32_prefix
           ) &&
           get(
             isContractSelector({
-              contractAddress: dumpState.admin,
+              contractAddress: admin,
               chainId,
               names: [
                 // V1
@@ -240,12 +242,12 @@ export const daoInfoSelector: (param: {
               ],
             })
           ) &&
-          !ignoreAdmins?.includes(dumpState.admin)
+          !ignoreAdmins?.includes(admin)
         ) {
           parentDaoInfo = get(
             daoInfoSelector({
               chainId,
-              coreAddress: dumpState.admin,
+              coreAddress: admin,
               ignoreAdmins: [...(ignoreAdmins ?? []), coreAddress],
             })
           )
@@ -254,7 +256,7 @@ export const daoInfoSelector: (param: {
           if (parentDaoInfo.coreVersion !== ContractVersion.V1) {
             parentSubDaos = get(
               DaoCoreV2Selectors.listAllSubDaosSelector({
-                contractAddress: dumpState.admin,
+                contractAddress: admin,
                 chainId,
               })
             ).map(({ addr }) => addr)
@@ -263,7 +265,7 @@ export const daoInfoSelector: (param: {
           get(
             addressIsModuleSelector({
               chainId,
-              address: dumpState.admin,
+              address: admin,
             })
           )
         ) {
@@ -304,7 +306,7 @@ export const daoInfoSelector: (param: {
               registeredSubDao: parentSubDaos?.includes(coreAddress) ?? false,
             }
           : null,
-        admin: dumpState.admin,
+        admin,
       }
     },
 })

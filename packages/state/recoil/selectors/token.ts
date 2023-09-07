@@ -1,4 +1,4 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAllSettled } from 'recoil'
 
 import {
   AmountWithTimestampAndDenom,
@@ -255,45 +255,59 @@ export const genericTokenBalancesSelector = selectorFamily<
           : []
 
       // TODO: Get polytone cw20s from some item prefix in the DAO.
-      const cw20TokenBalances =
+      const cw20TokenBalances = (
         !filter || filter === TokenType.Cw20
           ? get(
-              isValidContractAddress(
-                address,
-                getChainForChainId(chainId).bech32_prefix
-              ) &&
-                // If is a DAO contract.
-                get(
-                  isContractSelector({
-                    contractAddress: address,
-                    chainId,
-                    names: [
-                      // V1
-                      'cw-core',
-                      // V2
-                      'cwd-core',
-                      'dao-core',
-                    ],
-                  })
-                )
-                ? DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
-                    contractAddress: address,
-                    governanceTokenAddress: cw20GovernanceTokenAddress,
-                    chainId,
-                  })
-                : isValidWalletAddress(
-                    address,
-                    getChainForChainId(chainId).bech32_prefix
+              // Neutron's modified DAOs do not support cw20s, so this may
+              // error. Ignore if so.
+              waitForAllSettled(
+                isValidContractAddress(
+                  address,
+                  getChainForChainId(chainId).bech32_prefix
+                ) &&
+                  // If is a DAO contract.
+                  get(
+                    isContractSelector({
+                      contractAddress: address,
+                      chainId,
+                      names: [
+                        // V1
+                        'cw-core',
+                        // V2
+                        'cwd-core',
+                        'dao-core',
+                      ],
+                    })
                   )
-                ? walletCw20BalancesSelector({
-                    walletAddress: address,
-                    chainId,
-                  })
-                : waitForAll([])
+                  ? [
+                      DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
+                        contractAddress: address,
+                        governanceTokenAddress: cw20GovernanceTokenAddress,
+                        chainId,
+                      }),
+                    ]
+                  : isValidWalletAddress(
+                      address,
+                      getChainForChainId(chainId).bech32_prefix
+                    )
+                  ? [
+                      walletCw20BalancesSelector({
+                        walletAddress: address,
+                        chainId,
+                      }),
+                    ]
+                  : []
+              )
             )
           : []
+      )[0]
 
-      return [...nativeTokenBalances, ...cw20TokenBalances]
+      return [
+        ...nativeTokenBalances,
+        ...(cw20TokenBalances?.state === 'hasValue'
+          ? cw20TokenBalances.contents
+          : []),
+      ]
     },
 })
 
