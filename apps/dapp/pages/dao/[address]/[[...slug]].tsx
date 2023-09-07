@@ -2,7 +2,7 @@
 // See the "LICENSE" file in the root directory of this package for more copyright information.
 
 import type { GetStaticPaths, NextPage } from 'next'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
@@ -99,6 +99,7 @@ const InnerDaoHome = () => {
     router.prefetch(addSubDaoProposalPrefillHref)
   }, [addSubDaoProposalPrefillHref, router])
   // Notify if parent has not yet added subDAO.
+  const notifiedNotAddedSubDao = useRef<string | undefined>(undefined)
   useEffect(() => {
     if (
       daoInfo.parentDao &&
@@ -106,7 +107,8 @@ const InnerDaoHome = () => {
       parentDaosSubDaosLoadable.contents &&
       !parentDaosSubDaosLoadable.contents.some(
         ({ addr }) => addr === daoInfo.coreAddress
-      )
+      ) &&
+      notifiedNotAddedSubDao.current !== daoInfo.coreAddress
     ) {
       if (isMemberOfParent && addSubDaoProposalPrefillHref) {
         toast(
@@ -131,6 +133,8 @@ const InnerDaoHome = () => {
           })
         )
       }
+
+      notifiedNotAddedSubDao.current = daoInfo.coreAddress
     }
   }, [
     addSubDaoProposalPrefillHref,
