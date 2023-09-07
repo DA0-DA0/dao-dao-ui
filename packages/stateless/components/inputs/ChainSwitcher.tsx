@@ -1,17 +1,17 @@
 import { Chain } from '@chain-registry/types'
 import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 
 import { ButtonPopupProps, ButtonPopupSectionButton } from '@dao-dao/types'
 import {
   getChainForChainId,
   getDisplayNameForChainId,
-  getImageUrlForChainId,
   getSupportedChains,
 } from '@dao-dao/utils'
 
 import { ButtonLink } from '../buttons'
+import { ChainLogo } from '../ChainLogo'
 import { ButtonPopup } from '../popup'
 
 export type ChainSwitcherProps = Omit<
@@ -36,17 +36,13 @@ export const ChainSwitcher = ({
 }: ChainSwitcherProps) => {
   const chain = getChainForChainId(selected)
 
+  const excludeChainIdsRef = useRef(excludeChainIds)
+  excludeChainIdsRef.current = excludeChainIds
+
   const { chainSwitcherTriggerContent, chainSwitcherSections } = useMemo(() => {
     const makeChainIcon = (chainId: string) =>
       function ChainIcon({ className }: { className?: string }) {
-        return (
-          <div
-            className={clsx('shrink-0 bg-contain bg-center', className)}
-            style={{
-              backgroundImage: `url(${getImageUrlForChainId(chainId)})`,
-            }}
-          ></div>
-        )
+        return <ChainLogo chainId={chainId} className={className} />
       }
 
     const ChainIcon = makeChainIcon(chain.chain_id)
@@ -62,7 +58,7 @@ export const ChainSwitcher = ({
         buttons: getSupportedChains()
           .filter(
             ({ chain: { chain_id: chainId } }) =>
-              !excludeChainIds?.includes(chainId)
+              !excludeChainIdsRef.current?.includes(chainId)
           )
           .map(
             ({

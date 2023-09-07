@@ -141,42 +141,46 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     }
 
     // If address is polytone proxy, redirect to DAO on native chain.
-    const addressInfo = await queryIndexer<ContractVersionInfo>({
-      type: 'contract',
-      chainId,
-      address: coreAddress,
-      formula: 'info',
-      required: true,
-    })
-    if (addressInfo && addressInfo.contract === 'crates.io:polytone-proxy') {
-      // Get voice for this proxy on destination chain.
-      const voice = await queryIndexer({
+    try {
+      const addressInfo = await queryIndexer<ContractVersionInfo>({
         type: 'contract',
         chainId,
-        // proxy
         address: coreAddress,
-        formula: 'polytone/proxy/instantiator',
+        formula: 'info',
         required: true,
       })
-
-      const dao = await queryIndexer({
-        type: 'contract',
-        chainId,
-        address: voice,
-        formula: 'polytone/voice/remoteController',
-        args: {
+      if (addressInfo && addressInfo.contract === 'crates.io:polytone-proxy') {
+        // Get voice for this proxy on destination chain.
+        const voice = await queryIndexer({
+          type: 'contract',
+          chainId,
           // proxy
           address: coreAddress,
-        },
-        required: true,
-      })
+          formula: 'polytone/proxy/instantiator',
+          required: true,
+        })
 
-      return {
-        redirect: {
-          destination: getDaoPath(appMode, dao),
-          permanent: true,
-        },
+        const dao = await queryIndexer({
+          type: 'contract',
+          chainId,
+          address: voice,
+          formula: 'polytone/voice/remoteController',
+          args: {
+            // proxy
+            address: coreAddress,
+          },
+          required: true,
+        })
+
+        return {
+          redirect: {
+            destination: getDaoPath(appMode, dao),
+            permanent: true,
+          },
+        }
       }
+    } catch {
+      // If failed, ignore.
     }
 
     // Add to Sentry error tags if error occurs.
