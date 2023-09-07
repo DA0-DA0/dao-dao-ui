@@ -288,13 +288,192 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
   return { match: false }
 }
 
-export const makeManageVestingActionMaker =
-  ({ factory }: VestingPaymentsData): ActionMaker<ManageVestingData> =>
-  ({
-    t,
-    context,
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
-  }) => {
+export const makeManageVestingActionMaker = ({
+  factory,
+}: VestingPaymentsData): ActionMaker<ManageVestingData> => {
+  const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
+    const { t } = useTranslation()
+    const {
+      chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+    } = useActionOptions()
+
+    const { setValue, watch, setError, clearErrors } =
+      useFormContext<ManageVestingData>()
+    const mode = watch((props.fieldNamePrefix + 'mode') as 'mode')
+    const selectedAddress =
+      mode === 'registerSlash'
+        ? watch(
+            (props.fieldNamePrefix +
+              'registerSlash.address') as 'registerSlash.address'
+          )
+        : mode === 'cancel'
+        ? watch((props.fieldNamePrefix + 'cancel.address') as 'cancel.address')
+        : undefined
+
+    const tokenBalances = useTokenBalances()
+
+    const vestingFactoryOwner = loadableToLoadingData(
+      useCachedLoadable(
+        vestingFactoryOwnerSelector({
+          factory,
+          chainId,
+        })
+      ),
+      undefined
+    )
+
+    const vestingInfos = loadableToLoadingData(
+      useCachedLoadable(
+        vestingInfosSelector({
+          factory,
+          chainId,
+        })
+      ),
+      []
+    )
+
+    const selectedVest = useCachedLoading(
+      !props.isCreating &&
+        (mode === 'registerSlash' || mode === 'cancel') &&
+        selectedAddress
+        ? vestingInfoSelector({
+            vestingContractAddress: selectedAddress,
+            chainId,
+          })
+        : constSelector(undefined),
+      undefined
+    )
+
+    // Prevent action from being submitted if no address is selected while we're
+    // registering slash or cancelling.
+    useEffect(() => {
+      if (mode !== 'registerSlash' && mode !== 'cancel') {
+        clearErrors(
+          (props.fieldNamePrefix +
+            'registerSlash.address') as 'registerSlash.address'
+        )
+        clearErrors(
+          (props.fieldNamePrefix + 'cancel.address') as 'cancel.address'
+        )
+        return
+      }
+      // Make sure to clear errors for other modes on switch.
+      else if (mode === 'registerSlash') {
+        clearErrors(
+          (props.fieldNamePrefix + 'cancel.address') as 'cancel.address'
+        )
+      } else if (mode === 'cancel') {
+        clearErrors(
+          (props.fieldNamePrefix +
+            'registerSlash.address') as 'registerSlash.address'
+        )
+      }
+
+      if (
+        !selectedAddress ||
+        !isValidContractAddress(selectedAddress, bech32Prefix)
+      ) {
+        setError(
+          (props.fieldNamePrefix +
+            `${mode}.address`) as `${typeof mode}.address`,
+          {
+            type: 'manual',
+            message: t('error.noVestingContractSelected'),
+          }
+        )
+      } else {
+        clearErrors(
+          (props.fieldNamePrefix +
+            `${mode}.address`) as `${typeof mode}.address`
+        )
+      }
+    }, [
+      setError,
+      clearErrors,
+      props.fieldNamePrefix,
+      t,
+      mode,
+      selectedAddress,
+      bech32Prefix,
+    ])
+
+    const tabs: SegmentedControlsProps<ManageVestingData['mode']>['tabs'] = [
+      {
+        label: t('title.beginVesting'),
+        value: 'begin',
+      },
+      {
+        label: t('title.cancelVesting'),
+        value: 'cancel',
+      },
+      {
+        label: t('title.registerSlash'),
+        value: 'registerSlash',
+      },
+    ]
+    const selectedTab = tabs.find((tab) => tab.value === mode)
+
+    return (
+      <SuspenseLoader
+        fallback={<Loader />}
+        forceFallback={
+          // Manually trigger loader.
+          tokenBalances.loading
+        }
+      >
+        {props.isCreating ? (
+          <SegmentedControls<ManageVestingData['mode']>
+            className="mb-2"
+            onSelect={(value) =>
+              setValue((props.fieldNamePrefix + 'mode') as 'mode', value)
+            }
+            selected={mode}
+            tabs={tabs}
+          />
+        ) : (
+          <p className="title-text mb-2">{selectedTab?.label}</p>
+        )}
+
+        {mode === 'begin' ? (
+          <BeginVesting
+            {...props}
+            errors={props.errors?.begin}
+            fieldNamePrefix={props.fieldNamePrefix + 'begin.'}
+            options={{
+              tokens: tokenBalances.loading ? [] : tokenBalances.data,
+              vestingFactoryOwner,
+              AddressInput,
+            }}
+          />
+        ) : mode === 'registerSlash' ? (
+          <RegisterSlash
+            {...props}
+            errors={props.errors?.registerSlash}
+            fieldNamePrefix={props.fieldNamePrefix + 'registerSlash.'}
+            options={{
+              vestingInfos,
+              selectedVest,
+              EntityDisplay,
+              Trans,
+            }}
+          />
+        ) : mode === 'cancel' ? (
+          <CancelVesting
+            {...props}
+            errors={props.errors?.cancel}
+            fieldNamePrefix={props.fieldNamePrefix + 'cancel.'}
+            options={{
+              vestingInfos,
+              cancelledVestingContract: selectedVest,
+              EntityDisplay,
+            }}
+          />
+        ) : null}
+      </SuspenseLoader>
+    )
+  }
+
+  return ({ t, context, chain: { chain_id: chainId } }) => {
     // Only available in DAO context.
     if (context.type !== ActionContextType.Dao) {
       return null
@@ -453,188 +632,6 @@ export const makeManageVestingActionMaker =
       )
     }
 
-    const Component: ActionComponent<undefined, ManageVestingData> = (
-      props
-    ) => {
-      const { t } = useTranslation()
-
-      const { setValue, watch, setError, clearErrors } =
-        useFormContext<ManageVestingData>()
-      const mode = watch((props.fieldNamePrefix + 'mode') as 'mode')
-      const selectedAddress =
-        mode === 'registerSlash'
-          ? watch(
-              (props.fieldNamePrefix +
-                'registerSlash.address') as 'registerSlash.address'
-            )
-          : mode === 'cancel'
-          ? watch(
-              (props.fieldNamePrefix + 'cancel.address') as 'cancel.address'
-            )
-          : undefined
-
-      const tokenBalances = useTokenBalances()
-
-      const vestingFactoryOwner = loadableToLoadingData(
-        useCachedLoadable(
-          vestingFactoryOwnerSelector({
-            factory,
-            chainId,
-          })
-        ),
-        undefined
-      )
-
-      const vestingInfos = loadableToLoadingData(
-        useCachedLoadable(
-          vestingInfosSelector({
-            factory,
-            chainId,
-          })
-        ),
-        []
-      )
-
-      const selectedVest = useCachedLoading(
-        !props.isCreating &&
-          (mode === 'registerSlash' || mode === 'cancel') &&
-          selectedAddress
-          ? vestingInfoSelector({
-              vestingContractAddress: selectedAddress,
-              chainId,
-            })
-          : constSelector(undefined),
-        undefined
-      )
-
-      // Prevent action from being submitted if no address is selected while we're
-      // registering slash or cancelling.
-      useEffect(() => {
-        if (mode !== 'registerSlash' && mode !== 'cancel') {
-          clearErrors(
-            (props.fieldNamePrefix +
-              'registerSlash.address') as 'registerSlash.address'
-          )
-          clearErrors(
-            (props.fieldNamePrefix + 'cancel.address') as 'cancel.address'
-          )
-          return
-        }
-        // Make sure to clear errors for other modes on switch.
-        else if (mode === 'registerSlash') {
-          clearErrors(
-            (props.fieldNamePrefix + 'cancel.address') as 'cancel.address'
-          )
-        } else if (mode === 'cancel') {
-          clearErrors(
-            (props.fieldNamePrefix +
-              'registerSlash.address') as 'registerSlash.address'
-          )
-        }
-
-        if (
-          !selectedAddress ||
-          !isValidContractAddress(selectedAddress, bech32Prefix)
-        ) {
-          setError(
-            (props.fieldNamePrefix +
-              `${mode}.address`) as `${typeof mode}.address`,
-            {
-              type: 'manual',
-              message: t('error.noVestingContractSelected'),
-            }
-          )
-        } else {
-          clearErrors(
-            (props.fieldNamePrefix +
-              `${mode}.address`) as `${typeof mode}.address`
-          )
-        }
-      }, [
-        setError,
-        clearErrors,
-        props.fieldNamePrefix,
-        t,
-        mode,
-        selectedAddress,
-      ])
-
-      const tabs: SegmentedControlsProps<ManageVestingData['mode']>['tabs'] = [
-        {
-          label: t('title.beginVesting'),
-          value: 'begin',
-        },
-        {
-          label: t('title.cancelVesting'),
-          value: 'cancel',
-        },
-        {
-          label: t('title.registerSlash'),
-          value: 'registerSlash',
-        },
-      ]
-      const selectedTab = tabs.find((tab) => tab.value === mode)
-
-      return (
-        <SuspenseLoader
-          fallback={<Loader />}
-          forceFallback={
-            // Manually trigger loader.
-            tokenBalances.loading
-          }
-        >
-          {props.isCreating ? (
-            <SegmentedControls<ManageVestingData['mode']>
-              className="mb-2"
-              onSelect={(value) =>
-                setValue((props.fieldNamePrefix + 'mode') as 'mode', value)
-              }
-              selected={mode}
-              tabs={tabs}
-            />
-          ) : (
-            <p className="title-text mb-2">{selectedTab?.label}</p>
-          )}
-
-          {mode === 'begin' ? (
-            <BeginVesting
-              {...props}
-              errors={props.errors?.begin}
-              fieldNamePrefix={props.fieldNamePrefix + 'begin.'}
-              options={{
-                tokens: tokenBalances.loading ? [] : tokenBalances.data,
-                vestingFactoryOwner,
-                AddressInput,
-              }}
-            />
-          ) : mode === 'registerSlash' ? (
-            <RegisterSlash
-              {...props}
-              errors={props.errors?.registerSlash}
-              fieldNamePrefix={props.fieldNamePrefix + 'registerSlash.'}
-              options={{
-                vestingInfos,
-                selectedVest,
-                EntityDisplay,
-                Trans,
-              }}
-            />
-          ) : mode === 'cancel' ? (
-            <CancelVesting
-              {...props}
-              errors={props.errors?.cancel}
-              fieldNamePrefix={props.fieldNamePrefix + 'cancel.'}
-              options={{
-                vestingInfos,
-                cancelledVestingContract: selectedVest,
-                EntityDisplay,
-              }}
-            />
-          ) : null}
-        </SuspenseLoader>
-      )
-    }
-
     return {
       key: ActionKey.ManageVesting,
       Icon: MoneyWingsEmoji,
@@ -646,3 +643,4 @@ export const makeManageVestingActionMaker =
       useDecodedCosmosMsg,
     }
   }
+}
