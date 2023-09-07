@@ -15,6 +15,7 @@ import {
   ProposalLineProps,
 } from '../../../components/ProposalLine'
 import { useOnWebSocketMessage, useWallet } from '../../../hooks'
+import { followingDaosSelector } from '../../../recoil'
 import { inboxOpenProposalsSelector } from './state'
 
 export const OpenProposals: InboxSource<ProposalLineProps> = {
@@ -28,9 +29,11 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
     const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
+    const chains = getSupportedChains()
+
     const daosWithItemsLoadable = useCachedLoadable(
       waitForAll(
-        getSupportedChains().map(({ chain }) =>
+        chains.map(({ chain }) =>
           inboxOpenProposalsSelector({
             chainId: chain.chain_id,
             wallet:
@@ -45,19 +48,31 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
       )
     )
 
-    // Refresh when any proposal or vote is updated for any of the DAOs. Once
-    // the wallet votes, the item is no longer pending, so the inbox pending
-    // count needs to be updated.
+    const followingDaosLoadable = useCachedLoadable(
+      hexPublicKey.loading
+        ? undefined
+        : waitForAll(
+            chains.map(({ chain }) =>
+              followingDaosSelector({
+                chainId: chain.chain_id,
+                walletPublicKey: hexPublicKey.data,
+              })
+            )
+          )
+    )
+
+    // Refresh when any proposal or vote is updated for any of the followed
+    // DAOs.
     useOnWebSocketMessage(
-      daosWithItemsLoadable.state === 'hasValue'
-        ? daosWithItemsLoadable.contents
-            .flat()
-            .map(({ chainId, coreAddress }) =>
+      followingDaosLoadable.state === 'hasValue'
+        ? chains.flatMap(({ chain: { chain_id: chainId } }, index) =>
+            followingDaosLoadable.contents[index].map((coreAddress) =>
               webSocketChannelNameForDao({
                 coreAddress,
                 chainId,
               })
             )
+          )
         : [],
       ['proposal', 'vote'],
       refresh
