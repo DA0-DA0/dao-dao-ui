@@ -401,7 +401,8 @@ const InnerProposalStatusAndInfo = ({
       }
       footer={
         !polytoneState.loading &&
-        proposal.status === ProposalStatus.Executed && (
+        proposal.status === ProposalStatus.Executed &&
+        polytoneState.data.hasPolytoneMessages && (
           <ProposalCrossChainRelayStatus state={polytoneState.data} />
         )
       }

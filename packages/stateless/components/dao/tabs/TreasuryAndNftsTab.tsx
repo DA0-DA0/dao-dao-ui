@@ -21,6 +21,7 @@ import {
 
 import { useDaoInfoContext, useSupportedChainContext } from '../../../hooks'
 import { Button } from '../../buttons'
+import { ChainLogo } from '../../ChainLogo'
 import { CopyToClipboard } from '../../CopyToClipboard'
 import { GridCardContainer } from '../../GridCardContainer'
 import { DropdownIconButton } from '../../icon_buttons'
@@ -153,7 +154,7 @@ export const TreasuryAndNftsTab = <
         {tokens.loading || !tokens.data ? (
           <Loader className="mt-6" fill={false} />
         ) : tokens.data.infos.length ? (
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-8">
             {treasuries.map(({ chainId, address, tokens, nfts }) => {
               const bech32Prefix = getChainForChainId(chainId).bech32_prefix
               // Whether or not the treasury address is defined, meaning it is
@@ -162,33 +163,39 @@ export const TreasuryAndNftsTab = <
               const exists = !!address
 
               return (
-                <div key={chainId} className="flex flex-col gap-4">
+                <div key={chainId} className="flex flex-col gap-4 pl-8">
                   {/* header min-height of 3.5rem standardized across all tabs */}
-                  <div className="flex min-h-[3.5rem] flex-row items-center justify-between">
-                    <div className="flex flex-row items-center gap-3">
-                      {exists ? (
-                        <DropdownIconButton
-                          open={!chainsCollapsed[chainId]}
-                          toggle={() =>
-                            setChainsCollapsed((prev) => ({
-                              ...prev,
-                              [chainId]: !prev[chainId],
-                            }))
-                          }
-                        />
-                      ) : (
-                        <div className="flex h-6 w-6 items-center justify-center">
-                          <div className="h-1 w-1 rounded-full bg-icon-interactive-disabled"></div>
-                        </div>
-                      )}
+                  <div className="flex min-h-[3.5rem] grow flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2">
+                    <div className="relative flex flex-row items-center gap-2">
+                      <div className="absolute -left-8">
+                        {exists ? (
+                          <DropdownIconButton
+                            open={!chainsCollapsed[chainId]}
+                            toggle={() =>
+                              setChainsCollapsed((prev) => ({
+                                ...prev,
+                                [chainId]: !prev[chainId],
+                              }))
+                            }
+                          />
+                        ) : (
+                          <div className="flex h-6 w-6 items-center justify-center">
+                            <div className="h-1 w-1 rounded-full bg-icon-interactive-disabled"></div>
+                          </div>
+                        )}
+                      </div>
+
+                      <ChainLogo chainId={chainId} size={28} />
 
                       <p className="title-text shrink-0">
                         {getDisplayNameForChainId(chainId)}
                       </p>
+                    </div>
 
-                      {exists && (
+                    {exists ? (
+                      <div className="flex grow flex-row items-stretch justify-between gap-6">
                         <CopyToClipboard
-                          className="min-w-0 !gap-2 rounded-md bg-background-tertiary p-2 font-mono transition hover:bg-background-secondary"
+                          className="!gap-2 rounded-md bg-background-tertiary p-2 font-mono transition hover:bg-background-secondary"
                           takeStartEnd={{
                             start: bech32Prefix.length + 6,
                             end: 6,
@@ -197,26 +204,23 @@ export const TreasuryAndNftsTab = <
                           tooltip={t('button.clickToCopyAddress')}
                           value={address}
                         />
-                      )}
-                    </div>
 
-                    {exists ? (
-                      connected &&
-                      !!getSupportedChainConfig(chainId)?.kado && (
-                        <Button
-                          onClick={() => setDepositFiatChainId(chainId)}
-                          variant="secondary"
-                        >
-                          {t('button.depositFiat')}
-                        </Button>
-                      )
+                        {connected && !!getSupportedChainConfig(chainId)?.kado && (
+                          <Button
+                            onClick={() => setDepositFiatChainId(chainId)}
+                            variant="ghost_outline"
+                          >
+                            {t('button.depositFiat')}
+                          </Button>
+                        )}
+                      </div>
                     ) : (
                       <ButtonLink
                         href={createCrossChainAccountPrefillHref.replace(
                           'CHAIN_ID',
                           chainId
                         )}
-                        variant="primary"
+                        variant="ghost_outline"
                       >
                         {t('button.createAccount')}
                       </ButtonLink>
@@ -226,7 +230,7 @@ export const TreasuryAndNftsTab = <
                   {exists && (
                     <div
                       className={clsx(
-                        'ml-8 flex flex-col gap-3 overflow-hidden',
+                        'flex flex-col gap-3 overflow-hidden',
                         chainsCollapsed[chainId] ? 'h-0' : 'h-auto'
                       )}
                     >
