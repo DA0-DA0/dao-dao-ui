@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ContractVersion } from '@dao-dao/types'
+
 import { LinkWrapper } from '../LinkWrapper'
 import { DaoImage } from './DaoImage'
 
@@ -27,6 +29,7 @@ SmallWithParent.args = {
   imageUrl: '/placeholders/1.svg',
   parentDao: {
     name: 'Parent DAO',
+    coreVersion: ContractVersion.V210,
     coreAddress: 'parent',
     imageUrl: '/placeholders/2.svg',
     registeredSubDao: true,
@@ -49,6 +52,7 @@ LargeWithParent.args = {
   imageUrl: '/placeholders/1.svg',
   parentDao: {
     name: 'Parent DAO',
+    coreVersion: ContractVersion.V210,
     coreAddress: 'parent',
     imageUrl: '/placeholders/2.svg',
     registeredSubDao: true,

@@ -39,6 +39,7 @@ import {
 } from '@dao-dao/types'
 import {
   MAINNET,
+  addressIsModule,
   cosmWasmClientRouter,
   cosmosSdkVersionIs47OrHigher,
   cosmosValidatorToValidator,
@@ -887,6 +888,20 @@ export const moduleNameForAddressSelector = selectorFamily<
         // Rethrow other errors.
         throw err
       }
+    },
+})
+
+// Check whether or not the address is a module account.
+export const addressIsModuleSelector = selectorFamily<
+  boolean,
+  WithChainId<{ address: string }>
+>({
+  key: 'addressIsModule',
+  get:
+    ({ address, chainId }) =>
+    async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(chainId))
+      return await addressIsModule(client, address)
     },
 })
 

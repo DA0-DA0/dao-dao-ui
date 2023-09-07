@@ -1,11 +1,13 @@
 import {
   BreadcrumbCrumb,
+  ContractVersion,
   DaoParentInfo,
   DaoWebSocketChannelInfo,
   PolytoneProxies,
 } from '@dao-dao/types'
 
 import { getSupportedChainConfig } from './chain'
+import { getGovPath } from './url'
 
 export const getParentDaoBreadcrumbs = (
   getDaoPath: (coreAddress: string) => string,
@@ -15,7 +17,9 @@ export const getParentDaoBreadcrumbs = (
     ? [
         ...getParentDaoBreadcrumbs(getDaoPath, parentDao.parentDao),
         {
-          href: getDaoPath(parentDao.coreAddress),
+          href: (parentDao.coreVersion === ContractVersion.Gov
+            ? getGovPath
+            : getDaoPath)(parentDao.coreAddress),
           label: parentDao.name,
         },
       ]

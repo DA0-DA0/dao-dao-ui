@@ -92,7 +92,6 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // localClient: '07-tendermint-44',
           // stargaze
           // remoteClient: '07-tendermint-13',
-          needsSelfRelay: true,
         },
       },
     },
@@ -276,7 +275,6 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
           // localClient: '07-tendermint-13',
           // juno
           // remoteClient: '07-tendermint-44',
-          needsSelfRelay: true,
         },
       },
     },
@@ -438,11 +436,11 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://uni-api.reece.sh',
   },
   [ChainId.OsmosisMainnet]: {
-    rpc: 'https://osmosis-mainnet-rpc.indexer.zone',
+    rpc: 'https://osmosis-mainnet-rpc.daodao.zone',
     rest: 'https://lcd.osmosis.zone',
   },
   [ChainId.OsmosisTestnet]: {
-    rpc: 'https://osmosis-testnet-rpc.indexer.zone',
+    rpc: 'https://osmosis-testnet-rpc.daodao.zone',
     rest: 'https://lcd.testnet.osmosis.zone',
   },
   [ChainId.StargazeMainnet]: {

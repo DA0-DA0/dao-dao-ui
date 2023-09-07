@@ -9,8 +9,9 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 import removeMarkdown from 'remove-markdown'
 
+import { ContractVersion } from '@dao-dao/types'
 import { DaoCardProps } from '@dao-dao/types/stateless/DaoCard'
-import { formatDate } from '@dao-dao/utils'
+import { formatDate, getGovPath } from '@dao-dao/utils'
 
 import { useDaoNavHelpers } from '../../hooks'
 import { IconButton } from '../icon_buttons'
@@ -72,7 +73,9 @@ export const DaoCard = ({
                 />
               )}
               className="text-icon-interactive-disabled"
-              href={getDaoPath(parentDao.coreAddress)}
+              href={(parentDao.coreVersion === ContractVersion.Gov
+                ? getGovPath
+                : getDaoPath)(parentDao.coreAddress)}
               onClick={
                 // Don't click on DAO card.
                 (event) => event.stopPropagation()
