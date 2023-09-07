@@ -1,9 +1,12 @@
 import { wallets as coin98Wallets } from '@cosmos-kit/coin98'
 import { Endpoints, SignerOptions } from '@cosmos-kit/core'
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
+import { wallets as finWallets } from '@cosmos-kit/fin'
 import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
 import { wallets as keplrMobileWallets } from '@cosmos-kit/keplr-mobile'
 import { wallets as leapWallets } from '@cosmos-kit/leap'
+import { wallets as metamaskWallets } from '@cosmos-kit/leap-metamask-cosmos-snap'
+import { wallets as okxWallets } from '@cosmos-kit/okxwallet'
 import { wallets as omniWallets } from '@cosmos-kit/omni'
 import { ChainProvider, walletContext } from '@cosmos-kit/react-lite'
 import { wallets as shellWallets } from '@cosmos-kit/shell'
@@ -170,6 +173,7 @@ export const WalletProvider = ({
               // Only allow Keplr Mobile on mainnet since it can't use testnet.
               ...(MAINNET ? keplrMobileWallets : []),
               ...leapWallets,
+              ...metamaskWallets,
               ...stationWallets,
               ...vectisWallets,
               ...trustWallets,
@@ -178,6 +182,8 @@ export const WalletProvider = ({
               ...omniWallets,
               ...shellWallets,
               ...xdefiWallets,
+              ...okxWallets,
+              ...finWallets,
               // Google, Apple, Discord, Twitter
               ...web3AuthWallets,
             ]
