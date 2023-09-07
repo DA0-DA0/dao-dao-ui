@@ -29,7 +29,7 @@ import {
   useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
-import { DaoTabId, DaoTabWithComponent } from '@dao-dao/types'
+import { ChainId, DaoTabId, DaoTabWithComponent } from '@dao-dao/types'
 import {
   SITE_URL,
   getGovPath,
@@ -107,6 +107,11 @@ const InnerGovHome = () => {
       SuspenseLoader={SuspenseLoader}
       breadcrumbsOverride={
         <ChainSwitcher
+          excludeChainIds={[
+            // TODO(neutron-gov): remove this once the gov page supports Neutron
+            // Neutron does not use the native governance module.
+            ChainId.NeutronMainnet,
+          ]}
           loading={!!goingToChainId && goingToChainId !== chainId}
           onSelect={(chainId) => {
             router.push(

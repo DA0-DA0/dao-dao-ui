@@ -20,6 +20,7 @@ export type ChainSwitcherProps = Omit<
 > & {
   position?: ButtonPopupProps['position']
   loading?: boolean
+  excludeChainIds?: string[]
 
   onSelect: (chain: Chain) => void
   selected: string
@@ -30,6 +31,7 @@ export const ChainSwitcher = ({
   selected,
   loading,
   wrapperClassName,
+  excludeChainIds,
   ...props
 }: ChainSwitcherProps) => {
   const chain = getChainForChainId(selected)
@@ -58,6 +60,10 @@ export const ChainSwitcher = ({
     const chainSwitcherSections = [
       {
         buttons: getSupportedChains()
+          .filter(
+            ({ chain: { chain_id: chainId } }) =>
+              !excludeChainIds?.includes(chainId)
+          )
           .map(
             ({
               chain,

@@ -76,6 +76,12 @@ const config = {
         process.env.NEXT_PUBLIC_LEGACY_URL_PREFIX + '/multisig/:slug*',
       permanent: false,
     },
+    // TODO(neutron-gov): remove this once the gov page supports Neutron
+    {
+      source: '/gov/neutron/:slug*',
+      destination: '/',
+      permanent: false,
+    },
   ],
   // Only upload source maps to Sentry in CI action when token is provided.
   sentry: {
