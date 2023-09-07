@@ -13,7 +13,11 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  isValidContractAddress,
+  makeWasmMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
 import {
   AddressInput,
@@ -81,7 +85,7 @@ const Component: ActionComponent = (props) => {
   const {
     context,
     address,
-    chain: { chain_id: chainId },
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
   // Load DAO info for chosen DAO.
@@ -118,7 +122,8 @@ const Component: ActionComponent = (props) => {
       : undefined
   )
   const walletAdminOfDaosLoadable = useCachedLoadable(
-    context.type === ActionContextType.Wallet
+    context.type === ActionContextType.Wallet ||
+      context.type === ActionContextType.Gov
       ? walletAdminOfDaosSelector({
           chainId,
           walletAddress: address,
@@ -131,7 +136,7 @@ const Component: ActionComponent = (props) => {
       : walletAdminOfDaosLoadable
 
   const daoInfoLoadable = useRecoilValueLoadable(
-    context.type === ActionContextType.Dao
+    coreAddress && isValidContractAddress(coreAddress, bech32Prefix)
       ? daoInfoSelector({
           coreAddress,
           chainId,
@@ -151,11 +156,11 @@ const Component: ActionComponent = (props) => {
         : { loading: true },
   }
 
-  return daoInfoLoadable.state === 'hasValue' ? (
+  return daoInfoLoadable.state === 'hasValue' && !!daoInfoLoadable.contents ? (
     <SuspenseLoader
       fallback={<InnerComponentLoading {...props} options={options} />}
     >
-      <DaoProviders info={daoInfoLoadable.contents!}>
+      <DaoProviders info={daoInfoLoadable.contents}>
         <InnerComponent {...props} options={options} />
       </DaoProviders>
     </SuspenseLoader>
@@ -214,8 +219,9 @@ export const makeDaoAdminExecAction: ActionMaker<DaoAdminExecData> = ({
   t,
   context,
 }) =>
-  // Only allow using this action in DAOs.
-  context.type === ActionContextType.Dao
+  // Only allow using this action in DAOs or gov props.
+  context.type === ActionContextType.Dao ||
+  context.type === ActionContextType.Gov
     ? {
         key: ActionKey.DaoAdminExec,
         Icon: JoystickEmoji,
