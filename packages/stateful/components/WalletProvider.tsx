@@ -55,6 +55,9 @@ export type WalletProviderProps = {
   children: ReactNode
 }
 
+// Shorten Metamask name for vibes.
+metamaskWallets[0].walletInfo.prettyName = 'Metamask'
+
 export const WalletProvider = ({
   setWeb3AuthPrompt,
   children,
@@ -169,11 +172,11 @@ export const WalletProvider = ({
         isKeplrMobileWeb
           ? keplrExtensionWallets
           : [
+              ...metamaskWallets,
               ...keplrExtensionWallets,
               // Only allow Keplr Mobile on mainnet since it can't use testnet.
               ...(MAINNET ? keplrMobileWallets : []),
               ...leapWallets,
-              ...metamaskWallets,
               ...stationWallets,
               ...vectisWallets,
               ...trustWallets,
