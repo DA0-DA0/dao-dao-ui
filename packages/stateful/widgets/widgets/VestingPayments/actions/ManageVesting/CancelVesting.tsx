@@ -49,7 +49,10 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
   const cancellableVestingContracts = vestingInfos.loading
     ? undefined
     : vestingInfos.data.filter(
-        ({ owner, vested }) => owner === address && vested !== '0'
+        ({ owner, vested, vest: { status } }) =>
+          owner === address &&
+          vested !== '0' &&
+          !(typeof status === 'object' && 'canceled' in status)
       )
 
   return (

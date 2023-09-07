@@ -88,12 +88,20 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   const loadingWidgets = useWidgets({
     suspendWhileLoading: true,
   })
-  const widgetActionCategoryMakers = loadingWidgets.loading
-    ? []
-    : loadingWidgets.data.flatMap(
+  const loadedWidgets = loadingWidgets.loading ? undefined : loadingWidgets.data
+  // Memoize this so we don't reconstruct the action makers on every render. The
+  // React components often need to access data from the widget values object so
+  // they are defined in the maker functions. If the maker function is called on
+  // every render, the components will get redefined and will flicker and not be
+  // editable because they're constantly re-rendering.
+  const widgetActionCategoryMakers = useMemo(
+    () =>
+      loadedWidgets?.flatMap(
         ({ widget, daoWidget }) =>
           widget.getActionCategoryMakers?.(daoWidget.values || {}) ?? []
-      )
+      ) ?? [],
+    [loadedWidgets]
+  )
 
   // Make action categories.
   const categories = makeActionCategoriesWithLabel(

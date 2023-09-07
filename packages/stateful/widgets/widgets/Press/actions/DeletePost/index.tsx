@@ -14,6 +14,7 @@ import {
 } from '@dao-dao/types/actions'
 import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../../actions'
 import { postSelector, postsSelector } from '../../state'
 import { PressData } from '../../types'
 import { DeletePostComponent, DeletePostData } from './Component'
@@ -22,9 +23,52 @@ const useDefaults: UseDefaults<DeletePostData> = () => ({
   id: '',
 })
 
-export const makeDeletePostActionMaker =
-  ({ contract }: PressData): ActionMaker<DeletePostData> =>
-  ({ t, context, chain: { chain_id: chainId } }) => {
+export const makeDeletePostActionMaker = ({
+  contract,
+}: PressData): ActionMaker<DeletePostData> => {
+  // Make outside of the maker function returned below so it doesn't get
+  // redefined and thus remounted on every render.
+  const Component: ActionComponent = (props) => {
+    const {
+      chain: { chain_id: chainId },
+    } = useActionOptions()
+
+    const { watch } = useFormContext()
+    const id = watch((props.fieldNamePrefix + 'id') as 'id')
+
+    const postsLoading = useCachedLoading(
+      postsSelector({
+        contractAddress: contract,
+        chainId,
+      }),
+      []
+    )
+
+    // Once created, manually load metadata; it won't be retrievable from
+    // the contract if it was successfully removed since the token was
+    // burned.
+    const postLoading = useCachedLoading(
+      !props.isCreating
+        ? postSelector({
+            id,
+            metadataUri: `ipfs://${id}/metadata.json`,
+          })
+        : constSelector(undefined),
+      undefined
+    )
+
+    return (
+      <DeletePostComponent
+        {...props}
+        options={{
+          postsLoading,
+          postLoading,
+        }}
+      />
+    )
+  }
+
+  return ({ t, context }) => {
     // Only available in DAO context.
     if (context.type !== ActionContextType.Dao) {
       return null
@@ -75,46 +119,6 @@ export const makeDeletePostActionMaker =
         []
       )
 
-    // Memoize to prevent unnecessary re-renders.
-    const Component: ActionComponent = useCallback(
-      (props) => {
-        const { watch } = useFormContext()
-        const id = watch((props.fieldNamePrefix + 'id') as 'id')
-
-        const postsLoading = useCachedLoading(
-          postsSelector({
-            contractAddress: contract,
-            chainId,
-          }),
-          []
-        )
-
-        // Once created, manually load metadata; it won't be retrievable from
-        // the contract if it was successfully removed since the token was
-        // burned.
-        const postLoading = useCachedLoading(
-          !props.isCreating
-            ? postSelector({
-                id,
-                metadataUri: `ipfs://${id}/metadata.json`,
-              })
-            : constSelector(undefined),
-          undefined
-        )
-
-        return (
-          <DeletePostComponent
-            {...props}
-            options={{
-              postsLoading,
-              postLoading,
-            }}
-          />
-        )
-      },
-      [chainId]
-    )
-
     return {
       key: ActionKey.DeletePost,
       Icon: TrashEmoji,
@@ -126,3 +130,4 @@ export const makeDeletePostActionMaker =
       useDecodedCosmosMsg,
     }
   }
+}

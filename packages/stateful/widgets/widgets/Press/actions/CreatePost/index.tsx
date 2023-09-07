@@ -28,6 +28,32 @@ const useDefaults: UseDefaults<CreatePostData> = () => ({
   },
 })
 
+const Component: ActionComponent = (props) => {
+  const { watch } = useFormContext<CreatePostData>()
+  const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
+  const tokenUri = watch((props.fieldNamePrefix + 'tokenUri') as 'tokenUri')
+  const uploaded = watch((props.fieldNamePrefix + 'uploaded') as 'uploaded')
+
+  const postLoading = useCachedLoading(
+    uploaded && tokenId && tokenUri
+      ? postSelector({
+          id: tokenId,
+          metadataUri: tokenUri,
+        })
+      : undefined,
+    undefined
+  )
+
+  return (
+    <CreatePostComponent
+      {...props}
+      options={{
+        postLoading,
+      }}
+    />
+  )
+}
+
 export const makeCreatePostActionMaker =
   ({ contract }: PressData): ActionMaker<CreatePostData> =>
   ({ t, context, address }) => {
@@ -88,33 +114,6 @@ export const makeCreatePostActionMaker =
           }),
         []
       )
-
-    // Memoize to prevent unnecessary re-renders.
-    const Component: ActionComponent = useCallback((props) => {
-      const { watch } = useFormContext<CreatePostData>()
-      const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
-      const tokenUri = watch((props.fieldNamePrefix + 'tokenUri') as 'tokenUri')
-      const uploaded = watch((props.fieldNamePrefix + 'uploaded') as 'uploaded')
-
-      const postLoading = useCachedLoading(
-        uploaded && tokenId && tokenUri
-          ? postSelector({
-              id: tokenId,
-              metadataUri: tokenUri,
-            })
-          : undefined,
-        undefined
-      )
-
-      return (
-        <CreatePostComponent
-          {...props}
-          options={{
-            postLoading,
-          }}
-        />
-      )
-    }, [])
 
     return {
       key: ActionKey.CreatePost,
