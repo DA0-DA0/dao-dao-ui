@@ -6,6 +6,7 @@ import { GasPrice, decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
 import { assets, chains, ibc } from 'chain-registry'
 import RIPEMD160 from 'ripemd160'
 
+import { cosmos } from '@dao-dao/protobuf'
 import {
   Validator as RpcValidator,
   bondStatusToJSON,
@@ -424,5 +425,35 @@ export const getSignerOptions = ({ chain_id, fees }: Chain) => {
     gasPrice,
     registry: typesRegistry,
     aminoTypes,
+  }
+}
+
+// Check whether or not the address is a module account.
+export const addressIsModule = async (
+  client: Awaited<
+    ReturnType<typeof cosmos.ClientFactory.createRPCQueryClient>
+  >['cosmos'],
+  address: string
+): Promise<boolean> => {
+  try {
+    const { account } = await client.auth.v1beta1.account({
+      address,
+    })
+
+    return (
+      (account?.typeUrl || account?.$typeUrl) ===
+      '/cosmos.auth.v1beta1.ModuleAccount'
+    )
+  } catch (err) {
+    if (
+      err instanceof Error &&
+      (err.message.includes('not found: key not found') ||
+        err.message.includes('decoding bech32 failed'))
+    ) {
+      return false
+    }
+
+    // Rethrow other errors.
+    throw err
   }
 }
