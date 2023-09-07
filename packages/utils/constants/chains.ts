@@ -410,6 +410,48 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoVotingNativeStaked: -1,
       },
     },
+    [ChainId.NeutronMainnet]: {
+      name: 'neutron',
+      mainnet: true,
+      accentColor: '#000000',
+      factoryContractAddress:
+        'neutron1xms03jykg6e2g402dxj3cw4q6ygm0r5rctdt5d7j99xehwtevm3sxl52n5',
+      supportsV1GovProposals: false,
+      indexes: {
+        search: 'neutron_daos',
+        featured: 'neutron_featured_daos',
+      },
+      explorerUrlTemplates: {
+        tx: 'https://ping.pub/neutron/tx/REPLACE',
+        gov: 'https://ping.pub/neutron/gov',
+        govProp: 'https://ping.pub/neutron/gov/REPLACE',
+        wallet: 'https://ping.pub/neutron/account/REPLACE',
+      },
+      codeIds: {
+        // https://github.com/CosmWasm/cw-plus
+        Cw20Base: -1, // v0.16
+        Cw4Group: 218, // v0.16
+        Cw721Base: 232,
+
+        // ContractVersion.V210
+        // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
+        Cw20Stake: -1,
+        CwAdminFactory: 219,
+        CwPayrollFactory: 220,
+        CwTokenSwap: 221,
+        CwVesting: 222,
+        DaoCore: 223,
+        DaoMigrator: -1,
+        DaoPreProposeMultiple: 224,
+        DaoPreProposeSingle: 225,
+        DaoProposalMultiple: 226,
+        DaoProposalSingle: 227,
+        DaoVotingCw20Staked: -1,
+        DaoVotingCw4: 228,
+        DaoVotingCw721Staked: -1,
+        DaoVotingNativeStaked: -1,
+      },
+    },
   }
 
 export const POLYTONE_CONFIG_PER_CHAIN: [ChainId, PolytoneConfig][] =
@@ -450,5 +492,9 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.StargazeTestnet]: {
     rpc: 'https://rpc.elgafar-1.stargaze-apis.com',
     rest: 'https://rest.elgafar-1.stargaze-apis.com',
+  },
+  [ChainId.NeutronMainnet]: {
+    rpc: 'https://rpc-kralum.neutron-1.neutron.org',
+    rest: 'https://rest-kralum.neutron-1.neutron.org',
   },
 }
