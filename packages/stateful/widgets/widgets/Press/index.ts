@@ -22,17 +22,22 @@ export const PressWidget: Widget<PressData> = {
   visibilityContext: WidgetVisibilityContext.Always,
   Renderer,
   Editor,
-  getActionCategoryMakers: (data) => [
-    ({ t }) => ({
-      key: ActionCategoryKey.Press,
-      label: t('actionCategory.pressLabel'),
-      description: t('actionCategory.pressDescription'),
-      keywords: ['publish', 'article', 'news', 'announcement'],
-      actionMakers: [
-        makeCreatePostActionMaker(data),
-        makeUpdatePostActionMaker(data),
-        makeDeletePostActionMaker(data),
-      ],
-    }),
-  ],
+  getActionCategoryMakers: (data) => {
+    // Make makers in outer function so they're not remade on every render.
+    const actionMakers = [
+      makeCreatePostActionMaker(data),
+      makeUpdatePostActionMaker(data),
+      makeDeletePostActionMaker(data),
+    ]
+
+    return [
+      ({ t }) => ({
+        key: ActionCategoryKey.Press,
+        label: t('actionCategory.pressLabel'),
+        description: t('actionCategory.pressDescription'),
+        keywords: ['publish', 'article', 'news', 'announcement'],
+        actionMakers,
+      }),
+    ]
+  },
 }

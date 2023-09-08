@@ -15,7 +15,7 @@ import {
   useCachedLoading,
   useChainContext,
 } from '@dao-dao/stateless'
-import { Coin, LoadingData, TokenType } from '@dao-dao/types'
+import { ChainId, Coin, LoadingData, TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -391,8 +391,12 @@ export const makeManageStakingAction: ActionMaker<ManageStakingData> = ({
   address,
   context,
 }) => {
-  // x/gov cannot stake.
-  if (context.type === ActionContextType.Gov) {
+  if (
+    // x/gov cannot stake.
+    context.type === ActionContextType.Gov ||
+    // Neutron does not support staking.
+    chainId === ChainId.NeutronMainnet
+  ) {
     return null
   }
 

@@ -20,11 +20,16 @@ export const VestingPaymentsWidget: Widget<VestingPaymentsData> = {
   visibilityContext: WidgetVisibilityContext.Always,
   Renderer,
   Editor,
-  getActionCategoryMakers: (data) => [
-    () => ({
-      // Add to Treasury category.
-      key: ActionCategoryKey.Treasury,
-      actionMakers: [makeManageVestingActionMaker(data)],
-    }),
-  ],
+  getActionCategoryMakers: (data) => {
+    // Make makers in outer function so they're not remade on every render.
+    const actionMakers = [makeManageVestingActionMaker(data)]
+
+    return [
+      () => ({
+        // Add to Treasury category.
+        key: ActionCategoryKey.Treasury,
+        actionMakers,
+      }),
+    ]
+  },
 }

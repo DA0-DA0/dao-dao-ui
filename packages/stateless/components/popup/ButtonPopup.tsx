@@ -45,7 +45,7 @@ export const ButtonPopup = ({
                     <div className="flex h-6 w-6 items-center justify-center text-lg">
                       <Icon
                         className={clsx(
-                          'h-5 w-5 transition',
+                          '!h-5 !w-5 transition',
                           pressed
                             ? 'text-icon-interactive-active'
                             : 'text-icon-primary'

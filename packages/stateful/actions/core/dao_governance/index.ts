@@ -9,10 +9,13 @@ import { makeUpgradeV1ToV2Action } from './UpgradeV1ToV2'
 
 export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
   t,
+  context,
 }) => ({
   key: ActionCategoryKey.DaoGovernance,
   label: t('actionCategory.daoGovernanceLabel'),
-  description: t('actionCategory.daoGovernanceDescription'),
+  description: t('actionCategory.daoGovernanceDescription', {
+    context: context.type,
+  }),
   actionMakers: [
     makeEnableMultipleChoiceAction,
     makeManageSubDaosAction,

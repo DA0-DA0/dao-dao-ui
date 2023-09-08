@@ -325,7 +325,7 @@ export const nativeDenomBalanceWithTimestampSelector = selectorFamily<
     },
 })
 
-// Get the SUM of native tokens delegated across all validators
+// Get the sum of native tokens delegated across all validators
 export const nativeDelegatedBalanceSelector = selectorFamily<
   Coin,
   WithChainId<{ address: string }>
@@ -334,6 +334,14 @@ export const nativeDelegatedBalanceSelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     async ({ get }) => {
+      // Neutron does not have staking.
+      if (chainId === ChainId.NeutronMainnet) {
+        return {
+          amount: '0',
+          denom: getNativeTokenForChainId(chainId).denomOrAddress,
+        }
+      }
+
       const client = get(stargateClientForChainSelector(chainId))
 
       get(refreshWalletBalancesIdAtom(address))

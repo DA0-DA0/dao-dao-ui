@@ -13,6 +13,7 @@ import {
 } from '@dao-dao/types/actions'
 import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 
+import { useActionOptions } from '../../../../../actions'
 import { postSelector, postsSelector } from '../../state'
 import { PressData } from '../../types'
 import { UpdatePostComponent, UpdatePostData } from './Component'
@@ -28,9 +29,51 @@ const useDefaults: UseDefaults<UpdatePostData> = () => ({
   },
 })
 
-export const makeUpdatePostActionMaker =
-  ({ contract }: PressData): ActionMaker<UpdatePostData> =>
-  ({ t, context, address, chain: { chain_id: chainId } }) => {
+export const makeUpdatePostActionMaker = ({
+  contract,
+}: PressData): ActionMaker<UpdatePostData> => {
+  // Make outside of the maker function returned below so it doesn't get
+  // redefined and thus remounted on every render.
+  const Component: ActionComponent = (props) => {
+    const {
+      chain: { chain_id: chainId },
+    } = useActionOptions()
+
+    const { watch } = useFormContext<UpdatePostData>()
+    const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
+    const tokenUri = watch((props.fieldNamePrefix + 'tokenUri') as 'tokenUri')
+    const uploaded = watch((props.fieldNamePrefix + 'uploaded') as 'uploaded')
+
+    const postLoading = useCachedLoading(
+      uploaded && tokenId && tokenUri
+        ? postSelector({
+            id: tokenId,
+            metadataUri: tokenUri,
+          })
+        : undefined,
+      undefined
+    )
+
+    const postsLoading = useCachedLoading(
+      postsSelector({
+        contractAddress: contract,
+        chainId,
+      }),
+      []
+    )
+
+    return (
+      <UpdatePostComponent
+        {...props}
+        options={{
+          postLoading,
+          postsLoading,
+        }}
+      />
+    )
+  }
+
+  return ({ t, context, address }) => {
     // Only available in DAO context.
     if (context.type !== ActionContextType.Dao) {
       return null
@@ -89,49 +132,6 @@ export const makeUpdatePostActionMaker =
         []
       )
 
-    // Memoize to prevent unnecessary re-renders.
-    const Component: ActionComponent = useCallback(
-      (props) => {
-        const { watch } = useFormContext<UpdatePostData>()
-        const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
-        const tokenUri = watch(
-          (props.fieldNamePrefix + 'tokenUri') as 'tokenUri'
-        )
-        const uploaded = watch(
-          (props.fieldNamePrefix + 'uploaded') as 'uploaded'
-        )
-
-        const postLoading = useCachedLoading(
-          uploaded && tokenId && tokenUri
-            ? postSelector({
-                id: tokenId,
-                metadataUri: tokenUri,
-              })
-            : undefined,
-          undefined
-        )
-
-        const postsLoading = useCachedLoading(
-          postsSelector({
-            contractAddress: contract,
-            chainId,
-          }),
-          []
-        )
-
-        return (
-          <UpdatePostComponent
-            {...props}
-            options={{
-              postLoading,
-              postsLoading,
-            }}
-          />
-        )
-      },
-      [chainId]
-    )
-
     return {
       key: ActionKey.UpdatePost,
       Icon: PencilEmoji,
@@ -143,3 +143,4 @@ export const makeUpdatePostActionMaker =
       useDecodedCosmosMsg,
     }
   }
+}
