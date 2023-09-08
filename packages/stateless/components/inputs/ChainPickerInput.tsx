@@ -31,6 +31,12 @@ export const ChainPickerInput = ({
   } = useSupportedChainContext()
   const { watch, setValue } = useFormContext()
 
+  const polytoneChains = Object.keys(polytone || {})
+
+  if (polytoneChains.length === 0) {
+    return null
+  }
+
   return (
     <div className={className}>
       <RadioInput
@@ -40,7 +46,7 @@ export const ChainPickerInput = ({
         options={[
           chainId,
           // Other chains with Polytone.
-          ...Object.keys(polytone || {}),
+          ...polytoneChains,
         ].map((chainId) => ({
           label:
             labelMode === 'chain'
