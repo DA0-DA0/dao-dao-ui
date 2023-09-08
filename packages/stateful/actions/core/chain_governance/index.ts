@@ -2,6 +2,7 @@ import {
   ActionCategoryKey,
   ActionCategoryMaker,
   ActionContextType,
+  ChainId,
 } from '@dao-dao/types'
 
 import { makeGovernanceDepositAction } from './GovernanceDeposit'
@@ -12,9 +13,12 @@ import { makeValidatorActionsAction } from './ValidatorActions'
 export const makeChainGovernanceActionCategory: ActionCategoryMaker = ({
   t,
   context,
+  chain: { chain_id: chainId },
 }) =>
   // Governance module cannot participate in governance.
-  context.type === ActionContextType.Gov
+  context.type === ActionContextType.Gov ||
+  // Neutron does not use the x/gov module.
+  chainId === ChainId.NeutronMainnet
     ? null
     : {
         key: ActionCategoryKey.ChainGovernance,
