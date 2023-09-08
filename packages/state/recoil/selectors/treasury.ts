@@ -1,6 +1,6 @@
 import { parseCoins } from '@cosmjs/proto-signing'
 import { IndexedTx } from '@cosmjs/stargate'
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import { AmountWithTimestamp, WithChainId } from '@dao-dao/types'
 import {
@@ -186,6 +186,18 @@ export const daoTvlSelector = selectorFamily<
         )
       )
 
+      // Neutron's modified DAOs do not support cw20s, so this may error. Ignore
+      // if so.
+      const cw20BalancesLoadable = get(
+        waitForAllSettled([
+          DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
+            contractAddress: coreAddress,
+            chainId,
+            governanceTokenAddress: cw20GovernanceTokenAddress,
+          }),
+        ])
+      )[0]
+
       const allBalances = [
         // Native balances.
         ...[
@@ -218,13 +230,9 @@ export const daoTvlSelector = selectorFamily<
           ])
           .flat(),
         // Cw20s on current chain.
-        ...get(
-          DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
-            contractAddress: coreAddress,
-            chainId,
-            governanceTokenAddress: cw20GovernanceTokenAddress,
-          })
-        ),
+        ...(cw20BalancesLoadable.state === 'hasValue'
+          ? cw20BalancesLoadable.contents
+          : []),
       ]
 
       const prices = allBalances.map(({ token, balance }) => {

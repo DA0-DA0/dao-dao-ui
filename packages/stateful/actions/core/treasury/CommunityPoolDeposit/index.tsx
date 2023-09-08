@@ -6,7 +6,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 import { MsgFundCommunityPool } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import { DownArrowEmoji } from '@dao-dao/stateless'
-import { TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
+import { ChainId, TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionKey,
@@ -72,6 +72,11 @@ export const makeCommunityPoolDepositAction: ActionMaker<
   chain: { chain_id: currentChainId },
   chainContext: { nativeToken },
 }) => {
+  // Neutron does not use the x/distribution community pool.
+  if (currentChainId === ChainId.NeutronMainnet) {
+    return null
+  }
+
   const useDefaults: UseDefaults<CommunityPoolDepositData> = () => ({
     chainId: currentChainId,
     amount: 100,

@@ -73,14 +73,13 @@ export const cosmosValidatorToValidator = ({
 })
 
 export const getImageUrlForChainId = (chainId: string): string => {
-  if (
-    chainId === ChainId.OsmosisMainnet ||
-    chainId === ChainId.OsmosisTestnet
-  ) {
-    return '/osmosis.png'
+  // Use native token image if available.
+  const { imageUrl } = getNativeTokenForChainId(chainId)
+  if (imageUrl) {
+    return imageUrl
   }
 
-  // Use chain logo if available.
+  // Fallback to chain logo. Chain logo is sometimes larger and not square.
   const { logo_URIs, images } = getChainForChainId(chainId)
   const image =
     logo_URIs?.png ??
@@ -88,14 +87,8 @@ export const getImageUrlForChainId = (chainId: string): string => {
     logo_URIs?.svg ??
     images?.[0]?.png ??
     images?.[0]?.svg
-  if (image) {
-    return image
-  }
 
-  // Fallback to image of native token on chain.
-  const { imageUrl } = getNativeTokenForChainId(chainId)
-
-  return imageUrl || getFallbackImage(chainId)
+  return image || getFallbackImage(chainId)
 }
 
 // Convert public key in hex format to a bech32 address.

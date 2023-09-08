@@ -68,6 +68,7 @@ export enum ChainId {
   OsmosisTestnet = 'osmo-test-5',
   StargazeMainnet = 'stargaze-1',
   StargazeTestnet = 'elgafar-1',
+  NeutronMainnet = 'neutron-1',
 }
 
 export type SupportedChainConfig = {

@@ -9,28 +9,35 @@ import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSetRecoilState } from 'recoil'
+import { useRecoilValueLoadable } from 'recoil'
 
-import { walletChainIdAtom } from '@dao-dao/state'
+import { DaoCoreV2Selectors } from '@dao-dao/state'
 import {
   ChainSwitcher,
+  DaoCard,
   GovCommunityPoolTab,
   GovInfoBar,
   GovPageWrapper,
   GovPageWrapperProps,
   GovProposalsTab,
   LinkWrapper,
+  ProfileDisconnectedCard,
   ProfileHomeCard,
   SuspenseLoader,
+  useLoadingDaoCardInfos,
+  useWallet,
 } from '@dao-dao/stateful'
 import { makeGetGovStaticProps } from '@dao-dao/stateful/server'
 import {
   DaoDappTabbedHome,
+  GovernanceHome,
+  useChain,
   useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
-import { DaoTabId, DaoTabWithComponent } from '@dao-dao/types'
+import { ChainId, DaoTabId, DaoTabWithComponent } from '@dao-dao/types'
 import {
+  NEUTRON_GOVERNANCE_DAO,
   SITE_URL,
   getGovPath,
   getSupportedChainConfig,
@@ -41,10 +48,6 @@ const InnerGovHome = () => {
   const { t } = useTranslation()
   const { chainId, config } = useSupportedChainContext()
   const daoInfo = useDaoInfoContext()
-
-  // Update wallet chain ID to the current chain.
-  const setWalletChainId = useSetRecoilState(walletChainIdAtom)
-  useEffect(() => setWalletChainId(chainId), [chainId, setWalletChainId])
 
   const router = useRouter()
 
@@ -128,12 +131,76 @@ const InnerGovHome = () => {
   )
 }
 
+const NeutronGovHome: NextPage = () => {
+  const router = useRouter()
+  const { chain_id: chainId } = useChain()
+  const { isWalletConnected } = useWallet()
+
+  const neutronSubdaos = useRecoilValueLoadable(
+    DaoCoreV2Selectors.listAllSubDaosSelector({
+      chainId,
+      contractAddress: NEUTRON_GOVERNANCE_DAO,
+    })
+  )
+  const daosLoading = useLoadingDaoCardInfos(
+    neutronSubdaos.state !== 'hasValue'
+      ? { loading: true }
+      : {
+          loading: false,
+          data: [
+            {
+              chainId,
+              coreAddress: NEUTRON_GOVERNANCE_DAO,
+            },
+            ...neutronSubdaos.contents.map(({ addr }) => ({
+              chainId,
+              coreAddress: addr,
+            })),
+          ],
+        }
+  )
+
+  const [goingToChainId, setGoingToChainId] = useState<string>()
+  // Pre-fetch other chains.
+  useEffect(() => {
+    getSupportedChains().forEach(({ name }) => {
+      router.prefetch('/' + name)
+    })
+  }, [router])
+
+  return (
+    <GovernanceHome
+      DaoCard={DaoCard}
+      breadcrumbsOverride={
+        <ChainSwitcher
+          loading={!!goingToChainId && goingToChainId !== chainId}
+          onSelect={(chainId) => {
+            const chainConfig = getSupportedChainConfig(chainId)
+            if (chainConfig) {
+              router.push(getGovPath(chainConfig.name))
+              setGoingToChainId(chainId)
+            }
+          }}
+        />
+      }
+      daos={daosLoading}
+      rightSidebarContent={
+        isWalletConnected ? <ProfileHomeCard /> : <ProfileDisconnectedCard />
+      }
+    />
+  )
+}
+
 const GovHomePage: NextPage<GovPageWrapperProps> = ({
   children: _,
   ...props
 }) => (
   <GovPageWrapper {...props}>
-    <InnerGovHome />
+    {props.serializedInfo?.chainId === ChainId.NeutronMainnet ? (
+      <NeutronGovHome />
+    ) : (
+      <InnerGovHome />
+    )}
   </GovPageWrapper>
 )
 

@@ -1,6 +1,7 @@
 export * from './CreateProposal'
 export * from './DaoDappTabbedHome'
 export * from './DaoSdaWrappedTab'
+export * from './GovernanceHome'
 export * from './Home'
 export * from './Inbox'
 export * from './LogInRequiredPage'

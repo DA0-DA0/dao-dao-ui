@@ -141,42 +141,46 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
     }
 
     // If address is polytone proxy, redirect to DAO on native chain.
-    const addressInfo = await queryIndexer<ContractVersionInfo>({
-      type: 'contract',
-      chainId,
-      address: coreAddress,
-      formula: 'info',
-      required: true,
-    })
-    if (addressInfo && addressInfo.contract === 'crates.io:polytone-proxy') {
-      // Get voice for this proxy on destination chain.
-      const voice = await queryIndexer({
+    try {
+      const addressInfo = await queryIndexer<ContractVersionInfo>({
         type: 'contract',
         chainId,
-        // proxy
         address: coreAddress,
-        formula: 'polytone/proxy/instantiator',
+        formula: 'info',
         required: true,
       })
-
-      const dao = await queryIndexer({
-        type: 'contract',
-        chainId,
-        address: voice,
-        formula: 'polytone/voice/remoteController',
-        args: {
+      if (addressInfo && addressInfo.contract === 'crates.io:polytone-proxy') {
+        // Get voice for this proxy on destination chain.
+        const voice = await queryIndexer({
+          type: 'contract',
+          chainId,
           // proxy
           address: coreAddress,
-        },
-        required: true,
-      })
+          formula: 'polytone/proxy/instantiator',
+          required: true,
+        })
 
-      return {
-        redirect: {
-          destination: getDaoPath(appMode, dao),
-          permanent: true,
-        },
+        const dao = await queryIndexer({
+          type: 'contract',
+          chainId,
+          address: voice,
+          formula: 'polytone/voice/remoteController',
+          args: {
+            // proxy
+            address: coreAddress,
+          },
+          required: true,
+        })
+
+        return {
+          redirect: {
+            destination: getDaoPath(appMode, dao),
+            permanent: true,
+          },
+        }
       }
+    } catch {
+      // If failed, ignore.
     }
 
     // Add to Sentry error tags if error occurs.
@@ -264,7 +268,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           items,
           polytoneProxies,
           parentDao,
-          admin,
+          admin: admin ?? null,
         },
         ...additionalProps,
       }
@@ -507,7 +511,7 @@ const loadParentDaoInfo = async (
       name: name,
       imageUrl: image_url ?? null,
       parentDao,
-      admin,
+      admin: admin ?? null,
     }
   } catch (err) {
     // If contract not found, ignore error. Otherwise, log it.
@@ -582,10 +586,12 @@ const daoCoreDumpState = async (
           required: true,
         })) ?? []
 
+      const { admin } = indexerDumpedState
+
       const parentDaoInfo = await loadParentDaoInfo(
         chainId,
         coreAddress,
-        indexerDumpedState.admin,
+        admin,
         serverT,
         [...(previousParentAddresses ?? []), coreAddress]
       )
@@ -675,10 +681,11 @@ const daoCoreDumpState = async (
     }
   }
 
+  const { admin } = dumpedState
   const parentDao = await loadParentDaoInfo(
     chainId,
     coreAddress,
-    dumpedState.admin,
+    admin,
     serverT,
     [...(previousParentAddresses ?? []), coreAddress]
   )
@@ -690,10 +697,7 @@ const daoCoreDumpState = async (
     parentDao.coreVersion !== ContractVersion.V1 &&
     parentDao.coreVersion !== ContractVersion.Gov
   ) {
-    const parentDaoCoreClient = new DaoCoreV2QueryClient(
-      cwClient,
-      dumpedState.admin
-    )
+    const parentDaoCoreClient = new DaoCoreV2QueryClient(cwClient, admin)
 
     // Get all SubDAOs.
     const subdaoAddrs: string[] = []
