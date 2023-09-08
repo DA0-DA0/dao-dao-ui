@@ -3,7 +3,10 @@ import { DirectSignDoc } from '@cosmos-kit/core'
 import { useIframe } from '@cosmos-kit/react-lite'
 
 import { TxBody } from '@dao-dao/protobuf/codegen/cosmos/tx/v1beta1/tx'
-import { BrowserTab as StatelessBrowserTab } from '@dao-dao/stateless'
+import {
+  BrowserTab as StatelessBrowserTab,
+  useDaoInfoContext,
+} from '@dao-dao/stateless'
 import {
   aminoTypes,
   decodeMessages,
@@ -11,6 +14,13 @@ import {
   protobufToCwMsg,
 } from '@dao-dao/utils'
 export const BrowserTab = () => {
+  const {
+    name,
+    chainId: currentChainId,
+    coreAddress,
+    polytoneProxies,
+  } = useDaoInfoContext()
+
   const decodeDirect = (signDocBodyBytes: Uint8Array) => {
     const encodedMessages = TxBody.decode(signDocBodyBytes).messages
     console.log('direct encoded', encodedMessages)
@@ -28,6 +38,16 @@ export const BrowserTab = () => {
   }
 
   const iframeRef = useIframe({
+    accountReplacement: (chainId) => {
+      const address =
+        chainId === currentChainId ? coreAddress : polytoneProxies[chainId]
+      if (address) {
+        return {
+          username: name,
+          address,
+        }
+      }
+    },
     walletClientOverrides: {
       signAmino: (_chainId: string, _signer: string, signDoc: StdSignDoc) => {
         decodeAmino(signDoc)
