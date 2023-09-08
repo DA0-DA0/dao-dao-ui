@@ -6,38 +6,63 @@ import { TxBody } from '@dao-dao/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import {
   BrowserTab as StatelessBrowserTab,
   useDaoInfoContext,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
+import { ActionKey, CosmosMsgFor_Empty } from '@dao-dao/types'
 import {
+  SITE_URL,
   aminoTypes,
-  decodeMessages,
   decodedStargateMsgToCw,
+  getDaoProposalSinglePrefill,
+  getFallbackImage,
   protobufToCwMsg,
 } from '@dao-dao/utils'
 export const BrowserTab = () => {
   const {
     name,
+    imageUrl,
     chainId: currentChainId,
     coreAddress,
     polytoneProxies,
   } = useDaoInfoContext()
+  const { getDaoProposalPath } = useDaoNavHelpers()
+
+  const propose = (msgs: CosmosMsgFor_Empty[]) =>
+    window.open(
+      getDaoProposalPath(coreAddress, 'create', {
+        prefill: getDaoProposalSinglePrefill({
+          title: '',
+          description: '',
+          actions: [
+            {
+              actionKey: ActionKey.Custom,
+              data: {
+                message: JSON.stringify(msgs, undefined, 2),
+              },
+            },
+          ],
+        }),
+      }),
+      '_blank'
+    )
 
   const decodeDirect = (signDocBodyBytes: Uint8Array) => {
     const encodedMessages = TxBody.decode(signDocBodyBytes).messages
-    console.log('direct encoded', encodedMessages)
-    const messages = decodeMessages(
-      encodedMessages.map((msg) => protobufToCwMsg(msg).msg)
-    )
-    console.log('direct decoded', messages)
+    const messages = encodedMessages.map((msg) => protobufToCwMsg(msg).msg)
+    propose(messages)
   }
   const decodeAmino = (signDoc: StdSignDoc) => {
-    console.log('amino encoded', signDoc.msgs)
     const messages = signDoc.msgs.map(
       (msg) => decodedStargateMsgToCw(aminoTypes.fromAmino(msg)).msg
     )
-    console.log('amino decoded', messages)
+    propose(messages)
   }
 
   const iframeRef = useIframe({
+    walletInfo: {
+      prettyName: name,
+      logo: imageUrl || SITE_URL + getFallbackImage(coreAddress),
+    },
     accountReplacement: (chainId) => {
       const address =
         chainId === currentChainId ? coreAddress : polytoneProxies[chainId]
@@ -46,6 +71,8 @@ export const BrowserTab = () => {
           username: name,
           address,
         }
+      } else {
+        throw new Error('Chain not supported.')
       }
     },
     walletClientOverrides: {

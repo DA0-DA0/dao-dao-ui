@@ -24,6 +24,7 @@ export const BrowserTab = ({ iframeRef }: BrowserTabProps) => {
     <div className="flex flex-col gap-2">
       <div className="flex flex-row justify-between gap-2">
         <TextInput
+          autoComplete="off"
           onChange={(event) => setUrl(event.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {

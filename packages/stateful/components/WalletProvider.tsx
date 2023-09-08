@@ -2,7 +2,6 @@ import { wallets as coin98Wallets } from '@cosmos-kit/coin98'
 import { Endpoints, SignerOptions } from '@cosmos-kit/core'
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
 import { wallets as finWallets } from '@cosmos-kit/fin'
-import { wallets as iframeWallets } from '@cosmos-kit/iframe'
 import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
 import { wallets as keplrMobileWallets } from '@cosmos-kit/keplr-mobile'
 import { wallets as leapWallets } from '@cosmos-kit/leap'
@@ -187,7 +186,6 @@ export const WalletProvider = ({
               ...finWallets,
               // Google, Apple, Discord, Twitter
               ...web3AuthWallets,
-              ...iframeWallets,
             ]
       }
     >
