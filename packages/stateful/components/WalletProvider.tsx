@@ -55,9 +55,6 @@ export type WalletProviderProps = {
   children: ReactNode
 }
 
-// Shorten Metamask name for vibes.
-metamaskWallets[0].walletInfo.prettyName = 'Metamask'
-
 export const WalletProvider = ({
   setWeb3AuthPrompt,
   children,
