@@ -28,7 +28,7 @@ const defaultHttpBatchClientOptions = {
 export class BatchClient {
   protected readonly url: string
   protected readonly options: BatchClientOptions
-  private timer: NodeJS.Timer | number | undefined
+  private timer: number | undefined
   private readonly queue: QueueItem[]
 
   constructor(endpoint: string, options: Partial<BatchClientOptions> = {}) {
@@ -41,7 +41,10 @@ export class BatchClient {
         defaultHttpBatchClientOptions.dispatchInterval,
     }
     this.url = endpoint
-    this.timer = setInterval(() => this.tick(), options.dispatchInterval)
+    this.timer = setInterval(
+      () => this.tick(),
+      options.dispatchInterval
+    ) as unknown as number
     this.validate()
   }
 
