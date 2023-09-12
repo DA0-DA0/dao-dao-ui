@@ -17,6 +17,7 @@ import {
   refreshNativeTokenStakingInfoAtom,
 } from '@dao-dao/state'
 import {
+  ChainProvider,
   TokenCard as StatelessTokenCard,
   useCachedLoadable,
   useCachedLoading,
@@ -206,7 +207,7 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   const kadoModalEnabled = !!getSupportedChainConfig(props.token.chainId)?.kado
 
   return (
-    <>
+    <ChainProvider chainId={props.token.chainId}>
       <StatelessTokenCard
         {...props}
         ButtonLink={ButtonLink}
@@ -307,6 +308,6 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
           visible={stakingModalVisible}
         />
       )}
-    </>
+    </ChainProvider>
   )
 }
