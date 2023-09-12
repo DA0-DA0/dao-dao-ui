@@ -78,7 +78,6 @@ export const BrowserTab = () => {
     walletClientOverrides: {
       signAmino: (_chainId: string, _signer: string, signDoc: StdSignDoc) => {
         decodeAmino(signDoc)
-        return true
       },
       signDirect: (
         _chainId: string,
@@ -86,23 +85,22 @@ export const BrowserTab = () => {
         signDoc: DirectSignDoc
       ) => {
         if (!signDoc?.bodyBytes) {
-          return false
+          return {
+            type: 'execute',
+          }
         }
 
         decodeDirect(signDoc.bodyBytes)
-        return true
       },
     },
     aminoSignerOverrides: {
       signAmino: (_signerAddress, signDoc) => {
         decodeAmino(signDoc)
-        return true
       },
     },
     directSignerOverrides: {
       signDirect: (_signerAddress, signDoc) => {
         decodeDirect(signDoc.bodyBytes)
-        return true
       },
     },
   })
