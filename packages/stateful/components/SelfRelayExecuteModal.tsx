@@ -76,6 +76,7 @@ enum RelayStatus {
   RefundingErrored,
   Success,
   RelayErrored,
+  Canceled,
 }
 
 const RELAYER_FUNDS_NEEDED: Partial<Record<ChainId | string, number>> = {
@@ -151,6 +152,10 @@ export const SelfRelayExecuteModal = ({
     Record<string, number | undefined>
   >({})
 
+  // If relay fails and user decides to refund and cancel, this will be set to
+  // true.
+  const [canceling, setCanceling] = useState(false)
+
   // When the modal is closed, reset state.
   useEffect(() => {
     if (visible) {
@@ -166,6 +171,7 @@ export const SelfRelayExecuteModal = ({
       setExecuteTx(undefined)
       setRefundedAmount({})
       setRelaying(undefined)
+      setCanceling(false)
     }, 500)
   }, [visible])
 
@@ -257,6 +263,9 @@ export const SelfRelayExecuteModal = ({
       toast.error(t('error.chainNotConnected'))
       return
     }
+
+    // Make sure all wallets are connected by trying to connect first one.
+    Object.values(wallets)[0]?.connect()
 
     setStatus(RelayStatus.Initializing)
     try {
@@ -592,8 +601,8 @@ export const SelfRelayExecuteModal = ({
           polytoneConnection.remoteConnection
         )
 
-        // Relay packets. Try 10 times.
-        let tries = 10
+        // Relay packets. Try 5 times.
+        let tries = 5
         while (tries) {
           try {
             const unrelayedPackets =
@@ -644,8 +653,8 @@ export const SelfRelayExecuteModal = ({
         const sourcePort = thesePackets[0].packet.sourcePort
         const sourceChannel = thesePackets[0].packet.sourceChannel
 
-        // Relay acks. Try 10 times.
-        tries = 10
+        // Relay acks. Try 5 times.
+        tries = 5
         while (tries) {
           try {
             // Find acks that need relaying.
@@ -742,10 +751,14 @@ export const SelfRelayExecuteModal = ({
   }
 
   // Refund all relayers that have remaining tokens.
-  const refundAllRelayers = async () => {
+  const refundAllRelayers = async (cancel = false) => {
     if (!relayers || !mnemonicKey) {
       toast.error(t('error.relayerNotSetUp'))
       return
+    }
+
+    if (cancel) {
+      setCanceling(true)
     }
 
     // If relay was successful, refund remaining tokens from relayer wallet back
@@ -760,7 +773,9 @@ export const SelfRelayExecuteModal = ({
       // (if all refunds completed successfully).
       localStorage.removeItem(mnemonicKey)
 
-      setStatus(RelayStatus.Success)
+      setStatus(
+        cancel || canceling ? RelayStatus.Canceled : RelayStatus.Success
+      )
     } catch (err) {
       setStatus(RelayStatus.RefundingErrored)
 
@@ -1004,7 +1019,11 @@ export const SelfRelayExecuteModal = ({
                                 disabled={
                                   walletCannotAfford || cannotExecuteUntilFunded
                                 }
-                                loading={!!fundingRelayer[chain_id]}
+                                loading={
+                                  !!fundingRelayer[chain_id] ||
+                                  walletFunds.loading ||
+                                  walletFunds.errored
+                                }
                                 onClick={() => fundRelayer(chain_id, isExecute)}
                               >
                                 {walletCannotAfford
@@ -1061,7 +1080,14 @@ export const SelfRelayExecuteModal = ({
                     {relayError}
                   </p>
 
-                  <div className="flex grow flex-row justify-end">
+                  <div className="flex grow flex-row items-stretch justify-end gap-2">
+                    <Button
+                      onClick={() => refundAllRelayers(true)}
+                      variant="secondary"
+                    >
+                      {t('button.refundAndCancel')}
+                    </Button>
+
                     <Button onClick={() => setStatus(RelayStatus.Funding)}>
                       {t('button.retry')}
                     </Button>
@@ -1200,7 +1226,7 @@ export const SelfRelayExecuteModal = ({
                   <Button
                     className="self-end"
                     loading={status === RelayStatus.Refunding}
-                    onClick={refundAllRelayers}
+                    onClick={() => refundAllRelayers()}
                     size="sm"
                   >
                     {t('button.retry')}
@@ -1210,14 +1236,17 @@ export const SelfRelayExecuteModal = ({
             ),
           },
           {
-            label: t('title.success'),
+            label: canceling ? t('title.canceled') : t('title.success'),
             content: () => (
               <div className="flex flex-row flex-wrap items-center justify-between gap-x-8 gap-y-4">
-                <p>The execution and relay succeeded.</p>
+                <p>
+                  The execution and relay{' '}
+                  {canceling ? 'was canceled' : 'succeeded'}.
+                </p>
 
                 <Button
                   onClick={() => {
-                    onSuccess()
+                    status === RelayStatus.Success && onSuccess()
                     onClose?.()
                   }}
                 >
