@@ -430,6 +430,7 @@
     "allowedMethodsDescription": "Comma separated list of smart contract method names to authorize (i.e. set_item, remove_item)",
     "allowsTradingAfter": "Allows trading after",
     "amount": "amount",
+    "tokens": "Tokens",
     "attributeName": "Attribute name",
     "attributeNamePlaceholder": "Community impact",
     "audioUrl": "Audio URL",
