@@ -67,6 +67,7 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
       {isCreating && (
         <ChainPickerInput
           className="mb-4"
+          disabled={!isCreating}
           fieldName={fieldNamePrefix + 'chainId'}
         />
       )}

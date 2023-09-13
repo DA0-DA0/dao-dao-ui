@@ -19,12 +19,14 @@ import {
 import { IconButton } from '../icon_buttons'
 import { InputErrorMessage, TokenInput } from '../inputs'
 
-export type NativeCoinSelectorProps = ComponentProps<
-  ActionComponent<{
-    nativeBalances: LoadingData<GenericTokenBalance[]>
-  }>
+export type NativeCoinSelectorProps = Pick<
+  ComponentProps<ActionComponent>,
+  'fieldNamePrefix' | 'errors' | 'isCreating'
 > & {
   chainId: string
+  options: {
+    nativeBalances: LoadingData<GenericTokenBalance[]>
+  }
   onRemove?: () => void
   className?: string
   dontValidate?: boolean
