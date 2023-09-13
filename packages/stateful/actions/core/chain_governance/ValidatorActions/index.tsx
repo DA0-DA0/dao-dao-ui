@@ -1,6 +1,6 @@
 import { fromBase64, toBase64 } from '@cosmjs/encoding'
 import cloneDeep from 'lodash.clonedeep'
-import { useCallback, useMemo } from 'react'
+import { useCallback } from 'react'
 
 import { PubKey } from '@dao-dao/protobuf/codegen/cosmos/crypto/ed25519/keys'
 import { MsgWithdrawValidatorCommission } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/tx'
@@ -42,7 +42,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
 }) => {
   const getAddress = (chainId: string) =>
     context.type === ActionContextType.Dao && currentChainId !== chainId
-      ? context.info.polytoneProxies[currentChainId] || ''
+      ? context.info.polytoneProxies[chainId] || ''
       : address
   const getValidatorAddress = (chainId: string) =>
     toValidatorAddress(
@@ -184,90 +184,88 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
 
     const data = useDefaults()
 
-    return useMemo(() => {
-      // Check this is a stargate message.
-      if (!isDecodedStargateMsg(msg)) {
-        return { match: false }
-      }
+    // Check this is a stargate message.
+    if (!isDecodedStargateMsg(msg)) {
+      return { match: false }
+    }
 
-      // Check that the type URL is a validator message, set data accordingly.
-      const decodedData = cloneDeep(data)
-      decodedData.chainId = chainId
+    // Check that the type URL is a validator message, set data accordingly.
+    const decodedData = cloneDeep(data)
+    decodedData.chainId = chainId
 
-      switch (msg.stargate.typeUrl) {
-        case MsgWithdrawValidatorCommission.typeUrl:
-          if (
-            (msg.stargate.value as MsgWithdrawValidatorCommission)
-              .validatorAddress !== validatorAddress
-          ) {
-            return { match: false }
-          }
+    switch (msg.stargate.typeUrl) {
+      case MsgWithdrawValidatorCommission.typeUrl:
+        if (
+          (msg.stargate.value as MsgWithdrawValidatorCommission)
+            .validatorAddress !== validatorAddress
+        ) {
+          return { match: false }
+        }
 
-          decodedData.validatorActionTypeUrl =
-            MsgWithdrawValidatorCommission.typeUrl
-          break
+        decodedData.validatorActionTypeUrl =
+          MsgWithdrawValidatorCommission.typeUrl
+        break
 
-        case MsgCreateValidator.typeUrl:
-          if (
-            (msg.stargate.value as MsgCreateValidator).delegatorAddress !==
-              thisAddress ||
-            (msg.stargate.value as MsgCreateValidator).validatorAddress !==
-              validatorAddress
-          ) {
-            return { match: false }
-          }
+      case MsgCreateValidator.typeUrl:
+        if (
+          (msg.stargate.value as MsgCreateValidator).delegatorAddress !==
+            thisAddress ||
+          (msg.stargate.value as MsgCreateValidator).validatorAddress !==
+            validatorAddress
+        ) {
+          return { match: false }
+        }
 
-          decodedData.validatorActionTypeUrl = MsgCreateValidator.typeUrl
-          const decodedPubkey = PubKey.decode(
-            (msg.stargate.value as MsgCreateValidator).pubkey!.value
-          )
-          decodedData.createMsg = JSON.stringify(
-            {
-              ...msg.stargate.value,
-              pubkey: {
-                typeUrl: msg.stargate.value.pubkey!.typeUrl,
-                value: {
-                  key: toBase64(decodedPubkey.key),
-                },
+        decodedData.validatorActionTypeUrl = MsgCreateValidator.typeUrl
+        const decodedPubkey = PubKey.decode(
+          (msg.stargate.value as MsgCreateValidator).pubkey!.value
+        )
+        decodedData.createMsg = JSON.stringify(
+          {
+            ...msg.stargate.value,
+            pubkey: {
+              typeUrl: msg.stargate.value.pubkey!.typeUrl,
+              value: {
+                key: toBase64(decodedPubkey.key),
               },
             },
-            null,
-            2
-          )
-          break
+          },
+          null,
+          2
+        )
+        break
 
-        case MsgEditValidator.typeUrl:
-          if (
-            (msg.stargate.value as MsgEditValidator).validatorAddress !==
-            validatorAddress
-          ) {
-            return { match: false }
-          }
-
-          decodedData.validatorActionTypeUrl = MsgEditValidator.typeUrl
-          decodedData.editMsg = JSON.stringify(msg.stargate.value, null, 2)
-          break
-
-        case MsgUnjail.typeUrl:
-          if (
-            (msg.stargate.value as MsgUnjail).validatorAddr !== validatorAddress
-          ) {
-            return { match: false }
-          }
-
-          decodedData.validatorActionTypeUrl = MsgUnjail.typeUrl
-          break
-
-        default:
-          // No validator action type URL match, so return a false match.
+      case MsgEditValidator.typeUrl:
+        if (
+          (msg.stargate.value as MsgEditValidator).validatorAddress !==
+          validatorAddress
+        ) {
           return { match: false }
-      }
+        }
 
-      return {
-        match: true,
-        data: decodedData,
-      }
-    }, [msg, data, chainId, validatorAddress, thisAddress])
+        decodedData.validatorActionTypeUrl = MsgEditValidator.typeUrl
+        decodedData.editMsg = JSON.stringify(msg.stargate.value, null, 2)
+        break
+
+      case MsgUnjail.typeUrl:
+        if (
+          (msg.stargate.value as MsgUnjail).validatorAddr !== validatorAddress
+        ) {
+          return { match: false }
+        }
+
+        decodedData.validatorActionTypeUrl = MsgUnjail.typeUrl
+        break
+
+      default:
+        // No validator action type URL match, so return a false match.
+        return { match: false }
+    }
+
+    return {
+      match: true,
+      data: decodedData,
+    }
   }
 
   return {
