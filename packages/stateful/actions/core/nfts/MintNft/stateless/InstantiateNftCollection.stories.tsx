@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { AddressInput } from '@dao-dao/stateless'
 import {
   CHAIN_ID,
   makeDaoInfo,
@@ -8,6 +7,7 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
 
+import { Trans } from '../../../../../components/Trans'
 import { MintNftData } from '../types'
 import { InstantiateNftCollection } from './InstantiateNftCollection'
 
@@ -49,6 +49,6 @@ Default.args = {
   options: {
     onInstantiate: async () => alert('instantiate'),
     instantiating: false,
-    AddressInput,
+    Trans,
   },
 }

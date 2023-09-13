@@ -1,10 +1,12 @@
 import { ComponentType } from 'react'
 
 import { AddressInputProps, NftCardInfo } from '@dao-dao/types'
+import { MintMsgForNullable_Empty } from '@dao-dao/types/contracts/Cw721Base'
+
 import {
-  InstantiateMsg as Cw721InstantiateMsg,
-  MintMsgForNullable_Empty,
-} from '@dao-dao/types/contracts/Cw721Base'
+  InstantiateNftCollectionData,
+  InstantiateNftCollectionOptions,
+} from '../../../../components/nft/InstantiateNftCollectionAction'
 
 export interface MintNftData {
   chainId: string
@@ -17,7 +19,7 @@ export interface MintNftData {
   collectionAddress?: string
 
   // Set when creating a new collection by InstantiateNftCollection component.
-  instantiateMsg?: Cw721InstantiateMsg
+  instantiateData?: InstantiateNftCollectionData
   // Set when entering metadata for IPFS by UploadNftMetadata component.
   metadata?: {
     name: string
@@ -31,11 +33,9 @@ export interface MintNftData {
   mintMsg: MintMsgForNullable_Empty
 }
 
-export interface InstantiateNftCollectionOptions {
+export type InstantiateOptions = InstantiateNftCollectionOptions & {
   instantiating: boolean
   onInstantiate: () => Promise<void>
-
-  AddressInput: ComponentType<AddressInputProps>
 }
 
 export interface ChooseExistingNftCollectionOptions {

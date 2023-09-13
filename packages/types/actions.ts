@@ -29,6 +29,7 @@ export enum ActionKey {
   ManageStaking = 'manageStaking',
   ManageCw20 = 'manageCw20',
   ManageCw721 = 'manageCw721',
+  CreateNftCollection = 'createNftCollection',
   TransferNft = 'transferNft',
   MintNft = 'mintNft',
   BurnNft = 'burnNft',

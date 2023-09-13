@@ -3,21 +3,29 @@ import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { useSupportedChainContext } from '@dao-dao/stateless'
-import { ActionComponent, ActionContextType, ActionKey } from '@dao-dao/types'
+import { Button, useSupportedChainContext } from '@dao-dao/stateless'
+import {
+  ActionComponent,
+  ActionContextType,
+  ActionKey,
+  ChainId,
+} from '@dao-dao/types'
 import { instantiateSmartContract, processError } from '@dao-dao/utils'
 
-import { AddressInput } from '../../../../components'
+import { Trans } from '../../../../components'
 import { useWallet } from '../../../../hooks'
-import { useActionOptions } from '../../../react'
+import { useActionForKey, useActionOptions } from '../../../react'
 import { InstantiateNftCollection as StatelessInstantiateNftCollection } from './stateless/InstantiateNftCollection'
 import { MintNftData } from './types'
 
 export const InstantiateNftCollection: ActionComponent = (props) => {
   const { t } = useTranslation()
   const { watch, setValue } = useFormContext<MintNftData>()
-  const { context } = useActionOptions()
-  const { address: walletAddress, getSigningCosmWasmClient } = useWallet()
+  const {
+    context,
+    chain: { chain_id: nativeChainId },
+    address,
+  } = useActionOptions()
 
   const [instantiating, setInstantiating] = useState(false)
 
@@ -26,12 +34,16 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
     config: { codeIds },
   } = useSupportedChainContext()
 
-  const instantiateMsg = watch(
-    (props.fieldNamePrefix + 'instantiateMsg') as 'instantiateMsg'
+  const { address: walletAddress, getSigningCosmWasmClient } = useWallet({
+    chainId,
+  })
+
+  const instantiateData = watch(
+    (props.fieldNamePrefix + 'instantiateData') as 'instantiateData'
   )
 
   const onInstantiate = async () => {
-    if (!instantiateMsg) {
+    if (!instantiateData) {
       toast.error(t('error.loadingData'))
       return
     }
@@ -41,16 +53,30 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
       return
     }
 
+    if (!codeIds.Cw721Base) {
+      toast.error(t('error.invalidChain'))
+      return
+    }
+
     const signingCosmWasmClient = await getSigningCosmWasmClient()
 
     setInstantiating(true)
     try {
+      const minter =
+        context.type !== ActionContextType.Dao || nativeChainId === chainId
+          ? address
+          : context.info.polytoneProxies[chainId] ?? ''
+
       const contractAddress = await instantiateSmartContract(
         signingCosmWasmClient,
         walletAddress,
-        codeIds.Cw721Base ? codeIds.Cw721Base : codeIds.Sg721Base ?? -1,
-        'NFT Collection',
-        instantiateMsg
+        codeIds.Cw721Base,
+        instantiateData.name,
+        {
+          minter,
+          name: instantiateData.name,
+          symbol: instantiateData.symbol,
+        }
       )
 
       // Update action form data with address.
@@ -91,13 +117,40 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
     }
   }
 
-  return (
+  const createNftCollectionActionDefaults = useActionForKey(
+    ActionKey.CreateNftCollection
+  )?.action.useDefaults()
+
+  return chainId === ChainId.StargazeMainnet ||
+    chainId === ChainId.StargazeTestnet ? (
+    <>
+      <p className="primary-text max-w-prose">
+        {t('info.stargazeCreateCollectionFirst')}
+      </p>
+
+      <Button
+        onClick={() => {
+          props.addAction?.(
+            {
+              actionKey: ActionKey.CreateNftCollection,
+              data: createNftCollectionActionDefaults,
+            },
+            props.index
+          )
+
+          props.remove?.()
+        }}
+      >
+        {t('button.createNftCollection')}
+      </Button>
+    </>
+  ) : (
     <StatelessInstantiateNftCollection
       {...props}
       options={{
         instantiating,
         onInstantiate,
-        AddressInput,
+        Trans,
       }}
     />
   )

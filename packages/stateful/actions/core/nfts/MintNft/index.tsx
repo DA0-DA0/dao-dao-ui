@@ -69,14 +69,9 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
           className="mb-4"
           fieldName={props.fieldNamePrefix + 'chainId'}
           onChange={(chainId) => {
-            // Update minter and recipient to correct address.
+            // Update recipient to correct address.
             const newAddress = getChainAddressForActionOptions(options, chainId)
 
-            setValue(
-              (props.fieldNamePrefix +
-                'instantiateMsg.minter') as 'instantiateMsg.minter',
-              newAddress
-            )
             setValue(
               (props.fieldNamePrefix + 'mintMsg.owner') as 'mintMsg.owner',
               newAddress
