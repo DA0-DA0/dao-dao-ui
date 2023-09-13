@@ -638,7 +638,9 @@ export const decodeRawMessagesForDisplay = (msg: any): any =>
 // Rules:
 //   (1) Strings with the 'DATE:' prefix are converted to Dates.
 export const prepareProtobufJson = (msg: any): any =>
-  Array.isArray(msg)
+  msg instanceof Uint8Array
+    ? msg
+    : Array.isArray(msg)
     ? msg.map(prepareProtobufJson)
     : // Rule (1)
     typeof msg === 'string' && msg.startsWith('DATE:')

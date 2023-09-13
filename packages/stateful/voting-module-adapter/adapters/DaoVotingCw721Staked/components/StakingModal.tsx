@@ -15,7 +15,6 @@ import {
   SegmentedControls,
   StakingMode,
   useCachedLoadable,
-  useChain,
 } from '@dao-dao/stateless'
 import {
   BaseStakingModalProps,
@@ -45,9 +44,10 @@ const InnerStakingModal = ({
   onClose,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
-  const { address: walletAddress, isWalletConnected } = useWallet()
-  const { coreAddress } = useVotingModuleAdapterOptions()
+  const { chainId, coreAddress } = useVotingModuleAdapterOptions()
+  const { address: walletAddress, isWalletConnected } = useWallet({
+    chainId,
+  })
 
   const setRefreshWalletNftsId = useSetRecoilState(
     refreshWalletBalancesIdAtom(walletAddress)

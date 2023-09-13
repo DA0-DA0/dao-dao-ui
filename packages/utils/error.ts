@@ -96,7 +96,6 @@ export enum CommonError {
   TextEncodingDecodingError = 'Text encoding/decoding error. Invalid character present in text.',
   TxnSentTimeout = 'Transaction sent but has not yet been detected. Refresh this page to view its changes or check back later.',
   InvalidJSONResponse = 'Invalid JSON response from server.',
-  NodeFailure = 'The blockchain nodes seem to be having problems. Try again later.',
   BlockHeightTooLow = 'Block height is too low.',
   TxPageOutOfRange = 'Transaction page is out of range.',
   AuthorizationNotFound = 'Authorization does not exist.',
@@ -135,7 +134,6 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
     'Bad status on response: 5',
     'ECONNREFUSED',
     'ETIMEDOUT',
-    'panic: invalid request',
     'tx already exists in cache',
     'Load failed',
     'fetch failed',
@@ -151,7 +149,6 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
     'invalid json response body',
     'Unexpected token < in JSON',
   ],
-  [CommonError.NodeFailure]: ['goroutine'],
   [CommonError.BlockHeightTooLow]: [
     ['32603', 'not available', 'lowest height is'],
   ],

@@ -478,12 +478,12 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://uni-api.reece.sh',
   },
   [ChainId.OsmosisMainnet]: {
-    rpc: 'https://osmosis-mainnet-rpc.daodao.zone',
-    rest: 'https://lcd.osmosis.zone',
+    rpc: 'https://osmosis-rpc.polkachu.com',
+    rest: 'https://osmosis-api.polkachu.com',
   },
   [ChainId.OsmosisTestnet]: {
-    rpc: 'https://osmosis-testnet-rpc.daodao.zone',
-    rest: 'https://lcd.testnet.osmosis.zone',
+    rpc: 'https://osmosis-testnet-rpc.polkachu.com',
+    rest: 'https://osmosis-testnet-api.polkachu.com',
   },
   [ChainId.StargazeMainnet]: {
     rpc: 'https://rpc.stargaze-apis.com',

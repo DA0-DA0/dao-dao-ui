@@ -2,15 +2,13 @@ import { useDaoInfoContext } from '@dao-dao/stateless'
 import { BaseProfileCardMemberInfoProps } from '@dao-dao/types'
 
 import { useMembership } from '../../../../../hooks'
-import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { ProfileCardMemberInfo as StatelessProfileCardMemberInfo } from './ProfileCardMemberInfo'
 
 export const ProfileCardMemberInfo = ({
   maxGovernanceTokenDeposit: _,
   ...props
 }: BaseProfileCardMemberInfoProps) => {
-  const { name: daoName } = useDaoInfoContext()
-  const { coreAddress } = useVotingModuleAdapterOptions()
+  const { name: daoName, coreAddress } = useDaoInfoContext()
 
   const { walletVotingWeight, totalVotingWeight } = useMembership({
     coreAddress,

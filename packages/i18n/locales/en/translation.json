@@ -138,6 +138,7 @@
     "rateContributions": "Rate contributions",
     "readLess": "Read less",
     "readMore": "Read more",
+    "refundAndCancel": "Refund and cancel",
     "registerSlashes": "Register slashes",
     "reject": "Reject",
     "relay": "Relay",
@@ -1120,6 +1121,7 @@
     "bulkImportActions": "Bulk Import Actions",
     "burnNft": "Burn NFT",
     "cancelVesting": "Cancel vesting",
+    "canceled": "Canceled",
     "casting": "Casting",
     "chain": "Chain",
     "chainModule": {
