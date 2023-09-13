@@ -11,6 +11,7 @@ import {
 } from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/tx'
 import { PickEmoji } from '@dao-dao/stateless'
 import {
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
@@ -18,8 +19,11 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  decodePolytoneExecuteMsg,
+  getChainForChainId,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
+  makePolytoneExecuteMessage,
   makeStargateMessage,
   toValidatorAddress,
 } from '@dao-dao/utils'
@@ -33,20 +37,33 @@ import {
 export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
   t,
   address,
-  chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  chain: { chain_id: currentChainId },
+  context,
 }) => {
-  const validatorAddress = toValidatorAddress(address, bech32Prefix)
+  const getAddress = (chainId: string) =>
+    context.type === ActionContextType.Dao && currentChainId !== chainId
+      ? context.info.polytoneProxies[currentChainId] || ''
+      : address
+  const getValidatorAddress = (chainId: string) =>
+    toValidatorAddress(
+      getAddress(chainId),
+      getChainForChainId(chainId).bech32_prefix
+    )
 
   const useTransformToCosmos: UseTransformToCosmos<ValidatorActionsData> = () =>
     useCallback(
       ({
+        chainId,
         validatorActionTypeUrl: validatorActionType,
         createMsg,
         editMsg,
       }: ValidatorActionsData) => {
+        const validatorAddress = getValidatorAddress(chainId)
+
+        let msg
         switch (validatorActionType) {
           case MsgWithdrawValidatorCommission.typeUrl:
-            return makeStargateMessage({
+            msg = makeStargateMessage({
               stargate: {
                 typeUrl: MsgWithdrawValidatorCommission.typeUrl,
                 value: {
@@ -54,9 +71,10 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
                 } as MsgWithdrawValidatorCommission,
               },
             })
+            break
           case MsgCreateValidator.typeUrl:
             const parsed = JSON.parse(createMsg)
-            return makeStargateMessage({
+            msg = makeStargateMessage({
               stargate: {
                 typeUrl: MsgCreateValidator.typeUrl,
                 value: {
@@ -67,15 +85,17 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
                 },
               },
             })
+            break
           case MsgEditValidator.typeUrl:
-            return makeStargateMessage({
+            msg = makeStargateMessage({
               stargate: {
                 typeUrl: MsgEditValidator.typeUrl,
                 value: JSON.parse(editMsg),
               },
             })
+            break
           case MsgUnjail.typeUrl:
-            return makeStargateMessage({
+            msg = makeStargateMessage({
               stargate: {
                 typeUrl: MsgUnjail.typeUrl,
                 value: {
@@ -83,14 +103,22 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
                 } as MsgUnjail,
               },
             })
+            break
           default:
             throw Error('Unrecogonized validator action type')
+        }
+
+        if (chainId === currentChainId) {
+          return msg
+        } else {
+          return makePolytoneExecuteMessage(currentChainId, chainId, msg)
         }
       },
       []
     )
 
   const useDefaults: UseDefaults<ValidatorActionsData> = () => ({
+    chainId: currentChainId,
     validatorActionTypeUrl: VALIDATOR_ACTION_TYPES[0].typeUrl,
     createMsg: JSON.stringify(
       {
@@ -107,8 +135,8 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
           maxChangeRate: '100000000000000000',
         },
         minSelfDelegation: '1',
-        delegatorAddress: address,
-        validatorAddress,
+        delegatorAddress: getAddress(currentChainId),
+        validatorAddress: getValidatorAddress(currentChainId),
         pubkey: {
           typeUrl: PubKey.typeUrl,
           value: {
@@ -116,7 +144,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
           },
         },
         value: {
-          denom: getNativeTokenForChainId(chainId).denomOrAddress,
+          denom: getNativeTokenForChainId(currentChainId).denomOrAddress,
           amount: '1000000',
         },
       },
@@ -134,7 +162,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
         },
         commissionRate: '50000000000000000',
         minSelfDelegation: '1',
-        validatorAddress,
+        validatorAddress: getValidatorAddress(currentChainId),
       },
       null,
       2
@@ -144,6 +172,16 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<ValidatorActionsData> = (
     msg: Record<string, any>
   ) => {
+    let chainId = currentChainId
+    const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+    if (decodedPolytone.match) {
+      chainId = decodedPolytone.chainId
+      msg = decodedPolytone.msg
+    }
+
+    const thisAddress = getAddress(chainId)
+    const validatorAddress = getValidatorAddress(chainId)
+
     const data = useDefaults()
 
     return useMemo(() => {
@@ -154,6 +192,8 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
 
       // Check that the type URL is a validator message, set data accordingly.
       const decodedData = cloneDeep(data)
+      decodedData.chainId = chainId
+
       switch (msg.stargate.typeUrl) {
         case MsgWithdrawValidatorCommission.typeUrl:
           if (
@@ -170,7 +210,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
         case MsgCreateValidator.typeUrl:
           if (
             (msg.stargate.value as MsgCreateValidator).delegatorAddress !==
-              address ||
+              thisAddress ||
             (msg.stargate.value as MsgCreateValidator).validatorAddress !==
               validatorAddress
           ) {
@@ -227,7 +267,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
         match: true,
         data: decodedData,
       }
-    }, [msg, data])
+    }, [msg, data, chainId, validatorAddress, thisAddress])
   }
 
   return {

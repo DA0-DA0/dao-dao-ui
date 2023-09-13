@@ -8,9 +8,21 @@ import {
   MsgCreateValidator,
   MsgEditValidator,
 } from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/tx'
-import { CodeMirrorInput, InputLabel, SelectInput } from '@dao-dao/stateless'
-import { ActionComponent } from '@dao-dao/types/actions'
-import { validateJSON } from '@dao-dao/utils'
+import {
+  ChainPickerInput,
+  CodeMirrorInput,
+  InputLabel,
+  SelectInput,
+} from '@dao-dao/stateless'
+import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
+import {
+  getChainForChainId,
+  getNativeTokenForChainId,
+  toValidatorAddress,
+  validateJSON,
+} from '@dao-dao/utils'
+
+import { useActionOptions } from '../../../react'
 
 export const VALIDATOR_ACTION_TYPES = [
   {
@@ -32,6 +44,7 @@ export const VALIDATOR_ACTION_TYPES = [
 ]
 
 export type ValidatorActionsData = {
+  chainId: string
   validatorActionTypeUrl: string
   createMsg: string
   editMsg: string
@@ -43,14 +56,62 @@ export const ValidatorActionsComponent: ActionComponent = ({
   isCreating,
 }) => {
   const { t } = useTranslation()
-  const { control, register, watch } = useFormContext<ValidatorActionsData>()
+  const {
+    chain: { chain_id: currentChainId },
+    address: _address,
+    context,
+  } = useActionOptions()
+  const { control, register, watch, getValues, setValue } =
+    useFormContext<ValidatorActionsData>()
 
+  const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
   const validatorActionTypeUrl = watch(
     (fieldNamePrefix + 'validatorActionTypeUrl') as 'validatorActionTypeUrl'
   )
 
+  const updateChainValues = (chainId: string, typeUrl: string) => {
+    const address =
+      context.type === ActionContextType.Dao && currentChainId !== chainId
+        ? context.info.polytoneProxies[chainId] || ''
+        : _address
+    const validatorAddress =
+      address &&
+      toValidatorAddress(address, getChainForChainId(chainId).bech32_prefix)
+
+    if (typeUrl === MsgCreateValidator.typeUrl) {
+      const createMsg = JSON.parse(
+        getValues((fieldNamePrefix + 'createMsg') as 'createMsg')
+      )
+      createMsg.delegatorAddress = address
+      createMsg.validatorAddress = validatorAddress
+      createMsg.value.denom = getNativeTokenForChainId(chainId).denomOrAddress
+      setValue(
+        (fieldNamePrefix + 'createMsg') as 'createMsg',
+        JSON.stringify(createMsg, null, 2)
+      )
+    } else if (typeUrl === MsgEditValidator.typeUrl) {
+      const editMsg = JSON.parse(
+        getValues((fieldNamePrefix + 'editMsg') as 'editMsg')
+      )
+      editMsg.validatorAddress = validatorAddress
+      setValue(
+        (fieldNamePrefix + 'editMsg') as 'editMsg',
+        JSON.stringify(editMsg, null, 2)
+      )
+    }
+  }
+
   return (
     <>
+      <ChainPickerInput
+        className="mb-4"
+        disabled={!isCreating}
+        fieldName={fieldNamePrefix + 'chainId'}
+        onChange={(chainId) =>
+          updateChainValues(chainId, validatorActionTypeUrl)
+        }
+      />
+
       <SelectInput
         disabled={!isCreating}
         error={errors?.validatorActionTypeUrl}
@@ -58,6 +119,7 @@ export const ValidatorActionsComponent: ActionComponent = ({
           (fieldNamePrefix +
             'validatorActionTypeUrl') as 'validatorActionTypeUrl'
         }
+        onChange={(value) => updateChainValues(chainId, value)}
         register={register}
       >
         {VALIDATOR_ACTION_TYPES.map(({ typeUrl, i18nKey }) => (
