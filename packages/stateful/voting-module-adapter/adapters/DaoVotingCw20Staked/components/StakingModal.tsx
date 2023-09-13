@@ -19,7 +19,6 @@ import {
   StakingMode,
   StakingModal as StatelessStakingModal,
   useCachedLoadable,
-  useChain,
 } from '@dao-dao/stateless'
 import { BaseStakingModalProps } from '@dao-dao/types'
 import {
@@ -51,10 +50,9 @@ const InnerStakingModal = ({
   maxDeposit,
 }: BaseStakingModalProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
   const { address: walletAddress, isWalletConnected } = useWallet()
   const { refreshBalances } = useWalletInfo()
-  const { coreAddress } = useVotingModuleAdapterOptions()
+  const { chainId, coreAddress } = useVotingModuleAdapterOptions()
 
   const [stakingLoading, setStakingLoading] = useRecoilState(stakingLoadingAtom)
 

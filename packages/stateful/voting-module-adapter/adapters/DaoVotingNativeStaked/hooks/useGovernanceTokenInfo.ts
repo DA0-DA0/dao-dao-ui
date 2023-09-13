@@ -7,7 +7,7 @@ import {
   nativeSupplySelector,
   usdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoading, useChain } from '@dao-dao/stateless'
+import { useCachedLoading } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 
@@ -23,9 +23,11 @@ export const useGovernanceTokenInfo = ({
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
-  const { chain_id: chainId } = useChain()
-  const { address: walletAddress } = useWallet()
-  const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { chainId, coreAddress, votingModuleAddress } =
+    useVotingModuleAdapterOptions()
+  const { address: walletAddress } = useWallet({
+    chainId,
+  })
 
   const { denom } = useRecoilValue(
     DaoVotingNativeStakedSelectors.getConfigSelector({

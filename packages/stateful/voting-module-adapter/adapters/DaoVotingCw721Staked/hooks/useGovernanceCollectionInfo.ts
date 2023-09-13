@@ -4,7 +4,7 @@ import {
   CommonNftSelectors,
   DaoVotingCw721StakedSelectors,
 } from '@dao-dao/state'
-import { useCachedLoading, useChain } from '@dao-dao/stateless'
+import { useCachedLoading } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
 import { useWallet } from '../../../../hooks/useWallet'
@@ -18,9 +18,11 @@ export const useGovernanceCollectionInfo = ({
   fetchWalletBalance = false,
   fetchTreasuryBalance = false,
 }: UseGovernanceCollectionInfoOptions = {}): UseGovernanceCollectionInfoResponse => {
-  const { chain_id: chainId } = useChain()
-  const { address: walletAddress } = useWallet()
-  const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { chainId, coreAddress, votingModuleAddress } =
+    useVotingModuleAdapterOptions()
+  const { address: walletAddress } = useWallet({
+    chainId,
+  })
 
   const { nft_address: collectionAddress } = useRecoilValue(
     DaoVotingCw721StakedSelectors.configSelector({
