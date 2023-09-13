@@ -5,7 +5,7 @@ import {
   DaoVotingCw20StakedSelectors,
   usdPriceSelector,
 } from '@dao-dao/state'
-import { useCachedLoading, useChain } from '@dao-dao/stateless'
+import { useCachedLoading } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
 import { useWallet } from '../../../../hooks/useWallet'
@@ -20,9 +20,9 @@ export const useGovernanceTokenInfo = ({
   fetchTreasuryBalance = false,
   fetchUsdcPrice = false,
 }: UseGovernanceTokenInfoOptions = {}): UseGovernanceTokenInfoResponse => {
-  const { chain_id: chainId } = useChain()
   const { address: walletAddress } = useWallet()
-  const { coreAddress, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { chainId, coreAddress, votingModuleAddress } =
+    useVotingModuleAdapterOptions()
 
   const stakingContractAddress = useRecoilValue(
     DaoVotingCw20StakedSelectors.stakingContractSelector({

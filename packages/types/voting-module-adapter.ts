@@ -49,6 +49,7 @@ export type VotingModuleAdapter = {
 }
 
 export interface IVotingModuleAdapterOptions {
+  chainId: string
   coreAddress: string
   votingModuleAddress: string
 }

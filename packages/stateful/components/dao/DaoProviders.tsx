@@ -23,6 +23,7 @@ export const DaoProviders = ({ info, children }: DaoProvidersProps) => (
       <VotingModuleAdapterProvider
         contractName={info.votingModuleContractName}
         options={{
+          chainId: info.chainId,
           votingModuleAddress: info.votingModuleAddress,
           coreAddress: info.coreAddress,
         }}

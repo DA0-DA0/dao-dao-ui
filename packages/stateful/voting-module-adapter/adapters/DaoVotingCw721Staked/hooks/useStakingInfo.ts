@@ -17,7 +17,6 @@ import {
   useCachedLoadable,
   useCachedLoading,
   useCachedLoadingWithError,
-  useChain,
 } from '@dao-dao/stateless'
 import { NftClaim } from '@dao-dao/types/contracts/DaoVotingCw721Staked'
 import { claimAvailable } from '@dao-dao/utils'
@@ -34,9 +33,10 @@ export const useStakingInfo = ({
   fetchWalletStakedValue = false,
   fetchWalletUnstakedValue = false,
 }: UseStakingInfoOptions = {}): UseStakingInfoResponse => {
-  const { chain_id: chainId } = useChain()
-  const { address: walletAddress } = useWallet()
-  const { votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { address: walletAddress } = useWallet({
+    chainId,
+  })
 
   const { collectionAddress: governanceTokenAddress } =
     useGovernanceCollectionInfo()

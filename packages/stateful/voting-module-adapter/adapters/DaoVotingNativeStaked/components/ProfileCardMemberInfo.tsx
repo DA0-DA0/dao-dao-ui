@@ -8,11 +8,7 @@ import {
   blocksPerYearSelector,
   stakingLoadingAtom,
 } from '@dao-dao/state'
-import {
-  useCachedLoadable,
-  useChain,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { useCachedLoadable, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   BaseProfileCardMemberInfoProps,
   UnstakingTask,
@@ -41,11 +37,14 @@ export const ProfileCardMemberInfo = ({
   ...props
 }: BaseProfileCardMemberInfoProps) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
   const { name: daoName } = useDaoInfoContext()
-  const { address: walletAddress, isWalletConnected } = useWallet()
-  const { refreshBalances } = useWalletInfo()
-  const { votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { address: walletAddress, isWalletConnected } = useWallet({
+    chainId,
+  })
+  const { refreshBalances } = useWalletInfo({
+    chainId,
+  })
 
   const [showStakingModal, setShowStakingModal] = useState(false)
   const [claimingLoading, setClaimingLoading] = useState(false)
