@@ -3303,9 +3303,9 @@
   dependencies:
     "@cosmos-kit/coin98-extension" "^2.4.6"
 
-"@cosmos-kit/core@^2.6.2", "@cosmos-kit/core@https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/core?1992b0dffc918e292374f33aaac0dd4e709bfc5d":
+"@cosmos-kit/core@^2.6.2", "@cosmos-kit/core@https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/core?ef3f87bbcfe935ec27975ecd5eff99972909affc":
   version "2.6.2"
-  resolved "https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/core?1992b0dffc918e292374f33aaac0dd4e709bfc5d#08efc95baacadbc14901a71886499b1481049cb3"
+  resolved "https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/core?ef3f87bbcfe935ec27975ecd5eff99972909affc#2e1374e5e2ab75ffc308e917d327ff5cf5b0d257"
   dependencies:
     "@chain-registry/types" "0.13.0"
     "@walletconnect/types" "2.7.2"
@@ -3443,9 +3443,9 @@
   dependencies:
     "@cosmos-kit/omni-mobile" "^2.3.6"
 
-"@cosmos-kit/react-lite@https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/react-lite?1992b0dffc918e292374f33aaac0dd4e709bfc5d":
+"@cosmos-kit/react-lite@https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/react-lite?ef3f87bbcfe935ec27975ecd5eff99972909affc":
   version "2.4.8"
-  resolved "https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/react-lite?1992b0dffc918e292374f33aaac0dd4e709bfc5d#3698f01b24efe87a2e1a96b7ab38c5f9baad83a2"
+  resolved "https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/react-lite?ef3f87bbcfe935ec27975ecd5eff99972909affc#54c2e5d78d04a0f3e780a9e534d315a3ac1f4c76"
   dependencies:
     "@chain-registry/types" "0.13.1"
     "@cosmos-kit/core" "^2.6.2"

@@ -66,14 +66,12 @@ export const BrowserTab = () => {
     },
     accountReplacement: (chainId) => {
       const address =
-        chainId === currentChainId ? coreAddress : polytoneProxies[chainId]
-      if (address) {
-        return {
-          username: name,
-          address,
-        }
-      } else {
-        throw new Error('Chain not supported.')
+        (chainId === currentChainId ? coreAddress : polytoneProxies[chainId]) ||
+        ''
+
+      return {
+        username: name,
+        address,
       }
     },
     walletClientOverrides: {
@@ -97,15 +95,45 @@ export const BrowserTab = () => {
 
         decodeDirect(signDoc.bodyBytes)
       },
+      sign: () => ({
+        type: 'error',
+        value: 'Unsupported.',
+      }),
+      signArbitrary: () => ({
+        type: 'error',
+        value: 'Unsupported.',
+      }),
+      enable: () => ({
+        type: 'success',
+        value: undefined,
+      }),
+      suggestToken: () => ({
+        type: 'success',
+        value: undefined,
+      }),
+      addChain: () => ({
+        type: 'success',
+        value: undefined,
+      }),
     },
     aminoSignerOverrides: {
       signAmino: (_signerAddress, signDoc) => {
         decodeAmino(signDoc)
+
+        return {
+          type: 'error',
+          error: 'Handled by DAO browser.',
+        }
       },
     },
     directSignerOverrides: {
       signDirect: (_signerAddress, signDoc) => {
         decodeDirect(signDoc.bodyBytes)
+
+        return {
+          type: 'error',
+          error: 'Handled by DAO browser.',
+        }
       },
     },
   })
