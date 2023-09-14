@@ -1,6 +1,7 @@
 import { StdSignDoc } from '@cosmjs/amino'
 import { DirectSignDoc } from '@cosmos-kit/core'
 import { useIframe } from '@cosmos-kit/react-lite'
+import { useEffect, useRef } from 'react'
 
 import { TxBody } from '@dao-dao/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import {
@@ -58,7 +59,7 @@ export const BrowserTab = () => {
     propose(messages)
   }
 
-  const iframeRef = useIframe({
+  const { wallet, iframeRef } = useIframe({
     walletInfo: {
       prettyName: name,
       logo: imageUrl || SITE_URL + getFallbackImage(coreAddress),
@@ -108,6 +109,19 @@ export const BrowserTab = () => {
       },
     },
   })
+
+  // Connect to iframe wallet on load if disconnected.
+  const connectingRef = useRef(false)
+  useEffect(() => {
+    if (wallet && !wallet.isWalletConnected && !connectingRef.current) {
+      connectingRef.current = true
+      try {
+        wallet.connect()
+      } finally {
+        connectingRef.current = false
+      }
+    }
+  }, [wallet])
 
   return <StatelessBrowserTab iframeRef={iframeRef} />
 }
