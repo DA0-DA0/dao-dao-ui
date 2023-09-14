@@ -3303,14 +3303,15 @@
   dependencies:
     "@cosmos-kit/coin98-extension" "^2.4.6"
 
-"@cosmos-kit/core@^2.6.2", "@cosmos-kit/core@https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/core?ef3f87bbcfe935ec27975ecd5eff99972909affc":
+"@cosmos-kit/core@^2.6.2", "@cosmos-kit/core@https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/core?e08a4cc8a1690b5f2101263b80680c42a525c9cf":
   version "2.6.2"
-  resolved "https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/core?ef3f87bbcfe935ec27975ecd5eff99972909affc#2e1374e5e2ab75ffc308e917d327ff5cf5b0d257"
+  resolved "https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/core?e08a4cc8a1690b5f2101263b80680c42a525c9cf#2dfa8e1986bac9beb11ab6ba652ea700b654d43c"
   dependencies:
     "@chain-registry/types" "0.13.0"
     "@walletconnect/types" "2.7.2"
     bowser "2.11.0"
     events "3.3.0"
+    uuid "^9.0.1"
 
 "@cosmos-kit/cosmostation-extension@^2.4.3":
   version "2.4.3"
@@ -3443,9 +3444,9 @@
   dependencies:
     "@cosmos-kit/omni-mobile" "^2.3.6"
 
-"@cosmos-kit/react-lite@https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/react-lite?ef3f87bbcfe935ec27975ecd5eff99972909affc":
+"@cosmos-kit/react-lite@https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/react-lite?e08a4cc8a1690b5f2101263b80680c42a525c9cf":
   version "2.4.8"
-  resolved "https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/react-lite?ef3f87bbcfe935ec27975ecd5eff99972909affc#54c2e5d78d04a0f3e780a9e534d315a3ac1f4c76"
+  resolved "https://gitpkg.now.sh/NoahSaso/cosmos-kit/packages/react-lite?e08a4cc8a1690b5f2101263b80680c42a525c9cf#a4e96301c98bdacc4a04d09cac904005a199401d"
   dependencies:
     "@chain-registry/types" "0.13.1"
     "@cosmos-kit/core" "^2.6.2"
@@ -25434,6 +25435,11 @@ uuid@^9.0.0:
   version "9.0.0"
   resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.0.tgz#592f550650024a38ceb0c562f2f6aa435761efb5"
   integrity sha512-MXcSTerfPa4uqyzStbRoTgt5XIe3x5+42+q1sDuy3R5MDk66URdLMOZe5aPX/SQd+kuYAh0FdP/pO28IkQyTeg==
+
+uuid@^9.0.1:
+  version "9.0.1"
+  resolved "https://registry.yarnpkg.com/uuid/-/uuid-9.0.1.tgz#e188d4c8853cc722220392c424cd637f32293f30"
+  integrity sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==
 
 uvu@^0.5.0:
   version "0.5.4"

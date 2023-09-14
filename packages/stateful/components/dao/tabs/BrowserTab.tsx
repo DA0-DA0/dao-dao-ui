@@ -59,21 +59,18 @@ export const BrowserTab = () => {
     propose(messages)
   }
 
+  const addressForChainId = (chainId: string) =>
+    (chainId === currentChainId ? coreAddress : polytoneProxies[chainId]) || ''
+
   const { wallet, iframeRef } = useIframe({
     walletInfo: {
       prettyName: name,
       logo: imageUrl || SITE_URL + getFallbackImage(coreAddress),
     },
-    accountReplacement: (chainId) => {
-      const address =
-        (chainId === currentChainId ? coreAddress : polytoneProxies[chainId]) ||
-        ''
-
-      return {
-        username: name,
-        address,
-      }
-    },
+    accountReplacement: (chainId) => ({
+      username: name,
+      address: addressForChainId(chainId),
+    }),
     walletClientOverrides: {
       // TODO(iframe): remove
       // @ts-ignore
@@ -95,6 +92,24 @@ export const BrowserTab = () => {
 
         decodeDirect(signDoc.bodyBytes)
       },
+      enable: (chainIds: string | string[]) =>
+        [chainIds].flat().every((chainId) => addressForChainId(chainId))
+          ? {
+              type: 'success',
+            }
+          : {
+              type: 'error',
+              error: 'Unsupported chain.',
+            },
+      connect: (chainIds: string | string[]) =>
+        [chainIds].flat().every((chainId) => addressForChainId(chainId))
+          ? {
+              type: 'success',
+            }
+          : {
+              type: 'error',
+              error: 'Unsupported chain.',
+            },
       sign: () => ({
         type: 'error',
         value: 'Unsupported.',
@@ -103,17 +118,11 @@ export const BrowserTab = () => {
         type: 'error',
         value: 'Unsupported.',
       }),
-      enable: () => ({
-        type: 'success',
-        value: undefined,
-      }),
       suggestToken: () => ({
         type: 'success',
-        value: undefined,
       }),
       addChain: () => ({
         type: 'success',
-        value: undefined,
       }),
     },
     aminoSignerOverrides: {
