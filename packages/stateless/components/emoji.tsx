@@ -240,3 +240,7 @@ export const FilmSlateEmoji = () => (
 export const PrinterEmoji = () => (
   <EmojiWrapper emoji="🖨️" labelI18nKey="emoji.printer" />
 )
+
+export const BalanceEmoji = () => (
+  <EmojiWrapper emoji="⚖️" labelI18nKey="emoji.balance" />
+)

@@ -149,27 +149,30 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
           <div className="flex grow flex-col gap-1">
             {cw20 ? (
               <TokenInput
-                amountError={errors?.funds?.[0]?.amount}
-                amountFieldName={fieldNamePrefix + 'funds.0.amount'}
-                amountMax={convertMicroDenomToDenomWithDecimals(
-                  selectedCw20?.balance ?? 0,
-                  selectedCw20?.token.decimals ?? 0
-                )}
-                amountMin={convertMicroDenomToDenomWithDecimals(
-                  1,
-                  selectedCw20?.token.decimals ?? 0
-                )}
-                amountStep={convertMicroDenomToDenomWithDecimals(
-                  1,
-                  selectedCw20?.token.decimals ?? 0
-                )}
+                amount={{
+                  watch,
+                  setValue,
+                  register,
+                  fieldName: fieldNamePrefix + 'funds.0.amount',
+                  error: errors?.funds?.[0]?.amount,
+                  min: convertMicroDenomToDenomWithDecimals(
+                    1,
+                    selectedCw20?.token.decimals ?? 0
+                  ),
+                  max: convertMicroDenomToDenomWithDecimals(
+                    selectedCw20?.balance ?? 0,
+                    selectedCw20?.token.decimals ?? 0
+                  ),
+                  step: convertMicroDenomToDenomWithDecimals(
+                    1,
+                    selectedCw20?.token.decimals ?? 0
+                  ),
+                }}
                 onSelectToken={({ denomOrAddress }) =>
                   setValue(fieldNamePrefix + 'funds.0.denom', denomOrAddress)
                 }
                 readOnly={!isCreating}
-                register={register}
                 selectedToken={selectedCw20?.token}
-                setValue={setValue}
                 tokens={
                   balances.loading
                     ? { loading: true }
@@ -180,7 +183,6 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                           .map(({ token }) => token),
                       }
                 }
-                watch={watch}
               />
             ) : (
               <div className="flex flex-col items-stretch gap-2">
@@ -189,6 +191,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                     key={id}
                     {...({
                       ...props,
+                      chainId,
                       options: {
                         nativeBalances: balances,
                       },
@@ -196,7 +199,6 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                         ? () => removeCoin(index)
                         : undefined,
                     } as NativeCoinSelectorProps)}
-                    chainId={chainId}
                     errors={errors?.funds?.[index]}
                     fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
                   />

@@ -86,40 +86,35 @@ export const TokenCard = ({
 
   // Setup actions for popup. Prefill with cw20 related actions.
   const buttonPopupSections: ButtonPopupSection[] = [
-    ...(token.type === TokenType.Cw20 || !!actions?.token?.length
-      ? [
-          {
-            label: t('title.token'),
-            buttons: [
-              ...(token.type === TokenType.Cw20
-                ? [
-                    {
-                      Icon: copied ? Check : CopyAll,
-                      label: t('button.copyAddressToClipboard'),
-                      closeOnClick: false,
-                      onClick: () => {
-                        navigator.clipboard.writeText(token.denomOrAddress)
-                        toast.success(t('info.copiedToClipboard'))
-                        setCopied(true)
-                      },
-                    },
-                  ]
-                : []),
-              ...(addCw20Token
-                ? [
-                    {
-                      Icon: Add,
-                      label: t('button.addToKeplr'),
-                      closeOnClick: false,
-                      onClick: addCw20Token,
-                    },
-                  ]
-                : []),
-              ...(actions?.token ?? []),
-            ],
+    {
+      label: t('title.token'),
+      buttons: [
+        {
+          Icon: copied ? Check : CopyAll,
+          label:
+            token.type === TokenType.Cw20
+              ? t('button.copyAddressToClipboard')
+              : t('button.copyIdToClipboard'),
+          closeOnClick: false,
+          onClick: () => {
+            navigator.clipboard.writeText(token.denomOrAddress)
+            toast.success(t('info.copiedToClipboard'))
+            setCopied(true)
           },
-        ]
-      : []),
+        },
+        ...(addCw20Token
+          ? [
+              {
+                Icon: Add,
+                label: t('button.addToKeplr'),
+                closeOnClick: false,
+                onClick: addCw20Token,
+              },
+            ]
+          : []),
+        ...(actions?.token ?? []),
+      ],
+    },
     ...(actions?.extraSections ?? []),
   ]
 

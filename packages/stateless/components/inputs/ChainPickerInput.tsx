@@ -18,6 +18,9 @@ export type ChainPickerInputProps = {
   labelMode?: 'chain' | 'token'
   disabled?: boolean
   onChange?: (chainId: string) => void
+  // If defined, only include these chains.
+  includeChainIds?: string[]
+  // If defined, exclude these chains.
   excludeChainIds?: string[]
   // Whether to include only the chains the DAO has an account on (its native
   // chain or one of its polytone chains).
@@ -31,6 +34,7 @@ export const ChainPickerInput = ({
   labelMode = 'chain',
   disabled,
   onChange,
+  includeChainIds: _includeChainIds,
   excludeChainIds,
   onlyDaoChainIds = false,
   className,
@@ -42,10 +46,12 @@ export const ChainPickerInput = ({
   const { watch, setValue } = useFormContext()
   const daoInfo = useDaoInfoContextIfAvailable()
 
-  const includeChainIds =
-    onlyDaoChainIds && daoInfo
+  const includeChainIds = [
+    ...(onlyDaoChainIds && daoInfo
       ? [daoInfo.chainId, ...Object.keys(daoInfo.polytoneProxies)]
-      : undefined
+      : []),
+    ...(_includeChainIds ?? []),
+  ]
 
   const polytoneChains = Object.keys(polytone || {})
 
@@ -53,29 +59,31 @@ export const ChainPickerInput = ({
     return null
   }
 
+  const chainIds = [
+    chainId,
+    // Other chains with Polytone.
+    ...polytoneChains,
+  ]
+    .filter(
+      (chainId) =>
+        !excludeChainIds?.includes(chainId) &&
+        (!includeChainIds || includeChainIds.includes(chainId))
+    )
+    .map((chainId) => ({
+      label:
+        labelMode === 'chain'
+          ? getDisplayNameForChainId(chainId)
+          : getNativeTokenForChainId(chainId).symbol,
+      value: chainId,
+    }))
+
   return (
     <div className={className}>
       <RadioInput
         disabled={disabled}
         fieldName={fieldName}
         onChange={onChange}
-        options={[
-          chainId,
-          // Other chains with Polytone.
-          ...polytoneChains,
-        ]
-          .filter(
-            (chainId) =>
-              (!includeChainIds || includeChainIds.includes(chainId)) &&
-              !excludeChainIds?.includes(chainId)
-          )
-          .map((chainId) => ({
-            label:
-              labelMode === 'chain'
-                ? getDisplayNameForChainId(chainId)
-                : getNativeTokenForChainId(chainId).symbol,
-            value: chainId,
-          }))}
+        options={chainIds}
         setValue={setValue}
         watch={watch}
       />

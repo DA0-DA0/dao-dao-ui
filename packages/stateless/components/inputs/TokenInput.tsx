@@ -42,19 +42,23 @@ export type TokenInputProps<
   FV extends FieldValues = FieldValues,
   FieldName extends Path<FV> = Path<FV>
 > = {
-  register: UseFormRegister<FV>
-  watch: UseFormWatch<FV>
-  setValue: UseFormSetValue<FV>
-  amountFieldName: FieldName
-  amountError?: FieldError
-  amountMin?: number
-  amountMax?: number
-  amountStep?: number
-  amountValidations?: Validate<number>[]
-  // If true, will convert the amount to micro-denom using the token's decimals
-  // value for the form. Thus, the input will display the macro-denom amount,
-  // but the form will receive the micro-denom amount. Default is false.
-  convertMicroDenom?: boolean
+  amount?: {
+    register: UseFormRegister<FV>
+    watch: UseFormWatch<FV>
+    setValue: UseFormSetValue<FV>
+    fieldName: FieldName
+    error?: FieldError
+    min?: number
+    max?: number
+    step?: number
+    unit?: string
+    validations?: Validate<number>[]
+    // If true, will convert the amount to micro-denom using the token's
+    // decimals value for the form. Thus, the input will display the macro-denom
+    // amount, but the form will receive the micro-denom amount. Default is
+    // false.
+    convertMicroDenom?: boolean
+  }
   // The pair of `type` and `denomOrAddress` must be unique for each token.
   tokens: LoadingData<T[]>
   onSelectToken: (token: T) => void
@@ -77,17 +81,8 @@ export const TokenInput = <
   FV extends FieldValues = FieldValues,
   FieldName extends Path<FV> = Path<FV>
 >({
-  // The form fields that register the amount field and watch for changes.
-  register,
-  watch,
-  setValue,
-  amountFieldName,
-  amountError,
-  amountMin,
-  amountMax,
-  amountStep,
-  amountValidations,
-  convertMicroDenom = false,
+  // The fields that control the amount input.
+  amount: amountField,
   // The available tokens and selection handlers for the token. Various
   // use-cases exist for this component, so the token selection is left up to
   // the caller instead of being handled internally like the amount field.
@@ -117,12 +112,14 @@ export const TokenInput = <
       ? undefined
       : tokens.data.find((token) => tokensEqual(token, _selectedToken))
 
-  const amount = convertMicroDenom
-    ? convertMicroDenomToDenomWithDecimals(
-        watch(amountFieldName),
-        selectedToken?.decimals ?? 0
-      )
-    : Number(watch(amountFieldName))
+  const amount = amountField
+    ? amountField.convertMicroDenom
+      ? convertMicroDenomToDenomWithDecimals(
+          amountField.watch(amountField.fieldName),
+          selectedToken?.decimals ?? 0
+        )
+      : Number(amountField.watch(amountField.fieldName))
+    : 0
 
   // All tokens from same chain.
   const allTokensOnSameChain =
@@ -192,7 +189,8 @@ export const TokenInput = <
     ]
   )
 
-  const selectDisabled = // Disable if there is only one token to choose from.
+  // Disable if there is only one token to choose from.
+  const selectDisabled =
     disabled || (!tokens.loading && tokens.data.length === 1)
 
   return (
@@ -206,29 +204,34 @@ export const TokenInput = <
         selectedTokenDisplay
       ) : (
         <>
-          <NumberInput
-            containerClassName="min-w-[12rem] grow basis-[12rem]"
-            disabled={disabled || !selectedToken}
-            error={amountError}
-            fieldName={amountFieldName}
-            max={amountMax}
-            min={amountMin}
-            register={register}
-            setValue={(fieldName, value, options) =>
-              setValue(fieldName, value as any, options)
-            }
-            step={amountStep}
-            transformDecimals={
-              convertMicroDenom ? selectedToken?.decimals : undefined
-            }
-            validation={[
-              amountMin ? validatePositive : validateNonNegative,
+          {amountField && (
+            <NumberInput
+              containerClassName="min-w-[12rem] grow basis-[12rem]"
+              disabled={disabled || !selectedToken}
+              error={amountField.error}
+              fieldName={amountField.fieldName}
+              max={amountField.max}
+              min={amountField.max}
+              register={amountField.register}
+              setValue={(fieldName, value, options) =>
+                amountField.setValue(fieldName, value as any, options)
+              }
+              step={amountField.step}
+              transformDecimals={
+                amountField.convertMicroDenom
+                  ? selectedToken?.decimals
+                  : undefined
+              }
+              unit={amountField.unit}
+              validation={[
+                amountField.min ? validatePositive : validateNonNegative,
 
-              ...(required ? [validateRequired] : []),
-              ...(amountValidations ?? []),
-            ]}
-            watch={watch}
-          />
+                ...(required ? [validateRequired] : []),
+                ...(amountField.validations ?? []),
+              ]}
+              watch={amountField.watch}
+            />
+          )}
 
           <FilterableItemPopup
             filterableItemKeys={FILTERABLE_KEYS}

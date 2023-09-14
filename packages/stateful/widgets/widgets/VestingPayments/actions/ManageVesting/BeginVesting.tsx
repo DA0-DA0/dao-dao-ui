@@ -135,41 +135,37 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
 
         <div className="flex min-w-0 flex-col flex-wrap gap-x-3 gap-y-2 sm:flex-row sm:items-stretch">
           <TokenInput
-            amountError={errors?.amount}
-            amountFieldName={fieldNamePrefix + 'amount'}
-            amountMax={selectedBalance}
-            amountMin={convertMicroDenomToDenomWithDecimals(
-              1,
-              selectedDecimals
-            )}
-            amountStep={convertMicroDenomToDenomWithDecimals(
-              1,
-              selectedDecimals
-            )}
-            amountValidations={[
-              (amount) =>
-                amount <= selectedBalance ||
-                t(insufficientBalanceI18nKey, {
-                  amount: selectedBalance.toLocaleString(undefined, {
-                    maximumFractionDigits: selectedDecimals,
+            amount={{
+              watch,
+              setValue,
+              register,
+              fieldName: fieldNamePrefix + 'amount',
+              error: errors?.amount,
+              min: convertMicroDenomToDenomWithDecimals(1, selectedDecimals),
+              max: selectedBalance,
+              step: convertMicroDenomToDenomWithDecimals(1, selectedDecimals),
+              validations: [
+                (amount) =>
+                  amount <= selectedBalance ||
+                  t(insufficientBalanceI18nKey, {
+                    amount: selectedBalance.toLocaleString(undefined, {
+                      maximumFractionDigits: selectedDecimals,
+                    }),
+                    tokenSymbol:
+                      selectedToken?.token.symbol ??
+                      t('info.token').toLocaleUpperCase(),
                   }),
-                  tokenSymbol:
-                    selectedToken?.token.symbol ??
-                    t('info.token').toLocaleUpperCase(),
-                }),
-            ]}
+              ],
+            }}
             onSelectToken={({ denomOrAddress }) =>
               setValue(fieldNamePrefix + 'denomOrAddress', denomOrAddress)
             }
             readOnly={!isCreating}
-            register={register}
             selectedToken={selectedToken?.token}
-            setValue={setValue}
             tokens={{
               loading: false,
               data: tokens.map(({ token }) => token),
             }}
-            watch={watch}
           />
 
           <div className="flex min-w-0 grow flex-row items-stretch gap-2 sm:gap-3">

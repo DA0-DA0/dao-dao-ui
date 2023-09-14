@@ -168,12 +168,16 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         {depositRequired && (
           <div className="flex max-w-md grow flex-col gap-1">
             <TokenInput
-              amountError={errors?.depositInfo?.amount}
-              amountFieldName={
-                (fieldNamePrefix + 'depositInfo.amount') as 'depositInfo.amount'
-              }
-              amountMin={minimumDeposit}
-              amountStep={minimumDeposit}
+              amount={{
+                watch,
+                setValue,
+                register,
+                fieldName: (fieldNamePrefix +
+                  'depositInfo.amount') as 'depositInfo.amount',
+                error: errors?.depositInfo?.amount,
+                min: minimumDeposit,
+                step: minimumDeposit,
+              }}
               onSelectToken={({ type, denomOrAddress }) => {
                 // Type-check, should never happen.
                 if (
@@ -206,9 +210,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                 }
               }}
               readOnly={!isCreating}
-              register={register}
               selectedToken={selectedToken}
-              setValue={setValue}
               tokenFallback={
                 depositInfo.type === 'cw20' ? (
                   // If valid cw20 address, show loader since deposit token
@@ -224,7 +226,6 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
                 ) : undefined
               }
               tokens={{ loading: false, data: availableTokens }}
-              watch={watch}
             />
             <InputErrorMessage error={errors?.depositInfo?.amount} />
 

@@ -123,24 +123,25 @@ export const NewAttribute = ({
                 className="flex flex-row gap-2 rounded-lg bg-background-tertiary p-4"
               >
                 <TokenInput
-                  amountError={
-                    errors?.attributes?.[attributeIndex]?.tokens?.[tokenIndex]
-                      ?.amount
-                  }
-                  amountFieldName={`attributes.${attributeIndex}.tokens.${tokenIndex}.amount`}
-                  amountStep={convertMicroDenomToDenomWithDecimals(
-                    1,
-                    selectedToken?.decimals ?? 0
-                  )}
+                  amount={{
+                    watch,
+                    setValue,
+                    register,
+                    fieldName: `attributes.${attributeIndex}.tokens.${tokenIndex}.amount`,
+                    error:
+                      errors?.attributes?.[attributeIndex]?.tokens?.[tokenIndex]
+                        ?.amount,
+                    step: convertMicroDenomToDenomWithDecimals(
+                      1,
+                      selectedToken?.decimals ?? 0
+                    ),
+                  }}
                   onSelectToken={({ denomOrAddress }) =>
                     setValue(denomOrAddressFieldName, denomOrAddress)
                   }
-                  register={register}
                   required={false}
                   selectedToken={selectedToken}
-                  setValue={setValue}
                   tokens={{ loading: false, data: availableTokens }}
-                  watch={watch}
                 />
 
                 <div className="flex flex-row items-center">
