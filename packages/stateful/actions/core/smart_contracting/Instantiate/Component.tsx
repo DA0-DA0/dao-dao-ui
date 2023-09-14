@@ -154,6 +154,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
               key={id}
               {...({
                 ...props,
+                chainId,
                 onRemove: props.isCreating
                   ? () => removeCoin(index)
                   : undefined,

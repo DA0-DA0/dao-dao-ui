@@ -276,17 +276,22 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         ref={containerRef}
       >
         <TokenInput
-          amountError={errors?.amount}
-          amountFieldName={(fieldNamePrefix + 'amount') as 'amount'}
-          amountMax={balance}
-          amountMin={convertMicroDenomToDenomWithDecimals(
-            1,
-            selectedToken?.token.decimals ?? 0
-          )}
-          amountStep={convertMicroDenomToDenomWithDecimals(
-            1,
-            selectedToken?.token.decimals ?? 0
-          )}
+          amount={{
+            watch,
+            setValue,
+            register,
+            fieldName: (fieldNamePrefix + 'amount') as 'amount',
+            error: errors?.amount,
+            min: convertMicroDenomToDenomWithDecimals(
+              1,
+              selectedToken?.token.decimals ?? 0
+            ),
+            max: balance,
+            step: convertMicroDenomToDenomWithDecimals(
+              1,
+              selectedToken?.token.decimals ?? 0
+            ),
+          }}
           onSelectToken={({ chainId, denomOrAddress }) => {
             // If chain changes and the dest chain is the same, switch it.
             if (spendChainId === toChainId && chainId !== spendChainId) {
@@ -300,9 +305,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             setValue((fieldNamePrefix + 'denom') as 'denom', denomOrAddress)
           }}
           readOnly={!isCreating}
-          register={register}
           selectedToken={selectedToken?.token}
-          setValue={setValue}
           showChainImage
           tokens={
             tokens.loading
@@ -323,7 +326,6 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                   })),
                 }
           }
-          watch={watch}
         />
 
         <div

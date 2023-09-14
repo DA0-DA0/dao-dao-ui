@@ -88,6 +88,7 @@ export const NativeCoinSelector = ({
           })
         )
       }
+
       // If there are no native tokens in the treasury the native balances
       // query will return an empty list.
       if (id === nativeToken.denomOrAddress) {
@@ -157,26 +158,27 @@ export const NativeCoinSelector = ({
     <div className={className}>
       <div className="flex flex-row items-stretch gap-2">
         <TokenInput
-          amountError={errors?.amount || errors?._error}
-          amountFieldName={fieldNamePrefix + 'amount'}
-          amountMax={
-            dontValidate
+          amount={{
+            watch,
+            setValue,
+            register,
+            fieldName: fieldNamePrefix + 'amount',
+            error: errors?.amount || errors?._error,
+            min: minAmount,
+            step: minAmount,
+            max: dontValidate
               ? undefined
               : selectedTokenBalance &&
                 convertMicroDenomToDenomWithDecimals(
                   selectedTokenBalance.balance,
                   selectedTokenBalance.token.decimals
-                )
-          }
-          amountMin={minAmount}
-          amountStep={minAmount}
+                ),
+          }}
           onSelectToken={({ denomOrAddress }) =>
             setValue(fieldNamePrefix + 'denom', denomOrAddress)
           }
           readOnly={!isCreating}
-          register={register}
           selectedToken={selectedTokenBalance?.token}
-          setValue={setValue}
           tokens={
             nativeBalances.loading
               ? { loading: true }
@@ -191,7 +193,6 @@ export const NativeCoinSelector = ({
                     .map(({ token }) => token),
                 }
           }
-          watch={watch}
         />
 
         {isCreating && (

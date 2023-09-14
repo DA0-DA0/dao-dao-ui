@@ -7,7 +7,7 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
 import { TokenType } from '@dao-dao/types'
-import { getNativeTokenForChainId } from '@dao-dao/utils'
+import { getNativeIbcUsdc, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import {
   ConfigureRebalancerComponent,
@@ -21,10 +21,15 @@ export default {
   decorators: [
     makeReactHookFormDecorator<ConfigureRebalancerData>({
       chainId: CHAIN_ID,
+      baseDenom: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,
       tokens: [
         {
-          amount: 1,
+          percent: 50,
           denom: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,
+        },
+        {
+          percent: 50,
+          denom: getNativeIbcUsdc(CHAIN_ID)!.denomOrAddress,
         },
       ],
       pid: {

@@ -235,12 +235,12 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                   key={id}
                   {...({
                     ...props,
+                    chainId,
                     options: {
                       nativeBalances: balances,
                     },
                     onRemove: isCreating ? () => removeCoin(index) : undefined,
                   } as NativeCoinSelectorProps)}
-                  chainId={chainId}
                   dontValidate
                   errors={errors?.funds?.[index]}
                   fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
@@ -446,6 +446,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                         key={id}
                         {...({
                           ...props,
+                          chainId,
                           options: {
                             nativeBalances: balances,
                           },
@@ -453,7 +454,6 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                             ? () => removeCoin(index)
                             : undefined,
                         } as NativeCoinSelectorProps)}
-                        chainId={chainId}
                         dontValidate
                         errors={errors?.funds?.[index]}
                         fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}

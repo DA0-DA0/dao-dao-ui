@@ -86,17 +86,22 @@ export const WyndDepositEditor = ({
         <InputLabel name={t('form.outputToken')} />
 
         <TokenInput
-          amountError={errors?.outputAmount}
-          amountFieldName={(fieldNamePrefix + 'outputAmount') as 'outputAmount'}
-          amountMin={convertMicroDenomToDenomWithDecimals(
-            1,
-            selectedOutputToken?.decimals ?? 0
-          )}
-          amountStep={convertMicroDenomToDenomWithDecimals(
-            1,
-            selectedOutputToken?.decimals ?? 0
-          )}
-          convertMicroDenom
+          amount={{
+            watch,
+            setValue,
+            register,
+            fieldName: (fieldNamePrefix + 'outputAmount') as 'outputAmount',
+            error: errors?.outputAmount,
+            min: convertMicroDenomToDenomWithDecimals(
+              1,
+              selectedOutputToken?.decimals ?? 0
+            ),
+            step: convertMicroDenomToDenomWithDecimals(
+              1,
+              selectedOutputToken?.decimals ?? 0
+            ),
+            convertMicroDenom: true,
+          }}
           disabled={!isCreating}
           onSelectToken={({ type, denomOrAddress }) => {
             // Update type, denomOrAddress, and decimals.
@@ -105,11 +110,8 @@ export const WyndDepositEditor = ({
               denomOrAddress,
             })
           }}
-          register={register}
           selectedToken={selectedOutputToken}
-          setValue={setValue}
           tokens={loadingWyndTokens}
-          watch={watch}
         />
       </div>
 
