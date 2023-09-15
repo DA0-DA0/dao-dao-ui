@@ -24,6 +24,7 @@ import {
   decodePolytoneExecuteMsg,
   isDecodedStargateMsg,
   isValidContractAddress,
+  isValidWalletAddress,
   makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
@@ -97,6 +98,7 @@ const InnerComponentWrapper: ActionComponent<
   const { bech32_prefix: bech32Prefix, chain_id: chainId } = useChain()
 
   const isContractAddress = isValidContractAddress(address, bech32Prefix)
+  const isWalletAddress = isValidWalletAddress(address, bech32Prefix)
   // If contract, try to load DAO info.
   const daoInfoLoadable = useRecoilValueLoadable(
     isContractAddress
@@ -107,22 +109,22 @@ const InnerComponentWrapper: ActionComponent<
       : constSelector(undefined)
   )
 
-  return isContractAddress && daoInfoLoadable.state !== 'hasError' ? (
-    daoInfoLoadable.state === 'hasValue' ? (
-      <SuspenseLoader fallback={<InnerComponentLoading {...props} />}>
-        <DaoProviders info={daoInfoLoadable.contents!}>
-          <InnerComponent {...props} />
-        </DaoProviders>
-      </SuspenseLoader>
-    ) : (
-      <InnerComponentLoading {...props} />
-    )
-  ) : address ? (
+  return isContractAddress &&
+    daoInfoLoadable.state === 'hasValue' &&
+    daoInfoLoadable.contents ? (
+    <SuspenseLoader fallback={<InnerComponentLoading {...props} />}>
+      <DaoProviders info={daoInfoLoadable.contents}>
+        <InnerComponent {...props} />
+      </DaoProviders>
+    </SuspenseLoader>
+  ) : (isContractAddress &&
+      (daoInfoLoadable.state === 'hasError' || !daoInfoLoadable.contents)) ||
+    isWalletAddress ? (
     <WalletActionsProvider address={address}>
       <InnerComponent {...props} />
     </WalletActionsProvider>
   ) : (
-    <InnerComponent {...props} />
+    <InnerComponentLoading {...props} />
   )
 }
 
