@@ -32,10 +32,10 @@ import {
   isValidBech32Address,
   isValidContractAddress,
   makeBankMessage,
-  makePolytoneExecuteMessage,
   makeStargateMessage,
   makeWasmMessage,
   maybeGetNativeTokenForChainId,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
   transformBech32Address,
 } from '@dao-dao/utils'
@@ -215,11 +215,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
         throw new Error(`Unknown token type: ${token.type}`)
       }
 
-      if (fromChainId === currentChainId) {
-        return msg
-      } else {
-        return makePolytoneExecuteMessage(currentChainId, fromChainId, msg)
-      }
+      return maybeMakePolytoneExecuteMessage(currentChainId, fromChainId, msg)
     },
     [address, context, currentChainId, loadingTokenBalances]
   )

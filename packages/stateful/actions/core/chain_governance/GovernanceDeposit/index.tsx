@@ -31,8 +31,8 @@ import {
 import {
   decodePolytoneExecuteMsg,
   isDecodedStargateMsg,
-  makePolytoneExecuteMessage,
   makeStargateMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -203,27 +203,27 @@ export const makeGovernanceDepositAction: ActionMaker<
   const useTransformToCosmos: UseTransformToCosmos<
     GovernanceDepositData
   > = () =>
-    useCallback(({ chainId, proposalId, deposit }) => {
-      const msg = makeStargateMessage({
-        stargate: {
-          typeUrl: MsgDeposit.typeUrl,
-          value: {
-            proposalId: BigInt(proposalId || '0'),
-            depositor: address,
-            amount: deposit.map(({ denom, amount }) => ({
-              denom,
-              amount: BigInt(amount).toString(),
-            })),
-          } as MsgDeposit,
-        },
-      })
-
-      if (chainId === currentChainId) {
-        return msg
-      } else {
-        return makePolytoneExecuteMessage(currentChainId, chainId, msg)
-      }
-    }, [])
+    useCallback(
+      ({ chainId, proposalId, deposit }) =>
+        maybeMakePolytoneExecuteMessage(
+          currentChainId,
+          chainId,
+          makeStargateMessage({
+            stargate: {
+              typeUrl: MsgDeposit.typeUrl,
+              value: {
+                proposalId: BigInt(proposalId || '0'),
+                depositor: address,
+                amount: deposit.map(({ denom, amount }) => ({
+                  denom,
+                  amount: BigInt(amount).toString(),
+                })),
+              } as MsgDeposit,
+            },
+          })
+        ),
+      []
+    )
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<GovernanceDepositData> = (
     msg: Record<string, any>

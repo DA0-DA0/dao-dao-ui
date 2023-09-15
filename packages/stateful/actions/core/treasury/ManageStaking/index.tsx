@@ -33,8 +33,8 @@ import {
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
-  makePolytoneExecuteMessage,
   makeStakingActionMessage,
+  maybeMakePolytoneExecuteMessage,
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../components/AddressInput'
@@ -65,20 +65,19 @@ const useTransformToCosmos: UseTransformToCosmos<ManageStakingData> = () => {
         amount,
         nativeToken.decimals
       )
-      const msg = makeStakingActionMessage(
-        stakeType,
-        microAmount.toString(),
-        nativeToken.denomOrAddress,
-        validator,
-        toValidator,
-        withdrawAddress
-      )
 
-      if (chainId === currentChainId) {
-        return msg
-      } else {
-        return makePolytoneExecuteMessage(currentChainId, chainId, msg)
-      }
+      return maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        makeStakingActionMessage(
+          stakeType,
+          microAmount.toString(),
+          nativeToken.denomOrAddress,
+          validator,
+          toValidator,
+          withdrawAddress
+        )
+      )
     },
     [currentChainId]
   )

@@ -23,8 +23,8 @@ import {
   getChainForChainId,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
-  makePolytoneExecuteMessage,
   makeStargateMessage,
+  maybeMakePolytoneExecuteMessage,
   toValidatorAddress,
 } from '@dao-dao/utils'
 
@@ -106,11 +106,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = (
             throw Error('Unrecogonized validator action type')
         }
 
-        if (chainId === currentChainId) {
-          return msg
-        } else {
-          return makePolytoneExecuteMessage(currentChainId, chainId, msg)
-        }
+        return maybeMakePolytoneExecuteMessage(currentChainId, chainId, msg)
       },
       []
     )

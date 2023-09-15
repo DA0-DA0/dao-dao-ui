@@ -42,8 +42,8 @@ import {
   decodePolytoneExecuteMsg,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
-  makePolytoneExecuteMessage,
   makeStargateMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -344,11 +344,7 @@ export const makeGovernanceProposalAction: ActionMaker<
         })
       }
 
-      if (chainId === currentChainId) {
-        return msg
-      } else {
-        return makePolytoneExecuteMessage(currentChainId, chainId, msg)
-      }
+      return maybeMakePolytoneExecuteMessage(currentChainId, chainId, msg)
     }
   }
 

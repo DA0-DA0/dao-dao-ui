@@ -29,6 +29,7 @@ import {
   SelectInput,
   TextInput,
   WarningCard,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
@@ -47,7 +48,6 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../react'
 import {
   ACTION_TYPES,
   AUTHORIZATION_TYPES,
@@ -65,9 +65,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
   AuthzGrantRevokeOptions
 > = (props) => {
   const { t } = useTranslation()
-  const {
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
-  } = useActionOptions()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
   const {
     fieldNamePrefix,
     errors,

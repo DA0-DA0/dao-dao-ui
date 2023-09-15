@@ -21,8 +21,8 @@ import {
 import {
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
-  makePolytoneExecuteMessage,
   makeWasmMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -175,21 +175,21 @@ export const makeMintNftAction: ActionMaker<MintNftData> = ({
         throw new Error(t('error.loadingData'))
       }
 
-      const msg = makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: collectionAddress,
-            funds: [],
-            msg: {
-              mint: mintMsg,
+      return maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: collectionAddress,
+              funds: [],
+              msg: {
+                mint: mintMsg,
+              },
             },
           },
-        },
-      })
-
-      return chainId === currentChainId
-        ? msg
-        : makePolytoneExecuteMessage(currentChainId, chainId, msg)
+        })
+      )
     }, [])
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintNftData> = (

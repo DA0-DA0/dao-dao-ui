@@ -645,7 +645,7 @@ export const prepareProtobufJson = (msg: any): any =>
     : // Rule (1)
     typeof msg === 'string' && msg.startsWith('DATE:')
     ? new Date(msg.replace('DATE:', ''))
-    : typeof msg !== 'object' || msg === null
+    : typeof msg !== 'object' || msg === null || msg.constructor !== Object
     ? msg
     : Object.entries(msg).reduce(
         (acc, [key, value]) => ({

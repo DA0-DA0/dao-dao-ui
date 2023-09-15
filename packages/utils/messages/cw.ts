@@ -266,12 +266,21 @@ export const makeStakingActionMessage = (
   return msg
 }
 
-export const makePolytoneExecuteMessage = (
+// If the source and destination chains are different, this wraps the message in
+// a polytone execution message. Otherwise, it just returns the message. If the
+// chains are different but the message is undefined, this will return a message
+// that just creates a Polytone account.
+export const maybeMakePolytoneExecuteMessage = (
   srcChainId: string,
   destChainId: string,
   // Allow passing no message, which just creates an account.
   msg?: CosmosMsgFor_Empty
 ): CosmosMsgFor_Empty => {
+  // If on same chain, just return the message.
+  if (srcChainId === destChainId && msg) {
+    return msg
+  }
+
   const polytoneConnection =
     getSupportedChainConfig(srcChainId)?.polytone?.[destChainId]
 

@@ -34,7 +34,7 @@ import {
   govVoteOptionToCwVoteOption,
   isDecodedStargateMsg,
   loadableToLoadingData,
-  makePolytoneExecuteMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -177,22 +177,18 @@ export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
   })
 
   const useTransformToCosmos: UseTransformToCosmos<GovernanceVoteData> = () =>
-    useCallback(({ chainId, proposalId, vote }) => {
-      const msg = {
-        gov: {
-          vote: {
-            proposal_id: Number(proposalId || '-1'),
-            vote: govVoteOptionToCwVoteOption(vote),
+    useCallback(
+      ({ chainId, proposalId, vote }) =>
+        maybeMakePolytoneExecuteMessage(currentChainId, chainId, {
+          gov: {
+            vote: {
+              proposal_id: Number(proposalId || '-1'),
+              vote: govVoteOptionToCwVoteOption(vote),
+            },
           },
-        },
-      }
-
-      if (chainId === currentChainId) {
-        return msg
-      } else {
-        return makePolytoneExecuteMessage(currentChainId, chainId, msg)
-      }
-    }, [])
+        }),
+      []
+    )
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<GovernanceVoteData> = (
     msg: Record<string, any>

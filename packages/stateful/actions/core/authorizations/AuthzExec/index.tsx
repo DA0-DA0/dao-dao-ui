@@ -3,9 +3,15 @@ import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { MsgExec } from '@dao-dao/protobuf/codegen/cosmos/authz/v1beta1/tx'
-import { LockWithKeyEmoji, useChain } from '@dao-dao/stateless'
+import {
+  ChainPickerInput,
+  ChainProvider,
+  LockWithKeyEmoji,
+  useChain,
+} from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
   ActionMaker,
   CosmosMsgFor_Empty,
@@ -15,10 +21,11 @@ import {
 } from '@dao-dao/types'
 import {
   cwMsgToProtobuf,
+  decodePolytoneExecuteMsg,
   isDecodedStargateMsg,
   isValidContractAddress,
-  isValidWalletAddress,
   makeStargateMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
   protobufToCwMsg,
 } from '@dao-dao/utils'
@@ -32,6 +39,7 @@ import {
 import { daoInfoSelector } from '../../../../recoil'
 import {
   WalletActionsProvider,
+  useActionOptions,
   useActionsForMatching,
   useLoadedActionsAndCategories,
 } from '../../../react'
@@ -40,11 +48,6 @@ import {
   AuthzExecOptions,
   AuthzExecComponent as StatelessAuthzExecComponent,
 } from './Component'
-
-const useDefaults: UseDefaults<AuthzExecData> = () => ({
-  address: '',
-  msgs: [],
-})
 
 type InnerOptions = Pick<AuthzExecOptions, 'msgPerSenderIndex'>
 
@@ -94,7 +97,6 @@ const InnerComponentWrapper: ActionComponent<
   const { bech32_prefix: bech32Prefix, chain_id: chainId } = useChain()
 
   const isContractAddress = isValidContractAddress(address, bech32Prefix)
-  const isWalletAddress = isValidWalletAddress(address, bech32Prefix)
   // If contract, try to load DAO info.
   const daoInfoLoadable = useRecoilValueLoadable(
     isContractAddress
@@ -105,7 +107,7 @@ const InnerComponentWrapper: ActionComponent<
       : constSelector(undefined)
   )
 
-  return isContractAddress ? (
+  return isContractAddress && daoInfoLoadable.state !== 'hasError' ? (
     daoInfoLoadable.state === 'hasValue' ? (
       <SuspenseLoader fallback={<InnerComponentLoading {...props} />}>
         <DaoProviders info={daoInfoLoadable.contents!}>
@@ -115,7 +117,7 @@ const InnerComponentWrapper: ActionComponent<
     ) : (
       <InnerComponentLoading {...props} />
     )
-  ) : isWalletAddress ? (
+  ) : address ? (
     <WalletActionsProvider address={address}>
       <InnerComponent {...props} />
     </WalletActionsProvider>
@@ -125,35 +127,53 @@ const InnerComponentWrapper: ActionComponent<
 }
 
 const Component: ActionComponent = (props) => {
+  const { context } = useActionOptions()
+
   // Load DAO info for chosen DAO.
   const { watch } = useFormContext<AuthzExecData>()
   const address = watch((props.fieldNamePrefix + 'address') as 'address')
   const msgsPerSender =
     watch((props.fieldNamePrefix + '_msgs') as '_msgs') ?? []
 
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
+
   // When creating, just show one form for the chosen address. When not
   // creating, render a form for each sender message group since the component
   // needs to be wrapped in the providers for that sender.
-  return props.isCreating ? (
-    <InnerComponentWrapper
-      {...props}
-      options={{
-        address,
-      }}
-    />
-  ) : (
+  return (
     <>
-      {msgsPerSender.map(({ sender }, index) => (
-        <InnerComponentWrapper
-          key={index}
-          {...props}
-          options={{
-            address: sender,
-            // Set so the component knows which sender message group to render.
-            msgPerSenderIndex: index,
-          }}
+      {context.type === ActionContextType.Dao && (
+        <ChainPickerInput
+          className="mb-4"
+          disabled={!props.isCreating}
+          fieldName={props.fieldNamePrefix + 'chainId'}
         />
-      ))}
+      )}
+
+      <ChainProvider chainId={chainId}>
+        {props.isCreating ? (
+          <InnerComponentWrapper
+            {...props}
+            options={{
+              address,
+            }}
+          />
+        ) : (
+          <>
+            {msgsPerSender.map(({ sender }, index) => (
+              <InnerComponentWrapper
+                key={index}
+                {...props}
+                options={{
+                  address: sender,
+                  // Set so the component knows which sender message group to render.
+                  msgPerSenderIndex: index,
+                }}
+              />
+            ))}
+          </>
+        )}
+      </ChainProvider>
     </>
   )
 }
@@ -161,11 +181,25 @@ const Component: ActionComponent = (props) => {
 export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
   t,
   address: grantee,
+  chain: { chain_id: currentChainId },
 }) => {
+  const useDefaults: UseDefaults<AuthzExecData> = () => ({
+    chainId: currentChainId,
+    address: '',
+    msgs: [],
+  })
+
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzExecData> = (
     msg: Record<string, any>
-  ) =>
-    useMemo(() => {
+  ) => {
+    let chainId = currentChainId
+    const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+    if (decodedPolytone.match) {
+      chainId = decodedPolytone.chainId
+      msg = decodedPolytone.msg
+    }
+
+    return useMemo(() => {
       if (
         !isDecodedStargateMsg(msg) ||
         msg.stargate.typeUrl !== MsgExec.typeUrl ||
@@ -204,6 +238,7 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
       return {
         match: true,
         data: {
+          chainId,
           // Technically each message could have a different address. While we
           // don't support that on creation, we can still detect and render them
           // correctly in the component.
@@ -212,20 +247,25 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
           _msgs: msgsPerSender,
         },
       }
-    }, [msg])
+    }, [chainId, msg])
+  }
 
   const useTransformToCosmos: UseTransformToCosmos<AuthzExecData> = () =>
     useCallback(
-      ({ address, msgs }) =>
-        makeStargateMessage({
-          stargate: {
-            typeUrl: MsgExec.typeUrl,
-            value: {
-              grantee,
-              msgs: msgs.map((msg) => cwMsgToProtobuf(msg, address)),
-            } as MsgExec,
-          },
-        }),
+      ({ chainId, address, msgs }) =>
+        maybeMakePolytoneExecuteMessage(
+          currentChainId,
+          chainId,
+          makeStargateMessage({
+            stargate: {
+              typeUrl: MsgExec.typeUrl,
+              value: {
+                grantee,
+                msgs: msgs.map((msg) => cwMsgToProtobuf(msg, address)),
+              } as MsgExec,
+            },
+          })
+        ),
       []
     )
 
