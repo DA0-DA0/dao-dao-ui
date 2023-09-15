@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { SoftwareUpgradeProposal } from '@dao-dao/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
-import { ReactHookFormDecorator } from '@dao-dao/storybook'
+import { CHAIN_ID, ReactHookFormDecorator } from '@dao-dao/storybook'
 import {
   GovProposalVersion,
   GovProposalWithDecodedContent,
@@ -72,6 +72,7 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   data: {
+    chainId: CHAIN_ID,
     proposalId: '',
     deposit: [
       {

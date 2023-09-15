@@ -31,6 +31,7 @@ export type GovernanceDepositOptions = {
 }
 
 export type GovernanceDepositData = {
+  chainId: string
   proposalId: string
   deposit: {
     amount: number
