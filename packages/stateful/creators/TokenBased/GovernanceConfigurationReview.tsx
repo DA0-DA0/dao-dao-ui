@@ -8,7 +8,6 @@ import {
   DaoCreateVotingPowerDistributionReviewCard,
   Loader,
   TierDataEntry,
-  VOTING_POWER_DISTRIBUTION_COLORS,
   useChain,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
@@ -16,7 +15,7 @@ import {
   DaoCreationGovernanceConfigReviewProps,
   TokenType,
 } from '@dao-dao/types'
-import { formatPercentOf100 } from '@dao-dao/utils'
+import { DISTRIBUTION_COLORS, formatPercentOf100 } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../../components/EntityDisplay'
 import { CreatorData, GovernanceTokenType } from './types'
@@ -79,20 +78,14 @@ export const GovernanceConfigurationReview = ({
         name: address,
         // Governance token-based DAO tier weights are split amongst members.
         value: tiers[0].weight / tiers[0].members.length,
-        color:
-          VOTING_POWER_DISTRIBUTION_COLORS[
-            memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-          ],
+        color: DISTRIBUTION_COLORS[memberIndex % DISTRIBUTION_COLORS.length],
       }))
     : // Displaying entire tier as one pie wedge.
       tiers.map(({ name, weight }, tierIndex) => ({
         name,
         // Governance token-based DAO tier weights are split amongst members.
         value: weight,
-        color:
-          VOTING_POWER_DISTRIBUTION_COLORS[
-            tierIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-          ],
+        color: DISTRIBUTION_COLORS[tierIndex % DISTRIBUTION_COLORS.length],
       }))
   // Add treasury.
   pieData.push({
@@ -106,15 +99,11 @@ export const GovernanceConfigurationReview = ({
       name,
       color: onlyOneTier
         ? undefined
-        : VOTING_POWER_DISTRIBUTION_COLORS[
-            tierIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-          ],
+        : DISTRIBUTION_COLORS[tierIndex % DISTRIBUTION_COLORS.length],
       members: members.map(({ address }, memberIndex) => ({
         address,
         color: onlyOneTier
-          ? VOTING_POWER_DISTRIBUTION_COLORS[
-              memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-            ]
+          ? DISTRIBUTION_COLORS[memberIndex % DISTRIBUTION_COLORS.length]
           : undefined,
         // Governance token-based DAO tier weights are split amongst members.
         readableValue: formatPercentOf100(weight / members.length),

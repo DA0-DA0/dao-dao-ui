@@ -1,11 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { EntityDisplay } from '@dao-dao/stateful/components/EntityDisplay'
+import { DISTRIBUTION_COLORS } from '@dao-dao/utils'
 
-import {
-  DaoCreateVotingPowerDistributionReviewCard,
-  VOTING_POWER_DISTRIBUTION_COLORS,
-} from './DaoCreateVotingPowerDistribution'
+import { DaoCreateVotingPowerDistributionReviewCard } from './DaoCreateVotingPowerDistribution'
 
 export default {
   title:
@@ -27,7 +25,7 @@ Default.args = {
   pieData: [
     {
       value: 15,
-      color: VOTING_POWER_DISTRIBUTION_COLORS[0],
+      color: DISTRIBUTION_COLORS[0],
     },
     {
       value: 85,
@@ -42,7 +40,7 @@ Default.args = {
     },
     {
       name: 'Core members',
-      color: VOTING_POWER_DISTRIBUTION_COLORS[0],
+      color: DISTRIBUTION_COLORS[0],
       members: [
         {
           address: 'juno49hndidfcjf928u12wds1vf11jieds8d9',
