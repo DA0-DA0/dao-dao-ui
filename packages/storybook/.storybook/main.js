@@ -22,10 +22,14 @@ module.exports = {
   framework: '@storybook/react',
   webpackFinal: async (config) => {
     config.resolve.plugins = [new tsconfigPathsPlugin()]
+
     // These packages fail to import Buffer, and adding webpack.ProvidePlugin
     // doesn't fix the issue, so let's just ignore them!
     config.resolve.alias['tiny-secp256k1'] = false
     config.resolve.alias['@toruslabs/eccrypto'] = false
+
+    // @cosmos-kit/web3auth fails to import
+    config.resolve.alias['@cosmos-kit/web3auth'] = false
 
     return config
   },
