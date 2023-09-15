@@ -65,3 +65,44 @@ export const NEUTRON_GOVERNANCE_DAO =
 
 // DAOs with these names will be excluded from search.
 export const INACTIVE_DAO_NAMES = ['[archived]', '[deleted]']
+
+// 1-10 linear from purple to orange/yellow. Intersperse colors so similar
+// colors are not adjacent.
+export const DISTRIBUTION_COLORS = [
+  '#5B58E2', // 1
+  '#954FE7', // 4
+  '#FC81A4', // 7
+  '#F1B671', // 10
+  '#4744AC', // 2
+  '#BA73DD', // 5
+  '#EE7969', // 8
+  '#6642CE', // 3
+  '#DE73C0', // 6
+  '#F4925A', // 9
+]
+
+export const DISTRIBUTION_COLORS_ORDERED = [
+  '#5B58E2', // 1
+  '#4744AC', // 2
+  '#6642CE', // 3
+  '#954FE7', // 4
+  '#BA73DD', // 5
+  '#DE73C0', // 6
+  '#FC81A4', // 7
+  '#EE7969', // 8
+  '#F4925A', // 9
+  '#F1B671', // 10
+]
+
+export const DISTRIBUTION_COLORS_EVERY_OTHER = [
+  '#4744AC', // 2
+  '#954FE7', // 4
+  '#DE73C0', // 6
+  '#EE7969', // 8
+  '#F1B671', // 10
+  '#5B58E2', // 1
+  '#6642CE', // 3
+  '#BA73DD', // 5
+  '#FC81A4', // 7
+  '#F4925A', // 9
+]

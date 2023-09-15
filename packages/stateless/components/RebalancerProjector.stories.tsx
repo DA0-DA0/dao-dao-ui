@@ -23,17 +23,17 @@ Default.args = {
     {
       symbol: 'NTRN',
       currentAmount: 1250,
-      targetProportion: 3 / 8,
+      targetProportion: 5 / 8,
       currentPrice: 0.4,
       projection: {
         type: 'random',
-        disturbance: 0.1,
+        disturbance: 0.5,
       },
     },
     {
       symbol: 'USDC',
       currentAmount: 300,
-      targetProportion: 5 / 8,
+      targetProportion: 3 / 8,
       currentPrice: 1,
       projection: {
         type: 'linear',

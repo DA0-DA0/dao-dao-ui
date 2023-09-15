@@ -157,31 +157,3 @@ const PieChart = ({ data, className }: ChartProps) => (
     }}
   />
 )
-
-// 1-10 linear from purple to orange/yellow. Intersperse colors so similar
-// colors are not adjacent.
-export const VOTING_POWER_DISTRIBUTION_COLORS = [
-  '#5B58E2', // 1
-  '#954FE7', // 4
-  '#FC81A4', // 7
-  '#F1B671', // 10
-  '#4744AC', // 2
-  '#BA73DD', // 5
-  '#EE7969', // 8
-  '#6642CE', // 3
-  '#DE73C0', // 6
-  '#F4925A', // 9
-]
-
-export const VOTING_POWER_DISTRIBUTION_COLORS_ORDERED = [
-  '#5B58E2', // 1
-  '#4744AC', // 2
-  '#6642CE', // 3
-  '#954FE7', // 4
-  '#BA73DD', // 5
-  '#DE73C0', // 6
-  '#FC81A4', // 7
-  '#EE7969', // 8
-  '#F4925A', // 9
-  '#F1B671', // 10
-]

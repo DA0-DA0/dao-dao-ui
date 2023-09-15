@@ -15,8 +15,9 @@ import Controller from 'node-pid-controller'
 import { useMemo } from 'react'
 import { Line } from 'react-chartjs-2'
 
+import { DISTRIBUTION_COLORS_EVERY_OTHER } from '@dao-dao/utils'
+
 import { useNamedThemeColor } from '../theme'
-import { VOTING_POWER_DISTRIBUTION_COLORS } from './dao/create/DaoCreateVotingPowerDistribution'
 
 ChartJS.register(
   CategoryScale,
@@ -84,102 +85,121 @@ export const RebalancerProjector = ({
   const textColor = useNamedThemeColor('text-tertiary')
   const borderColor = useNamedThemeColor('border-primary')
 
-  const controller = useMemo(
+  // The PID controller for each asset.
+  const controllers = useMemo(
     () =>
-      new Controller({
-        k_p: kp,
-        k_i: ki,
-        k_d: kd,
-        dt: interval,
-      }),
-    [interval, kd, ki, kp]
+      [...Array(assets.length)].map(
+        () =>
+          new Controller({
+            k_p: kp,
+            k_i: ki,
+            k_d: kd,
+            dt: interval,
+          })
+      ),
+    [assets.length, interval, kd, ki, kp]
   )
 
-  const assetPrices = assets.map(({ currentPrice, projection }) => {
-    let latestPrice = currentPrice
-    return [
-      currentPrice,
-      // Change prices at each rebalance.
-      ...[...Array(numRebalances)].map(() => {
-        latestPrice = changePrice(latestPrice, projection)
-        return latestPrice
-      }),
-    ]
+  controllers.forEach((controller) => {
+    controller.reset()
   })
 
-  // Map asset index to latest amount.
-  const latestAmounts = assets.reduce(
-    (acc, { currentAmount }, index) => ({
-      ...acc,
-      [index]: currentAmount,
-    }),
-    {} as Record<number, number>
-  )
+  // Each projection is a list of all assets' amount and price after each
+  // rebalance.
+  const projections = [...Array(numRebalances)].reduce(
+    (
+      acc: {
+        amount: number
+        price: number
+      }[][]
+    ) => {
+      const lastProjection = acc[acc.length - 1]
 
-  const projections: ChartDataset<
-    'line',
-    (number | ScatterDataPoint | null)[]
-    >[] = [...Array(numRebalances)].map(() => {
-    
-  })
+      // Update the price for each asset.
+      const newProjection = assets.map(({ projection }, index) => {
+        const { amount, price } = lastProjection[index]
+        const newPrice = changePrice(price, projection)
 
-  const getProjections = ({
-    symbol,
-    currentAmount,
-    targetProportion,
-    currentPrice,
-    projection,
-  }: RebalancerProjectorAsset): ChartDataset<
-    'line',
-    (number | ScatterDataPoint | null)[]
-  >[] => {
-    controller.setTarget(targetValue)
+        return {
+          amount,
+          price: newPrice,
+        }
+      })
 
-    // Change prices at each rebalance.
-    let latestPrice = currentPrice
-    const priceUpdates = [...Array(numRebalances)].map(() => {
-      latestPrice = changePrice(latestPrice, projection)
-      return latestPrice
-    })
+      // Get total value of assets based on new prices.
+      const totalValue = newProjection.reduce((acc, { amount, price }) => {
+        return acc + amount * price
+      }, 0)
 
-    // Change amounts at each rebalance.
-    let latestAmount = currentAmount
-    const values = [
-      currentAmount * currentPrice,
-      ...priceUpdates.map((price) => {
+      // Use PID controller with new values to rebalance amounts.
+      assets.forEach(({ targetProportion }, index) => {
+        const controller = controllers[index]
+        const { amount: lastAmount, price } = newProjection[index]
+
+        const targetValue = targetProportion * totalValue
+        controller.setTarget(targetValue)
+
+        const currentValue = lastAmount * price
         // Rebalance with PID.
-        const rebalanceValue = controller.update(latestAmount * price)
-        latestAmount += rebalanceValue / price
+        const rebalanceValue = controller.update(currentValue)
+        const newAmount = lastAmount + rebalanceValue / price
 
-        // Return projected value.
-        return latestAmount * price
-      }),
-    ]
+        // Update projection amount.
+        newProjection[index].amount = newAmount
+      })
 
-    return [
-      {
-        label: `${symbol} Price`,
-        data: [currentPrice, ...priceUpdates],
-      },
-      {
-        label: `${symbol} Value`,
-        data: values,
-      },
+      return [...acc, newProjection]
+    },
+    [
+      // Start with initial amount and price for each asset.
+      assets.map(({ currentAmount, currentPrice }) => ({
+        amount: currentAmount,
+        price: currentPrice,
+      })),
     ]
-  }
+  )
+
+  const getProjections = (
+    { symbol }: RebalancerProjectorAsset,
+    assetIndex: number
+  ): ChartDataset<'line', (number | ScatterDataPoint | null)[]>[] => [
+    {
+      label: `${symbol} Value`,
+      data: projections.map(
+        (projection) =>
+          projection[assetIndex].amount * projection[assetIndex].price
+      ),
+    },
+    {
+      label: `${symbol} Amount`,
+      data: projections.map((projection) => projection[assetIndex].amount),
+    },
+  ]
 
   return (
     <div className={clsx('h-full', className)}>
       <Line
         data={{
-          labels: [...Array(numRebalances)].map((_, index) =>
+          labels: [undefined, ...Array(numRebalances)].map((_, index) =>
             (index + 1).toLocaleString()
           ),
-          datasets: assets.flatMap(getProjections).map((p, index) => ({
+          datasets: [
+            ...assets.flatMap(getProjections),
+            // Total
+            {
+              label: 'Total Value',
+              data: projections.map((projection) =>
+                projection.reduce(
+                  (acc, { amount, price }) => acc + amount * price,
+                  0
+                )
+              ),
+            },
+          ].map((p, index) => ({
             ...p,
             borderColor:
-              VOTING_POWER_DISTRIBUTION_COLORS[
-                index % VOTING_POWER_DISTRIBUTION_COLORS.length
+              DISTRIBUTION_COLORS_EVERY_OTHER[
+                index % DISTRIBUTION_COLORS_EVERY_OTHER.length
               ],
           })),
         }}
