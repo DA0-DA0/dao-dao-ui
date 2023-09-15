@@ -12,9 +12,15 @@ import {
   govProposalVoteSelector,
   govProposalsSelector,
 } from '@dao-dao/state'
-import { BallotDepositEmoji, Loader } from '@dao-dao/stateless'
+import {
+  BallotDepositEmoji,
+  ChainPickerInput,
+  ChainProvider,
+  Loader,
+} from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
@@ -23,14 +29,19 @@ import {
 } from '@dao-dao/types/actions'
 import {
   cwVoteOptionToGovVoteOption,
+  decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   govVoteOptionToCwVoteOption,
   isDecodedStargateMsg,
   loadableToLoadingData,
+  makePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { GovProposalActionDisplay } from '../../../../components'
-import { SuspenseLoader } from '../../../../components/SuspenseLoader'
+import {
+  GovProposalActionDisplay,
+  SuspenseLoader,
+} from '../../../../components'
 import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'
 import { GovActionsProvider, useActionOptions } from '../../../react'
 import {
@@ -38,35 +49,18 @@ import {
   GovernanceVoteComponent as StatelessGovernanceVoteComponent,
 } from './Component'
 
-const useDefaults: UseDefaults<GovernanceVoteData> = () => ({
-  proposalId: '',
-  vote: VoteOption.VOTE_OPTION_ABSTAIN,
-})
-
-const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => (
-  <SuspenseLoader fallback={<Loader />}>
-    <GovActionsProvider>
-      <InnerComponent {...props} />
-    </GovActionsProvider>
-  </SuspenseLoader>
-)
-
-const InnerComponent: ActionComponent<undefined, GovernanceVoteData> = (
-  props
-) => {
+const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
   const { isCreating, fieldNamePrefix } = props
-  const {
-    address,
-    chain: { chain_id: chainId },
-  } = useActionOptions()
+  const options = useActionOptions()
   const { watch, setValue, setError, clearErrors } =
     useFormContext<GovernanceVoteData>()
 
+  const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
   const proposalId = watch(
     (props.fieldNamePrefix + 'proposalId') as 'proposalId'
   )
 
-  const openProposals = useRecoilValue(
+  const openProposalsLoadable = useRecoilValueLoadable(
     isCreating
       ? govProposalsSelector({
           status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
@@ -77,14 +71,17 @@ const InnerComponent: ActionComponent<undefined, GovernanceVoteData> = (
 
   // Prevent action from being submitted if there are no open proposals.
   useEffect(() => {
-    if (openProposals && openProposals.proposals.length === 0) {
+    if (
+      openProposalsLoadable.state === 'hasValue' &&
+      openProposalsLoadable.contents?.proposals.length === 0
+    ) {
       setError((fieldNamePrefix + 'proposalId') as 'proposalId', {
         type: 'manual',
       })
     } else {
       clearErrors((fieldNamePrefix + 'proposalId') as 'proposalId')
     }
-  }, [openProposals, setError, clearErrors, fieldNamePrefix])
+  }, [openProposalsLoadable, setError, clearErrors, fieldNamePrefix])
 
   // If viewing an action where we already selected and voted on a proposal,
   // load just the one we voted on and add it to the list so we can display it.
@@ -102,7 +99,7 @@ const InnerComponent: ActionComponent<undefined, GovernanceVoteData> = (
       proposalId
         ? govProposalVoteSelector({
             proposalId: Number(proposalId),
-            voter: address,
+            voter: getChainAddressForActionOptions(options, chainId),
             chainId,
           })
         : constSelector(undefined)
@@ -112,65 +109,119 @@ const InnerComponent: ActionComponent<undefined, GovernanceVoteData> = (
 
   // Select first proposal once loaded if nothing selected.
   useEffect(() => {
-    if (isCreating && openProposals?.proposals.length && !proposalId) {
+    if (
+      isCreating &&
+      openProposalsLoadable.state === 'hasValue' &&
+      openProposalsLoadable.contents?.proposals.length &&
+      !proposalId
+    ) {
       setValue(
         (fieldNamePrefix + 'proposalId') as 'proposalId',
-        openProposals.proposals[0].id.toString()
+        openProposalsLoadable.contents.proposals[0].id.toString()
       )
     }
-  }, [isCreating, openProposals, proposalId, setValue, fieldNamePrefix])
+  }, [isCreating, openProposalsLoadable, proposalId, setValue, fieldNamePrefix])
 
   return (
-    <StatelessGovernanceVoteComponent
-      {...props}
-      options={{
-        proposals: [
-          ...(openProposals?.proposals ?? []),
-          ...(selectedProposal ? [selectedProposal] : []),
-        ],
-        existingVotesLoading,
-        TokenAmountDisplay,
-        GovProposalActionDisplay,
-      }}
-    />
+    <>
+      {options.context.type === ActionContextType.Dao && (
+        <ChainPickerInput
+          className="mb-4"
+          disabled={!isCreating}
+          fieldName={fieldNamePrefix + 'chainId'}
+          onChange={() =>
+            // Clear proposal on chain change.
+            setValue((fieldNamePrefix + 'proposalId') as 'proposalId', '')
+          }
+        />
+      )}
+
+      <SuspenseLoader
+        fallback={<Loader />}
+        forceFallback={
+          openProposalsLoadable.state !== 'hasValue' ||
+          !openProposalsLoadable.contents
+        }
+      >
+        <ChainProvider chainId={chainId}>
+          <GovActionsProvider>
+            <StatelessGovernanceVoteComponent
+              {...props}
+              options={{
+                proposals: [
+                  ...((openProposalsLoadable.state === 'hasValue' &&
+                    openProposalsLoadable.contents?.proposals) ||
+                    []),
+                  ...(selectedProposal ? [selectedProposal] : []),
+                ],
+                existingVotesLoading,
+                TokenAmountDisplay,
+                GovProposalActionDisplay,
+              }}
+            />
+          </GovActionsProvider>
+        </ChainProvider>
+      </SuspenseLoader>
+    </>
   )
 }
 
 export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
   t,
+  chain: { chain_id: currentChainId },
 }) => {
+  const useDefaults: UseDefaults<GovernanceVoteData> = () => ({
+    chainId: currentChainId,
+    proposalId: '',
+    vote: VoteOption.VOTE_OPTION_ABSTAIN,
+  })
+
   const useTransformToCosmos: UseTransformToCosmos<GovernanceVoteData> = () =>
-    useCallback(
-      ({ proposalId, vote }) => ({
+    useCallback(({ chainId, proposalId, vote }) => {
+      const msg = {
         gov: {
           vote: {
             proposal_id: Number(proposalId || '-1'),
             vote: govVoteOptionToCwVoteOption(vote),
           },
         },
-      }),
-      []
-    )
+      }
+
+      if (chainId === currentChainId) {
+        return msg
+      } else {
+        return makePolytoneExecuteMessage(currentChainId, chainId, msg)
+      }
+    }, [])
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<GovernanceVoteData> = (
     msg: Record<string, any>
-  ) =>
-    isDecodedStargateMsg(msg) &&
-    objectMatchesStructure(msg.stargate.value, {
-      proposalId: {},
-      voter: {},
-      option: {},
-    }) &&
-    // Make sure this is a vote message.
-    msg.stargate.typeUrl === MsgVote.typeUrl
+  ) => {
+    let chainId = currentChainId
+    const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+    if (decodedPolytone.match) {
+      chainId = decodedPolytone.chainId
+      msg = decodedPolytone.msg
+    }
+
+    return isDecodedStargateMsg(msg) &&
+      objectMatchesStructure(msg.stargate.value, {
+        proposalId: {},
+        voter: {},
+        option: {},
+      }) &&
+      // If vote Stargate message.
+      msg.stargate.typeUrl === MsgVote.typeUrl
       ? {
           match: true,
           data: {
+            chainId,
             proposalId: msg.stargate.value.proposalId.toString(),
             vote: msg.stargate.value.option,
           },
         }
-      : objectMatchesStructure(msg, {
+      : // If vote gov CosmWasm message.
+      objectMatchesStructure(msg, {
           gov: {
             vote: {
               proposal_id: {},
@@ -181,6 +232,7 @@ export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
       ? {
           match: true,
           data: {
+            chainId,
             proposalId: msg.gov.vote.proposal_id.toString(),
             vote: cwVoteOptionToGovVoteOption(msg.gov.vote.vote),
           },
@@ -188,6 +240,7 @@ export const makeGovernanceVoteAction: ActionMaker<GovernanceVoteData> = ({
       : {
           match: false,
         }
+  }
 
   return {
     key: ActionKey.GovernanceVote,

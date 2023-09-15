@@ -20,6 +20,7 @@ import {
 } from '@dao-dao/types/actions'
 import {
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   makePolytoneExecuteMessage,
   makeWasmMessage,
   objectMatchesStructure,
@@ -34,11 +35,7 @@ import { MintNftData } from './types'
 
 const Component: ActionComponent<undefined, MintNftData> = (props) => {
   const { t } = useTranslation()
-  const {
-    context,
-    address,
-    chain: { chain_id: currentChainId },
-  } = useActionOptions()
+  const options = useActionOptions()
   const { watch, register, setValue } = useFormContext<MintNftData>()
 
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
@@ -67,17 +64,13 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
 
   return (
     <>
-      {context.type === ActionContextType.Dao && props.isCreating && (
+      {options.context.type === ActionContextType.Dao && props.isCreating && (
         <ChainPickerInput
           className="mb-4"
           fieldName={props.fieldNamePrefix + 'chainId'}
           onChange={(chainId) => {
             // Update minter and recipient to correct address.
-            const newAddress =
-              chainId === currentChainId
-                ? address
-                : // Use DAO's polytone proxy if exists.
-                  context.info.polytoneProxies[chainId] || ''
+            const newAddress = getChainAddressForActionOptions(options, chainId)
 
             setValue(
               (props.fieldNamePrefix +

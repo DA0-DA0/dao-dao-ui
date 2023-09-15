@@ -25,6 +25,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   getNativeTokenForChainId,
   makePolytoneExecuteMessage,
   makeWasmMessage,
@@ -151,11 +152,12 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
 }
 
 const Component: ActionComponent = (props) => {
+  const options = useActionOptions()
   const {
     context,
     address,
     chain: { chain_id: currentChainId },
-  } = useActionOptions()
+  } = options
 
   const { watch, setValue } = useFormContext<InstantiateData>()
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
@@ -295,9 +297,7 @@ const Component: ActionComponent = (props) => {
             setValue((props.fieldNamePrefix + 'funds') as 'funds', [])
             setValue(
               (props.fieldNamePrefix + 'admin') as 'admin',
-              chainId === currentChainId
-                ? address
-                : context.info.polytoneProxies[chainId] ?? ''
+              getChainAddressForActionOptions(options, chainId)
             )
           }}
         />

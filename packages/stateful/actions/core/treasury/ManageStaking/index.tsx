@@ -31,6 +31,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   getNativeTokenForChainId,
   makePolytoneExecuteMessage,
   makeStakingActionMessage,
@@ -177,11 +178,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
 
 const InnerComponent: ActionComponent = (props) => {
   const { t } = useTranslation()
-  const { address: _address, context, chain } = useActionOptions()
+  const options = useActionOptions()
   const { watch } = useFormContext()
 
   const {
-    chain: { chain_id: currentChainId },
+    chain: { chain_id: chainId },
     nativeToken,
   } = useChainContext()
 
@@ -189,10 +190,7 @@ const InnerComponent: ActionComponent = (props) => {
     throw new Error(t('error.missingNativeToken'))
   }
 
-  const address =
-    context.type === ActionContextType.Dao && currentChainId !== chain.chain_id
-      ? context.info.polytoneProxies[currentChainId] || ''
-      : _address
+  const address = getChainAddressForActionOptions(options, chainId)
 
   // These need to be loaded via cached loadables to avoid displaying a loader
   // when this data updates on a schedule. Manually trigger a suspense loader
@@ -218,7 +216,7 @@ const InnerComponent: ActionComponent = (props) => {
 
   const loadingNativeDelegationInfo = useCachedLoading(
     nativeDelegationInfoSelector({
-      chainId: currentChainId,
+      chainId,
       address,
     }),
     {
@@ -229,14 +227,14 @@ const InnerComponent: ActionComponent = (props) => {
 
   const loadingValidators = useCachedLoading(
     validatorsSelector({
-      chainId: currentChainId,
+      chainId,
     }),
     []
   )
 
   const nativeUnstakingDurationSeconds = useCachedLoading(
     nativeUnstakingDurationSecondsSelector({
-      chainId: currentChainId,
+      chainId,
     }),
     -1
   )

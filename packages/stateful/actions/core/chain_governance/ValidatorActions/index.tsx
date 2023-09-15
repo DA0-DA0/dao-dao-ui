@@ -11,7 +11,6 @@ import {
 } from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/tx'
 import { PickEmoji } from '@dao-dao/stateless'
 import {
-  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
@@ -20,6 +19,7 @@ import {
 } from '@dao-dao/types/actions'
 import {
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   getChainForChainId,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
@@ -34,19 +34,17 @@ import {
   ValidatorActionsData,
 } from './Component'
 
-export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
-  t,
-  address,
-  chain: { chain_id: currentChainId },
-  context,
-}) => {
-  const getAddress = (chainId: string) =>
-    context.type === ActionContextType.Dao && currentChainId !== chainId
-      ? context.info.polytoneProxies[chainId] || ''
-      : address
+export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = (
+  options
+) => {
+  const {
+    t,
+    chain: { chain_id: currentChainId },
+  } = options
+
   const getValidatorAddress = (chainId: string) =>
     toValidatorAddress(
-      getAddress(chainId),
+      getChainAddressForActionOptions(options, chainId),
       getChainForChainId(chainId).bech32_prefix
     )
 
@@ -135,7 +133,10 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
           maxChangeRate: '100000000000000000',
         },
         minSelfDelegation: '1',
-        delegatorAddress: getAddress(currentChainId),
+        delegatorAddress: getChainAddressForActionOptions(
+          options,
+          currentChainId
+        ),
         validatorAddress: getValidatorAddress(currentChainId),
         pubkey: {
           typeUrl: PubKey.typeUrl,
@@ -179,7 +180,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = ({
       msg = decodedPolytone.msg
     }
 
-    const thisAddress = getAddress(chainId)
+    const thisAddress = getChainAddressForActionOptions(options, chainId)
     const validatorAddress = getValidatorAddress(chainId)
 
     const data = useDefaults()
