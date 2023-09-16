@@ -1,12 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { CHAIN_ID } from '@dao-dao/storybook'
 import {
   makeDaoInfo,
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook/decorators'
-import { TokenType } from '@dao-dao/types'
+import { ChainId, TokenType } from '@dao-dao/types'
 import { getNativeIbcUsdc, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import {
@@ -20,22 +19,23 @@ export default {
   component: ConfigureRebalancerComponent,
   decorators: [
     makeReactHookFormDecorator<ConfigureRebalancerData>({
-      chainId: CHAIN_ID,
-      baseDenom: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,
+      chainId: ChainId.NeutronMainnet,
+      baseDenom: getNativeIbcUsdc(ChainId.NeutronMainnet)!.denomOrAddress,
       tokens: [
         {
           percent: 50,
-          denom: getNativeTokenForChainId(CHAIN_ID).denomOrAddress,
+          denom: getNativeTokenForChainId(ChainId.NeutronMainnet)
+            .denomOrAddress,
         },
         {
           percent: 50,
-          denom: getNativeIbcUsdc(CHAIN_ID)!.denomOrAddress,
+          denom: getNativeIbcUsdc(ChainId.NeutronMainnet)!.denomOrAddress,
         },
       ],
       pid: {
-        kp: 1,
-        ki: 1,
-        kd: 1,
+        kp: 0.5,
+        ki: 0.2,
+        kd: 0.1,
       },
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),
@@ -56,30 +56,52 @@ Default.args = {
       loading: false,
       data: [
         {
-          token: getNativeTokenForChainId(CHAIN_ID),
+          token: getNativeTokenForChainId(ChainId.NeutronMainnet),
           balance: '46252349169321',
         },
         {
           token: {
-            chainId: CHAIN_ID,
-            type: TokenType.Cw20,
-            denomOrAddress: 'cw20_1',
+            chainId: ChainId.NeutronMainnet,
+            type: TokenType.Native,
+            denomOrAddress: getNativeIbcUsdc(ChainId.NeutronMainnet)!
+              .denomOrAddress,
             decimals: 6,
-            symbol: 'ATKN',
+            symbol: 'USDC',
+            imageUrl: '',
+          },
+          balance: '102948124125',
+        },
+        {
+          token: {
+            chainId: ChainId.NeutronMainnet,
+            type: TokenType.Native,
+            denomOrAddress: 'uatom',
+            decimals: 6,
+            symbol: 'ATOM',
             imageUrl: '',
           },
           balance: '1284135723893',
         },
+      ],
+    },
+    prices: {
+      loading: false,
+      data: [
         {
-          token: {
-            chainId: CHAIN_ID,
-            type: TokenType.Cw20,
-            denomOrAddress: 'cw20_2',
-            decimals: 6,
-            symbol: 'DIFF',
-            imageUrl: '',
-          },
-          balance: '102948124125',
+          denom: getNativeTokenForChainId(ChainId.NeutronMainnet)
+            .denomOrAddress,
+          amount: 0.1,
+          timestamp: new Date(),
+        },
+        {
+          denom: getNativeIbcUsdc(ChainId.NeutronMainnet)!.denomOrAddress,
+          amount: 1,
+          timestamp: new Date(),
+        },
+        {
+          denom: 'uatom',
+          amount: 6.5,
+          timestamp: new Date(),
         },
       ],
     },

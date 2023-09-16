@@ -570,6 +570,7 @@
     "plan": "Plan",
     "postToDelete": "Post to delete",
     "postToUpdate": "Post to update",
+    "projection": "Projection",
     "proposalDepositDescription": "The number of tokens that must be deposited to create a proposal. Setting this may deter spam, but setting it too high may limit broad participation.",
     "proposalDepositTitle": "Proposal deposit",
     "proposalSubmissionPolicyDescription": "Who is allowed to submit proposals to the DAO?",

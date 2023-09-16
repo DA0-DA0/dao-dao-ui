@@ -1,8 +1,19 @@
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { waitForAll } from 'recoil'
 
-import { BalanceEmoji, ChainProvider } from '@dao-dao/stateless'
-import { ChainId, TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
+import { usdPriceSelector } from '@dao-dao/state/recoil'
+import {
+  BalanceEmoji,
+  ChainProvider,
+  useCachedLoading,
+} from '@dao-dao/stateless'
+import {
+  AmountWithTimestampAndDenom,
+  ChainId,
+  TokenType,
+  UseDecodedCosmosMsg,
+} from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -21,6 +32,7 @@ import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
 import {
   ConfigureRebalancerData,
+  REBALANCER_BASE_TOKEN_ALLOWLIST,
   ConfigureRebalancerComponent as StatelessConfigureRebalancerComponent,
 } from './Component'
 
@@ -34,7 +46,8 @@ const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
 
   return {
     chainId,
-    baseDenom: nativeDenom,
+    baseDenom:
+      REBALANCER_BASE_TOKEN_ALLOWLIST[chainId as ChainId]?.[0] ?? nativeDenom,
     tokens: [
       {
         denom: nativeDenom,
@@ -68,6 +81,41 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
     filter: TokenType.Native,
   })
 
+  const nativeBalances = loadingTokens.loading
+    ? loadingTokens
+    : {
+        loading: false,
+        updating: loadingTokens.updating,
+        data: loadingTokens.data.filter(
+          ({ token }) => token.chainId === chainId
+        ),
+      }
+
+  const loadingPrices = useCachedLoading(
+    nativeBalances.loading
+      ? undefined
+      : waitForAll(
+          nativeBalances.data.map(
+            ({ token: { chainId, type, denomOrAddress } }) =>
+              usdPriceSelector({
+                chainId,
+                type,
+                denomOrAddress,
+              })
+          )
+        ),
+    []
+  )
+  const prices = loadingPrices.loading
+    ? loadingPrices
+    : {
+        loading: false,
+        updating: loadingPrices.updating,
+        data: loadingPrices.data.filter(
+          (price): price is AmountWithTimestampAndDenom => !!price
+        ),
+      }
+
   return (
     <>
       {/* TODO(rebalancer-cross-chain) */}
@@ -89,15 +137,8 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
         <StatelessConfigureRebalancerComponent
           {...props}
           options={{
-            nativeBalances: loadingTokens.loading
-              ? loadingTokens
-              : {
-                  loading: false,
-                  updating: loadingTokens.updating,
-                  data: loadingTokens.data.filter(
-                    ({ token }) => token.chainId === chainId
-                  ),
-                },
+            nativeBalances,
+            prices,
           }}
         />
       </ChainProvider>

@@ -211,7 +211,7 @@ export const TokenInput = <
               error={amountField.error}
               fieldName={amountField.fieldName}
               max={amountField.max}
-              min={amountField.max}
+              min={amountField.min}
               register={amountField.register}
               setValue={(fieldName, value, options) =>
                 amountField.setValue(fieldName, value as any, options)

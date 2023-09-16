@@ -12,8 +12,9 @@ import {
 } from 'chart.js'
 import clsx from 'clsx'
 import Controller from 'node-pid-controller'
-import { useMemo } from 'react'
+import { useRef, useState } from 'react'
 import { Line } from 'react-chartjs-2'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { DISTRIBUTION_COLORS_EVERY_OTHER } from '@dao-dao/utils'
 
@@ -85,96 +86,126 @@ export const RebalancerProjector = ({
   const textColor = useNamedThemeColor('text-tertiary')
   const borderColor = useNamedThemeColor('border-primary')
 
-  // The PID controller for each asset.
-  const controllers = useMemo(
-    () =>
-      [...Array(assets.length)].map(
-        () =>
-          new Controller({
-            k_p: kp,
-            k_i: ki,
-            k_d: kd,
-            dt: interval,
-          })
-      ),
-    [assets.length, interval, kd, ki, kp]
-  )
+  const [datasets, setDatasets] = useState<
+    ChartDataset<'line', (number | ScatterDataPoint | null)[]>[]
+  >([])
 
-  controllers.forEach((controller) => {
-    controller.reset()
-  })
+  const makeProjections = () => {
+    // The PID controller for each asset.
+    const controllers = [...Array(assets.length)].map(
+      () =>
+        new Controller({
+          k_p: kp,
+          k_i: ki,
+          k_d: kd,
+          dt: interval,
+        })
+    )
 
-  // Each projection is a list of all assets' amount and price after each
-  // rebalance.
-  const projections = [...Array(numRebalances)].reduce(
-    (
-      acc: {
-        amount: number
-        price: number
-      }[][]
-    ) => {
-      const lastProjection = acc[acc.length - 1]
+    // Each projection is a list of all assets' amount and price after each
+    // rebalance.
+    const projections = [...Array(numRebalances)].reduce(
+      (
+        acc: {
+          amount: number
+          price: number
+        }[][]
+      ) => {
+        const lastProjection = acc[acc.length - 1]
 
-      // Update the price for each asset.
-      const newProjection = assets.map(({ projection }, index) => {
-        const { amount, price } = lastProjection[index]
-        const newPrice = changePrice(price, projection)
+        // Update the price for each asset.
+        const newProjection = assets.map(({ projection }, index) => {
+          const { amount, price } = lastProjection[index]
+          const newPrice = changePrice(price, projection)
 
-        return {
-          amount,
-          price: newPrice,
-        }
-      })
+          return {
+            amount,
+            price: newPrice,
+          }
+        })
 
-      // Get total value of assets based on new prices.
-      const totalValue = newProjection.reduce((acc, { amount, price }) => {
-        return acc + amount * price
-      }, 0)
+        // Get total value of assets based on new prices.
+        const totalValue = newProjection.reduce(
+          (acc, { amount, price }) => acc + amount * price,
+          0
+        )
 
-      // Use PID controller with new values to rebalance amounts.
-      assets.forEach(({ targetProportion }, index) => {
-        const controller = controllers[index]
-        const { amount: lastAmount, price } = newProjection[index]
+        // Use PID controller with new values to rebalance amounts.
+        assets.forEach(({ targetProportion }, index) => {
+          const controller = controllers[index]
+          const { amount: lastAmount, price } = newProjection[index]
 
-        const targetValue = targetProportion * totalValue
-        controller.setTarget(targetValue)
+          const targetValue = targetProportion * totalValue
+          controller.setTarget(targetValue)
 
-        const currentValue = lastAmount * price
-        // Rebalance with PID.
-        const rebalanceValue = controller.update(currentValue)
-        const newAmount = lastAmount + rebalanceValue / price
+          const currentValue = lastAmount * price
+          // Rebalance with PID.
+          const rebalanceValue = controller.update(currentValue)
+          const newAmount = lastAmount + rebalanceValue / price
 
-        // Update projection amount.
-        newProjection[index].amount = newAmount
-      })
+          // Update projection amount.
+          newProjection[index].amount = newAmount
+        })
 
-      return [...acc, newProjection]
-    },
-    [
-      // Start with initial amount and price for each asset.
-      assets.map(({ currentAmount, currentPrice }) => ({
-        amount: currentAmount,
-        price: currentPrice,
-      })),
-    ]
-  )
+        return [...acc, newProjection]
+      },
+      [
+        // Start with initial amount and price for each asset.
+        assets.map(({ currentAmount, currentPrice }) => ({
+          amount: currentAmount,
+          price: currentPrice,
+        })),
+      ]
+    )
 
-  const getProjections = (
-    { symbol }: RebalancerProjectorAsset,
-    assetIndex: number
-  ): ChartDataset<'line', (number | ScatterDataPoint | null)[]>[] => [
-    {
-      label: `${symbol} Value`,
-      data: projections.map(
-        (projection) =>
-          projection[assetIndex].amount * projection[assetIndex].price
-      ),
-    },
-    {
-      label: `${symbol} Amount`,
-      data: projections.map((projection) => projection[assetIndex].amount),
-    },
-  ]
+    setDatasets(
+      [
+        ...assets.flatMap(
+          (
+            { symbol },
+            assetIndex
+          ): ChartDataset<'line', (number | ScatterDataPoint | null)[]>[] => [
+            {
+              label: `${symbol} Value`,
+              data: projections.map(
+                (projection) =>
+                  projection[assetIndex].amount * projection[assetIndex].price
+              ),
+            },
+            {
+              label: `${symbol} Amount`,
+              data: projections.map(
+                (projection) => projection[assetIndex].amount
+              ),
+            },
+          ]
+        ),
+        // Total
+        {
+          label: 'Total Value',
+          data: projections.map((projection) =>
+            projection.reduce(
+              (acc, { amount, price }) => acc + amount * price,
+              0
+            )
+          ),
+        },
+      ].map((p, index) => ({
+        ...p,
+        borderColor:
+          DISTRIBUTION_COLORS_EVERY_OTHER[
+            index % DISTRIBUTION_COLORS_EVERY_OTHER.length
+          ],
+      }))
+    )
+  }
+  const makeProjectionsRef = useRef(makeProjections)
+  makeProjectionsRef.current = makeProjections
+
+  // When any projection info changes...
+  useDeepCompareEffect(() => {
+    makeProjectionsRef.current()
+  }, [kp, ki, kd, interval, assets, numRebalances])
 
   return (
     <div className={clsx('h-full', className)}>
@@ -183,25 +214,7 @@ export const RebalancerProjector = ({
           labels: [undefined, ...Array(numRebalances)].map((_, index) =>
             (index + 1).toLocaleString()
           ),
-          datasets: [
-            ...assets.flatMap(getProjections),
-            // Total
-            {
-              label: 'Total Value',
-              data: projections.map((projection) =>
-                projection.reduce(
-                  (acc, { amount, price }) => acc + amount * price,
-                  0
-                )
-              ),
-            },
-          ].map((p, index) => ({
-            ...p,
-            borderColor:
-              DISTRIBUTION_COLORS_EVERY_OTHER[
-                index % DISTRIBUTION_COLORS_EVERY_OTHER.length
-              ],
-          })),
+          datasets,
         }}
         options={{
           responsive: true,
