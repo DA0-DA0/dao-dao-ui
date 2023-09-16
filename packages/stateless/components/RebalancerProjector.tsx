@@ -16,7 +16,7 @@ import { useRef, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
-import { DISTRIBUTION_COLORS_EVERY_OTHER } from '@dao-dao/utils'
+import { DISTRIBUTION_COLORS } from '@dao-dao/utils'
 
 import { useNamedThemeColor } from '../theme'
 
@@ -141,7 +141,8 @@ export const RebalancerProjector = ({
           const currentValue = lastAmount * price
           // Rebalance with PID.
           const rebalanceValue = controller.update(currentValue)
-          const newAmount = lastAmount + rebalanceValue / price
+          // Cannot sell more than we have.
+          const newAmount = Math.max(0, lastAmount + rebalanceValue / price)
 
           // Update projection amount.
           newProjection[index].amount = newAmount
@@ -160,25 +161,17 @@ export const RebalancerProjector = ({
 
     setDatasets(
       [
-        ...assets.flatMap(
+        ...assets.map(
           (
             { symbol },
             assetIndex
-          ): ChartDataset<'line', (number | ScatterDataPoint | null)[]>[] => [
-            {
-              label: `${symbol} Value`,
-              data: projections.map(
-                (projection) =>
-                  projection[assetIndex].amount * projection[assetIndex].price
-              ),
-            },
-            {
-              label: `${symbol} Amount`,
-              data: projections.map(
-                (projection) => projection[assetIndex].amount
-              ),
-            },
-          ]
+          ): ChartDataset<'line', (number | ScatterDataPoint | null)[]> => ({
+            label: `${symbol} Value`,
+            data: projections.map(
+              (projection) =>
+                projection[assetIndex].amount * projection[assetIndex].price
+            ),
+          })
         ),
         // Total
         {
@@ -192,10 +185,7 @@ export const RebalancerProjector = ({
         },
       ].map((p, index) => ({
         ...p,
-        borderColor:
-          DISTRIBUTION_COLORS_EVERY_OTHER[
-            index % DISTRIBUTION_COLORS_EVERY_OTHER.length
-          ],
+        borderColor: DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
       }))
     )
   }
@@ -231,9 +221,6 @@ export const RebalancerProjector = ({
             title: {
               display: false,
             },
-            // legend: {
-            //   position: 'bottom',
-            // },
           },
           scales: {
             x: {
