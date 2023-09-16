@@ -1,4 +1,5 @@
 import { Close } from '@mui/icons-material'
+import { useEffect, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -7,14 +8,25 @@ import {
   IconButton,
   InputErrorMessage,
   InputLabel,
+  Loader,
   NumberInput,
+  RebalancerProjector,
+  RebalancerProjectorAsset,
+  SwitchCard,
   TokenInput,
   useChain,
 } from '@dao-dao/stateless'
-import { ChainId, GenericTokenBalance, LoadingData } from '@dao-dao/types'
+import {
+  AmountWithTimestampAndDenom,
+  ChainId,
+  GenericTokenBalance,
+  LoadingData,
+} from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
+  convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
+  getNativeIbcUsdc,
   getNativeTokenForChainId,
   validateRequired,
 } from '@dao-dao/utils'
@@ -35,11 +47,17 @@ export type ConfigureRebalancerData = {
 
 export type ConfigureRebalancerOptions = {
   nativeBalances: LoadingData<GenericTokenBalance[]>
+  prices: LoadingData<AmountWithTimestampAndDenom[]>
 }
 
 export const ConfigureRebalancerComponent: ActionComponent<
   ConfigureRebalancerOptions
-> = ({ fieldNamePrefix, errors, isCreating, options: { nativeBalances } }) => {
+> = ({
+  fieldNamePrefix,
+  errors,
+  isCreating,
+  options: { nativeBalances, prices },
+}) => {
   const { chain_id: chainId } = useChain()
   const allowedTokens =
     (chainId in REBALANCER_TOKEN_ALLOWLIST &&
@@ -53,7 +71,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
 
   const { t } = useTranslation()
 
-  const { control, watch, register, setValue } =
+  const { control, watch, register, setValue, clearErrors, setError } =
     useFormContext<ConfigureRebalancerData>()
   const {
     fields: tokensFields,
@@ -65,10 +83,46 @@ export const ConfigureRebalancerComponent: ActionComponent<
   })
 
   const baseDenom = watch((fieldNamePrefix + 'baseDenom') as 'baseDenom')
+  const pid = watch((fieldNamePrefix + 'pid') as 'pid')
+  const tokens = watch((fieldNamePrefix + 'tokens') as 'tokens')
   const totalPercent = watch((fieldNamePrefix + `tokens`) as 'tokens').reduce(
     (acc, { percent }) => acc + percent,
     0
   )
+
+  // Validate all add up to 100%.
+  useEffect(() => {
+    if (totalPercent === 100) {
+      clearErrors(
+        (fieldNamePrefix +
+          `tokens.${
+            tokensFields.length - 1
+          }.percent`) as `tokens.${number}.percent`
+      )
+    } else {
+      setError(
+        (fieldNamePrefix +
+          `tokens.${
+            tokensFields.length - 1
+          }.percent`) as `tokens.${number}.percent`,
+        {
+          type: 'manual',
+          message: t('error.percentageDoesNotSumTo100', {
+            totalPercent: formatPercentOf100(totalPercent),
+          }),
+        }
+      )
+    }
+  }, [
+    t,
+    clearErrors,
+    setError,
+    totalPercent,
+    fieldNamePrefix,
+    tokensFields.length,
+  ])
+
+  const [projection, setProjection] = useState(false)
 
   return (
     <>
@@ -122,17 +176,6 @@ export const ConfigureRebalancerComponent: ActionComponent<
                     max: 100,
                     step: 0.01,
                     unit: '%',
-                    // On the last field, validate that all values add up to 100.
-                    validations:
-                      index === tokensFields.length - 1
-                        ? [
-                            () =>
-                              totalPercent === 100 ||
-                              t('error.percentageDoesNotSumTo100', {
-                                totalPercent: formatPercentOf100(totalPercent),
-                              }),
-                          ]
-                        : undefined,
                   }}
                   onSelectToken={({ denomOrAddress }) =>
                     setValue(
@@ -170,7 +213,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
 
               <InputErrorMessage
                 error={
-                  errors?.tokens?.[index]?.amount ||
+                  errors?.tokens?.[index]?.percent ||
                   errors?.tokens?.[index]?.denom
                 }
               />
@@ -214,6 +257,8 @@ export const ConfigureRebalancerComponent: ActionComponent<
             max={1}
             min={0}
             register={register}
+            sizing="sm"
+            step={0.01}
             validation={[validateRequired]}
           />
           <InputErrorMessage error={errors?.pid?.kp} />
@@ -229,6 +274,8 @@ export const ConfigureRebalancerComponent: ActionComponent<
             max={1}
             min={0}
             register={register}
+            sizing="sm"
+            step={0.01}
             validation={[validateRequired]}
           />
           <InputErrorMessage error={errors?.pid?.ki} />
@@ -244,11 +291,77 @@ export const ConfigureRebalancerComponent: ActionComponent<
             max={1}
             min={0}
             register={register}
+            sizing="sm"
+            step={0.01}
             validation={[validateRequired]}
           />
           <InputErrorMessage error={errors?.pid?.kd} />
         </div>
       </div>
+
+      <SwitchCard
+        containerClassName="self-end"
+        enabled={projection}
+        label={t('form.projection')}
+        onClick={() => setProjection((p) => !p)}
+        sizing="sm"
+      />
+
+      {projection &&
+        (nativeBalances.loading || prices.loading ? (
+          <Loader />
+        ) : (
+          <RebalancerProjector
+            assets={tokens.flatMap(
+              ({ denom, percent }): RebalancerProjectorAsset[] => {
+                const { token, balance: _balance } =
+                  nativeBalances.data.find(
+                    ({ token }) => token.denomOrAddress === denom
+                  ) ?? {}
+                const balance = Number(_balance)
+                const { amount: price } =
+                  prices.data.find(
+                    ({ denom: priceDenom }) => priceDenom === denom
+                  ) ?? {}
+
+                if (!token || !balance || !price) {
+                  return []
+                }
+
+                return [
+                  {
+                    symbol:
+                      nativeBalances.data.find(
+                        ({ token }) => token.denomOrAddress === denom
+                      )?.token.symbol || denom,
+                    currentAmount: convertMicroDenomToDenomWithDecimals(
+                      balance,
+                      token.decimals
+                    ),
+                    targetProportion: percent / 100,
+                    currentPrice: price,
+                    projection:
+                      denom === getNativeIbcUsdc(chainId)?.denomOrAddress
+                        ? {
+                            type: 'linear',
+                            slope: 1,
+                          }
+                        : {
+                            type: 'random',
+                            disturbance: 0.25,
+                          },
+                  },
+                ]
+              }
+            )}
+            className="h-72"
+            numRebalances={100}
+            pid={{
+              ...pid,
+              interval: 1,
+            }}
+          />
+        ))}
     </>
   )
 }
@@ -261,5 +374,19 @@ export const REBALANCER_TOKEN_ALLOWLIST: Partial<Record<ChainId, string[]>> = {
     'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9',
     // USDC
     'ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349',
+  ],
+}
+
+export const REBALANCER_BASE_TOKEN_ALLOWLIST: Partial<
+  Record<ChainId, string[]>
+> = {
+  [ChainId.NeutronMainnet]: [
+    // First denom is the default.
+    // USDC
+    'ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349',
+    // NTRN
+    'untrn',
+    // ATOM
+    'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9',
   ],
 }

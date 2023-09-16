@@ -130,6 +130,8 @@ export const usdPriceSelector = selectorFamily<
         return undefined
       }
 
+      const initialDenomOrAddress = denomOrAddress
+
       // Try to reverse engineer denom and get the osmosis price.
       try {
         if (type === TokenType.Native) {
@@ -200,8 +202,20 @@ export const usdPriceSelector = selectorFamily<
       }
 
       switch (chainId) {
-        case ChainId.OsmosisMainnet:
-          return get(osmosisUsdPriceSelector(denomOrAddress))
+        case ChainId.OsmosisMainnet: {
+          let price = get(osmosisUsdPriceSelector(denomOrAddress))
+
+          // If started as different denom and was resolved to an Osmosis denom,
+          // return original denom.
+          if (price && price.denom !== initialDenomOrAddress) {
+            price = {
+              ...price,
+              denom: initialDenomOrAddress,
+            }
+          }
+
+          return price
+        }
         // On Juno, use WYND DEX as backup. Likely for CW20s.
         case ChainId.JunoMainnet:
           return get(wyndUsdPriceSelector(denomOrAddress))
