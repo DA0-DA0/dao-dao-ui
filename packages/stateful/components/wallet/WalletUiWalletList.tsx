@@ -1,4 +1,4 @@
-import { ChainWalletBase, WalletModalProps } from '@cosmos-kit/core'
+import { ChainWalletBase, Wallet, WalletModalProps } from '@cosmos-kit/core'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
@@ -54,14 +54,7 @@ export const WalletUiWalletList = ({
             }
             variant="secondary"
           >
-            {!!wallet.walletInfo.logo && (
-              <div
-                className="h-10 w-10 bg-contain bg-center bg-no-repeat"
-                style={{
-                  backgroundImage: `url(${wallet.walletInfo.logo})`,
-                }}
-              />
-            )}
+            <WalletImage logo={wallet.walletInfo.logo} />
 
             <p className="secondary-text text-center">
               {wallet.walletInfo.prettyName}
@@ -109,14 +102,7 @@ export const WalletUiWalletList = ({
                   }
                   variant="secondary"
                 >
-                  {!!wallet.walletInfo.logo && (
-                    <div
-                      className="h-10 w-10 bg-contain bg-center  bg-no-repeat"
-                      style={{
-                        backgroundImage: `url(${wallet.walletInfo.logo})`,
-                      }}
-                    />
-                  )}
+                  <WalletImage logo={wallet.walletInfo.logo} />
                 </Button>
               </Tooltip>
             ))}
@@ -126,3 +112,31 @@ export const WalletUiWalletList = ({
     </div>
   )
 }
+
+export type WalletImageProps = {
+  logo: Wallet['logo']
+}
+
+export const WalletImage = ({ logo }: WalletImageProps) =>
+  typeof logo === 'string' ? (
+    <div
+      className="h-10 w-10 bg-contain bg-center bg-no-repeat"
+      style={{
+        backgroundImage: `url(${logo})`,
+      }}
+    />
+  ) : logo && 'major' in logo ? (
+    <div
+      className="relative h-10 w-10 bg-contain bg-center  bg-no-repeat"
+      style={{
+        backgroundImage: `url(${logo.major})`,
+      }}
+    >
+      <div
+        className="absolute -right-1 -bottom-1 h-4 w-4 bg-contain bg-center"
+        style={{
+          backgroundImage: `url(${logo.minor})`,
+        }}
+      />
+    </div>
+  ) : null
