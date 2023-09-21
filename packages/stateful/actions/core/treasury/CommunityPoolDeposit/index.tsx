@@ -80,7 +80,7 @@ export const makeCommunityPoolDepositAction: ActionMaker<
   const useDefaults: UseDefaults<CommunityPoolDepositData> = () => ({
     chainId: currentChainId,
     amount: 100,
-    denom: nativeToken.denomOrAddress,
+    denom: nativeToken?.denomOrAddress || '',
   })
 
   const useTransformToCosmos: UseTransformToCosmos<

@@ -168,7 +168,7 @@ export const NewAttribute = ({
           className="self-start"
           onClick={() =>
             appendToken({
-              denomOrAddress: nativeToken.denomOrAddress,
+              denomOrAddress: nativeToken?.denomOrAddress || '',
             })
           }
           variant="ghost"

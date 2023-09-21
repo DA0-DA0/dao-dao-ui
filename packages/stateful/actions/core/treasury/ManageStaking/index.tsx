@@ -1,6 +1,7 @@
 import { coin, parseCoins } from '@cosmjs/amino'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 import {
   nativeDelegationInfoSelector,
@@ -175,6 +176,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
 }
 
 const InnerComponent: ActionComponent = (props) => {
+  const { t } = useTranslation()
   const { address: _address, context, chain } = useActionOptions()
   const { watch } = useFormContext()
 
@@ -182,6 +184,10 @@ const InnerComponent: ActionComponent = (props) => {
     chain: { chain_id: currentChainId },
     nativeToken,
   } = useChainContext()
+
+  if (!nativeToken) {
+    throw new Error(t('error.missingNativeToken'))
+  }
 
   const address =
     context.type === ActionContextType.Dao && currentChainId !== chain.chain_id
