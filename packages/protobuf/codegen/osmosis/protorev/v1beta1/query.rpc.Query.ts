@@ -1,7 +1,7 @@
 import { Rpc } from "../../../helpers";
 import { BinaryReader } from "../../../binary";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
-import { QueryParamsRequest, QueryParamsResponse, QueryGetProtoRevNumberOfTradesRequest, QueryGetProtoRevNumberOfTradesResponse, QueryGetProtoRevProfitsByDenomRequest, QueryGetProtoRevProfitsByDenomResponse, QueryGetProtoRevAllProfitsRequest, QueryGetProtoRevAllProfitsResponse, QueryGetProtoRevStatisticsByRouteRequest, QueryGetProtoRevStatisticsByRouteResponse, QueryGetProtoRevAllRouteStatisticsRequest, QueryGetProtoRevAllRouteStatisticsResponse, QueryGetProtoRevTokenPairArbRoutesRequest, QueryGetProtoRevTokenPairArbRoutesResponse, QueryGetProtoRevAdminAccountRequest, QueryGetProtoRevAdminAccountResponse, QueryGetProtoRevDeveloperAccountRequest, QueryGetProtoRevDeveloperAccountResponse, QueryGetProtoRevPoolWeightsRequest, QueryGetProtoRevPoolWeightsResponse, QueryGetProtoRevMaxPoolPointsPerTxRequest, QueryGetProtoRevMaxPoolPointsPerTxResponse, QueryGetProtoRevMaxPoolPointsPerBlockRequest, QueryGetProtoRevMaxPoolPointsPerBlockResponse, QueryGetProtoRevBaseDenomsRequest, QueryGetProtoRevBaseDenomsResponse, QueryGetProtoRevEnabledRequest, QueryGetProtoRevEnabledResponse, QueryGetProtoRevPoolRequest, QueryGetProtoRevPoolResponse } from "./query";
+import { QueryParamsRequest, QueryParamsResponse, QueryGetProtoRevNumberOfTradesRequest, QueryGetProtoRevNumberOfTradesResponse, QueryGetProtoRevProfitsByDenomRequest, QueryGetProtoRevProfitsByDenomResponse, QueryGetProtoRevAllProfitsRequest, QueryGetProtoRevAllProfitsResponse, QueryGetProtoRevStatisticsByRouteRequest, QueryGetProtoRevStatisticsByRouteResponse, QueryGetProtoRevAllRouteStatisticsRequest, QueryGetProtoRevAllRouteStatisticsResponse, QueryGetProtoRevTokenPairArbRoutesRequest, QueryGetProtoRevTokenPairArbRoutesResponse, QueryGetProtoRevAdminAccountRequest, QueryGetProtoRevAdminAccountResponse, QueryGetProtoRevDeveloperAccountRequest, QueryGetProtoRevDeveloperAccountResponse, QueryGetProtoRevInfoByPoolTypeRequest, QueryGetProtoRevInfoByPoolTypeResponse, QueryGetProtoRevMaxPoolPointsPerTxRequest, QueryGetProtoRevMaxPoolPointsPerTxResponse, QueryGetProtoRevMaxPoolPointsPerBlockRequest, QueryGetProtoRevMaxPoolPointsPerBlockResponse, QueryGetProtoRevBaseDenomsRequest, QueryGetProtoRevBaseDenomsResponse, QueryGetProtoRevEnabledRequest, QueryGetProtoRevEnabledResponse, QueryGetProtoRevPoolRequest, QueryGetProtoRevPoolResponse } from "./query";
 /** Query defines the gRPC querier service. */
 export interface Query {
   /** Params queries the parameters of the module. */
@@ -36,10 +36,10 @@ export interface Query {
   /** GetProtoRevDeveloperAccount queries the developer account of the module */
   getProtoRevDeveloperAccount(request?: QueryGetProtoRevDeveloperAccountRequest): Promise<QueryGetProtoRevDeveloperAccountResponse>;
   /**
-   * GetProtoRevPoolWeights queries the weights of each pool type currently
-   * being used by the module
+   * GetProtoRevInfoByPoolType queries pool type information that is currently
+   * being utilized by the module
    */
-  getProtoRevPoolWeights(request?: QueryGetProtoRevPoolWeightsRequest): Promise<QueryGetProtoRevPoolWeightsResponse>;
+  getProtoRevInfoByPoolType(request?: QueryGetProtoRevInfoByPoolTypeRequest): Promise<QueryGetProtoRevInfoByPoolTypeResponse>;
   /**
    * GetProtoRevMaxPoolPointsPerTx queries the maximum number of pool points
    * that can be consumed per transaction
@@ -76,7 +76,7 @@ export class QueryClientImpl implements Query {
     this.getProtoRevTokenPairArbRoutes = this.getProtoRevTokenPairArbRoutes.bind(this);
     this.getProtoRevAdminAccount = this.getProtoRevAdminAccount.bind(this);
     this.getProtoRevDeveloperAccount = this.getProtoRevDeveloperAccount.bind(this);
-    this.getProtoRevPoolWeights = this.getProtoRevPoolWeights.bind(this);
+    this.getProtoRevInfoByPoolType = this.getProtoRevInfoByPoolType.bind(this);
     this.getProtoRevMaxPoolPointsPerTx = this.getProtoRevMaxPoolPointsPerTx.bind(this);
     this.getProtoRevMaxPoolPointsPerBlock = this.getProtoRevMaxPoolPointsPerBlock.bind(this);
     this.getProtoRevBaseDenoms = this.getProtoRevBaseDenoms.bind(this);
@@ -128,10 +128,10 @@ export class QueryClientImpl implements Query {
     const promise = this.rpc.request("osmosis.protorev.v1beta1.Query", "GetProtoRevDeveloperAccount", data);
     return promise.then(data => QueryGetProtoRevDeveloperAccountResponse.decode(new BinaryReader(data)));
   }
-  getProtoRevPoolWeights(request: QueryGetProtoRevPoolWeightsRequest = {}): Promise<QueryGetProtoRevPoolWeightsResponse> {
-    const data = QueryGetProtoRevPoolWeightsRequest.encode(request).finish();
-    const promise = this.rpc.request("osmosis.protorev.v1beta1.Query", "GetProtoRevPoolWeights", data);
-    return promise.then(data => QueryGetProtoRevPoolWeightsResponse.decode(new BinaryReader(data)));
+  getProtoRevInfoByPoolType(request: QueryGetProtoRevInfoByPoolTypeRequest = {}): Promise<QueryGetProtoRevInfoByPoolTypeResponse> {
+    const data = QueryGetProtoRevInfoByPoolTypeRequest.encode(request).finish();
+    const promise = this.rpc.request("osmosis.protorev.v1beta1.Query", "GetProtoRevInfoByPoolType", data);
+    return promise.then(data => QueryGetProtoRevInfoByPoolTypeResponse.decode(new BinaryReader(data)));
   }
   getProtoRevMaxPoolPointsPerTx(request: QueryGetProtoRevMaxPoolPointsPerTxRequest = {}): Promise<QueryGetProtoRevMaxPoolPointsPerTxResponse> {
     const data = QueryGetProtoRevMaxPoolPointsPerTxRequest.encode(request).finish();
@@ -190,8 +190,8 @@ export const createRpcQueryExtension = (base: QueryClient) => {
     getProtoRevDeveloperAccount(request?: QueryGetProtoRevDeveloperAccountRequest): Promise<QueryGetProtoRevDeveloperAccountResponse> {
       return queryService.getProtoRevDeveloperAccount(request);
     },
-    getProtoRevPoolWeights(request?: QueryGetProtoRevPoolWeightsRequest): Promise<QueryGetProtoRevPoolWeightsResponse> {
-      return queryService.getProtoRevPoolWeights(request);
+    getProtoRevInfoByPoolType(request?: QueryGetProtoRevInfoByPoolTypeRequest): Promise<QueryGetProtoRevInfoByPoolTypeResponse> {
+      return queryService.getProtoRevInfoByPoolType(request);
     },
     getProtoRevMaxPoolPointsPerTx(request?: QueryGetProtoRevMaxPoolPointsPerTxRequest): Promise<QueryGetProtoRevMaxPoolPointsPerTxResponse> {
       return queryService.getProtoRevMaxPoolPointsPerTx(request);

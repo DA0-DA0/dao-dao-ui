@@ -1,4 +1,4 @@
-import { MsgSuperfluidDelegate, MsgSuperfluidUndelegate, MsgSuperfluidUnbondLock, MsgSuperfluidUndelegateAndUnbondLock, MsgLockAndSuperfluidDelegate, MsgCreateFullRangePositionAndSuperfluidDelegate, MsgUnPoolWhitelistedPool, MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition, MsgAddToConcentratedLiquiditySuperfluidPosition } from "./tx";
+import { MsgSuperfluidDelegate, MsgSuperfluidUndelegate, MsgSuperfluidUnbondLock, MsgSuperfluidUndelegateAndUnbondLock, MsgLockAndSuperfluidDelegate, MsgCreateFullRangePositionAndSuperfluidDelegate, MsgUnPoolWhitelistedPool, MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition, MsgAddToConcentratedLiquiditySuperfluidPosition, MsgUnbondConvertAndStake } from "./tx";
 export const AminoConverter = {
   "/osmosis.superfluid.MsgSuperfluidDelegate": {
     aminoType: "osmosis/superfluid-delegate",
@@ -44,5 +44,10 @@ export const AminoConverter = {
     aminoType: "osmosis/add-to-cl-superfluid-position",
     toAmino: MsgAddToConcentratedLiquiditySuperfluidPosition.toAmino,
     fromAmino: MsgAddToConcentratedLiquiditySuperfluidPosition.fromAmino
+  },
+  "/osmosis.superfluid.MsgUnbondConvertAndStake": {
+    aminoType: "osmosis/unbond-convert-and-stake",
+    toAmino: MsgUnbondConvertAndStake.toAmino,
+    fromAmino: MsgUnbondConvertAndStake.fromAmino
   }
 };

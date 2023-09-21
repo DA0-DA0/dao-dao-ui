@@ -1,6 +1,5 @@
 //@ts-nocheck
 import { BinaryReader, BinaryWriter } from "../../binary";
-import { Decimal } from "@cosmjs/math";
 /**
  * CreateConcentratedLiquidityPoolsProposal is a gov Content type for creating
  * concentrated liquidity pools. If a CreateConcentratedLiquidityPoolsProposal
@@ -116,7 +115,6 @@ export interface PoolRecord {
   denom0: string;
   denom1: string;
   tickSpacing: bigint;
-  exponentAtPriceOne: string;
   spreadFactor: string;
 }
 export interface PoolRecordProtoMsg {
@@ -127,7 +125,6 @@ export interface PoolRecordAmino {
   denom0: string;
   denom1: string;
   tick_spacing: string;
-  exponent_at_price_one: string;
   spread_factor: string;
 }
 export interface PoolRecordAminoMsg {
@@ -138,7 +135,6 @@ export interface PoolRecordSDKType {
   denom0: string;
   denom1: string;
   tick_spacing: bigint;
-  exponent_at_price_one: string;
   spread_factor: string;
 }
 function createBaseCreateConcentratedLiquidityPoolsProposal(): CreateConcentratedLiquidityPoolsProposal {
@@ -405,7 +401,6 @@ function createBasePoolRecord(): PoolRecord {
     denom0: "",
     denom1: "",
     tickSpacing: BigInt(0),
-    exponentAtPriceOne: "",
     spreadFactor: ""
   };
 }
@@ -421,11 +416,8 @@ export const PoolRecord = {
     if (message.tickSpacing !== BigInt(0)) {
       writer.uint32(24).uint64(message.tickSpacing);
     }
-    if (message.exponentAtPriceOne !== "") {
-      writer.uint32(34).string(message.exponentAtPriceOne);
-    }
     if (message.spreadFactor !== "") {
-      writer.uint32(42).string(Decimal.fromUserInput(message.spreadFactor, 18).atomics);
+      writer.uint32(42).string(message.spreadFactor);
     }
     return writer;
   },
@@ -445,11 +437,8 @@ export const PoolRecord = {
         case 3:
           message.tickSpacing = reader.uint64();
           break;
-        case 4:
-          message.exponentAtPriceOne = reader.string();
-          break;
         case 5:
-          message.spreadFactor = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.spreadFactor = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -463,7 +452,6 @@ export const PoolRecord = {
     message.denom0 = object.denom0 ?? "";
     message.denom1 = object.denom1 ?? "";
     message.tickSpacing = object.tickSpacing !== undefined && object.tickSpacing !== null ? BigInt(object.tickSpacing.toString()) : BigInt(0);
-    message.exponentAtPriceOne = object.exponentAtPriceOne ?? "";
     message.spreadFactor = object.spreadFactor ?? "";
     return message;
   },
@@ -472,7 +460,6 @@ export const PoolRecord = {
       denom0: object.denom0,
       denom1: object.denom1,
       tickSpacing: BigInt(object.tick_spacing),
-      exponentAtPriceOne: object.exponent_at_price_one,
       spreadFactor: object.spread_factor
     };
   },
@@ -481,7 +468,6 @@ export const PoolRecord = {
     obj.denom0 = message.denom0;
     obj.denom1 = message.denom1;
     obj.tick_spacing = message.tickSpacing ? message.tickSpacing.toString() : undefined;
-    obj.exponent_at_price_one = message.exponentAtPriceOne;
     obj.spread_factor = message.spreadFactor;
     return obj;
   },

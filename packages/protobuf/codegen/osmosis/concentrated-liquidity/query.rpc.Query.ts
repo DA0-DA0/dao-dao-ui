@@ -1,7 +1,7 @@
 import { Rpc } from "../../helpers";
 import { BinaryReader } from "../../binary";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
-import { PoolsRequest, PoolsResponse, ParamsRequest, ParamsResponse, UserPositionsRequest, UserPositionsResponse, LiquidityPerTickRangeRequest, LiquidityPerTickRangeResponse, LiquidityNetInDirectionRequest, LiquidityNetInDirectionResponse, ClaimableSpreadRewardsRequest, ClaimableSpreadRewardsResponse, ClaimableIncentivesRequest, ClaimableIncentivesResponse, PositionByIdRequest, PositionByIdResponse, PoolAccumulatorRewardsRequest, PoolAccumulatorRewardsResponse, IncentiveRecordsRequest, IncentiveRecordsResponse, TickAccumulatorTrackersRequest, TickAccumulatorTrackersResponse, CFMMPoolIdLinkFromConcentratedPoolIdRequest, CFMMPoolIdLinkFromConcentratedPoolIdResponse, UserUnbondingPositionsRequest, UserUnbondingPositionsResponse, GetTotalLiquidityRequest, GetTotalLiquidityResponse } from "./query";
+import { PoolsRequest, PoolsResponse, ParamsRequest, ParamsResponse, UserPositionsRequest, UserPositionsResponse, LiquidityPerTickRangeRequest, LiquidityPerTickRangeResponse, LiquidityNetInDirectionRequest, LiquidityNetInDirectionResponse, ClaimableSpreadRewardsRequest, ClaimableSpreadRewardsResponse, ClaimableIncentivesRequest, ClaimableIncentivesResponse, PositionByIdRequest, PositionByIdResponse, PoolAccumulatorRewardsRequest, PoolAccumulatorRewardsResponse, IncentiveRecordsRequest, IncentiveRecordsResponse, TickAccumulatorTrackersRequest, TickAccumulatorTrackersResponse, CFMMPoolIdLinkFromConcentratedPoolIdRequest, CFMMPoolIdLinkFromConcentratedPoolIdResponse, UserUnbondingPositionsRequest, UserUnbondingPositionsResponse, GetTotalLiquidityRequest, GetTotalLiquidityResponse, NumNextInitializedTicksRequest, NumNextInitializedTicksResponse } from "./query";
 export interface Query {
   /** Pools returns all concentrated liquidity pools */
   pools(request?: PoolsRequest): Promise<PoolsResponse>;
@@ -56,6 +56,11 @@ export interface Query {
   userUnbondingPositions(request: UserUnbondingPositionsRequest): Promise<UserUnbondingPositionsResponse>;
   /** GetTotalLiquidity returns total liquidity across all cl pools. */
   getTotalLiquidity(request?: GetTotalLiquidityRequest): Promise<GetTotalLiquidityResponse>;
+  /**
+   * NumNextInitializedTicks returns the provided number of next initialized
+   * ticks in the direction of swapping the token in denom.
+   */
+  numNextInitializedTicks(request: NumNextInitializedTicksRequest): Promise<NumNextInitializedTicksResponse>;
 }
 export class QueryClientImpl implements Query {
   private readonly rpc: Rpc;
@@ -75,6 +80,7 @@ export class QueryClientImpl implements Query {
     this.cFMMPoolIdLinkFromConcentratedPoolId = this.cFMMPoolIdLinkFromConcentratedPoolId.bind(this);
     this.userUnbondingPositions = this.userUnbondingPositions.bind(this);
     this.getTotalLiquidity = this.getTotalLiquidity.bind(this);
+    this.numNextInitializedTicks = this.numNextInitializedTicks.bind(this);
   }
   pools(request: PoolsRequest = {
     pagination: undefined
@@ -148,6 +154,11 @@ export class QueryClientImpl implements Query {
     const promise = this.rpc.request("osmosis.concentratedliquidity.v1beta1.Query", "GetTotalLiquidity", data);
     return promise.then(data => GetTotalLiquidityResponse.decode(new BinaryReader(data)));
   }
+  numNextInitializedTicks(request: NumNextInitializedTicksRequest): Promise<NumNextInitializedTicksResponse> {
+    const data = NumNextInitializedTicksRequest.encode(request).finish();
+    const promise = this.rpc.request("osmosis.concentratedliquidity.v1beta1.Query", "NumNextInitializedTicks", data);
+    return promise.then(data => NumNextInitializedTicksResponse.decode(new BinaryReader(data)));
+  }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
@@ -194,6 +205,9 @@ export const createRpcQueryExtension = (base: QueryClient) => {
     },
     getTotalLiquidity(request?: GetTotalLiquidityRequest): Promise<GetTotalLiquidityResponse> {
       return queryService.getTotalLiquidity(request);
+    },
+    numNextInitializedTicks(request: NumNextInitializedTicksRequest): Promise<NumNextInitializedTicksResponse> {
+      return queryService.numNextInitializedTicks(request);
     }
   };
 };

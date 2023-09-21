@@ -1,4 +1,4 @@
-import { MsgSwapExactAmountIn, MsgSwapExactAmountOut, MsgSplitRouteSwapExactAmountIn, MsgSplitRouteSwapExactAmountOut } from "./tx";
+import { MsgSwapExactAmountIn, MsgSwapExactAmountOut, MsgSplitRouteSwapExactAmountIn, MsgSplitRouteSwapExactAmountOut, MsgSetDenomPairTakerFee } from "./tx";
 export const AminoConverter = {
   "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn": {
     aminoType: "osmosis/poolmanager/swap-exact-amount-in",
@@ -19,5 +19,10 @@ export const AminoConverter = {
     aminoType: "osmosis/poolmanager/split-amount-out",
     toAmino: MsgSplitRouteSwapExactAmountOut.toAmino,
     fromAmino: MsgSplitRouteSwapExactAmountOut.fromAmino
+  },
+  "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee": {
+    aminoType: "osmosis/poolmanager/set-denom-pair-taker-fee",
+    toAmino: MsgSetDenomPairTakerFee.toAmino,
+    fromAmino: MsgSetDenomPairTakerFee.fromAmino
   }
 };

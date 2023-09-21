@@ -71,6 +71,32 @@ export interface EstimateSwapExactAmountInRequestSDKType {
   token_in: string;
   routes: SwapAmountInRouteSDKType[];
 }
+export interface EstimateSwapExactAmountInWithPrimitiveTypesRequest {
+  poolId: bigint;
+  tokenIn: string;
+  routesPoolId: bigint[];
+  routesTokenOutDenom: string[];
+}
+export interface EstimateSwapExactAmountInWithPrimitiveTypesRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.EstimateSwapExactAmountInWithPrimitiveTypesRequest";
+  value: Uint8Array;
+}
+export interface EstimateSwapExactAmountInWithPrimitiveTypesRequestAmino {
+  pool_id: string;
+  token_in: string;
+  routes_pool_id: string[];
+  routes_token_out_denom: string[];
+}
+export interface EstimateSwapExactAmountInWithPrimitiveTypesRequestAminoMsg {
+  type: "osmosis/poolmanager/estimate-swap-exact-amount-in-with-primitive-types-request";
+  value: EstimateSwapExactAmountInWithPrimitiveTypesRequestAmino;
+}
+export interface EstimateSwapExactAmountInWithPrimitiveTypesRequestSDKType {
+  pool_id: bigint;
+  token_in: string;
+  routes_pool_id: bigint[];
+  routes_token_out_denom: string[];
+}
 export interface EstimateSinglePoolSwapExactAmountInRequest {
   poolId: bigint;
   tokenIn: string;
@@ -135,6 +161,32 @@ export interface EstimateSwapExactAmountOutRequestAminoMsg {
 export interface EstimateSwapExactAmountOutRequestSDKType {
   pool_id: bigint;
   routes: SwapAmountOutRouteSDKType[];
+  token_out: string;
+}
+export interface EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
+  poolId: bigint;
+  routesPoolId: bigint[];
+  routesTokenInDenom: string[];
+  tokenOut: string;
+}
+export interface EstimateSwapExactAmountOutWithPrimitiveTypesRequestProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.EstimateSwapExactAmountOutWithPrimitiveTypesRequest";
+  value: Uint8Array;
+}
+export interface EstimateSwapExactAmountOutWithPrimitiveTypesRequestAmino {
+  pool_id: string;
+  routes_pool_id: string[];
+  routes_token_in_denom: string[];
+  token_out: string;
+}
+export interface EstimateSwapExactAmountOutWithPrimitiveTypesRequestAminoMsg {
+  type: "osmosis/poolmanager/estimate-swap-exact-amount-out-with-primitive-types-request";
+  value: EstimateSwapExactAmountOutWithPrimitiveTypesRequestAmino;
+}
+export interface EstimateSwapExactAmountOutWithPrimitiveTypesRequestSDKType {
+  pool_id: bigint;
+  routes_pool_id: bigint[];
+  routes_token_in_denom: string[];
   token_out: string;
 }
 export interface EstimateSinglePoolSwapExactAmountOutRequest {
@@ -629,6 +681,120 @@ export const EstimateSwapExactAmountInRequest = {
     };
   }
 };
+function createBaseEstimateSwapExactAmountInWithPrimitiveTypesRequest(): EstimateSwapExactAmountInWithPrimitiveTypesRequest {
+  return {
+    poolId: BigInt(0),
+    tokenIn: "",
+    routesPoolId: [],
+    routesTokenOutDenom: []
+  };
+}
+export const EstimateSwapExactAmountInWithPrimitiveTypesRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.EstimateSwapExactAmountInWithPrimitiveTypesRequest",
+  encode(message: EstimateSwapExactAmountInWithPrimitiveTypesRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
+      writer.uint32(8).uint64(message.poolId);
+    }
+    if (message.tokenIn !== "") {
+      writer.uint32(18).string(message.tokenIn);
+    }
+    writer.uint32(26).fork();
+    for (const v of message.routesPoolId) {
+      writer.uint64(v);
+    }
+    writer.ldelim();
+    for (const v of message.routesTokenOutDenom) {
+      writer.uint32(34).string(v!);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): EstimateSwapExactAmountInWithPrimitiveTypesRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEstimateSwapExactAmountInWithPrimitiveTypesRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.poolId = reader.uint64();
+          break;
+        case 2:
+          message.tokenIn = reader.string();
+          break;
+        case 3:
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.routesPoolId.push(reader.uint64());
+            }
+          } else {
+            message.routesPoolId.push(reader.uint64());
+          }
+          break;
+        case 4:
+          message.routesTokenOutDenom.push(reader.string());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<EstimateSwapExactAmountInWithPrimitiveTypesRequest>): EstimateSwapExactAmountInWithPrimitiveTypesRequest {
+    const message = createBaseEstimateSwapExactAmountInWithPrimitiveTypesRequest();
+    message.poolId = object.poolId !== undefined && object.poolId !== null ? BigInt(object.poolId.toString()) : BigInt(0);
+    message.tokenIn = object.tokenIn ?? "";
+    message.routesPoolId = object.routesPoolId?.map(e => BigInt(e.toString())) || [];
+    message.routesTokenOutDenom = object.routesTokenOutDenom?.map(e => e) || [];
+    return message;
+  },
+  fromAmino(object: EstimateSwapExactAmountInWithPrimitiveTypesRequestAmino): EstimateSwapExactAmountInWithPrimitiveTypesRequest {
+    return {
+      poolId: BigInt(object.pool_id),
+      tokenIn: object.token_in,
+      routesPoolId: Array.isArray(object?.routes_pool_id) ? object.routes_pool_id.map((e: any) => BigInt(e)) : [],
+      routesTokenOutDenom: Array.isArray(object?.routes_token_out_denom) ? object.routes_token_out_denom.map((e: any) => e) : []
+    };
+  },
+  toAmino(message: EstimateSwapExactAmountInWithPrimitiveTypesRequest): EstimateSwapExactAmountInWithPrimitiveTypesRequestAmino {
+    const obj: any = {};
+    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.token_in = message.tokenIn;
+    if (message.routesPoolId) {
+      obj.routes_pool_id = message.routesPoolId.map(e => e.toString());
+    } else {
+      obj.routes_pool_id = [];
+    }
+    if (message.routesTokenOutDenom) {
+      obj.routes_token_out_denom = message.routesTokenOutDenom.map(e => e);
+    } else {
+      obj.routes_token_out_denom = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(object: EstimateSwapExactAmountInWithPrimitiveTypesRequestAminoMsg): EstimateSwapExactAmountInWithPrimitiveTypesRequest {
+    return EstimateSwapExactAmountInWithPrimitiveTypesRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: EstimateSwapExactAmountInWithPrimitiveTypesRequest): EstimateSwapExactAmountInWithPrimitiveTypesRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/estimate-swap-exact-amount-in-with-primitive-types-request",
+      value: EstimateSwapExactAmountInWithPrimitiveTypesRequest.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: EstimateSwapExactAmountInWithPrimitiveTypesRequestProtoMsg): EstimateSwapExactAmountInWithPrimitiveTypesRequest {
+    return EstimateSwapExactAmountInWithPrimitiveTypesRequest.decode(message.value);
+  },
+  toProto(message: EstimateSwapExactAmountInWithPrimitiveTypesRequest): Uint8Array {
+    return EstimateSwapExactAmountInWithPrimitiveTypesRequest.encode(message).finish();
+  },
+  toProtoMsg(message: EstimateSwapExactAmountInWithPrimitiveTypesRequest): EstimateSwapExactAmountInWithPrimitiveTypesRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.EstimateSwapExactAmountInWithPrimitiveTypesRequest",
+      value: EstimateSwapExactAmountInWithPrimitiveTypesRequest.encode(message).finish()
+    };
+  }
+};
 function createBaseEstimateSinglePoolSwapExactAmountInRequest(): EstimateSinglePoolSwapExactAmountInRequest {
   return {
     poolId: BigInt(0),
@@ -871,6 +1037,120 @@ export const EstimateSwapExactAmountOutRequest = {
     return {
       typeUrl: "/osmosis.poolmanager.v1beta1.EstimateSwapExactAmountOutRequest",
       value: EstimateSwapExactAmountOutRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseEstimateSwapExactAmountOutWithPrimitiveTypesRequest(): EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
+  return {
+    poolId: BigInt(0),
+    routesPoolId: [],
+    routesTokenInDenom: [],
+    tokenOut: ""
+  };
+}
+export const EstimateSwapExactAmountOutWithPrimitiveTypesRequest = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.EstimateSwapExactAmountOutWithPrimitiveTypesRequest",
+  encode(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
+      writer.uint32(8).uint64(message.poolId);
+    }
+    writer.uint32(18).fork();
+    for (const v of message.routesPoolId) {
+      writer.uint64(v);
+    }
+    writer.ldelim();
+    for (const v of message.routesTokenInDenom) {
+      writer.uint32(26).string(v!);
+    }
+    if (message.tokenOut !== "") {
+      writer.uint32(34).string(message.tokenOut);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseEstimateSwapExactAmountOutWithPrimitiveTypesRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.poolId = reader.uint64();
+          break;
+        case 2:
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.routesPoolId.push(reader.uint64());
+            }
+          } else {
+            message.routesPoolId.push(reader.uint64());
+          }
+          break;
+        case 3:
+          message.routesTokenInDenom.push(reader.string());
+          break;
+        case 4:
+          message.tokenOut = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<EstimateSwapExactAmountOutWithPrimitiveTypesRequest>): EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
+    const message = createBaseEstimateSwapExactAmountOutWithPrimitiveTypesRequest();
+    message.poolId = object.poolId !== undefined && object.poolId !== null ? BigInt(object.poolId.toString()) : BigInt(0);
+    message.routesPoolId = object.routesPoolId?.map(e => BigInt(e.toString())) || [];
+    message.routesTokenInDenom = object.routesTokenInDenom?.map(e => e) || [];
+    message.tokenOut = object.tokenOut ?? "";
+    return message;
+  },
+  fromAmino(object: EstimateSwapExactAmountOutWithPrimitiveTypesRequestAmino): EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
+    return {
+      poolId: BigInt(object.pool_id),
+      routesPoolId: Array.isArray(object?.routes_pool_id) ? object.routes_pool_id.map((e: any) => BigInt(e)) : [],
+      routesTokenInDenom: Array.isArray(object?.routes_token_in_denom) ? object.routes_token_in_denom.map((e: any) => e) : [],
+      tokenOut: object.token_out
+    };
+  },
+  toAmino(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequest): EstimateSwapExactAmountOutWithPrimitiveTypesRequestAmino {
+    const obj: any = {};
+    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    if (message.routesPoolId) {
+      obj.routes_pool_id = message.routesPoolId.map(e => e.toString());
+    } else {
+      obj.routes_pool_id = [];
+    }
+    if (message.routesTokenInDenom) {
+      obj.routes_token_in_denom = message.routesTokenInDenom.map(e => e);
+    } else {
+      obj.routes_token_in_denom = [];
+    }
+    obj.token_out = message.tokenOut;
+    return obj;
+  },
+  fromAminoMsg(object: EstimateSwapExactAmountOutWithPrimitiveTypesRequestAminoMsg): EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
+    return EstimateSwapExactAmountOutWithPrimitiveTypesRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequest): EstimateSwapExactAmountOutWithPrimitiveTypesRequestAminoMsg {
+    return {
+      type: "osmosis/poolmanager/estimate-swap-exact-amount-out-with-primitive-types-request",
+      value: EstimateSwapExactAmountOutWithPrimitiveTypesRequest.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequestProtoMsg): EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
+    return EstimateSwapExactAmountOutWithPrimitiveTypesRequest.decode(message.value);
+  },
+  toProto(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequest): Uint8Array {
+    return EstimateSwapExactAmountOutWithPrimitiveTypesRequest.encode(message).finish();
+  },
+  toProtoMsg(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequest): EstimateSwapExactAmountOutWithPrimitiveTypesRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.EstimateSwapExactAmountOutWithPrimitiveTypesRequest",
+      value: EstimateSwapExactAmountOutWithPrimitiveTypesRequest.encode(message).finish()
     };
   }
 };

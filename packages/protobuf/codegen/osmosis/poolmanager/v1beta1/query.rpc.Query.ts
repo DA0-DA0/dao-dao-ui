@@ -1,14 +1,29 @@
 import { Rpc } from "../../../helpers";
 import { BinaryReader } from "../../../binary";
 import { QueryClient, createProtobufRpcClient } from "@cosmjs/stargate";
-import { ParamsRequest, ParamsResponse, EstimateSwapExactAmountInRequest, EstimateSwapExactAmountInResponse, EstimateSinglePoolSwapExactAmountInRequest, EstimateSwapExactAmountOutRequest, EstimateSwapExactAmountOutResponse, EstimateSinglePoolSwapExactAmountOutRequest, NumPoolsRequest, NumPoolsResponse, PoolRequest, PoolResponse, AllPoolsRequest, AllPoolsResponse, SpotPriceRequest, SpotPriceResponse, TotalPoolLiquidityRequest, TotalPoolLiquidityResponse, TotalLiquidityRequest, TotalLiquidityResponse } from "./query";
+import { ParamsRequest, ParamsResponse, EstimateSwapExactAmountInRequest, EstimateSwapExactAmountInResponse, EstimateSwapExactAmountInWithPrimitiveTypesRequest, EstimateSinglePoolSwapExactAmountInRequest, EstimateSwapExactAmountOutRequest, EstimateSwapExactAmountOutResponse, EstimateSwapExactAmountOutWithPrimitiveTypesRequest, EstimateSinglePoolSwapExactAmountOutRequest, NumPoolsRequest, NumPoolsResponse, PoolRequest, PoolResponse, AllPoolsRequest, AllPoolsResponse, SpotPriceRequest, SpotPriceResponse, TotalPoolLiquidityRequest, TotalPoolLiquidityResponse, TotalLiquidityRequest, TotalLiquidityResponse } from "./query";
 export interface Query {
   params(request?: ParamsRequest): Promise<ParamsResponse>;
   /** Estimates swap amount out given in. */
   estimateSwapExactAmountIn(request: EstimateSwapExactAmountInRequest): Promise<EstimateSwapExactAmountInResponse>;
+  /**
+   * EstimateSwapExactAmountInWithPrimitiveTypes is an alternative query for
+   * EstimateSwapExactAmountIn. Supports query via GRPC-Gateway by using
+   * primitive types instead of repeated structs. Each index in the
+   * routes_pool_id field corresponds to the respective routes_token_out_denom
+   * value, thus they are required to have the same length and are grouped
+   * together as pairs.
+   * example usage:
+   * http://0.0.0.0:1317/osmosis/poolmanager/v1beta1/1/estimate/
+   * swap_exact_amount_in_with_primitive_types?token_in=100000stake&routes_token_out_denom=uatom
+   * &routes_token_out_denom=uion&routes_pool_id=1&routes_pool_id=2
+   */
+  estimateSwapExactAmountInWithPrimitiveTypes(request: EstimateSwapExactAmountInWithPrimitiveTypesRequest): Promise<EstimateSwapExactAmountInResponse>;
   estimateSinglePoolSwapExactAmountIn(request: EstimateSinglePoolSwapExactAmountInRequest): Promise<EstimateSwapExactAmountInResponse>;
   /** Estimates swap amount in given out. */
   estimateSwapExactAmountOut(request: EstimateSwapExactAmountOutRequest): Promise<EstimateSwapExactAmountOutResponse>;
+  /** Estimates swap amount in given out. */
+  estimateSwapExactAmountOutWithPrimitiveTypes(request: EstimateSwapExactAmountOutWithPrimitiveTypesRequest): Promise<EstimateSwapExactAmountOutResponse>;
   estimateSinglePoolSwapExactAmountOut(request: EstimateSinglePoolSwapExactAmountOutRequest): Promise<EstimateSwapExactAmountOutResponse>;
   /** Returns the total number of pools existing in Osmosis. */
   numPools(request?: NumPoolsRequest): Promise<NumPoolsResponse>;
@@ -32,8 +47,10 @@ export class QueryClientImpl implements Query {
     this.rpc = rpc;
     this.params = this.params.bind(this);
     this.estimateSwapExactAmountIn = this.estimateSwapExactAmountIn.bind(this);
+    this.estimateSwapExactAmountInWithPrimitiveTypes = this.estimateSwapExactAmountInWithPrimitiveTypes.bind(this);
     this.estimateSinglePoolSwapExactAmountIn = this.estimateSinglePoolSwapExactAmountIn.bind(this);
     this.estimateSwapExactAmountOut = this.estimateSwapExactAmountOut.bind(this);
+    this.estimateSwapExactAmountOutWithPrimitiveTypes = this.estimateSwapExactAmountOutWithPrimitiveTypes.bind(this);
     this.estimateSinglePoolSwapExactAmountOut = this.estimateSinglePoolSwapExactAmountOut.bind(this);
     this.numPools = this.numPools.bind(this);
     this.pool = this.pool.bind(this);
@@ -52,6 +69,11 @@ export class QueryClientImpl implements Query {
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "EstimateSwapExactAmountIn", data);
     return promise.then(data => EstimateSwapExactAmountInResponse.decode(new BinaryReader(data)));
   }
+  estimateSwapExactAmountInWithPrimitiveTypes(request: EstimateSwapExactAmountInWithPrimitiveTypesRequest): Promise<EstimateSwapExactAmountInResponse> {
+    const data = EstimateSwapExactAmountInWithPrimitiveTypesRequest.encode(request).finish();
+    const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "EstimateSwapExactAmountInWithPrimitiveTypes", data);
+    return promise.then(data => EstimateSwapExactAmountInResponse.decode(new BinaryReader(data)));
+  }
   estimateSinglePoolSwapExactAmountIn(request: EstimateSinglePoolSwapExactAmountInRequest): Promise<EstimateSwapExactAmountInResponse> {
     const data = EstimateSinglePoolSwapExactAmountInRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "EstimateSinglePoolSwapExactAmountIn", data);
@@ -60,6 +82,11 @@ export class QueryClientImpl implements Query {
   estimateSwapExactAmountOut(request: EstimateSwapExactAmountOutRequest): Promise<EstimateSwapExactAmountOutResponse> {
     const data = EstimateSwapExactAmountOutRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "EstimateSwapExactAmountOut", data);
+    return promise.then(data => EstimateSwapExactAmountOutResponse.decode(new BinaryReader(data)));
+  }
+  estimateSwapExactAmountOutWithPrimitiveTypes(request: EstimateSwapExactAmountOutWithPrimitiveTypesRequest): Promise<EstimateSwapExactAmountOutResponse> {
+    const data = EstimateSwapExactAmountOutWithPrimitiveTypesRequest.encode(request).finish();
+    const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "EstimateSwapExactAmountOutWithPrimitiveTypes", data);
     return promise.then(data => EstimateSwapExactAmountOutResponse.decode(new BinaryReader(data)));
   }
   estimateSinglePoolSwapExactAmountOut(request: EstimateSinglePoolSwapExactAmountOutRequest): Promise<EstimateSwapExactAmountOutResponse> {
@@ -108,11 +135,17 @@ export const createRpcQueryExtension = (base: QueryClient) => {
     estimateSwapExactAmountIn(request: EstimateSwapExactAmountInRequest): Promise<EstimateSwapExactAmountInResponse> {
       return queryService.estimateSwapExactAmountIn(request);
     },
+    estimateSwapExactAmountInWithPrimitiveTypes(request: EstimateSwapExactAmountInWithPrimitiveTypesRequest): Promise<EstimateSwapExactAmountInResponse> {
+      return queryService.estimateSwapExactAmountInWithPrimitiveTypes(request);
+    },
     estimateSinglePoolSwapExactAmountIn(request: EstimateSinglePoolSwapExactAmountInRequest): Promise<EstimateSwapExactAmountInResponse> {
       return queryService.estimateSinglePoolSwapExactAmountIn(request);
     },
     estimateSwapExactAmountOut(request: EstimateSwapExactAmountOutRequest): Promise<EstimateSwapExactAmountOutResponse> {
       return queryService.estimateSwapExactAmountOut(request);
+    },
+    estimateSwapExactAmountOutWithPrimitiveTypes(request: EstimateSwapExactAmountOutWithPrimitiveTypesRequest): Promise<EstimateSwapExactAmountOutResponse> {
+      return queryService.estimateSwapExactAmountOutWithPrimitiveTypes(request);
     },
     estimateSinglePoolSwapExactAmountOut(request: EstimateSinglePoolSwapExactAmountOutRequest): Promise<EstimateSwapExactAmountOutResponse> {
       return queryService.estimateSinglePoolSwapExactAmountOut(request);
