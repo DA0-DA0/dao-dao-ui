@@ -132,7 +132,7 @@ export const TokenInput = <
   const selectedTokenDisplay = useMemo(
     () =>
       selectedToken ? (
-        <div className="flex flex-row items-center gap-2">
+        <div className="flex min-w-0 flex-row items-center gap-2">
           <Tooltip
             title={t('info.tokenOnChain', {
               token: selectedToken.symbol,
@@ -161,7 +161,7 @@ export const TokenInput = <
             </div>
           </Tooltip>
 
-          <p>
+          <p className="min-w-[4rem] grow truncate text-left">
             {readOnly &&
               amount.toLocaleString(undefined, {
                 // Show as many decimals as possible (max is 20).
@@ -232,11 +232,9 @@ export const TokenInput = <
                       token.imageUrl || getFallbackImage(token.denomOrAddress),
                     ...token,
                     rightNode: (
-                      <p className="caption-text">
+                      <p className="caption-text max-w-[5rem] truncate">
                         {allTokensOnSameChain
-                          ? token.denomOrAddress.startsWith('ibc/')
-                            ? token.denomOrAddress.slice(0, 9) + '...'
-                            : token.denomOrAddress
+                          ? token.denomOrAddress
                           : getDisplayNameForChainId(token.chainId)}
                       </p>
                     ),

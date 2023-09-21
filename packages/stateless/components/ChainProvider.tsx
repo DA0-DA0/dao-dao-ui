@@ -2,8 +2,8 @@ import { ReactNode } from 'react'
 
 import {
   getChainForChainId,
-  getNativeTokenForChainId,
   getSupportedChainConfig,
+  maybeGetNativeTokenForChainId,
 } from '@dao-dao/utils'
 
 import { ChainContext } from '../hooks/useChainContext'
@@ -18,7 +18,7 @@ export const ChainProvider = ({ chainId, children }: ChainProviderProps) => (
     value={{
       chainId,
       chain: getChainForChainId(chainId),
-      nativeToken: getNativeTokenForChainId(chainId),
+      nativeToken: maybeGetNativeTokenForChainId(chainId),
       config: getSupportedChainConfig(chainId),
     }}
   >
