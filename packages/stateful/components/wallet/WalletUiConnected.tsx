@@ -13,6 +13,7 @@ import {
   ProfileImage,
   ProfileNameDisplayAndEditor,
   Tooltip,
+  WalletLogo,
   WarningCard,
 } from '@dao-dao/stateless'
 
@@ -67,14 +68,10 @@ export const WalletUiConnected = ({
                   })
             }
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              alt=""
-              className="object-no-repeat absolute -right-2 -bottom-2 h-6 w-6 object-contain object-center"
-              src={walletRepo?.current.walletInfo.logo}
-              style={{
-                filter: 'drop-shadow(0px 2px 8px rgba(0, 0, 0, 1))',
-              }}
+            <WalletLogo
+              className="!absolute -right-2 -bottom-2"
+              logo={walletRepo?.current.walletInfo.logo}
+              size="sm"
             />
           </Tooltip>
         </div>
