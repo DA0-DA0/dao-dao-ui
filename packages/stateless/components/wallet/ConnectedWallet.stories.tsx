@@ -14,7 +14,7 @@ const Template: ComponentStory<typeof ConnectedWallet> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
-  walletProviderImageUrl: '/daodao.png',
+  walletLogo: '/daodao.png',
   walletName: '@Modern-Edamame',
   walletAddress: 'juno123abx789xyz',
   openWalletModal: () => alert('open'),

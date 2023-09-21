@@ -1,12 +1,14 @@
-import { Settings, Wallet } from '@mui/icons-material'
+import { Wallet } from '@cosmos-kit/core'
+import { Settings, Wallet as WalletIcon } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 
 import { CopyableAddress } from '../CopyableAddress'
 import { IconButton } from '../icon_buttons'
+import { WalletLogo } from './WalletLogo'
 
 export interface ConnectedWalletProps {
-  walletProviderImageUrl?: string
+  walletLogo?: Wallet['logo']
   walletName: string
   walletAddress: string
   openWalletModal: () => void
@@ -14,7 +16,7 @@ export interface ConnectedWalletProps {
 }
 
 export const ConnectedWallet = ({
-  walletProviderImageUrl,
+  walletLogo,
   walletName,
   walletAddress,
   openWalletModal,
@@ -36,21 +38,14 @@ export const ConnectedWallet = ({
     >
       <div className="flex min-w-0 flex-row items-stretch gap-3">
         <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-[2px] border-border-primary">
-          {walletProviderImageUrl && (
-            <div
-              className="h-6 w-6 bg-contain bg-center bg-no-repeat"
-              style={{
-                backgroundImage: `url(${walletProviderImageUrl})`,
-              }}
-            />
-          )}
+          <WalletLogo logo={walletLogo} size="sm" />
         </div>
 
         <div className="flex min-w-0 flex-col justify-center gap-1">
-          <p className="primary-text text-text-body">{walletName}</p>
+          <p className="primary-text truncate text-text-body">{walletName}</p>
 
           <CopyableAddress
-            Icon={Wallet}
+            Icon={WalletIcon}
             address={walletAddress}
             iconClassName="!h-4 !w-4"
             textClassName="!legend-text"

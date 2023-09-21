@@ -2,7 +2,12 @@ import { ChainWalletBase, WalletModalProps } from '@cosmos-kit/core'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
-import { Button, Tooltip, TooltipInfoIcon } from '@dao-dao/stateless'
+import {
+  Button,
+  Tooltip,
+  TooltipInfoIcon,
+  WalletLogo,
+} from '@dao-dao/stateless'
 
 import { useWallet } from '../../hooks/useWallet'
 
@@ -54,14 +59,7 @@ export const WalletUiWalletList = ({
             }
             variant="secondary"
           >
-            {!!wallet.walletInfo.logo && (
-              <div
-                className="h-10 w-10 bg-contain bg-center bg-no-repeat"
-                style={{
-                  backgroundImage: `url(${wallet.walletInfo.logo})`,
-                }}
-              />
-            )}
+            <WalletLogo logo={wallet.walletInfo.logo} />
 
             <p className="secondary-text text-center">
               {wallet.walletInfo.prettyName}
@@ -109,14 +107,7 @@ export const WalletUiWalletList = ({
                   }
                   variant="secondary"
                 >
-                  {!!wallet.walletInfo.logo && (
-                    <div
-                      className="h-10 w-10 bg-contain bg-center  bg-no-repeat"
-                      style={{
-                        backgroundImage: `url(${wallet.walletInfo.logo})`,
-                      }}
-                    />
-                  )}
+                  <WalletLogo logo={wallet.walletInfo.logo} />
                 </Button>
               </Tooltip>
             ))}
