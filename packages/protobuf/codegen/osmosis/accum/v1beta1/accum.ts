@@ -1,6 +1,5 @@
 import { DecCoin, DecCoinAmino, DecCoinSDKType } from "../../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../../binary";
-import { Decimal } from "@cosmjs/math";
 /**
  * AccumulatorContent is the state-entry for the global accumulator.
  * It contains the name of the global accumulator and the total value of
@@ -158,7 +157,7 @@ export const AccumulatorContent = {
       DecCoin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     if (message.totalShares !== "") {
-      writer.uint32(18).string(Decimal.fromUserInput(message.totalShares, 18).atomics);
+      writer.uint32(18).string(message.totalShares);
     }
     return writer;
   },
@@ -173,7 +172,7 @@ export const AccumulatorContent = {
           message.accumValue.push(DecCoin.decode(reader, reader.uint32()));
           break;
         case 2:
-          message.totalShares = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.totalShares = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -293,7 +292,7 @@ export const Record = {
   typeUrl: "/osmosis.accum.v1beta1.Record",
   encode(message: Record, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.numShares !== "") {
-      writer.uint32(10).string(Decimal.fromUserInput(message.numShares, 18).atomics);
+      writer.uint32(10).string(message.numShares);
     }
     for (const v of message.accumValuePerShare) {
       DecCoin.encode(v!, writer.uint32(18).fork()).ldelim();
@@ -314,7 +313,7 @@ export const Record = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.numShares = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.numShares = reader.string();
           break;
         case 2:
           message.accumValuePerShare.push(DecCoin.decode(reader, reader.uint32()));

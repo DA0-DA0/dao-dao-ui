@@ -207,7 +207,7 @@ export interface MsgForceUnlockAmino {
   coins: CoinAmino[];
 }
 export interface MsgForceUnlockAminoMsg {
-  type: "osmosis/lockup/force-unlock";
+  type: "osmosis/lockup/force-unlock-tokens";
   value: MsgForceUnlockAmino;
 }
 /**
@@ -968,7 +968,7 @@ export const MsgForceUnlock = {
   },
   toAminoMsg(message: MsgForceUnlock): MsgForceUnlockAminoMsg {
     return {
-      type: "osmosis/lockup/force-unlock",
+      type: "osmosis/lockup/force-unlock-tokens",
       value: MsgForceUnlock.toAmino(message)
     };
   },

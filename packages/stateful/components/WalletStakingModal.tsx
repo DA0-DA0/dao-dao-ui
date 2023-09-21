@@ -41,6 +41,10 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
   } = useChainContext()
   const { address: walletAddress = '', getSigningCosmWasmClient } = useWallet()
 
+  if (!nativeToken) {
+    throw new Error(t('error.missingNativeToken'))
+  }
+
   const { walletBalance, refreshBalances } = useWalletInfo()
   // Refreshes validator balances.
   const setRefreshValidatorBalances = useSetRecoilState(

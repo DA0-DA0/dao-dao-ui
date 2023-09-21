@@ -1,6 +1,6 @@
 //@ts-nocheck
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
-import { TokenPairArbRoutes, TokenPairArbRoutesAmino, TokenPairArbRoutesSDKType, BaseDenom, BaseDenomAmino, BaseDenomSDKType, PoolWeights, PoolWeightsAmino, PoolWeightsSDKType } from "./protorev";
+import { TokenPairArbRoutes, TokenPairArbRoutesAmino, TokenPairArbRoutesSDKType, BaseDenom, BaseDenomAmino, BaseDenomSDKType, PoolWeights, PoolWeightsAmino, PoolWeightsSDKType, InfoByPoolType, InfoByPoolTypeAmino, InfoByPoolTypeSDKType } from "./protorev";
 import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 /** GenesisState defines the protorev module's genesis state. */
@@ -17,6 +17,9 @@ export interface GenesisState {
   /**
    * The pool weights that are being used to calculate the weight (compute cost)
    * of each route.
+   * 
+   * DEPRECATED: This field is deprecated and will be removed in the next
+   * release. It is replaced by the `info_by_pool_type` field.
    */
   poolWeights: PoolWeights | undefined;
   /** The number of days since module genesis. */
@@ -41,6 +44,11 @@ export interface GenesisState {
   pointCountForBlock: bigint;
   /** All of the profits that have been accumulated by the module. */
   profits: Coin[];
+  /**
+   * Information that is used to estimate execution time / gas
+   * consumption of a swap on a given pool type.
+   */
+  infoByPoolType: InfoByPoolType | undefined;
 }
 export interface GenesisStateProtoMsg {
   typeUrl: "/osmosis.protorev.v1beta1.GenesisState";
@@ -60,6 +68,9 @@ export interface GenesisStateAmino {
   /**
    * The pool weights that are being used to calculate the weight (compute cost)
    * of each route.
+   * 
+   * DEPRECATED: This field is deprecated and will be removed in the next
+   * release. It is replaced by the `info_by_pool_type` field.
    */
   pool_weights?: PoolWeightsAmino | undefined;
   /** The number of days since module genesis. */
@@ -84,6 +95,11 @@ export interface GenesisStateAmino {
   point_count_for_block: string;
   /** All of the profits that have been accumulated by the module. */
   profits: CoinAmino[];
+  /**
+   * Information that is used to estimate execution time / gas
+   * consumption of a swap on a given pool type.
+   */
+  info_by_pool_type?: InfoByPoolTypeAmino | undefined;
 }
 export interface GenesisStateAminoMsg {
   type: "osmosis/protorev/genesis-state";
@@ -103,6 +119,7 @@ export interface GenesisStateSDKType {
   max_pool_points_per_tx: bigint;
   point_count_for_block: bigint;
   profits: CoinSDKType[];
+  info_by_pool_type: InfoByPoolTypeSDKType | undefined;
 }
 function createBaseGenesisState(): GenesisState {
   return {
@@ -117,7 +134,8 @@ function createBaseGenesisState(): GenesisState {
     maxPoolPointsPerBlock: BigInt(0),
     maxPoolPointsPerTx: BigInt(0),
     pointCountForBlock: BigInt(0),
-    profits: []
+    profits: [],
+    infoByPoolType: InfoByPoolType.fromPartial({})
   };
 }
 export const GenesisState = {
@@ -158,6 +176,9 @@ export const GenesisState = {
     }
     for (const v of message.profits) {
       Coin.encode(v!, writer.uint32(98).fork()).ldelim();
+    }
+    if (message.infoByPoolType !== undefined) {
+      InfoByPoolType.encode(message.infoByPoolType, writer.uint32(106).fork()).ldelim();
     }
     return writer;
   },
@@ -204,6 +225,9 @@ export const GenesisState = {
         case 12:
           message.profits.push(Coin.decode(reader, reader.uint32()));
           break;
+        case 13:
+          message.infoByPoolType = InfoByPoolType.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -225,6 +249,7 @@ export const GenesisState = {
     message.maxPoolPointsPerTx = object.maxPoolPointsPerTx !== undefined && object.maxPoolPointsPerTx !== null ? BigInt(object.maxPoolPointsPerTx.toString()) : BigInt(0);
     message.pointCountForBlock = object.pointCountForBlock !== undefined && object.pointCountForBlock !== null ? BigInt(object.pointCountForBlock.toString()) : BigInt(0);
     message.profits = object.profits?.map(e => Coin.fromPartial(e)) || [];
+    message.infoByPoolType = object.infoByPoolType !== undefined && object.infoByPoolType !== null ? InfoByPoolType.fromPartial(object.infoByPoolType) : undefined;
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
@@ -240,7 +265,8 @@ export const GenesisState = {
       maxPoolPointsPerBlock: BigInt(object.max_pool_points_per_block),
       maxPoolPointsPerTx: BigInt(object.max_pool_points_per_tx),
       pointCountForBlock: BigInt(object.point_count_for_block),
-      profits: Array.isArray(object?.profits) ? object.profits.map((e: any) => Coin.fromAmino(e)) : []
+      profits: Array.isArray(object?.profits) ? object.profits.map((e: any) => Coin.fromAmino(e)) : [],
+      infoByPoolType: object?.info_by_pool_type ? InfoByPoolType.fromAmino(object.info_by_pool_type) : undefined
     };
   },
   toAmino(message: GenesisState): GenesisStateAmino {
@@ -273,6 +299,7 @@ export const GenesisState = {
     } else {
       obj.profits = [];
     }
+    obj.info_by_pool_type = message.infoByPoolType ? InfoByPoolType.toAmino(message.infoByPoolType) : undefined;
     return obj;
   },
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {

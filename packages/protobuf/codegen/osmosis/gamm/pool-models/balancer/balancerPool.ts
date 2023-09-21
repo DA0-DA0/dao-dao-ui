@@ -3,7 +3,6 @@ import { Duration, DurationAmino, DurationSDKType } from "../../../../google/pro
 import { Coin, CoinAmino, CoinSDKType } from "../../../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../../../binary";
 import { toTimestamp, fromTimestamp } from "../../../../helpers";
-import { Decimal } from "@cosmjs/math";
 /**
  * Parameters for changing the weights in a balancer pool smoothly from
  * a start weight and end weight over a period of time.
@@ -393,10 +392,10 @@ export const PoolParams = {
   typeUrl: "/osmosis.gamm.v1beta1.PoolParams",
   encode(message: PoolParams, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.swapFee !== "") {
-      writer.uint32(10).string(Decimal.fromUserInput(message.swapFee, 18).atomics);
+      writer.uint32(10).string(message.swapFee);
     }
     if (message.exitFee !== "") {
-      writer.uint32(18).string(Decimal.fromUserInput(message.exitFee, 18).atomics);
+      writer.uint32(18).string(message.exitFee);
     }
     if (message.smoothWeightChangeParams !== undefined) {
       SmoothWeightChangeParams.encode(message.smoothWeightChangeParams, writer.uint32(26).fork()).ldelim();
@@ -411,10 +410,10 @@ export const PoolParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.swapFee = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.swapFee = reader.string();
           break;
         case 2:
-          message.exitFee = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.exitFee = reader.string();
           break;
         case 3:
           message.smoothWeightChangeParams = SmoothWeightChangeParams.decode(reader, reader.uint32());

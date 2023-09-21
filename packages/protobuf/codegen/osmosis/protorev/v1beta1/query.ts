@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
-import { RouteStatistics, RouteStatisticsAmino, RouteStatisticsSDKType, TokenPairArbRoutes, TokenPairArbRoutesAmino, TokenPairArbRoutesSDKType, PoolWeights, PoolWeightsAmino, PoolWeightsSDKType, BaseDenom, BaseDenomAmino, BaseDenomSDKType } from "./protorev";
+import { RouteStatistics, RouteStatisticsAmino, RouteStatisticsSDKType, TokenPairArbRoutes, TokenPairArbRoutesAmino, TokenPairArbRoutesSDKType, InfoByPoolType, InfoByPoolTypeAmino, InfoByPoolTypeSDKType, BaseDenom, BaseDenomAmino, BaseDenomSDKType } from "./protorev";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 /** QueryParamsRequest is request type for the Query/Params RPC method. */
 export interface QueryParamsRequest {}
@@ -506,58 +506,64 @@ export interface QueryGetProtoRevDeveloperAccountResponseSDKType {
   developer_account: string;
 }
 /**
- * QueryGetProtoRevPoolWeightsRequest is request type for the
- * Query/GetProtoRevPoolWeights RPC method.
+ * QueryGetProtoRevInfoByPoolTypeRequest is request type for the
+ * Query/GetProtoRevInfoByPoolType RPC method.
  */
-export interface QueryGetProtoRevPoolWeightsRequest {}
-export interface QueryGetProtoRevPoolWeightsRequestProtoMsg {
-  typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevPoolWeightsRequest";
+export interface QueryGetProtoRevInfoByPoolTypeRequest {}
+export interface QueryGetProtoRevInfoByPoolTypeRequestProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevInfoByPoolTypeRequest";
   value: Uint8Array;
 }
 /**
- * QueryGetProtoRevPoolWeightsRequest is request type for the
- * Query/GetProtoRevPoolWeights RPC method.
+ * QueryGetProtoRevInfoByPoolTypeRequest is request type for the
+ * Query/GetProtoRevInfoByPoolType RPC method.
  */
-export interface QueryGetProtoRevPoolWeightsRequestAmino {}
-export interface QueryGetProtoRevPoolWeightsRequestAminoMsg {
-  type: "osmosis/protorev/query-get-proto-rev-pool-weights-request";
-  value: QueryGetProtoRevPoolWeightsRequestAmino;
+export interface QueryGetProtoRevInfoByPoolTypeRequestAmino {}
+export interface QueryGetProtoRevInfoByPoolTypeRequestAminoMsg {
+  type: "osmosis/protorev/query-get-proto-rev-info-by-pool-type-request";
+  value: QueryGetProtoRevInfoByPoolTypeRequestAmino;
 }
 /**
- * QueryGetProtoRevPoolWeightsRequest is request type for the
- * Query/GetProtoRevPoolWeights RPC method.
+ * QueryGetProtoRevInfoByPoolTypeRequest is request type for the
+ * Query/GetProtoRevInfoByPoolType RPC method.
  */
-export interface QueryGetProtoRevPoolWeightsRequestSDKType {}
+export interface QueryGetProtoRevInfoByPoolTypeRequestSDKType {}
 /**
- * QueryGetProtoRevPoolWeightsResponse is response type for the
- * Query/GetProtoRevPoolWeights RPC method.
+ * QueryGetProtoRevInfoByPoolTypeResponse is response type for the
+ * Query/GetProtoRevInfoByPoolType RPC method.
  */
-export interface QueryGetProtoRevPoolWeightsResponse {
-  /** pool_weights is a list of all of the pool weights */
-  poolWeights: PoolWeights | undefined;
+export interface QueryGetProtoRevInfoByPoolTypeResponse {
+  /**
+   * InfoByPoolType contains all information pertaining to how different
+   * pool types are handled by the module.
+   */
+  infoByPoolType: InfoByPoolType | undefined;
 }
-export interface QueryGetProtoRevPoolWeightsResponseProtoMsg {
-  typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevPoolWeightsResponse";
+export interface QueryGetProtoRevInfoByPoolTypeResponseProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevInfoByPoolTypeResponse";
   value: Uint8Array;
 }
 /**
- * QueryGetProtoRevPoolWeightsResponse is response type for the
- * Query/GetProtoRevPoolWeights RPC method.
+ * QueryGetProtoRevInfoByPoolTypeResponse is response type for the
+ * Query/GetProtoRevInfoByPoolType RPC method.
  */
-export interface QueryGetProtoRevPoolWeightsResponseAmino {
-  /** pool_weights is a list of all of the pool weights */
-  pool_weights?: PoolWeightsAmino | undefined;
+export interface QueryGetProtoRevInfoByPoolTypeResponseAmino {
+  /**
+   * InfoByPoolType contains all information pertaining to how different
+   * pool types are handled by the module.
+   */
+  info_by_pool_type?: InfoByPoolTypeAmino | undefined;
 }
-export interface QueryGetProtoRevPoolWeightsResponseAminoMsg {
-  type: "osmosis/protorev/query-get-proto-rev-pool-weights-response";
-  value: QueryGetProtoRevPoolWeightsResponseAmino;
+export interface QueryGetProtoRevInfoByPoolTypeResponseAminoMsg {
+  type: "osmosis/protorev/query-get-proto-rev-info-by-pool-type-response";
+  value: QueryGetProtoRevInfoByPoolTypeResponseAmino;
 }
 /**
- * QueryGetProtoRevPoolWeightsResponse is response type for the
- * Query/GetProtoRevPoolWeights RPC method.
+ * QueryGetProtoRevInfoByPoolTypeResponse is response type for the
+ * Query/GetProtoRevInfoByPoolType RPC method.
  */
-export interface QueryGetProtoRevPoolWeightsResponseSDKType {
-  pool_weights: PoolWeightsSDKType | undefined;
+export interface QueryGetProtoRevInfoByPoolTypeResponseSDKType {
+  info_by_pool_type: InfoByPoolTypeSDKType | undefined;
 }
 /**
  * QueryGetProtoRevMaxPoolPointsPerBlockRequest is request type for the
@@ -2007,18 +2013,18 @@ export const QueryGetProtoRevDeveloperAccountResponse = {
     };
   }
 };
-function createBaseQueryGetProtoRevPoolWeightsRequest(): QueryGetProtoRevPoolWeightsRequest {
+function createBaseQueryGetProtoRevInfoByPoolTypeRequest(): QueryGetProtoRevInfoByPoolTypeRequest {
   return {};
 }
-export const QueryGetProtoRevPoolWeightsRequest = {
-  typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevPoolWeightsRequest",
-  encode(_: QueryGetProtoRevPoolWeightsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+export const QueryGetProtoRevInfoByPoolTypeRequest = {
+  typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevInfoByPoolTypeRequest",
+  encode(_: QueryGetProtoRevInfoByPoolTypeRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevPoolWeightsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevInfoByPoolTypeRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryGetProtoRevPoolWeightsRequest();
+    const message = createBaseQueryGetProtoRevInfoByPoolTypeRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -2029,61 +2035,61 @@ export const QueryGetProtoRevPoolWeightsRequest = {
     }
     return message;
   },
-  fromPartial(_: Partial<QueryGetProtoRevPoolWeightsRequest>): QueryGetProtoRevPoolWeightsRequest {
-    const message = createBaseQueryGetProtoRevPoolWeightsRequest();
+  fromPartial(_: Partial<QueryGetProtoRevInfoByPoolTypeRequest>): QueryGetProtoRevInfoByPoolTypeRequest {
+    const message = createBaseQueryGetProtoRevInfoByPoolTypeRequest();
     return message;
   },
-  fromAmino(_: QueryGetProtoRevPoolWeightsRequestAmino): QueryGetProtoRevPoolWeightsRequest {
+  fromAmino(_: QueryGetProtoRevInfoByPoolTypeRequestAmino): QueryGetProtoRevInfoByPoolTypeRequest {
     return {};
   },
-  toAmino(_: QueryGetProtoRevPoolWeightsRequest): QueryGetProtoRevPoolWeightsRequestAmino {
+  toAmino(_: QueryGetProtoRevInfoByPoolTypeRequest): QueryGetProtoRevInfoByPoolTypeRequestAmino {
     const obj: any = {};
     return obj;
   },
-  fromAminoMsg(object: QueryGetProtoRevPoolWeightsRequestAminoMsg): QueryGetProtoRevPoolWeightsRequest {
-    return QueryGetProtoRevPoolWeightsRequest.fromAmino(object.value);
+  fromAminoMsg(object: QueryGetProtoRevInfoByPoolTypeRequestAminoMsg): QueryGetProtoRevInfoByPoolTypeRequest {
+    return QueryGetProtoRevInfoByPoolTypeRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevPoolWeightsRequest): QueryGetProtoRevPoolWeightsRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevInfoByPoolTypeRequest): QueryGetProtoRevInfoByPoolTypeRequestAminoMsg {
     return {
-      type: "osmosis/protorev/query-get-proto-rev-pool-weights-request",
-      value: QueryGetProtoRevPoolWeightsRequest.toAmino(message)
+      type: "osmosis/protorev/query-get-proto-rev-info-by-pool-type-request",
+      value: QueryGetProtoRevInfoByPoolTypeRequest.toAmino(message)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevPoolWeightsRequestProtoMsg): QueryGetProtoRevPoolWeightsRequest {
-    return QueryGetProtoRevPoolWeightsRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevInfoByPoolTypeRequestProtoMsg): QueryGetProtoRevInfoByPoolTypeRequest {
+    return QueryGetProtoRevInfoByPoolTypeRequest.decode(message.value);
   },
-  toProto(message: QueryGetProtoRevPoolWeightsRequest): Uint8Array {
-    return QueryGetProtoRevPoolWeightsRequest.encode(message).finish();
+  toProto(message: QueryGetProtoRevInfoByPoolTypeRequest): Uint8Array {
+    return QueryGetProtoRevInfoByPoolTypeRequest.encode(message).finish();
   },
-  toProtoMsg(message: QueryGetProtoRevPoolWeightsRequest): QueryGetProtoRevPoolWeightsRequestProtoMsg {
+  toProtoMsg(message: QueryGetProtoRevInfoByPoolTypeRequest): QueryGetProtoRevInfoByPoolTypeRequestProtoMsg {
     return {
-      typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevPoolWeightsRequest",
-      value: QueryGetProtoRevPoolWeightsRequest.encode(message).finish()
+      typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevInfoByPoolTypeRequest",
+      value: QueryGetProtoRevInfoByPoolTypeRequest.encode(message).finish()
     };
   }
 };
-function createBaseQueryGetProtoRevPoolWeightsResponse(): QueryGetProtoRevPoolWeightsResponse {
+function createBaseQueryGetProtoRevInfoByPoolTypeResponse(): QueryGetProtoRevInfoByPoolTypeResponse {
   return {
-    poolWeights: PoolWeights.fromPartial({})
+    infoByPoolType: InfoByPoolType.fromPartial({})
   };
 }
-export const QueryGetProtoRevPoolWeightsResponse = {
-  typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevPoolWeightsResponse",
-  encode(message: QueryGetProtoRevPoolWeightsResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.poolWeights !== undefined) {
-      PoolWeights.encode(message.poolWeights, writer.uint32(10).fork()).ldelim();
+export const QueryGetProtoRevInfoByPoolTypeResponse = {
+  typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevInfoByPoolTypeResponse",
+  encode(message: QueryGetProtoRevInfoByPoolTypeResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.infoByPoolType !== undefined) {
+      InfoByPoolType.encode(message.infoByPoolType, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevPoolWeightsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevInfoByPoolTypeResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseQueryGetProtoRevPoolWeightsResponse();
+    const message = createBaseQueryGetProtoRevInfoByPoolTypeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.poolWeights = PoolWeights.decode(reader, reader.uint32());
+          message.infoByPoolType = InfoByPoolType.decode(reader, reader.uint32());
           break;
         default:
           reader.skipType(tag & 7);
@@ -2092,40 +2098,40 @@ export const QueryGetProtoRevPoolWeightsResponse = {
     }
     return message;
   },
-  fromPartial(object: Partial<QueryGetProtoRevPoolWeightsResponse>): QueryGetProtoRevPoolWeightsResponse {
-    const message = createBaseQueryGetProtoRevPoolWeightsResponse();
-    message.poolWeights = object.poolWeights !== undefined && object.poolWeights !== null ? PoolWeights.fromPartial(object.poolWeights) : undefined;
+  fromPartial(object: Partial<QueryGetProtoRevInfoByPoolTypeResponse>): QueryGetProtoRevInfoByPoolTypeResponse {
+    const message = createBaseQueryGetProtoRevInfoByPoolTypeResponse();
+    message.infoByPoolType = object.infoByPoolType !== undefined && object.infoByPoolType !== null ? InfoByPoolType.fromPartial(object.infoByPoolType) : undefined;
     return message;
   },
-  fromAmino(object: QueryGetProtoRevPoolWeightsResponseAmino): QueryGetProtoRevPoolWeightsResponse {
+  fromAmino(object: QueryGetProtoRevInfoByPoolTypeResponseAmino): QueryGetProtoRevInfoByPoolTypeResponse {
     return {
-      poolWeights: object?.pool_weights ? PoolWeights.fromAmino(object.pool_weights) : undefined
+      infoByPoolType: object?.info_by_pool_type ? InfoByPoolType.fromAmino(object.info_by_pool_type) : undefined
     };
   },
-  toAmino(message: QueryGetProtoRevPoolWeightsResponse): QueryGetProtoRevPoolWeightsResponseAmino {
+  toAmino(message: QueryGetProtoRevInfoByPoolTypeResponse): QueryGetProtoRevInfoByPoolTypeResponseAmino {
     const obj: any = {};
-    obj.pool_weights = message.poolWeights ? PoolWeights.toAmino(message.poolWeights) : undefined;
+    obj.info_by_pool_type = message.infoByPoolType ? InfoByPoolType.toAmino(message.infoByPoolType) : undefined;
     return obj;
   },
-  fromAminoMsg(object: QueryGetProtoRevPoolWeightsResponseAminoMsg): QueryGetProtoRevPoolWeightsResponse {
-    return QueryGetProtoRevPoolWeightsResponse.fromAmino(object.value);
+  fromAminoMsg(object: QueryGetProtoRevInfoByPoolTypeResponseAminoMsg): QueryGetProtoRevInfoByPoolTypeResponse {
+    return QueryGetProtoRevInfoByPoolTypeResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevPoolWeightsResponse): QueryGetProtoRevPoolWeightsResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevInfoByPoolTypeResponse): QueryGetProtoRevInfoByPoolTypeResponseAminoMsg {
     return {
-      type: "osmosis/protorev/query-get-proto-rev-pool-weights-response",
-      value: QueryGetProtoRevPoolWeightsResponse.toAmino(message)
+      type: "osmosis/protorev/query-get-proto-rev-info-by-pool-type-response",
+      value: QueryGetProtoRevInfoByPoolTypeResponse.toAmino(message)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevPoolWeightsResponseProtoMsg): QueryGetProtoRevPoolWeightsResponse {
-    return QueryGetProtoRevPoolWeightsResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevInfoByPoolTypeResponseProtoMsg): QueryGetProtoRevInfoByPoolTypeResponse {
+    return QueryGetProtoRevInfoByPoolTypeResponse.decode(message.value);
   },
-  toProto(message: QueryGetProtoRevPoolWeightsResponse): Uint8Array {
-    return QueryGetProtoRevPoolWeightsResponse.encode(message).finish();
+  toProto(message: QueryGetProtoRevInfoByPoolTypeResponse): Uint8Array {
+    return QueryGetProtoRevInfoByPoolTypeResponse.encode(message).finish();
   },
-  toProtoMsg(message: QueryGetProtoRevPoolWeightsResponse): QueryGetProtoRevPoolWeightsResponseProtoMsg {
+  toProtoMsg(message: QueryGetProtoRevInfoByPoolTypeResponse): QueryGetProtoRevInfoByPoolTypeResponseProtoMsg {
     return {
-      typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevPoolWeightsResponse",
-      value: QueryGetProtoRevPoolWeightsResponse.encode(message).finish()
+      typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevInfoByPoolTypeResponse",
+      value: QueryGetProtoRevInfoByPoolTypeResponse.encode(message).finish()
     };
   }
 };

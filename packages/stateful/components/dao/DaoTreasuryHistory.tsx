@@ -166,12 +166,12 @@ export const InnerDaoTreasuryHistory = ({
   const lineGraphValues = useMemo(() => {
     let runningTotal = convertMicroDenomToDenomWithDecimals(
       nativeBalance.amount,
-      nativeToken.decimals
+      nativeToken?.decimals ?? 0
     )
 
     return (
       transactions
-        .filter(({ denomLabel }) => denomLabel === nativeToken.symbol)
+        .filter(({ denomLabel }) => denomLabel === nativeToken?.symbol)
         .map(({ amount, outgoing }) => {
           let currentTotal = runningTotal
           runningTotal -= (outgoing ? -1 : 1) * amount
@@ -183,8 +183,8 @@ export const InnerDaoTreasuryHistory = ({
     )
   }, [
     nativeBalance.amount,
-    nativeToken.decimals,
-    nativeToken.symbol,
+    nativeToken?.decimals,
+    nativeToken?.symbol,
     transactions,
   ])
 
@@ -199,9 +199,9 @@ export const InnerDaoTreasuryHistory = ({
           <div className="max-w-lg">
             <LineGraph
               title={t('title.nativeBalanceOverTime', {
-                denomLabel: nativeToken.symbol,
+                denomLabel: nativeToken?.symbol ?? 'unknown',
               }).toLocaleUpperCase()}
-              yTitle={nativeToken.symbol}
+              yTitle={nativeToken?.symbol || 'Unknown token'}
               yValues={lineGraphValues}
             />
           </div>

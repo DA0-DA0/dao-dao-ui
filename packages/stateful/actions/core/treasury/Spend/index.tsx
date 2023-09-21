@@ -28,7 +28,6 @@ import {
   getChainForChainName,
   getIbcTransferInfoBetweenChains,
   getIbcTransferInfoFromChainSource,
-  getNativeTokenForChainId,
   isDecodedStargateMsg,
   isValidBech32Address,
   isValidContractAddress,
@@ -36,6 +35,7 @@ import {
   makePolytoneExecuteMessage,
   makeStargateMessage,
   makeWasmMessage,
+  maybeGetNativeTokenForChainId,
   objectMatchesStructure,
   transformBech32Address,
 } from '@dao-dao/utils'
@@ -61,7 +61,7 @@ const useDefaults: UseDefaults<SpendData> = () => {
     toChainId: chainId,
     to: walletAddress,
     amount: 1,
-    denom: getNativeTokenForChainId(chainId).denomOrAddress,
+    denom: maybeGetNativeTokenForChainId(chainId)?.denomOrAddress || '',
   }
 }
 
