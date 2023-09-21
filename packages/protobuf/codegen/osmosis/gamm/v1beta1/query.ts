@@ -3,6 +3,7 @@ import { PageRequest, PageRequestAmino, PageRequestSDKType, PageResponse, PageRe
 import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
 import { SwapAmountInRoute, SwapAmountInRouteAmino, SwapAmountInRouteSDKType, SwapAmountOutRoute, SwapAmountOutRouteAmino, SwapAmountOutRouteSDKType } from "../../poolmanager/v1beta1/swap_route";
 import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
+import { MigrationRecords, MigrationRecordsAmino, MigrationRecordsSDKType } from "./shared";
 import { Pool as Pool1 } from "../../concentrated-liquidity/pool";
 import { PoolProtoMsg as Pool1ProtoMsg } from "../../concentrated-liquidity/pool";
 import { PoolSDKType as Pool1SDKType } from "../../concentrated-liquidity/pool";
@@ -744,6 +745,37 @@ export interface QueryConcentratedPoolIdLinkFromCFMMResponseAminoMsg {
 }
 export interface QueryConcentratedPoolIdLinkFromCFMMResponseSDKType {
   concentrated_pool_id: bigint;
+}
+/** =============================== QueryCFMMConcentratedPoolLinks */
+export interface QueryCFMMConcentratedPoolLinksRequest {}
+export interface QueryCFMMConcentratedPoolLinksRequestProtoMsg {
+  typeUrl: "/osmosis.gamm.v1beta1.QueryCFMMConcentratedPoolLinksRequest";
+  value: Uint8Array;
+}
+/** =============================== QueryCFMMConcentratedPoolLinks */
+export interface QueryCFMMConcentratedPoolLinksRequestAmino {}
+export interface QueryCFMMConcentratedPoolLinksRequestAminoMsg {
+  type: "osmosis/gamm/query-cfmm-concentrated-pool-links-request";
+  value: QueryCFMMConcentratedPoolLinksRequestAmino;
+}
+/** =============================== QueryCFMMConcentratedPoolLinks */
+export interface QueryCFMMConcentratedPoolLinksRequestSDKType {}
+export interface QueryCFMMConcentratedPoolLinksResponse {
+  migrationRecords: MigrationRecords | undefined;
+}
+export interface QueryCFMMConcentratedPoolLinksResponseProtoMsg {
+  typeUrl: "/osmosis.gamm.v1beta1.QueryCFMMConcentratedPoolLinksResponse";
+  value: Uint8Array;
+}
+export interface QueryCFMMConcentratedPoolLinksResponseAmino {
+  migration_records?: MigrationRecordsAmino | undefined;
+}
+export interface QueryCFMMConcentratedPoolLinksResponseAminoMsg {
+  type: "osmosis/gamm/query-cfmm-concentrated-pool-links-response";
+  value: QueryCFMMConcentratedPoolLinksResponseAmino;
+}
+export interface QueryCFMMConcentratedPoolLinksResponseSDKType {
+  migration_records: MigrationRecordsSDKType | undefined;
 }
 function createBaseQueryPoolRequest(): QueryPoolRequest {
   return {
@@ -3076,6 +3108,128 @@ export const QueryConcentratedPoolIdLinkFromCFMMResponse = {
     return {
       typeUrl: "/osmosis.gamm.v1beta1.QueryConcentratedPoolIdLinkFromCFMMResponse",
       value: QueryConcentratedPoolIdLinkFromCFMMResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryCFMMConcentratedPoolLinksRequest(): QueryCFMMConcentratedPoolLinksRequest {
+  return {};
+}
+export const QueryCFMMConcentratedPoolLinksRequest = {
+  typeUrl: "/osmosis.gamm.v1beta1.QueryCFMMConcentratedPoolLinksRequest",
+  encode(_: QueryCFMMConcentratedPoolLinksRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): QueryCFMMConcentratedPoolLinksRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryCFMMConcentratedPoolLinksRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(_: Partial<QueryCFMMConcentratedPoolLinksRequest>): QueryCFMMConcentratedPoolLinksRequest {
+    const message = createBaseQueryCFMMConcentratedPoolLinksRequest();
+    return message;
+  },
+  fromAmino(_: QueryCFMMConcentratedPoolLinksRequestAmino): QueryCFMMConcentratedPoolLinksRequest {
+    return {};
+  },
+  toAmino(_: QueryCFMMConcentratedPoolLinksRequest): QueryCFMMConcentratedPoolLinksRequestAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(object: QueryCFMMConcentratedPoolLinksRequestAminoMsg): QueryCFMMConcentratedPoolLinksRequest {
+    return QueryCFMMConcentratedPoolLinksRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryCFMMConcentratedPoolLinksRequest): QueryCFMMConcentratedPoolLinksRequestAminoMsg {
+    return {
+      type: "osmosis/gamm/query-cfmm-concentrated-pool-links-request",
+      value: QueryCFMMConcentratedPoolLinksRequest.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: QueryCFMMConcentratedPoolLinksRequestProtoMsg): QueryCFMMConcentratedPoolLinksRequest {
+    return QueryCFMMConcentratedPoolLinksRequest.decode(message.value);
+  },
+  toProto(message: QueryCFMMConcentratedPoolLinksRequest): Uint8Array {
+    return QueryCFMMConcentratedPoolLinksRequest.encode(message).finish();
+  },
+  toProtoMsg(message: QueryCFMMConcentratedPoolLinksRequest): QueryCFMMConcentratedPoolLinksRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.gamm.v1beta1.QueryCFMMConcentratedPoolLinksRequest",
+      value: QueryCFMMConcentratedPoolLinksRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseQueryCFMMConcentratedPoolLinksResponse(): QueryCFMMConcentratedPoolLinksResponse {
+  return {
+    migrationRecords: MigrationRecords.fromPartial({})
+  };
+}
+export const QueryCFMMConcentratedPoolLinksResponse = {
+  typeUrl: "/osmosis.gamm.v1beta1.QueryCFMMConcentratedPoolLinksResponse",
+  encode(message: QueryCFMMConcentratedPoolLinksResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.migrationRecords !== undefined) {
+      MigrationRecords.encode(message.migrationRecords, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): QueryCFMMConcentratedPoolLinksResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseQueryCFMMConcentratedPoolLinksResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.migrationRecords = MigrationRecords.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<QueryCFMMConcentratedPoolLinksResponse>): QueryCFMMConcentratedPoolLinksResponse {
+    const message = createBaseQueryCFMMConcentratedPoolLinksResponse();
+    message.migrationRecords = object.migrationRecords !== undefined && object.migrationRecords !== null ? MigrationRecords.fromPartial(object.migrationRecords) : undefined;
+    return message;
+  },
+  fromAmino(object: QueryCFMMConcentratedPoolLinksResponseAmino): QueryCFMMConcentratedPoolLinksResponse {
+    return {
+      migrationRecords: object?.migration_records ? MigrationRecords.fromAmino(object.migration_records) : undefined
+    };
+  },
+  toAmino(message: QueryCFMMConcentratedPoolLinksResponse): QueryCFMMConcentratedPoolLinksResponseAmino {
+    const obj: any = {};
+    obj.migration_records = message.migrationRecords ? MigrationRecords.toAmino(message.migrationRecords) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: QueryCFMMConcentratedPoolLinksResponseAminoMsg): QueryCFMMConcentratedPoolLinksResponse {
+    return QueryCFMMConcentratedPoolLinksResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: QueryCFMMConcentratedPoolLinksResponse): QueryCFMMConcentratedPoolLinksResponseAminoMsg {
+    return {
+      type: "osmosis/gamm/query-cfmm-concentrated-pool-links-response",
+      value: QueryCFMMConcentratedPoolLinksResponse.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: QueryCFMMConcentratedPoolLinksResponseProtoMsg): QueryCFMMConcentratedPoolLinksResponse {
+    return QueryCFMMConcentratedPoolLinksResponse.decode(message.value);
+  },
+  toProto(message: QueryCFMMConcentratedPoolLinksResponse): Uint8Array {
+    return QueryCFMMConcentratedPoolLinksResponse.encode(message).finish();
+  },
+  toProtoMsg(message: QueryCFMMConcentratedPoolLinksResponse): QueryCFMMConcentratedPoolLinksResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.gamm.v1beta1.QueryCFMMConcentratedPoolLinksResponse",
+      value: QueryCFMMConcentratedPoolLinksResponse.encode(message).finish()
     };
   }
 };

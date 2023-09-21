@@ -627,6 +627,55 @@ export interface GetTotalLiquidityResponseAminoMsg {
 export interface GetTotalLiquidityResponseSDKType {
   total_liquidity: CoinSDKType[];
 }
+/** =============================== NumNextInitializedTicks */
+export interface NumNextInitializedTicksRequest {
+  poolId: bigint;
+  tokenInDenom: string;
+  numNextInitializedTicks: bigint;
+}
+export interface NumNextInitializedTicksRequestProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.NumNextInitializedTicksRequest";
+  value: Uint8Array;
+}
+/** =============================== NumNextInitializedTicks */
+export interface NumNextInitializedTicksRequestAmino {
+  pool_id: string;
+  token_in_denom: string;
+  num_next_initialized_ticks: string;
+}
+export interface NumNextInitializedTicksRequestAminoMsg {
+  type: "osmosis/concentratedliquidity/num-next-initialized-ticks-request";
+  value: NumNextInitializedTicksRequestAmino;
+}
+/** =============================== NumNextInitializedTicks */
+export interface NumNextInitializedTicksRequestSDKType {
+  pool_id: bigint;
+  token_in_denom: string;
+  num_next_initialized_ticks: bigint;
+}
+export interface NumNextInitializedTicksResponse {
+  liquidityDepths: TickLiquidityNet[];
+  currentTick: bigint;
+  currentLiquidity: string;
+}
+export interface NumNextInitializedTicksResponseProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.NumNextInitializedTicksResponse";
+  value: Uint8Array;
+}
+export interface NumNextInitializedTicksResponseAmino {
+  liquidity_depths: TickLiquidityNetAmino[];
+  current_tick: string;
+  current_liquidity: string;
+}
+export interface NumNextInitializedTicksResponseAminoMsg {
+  type: "osmosis/concentratedliquidity/num-next-initialized-ticks-response";
+  value: NumNextInitializedTicksResponseAmino;
+}
+export interface NumNextInitializedTicksResponseSDKType {
+  liquidity_depths: TickLiquidityNetSDKType[];
+  current_tick: bigint;
+  current_liquidity: string;
+}
 function createBaseUserPositionsRequest(): UserPositionsRequest {
   return {
     address: "",
@@ -1209,7 +1258,7 @@ export const TickLiquidityNet = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.TickLiquidityNet",
   encode(message: TickLiquidityNet, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.liquidityNet !== "") {
-      writer.uint32(10).string(Decimal.fromUserInput(message.liquidityNet, 18).atomics);
+      writer.uint32(10).string(message.liquidityNet);
     }
     if (message.tickIndex !== BigInt(0)) {
       writer.uint32(16).int64(message.tickIndex);
@@ -1224,7 +1273,7 @@ export const TickLiquidityNet = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.liquidityNet = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.liquidityNet = reader.string();
           break;
         case 2:
           message.tickIndex = reader.int64();
@@ -1287,7 +1336,7 @@ export const LiquidityDepthWithRange = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.LiquidityDepthWithRange",
   encode(message: LiquidityDepthWithRange, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.liquidityAmount !== "") {
-      writer.uint32(10).string(Decimal.fromUserInput(message.liquidityAmount, 18).atomics);
+      writer.uint32(10).string(message.liquidityAmount);
     }
     if (message.lowerTick !== BigInt(0)) {
       writer.uint32(16).int64(message.lowerTick);
@@ -1305,7 +1354,7 @@ export const LiquidityDepthWithRange = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.liquidityAmount = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.liquidityAmount = reader.string();
           break;
         case 2:
           message.lowerTick = reader.int64();
@@ -1497,7 +1546,7 @@ export const LiquidityNetInDirectionResponse = {
       writer.uint32(16).int64(message.currentTick);
     }
     if (message.currentLiquidity !== "") {
-      writer.uint32(26).string(Decimal.fromUserInput(message.currentLiquidity, 18).atomics);
+      writer.uint32(26).string(message.currentLiquidity);
     }
     return writer;
   },
@@ -1515,7 +1564,7 @@ export const LiquidityNetInDirectionResponse = {
           message.currentTick = reader.int64();
           break;
         case 3:
-          message.currentLiquidity = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.currentLiquidity = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -2866,6 +2915,184 @@ export const GetTotalLiquidityResponse = {
     return {
       typeUrl: "/osmosis.concentratedliquidity.v1beta1.GetTotalLiquidityResponse",
       value: GetTotalLiquidityResponse.encode(message).finish()
+    };
+  }
+};
+function createBaseNumNextInitializedTicksRequest(): NumNextInitializedTicksRequest {
+  return {
+    poolId: BigInt(0),
+    tokenInDenom: "",
+    numNextInitializedTicks: BigInt(0)
+  };
+}
+export const NumNextInitializedTicksRequest = {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.NumNextInitializedTicksRequest",
+  encode(message: NumNextInitializedTicksRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
+      writer.uint32(8).uint64(message.poolId);
+    }
+    if (message.tokenInDenom !== "") {
+      writer.uint32(18).string(message.tokenInDenom);
+    }
+    if (message.numNextInitializedTicks !== BigInt(0)) {
+      writer.uint32(24).uint64(message.numNextInitializedTicks);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): NumNextInitializedTicksRequest {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNumNextInitializedTicksRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.poolId = reader.uint64();
+          break;
+        case 2:
+          message.tokenInDenom = reader.string();
+          break;
+        case 3:
+          message.numNextInitializedTicks = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<NumNextInitializedTicksRequest>): NumNextInitializedTicksRequest {
+    const message = createBaseNumNextInitializedTicksRequest();
+    message.poolId = object.poolId !== undefined && object.poolId !== null ? BigInt(object.poolId.toString()) : BigInt(0);
+    message.tokenInDenom = object.tokenInDenom ?? "";
+    message.numNextInitializedTicks = object.numNextInitializedTicks !== undefined && object.numNextInitializedTicks !== null ? BigInt(object.numNextInitializedTicks.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: NumNextInitializedTicksRequestAmino): NumNextInitializedTicksRequest {
+    return {
+      poolId: BigInt(object.pool_id),
+      tokenInDenom: object.token_in_denom,
+      numNextInitializedTicks: BigInt(object.num_next_initialized_ticks)
+    };
+  },
+  toAmino(message: NumNextInitializedTicksRequest): NumNextInitializedTicksRequestAmino {
+    const obj: any = {};
+    obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
+    obj.token_in_denom = message.tokenInDenom;
+    obj.num_next_initialized_ticks = message.numNextInitializedTicks ? message.numNextInitializedTicks.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: NumNextInitializedTicksRequestAminoMsg): NumNextInitializedTicksRequest {
+    return NumNextInitializedTicksRequest.fromAmino(object.value);
+  },
+  toAminoMsg(message: NumNextInitializedTicksRequest): NumNextInitializedTicksRequestAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/num-next-initialized-ticks-request",
+      value: NumNextInitializedTicksRequest.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: NumNextInitializedTicksRequestProtoMsg): NumNextInitializedTicksRequest {
+    return NumNextInitializedTicksRequest.decode(message.value);
+  },
+  toProto(message: NumNextInitializedTicksRequest): Uint8Array {
+    return NumNextInitializedTicksRequest.encode(message).finish();
+  },
+  toProtoMsg(message: NumNextInitializedTicksRequest): NumNextInitializedTicksRequestProtoMsg {
+    return {
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.NumNextInitializedTicksRequest",
+      value: NumNextInitializedTicksRequest.encode(message).finish()
+    };
+  }
+};
+function createBaseNumNextInitializedTicksResponse(): NumNextInitializedTicksResponse {
+  return {
+    liquidityDepths: [],
+    currentTick: BigInt(0),
+    currentLiquidity: ""
+  };
+}
+export const NumNextInitializedTicksResponse = {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.NumNextInitializedTicksResponse",
+  encode(message: NumNextInitializedTicksResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.liquidityDepths) {
+      TickLiquidityNet.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.currentTick !== BigInt(0)) {
+      writer.uint32(16).int64(message.currentTick);
+    }
+    if (message.currentLiquidity !== "") {
+      writer.uint32(26).string(Decimal.fromUserInput(message.currentLiquidity, 18).atomics);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): NumNextInitializedTicksResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseNumNextInitializedTicksResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.liquidityDepths.push(TickLiquidityNet.decode(reader, reader.uint32()));
+          break;
+        case 2:
+          message.currentTick = reader.int64();
+          break;
+        case 3:
+          message.currentLiquidity = Decimal.fromAtomics(reader.string(), 18).toString();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<NumNextInitializedTicksResponse>): NumNextInitializedTicksResponse {
+    const message = createBaseNumNextInitializedTicksResponse();
+    message.liquidityDepths = object.liquidityDepths?.map(e => TickLiquidityNet.fromPartial(e)) || [];
+    message.currentTick = object.currentTick !== undefined && object.currentTick !== null ? BigInt(object.currentTick.toString()) : BigInt(0);
+    message.currentLiquidity = object.currentLiquidity ?? "";
+    return message;
+  },
+  fromAmino(object: NumNextInitializedTicksResponseAmino): NumNextInitializedTicksResponse {
+    return {
+      liquidityDepths: Array.isArray(object?.liquidity_depths) ? object.liquidity_depths.map((e: any) => TickLiquidityNet.fromAmino(e)) : [],
+      currentTick: BigInt(object.current_tick),
+      currentLiquidity: object.current_liquidity
+    };
+  },
+  toAmino(message: NumNextInitializedTicksResponse): NumNextInitializedTicksResponseAmino {
+    const obj: any = {};
+    if (message.liquidityDepths) {
+      obj.liquidity_depths = message.liquidityDepths.map(e => e ? TickLiquidityNet.toAmino(e) : undefined);
+    } else {
+      obj.liquidity_depths = [];
+    }
+    obj.current_tick = message.currentTick ? message.currentTick.toString() : undefined;
+    obj.current_liquidity = message.currentLiquidity;
+    return obj;
+  },
+  fromAminoMsg(object: NumNextInitializedTicksResponseAminoMsg): NumNextInitializedTicksResponse {
+    return NumNextInitializedTicksResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: NumNextInitializedTicksResponse): NumNextInitializedTicksResponseAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/num-next-initialized-ticks-response",
+      value: NumNextInitializedTicksResponse.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: NumNextInitializedTicksResponseProtoMsg): NumNextInitializedTicksResponse {
+    return NumNextInitializedTicksResponse.decode(message.value);
+  },
+  toProto(message: NumNextInitializedTicksResponse): Uint8Array {
+    return NumNextInitializedTicksResponse.encode(message).finish();
+  },
+  toProtoMsg(message: NumNextInitializedTicksResponse): NumNextInitializedTicksResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.NumNextInitializedTicksResponse",
+      value: NumNextInitializedTicksResponse.encode(message).finish()
     };
   }
 };

@@ -156,6 +156,9 @@ export interface RouteStatisticsSDKType {
  * significantly between the different pool types. Each weight roughly
  * corresponds to the amount of time (in ms) it takes to execute a swap on that
  * pool type.
+ * 
+ * DEPRECATED: This field is deprecated and will be removed in the next
+ * release. It is replaced by the `info_by_pool_type` field.
  */
 export interface PoolWeights {
   /** The weight of a stableswap pool */
@@ -164,6 +167,8 @@ export interface PoolWeights {
   balancerWeight: bigint;
   /** The weight of a concentrated pool */
   concentratedWeight: bigint;
+  /** The weight of a cosmwasm pool */
+  cosmwasmWeight: bigint;
 }
 export interface PoolWeightsProtoMsg {
   typeUrl: "/osmosis.protorev.v1beta1.PoolWeights";
@@ -175,6 +180,9 @@ export interface PoolWeightsProtoMsg {
  * significantly between the different pool types. Each weight roughly
  * corresponds to the amount of time (in ms) it takes to execute a swap on that
  * pool type.
+ * 
+ * DEPRECATED: This field is deprecated and will be removed in the next
+ * release. It is replaced by the `info_by_pool_type` field.
  */
 export interface PoolWeightsAmino {
   /** The weight of a stableswap pool */
@@ -183,6 +191,8 @@ export interface PoolWeightsAmino {
   balancer_weight: string;
   /** The weight of a concentrated pool */
   concentrated_weight: string;
+  /** The weight of a cosmwasm pool */
+  cosmwasm_weight: string;
 }
 export interface PoolWeightsAminoMsg {
   type: "osmosis/protorev/pool-weights";
@@ -194,11 +204,205 @@ export interface PoolWeightsAminoMsg {
  * significantly between the different pool types. Each weight roughly
  * corresponds to the amount of time (in ms) it takes to execute a swap on that
  * pool type.
+ * 
+ * DEPRECATED: This field is deprecated and will be removed in the next
+ * release. It is replaced by the `info_by_pool_type` field.
  */
 export interface PoolWeightsSDKType {
   stable_weight: bigint;
   balancer_weight: bigint;
   concentrated_weight: bigint;
+  cosmwasm_weight: bigint;
+}
+/**
+ * InfoByPoolType contains information pertaining to how expensive (in terms of
+ * gas and time) it is to execute a swap on a given pool type. This distinction
+ * is made and necessary because the execution time ranges significantly between
+ * the different pool types.
+ */
+export interface InfoByPoolType {
+  /** The stable pool info */
+  stable: StablePoolInfo | undefined;
+  /** The balancer pool info */
+  balancer: BalancerPoolInfo | undefined;
+  /** The concentrated pool info */
+  concentrated: ConcentratedPoolInfo | undefined;
+  /** The cosmwasm pool info */
+  cosmwasm: CosmwasmPoolInfo | undefined;
+}
+export interface InfoByPoolTypeProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.InfoByPoolType";
+  value: Uint8Array;
+}
+/**
+ * InfoByPoolType contains information pertaining to how expensive (in terms of
+ * gas and time) it is to execute a swap on a given pool type. This distinction
+ * is made and necessary because the execution time ranges significantly between
+ * the different pool types.
+ */
+export interface InfoByPoolTypeAmino {
+  /** The stable pool info */
+  stable?: StablePoolInfoAmino | undefined;
+  /** The balancer pool info */
+  balancer?: BalancerPoolInfoAmino | undefined;
+  /** The concentrated pool info */
+  concentrated?: ConcentratedPoolInfoAmino | undefined;
+  /** The cosmwasm pool info */
+  cosmwasm?: CosmwasmPoolInfoAmino | undefined;
+}
+export interface InfoByPoolTypeAminoMsg {
+  type: "osmosis/protorev/info-by-pool-type";
+  value: InfoByPoolTypeAmino;
+}
+/**
+ * InfoByPoolType contains information pertaining to how expensive (in terms of
+ * gas and time) it is to execute a swap on a given pool type. This distinction
+ * is made and necessary because the execution time ranges significantly between
+ * the different pool types.
+ */
+export interface InfoByPoolTypeSDKType {
+  stable: StablePoolInfoSDKType | undefined;
+  balancer: BalancerPoolInfoSDKType | undefined;
+  concentrated: ConcentratedPoolInfoSDKType | undefined;
+  cosmwasm: CosmwasmPoolInfoSDKType | undefined;
+}
+/** StablePoolInfo contains meta data pertaining to a stableswap pool type. */
+export interface StablePoolInfo {
+  /** The weight of a stableswap pool */
+  weight: bigint;
+}
+export interface StablePoolInfoProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.StablePoolInfo";
+  value: Uint8Array;
+}
+/** StablePoolInfo contains meta data pertaining to a stableswap pool type. */
+export interface StablePoolInfoAmino {
+  /** The weight of a stableswap pool */
+  weight: string;
+}
+export interface StablePoolInfoAminoMsg {
+  type: "osmosis/protorev/stable-pool-info";
+  value: StablePoolInfoAmino;
+}
+/** StablePoolInfo contains meta data pertaining to a stableswap pool type. */
+export interface StablePoolInfoSDKType {
+  weight: bigint;
+}
+/** BalancerPoolInfo contains meta data pertaining to a balancer pool type. */
+export interface BalancerPoolInfo {
+  /** The weight of a balancer pool */
+  weight: bigint;
+}
+export interface BalancerPoolInfoProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.BalancerPoolInfo";
+  value: Uint8Array;
+}
+/** BalancerPoolInfo contains meta data pertaining to a balancer pool type. */
+export interface BalancerPoolInfoAmino {
+  /** The weight of a balancer pool */
+  weight: string;
+}
+export interface BalancerPoolInfoAminoMsg {
+  type: "osmosis/protorev/balancer-pool-info";
+  value: BalancerPoolInfoAmino;
+}
+/** BalancerPoolInfo contains meta data pertaining to a balancer pool type. */
+export interface BalancerPoolInfoSDKType {
+  weight: bigint;
+}
+/**
+ * ConcentratedPoolInfo contains meta data pertaining to a concentrated pool
+ * type.
+ */
+export interface ConcentratedPoolInfo {
+  /** The weight of a concentrated pool */
+  weight: bigint;
+  /** The maximum number of ticks we can move when rebalancing */
+  maxTicksCrossed: bigint;
+}
+export interface ConcentratedPoolInfoProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.ConcentratedPoolInfo";
+  value: Uint8Array;
+}
+/**
+ * ConcentratedPoolInfo contains meta data pertaining to a concentrated pool
+ * type.
+ */
+export interface ConcentratedPoolInfoAmino {
+  /** The weight of a concentrated pool */
+  weight: string;
+  /** The maximum number of ticks we can move when rebalancing */
+  max_ticks_crossed: string;
+}
+export interface ConcentratedPoolInfoAminoMsg {
+  type: "osmosis/protorev/concentrated-pool-info";
+  value: ConcentratedPoolInfoAmino;
+}
+/**
+ * ConcentratedPoolInfo contains meta data pertaining to a concentrated pool
+ * type.
+ */
+export interface ConcentratedPoolInfoSDKType {
+  weight: bigint;
+  max_ticks_crossed: bigint;
+}
+/** CosmwasmPoolInfo contains meta data pertaining to a cosmwasm pool type. */
+export interface CosmwasmPoolInfo {
+  /** The weight of a cosmwasm pool (by contract address) */
+  weightMaps: WeightMap[];
+}
+export interface CosmwasmPoolInfoProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.CosmwasmPoolInfo";
+  value: Uint8Array;
+}
+/** CosmwasmPoolInfo contains meta data pertaining to a cosmwasm pool type. */
+export interface CosmwasmPoolInfoAmino {
+  /** The weight of a cosmwasm pool (by contract address) */
+  weight_maps: WeightMapAmino[];
+}
+export interface CosmwasmPoolInfoAminoMsg {
+  type: "osmosis/protorev/cosmwasm-pool-info";
+  value: CosmwasmPoolInfoAmino;
+}
+/** CosmwasmPoolInfo contains meta data pertaining to a cosmwasm pool type. */
+export interface CosmwasmPoolInfoSDKType {
+  weight_maps: WeightMapSDKType[];
+}
+/**
+ * WeightMap maps a contract address to a weight. The weight of an address
+ * corresponds to the amount of ms required to execute a swap on that contract.
+ */
+export interface WeightMap {
+  /** The weight of a cosmwasm pool (by contract address) */
+  weight: bigint;
+  /** The contract address */
+  contractAddress: string;
+}
+export interface WeightMapProtoMsg {
+  typeUrl: "/osmosis.protorev.v1beta1.WeightMap";
+  value: Uint8Array;
+}
+/**
+ * WeightMap maps a contract address to a weight. The weight of an address
+ * corresponds to the amount of ms required to execute a swap on that contract.
+ */
+export interface WeightMapAmino {
+  /** The weight of a cosmwasm pool (by contract address) */
+  weight: string;
+  /** The contract address */
+  contract_address: string;
+}
+export interface WeightMapAminoMsg {
+  type: "osmosis/protorev/weight-map";
+  value: WeightMapAmino;
+}
+/**
+ * WeightMap maps a contract address to a weight. The weight of an address
+ * corresponds to the amount of ms required to execute a swap on that contract.
+ */
+export interface WeightMapSDKType {
+  weight: bigint;
+  contract_address: string;
 }
 /**
  * BaseDenom represents a single base denom that the module uses for its
@@ -612,7 +816,8 @@ function createBasePoolWeights(): PoolWeights {
   return {
     stableWeight: BigInt(0),
     balancerWeight: BigInt(0),
-    concentratedWeight: BigInt(0)
+    concentratedWeight: BigInt(0),
+    cosmwasmWeight: BigInt(0)
   };
 }
 export const PoolWeights = {
@@ -626,6 +831,9 @@ export const PoolWeights = {
     }
     if (message.concentratedWeight !== BigInt(0)) {
       writer.uint32(24).uint64(message.concentratedWeight);
+    }
+    if (message.cosmwasmWeight !== BigInt(0)) {
+      writer.uint32(32).uint64(message.cosmwasmWeight);
     }
     return writer;
   },
@@ -645,6 +853,9 @@ export const PoolWeights = {
         case 3:
           message.concentratedWeight = reader.uint64();
           break;
+        case 4:
+          message.cosmwasmWeight = reader.uint64();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -657,13 +868,15 @@ export const PoolWeights = {
     message.stableWeight = object.stableWeight !== undefined && object.stableWeight !== null ? BigInt(object.stableWeight.toString()) : BigInt(0);
     message.balancerWeight = object.balancerWeight !== undefined && object.balancerWeight !== null ? BigInt(object.balancerWeight.toString()) : BigInt(0);
     message.concentratedWeight = object.concentratedWeight !== undefined && object.concentratedWeight !== null ? BigInt(object.concentratedWeight.toString()) : BigInt(0);
+    message.cosmwasmWeight = object.cosmwasmWeight !== undefined && object.cosmwasmWeight !== null ? BigInt(object.cosmwasmWeight.toString()) : BigInt(0);
     return message;
   },
   fromAmino(object: PoolWeightsAmino): PoolWeights {
     return {
       stableWeight: BigInt(object.stable_weight),
       balancerWeight: BigInt(object.balancer_weight),
-      concentratedWeight: BigInt(object.concentrated_weight)
+      concentratedWeight: BigInt(object.concentrated_weight),
+      cosmwasmWeight: BigInt(object.cosmwasm_weight)
     };
   },
   toAmino(message: PoolWeights): PoolWeightsAmino {
@@ -671,6 +884,7 @@ export const PoolWeights = {
     obj.stable_weight = message.stableWeight ? message.stableWeight.toString() : undefined;
     obj.balancer_weight = message.balancerWeight ? message.balancerWeight.toString() : undefined;
     obj.concentrated_weight = message.concentratedWeight ? message.concentratedWeight.toString() : undefined;
+    obj.cosmwasm_weight = message.cosmwasmWeight ? message.cosmwasmWeight.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: PoolWeightsAminoMsg): PoolWeights {
@@ -692,6 +906,462 @@ export const PoolWeights = {
     return {
       typeUrl: "/osmosis.protorev.v1beta1.PoolWeights",
       value: PoolWeights.encode(message).finish()
+    };
+  }
+};
+function createBaseInfoByPoolType(): InfoByPoolType {
+  return {
+    stable: StablePoolInfo.fromPartial({}),
+    balancer: BalancerPoolInfo.fromPartial({}),
+    concentrated: ConcentratedPoolInfo.fromPartial({}),
+    cosmwasm: CosmwasmPoolInfo.fromPartial({})
+  };
+}
+export const InfoByPoolType = {
+  typeUrl: "/osmosis.protorev.v1beta1.InfoByPoolType",
+  encode(message: InfoByPoolType, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.stable !== undefined) {
+      StablePoolInfo.encode(message.stable, writer.uint32(10).fork()).ldelim();
+    }
+    if (message.balancer !== undefined) {
+      BalancerPoolInfo.encode(message.balancer, writer.uint32(18).fork()).ldelim();
+    }
+    if (message.concentrated !== undefined) {
+      ConcentratedPoolInfo.encode(message.concentrated, writer.uint32(26).fork()).ldelim();
+    }
+    if (message.cosmwasm !== undefined) {
+      CosmwasmPoolInfo.encode(message.cosmwasm, writer.uint32(34).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): InfoByPoolType {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseInfoByPoolType();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.stable = StablePoolInfo.decode(reader, reader.uint32());
+          break;
+        case 2:
+          message.balancer = BalancerPoolInfo.decode(reader, reader.uint32());
+          break;
+        case 3:
+          message.concentrated = ConcentratedPoolInfo.decode(reader, reader.uint32());
+          break;
+        case 4:
+          message.cosmwasm = CosmwasmPoolInfo.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<InfoByPoolType>): InfoByPoolType {
+    const message = createBaseInfoByPoolType();
+    message.stable = object.stable !== undefined && object.stable !== null ? StablePoolInfo.fromPartial(object.stable) : undefined;
+    message.balancer = object.balancer !== undefined && object.balancer !== null ? BalancerPoolInfo.fromPartial(object.balancer) : undefined;
+    message.concentrated = object.concentrated !== undefined && object.concentrated !== null ? ConcentratedPoolInfo.fromPartial(object.concentrated) : undefined;
+    message.cosmwasm = object.cosmwasm !== undefined && object.cosmwasm !== null ? CosmwasmPoolInfo.fromPartial(object.cosmwasm) : undefined;
+    return message;
+  },
+  fromAmino(object: InfoByPoolTypeAmino): InfoByPoolType {
+    return {
+      stable: object?.stable ? StablePoolInfo.fromAmino(object.stable) : undefined,
+      balancer: object?.balancer ? BalancerPoolInfo.fromAmino(object.balancer) : undefined,
+      concentrated: object?.concentrated ? ConcentratedPoolInfo.fromAmino(object.concentrated) : undefined,
+      cosmwasm: object?.cosmwasm ? CosmwasmPoolInfo.fromAmino(object.cosmwasm) : undefined
+    };
+  },
+  toAmino(message: InfoByPoolType): InfoByPoolTypeAmino {
+    const obj: any = {};
+    obj.stable = message.stable ? StablePoolInfo.toAmino(message.stable) : undefined;
+    obj.balancer = message.balancer ? BalancerPoolInfo.toAmino(message.balancer) : undefined;
+    obj.concentrated = message.concentrated ? ConcentratedPoolInfo.toAmino(message.concentrated) : undefined;
+    obj.cosmwasm = message.cosmwasm ? CosmwasmPoolInfo.toAmino(message.cosmwasm) : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: InfoByPoolTypeAminoMsg): InfoByPoolType {
+    return InfoByPoolType.fromAmino(object.value);
+  },
+  toAminoMsg(message: InfoByPoolType): InfoByPoolTypeAminoMsg {
+    return {
+      type: "osmosis/protorev/info-by-pool-type",
+      value: InfoByPoolType.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: InfoByPoolTypeProtoMsg): InfoByPoolType {
+    return InfoByPoolType.decode(message.value);
+  },
+  toProto(message: InfoByPoolType): Uint8Array {
+    return InfoByPoolType.encode(message).finish();
+  },
+  toProtoMsg(message: InfoByPoolType): InfoByPoolTypeProtoMsg {
+    return {
+      typeUrl: "/osmosis.protorev.v1beta1.InfoByPoolType",
+      value: InfoByPoolType.encode(message).finish()
+    };
+  }
+};
+function createBaseStablePoolInfo(): StablePoolInfo {
+  return {
+    weight: BigInt(0)
+  };
+}
+export const StablePoolInfo = {
+  typeUrl: "/osmosis.protorev.v1beta1.StablePoolInfo",
+  encode(message: StablePoolInfo, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.weight !== BigInt(0)) {
+      writer.uint32(8).uint64(message.weight);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): StablePoolInfo {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseStablePoolInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.weight = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<StablePoolInfo>): StablePoolInfo {
+    const message = createBaseStablePoolInfo();
+    message.weight = object.weight !== undefined && object.weight !== null ? BigInt(object.weight.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: StablePoolInfoAmino): StablePoolInfo {
+    return {
+      weight: BigInt(object.weight)
+    };
+  },
+  toAmino(message: StablePoolInfo): StablePoolInfoAmino {
+    const obj: any = {};
+    obj.weight = message.weight ? message.weight.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: StablePoolInfoAminoMsg): StablePoolInfo {
+    return StablePoolInfo.fromAmino(object.value);
+  },
+  toAminoMsg(message: StablePoolInfo): StablePoolInfoAminoMsg {
+    return {
+      type: "osmosis/protorev/stable-pool-info",
+      value: StablePoolInfo.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: StablePoolInfoProtoMsg): StablePoolInfo {
+    return StablePoolInfo.decode(message.value);
+  },
+  toProto(message: StablePoolInfo): Uint8Array {
+    return StablePoolInfo.encode(message).finish();
+  },
+  toProtoMsg(message: StablePoolInfo): StablePoolInfoProtoMsg {
+    return {
+      typeUrl: "/osmosis.protorev.v1beta1.StablePoolInfo",
+      value: StablePoolInfo.encode(message).finish()
+    };
+  }
+};
+function createBaseBalancerPoolInfo(): BalancerPoolInfo {
+  return {
+    weight: BigInt(0)
+  };
+}
+export const BalancerPoolInfo = {
+  typeUrl: "/osmosis.protorev.v1beta1.BalancerPoolInfo",
+  encode(message: BalancerPoolInfo, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.weight !== BigInt(0)) {
+      writer.uint32(8).uint64(message.weight);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): BalancerPoolInfo {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseBalancerPoolInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.weight = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<BalancerPoolInfo>): BalancerPoolInfo {
+    const message = createBaseBalancerPoolInfo();
+    message.weight = object.weight !== undefined && object.weight !== null ? BigInt(object.weight.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: BalancerPoolInfoAmino): BalancerPoolInfo {
+    return {
+      weight: BigInt(object.weight)
+    };
+  },
+  toAmino(message: BalancerPoolInfo): BalancerPoolInfoAmino {
+    const obj: any = {};
+    obj.weight = message.weight ? message.weight.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: BalancerPoolInfoAminoMsg): BalancerPoolInfo {
+    return BalancerPoolInfo.fromAmino(object.value);
+  },
+  toAminoMsg(message: BalancerPoolInfo): BalancerPoolInfoAminoMsg {
+    return {
+      type: "osmosis/protorev/balancer-pool-info",
+      value: BalancerPoolInfo.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: BalancerPoolInfoProtoMsg): BalancerPoolInfo {
+    return BalancerPoolInfo.decode(message.value);
+  },
+  toProto(message: BalancerPoolInfo): Uint8Array {
+    return BalancerPoolInfo.encode(message).finish();
+  },
+  toProtoMsg(message: BalancerPoolInfo): BalancerPoolInfoProtoMsg {
+    return {
+      typeUrl: "/osmosis.protorev.v1beta1.BalancerPoolInfo",
+      value: BalancerPoolInfo.encode(message).finish()
+    };
+  }
+};
+function createBaseConcentratedPoolInfo(): ConcentratedPoolInfo {
+  return {
+    weight: BigInt(0),
+    maxTicksCrossed: BigInt(0)
+  };
+}
+export const ConcentratedPoolInfo = {
+  typeUrl: "/osmosis.protorev.v1beta1.ConcentratedPoolInfo",
+  encode(message: ConcentratedPoolInfo, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.weight !== BigInt(0)) {
+      writer.uint32(8).uint64(message.weight);
+    }
+    if (message.maxTicksCrossed !== BigInt(0)) {
+      writer.uint32(16).uint64(message.maxTicksCrossed);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): ConcentratedPoolInfo {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseConcentratedPoolInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.weight = reader.uint64();
+          break;
+        case 2:
+          message.maxTicksCrossed = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<ConcentratedPoolInfo>): ConcentratedPoolInfo {
+    const message = createBaseConcentratedPoolInfo();
+    message.weight = object.weight !== undefined && object.weight !== null ? BigInt(object.weight.toString()) : BigInt(0);
+    message.maxTicksCrossed = object.maxTicksCrossed !== undefined && object.maxTicksCrossed !== null ? BigInt(object.maxTicksCrossed.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: ConcentratedPoolInfoAmino): ConcentratedPoolInfo {
+    return {
+      weight: BigInt(object.weight),
+      maxTicksCrossed: BigInt(object.max_ticks_crossed)
+    };
+  },
+  toAmino(message: ConcentratedPoolInfo): ConcentratedPoolInfoAmino {
+    const obj: any = {};
+    obj.weight = message.weight ? message.weight.toString() : undefined;
+    obj.max_ticks_crossed = message.maxTicksCrossed ? message.maxTicksCrossed.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: ConcentratedPoolInfoAminoMsg): ConcentratedPoolInfo {
+    return ConcentratedPoolInfo.fromAmino(object.value);
+  },
+  toAminoMsg(message: ConcentratedPoolInfo): ConcentratedPoolInfoAminoMsg {
+    return {
+      type: "osmosis/protorev/concentrated-pool-info",
+      value: ConcentratedPoolInfo.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: ConcentratedPoolInfoProtoMsg): ConcentratedPoolInfo {
+    return ConcentratedPoolInfo.decode(message.value);
+  },
+  toProto(message: ConcentratedPoolInfo): Uint8Array {
+    return ConcentratedPoolInfo.encode(message).finish();
+  },
+  toProtoMsg(message: ConcentratedPoolInfo): ConcentratedPoolInfoProtoMsg {
+    return {
+      typeUrl: "/osmosis.protorev.v1beta1.ConcentratedPoolInfo",
+      value: ConcentratedPoolInfo.encode(message).finish()
+    };
+  }
+};
+function createBaseCosmwasmPoolInfo(): CosmwasmPoolInfo {
+  return {
+    weightMaps: []
+  };
+}
+export const CosmwasmPoolInfo = {
+  typeUrl: "/osmosis.protorev.v1beta1.CosmwasmPoolInfo",
+  encode(message: CosmwasmPoolInfo, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    for (const v of message.weightMaps) {
+      WeightMap.encode(v!, writer.uint32(10).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): CosmwasmPoolInfo {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseCosmwasmPoolInfo();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.weightMaps.push(WeightMap.decode(reader, reader.uint32()));
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<CosmwasmPoolInfo>): CosmwasmPoolInfo {
+    const message = createBaseCosmwasmPoolInfo();
+    message.weightMaps = object.weightMaps?.map(e => WeightMap.fromPartial(e)) || [];
+    return message;
+  },
+  fromAmino(object: CosmwasmPoolInfoAmino): CosmwasmPoolInfo {
+    return {
+      weightMaps: Array.isArray(object?.weight_maps) ? object.weight_maps.map((e: any) => WeightMap.fromAmino(e)) : []
+    };
+  },
+  toAmino(message: CosmwasmPoolInfo): CosmwasmPoolInfoAmino {
+    const obj: any = {};
+    if (message.weightMaps) {
+      obj.weight_maps = message.weightMaps.map(e => e ? WeightMap.toAmino(e) : undefined);
+    } else {
+      obj.weight_maps = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(object: CosmwasmPoolInfoAminoMsg): CosmwasmPoolInfo {
+    return CosmwasmPoolInfo.fromAmino(object.value);
+  },
+  toAminoMsg(message: CosmwasmPoolInfo): CosmwasmPoolInfoAminoMsg {
+    return {
+      type: "osmosis/protorev/cosmwasm-pool-info",
+      value: CosmwasmPoolInfo.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: CosmwasmPoolInfoProtoMsg): CosmwasmPoolInfo {
+    return CosmwasmPoolInfo.decode(message.value);
+  },
+  toProto(message: CosmwasmPoolInfo): Uint8Array {
+    return CosmwasmPoolInfo.encode(message).finish();
+  },
+  toProtoMsg(message: CosmwasmPoolInfo): CosmwasmPoolInfoProtoMsg {
+    return {
+      typeUrl: "/osmosis.protorev.v1beta1.CosmwasmPoolInfo",
+      value: CosmwasmPoolInfo.encode(message).finish()
+    };
+  }
+};
+function createBaseWeightMap(): WeightMap {
+  return {
+    weight: BigInt(0),
+    contractAddress: ""
+  };
+}
+export const WeightMap = {
+  typeUrl: "/osmosis.protorev.v1beta1.WeightMap",
+  encode(message: WeightMap, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.weight !== BigInt(0)) {
+      writer.uint32(8).uint64(message.weight);
+    }
+    if (message.contractAddress !== "") {
+      writer.uint32(18).string(message.contractAddress);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): WeightMap {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseWeightMap();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.weight = reader.uint64();
+          break;
+        case 2:
+          message.contractAddress = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<WeightMap>): WeightMap {
+    const message = createBaseWeightMap();
+    message.weight = object.weight !== undefined && object.weight !== null ? BigInt(object.weight.toString()) : BigInt(0);
+    message.contractAddress = object.contractAddress ?? "";
+    return message;
+  },
+  fromAmino(object: WeightMapAmino): WeightMap {
+    return {
+      weight: BigInt(object.weight),
+      contractAddress: object.contract_address
+    };
+  },
+  toAmino(message: WeightMap): WeightMapAmino {
+    const obj: any = {};
+    obj.weight = message.weight ? message.weight.toString() : undefined;
+    obj.contract_address = message.contractAddress;
+    return obj;
+  },
+  fromAminoMsg(object: WeightMapAminoMsg): WeightMap {
+    return WeightMap.fromAmino(object.value);
+  },
+  toAminoMsg(message: WeightMap): WeightMapAminoMsg {
+    return {
+      type: "osmosis/protorev/weight-map",
+      value: WeightMap.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: WeightMapProtoMsg): WeightMap {
+    return WeightMap.decode(message.value);
+  },
+  toProto(message: WeightMap): Uint8Array {
+    return WeightMap.encode(message).finish();
+  },
+  toProtoMsg(message: WeightMap): WeightMapProtoMsg {
+    return {
+      typeUrl: "/osmosis.protorev.v1beta1.WeightMap",
+      value: WeightMap.encode(message).finish()
     };
   }
 };

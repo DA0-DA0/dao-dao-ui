@@ -1,4 +1,4 @@
-import { MsgSetHotRoutes, MsgSetDeveloperAccount, MsgSetMaxPoolPointsPerTx, MsgSetMaxPoolPointsPerBlock, MsgSetPoolWeights, MsgSetBaseDenoms } from "./tx";
+import { MsgSetHotRoutes, MsgSetDeveloperAccount, MsgSetMaxPoolPointsPerTx, MsgSetMaxPoolPointsPerBlock, MsgSetInfoByPoolType, MsgSetBaseDenoms } from "./tx";
 export const AminoConverter = {
   "/osmosis.protorev.v1beta1.MsgSetHotRoutes": {
     aminoType: "osmosis/MsgSetHotRoutes",
@@ -20,10 +20,10 @@ export const AminoConverter = {
     toAmino: MsgSetMaxPoolPointsPerBlock.toAmino,
     fromAmino: MsgSetMaxPoolPointsPerBlock.fromAmino
   },
-  "/osmosis.protorev.v1beta1.MsgSetPoolWeights": {
-    aminoType: "osmosis/MsgSetPoolWeights",
-    toAmino: MsgSetPoolWeights.toAmino,
-    fromAmino: MsgSetPoolWeights.fromAmino
+  "/osmosis.protorev.v1beta1.MsgSetInfoByPoolType": {
+    aminoType: "osmosis/MsgSetInfoByPoolType",
+    toAmino: MsgSetInfoByPoolType.toAmino,
+    fromAmino: MsgSetInfoByPoolType.fromAmino
   },
   "/osmosis.protorev.v1beta1.MsgSetBaseDenoms": {
     aminoType: "osmosis/MsgSetBaseDenoms",
