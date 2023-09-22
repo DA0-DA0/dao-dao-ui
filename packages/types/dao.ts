@@ -20,8 +20,8 @@ import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
 } from './proposal-module-adapter'
-import { DaoCardProps, SuspenseLoaderProps } from './stateless'
-import { GenericToken } from './token'
+import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './stateless'
+import { GenericToken, TokenCardInfo } from './token'
 import { DurationWithUnits } from './units'
 import { CodeIdConfig } from './utils'
 
@@ -292,4 +292,11 @@ export enum DaoPageMode {
 export type DaoWebSocketChannelInfo = {
   chainId: string
   coreAddress: string
+}
+
+export type DaoChainTreasury<T extends TokenCardInfo, N extends object> = {
+  chainId: string
+  address: string | undefined
+  tokens: LoadingData<T[]>
+  nfts: LoadingData<(N & { key: string })[]>
 }
