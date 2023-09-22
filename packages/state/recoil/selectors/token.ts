@@ -12,10 +12,7 @@ import {
 import {
   MAINNET,
   getChainForChainId,
-  getChainForChainName,
   getFallbackImage,
-  getIbcTransferInfoBetweenChains,
-  getIbcTransferInfoFromChainSource,
   getTokenForChainIdAndDenom,
   isValidContractAddress,
   isValidTokenFactoryDenom,
@@ -24,14 +21,16 @@ import {
 
 import {
   denomMetadataSelector,
-  ibcRpcClientForChainSelector,
   nativeBalanceSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
 } from './chain'
 import { isContractSelector } from './contract'
 import { Cw20BaseSelectors, DaoCoreV2Selectors } from './contracts'
-import { osmosisUsdPriceSelector } from './osmosis'
+import {
+  osmosisDenomForTokenSelector,
+  osmosisUsdPriceSelector,
+} from './osmosis'
 import { walletCw20BalancesSelector } from './wallet'
 import { wyndUsdPriceSelector } from './wynd'
 
@@ -125,80 +124,27 @@ export const usdPriceSelector = selectorFamily<
   key: 'usdPrice',
   get:
     ({ type, denomOrAddress, chainId }) =>
-    async ({ get }) => {
+    ({ get }) => {
       if (!MAINNET) {
         return undefined
       }
 
       const initialDenomOrAddress = denomOrAddress
 
-      // Try to reverse engineer denom and get the osmosis price.
-      try {
-        if (type === TokenType.Native) {
-          const ibc = get(ibcRpcClientForChainSelector(chainId))
-          const trace = denomOrAddress.startsWith('ibc/')
-            ? (
-                await ibc.applications.transfer.v1.denomTrace({
-                  hash: denomOrAddress,
-                })
-              ).denomTrace
-            : undefined
+      if (type === TokenType.Native) {
+        // Try to resolve Osmosis denom.
+        const osmosisDenom = get(
+          osmosisDenomForTokenSelector({
+            chainId,
+            denom: denomOrAddress,
+          })
+        )
 
-          let sourceChainId = chainId
-          let baseDenom = denomOrAddress
-
-          // If trace exists, resolve IBC denom and then get its Osmosis IBC
-          // denom to find its price.
-          if (trace) {
-            let channels = trace.path.split('transfer/').slice(1)
-            // Trim trailing slash from all but last channel.
-            channels = channels.map((channel, index) =>
-              index === channels.length - 1 ? channel : channel.slice(0, -1)
-            )
-            if (channels.length) {
-              // Retrace channel paths to find source chain of denom.
-              sourceChainId = channels.reduce(
-                (currentChainId, channel) =>
-                  getChainForChainName(
-                    getIbcTransferInfoFromChainSource(currentChainId, channel)
-                      .destinationChain.chain_name
-                  ).chain_id,
-                chainId
-              )
-              baseDenom = trace.baseDenom
-            }
-          }
-
-          // If source chain is Osmosis, the denom is the base denom.
-          if (sourceChainId === ChainId.OsmosisMainnet) {
-            chainId = ChainId.OsmosisMainnet
-            denomOrAddress = baseDenom
-          } else {
-            // Otherwise get the Osmosis IBC denom.
-            const osmosisIbc = get(
-              ibcRpcClientForChainSelector(ChainId.OsmosisMainnet)
-            )
-            const { sourceChannel } = getIbcTransferInfoBetweenChains(
-              ChainId.OsmosisMainnet,
-              sourceChainId
-            )
-            const { hash: osmosisDenomIbcHash } =
-              await osmosisIbc.applications.transfer.v1.denomHash({
-                trace: `transfer/${sourceChannel}/${baseDenom}`,
-              })
-
-            chainId = ChainId.OsmosisMainnet
-            denomOrAddress = 'ibc/' + osmosisDenomIbcHash
-          }
+        // If found a denom, resolved Osmosis denom correctly.
+        if (osmosisDenom) {
+          chainId = ChainId.OsmosisMainnet
+          denomOrAddress = osmosisDenom
         }
-      } catch (err) {
-        // If not error, rethrow. This may be a promise, which is how
-        // recoil waits for the `get` to resolve.
-        if (!(err instanceof Error)) {
-          throw err
-        }
-
-        // On failure, do nothing.
       }
 
       switch (chainId) {

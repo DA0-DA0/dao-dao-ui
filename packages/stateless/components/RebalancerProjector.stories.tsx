@@ -11,6 +11,8 @@ const Template: ComponentStory<typeof RebalancerProjector> = (args) => (
   <RebalancerProjector {...args} />
 )
 
+const numRebalances = 40
+
 export const Default = Template.bind({})
 Default.args = {
   pid: {
@@ -22,24 +24,24 @@ Default.args = {
   assets: [
     {
       symbol: 'NTRN',
-      currentAmount: 1250,
+      initialAmount: 1250,
       targetProportion: 5 / 8,
-      currentPrice: 0.4,
-      projection: {
-        type: 'random',
-        disturbance: 0.5,
-      },
+      // Random disturbance.
+      prices: [...Array(numRebalances + 1)].reduce(
+        (acc) => [
+          ...acc,
+          acc[acc.length - 1] * (1 + (Math.random() - 0.5) * 0.5),
+        ],
+        [0.4]
+      ),
     },
     {
       symbol: 'USDC',
-      currentAmount: 300,
+      initialAmount: 300,
       targetProportion: 3 / 8,
-      currentPrice: 1,
-      projection: {
-        type: 'linear',
-        slope: 1,
-      },
+      // Constant at $1.
+      prices: [...Array(numRebalances + 1)].map(() => 1),
     },
   ],
-  numRebalances: 40,
+  numRebalances,
 }

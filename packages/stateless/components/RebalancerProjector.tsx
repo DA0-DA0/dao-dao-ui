@@ -16,7 +16,7 @@ import { useRef, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 
-import { DISTRIBUTION_COLORS } from '@dao-dao/utils'
+import { DISTRIBUTION_COLORS, formatDate } from '@dao-dao/utils'
 
 import { useNamedThemeColor } from '../theme'
 
@@ -30,24 +30,14 @@ ChartJS.register(
   Legend
 )
 
-// How to change the price of an asset on each rebalance.
-export type RebalancerProjection =
-  | {
-      type: 'linear'
-      slope: number
-    }
-  | {
-      type: 'random'
-      disturbance: number
-    }
-
 export type RebalancerProjectorAsset = {
   symbol: string
-  currentAmount: number
+  initialAmount: number
   targetProportion: number
-  // $ per 1 unit of asset
-  currentPrice: number
-  projection: RebalancerProjection
+  // $ per 1 unit of asset. Each item is the price at each point in time when a
+  // rebalance occurs. The length should be `rebalanceTimestamps.length + 1` so
+  // that this includes the initial balance.
+  prices: number[]
 }
 
 export type RebalancerProjectorProps = {
@@ -59,28 +49,16 @@ export type RebalancerProjectorProps = {
     interval: number
   }
   assets: RebalancerProjectorAsset[]
-  // How many times to rebalance.
-  numRebalances: number
+  // When to rebalance. There should be one fewer rebalance timestamps than
+  // prices for each asset, since the initial price is included.
+  rebalanceTimestamps: Date[]
   className?: string
-}
-
-const changePrice = (
-  currentPrice: number,
-  projection: RebalancerProjection
-) => {
-  switch (projection.type) {
-    case 'linear':
-      return currentPrice * projection.slope
-    case 'random':
-      // Randomly increase or decrease the price based on the disturbance.
-      return currentPrice * (1 + (Math.random() - 0.5) * projection.disturbance)
-  }
 }
 
 export const RebalancerProjector = ({
   pid: { kp, ki, kd, interval },
   assets,
-  numRebalances,
+  rebalanceTimestamps,
   className,
 }: RebalancerProjectorProps) => {
   const textColor = useNamedThemeColor('text-tertiary')
@@ -90,6 +68,7 @@ export const RebalancerProjector = ({
     ChartDataset<'line', (number | ScatterDataPoint | null)[]>[]
   >([])
 
+  const numRebalances = rebalanceTimestamps.length
   const makeProjections = () => {
     // The PID controller for each asset.
     const controllers = [...Array(assets.length)].map(
@@ -109,26 +88,28 @@ export const RebalancerProjector = ({
         acc: {
           amount: number
           price: number
-        }[][]
+        }[][],
+        _,
+        rebalanceIndex
       ) => {
         const lastProjection = acc[acc.length - 1]
 
         // Update the price for each asset.
-        const newProjection = assets.map(({ projection }, index) => {
-          const { amount, price } = lastProjection[index]
-          const newPrice = changePrice(price, projection)
-
-          return {
-            amount,
-            price: newPrice,
-          }
-        })
+        const newProjection = assets.map(({ prices }, index) => ({
+          amount: lastProjection[index].amount,
+          price: prices[rebalanceIndex + 1],
+        }))
 
         // Get total value of assets based on new prices.
         const totalValue = newProjection.reduce(
           (acc, { amount, price }) => acc + amount * price,
           0
         )
+
+        // TODO: Contrain buy amounts to only how much we are able to sell of
+        // other assets. Just like the sell amount is bounded by 0 on the
+        // bottom, we need to bound the buy amount by the total value not
+        // already sold of other assets.
 
         // Use PID controller with new values to rebalance amounts.
         assets.forEach(({ targetProportion }, index) => {
@@ -152,9 +133,9 @@ export const RebalancerProjector = ({
       },
       [
         // Start with initial amount and price for each asset.
-        assets.map(({ currentAmount, currentPrice }) => ({
-          amount: currentAmount,
-          price: currentPrice,
+        assets.map(({ initialAmount, prices }) => ({
+          amount: initialAmount,
+          price: prices[0],
         })),
       ]
     )
@@ -201,9 +182,7 @@ export const RebalancerProjector = ({
     <div className={clsx('h-full', className)}>
       <Line
         data={{
-          labels: [undefined, ...Array(numRebalances)].map((_, index) =>
-            (index + 1).toLocaleString()
-          ),
+          labels: ['Initial', ...rebalanceTimestamps.map((t) => formatDate(t))],
           datasets,
         }}
         options={{

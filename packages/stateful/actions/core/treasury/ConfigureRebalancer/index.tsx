@@ -1,19 +1,10 @@
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { waitForAll } from 'recoil'
+import { useRecoilValueLoadable, waitForAll } from 'recoil'
 
-import { usdPriceSelector } from '@dao-dao/state/recoil'
-import {
-  BalanceEmoji,
-  ChainProvider,
-  useCachedLoading,
-} from '@dao-dao/stateless'
-import {
-  AmountWithTimestampAndDenom,
-  ChainId,
-  TokenType,
-  UseDecodedCosmosMsg,
-} from '@dao-dao/types'
+import { historicalUsdPriceSelector } from '@dao-dao/state/recoil/selectors/osmosis'
+import { BalanceEmoji, ChainProvider } from '@dao-dao/stateless'
+import { ChainId, TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -26,6 +17,7 @@ import {
   decodePolytoneExecuteMsg,
   getNativeIbcUsdc,
   getNativeTokenForChainId,
+  loadableToLoadingData,
 } from '@dao-dao/utils'
 
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
@@ -75,6 +67,7 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
 ) => {
   const { watch } = useFormContext<ConfigureRebalancerData>()
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
+  const selectedTokens = watch((props.fieldNamePrefix + 'tokens') as 'tokens')
 
   const loadingTokens = useTokenBalances({
     allChains: true,
@@ -91,28 +84,64 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
         ),
       }
 
-  const loadingPrices = useCachedLoading(
-    nativeBalances.loading
-      ? undefined
-      : waitForAll(
-          nativeBalances.data.map(
-            ({ token: { chainId, type, denomOrAddress } }) =>
-              usdPriceSelector({
-                chainId,
-                type,
-                denomOrAddress,
-              })
-          )
-        ),
-    []
+  const historicalPricesLoading = loadableToLoadingData(
+    useRecoilValueLoadable(
+      waitForAll(
+        selectedTokens.map(({ denom }) =>
+          historicalUsdPriceSelector({
+            chainId,
+            denom,
+          })
+        )
+      )
+    ),
+    undefined
   )
-  const prices = loadingPrices.loading
-    ? loadingPrices
+
+  // Get overlapping timestamps across all tokens.
+  const overlappingTimestamps =
+    historicalPricesLoading.loading || !historicalPricesLoading.data
+      ? []
+      : Object.entries(
+          // Map timestamp to number of tokens for which it appears in its
+          // historical price list.
+          historicalPricesLoading.data.reduce((acc, prices) => {
+            if (!prices) {
+              return acc
+            }
+
+            // Increment timestamp counter for each price.
+            prices.forEach(({ timestamp }) => {
+              const time = timestamp.getTime().toString()
+              acc[time] = (acc[time] ?? 0) + 1
+            })
+
+            return acc
+          }, {} as Record<string, number>)
+        )
+          // Keep only timestamp keys that exist in each token's historical
+          // price list.
+          .filter(([, value]) => value === historicalPricesLoading.data?.length)
+          .map(([timestamp]) => Number(timestamp))
+
+  const historicalPrices = historicalPricesLoading.loading
+    ? historicalPricesLoading
     : {
         loading: false,
-        updating: loadingPrices.updating,
-        data: loadingPrices.data.filter(
-          (price): price is AmountWithTimestampAndDenom => !!price
+        data: selectedTokens.flatMap(({ denom }, index) =>
+          historicalPricesLoading.data?.[index]
+            ? {
+                denom,
+                // Keep only prices that overlap with all tokens.
+                prices: historicalPricesLoading
+                  .data![index]!.filter(({ timestamp }) =>
+                    overlappingTimestamps.includes(timestamp.getTime())
+                  )
+                  .sort(
+                    (a, b) => a.timestamp.getTime() - b.timestamp.getTime()
+                  ),
+              }
+            : []
         ),
       }
 
@@ -138,7 +167,7 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
           {...props}
           options={{
             nativeBalances,
-            prices,
+            historicalPrices,
           }}
         />
       </ChainProvider>
