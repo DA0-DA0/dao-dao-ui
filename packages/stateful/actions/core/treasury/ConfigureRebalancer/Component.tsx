@@ -17,7 +17,7 @@ import {
   useChain,
 } from '@dao-dao/stateless'
 import {
-  AmountWithTimestampAndDenom,
+  AmountWithTimestamp,
   ChainId,
   GenericTokenBalance,
   LoadingData,
@@ -26,7 +26,6 @@ import { ActionComponent } from '@dao-dao/types/actions'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
-  getNativeIbcUsdc,
   getNativeTokenForChainId,
   validateRequired,
 } from '@dao-dao/utils'
@@ -47,7 +46,12 @@ export type ConfigureRebalancerData = {
 
 export type ConfigureRebalancerOptions = {
   nativeBalances: LoadingData<GenericTokenBalance[]>
-  prices: LoadingData<AmountWithTimestampAndDenom[]>
+  historicalPrices: LoadingData<
+    {
+      denom: string
+      prices: AmountWithTimestamp[]
+    }[]
+  >
 }
 
 export const ConfigureRebalancerComponent: ActionComponent<
@@ -56,7 +60,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { nativeBalances, prices },
+  options: { nativeBalances, historicalPrices },
 }) => {
   const { chain_id: chainId } = useChain()
   const allowedTokens =
@@ -123,6 +127,34 @@ export const ConfigureRebalancerComponent: ActionComponent<
   ])
 
   const [projection, setProjection] = useState(false)
+
+  const rebalanceTimestamps = historicalPrices.loading
+    ? []
+    : // All tokens historical price lists should have the same timestamps, so we just need to pick the first one that has prices loaded.
+      historicalPrices.data
+        .find(({ prices }) => prices.length)
+        ?.prices.map(({ timestamp }) => timestamp)
+        // Rebalance one fewer time than how many prices we have. The rebalancer
+        // projector expects number of rebalances to be one fewer than the
+        // number of prices since the first price acts as the initial price.
+        ?.slice(1) || []
+
+  const secondsBetweenRebalances = historicalPrices.loading
+    ? 0
+    : historicalPrices.data
+        .find(({ prices }) => prices.length > 1)
+        ?.prices.slice(0, 2)
+        // Subtract timestamps of first two prices to get time between
+        // rebalances.
+        .reduce(
+          (acc, { timestamp }, index) =>
+            index === 0
+              ? timestamp.getTime()
+              : index === 1
+              ? Math.round((timestamp.getTime() - acc) / 1000)
+              : 0,
+          0
+        ) || 0
 
   return (
     <>
@@ -308,58 +340,45 @@ export const ConfigureRebalancerComponent: ActionComponent<
       />
 
       {projection &&
-        (nativeBalances.loading || prices.loading ? (
+        (nativeBalances.loading || historicalPrices.loading ? (
           <Loader />
         ) : (
           <RebalancerProjector
             assets={tokens.flatMap(
-              ({ denom, percent }): RebalancerProjectorAsset[] => {
+              ({ denom, percent }): RebalancerProjectorAsset | [] => {
                 const { token, balance: _balance } =
                   nativeBalances.data.find(
                     ({ token }) => token.denomOrAddress === denom
                   ) ?? {}
-                const balance = Number(_balance)
-                const { amount: price } =
-                  prices.data.find(
-                    ({ denom: priceDenom }) => priceDenom === denom
-                  ) ?? {}
+                const balance = Number(_balance) || 10000000000
+                const prices = historicalPrices.data.find(
+                  ({ denom: priceDenom }) => priceDenom === denom
+                )?.prices
 
-                if (!token || !balance || !price) {
+                if (!token || !balance || !prices) {
                   return []
                 }
 
-                return [
-                  {
-                    symbol:
-                      nativeBalances.data.find(
-                        ({ token }) => token.denomOrAddress === denom
-                      )?.token.symbol || denom,
-                    currentAmount: convertMicroDenomToDenomWithDecimals(
-                      balance,
-                      token.decimals
-                    ),
-                    targetProportion: percent / 100,
-                    currentPrice: price,
-                    projection:
-                      denom === getNativeIbcUsdc(chainId)?.denomOrAddress
-                        ? {
-                            type: 'linear',
-                            slope: 1,
-                          }
-                        : {
-                            type: 'random',
-                            disturbance: 0.25,
-                          },
-                  },
-                ]
+                return {
+                  symbol:
+                    nativeBalances.data.find(
+                      ({ token }) => token.denomOrAddress === denom
+                    )?.token.symbol || denom,
+                  initialAmount: convertMicroDenomToDenomWithDecimals(
+                    balance,
+                    token.decimals
+                  ),
+                  targetProportion: percent / 100,
+                  prices: prices.map(({ amount }) => amount),
+                }
               }
             )}
             className="h-72"
-            numRebalances={100}
             pid={{
               ...pid,
               interval: 1,
             }}
+            rebalanceTimestamps={rebalanceTimestamps}
           />
         ))}
     </>

@@ -84,24 +84,76 @@ Default.args = {
         },
       ],
     },
-    prices: {
+    historicalPrices: {
       loading: false,
       data: [
         {
           denom: getNativeTokenForChainId(ChainId.NeutronMainnet)
             .denomOrAddress,
-          amount: 0.1,
-          timestamp: new Date(),
+          // Random disturbance.
+          prices: [...Array(50)].reduce(
+            (acc) => [
+              ...acc,
+              {
+                timestamp: new Date(
+                  acc[acc.length - 1].timestamp.getTime() + 1000
+                ),
+                amount:
+                  acc[acc.length - 1].amount *
+                  (1 + (Math.random() - 0.5) * 0.5),
+              },
+            ],
+            [
+              {
+                timestamp: new Date(new Date().getTime() - 50 * 1000),
+                amount: 0.4,
+              },
+            ]
+          ),
         },
         {
           denom: getNativeIbcUsdc(ChainId.NeutronMainnet)!.denomOrAddress,
-          amount: 1,
-          timestamp: new Date(),
+          // Constant.
+          prices: [...Array(50)].reduce(
+            (acc) => [
+              ...acc,
+              {
+                timestamp: new Date(
+                  acc[acc.length - 1].timestamp.getTime() + 1000
+                ),
+                amount: 1,
+              },
+            ],
+            [
+              {
+                timestamp: new Date(new Date().getTime() - 50 * 1000),
+                amount: 1,
+              },
+            ]
+          ),
         },
         {
           denom: 'uatom',
-          amount: 6.5,
-          timestamp: new Date(),
+          // Random disturbance.
+          prices: [...Array(50)].reduce(
+            (acc) => [
+              ...acc,
+              {
+                timestamp: new Date(
+                  acc[acc.length - 1].timestamp.getTime() + 1000
+                ),
+                amount:
+                  acc[acc.length - 1].amount *
+                  (1 + (Math.random() - 0.5) * 0.5),
+              },
+            ],
+            [
+              {
+                timestamp: new Date(new Date().getTime() - 50 * 1000),
+                amount: 6.5,
+              },
+            ]
+          ),
         },
       ],
     },
