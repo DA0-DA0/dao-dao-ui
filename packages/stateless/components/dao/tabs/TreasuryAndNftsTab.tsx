@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'
 import {
   DaoChainTreasury,
   DaoFiatDepositModalProps,
-  LazyNftCardProps,
   LoadingData,
   LoadingNfts,
   TokenCardInfo,
@@ -20,26 +19,32 @@ import {
   DaoChainTreasuryAndNftsProps,
 } from '../DaoChainTreasuryAndNfts'
 
-export type TreasuryAndNftsTabProps<T extends TokenCardInfo> = {
+export type TreasuryAndNftsTabProps<
+  T extends TokenCardInfo,
+  N extends object
+> = {
   connected: boolean
   tokens: LoadingData<{
     infos: T[]
     // Map chain ID to loading state.
     loading: Record<string, boolean>
   }>
-  nfts: LoadingNfts<LazyNftCardProps>
+  nfts: LoadingNfts<N & { key: string }>
   StargazeNftImportModal: ComponentType<Pick<ModalProps, 'onClose'>>
   FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
-} & Omit<DaoChainTreasuryAndNftsProps<T>, 'treasury' | 'setDepositFiatChainId'>
+} & Omit<
+  DaoChainTreasuryAndNftsProps<T, N>,
+  'treasury' | 'setDepositFiatChainId'
+>
 
-export const TreasuryAndNftsTab = <T extends TokenCardInfo>({
+export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
   connected,
   tokens,
   nfts,
   FiatDepositModal,
   createCrossChainAccountPrefillHref,
   ...props
-}: TreasuryAndNftsTabProps<T>) => {
+}: TreasuryAndNftsTabProps<T, N>) => {
   const { t } = useTranslation()
   const {
     chain: { chain_id: currentChainId },
@@ -54,7 +59,7 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo>({
       chainId,
       polytoneProxies[chainId],
     ]),
-  ].map(([chainId, address]): DaoChainTreasury<T> => {
+  ].map(([chainId, address]): DaoChainTreasury<T, N> => {
     const chainNfts = nfts[chainId]
 
     return {

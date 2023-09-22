@@ -6,7 +6,7 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, TokenCardInfo } from '@dao-dao/types'
+import { ActionKey, LazyNftCardProps, TokenCardInfo } from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../actions'
@@ -87,10 +87,10 @@ export const TreasuryAndNftsTab = () => {
   })
 
   return (
-    <StatelessTreasuryAndNftsTab
+    <StatelessTreasuryAndNftsTab<TokenCardInfo, LazyNftCardProps>
       ButtonLink={ButtonLink}
       FiatDepositModal={DaoFiatDepositModal}
-      LazyNftCard={LazyNftCard}
+      NftCard={LazyNftCard}
       StargazeNftImportModal={StargazeNftImportModal}
       TokenCard={DaoTokenCard}
       addCollectionHref={

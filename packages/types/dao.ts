@@ -16,7 +16,6 @@ import { ContractVersion } from './chain'
 import { DepositRefundPolicy, ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
 import { DaoCreator } from './creators'
-import { LazyNftCardProps } from './nft'
 import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
@@ -295,9 +294,9 @@ export type DaoWebSocketChannelInfo = {
   coreAddress: string
 }
 
-export type DaoChainTreasury<T extends TokenCardInfo> = {
+export type DaoChainTreasury<T extends TokenCardInfo, N extends object> = {
   chainId: string
   address: string | undefined
   tokens: LoadingData<T[]>
-  nfts: LoadingData<LazyNftCardProps[]>
+  nfts: LoadingData<(N & { key: string })[]>
 }

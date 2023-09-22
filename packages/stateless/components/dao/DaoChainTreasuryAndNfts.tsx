@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 import {
   ButtonLinkProps,
   DaoChainTreasury,
-  LazyNftCardProps,
   TokenCardInfo,
 } from '@dao-dao/types'
 import {
@@ -28,21 +27,27 @@ import { ChainLogo } from '../ChainLogo'
 import { DropdownIconButton } from '../icon_buttons'
 import { Loader } from '../logo'
 
-export type DaoChainTreasuryAndNftsProps<T extends TokenCardInfo> = {
-  treasury: DaoChainTreasury<T>
+export type DaoChainTreasuryAndNftsProps<
+  T extends TokenCardInfo,
+  N extends object
+> = {
+  treasury: DaoChainTreasury<T, N>
   connected: boolean
   isMember: boolean
   createCrossChainAccountPrefillHref: string
   addCollectionHref?: string
   setDepositFiatChainId: (chainId: string | undefined) => void
   TokenCard: ComponentType<T>
-  LazyNftCard: ComponentType<LazyNftCardProps>
+  NftCard: ComponentType<N>
   ButtonLink: ComponentType<ButtonLinkProps>
 }
 
 const NFTS_PER_PAGE = 15
 
-export const DaoChainTreasuryAndNfts = <T extends TokenCardInfo>({
+export const DaoChainTreasuryAndNfts = <
+  T extends TokenCardInfo,
+  N extends object
+>({
   treasury: { chainId, address, tokens, nfts },
   connected,
   isMember,
@@ -50,9 +55,9 @@ export const DaoChainTreasuryAndNfts = <T extends TokenCardInfo>({
   addCollectionHref,
   setDepositFiatChainId,
   TokenCard,
-  LazyNftCard,
+  NftCard,
   ButtonLink,
-}: DaoChainTreasuryAndNftsProps<T>) => {
+}: DaoChainTreasuryAndNftsProps<T, N>) => {
   const { t } = useTranslation()
   const { chainId: daoChainId } = useDaoInfoContext()
 
@@ -158,14 +163,7 @@ export const DaoChainTreasuryAndNfts = <T extends TokenCardInfo>({
                       nftPage * NFTS_PER_PAGE
                     )
                     .map((props) => (
-                      <LazyNftCard
-                        {...props}
-                        key={
-                          props.chainId +
-                          props.collectionAddress +
-                          props.tokenId
-                        }
-                      />
+                      <NftCard {...props} key={props.key} />
                     ))}
                 </GridCardContainer>
 

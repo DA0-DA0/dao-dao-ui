@@ -29,13 +29,13 @@ import { NoContent } from '../NoContent'
 import { ButtonPopup } from '../popup'
 import { Modal } from './Modal'
 
-export interface NftSelectionModalProps<T extends NftCardInfo>
+export interface NftSelectionModalProps<N extends NftCardInfo>
   extends Omit<ModalProps, 'children' | 'header'>,
     Required<Pick<ModalProps, 'header'>> {
-  nfts: LoadingDataWithError<T[]>
+  nfts: LoadingDataWithError<N[]>
   selectedIds: string[]
-  getIdForNft: (nft: T) => string
-  onNftClick: (nft: T) => void
+  getIdForNft: (nft: N) => string
+  onNftClick: (nft: N) => void
   onSelectAll?: () => void
   onDeselectAll?: () => void
   action: {
@@ -56,7 +56,7 @@ export interface NftSelectionModalProps<T extends NftCardInfo>
   noneDisplay?: ReactNode
 }
 
-export const NftSelectionModal = <T extends NftCardInfo>({
+export const NftSelectionModal = <N extends NftCardInfo>({
   nfts,
   selectedIds,
   getIdForNft,
@@ -72,7 +72,7 @@ export const NftSelectionModal = <T extends NftCardInfo>({
   headerDisplay,
   noneDisplay,
   ...modalProps
-}: NftSelectionModalProps<T>) => {
+}: NftSelectionModalProps<N>) => {
   const { t } = useTranslation()
   const showSelectAll =
     (onSelectAll || onDeselectAll) &&
@@ -266,19 +266,19 @@ export const NftSelectionModal = <T extends NftCardInfo>({
           </pre>
         </>
       ) : nfts.data.length > 0 ? (
-        filteredSortedSearchedNfts.map(({ item: nft }) => (
+        filteredSortedSearchedNfts.map(({ item }) => (
           <NftCard
-            key={getIdForNft(nft as T)}
             ref={
-              selectedIds[0] === getIdForNft(nft as T)
+              selectedIds[0] === getIdForNft(item as N)
                 ? firstSelectedRef
                 : undefined
             }
-            {...(nft as T)}
+            {...(item as N)}
+            key={(item as N).key}
             checkbox={{
-              checked: selectedIds.includes(getIdForNft(nft as T)),
+              checked: selectedIds.includes(getIdForNft(item as N)),
               // Disable toggling if currently staking.
-              onClick: () => !action.loading && onNftClick(nft as T),
+              onClick: () => !action.loading && onNftClick(item as N),
             }}
           />
         ))

@@ -80,6 +80,7 @@ export const MintNft: ActionComponent = (props) => {
       creatingCollectionInfoLoading.loading
       ? undefined
       : {
+          key: chainId + collectionAddress + mintMsg.token_id,
           collection: {
             address: collectionAddress,
             name: creatingCollectionInfoLoading.data?.name ?? '',

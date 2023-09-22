@@ -53,6 +53,7 @@ export type NftUriData = {
 
 export type NftCardInfo = {
   chainId: string
+  key: string
   collection: {
     address: string
     name: string
@@ -84,6 +85,7 @@ export type LoadingNfts<N extends object> = Partial<
 >
 
 export type LazyNftCardProps = WithChainId<{
+  key: string
   // Whether to show the collection or the owner/staker. Default is owner.
   type?: 'collection' | 'owner'
   collectionAddress: string

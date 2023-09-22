@@ -28,6 +28,7 @@ export const StakedNftCard = (props: ComponentProps<typeof NftCard>) => {
 }
 
 export const LazyNftCard = ({
+  key,
   type = 'owner',
   collectionAddress,
   tokenId,
@@ -66,6 +67,7 @@ export const LazyNftCard = ({
 
   return info.loading || info.errored ? (
     <NftCardToUse
+      key={key}
       chainId={chainId}
       className="animate-pulse"
       collection={{

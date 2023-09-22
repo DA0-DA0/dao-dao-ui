@@ -100,6 +100,7 @@ export const nftCardInfoWithUriSelector = selectorFamily<
       const { name = '', description, imageUrl, externalLink } = metadata || {}
 
       const info: NftCardInfo = {
+        key: chainId + collection + tokenId,
         collection: {
           address: collection,
           name: collectionInfo.name,
@@ -200,6 +201,7 @@ export const lazyNftCardPropsForDaoSelector = selectorFamily<
               nftCollectionTokenIds[index].state === 'hasValue'
                 ? (nftCollectionTokenIds[index].contents as string[]).map(
                     (tokenId): LazyNftCardProps => ({
+                      key: chainId + collectionAddress + tokenId,
                       chainId,
                       tokenId,
                       collectionAddress,
