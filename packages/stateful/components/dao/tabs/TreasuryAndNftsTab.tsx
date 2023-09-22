@@ -6,13 +6,13 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, TokenCardInfo } from '@dao-dao/types'
+import { ActionKey, LazyNftCardProps, TokenCardInfo } from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../actions'
 import { useMembership, useWallet } from '../../../hooks'
 import {
-  nftCardInfosForDaoSelector,
+  lazyNftCardPropsForDaoSelector,
   treasuryTokenCardInfosSelector,
 } from '../../../recoil'
 import {
@@ -21,7 +21,7 @@ import {
   useNativeCommonGovernanceTokenInfoIfExists,
 } from '../../../voting-module-adapter'
 import { ButtonLink } from '../../ButtonLink'
-import { NftCard } from '../../NftCard'
+import { LazyNftCard } from '../../NftCard'
 import { StargazeNftImportModal } from '../../StargazeNftImportModal'
 import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
 import { DaoTokenCard } from '../DaoTokenCard'
@@ -63,7 +63,7 @@ export const TreasuryAndNftsTab = () => {
     []
   )
   const nfts = useCachedLoading(
-    nftCardInfosForDaoSelector({
+    lazyNftCardPropsForDaoSelector({
       chainId: daoInfo.chainId,
       coreAddress: daoInfo.coreAddress,
       governanceCollectionAddress: cw721GovernanceCollectionAddress,
@@ -87,10 +87,10 @@ export const TreasuryAndNftsTab = () => {
   })
 
   return (
-    <StatelessTreasuryAndNftsTab
+    <StatelessTreasuryAndNftsTab<TokenCardInfo, LazyNftCardProps>
       ButtonLink={ButtonLink}
       FiatDepositModal={DaoFiatDepositModal}
-      NftCard={NftCard}
+      NftCard={LazyNftCard}
       StargazeNftImportModal={StargazeNftImportModal}
       TokenCard={DaoTokenCard}
       addCollectionHref={

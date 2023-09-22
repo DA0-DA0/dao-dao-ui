@@ -6,7 +6,7 @@ import {
   NftCard as StatelessNftCard,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { WithChainId } from '@dao-dao/types'
+import { LazyNftCardProps } from '@dao-dao/types'
 
 import {
   nftCardInfoSelector,
@@ -27,14 +27,9 @@ export const StakedNftCard = (props: ComponentProps<typeof NftCard>) => {
   return <NftCard hideCollection ownerLabel={t('title.staker')} {...props} />
 }
 
-export type LazyNftCardProps = WithChainId<{
-  collectionAddress: string
-  tokenId: string
-  // If passed and the NFT is staked, get staker info from this contract.
-  stakingContractAddress?: string
-}>
-
 export const LazyNftCard = ({
+  key,
+  type = 'owner',
   collectionAddress,
   tokenId,
   stakingContractAddress,
@@ -49,12 +44,14 @@ export const LazyNftCard = ({
   )
 
   const stakerOrOwner = useCachedLoadingWithError(
-    nftStakerOrOwnerSelector({
-      collectionAddress,
-      tokenId,
-      stakingContractAddress,
-      chainId,
-    })
+    type === 'owner'
+      ? nftStakerOrOwnerSelector({
+          collectionAddress,
+          tokenId,
+          stakingContractAddress,
+          chainId,
+        })
+      : undefined
   )
 
   const staked =
@@ -62,10 +59,15 @@ export const LazyNftCard = ({
     !stakerOrOwner.errored &&
     stakerOrOwner.data.staked
 
-  const NftCardToUse = staked ? StakedNftCard : NftCardNoCollection
+  const NftCardToUse = staked
+    ? StakedNftCard
+    : type === 'owner'
+    ? NftCardNoCollection
+    : NftCard
 
   return info.loading || info.errored ? (
     <NftCardToUse
+      key={key}
       chainId={chainId}
       className="animate-pulse"
       collection={{
