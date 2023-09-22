@@ -1,5 +1,6 @@
 import { ChainId } from './chain'
 import { ContractInfoResponse } from './contracts/Cw721Base'
+import { WithChainId } from './state'
 import { LoadingDataWithError } from './stateless'
 
 export interface StargazeNft {
@@ -78,6 +79,15 @@ export type NftCardInfo = {
 }
 
 // Map chain ID to loading NFTs on that chain.
-export type LoadingNfts<N extends NftCardInfo = NftCardInfo> = Partial<
+export type LoadingNfts<N extends object> = Partial<
   Record<ChainId | string, LoadingDataWithError<N[]>>
 >
+
+export type LazyNftCardProps = WithChainId<{
+  // Whether to show the collection or the owner/staker. Default is owner.
+  type?: 'collection' | 'owner'
+  collectionAddress: string
+  tokenId: string
+  // If passed and the NFT is staked, get staker info from this contract.
+  stakingContractAddress?: string
+}>

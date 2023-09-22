@@ -16,12 +16,13 @@ import { ContractVersion } from './chain'
 import { DepositRefundPolicy, ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
 import { DaoCreator } from './creators'
+import { LazyNftCardProps } from './nft'
 import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
 } from './proposal-module-adapter'
-import { DaoCardProps, SuspenseLoaderProps } from './stateless'
-import { GenericToken } from './token'
+import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './stateless'
+import { GenericToken, TokenCardInfo } from './token'
 import { DurationWithUnits } from './units'
 import { CodeIdConfig } from './utils'
 
@@ -292,4 +293,11 @@ export enum DaoPageMode {
 export type DaoWebSocketChannelInfo = {
   chainId: string
   coreAddress: string
+}
+
+export type DaoChainTreasury<T extends TokenCardInfo> = {
+  chainId: string
+  address: string | undefined
+  tokens: LoadingData<T[]>
+  nfts: LoadingData<LazyNftCardProps[]>
 }

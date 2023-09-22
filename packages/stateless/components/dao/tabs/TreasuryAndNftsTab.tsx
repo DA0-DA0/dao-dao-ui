@@ -1,152 +1,113 @@
-import { Image } from '@mui/icons-material'
-import clsx from 'clsx'
 import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
-  ButtonLinkProps,
+  DaoChainTreasury,
   DaoFiatDepositModalProps,
+  LazyNftCardProps,
   LoadingData,
   LoadingNfts,
-  NftCardInfo,
   TokenCardInfo,
   TokenType,
 } from '@dao-dao/types'
-import {
-  getChainForChainId,
-  getDisplayNameForChainId,
-  getNativeTokenForChainId,
-  getSupportedChainConfig,
-} from '@dao-dao/utils'
+import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { useDaoInfoContext, useSupportedChainContext } from '../../../hooks'
-import { Button } from '../../buttons'
-import { ChainLogo } from '../../ChainLogo'
-import { CopyToClipboard } from '../../CopyToClipboard'
-import { GridCardContainer } from '../../GridCardContainer'
-import { DropdownIconButton } from '../../icon_buttons'
 import { Loader } from '../../logo/Loader'
 import { ModalProps } from '../../modals/Modal'
-import { NoContent } from '../../NoContent'
+import {
+  DaoChainTreasuryAndNfts,
+  DaoChainTreasuryAndNftsProps,
+} from '../DaoChainTreasuryAndNfts'
 
-export interface TreasuryAndNftsTabProps<
-  T extends TokenCardInfo,
-  N extends NftCardInfo
-> {
+export type TreasuryAndNftsTabProps<T extends TokenCardInfo> = {
   connected: boolean
   tokens: LoadingData<{
     infos: T[]
     // Map chain ID to loading state.
     loading: Record<string, boolean>
   }>
-  TokenCard: ComponentType<T>
-  nfts: LoadingNfts<N>
-  NftCard: ComponentType<N>
-  isMember: boolean
-  createCrossChainAccountPrefillHref: string
-  addCollectionHref?: string
+  nfts: LoadingNfts<LazyNftCardProps>
   StargazeNftImportModal: ComponentType<Pick<ModalProps, 'onClose'>>
   FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
-  ButtonLink: ComponentType<ButtonLinkProps>
-}
+} & Omit<DaoChainTreasuryAndNftsProps<T>, 'treasury' | 'setDepositFiatChainId'>
 
-export const TreasuryAndNftsTab = <
-  T extends TokenCardInfo,
-  N extends NftCardInfo
->({
+export const TreasuryAndNftsTab = <T extends TokenCardInfo>({
   connected,
   tokens,
-  TokenCard,
   nfts,
-  NftCard,
-  isMember,
-  createCrossChainAccountPrefillHref,
-  addCollectionHref,
   FiatDepositModal,
-  ButtonLink,
-}: TreasuryAndNftsTabProps<T, N>) => {
+  createCrossChainAccountPrefillHref,
+  ...props
+}: TreasuryAndNftsTabProps<T>) => {
   const { t } = useTranslation()
   const {
-    chain: { chain_id: chainId },
+    chain: { chain_id: currentChainId },
     config: { polytone = {} },
   } = useSupportedChainContext()
-  const {
-    chainId: daoChainId,
-    coreAddress,
-    polytoneProxies,
-  } = useDaoInfoContext()
+  const { coreAddress, polytoneProxies } = useDaoInfoContext()
 
   // Tokens and NFTs on the various Polytone-supported chains.
   const treasuries = [
-    [chainId, coreAddress],
+    [currentChainId, coreAddress],
     ...Object.keys(polytone).map((chainId): [string, string | undefined] => [
       chainId,
       polytoneProxies[chainId],
     ]),
-  ].map(
-    ([chainId, address]): {
-      chainId: string
-      address: string | undefined
-      tokens: LoadingData<T[]>
-      nfts: LoadingData<N[]>
-    } => {
-      const chainNfts = nfts[chainId]
+  ].map(([chainId, address]): DaoChainTreasury<T> => {
+    const chainNfts = nfts[chainId]
 
-      return {
-        chainId,
-        address,
-        tokens:
-          tokens.loading || tokens.data.loading[chainId]
-            ? { loading: true }
-            : {
-                loading: false,
-                updating: tokens.updating,
-                data: tokens.data.infos
-                  .filter(({ token }) => token.chainId === chainId)
-                  // Sort governance token first, then native currency, then by
-                  // balance.
-                  .sort((a, b) => {
-                    const aValue = a.isGovernanceToken
-                      ? -2
-                      : a.token.type === TokenType.Native &&
-                        a.token.denomOrAddress ===
-                          getNativeTokenForChainId(chainId).denomOrAddress
-                      ? -1
-                      : a.lazyInfo.loading
-                      ? a.unstakedBalance
-                      : a.lazyInfo.data.totalBalance
-                    const bValue = b.isGovernanceToken
-                      ? -2
-                      : b.token.type === TokenType.Native &&
-                        b.token.denomOrAddress ===
-                          getNativeTokenForChainId(chainId).denomOrAddress
-                      ? -1
-                      : b.lazyInfo.loading
-                      ? b.unstakedBalance
-                      : b.lazyInfo.data.totalBalance
-
-                    // Put smaller value first if either is negative (prioritized
-                    // token), otherwise sort balances descending.
-                    return aValue < 0 || bValue < 0
-                      ? aValue - bValue
-                      : bValue - aValue
-                  }),
-              },
-        nfts: !chainNfts
-          ? { loading: false, data: [] }
-          : chainNfts.loading || chainNfts.errored
+    return {
+      chainId,
+      address,
+      tokens:
+        tokens.loading || tokens.data.loading[chainId]
           ? { loading: true }
-          : chainNfts,
-      }
+          : {
+              loading: false,
+              updating: tokens.updating,
+              data: tokens.data.infos
+                .filter(({ token }) => token.chainId === chainId)
+                // Sort governance token first, then native currency, then by
+                // balance.
+                .sort((a, b) => {
+                  const aValue = a.isGovernanceToken
+                    ? -2
+                    : a.token.type === TokenType.Native &&
+                      a.token.denomOrAddress ===
+                        getNativeTokenForChainId(chainId).denomOrAddress
+                    ? -1
+                    : a.lazyInfo.loading
+                    ? a.unstakedBalance
+                    : a.lazyInfo.data.totalBalance
+                  const bValue = b.isGovernanceToken
+                    ? -2
+                    : b.token.type === TokenType.Native &&
+                      b.token.denomOrAddress ===
+                        getNativeTokenForChainId(chainId).denomOrAddress
+                    ? -1
+                    : b.lazyInfo.loading
+                    ? b.unstakedBalance
+                    : b.lazyInfo.data.totalBalance
+
+                  // Put smaller value first if either is negative (prioritized
+                  // token), otherwise sort balances descending.
+                  return aValue < 0 || bValue < 0
+                    ? aValue - bValue
+                    : bValue - aValue
+                }),
+            },
+      nfts: !chainNfts
+        ? { loading: false, data: [] }
+        : chainNfts.loading || chainNfts.errored
+        ? { loading: true }
+        : chainNfts,
     }
-  )
+  })
 
   const [depositFiatChainId, setDepositFiatChainId] = useState<
     string | undefined
   >()
-  const [chainsCollapsed, setChainsCollapsed] = useState(
-    {} as Record<string, boolean | undefined>
-  )
 
   return (
     <>
@@ -155,136 +116,19 @@ export const TreasuryAndNftsTab = <
           <Loader className="mt-6" fill={false} />
         ) : tokens.data.infos.length ? (
           <div className="flex flex-col gap-8">
-            {treasuries.map(({ chainId, address, tokens, nfts }) => {
-              const bech32Prefix = getChainForChainId(chainId).bech32_prefix
-              // Whether or not the treasury address is defined, meaning it is
-              // the current chain or a polytone account has already been
-              // created on that chain.
-              const exists = !!address
-
-              return (
-                <div key={chainId} className="flex flex-col gap-4 pl-8">
-                  {/* header min-height of 3.5rem standardized across all tabs */}
-                  <div className="flex min-h-[3.5rem] grow flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2">
-                    <div className="relative flex flex-row items-center gap-2">
-                      <div className="absolute -left-8">
-                        {exists ? (
-                          <DropdownIconButton
-                            open={!chainsCollapsed[chainId]}
-                            toggle={() =>
-                              setChainsCollapsed((prev) => ({
-                                ...prev,
-                                [chainId]: !prev[chainId],
-                              }))
-                            }
-                          />
-                        ) : (
-                          <div className="flex h-6 w-6 items-center justify-center">
-                            <div className="h-1 w-1 rounded-full bg-icon-interactive-disabled"></div>
-                          </div>
-                        )}
-                      </div>
-
-                      <ChainLogo chainId={chainId} size={28} />
-
-                      <p className="title-text shrink-0">
-                        {getDisplayNameForChainId(chainId)}
-                      </p>
-                    </div>
-
-                    {exists ? (
-                      <div className="flex grow flex-row items-stretch justify-between gap-6">
-                        <CopyToClipboard
-                          className="!gap-2 rounded-md bg-background-tertiary p-2 font-mono transition hover:bg-background-secondary"
-                          takeStartEnd={{
-                            start: bech32Prefix.length + 6,
-                            end: 6,
-                          }}
-                          textClassName="!bg-transparent !p-0"
-                          tooltip={t('button.clickToCopyAddress')}
-                          value={address}
-                        />
-
-                        {connected && !!getSupportedChainConfig(chainId)?.kado && (
-                          <Button
-                            onClick={() => setDepositFiatChainId(chainId)}
-                            variant="ghost_outline"
-                          >
-                            {t('button.depositFiat')}
-                          </Button>
-                        )}
-                      </div>
-                    ) : (
-                      <ButtonLink
-                        href={createCrossChainAccountPrefillHref.replace(
-                          'CHAIN_ID',
-                          chainId
-                        )}
-                        variant="ghost_outline"
-                      >
-                        {t('button.createAccount')}
-                      </ButtonLink>
-                    )}
-                  </div>
-
-                  {exists && (
-                    <div
-                      className={clsx(
-                        'flex flex-col gap-3 overflow-hidden',
-                        chainsCollapsed[chainId] ? 'h-0' : 'h-auto'
-                      )}
-                    >
-                      {tokens.loading ? (
-                        <Loader />
-                      ) : (
-                        tokens.data.length > 0 && (
-                          <GridCardContainer cardType="wide">
-                            {tokens.data.map((props, index) => (
-                              <TokenCard {...props} key={index} />
-                            ))}
-                          </GridCardContainer>
-                        )
-                      )}
-
-                      {nfts.loading ? (
-                        <Loader className="mt-6" />
-                      ) : (
-                        nfts.data.length > 0 && (
-                          <>
-                            <p className="title-text mt-4">{t('title.nfts')}</p>
-
-                            <GridCardContainer>
-                              {nfts.data.map((props, index) => (
-                                <NftCard {...(props as N)} key={index} />
-                              ))}
-                            </GridCardContainer>
-                          </>
-                        )
-                      )}
-
-                      {!tokens.loading &&
-                        tokens.data.length === 0 &&
-                        !nfts.loading &&
-                        nfts.data.length === 0 &&
-                        (chainId === daoChainId ? (
-                          <p className="secondary-text">
-                            {t('info.nothingFound')}
-                          </p>
-                        ) : (
-                          // Show NFT add prompt if on current chain.
-                          <NoContent
-                            Icon={Image}
-                            actionNudge={t('info.areTheyMissingQuestion')}
-                            body={t('info.noNftsYet')}
-                            buttonLabel={t('button.addCollection')}
-                            href={isMember ? addCollectionHref : undefined}
-                          />
-                        ))}
-                    </div>
-                  )}
-                </div>
-              )
-            })}
+            {treasuries.map((treasury) => (
+              <DaoChainTreasuryAndNfts
+                key={treasury.chainId}
+                connected={connected}
+                setDepositFiatChainId={setDepositFiatChainId}
+                treasury={treasury}
+                {...props}
+                createCrossChainAccountPrefillHref={createCrossChainAccountPrefillHref.replace(
+                  'CHAIN_ID',
+                  treasury.chainId
+                )}
+              />
+            ))}
           </div>
         ) : (
           <p className="secondary-text">{t('info.nothingFound')}</p>
