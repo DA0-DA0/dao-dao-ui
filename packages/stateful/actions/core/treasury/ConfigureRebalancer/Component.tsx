@@ -139,23 +139,6 @@ export const ConfigureRebalancerComponent: ActionComponent<
         // number of prices since the first price acts as the initial price.
         ?.slice(1) || []
 
-  const secondsBetweenRebalances = historicalPrices.loading
-    ? 0
-    : historicalPrices.data
-        .find(({ prices }) => prices.length > 1)
-        ?.prices.slice(0, 2)
-        // Subtract timestamps of first two prices to get time between
-        // rebalances.
-        .reduce(
-          (acc, { timestamp }, index) =>
-            index === 0
-              ? timestamp.getTime()
-              : index === 1
-              ? Math.round((timestamp.getTime() - acc) / 1000)
-              : 0,
-          0
-        ) || 0
-
   return (
     <>
       <div className="flex flex-col gap-2 self-start">
