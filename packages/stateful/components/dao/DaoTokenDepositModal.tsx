@@ -10,15 +10,18 @@ import {
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
+  CopyToClipboard,
   TokenDepositModal,
   TokenDepositModalProps,
   useCachedLoading,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { DaoAccountType } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  getDaoAccount,
   processError,
 } from '@dao-dao/utils'
 
@@ -28,20 +31,18 @@ import { ConnectWallet } from '../ConnectWallet'
 export type DaoTokenDepositModalProps = Pick<
   TokenDepositModalProps,
   'token' | 'onClose' | 'visible'
->
+> & {
+  daoOwnerType: DaoAccountType
+}
 
 export const DaoTokenDepositModal = ({
   token,
   onClose,
+  daoOwnerType,
   ...props
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
-  const {
-    chainId: daoChainId,
-    name: daoName,
-    coreAddress,
-    polytoneProxies,
-  } = useDaoInfoContext()
+  const daoInfo = useDaoInfoContext()
   const { isWalletConnected, address, getSigningCosmWasmClient } = useWallet({
     chainId: token.chainId,
   })
@@ -49,10 +50,13 @@ export const DaoTokenDepositModal = ({
     chainId: token.chainId,
   })
 
-  // Deposit address depends on if the token is on the DAO's native chain or one
-  // of its polytone chains.
-  const depositAddress =
-    token.chainId === daoChainId ? coreAddress : polytoneProxies[token.chainId]
+  const daoName = daoInfo.name
+  // Deposit address depends on what the account type is of the token owner.
+  const depositAddress = getDaoAccount({
+    daoInfo,
+    chainId: token.chainId,
+    accountType: daoOwnerType,
+  })
 
   const setRefreshDaoBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(depositAddress)
@@ -94,6 +98,11 @@ export const DaoTokenDepositModal = ({
     async (amount: number) => {
       if (!address) {
         toast.error(t('error.logInToContinue'))
+        return
+      }
+
+      if (!depositAddress) {
+        toast.error(t('error.accountNotFound'))
         return
       }
 
@@ -162,6 +171,7 @@ export const DaoTokenDepositModal = ({
       ConnectWallet={ConnectWallet}
       amount={amount}
       connected={isWalletConnected}
+      disabled={!depositAddress}
       loading={loading}
       loadingBalance={
         loadingBalance.loading
@@ -180,6 +190,16 @@ export const DaoTokenDepositModal = ({
       onClose={onClose}
       onDeposit={onDeposit}
       setAmount={setAmount}
+      subtitle={
+        <CopyToClipboard
+          className="mt-1"
+          iconClassName="text-icon-secondary"
+          takeAll
+          textClassName="text-text-secondary"
+          tooltip={t('button.clickToCopyAddress')}
+          value={depositAddress || 'ERROR'}
+        />
+      }
       token={token}
       warning={t('info.depositTokenWarning')}
       {...props}
