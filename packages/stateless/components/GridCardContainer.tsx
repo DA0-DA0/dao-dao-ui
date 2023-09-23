@@ -14,9 +14,9 @@ export const GridCardContainer = ({
 }: GridCardContainerProps) => (
   <div
     className={clsx(
-      'grid-rows-auto grid grid-cols-1 gap-4',
+      'grid-rows-auto grid grid-cols-1 gap-2 sm:gap-3 lg:gap-4',
       {
-        'sm:grid-cols-3': cardType === 'tall',
+        'sm:grid-cols-2 md:grid-cols-3': cardType === 'tall',
         'sm:grid-cols-2': cardType === 'wide',
       },
       className
