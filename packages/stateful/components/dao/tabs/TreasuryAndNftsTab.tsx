@@ -1,5 +1,3 @@
-import { waitForAny } from 'recoil'
-
 import {
   TreasuryAndNftsTab as StatelessTreasuryAndNftsTab,
   useCachedLoading,
@@ -13,7 +11,7 @@ import { useActionForKey } from '../../../actions'
 import { useMembership, useWallet } from '../../../hooks'
 import {
   lazyNftCardInfosForDaoSelector,
-  treasuryTokenCardInfosSelector,
+  treasuryTokenCardInfosForDaoSelector,
 } from '../../../recoil'
 import {
   useCw20CommonGovernanceTokenInfoIfExists,
@@ -38,28 +36,14 @@ export const TreasuryAndNftsTab = () => {
   const { denomOrAddress: cw721GovernanceCollectionAddress } =
     useCw721CommonGovernanceTokenInfoIfExists() ?? {}
 
-  const chains = [
-    [daoInfo.chainId, daoInfo.coreAddress],
-    ...Object.entries(daoInfo.polytoneProxies),
-  ]
   const tokens = useCachedLoading(
-    waitForAny(
-      chains.map(([chainId, address]) =>
-        treasuryTokenCardInfosSelector({
-          chainId,
-          coreAddress: address,
-          cw20GovernanceTokenAddress:
-            chainId === daoInfo.chainId
-              ? cw20GovernanceTokenAddress
-              : undefined,
-          nativeGovernanceTokenDenom:
-            chainId === daoInfo.chainId
-              ? nativeGovernanceTokenDenom
-              : undefined,
-        })
-      )
-    ),
-    []
+    treasuryTokenCardInfosForDaoSelector({
+      chainId: daoInfo.chainId,
+      coreAddress: daoInfo.coreAddress,
+      cw20GovernanceTokenAddress,
+      nativeGovernanceTokenDenom,
+    }),
+    {}
   )
   const nfts = useCachedLoading(
     lazyNftCardInfosForDaoSelector({
@@ -118,36 +102,7 @@ export const TreasuryAndNftsTab = () => {
       )}
       isMember={isMember}
       nfts={nfts.loading ? {} : nfts.data}
-      tokens={
-        tokens.loading
-          ? {
-              loading: true,
-            }
-          : {
-              loading: false,
-              updating: tokens.updating,
-              data: {
-                infos: tokens.data
-                  .map((loadable) =>
-                    loadable.state === 'hasValue'
-                      ? loadable.contents
-                      : undefined
-                  )
-                  .filter(
-                    (value): value is TokenCardInfo[] => value !== undefined
-                  )
-                  .flat(),
-                // Map chain ID to loading state.
-                loading: chains.reduce(
-                  (acc, [chainId], index) => ({
-                    ...acc,
-                    [chainId]: tokens.data[index]?.state === 'loading',
-                  }),
-                  {} as Record<string, boolean>
-                ),
-              },
-            }
-      }
+      tokens={tokens.loading ? {} : tokens.data}
     />
   )
 }

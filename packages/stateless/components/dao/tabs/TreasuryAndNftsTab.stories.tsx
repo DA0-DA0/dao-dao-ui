@@ -25,12 +25,10 @@ const Template: ComponentStory<
 export const Default = Template.bind({})
 Default.args = {
   tokens: {
-    loading: false,
-    data: {
-      infos: [makeTokenCardProps(true), makeTokenCardProps()],
-      loading: {
-        [CHAIN_ID]: false,
-      },
+    [CHAIN_ID]: {
+      loading: false,
+      errored: false,
+      data: [makeTokenCardProps(true), makeTokenCardProps()],
     },
   },
   TokenCard,
@@ -55,7 +53,7 @@ Default.args = {
 
 export const Loading = Template.bind({})
 Loading.args = {
-  tokens: { loading: true },
+  tokens: { [CHAIN_ID]: { loading: true, errored: false } },
   TokenCard,
   nfts: { [CHAIN_ID]: { loading: true, errored: false } },
   NftCard,

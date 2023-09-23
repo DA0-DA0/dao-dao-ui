@@ -324,3 +324,15 @@ export type DaoApp = {
   imageUrl: string
   url: string
 }
+
+// The type of account. `native` means it's the DAO address on its native chain.
+// `polytone` means it's a polytone account controlled by a DAO on another
+// chain. `valence` means it's a valence account controlled by a DAO on the same
+// or another chain.
+export type DaoAccountType = 'native' | 'polytone' | 'valence'
+
+export type DaoAccount = {
+  type: DaoAccountType
+  chainId: string
+  address: string
+}

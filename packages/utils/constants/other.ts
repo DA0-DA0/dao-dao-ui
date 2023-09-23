@@ -49,6 +49,12 @@ export const CW721_WORKAROUND_ITEM_KEY_PREFIX = 'cw721:'
 // core contract can, so we need to store this separately.
 export const POLYTONE_CW721_ITEM_KEY_PREFIX = 'polytone_cw721:'
 
+// Timewave's Valence Account
+//
+// The namespace (prefix) of the items in the DAO core contract that contain the
+// addresses of the DAO's valence accounts on various chains.
+export const VALENCE_ACCOUNT_ITEM_KEY_PREFIX = 'valence_account:'
+
 // Osmosis API
 export const OSMOSIS_API_BASE = 'https://api-osmosis.imperator.co'
 

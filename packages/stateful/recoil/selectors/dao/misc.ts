@@ -378,7 +378,7 @@ export const daoInfoFromPolytoneProxySelector = selectorFamily<
 
       // Get source DAO core address for this voice.
       const coreAddress = get(
-        DaoCoreV2Selectors.coreAddressForPolytoneProxy({
+        DaoCoreV2Selectors.coreAddressForPolytoneProxySelector({
           chainId,
           voice,
           proxy,

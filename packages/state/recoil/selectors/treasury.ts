@@ -174,16 +174,14 @@ export const daoTvlSelector = selectorFamily<
   key: 'daoTvl',
   get:
     ({ coreAddress, cw20GovernanceTokenAddress, chainId }) =>
-    async ({ get }) => {
+    ({ get }) => {
       const timestamp = new Date()
 
-      const polytoneProxies = Object.entries(
-        get(
-          DaoCoreV2Selectors.polytoneProxiesSelector({
-            chainId,
-            contractAddress: coreAddress,
-          })
-        )
+      const allAccounts = get(
+        DaoCoreV2Selectors.allAccountsSelector({
+          chainId,
+          contractAddress: coreAddress,
+        })
       )
 
       // Neutron's modified DAOs do not support cw20s, so this may error. Ignore
@@ -200,31 +198,20 @@ export const daoTvlSelector = selectorFamily<
 
       const allBalances = [
         // Native balances.
-        ...[
-          // Current chain.
-          {
-            owner: coreAddress,
-            chainId,
-          },
-          // Polytone.
-          ...polytoneProxies.map(([chainId, proxy]) => ({
-            owner: proxy,
-            chainId,
-          })),
-        ]
-          .map(({ owner, chainId }) => [
+        ...allAccounts
+          .map(({ address, chainId }) => [
             // All unstaked
             ...get(
               genericTokenBalancesSelector({
-                address: owner,
                 chainId,
+                address,
               })
             ),
             // Staked
             get(
               genericTokenDelegatedBalanceSelector({
-                walletAddress: owner,
                 chainId,
+                walletAddress: address,
               })
             ),
           ])

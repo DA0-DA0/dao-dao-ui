@@ -1,12 +1,14 @@
 import { ComponentType } from 'react'
 
-import { Validator } from './chain'
+import { ChainId, Validator } from './chain'
+import { DaoAccountType } from './dao'
 import { AmountWithTimestamp } from './state'
 import {
   ButtonLinkProps,
   ButtonPopupSection,
   ButtonPopupSectionButton,
   LoadingData,
+  LoadingDataWithError,
   StatefulEntityDisplayProps,
 } from './stateless'
 
@@ -94,6 +96,9 @@ export type TokenCardLazyInfo = {
 
 export type TokenCardInfo = {
   owner: string
+  // If this is token is owned by a DAO account, this is the type of the account
+  // that owns it.
+  daoOwnerType?: DaoAccountType
   token: GenericToken
   isGovernanceToken: boolean
   subtitle?: string
@@ -122,3 +127,8 @@ export type TokenLineProps<T extends TokenCardInfo = TokenCardInfo> = T & {
   transparentBackground?: boolean
   TokenCard: ComponentType<T>
 }
+
+// Map chain ID to loading tokens on that chain.
+export type LoadingTokens<T extends TokenCardInfo = TokenCardInfo> = Partial<
+  Record<ChainId | string, LoadingDataWithError<T[]>>
+>

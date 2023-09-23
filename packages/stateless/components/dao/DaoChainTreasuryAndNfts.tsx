@@ -133,7 +133,7 @@ export const DaoChainTreasuryAndNfts = <
             collapsed ? 'h-0' : 'h-auto'
           )}
         >
-          {tokens.loading ? (
+          {tokens.loading || (tokens.updating && tokens.data.length === 0) ? (
             <Loader />
           ) : (
             tokens.data.length > 0 && (
@@ -145,7 +145,7 @@ export const DaoChainTreasuryAndNfts = <
             )
           )}
 
-          {nfts.loading ? (
+          {nfts.loading || (nfts.updating && nfts.data.length === 0) ? (
             <Loader className="mt-6" />
           ) : (
             nfts.data.length > 0 && (
@@ -168,7 +168,7 @@ export const DaoChainTreasuryAndNfts = <
                 </GridCardContainer>
 
                 <Pagination
-                  className="mx-auto mt-9"
+                  className="mx-auto mt-3"
                   page={nftPage}
                   pageSize={NFTS_PER_PAGE}
                   setPage={setNftPage}
@@ -179,8 +179,10 @@ export const DaoChainTreasuryAndNfts = <
           )}
 
           {!tokens.loading &&
+            !tokens.updating &&
             tokens.data.length === 0 &&
             !nfts.loading &&
+            !nfts.updating &&
             nfts.data.length === 0 &&
             (chainId === daoChainId ? (
               <p className="secondary-text">{t('info.nothingFound')}</p>
