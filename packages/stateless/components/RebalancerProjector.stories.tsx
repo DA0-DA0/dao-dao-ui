@@ -43,5 +43,8 @@ Default.args = {
       prices: [...Array(numRebalances + 1)].map(() => 1),
     },
   ],
-  numRebalances,
+  rebalanceTimestamps: [...Array(numRebalances)].map(
+    (_, index) =>
+      new Date(new Date().getTime() - (numRebalances - index) * 1000)
+  ),
 }
