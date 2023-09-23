@@ -181,7 +181,10 @@ export const DaoChainTreasuryAndNfts = <
                 <p className="primary-text">{t('title.valenceAccount')}</p>
                 <TooltipInfoIcon
                   size="sm"
-                  title={'What is a Valence Account'}
+                  title={
+                    // TODO(rebalancer): Add description.
+                    'What is a Valence Account'
+                  }
                 />
               </div>
 
