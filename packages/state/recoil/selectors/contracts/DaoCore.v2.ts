@@ -1222,6 +1222,9 @@ export const valenceAccountSelector = selectorFamily<
   get:
     ({ targetChainId, ...queryClientParams }) =>
     ({ get }) =>
+      // TODO(rebalancer): Verify that the address value is set to a valence account
+      // contract owned by this DAO, so DAOs cannot set their valence account to
+      // any address to render it in their treasury.
       get(
         getItemSelector({
           ...queryClientParams,

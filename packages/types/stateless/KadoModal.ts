@@ -1,3 +1,4 @@
+import { DaoAccountType } from '../dao'
 import { ModalProps } from './Modal'
 
 export type KadoModalProps = Omit<ModalProps, 'children'> & {
@@ -11,4 +12,6 @@ export type KadoModalProps = Omit<ModalProps, 'children'> & {
 export type DaoFiatDepositModalProps = Omit<
   KadoModalProps,
   'header' | 'defaultMode' | 'toAddress'
->
+> & {
+  accountType: DaoAccountType
+}

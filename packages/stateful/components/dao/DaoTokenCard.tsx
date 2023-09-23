@@ -198,16 +198,19 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
                 },
               ]
             : // Only show deposit button if not governance cw20 token. People
-              // accidentally deposit governance tokens into the DAO when
-              // they're trying to stake them.
-              [
+            // accidentally deposit governance tokens into the DAO when
+            // they're trying to stake them. Also don't show unless owner type
+            // is set.
+            props.daoOwnerType
+            ? [
                 {
                   Icon: AccountBalance,
                   label: t('button.deposit'),
                   closeOnClick: true,
                   onClick: showDeposit,
                 },
-              ],
+              ]
+            : [],
           extraSections: extraActionSections,
         }}
         lazyInfo={lazyInfo}
@@ -220,8 +223,9 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
         <StakingModal onClose={() => setShowCw20StakingModal(false)} />
       )}
 
-      {!isCw20GovernanceToken && (
+      {!isCw20GovernanceToken && !!props.daoOwnerType && (
         <DaoTokenDepositModal
+          daoOwnerType={props.daoOwnerType}
           onClose={() => setDepositVisible(false)}
           token={props.token}
           visible={depositVisible}

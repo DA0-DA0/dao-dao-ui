@@ -2,22 +2,29 @@ import { useTranslation } from 'react-i18next'
 
 import { KadoModal, useDaoInfoContext } from '@dao-dao/stateless'
 import { DaoFiatDepositModalProps } from '@dao-dao/types'
+import { getDaoAccount } from '@dao-dao/utils'
 
-export const DaoFiatDepositModal = (props: DaoFiatDepositModalProps) => {
+export const DaoFiatDepositModal = ({
+  chainId,
+  accountType,
+  ...props
+}: DaoFiatDepositModalProps) => {
   const { t } = useTranslation()
-  const {
-    chainId: daoChainId,
-    coreAddress,
-    polytoneProxies,
-  } = useDaoInfoContext()
 
-  // Deposit address depends on if the token is on the DAO's native chain or one
-  // of its polytone chains.
-  const depositAddress =
-    props.chainId === daoChainId ? coreAddress : polytoneProxies[props.chainId]
+  const daoInfo = useDaoInfoContext()
+  // Deposit address depends on what the account type is of the token owner.
+  let depositAddress = getDaoAccount({
+    daoInfo,
+    chainId,
+    accountType,
+  })
+  // Default to the DAO's native chain and address if no deposit address found.
+  chainId = depositAddress ? chainId : daoInfo.chainId
+  depositAddress ||= daoInfo.coreAddress
 
   return (
     <KadoModal
+      chainId={chainId}
       header={{
         title: t('title.depositFiat'),
         subtitle: t('info.depositFiatDescription'),

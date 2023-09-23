@@ -139,6 +139,9 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
 
       {connected && !!depositFiatChainId && (
         <FiatDepositModal
+          accountType={
+            depositFiatChainId === currentChainId ? 'native' : 'polytone'
+          }
           chainId={depositFiatChainId}
           onClose={() => setDepositFiatChainId(undefined)}
           visible

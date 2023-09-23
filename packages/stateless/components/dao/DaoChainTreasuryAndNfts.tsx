@@ -9,6 +9,7 @@ import {
   TokenCardInfo,
 } from '@dao-dao/types'
 import {
+  VALENCE_ACCOUNT_ITEM_KEY_PREFIX,
   getChainForChainId,
   getDisplayNameForChainId,
   getSupportedChainConfig,
@@ -20,6 +21,7 @@ import {
   NoContent,
   PAGINATION_MIN_PAGE,
   Pagination,
+  TooltipInfoIcon,
 } from '../../components'
 import { useDaoInfoContext } from '../../hooks'
 import { Button } from '../buttons'
@@ -59,7 +61,7 @@ export const DaoChainTreasuryAndNfts = <
   ButtonLink,
 }: DaoChainTreasuryAndNftsProps<T, N>) => {
   const { t } = useTranslation()
-  const { chainId: daoChainId } = useDaoInfoContext()
+  const { chainId: daoChainId, items: daoItems } = useDaoInfoContext()
 
   const bech32Prefix = getChainForChainId(chainId).bech32_prefix
   // Whether or not the treasury address is defined, meaning it is the current
@@ -68,6 +70,32 @@ export const DaoChainTreasuryAndNfts = <
 
   const [collapsed, setCollapsed] = useState(false)
   const [nftPage, setNftPage] = useState(PAGINATION_MIN_PAGE)
+
+  // Separate valence from non-valence account tokens and display valence
+  // separately.
+  const nonValenceTokens: typeof tokens = tokens.loading
+    ? tokens
+    : {
+        loading: false,
+        updating: tokens.updating,
+        data: tokens.data.filter(
+          ({ daoOwnerType }) => daoOwnerType !== 'valence'
+        ),
+      }
+  const valenceTokens: typeof tokens = tokens.loading
+    ? tokens
+    : {
+        loading: false,
+        updating: tokens.updating,
+        data: tokens.data.filter(
+          ({ daoOwnerType }) => daoOwnerType === 'valence'
+        ),
+      }
+
+  const hasValenceTokens = valenceTokens.loading
+    ? // When tokens not yet loaded, check to see if valence account is set to determine if we should render UI and show loader.
+      !!daoItems[VALENCE_ACCOUNT_ITEM_KEY_PREFIX + chainId]
+    : valenceTokens.data.length > 0
 
   return (
     <div className="flex flex-col gap-4 pl-8">
@@ -133,16 +161,45 @@ export const DaoChainTreasuryAndNfts = <
             collapsed ? 'h-0' : 'h-auto'
           )}
         >
-          {tokens.loading || (tokens.updating && tokens.data.length === 0) ? (
-            <Loader />
+          {nonValenceTokens.loading ||
+          (nonValenceTokens.updating && nonValenceTokens.data.length === 0) ? (
+            <Loader className="my-14" size={48} />
           ) : (
-            tokens.data.length > 0 && (
+            nonValenceTokens.data.length > 0 && (
               <GridCardContainer cardType="wide">
-                {tokens.data.map((props, index) => (
+                {nonValenceTokens.data.map((props, index) => (
                   <TokenCard {...props} key={index} />
                 ))}
               </GridCardContainer>
             )
+          )}
+
+          {/* Valence Account */}
+          {hasValenceTokens && (
+            <div className="mt-3 space-y-3">
+              <div className="flex flex-row items-center gap-1">
+                <p className="primary-text">{t('title.valenceAccount')}</p>
+                <TooltipInfoIcon
+                  size="sm"
+                  title={'What is a Valence Account'}
+                />
+              </div>
+
+              <div className="rounded-lg border border-dashed border-border-primary p-3 sm:p-4 lg:p-5">
+                {valenceTokens.loading ||
+                (valenceTokens.updating && valenceTokens.data.length === 0) ? (
+                  <Loader className="my-12" size={48} />
+                ) : (
+                  valenceTokens.data.length > 0 && (
+                    <GridCardContainer cardType="wide">
+                      {valenceTokens.data.map((props, index) => (
+                        <TokenCard {...props} key={index} />
+                      ))}
+                    </GridCardContainer>
+                  )
+                )}
+              </div>
+            </div>
           )}
 
           {nfts.loading || (nfts.updating && nfts.data.length === 0) ? (

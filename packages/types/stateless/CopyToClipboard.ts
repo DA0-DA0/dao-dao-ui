@@ -10,6 +10,7 @@ export interface CopyToClipboardProps {
   takeAll?: true
   className?: string
   textClassName?: string
+  iconClassName?: string
   onCopy?: () => void
   tooltip?: string
   noCopy?: boolean

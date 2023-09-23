@@ -1,6 +1,8 @@
 import {
   BreadcrumbCrumb,
   ContractVersion,
+  DaoAccountType,
+  DaoInfo,
   DaoParentInfo,
   DaoWebSocketChannelInfo,
   PolytoneProxies,
@@ -8,6 +10,7 @@ import {
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
 
 import { getSupportedChainConfig } from './chain'
+import { VALENCE_ACCOUNT_ITEM_KEY_PREFIX } from './constants/other'
 import { getGovPath } from './url'
 
 export const getParentDaoBreadcrumbs = (
@@ -63,3 +66,21 @@ export const getFundsFromDaoInstantiateMsg = ({
   // TODO(neutron-2.3.0): remove once non-optional
   ...proposal_modules_instantiate_info.flatMap(({ funds }) => funds || []),
 ]
+
+// Gets the DAO account on the specified chain or undefined if not found.
+export const getDaoAccount = ({
+  daoInfo: { chainId: daoChainId, coreAddress, polytoneProxies, items },
+  chainId,
+  accountType,
+}: {
+  daoInfo: DaoInfo
+  chainId: string
+  accountType: DaoAccountType
+}): string | undefined =>
+  accountType === 'native' && chainId === daoChainId
+    ? coreAddress
+    : accountType === 'polytone' && chainId !== daoChainId
+    ? polytoneProxies[chainId]
+    : accountType === 'valence'
+    ? items[VALENCE_ACCOUNT_ITEM_KEY_PREFIX + chainId]
+    : undefined
