@@ -42,6 +42,7 @@ export type DaoChainTreasuryAndNftsProps<
   TokenCard: ComponentType<T>
   NftCard: ComponentType<N>
   ButtonLink: ComponentType<ButtonLinkProps>
+  DaoTreasuryHistoryGraph: ComponentType<{ chainId: string }>
 }
 
 const NFTS_PER_PAGE = 18
@@ -59,6 +60,7 @@ export const DaoChainTreasuryAndNfts = <
   TokenCard,
   NftCard,
   ButtonLink,
+  DaoTreasuryHistoryGraph,
 }: DaoChainTreasuryAndNftsProps<T, N>) => {
   const { t } = useTranslation()
   const { chainId: daoChainId, items: daoItems } = useDaoInfoContext()
@@ -166,11 +168,15 @@ export const DaoChainTreasuryAndNfts = <
             <Loader className="my-14" size={48} />
           ) : (
             nonValenceTokens.data.length > 0 && (
-              <GridCardContainer cardType="wide">
-                {nonValenceTokens.data.map((props, index) => (
-                  <TokenCard {...props} key={index} />
-                ))}
-              </GridCardContainer>
+              <>
+                <DaoTreasuryHistoryGraph chainId={chainId} />
+
+                <GridCardContainer cardType="wide">
+                  {nonValenceTokens.data.map((props, index) => (
+                    <TokenCard {...props} key={index} />
+                  ))}
+                </GridCardContainer>
+              </>
             )
           )}
 

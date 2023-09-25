@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { DaoFiatDepositModal } from '@dao-dao/stateful'
+import { DaoFiatDepositModal, DaoTreasuryHistoryGraph } from '@dao-dao/stateful'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 import { TokenCardProps } from '@dao-dao/types'
@@ -49,6 +49,7 @@ Default.args = {
   isMember: true,
   addCollectionHref: '#',
   FiatDepositModal: DaoFiatDepositModal,
+  DaoTreasuryHistoryGraph,
 }
 
 export const Loading = Template.bind({})
@@ -60,4 +61,5 @@ Loading.args = {
   isMember: true,
   addCollectionHref: '#',
   FiatDepositModal: DaoFiatDepositModal,
+  DaoTreasuryHistoryGraph,
 }

@@ -28,11 +28,11 @@ import {
 import { IconButtonLink } from '../IconButtonLink'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-interface DaoTreasuryHistoryProps {
+type DaoTxTreasuryHistoryProps = {
   shortTitle?: boolean
 }
 
-export const DaoTreasuryHistory = (props: DaoTreasuryHistoryProps) => {
+export const DaoTxTreasuryHistory = (props: DaoTxTreasuryHistoryProps) => {
   const { t } = useTranslation()
 
   return (
@@ -46,7 +46,7 @@ export const DaoTreasuryHistory = (props: DaoTreasuryHistoryProps) => {
         </div>
       }
     >
-      <InnerDaoTreasuryHistory {...props} />
+      <InnerDaoTxTreasuryHistory {...props} />
     </SuspenseLoader>
   )
 }
@@ -55,9 +55,9 @@ export const DaoTreasuryHistory = (props: DaoTreasuryHistoryProps) => {
 // accurate but close enough).
 const BLOCK_HEIGHT_INTERVAL = (60 * 60 * 24 * 3) / 6
 
-export const InnerDaoTreasuryHistory = ({
+export const InnerDaoTxTreasuryHistory = ({
   shortTitle,
-}: DaoTreasuryHistoryProps) => {
+}: DaoTxTreasuryHistoryProps) => {
   const { t } = useTranslation()
   const {
     chain: { chain_id: chainId },
