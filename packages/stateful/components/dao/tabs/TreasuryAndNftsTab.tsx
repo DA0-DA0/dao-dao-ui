@@ -22,6 +22,7 @@ import { ButtonLink } from '../../ButtonLink'
 import { LazyNftCard } from '../../nft'
 import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
 import { DaoTokenCard } from '../DaoTokenCard'
+import { DaoTreasuryHistoryGraph } from '../DaoTreasuryHistoryGraph'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
@@ -72,6 +73,7 @@ export const TreasuryAndNftsTab = () => {
   return (
     <StatelessTreasuryAndNftsTab<TokenCardInfo, LazyNftCardInfo>
       ButtonLink={ButtonLink}
+      DaoTreasuryHistoryGraph={DaoTreasuryHistoryGraph}
       FiatDepositModal={DaoFiatDepositModal}
       NftCard={LazyNftCard}
       TokenCard={DaoTokenCard}

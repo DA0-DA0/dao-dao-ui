@@ -15,6 +15,11 @@ export type QueryIndexerOptions = WithChainId<
       // Most formulas do not need the time, so make it optional.
       timeUnixMs?: number | string
     }
+    times?: {
+      startUnixMs: number
+      endUnixMs?: number
+      stepMs?: number
+    }
     // If true, ignores indexer disabled setting. This should be used by
     // features that require the indexer. Most indexer queries are not required
     // as they can fallback to the RPC.
@@ -39,6 +44,7 @@ export const queryIndexer = async <T = any>({
   formula,
   args,
   block,
+  times,
   chainId,
   required = false,
 }: QueryIndexerOptions): Promise<T | undefined> => {
@@ -58,7 +64,17 @@ export const queryIndexer = async <T = any>({
 
   const params = new URLSearchParams({
     ...args,
-    ...(block ? { block: `${block.height}:${block.timeUnixMs ?? 1}` } : {}),
+    ...(block && {
+      block: `${block.height}:${block.timeUnixMs ?? 1}`,
+    }),
+    ...(times && {
+      times: `${BigInt(times.startUnixMs).toString()}..${
+        times.endUnixMs ? BigInt(times.endUnixMs).toString() : ''
+      }`,
+      ...(times.stepMs && {
+        timeStep: times.stepMs.toString(),
+      }),
+    }),
   })
 
   const url = `/${chainId}/${type}/${address}/${formula}?${params.toString()}`
