@@ -32,24 +32,38 @@ import {
   bondStatusToJSON,
 } from './protobuf/codegen/cosmos/staking/v1beta1/staking'
 
-export const getRpcForChainId = (chainId: string): string => {
+export const getRpcForChainId = (
+  chainId: string,
+  // Offset will try a different RPC from the list of available RPCs.
+  offset = 0
+): string => {
   let rpc = (
     (chainId in CHAIN_ENDPOINTS &&
       CHAIN_ENDPOINTS[chainId as keyof typeof CHAIN_ENDPOINTS]) ||
     {}
   )?.rpc
-  if (rpc) {
+  if (rpc && offset === 0) {
     return rpc
+  }
+
+  // If RPC was found but not used, offset > 0, and subtract 1 from offset so we
+  // try the first RPC in the chain registry list.
+  if (rpc) {
+    offset -= 1
   }
 
   // Fallback to chain registry.
   const chain = maybeGetChainForChainId(chainId)
-  rpc = chain?.apis?.rpc?.[0].address
-  if (!rpc) {
+  if (!chain) {
     throw new Error(`Unknown chain ID "${chainId}"`)
   }
 
-  return rpc
+  const rpcs = chain?.apis?.rpc ?? []
+  if (rpcs.length === 0) {
+    throw new Error(`No RPCs found for chain ID "${chainId}"`)
+  }
+
+  return rpcs[offset % rpcs.length].address
 }
 
 export const cosmosValidatorToValidator = ({

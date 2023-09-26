@@ -16,7 +16,6 @@ import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 
 import {
-  Loader,
   WarningCard,
   useCachedLoadingWithError,
   useDaoInfoContext,
@@ -54,12 +53,12 @@ export const DaoTreasuryHistoryGraph = ({
   const borderColor = useNamedThemeColor('border-primary')
 
   // TODO(treasury-history): make these configurable
-  // Initialize to 30 days ago.
+  // Initialize to 3 days ago.
   const [startTimeUnixMs, _setStartTimeUnixMs] = useState(
-    () => -30 * 24 * 60 * 60 * 1000
+    () => -3 * 24 * 60 * 60 * 1000
   )
-  // Initialize to 4 hours.
-  const [intervalMs, _setIntervalMs] = useState(() => 4 * 60 * 60 * 1000)
+  // Initialize to 1 hour.
+  const [intervalMs, _setIntervalMs] = useState(() => 1 * 60 * 60 * 1000)
 
   const treasuryValueHistory = useCachedLoadingWithError(
     daoTreasuryValueHistorySelector({
@@ -116,85 +115,98 @@ export const DaoTreasuryHistoryGraph = ({
 
   return (
     <div
-      className={clsx('relative flex max-h-[20rem] flex-col gap-4', className)}
+      className={clsx(
+        'relative mb-8 mt-4 flex max-h-[20rem] flex-col gap-4 px-8',
+        className
+      )}
     >
-      {treasuryValueHistory.loading ? (
-        <Loader />
-      ) : treasuryValueHistory.errored ? (
-        <WarningCard
-          className="mx-8 my-4"
-          content={
-            treasuryValueHistory.error instanceof Error
-              ? treasuryValueHistory.error.message
-              : `${treasuryValueHistory.error}`
-          }
-        />
-      ) : (
-        <Line
-          data={{
-            labels: [
-              ...treasuryValueHistory.data.timestamps.map((timestamp) =>
-                formatDate(timestamp)
-              ),
-              t('title.now'),
-            ],
-            datasets,
-          }}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false,
-            // animation: false,
-            plugins: {
+      <Line
+        className={clsx(
+          (treasuryValueHistory.loading || treasuryValueHistory.updating) &&
+            'animate-pulse'
+        )}
+        data={{
+          labels:
+            treasuryValueHistory.loading || treasuryValueHistory.errored
+              ? []
+              : [
+                  ...treasuryValueHistory.data.timestamps.map((timestamp) =>
+                    formatDate(timestamp)
+                  ),
+                  t('title.now'),
+                ],
+          datasets,
+        }}
+        options={{
+          responsive: true,
+          maintainAspectRatio: false,
+          // animation: false,
+          plugins: {
+            title: {
+              display: false,
+            },
+            legend: {
+              position: 'right',
+            },
+            tooltip: {
+              // Show all x-axis values in one tooltip.
+              mode: 'index',
+              enabled: false,
+              external: ({ tooltip }) =>
+                setTooltipData(tooltip.opacity === 0 ? undefined : tooltip),
+              callbacks: {
+                label: (item) =>
+                  `${item.dataset.label}: $${Number(item.raw).toLocaleString(
+                    undefined,
+                    {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    }
+                  )}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              display: true,
+              ticks: {
+                color: textColor,
+              },
+              grid: {
+                color: borderColor,
+                tickColor: 'transparent',
+              },
+            },
+            y: {
+              display: true,
               title: {
-                display: false,
+                text: 'Est. USD Value',
+                display: true,
+                color: textColor,
               },
-              tooltip: {
-                // Show all x-axis values in one tooltip.
-                mode: 'index',
-                enabled: false,
-                external: ({ tooltip }) =>
-                  setTooltipData(tooltip.opacity === 0 ? undefined : tooltip),
-                callbacks: {
-                  label: (item) =>
-                    `${item.dataset.label}: $${Number(item.raw).toLocaleString(
-                      undefined,
-                      {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                      }
-                    )}`,
-                },
+              ticks: {
+                color: textColor,
+              },
+              grid: {
+                color: borderColor,
+                tickColor: 'transparent',
               },
             },
-            scales: {
-              x: {
-                display: true,
-                ticks: {
-                  color: textColor,
-                },
-                grid: {
-                  color: borderColor,
-                  tickColor: 'transparent',
-                },
-              },
-              y: {
-                display: true,
-                title: {
-                  text: 'Est. USD Value',
-                  display: true,
-                  color: textColor,
-                },
-                ticks: {
-                  color: textColor,
-                },
-                grid: {
-                  color: borderColor,
-                  tickColor: 'transparent',
-                },
-              },
-            },
-          }}
-        />
+          },
+        }}
+      />
+
+      {treasuryValueHistory.errored && (
+        <div className="absolute top-0 bottom-0 right-0 left-0 flex items-center justify-center">
+          <WarningCard
+            className="bg-background-primary"
+            content={
+              treasuryValueHistory.error instanceof Error
+                ? treasuryValueHistory.error.message
+                : `${treasuryValueHistory.error}`
+            }
+          />
+        </div>
       )}
 
       {tooltipData && (
