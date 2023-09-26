@@ -274,6 +274,10 @@ export const DaoTreasuryHistoryGraph = ({
               title: {
                 display: false,
               },
+              tooltip: {
+                // Show all x-axis values in one tooltip.
+                mode: 'index',
+              },
             },
             scales: {
               x: {
