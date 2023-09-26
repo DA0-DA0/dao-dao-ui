@@ -91,6 +91,7 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
           historicalUsdPriceSelector({
             chainId,
             denom,
+            precision: 'day',
           })
         )
       )
