@@ -27,6 +27,12 @@ export type GenericToken = {
   symbol: string
   decimals: number
   imageUrl: string | undefined
+  // The source chain and base denom. For IBC assets, this should differ from
+  // the main fields.
+  source: {
+    chainId: string
+    denomOrAddress: string
+  }
 }
 
 export type GenericTokenWithUsdPrice = {

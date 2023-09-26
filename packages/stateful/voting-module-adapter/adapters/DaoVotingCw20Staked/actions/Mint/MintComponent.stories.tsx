@@ -38,6 +38,10 @@ Default.args = {
       symbol: 'GOV',
       decimals: 6,
       imageUrl: '',
+      source: {
+        chainId: CHAIN_ID,
+        denomOrAddress: 'gov',
+      },
     },
     AddressInput,
   },

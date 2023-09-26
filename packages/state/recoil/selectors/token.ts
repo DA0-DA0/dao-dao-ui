@@ -12,7 +12,9 @@ import {
 import {
   MAINNET,
   getChainForChainId,
+  getChainForChainName,
   getFallbackImage,
+  getIbcTransferInfoFromChainSource,
   getTokenForChainIdAndDenom,
   isValidContractAddress,
   isValidTokenFactoryDenom,
@@ -21,6 +23,7 @@ import {
 
 import {
   denomMetadataSelector,
+  ibcRpcClientForChainSelector,
   nativeBalanceSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
@@ -66,10 +69,20 @@ export const genericTokenSelector = selectorFamily<
           : // Native token or invalid type.
             undefined
 
+      const source = get(
+        sourceChainAndDenomSelector({
+          chainId,
+          denomOrAddress,
+        })
+      )
+
       // If native non-factory token, try to get the token from the asset list.
       if (!tokenInfo) {
         try {
-          return getTokenForChainIdAndDenom(chainId, denomOrAddress, false)
+          return {
+            ...getTokenForChainIdAndDenom(chainId, denomOrAddress, false),
+            source,
+          }
         } catch {
           // If that fails, try to fetch from chain if not IBC asset.
           try {
@@ -91,7 +104,10 @@ export const genericTokenSelector = selectorFamily<
 
           // If that fails, return placeholder token.
           if (!tokenInfo) {
-            return getTokenForChainIdAndDenom(chainId, denomOrAddress)
+            return {
+              ...getTokenForChainIdAndDenom(chainId, denomOrAddress),
+              source,
+            }
           }
         }
       }
@@ -113,6 +129,7 @@ export const genericTokenSelector = selectorFamily<
         symbol: tokenInfo.symbol,
         decimals: tokenInfo.decimals,
         imageUrl,
+        source,
       }
     },
 })
@@ -381,5 +398,78 @@ export const nativeDenomMetadataInfoSelector = selectorFamily<
         symbol: displayDenom.denom,
         decimals: displayDenom.exponent,
       }
+    },
+})
+
+// Resolve a denom on a chain to its source chain and base denom. If an IBC
+// asset, tries to reverse engineer IBC denom. Otherwise returns the arguments.
+export const sourceChainAndDenomSelector = selectorFamily<
+  GenericToken['source'],
+  Pick<GenericToken, 'chainId' | 'denomOrAddress'>
+>({
+  key: 'sourceChainAndDenom',
+  get:
+    ({ denomOrAddress, chainId }) =>
+    async ({ get }) => {
+      const ibc = get(ibcRpcClientForChainSelector(chainId))
+
+      let sourceChainId = chainId
+      let baseDenom = denomOrAddress
+
+      // Try to reverse engineer IBC denom.
+      if (denomOrAddress.startsWith('ibc/')) {
+        try {
+          const { denomTrace } = await ibc.applications.transfer.v1.denomTrace({
+            hash: denomOrAddress,
+          })
+
+          // If trace exists, resolve IBC denom.
+          if (denomTrace) {
+            let channels = denomTrace.path.split('transfer/').slice(1)
+            // Trim trailing slash from all but last channel.
+            channels = channels.map((channel, index) =>
+              index === channels.length - 1 ? channel : channel.slice(0, -1)
+            )
+            if (channels.length) {
+              // Retrace channel paths to find source chain of denom.
+              sourceChainId = channels.reduce(
+                (currentChainId, channel) =>
+                  getChainForChainName(
+                    getIbcTransferInfoFromChainSource(currentChainId, channel)
+                      .destinationChain.chain_name
+                  ).chain_id,
+                chainId
+              )
+
+              baseDenom = denomTrace.baseDenom
+            }
+          }
+        } catch (err) {
+          console.error(err)
+          // Ignore resolution error.
+        }
+      }
+
+      return {
+        chainId: sourceChainId,
+        denomOrAddress: baseDenom,
+      }
+    },
+})
+
+// Resolves a unique token identifier that represents the same denom across all
+// chains. It is composed of the native chain and its denom.
+export const uniqueTokenIdentifierSelector = selectorFamily<
+  string,
+  Pick<GenericToken, 'chainId' | 'denomOrAddress'>
+>({
+  key: 'uniqueTokenIdentifier',
+  get:
+    (params) =>
+    ({ get }) => {
+      const { chainId, denomOrAddress } = get(
+        sourceChainAndDenomSelector(params)
+      )
+      return `${chainId}:${denomOrAddress}`
     },
 })

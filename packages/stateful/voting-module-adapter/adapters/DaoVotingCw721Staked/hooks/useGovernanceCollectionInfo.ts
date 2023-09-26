@@ -89,6 +89,10 @@ export const useGovernanceCollectionInfo = ({
       symbol: contractInfo.symbol,
       decimals: 0,
       imageUrl: undefined,
+      source: {
+        chainId,
+        denomOrAddress: collectionAddress,
+      },
     },
     /// Optional
     // Wallet balance

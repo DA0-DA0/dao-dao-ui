@@ -33,6 +33,10 @@ export const token: GenericToken = {
   symbol: 'JUNO',
   decimals: 6,
   imageUrl: '/daodao.png',
+  source: {
+    chainId: CHAIN_ID,
+    denomOrAddress: 'ujuno',
+  },
 }
 
 export const makeProps = (isGovernanceToken = false): TokenCardProps => {

@@ -105,6 +105,10 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
       imageUrl:
         (depositInfo.type === TokenType.Cw20 && depositInfo.token?.imageUrl) ||
         undefined,
+      source: {
+        chainId,
+        denomOrAddress: 'other_cw20',
+      },
     },
     // Then the chain assets.
     ...getChainAssets(chainId).filter(

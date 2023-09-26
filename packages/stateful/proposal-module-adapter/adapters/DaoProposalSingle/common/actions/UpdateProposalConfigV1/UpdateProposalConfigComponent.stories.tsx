@@ -48,6 +48,10 @@ Default.args = {
       symbol: 'GOV',
       decimals: 6,
       imageUrl: undefined,
+      source: {
+        chainId: CHAIN_ID,
+        denomOrAddress: 'gov',
+      },
     },
   },
 }

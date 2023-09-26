@@ -68,6 +68,11 @@ Default.args = {
             decimals: 6,
             symbol: 'USDC',
             imageUrl: '',
+            source: {
+              chainId: ChainId.NeutronMainnet,
+              denomOrAddress: getNativeIbcUsdc(ChainId.NeutronMainnet)!
+                .denomOrAddress,
+            },
           },
           balance: '102948124125',
         },
@@ -79,6 +84,10 @@ Default.args = {
             decimals: 6,
             symbol: 'ATOM',
             imageUrl: '',
+            source: {
+              chainId: ChainId.NeutronMainnet,
+              denomOrAddress: 'uatom',
+            },
           },
           balance: '1284135723893',
         },

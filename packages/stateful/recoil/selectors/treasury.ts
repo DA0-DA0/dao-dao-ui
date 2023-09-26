@@ -1,19 +1,27 @@
-import { noWait, selectorFamily, waitForNone } from 'recoil'
+import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
+  allDaoBalancesSelector,
+  historicalNativeBalancesByDenomSelector,
+  historicalNativeBalancesSelector,
+  historicalUsdPriceSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
+  usdPriceSelector,
 } from '@dao-dao/state'
 import {
   DaoAccount,
   LoadingTokens,
   TokenCardInfo,
+  TokenType,
   WithChainId,
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
+  deserializeTokenSource,
   getNativeTokenForChainId,
+  serializeTokenSource,
 } from '@dao-dao/utils'
 
 // lazyInfo must be loaded in the component separately, since it refreshes on a
@@ -202,5 +210,265 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
                 },
         }
       }, {} as LoadingTokens)
+    },
+})
+
+export const daoTreasuryValueHistorySelector = selectorFamily<
+  {
+    timestamps: Date[]
+    tokens: {
+      symbol: string
+      // Value at each timestamp.
+      values: (number | null)[]
+      // Current value.
+      currentValue: number
+    }[]
+    total: {
+      // Total value at each timestamp.
+      values: (number | null)[]
+      // Current total.
+      currentValue: number
+    }
+  },
+  WithChainId<{
+    coreAddress: string
+    startTimeUnixMs: number
+    intervalMs: number
+  }>
+>({
+  key: 'daoTreasuryValueHistory',
+  get:
+    ({ chainId: nativeChainId, coreAddress, startTimeUnixMs, intervalMs }) =>
+    ({ get }) => {
+      const allAccounts = get(
+        DaoCoreV2Selectors.allAccountsSelector({
+          chainId: nativeChainId,
+          contractAddress: coreAddress,
+        })
+      )
+
+      // Historical balances.
+      const historicalBalancesByTimestamp = get(
+        waitForAll(
+          allAccounts.map(({ chainId, address }) =>
+            historicalNativeBalancesSelector({
+              chainId,
+              address,
+              startTimeUnixMs,
+              intervalMs,
+            })
+          )
+        )
+      ).flat()
+      // Get all unique timestamps.
+      const timestamps = [
+        ...new Set(
+          historicalBalancesByTimestamp.flatMap(({ timestamp }) =>
+            timestamp.getTime()
+          )
+        ),
+      ]
+        .map((timestamp) => new Date(timestamp))
+        .sort()
+
+      const historicalBalancesByToken = get(
+        waitForAll(
+          allAccounts.map(({ chainId, address }) =>
+            historicalNativeBalancesByDenomSelector({
+              chainId,
+              address,
+              startTimeUnixMs,
+              intervalMs,
+            })
+          )
+        )
+      ).flat()
+
+      // Current native balances.
+      const currentBalances = Object.values(
+        get(
+          allDaoBalancesSelector({
+            chainId: nativeChainId,
+            coreAddress,
+          })
+        )
+      )
+        .flat()
+        .filter(({ token }) => token.type === TokenType.Native)
+
+      const tokens = [
+        ...historicalBalancesByToken.map(({ token }) => token),
+        ...currentBalances.map(({ token }) => token),
+      ]
+        // Can only compute price if token decimals loaded correctly.
+        .filter(({ decimals }) => decimals > 0)
+
+      // Unique token sources.
+      const uniqueTokenSources = [
+        ...new Set(tokens.map(({ source }) => serializeTokenSource(source))),
+      ]
+      const tokenSources = uniqueTokenSources.map(deserializeTokenSource)
+
+      // Get historical token prices for unique tokens.
+      const allHistoricalUsdPrices = get(
+        waitForAll(
+          tokenSources.map(({ chainId, denomOrAddress: denom }) =>
+            historicalUsdPriceSelector({
+              chainId,
+              denom,
+            })
+          )
+        )
+      )
+      // Get current token prices for unique tokens.
+      const allCurrentUsdPrices = get(
+        waitForAll(
+          tokenSources.map(({ chainId, denomOrAddress }) =>
+            usdPriceSelector({
+              chainId,
+              type: TokenType.Native,
+              denomOrAddress,
+            })
+          )
+        )
+      )
+
+      // Group tokens by unique ID and add balances at same timestamps.
+      const tokensWithValues = uniqueTokenSources.reduce(
+        (acc, source, index) => {
+          const { symbol, decimals } =
+            tokens.find(
+              (token) =>
+                serializeTokenSource(token.source) === source &&
+                token.symbol &&
+                token.decimals
+            ) ?? {}
+          const historicalUsdPrices = allHistoricalUsdPrices[index]
+          const currentUsdPrice = allCurrentUsdPrices[index]
+          // If no symbol, decimals, nor prices, skip.
+          if (
+            !symbol ||
+            !decimals ||
+            !historicalUsdPrices ||
+            !currentUsdPrice
+          ) {
+            return acc
+          }
+
+          // Flattened list of historical balances across all accounts.
+          // Timestamps will likely be duplicated.
+          const historical = historicalBalancesByToken
+            .filter(
+              ({ token }) => serializeTokenSource(token.source) === source
+            )
+            .flatMap(({ balances }) => balances)
+
+          // Sum up historical balances per timestamp.
+          const values = timestamps.map((timestamp) => {
+            const balances = historical.filter(
+              ({ timestamp: balanceTimestamp }) =>
+                balanceTimestamp.getTime() === timestamp.getTime()
+            )
+
+            // Sum up the balances for this timestamp, unless they are all
+            // undefined, in which case return null. This is to indicate that
+            // the indexer has no data on this timestamp from any account and
+            // thus should not show up in the graph. If any have a balance,
+            // show it.
+            const totalBalance = balances.reduce(
+              (acc, { balance }) =>
+                acc === null && !balance
+                  ? null
+                  : (acc || 0n) + BigInt(balance || 0),
+              null as bigint | null
+            )
+
+            // Find the first price after this timestamp.
+            const firstPriceAfterIndex = historicalUsdPrices.findIndex(
+              (historical) => historical.timestamp > timestamp
+            )
+            // If price is not found or is the first element, no value for this
+            // timestamp.
+            if (firstPriceAfterIndex <= 0) {
+              return null
+            }
+
+            // Get the closest price for this timestamp by choosing the closer
+            // price of the two surrounding it.
+            const priceBefore = historicalUsdPrices[firstPriceAfterIndex - 1]
+            const priceAfter = historicalUsdPrices[firstPriceAfterIndex]
+            const usdPrice = (
+              Math.abs(priceBefore.timestamp.getTime() - timestamp.getTime()) <
+              Math.abs(priceAfter.timestamp.getTime() - timestamp.getTime())
+                ? priceBefore
+                : priceAfter
+            ).amount
+
+            return totalBalance === null
+              ? null
+              : usdPrice *
+                  convertMicroDenomToDenomWithDecimals(
+                    totalBalance.toString(),
+                    decimals
+                  )
+          })
+
+          // Sum up current balances.
+          const currentBalance = currentBalances
+            .filter(
+              ({ token }) => serializeTokenSource(token.source) === source
+            )
+            .reduce((acc, { balance }) => acc + BigInt(balance), 0n)
+          const currentValue =
+            currentUsdPrice.amount *
+            convertMicroDenomToDenomWithDecimals(
+              currentBalance.toString(),
+              decimals
+            )
+
+          return [
+            ...acc,
+            {
+              symbol,
+              values,
+              currentValue,
+            },
+          ]
+        },
+        [] as {
+          symbol: string
+          // Value at each timestamp.
+          values: (number | null)[]
+          // Current value.
+          currentValue: number
+        }[]
+      )
+
+      // Sum up the values at each timestamp, unless they're all null, in which
+      // case return null to indicate there is no data at this timestamp.
+      const totalValues = timestamps.map((_, index) =>
+        tokensWithValues.reduce(
+          (acc, { values }) =>
+            acc === null && values[index] === null
+              ? null
+              : (acc || 0) + (values[index] || 0),
+          null as number | null
+        )
+      )
+
+      // Sum up the current value of each token.
+      const totalCurrentValue = tokensWithValues.reduce(
+        (acc, { currentValue }) => acc + currentValue,
+        0
+      )
+
+      return {
+        timestamps,
+        tokens: tokensWithValues,
+        total: {
+          values: totalValues,
+          currentValue: totalCurrentValue,
+        },
+      }
     },
 })

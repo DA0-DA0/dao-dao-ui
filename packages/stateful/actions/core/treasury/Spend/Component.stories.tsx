@@ -52,6 +52,10 @@ Default.args = {
             decimals: 6,
             symbol: 'ATKN',
             imageUrl: '',
+            source: {
+              chainId: CHAIN_ID,
+              denomOrAddress: 'cw20_1',
+            },
           },
           balance: '1284135723893',
         },
@@ -63,6 +67,10 @@ Default.args = {
             decimals: 6,
             symbol: 'DIFF',
             imageUrl: '',
+            source: {
+              chainId: CHAIN_ID,
+              denomOrAddress: 'cw20_2',
+            },
           },
           balance: '102948124125',
         },
