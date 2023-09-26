@@ -277,6 +277,16 @@ export const DaoTreasuryHistoryGraph = ({
               tooltip: {
                 // Show all x-axis values in one tooltip.
                 mode: 'index',
+                callbacks: {
+                  label: (item) =>
+                    `${item.dataset.label}: $${Number(item.raw).toLocaleString(
+                      undefined,
+                      {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      }
+                    )}`,
+                },
               },
             },
             scales: {
