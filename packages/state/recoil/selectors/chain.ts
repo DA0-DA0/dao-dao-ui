@@ -28,6 +28,7 @@ import {
   getAllRpcResponse,
   getNativeTokenForChainId,
   getRpcForChainId,
+  retry,
   stargateClientRouter,
 } from '@dao-dao/utils'
 import { cosmos, ibc, juno, osmosis } from '@dao-dao/utils/protobuf'
@@ -60,7 +61,11 @@ export const stargateClientForChainSelector = selectorFamily<
 >({
   key: 'stargateClientForChain',
   get: (chainId) => async () =>
-    await stargateClientRouter.connect(getRpcForChainId(chainId)),
+    retry(
+      10,
+      async (attempt) =>
+        await stargateClientRouter.connect(getRpcForChainId(chainId, attempt))
+    ),
   dangerouslyAllowMutability: true,
 })
 
@@ -70,29 +75,41 @@ export const cosmWasmClientForChainSelector = selectorFamily<
 >({
   key: 'cosmWasmClientForChain',
   get: (chainId) => async () =>
-    await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
+    retry(
+      10,
+      async (attempt) =>
+        await cosmWasmClientRouter.connect(getRpcForChainId(chainId, attempt))
+    ),
   dangerouslyAllowMutability: true,
 })
 
 export const cosmosRpcClientForChainSelector = selectorFamily({
   key: 'cosmosRpcClientForChain',
   get: (chainId: string) => async () =>
-    (
-      await cosmos.ClientFactory.createRPCQueryClient({
-        rpcEndpoint: getRpcForChainId(chainId),
-      })
-    ).cosmos,
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await cosmos.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt),
+          })
+        ).cosmos
+    ),
   dangerouslyAllowMutability: true,
 })
 
 export const ibcRpcClientForChainSelector = selectorFamily({
   key: 'ibcRpcClientForChain',
   get: (chainId: string) => async () =>
-    (
-      await ibc.ClientFactory.createRPCQueryClient({
-        rpcEndpoint: getRpcForChainId(chainId),
-      })
-    ).ibc,
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await ibc.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt),
+          })
+        ).ibc
+    ),
   dangerouslyAllowMutability: true,
 })
 
@@ -110,11 +127,15 @@ export const osmosisRpcClientForChainSelector = selectorFamily({
 export const junoRpcClientSelector = selector({
   key: 'junoRpcClient',
   get: async () =>
-    (
-      await juno.ClientFactory.createRPCQueryClient({
-        rpcEndpoint: getRpcForChainId(ChainId.JunoMainnet),
-      })
-    ).juno,
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await juno.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(ChainId.JunoMainnet, attempt),
+          })
+        ).juno
+    ),
   dangerouslyAllowMutability: true,
 })
 
