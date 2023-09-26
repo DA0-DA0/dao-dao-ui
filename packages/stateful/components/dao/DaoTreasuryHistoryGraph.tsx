@@ -223,19 +223,21 @@ export const DaoTreasuryHistoryGraph = ({
           },
         ].map((data, index) => ({
           ...data,
+
           borderColor:
             VOTING_POWER_DISTRIBUTION_COLORS[
               index % VOTING_POWER_DISTRIBUTION_COLORS.length
             ],
-          pointRadius: 2,
+          backgroundColor:
+            VOTING_POWER_DISTRIBUTION_COLORS[
+              index % VOTING_POWER_DISTRIBUTION_COLORS.length
+            ],
+
+          pointRadius: 2.5,
 
           // Accentuate the total.
           ...(data.label === t('title.total') && {
             pointRadius: 4,
-            backgroundColor:
-              VOTING_POWER_DISTRIBUTION_COLORS[
-                index % VOTING_POWER_DISTRIBUTION_COLORS.length
-              ],
           }),
         }))
 
