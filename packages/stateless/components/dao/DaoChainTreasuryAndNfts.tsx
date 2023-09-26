@@ -188,7 +188,7 @@ export const DaoChainTreasuryAndNfts = <
                 />
               </div>
 
-              <div className="rounded-lg border border-dashed border-border-primary p-3 sm:p-4 lg:p-5">
+              <div className="rounded-lg border border-dashed border-border-primary bg-background-tertiary p-3 sm:p-4 lg:p-5">
                 {valenceTokens.loading ||
                 (valenceTokens.updating && valenceTokens.data.length === 0) ? (
                   <Loader className="my-12" size={48} />
