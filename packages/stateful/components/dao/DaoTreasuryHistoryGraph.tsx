@@ -23,7 +23,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   DISTRIBUTION_COLORS,
-  formatDate,
+  formatDateTime,
   transformIbcSymbol,
 } from '@dao-dao/utils'
 
@@ -53,12 +53,12 @@ export const DaoTreasuryHistoryGraph = ({
   const borderColor = useNamedThemeColor('border-primary')
 
   // TODO(treasury-history): make these configurable
-  // Initialize to 3 days ago.
+  // Initialize to 30 days ago.
   const [startTimeUnixMs, _setStartTimeUnixMs] = useState(
-    () => -3 * 24 * 60 * 60 * 1000
+    () => -30 * 24 * 60 * 60 * 1000
   )
-  // Initialize to 1 hour.
-  const [intervalMs, _setIntervalMs] = useState(() => 1 * 60 * 60 * 1000)
+  // Initialize to 12 hours.
+  const [intervalMs, _setIntervalMs] = useState(() => 12 * 60 * 60 * 1000)
 
   const treasuryValueHistory = useCachedLoadingWithError(
     daoTreasuryValueHistorySelector({
@@ -131,7 +131,7 @@ export const DaoTreasuryHistoryGraph = ({
               ? []
               : [
                   ...treasuryValueHistory.data.timestamps.map((timestamp) =>
-                    formatDate(timestamp)
+                    formatDateTime(timestamp)
                   ),
                   t('title.now'),
                 ],
