@@ -2,12 +2,14 @@ import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
+  OsmosisHistoricalPriceChartPrecision,
   allDaoBalancesSelector,
   historicalNativeBalancesByDenomSelector,
   historicalNativeBalancesSelector,
   historicalUsdPriceSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
+  osmosisPrecisionToMinutes,
   usdPriceSelector,
 } from '@dao-dao/state'
 import {
@@ -232,13 +234,12 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
   },
   WithChainId<{
     coreAddress: string
-    startTimeUnixMs: number
-    intervalMs: number
+    precision: OsmosisHistoricalPriceChartPrecision
   }>
 >({
   key: 'daoTreasuryValueHistory',
   get:
-    ({ chainId: nativeChainId, coreAddress, startTimeUnixMs, intervalMs }) =>
+    ({ chainId: nativeChainId, coreAddress, precision }) =>
     ({ get }) => {
       const allAccounts = get(
         DaoCoreV2Selectors.allAccountsSelector({
@@ -246,6 +247,10 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
           contractAddress: coreAddress,
         })
       )
+
+      const startTimeUnixMs = 0
+      // minutes to milliseconds
+      const intervalMs = osmosisPrecisionToMinutes[precision] * 60 * 1000
 
       // Historical balances.
       const historicalBalancesByTimestamp = get(
@@ -261,7 +266,7 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
         )
       ).flat()
       // Get all unique timestamps.
-      const timestamps = [
+      let timestamps = [
         ...new Set(
           historicalBalancesByTimestamp.flatMap(({ timestamp }) =>
             timestamp.getTime()
@@ -316,6 +321,7 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
             historicalUsdPriceSelector({
               chainId,
               denom,
+              precision,
             })
           )
         )
@@ -384,11 +390,34 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
             )
 
             // Find the first price after this timestamp.
-            const firstPriceAfterIndex = historicalUsdPrices.findIndex(
+            let firstPriceAfterIndex = historicalUsdPrices.findIndex(
               (historical) => historical.timestamp > timestamp
             )
-            // If price is not found or is the first element, no value for this
-            // timestamp.
+            // If all prices are before this timestamp, use the last one if it's
+            // within the last day.
+            if (firstPriceAfterIndex === -1) {
+              const lastPrice =
+                historicalUsdPrices[historicalUsdPrices.length - 1]
+              if (
+                timestamp.getTime() - lastPrice.timestamp.getTime() <
+                24 * 60 * 60 * 1000
+              ) {
+                firstPriceAfterIndex = historicalUsdPrices.length - 1
+              }
+            }
+            // If all prices are after this timestamp, use the second one if
+            // it's within the next day so we check the first two.
+            if (firstPriceAfterIndex === 0) {
+              const firstPrice = historicalUsdPrices[0]
+              if (
+                firstPrice.timestamp.getTime() - timestamp.getTime() <
+                24 * 60 * 60 * 1000
+              ) {
+                firstPriceAfterIndex = 1
+              }
+            }
+            // If price is not found or is still the first one, no value for
+            // this timestamp.
             if (firstPriceAfterIndex <= 0) {
               return null
             }
@@ -446,7 +475,7 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
 
       // Sum up the values at each timestamp, unless they're all null, in which
       // case return null to indicate there is no data at this timestamp.
-      const totalValues = timestamps.map((_, index) =>
+      let totalValues = timestamps.map((_, index) =>
         tokensWithValues.reduce(
           (acc, { values }) =>
             acc === null && values[index] === null
@@ -461,6 +490,22 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
         (acc, { currentValue }) => acc + currentValue,
         0
       )
+
+      // Remove timestamps at the front that have no data for any token.
+      let firstNonNullTimestamp = totalValues.findIndex(
+        (value) => value !== null
+      )
+      // If no non-null timestamps, remove all.
+      if (firstNonNullTimestamp === -1) {
+        firstNonNullTimestamp = totalValues.length
+      }
+      if (firstNonNullTimestamp > 0) {
+        timestamps = timestamps.slice(firstNonNullTimestamp)
+        tokensWithValues.forEach(
+          (data) => (data.values = data.values.splice(firstNonNullTimestamp))
+        )
+        totalValues = totalValues.slice(firstNonNullTimestamp)
+      }
 
       return {
         timestamps,

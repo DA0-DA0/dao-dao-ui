@@ -15,6 +15,7 @@ import { useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 
+import { OsmosisHistoricalPriceChartPrecision } from '@dao-dao/state/recoil'
 import {
   WarningCard,
   useCachedLoadingWithError,
@@ -52,20 +53,15 @@ export const DaoTreasuryHistoryGraph = ({
   const textColor = useNamedThemeColor('text-tertiary')
   const borderColor = useNamedThemeColor('border-primary')
 
-  // TODO(treasury-history): make these configurable
-  // Initialize to 30 days ago.
-  const [startTimeUnixMs, _setStartTimeUnixMs] = useState(
-    () => -30 * 24 * 60 * 60 * 1000
-  )
-  // Initialize to 12 hours.
-  const [intervalMs, _setIntervalMs] = useState(() => 12 * 60 * 60 * 1000)
+  // TODO(treasury-history): make configurable
+  const [precision, setPrecision] =
+    useState<OsmosisHistoricalPriceChartPrecision>('day')
 
   const treasuryValueHistory = useCachedLoadingWithError(
     daoTreasuryValueHistorySelector({
       chainId,
       coreAddress,
-      startTimeUnixMs,
-      intervalMs,
+      precision,
     })
   )
 
@@ -102,13 +98,11 @@ export const DaoTreasuryHistoryGraph = ({
           borderColor: DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
           backgroundColor:
             DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
-
-          pointRadius: 2.5,
+          pointRadius: 1,
+          pointHitRadius: 20,
 
           // Accentuate the total.
-          ...(data.order === 1 && {
-            pointRadius: 4,
-          }),
+          borderWidth: data.order === 1 ? 5 : 2.5,
         }))
 
   const [tooltipData, setTooltipData] = useState<TooltipModel<'line'>>()
@@ -211,7 +205,7 @@ export const DaoTreasuryHistoryGraph = ({
 
       {tooltipData && (
         <div
-          className="absolute flex animate-fade-in flex-col gap-1 rounded-md border border-border-component-primary bg-component-tooltip py-2 px-3 text-text-component-primary"
+          className="pointer-events-none absolute flex animate-fade-in flex-col gap-1 rounded-md border border-border-component-primary bg-component-tooltip py-2 px-3 text-text-component-primary"
           style={{
             left: tooltipData.x,
             top: tooltipData.y,

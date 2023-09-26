@@ -376,7 +376,7 @@ export const historicalNativeBalancesSelector = selectorFamily<
           required: true,
         })
       ) ?? []) as {
-        at: string
+        at?: string
         // Map of denom to balance.
         value: Record<string, string | undefined>
         blockHeight: number
@@ -408,8 +408,8 @@ export const historicalNativeBalancesSelector = selectorFamily<
       )
 
       return balanceSnapshots
-        .map(({ at, value }) => ({
-          timestamp: new Date(Number(at)),
+        .map(({ at, blockTimeUnixMs, value }) => ({
+          timestamp: new Date(Number(at || blockTimeUnixMs)),
           balances: Object.entries(value).flatMap(
             ([denom, balance]): GenericTokenBalance | [] =>
               balance
