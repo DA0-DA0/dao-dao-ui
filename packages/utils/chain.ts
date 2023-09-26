@@ -198,7 +198,11 @@ export const getNativeTokenForChainId = (chainId: string): GenericToken => {
         asset.logo_URIs?.svg ??
         // Fallback.
         getFallbackImage(feeDenom),
-    })
+      source: {
+        chainId,
+        denomOrAddress: feeDenom,
+      },
+    } as GenericToken)
   }
 
   return cachedNativeTokens[chainId]!
@@ -253,7 +257,11 @@ export const getTokenForChainIdAndDenom = (
         symbol: denom,
         decimals: 0,
         imageUrl: getFallbackImage(denom),
-      })
+        source: {
+          chainId,
+          denomOrAddress: denom,
+        },
+      } as GenericToken)
     } else {
       throw err
     }

@@ -174,19 +174,18 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
     },
 })
 
-export const daoTvlSelector = selectorFamily<
-  AmountWithTimestamp,
+export const allDaoBalancesSelector = selectorFamily<
+  // Map chain ID to token balances on that chain.
+  Record<string, GenericTokenBalance[]>,
   WithChainId<{
     coreAddress: string
     cw20GovernanceTokenAddress?: string
   }>
 >({
-  key: 'daoTvl',
+  key: 'allDaoBalances',
   get:
     ({ coreAddress, cw20GovernanceTokenAddress, chainId }) =>
     ({ get }) => {
-      const timestamp = new Date()
-
       const allAccounts = get(
         DaoCoreV2Selectors.allAccountsSelector({
           chainId,
@@ -208,50 +207,91 @@ export const daoTvlSelector = selectorFamily<
 
       const allBalances = [
         // Native balances.
-        ...allAccounts
-          .map(({ address, chainId }) => [
-            // All unstaked
-            ...get(
+        ...get(
+          waitForAll(
+            allAccounts.flatMap(({ address, chainId }) => [
+              // All unstaked
               genericTokenBalancesSelector({
                 chainId,
                 address,
-              })
-            ),
-            // Staked
-            get(
+              }),
+              // Native staked
               genericTokenDelegatedBalanceSelector({
                 chainId,
                 walletAddress: address,
-              })
-            ),
-          ])
-          .flat(),
-        // Cw20s on current chain.
+              }),
+            ])
+          )
+        ).flat(),
+        // Cw20s on native chain.
         ...(cw20BalancesLoadable.state === 'hasValue'
           ? cw20BalancesLoadable.contents
           : []),
       ]
 
-      const prices = allBalances.map(({ token, balance }) => {
-        // Don't calculate price if could not load token decimals correctly.
-        if (token.decimals === 0) {
-          return 0
-        }
+      const uniqueChainIds = [
+        ...new Set(allAccounts.map(({ chainId }) => chainId)),
+      ]
 
-        const price = get(
-          usdPriceSelector({
-            type: token.type,
-            denomOrAddress: token.denomOrAddress,
-            chainId: token.chainId,
-          })
-        )?.amount
+      return uniqueChainIds.reduce(
+        (acc, chainId) => ({
+          ...acc,
+          [chainId]: allBalances.filter(
+            ({ token }) => token.chainId === chainId
+          ),
+        }),
+        {} as Record<string, GenericTokenBalance[]>
+      )
+    },
+})
 
-        return price
-          ? convertMicroDenomToDenomWithDecimals(balance, token.decimals) *
+export const daoTvlSelector = selectorFamily<
+  AmountWithTimestamp,
+  WithChainId<{
+    coreAddress: string
+    cw20GovernanceTokenAddress?: string
+  }>
+>({
+  key: 'daoTvl',
+  get:
+    (params) =>
+    ({ get }) => {
+      const timestamp = new Date()
+
+      const allBalances = Object.values(
+        get(allDaoBalancesSelector(params))
+      ).flat()
+
+      const usdPrices = get(
+        waitForAllSettled(
+          allBalances.map(({ token }) =>
+            usdPriceSelector({
+              type: token.type,
+              denomOrAddress: token.denomOrAddress,
+              chainId: token.chainId,
+            })
+          )
+        )
+      )
+
+      const amount = allBalances
+        .map(({ token, balance }, index) => {
+          // Don't calculate price if could not load token decimals correctly.
+          if (token.decimals === 0) {
+            return 0
+          }
+
+          const price =
+            (usdPrices[index].state === 'hasValue' &&
+              usdPrices[index].getValue()?.amount) ||
+            0
+          return (
+            price &&
+            convertMicroDenomToDenomWithDecimals(balance, token.decimals) *
               price
-          : 0
-      })
-      const amount = prices.reduce((price, total) => price + total, 0)
+          )
+        })
+        .reduce((price, total) => price + total, 0)
 
       return {
         amount,
@@ -390,6 +430,9 @@ export const historicalNativeBalancesByDenomSelector = selectorFamily<
     token: GenericToken
     balances: {
       timestamp: Date
+      // undefined balance means this token was not detected at this timestamp.
+      // This means the indexer does not have historical data at this time,
+      // which is not the same as a balance of '0'.
       balance: string | undefined
     }[]
   }[],
@@ -452,7 +495,7 @@ export const historicalNativeBalancesByDenomSelector = selectorFamily<
 
             return {
               timestamp,
-              balance: balance,
+              balance,
             }
           }
         ),

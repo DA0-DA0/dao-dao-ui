@@ -25,6 +25,7 @@ export type TreasuryAndNftsTabProps<
   tokens: LoadingTokens<T>
   nfts: LoadingNfts<N & { key: string }>
   FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
+  DaoTreasuryHistoryGraph: ComponentType<{ className?: string }>
 } & Omit<
   DaoChainTreasuryAndNftsProps<T, N>,
   'treasury' | 'setDepositFiatChainId'
@@ -36,6 +37,7 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
   nfts,
   FiatDepositModal,
   createCrossChainAccountPrefillHref,
+  DaoTreasuryHistoryGraph,
   ...props
 }: TreasuryAndNftsTabProps<T, N>) => {
   const {
@@ -110,7 +112,9 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
 
   return (
     <>
-      <div className="mb-9">
+      <DaoTreasuryHistoryGraph />
+
+      <div className="mb-9 mt-6">
         {
           // If there is nothing loaded, `every` returns true and shows loading.
           Object.values(tokens).every(

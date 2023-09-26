@@ -72,6 +72,10 @@ Default.args = {
             decimals: 6,
             symbol: 'ATOM',
             imageUrl: '',
+            source: {
+              chainId: CHAIN_ID,
+              denomOrAddress: 'uatom',
+            },
           },
           balance: '984129741',
         },

@@ -36,6 +36,10 @@ Default.args = {
       symbol: 'DENOM',
       decimals: 6,
       imageUrl: '',
+      source: {
+        chainId: CHAIN_ID,
+        denomOrAddress: 'factory/wallet/subdenom',
+      },
     },
   },
 }

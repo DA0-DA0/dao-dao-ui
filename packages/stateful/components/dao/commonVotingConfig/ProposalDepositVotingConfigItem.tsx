@@ -69,6 +69,10 @@ const ProposalDepositInput = ({
             symbol: tokenBasedCreatorData.newInfo.symbol,
             decimals: NEW_DAO_TOKEN_DECIMALS,
             imageUrl: tokenBasedCreatorData.newInfo.imageUrl,
+            source: {
+              chainId,
+              denomOrAddress: 'NEW_CW20',
+            },
           })
         : genericTokenSelector({
             chainId,
@@ -165,6 +169,10 @@ const ProposalDepositInput = ({
       symbol:
         (type === TokenType.Cw20 && tokenLoaded?.symbol) || t('form.cw20Token'),
       imageUrl: (type === TokenType.Cw20 && tokenLoaded?.imageUrl) || undefined,
+      source: {
+        chainId,
+        denomOrAddress: 'other_cw20',
+      },
     },
     // Then the chain assets.
     ...getChainAssets(chainId).filter(

@@ -102,6 +102,10 @@ export const useGovernanceTokenInfo = ({
       symbol: governanceTokenInfo.symbol,
       decimals: governanceTokenInfo.decimals,
       imageUrl: governanceTokenLogoUrl,
+      source: {
+        chainId,
+        denomOrAddress: governanceTokenAddress,
+      },
     },
     /// Optional
     // Wallet balance

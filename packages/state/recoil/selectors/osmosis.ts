@@ -9,12 +9,11 @@ import {
 import {
   MAINNET,
   OSMOSIS_API_BASE,
-  getChainForChainName,
   getIbcTransferInfoBetweenChains,
-  getIbcTransferInfoFromChainSource,
 } from '@dao-dao/utils'
 
 import { ibcRpcClientForChainSelector } from './chain'
+import { sourceChainAndDenomSelector } from './token'
 
 export const osmosisSymbolForDenomSelector = selectorFamily<
   string | undefined,
@@ -76,81 +75,84 @@ export const osmosisDenomForTokenSelector = selectorFamily<
         return undefined
       }
 
-      // If already on Osmosis, return the denom.
-      if (chainId === ChainId.OsmosisMainnet) {
-        return denom
-      }
+      const { chainId: sourceChainId, denomOrAddress: baseDenom } = get(
+        sourceChainAndDenomSelector({
+          chainId,
+          denomOrAddress: denom,
+        })
+      )
 
-      // Try to reverse engineer denom and get the osmosis price.
-      try {
-        const ibc = get(ibcRpcClientForChainSelector(chainId))
-        const trace = denom.startsWith('ibc/')
-          ? (
-              await ibc.applications.transfer.v1.denomTrace({
-                hash: denom,
-              })
-            ).denomTrace
-          : undefined
+      // If source chain is Osmosis, the denom is the base denom.
+      if (sourceChainId === ChainId.OsmosisMainnet) {
+        return baseDenom
+      } else {
+        // Otherwise get the Osmosis IBC denom.
+        const osmosisIbc = get(
+          ibcRpcClientForChainSelector(ChainId.OsmosisMainnet)
+        )
+        const { sourceChannel } = getIbcTransferInfoBetweenChains(
+          ChainId.OsmosisMainnet,
+          sourceChainId
+        )
 
-        let sourceChainId = chainId
-        let baseDenom = denom
-
-        // If trace exists, resolve IBC denom and then get its Osmosis IBC
-        // denom to find its price.
-        if (trace) {
-          let channels = trace.path.split('transfer/').slice(1)
-          // Trim trailing slash from all but last channel.
-          channels = channels.map((channel, index) =>
-            index === channels.length - 1 ? channel : channel.slice(0, -1)
-          )
-          if (channels.length) {
-            // Retrace channel paths to find source chain of denom.
-            sourceChainId = channels.reduce(
-              (currentChainId, channel) =>
-                getChainForChainName(
-                  getIbcTransferInfoFromChainSource(currentChainId, channel)
-                    .destinationChain.chain_name
-                ).chain_id,
-              chainId
-            )
-
-            baseDenom = trace.baseDenom
-          }
-        }
-
-        // If source chain is Osmosis, the denom is the base denom.
-        if (sourceChainId === ChainId.OsmosisMainnet) {
-          return baseDenom
-        } else {
-          // Otherwise get the Osmosis IBC denom.
-          const osmosisIbc = get(
-            ibcRpcClientForChainSelector(ChainId.OsmosisMainnet)
-          )
-          const { sourceChannel } = getIbcTransferInfoBetweenChains(
-            ChainId.OsmosisMainnet,
-            sourceChainId
-          )
-          const { hash: osmosisDenomIbcHash } =
+        let osmosisDenomIbcHash
+        try {
+          osmosisDenomIbcHash = (
             await osmosisIbc.applications.transfer.v1.denomHash({
               trace: `transfer/${sourceChannel}/${baseDenom}`,
             })
+          ).hash
+        } catch (err) {
+          // If trace not found, return undefined.
+          if (
+            err instanceof Error &&
+            err.message.includes('denomination trace not found')
+          ) {
+            return
+          }
 
-          // Construct Osmosis IBC denom.
-          return 'ibc/' + osmosisDenomIbcHash
-        }
-      } catch (err) {
-        // If not error, rethrow. This may be a promise, which is how
-        // recoil waits for the `get` to resolve.
-        if (!(err instanceof Error)) {
           throw err
         }
 
-        // On failure, do nothing.
+        // Construct Osmosis IBC denom.
+        return 'ibc/' + osmosisDenomIbcHash
       }
     },
 })
 
 // Returns price every 24 hours for as far back as Osmosis allows.
+export const osmosisHistoricalPriceChartSelector = selectorFamily<
+  AmountWithTimestamp[] | undefined,
+  string
+>({
+  key: 'osmosisHistoricalPriceChart',
+  get: (symbol) => async () => {
+    try {
+      const prices: {
+        time: number
+        close: number
+      }[] = await (
+        await fetch(
+          OSMOSIS_API_BASE +
+            '/tokens/v2/historical/' +
+            symbol +
+            '/chart?tf=1440'
+        )
+      ).json()
+
+      return prices.map(({ time, close }) => ({
+        // seconds to milliseconds
+        timestamp: new Date(time * 1000),
+        amount: close,
+      }))
+    } catch {
+      return undefined
+    }
+  },
+})
+
+// Returns price every 24 hours for as far back as Osmosis allows. Resolves
+// native denom from any chain into Osmosis denom if possible.
 export const historicalUsdPriceSelector = selectorFamily<
   AmountWithTimestamp[] | undefined,
   WithChainId<{ denom: string }>
@@ -168,7 +170,7 @@ export const historicalUsdPriceSelector = selectorFamily<
 
       // If found a denom, resolved Osmosis denom correctly.
       if (!osmosisDenom) {
-        return undefined
+        return
       }
 
       const symbol = get(osmosisSymbolForDenomSelector(osmosisDenom))
@@ -176,26 +178,6 @@ export const historicalUsdPriceSelector = selectorFamily<
         return
       }
 
-      try {
-        const prices: {
-          time: number
-          close: number
-        }[] = await (
-          await fetch(
-            OSMOSIS_API_BASE +
-              '/tokens/v2/historical/' +
-              symbol +
-              '/chart?tf=1440'
-          )
-        ).json()
-
-        return prices.map(({ time, close }) => ({
-          // seconds to milliseconds
-          timestamp: new Date(time * 1000),
-          amount: close,
-        }))
-      } catch {
-        return undefined
-      }
+      return get(osmosisHistoricalPriceChartSelector(symbol))
     },
 })

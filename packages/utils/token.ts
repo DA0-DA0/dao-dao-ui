@@ -21,3 +21,19 @@ export const tokensEqual = (
   a.chainId === b.chainId &&
   a.type === b.type &&
   a.denomOrAddress === b.denomOrAddress
+
+export const serializeTokenSource = (
+  tokenOrSource: GenericToken | GenericToken['source']
+): string => {
+  const source = 'type' in tokenOrSource ? tokenOrSource.source : tokenOrSource
+  return `${source.chainId}:${source.denomOrAddress}`
+}
+export const deserializeTokenSource = (
+  source: string
+): GenericToken['source'] => {
+  const [chainId, denomOrAddress] = source.split(':')
+  return {
+    chainId,
+    denomOrAddress,
+  }
+}
