@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next'
 import removeMarkdown from 'remove-markdown'
 
 import { ContractVersion } from '@dao-dao/types'
-import { DaoCardProps } from '@dao-dao/types/stateless/DaoCard'
+import { DaoCardProps } from '@dao-dao/types/components/DaoCard'
 import { formatDate, getGovPath } from '@dao-dao/utils'
 
 import { useDaoNavHelpers } from '../../hooks'
@@ -20,7 +20,7 @@ import { TooltipInfoIcon } from '../tooltip'
 import { Tooltip } from '../tooltip/Tooltip'
 import { DaoImage } from './DaoImage'
 
-export * from '@dao-dao/types/stateless/DaoCard'
+export * from '@dao-dao/types/components/DaoCard'
 
 export const DaoCard = ({
   coreAddress,

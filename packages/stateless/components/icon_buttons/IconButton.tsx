@@ -1,6 +1,6 @@
 import { forwardRef } from 'react'
 
-import { IconButtonProps } from '@dao-dao/types/stateless/IconButtonifier'
+import { IconButtonProps } from '@dao-dao/types/components/IconButtonifier'
 
 import {
   IconButtonifiedChildren,

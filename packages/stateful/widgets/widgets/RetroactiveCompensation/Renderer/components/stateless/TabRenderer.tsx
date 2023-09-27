@@ -12,8 +12,8 @@ import {
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
+import { IconButtonLinkProps } from '@dao-dao/types/components/IconButtonLink'
 import { VotingPowerAtHeightResponse } from '@dao-dao/types/contracts/DaoCore.v2'
-import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
 
 import {
   CompletedSurveyListing,

@@ -1,5 +1,5 @@
+import { ProposalCardProps } from './components/ProposalCard'
 import { CosmosMsgFor_Empty } from './contracts'
-import { ProposalCardProps } from './stateless/ProposalCard'
 import { PolytoneConnection } from './utils'
 
 export type ProposalCreatedCardProps = Omit<

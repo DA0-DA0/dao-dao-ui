@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { CopyToClipboardProps } from '@dao-dao/types/stateless/CopyToClipboard'
+import { CopyToClipboardProps } from '@dao-dao/types/components/CopyToClipboard'
 import { concatAddressBoth, concatAddressStartEnd } from '@dao-dao/utils'
 
 import { Tooltip } from './tooltip/Tooltip'

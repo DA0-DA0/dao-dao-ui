@@ -17,8 +17,8 @@ import {
 } from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 
 import { NestedActionsEditorFormData } from './actions'
+import { LoadingData } from './components'
 import { Coin, CosmosMsgFor_Empty } from './contracts'
-import { LoadingData } from './stateless'
 import { ProcessedTQ } from './utils'
 
 export { ProposalV1Beta1, ProposalV1 }

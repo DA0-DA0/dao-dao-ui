@@ -6,10 +6,10 @@ import {
   LoadedActions,
   PartialCategorizedActionKeyAndData,
 } from './actions'
+import { LoadingData, SuspenseLoaderProps } from './components'
 import { CosmosMsgFor_Empty } from './contracts'
 import { LazyNftCardInfo } from './nft'
 import { WalletProfileData } from './profile'
-import { LoadingData, SuspenseLoaderProps } from './stateless'
 import { TokenCardInfo } from './token'
 
 export type MeTransactionForm = {

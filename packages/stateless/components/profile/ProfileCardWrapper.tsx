@@ -1,14 +1,14 @@
 import clsx from 'clsx'
 
 import { averageColorSelector } from '@dao-dao/state/recoil'
-import { ProfileCardWrapperProps } from '@dao-dao/types/stateless/ProfileCardWrapper'
+import { ProfileCardWrapperProps } from '@dao-dao/types/components/ProfileCardWrapper'
 
 import { useCachedLoadable } from '../../hooks'
 import { CornerGradient } from '../CornerGradient'
 import { ProfileImage } from './ProfileImage'
 import { ProfileNameDisplayAndEditor } from './ProfileNameDisplayAndEditor'
 
-export * from '@dao-dao/types/stateless/ProfileCardWrapper'
+export * from '@dao-dao/types/components/ProfileCardWrapper'
 
 export const ProfileCardWrapper = ({
   children,

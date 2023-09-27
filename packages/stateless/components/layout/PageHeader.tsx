@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
-import { PageHeaderProps } from '@dao-dao/types/stateless/PageHeader'
+import { PageHeaderProps } from '@dao-dao/types/components/PageHeader'
 
 import { IconButton } from '../icon_buttons'
 import { PageLoader } from '../logo'
