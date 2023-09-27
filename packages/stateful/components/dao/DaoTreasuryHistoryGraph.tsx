@@ -26,6 +26,7 @@ import { DaoTreasuryHistoryGraphProps } from '@dao-dao/types'
 import {
   DISTRIBUTION_COLORS,
   formatDateTime,
+  formatPercentOf100,
   transformIbcSymbol,
 } from '@dao-dao/utils'
 
@@ -56,7 +57,7 @@ export const DaoTreasuryHistoryGraph = ({
   const [startSecondsAgo, setStartSecondsAgo] = useState(365 * 24 * 60 * 60)
   // Only `day` precision has prices as far back as a year.
   const [precision, setPrecision] =
-    useState<OsmosisHistoricalPriceChartPrecision>('day')
+    useState<OsmosisHistoricalPriceChartPrecision>('hour')
 
   const treasuryValueHistory = useCachedLoadingWithError(
     daoTreasuryValueHistorySelector({
@@ -102,13 +103,18 @@ export const DaoTreasuryHistoryGraph = ({
           backgroundColor:
             DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
           pointRadius: 1,
-          pointHitRadius: 20,
+          pointHitRadius: 10,
 
           // Accentuate the total.
           borderWidth: data.order === 1 ? 5 : 2.5,
         }))
 
   const [tooltipData, setTooltipData] = useState<TooltipModel<'line'>>()
+  const tooltipTotalValue =
+    tooltipData &&
+    (tooltipData.dataPoints.find(
+      ({ datasetIndex }) => datasetIndex === datasets.length - 1
+    )?.raw as number | undefined)
 
   return (
     <div className={clsx('relative flex flex-col gap-4', className)}>
@@ -145,7 +151,9 @@ export const DaoTreasuryHistoryGraph = ({
               mode: 'index',
               enabled: false,
               external: ({ tooltip }) =>
-                setTooltipData(tooltip.opacity === 0 ? undefined : tooltip),
+                setTooltipData(
+                  tooltip.opacity === 0 ? undefined : { ...tooltip }
+                ),
               callbacks: {
                 label: (item) =>
                   `${item.dataset.label}: $${Number(item.raw).toLocaleString(
@@ -203,7 +211,7 @@ export const DaoTreasuryHistoryGraph = ({
 
       {tooltipData && (
         <div
-          className="pointer-events-none absolute flex animate-fade-in flex-col gap-1 rounded-md border border-border-component-primary bg-component-tooltip py-2 px-3 text-text-component-primary"
+          className="pointer-events-none absolute flex animate-fade-in flex-col gap-2 rounded-md border border-border-component-primary bg-component-tooltip py-2 px-3 text-text-component-primary"
           style={{
             left: tooltipData.x,
             top: tooltipData.y,
@@ -216,7 +224,10 @@ export const DaoTreasuryHistoryGraph = ({
             .map((point, index) => (
               <div
                 key={index}
-                className="flex flex-row items-center justify-between gap-6"
+                className={clsx(
+                  'flex flex-row items-start justify-between gap-6',
+                  index === 0 && 'mb-4'
+                )}
               >
                 <div className="flex flex-row items-center gap-2">
                   <div
@@ -229,13 +240,26 @@ export const DaoTreasuryHistoryGraph = ({
                   <p className="secondary-text">{point.dataset.label}:</p>
                 </div>
 
-                <p className="font-mono">
-                  $
-                  {Number(point.raw).toLocaleString(undefined, {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </p>
+                <div className="flex flex-col items-end gap-1 text-right font-mono">
+                  <p className="primary-text leading-4">
+                    $
+                    {Number(point.raw).toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </p>
+
+                  {point.datasetIndex !== datasets.length - 1 &&
+                    !!tooltipTotalValue && (
+                      <p className="caption-text">
+                        (
+                        {formatPercentOf100(
+                          (Number(point.raw) / tooltipTotalValue) * 100
+                        )}
+                        )
+                      </p>
+                    )}
+                </div>
               </div>
             ))}
         </div>

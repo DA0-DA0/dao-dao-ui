@@ -493,15 +493,15 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
         }[]
       )
 
-      // Sum up the values at each timestamp, unless they're all null, in which
+      // Sum up the values at each timestamp where no prices are null, in which
       // case return null to indicate there is no data at this timestamp.
       let totalValues = timestamps.map((_, index) =>
         tokensWithValues.reduce(
           (acc, { values }) =>
-            acc === null && values[index] === null
+            acc === null || values[index] === null
               ? null
-              : (acc || 0) + (values[index] || 0),
-          null as number | null
+              : acc + values[index]!,
+          0 as number | null
         )
       )
 
