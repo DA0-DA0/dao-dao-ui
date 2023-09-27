@@ -42,6 +42,7 @@ ChartJS.register(
   Legend
 )
 
+// TODO: Allow passing in targets to show.
 export const DaoTreasuryHistoryGraph = ({
   filter,
   className,
