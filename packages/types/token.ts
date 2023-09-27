@@ -138,3 +138,8 @@ export type TokenLineProps<T extends TokenCardInfo = TokenCardInfo> = T & {
 export type LoadingTokens<T extends TokenCardInfo = TokenCardInfo> = Partial<
   Record<ChainId | string, LoadingDataWithError<T[]>>
 >
+
+export type DaoTokenCardProps = TokenCardInfo & {
+  // Hide extra actions, like stake, unstake, and claim.
+  noExtraActions?: boolean
+}

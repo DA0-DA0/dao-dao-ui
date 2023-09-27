@@ -266,7 +266,21 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
         )
       }
 
-      const startTimeUnixMs = -startSecondsAgo * 1000
+      const startTime = new Date(Date.now() - startSecondsAgo * 1000)
+      // Snap to beginning.
+      switch (precision) {
+        case 'day':
+          startTime.setHours(0, 0, 0, 0)
+          break
+        case 'hour':
+          startTime.setMinutes(0, 0, 0)
+          break
+        // case 'fiveminutes':
+        default:
+          startTime.setSeconds(0, 0)
+          break
+      }
+      const startTimeUnixMs = startTime.getTime()
       // minutes to milliseconds
       const intervalMs = osmosisPrecisionToMinutes[precision] * 60 * 1000
 
