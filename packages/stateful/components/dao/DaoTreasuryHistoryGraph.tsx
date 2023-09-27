@@ -57,7 +57,7 @@ export const DaoTreasuryHistoryGraph = ({
   const [startSecondsAgo, setStartSecondsAgo] = useState(365 * 24 * 60 * 60)
   // Only `day` precision has prices as far back as a year.
   const [precision, setPrecision] =
-    useState<OsmosisHistoricalPriceChartPrecision>('hour')
+    useState<OsmosisHistoricalPriceChartPrecision>('day')
 
   const treasuryValueHistory = useCachedLoadingWithError(
     daoTreasuryValueHistorySelector({
