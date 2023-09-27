@@ -1,7 +1,7 @@
 import clsx from 'clsx'
 import { useState } from 'react'
 
-import { CollapsibleProps } from '@dao-dao/types/stateless/Collapsible'
+import { CollapsibleProps } from '@dao-dao/types/components/Collapsible'
 import { toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { DropdownIconButton } from './icon_buttons/DropdownIconButton'

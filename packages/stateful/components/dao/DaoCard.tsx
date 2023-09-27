@@ -2,7 +2,7 @@ import {
   DaoCard as StatelessDaoCard,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import { DaoCardInfo } from '@dao-dao/types/stateless/DaoCard'
+import { DaoCardInfo } from '@dao-dao/types/components/DaoCard'
 
 import { useFollowingDaos, useWallet } from '../../hooks'
 import { daoCardInfoLazyDataSelector } from '../../recoil'

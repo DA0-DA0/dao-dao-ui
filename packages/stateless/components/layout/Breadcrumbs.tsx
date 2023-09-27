@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { ContractVersion, DaoPageMode } from '@dao-dao/types'
-import { BreadcrumbsProps } from '@dao-dao/types/stateless/Breadcrumbs'
+import { BreadcrumbsProps } from '@dao-dao/types/components/Breadcrumbs'
 import { getGovPath, getParentDaoBreadcrumbs } from '@dao-dao/utils'
 
 import {
@@ -19,7 +19,7 @@ import { Tooltip } from '../tooltip'
 import { TopGradient } from '../TopGradient'
 import { useAppContext } from './AppContext'
 
-export * from '@dao-dao/types/stateless/Breadcrumbs'
+export * from '@dao-dao/types/components/Breadcrumbs'
 
 export const Breadcrumbs = ({
   home = false,

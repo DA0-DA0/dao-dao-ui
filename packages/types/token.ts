@@ -1,8 +1,6 @@
 import { ComponentType } from 'react'
 
 import { ChainId, Validator } from './chain'
-import { DaoAccountType } from './dao'
-import { AmountWithTimestamp } from './state'
 import {
   ButtonLinkProps,
   ButtonPopupSection,
@@ -10,7 +8,9 @@ import {
   LoadingData,
   LoadingDataWithError,
   StatefulEntityDisplayProps,
-} from './stateless'
+} from './components'
+import { DaoAccountType } from './dao'
+import { AmountWithTimestamp } from './state'
 
 export enum TokenType {
   Native = 'native',

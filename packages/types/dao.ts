@@ -13,6 +13,7 @@ import {
 } from 'react-hook-form'
 
 import { SupportedChainConfig } from './chain'
+import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './components'
 import {
   ActiveThreshold,
   DepositRefundPolicy,
@@ -25,7 +26,6 @@ import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
 } from './proposal-module-adapter'
-import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './stateless'
 import { GenericToken, TokenCardInfo } from './token'
 import { DurationWithUnits } from './units'
 

@@ -4,7 +4,7 @@ import {
   DaoMemberCard as StatelessDaoMemberCard,
   useChain,
 } from '@dao-dao/stateless'
-import { StatefulDaoMemberCardProps } from '@dao-dao/types/stateless/DaoMemberCard'
+import { StatefulDaoMemberCardProps } from '@dao-dao/types/components/DaoMemberCard'
 
 import { walletProfileDataSelector } from '../../recoil'
 

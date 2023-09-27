@@ -15,7 +15,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DappNavigationProps } from '@dao-dao/types/stateless/DappNavigation'
+import { DappNavigationProps } from '@dao-dao/types/components/DappNavigation'
 import { getGovPath } from '@dao-dao/utils'
 
 import { useConfiguredChainContext, usePlatform } from '../../hooks'
@@ -30,7 +30,7 @@ import { Footer } from './Footer'
 import { PageHeader } from './PageHeader'
 import { Row } from './Row'
 
-export * from '@dao-dao/types/stateless/DappNavigation'
+export * from '@dao-dao/types/components/DappNavigation'
 
 // Width of `lg` tailwind selector. Don't change this without changing the
 // compact button media query class that shows the compact toggle at the very
