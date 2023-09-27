@@ -74,7 +74,7 @@ export const cosmosValidatorToValidator = ({
 
 export const getImageUrlForChainId = (chainId: string): string => {
   // Use native token image if available.
-  const { imageUrl } = getNativeTokenForChainId(chainId)
+  const { imageUrl } = maybeGetNativeTokenForChainId(chainId) || {}
   if (imageUrl) {
     return imageUrl
   }
@@ -182,6 +182,16 @@ export const getNativeTokenForChainId = (chainId: string): GenericToken => {
   }
 
   return cachedNativeTokens[chainId]!
+}
+
+export const maybeGetNativeTokenForChainId = (
+  chainId: string
+): GenericToken | undefined => {
+  try {
+    return getNativeTokenForChainId(chainId)
+  } catch {
+    return undefined
+  }
 }
 
 const cachedTokens: Record<string, GenericToken | undefined> = {}

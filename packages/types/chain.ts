@@ -7,12 +7,16 @@ import { CodeIdConfig, PolytoneConfig } from './utils'
 export type IChainContext = {
   chainId: string
   chain: Chain
-  nativeToken: GenericToken
+  // Chain may not have a native token.
+  nativeToken?: GenericToken
   // If defined, this is a supported chain.
   config?: SupportedChainConfig
 }
 
-export type SupportedChainContext = Required<IChainContext>
+// Require supported chain config.
+export type SupportedChainContext = Omit<IChainContext, 'config'> & {
+  config: SupportedChainConfig
+}
 
 export interface Validator {
   address: string

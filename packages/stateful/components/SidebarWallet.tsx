@@ -15,8 +15,8 @@ export const SidebarWallet = () => {
           connected
           openWalletModal={openView}
           walletAddress={address}
+          walletLogo={wallet.logo}
           walletName={username || wallet?.prettyName}
-          walletProviderImageUrl={wallet.logo}
         />
       ) : (
         <OriginalSidebarWallet connected={false} onConnect={openView} />

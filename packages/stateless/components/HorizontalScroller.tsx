@@ -131,7 +131,7 @@ export const HorizontalScroller = <P extends {}>({
             viewRef(r)
           }}
         >
-          <div className="flex w-max flex-row gap-4 py-1">
+          <div className="flex w-max flex-row gap-2 py-1 sm:gap-3 lg:gap-4">
             {items.data.map((item, index) => (
               <div key={index} className={itemClassName}>
                 <Component {...item} />

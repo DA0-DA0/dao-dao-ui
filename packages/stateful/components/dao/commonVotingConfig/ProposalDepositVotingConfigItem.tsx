@@ -159,7 +159,7 @@ const ProposalDepositInput = ({
         ]
       : []),
     // Then native.
-    nativeToken,
+    ...(nativeToken ? [nativeToken] : []),
     // Then other CW20.
     {
       chainId,
@@ -171,7 +171,7 @@ const ProposalDepositInput = ({
     },
     // Then the chain assets.
     ...getChainAssets(chainId).filter(
-      ({ denomOrAddress }) => denomOrAddress !== nativeToken.denomOrAddress
+      ({ denomOrAddress }) => denomOrAddress !== nativeToken?.denomOrAddress
     ),
   ]
   const selectedToken = availableTokens.find(

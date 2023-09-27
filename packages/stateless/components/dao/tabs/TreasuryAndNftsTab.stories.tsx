@@ -19,7 +19,7 @@ export default {
 } as ComponentMeta<typeof TreasuryAndNftsTab>
 
 const Template: ComponentStory<
-  typeof TreasuryAndNftsTab<TokenCardProps, NftCardProps>
+  typeof TreasuryAndNftsTab<TokenCardProps, NftCardProps & { key: string }>
 > = (args) => <TreasuryAndNftsTab {...args} />
 
 export const Default = Template.bind({})

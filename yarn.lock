@@ -3318,6 +3318,17 @@
   dependencies:
     "@cosmos-kit/compass-extension" "^2.3.10"
 
+"@cosmos-kit/core@^2.6.4":
+  version "2.6.4"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.6.4.tgz#59365cc2e5ec801ba778b35a04c8f30dd512c4db"
+  integrity sha512-qe2n9g5uK8d81UpuZAxkawZqBsBwOh0KdwQdEapB8u7CtQ+1j9ZJM8LGE8/zQyQuaqvExRAwHBepCOt7rw7VkQ==
+  dependencies:
+    "@chain-registry/types" "0.13.0"
+    "@walletconnect/types" "2.7.2"
+    bowser "2.11.0"
+    events "3.3.0"
+    uuid "^9.0.1"
+
 "@cosmos-kit/core@^2.6.6":
   version "2.6.6"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.6.6.tgz#c56d8d6955c4796c22425a35ef7b9031fb693553"

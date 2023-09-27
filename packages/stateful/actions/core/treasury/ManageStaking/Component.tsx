@@ -116,6 +116,10 @@ export const ManageStakingComponent: ActionComponent<
     nativeToken,
   } = useChainContext()
 
+  if (!nativeToken) {
+    throw new Error(t('error.missingNativeToken'))
+  }
+
   // Metadata for the given denom.
   const minAmount = convertMicroDenomToDenomWithDecimals(
     1,

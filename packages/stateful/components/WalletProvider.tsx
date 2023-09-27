@@ -48,6 +48,9 @@ import {
 import { useSyncWalletSigner, useWallet } from '../hooks'
 import { WalletUi } from './wallet'
 
+// Set better name for MetaMask wallet.
+metamaskWallets[0].walletInfo.prettyName = 'MetaMask (Leap Snap)'
+
 export type WalletProviderProps = {
   // This needs to be provided by the parent component and then passed to the
   // AppContext that wraps the app. Since the AppContext uses the inbox which
@@ -177,7 +180,7 @@ export const WalletProvider = ({
               ...keplrExtensionWallets,
               // Only allow Keplr Mobile on mainnet since it can't use testnet.
               ...(MAINNET ? keplrMobileWallets : []),
-              ...leapWallets,
+              ...leapWallets.filter((w) => !metamaskWallets.includes(w)),
               ...stationWallets,
               ...vectisWallets,
               ...trustWallets,

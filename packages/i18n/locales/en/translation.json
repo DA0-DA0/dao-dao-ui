@@ -331,6 +331,7 @@
     "metadataUpload": "Failed to upload metadata.",
     "missingGovernanceTokenAddress": "Missing governance token address.",
     "missingGovernanceTokenDenom": "Missing governance token denom.",
+    "missingNativeToken": "Missing native token.",
     "mustBeMemberToCreateCompensationCycle": "You must be a member of the DAO to create a compensation cycle.",
     "mustBeMemberToCreatePost": "You must be a member of the DAO to create a post.",
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
