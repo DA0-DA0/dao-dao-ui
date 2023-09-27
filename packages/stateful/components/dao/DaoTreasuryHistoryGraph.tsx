@@ -22,6 +22,7 @@ import {
   useDaoInfoContext,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
+import { DaoTreasuryHistoryGraphProps } from '@dao-dao/types'
 import {
   DISTRIBUTION_COLORS,
   formatDateTime,
@@ -40,11 +41,8 @@ ChartJS.register(
   Legend
 )
 
-export type DaoTreasuryHistoryGraphProps = {
-  className?: string
-}
-
 export const DaoTreasuryHistoryGraph = ({
+  filter,
   className,
 }: DaoTreasuryHistoryGraphProps) => {
   const { t } = useTranslation()
@@ -54,6 +52,9 @@ export const DaoTreasuryHistoryGraph = ({
   const borderColor = useNamedThemeColor('border-primary')
 
   // TODO(treasury-history): make configurable
+  // Default to 1 year ago.
+  const [startSecondsAgo, setStartSecondsAgo] = useState(365 * 24 * 60 * 60)
+  // Only `day` precision has prices as far back as a year.
   const [precision, setPrecision] =
     useState<OsmosisHistoricalPriceChartPrecision>('day')
 
@@ -62,6 +63,8 @@ export const DaoTreasuryHistoryGraph = ({
       chainId,
       coreAddress,
       precision,
+      filter,
+      startSecondsAgo,
     })
   )
 
@@ -108,12 +111,7 @@ export const DaoTreasuryHistoryGraph = ({
   const [tooltipData, setTooltipData] = useState<TooltipModel<'line'>>()
 
   return (
-    <div
-      className={clsx(
-        'relative mb-8 mt-4 flex max-h-[20rem] flex-col gap-4 px-8',
-        className
-      )}
-    >
+    <div className={clsx('relative flex flex-col gap-4', className)}>
       <Line
         className={clsx(
           (treasuryValueHistory.loading || treasuryValueHistory.updating) &&

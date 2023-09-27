@@ -47,6 +47,7 @@ export type DaoInfo = {
   items: Record<string, string>
   // Map chain ID to polytone proxy address.
   polytoneProxies: PolytoneProxies
+  accounts: DaoAccount[]
 
   parentDao: DaoParentInfo | null
   admin: string
@@ -314,7 +315,7 @@ export type DaoWebSocketChannelInfo = {
 
 export type DaoChainTreasury<T extends TokenCardInfo, N extends object> = {
   chainId: string
-  address: string | undefined
+  accounts: DaoAccount[]
   tokens: LoadingData<T[]>
   nfts: LoadingData<(N & { key: string })[]>
 }

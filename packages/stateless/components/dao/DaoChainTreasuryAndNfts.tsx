@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import {
   ButtonLinkProps,
   DaoChainTreasury,
+  DaoTreasuryHistoryGraphProps,
   TokenCardInfo,
 } from '@dao-dao/types'
 import {
@@ -42,6 +43,7 @@ export type DaoChainTreasuryAndNftsProps<
   TokenCard: ComponentType<T>
   NftCard: ComponentType<N>
   ButtonLink: ComponentType<ButtonLinkProps>
+  DaoTreasuryHistoryGraph: ComponentType<DaoTreasuryHistoryGraphProps>
 }
 
 const NFTS_PER_PAGE = 18
@@ -50,7 +52,7 @@ export const DaoChainTreasuryAndNfts = <
   T extends TokenCardInfo,
   N extends object
 >({
-  treasury: { chainId, address, tokens, nfts },
+  treasury: { chainId, accounts, tokens, nfts },
   connected,
   isMember,
   createCrossChainAccountPrefillHref,
@@ -59,11 +61,18 @@ export const DaoChainTreasuryAndNfts = <
   TokenCard,
   NftCard,
   ButtonLink,
+  DaoTreasuryHistoryGraph,
 }: DaoChainTreasuryAndNftsProps<T, N>) => {
   const { t } = useTranslation()
   const { chainId: daoChainId, items: daoItems } = useDaoInfoContext()
 
   const bech32Prefix = getChainForChainId(chainId).bech32_prefix
+  const address = accounts.find(
+    ({ type }) => type === 'native' || type === 'polytone'
+  )?.address
+  const valenceAddress = accounts.find(
+    ({ type }) => type === 'valence'
+  )?.address
   // Whether or not the treasury address is defined, meaning it is the current
   // chain or a polytone account has already been created on that chain.
   const exists = !!address
@@ -175,16 +184,29 @@ export const DaoChainTreasuryAndNfts = <
           )}
 
           {/* Valence Account */}
-          {hasValenceTokens && (
-            <div className="mt-3 space-y-3">
-              <div className="flex flex-row items-center gap-1">
-                <p className="primary-text">{t('title.valenceAccount')}</p>
-                <TooltipInfoIcon
-                  size="sm"
-                  title={
-                    // TODO(rebalancer): Add description.
-                    'What is a Valence Account'
-                  }
+          {hasValenceTokens && !!valenceAddress && (
+            <div className="mt-6 space-y-3">
+              <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-2">
+                <div className="flex flex-row items-center gap-1">
+                  <p className="primary-text">{t('title.valenceAccount')}</p>
+                  <TooltipInfoIcon
+                    size="sm"
+                    title={
+                      // TODO(rebalancer): Add description.
+                      'What is a Valence Account'
+                    }
+                  />
+                </div>
+
+                <CopyToClipboard
+                  className="!gap-2 rounded-md bg-background-tertiary p-2 font-mono transition hover:bg-background-secondary"
+                  takeStartEnd={{
+                    start: bech32Prefix.length + 6,
+                    end: 6,
+                  }}
+                  textClassName="!bg-transparent !p-0"
+                  tooltip={t('button.clickToCopyAddress')}
+                  value={valenceAddress}
                 />
               </div>
 
@@ -194,11 +216,22 @@ export const DaoChainTreasuryAndNfts = <
                   <Loader className="my-12" size={48} />
                 ) : (
                   valenceTokens.data.length > 0 && (
-                    <GridCardContainer cardType="wide">
-                      {valenceTokens.data.map((props, index) => (
-                        <TokenCard {...props} key={index} />
-                      ))}
-                    </GridCardContainer>
+                    <>
+                      <DaoTreasuryHistoryGraph
+                        className="mb-8 px-8"
+                        filter={{
+                          type: 'valence',
+                          chainId,
+                          address: valenceAddress,
+                        }}
+                      />
+
+                      <GridCardContainer cardType="wide">
+                        {valenceTokens.data.map((props, index) => (
+                          <TokenCard {...props} key={index} />
+                        ))}
+                      </GridCardContainer>
+                    </>
                   )
                 )}
               </div>

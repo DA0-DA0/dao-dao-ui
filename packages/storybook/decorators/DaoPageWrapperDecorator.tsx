@@ -38,6 +38,13 @@ export const makeDaoInfo = (): DaoInfo => ({
   activeThreshold: null,
   items: {},
   polytoneProxies: {},
+  accounts: [
+    {
+      type: 'native',
+      chainId: ChainId.JunoMainnet,
+      address: 'junoDaoCoreAddress',
+    },
+  ],
   parentDao: null,
   admin: '',
 })
