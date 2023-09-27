@@ -235,20 +235,38 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
   WithChainId<{
     coreAddress: string
     precision: OsmosisHistoricalPriceChartPrecision
+    startSecondsAgo: number
+    // Filter by any of the account properties.
+    filter?: Partial<DaoAccount>
   }>
 >({
   key: 'daoTreasuryValueHistory',
   get:
-    ({ chainId: nativeChainId, coreAddress, precision }) =>
+    ({
+      chainId: nativeChainId,
+      coreAddress,
+      precision,
+      startSecondsAgo,
+      filter,
+    }) =>
     ({ get }) => {
-      const allAccounts = get(
+      let allAccounts = get(
         DaoCoreV2Selectors.allAccountsSelector({
           chainId: nativeChainId,
           contractAddress: coreAddress,
         })
       )
 
-      const startTimeUnixMs = 0
+      // Filter accounts.
+      if (filter) {
+        allAccounts = allAccounts.filter((account) =>
+          Object.entries(filter).every(([key, value]) => {
+            return account[key as keyof DaoAccount] === value
+          })
+        )
+      }
+
+      const startTimeUnixMs = -startSecondsAgo * 1000
       // minutes to milliseconds
       const intervalMs = osmosisPrecisionToMinutes[precision] * 60 * 1000
 
@@ -275,6 +293,8 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
       ]
         .map((timestamp) => new Date(timestamp))
         .sort()
+        // Remove last timestamp since we replace it with current balance.
+        .slice(0, -1)
 
       const historicalBalancesByToken = get(
         waitForAll(

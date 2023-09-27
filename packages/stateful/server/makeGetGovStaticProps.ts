@@ -137,6 +137,13 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
         activeThreshold: null,
         items: {},
         polytoneProxies: {},
+        accounts: [
+          {
+            type: 'native',
+            chainId: chain.chain_id,
+            address: supportedChain.name,
+          },
+        ],
         parentDao: null,
         admin: '',
       },

@@ -3,6 +3,7 @@ import { ComponentType, useState } from 'react'
 import {
   DaoChainTreasury,
   DaoFiatDepositModalProps,
+  DaoTreasuryHistoryGraphProps,
   LoadingNfts,
   LoadingTokens,
   TokenCardInfo,
@@ -25,7 +26,7 @@ export type TreasuryAndNftsTabProps<
   tokens: LoadingTokens<T>
   nfts: LoadingNfts<N & { key: string }>
   FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
-  DaoTreasuryHistoryGraph: ComponentType<{ className?: string }>
+  DaoTreasuryHistoryGraph: ComponentType<DaoTreasuryHistoryGraphProps>
 } & Omit<
   DaoChainTreasuryAndNftsProps<T, N>,
   'treasury' | 'setDepositFiatChainId'
@@ -44,67 +45,63 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
     chain: { chain_id: currentChainId },
     config: { polytone = {} },
   } = useSupportedChainContext()
-  const { coreAddress, polytoneProxies } = useDaoInfoContext()
+  const { accounts: allAccounts } = useDaoInfoContext()
 
   // Tokens and NFTs on the various Polytone-supported chains.
-  const treasuries = [
-    [currentChainId, coreAddress],
-    ...Object.keys(polytone).map((chainId): [string, string | undefined] => [
-      chainId,
-      polytoneProxies[chainId],
-    ]),
-  ].map(([chainId, address]): DaoChainTreasury<T, N> => {
-    const chainTokens = tokens[chainId]
-    const chainNfts = nfts[chainId]
+  const treasuries = [currentChainId, ...Object.keys(polytone)].map(
+    (chainId): DaoChainTreasury<T, N> => {
+      const chainTokens = tokens[chainId]
+      const chainNfts = nfts[chainId]
 
-    return {
-      chainId,
-      address,
-      tokens: !chainTokens
-        ? { loading: false, data: [] }
-        : chainTokens.loading || chainTokens.errored
-        ? { loading: true }
-        : {
-            loading: false,
-            updating: chainTokens.updating,
-            data: chainTokens.data
-              .filter(({ token }) => token.chainId === chainId)
-              // Sort governance token first, then native currency, then by
-              // balance.
-              .sort((a, b) => {
-                const aValue = a.isGovernanceToken
-                  ? -2
-                  : a.token.type === TokenType.Native &&
-                    a.token.denomOrAddress ===
-                      getNativeTokenForChainId(chainId).denomOrAddress
-                  ? -1
-                  : a.lazyInfo.loading
-                  ? a.unstakedBalance
-                  : a.lazyInfo.data.totalBalance
-                const bValue = b.isGovernanceToken
-                  ? -2
-                  : b.token.type === TokenType.Native &&
-                    b.token.denomOrAddress ===
-                      getNativeTokenForChainId(chainId).denomOrAddress
-                  ? -1
-                  : b.lazyInfo.loading
-                  ? b.unstakedBalance
-                  : b.lazyInfo.data.totalBalance
+      return {
+        chainId,
+        accounts: allAccounts.filter((a) => a.chainId === chainId),
+        tokens: !chainTokens
+          ? { loading: false, data: [] }
+          : chainTokens.loading || chainTokens.errored
+          ? { loading: true }
+          : {
+              loading: false,
+              updating: chainTokens.updating,
+              data: chainTokens.data
+                .filter(({ token }) => token.chainId === chainId)
+                // Sort governance token first, then native currency, then by
+                // balance.
+                .sort((a, b) => {
+                  const aValue = a.isGovernanceToken
+                    ? -2
+                    : a.token.type === TokenType.Native &&
+                      a.token.denomOrAddress ===
+                        getNativeTokenForChainId(chainId).denomOrAddress
+                    ? -1
+                    : a.lazyInfo.loading
+                    ? a.unstakedBalance
+                    : a.lazyInfo.data.totalBalance
+                  const bValue = b.isGovernanceToken
+                    ? -2
+                    : b.token.type === TokenType.Native &&
+                      b.token.denomOrAddress ===
+                        getNativeTokenForChainId(chainId).denomOrAddress
+                    ? -1
+                    : b.lazyInfo.loading
+                    ? b.unstakedBalance
+                    : b.lazyInfo.data.totalBalance
 
-                // Put smaller value first if either is negative (prioritized
-                // token), otherwise sort balances descending.
-                return aValue < 0 || bValue < 0
-                  ? aValue - bValue
-                  : bValue - aValue
-              }),
-          },
-      nfts: !chainNfts
-        ? { loading: false, data: [] }
-        : chainNfts.loading || chainNfts.errored
-        ? { loading: true }
-        : chainNfts,
+                  // Put smaller value first if either is negative (prioritized
+                  // token), otherwise sort balances descending.
+                  return aValue < 0 || bValue < 0
+                    ? aValue - bValue
+                    : bValue - aValue
+                }),
+            },
+        nfts: !chainNfts
+          ? { loading: false, data: [] }
+          : chainNfts.loading || chainNfts.errored
+          ? { loading: true }
+          : chainNfts,
+      }
     }
-  })
+  )
 
   const [depositFiatChainId, setDepositFiatChainId] = useState<
     string | undefined
@@ -112,7 +109,7 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
 
   return (
     <>
-      <DaoTreasuryHistoryGraph />
+      <DaoTreasuryHistoryGraph className="mb-8 mt-4 max-h-[20rem] px-8" />
 
       <div className="mb-9 mt-6">
         {
@@ -126,6 +123,7 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
               {treasuries.map((treasury) => (
                 <DaoChainTreasuryAndNfts
                   key={treasury.chainId}
+                  DaoTreasuryHistoryGraph={DaoTreasuryHistoryGraph}
                   connected={connected}
                   setDepositFiatChainId={setDepositFiatChainId}
                   treasury={treasury}

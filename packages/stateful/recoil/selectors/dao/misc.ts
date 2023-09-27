@@ -180,6 +180,7 @@ export const daoInfoSelector: (param: {
           created,
           _items,
           polytoneProxies,
+          accounts,
         ],
         // Loadables
         [isActiveResponse, activeThresholdResponse],
@@ -208,6 +209,10 @@ export const daoInfoSelector: (param: {
               chainId,
             }),
             DaoCoreV2Selectors.polytoneProxiesSelector({
+              contractAddress: coreAddress,
+              chainId,
+            }),
+            DaoCoreV2Selectors.allAccountsSelector({
               contractAddress: coreAddress,
               chainId,
             }),
@@ -332,6 +337,7 @@ export const daoInfoSelector: (param: {
         activeThreshold,
         items,
         polytoneProxies,
+        accounts,
         parentDao: parentDaoInfo
           ? {
               chainId: parentDaoInfo.chainId,

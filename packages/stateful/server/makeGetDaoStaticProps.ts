@@ -15,6 +15,7 @@ import {
   CommonProposalInfo,
   ContractVersion,
   ContractVersionInfo,
+  DaoAccount,
   DaoPageMode,
   DaoParentInfo,
   Feature,
@@ -36,6 +37,7 @@ import {
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
   MAX_META_CHARS_PROPOSAL_DESCRIPTION,
+  VALENCE_ACCOUNT_ITEM_KEY_PREFIX,
   addressIsModule,
   cosmWasmClientRouter,
   getChainForChainId,
@@ -230,6 +232,39 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         {} as Record<string, string>
       )
 
+      const accounts: DaoAccount[] = [
+        // Current chain.
+        {
+          chainId,
+          address: coreAddress,
+          type: 'native',
+        },
+        // Polytone.
+        ...Object.entries(polytoneProxies).map(
+          ([chainId, address]): DaoAccount => ({
+            chainId,
+            address,
+            type: 'polytone',
+          })
+        ),
+        // Valence.
+        // TODO(rebalancer): Verify that the address value is set to a valence account
+        ...Object.entries(items).flatMap(([key, value]): DaoAccount | [] => {
+          if (!key.startsWith(VALENCE_ACCOUNT_ITEM_KEY_PREFIX)) {
+            return []
+          }
+
+          const chainId = key.slice(VALENCE_ACCOUNT_ITEM_KEY_PREFIX.length)
+          const address = value
+
+          return {
+            chainId,
+            address,
+            type: 'valence',
+          }
+        }),
+      ]
+
       // Must be called after server side translations has been awaited, because
       // props may use the `t` function, and it won't be available until after.
       const {
@@ -277,6 +312,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           activeThreshold,
           items,
           polytoneProxies,
+          accounts,
           parentDao,
           admin: admin ?? null,
         },
