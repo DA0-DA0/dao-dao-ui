@@ -137,6 +137,34 @@ export const WalletProvider = ({
     })()
   }, [mountedInBrowser, setIsKeplrMobileWeb])
 
+  const allWallets = [
+    ...leapMetamaskWallets,
+    // Alphabetize.
+    ...[
+      ...keplrExtensionWallets,
+      // Only allow Keplr Mobile on mainnet since it can't use testnet.
+      ...(MAINNET ? keplrMobileWallets : []),
+      ...leapWallets.filter((w) => !leapMetamaskWallets.includes(w)),
+      ...stationWallets,
+      ...vectisWallets,
+      ...trustWallets,
+      ...cosmostationWallets,
+      ...coin98Wallets,
+      ...omniWallets,
+      ...shellWallets,
+      ...xdefiWallets,
+      ...okxWallets,
+      ...finWallets,
+      ...compassWallets,
+      ...frontierWallets,
+      ...cosmosExtensionMetamaskWallets,
+    ].sort((a, b) =>
+      a.walletInfo.prettyName.localeCompare(b.walletInfo.prettyName)
+    ),
+    // Google, Apple, Discord, Twitter
+    ...web3AuthWallets,
+  ]
+
   return (
     <ChainProvider
       assetLists={assets}
@@ -174,30 +202,7 @@ export const WalletProvider = ({
       wallets={
         // If Keplr Mobile in-app browser, only allow Keplr Extension. Keplr
         // Mobile wallet works via WalletConnect from a desktop, but not in-app.
-        isKeplrMobileWeb
-          ? keplrExtensionWallets
-          : [
-              ...leapMetamaskWallets,
-              ...cosmosExtensionMetamaskWallets,
-              ...keplrExtensionWallets,
-              // Only allow Keplr Mobile on mainnet since it can't use testnet.
-              ...(MAINNET ? keplrMobileWallets : []),
-              ...leapWallets.filter((w) => !leapMetamaskWallets.includes(w)),
-              ...stationWallets,
-              ...vectisWallets,
-              ...trustWallets,
-              ...cosmostationWallets,
-              ...coin98Wallets,
-              ...omniWallets,
-              ...shellWallets,
-              ...xdefiWallets,
-              ...okxWallets,
-              ...finWallets,
-              ...compassWallets,
-              ...frontierWallets,
-              // Google, Apple, Discord, Twitter
-              ...web3AuthWallets,
-            ]
+        isKeplrMobileWeb ? keplrExtensionWallets : allWallets
       }
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>
