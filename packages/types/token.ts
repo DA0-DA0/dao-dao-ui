@@ -18,6 +18,11 @@ export enum TokenType {
   Cw721 = 'cw721',
 }
 
+export type GenericTokenSource = {
+  chainId: string
+  denomOrAddress: string
+}
+
 // A native or CW20 token.
 export type GenericToken = {
   // What chain this token lives on.
@@ -29,10 +34,7 @@ export type GenericToken = {
   imageUrl: string | undefined
   // The source chain and base denom. For IBC assets, this should differ from
   // the main fields.
-  source: {
-    chainId: string
-    denomOrAddress: string
-  }
+  source: GenericTokenSource
 }
 
 export type GenericTokenWithUsdPrice = {

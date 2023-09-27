@@ -14,6 +14,7 @@ import {
 } from '@dao-dao/state'
 import {
   DaoAccount,
+  GenericToken,
   LoadingTokens,
   TokenCardInfo,
   TokenType,
@@ -219,7 +220,7 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
   {
     timestamps: Date[]
     tokens: {
-      symbol: string
+      token: GenericToken
       // Value at each timestamp.
       values: (number | null)[]
       // Current value.
@@ -376,22 +377,16 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
       // Group tokens by unique ID and add balances at same timestamps.
       const tokensWithValues = uniqueTokenSources.reduce(
         (acc, source, index) => {
-          const { symbol, decimals } =
-            tokens.find(
-              (token) =>
-                serializeTokenSource(token.source) === source &&
-                token.symbol &&
-                token.decimals
-            ) ?? {}
+          const token = tokens.find(
+            (token) =>
+              serializeTokenSource(token.source) === source &&
+              token.symbol &&
+              token.decimals
+          )
           const historicalUsdPrices = allHistoricalUsdPrices[index]
           const currentUsdPrice = allCurrentUsdPrices[index]
-          // If no symbol, decimals, nor prices, skip.
-          if (
-            !symbol ||
-            !decimals ||
-            !historicalUsdPrices ||
-            !currentUsdPrice
-          ) {
+          // If no token, decimals, nor prices, skip.
+          if (!token?.decimals || !historicalUsdPrices || !currentUsdPrice) {
             return acc
           }
 
@@ -472,7 +467,7 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
               : usdPrice *
                   convertMicroDenomToDenomWithDecimals(
                     totalBalance.toString(),
-                    decimals
+                    token.decimals
                   )
           })
 
@@ -486,20 +481,20 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
             currentUsdPrice.amount *
             convertMicroDenomToDenomWithDecimals(
               currentBalance.toString(),
-              decimals
+              token.decimals
             )
 
           return [
             ...acc,
             {
-              symbol,
+              token,
               values,
               currentValue,
             },
           ]
         },
         [] as {
-          symbol: string
+          token: GenericToken
           // Value at each timestamp.
           values: (number | null)[]
           // Current value.

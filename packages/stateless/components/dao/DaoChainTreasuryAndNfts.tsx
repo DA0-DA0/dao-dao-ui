@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ButtonLinkProps,
+  ChainId,
   DaoChainTreasury,
   DaoTreasuryHistoryGraphProps,
   TokenCardInfo,
@@ -227,7 +228,10 @@ export const DaoChainTreasuryAndNfts = <
                         targets={[
                           // TODO(rebalancer): Provide actual targets.
                           {
-                            symbol: 'NTRN',
+                            source: {
+                              chainId: ChainId.NeutronMainnet,
+                              denomOrAddress: 'untrn',
+                            },
                             targets: [
                               {
                                 timestamp: new Date(0),
@@ -236,7 +240,10 @@ export const DaoChainTreasuryAndNfts = <
                             ],
                           },
                           {
-                            symbol: 'USDC',
+                            source: {
+                              chainId: 'axelar-dojo-1',
+                              denomOrAddress: 'uusdc',
+                            },
                             targets: [
                               {
                                 timestamp: new Date(0),

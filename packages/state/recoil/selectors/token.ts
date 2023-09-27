@@ -5,6 +5,7 @@ import {
   ChainId,
   GenericToken,
   GenericTokenBalance,
+  GenericTokenSource,
   GenericTokenWithUsdPrice,
   TokenType,
   WithChainId,
@@ -404,7 +405,7 @@ export const nativeDenomMetadataInfoSelector = selectorFamily<
 // Resolve a denom on a chain to its source chain and base denom. If an IBC
 // asset, tries to reverse engineer IBC denom. Otherwise returns the arguments.
 export const sourceChainAndDenomSelector = selectorFamily<
-  GenericToken['source'],
+  GenericTokenSource,
   Pick<GenericToken, 'chainId' | 'denomOrAddress'>
 >({
   key: 'sourceChainAndDenom',
