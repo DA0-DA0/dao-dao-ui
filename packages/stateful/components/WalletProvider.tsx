@@ -1,11 +1,14 @@
 import { wallets as coin98Wallets } from '@cosmos-kit/coin98'
+import { wallets as compassWallets } from '@cosmos-kit/compass'
 import { Endpoints, SignerOptions } from '@cosmos-kit/core'
+import { wallets as cosmosExtensionMetamaskWallets } from '@cosmos-kit/cosmos-extension-metamask'
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
 import { wallets as finWallets } from '@cosmos-kit/fin'
+import { wallets as frontierWallets } from '@cosmos-kit/frontier'
 import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
 import { wallets as keplrMobileWallets } from '@cosmos-kit/keplr-mobile'
 import { wallets as leapWallets } from '@cosmos-kit/leap'
-import { wallets as metamaskWallets } from '@cosmos-kit/leap-metamask-cosmos-snap'
+import { wallets as leapMetamaskWallets } from '@cosmos-kit/leap-metamask-cosmos-snap'
 import { wallets as okxWallets } from '@cosmos-kit/okxwallet'
 import { wallets as omniWallets } from '@cosmos-kit/omni'
 import { ChainProvider, walletContext } from '@cosmos-kit/react-lite'
@@ -169,7 +172,8 @@ export const WalletProvider = ({
         isKeplrMobileWeb
           ? keplrExtensionWallets
           : [
-              ...metamaskWallets,
+              ...leapMetamaskWallets,
+              ...cosmosExtensionMetamaskWallets,
               ...keplrExtensionWallets,
               // Only allow Keplr Mobile on mainnet since it can't use testnet.
               ...(MAINNET ? keplrMobileWallets : []),
@@ -184,6 +188,8 @@ export const WalletProvider = ({
               ...xdefiWallets,
               ...okxWallets,
               ...finWallets,
+              ...compassWallets,
+              ...frontierWallets,
               // Google, Apple, Discord, Twitter
               ...web3AuthWallets,
             ]
