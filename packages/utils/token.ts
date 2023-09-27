@@ -1,4 +1,9 @@
-import { GenericToken, LooseGenericToken, TokenType } from '@dao-dao/types'
+import {
+  GenericToken,
+  GenericTokenSource,
+  LooseGenericToken,
+  TokenType,
+} from '@dao-dao/types'
 import { AssetInfo } from '@dao-dao/types/contracts/WyndexMultiHop'
 
 export const genericTokenToAssetInfo = (token: GenericToken): AssetInfo =>
@@ -23,14 +28,12 @@ export const tokensEqual = (
   a.denomOrAddress === b.denomOrAddress
 
 export const serializeTokenSource = (
-  tokenOrSource: GenericToken | GenericToken['source']
+  tokenOrSource: GenericToken | GenericTokenSource
 ): string => {
   const source = 'type' in tokenOrSource ? tokenOrSource.source : tokenOrSource
   return `${source.chainId}:${source.denomOrAddress}`
 }
-export const deserializeTokenSource = (
-  source: string
-): GenericToken['source'] => {
+export const deserializeTokenSource = (source: string): GenericTokenSource => {
   const [chainId, denomOrAddress] = source.split(':')
   return {
     chainId,

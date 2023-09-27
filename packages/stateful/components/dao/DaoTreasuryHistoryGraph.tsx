@@ -1,6 +1,5 @@
 import {
   CategoryScale,
-  ChartDataset,
   Chart as ChartJS,
   Legend,
   LineElement,
@@ -28,6 +27,7 @@ import {
   formatDate,
   formatDateTime,
   formatPercentOf100,
+  serializeTokenSource,
   transformIbcSymbol,
 } from '@dao-dao/utils'
 
@@ -72,88 +72,110 @@ export const DaoTreasuryHistoryGraph = ({
     })
   )
 
-  const datasets: ChartDataset<'line', (number | null)[]>[] =
+  const tokenValues =
     treasuryValueHistory.loading || treasuryValueHistory.errored
       ? []
-      : [
-          ...treasuryValueHistory.data.tokens.flatMap(
-            ({ symbol, values, currentValue }, index) => {
-              // If all values are null/0, do not include this token.
-              if (!values.every((d) => !d) && !currentValue) {
-                return []
-              }
-
-              return {
-                order: 2,
-                label: '$' + transformIbcSymbol(symbol).tokenSymbol + ' Value',
-                data: [...values, currentValue],
-                borderColor:
-                  DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
-              }
-            }
-          ),
-          ...(targets || []).flatMap(({ symbol, targets }) => {
-            if (targets.length === 0) {
+      : treasuryValueHistory.data.tokens.flatMap(
+          ({ token, values, currentValue }, index) => {
+            // If all values are null/0, do not include this token.
+            if (!values.every((d) => !d) && !currentValue) {
               return []
             }
 
-            const data = treasuryValueHistory.data.timestamps.map(
-              (_timestamp, timestampIndex) => {
-                // Find first target that is after this timestamp so we can
-                // choose the most recent target before it.
-                let nextTargetIndex = targets.findIndex(
-                  (target) => target.timestamp > _timestamp
-                )
-                const targetIndex =
-                  nextTargetIndex === -1
-                    ? // If all targets are before, use last one.
-                      targets.length - 1
-                    : // If all targets are after, no target for this timestamp.
-                    nextTargetIndex === 0
-                    ? undefined
-                    : // Otherwise use the previous one.
-                      nextTargetIndex - 1
-                if (targetIndex === undefined) {
-                  return null
-                }
-
-                // Get total value at this point in time.
-                const totalValue =
-                  treasuryValueHistory.data.total.values[timestampIndex]
-                if (totalValue === null) {
-                  return null
-                }
-
-                const { target } = targets[targetIndex]
-
-                // The target at this point is based on the total value.
-                return totalValue * target
-              }
-            )
-
-            // Add current target.
-            const currentTarget =
-              treasuryValueHistory.data.total.currentValue *
-              targets[targets.length - 1].target
-            data.push(currentTarget)
-
-            const borderColor =
-              DISTRIBUTION_COLORS[
-                treasuryValueHistory.data.tokens.findIndex(
-                  (token) => token.symbol === symbol
-                ) % DISTRIBUTION_COLORS.length
-              ]
-
             return {
+              token,
               order: 2,
-              label: '$' + transformIbcSymbol(symbol).tokenSymbol + ' Target',
-              data,
-              borderDash: [2.5, 2.5],
-              borderColor,
+              label:
+                '$' + transformIbcSymbol(token.symbol).tokenSymbol + ' Value',
+              data: [...values, currentValue],
+              borderColor:
+                DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
+              borderWidth: 2.5,
             }
-          }),
-          // Total value.
+          }
+        )
+
+  const targetValues =
+    treasuryValueHistory.loading || treasuryValueHistory.errored
+      ? []
+      : (targets || []).flatMap(({ source, targets }) => {
+          if (targets.length === 0) {
+            return []
+          }
+
+          const data = treasuryValueHistory.data.timestamps.map(
+            (_timestamp, timestampIndex) => {
+              // Find first target that is after this timestamp so we can
+              // choose the most recent target before it.
+              let nextTargetIndex = targets.findIndex(
+                (target) => target.timestamp > _timestamp
+              )
+              const targetIndex =
+                nextTargetIndex === -1
+                  ? // If all targets are before, use last one.
+                    targets.length - 1
+                  : // If all targets are after, no target for this timestamp.
+                  nextTargetIndex === 0
+                  ? undefined
+                  : // Otherwise use the previous one.
+                    nextTargetIndex - 1
+              if (targetIndex === undefined) {
+                return null
+              }
+
+              // Get total value at this point in time.
+              const totalValue =
+                treasuryValueHistory.data.total.values[timestampIndex]
+              if (totalValue === null) {
+                return null
+              }
+
+              const { target } = targets[targetIndex]
+
+              // The target at this point is based on the total value.
+              return totalValue * target
+            }
+          )
+
+          // Add current target.
+          const currentTarget =
+            treasuryValueHistory.data.total.currentValue *
+            targets[targets.length - 1].target
+          data.push(currentTarget)
+
+          const tokenIndex = treasuryValueHistory.data.tokens.findIndex(
+            ({ token }) =>
+              serializeTokenSource(token.source) ===
+              serializeTokenSource(source)
+          )
+          if (tokenIndex === -1) {
+            return []
+          }
+
+          const borderColor =
+            DISTRIBUTION_COLORS[tokenIndex % DISTRIBUTION_COLORS.length]
+
+          const token = treasuryValueHistory.data.tokens[tokenIndex].token
+          return {
+            token,
+            order: 2,
+            label:
+              '$' + transformIbcSymbol(token.symbol).tokenSymbol + ' Target',
+            data,
+            borderDash: [2.5, 2.5],
+            borderColor,
+            pointRadius: 0,
+            pointHitRadius: 0,
+            borderWidth: 2.5,
+          }
+        })
+
+  const totalValues =
+    treasuryValueHistory.loading || treasuryValueHistory.errored
+      ? []
+      : [
           {
+            token: undefined,
             order: 1,
             label: t('title.totalValue'),
             data: [
@@ -161,18 +183,24 @@ export const DaoTreasuryHistoryGraph = ({
               treasuryValueHistory.data.total.currentValue,
             ],
             borderColor: brandColor,
+            borderWidth: 5,
           },
-        ].map((data) => ({
-          ...data,
+        ]
 
-          pointRadius: 1,
-          pointHitRadius: 10,
+  const datasets = [...tokenValues, ...targetValues, ...totalValues].map(
+    (data) => ({
+      ...data,
 
-          // Accentuate the total.
-          borderWidth: data.order === 1 ? 5 : 2.5,
-        }))
+      pointRadius:
+        ('pointRadius' in data ? Number(data.pointRadius) : undefined) ?? 1,
+      pointHitRadius:
+        ('pointHitRadius' in data ? Number(data.pointHitRadius) : undefined) ??
+        10,
+    })
+  )
 
   const [tooltipData, setTooltipData] = useState<TooltipModel<'line'>>()
+  const tooltipTimestampIndex = tooltipData?.dataPoints[0].dataIndex
   const tooltipTotalValue =
     tooltipData &&
     (tooltipData.dataPoints.find(
@@ -277,7 +305,7 @@ export const DaoTreasuryHistoryGraph = ({
         </div>
       )}
 
-      {tooltipData && (
+      {tooltipData && tooltipTimestampIndex !== undefined && (
         <div
           className="pointer-events-none absolute flex animate-fade-in flex-col gap-2 rounded-md border border-border-component-primary bg-component-tooltip py-2 px-3 text-text-component-primary"
           style={{
@@ -287,51 +315,78 @@ export const DaoTreasuryHistoryGraph = ({
         >
           <p className="!primary-text mb-1">{tooltipData.title}</p>
 
-          {[...tooltipData.dataPoints]
-            .filter((point) => point.dataset.label?.endsWith(' Value'))
-            .sort((a, b) => Number(b.raw) - Number(a.raw))
-            .map((point, index) => (
-              <div
-                key={index}
-                className={clsx(
-                  'flex flex-row items-start justify-between gap-6',
-                  index === 0 && 'mb-4'
-                )}
-              >
-                <div className="flex flex-row items-center gap-2">
-                  <div
-                    className="h-4 w-6"
-                    style={{
-                      borderWidth: point.dataset.borderWidth as number,
-                      borderColor: point.dataset.borderColor as string,
-                      backgroundColor: point.dataset.backgroundColor as string,
-                    }}
-                  />
-                  <p className="secondary-text">{point.dataset.label}:</p>
-                </div>
+          {[
+            totalValues[0],
+            ...tokenValues.sort(
+              (a, b) =>
+                Number(b.data[tooltipTimestampIndex]) -
+                Number(a.data[tooltipTimestampIndex])
+            ),
+          ].flatMap(
+            ({ token, data, label, borderWidth, borderColor }, index) => {
+              const value = data[tooltipTimestampIndex]
+              if (value === null) {
+                return
+              }
 
-                <div className="flex flex-col items-end gap-1 text-right font-mono">
-                  <p className="primary-text leading-4">
-                    $
-                    {Number(point.raw).toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </p>
+              const targetValue =
+                token &&
+                targetValues.find(({ token: t }) => t === token)?.data[
+                  tooltipTimestampIndex
+                ]
 
-                  {point.datasetIndex !== datasets.length - 1 &&
-                    !!tooltipTotalValue && (
-                      <p className="caption-text">
-                        (
-                        {formatPercentOf100(
-                          (Number(point.raw) / tooltipTotalValue) * 100
-                        )}
-                        )
-                      </p>
+              return (
+                <div
+                  key={index}
+                  className={clsx(
+                    'flex flex-row items-start justify-between gap-6',
+                    index === 0 && 'mb-4'
+                  )}
+                >
+                  <div className="flex flex-row items-center gap-2">
+                    <div
+                      className="h-4 w-6"
+                      style={{
+                        borderWidth,
+                        borderColor,
+                      }}
+                    />
+                    <p className="secondary-text">{label}:</p>
+                  </div>
+
+                  <div className="flex flex-col items-end gap-1 text-right font-mono">
+                    <p className="primary-text leading-4">
+                      $
+                      {value.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </p>
+
+                    {index > 0 && !!tooltipTotalValue && (
+                      <>
+                        <p className="caption-text">
+                          {formatPercentOf100(
+                            (value / tooltipTotalValue) * 100
+                          )}
+
+                          {!!targetValue && (
+                            <>
+                              {' (target: '}
+                              {formatPercentOf100(
+                                (targetValue / tooltipTotalValue) * 100
+                              )}
+                              {')'}
+                            </>
+                          )}
+                        </p>
+                      </>
                     )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            }
+          )}
         </div>
       )}
     </div>

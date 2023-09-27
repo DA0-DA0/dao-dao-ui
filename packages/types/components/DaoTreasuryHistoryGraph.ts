@@ -1,7 +1,9 @@
 import { DaoAccount } from '../dao'
+import { GenericTokenSource } from '../token'
 
 export type DaoTreasuryTarget = {
-  symbol: string
+  // The source that uniquely identifies a token.
+  source: GenericTokenSource
   targets: {
     timestamp: Date
     // Proportion between 0 and 1.
