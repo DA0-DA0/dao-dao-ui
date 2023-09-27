@@ -224,11 +224,32 @@ export const DaoChainTreasuryAndNfts = <
                           chainId,
                           address: valenceAddress,
                         }}
+                        targets={[
+                          // TODO(rebalancer): Provide actual targets.
+                          {
+                            symbol: 'NTRN',
+                            targets: [
+                              {
+                                timestamp: new Date(0),
+                                target: 0.75,
+                              },
+                            ],
+                          },
+                          {
+                            symbol: 'USDC',
+                            targets: [
+                              {
+                                timestamp: new Date(0),
+                                target: 0.25,
+                              },
+                            ],
+                          },
+                        ]}
                       />
 
                       <GridCardContainer cardType="wide">
                         {valenceTokens.data.map((props, index) => (
-                          <TokenCard {...props} key={index} />
+                          <TokenCard {...props} key={index} noExtraActions />
                         ))}
                       </GridCardContainer>
                     </>

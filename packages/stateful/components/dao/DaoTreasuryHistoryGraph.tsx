@@ -25,6 +25,7 @@ import {
 import { DaoTreasuryHistoryGraphProps } from '@dao-dao/types'
 import {
   DISTRIBUTION_COLORS,
+  formatDate,
   formatDateTime,
   formatPercentOf100,
   transformIbcSymbol,
@@ -42,9 +43,9 @@ ChartJS.register(
   Legend
 )
 
-// TODO: Allow passing in targets to show.
 export const DaoTreasuryHistoryGraph = ({
   filter,
+  targets,
   className,
 }: DaoTreasuryHistoryGraphProps) => {
   const { t } = useTranslation()
@@ -52,13 +53,14 @@ export const DaoTreasuryHistoryGraph = ({
 
   const textColor = useNamedThemeColor('text-tertiary')
   const borderColor = useNamedThemeColor('border-primary')
+  const brandColor = useNamedThemeColor('text-brand')
 
   // TODO(treasury-history): make configurable
   // Default to 1 year ago.
   const [startSecondsAgo, setStartSecondsAgo] = useState(365 * 24 * 60 * 60)
   // Only `day` precision has prices as far back as a year.
   const [precision, setPrecision] =
-    useState<OsmosisHistoricalPriceChartPrecision>('day')
+    useState<OsmosisHistoricalPriceChartPrecision>('hour')
 
   const treasuryValueHistory = useCachedLoadingWithError(
     daoTreasuryValueHistorySelector({
@@ -75,7 +77,7 @@ export const DaoTreasuryHistoryGraph = ({
       ? []
       : [
           ...treasuryValueHistory.data.tokens.flatMap(
-            ({ symbol, values, currentValue }) => {
+            ({ symbol, values, currentValue }, index) => {
               // If all values are null/0, do not include this token.
               if (!values.every((d) => !d) && !currentValue) {
                 return []
@@ -85,9 +87,71 @@ export const DaoTreasuryHistoryGraph = ({
                 order: 2,
                 label: '$' + transformIbcSymbol(symbol).tokenSymbol + ' Value',
                 data: [...values, currentValue],
+                borderColor:
+                  DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
               }
             }
           ),
+          ...(targets || []).flatMap(({ symbol, targets }) => {
+            if (targets.length === 0) {
+              return []
+            }
+
+            const data = treasuryValueHistory.data.timestamps.map(
+              (_timestamp, timestampIndex) => {
+                // Find first target that is after this timestamp so we can
+                // choose the most recent target before it.
+                let nextTargetIndex = targets.findIndex(
+                  (target) => target.timestamp > _timestamp
+                )
+                const targetIndex =
+                  nextTargetIndex === -1
+                    ? // If all targets are before, use last one.
+                      targets.length - 1
+                    : // If all targets are after, no target for this timestamp.
+                    nextTargetIndex === 0
+                    ? undefined
+                    : // Otherwise use the previous one.
+                      nextTargetIndex - 1
+                if (targetIndex === undefined) {
+                  return null
+                }
+
+                // Get total value at this point in time.
+                const totalValue =
+                  treasuryValueHistory.data.total.values[timestampIndex]
+                if (totalValue === null) {
+                  return null
+                }
+
+                const { target } = targets[targetIndex]
+
+                // The target at this point is based on the total value.
+                return totalValue * target
+              }
+            )
+
+            // Add current target.
+            const currentTarget =
+              treasuryValueHistory.data.total.currentValue *
+              targets[targets.length - 1].target
+            data.push(currentTarget)
+
+            const borderColor =
+              DISTRIBUTION_COLORS[
+                treasuryValueHistory.data.tokens.findIndex(
+                  (token) => token.symbol === symbol
+                ) % DISTRIBUTION_COLORS.length
+              ]
+
+            return {
+              order: 2,
+              label: '$' + transformIbcSymbol(symbol).tokenSymbol + ' Target',
+              data,
+              borderDash: [2.5, 2.5],
+              borderColor,
+            }
+          }),
           // Total value.
           {
             order: 1,
@@ -96,13 +160,11 @@ export const DaoTreasuryHistoryGraph = ({
               ...treasuryValueHistory.data.total.values,
               treasuryValueHistory.data.total.currentValue,
             ],
+            borderColor: brandColor,
           },
-        ].map((data, index) => ({
+        ].map((data) => ({
           ...data,
 
-          borderColor: DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
-          backgroundColor:
-            DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
           pointRadius: 1,
           pointHitRadius: 10,
 
@@ -130,7 +192,9 @@ export const DaoTreasuryHistoryGraph = ({
               ? []
               : [
                   ...treasuryValueHistory.data.timestamps.map((timestamp) =>
-                    formatDateTime(timestamp)
+                    (precision === 'day' ? formatDate : formatDateTime)(
+                      timestamp
+                    )
                   ),
                   t('title.now'),
                 ],
@@ -146,6 +210,9 @@ export const DaoTreasuryHistoryGraph = ({
             },
             legend: {
               position: 'right',
+              labels: {
+                filter: (item) => item.text.endsWith(' Value'),
+              },
             },
             tooltip: {
               // Show all x-axis values in one tooltip.
@@ -221,6 +288,7 @@ export const DaoTreasuryHistoryGraph = ({
           <p className="!primary-text mb-1">{tooltipData.title}</p>
 
           {[...tooltipData.dataPoints]
+            .filter((point) => point.dataset.label?.endsWith(' Value'))
             .sort((a, b) => Number(b.raw) - Number(a.raw))
             .map((point, index) => (
               <div
@@ -234,6 +302,7 @@ export const DaoTreasuryHistoryGraph = ({
                   <div
                     className="h-4 w-6"
                     style={{
+                      borderWidth: point.dataset.borderWidth as number,
                       borderColor: point.dataset.borderColor as string,
                       backgroundColor: point.dataset.backgroundColor as string,
                     }}
