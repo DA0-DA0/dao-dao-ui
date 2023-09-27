@@ -48,8 +48,10 @@ import {
 import { useSyncWalletSigner, useWallet } from '../hooks'
 import { WalletUi } from './wallet'
 
-// Set better name for MetaMask wallet.
-metamaskWallets[0].walletInfo.prettyName = 'MetaMask (Leap Snap)'
+// Set better name for MetaMask wallets.
+leapMetamaskWallets[0].walletInfo.prettyName = 'MetaMask (Leap Snap)'
+cosmosExtensionMetamaskWallets[0].walletInfo.prettyName =
+  'MetaMask (Cosmos Extension)'
 
 export type WalletProviderProps = {
   // This needs to be provided by the parent component and then passed to the
@@ -180,7 +182,7 @@ export const WalletProvider = ({
               ...keplrExtensionWallets,
               // Only allow Keplr Mobile on mainnet since it can't use testnet.
               ...(MAINNET ? keplrMobileWallets : []),
-              ...leapWallets.filter((w) => !metamaskWallets.includes(w)),
+              ...leapWallets.filter((w) => !leapMetamaskWallets.includes(w)),
               ...stationWallets,
               ...vectisWallets,
               ...trustWallets,
