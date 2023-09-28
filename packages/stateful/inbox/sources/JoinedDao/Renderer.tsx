@@ -14,7 +14,7 @@ export const Renderer = ({ chainId, coreAddress, inboxItemId }: Data) => {
   const [loadingFollowing, setLoadingFollowing] = useState(false)
 
   return (
-    <div className="ml-10 flex flex-col gap-4 self-start rounded-md bg-background-secondary p-6">
+    <div className="flex flex-col gap-4 self-start rounded-md bg-background-secondary p-6">
       <p className="primary-text">{t('info.addedToDaoFollowPrompt')}</p>
 
       <div className="flex flex-row items-center gap-2">

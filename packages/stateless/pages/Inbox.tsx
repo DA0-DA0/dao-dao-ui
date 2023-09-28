@@ -131,7 +131,7 @@ export const Inbox = ({
                   noContentIndent
                 >
                   {items.length ? (
-                    <div className="flex flex-col gap-2 px-2 md:gap-1">
+                    <div className="flex flex-col gap-2 pr-2 pl-5 md:gap-1">
                       {items.map(({ Renderer, props }, index) => (
                         <Renderer key={index} {...props} />
                       ))}
