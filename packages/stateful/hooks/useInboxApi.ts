@@ -184,8 +184,6 @@ export const useInboxApi = (): InboxApi => {
       return
     }
 
-    let subscription
-
     setPushUpdating(true)
     try {
       const notificationPermission = await Notification.requestPermission()
@@ -194,25 +192,27 @@ export const useInboxApi = (): InboxApi => {
         return
       }
 
-      subscription = await serviceWorker.registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: fromBase64(WEB_PUSH_PUBLIC_KEY),
-      })
+      const subscription =
+        await serviceWorker.registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: fromBase64(WEB_PUSH_PUBLIC_KEY),
+        })
 
-      await updateConfig({
+      const saved = await updateConfig({
         push: {
           type: 'subscribe',
           subscription: JSON.parse(JSON.stringify(subscription)),
         },
       })
 
-      setPushSubscription(subscription)
-      setPushSubscribed(true)
+      if (saved) {
+        setPushSubscription(subscription)
+        setPushSubscribed(true)
+      } else {
+        // Unsubscribe if there was an error after the subscription was created.
+        await subscription.unsubscribe().catch(() => {})
+      }
     } catch (err) {
-      // Attempt to unsubscribe if there was an error but the subscription was
-      // already created.
-      await subscription?.unsubscribe().catch(() => {})
-
       console.error(err)
       toast.error(processError(err))
     } finally {
