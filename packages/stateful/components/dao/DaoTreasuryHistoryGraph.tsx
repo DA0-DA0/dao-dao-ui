@@ -153,10 +153,8 @@ export const DaoTreasuryHistoryGraph = ({
             return []
           }
 
-          const borderColor =
-            DISTRIBUTION_COLORS[tokenIndex % DISTRIBUTION_COLORS.length]
+          const { token } = treasuryValueHistory.data.tokens[tokenIndex]
 
-          const token = treasuryValueHistory.data.tokens[tokenIndex].token
           return {
             token,
             order: 3,
@@ -164,7 +162,8 @@ export const DaoTreasuryHistoryGraph = ({
               '$' + transformIbcSymbol(token.symbol).tokenSymbol + ' Target',
             data,
             borderDash: [2.5, 2.5],
-            borderColor,
+            borderColor:
+              DISTRIBUTION_COLORS[tokenIndex % DISTRIBUTION_COLORS.length],
             pointRadius: 0,
             pointHitRadius: 0,
             borderWidth: 2.5,
