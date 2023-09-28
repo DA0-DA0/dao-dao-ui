@@ -48,7 +48,9 @@ export const Switch = ({
     >
       <div
         className={clsx(
-          'absolute flex items-center justify-center rounded-full bg-background-button transition-all',
+          'absolute flex items-center justify-center rounded-full transition-all',
+          // If loading, use base background so loader appears.
+          loading ? 'bg-background-base' : 'bg-background-button',
           // Sizing.
           {
             // Small
