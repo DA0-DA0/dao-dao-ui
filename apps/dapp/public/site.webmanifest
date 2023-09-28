@@ -1,6 +1,7 @@
 {
   "name": "DAO DAO",
   "short_name": "DAO DAO",
+  "start_url": "/?s=pwa",
   "icons": [
     {
       "src": "/android-chrome-192x192.png",
@@ -13,7 +14,34 @@
       "type": "image/png"
     }
   ],
-  "theme_color": "#ffffff",
-  "background_color": "#ffffff",
-  "display": "standalone"
+  "theme_color": "#7b61ff",
+  "background_color": "#151617",
+  "display": "standalone",
+  "orientation": "portrait",
+  "shortcuts": [
+    {
+      "name": "Home",
+      "short_name": "Home",
+      "description": "View featured and followed DAOs",
+      "url": "/?s=pwa"
+    },
+    {
+      "name": "Inbox",
+      "short_name": "Inbox",
+      "description": "View notifications",
+      "url": "/inbox?s=pwa"
+    },
+    {
+      "name": "Me",
+      "short_name": "Me",
+      "description": "Access your wallet and execute transactions",
+      "url": "/me?s=pwa"
+    },
+    {
+      "name": "Governance",
+      "short_name": "Governance",
+      "description": "View native chain governance",
+      "url": "/gov?s=pwa"
+    }
+  ]
 }

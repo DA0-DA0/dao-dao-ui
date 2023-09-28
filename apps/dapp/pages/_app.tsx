@@ -125,11 +125,23 @@ const DApp = (props: AppProps) => {
           },
           {
             name: 'msapplication-TileColor',
-            content: '#da532c',
+            content: '#7b61ff',
           },
           {
             name: 'theme-color',
-            content: '#111213',
+            content: '#7b61ff',
+          },
+          {
+            name: 'apple-mobile-web-app-title',
+            content: 'DAO DAO',
+          },
+          {
+            name: 'apple-mobile-web-app-capable',
+            content: 'yes',
+          },
+          {
+            name: 'apple-mobile-web-app-status-bar-style',
+            content: 'black-translucent',
           },
         ]}
         description={t('meta.description').replace(
@@ -140,7 +152,7 @@ const DApp = (props: AppProps) => {
         openGraph={{
           url: SITE_URL,
           type: 'website',
-          title: t('meta.title').replace('meta.title', 'Loading...'),
+          title: 'DAO DAO',
           description: t('meta.description').replace(
             'meta.description',
             'Loading...'
