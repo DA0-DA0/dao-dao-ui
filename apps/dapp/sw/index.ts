@@ -8,6 +8,7 @@ const CACHE = 'pwa-offline'
 type PushNotificationPayload = {
   title: string
   message: string
+  imageUrl: string | undefined
   deepLink:
     | {
         type: 'dao'
@@ -58,7 +59,7 @@ const getPathFromNotification = ({ deepLink }: PushNotificationPayload) => {
     event.waitUntil(
       this.registration.showNotification(data.title, {
         body: data.message,
-        icon: '/yin-yang.png',
+        icon: data.imageUrl || '/daodao.png',
         data,
       })
     )
