@@ -159,7 +159,7 @@ export const DaoTreasuryHistoryGraph = ({
           const token = treasuryValueHistory.data.tokens[tokenIndex].token
           return {
             token,
-            order: 2,
+            order: 3,
             label:
               '$' + transformIbcSymbol(token.symbol).tokenSymbol + ' Target',
             data,
