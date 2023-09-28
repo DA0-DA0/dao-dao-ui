@@ -19,7 +19,9 @@ export const useServiceWorker = (path = '/sw.js') => {
 
     ;(async () => {
       try {
-        setRegistration(await navigator.serviceWorker.register(path))
+        const registration = await navigator.serviceWorker.register(path)
+        await registration.update()
+        setRegistration(registration)
       } catch (err) {
         alert(err)
         console.error('Service Worker registration failed', err)

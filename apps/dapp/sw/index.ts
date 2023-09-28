@@ -34,6 +34,11 @@ const getPathFromNotification = ({ deepLink }: PushNotificationPayload) => {
 
 // TypeScript work-around to type `self` as `this` correctly.
 ;(function (this: ServiceWorkerGlobalScope) {
+  // Become the active server worker on install.
+  this.addEventListener('install', () => {
+    this.skipWaiting()
+  })
+
   // Cache offline page on install.
   // self.addEventListener('install', function (event) {
   //   event.waitUntil(
@@ -73,7 +78,7 @@ const getPathFromNotification = ({ deepLink }: PushNotificationPayload) => {
     event.waitUntil(
       this.clients
         .matchAll({ type: 'window', includeUncontrolled: true })
-        .then((clientList) => {
+        .then(async (clientList) => {
           if (clientList.length > 0) {
             // Find last focused client.
             let client = clientList[0]
@@ -83,7 +88,7 @@ const getPathFromNotification = ({ deepLink }: PushNotificationPayload) => {
               }
             })
 
-            client.navigate(path)
+            await client.navigate(path)
             if (!client.focused) {
               return client.focus()
             }
@@ -112,11 +117,11 @@ const getPathFromNotification = ({ deepLink }: PushNotificationPayload) => {
           event.waitUntil(updateCache(event.request, response.clone()))
           return response
         })
-        .catch((error) => {
+        .catch(() => {
           // If request failed, try to get it from the cache.
-          console.log(
-            '[PWA] Network request Failed. Serving content from cache: ' + error
-          )
+          // console.log(
+          //   '[PWA] Network request Failed. Serving content from cache: ' + error
+          // )
           return fromCache(event.request)
         })
     )

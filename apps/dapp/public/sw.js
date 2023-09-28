@@ -151,12 +151,16 @@ var getPathFromNotification = function (_a) {
   }
 }
 ;(function () {
+  var _this = this
+  // Become the active server worker on install.
+  this.addEventListener('install', function () {
+    _this.skipWaiting()
+  })
   // Cache offline page on install.
   // self.addEventListener('install', function (event) {
   //   event.waitUntil(
   //     caches.open(CACHE).then(function (cache) {
   //       console.log('[PWA] Cached offline page during install')
-  var _this = this
   //       if (offlineFallbackPage === '/fallback.js') {
   //         return cache.add(
   //           new Response(
@@ -176,7 +180,7 @@ var getPathFromNotification = function (_a) {
     event.waitUntil(
       _this.registration.showNotification(data.title, {
         body: data.message,
-        icon: '/android-chrome-192x192.png',
+        icon: data.imageUrl || '/daodao.png',
         data: data,
       })
     )
@@ -184,22 +188,36 @@ var getPathFromNotification = function (_a) {
   // Notification click event.
   this.addEventListener('notificationclick', function (event) {
     event.notification.close()
+    var path = getPathFromNotification(event.notification.data)
     event.waitUntil(
       _this.clients
         .matchAll({ type: 'window', includeUncontrolled: true })
         .then(function (clientList) {
-          if (clientList.length > 0) {
-            var client = clientList[0]
-            for (var i = 0; i < clientList.length; i++) {
-              if (clientList[i].focused) {
-                client = clientList[i]
+          return __awaiter(_this, void 0, void 0, function () {
+            var client_1
+            return __generator(this, function (_a) {
+              switch (_a.label) {
+                case 0:
+                  if (!(clientList.length > 0)) return [3 /*break*/, 2]
+                  client_1 = clientList[0]
+                  clientList.forEach(function (c) {
+                    if (c.focused) {
+                      client_1 = c
+                    }
+                  })
+                  return [4 /*yield*/, client_1.navigate(path)]
+                case 1:
+                  _a.sent()
+                  if (!client_1.focused) {
+                    return [2 /*return*/, client_1.focus()]
+                  }
+                  _a.label = 2
+                case 2:
+                  // If no clients, open new window.
+                  return [2 /*return*/, this.clients.openWindow(path)]
               }
-            }
-            return client.focus()
-          }
-          return _this.clients.openWindow(
-            getPathFromNotification(event.notification.data)
-          )
+            })
+          })
         })
     )
   })
@@ -219,11 +237,11 @@ var getPathFromNotification = function (_a) {
           event.waitUntil(updateCache(event.request, response.clone()))
           return response
         })
-        .catch(function (error) {
+        .catch(function () {
           // If request failed, try to get it from the cache.
-          console.log(
-            '[PWA] Network request Failed. Serving content from cache: ' + error
-          )
+          // console.log(
+          //   '[PWA] Network request Failed. Serving content from cache: ' + error
+          // )
           return fromCache(event.request)
         })
     )
