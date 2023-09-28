@@ -1,4 +1,10 @@
-import { Check, Email, Language, WarningRounded } from '@mui/icons-material'
+import {
+  Check,
+  Email,
+  Language,
+  Smartphone,
+  WarningRounded,
+} from '@mui/icons-material'
 import { useRouter } from 'next/router'
 import { useEffect, useRef } from 'react'
 import { useForm } from 'react-hook-form'
@@ -9,6 +15,7 @@ import {
   InboxApi,
   InboxApiItemType,
   InboxApiItemTypeMethod,
+  InboxApiItemTypeMethodData,
   InboxApiUpdateConfig,
   ModalProps,
 } from '@dao-dao/types'
@@ -16,7 +23,7 @@ import { validateEmail } from '@dao-dao/utils'
 
 import { Button } from '../buttons'
 import { IconButton } from '../icon_buttons'
-import { Checkbox, InputLabel, TextInput } from '../inputs'
+import { Checkbox, InputLabel, Switch, TextInput } from '../inputs'
 import { Loader } from '../logo'
 import { Tooltip } from '../tooltip'
 import { Modal } from './Modal'
@@ -25,6 +32,24 @@ const DEFAULT_TYPE = Object.values(InboxApiItemTypeMethod).reduce(
   (acc, cur) => acc | (cur as number),
   0
 )
+
+const TYPE_METHODS: InboxApiItemTypeMethodData[] = [
+  {
+    method: InboxApiItemTypeMethod.Website,
+    i18nKey: 'title.website',
+    Icon: Language,
+  },
+  {
+    method: InboxApiItemTypeMethod.Email,
+    i18nKey: 'title.email',
+    Icon: Email,
+  },
+  {
+    method: InboxApiItemTypeMethod.Push,
+    i18nKey: 'title.push',
+    Icon: Smartphone,
+  },
+]
 
 export type InboxSettingsModalProps = Pick<
   ModalProps,
@@ -36,12 +61,19 @@ export type InboxSettingsModalProps = Pick<
 }
 
 export const InboxSettingsModal = ({
-  api: { updating, config, loadConfig, updateConfig, resendVerificationEmail },
+  api: {
+    updating,
+    config,
+    loadConfig,
+    updateConfig,
+    resendVerificationEmail,
+    push,
+  },
   verify,
   ...props
 }: InboxSettingsModalProps) => {
   const { t } = useTranslation()
-  const { push } = useRouter()
+  const router = useRouter()
 
   const { register, reset, setValue, getValues, watch } =
     useForm<InboxApiUpdateConfig>()
@@ -50,18 +82,19 @@ export const InboxSettingsModal = ({
 
   // Prompt to load config if not loaded yet.
   const loadingRef = useRef(false)
+  const routerPush = router.push
   useEffect(() => {
     ;(async () => {
       if (props.visible && !config && !loadingRef.current) {
         loadingRef.current = true
         // Load config. On failure, close modal.
         if (!(await loadConfig())) {
-          push('/inbox')
+          routerPush('/inbox')
         }
         loadingRef.current = false
       }
     })()
-  }, [props.visible, config, loadConfig, push])
+  }, [props.visible, config, loadConfig, routerPush])
 
   // Once config is loaded, populate form with config values.
   useEffect(() => {
@@ -76,7 +109,7 @@ export const InboxSettingsModal = ({
   return (
     <Modal
       {...props}
-      contentContainerClassName="gap-2"
+      contentContainerClassName="gap-3"
       footerContainerClassName="flex flex-row justify-end"
       footerContent={
         <Button
@@ -145,10 +178,24 @@ export const InboxSettingsModal = ({
             />
           </div>
 
+          <div className="mt-2 flex flex-row items-center justify-between gap-2">
+            <InputLabel
+              name={t('title.pushNotifications')}
+              tooltip={t('info.pushNotificationsTooltip')}
+            />
+
+            <Switch
+              enabled={!push.ready || push.subscribed}
+              onClick={push.subscribed ? push.unsubscribe : push.subscribe}
+              readOnly={push.updating}
+              sizing="md"
+            />
+          </div>
+
           {verify && !config.verified && (
             <Button
               center
-              className="mt-2"
+              className="mt-1"
               loading={updating}
               onClick={verify}
               size="lg"
@@ -158,80 +205,56 @@ export const InboxSettingsModal = ({
             </Button>
           )}
 
-          <p className="title-text mt-4">{t('title.preferences')}</p>
-          <p className="caption-text">
+          <p className="title-text mt-3">{t('title.preferences')}</p>
+          <p className="caption-text -mt-2">
             {t('info.inboxConfigPreferencesDescription')}
           </p>
-          {Object.values(InboxApiItemType).map((type) => (
-            <div
-              key={type}
-              className="flex flex-row items-start gap-4 rounded-md bg-background-secondary p-3"
-            >
-              <div className="flex flex-col gap-2">
-                <p className="primary-text">
-                  {t(`inboxItemType.${type}.title`)}
-                </p>
+          <div className="-mt-1 flex flex-col gap-1">
+            {Object.values(InboxApiItemType).map((type) => (
+              <div
+                key={type}
+                className="flex flex-row items-start gap-4 rounded-md bg-background-secondary p-3"
+              >
+                <div className="flex flex-col gap-2">
+                  <p className="primary-text">
+                    {t(`inboxItemType.${type}.title`)}
+                  </p>
 
-                <p className="caption-text">
-                  {t(`inboxItemType.${type}.description`)}
-                </p>
+                  <p className="caption-text">
+                    {t(`inboxItemType.${type}.description`)}
+                  </p>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  {TYPE_METHODS.filter(
+                    ({ method }) =>
+                      // If defined, only the listed methods are allowed for the
+                      // given type. Otherwise, all methods are allowed.
+                      !TYPE_ALLOWED_METHODS[type] ||
+                      TYPE_ALLOWED_METHODS[type]!.includes(method)
+                  ).map(({ method, i18nKey, Icon }) => (
+                    <div key={method} className="flex flex-row gap-2">
+                      <Tooltip title={t(i18nKey)}>
+                        <Icon className="!h-6 !w-6" />
+                      </Tooltip>
+
+                      <Checkbox
+                        checked={
+                          ((types?.[type] ?? DEFAULT_TYPE) & method) === method
+                        }
+                        onClick={() =>
+                          setValue(
+                            `types.${type}`,
+                            (types?.[type] ?? DEFAULT_TYPE) ^ method
+                          )
+                        }
+                      />
+                    </div>
+                  ))}
+                </div>
               </div>
-
-              <div className="flex flex-col gap-2">
-                {(!TYPE_ALLOWED_METHODS[type] ||
-                  TYPE_ALLOWED_METHODS[type]?.includes(
-                    InboxApiItemTypeMethod.Website
-                  )) && (
-                  <div className="flex flex-row gap-2">
-                    <Tooltip title={t('title.website')}>
-                      <Language className="!h-6 !w-6" />
-                    </Tooltip>
-
-                    <Checkbox
-                      checked={
-                        ((types?.[type] ?? DEFAULT_TYPE) &
-                          InboxApiItemTypeMethod.Website) ===
-                        InboxApiItemTypeMethod.Website
-                      }
-                      onClick={() =>
-                        setValue(
-                          `types.${type}`,
-                          (types?.[type] ?? DEFAULT_TYPE) ^
-                            InboxApiItemTypeMethod.Website
-                        )
-                      }
-                    />
-                  </div>
-                )}
-
-                {(!TYPE_ALLOWED_METHODS[type] ||
-                  TYPE_ALLOWED_METHODS[type]?.includes(
-                    InboxApiItemTypeMethod.Email
-                  )) && (
-                  <div className="flex flex-row gap-2">
-                    <Tooltip title={t('title.email')}>
-                      <Email className="!h-6 !w-6" />
-                    </Tooltip>
-
-                    <Checkbox
-                      checked={
-                        ((types?.[type] ?? DEFAULT_TYPE) &
-                          InboxApiItemTypeMethod.Email) ===
-                        InboxApiItemTypeMethod.Email
-                      }
-                      onClick={() =>
-                        setValue(
-                          `types.${type}`,
-                          (types?.[type] ?? DEFAULT_TYPE) ^
-                            InboxApiItemTypeMethod.Email
-                        )
-                      }
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </>
       ) : (
         updating && (
@@ -244,9 +267,11 @@ export const InboxSettingsModal = ({
 
 // If defined, only the listed methods are allowed for the given type.
 // Otherwise, all methods are allowed.
-const TYPE_ALLOWED_METHODS: Record<
-  string,
-  InboxApiItemTypeMethod[] | undefined
+const TYPE_ALLOWED_METHODS: Partial<
+  Record<InboxApiItemType, InboxApiItemTypeMethod[]>
 > = {
-  [InboxApiItemType.ProposalCreated]: [InboxApiItemTypeMethod.Email],
+  [InboxApiItemType.ProposalCreated]: [
+    InboxApiItemTypeMethod.Email,
+    InboxApiItemTypeMethod.Push,
+  ],
 }

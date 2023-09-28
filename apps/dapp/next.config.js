@@ -5,7 +5,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
   enabled: process.env.ANALYZE === 'true',
 })
 const withInterceptStdout = require('next-intercept-stdout')
-const withPWA = require('next-pwa')
 
 const { withSentryConfig } = require('@sentry/nextjs')
 /** @type {import("@sentry/nextjs").SentryWebpackPluginOptions} */
@@ -103,21 +102,17 @@ const config = {
   },
 }
 
-module.exports = withPWA({
-  dest: 'public',
-})(
-  withSentryConfig(
-    withBundleAnalyzer(
-      withInterceptStdout(
-        config,
-        // Silence Recoil duplicate warnings on dev.
-        (text) =>
-          process.env.NODE_ENV === 'development' &&
-          text.includes('Expectation Violation: Duplicate atom key')
-            ? ''
-            : text
-      )
-    ),
-    sentryWebpackPluginOptions
-  )
+module.exports = withSentryConfig(
+  withBundleAnalyzer(
+    withInterceptStdout(
+      config,
+      // Silence Recoil duplicate warnings on dev.
+      (text) =>
+        process.env.NODE_ENV === 'development' &&
+        text.includes('Expectation Violation: Duplicate atom key')
+          ? ''
+          : text
+    )
+  ),
+  sentryWebpackPluginOptions
 )

@@ -4,7 +4,10 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "analyze": "ANALYZE=true next build",
+    "prepare": "npm run build:worker",
+    "prebuild": "npm run build:worker",
     "build": "next build --debug",
+    "build:worker": "tsc sw/index.ts --lib webworker --outfile public/sw.js && eslint public/sw.js --fix",
     "dev": "next dev",
     "format": "eslint . --fix",
     "lint": "eslint .",
@@ -37,7 +40,6 @@
     "lodash.clonedeep": "^4.5.0",
     "next": "^13.3.0",
     "next-intercept-stdout": "^1.0.1",
-    "next-pwa": "^5.6.0",
     "next-seo": "^5.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

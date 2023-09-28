@@ -77,6 +77,13 @@ export enum InboxApiItemType {
 export enum InboxApiItemTypeMethod {
   Website = 1 << 0,
   Email = 1 << 1,
+  Push = 1 << 2,
+}
+
+export type InboxApiItemTypeMethodData = {
+  method: InboxApiItemTypeMethod
+  i18nKey: string
+  Icon: ComponentType<{ className?: string }>
 }
 
 export type InboxApiUpdateConfig = {
@@ -88,12 +95,43 @@ export type InboxApiUpdateConfig = {
   verify?: string
   // If present, resend verification email.
   resend?: boolean
+  // If present, update push settings.
+  push?:
+    | {
+        // Add subscription.
+        type: 'subscribe'
+        subscription: PushSubscription
+        // {
+        //   endpoint: string
+        //   keys: {
+        //     p256dh: string
+        //     auth: string
+        //   }
+        // }
+      }
+    | {
+        // Check if subscribed or unsubscribe.
+        type: 'check' | 'unsubscribe'
+        p256dh: string
+      }
+}
+
+export type PushSubscriptionManager = {
+  ready: boolean
+  updating: boolean
+  subscribed: boolean
+  subscription: PushSubscription | undefined
+  subscribe: () => Promise<void>
+  unsubscribe: () => Promise<void>
 }
 
 export type InboxApiConfig = {
   email: string | null
   verified: boolean
   types: Record<string, number | null>
+  // If `push` is defined in the body, returns whether or not the push is now
+  // subscribed.
+  pushSubscribed?: boolean
 }
 
 export type InboxApi = {
@@ -108,6 +146,7 @@ export type InboxApi = {
   resendVerificationEmail: () => Promise<boolean>
   verify: (code: string) => Promise<boolean>
   config: InboxApiConfig | undefined
+  push: PushSubscriptionManager
 }
 
 export enum InboxPageSlug {

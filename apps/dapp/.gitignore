@@ -1,7 +1,2 @@
 # Sentry
 .sentryclirc
-
-# next-pwa stuff
-public/workbox-*.js*
-public/sw.js*
-public/worker-*.js*

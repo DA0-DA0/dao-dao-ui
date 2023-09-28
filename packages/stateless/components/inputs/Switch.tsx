@@ -13,7 +13,7 @@ export interface SwitchProps {
   enabled: boolean
   onClick?: () => void
   className?: string
-  sizing?: 'sm' | 'lg'
+  sizing?: 'sm' | 'md' | 'lg'
   readOnly?: boolean
 }
 
@@ -33,6 +33,7 @@ export const Switch = ({
         'border border-border-interactive-focus bg-transparent': !enabled,
         // Sizing.
         'h-[16px] w-[28px]': sizing === 'sm',
+        'h-[27px] w-[47px]': sizing === 'md',
         'h-[38px] w-[67px]': sizing === 'lg',
       },
       className
@@ -48,6 +49,10 @@ export const Switch = ({
           'h-[10px] w-[10px]': sizing === 'sm',
           'left-[15px]': sizing === 'sm' && enabled,
           'left-[2px]': sizing === 'sm' && !enabled,
+          // Medium
+          'h-[18px] w-[18px]': sizing === 'md',
+          'left-[24px]': sizing === 'md' && enabled,
+          'left-[4px]': sizing === 'md' && !enabled,
           // Large
           'h-[28px] w-[28px]': sizing === 'lg',
           'left-[33px]': sizing === 'lg' && enabled,
