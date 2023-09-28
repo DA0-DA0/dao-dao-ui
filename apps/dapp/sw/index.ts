@@ -58,7 +58,7 @@ const getPathFromNotification = ({ deepLink }: PushNotificationPayload) => {
     event.waitUntil(
       this.registration.showNotification(data.title, {
         body: data.message,
-        icon: '/android-chrome-192x192.png',
+        icon: '/yin-yang.png',
         data,
       })
     )
