@@ -156,7 +156,7 @@ export const Breadcrumbs = ({
 
       <div
         className={clsx(
-          'header-text fixed top-0 right-0 bottom-0 left-0 z-20 flex flex-col bg-background-base transition-opacity',
+          'header-text fixed top-0 right-0 bottom-0 left-0 z-20 flex flex-col bg-background-base transition-opacity p-safe',
           responsive && hasCrumbs
             ? 'opacity-100 sm:pointer-events-none sm:opacity-0'
             : 'pointer-events-none opacity-0'
