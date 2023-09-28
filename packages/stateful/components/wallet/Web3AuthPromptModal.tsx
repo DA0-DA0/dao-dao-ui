@@ -115,7 +115,10 @@ export const Web3AuthPromptModal = () => {
               </WalletActionsProvider>
             ) : (
               <CosmosMessageDisplay
-                value={JSON.stringify(decoded.messages, undefined, 2)}
+                value={JSON.stringify(decoded.messages, undefined, 2).replace(
+                  /\\n/g,
+                  '\n'
+                )}
               />
             ))}
         </ChainProvider>
