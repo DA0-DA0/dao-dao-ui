@@ -150,6 +150,24 @@ export const InboxSettingsModal = ({
     >
       {config ? (
         <>
+          <div className="mb-2 flex flex-row items-center justify-between gap-2">
+            <InputLabel
+              name={t('title.pushNotifications')}
+              tooltip={t('info.pushNotificationsTooltip')}
+            />
+
+            {(!push.ready || push.supported) && (
+              <div className="flex flex-row items-center justify-end gap-2">
+                <Switch
+                  enabled={push.subscribed}
+                  loading={!push.ready || !push.supported || push.updating}
+                  onClick={push.subscribed ? push.unsubscribe : push.subscribe}
+                  sizing="md"
+                />
+              </div>
+            )}
+          </div>
+
           <div className="flex flex-col gap-2">
             <div className="flex flex-row items-center justify-between">
               <InputLabel
@@ -184,26 +202,6 @@ export const InboxSettingsModal = ({
               type="email"
               validation={[validateEmail]}
             />
-          </div>
-
-          <div className="mt-2 flex flex-row items-center justify-between gap-2">
-            <InputLabel
-              name={t('title.pushNotifications')}
-              tooltip={t('info.pushNotificationsTooltip')}
-            />
-
-            {(!push.ready || push.supported) && (
-              <div className="flex flex-row items-center justify-end gap-2">
-                {push.updating && <Loader fill={false} size={20} />}
-
-                <Switch
-                  enabled={push.subscribed}
-                  onClick={push.subscribed ? push.unsubscribe : push.subscribe}
-                  readOnly={!push.ready || !push.supported || push.updating}
-                  sizing="md"
-                />
-              </div>
-            )}
           </div>
 
           {push.ready && !push.supported && (

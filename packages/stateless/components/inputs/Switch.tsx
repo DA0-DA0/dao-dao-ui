@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { BooleanFieldNames } from '@dao-dao/types'
 
+import { Loader } from '../logo'
 import {
   TooltipInfoIcon,
   TooltipInfoIconProps,
@@ -15,6 +16,7 @@ export interface SwitchProps {
   className?: string
   sizing?: 'sm' | 'md' | 'lg'
   readOnly?: boolean
+  loading?: boolean
 }
 
 export const Switch = ({
@@ -23,45 +25,60 @@ export const Switch = ({
   className,
   sizing = 'lg',
   readOnly,
-}: SwitchProps) => (
-  <div
-    className={clsx(
-      'relative flex flex-none items-center rounded-full',
-      {
-        'cursor-pointer hover:opacity-90': !readOnly,
-        'bg-background-button-active': enabled,
-        'border border-border-interactive-focus bg-transparent': !enabled,
-        // Sizing.
-        'h-[16px] w-[28px]': sizing === 'sm',
-        'h-[27px] w-[47px]': sizing === 'md',
-        'h-[38px] w-[67px]': sizing === 'lg',
-      },
-      className
-    )}
-    onClick={readOnly ? undefined : onClick}
-  >
+  loading,
+}: SwitchProps) => {
+  readOnly ||= loading
+
+  return (
     <div
       className={clsx(
-        'absolute rounded-full bg-background-button transition-all',
-        // Sizing.
+        'relative flex flex-none items-center rounded-full',
         {
-          // Small
-          'h-[10px] w-[10px]': sizing === 'sm',
-          'left-[15px]': sizing === 'sm' && enabled,
-          'left-[2px]': sizing === 'sm' && !enabled,
-          // Medium
-          'h-[18px] w-[18px]': sizing === 'md',
-          'left-[24px]': sizing === 'md' && enabled,
-          'left-[4px]': sizing === 'md' && !enabled,
-          // Large
-          'h-[28px] w-[28px]': sizing === 'lg',
-          'left-[33px]': sizing === 'lg' && enabled,
-          'left-[4.5px]': sizing === 'lg' && !enabled,
-        }
+          'cursor-pointer hover:opacity-90': !readOnly,
+          'bg-background-button-active': enabled,
+          'border border-border-interactive-focus bg-transparent': !enabled,
+          // Sizing.
+          'h-[16px] w-[28px]': sizing === 'sm',
+          'h-[27px] w-[47px]': sizing === 'md',
+          'h-[38px] w-[67px]': sizing === 'lg',
+        },
+        className
       )}
-    ></div>
-  </div>
-)
+      onClick={readOnly ? undefined : onClick}
+    >
+      <div
+        className={clsx(
+          'absolute flex items-center justify-center rounded-full bg-background-button transition-all',
+          // Sizing.
+          {
+            // Small
+            'h-[10px] w-[10px]': sizing === 'sm',
+            'left-[15px]': sizing === 'sm' && enabled,
+            'left-[2px]': sizing === 'sm' && !enabled,
+            // Medium
+            'h-[18px] w-[18px]': sizing === 'md',
+            'left-[24px]': sizing === 'md' && enabled,
+            'left-[4px]': sizing === 'md' && !enabled,
+            // Large
+            'h-[28px] w-[28px]': sizing === 'lg',
+            'left-[33px]': sizing === 'lg' && enabled,
+            'left-[4.5px]': sizing === 'lg' && !enabled,
+          }
+        )}
+      >
+        {loading && (
+          <Loader
+            fill={false}
+            size={
+              // Match parent size.
+              sizing === 'lg' ? 28 : sizing === 'md' ? 18 : 10
+            }
+          />
+        )}
+      </div>
+    </div>
+  )
+}
 
 export interface SwitchCardProps extends SwitchProps {
   containerClassName?: string
