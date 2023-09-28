@@ -47,16 +47,16 @@ export const useInboxApi = (): InboxApi => {
 
   // Load push service worker registration and subscription.
   useEffect(() => {
-    if (!serviceWorker.ready || !serviceWorker.registration) {
+    if (!serviceWorker.ready) {
       return
     }
 
     ;(async () => {
-      if (!serviceWorker.registration) {
-        return
-      }
-
       try {
+        if (!serviceWorker.registration) {
+          return
+        }
+
         const subscription =
           await serviceWorker.registration.pushManager.getSubscription()
         if (
@@ -253,6 +253,7 @@ export const useInboxApi = (): InboxApi => {
   const push = useMemo(
     (): PushSubscriptionManager => ({
       ready: serviceWorker.ready,
+      supported: serviceWorker.ready && !!serviceWorker.registration,
       updating: pushUpdating,
       subscribed: pushSubscribed,
       subscribe,
@@ -261,6 +262,7 @@ export const useInboxApi = (): InboxApi => {
     }),
     [
       serviceWorker.ready,
+      serviceWorker.registration,
       pushUpdating,
       pushSubscribed,
       subscribe,

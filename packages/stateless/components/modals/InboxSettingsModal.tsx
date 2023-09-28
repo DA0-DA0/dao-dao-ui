@@ -83,18 +83,26 @@ export const InboxSettingsModal = ({
   // Prompt to load config if not loaded yet.
   const loadingRef = useRef(false)
   const routerPush = router.push
+  // Memoize so we only load config once.
+  const loadConfigRef = useRef(loadConfig)
+  loadConfigRef.current = loadConfig
+
   useEffect(() => {
     ;(async () => {
       if (props.visible && !config && !loadingRef.current) {
         loadingRef.current = true
-        // Load config. On failure, close modal.
-        if (!(await loadConfig())) {
-          routerPush('/inbox')
+        try {
+          // Load config. On failure, close modal.
+          if (!(await loadConfigRef.current())) {
+            routerPush('/inbox')
+            toast.error(t('error.loadingData'))
+          }
+        } finally {
+          loadingRef.current = false
         }
-        loadingRef.current = false
       }
     })()
-  }, [props.visible, config, loadConfig, routerPush])
+  }, [props.visible, config, routerPush, t])
 
   // Once config is loaded, populate form with config values.
   useEffect(() => {
@@ -184,13 +192,25 @@ export const InboxSettingsModal = ({
               tooltip={t('info.pushNotificationsTooltip')}
             />
 
-            <Switch
-              enabled={!push.ready || push.subscribed}
-              onClick={push.subscribed ? push.unsubscribe : push.subscribe}
-              readOnly={push.updating}
-              sizing="md"
-            />
+            {(!push.ready || push.supported) && (
+              <div className="flex flex-row items-center justify-end gap-2">
+                {push.updating && <Loader fill={false} size={20} />}
+
+                <Switch
+                  enabled={push.subscribed}
+                  onClick={push.subscribed ? push.unsubscribe : push.subscribe}
+                  readOnly={!push.ready || !push.supported || push.updating}
+                  sizing="md"
+                />
+              </div>
+            )}
           </div>
+
+          {push.ready && !push.supported && (
+            <p className="caption-text -mt-2 italic text-text-interactive-warning-body">
+              {t('error.browserNotSupported')}
+            </p>
+          )}
 
           {verify && !config.verified && (
             <Button

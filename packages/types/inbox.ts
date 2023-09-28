@@ -118,6 +118,7 @@ export type InboxApiUpdateConfig = {
 
 export type PushSubscriptionManager = {
   ready: boolean
+  supported: boolean
   updating: boolean
   subscribed: boolean
   subscription: PushSubscription | undefined

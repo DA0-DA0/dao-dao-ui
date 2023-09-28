@@ -117,7 +117,7 @@ export const SdaNavigation = ({
           // highlighted rows fill the whole width.
           !compact && 'px-6',
           // Responsive
-          'pt-safe absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8 transition-all',
+          'absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8 transition-all pt-safe',
           responsiveEnabled ? 'left-0' : '-left-full',
           // Large
           'sm:relative sm:left-0 sm:pt-0 sm:shadow-none sm:transition-[padding-left]',

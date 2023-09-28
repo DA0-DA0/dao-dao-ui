@@ -36,7 +36,8 @@ export const RightSidebar = ({ wallet }: RightSidebarProps) => {
           // General
           'no-scrollbar flex w-[90vw] flex-col items-stretch overflow-y-auto bg-background-base p-6 pt-0 transition-all duration-[225ms] sm:w-96',
           // Responsive
-          'pt-safe absolute top-0 bottom-0 z-30 shadow-dp8',
+          // 1.5rem matches p-6 above, in case no safe insets on right.
+          'absolute top-0 bottom-0 z-30 shadow-dp8 pt-safe pr-safe-or-[1.5rem]',
           responsiveEnabled
             ? 'right-0 opacity-100'
             : 'pointer-events-none -right-full opacity-0 sm:-right-96',

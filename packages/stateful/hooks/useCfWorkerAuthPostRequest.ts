@@ -12,7 +12,7 @@ export const useCfWorkerAuthPostRequest = (
 ) => {
   const { t } = useTranslation()
   const {
-    signAmino,
+    getOfflineSignerAmino,
     chain,
     hexPublicKey,
     address: walletAddress,
@@ -88,7 +88,9 @@ export const useCfWorkerAuthPostRequest = (
       )
       const {
         signature: { signature },
-      } = await signAmino(walletAddress, signDocAmino)
+      } = await (
+        await getOfflineSignerAmino()
+      ).signAmino(walletAddress, signDocAmino)
 
       const body = {
         data: dataWithAuth,
@@ -127,7 +129,7 @@ export const useCfWorkerAuthPostRequest = (
       chain.chain_id,
       chain.bech32_prefix,
       walletAddress,
-      signAmino,
+      getOfflineSignerAmino,
       t,
     ]
   )

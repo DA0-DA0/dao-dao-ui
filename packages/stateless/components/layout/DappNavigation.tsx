@@ -153,7 +153,8 @@ export const DappNavigation = ({
           // rows fill the whole width.
           !compact && 'px-6',
           // Responsive
-          'pt-safe absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8 transition-all',
+          // 1.5rem matches px-6 above, in case no safe insets on left.
+          'absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8 transition-all pt-safe pl-safe-or-[1.5rem]',
           responsiveEnabled ? 'left-0' : '-left-full',
           // Large
           'sm:relative sm:left-0 sm:pt-0 sm:shadow-none sm:transition-[padding-left]',
@@ -336,7 +337,7 @@ export const DappNavigation = ({
 
           <div
             className={clsx(
-              'mt-8 flex gap-2',
+              'mt-8 flex shrink-0 gap-2',
               compact ? 'mx-6 flex-col' : 'flex-row items-center'
             )}
           >
@@ -353,7 +354,7 @@ export const DappNavigation = ({
                 compact ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft
               }
               circular
-              className="hidden lg:flex"
+              className="hidden shrink-0 lg:flex"
               onClick={() => setCompact(!compact)}
               size={compact ? 'default' : 'xl'}
               variant="secondary"

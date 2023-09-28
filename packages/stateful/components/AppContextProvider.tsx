@@ -2,7 +2,7 @@ import { ReactNode, useCallback, useEffect, useRef, useState } from 'react'
 import { useRecoilState } from 'recoil'
 
 import { indexerWebSocketChannelSubscriptionsAtom } from '@dao-dao/state/recoil'
-import { AppContext } from '@dao-dao/stateless'
+import { AppContext, useServiceWorker } from '@dao-dao/stateless'
 import {
   AppContextProviderProps,
   CommandModalContextMaker,
@@ -92,6 +92,9 @@ export const AppContextProvider = ({
     rightSidebarRef,
     setRightSidebarRef,
   }
+
+  // Install service worker.
+  useServiceWorker()
 
   return mode === DaoPageMode.Dapp ? (
     <DappContextProvider commonContext={commonContext}>
