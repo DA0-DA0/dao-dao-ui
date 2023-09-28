@@ -15,7 +15,7 @@ export const useAnimationFrame = (callback: FrameRequestCallback) => {
     if (startTimestampMsRef.current === undefined) {
       startTimestampMsRef.current = timestampMs
     }
-    callbackRef.current(timestampMs - startTimestampMsRef.current)
+    callbackRef.current(timestampMs - startTimestampMsRef.current!)
 
     requestRef.current = requestAnimationFrame(animate)
   }
