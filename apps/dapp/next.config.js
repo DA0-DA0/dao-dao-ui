@@ -106,7 +106,7 @@ const config = {
 module.exports = withPWA({
   dest: 'public',
 })(
-  ...withSentryConfig(
+  withSentryConfig(
     withBundleAnalyzer(
       withInterceptStdout(
         config,
