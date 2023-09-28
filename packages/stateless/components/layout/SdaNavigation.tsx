@@ -117,10 +117,10 @@ export const SdaNavigation = ({
           // highlighted rows fill the whole width.
           !compact && 'px-6',
           // Responsive
-          'absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8 transition-all',
+          'pt-safe absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8 transition-all',
           responsiveEnabled ? 'left-0' : '-left-full',
           // Large
-          'sm:relative sm:left-0 sm:shadow-none sm:transition-[padding-left]',
+          'sm:relative sm:left-0 sm:pt-0 sm:shadow-none sm:transition-[padding-left]',
           compact ? 'sm:w-min' : 'sm:w-[264px]',
 
           // Dim if responsive right sidebar is open. Right sidebar can be responsive up to 2xl size. After that, it automatically displays.
