@@ -133,19 +133,21 @@ export const useInboxApi = (): InboxApi => {
           ? toBase64(new Uint8Array(p256dhKey))
           : undefined
 
+        const push =
+          data.push ||
+          (p256dh
+            ? // If no push provided, just check if subscribed.
+              {
+                type: 'check',
+                p256dh,
+              }
+            : undefined)
+
         const config = await postRequest<InboxApiConfig>(
           '/config',
           {
             ...data,
-            // If no push provided, just check if subscribed.
-            push:
-              data.push ||
-              (p256dh
-                ? {
-                    type: 'check',
-                    p256dh,
-                  }
-                : undefined),
+            ...(push && { push }),
           },
           signatureType
         )
@@ -227,12 +229,12 @@ export const useInboxApi = (): InboxApi => {
 
     setPushUpdating(true)
     try {
-      await pushSubscription.unsubscribe()
-
+      let saved = true
+      // Key should always be found, but just in case.
       const p256dhKey = pushSubscription.getKey('p256dh')
       const p256dh = p256dhKey ? toBase64(new Uint8Array(p256dhKey)) : undefined
       if (p256dh) {
-        await updateConfig({
+        saved = await updateConfig({
           push: {
             type: 'unsubscribe',
             p256dh,
@@ -240,8 +242,14 @@ export const useInboxApi = (): InboxApi => {
         })
       }
 
-      setPushSubscription(undefined)
-      setPushSubscribed(false)
+      // Unsubscribe locally once removed from server successfully. If key could
+      // not be found for some reason, just unsubscribe locally.
+      if (saved) {
+        await pushSubscription.unsubscribe()
+
+        setPushSubscription(undefined)
+        setPushSubscribed(false)
+      }
     } catch (err) {
       console.error(err)
       toast.error(processError(err))

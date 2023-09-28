@@ -65,7 +65,7 @@ export const useCfWorkerAuthPostRequest = (
       const signDocAmino = makeSignDoc(
         [
           {
-            type: signatureType,
+            type: dataWithAuth.auth.type,
             value: {
               signer: walletAddress,
               data: JSON.stringify(dataWithAuth, undefined, 2),
