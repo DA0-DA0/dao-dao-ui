@@ -6,7 +6,7 @@ import {
   WarningRounded,
 } from '@mui/icons-material'
 import { useRouter } from 'next/router'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -114,34 +114,39 @@ export const InboxSettingsModal = ({
     }
   }, [config, reset])
 
+  const [needsSave, setNeedsSave] = useState(false)
+
   return (
     <Modal
       {...props}
       contentContainerClassName="gap-3"
       footerContainerClassName="flex flex-row justify-end"
       footerContent={
-        <Button
-          disabled={!config}
-          loading={!!config && updating}
-          onClick={async () => {
-            if (!config) {
-              return
-            }
+        needsSave && (
+          <Button
+            disabled={!config}
+            loading={!!config && updating}
+            onClick={async () => {
+              if (!config) {
+                return
+              }
 
-            const data = getValues()
-            const success = await updateConfig({
-              // Only save email if changed so it doesn't reverify each time.
-              email: data.email !== config.email ? data.email : undefined,
-              types: data.types,
-            })
+              const data = getValues()
+              const success = await updateConfig({
+                // Only save email if changed so it doesn't reverify each time.
+                email: data.email !== config.email ? data.email : undefined,
+                types: data.types,
+              })
 
-            if (success) {
-              toast.success(t('success.saved'))
-            }
-          }}
-        >
-          {t('button.save')}
-        </Button>
+              if (success) {
+                toast.success(t('success.saved'))
+                setNeedsSave(false)
+              }
+            }}
+          >
+            {t('button.save')}
+          </Button>
+        )
       }
       header={{
         title: t('title.inboxConfiguration'),
@@ -150,25 +155,63 @@ export const InboxSettingsModal = ({
     >
       {config ? (
         <>
-          <div className="mb-2 flex flex-row items-center justify-between gap-2">
-            <InputLabel
-              name={t('title.pushNotifications')}
-              tooltip={t('info.pushNotificationsTooltip')}
-            />
+          <div className="flex flex-row items-start justify-between gap-x-6 gap-y-2">
+            <div className="flex min-w-0 flex-col items-start gap-1">
+              <InputLabel
+                containerProps={{
+                  // Match Switch height.
+                  className: 'leading-[27px]',
+                }}
+                name={t('title.pushNotifications')}
+                tooltip={t('info.pushNotificationsTooltip')}
+              />
+
+              {push.ready && !push.supported && (
+                <p className="caption-text italic text-text-interactive-warning-body">
+                  {t('error.browserNotSupported')}
+                </p>
+              )}
+
+              {config.pushSubscriptions === 0 ? (
+                <p className="caption-text">
+                  {t('info.noPushNotificationSubscriptions', {
+                    count: config.pushSubscriptions,
+                  })}
+                </p>
+              ) : (
+                <>
+                  <p className="caption-text">
+                    {t('info.activePushNotificationSubscriptions', {
+                      count: config.pushSubscriptions,
+                    })}
+                  </p>
+
+                  {config.pushSubscriptions > 1 && (
+                    <Button
+                      disabled={updating}
+                      loading={push.updating}
+                      onClick={push.unsubscribeAll}
+                      variant="secondary"
+                    >
+                      {t('button.unsubscribeAll')}
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
 
             {(!push.ready || push.supported) && (
-              <div className="flex flex-row items-center justify-end gap-2">
-                <Switch
-                  enabled={push.subscribed}
-                  loading={!push.ready || !push.supported || push.updating}
-                  onClick={push.subscribed ? push.unsubscribe : push.subscribe}
-                  sizing="md"
-                />
-              </div>
+              <Switch
+                enabled={push.subscribed}
+                loading={!push.ready || !push.supported || push.updating}
+                onClick={push.subscribed ? push.unsubscribe : push.subscribe}
+                readOnly={updating}
+                sizing="md"
+              />
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
+          <div className="mt-2 flex flex-col gap-2">
             <div className="flex flex-row items-center justify-between">
               <InputLabel
                 name={t('title.email')}
@@ -196,19 +239,15 @@ export const InboxSettingsModal = ({
 
             <TextInput
               className="grow"
+              disabled={updating}
               fieldName="email"
+              onInput={() => setNeedsSave(true)}
               placeholder="Email..."
               register={register}
               type="email"
               validation={[validateEmail]}
             />
           </div>
-
-          {push.ready && !push.supported && (
-            <p className="caption-text -mt-2 italic text-text-interactive-warning-body">
-              {t('error.browserNotSupported')}
-            </p>
-          )}
 
           {verify && !config.verified && (
             <Button
@@ -260,12 +299,14 @@ export const InboxSettingsModal = ({
                         checked={
                           ((types?.[type] ?? DEFAULT_TYPE) & method) === method
                         }
-                        onClick={() =>
+                        onClick={() => {
                           setValue(
                             `types.${type}`,
                             (types?.[type] ?? DEFAULT_TYPE) ^ method
                           )
-                        }
+                          setNeedsSave(true)
+                        }}
+                        readOnly={updating}
                       />
                     </div>
                   ))}

@@ -100,19 +100,16 @@ export type InboxApiUpdateConfig = {
     | {
         // Add subscription.
         type: 'subscribe'
-        subscription: PushSubscription
-        // {
-        //   endpoint: string
-        //   keys: {
-        //     p256dh: string
-        //     auth: string
-        //   }
-        // }
+        subscription: any
       }
     | {
         // Check if subscribed or unsubscribe.
         type: 'check' | 'unsubscribe'
         p256dh: string
+      }
+    | {
+        // Unsubscribe all subscriptions.
+        type: 'unsubscribe_all'
       }
 }
 
@@ -124,12 +121,15 @@ export type PushSubscriptionManager = {
   subscription: PushSubscription | undefined
   subscribe: () => Promise<void>
   unsubscribe: () => Promise<void>
+  unsubscribeAll: () => Promise<void>
 }
 
 export type InboxApiConfig = {
   email: string | null
   verified: boolean
   types: Record<string, number | null>
+  // Number of registered push subscriptions.
+  pushSubscriptions: number
   // If `push` is defined in the body, returns whether or not the push is now
   // subscribed.
   pushSubscribed?: boolean

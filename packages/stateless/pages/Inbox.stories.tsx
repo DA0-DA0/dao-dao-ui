@@ -52,6 +52,7 @@ Default.args = {
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),
   LinkWrapper,
+  connected: true,
 }
 Default.parameters = {
   design: {

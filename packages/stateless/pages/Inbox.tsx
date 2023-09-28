@@ -28,6 +28,7 @@ export interface InboxProps {
   LinkWrapper: ComponentType<LinkWrapperProps>
   api: InboxApi
   verify: () => void
+  connected: boolean
 }
 
 export const Inbox = ({
@@ -36,6 +37,7 @@ export const Inbox = ({
   LinkWrapper,
   api,
   verify,
+  connected,
 }: InboxProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
@@ -57,18 +59,22 @@ export const Inbox = ({
     isReady &&
     (slug === InboxPageSlug.Settings || slug === InboxPageSlug.Verify)
 
+  // 1 second delay until settings modal can show, so wallet has time to load.
+  const [ready, setReady] = useState(false)
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setReady(true)
+    }, 1000)
+    return () => clearTimeout(timeout)
+  }, [])
+
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
       <PageHeaderContent
         className="mx-auto max-w-5xl"
         rightNode={
-          <div
-            className={clsx(
-              'flex flex-row items-center gap-2 transition-opacity',
-              loading ? 'pointer-events-none opacity-0' : 'opacity-100'
-            )}
-          >
+          <div className="flex flex-row items-center gap-2 transition-opacity">
             <IconButton
               Icon={Settings}
               circular
@@ -148,7 +154,7 @@ export const Inbox = ({
         api={api}
         onClose={() => push('/inbox', undefined, { shallow: true })}
         verify={slug === InboxPageSlug.Verify ? verify : undefined}
-        visible={settingsModalVisible}
+        visible={settingsModalVisible && connected && ready}
       />
     </>
   )

@@ -66,6 +66,7 @@ export const Inbox: NextPage = () => {
         <StatelessInbox
           LinkWrapper={LinkWrapper}
           api={api}
+          connected={isWalletConnected}
           rightSidebarContent={<ProfileHomeCard />}
           state={inbox}
           verify={verify}

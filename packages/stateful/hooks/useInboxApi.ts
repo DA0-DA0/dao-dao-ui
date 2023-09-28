@@ -258,6 +258,34 @@ export const useInboxApi = (): InboxApi => {
     }
   }, [pushSubscription, pushUpdating, updateConfig])
 
+  const unsubscribeAll = useCallback(async () => {
+    if (pushUpdating) {
+      return
+    }
+
+    setPushUpdating(true)
+    try {
+      const saved = await updateConfig({
+        push: {
+          type: 'unsubscribe_all',
+        },
+      })
+
+      if (saved) {
+        // Unsubscribe the current one if it exists.
+        await pushSubscription?.unsubscribe()
+
+        setPushSubscription(undefined)
+        setPushSubscribed(false)
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setPushUpdating(false)
+    }
+  }, [pushSubscription, pushUpdating, updateConfig])
+
   const push = useMemo(
     (): PushSubscriptionManager => ({
       ready: serviceWorker.ready,
@@ -267,6 +295,7 @@ export const useInboxApi = (): InboxApi => {
       subscribe,
       subscription: pushSubscription,
       unsubscribe,
+      unsubscribeAll,
     }),
     [
       serviceWorker.ready,
@@ -276,6 +305,7 @@ export const useInboxApi = (): InboxApi => {
       subscribe,
       pushSubscription,
       unsubscribe,
+      unsubscribeAll,
     ]
   )
 
