@@ -43,6 +43,7 @@ ChartJS.register(
   Legend
 )
 
+// TODO: add way to set base price denom to use instead of USD
 export const DaoTreasuryHistoryGraph = ({
   filter,
   targets,
@@ -370,15 +371,13 @@ export const DaoTreasuryHistoryGraph = ({
                             (value / tooltipTotalValue) * 100
                           )}
 
-                          {!!targetValue && (
-                            <>
-                              {' (target: '}
-                              {formatPercentOf100(
-                                (targetValue / tooltipTotalValue) * 100
-                              )}
-                              {')'}
-                            </>
-                          )}
+                          {` (${
+                            typeof targetValue === 'number'
+                              ? `target: ${formatPercentOf100(
+                                  (targetValue / tooltipTotalValue) * 100
+                                )}`
+                              : 'no target'
+                          })`}
                         </p>
                       </>
                     )}
