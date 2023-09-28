@@ -171,10 +171,8 @@ var getPathFromNotification = function (_a) {
   // Push notification event.
   this.addEventListener('push', function (event) {
     var _a
-    console.log('received push event', event)
     var data =
       ((_a = event.data) === null || _a === void 0 ? void 0 : _a.json()) || {}
-    console.log('data', data)
     event.waitUntil(
       _this.registration.showNotification(data.title, {
         body: data.message,

@@ -20,6 +20,7 @@ const tailwindConfig = {
     require('@tailwindcss/line-clamp'),
     require('./button'),
     require('@tailwindcss/typography'),
+    require('tailwindcss-safe-area'),
   ],
   theme: {
     screens: {

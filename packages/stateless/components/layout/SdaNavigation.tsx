@@ -112,7 +112,7 @@ export const SdaNavigation = ({
       <nav
         className={clsx(
           // General
-          'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto bg-background-base py-6 pt-0 text-lg',
+          'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto bg-background-base pb-6 text-lg',
           // If compact, items will manager their own padding so that
           // highlighted rows fill the whole width.
           !compact && 'px-6',
