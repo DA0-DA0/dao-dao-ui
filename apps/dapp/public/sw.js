@@ -190,35 +190,26 @@ var getPathFromNotification = function (_a) {
     event.notification.close()
     var path = getPathFromNotification(event.notification.data)
     event.waitUntil(
-      _this.clients
-        .matchAll({ type: 'window', includeUncontrolled: true })
-        .then(function (clientList) {
-          return __awaiter(_this, void 0, void 0, function () {
-            var client_1
-            return __generator(this, function (_a) {
-              switch (_a.label) {
-                case 0:
-                  if (!(clientList.length > 0)) return [3 /*break*/, 2]
-                  client_1 = clientList[0]
-                  clientList.forEach(function (c) {
-                    if (c.focused) {
-                      client_1 = c
-                    }
-                  })
-                  return [4 /*yield*/, client_1.navigate(path)]
-                case 1:
-                  _a.sent()
-                  if (!client_1.focused) {
-                    return [2 /*return*/, client_1.focus()]
-                  }
-                  _a.label = 2
-                case 2:
-                  // If no clients, open new window.
-                  return [2 /*return*/, this.clients.openWindow(path)]
-              }
-            })
-          })
-        })
+      _this.clients.openWindow(path)
+      // this.clients
+      //   .matchAll({ type: 'window', includeUncontrolled: true })
+      //   .then(async (clientList) => {
+      //     if (clientList.length > 0) {
+      //       // Find last focused client.
+      //       let client = clientList[0]
+      //       clientList.forEach((c) => {
+      //         if (c.focused) {
+      //           client = c
+      //         }
+      //       })
+      //       await client.navigate(path)
+      //       if (!client.focused) {
+      //         return client.focus()
+      //       }
+      //     }
+      //     // If no clients, open new window.
+      //     return this.clients.openWindow(path)
+      //   })
     )
   })
   // Offline support. If any fetch fails, it will check the cache for the

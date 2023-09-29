@@ -76,27 +76,28 @@ const getPathFromNotification = ({ deepLink }: PushNotificationPayload) => {
     const path = getPathFromNotification(event.notification.data)
 
     event.waitUntil(
-      this.clients
-        .matchAll({ type: 'window', includeUncontrolled: true })
-        .then(async (clientList) => {
-          if (clientList.length > 0) {
-            // Find last focused client.
-            let client = clientList[0]
-            clientList.forEach((c) => {
-              if (c.focused) {
-                client = c
-              }
-            })
+      this.clients.openWindow(path)
+      // this.clients
+      //   .matchAll({ type: 'window', includeUncontrolled: true })
+      //   .then(async (clientList) => {
+      //     if (clientList.length > 0) {
+      //       // Find last focused client.
+      //       let client = clientList[0]
+      //       clientList.forEach((c) => {
+      //         if (c.focused) {
+      //           client = c
+      //         }
+      //       })
 
-            await client.navigate(path)
-            if (!client.focused) {
-              return client.focus()
-            }
-          }
+      //       await client.navigate(path)
+      //       if (!client.focused) {
+      //         return client.focus()
+      //       }
+      //     }
 
-          // If no clients, open new window.
-          return this.clients.openWindow(path)
-        })
+      //     // If no clients, open new window.
+      //     return this.clients.openWindow(path)
+      //   })
     )
   })
 
