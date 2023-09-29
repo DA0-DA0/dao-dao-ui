@@ -37,7 +37,9 @@ export const useCfWorkerAuthPostRequest = (
 
       // Fetch nonce.
       const nonceResponse: { nonce: number } = await (
-        await fetch(`${apiBase}/nonce/${hexPublicKey.data}`)
+        await fetch(`${apiBase}/nonce/${hexPublicKey.data}`, {
+          cache: 'no-store',
+        })
       ).json()
       if (
         !('nonce' in nonceResponse) ||
