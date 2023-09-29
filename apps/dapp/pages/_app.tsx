@@ -125,11 +125,11 @@ const DApp = (props: AppProps) => {
           },
           {
             name: 'msapplication-TileColor',
-            content: '#7b61ff',
+            content: '#151617',
           },
           {
             name: 'theme-color',
-            content: '#7b61ff',
+            content: '#151617',
           },
           {
             name: 'apple-mobile-web-app-title',
