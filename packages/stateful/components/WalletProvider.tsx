@@ -1,11 +1,14 @@
 import { wallets as coin98Wallets } from '@cosmos-kit/coin98'
+import { wallets as compassWallets } from '@cosmos-kit/compass'
 import { Endpoints, SignerOptions } from '@cosmos-kit/core'
+import { wallets as cosmosExtensionMetamaskWallets } from '@cosmos-kit/cosmos-extension-metamask'
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
 import { wallets as finWallets } from '@cosmos-kit/fin'
+import { wallets as frontierWallets } from '@cosmos-kit/frontier'
 import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
 import { wallets as keplrMobileWallets } from '@cosmos-kit/keplr-mobile'
 import { wallets as leapWallets } from '@cosmos-kit/leap'
-import { wallets as metamaskWallets } from '@cosmos-kit/leap-metamask-cosmos-snap'
+import { wallets as leapMetamaskWallets } from '@cosmos-kit/leap-metamask-cosmos-snap'
 import { wallets as okxWallets } from '@cosmos-kit/okxwallet'
 import { wallets as omniWallets } from '@cosmos-kit/omni'
 import { ChainProvider, walletContext } from '@cosmos-kit/react-lite'
@@ -45,8 +48,10 @@ import {
 import { useSyncWalletSigner, useWallet } from '../hooks'
 import { WalletUi } from './wallet'
 
-// Set better name for MetaMask wallet.
-metamaskWallets[0].walletInfo.prettyName = 'MetaMask (Leap Snap)'
+// Set better name for MetaMask wallets.
+leapMetamaskWallets[0].walletInfo.prettyName = 'MetaMask (Leap Snap)'
+cosmosExtensionMetamaskWallets[0].walletInfo.prettyName =
+  'MetaMask (Cosmos Extension)'
 
 export type WalletProviderProps = {
   // This needs to be provided by the parent component and then passed to the
@@ -110,9 +115,9 @@ export const WalletProvider = ({
 
   const signerOptions: SignerOptions = {
     // cosmos-kit has an older version of the package. This is a workaround.
-    signingStargate: getSignerOptions as SignerOptions['signingStargate'],
+    signingStargate: getSignerOptions as any,
     // cosmos-kit has an older version of the package. This is a workaround.
-    signingCosmwasm: getSignerOptions as SignerOptions['signingCosmwasm'],
+    signingCosmwasm: getSignerOptions as any,
   }
 
   // Auto-connect to Keplr mobile web if in that context.
@@ -131,6 +136,34 @@ export const WalletProvider = ({
       )
     })()
   }, [mountedInBrowser, setIsKeplrMobileWeb])
+
+  const allWallets = [
+    ...leapMetamaskWallets,
+    // Alphabetize.
+    ...[
+      ...keplrExtensionWallets,
+      // Only allow Keplr Mobile on mainnet since it can't use testnet.
+      ...(MAINNET ? keplrMobileWallets : []),
+      ...leapWallets.filter((w) => !leapMetamaskWallets.includes(w)),
+      ...stationWallets,
+      ...vectisWallets,
+      ...trustWallets,
+      ...cosmostationWallets,
+      ...coin98Wallets,
+      ...omniWallets,
+      ...shellWallets,
+      ...xdefiWallets,
+      ...okxWallets,
+      ...finWallets,
+      ...compassWallets,
+      ...frontierWallets,
+      ...cosmosExtensionMetamaskWallets,
+    ].sort((a, b) =>
+      a.walletInfo.prettyName.localeCompare(b.walletInfo.prettyName)
+    ),
+    // Google, Apple, Discord, Twitter
+    ...web3AuthWallets,
+  ]
 
   return (
     <ChainProvider
@@ -169,27 +202,7 @@ export const WalletProvider = ({
       wallets={
         // If Keplr Mobile in-app browser, only allow Keplr Extension. Keplr
         // Mobile wallet works via WalletConnect from a desktop, but not in-app.
-        isKeplrMobileWeb
-          ? keplrExtensionWallets
-          : [
-              ...metamaskWallets,
-              ...keplrExtensionWallets,
-              // Only allow Keplr Mobile on mainnet since it can't use testnet.
-              ...(MAINNET ? keplrMobileWallets : []),
-              ...leapWallets.filter((w) => !metamaskWallets.includes(w)),
-              ...stationWallets,
-              ...vectisWallets,
-              ...trustWallets,
-              ...cosmostationWallets,
-              ...coin98Wallets,
-              ...omniWallets,
-              ...shellWallets,
-              ...xdefiWallets,
-              ...okxWallets,
-              ...finWallets,
-              // Google, Apple, Discord, Twitter
-              ...web3AuthWallets,
-            ]
+        isKeplrMobileWeb ? keplrExtensionWallets : allWallets
       }
     >
       <InnerWalletProvider>{children}</InnerWalletProvider>
