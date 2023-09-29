@@ -72,6 +72,8 @@ export type InboxApiItem = {
 export enum InboxApiItemType {
   JoinedDao = 'joined_dao',
   ProposalCreated = 'proposal_created',
+  ProposalExecuted = 'proposal_executed',
+  ProposalClosed = 'proposal_closed',
 }
 
 export enum InboxApiItemTypeMethod {
@@ -133,6 +135,8 @@ export type InboxApiConfig = {
   // If `push` is defined in the body, returns whether or not the push is now
   // subscribed.
   pushSubscribed?: boolean
+  // Allowed methods per type.
+  typeAllowedMethods: Record<InboxApiItemType, InboxApiItemTypeMethod[]>
 }
 
 export type InboxApi = {

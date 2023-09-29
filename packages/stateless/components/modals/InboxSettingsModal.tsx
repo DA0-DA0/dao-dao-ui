@@ -285,10 +285,8 @@ export const InboxSettingsModal = ({
                 <div className="flex flex-col gap-2">
                   {TYPE_METHODS.filter(
                     ({ method }) =>
-                      // If defined, only the listed methods are allowed for the
-                      // given type. Otherwise, all methods are allowed.
-                      !TYPE_ALLOWED_METHODS[type] ||
-                      TYPE_ALLOWED_METHODS[type]!.includes(method)
+                      type in config.typeAllowedMethods &&
+                      config.typeAllowedMethods[type].includes(method)
                   ).map(({ method, i18nKey, Icon }) => (
                     <div key={method} className="flex flex-row gap-2">
                       <Tooltip title={t(i18nKey)}>
@@ -322,15 +320,4 @@ export const InboxSettingsModal = ({
       )}
     </Modal>
   )
-}
-
-// If defined, only the listed methods are allowed for the given type.
-// Otherwise, all methods are allowed.
-const TYPE_ALLOWED_METHODS: Partial<
-  Record<InboxApiItemType, InboxApiItemTypeMethod[]>
-> = {
-  [InboxApiItemType.ProposalCreated]: [
-    InboxApiItemTypeMethod.Email,
-    InboxApiItemTypeMethod.Push,
-  ],
 }

@@ -662,12 +662,20 @@
   },
   "inboxItemType": {
     "joined_dao": {
-      "description": "Get notified when you're added to a DAO, with a reminder to follow it.",
+      "description": "When you're added to a DAO.",
       "title": "Joined DAO"
     },
+    "proposal_closed": {
+      "description": "When a proposal is rejected and closed.",
+      "title": "Proposal closed"
+    },
     "proposal_created": {
-      "description": "Get notified when a proposal is created in a DAO you follow.",
+      "description": "When a proposal is created.",
       "title": "Proposal created"
+    },
+    "proposal_executed": {
+      "description": "When a proposal is passed and executed.",
+      "title": "Proposal executed"
     }
   },
   "info": {
