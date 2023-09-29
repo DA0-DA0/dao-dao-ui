@@ -47,7 +47,7 @@ export const DaoCard = ({
   return (
     <LinkWrapper
       className={clsx(
-        'relative flex h-[328px] w-full flex-col items-center justify-between rounded-md bg-background-secondary py-7 px-6 ring-1 ring-inset ring-transparent transition-all hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus',
+        'relative flex h-[328px] w-full flex-col items-center justify-between rounded-md bg-background-secondary px-4 py-5 ring-1 ring-inset ring-transparent transition-all hover:bg-background-interactive-hover hover:ring-border-interactive-hover active:bg-background-interactive-pressed active:ring-border-interactive-focus sm:py-7 sm:px-6',
         className
       )}
       href={getDaoPath(coreAddress)}
@@ -56,7 +56,7 @@ export const DaoCard = ({
     >
       <div
         className={clsx(
-          'absolute top-0 left-0 flex w-full flex-row items-center p-3',
+          'absolute top-0 left-0 flex w-full flex-row items-center p-2 sm:p-3',
           {
             'justify-between': !!parentDao,
             'justify-end': !parentDao, // Keep the pin and member check at the end if no parent DAO.

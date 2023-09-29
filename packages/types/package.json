@@ -9,7 +9,7 @@
   "devDependencies": {
     "@chain-registry/types": "^0.16.0",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
-    "@cosmos-kit/web3auth": "^2.3.8",
+    "@cosmos-kit/web3auth": "^2.3.10",
     "@dao-dao/config": "2.2.0",
     "next-i18next": "^11.0.0",
     "pusher-js": "^7.6.0",
