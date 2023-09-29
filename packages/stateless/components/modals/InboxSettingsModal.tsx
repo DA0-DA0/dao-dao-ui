@@ -28,11 +28,6 @@ import { Loader } from '../logo'
 import { Tooltip } from '../tooltip'
 import { Modal } from './Modal'
 
-const DEFAULT_TYPE = Object.values(InboxApiItemTypeMethod).reduce(
-  (acc, cur) => acc | (cur as number),
-  0
-)
-
 const TYPE_METHODS: InboxApiItemTypeMethodData[] = [
   {
     method: InboxApiItemTypeMethod.Website,
@@ -294,13 +289,11 @@ export const InboxSettingsModal = ({
                       </Tooltip>
 
                       <Checkbox
-                        checked={
-                          ((types?.[type] ?? DEFAULT_TYPE) & method) === method
-                        }
+                        checked={((types?.[type] ?? 0) & method) === method}
                         onClick={() => {
                           setValue(
                             `types.${type}`,
-                            (types?.[type] ?? DEFAULT_TYPE) ^ method
+                            (types?.[type] ?? 0) ^ method
                           )
                           setNeedsSave(true)
                         }}

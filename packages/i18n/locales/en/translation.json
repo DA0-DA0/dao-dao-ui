@@ -57,6 +57,7 @@
     "claimNumTokens": "Claim your {{amount}} ${{tokenSymbol}}",
     "claimStakingRewards": "Claim staking rewards",
     "clear": "Clear",
+    "clearNotification": "Clear notification",
     "clickHereToProposeAdding": "Click here to propose adding it.",
     "clickToCopyAddress": "Click to copy address",
     "clickToFollow": "Click to follow",
@@ -394,7 +395,8 @@
     "treasuryNoTokensCannotStake": "The treasury has no ${{tokenSymbol}}, so you can't stake any tokens.",
     "txNotFound": "Transaction not found.",
     "unexpectedError": "An unexpected error occurred.",
-    "unknownDenom": "Unknown denomination {{denom}}."
+    "unknownDenom": "Unknown denomination {{denom}}.",
+    "unknownInboxType": "Unknown inbox item type."
   },
   "form": {
     "addAnImage": "Add an image",

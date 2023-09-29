@@ -1,10 +1,15 @@
 import { makeSignDoc } from '@cosmjs/amino'
-import { useCallback, useRef } from 'react'
+import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { useWallet } from './useWallet'
+
+// Cloudflare KV is slow to update, so keep track of the last successful nonce
+// that worked so we don't have to wait for the nonce query to update. Make this
+// a global variable so it persists across all hook uses.
+const lastSuccessfulNonceForType: Record<string, number | undefined> = {}
 
 export const useCfWorkerAuthPostRequest = (
   apiBase: string,
@@ -21,9 +26,6 @@ export const useCfWorkerAuthPostRequest = (
   })
 
   const ready = !hexPublicKey.loading && !!walletAddress
-  // Cloudflare KV is slow to update, so keep track of the last successful nonce
-  // that worked so we don't have to wait for the nonce query to update.
-  const lastSuccessfulNonce = useRef(-1)
 
   const postRequest = useCallback(
     async <R = any>(
@@ -55,8 +57,10 @@ export const useCfWorkerAuthPostRequest = (
 
       // If nonce was already used, manually increment.
       let nonce = nonceResponse.nonce
-      if (nonce <= lastSuccessfulNonce.current) {
-        nonce = lastSuccessfulNonce.current + 1
+      const lastSuccessfulNonce =
+        lastSuccessfulNonceForType[signatureType] ?? -1
+      if (nonce <= lastSuccessfulNonce) {
+        nonce = lastSuccessfulNonce + 1
       }
 
       const dataWithAuth = {
@@ -130,7 +134,7 @@ export const useCfWorkerAuthPostRequest = (
       }
 
       // If succeeded, store nonce.
-      lastSuccessfulNonce.current = nonce
+      lastSuccessfulNonceForType[signatureType] = nonce
 
       // If response OK, return response body.
       return await response.json()

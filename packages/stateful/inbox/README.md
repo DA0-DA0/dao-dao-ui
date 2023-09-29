@@ -6,8 +6,8 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 
 | Adapter                                  | Summary                          |
 | ---------------------------------------- | -------------------------------- |
+| [Inbox](./sources/Inbox)                 | Inbox notifications              |
 | [OpenProposals](./sources/OpenProposals) | Open proposals in following DAOs |
-| [JoinedDao](./sources/JoinedDao)         | Joined DAO follow suggestions    |
 
 ## Layout
 

@@ -7,27 +7,27 @@ export type InboxSourceItem<Props extends unknown = any> = {
   order?: number
 }
 
-export type InboxSourceDaoWithItems<Props extends unknown = any> = {
+export type InboxSourceDaoWithItems<Data extends unknown = any> = {
   chainId: string
   coreAddress: string
-  items: InboxSourceItem<Props>[]
+  items: InboxSourceItem<Data>[]
 }
 
-export type InboxSourceData<Props extends unknown = any> = {
+export type InboxSourceData<Data extends unknown = any> = {
   loading: boolean
   refreshing: boolean
-  daosWithItems: InboxSourceDaoWithItems<Props>[]
+  daosWithItems: InboxSourceDaoWithItems<Data>[]
   refresh: () => void
 }
 
-export type InboxSource<Props extends unknown = any> = {
+export type InboxSource<Data extends unknown = any> = {
   id: string
-  Renderer: ComponentType<Props>
-  useData: () => InboxSourceData<Props>
+  Renderer: ComponentType<Data>
+  useData: () => InboxSourceData<Data>
 }
 
-export type InboxItem<Props extends unknown = any> = InboxSourceItem<Props> & {
-  Renderer: ComponentType<Props>
+export type InboxItem<Data extends unknown = any> = InboxSourceItem<Data> & {
+  Renderer: ComponentType<Data>
 }
 
 export type InboxDaoWithItems = {
@@ -56,25 +56,59 @@ export type InboxApiLoadedItem = {
   data: unknown
 }
 
-// Items from the inbox API.
-export type InboxApiItem = {
-  id: string
-  timestamp: string | undefined
-  chainId: string | undefined
-} & {
-  type: InboxApiItemType.JoinedDao
-  data: {
-    chainId: string
-    dao: string
-  }
-}
-
 export enum InboxApiItemType {
   JoinedDao = 'joined_dao',
   ProposalCreated = 'proposal_created',
   ProposalExecuted = 'proposal_executed',
   ProposalClosed = 'proposal_closed',
 }
+
+export type InboxApiItemTypeJoinedDaoData = {
+  chainId: string
+  dao: string
+  name: string
+  imageUrl: string | undefined
+}
+
+export type InboxApiItemTypeProposalCreatedData = {
+  chainId: string
+  dao: string
+  daoName: string
+  imageUrl: string | undefined
+  proposalId: string
+  proposalTitle: string
+}
+
+export type InboxApiItemTypeProposalExecutedData =
+  InboxApiItemTypeProposalCreatedData & {
+    failed: boolean
+    // Winning option for a multiple choice proposal.
+    winningOption?: string
+  }
+
+export type InboxApiItemTypeProposalClosedData =
+  InboxApiItemTypeProposalCreatedData
+
+// Items from the inbox API.
+export type InboxApiItem = Omit<InboxApiLoadedItem, 'data'> &
+  (
+    | {
+        type: InboxApiItemType.JoinedDao
+        data: InboxApiItemTypeJoinedDaoData
+      }
+    | {
+        type: InboxApiItemType.ProposalCreated
+        data: InboxApiItemTypeProposalCreatedData
+      }
+    | {
+        type: InboxApiItemType.ProposalExecuted
+        data: InboxApiItemTypeProposalExecutedData
+      }
+    | {
+        type: InboxApiItemType.ProposalClosed
+        data: InboxApiItemTypeProposalClosedData
+      }
+  )
 
 export enum InboxApiItemTypeMethod {
   Website = 1 << 0,

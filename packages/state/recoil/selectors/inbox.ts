@@ -6,7 +6,7 @@ import {
   InboxApiLoadedItem,
   WithChainId,
 } from '@dao-dao/types'
-import { INBOX_API_BASE, objectMatchesStructure } from '@dao-dao/utils'
+import { INBOX_API_BASE } from '@dao-dao/utils'
 
 import { refreshInboxApiItemsAtom } from '../atoms/refresh'
 
@@ -53,44 +53,14 @@ export const inboxApiItemsSelector = selectorFamily<
         }
 
         const items = loadedItems
-          .map((item): InboxApiItem | undefined => {
-            const type = item.id.split('/')[0] as InboxApiItemType
-
-            // Validate type and matching data format.
-            switch (type) {
-              case InboxApiItemType.JoinedDao:
-                if (
-                  !objectMatchesStructure(item.data, {
-                    dao: {},
-                  })
-                ) {
-                  console.error(
-                    `[${
-                      item.id
-                    }] Invalid inbox API item data for type ${type}: ${JSON.stringify(
-                      item.data
-                    )}`
-                  )
-                  return
-                }
-
-                return {
-                  ...item,
-                  type,
-                  data: {
-                    chainId,
-                    ...(item.data as {
-                      dao: string
-                    }),
-                  },
-                }
-
-              default:
-                console.error(
-                  `[${item.id}] Invalid inbox API item type: ${type}`
-                )
-            }
-          })
+          // Extract type from ID.
+          .map(
+            (item) =>
+              ({
+                type: item.id.split('/')[0] as InboxApiItemType,
+                ...item,
+              } as InboxApiItem)
+          )
           .filter(
             (item): item is InboxApiItem =>
               !!item &&

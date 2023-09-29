@@ -1,8 +1,9 @@
 import { InboxSource } from '@dao-dao/types'
 
-import { JoinedDao, OpenProposals } from './sources'
+import { InboxItems } from './sources'
+import { OpenProposals } from './sources/OpenProposals'
 
 export const getSources = (): readonly InboxSource[] => [
+  InboxItems,
   OpenProposals,
-  JoinedDao,
 ]

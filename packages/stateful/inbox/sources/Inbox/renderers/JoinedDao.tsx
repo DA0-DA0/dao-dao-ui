@@ -2,14 +2,17 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@dao-dao/stateless'
+import { InboxApiItemTypeJoinedDaoData } from '@dao-dao/types'
 
-import { useFollowingDaos, useInboxApi } from '../../../hooks'
-import { Data } from './types'
+import { useFollowingDaos } from '../../../../hooks'
+import { RendererProps } from '../types'
 
-export const Renderer = ({ chainId, coreAddress, inboxItemId }: Data) => {
+export const JoinedDaoRenderer = ({
+  data: { chainId, dao },
+  clear,
+}: RendererProps<InboxApiItemTypeJoinedDaoData>) => {
   const { t } = useTranslation()
   const { setFollowing, updatingFollowing } = useFollowingDaos(chainId)
-  const { clear } = useInboxApi()
 
   const [loadingFollowing, setLoadingFollowing] = useState(false)
 
@@ -25,9 +28,11 @@ export const Renderer = ({ chainId, coreAddress, inboxItemId }: Data) => {
           loading={updatingFollowing && loadingFollowing}
           onClick={() => {
             setLoadingFollowing(true)
-            setFollowing(coreAddress).then(
-              (success) => success && clear(inboxItemId)
-            )
+            setFollowing(dao).then((success) => {
+              if (success) {
+                clear()
+              }
+            })
           }}
         >
           {t('button.follow')}
@@ -40,7 +45,7 @@ export const Renderer = ({ chainId, coreAddress, inboxItemId }: Data) => {
           loading={updatingFollowing && !loadingFollowing}
           onClick={() => {
             setLoadingFollowing(false)
-            clear(inboxItemId)
+            clear()
           }}
           variant="secondary"
         >
