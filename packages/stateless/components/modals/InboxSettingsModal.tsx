@@ -270,9 +270,9 @@ export const InboxSettingsModal = ({
             {Object.values(InboxApiItemType).map((type) => (
               <div
                 key={type}
-                className="flex flex-row items-start gap-4 rounded-md bg-background-secondary p-3"
+                className="flex flex-row items-start justify-between gap-4 rounded-md bg-background-secondary p-3"
               >
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-1">
                   <p className="primary-text">
                     {t(`inboxItemType.${type}.title`)}
                   </p>
