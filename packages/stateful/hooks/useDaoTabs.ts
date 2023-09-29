@@ -3,13 +3,20 @@ import {
   FiberSmartRecordOutlined,
   HomeOutlined,
   HowToVoteOutlined,
+  WebOutlined,
 } from '@mui/icons-material'
 import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import { useDaoInfoContext } from '@dao-dao/stateless'
 import { DaoTabId, DaoTabWithComponent, WidgetLocation } from '@dao-dao/types'
 
-import { ProposalsTab, SubDaosTab, TreasuryAndNftsTab } from '../components'
+import {
+  BrowserTab,
+  ProposalsTab,
+  SubDaosTab,
+  TreasuryAndNftsTab,
+} from '../components'
 import { useVotingModuleAdapter } from '../voting-module-adapter'
 import { useWidgets } from '../widgets'
 
@@ -25,6 +32,7 @@ export const useDaoTabs = ({
   const {
     components: { extraTabs },
   } = useVotingModuleAdapter()
+  const { items } = useDaoInfoContext()
 
   // Get widget tab components, if exist.
   const loadingWidgets = useWidgets({
@@ -75,13 +83,17 @@ export const useDaoTabs = ({
       Component: SubDaosTab,
       Icon: FiberSmartRecordOutlined,
     },
-    // TODO(iframe browser): once most apps have updated
-    // {
-    //   id: DaoTabId.Browser,
-    //   label: t('title.browser'),
-    //   Component: BrowserTab,
-    //   Icon: WebOutlined,
-    // },
+    // Experimental Browser tab must be enabled through the DAO.
+    ...('browserEnabled' in items && items.browserEnabled === 'true'
+      ? [
+          {
+            id: DaoTabId.Browser,
+            label: t('title.browser'),
+            Component: BrowserTab,
+            Icon: WebOutlined,
+          },
+        ]
+      : []),
     ...(extraTabs?.map(({ labelI18nKey, ...tab }) => ({
       label: t(labelI18nKey),
       ...tab,
