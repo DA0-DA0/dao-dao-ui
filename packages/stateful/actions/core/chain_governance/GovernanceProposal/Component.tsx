@@ -112,10 +112,11 @@ export const GovernanceProposalComponent: ActionComponent<
 
   const availableTokens: GenericToken[] = [
     // First native.
-    nativeToken,
+    ...(nativeToken ? [nativeToken] : []),
     // Then the chain assets.
     ...getChainAssets(chainId).filter(
-      ({ denomOrAddress }) => denomOrAddress !== nativeToken.denomOrAddress
+      ({ denomOrAddress }) =>
+        !nativeToken || denomOrAddress !== nativeToken.denomOrAddress
     ),
   ]
 
@@ -587,7 +588,7 @@ export const GovernanceProposalComponent: ActionComponent<
                               onClick={() =>
                                 appendSpend({
                                   amount: 1,
-                                  denom: nativeToken.denomOrAddress,
+                                  denom: nativeToken?.denomOrAddress || '',
                                 })
                               }
                               variant="secondary"
