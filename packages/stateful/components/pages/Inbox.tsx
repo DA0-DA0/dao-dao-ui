@@ -14,7 +14,7 @@ import { SITE_URL } from '@dao-dao/utils'
 
 import { useInboxApi, useWallet } from '../../hooks'
 import { ConnectWallet } from '../ConnectWallet'
-import { LinkWrapper } from '../LinkWrapper'
+import { InboxMainItemRenderer } from '../inbox'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 
 export const Inbox: NextPage = () => {
@@ -64,7 +64,7 @@ export const Inbox: NextPage = () => {
 
       {isWalletConnected ? (
         <StatelessInbox
-          LinkWrapper={LinkWrapper}
+          InboxMainItemRenderer={InboxMainItemRenderer}
           api={api}
           connected={isWalletConnected}
           rightSidebarContent={<ProfileHomeCard />}

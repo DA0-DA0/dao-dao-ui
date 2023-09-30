@@ -1,6 +1,7 @@
 # OpenProposals
 
-This is the inbox source for showing open proposals the wallet is following.
+This is the feed source for showing open proposals in DAOs the wallet is
+following.
 
 ## Layout
 

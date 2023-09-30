@@ -113,9 +113,9 @@ export const refreshPolytoneListenerResultsAtom = atom({
   default: 0,
 })
 
-// Change this to refresh inbox items from the API.
-export const refreshInboxApiItemsAtom = atom({
-  key: 'refreshInboxApiItems',
+// Change this to refresh inbox items.
+export const refreshInboxItemsAtom = atom({
+  key: 'refreshInboxItems',
   default: 0,
 })
 

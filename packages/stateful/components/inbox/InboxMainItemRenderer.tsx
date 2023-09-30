@@ -2,13 +2,16 @@ import { ComponentType, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { WarningCard } from '@dao-dao/stateless'
-import { InboxApiItem, InboxApiItemType } from '@dao-dao/types'
+import {
+  InboxItemRendererProps,
+  InboxItemType,
+  InboxMainItemRendererProps,
+} from '@dao-dao/types'
 
-import { useInboxApi } from '../../../hooks'
+import { useInboxApi } from '../../hooks'
 import { JoinedDaoRenderer, ProposalRenderer } from './renderers'
-import { RendererProps } from './types'
 
-export const Renderer = (item: InboxApiItem) => {
+export const InboxMainItemRenderer = ({ item }: InboxMainItemRendererProps) => {
   const { t } = useTranslation()
   const { clear: _clear } = useInboxApi()
   const clear = useCallback(() => _clear(item.id), [_clear, item.id])
@@ -23,10 +26,10 @@ export const Renderer = (item: InboxApiItem) => {
 }
 
 const ITEM_RENDERER_MAP: Partial<
-  Record<InboxApiItemType, ComponentType<RendererProps<any>>>
+  Record<InboxItemType, ComponentType<InboxItemRendererProps<any>>>
 > = {
-  [InboxApiItemType.JoinedDao]: JoinedDaoRenderer,
-  [InboxApiItemType.ProposalCreated]: ProposalRenderer,
-  [InboxApiItemType.ProposalExecuted]: ProposalRenderer,
-  [InboxApiItemType.ProposalClosed]: ProposalRenderer,
+  [InboxItemType.JoinedDao]: JoinedDaoRenderer,
+  [InboxItemType.ProposalCreated]: ProposalRenderer,
+  [InboxItemType.ProposalExecuted]: ProposalRenderer,
+  [InboxItemType.ProposalClosed]: ProposalRenderer,
 }

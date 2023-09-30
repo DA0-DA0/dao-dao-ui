@@ -4,12 +4,12 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { temporaryClearedInboxApiItemsAtom } from '@dao-dao/state'
+import { temporaryClearedInboxItemsAtom } from '@dao-dao/state'
 import { useServiceWorker } from '@dao-dao/stateless'
 import {
   InboxApi,
-  InboxApiConfig,
-  InboxApiUpdateConfig,
+  InboxConfig,
+  InboxUpdateConfig,
   PushSubscriptionManager,
 } from '@dao-dao/types'
 import {
@@ -29,7 +29,7 @@ export const useInboxApi = (): InboxApi => {
   // all successful updates for the current session. This will be reset on page
   // refresh.
   const setTemporary = useSetRecoilState(
-    temporaryClearedInboxApiItemsAtom(address)
+    temporaryClearedInboxItemsAtom(address)
   )
 
   const [updating, setUpdating] = useState(false)
@@ -38,7 +38,7 @@ export const useInboxApi = (): InboxApi => {
     'Inbox'
   )
 
-  const [config, setConfig] = useState<InboxApiConfig>()
+  const [config, setConfig] = useState<InboxConfig>()
 
   const serviceWorker = useServiceWorker()
   const [pushSubscribed, setPushSubscribed] = useState(false)
@@ -116,7 +116,7 @@ export const useInboxApi = (): InboxApi => {
   )
 
   const updateConfig = useCallback(
-    async (data: InboxApiUpdateConfig, signatureType = 'Save Inbox Config') => {
+    async (data: InboxUpdateConfig, signatureType = 'Save Inbox Config') => {
       if (!ready) {
         toast.error(t('error.logInToContinue'))
         return false
@@ -143,7 +143,7 @@ export const useInboxApi = (): InboxApi => {
               }
             : undefined)
 
-        const config = await postRequest<InboxApiConfig>(
+        const config = await postRequest<InboxConfig>(
           '/config',
           {
             ...data,

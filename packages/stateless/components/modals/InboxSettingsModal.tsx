@@ -13,10 +13,10 @@ import { useTranslation } from 'react-i18next'
 
 import {
   InboxApi,
-  InboxApiItemType,
-  InboxApiItemTypeMethod,
-  InboxApiItemTypeMethodData,
-  InboxApiUpdateConfig,
+  InboxItemType,
+  InboxItemTypeMethod,
+  InboxItemTypeMethodData,
+  InboxUpdateConfig,
   ModalProps,
 } from '@dao-dao/types'
 import { validateEmail } from '@dao-dao/utils'
@@ -28,19 +28,19 @@ import { Loader } from '../logo'
 import { Tooltip } from '../tooltip'
 import { Modal } from './Modal'
 
-const TYPE_METHODS: InboxApiItemTypeMethodData[] = [
+const TYPE_METHODS: InboxItemTypeMethodData[] = [
   {
-    method: InboxApiItemTypeMethod.Website,
+    method: InboxItemTypeMethod.Website,
     i18nKey: 'title.website',
     Icon: Language,
   },
   {
-    method: InboxApiItemTypeMethod.Email,
+    method: InboxItemTypeMethod.Email,
     i18nKey: 'title.email',
     Icon: Email,
   },
   {
-    method: InboxApiItemTypeMethod.Push,
+    method: InboxItemTypeMethod.Push,
     i18nKey: 'title.push',
     Icon: Smartphone,
   },
@@ -71,7 +71,7 @@ export const InboxSettingsModal = ({
   const router = useRouter()
 
   const { register, reset, setValue, getValues, watch } =
-    useForm<InboxApiUpdateConfig>()
+    useForm<InboxUpdateConfig>()
 
   const types = watch('types')
 
@@ -262,7 +262,7 @@ export const InboxSettingsModal = ({
             {t('info.inboxConfigPreferencesDescription')}
           </p>
           <div className="-mt-1 flex flex-col gap-1">
-            {Object.values(InboxApiItemType).map((type) => (
+            {Object.values(InboxItemType).map((type) => (
               <div
                 key={type}
                 className="flex flex-row items-start justify-between gap-4 rounded-md bg-background-secondary p-3"

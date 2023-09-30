@@ -11,8 +11,7 @@ import {
 } from '@dao-dao/types'
 
 import { makeGenericContext } from '../command'
-import { useWebSocket } from '../hooks'
-import { useInbox } from '../inbox'
+import { useInbox, useWebSocket } from '../hooks'
 
 export const AppContextProvider = ({
   mode,

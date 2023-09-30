@@ -8,8 +8,8 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   DaoPageMode,
-  InboxSourceDaoWithItems,
-  InboxSourceItem,
+  FeedSourceDaoWithItems,
+  FeedSourceItem,
   WithChainId,
 } from '@dao-dao/types'
 import { convertExpirationToDate, getDaoProposalPath } from '@dao-dao/utils'
@@ -17,11 +17,11 @@ import { convertExpirationToDate, getDaoProposalPath } from '@dao-dao/utils'
 import { ProposalLineProps } from '../../../components/ProposalLine'
 import { followingDaosWithProposalModulesSelector } from '../../../recoil'
 
-export const inboxOpenProposalsSelector = selectorFamily<
-  InboxSourceDaoWithItems[],
+export const feedOpenProposalsSelector = selectorFamily<
+  FeedSourceDaoWithItems[],
   WithChainId<{ wallet?: { address: string; hexPublicKey: string } }>
 >({
-  key: 'inboxOpenProposals',
+  key: 'feedOpenProposals',
   get:
     ({ wallet, chainId }) =>
     ({ get }) => {
@@ -99,7 +99,7 @@ export const inboxOpenProposalsSelector = selectorFamily<
         (
           { coreAddress, proposalModules },
           index
-        ): InboxSourceDaoWithItems<ProposalLineProps> => {
+        ): FeedSourceDaoWithItems<ProposalLineProps> => {
           const proposalModulesWithOpenProposals = openProposalsPerDao[index]
 
           return {
@@ -117,7 +117,7 @@ export const inboxOpenProposalsSelector = selectorFamily<
                       id,
                       proposal: { expiration, start_height },
                       voted,
-                    }): InboxSourceItem<ProposalLineProps> => ({
+                    }): FeedSourceItem<ProposalLineProps> => ({
                       props: {
                         chainId,
                         coreAddress,

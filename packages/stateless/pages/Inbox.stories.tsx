@@ -1,16 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { InboxMainItemRenderer } from '@dao-dao/stateful'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators'
+import { InboxItemType } from '@dao-dao/types'
 
-import {
-  LinkWrapper,
-  ProfileHomeCard,
-  ProfileHomeCardProps,
-  ProposalLine,
-} from '../components'
-import { DefaultArgs as NavigationStoryArgs } from '../components/layout/DappNavigation.stories'
+import { ProfileHomeCard, ProfileHomeCardProps } from '../components'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
-import { makeProps as makeProposalLineProps } from '../components/proposal/ProposalLine.ProposalLine.stories'
 import { Inbox } from './Inbox'
 
 export default {
@@ -26,32 +22,29 @@ Default.args = {
   state: {
     loading: false,
     refreshing: false,
-    daosWithItems: NavigationStoryArgs.followingDaos.loading
-      ? []
-      : NavigationStoryArgs.followingDaos.data.map((dao) => ({
-          dao,
-          // Generate between 1 and 3 proposals.
-          items: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {
-            // Random time in the next 3 days.
-            const secondsRemaining = Math.floor(
-              Math.random() * 3 * 24 * 60 * 60
-            )
+    items: [...Array(Math.floor(Math.random() * 3) + 1)].map((_, index) => {
+      // Random time in the last 3 days.
+      const secondsRemaining = Math.floor(Math.random() * 3 * 24 * 60 * 60)
 
-            return {
-              Renderer: ProposalLine,
-              props: makeProposalLineProps(secondsRemaining),
-              pending: true,
-            }
-          }),
-        })),
-    pendingItemCount: 42,
-    totalItemCount: 100,
+      return {
+        id: `${index}`,
+        timestamp: new Date(Date.now() - secondsRemaining * 1000).toISOString(),
+        chainId: CHAIN_ID,
+        type: InboxItemType.JoinedDao,
+        data: {
+          chainId: CHAIN_ID,
+          dao: 'junoDaoCoreAddress',
+          name: 'A DAO',
+          imageUrl: undefined,
+        },
+      }
+    }),
     refresh: () => {},
   },
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),
-  LinkWrapper,
+  InboxMainItemRenderer,
   connected: true,
 }
 Default.parameters = {
@@ -70,9 +63,7 @@ Loading.args = {
   state: {
     loading: true,
     refreshing: false,
-    daosWithItems: [],
-    pendingItemCount: 0,
-    totalItemCount: 0,
+    items: [],
     refresh: () => {},
   },
 }
@@ -83,9 +74,7 @@ NothingOpen.args = {
   state: {
     loading: false,
     refreshing: false,
-    daosWithItems: [],
-    pendingItemCount: 0,
-    totalItemCount: 0,
+    items: [],
     refresh: () => {},
   },
 }
@@ -96,9 +85,7 @@ NothingFollowed.args = {
   state: {
     loading: false,
     refreshing: false,
-    daosWithItems: [],
-    pendingItemCount: 0,
-    totalItemCount: 0,
+    items: [],
     refresh: () => {},
   },
 }

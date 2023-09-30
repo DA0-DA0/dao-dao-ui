@@ -8,19 +8,19 @@ import {
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
-  InboxApiItemType,
-  InboxApiItemTypeProposalCreatedData,
+  InboxItemRendererProps,
+  InboxItemType,
+  InboxItemTypeProposalCreatedData,
 } from '@dao-dao/types'
 import { formatDateTimeTz } from '@dao-dao/utils'
 
-import { LinkWrapper } from '../../../../components'
-import { RendererProps } from '../types'
+import { LinkWrapper } from '../../LinkWrapper'
 
 export const ProposalRenderer = ({
   item,
   data: { dao, proposalId, proposalTitle },
   clear,
-}: RendererProps<InboxApiItemTypeProposalCreatedData>) => {
+}: InboxItemRendererProps<InboxItemTypeProposalCreatedData>) => {
   const { t } = useTranslation()
   const { getDaoProposalPath } = useDaoNavHelpers()
 
@@ -29,13 +29,13 @@ export const ProposalRenderer = ({
   const timestamp = item.timestamp && new Date(item.timestamp)
 
   const status =
-    item.type === InboxApiItemType.ProposalCreated
+    item.type === InboxItemType.ProposalCreated
       ? t('title.created')
-      : item.type === InboxApiItemType.ProposalExecuted
+      : item.type === InboxItemType.ProposalExecuted
       ? item.data.failed
         ? t('proposalStatusTitle.execution_failed')
         : t('proposalStatusTitle.executed')
-      : item.type === InboxApiItemType.ProposalClosed
+      : item.type === InboxItemType.ProposalClosed
       ? t('proposalStatusTitle.closed')
       : undefined
 

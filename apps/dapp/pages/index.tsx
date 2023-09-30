@@ -8,12 +8,14 @@ import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { commandModalVisibleAtom } from '@dao-dao/state'
 import {
   DaoCard,
+  LinkWrapper,
   ProfileDisconnectedCard,
   ProfileHomeCard,
   useLoadingFeaturedDaoCardInfos,
   useLoadingFollowingDaoCardInfos,
   useWallet,
 } from '@dao-dao/stateful'
+import { useFeed } from '@dao-dao/stateful/feed'
 import { Home } from '@dao-dao/stateless'
 
 const HomePage: NextPage = () => {
@@ -23,6 +25,7 @@ const HomePage: NextPage = () => {
 
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos()
   const followingDaosLoading = useLoadingFollowingDaoCardInfos()
+  const feed = useFeed()
 
   return (
     <Home
@@ -30,6 +33,10 @@ const HomePage: NextPage = () => {
       featuredDaosProps={{
         Component: DaoCard,
         items: featuredDaosLoading,
+      }}
+      feedProps={{
+        state: feed,
+        LinkWrapper,
       }}
       followingDaosProps={{
         DaoCard,

@@ -2,15 +2,17 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { Button } from '@dao-dao/stateless'
-import { InboxApiItemTypeJoinedDaoData } from '@dao-dao/types'
+import {
+  InboxItemRendererProps,
+  InboxItemTypeJoinedDaoData,
+} from '@dao-dao/types'
 
-import { useFollowingDaos } from '../../../../hooks'
-import { RendererProps } from '../types'
+import { useFollowingDaos } from '../../../hooks'
 
 export const JoinedDaoRenderer = ({
   data: { chainId, dao },
   clear,
-}: RendererProps<InboxApiItemTypeJoinedDaoData>) => {
+}: InboxItemRendererProps<InboxItemTypeJoinedDaoData>) => {
   const { t } = useTranslation()
   const { setFollowing, updatingFollowing } = useFollowingDaos(chainId)
 

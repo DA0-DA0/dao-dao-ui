@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ProposalLine } from '@dao-dao/stateful'
 import { makeDappLayoutDecorator } from '@dao-dao/storybook/decorators'
 
 import {
@@ -13,8 +14,10 @@ import {
   SidebarWallet,
 } from '../components'
 import { FeaturedDaos as FeaturedDaosScrollerStory } from '../components/HorizontalScroller.stories'
+import { DefaultArgs as NavigationStoryArgs } from '../components/layout/DappNavigation.stories'
 import { Default as ProfileDisconnectedCardStory } from '../components/profile/ProfileDisconnectedCard.stories'
 import { Default as ProfileHomeCardStory } from '../components/profile/ProfileHomeCard.stories'
+import { makeProps as makeProposalLineProps } from '../components/proposal/ProposalLine.ProposalLine.stories'
 import { Home } from './Home'
 
 export default {
@@ -61,6 +64,34 @@ Connected.args = {
   rightSidebarContent: (
     <ProfileHomeCard {...(ProfileHomeCardStory.args as ProfileHomeCardProps)} />
   ),
+  feedProps: {
+    state: {
+      loading: false,
+      refreshing: false,
+      daosWithItems: NavigationStoryArgs.followingDaos.loading
+        ? []
+        : NavigationStoryArgs.followingDaos.data.map((dao) => ({
+            dao,
+            // Generate between 1 and 3 proposals.
+            items: [...Array(Math.floor(Math.random() * 3) + 1)].map(() => {
+              // Random time in the next 3 days.
+              const secondsRemaining = Math.floor(
+                Math.random() * 3 * 24 * 60 * 60
+              )
+
+              return {
+                Renderer: ProposalLine,
+                props: makeProposalLineProps(secondsRemaining),
+                pending: true,
+              }
+            }),
+          })),
+      pendingItemCount: 42,
+      totalItemCount: 100,
+      refresh: () => {},
+    },
+    LinkWrapper,
+  },
 }
 Connected.parameters = {
   design: {

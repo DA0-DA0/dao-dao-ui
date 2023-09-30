@@ -1,42 +1,42 @@
 import { atomFamily, selectorFamily } from 'recoil'
 
 import {
-  InboxApiItem,
-  InboxApiItemType,
-  InboxApiLoadedItem,
+  InboxItemType,
+  InboxLoadedItem,
+  InboxLoadedItemWithData,
   WithChainId,
 } from '@dao-dao/types'
 import { INBOX_API_BASE } from '@dao-dao/utils'
 
-import { refreshInboxApiItemsAtom } from '../atoms/refresh'
+import { refreshInboxItemsAtom } from '../atoms'
 
 // Inbox API doesn't update right away due to Cloudflare KV Store latency, so
 // this serves to keep track of all successful updates for the current session.
 // This will be reset on page refresh. Set this right away so the UI can update
 // immediately even if the API takes up to a minute or two. Though likely it
 // only takes 10 seconds or so.
-export const temporaryClearedInboxApiItemsAtom = atomFamily<string[], string>({
-  key: 'temporaryClearedInboxApiItems',
+export const temporaryClearedInboxItemsAtom = atomFamily<string[], string>({
+  key: 'temporaryClearedInboxItems',
   default: [],
 })
 
-export const inboxApiItemsSelector = selectorFamily<
-  InboxApiItem[],
+export const inboxItemsSelector = selectorFamily<
+  InboxLoadedItemWithData[],
   WithChainId<{
     walletAddress: string
     // Optional type filter.
-    type?: InboxApiItemType
+    type?: InboxItemType
   }>
 >({
-  key: 'inboxApiItems',
+  key: 'inboxItems',
   get:
     ({ walletAddress, type, chainId }) =>
     async ({ get }) => {
-      const temporaryClearedInboxApiItems = get(
-        temporaryClearedInboxApiItemsAtom(walletAddress)
+      const temporaryClearedInboxLoadedItemWithDatas = get(
+        temporaryClearedInboxItemsAtom(walletAddress)
       )
 
-      get(refreshInboxApiItemsAtom)
+      get(refreshInboxItemsAtom)
 
       // Optional filters.
       const query = new URLSearchParams({
@@ -49,7 +49,7 @@ export const inboxApiItemsSelector = selectorFamily<
 
       if (response.ok) {
         const { items: loadedItems } = (await response.json()) as {
-          items: InboxApiLoadedItem[]
+          items: InboxLoadedItem[]
         }
 
         const items = loadedItems
@@ -57,15 +57,15 @@ export const inboxApiItemsSelector = selectorFamily<
           .map(
             (item) =>
               ({
-                type: item.id.split('/')[0] as InboxApiItemType,
+                type: item.id.split('/')[0] as InboxItemType,
                 ...item,
-              } as InboxApiItem)
+              } as InboxLoadedItemWithData)
           )
           .filter(
-            (item): item is InboxApiItem =>
+            (item): item is InboxLoadedItemWithData =>
               !!item &&
               // Filter out items that were cleared.
-              !temporaryClearedInboxApiItems.includes(item.id)
+              !temporaryClearedInboxLoadedItemWithDatas.includes(item.id)
           )
 
         return items

@@ -1,5 +1,6 @@
 export * from './dao'
 export * from './gov'
+export * from './inbox'
 export * from './pages'
 export * from './profile'
 export * from './wallet'

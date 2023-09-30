@@ -1,4 +1,4 @@
-import { Refresh, Settings, WhereToVoteOutlined } from '@mui/icons-material'
+import { ClearAll, DoneAll, Refresh, Settings } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
@@ -6,41 +6,39 @@ import { useTranslation } from 'react-i18next'
 
 import {
   InboxApi,
+  InboxMainItemRendererProps,
   InboxPageSlug,
   InboxState,
-  LinkWrapperProps,
 } from '@dao-dao/types'
 
 import {
-  Collapsible,
   IconButton,
   InboxSettingsModal,
   Loader,
   NoContent,
   PageHeaderContent,
   RightSidebarContent,
+  Tooltip,
 } from '../components'
-import { useDaoNavHelpers } from '../hooks'
 
 export interface InboxProps {
   state: InboxState
   rightSidebarContent: ReactNode
-  LinkWrapper: ComponentType<LinkWrapperProps>
   api: InboxApi
   verify: () => void
   connected: boolean
+  InboxMainItemRenderer: ComponentType<InboxMainItemRendererProps>
 }
 
 export const Inbox = ({
-  state: { loading, refreshing, refresh, daosWithItems, pendingItemCount },
+  state: { loading, refreshing: refreshing, refresh, items },
   rightSidebarContent,
-  LinkWrapper,
   api,
   verify,
   connected,
+  InboxMainItemRenderer,
 }: InboxProps) => {
   const { t } = useTranslation()
-  const { getDaoPath } = useDaoNavHelpers()
   const {
     query: { slug: _slug },
     isReady,
@@ -113,37 +111,30 @@ export const Inbox = ({
       <div className="mx-auto flex max-w-5xl flex-col items-stretch">
         {loading ? (
           <Loader fill={false} />
-        ) : daosWithItems.length === 0 ? (
-          <NoContent
-            Icon={WhereToVoteOutlined}
-            body={t('info.emptyInboxCaughtUp')}
-          />
+        ) : items.length === 0 ? (
+          <NoContent Icon={DoneAll} body={t('info.emptyInboxCaughtUp')} />
         ) : (
           <>
-            <p className="title-text">
-              {t('title.numPendingItems', { count: pendingItemCount })}
-            </p>
+            <div className="flex flex-row items-center justify-between">
+              <p className="title-text">
+                {t('title.numNotifications', { count: items.length })}
+              </p>
 
-            <div className="mt-6 grow space-y-4">
-              {daosWithItems.map(({ dao, items }) => (
-                <Collapsible
-                  key={dao.coreAddress}
-                  imageUrl={dao.imageUrl}
-                  label={dao.name}
-                  link={{
-                    href: getDaoPath(dao.coreAddress),
-                    LinkWrapper,
-                  }}
-                  noContentIndent
-                >
-                  {items.length ? (
-                    <div className="flex flex-col gap-2 pr-2 pl-5 md:gap-1">
-                      {items.map(({ Renderer, props }, index) => (
-                        <Renderer key={index} {...props} />
-                      ))}
-                    </div>
-                  ) : undefined}
-                </Collapsible>
+              <Tooltip title={t('button.clearAll')}>
+                <IconButton
+                  Icon={ClearAll}
+                  circular
+                  disabled={!api.ready}
+                  loading={api.updating}
+                  onClick={() => api.clear(items.map(({ id }) => id))}
+                  variant="ghost"
+                />
+              </Tooltip>
+            </div>
+
+            <div className="mt-6 flex grow flex-col gap-1">
+              {items.map((item) => (
+                <InboxMainItemRenderer key={item.id} item={item} />
               ))}
             </div>
           </>
