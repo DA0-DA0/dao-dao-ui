@@ -24,8 +24,10 @@ export const Feed = ({
   // Start spinning refresh icon if refreshing sets to true. Turn off once the
   // iteration completes (in `onAnimationIteration` below).
   useEffect(() => {
-    refreshing && setRefreshSpinning(true)
-  }, [refreshing])
+    if (loading || refreshing) {
+      setRefreshSpinning(true)
+    }
+  }, [loading, refreshing])
 
   return (
     <div className="flex flex-col gap-6">
@@ -53,7 +55,7 @@ export const Feed = ({
           className={clsx(refreshSpinning && 'animate-spin-medium')}
           // If spinning but no longer refreshing, stop after iteration.
           onAnimationIteration={
-            refreshSpinning && !refreshing
+            refreshSpinning && !loading && !refreshing
               ? () => setRefreshSpinning(false)
               : undefined
           }

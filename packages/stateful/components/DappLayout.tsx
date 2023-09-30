@@ -114,7 +114,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
       setTimeout(
         () =>
           toast.success(
-            t('info.itemsInInboxNotification', {
+            t('info.notificationsInInbox', {
               count: inbox.items.length,
             })
           ),
