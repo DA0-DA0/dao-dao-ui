@@ -59,7 +59,9 @@ import {
 } from './types'
 
 const Component: ActionComponent = (props) => {
-  const balances = useTokenBalances()
+  const balances = useTokenBalances({
+    allChains: true,
+  })
 
   const { context } = useActionOptions()
   const { watch } = useFormContext<AuthzGrantRevokeData>()

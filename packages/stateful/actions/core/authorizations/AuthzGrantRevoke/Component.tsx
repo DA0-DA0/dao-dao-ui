@@ -35,7 +35,6 @@ import {
   AddressInputProps,
   GenericTokenBalance,
   LoadingData,
-  TokenType,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
@@ -237,14 +236,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                   {...({
                     ...props,
                     options: {
-                      nativeBalances: balances.loading
-                        ? { loading: true }
-                        : {
-                            loading: false,
-                            data: balances.data.filter(
-                              ({ token }) => token.type === TokenType.Native
-                            ),
-                          },
+                      nativeBalances: balances,
                     },
                     onRemove: isCreating ? () => removeCoin(index) : undefined,
                   } as NativeCoinSelectorProps)}
@@ -454,15 +446,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                         {...({
                           ...props,
                           options: {
-                            nativeBalances: balances.loading
-                              ? { loading: true }
-                              : {
-                                  loading: false,
-                                  data: balances.data.filter(
-                                    ({ token }) =>
-                                      token.type === TokenType.Native
-                                  ),
-                                },
+                            nativeBalances: balances,
                           },
                           onRemove: isCreating
                             ? () => removeCoin(index)
