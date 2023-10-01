@@ -138,10 +138,7 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
 
       <SuspenseLoader
         fallback={<Loader />}
-        forceFallback={
-          openProposalsLoadable.state !== 'hasValue' ||
-          !openProposalsLoadable.contents
-        }
+        forceFallback={openProposalsLoadable.state !== 'hasValue'}
       >
         <ChainProvider chainId={chainId}>
           <GovActionsProvider>
