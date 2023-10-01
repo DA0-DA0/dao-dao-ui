@@ -1,6 +1,7 @@
 import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import JSON5 from 'json5'
 import { useCallback } from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import { GenericAuthorization } from '@dao-dao/protobuf/codegen/cosmos/authz/v1beta1/authz'
 import {
@@ -18,10 +19,16 @@ import {
   MaxCallsLimit,
 } from '@dao-dao/protobuf/codegen/cosmwasm/wasm/v1/authz'
 import { Any } from '@dao-dao/protobuf/codegen/google/protobuf/any'
-import { KeyEmoji, Loader } from '@dao-dao/stateless'
+import {
+  ChainPickerInput,
+  ChainProvider,
+  KeyEmoji,
+  Loader,
+} from '@dao-dao/stateless'
 import { Coin } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
@@ -31,14 +38,17 @@ import {
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  decodePolytoneExecuteMsg,
   getTokenForChainIdAndDenom,
   isDecodedStargateMsg,
   makeStargateMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
 import { AddressInput, SuspenseLoader } from '../../../../components'
 import { useTokenBalances } from '../../../hooks'
+import { useActionOptions } from '../../../react'
 import { AuthzGrantRevokeComponent as StatelessAuthzAuthorizationComponent } from './Component'
 import {
   ACTION_TYPES,
@@ -48,51 +58,77 @@ import {
   LIMIT_TYPES,
 } from './types'
 
-const useDefaults: UseDefaults<AuthzGrantRevokeData> = () => ({
-  mode: 'grant',
-  authorizationTypeUrl: AUTHORIZATION_TYPES[0].type.typeUrl,
-  customTypeUrl: false,
-  grantee: '',
-  filterTypeUrl: FILTER_TYPES[0].type.typeUrl,
-  filterKeys: '',
-  filterMsgs: '{}',
-  funds: [],
-  contract: '',
-  calls: 10,
-  limitTypeUrl: LIMIT_TYPES[0].type.typeUrl,
-  msgTypeUrl: ACTION_TYPES[0].type.typeUrl,
-})
-
 const Component: ActionComponent = (props) => {
-  const balances = useTokenBalances()
+  const balances = useTokenBalances({
+    allChains: true,
+  })
+
+  const { context } = useActionOptions()
+  const { watch } = useFormContext<AuthzGrantRevokeData>()
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
 
   return (
-    <SuspenseLoader
-      fallback={<Loader />}
-      forceFallback={
-        // Manually trigger loader.
-        balances.loading
-      }
-    >
-      <StatelessAuthzAuthorizationComponent
-        {...props}
-        options={{
-          AddressInput,
-          balances,
-        }}
-      />
-    </SuspenseLoader>
+    <>
+      {context.type === ActionContextType.Dao && (
+        <ChainPickerInput
+          className="mb-4"
+          disabled={!props.isCreating}
+          fieldName={props.fieldNamePrefix + 'chainId'}
+        />
+      )}
+
+      <ChainProvider chainId={chainId}>
+        <SuspenseLoader
+          fallback={<Loader />}
+          forceFallback={
+            // Manually trigger loader.
+            balances.loading
+          }
+        >
+          <StatelessAuthzAuthorizationComponent
+            {...props}
+            options={{
+              AddressInput,
+              balances,
+            }}
+          />
+        </SuspenseLoader>
+      </ChainProvider>
+    </>
   )
 }
 
 export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
   t,
   address,
-  chain: { chain_id: chainId },
+  chain: { chain_id: currentChainId },
 }) => {
+  const useDefaults: UseDefaults<AuthzGrantRevokeData> = () => ({
+    chainId: currentChainId,
+    mode: 'grant',
+    authorizationTypeUrl: AUTHORIZATION_TYPES[0].type.typeUrl,
+    customTypeUrl: false,
+    grantee: '',
+    filterTypeUrl: FILTER_TYPES[0].type.typeUrl,
+    filterKeys: '',
+    filterMsgs: '{}',
+    funds: [],
+    contract: '',
+    calls: 10,
+    limitTypeUrl: LIMIT_TYPES[0].type.typeUrl,
+    msgTypeUrl: ACTION_TYPES[0].type.typeUrl,
+  })
+
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<AuthzGrantRevokeData> = (
     msg: Record<string, any>
   ) => {
+    let chainId = currentChainId
+    const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+    if (decodedPolytone.match) {
+      chainId = decodedPolytone.chainId
+      msg = decodedPolytone.msg
+    }
+
     const defaults = useDefaults()
 
     if (
@@ -130,6 +166,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
             match: true,
             data: {
               ...defaults,
+              chainId,
               mode: 'grant',
               authorizationTypeUrl,
               customTypeUrl: false,
@@ -149,6 +186,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
             match: true,
             data: {
               ...defaults,
+              chainId,
               mode: 'grant',
               authorizationTypeUrl,
               customTypeUrl: false,
@@ -213,6 +251,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
             match: true,
             data: {
               ...defaults,
+              chainId,
               mode: 'grant',
               authorizationTypeUrl,
               customTypeUrl: false,
@@ -259,6 +298,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
         match: true,
         data: {
           ...defaults,
+          chainId,
           mode: 'revoke',
           customTypeUrl: false,
           grantee: msg.stargate.value.grantee,
@@ -273,6 +313,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
   const useTransformToCosmos: UseTransformToCosmos<AuthzGrantRevokeData> = () =>
     useCallback(
       ({
+        chainId,
         mode,
         authorizationTypeUrl,
         grantee,
@@ -356,25 +397,29 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
         // Encoder needs a whole number of seconds.
         expiration.setMilliseconds(0)
 
-        return makeStargateMessage({
-          stargate: {
-            typeUrl: mode === 'grant' ? MsgGrant.typeUrl : MsgRevoke.typeUrl,
-            value: {
-              ...(mode === 'grant' && authorization
-                ? {
-                    grant: {
-                      authorization,
-                      expiration,
-                    },
-                  }
-                : {
-                    msgTypeUrl,
-                  }),
-              grantee,
-              granter: address,
+        return maybeMakePolytoneExecuteMessage(
+          currentChainId,
+          chainId,
+          makeStargateMessage({
+            stargate: {
+              typeUrl: mode === 'grant' ? MsgGrant.typeUrl : MsgRevoke.typeUrl,
+              value: {
+                ...(mode === 'grant' && authorization
+                  ? {
+                      grant: {
+                        authorization,
+                        expiration,
+                      },
+                    }
+                  : {
+                      msgTypeUrl,
+                    }),
+                grantee,
+                granter: address,
+              },
             },
-          },
-        })
+          })
+        )
       },
       []
     )

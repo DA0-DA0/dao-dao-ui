@@ -20,8 +20,9 @@ import {
 } from '@dao-dao/types/actions'
 import {
   decodePolytoneExecuteMsg,
-  makePolytoneExecuteMessage,
+  getChainAddressForActionOptions,
   makeWasmMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -34,11 +35,7 @@ import { MintNftData } from './types'
 
 const Component: ActionComponent<undefined, MintNftData> = (props) => {
   const { t } = useTranslation()
-  const {
-    context,
-    address,
-    chain: { chain_id: currentChainId },
-  } = useActionOptions()
+  const options = useActionOptions()
   const { watch, register, setValue } = useFormContext<MintNftData>()
 
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
@@ -67,17 +64,13 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
 
   return (
     <>
-      {context.type === ActionContextType.Dao && props.isCreating && (
+      {options.context.type === ActionContextType.Dao && props.isCreating && (
         <ChainPickerInput
           className="mb-4"
           fieldName={props.fieldNamePrefix + 'chainId'}
           onChange={(chainId) => {
             // Update minter and recipient to correct address.
-            const newAddress =
-              chainId === currentChainId
-                ? address
-                : // Use DAO's polytone proxy if exists.
-                  context.info.polytoneProxies[chainId] || ''
+            const newAddress = getChainAddressForActionOptions(options, chainId)
 
             setValue(
               (props.fieldNamePrefix +
@@ -182,21 +175,21 @@ export const makeMintNftAction: ActionMaker<MintNftData> = ({
         throw new Error(t('error.loadingData'))
       }
 
-      const msg = makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: collectionAddress,
-            funds: [],
-            msg: {
-              mint: mintMsg,
+      return maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: collectionAddress,
+              funds: [],
+              msg: {
+                mint: mintMsg,
+              },
             },
           },
-        },
-      })
-
-      return chainId === currentChainId
-        ? msg
-        : makePolytoneExecuteMessage(currentChainId, chainId, msg)
+        })
+      )
     }, [])
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintNftData> = (

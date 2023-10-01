@@ -14,8 +14,9 @@ import {
   InputLabel,
   SelectInput,
 } from '@dao-dao/stateless'
-import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
+import { ActionComponent } from '@dao-dao/types/actions'
 import {
+  getChainAddressForActionOptions,
   getChainForChainId,
   getNativeTokenForChainId,
   toValidatorAddress,
@@ -56,11 +57,7 @@ export const ValidatorActionsComponent: ActionComponent = ({
   isCreating,
 }) => {
   const { t } = useTranslation()
-  const {
-    chain: { chain_id: currentChainId },
-    address: _address,
-    context,
-  } = useActionOptions()
+  const options = useActionOptions()
   const { control, register, watch, getValues, setValue } =
     useFormContext<ValidatorActionsData>()
 
@@ -70,10 +67,7 @@ export const ValidatorActionsComponent: ActionComponent = ({
   )
 
   const updateChainValues = (chainId: string, typeUrl: string) => {
-    const address =
-      context.type === ActionContextType.Dao && currentChainId !== chainId
-        ? context.info.polytoneProxies[chainId] || ''
-        : _address
+    const address = getChainAddressForActionOptions(options, chainId)
     const validatorAddress =
       address &&
       toValidatorAddress(address, getChainForChainId(chainId).bech32_prefix)

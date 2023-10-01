@@ -190,16 +190,7 @@ export const ExecuteComponent: ActionComponent<ExecuteOptions> = (props) => {
                     {...({
                       ...props,
                       options: {
-                        nativeBalances: balances.loading
-                          ? { loading: true }
-                          : {
-                              loading: false,
-                              data: balances.data.filter(
-                                ({ token }) =>
-                                  token.chainId === chainId &&
-                                  token.type === TokenType.Native
-                              ),
-                            },
+                        nativeBalances: balances,
                       },
                       onRemove: props.isCreating
                         ? () => removeCoin(index)

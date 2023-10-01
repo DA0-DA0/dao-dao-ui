@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/types'
 import {
   decodePolytoneExecuteMsg,
-  makePolytoneExecuteMessage,
+  maybeMakePolytoneExecuteMessage,
 } from '@dao-dao/utils'
 
 import {
@@ -46,7 +46,7 @@ export const makeCreateCrossChainAccountAction: ActionMaker<
     CreateCrossChainAccountData
   > = () =>
     useCallback(
-      ({ chainId }) => makePolytoneExecuteMessage(chain.chain_id, chainId),
+      ({ chainId }) => maybeMakePolytoneExecuteMessage(chain.chain_id, chainId),
       []
     )
 

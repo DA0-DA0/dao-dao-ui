@@ -25,6 +25,7 @@ import {
   TextAreaInput,
   TextInput,
   TokenInput,
+  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
@@ -47,7 +48,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getChainAssets,
   getFundsUsedInCwMessage,
-  getNativeTokenForChainId,
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
   makeValidateAddress,
@@ -56,12 +56,10 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../react'
 import { CommunityPoolTransferData } from '../../treasury/CommunityPoolTransfer/Component'
 
 export type GovernanceProposalOptions = {
   govModuleAddress: string
-  supportsV1GovProposals: boolean
   minDeposits: LoadingData<GenericTokenBalance[]>
   TokenAmountDisplay: ComponentType<StatefulTokenAmountDisplayProps>
   AddressInput: ComponentType<AddressInputProps<GovernanceProposalActionData>>
@@ -78,7 +76,6 @@ export const GovernanceProposalComponent: ActionComponent<
     isCreating,
     options: {
       govModuleAddress,
-      supportsV1GovProposals,
       minDeposits,
       GovProposalActionDisplay,
       TokenAmountDisplay,
@@ -92,10 +89,11 @@ export const GovernanceProposalComponent: ActionComponent<
     useFormContext<GovernanceProposalActionData>()
 
   const {
-    address,
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
-  } = useActionOptions()
-  const nativeToken = getNativeTokenForChainId(chainId)
+    chainId,
+    chain: { bech32_prefix: bech32Prefix },
+    config: { supportsV1GovProposals },
+    nativeToken,
+  } = useSupportedChainContext()
 
   const selectedMinDepositToken = minDeposits.loading
     ? undefined
@@ -114,10 +112,11 @@ export const GovernanceProposalComponent: ActionComponent<
 
   const availableTokens: GenericToken[] = [
     // First native.
-    nativeToken,
+    ...(nativeToken ? [nativeToken] : []),
     // Then the chain assets.
     ...getChainAssets(chainId).filter(
-      ({ denomOrAddress }) => denomOrAddress !== nativeToken.denomOrAddress
+      ({ denomOrAddress }) =>
+        !nativeToken || denomOrAddress !== nativeToken.denomOrAddress
     ),
   ]
 
@@ -129,7 +128,7 @@ export const GovernanceProposalComponent: ActionComponent<
   // If any of these fields change, we need to re-upload the metadata.
   useEffect(() => {
     setMetadataUploaded(false)
-  }, [title, description, address])
+  }, [title, description])
   const uploadMetadata = async () => {
     setUploadingMetadata(true)
     try {
@@ -589,7 +588,7 @@ export const GovernanceProposalComponent: ActionComponent<
                               onClick={() =>
                                 appendSpend({
                                   amount: 1,
-                                  denom: nativeToken.denomOrAddress,
+                                  denom: nativeToken?.denomOrAddress || '',
                                 })
                               }
                               variant="secondary"

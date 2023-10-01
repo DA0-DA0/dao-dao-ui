@@ -29,12 +29,12 @@ import {
   SelectInput,
   TextInput,
   WarningCard,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
   GenericTokenBalance,
   LoadingData,
-  TokenType,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
@@ -47,7 +47,6 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../react'
 import {
   ACTION_TYPES,
   AUTHORIZATION_TYPES,
@@ -65,9 +64,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
   AuthzGrantRevokeOptions
 > = (props) => {
   const { t } = useTranslation()
-  const {
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
-  } = useActionOptions()
+  const { chain_id: chainId, bech32_prefix: bech32Prefix } = useChain()
   const {
     fieldNamePrefix,
     errors,
@@ -239,14 +236,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                   {...({
                     ...props,
                     options: {
-                      nativeBalances: balances.loading
-                        ? { loading: true }
-                        : {
-                            loading: false,
-                            data: balances.data.filter(
-                              ({ token }) => token.type === TokenType.Native
-                            ),
-                          },
+                      nativeBalances: balances,
                     },
                     onRemove: isCreating ? () => removeCoin(index) : undefined,
                   } as NativeCoinSelectorProps)}
@@ -456,15 +446,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                         {...({
                           ...props,
                           options: {
-                            nativeBalances: balances.loading
-                              ? { loading: true }
-                              : {
-                                  loading: false,
-                                  data: balances.data.filter(
-                                    ({ token }) =>
-                                      token.type === TokenType.Native
-                                  ),
-                                },
+                            nativeBalances: balances,
                           },
                           onRemove: isCreating
                             ? () => removeCoin(index)

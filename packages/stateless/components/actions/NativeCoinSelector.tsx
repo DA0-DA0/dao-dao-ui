@@ -8,6 +8,7 @@ import {
   ActionComponent,
   GenericTokenBalance,
   LoadingData,
+  TokenType,
 } from '@dao-dao/types'
 import {
   convertDenomToMicroDenomWithDecimals,
@@ -48,7 +49,9 @@ export const NativeCoinSelector = ({
     ? undefined
     : nativeBalances.data.find(
         ({ token }) =>
-          token.chainId === chainId && token.denomOrAddress === watchDenom
+          token.type === TokenType.Native &&
+          token.chainId === chainId &&
+          token.denomOrAddress === watchDenom
       )
 
   const validatePossibleSpend = useCallback(
@@ -58,7 +61,10 @@ export const NativeCoinSelector = ({
       }
 
       const native = nativeBalances.data.find(
-        ({ token }) => token.chainId === chainId && token.denomOrAddress === id
+        ({ token }) =>
+          token.type === TokenType.Native &&
+          token.chainId === chainId &&
+          token.denomOrAddress === id
       )
       if (native) {
         const microAmount = convertDenomToMicroDenomWithDecimals(
@@ -166,7 +172,11 @@ export const NativeCoinSelector = ({
               : {
                   loading: false,
                   data: nativeBalances.data
-                    .filter(({ token }) => token.chainId === chainId)
+                    .filter(
+                      ({ token }) =>
+                        token.type === TokenType.Native &&
+                        token.chainId === chainId
+                    )
                     .map(({ token }) => token),
                 }
           }

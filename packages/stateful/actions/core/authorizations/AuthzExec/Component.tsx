@@ -7,6 +7,7 @@ import {
   NestedActionsEditorOptions,
   NestedActionsRenderer,
   NestedActionsRendererProps,
+  useChain,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
@@ -17,9 +18,8 @@ import {
 import { ActionComponent } from '@dao-dao/types/actions'
 import { isValidBech32Address, makeValidateAddress } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../react'
-
 export type AuthzExecData = {
+  chainId: string
   // Set common address to use for all actions.
   address: string
   // Once created, fill group adjacent messages by sender.
@@ -43,9 +43,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
   props
 ) => {
   const { t } = useTranslation()
-  const {
-    chain: { bech32_prefix: bech32Prefix },
-  } = useActionOptions()
+  const { bech32_prefix: bech32Prefix } = useChain()
   const { watch, register } = useFormContext<AuthzExecData>()
   const {
     fieldNamePrefix,

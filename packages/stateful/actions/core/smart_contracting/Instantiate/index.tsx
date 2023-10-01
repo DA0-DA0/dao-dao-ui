@@ -25,9 +25,10 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   getNativeTokenForChainId,
-  makePolytoneExecuteMessage,
   makeWasmMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -65,33 +66,27 @@ const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () => {
         return
       }
 
-      const instantiateMsg = makeWasmMessage({
-        wasm: {
-          instantiate: {
-            admin: admin || null,
-            code_id: codeId,
-            funds: funds.map(({ denom, amount }) => ({
-              denom,
-              amount: convertDenomToMicroDenomWithDecimals(
-                amount,
-                getNativeTokenForChainId(chainId).decimals
-              ).toString(),
-            })),
-            label,
-            msg,
+      return maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        makeWasmMessage({
+          wasm: {
+            instantiate: {
+              admin: admin || null,
+              code_id: codeId,
+              funds: funds.map(({ denom, amount }) => ({
+                denom,
+                amount: convertDenomToMicroDenomWithDecimals(
+                  amount,
+                  getNativeTokenForChainId(chainId).decimals
+                ).toString(),
+              })),
+              label,
+              msg,
+            },
           },
-        },
-      })
-
-      if (chainId === currentChainId) {
-        return instantiateMsg
-      } else {
-        return makePolytoneExecuteMessage(
-          currentChainId,
-          chainId,
-          instantiateMsg
-        )
-      }
+        })
+      )
     },
     [currentChainId]
   )
@@ -151,11 +146,12 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
 }
 
 const Component: ActionComponent = (props) => {
+  const options = useActionOptions()
   const {
     context,
     address,
     chain: { chain_id: currentChainId },
-  } = useActionOptions()
+  } = options
 
   const { watch, setValue } = useFormContext<InstantiateData>()
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
@@ -295,9 +291,7 @@ const Component: ActionComponent = (props) => {
             setValue((props.fieldNamePrefix + 'funds') as 'funds', [])
             setValue(
               (props.fieldNamePrefix + 'admin') as 'admin',
-              chainId === currentChainId
-                ? address
-                : context.info.polytoneProxies[chainId] ?? ''
+              getChainAddressForActionOptions(options, chainId)
             )
           }}
         />

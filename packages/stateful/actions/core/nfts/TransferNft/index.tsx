@@ -18,8 +18,8 @@ import {
 import {
   combineLoadingDataWithErrors,
   decodePolytoneExecuteMsg,
-  makePolytoneExecuteMessage,
   makeWasmMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
   parseEncodedMessage,
 } from '@dao-dao/utils'
@@ -65,34 +65,33 @@ const useTransformToCosmos: UseTransformToCosmos<TransferNftData> = () => {
       recipient,
       executeSmartContract,
       smartContractMsg,
-    }: TransferNftData) => {
-      const msg = makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: collection,
-            funds: [],
-            msg: executeSmartContract
-              ? {
-                  send_nft: {
-                    contract: recipient,
-                    msg: toBase64(toUtf8(JSON.stringify(smartContractMsg))),
-                    token_id: tokenId,
+    }: TransferNftData) =>
+      maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: collection,
+              funds: [],
+              msg: executeSmartContract
+                ? {
+                    send_nft: {
+                      contract: recipient,
+                      msg: toBase64(toUtf8(JSON.stringify(smartContractMsg))),
+                      token_id: tokenId,
+                    },
+                  }
+                : {
+                    transfer_nft: {
+                      recipient,
+                      token_id: tokenId,
+                    },
                   },
-                }
-              : {
-                  transfer_nft: {
-                    recipient,
-                    token_id: tokenId,
-                  },
-                },
+            },
           },
-        },
-      })
-
-      return chainId === currentChainId
-        ? msg
-        : makePolytoneExecuteMessage(currentChainId, chainId, msg)
-    },
+        })
+      ),
     [currentChainId]
   )
 }

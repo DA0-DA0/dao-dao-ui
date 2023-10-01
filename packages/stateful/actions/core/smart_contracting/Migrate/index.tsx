@@ -16,8 +16,8 @@ import {
 } from '@dao-dao/types/actions'
 import {
   decodePolytoneExecuteMsg,
-  makePolytoneExecuteMessage,
   makeWasmMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -72,11 +72,11 @@ const useTransformToCosmos: UseTransformToCosmos<MigrateData> = () => {
         },
       })
 
-      if (chainId === currentChainId) {
-        return migrateMsg
-      } else {
-        return makePolytoneExecuteMessage(currentChainId, chainId, migrateMsg)
-      }
+      return maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        migrateMsg
+      )
     },
     [currentChainId]
   )
