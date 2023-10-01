@@ -25,6 +25,7 @@ export default {
   component: AuthzGrantRevokeComponent,
   decorators: [
     makeReactHookFormDecorator<AuthzGrantRevokeData>({
+      chainId: CHAIN_ID,
       mode: 'grant',
       authorizationTypeUrl: GenericAuthorization.typeUrl,
       customTypeUrl: false,

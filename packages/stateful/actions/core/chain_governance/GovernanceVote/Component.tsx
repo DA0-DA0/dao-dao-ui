@@ -44,7 +44,8 @@ export interface GovernanceVoteOptions {
   GovProposalActionDisplay: ComponentType<GovProposalActionDisplayProps>
 }
 
-export interface GovernanceVoteData {
+export type GovernanceVoteData = {
+  chainId: string
   proposalId: string
   vote: VoteOption
 }

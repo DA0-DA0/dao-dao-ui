@@ -21,7 +21,7 @@ import {
   decodePolytoneExecuteMsg,
   getChainForChainId,
   isValidContractAddress,
-  makePolytoneExecuteMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -50,22 +50,15 @@ const useTransformToCosmos: UseTransformToCosmos<UpdateAdminData> = () => {
   const currentChainId = useActionOptions().chain.chain_id
 
   return useCallback(
-    ({ chainId, contract, newAdmin }: UpdateAdminData) => {
-      const updateMsg = {
+    ({ chainId, contract, newAdmin }: UpdateAdminData) =>
+      maybeMakePolytoneExecuteMessage(currentChainId, chainId, {
         wasm: {
           update_admin: {
             contract_addr: contract,
             admin: newAdmin,
           },
         },
-      }
-
-      if (chainId === currentChainId) {
-        return updateMsg
-      } else {
-        return makePolytoneExecuteMessage(currentChainId, chainId, updateMsg)
-      }
-    },
+      }),
     [currentChainId]
   )
 }

@@ -2,7 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { SoftwareUpgradeProposal } from '@dao-dao/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 import { Any } from '@dao-dao/protobuf/codegen/google/protobuf/any'
-import { ReactHookFormDecorator } from '@dao-dao/storybook'
+import { CHAIN_ID, ReactHookFormDecorator } from '@dao-dao/storybook'
 import { GovProposalVersion } from '@dao-dao/types'
 
 import {
@@ -30,6 +30,7 @@ Default.args = {
   allActionsWithData: [],
   index: 0,
   data: {
+    chainId: CHAIN_ID,
     version: GovProposalVersion.V1_BETA_1,
     title: 'Upgrade to v10 Alpha 1',
     description:
@@ -71,7 +72,6 @@ Default.args = {
   errors: {},
   options: {
     govModuleAddress: '',
-    supportsV1GovProposals: true,
     minDeposits: { loading: false, data: [] },
     TokenAmountDisplay,
     AddressInput,

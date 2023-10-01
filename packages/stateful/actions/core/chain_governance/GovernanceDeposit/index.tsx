@@ -11,10 +11,17 @@ import {
   govProposalSelector,
   govProposalsSelector,
 } from '@dao-dao/state'
-import { BankEmoji, Loader, useCachedLoading } from '@dao-dao/stateless'
+import {
+  BankEmoji,
+  ChainPickerInput,
+  Loader,
+  useCachedLoading,
+  useChain,
+} from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
@@ -22,8 +29,10 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  decodePolytoneExecuteMsg,
   isDecodedStargateMsg,
   makeStargateMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -36,28 +45,41 @@ import {
   GovernanceDepositComponent as StatelessGovernanceDepositComponent,
 } from './Component'
 
-const useDefaults: UseDefaults<GovernanceDepositData> = () => ({
-  proposalId: '',
-  deposit: [],
-})
-
 const Component: ActionComponent<undefined, GovernanceDepositData> = (
   props
-) => (
-  <SuspenseLoader fallback={<Loader />}>
-    <GovActionsProvider>
-      <InnerComponent {...props} />
-    </GovActionsProvider>
-  </SuspenseLoader>
-)
+) => {
+  const { context } = useActionOptions()
+  const { setValue } = useFormContext<GovernanceDepositData>()
+
+  return (
+    <>
+      {context.type === ActionContextType.Dao && (
+        <ChainPickerInput
+          className="mb-4"
+          disabled={!props.isCreating}
+          fieldName={props.fieldNamePrefix + 'chainId'}
+          onChange={() => {
+            // Clear fields on chain change.
+            setValue((props.fieldNamePrefix + 'proposalId') as 'proposalId', '')
+            setValue((props.fieldNamePrefix + 'deposit') as 'deposit', [])
+          }}
+        />
+      )}
+
+      <SuspenseLoader fallback={<Loader />}>
+        <GovActionsProvider>
+          <InnerComponent {...props} />
+        </GovActionsProvider>
+      </SuspenseLoader>
+    </>
+  )
+}
 
 const InnerComponent: ActionComponent<undefined, GovernanceDepositData> = (
   props
 ) => {
   const { isCreating, fieldNamePrefix } = props
-  const {
-    chain: { chain_id: chainId },
-  } = useActionOptions()
+  const { chain_id: chainId } = useChain()
   const { watch, setValue, setError, clearErrors } =
     useFormContext<GovernanceDepositData>()
 
@@ -171,43 +193,61 @@ const InnerComponent: ActionComponent<undefined, GovernanceDepositData> = (
 
 export const makeGovernanceDepositAction: ActionMaker<
   GovernanceDepositData
-> = ({ t, address }) => {
+> = ({ t, address, chain: { chain_id: currentChainId } }) => {
+  const useDefaults: UseDefaults<GovernanceDepositData> = () => ({
+    chainId: currentChainId,
+    proposalId: '',
+    deposit: [],
+  })
+
   const useTransformToCosmos: UseTransformToCosmos<
     GovernanceDepositData
   > = () =>
     useCallback(
-      ({ proposalId, deposit }) =>
-        makeStargateMessage({
-          stargate: {
-            typeUrl: MsgDeposit.typeUrl,
-            value: {
-              proposalId: BigInt(proposalId || '-1'),
-              depositor: address,
-              amount: deposit.map(({ denom, amount }) => ({
-                denom,
-                amount: BigInt(amount).toString(),
-              })),
-            } as MsgDeposit,
-          },
-        }),
+      ({ chainId, proposalId, deposit }) =>
+        maybeMakePolytoneExecuteMessage(
+          currentChainId,
+          chainId,
+          makeStargateMessage({
+            stargate: {
+              typeUrl: MsgDeposit.typeUrl,
+              value: {
+                proposalId: BigInt(proposalId || '0'),
+                depositor: address,
+                amount: deposit.map(({ denom, amount }) => ({
+                  denom,
+                  amount: BigInt(amount).toString(),
+                })),
+              } as MsgDeposit,
+            },
+          })
+        ),
       []
     )
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<GovernanceDepositData> = (
     msg: Record<string, any>
-  ) =>
-    isDecodedStargateMsg(msg) &&
-    objectMatchesStructure(msg.stargate.value, {
-      proposalId: {},
-      depositor: {},
-      amount: {},
-    }) &&
-    // Make sure this is a deposit message.
-    msg.stargate.typeUrl === MsgDeposit.typeUrl &&
-    msg.stargate.value.depositor === address
+  ) => {
+    let chainId = currentChainId
+    const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+    if (decodedPolytone.match) {
+      chainId = decodedPolytone.chainId
+      msg = decodedPolytone.msg
+    }
+
+    return isDecodedStargateMsg(msg) &&
+      objectMatchesStructure(msg.stargate.value, {
+        proposalId: {},
+        depositor: {},
+        amount: {},
+      }) &&
+      // Make sure this is a deposit message.
+      msg.stargate.typeUrl === MsgDeposit.typeUrl &&
+      msg.stargate.value.depositor === address
       ? {
           match: true,
           data: {
+            chainId,
             proposalId: msg.stargate.value.proposalId.toString(),
             deposit: (msg.stargate.value.amount as Coin[]).map(
               ({ denom, amount }) => ({
@@ -220,6 +260,7 @@ export const makeGovernanceDepositAction: ActionMaker<
       : {
           match: false,
         }
+  }
 
   return {
     key: ActionKey.GovernanceDeposit,

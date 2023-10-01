@@ -24,6 +24,7 @@ import {
 } from '@dao-dao/protobuf/codegen/cosmwasm/wasm/v1/tx'
 
 export type AuthzGrantRevokeData = {
+  chainId: string
   mode: 'grant' | 'revoke'
   authorizationTypeUrl: string
   customTypeUrl: boolean

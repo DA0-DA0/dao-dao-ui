@@ -19,8 +19,8 @@ import {
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   isDecodedStargateMsg,
-  makePolytoneExecuteMessage,
   makeStargateMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -110,19 +110,19 @@ export const makeCommunityPoolDepositAction: ActionMaker<
           token.decimals
         )
 
-        const msg = makeStargateMessage({
-          stargate: {
-            typeUrl: MsgFundCommunityPool.typeUrl,
-            value: MsgFundCommunityPool.fromPartial({
-              depositor: address,
-              amount: coins(microAmount, denom),
-            }),
-          },
-        })
-
-        return chainId === currentChainId
-          ? msg
-          : makePolytoneExecuteMessage(currentChainId, chainId, msg)
+        return maybeMakePolytoneExecuteMessage(
+          currentChainId,
+          chainId,
+          makeStargateMessage({
+            stargate: {
+              typeUrl: MsgFundCommunityPool.typeUrl,
+              value: MsgFundCommunityPool.fromPartial({
+                depositor: address,
+                amount: coins(microAmount, denom),
+              }),
+            },
+          })
+        )
       },
       [tokens]
     )

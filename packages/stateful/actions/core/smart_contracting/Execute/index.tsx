@@ -27,8 +27,8 @@ import {
   decodePolytoneExecuteMsg,
   encodeMessageAsBase64,
   getTokenForChainIdAndDenom,
-  makePolytoneExecuteMessage,
   makeWasmMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
   parseEncodedMessage,
 } from '@dao-dao/utils'
@@ -122,11 +122,11 @@ const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
         })
       }
 
-      if (chainId === currentChainId) {
-        return executeMsg
-      } else {
-        return makePolytoneExecuteMessage(currentChainId, chainId, executeMsg)
-      }
+      return maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        executeMsg
+      )
     },
     [currentChainId, t, tokenBalances]
   )

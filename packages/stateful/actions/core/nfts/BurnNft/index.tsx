@@ -17,8 +17,8 @@ import {
 import {
   combineLoadingDataWithErrors,
   decodePolytoneExecuteMsg,
-  makePolytoneExecuteMessage,
   makeWasmMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -37,25 +37,24 @@ const useTransformToCosmos: UseTransformToCosmos<BurnNftData> = () => {
   } = useActionOptions()
 
   return useCallback(
-    ({ chainId, collection, tokenId }: BurnNftData) => {
-      const msg = makeWasmMessage({
-        wasm: {
-          execute: {
-            contract_addr: collection,
-            funds: [],
-            msg: {
-              burn: {
-                token_id: tokenId,
+    ({ chainId, collection, tokenId }: BurnNftData) =>
+      maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: collection,
+              funds: [],
+              msg: {
+                burn: {
+                  token_id: tokenId,
+                },
               },
             },
           },
-        },
-      })
-
-      return chainId === currentChainId
-        ? msg
-        : makePolytoneExecuteMessage(currentChainId, chainId, msg)
-    },
+        })
+      ),
     [currentChainId]
   )
 }

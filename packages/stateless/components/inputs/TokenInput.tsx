@@ -175,11 +175,21 @@ export const TokenInput = <
           <p className="text-text-secondary">
             {readOnly
               ? t('info.token', { count: amount })
+              : disabled
+              ? t('info.noTokenSelected')
               : t('button.selectToken')}
           </p>
         )
       ),
-    [amount, readOnly, selectedToken, showChainImage, t, tokenFallback]
+    [
+      amount,
+      disabled,
+      readOnly,
+      selectedToken,
+      showChainImage,
+      t,
+      tokenFallback,
+    ]
   )
 
   const selectDisabled = // Disable if there is only one token to choose from.
