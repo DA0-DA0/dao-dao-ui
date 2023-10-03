@@ -1,4 +1,5 @@
 import {
+  DaoCreationVotingConfigWithActiveThreshold,
   DurationWithUnits,
   GenericToken,
   NewDaoTier,
@@ -30,4 +31,4 @@ export type CreatorData = {
   }
   existingTokenSupply?: string
   unstakingDuration: DurationWithUnits
-}
+} & DaoCreationVotingConfigWithActiveThreshold

@@ -245,6 +245,14 @@ export type DaoCreationVotingConfigWithEnableMultipleChoice = {
   enableMultipleChoice: boolean
 }
 
+export type DaoCreationVotingConfigWithActiveThreshold = {
+  activeThreshold: {
+    enabled: boolean
+    type: 'percent' | 'absolute'
+    value: number
+  }
+}
+
 export type DaoCreationVotingConfig = DaoCreationVotingConfigWithAllowRevoting &
   DaoCreationVotingConfigWithProposalDeposit &
   DaoCreationVotingConfigWithProposalSubmissionPolicy &

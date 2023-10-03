@@ -216,3 +216,7 @@ export const CurvedDownArrowEmoji = () => (
 export const DownArrowEmoji = () => (
   <EmojiWrapper emoji="⬇️" labelI18nKey="emoji.downArrow" />
 )
+
+export const FilmSlateEmoji = () => (
+  <EmojiWrapper emoji="🎬" labelI18nKey="emoji.filmSlate" />
+)
