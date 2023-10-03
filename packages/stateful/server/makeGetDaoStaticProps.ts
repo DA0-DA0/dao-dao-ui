@@ -613,7 +613,7 @@ const daoCoreDumpState = async (
       )
 
       let isActive = true
-      let activeThreshold = null
+      let activeThreshold: ActiveThreshold | null = null
       try {
         // All voting modules use the same active queries, so it's safe to just
         // use one here.
@@ -710,7 +710,7 @@ const daoCoreDumpState = async (
   }
 
   let isActive = true
-  let activeThreshold = null
+  let activeThreshold: ActiveThreshold | null = null
   try {
     // All voting modules use the same active queries, so it's safe to just use
     // one here.
