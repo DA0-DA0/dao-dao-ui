@@ -10,13 +10,11 @@ export type ActiveThreshold =
   | {
       absolute_count: {
         count: Uint128
-        [k: string]: unknown
       }
     }
   | {
       percentage: {
         percent: Decimal
-        [k: string]: unknown
       }
     }
 export interface ActiveThresholdResponse {

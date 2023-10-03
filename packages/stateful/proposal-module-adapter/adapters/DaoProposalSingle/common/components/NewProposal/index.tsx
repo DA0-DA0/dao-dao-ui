@@ -51,6 +51,8 @@ export const NewProposal = ({
     name: daoName,
     imageUrl: daoImageUrl,
     coreAddress,
+    isActive,
+    activeThreshold,
   } = useDaoInfoContext()
   const { isWalletConnected, getStargateClient } = useWallet()
 
@@ -215,11 +217,13 @@ export const NewProposal = ({
     <StatelessNewProposal
       EntityDisplay={EntityDisplay}
       SuspenseLoader={SuspenseLoader}
+      activeThreshold={activeThreshold}
       anyoneCanPropose={anyoneCanPropose}
       categories={categories}
       connected={isWalletConnected}
       createProposal={createProposal}
       depositUnsatisfied={depositUnsatisfied}
+      isActive={isActive}
       isMember={
         membershipLoading
           ? { loading: true }

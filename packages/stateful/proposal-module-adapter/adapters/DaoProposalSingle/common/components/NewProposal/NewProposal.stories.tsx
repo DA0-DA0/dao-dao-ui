@@ -50,6 +50,8 @@ Default.args = {
   },
   loading: false,
   isPaused: false,
+  isActive: true,
+  activeThreshold: null,
   isMember: { loading: false, data: true },
   depositUnsatisfied: false,
   connected: true,

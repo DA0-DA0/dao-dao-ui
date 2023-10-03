@@ -15,6 +15,7 @@ import {
 import { ContractVersion } from './chain'
 import { DepositRefundPolicy, ModuleInstantiateInfo } from './contracts/common'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
+import { ActiveThreshold } from './contracts/DaoVotingCw20Staked'
 import { DaoCreator } from './creators'
 import {
   PercentOrMajorityValue,
@@ -37,6 +38,8 @@ export type DaoInfo = {
   description: string
   imageUrl: string | null
   created: Date | undefined
+  isActive: boolean
+  activeThreshold: ActiveThreshold | null
   items: Record<string, string>
   // Map chain ID to polytone proxy address.
   polytoneProxies: PolytoneProxies

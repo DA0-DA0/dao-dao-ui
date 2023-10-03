@@ -1,4 +1,4 @@
-import { AccountBalanceOutlined } from '@mui/icons-material'
+import { AccountBalanceOutlined, LockOpenOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import { daoTvlSelector } from '@dao-dao/state'
@@ -10,6 +10,10 @@ import {
   useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  formatPercentOf100,
+} from '@dao-dao/utils'
 
 import {
   useCw20CommonGovernanceTokenInfoIfExists,
@@ -27,13 +31,14 @@ const InnerDaoInfoBar = () => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const {
-    hooks: { useDaoInfoBarItems },
+    hooks: { useDaoInfoBarItems, useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
   const votingModuleItems = useDaoInfoBarItems()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress, activeThreshold } = useDaoInfoContext()
 
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
+  const tokenInfo = useCommonGovernanceTokenInfo?.()
 
   const treasuryUsdcValueLoading = useCachedLoading(
     daoTvlSelector({
@@ -75,6 +80,30 @@ const InnerDaoInfoBar = () => {
             />
           ),
         },
+        ...(activeThreshold
+          ? [
+              {
+                Icon: LockOpenOutlined,
+                label: t('title.activeThreshold'),
+                tooltip: t('info.activeThresholdDescription'),
+                value:
+                  'percentage' in activeThreshold
+                    ? formatPercentOf100(
+                        Number(activeThreshold.percentage.percent) * 100
+                      )
+                    : tokenInfo && (
+                        <TokenAmountDisplay
+                          amount={convertMicroDenomToDenomWithDecimals(
+                            activeThreshold.absolute_count.count,
+                            tokenInfo.decimals
+                          )}
+                          decimals={tokenInfo.decimals}
+                          symbol={tokenInfo.symbol}
+                        />
+                      ),
+              },
+            ]
+          : []),
         // Voting module-specific items.
         ...votingModuleItems,
       ]}

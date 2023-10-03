@@ -7,6 +7,7 @@ import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTrans
 import { cosmos } from '@dao-dao/protobuf'
 import {
   DaoCoreV2QueryClient,
+  DaoVotingCw20StakedQueryClient,
   PolytoneNoteQueryClient,
   queryIndexer,
 } from '@dao-dao/state'
@@ -28,6 +29,7 @@ import {
   ListItemsResponse,
   ProposalModuleWithInfo,
 } from '@dao-dao/types/contracts/DaoCore.v2'
+import { ActiveThreshold } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
 import {
   CI,
   DAO_CORE_ACCENT_ITEM_KEY,
@@ -193,6 +195,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         votingModule: { address: votingModuleAddress, info: votingModuleInfo },
         activeProposalModules,
         created,
+        isActive,
+        activeThreshold,
         parentDao,
         items: _items,
         polytoneProxies,
@@ -265,6 +269,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           description: config.description,
           imageUrl: overrideImageUrl ?? config.image_url ?? null,
           created: created?.toJSON() ?? null,
+          isActive,
+          activeThreshold,
           items,
           polytoneProxies,
           parentDao,
@@ -544,6 +550,8 @@ interface DaoCoreDumpState {
   parentDao: DaoParentInfo | null
   items: ListItemsResponse
   polytoneProxies: PolytoneProxies
+  isActive: boolean
+  activeThreshold: ActiveThreshold | null
 }
 
 const daoCoreDumpState = async (
@@ -553,6 +561,8 @@ const daoCoreDumpState = async (
   // Prevent cycles by ensuring admin has not already been seen.
   previousParentAddresses?: string[]
 ): Promise<DaoCoreDumpState> => {
+  const cwClient = await cosmWasmClientRouter.connect(getRpcForChainId(chainId))
+
   try {
     const indexerDumpedState = await queryIndexer<IndexerDumpState>({
       type: 'contract',
@@ -602,6 +612,23 @@ const daoCoreDumpState = async (
         indexerDumpedState.polytoneProxies || {}
       )
 
+      let isActive = true
+      let activeThreshold = null
+      try {
+        // All voting modules use the same active queries, so it's safe to just
+        // use one here.
+        const client = new DaoVotingCw20StakedQueryClient(
+          cwClient,
+          indexerDumpedState.voting_module
+        )
+        isActive = (await client.isActive()).active
+        activeThreshold =
+          (await client.activeThreshold()).active_threshold || null
+      } catch {
+        // Some voting modules don't support the active queries, so if they
+        // fail, assume it's active.
+      }
+
       return {
         ...indexerDumpedState,
         version: coreVersion,
@@ -615,6 +642,8 @@ const daoCoreDumpState = async (
         created: indexerDumpedState.createdAt
           ? new Date(indexerDumpedState.createdAt)
           : undefined,
+        isActive,
+        activeThreshold,
         items,
         parentDao: parentDaoInfo
           ? {
@@ -637,7 +666,6 @@ const daoCoreDumpState = async (
     console.error(error, processError(error))
   }
 
-  const cwClient = await cosmWasmClientRouter.connect(getRpcForChainId(chainId))
   const daoCoreClient = new DaoCoreV2QueryClient(cwClient, coreAddress)
 
   const dumpedState = await daoCoreClient.dumpState()
@@ -679,6 +707,22 @@ const daoCoreDumpState = async (
     if (_items.length < ITEM_LIST_LIMIT) {
       break
     }
+  }
+
+  let isActive = true
+  let activeThreshold = null
+  try {
+    // All voting modules use the same active queries, so it's safe to just use
+    // one here.
+    const client = new DaoVotingCw20StakedQueryClient(
+      cwClient,
+      dumpedState.voting_module
+    )
+    isActive = (await client.isActive()).active
+    activeThreshold = (await client.activeThreshold()).active_threshold || null
+  } catch {
+    // Some voting modules don't support the active queries, so if they fail,
+    // assume it's active.
   }
 
   const { admin } = dumpedState
@@ -779,6 +823,8 @@ const daoCoreDumpState = async (
       ({ status }) => status === 'enabled' || status === 'Enabled'
     ),
     created: undefined,
+    isActive,
+    activeThreshold,
     items,
     parentDao: parentDao
       ? {
