@@ -39,9 +39,11 @@ import {
   StatefulEntityDisplayProps,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
+import { ActiveThreshold } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
 import {
   convertActionsToMessages,
   formatDateTime,
+  formatPercentOf100,
   formatTime,
   processError,
   validateRequired,
@@ -70,6 +72,8 @@ export interface NewProposalProps
   createProposal: (newProposalData: NewProposalData) => Promise<void>
   loading: boolean
   isPaused: boolean
+  isActive: boolean
+  activeThreshold: ActiveThreshold | null
   isMember: LoadingData<boolean>
   anyoneCanPropose: boolean
   depositUnsatisfied: boolean
@@ -85,6 +89,8 @@ export const NewProposal = ({
   createProposal,
   loading,
   isPaused,
+  isActive,
+  activeThreshold,
   isMember,
   anyoneCanPropose,
   depositUnsatisfied,
@@ -280,6 +286,23 @@ export const NewProposal = ({
                   ? t('error.notEnoughForDeposit')
                   : isPaused
                   ? t('error.daoIsPaused')
+                  : !isActive && activeThreshold
+                  ? t('error.daoIsInactive', {
+                      context:
+                        'percentage' in activeThreshold
+                          ? 'percent'
+                          : 'absolute',
+                      percent:
+                        'percentage' in activeThreshold
+                          ? formatPercentOf100(
+                              Number(activeThreshold.percentage.percent) * 100
+                            )
+                          : undefined,
+                      count:
+                        'percentage' in activeThreshold
+                          ? undefined
+                          : Number(activeThreshold.absolute_count.count),
+                    })
                   : undefined
               }
             >
@@ -288,7 +311,8 @@ export const NewProposal = ({
                   !connected ||
                   (!anyoneCanPropose && !isMember.loading && !isMember.data) ||
                   depositUnsatisfied ||
-                  isPaused
+                  isPaused ||
+                  !isActive
                 }
                 loading={loading}
                 type="submit"

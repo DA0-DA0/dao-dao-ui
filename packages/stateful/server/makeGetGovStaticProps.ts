@@ -124,6 +124,8 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
         description: '',
         imageUrl: getImageUrlForChainId(chain.chain_id),
         created: null,
+        isActive: true,
+        activeThreshold: null,
         items: {},
         polytoneProxies: {},
         parentDao: null,

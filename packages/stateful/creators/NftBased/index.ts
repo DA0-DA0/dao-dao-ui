@@ -2,6 +2,7 @@ import { ImageEmoji } from '@dao-dao/stateless'
 import { DaoCreator, DurationUnits } from '@dao-dao/types'
 import { NftBasedCreatorId } from '@dao-dao/utils'
 
+import { makeActiveThresholdVotingConfigItem } from '../../components/dao/commonVotingConfig/ActiveThresholdVotingConfigItem'
 import { GovernanceTokenType } from '../TokenBased/types'
 import { GovernanceConfigurationInput } from './GovernanceConfigurationInput'
 import { GovernanceConfigurationReview } from './GovernanceConfigurationReview'
@@ -31,6 +32,7 @@ export const NftBasedCreator: DaoCreator = {
   },
   votingConfig: {
     items: [UnstakingDurationVotingConfigItem],
+    advancedItems: [makeActiveThresholdVotingConfigItem()],
   },
   mutate,
 }

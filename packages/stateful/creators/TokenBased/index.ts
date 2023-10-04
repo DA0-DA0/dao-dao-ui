@@ -2,6 +2,7 @@ import { DaoEmoji } from '@dao-dao/stateless'
 import { DaoCreator, DurationUnits, TokenType } from '@dao-dao/types'
 import { TokenBasedCreatorId } from '@dao-dao/utils'
 
+import { makeActiveThresholdVotingConfigItem } from '../../components/dao/commonVotingConfig/ActiveThresholdVotingConfigItem'
 import { GovernanceConfigurationInput } from './GovernanceConfigurationInput'
 import { GovernanceConfigurationReview } from './GovernanceConfigurationReview'
 import { mutate } from './mutate'
@@ -42,6 +43,11 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
       value: 2,
       units: DurationUnits.Weeks,
     },
+    activeThreshold: {
+      enabled: false,
+      type: 'percent',
+      value: 10,
+    },
   },
   governanceConfig: {
     Input: GovernanceConfigurationInput,
@@ -49,6 +55,7 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
   },
   votingConfig: {
     items: [UnstakingDurationVotingConfigItem],
+    advancedItems: [makeActiveThresholdVotingConfigItem()],
   },
   mutate,
 }
