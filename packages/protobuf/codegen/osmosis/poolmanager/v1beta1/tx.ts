@@ -2,6 +2,7 @@
 import { SwapAmountInRoute, SwapAmountInRouteAmino, SwapAmountInRouteSDKType, SwapAmountOutRoute, SwapAmountOutRouteAmino, SwapAmountOutRouteSDKType, SwapAmountInSplitRoute, SwapAmountInSplitRouteAmino, SwapAmountInSplitRouteSDKType, SwapAmountOutSplitRoute, SwapAmountOutSplitRouteAmino, SwapAmountOutSplitRouteSDKType } from "./swap_route";
 import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../../binary";
+import { Decimal } from "@cosmjs/math";
 /** ===================== MsgSwapExactAmountIn */
 export interface MsgSwapExactAmountIn {
   sender: string;
@@ -1094,7 +1095,7 @@ export const DenomPairTakerFee = {
       writer.uint32(18).string(message.denom1);
     }
     if (message.takerFee !== "") {
-      writer.uint32(26).string(message.takerFee);
+      writer.uint32(26).string(Decimal.fromUserInput(message.takerFee, 18).atomics);
     }
     return writer;
   },
@@ -1112,7 +1113,7 @@ export const DenomPairTakerFee = {
           message.denom1 = reader.string();
           break;
         case 3:
-          message.takerFee = reader.string();
+          message.takerFee = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);

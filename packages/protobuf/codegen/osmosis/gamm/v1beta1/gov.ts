@@ -1,6 +1,7 @@
 //@ts-nocheck
 import { BalancerToConcentratedPoolLink, BalancerToConcentratedPoolLinkAmino, BalancerToConcentratedPoolLinkSDKType } from "./shared";
 import { BinaryReader, BinaryWriter } from "../../../binary";
+import { Decimal } from "@cosmjs/math";
 /**
  * ReplaceMigrationRecordsProposal is a gov Content type for updating the
  * migration records. If a ReplaceMigrationRecordsProposal passes, the
@@ -421,7 +422,7 @@ export const PoolRecordWithCFMMLink = {
       writer.uint32(34).string(message.exponentAtPriceOne);
     }
     if (message.spreadFactor !== "") {
-      writer.uint32(42).string(message.spreadFactor);
+      writer.uint32(42).string(Decimal.fromUserInput(message.spreadFactor, 18).atomics);
     }
     if (message.balancerPoolId !== BigInt(0)) {
       writer.uint32(48).uint64(message.balancerPoolId);
@@ -448,7 +449,7 @@ export const PoolRecordWithCFMMLink = {
           message.exponentAtPriceOne = reader.string();
           break;
         case 5:
-          message.spreadFactor = reader.string();
+          message.spreadFactor = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 6:
           message.balancerPoolId = reader.uint64();

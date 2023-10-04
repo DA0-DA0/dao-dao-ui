@@ -3,6 +3,7 @@ import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { PeriodLock, PeriodLockAmino, PeriodLockSDKType } from "../lockup/lock";
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { toTimestamp, fromTimestamp } from "../../helpers";
+import { Decimal } from "@cosmjs/math";
 /**
  * Position contains position's id, address, pool id, lower tick, upper tick
  * join time, and liquidity.
@@ -162,7 +163,7 @@ export const Position = {
       Timestamp.encode(toTimestamp(message.joinTime), writer.uint32(50).fork()).ldelim();
     }
     if (message.liquidity !== "") {
-      writer.uint32(58).string(message.liquidity);
+      writer.uint32(58).string(Decimal.fromUserInput(message.liquidity, 18).atomics);
     }
     return writer;
   },
@@ -192,7 +193,7 @@ export const Position = {
           message.joinTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 7:
-          message.liquidity = reader.string();
+          message.liquidity = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);

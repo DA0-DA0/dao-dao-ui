@@ -1,6 +1,7 @@
 //@ts-nocheck
 import { FeeToken, FeeTokenAmino, FeeTokenSDKType } from "./feetoken";
 import { BinaryReader, BinaryWriter } from "../../../binary";
+import { Decimal } from "@cosmjs/math";
 export interface QueryFeeTokensRequest {}
 export interface QueryFeeTokensRequestProtoMsg {
   typeUrl: "/osmosis.txfees.v1beta1.QueryFeeTokensRequest";
@@ -358,7 +359,7 @@ export const QueryDenomSpotPriceResponse = {
       writer.uint32(8).uint64(message.poolID);
     }
     if (message.spotPrice !== "") {
-      writer.uint32(18).string(message.spotPrice);
+      writer.uint32(18).string(Decimal.fromUserInput(message.spotPrice, 18).atomics);
     }
     return writer;
   },
@@ -373,7 +374,7 @@ export const QueryDenomSpotPriceResponse = {
           message.poolID = reader.uint64();
           break;
         case 2:
-          message.spotPrice = reader.string();
+          message.spotPrice = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);

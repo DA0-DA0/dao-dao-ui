@@ -5,6 +5,7 @@ import { Coin, CoinAmino, CoinSDKType } from "../../base/v1beta1/coin";
 import { Timestamp } from "../../../google/protobuf/timestamp";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import { encodePubkey, decodePubkey } from "@cosmjs/proto-signing";
+import { Decimal } from "@cosmjs/math";
 import { toTimestamp, fromTimestamp } from "../../../helpers";
 /** MsgCreateValidator defines a SDK message for creating a new validator. */
 export interface MsgCreateValidator {
@@ -651,7 +652,7 @@ export const MsgEditValidator = {
       writer.uint32(18).string(message.validatorAddress);
     }
     if (message.commissionRate !== "") {
-      writer.uint32(26).string(message.commissionRate);
+      writer.uint32(26).string(Decimal.fromUserInput(message.commissionRate, 18).atomics);
     }
     if (message.minSelfDelegation !== "") {
       writer.uint32(34).string(message.minSelfDelegation);
@@ -672,7 +673,7 @@ export const MsgEditValidator = {
           message.validatorAddress = reader.string();
           break;
         case 3:
-          message.commissionRate = reader.string();
+          message.commissionRate = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 4:
           message.minSelfDelegation = reader.string();
