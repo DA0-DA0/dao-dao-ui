@@ -1255,7 +1255,7 @@ export const valenceAccountSelector = selectorFamily<
               },
               targets: [
                 {
-                  timestamp: new Date(0),
+                  timestamp: 0,
                   target: 0.75,
                 },
               ],
@@ -1267,7 +1267,7 @@ export const valenceAccountSelector = selectorFamily<
               },
               targets: [
                 {
-                  timestamp: new Date(0),
+                  timestamp: 0,
                   target: 0.25,
                 },
               ],
