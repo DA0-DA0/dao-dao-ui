@@ -4,7 +4,10 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "analyze": "ANALYZE=true next build",
+    "prepare": "npm run build:worker",
+    "prebuild": "npm run build:worker",
     "build": "next build --debug",
+    "build:worker": "tsc sw/index.ts --lib webworker --outfile public/sw.js && eslint public/sw.js --fix",
     "dev": "next dev",
     "format": "eslint . --fix",
     "lint": "eslint .",

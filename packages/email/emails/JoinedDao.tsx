@@ -10,8 +10,6 @@ import {
 
 import { EmailRenderer, EmailWrapper, styles } from '../common'
 
-const name = 'inbox-joined_dao'
-const subject = 'You joined {{name}}'
 const Template = () => (
   <EmailWrapper>
     <Text
@@ -72,7 +70,7 @@ const Template = () => (
 )
 
 export const JoinedDao: EmailRenderer = {
-  name,
-  subject,
+  name: 'inbox-joined_dao',
+  subject: 'You joined {{name}}',
   Template,
 }

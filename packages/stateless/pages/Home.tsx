@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 
 import {
   DaoCardInfo,
+  Feed,
+  FeedProps,
   FollowingDaos,
   FollowingDaosProps,
   HorizontalScroller,
@@ -19,6 +21,7 @@ export type HomeProps = {
   >
   followingDaosProps: FollowingDaosProps
   rightSidebarContent: ReactNode
+  feedProps: FeedProps
   connected: boolean
 }
 
@@ -30,6 +33,7 @@ export const Home = ({
   featuredDaosProps,
   rightSidebarContent,
   followingDaosProps,
+  feedProps,
   connected,
 }: HomeProps) => {
   const { t } = useTranslation()
@@ -38,6 +42,24 @@ export const Home = ({
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
       <PageHeaderContent className={maxWidth} title={t('title.home')} />
+
+      {/* Feed and Following DAOs*/}
+      {connected && (
+        <>
+          <div className={clsx('mb-8', maxWidth)}>
+            <Feed {...feedProps} />
+          </div>
+
+          <div className={maxWidth}>
+            <FollowingDaos {...followingDaosProps} />
+          </div>
+
+          {/* Divider */}
+          <div
+            className={clsx('my-10 h-[1px] bg-border-secondary', maxWidth)}
+          ></div>
+        </>
+      )}
 
       <div className="flex flex-col items-center gap-8">
         <p className={clsx('title-text', maxWidth)}>
@@ -58,20 +80,6 @@ export const Home = ({
           itemClassName="w-64"
           shadowClassName={widthOfSidePadding}
         />
-
-        {/* Following DAOs */}
-        {connected && (
-          <>
-            {/* Divider */}
-            <div
-              className={clsx('h-[1px] bg-border-secondary', maxWidth)}
-            ></div>
-
-            <div className={clsx('flex flex-col gap-8', maxWidth)}>
-              <FollowingDaos {...followingDaosProps} />
-            </div>
-          </>
-        )}
       </div>
     </>
   )

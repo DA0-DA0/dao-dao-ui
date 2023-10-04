@@ -98,3 +98,7 @@ export const WEB_SOCKET_PUSHER_HOST = process.env
 export const WEB_SOCKET_PUSHER_PORT = Number(
   process.env.NEXT_PUBLIC_WEB_SOCKET_PUSHER_PORT || '6001'
 )
+
+// Web Push
+export const WEB_PUSH_PUBLIC_KEY = process.env
+  .NEXT_PUBLIC_WEB_PUSH_PUBLIC_KEY as string

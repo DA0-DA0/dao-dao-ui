@@ -6,13 +6,18 @@ import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { useWallet } from './useWallet'
 
+// Cloudflare KV is slow to update, so keep track of the last successful nonce
+// that worked so we don't have to wait for the nonce query to update. Make this
+// a global variable so it persists across all hook uses.
+const lastSuccessfulNonceForType: Record<string, number | undefined> = {}
+
 export const useCfWorkerAuthPostRequest = (
   apiBase: string,
   defaultSignatureType: string
 ) => {
   const { t } = useTranslation()
   const {
-    signAmino,
+    getOfflineSignerAmino,
     chain,
     hexPublicKey,
     address: walletAddress,
@@ -34,7 +39,9 @@ export const useCfWorkerAuthPostRequest = (
 
       // Fetch nonce.
       const nonceResponse: { nonce: number } = await (
-        await fetch(`${apiBase}/nonce/${hexPublicKey.data}`)
+        await fetch(`${apiBase}/nonce/${hexPublicKey.data}`, {
+          cache: 'no-store',
+        })
       ).json()
       if (
         !('nonce' in nonceResponse) ||
@@ -48,11 +55,19 @@ export const useCfWorkerAuthPostRequest = (
         throw new Error(t('error.loadingData'))
       }
 
+      // If nonce was already used, manually increment.
+      let nonce = nonceResponse.nonce
+      const lastSuccessfulNonce =
+        lastSuccessfulNonceForType[signatureType] ?? -1
+      if (nonce <= lastSuccessfulNonce) {
+        nonce = lastSuccessfulNonce + 1
+      }
+
       const dataWithAuth = {
         ...data,
         auth: {
           type: signatureType,
-          nonce: nonceResponse.nonce,
+          nonce,
           chainId: chain.chain_id,
           chainFeeDenom: getNativeTokenForChainId(chain.chain_id)
             .denomOrAddress,
@@ -65,7 +80,7 @@ export const useCfWorkerAuthPostRequest = (
       const signDocAmino = makeSignDoc(
         [
           {
-            type: signatureType,
+            type: dataWithAuth.auth.type,
             value: {
               signer: walletAddress,
               data: JSON.stringify(dataWithAuth, undefined, 2),
@@ -88,7 +103,9 @@ export const useCfWorkerAuthPostRequest = (
       )
       const {
         signature: { signature },
-      } = await signAmino(walletAddress, signDocAmino)
+      } = await (
+        await getOfflineSignerAmino()
+      ).signAmino(walletAddress, signDocAmino)
 
       const body = {
         data: dataWithAuth,
@@ -116,6 +133,9 @@ export const useCfWorkerAuthPostRequest = (
         )
       }
 
+      // If succeeded, store nonce.
+      lastSuccessfulNonceForType[signatureType] = nonce
+
       // If response OK, return response body.
       return await response.json()
     },
@@ -127,7 +147,7 @@ export const useCfWorkerAuthPostRequest = (
       chain.chain_id,
       chain.bech32_prefix,
       walletAddress,
-      signAmino,
+      getOfflineSignerAmino,
       t,
     ]
   )

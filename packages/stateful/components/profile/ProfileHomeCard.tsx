@@ -47,7 +47,7 @@ export const ProfileHomeCard = () => {
 
   return (
     <StatelessProfileHomeCard
-      inboxPendingCount={inbox?.pendingItemCount ?? 0}
+      inboxPendingCount={inbox?.items.length ?? 0}
       lazyData={
         walletBalance === undefined ||
         walletStakedBalance === undefined ||

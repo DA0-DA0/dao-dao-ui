@@ -58,7 +58,7 @@ export const DappLayout = ({
   const [connectHidden, setConnectHidden] = useState(false)
 
   return (
-    <div className="relative z-[1] flex h-full w-full flex-row items-stretch overflow-hidden">
+    <div className="relative z-[1] flex h-full w-full flex-row items-stretch overflow-hidden pt-safe">
       <ErrorBoundary>
         <DappNavigation {...navigationProps} />
       </ErrorBoundary>

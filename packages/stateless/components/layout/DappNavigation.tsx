@@ -148,15 +148,15 @@ export const DappNavigation = ({
       <nav
         className={clsx(
           // General
-          'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto bg-background-base py-6 pt-0 text-lg',
+          'no-scrollbar flex h-full shrink-0 flex-col overflow-y-auto bg-background-base pb-6 text-lg',
           // If compact, items will manage their own padding so that highlighted
           // rows fill the whole width.
-          !compact && 'px-6',
+          compact ? 'pl-safe' : 'pr-6 pl-safe-or-[1.5rem]',
           // Responsive
-          'absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8 transition-all',
+          'absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8 transition-all pt-safe',
           responsiveEnabled ? 'left-0' : '-left-full',
           // Large
-          'sm:relative sm:left-0 sm:shadow-none sm:transition-[padding-left]',
+          'sm:relative sm:left-0 sm:pt-0 sm:shadow-none sm:transition-[padding-left]',
           compact ? 'sm:w-min' : 'sm:w-[264px]',
 
           // Dim if responsive right sidebar is open. Right sidebar can be responsive up to 2xl size. After that, it automatically displays.
@@ -336,7 +336,7 @@ export const DappNavigation = ({
 
           <div
             className={clsx(
-              'mt-8 flex gap-2',
+              'mt-8 flex shrink-0 gap-2',
               compact ? 'mx-6 flex-col' : 'flex-row items-center'
             )}
           >
@@ -353,7 +353,7 @@ export const DappNavigation = ({
                 compact ? KeyboardDoubleArrowRight : KeyboardDoubleArrowLeft
               }
               circular
-              className="hidden lg:flex"
+              className="hidden shrink-0 lg:flex"
               onClick={() => setCompact(!compact)}
               size={compact ? 'default' : 'xl'}
               variant="secondary"

@@ -108,24 +108,22 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
 
   //! Inbox
   // Inbox notifications
-  const [lastProposalCount, setLastProposalCount] = useState(
-    inbox.pendingItemCount
-  )
+  const [lastInboxCount, setLastInboxCount] = useState(inbox.items.length)
   useEffect(() => {
-    if (inbox.pendingItemCount > lastProposalCount) {
+    if (inbox.items.length > lastInboxCount) {
       setTimeout(
         () =>
           toast.success(
-            t('info.itemsInInboxNotification', {
-              count: inbox.pendingItemCount,
+            t('info.notificationsInInbox', {
+              count: inbox.items.length,
             })
           ),
         // 3 second delay.
         3 * 1000
       )
     }
-    setLastProposalCount(inbox.pendingItemCount)
-  }, [inbox.pendingItemCount, lastProposalCount, t])
+    setLastInboxCount(inbox.items.length)
+  }, [inbox.items.length, lastInboxCount, t])
 
   //! Refresh every minute. Block height, USDC conversions, and wallet balances.
   const setRefreshBlockHeight = useSetRecoilState(refreshBlockHeightAtom)
@@ -174,7 +172,7 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
                 }
               : {
                   loading: false,
-                  data: inbox.pendingItemCount,
+                  data: inbox.items.length,
                 },
           setCommandModalVisible: () => setCommandModalVisible(true),
           version: '2.0',

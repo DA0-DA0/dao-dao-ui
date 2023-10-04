@@ -64,6 +64,7 @@ export const Web3AuthPromptModal = () => {
 
   return (
     <Modal
+      backdropClassName="!z-[100]"
       containerClassName="!w-[48rem] !max-w-[90vw]"
       footerContainerClassName="flex flex-row gap-4 justify-between"
       footerContent={
@@ -114,7 +115,10 @@ export const Web3AuthPromptModal = () => {
               </WalletActionsProvider>
             ) : (
               <CosmosMessageDisplay
-                value={JSON.stringify(decoded.messages, undefined, 2)}
+                value={JSON.stringify(decoded.messages, undefined, 2).replace(
+                  /\\n/g,
+                  '\n'
+                )}
               />
             ))}
         </ChainProvider>

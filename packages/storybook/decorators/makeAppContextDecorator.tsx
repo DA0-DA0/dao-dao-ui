@@ -64,8 +64,6 @@ export const makeAppContextDecorator: (
 export const EMPTY_INBOX: InboxState = {
   loading: false,
   refreshing: false,
-  daosWithItems: [],
-  pendingItemCount: 0,
-  totalItemCount: 0,
+  items: [],
   refresh: async () => alert('refetch inbox'),
 }
