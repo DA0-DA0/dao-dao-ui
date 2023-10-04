@@ -2,6 +2,7 @@ import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { SyntheticLock, SyntheticLockAmino, SyntheticLockSDKType } from "../lockup/lock";
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { isSet } from "../../helpers";
+import { Decimal } from "@cosmjs/math";
 /**
  * SuperfluidAssetType indicates whether the superfluid asset is
  * a native token, lp share of a pool, or concentrated share of a pool
@@ -472,7 +473,7 @@ export const OsmoEquivalentMultiplierRecord = {
       writer.uint32(18).string(message.denom);
     }
     if (message.multiplier !== "") {
-      writer.uint32(26).string(message.multiplier);
+      writer.uint32(26).string(Decimal.fromUserInput(message.multiplier, 18).atomics);
     }
     return writer;
   },
@@ -490,7 +491,7 @@ export const OsmoEquivalentMultiplierRecord = {
           message.denom = reader.string();
           break;
         case 3:
-          message.multiplier = reader.string();
+          message.multiplier = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);

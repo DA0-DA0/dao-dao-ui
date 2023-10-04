@@ -1258,7 +1258,7 @@ export const TickLiquidityNet = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.TickLiquidityNet",
   encode(message: TickLiquidityNet, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.liquidityNet !== "") {
-      writer.uint32(10).string(message.liquidityNet);
+      writer.uint32(10).string(Decimal.fromUserInput(message.liquidityNet, 18).atomics);
     }
     if (message.tickIndex !== BigInt(0)) {
       writer.uint32(16).int64(message.tickIndex);
@@ -1273,7 +1273,7 @@ export const TickLiquidityNet = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.liquidityNet = reader.string();
+          message.liquidityNet = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 2:
           message.tickIndex = reader.int64();
@@ -1336,7 +1336,7 @@ export const LiquidityDepthWithRange = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.LiquidityDepthWithRange",
   encode(message: LiquidityDepthWithRange, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.liquidityAmount !== "") {
-      writer.uint32(10).string(message.liquidityAmount);
+      writer.uint32(10).string(Decimal.fromUserInput(message.liquidityAmount, 18).atomics);
     }
     if (message.lowerTick !== BigInt(0)) {
       writer.uint32(16).int64(message.lowerTick);
@@ -1354,7 +1354,7 @@ export const LiquidityDepthWithRange = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.liquidityAmount = reader.string();
+          message.liquidityAmount = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 2:
           message.lowerTick = reader.int64();
@@ -1546,7 +1546,7 @@ export const LiquidityNetInDirectionResponse = {
       writer.uint32(16).int64(message.currentTick);
     }
     if (message.currentLiquidity !== "") {
-      writer.uint32(26).string(message.currentLiquidity);
+      writer.uint32(26).string(Decimal.fromUserInput(message.currentLiquidity, 18).atomics);
     }
     return writer;
   },
@@ -1564,7 +1564,7 @@ export const LiquidityNetInDirectionResponse = {
           message.currentTick = reader.int64();
           break;
         case 3:
-          message.currentLiquidity = reader.string();
+          message.currentLiquidity = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);
