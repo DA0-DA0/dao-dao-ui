@@ -14,6 +14,7 @@ import {
 } from '@dao-dao/state'
 import {
   DaoAccount,
+  DaoAccountType,
   GenericToken,
   LoadingTokens,
   TokenCardInfo,
@@ -216,6 +217,12 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
     },
 })
 
+const ACCOUNT_FILTER_PROPERTIES: (keyof DaoAccount)[] = [
+  'type',
+  'chainId',
+  'address',
+]
+
 export const daoTreasuryValueHistorySelector = selectorFamily<
   {
     timestamps: Date[]
@@ -237,8 +244,13 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
     coreAddress: string
     precision: OsmosisHistoricalPriceChartPrecision
     startSecondsAgo: number
-    // Filter by any of the account properties.
-    filter?: Partial<DaoAccount>
+    filter?: {
+      // Filter by any of the account properties.
+      account?: Partial<DaoAccount>
+      // If `account` is a valence account and `rebalancerOnly` is true, only
+      // show valence account assets that are being rebalanced.
+      rebalancerOnly?: boolean
+    }
   }>
 >({
   key: 'daoTreasuryValueHistory',
@@ -258,12 +270,15 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
         })
       )
 
-      // Filter accounts.
-      if (filter) {
+      // Filter by account fields.
+      if (filter?.account) {
         allAccounts = allAccounts.filter((account) =>
-          Object.entries(filter).every(([key, value]) => {
-            return account[key as keyof DaoAccount] === value
-          })
+          ACCOUNT_FILTER_PROPERTIES.every(
+            (key) =>
+              !filter.account ||
+              !(key in filter.account) ||
+              account[key] === filter.account[key]
+          )
         )
       }
 
@@ -339,9 +354,20 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
       const tokens = [
         ...historicalBalancesByToken.map(({ token }) => token),
         ...currentBalances.map(({ token }) => token),
-      ]
-        // Can only compute price if token decimals loaded correctly.
-        .filter(({ decimals }) => decimals > 0)
+      ].filter(
+        (token) =>
+          // Can only compute price if token decimals loaded correctly.
+          token.decimals > 0 &&
+          // Filter by rebalancer tokens in valence account.
+          (!filter ||
+            !filter.rebalancerOnly ||
+            filter.account?.type !== DaoAccountType.Valence ||
+            !filter.account.config?.rebalancer ||
+            filter.account.config.rebalancer.targets.some(
+              ({ source }) =>
+                serializeTokenSource(source) === serializeTokenSource(token)
+            ))
+      )
 
       // Unique token sources.
       const uniqueTokenSources = [

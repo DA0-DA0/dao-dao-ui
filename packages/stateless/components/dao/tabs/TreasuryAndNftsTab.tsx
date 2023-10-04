@@ -1,6 +1,7 @@
 import { ComponentType, useState } from 'react'
 
 import {
+  DaoAccountType,
   DaoChainTreasury,
   DaoFiatDepositModalProps,
   DaoTreasuryHistoryGraphProps,
@@ -142,7 +143,9 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
       {connected && !!depositFiatChainId && (
         <FiatDepositModal
           accountType={
-            depositFiatChainId === currentChainId ? 'native' : 'polytone'
+            depositFiatChainId === currentChainId
+              ? DaoAccountType.Native
+              : DaoAccountType.Polytone
           }
           chainId={depositFiatChainId}
           onClose={() => setDepositFiatChainId(undefined)}

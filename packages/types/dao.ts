@@ -26,7 +26,7 @@ import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
 } from './proposal-module-adapter'
-import { GenericToken, TokenCardInfo } from './token'
+import { GenericToken, GenericTokenSource, TokenCardInfo } from './token'
 import { DurationWithUnits } from './units'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
@@ -330,10 +330,49 @@ export type DaoApp = {
 // `polytone` means it's a polytone account controlled by a DAO on another
 // chain. `valence` means it's a valence account controlled by a DAO on the same
 // or another chain.
-export type DaoAccountType = 'native' | 'polytone' | 'valence'
+export enum DaoAccountType {
+  Native = 'native',
+  Polytone = 'polytone',
+  Valence = 'valence',
+}
 
-export type DaoAccount = {
-  type: DaoAccountType
+export type DaoNativeAccountTypeConfig = {
+  type: DaoAccountType.Native
+  config?: undefined
+}
+
+export type DaoPolytoneAccountTypeConfig = {
+  type: DaoAccountType.Polytone
+  config?: undefined
+}
+
+export type DaoValenceAccountTypeConfig = {
+  type: DaoAccountType.Valence
+  config: DaoValenceAccountConfig
+}
+
+export type DaoValenceAccountConfig = {
+  // If rebalancer setup, this will be defined.
+  rebalancer?: {
+    targets: DaoValenceAccountRebalancerTarget[]
+  }
+}
+
+export type DaoValenceAccountRebalancerTarget = {
+  // The source that uniquely identifies a token.
+  source: GenericTokenSource
+  targets: {
+    timestamp: number
+    // Proportion between 0 and 1.
+    target: number
+  }[]
+}
+
+export type DaoAccount = (
+  | DaoNativeAccountTypeConfig
+  | DaoPolytoneAccountTypeConfig
+  | DaoValenceAccountTypeConfig
+) & {
   chainId: string
   address: string
 }
