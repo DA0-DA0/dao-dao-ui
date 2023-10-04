@@ -21,7 +21,7 @@ import {
   useDaoInfoContext,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
-import { DaoTreasuryHistoryGraphProps } from '@dao-dao/types'
+import { DaoAccountType, DaoTreasuryHistoryGraphProps } from '@dao-dao/types'
 import {
   DISTRIBUTION_COLORS,
   formatDate,
@@ -45,8 +45,8 @@ ChartJS.register(
 
 // TODO: add way to set base price denom to use instead of USD
 export const DaoTreasuryHistoryGraph = ({
-  filter,
-  targets,
+  account,
+  showRebalancer = false,
   className,
 }: DaoTreasuryHistoryGraphProps) => {
   const { t } = useTranslation()
@@ -68,7 +68,10 @@ export const DaoTreasuryHistoryGraph = ({
       chainId,
       coreAddress,
       precision,
-      filter,
+      filter: account && {
+        account,
+        rebalancerOnly: showRebalancer,
+      },
       startSecondsAgo,
     })
   )
@@ -96,10 +99,19 @@ export const DaoTreasuryHistoryGraph = ({
           }
         )
 
-  const targetValues =
-    treasuryValueHistory.loading || treasuryValueHistory.errored
-      ? []
-      : (targets || []).flatMap(({ source, targets }) => {
+  const showTargets =
+    !!account &&
+    account.type === DaoAccountType.Valence &&
+    !!account.config.rebalancer?.targets.length &&
+    showRebalancer &&
+    !treasuryValueHistory.loading &&
+    !treasuryValueHistory.errored
+
+  // Show targets if rebalancer configured account.
+  const targetValues = !showTargets
+    ? []
+    : (account.config.rebalancer?.targets || []).flatMap(
+        ({ source, targets }) => {
           if (targets.length === 0) {
             return []
           }
@@ -109,7 +121,7 @@ export const DaoTreasuryHistoryGraph = ({
               // Find first target that is after this timestamp so we can
               // choose the most recent target before it.
               let nextTargetIndex = targets.findIndex(
-                (target) => target.timestamp > _timestamp
+                (target) => target.timestamp > _timestamp.getTime()
               )
               const targetIndex =
                 nextTargetIndex === -1
@@ -168,7 +180,8 @@ export const DaoTreasuryHistoryGraph = ({
             pointHitRadius: 0,
             borderWidth: 2.5,
           }
-        })
+        }
+      )
 
   const totalValues =
     treasuryValueHistory.loading || treasuryValueHistory.errored
@@ -363,7 +376,7 @@ export const DaoTreasuryHistoryGraph = ({
                       })}
                     </p>
 
-                    {index > 0 && !!tooltipTotalValue && (
+                    {index > 0 && !!tooltipTotalValue && showTargets && (
                       <>
                         <p className="caption-text">
                           {formatPercentOf100(

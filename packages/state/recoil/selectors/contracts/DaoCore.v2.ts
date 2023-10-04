@@ -1,7 +1,10 @@
 import { selectorFamily, waitForAll, waitForAny } from 'recoil'
 
 import {
+  ChainId,
   DaoAccount,
+  DaoAccountType,
+  DaoValenceAccountConfig,
   GenericTokenBalance,
   PolytoneProxies,
   TokenType,
@@ -1210,9 +1213,9 @@ export const coreAddressForPolytoneProxySelector = selectorFamily<
       ),
 })
 
-// Get the valence account address from the DAO's items.
+// Get the valence account address from the DAO's items and its config.
 export const valenceAccountSelector = selectorFamily<
-  string | undefined,
+  DaoAccount | undefined,
   QueryClientParams & {
     // The chain ID the valence account exists on.
     targetChainId: string
@@ -1221,20 +1224,65 @@ export const valenceAccountSelector = selectorFamily<
   key: 'daoCoreV2ValenceAccount',
   get:
     ({ targetChainId, ...queryClientParams }) =>
-    ({ get }) =>
+    ({ get }) => {
+      const valenceAccountAddress =
+        get(
+          getItemSelector({
+            ...queryClientParams,
+            params: [
+              {
+                key: VALENCE_ACCOUNT_ITEM_KEY_PREFIX + targetChainId,
+              },
+            ],
+          })
+        ).item || undefined
+      if (!valenceAccountAddress) {
+        return
+      }
+
       // TODO(rebalancer): Verify that the address value is set to a valence account
       // contract owned by this DAO, so DAOs cannot set their valence account to
       // any address to render it in their treasury.
-      get(
-        getItemSelector({
-          ...queryClientParams,
-          params: [
+
+      // TODO(rebalancer): Get config
+      const config: DaoValenceAccountConfig = {
+        rebalancer: {
+          targets: [
             {
-              key: VALENCE_ACCOUNT_ITEM_KEY_PREFIX + targetChainId,
+              source: {
+                chainId: ChainId.NeutronMainnet,
+                denomOrAddress: 'untrn',
+              },
+              targets: [
+                {
+                  timestamp: new Date(0),
+                  target: 0.75,
+                },
+              ],
+            },
+            {
+              source: {
+                chainId: 'axelar-dojo-1',
+                denomOrAddress: 'uusdc',
+              },
+              targets: [
+                {
+                  timestamp: new Date(0),
+                  target: 0.25,
+                },
+              ],
             },
           ],
-        })
-      ).item || undefined,
+        },
+      }
+
+      return {
+        type: DaoAccountType.Valence,
+        chainId: targetChainId,
+        address: valenceAccountAddress,
+        config,
+      }
+    },
 })
 
 // Get all accounts controlled by this DAO, including its native chain, all
@@ -1256,14 +1304,14 @@ export const allAccountsSelector = selectorFamily<
         {
           chainId: queryClientParams.chainId,
           address: queryClientParams.contractAddress,
-          type: 'native',
+          type: DaoAccountType.Native,
         },
         // Polytone.
         ...polytoneProxies.map(
           ([chainId, address]): DaoAccount => ({
             chainId,
             address,
-            type: 'polytone',
+            type: DaoAccountType.Polytone,
           })
         ),
       ]
@@ -1281,18 +1329,7 @@ export const allAccountsSelector = selectorFamily<
       )
 
       // Add valence accounts.
-      allAccounts.push(
-        ...allAccounts.flatMap(({ chainId }, idx): DaoAccount | [] => {
-          const address = valenceAccounts[idx]
-          return address
-            ? {
-                chainId,
-                address,
-                type: 'valence',
-              }
-            : []
-        })
-      )
+      allAccounts.push(...valenceAccounts.flatMap((account) => account || []))
 
       return allAccounts
     },

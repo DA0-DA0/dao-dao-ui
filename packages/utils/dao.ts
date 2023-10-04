@@ -77,10 +77,10 @@ export const getDaoAccount = ({
   chainId: string
   accountType: DaoAccountType
 }): string | undefined =>
-  accountType === 'native' && chainId === daoChainId
+  accountType === DaoAccountType.Native && chainId === daoChainId
     ? coreAddress
-    : accountType === 'polytone' && chainId !== daoChainId
+    : accountType === DaoAccountType.Polytone && chainId !== daoChainId
     ? polytoneProxies[chainId]
-    : accountType === 'valence'
+    : accountType === DaoAccountType.Valence
     ? items[VALENCE_ACCOUNT_ITEM_KEY_PREFIX + chainId]
     : undefined

@@ -12,12 +12,15 @@ import {
 } from '@dao-dao/state'
 import {
   ActiveThreshold,
+  ChainId,
   CommonProposalInfo,
   ContractVersion,
   ContractVersionInfo,
   DaoAccount,
+  DaoAccountType,
   DaoPageMode,
   DaoParentInfo,
+  DaoValenceAccountConfig,
   Feature,
   IndexerDumpState,
   InfoResponse,
@@ -237,14 +240,14 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         {
           chainId,
           address: coreAddress,
-          type: 'native',
+          type: DaoAccountType.Native,
         },
         // Polytone.
         ...Object.entries(polytoneProxies).map(
           ([chainId, address]): DaoAccount => ({
             chainId,
             address,
-            type: 'polytone',
+            type: DaoAccountType.Polytone,
           })
         ),
         // Valence.
@@ -257,10 +260,43 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           const chainId = key.slice(VALENCE_ACCOUNT_ITEM_KEY_PREFIX.length)
           const address = value
 
+          // TODO(rebalancer): Get config
+          const config: DaoValenceAccountConfig = {
+            rebalancer: {
+              targets: [
+                {
+                  source: {
+                    chainId: ChainId.NeutronMainnet,
+                    denomOrAddress: 'untrn',
+                  },
+                  targets: [
+                    {
+                      timestamp: 0,
+                      target: 0.75,
+                    },
+                  ],
+                },
+                {
+                  source: {
+                    chainId: 'axelar-dojo-1',
+                    denomOrAddress: 'uusdc',
+                  },
+                  targets: [
+                    {
+                      timestamp: 0,
+                      target: 0.25,
+                    },
+                  ],
+                },
+              ],
+            },
+          }
+
           return {
             chainId,
             address,
-            type: 'valence',
+            type: DaoAccountType.Valence,
+            config,
           }
         }),
       ]
