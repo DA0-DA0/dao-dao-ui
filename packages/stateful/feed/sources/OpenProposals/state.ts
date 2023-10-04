@@ -19,11 +19,11 @@ import { followingDaosWithProposalModulesSelector } from '../../../recoil'
 
 export const feedOpenProposalsSelector = selectorFamily<
   FeedSourceDaoWithItems[],
-  WithChainId<{ wallet?: { address: string; hexPublicKey: string } }>
+  WithChainId<{ address: string; hexPublicKey: string }>
 >({
   key: 'feedOpenProposals',
   get:
-    ({ wallet, chainId }) =>
+    ({ address, hexPublicKey, chainId }) =>
     ({ get }) => {
       const blocksPerYear = get(
         blocksPerYearSelector({
@@ -37,47 +37,44 @@ export const feedOpenProposalsSelector = selectorFamily<
       )
 
       // Need proposal modules for the proposal line props.
-      const followingDaosWithProposalModules = wallet
-        ? get(
-            followingDaosWithProposalModulesSelector({
-              walletPublicKey: wallet.hexPublicKey,
-              chainId,
-            })
-          )
-        : []
+      const followingDaosWithProposalModules = get(
+        followingDaosWithProposalModulesSelector({
+          walletPublicKey: hexPublicKey,
+          chainId,
+        })
+      )
 
       const openProposalsPerDao = get(
         waitForAll(
           followingDaosWithProposalModules.map(({ coreAddress }) =>
             openProposalsSelector({
               coreAddress,
-              address: wallet?.address,
+              address,
               chainId,
             })
           )
         )
       )
 
-      const daosWithVotingPowerAtHeightsSelectors = wallet
-        ? followingDaosWithProposalModules.flatMap(({ coreAddress }, index) =>
-            openProposalsPerDao[index].flatMap(({ proposals }) =>
-              proposals.map(({ proposal: { start_height } }) => ({
-                coreAddress,
-                height: start_height,
-                selector: DaoCoreV2Selectors.votingPowerAtHeightSelector({
-                  contractAddress: coreAddress,
-                  chainId,
-                  params: [
-                    {
-                      address: wallet.address,
-                      height: start_height,
-                    },
-                  ],
-                }),
-              }))
-            )
+      const daosWithVotingPowerAtHeightsSelectors =
+        followingDaosWithProposalModules.flatMap(({ coreAddress }, index) =>
+          openProposalsPerDao[index].flatMap(({ proposals }) =>
+            proposals.map(({ proposal: { start_height } }) => ({
+              coreAddress,
+              height: start_height,
+              selector: DaoCoreV2Selectors.votingPowerAtHeightSelector({
+                contractAddress: coreAddress,
+                chainId,
+                params: [
+                  {
+                    address,
+                    height: start_height,
+                  },
+                ],
+              }),
+            }))
           )
-        : []
+        )
       const votingPowerValues = get(
         waitForAll(
           daosWithVotingPowerAtHeightsSelectors.map(({ selector }) => selector)

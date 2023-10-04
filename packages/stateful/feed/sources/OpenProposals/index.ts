@@ -35,20 +35,17 @@ export const OpenProposals: FeedSource<ProposalLineProps> = {
     )
 
     const daosWithItemsLoadable = useCachedLoadable(
-      waitForAll(
-        chains.map(({ chain }) =>
-          feedOpenProposalsSelector({
-            chainId: chain.chain_id,
-            wallet:
-              address && !hexPublicKey.loading
-                ? {
-                    address: transformBech32Address(address, chain.chain_id),
-                    hexPublicKey: hexPublicKey.data,
-                  }
-                : undefined,
-          })
-        )
-      )
+      address && !hexPublicKey.loading
+        ? waitForAll(
+            chains.map(({ chain }) =>
+              feedOpenProposalsSelector({
+                chainId: chain.chain_id,
+                address: transformBech32Address(address, chain.chain_id),
+                hexPublicKey: hexPublicKey.data,
+              })
+            )
+          )
+        : undefined
     )
 
     const followingDaosLoadable = useCachedLoadable(
