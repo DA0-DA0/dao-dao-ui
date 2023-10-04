@@ -1,4 +1,4 @@
-import { ClearAll, DoneAll, Refresh, Settings } from '@mui/icons-material'
+import { DoneAll, Refresh, Settings } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
@@ -122,7 +122,7 @@ export const Inbox = ({
 
               <Tooltip title={t('button.clearAll')}>
                 <IconButton
-                  Icon={ClearAll}
+                  Icon={DoneAll}
                   circular
                   disabled={!api.ready}
                   loading={api.updating}

@@ -1,4 +1,4 @@
-import { Clear } from '@mui/icons-material'
+import { Done } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -84,7 +84,7 @@ export const ProposalRenderer = ({
         <Tooltip title={t('button.clearNotification')}>
           <div>
             <IconButton
-              Icon={Clear}
+              Icon={Done}
               className="!h-full"
               onClick={clear}
               size="sm"
