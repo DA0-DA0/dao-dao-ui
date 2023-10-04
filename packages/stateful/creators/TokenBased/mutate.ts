@@ -2,6 +2,7 @@ import { Buffer } from 'buffer'
 
 import { DaoCreatorMutate, TokenType } from '@dao-dao/types'
 import {
+  ActiveThreshold,
   Cw20Coin,
   InstantiateMsg as DaoVotingCw20StakedInstantiateMsg,
 } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
@@ -28,6 +29,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     existingTokenType,
     existingTokenDenomOrAddress,
     unstakingDuration,
+    activeThreshold,
   },
   t,
   codeIds
@@ -39,6 +41,20 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   let votingModuleAdapterInstantiateMsg:
     | DaoVotingCw20StakedInstantiateMsg
     | DaoVotingNativeStakedInstantiateMsg
+
+  const active_threshold: ActiveThreshold | null = activeThreshold?.enabled
+    ? !activeThreshold.type || activeThreshold.type === 'percent'
+      ? {
+          percentage: {
+            percent: (activeThreshold.value / 100).toString(),
+          },
+        }
+      : {
+          absolute_count: {
+            count: BigInt(activeThreshold.value).toString(),
+          },
+        }
+    : null
 
   if (tokenType === GovernanceTokenType.NewCw20) {
     const microInitialBalances: Cw20Coin[] = tiers.flatMap(
@@ -64,6 +80,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     ).toString()
 
     votingModuleAdapterInstantiateMsg = {
+      active_threshold,
       token_info: {
         new: {
           code_id: codeIds.Cw20Base,
@@ -86,6 +103,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     }
 
     votingModuleAdapterInstantiateMsg = {
+      active_threshold,
       token_info: {
         existing: {
           address: existingTokenDenomOrAddress,
@@ -105,6 +123,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     }
 
     votingModuleAdapterInstantiateMsg = {
+      active_threshold,
       denom: existingTokenDenomOrAddress,
       owner: { core_module: {} },
       unstaking_duration:

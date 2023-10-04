@@ -2,6 +2,7 @@
 import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
 import { ModuleRoute, ModuleRouteAmino, ModuleRouteSDKType } from "./module_route";
 import { BinaryReader, BinaryWriter } from "../../../binary";
+import { Decimal } from "@cosmjs/math";
 /** Params holds parameters for the poolmanager module */
 export interface Params {
   poolCreationFee: Coin[];
@@ -413,7 +414,7 @@ export const TakerFeeParams = {
   typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeParams",
   encode(message: TakerFeeParams, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.defaultTakerFee !== "") {
-      writer.uint32(10).string(message.defaultTakerFee);
+      writer.uint32(10).string(Decimal.fromUserInput(message.defaultTakerFee, 18).atomics);
     }
     if (message.osmoTakerFeeDistribution !== undefined) {
       TakerFeeDistributionPercentage.encode(message.osmoTakerFeeDistribution, writer.uint32(18).fork()).ldelim();
@@ -437,7 +438,7 @@ export const TakerFeeParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.defaultTakerFee = reader.string();
+          message.defaultTakerFee = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 2:
           message.osmoTakerFeeDistribution = TakerFeeDistributionPercentage.decode(reader, reader.uint32());
@@ -521,10 +522,10 @@ export const TakerFeeDistributionPercentage = {
   typeUrl: "/osmosis.poolmanager.v1beta1.TakerFeeDistributionPercentage",
   encode(message: TakerFeeDistributionPercentage, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     if (message.stakingRewards !== "") {
-      writer.uint32(10).string(message.stakingRewards);
+      writer.uint32(10).string(Decimal.fromUserInput(message.stakingRewards, 18).atomics);
     }
     if (message.communityPool !== "") {
-      writer.uint32(18).string(message.communityPool);
+      writer.uint32(18).string(Decimal.fromUserInput(message.communityPool, 18).atomics);
     }
     return writer;
   },
@@ -536,10 +537,10 @@ export const TakerFeeDistributionPercentage = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.stakingRewards = reader.string();
+          message.stakingRewards = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 2:
-          message.communityPool = reader.string();
+          message.communityPool = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);

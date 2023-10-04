@@ -62,7 +62,7 @@ export const Modal = ({
     ? createPortal(
         <div
           className={clsx(
-            'fixed top-0 left-0 z-40 flex h-full w-screen items-center justify-center p-4 backdrop-brightness-50 backdrop-filter transition-all duration-[120ms]',
+            'fixed top-0 left-0 z-40 flex h-full w-screen items-center justify-center p-4 backdrop-brightness-50 backdrop-filter transition-all duration-[120ms] p-safe',
             visible ? 'opacity-100' : 'pointer-events-none opacity-0',
             onClose && 'cursor-pointer',
             backdropClassName
@@ -76,7 +76,7 @@ export const Modal = ({
         >
           <div
             className={clsx(
-              'relative flex h-min max-h-[82vh] max-w-md cursor-auto flex-col overflow-x-hidden rounded-lg border border-border-secondary bg-background-base shadow-dp8 transition-transform duration-[120ms]',
+              'relative flex h-min max-h-[min(98vh,_100%)] max-w-[min(98vw,_100%)] cursor-auto flex-col overflow-x-hidden rounded-lg border border-border-secondary bg-background-base shadow-dp8 transition-transform duration-[120ms] sm:max-h-[82vh] sm:max-w-md',
               visible ? 'scale-100' : 'scale-90',
               // If no children, remove bottom padding since header has its own
               // padding.

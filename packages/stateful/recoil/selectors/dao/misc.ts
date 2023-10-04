@@ -1,4 +1,4 @@
-import { RecoilValueReadOnly, selectorFamily } from 'recoil'
+import { RecoilValueReadOnly, selectorFamily, waitForAllSettled } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
@@ -183,6 +183,33 @@ export const daoInfoSelector: (param: {
       const votingModuleContractName =
         votingModuleInfo?.info.contract || 'fallback'
 
+      // All voting modules use the same isActive query, so it's safe to just
+      // use one here.
+      const [isActiveResponse, activeThresholdResponse] = get(
+        waitForAllSettled([
+          DaoVotingCw20StakedSelectors.isActiveSelector({
+            contractAddress: dumpState.voting_module,
+            chainId,
+            params: [],
+          }),
+          DaoVotingCw20StakedSelectors.activeThresholdSelector({
+            contractAddress: dumpState.voting_module,
+            chainId,
+            params: [],
+          }),
+        ])
+      )
+      // Some voting modules don't support the isActive query, so if the query
+      // fails, assume active.
+      const isActive =
+        isActiveResponse.state === 'hasError' ||
+        (isActiveResponse.state === 'hasValue' &&
+          isActiveResponse.contents.active)
+      const activeThreshold =
+        (activeThresholdResponse.state === 'hasValue' &&
+          activeThresholdResponse.contents.active_threshold) ||
+        null
+
       const proposalModules = get(
         daoCoreProposalModulesSelector({
           coreAddress,
@@ -293,6 +320,8 @@ export const daoInfoSelector: (param: {
         description: dumpState.config.description,
         imageUrl: dumpState.config.image_url || null,
         created,
+        isActive,
+        activeThreshold,
         items,
         polytoneProxies,
         parentDao: parentDaoInfo

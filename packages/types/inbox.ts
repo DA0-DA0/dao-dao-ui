@@ -1,85 +1,95 @@
 import { ComponentType } from 'react'
 
-export type InboxSourceItem<Props extends unknown = any> = {
-  props: Props
-  // If pending, the item will count towards the pending count.
-  pending: boolean
-  order?: number
-}
-
-export type InboxSourceDaoWithItems<Props extends unknown = any> = {
-  chainId: string
-  coreAddress: string
-  items: InboxSourceItem<Props>[]
-}
-
-export type InboxSourceData<Props extends unknown = any> = {
-  loading: boolean
-  refreshing: boolean
-  daosWithItems: InboxSourceDaoWithItems<Props>[]
-  refresh: () => void
-}
-
-export type InboxSource<Props extends unknown = any> = {
-  id: string
-  Renderer: ComponentType<Props>
-  useData: () => InboxSourceData<Props>
-}
-
-export type InboxItem<Props extends unknown = any> = InboxSourceItem<Props> & {
-  Renderer: ComponentType<Props>
-}
-
-export type InboxDaoWithItems = {
-  dao: {
-    chainId: string
-    coreAddress: string
-    name: string
-    imageUrl: string
-  }
-  items: InboxItem[]
-}
-
 export type InboxState = {
   loading: boolean
   refreshing: boolean
-  daosWithItems: InboxDaoWithItems[]
-  pendingItemCount: number
-  totalItemCount: number
+  items: InboxLoadedItemWithData[]
   refresh: () => void
 }
 
-export type InboxApiLoadedItem = {
+export type InboxLoadedItem = {
   id: string
   timestamp: string | undefined
   chainId: string | undefined
   data: unknown
 }
 
-// Items from the inbox API.
-export type InboxApiItem = {
-  id: string
-  timestamp: string | undefined
-  chainId: string | undefined
-} & {
-  type: InboxApiItemType.JoinedDao
-  data: {
-    chainId: string
-    dao: string
-  }
-}
-
-export enum InboxApiItemType {
+export enum InboxItemType {
   JoinedDao = 'joined_dao',
   ProposalCreated = 'proposal_created',
+  ProposalExecuted = 'proposal_executed',
+  ProposalClosed = 'proposal_closed',
 }
 
-export enum InboxApiItemTypeMethod {
+export type InboxItemTypeJoinedDaoData = {
+  chainId: string
+  dao: string
+  name: string
+  imageUrl: string | undefined
+}
+
+export type InboxItemTypeProposalCreatedData = {
+  chainId: string
+  dao: string
+  daoName: string
+  imageUrl: string | undefined
+  proposalId: string
+  proposalTitle: string
+}
+
+export type InboxItemTypeProposalExecutedData =
+  InboxItemTypeProposalCreatedData & {
+    failed: boolean
+    // Winning option for a multiple choice proposal.
+    winningOption?: string
+  }
+
+export type InboxItemTypeProposalClosedData = InboxItemTypeProposalCreatedData
+
+// Items from the inbox API.
+export type InboxLoadedItemWithData = Omit<InboxLoadedItem, 'data'> &
+  (
+    | {
+        type: InboxItemType.JoinedDao
+        data: InboxItemTypeJoinedDaoData
+      }
+    | {
+        type: InboxItemType.ProposalCreated
+        data: InboxItemTypeProposalCreatedData
+      }
+    | {
+        type: InboxItemType.ProposalExecuted
+        data: InboxItemTypeProposalExecutedData
+      }
+    | {
+        type: InboxItemType.ProposalClosed
+        data: InboxItemTypeProposalClosedData
+      }
+  )
+
+export enum InboxItemTypeMethod {
   Website = 1 << 0,
   Email = 1 << 1,
+  Push = 1 << 2,
 }
 
-export type InboxApiUpdateConfig = {
+export type InboxItemTypeMethodData = {
+  method: InboxItemTypeMethod
+  i18nKey: string
+  Icon: ComponentType<{ className?: string }>
+}
+
+export type InboxItemRendererProps<Data extends unknown> = {
+  item: InboxLoadedItemWithData
+  data: Data
+  clear: () => Promise<boolean>
+}
+
+export type InboxMainItemRendererProps = {
+  item: InboxLoadedItemWithData
+}
+
+export type InboxUpdateConfig = {
   // Update email. If empty or null, remove email.
   email?: string | null
   // Update notification settings per-type.
@@ -88,12 +98,46 @@ export type InboxApiUpdateConfig = {
   verify?: string
   // If present, resend verification email.
   resend?: boolean
+  // If present, update push settings.
+  push?:
+    | {
+        // Add subscription.
+        type: 'subscribe'
+        subscription: any
+      }
+    | {
+        // Check if subscribed or unsubscribe.
+        type: 'check' | 'unsubscribe'
+        p256dh: string
+      }
+    | {
+        // Unsubscribe all subscriptions.
+        type: 'unsubscribe_all'
+      }
 }
 
-export type InboxApiConfig = {
+export type PushSubscriptionManager = {
+  ready: boolean
+  supported: boolean
+  updating: boolean
+  subscribed: boolean
+  subscription: PushSubscription | undefined
+  subscribe: () => Promise<void>
+  unsubscribe: () => Promise<void>
+  unsubscribeAll: () => Promise<void>
+}
+
+export type InboxConfig = {
   email: string | null
   verified: boolean
   types: Record<string, number | null>
+  // Number of registered push subscriptions.
+  pushSubscriptions: number
+  // If `push` is defined in the body, returns whether or not the push is now
+  // subscribed.
+  pushSubscribed?: boolean
+  // Allowed methods per type.
+  typeAllowedMethods: Record<InboxItemType, InboxItemTypeMethod[]>
 }
 
 export type InboxApi = {
@@ -102,12 +146,13 @@ export type InboxApi = {
   clear: (idOrIds: string | string[]) => Promise<boolean>
   loadConfig: () => Promise<boolean>
   updateConfig: (
-    data: InboxApiUpdateConfig,
+    data: InboxUpdateConfig,
     signatureType?: string
   ) => Promise<boolean>
   resendVerificationEmail: () => Promise<boolean>
   verify: (code: string) => Promise<boolean>
-  config: InboxApiConfig | undefined
+  config: InboxConfig | undefined
+  push: PushSubscriptionManager
 }
 
 export enum InboxPageSlug {

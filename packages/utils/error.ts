@@ -102,6 +102,7 @@ export enum CommonError {
   SignatureVerificationFailedLedger = 'Signature verification failed. If you are using a Ledger, this is likely due to some unsupported symbols, such as "&", "<", or ">". Remove these symbols from the proposal title or description and try again.',
   IbcClientExpired = 'IBC client expired. Reach out to us for help.',
   IndexerDisabled = 'Indexer disabled.',
+  DaoInactive = 'This DAO is inactive, which means insufficient voting power has been staked. You cannot create a proposal at this time.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
@@ -170,6 +171,9 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
     ],
   ],
   [CommonError.IndexerDisabled]: ['Indexer disabled.'],
+  [CommonError.DaoInactive]: [
+    'the DAO is currently inactive, you cannot create proposals',
+  ],
 }
 const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
   CommonError,

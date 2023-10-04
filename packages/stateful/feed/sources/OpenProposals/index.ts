@@ -3,7 +3,7 @@ import { useSetRecoilState, waitForAll } from 'recoil'
 
 import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { InboxSource } from '@dao-dao/types'
+import { FeedSource } from '@dao-dao/types'
 import {
   getSupportedChains,
   transformBech32Address,
@@ -16,12 +16,12 @@ import {
 } from '../../../components/ProposalLine'
 import { useOnWebSocketMessage, useWallet } from '../../../hooks'
 import { followingDaosSelector } from '../../../recoil'
-import { inboxOpenProposalsSelector } from './state'
+import { feedOpenProposalsSelector } from './state'
 
-export const OpenProposals: InboxSource<ProposalLineProps> = {
+export const OpenProposals: FeedSource<ProposalLineProps> = {
   id: 'open_proposals',
   Renderer: ProposalLine,
-  useData: () => {
+  useData: (filter) => {
     const { address, hexPublicKey } = useWallet({
       loadAccount: true,
     })
@@ -29,23 +29,23 @@ export const OpenProposals: InboxSource<ProposalLineProps> = {
     const setRefresh = useSetRecoilState(refreshOpenProposalsAtom)
     const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
-    const chains = getSupportedChains()
+    const chains = getSupportedChains().filter(
+      ({ chain: { chain_id: chainId } }) =>
+        !filter?.chainId || chainId === filter.chainId
+    )
 
     const daosWithItemsLoadable = useCachedLoadable(
-      waitForAll(
-        chains.map(({ chain }) =>
-          inboxOpenProposalsSelector({
-            chainId: chain.chain_id,
-            wallet:
-              address && !hexPublicKey.loading
-                ? {
-                    address: transformBech32Address(address, chain.chain_id),
-                    hexPublicKey: hexPublicKey.data,
-                  }
-                : undefined,
-          })
-        )
-      )
+      address && !hexPublicKey.loading
+        ? waitForAll(
+            chains.map(({ chain }) =>
+              feedOpenProposalsSelector({
+                chainId: chain.chain_id,
+                address: transformBech32Address(address, chain.chain_id),
+                hexPublicKey: hexPublicKey.data,
+              })
+            )
+          )
+        : undefined
     )
 
     const followingDaosLoadable = useCachedLoadable(

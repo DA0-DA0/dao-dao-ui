@@ -3,18 +3,22 @@ import { waitForAll } from 'recoil'
 
 import { configSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoCore.v2'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { InboxDaoWithItems, InboxState } from '@dao-dao/types'
+import { FeedDaoWithItems, FeedFilter, FeedState } from '@dao-dao/types'
 import { getFallbackImage } from '@dao-dao/utils'
 
 import { getSources } from '../core'
 
-export const useInbox = (): InboxState => {
+export type UseFeedOptions = {
+  filter?: FeedFilter
+}
+
+export const useFeed = ({ filter = {} }: UseFeedOptions = {}): FeedState => {
   const sources = getSources().map(({ Renderer, useData }) => ({
     Renderer,
     // Safe to disable since `getSources` is constant. The hooks are always
     // called in the same order.
     // eslint-disable-next-line react-hooks/rules-of-hooks
-    data: useData(),
+    data: useData(filter),
   }))
 
   // Refresh all input sources.
@@ -120,7 +124,7 @@ export const useInbox = (): InboxState => {
         (
           { chainId, coreAddress, items },
           index
-        ): InboxDaoWithItems | undefined =>
+        ): FeedDaoWithItems | undefined =>
           daoConfigs.contents[index] && {
             dao: {
               chainId,
@@ -134,7 +138,7 @@ export const useInbox = (): InboxState => {
           }
       )
       .filter(
-        (daoWithItems): daoWithItems is InboxDaoWithItems => !!daoWithItems
+        (daoWithItems): daoWithItems is FeedDaoWithItems => !!daoWithItems
       )
   }, [daoConfigs.state, daoConfigs.contents, sourceDaosWithItems])
 

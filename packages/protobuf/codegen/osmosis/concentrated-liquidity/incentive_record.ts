@@ -2,6 +2,7 @@ import { Duration, DurationAmino, DurationSDKType } from "../../google/protobuf/
 import { DecCoin, DecCoinAmino, DecCoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { Timestamp } from "../../google/protobuf/timestamp";
 import { BinaryReader, BinaryWriter } from "../../binary";
+import { Decimal } from "@cosmjs/math";
 import { toTimestamp, fromTimestamp } from "../../helpers";
 /**
  * IncentiveRecord is the high-level struct we use to deal with an independent
@@ -213,7 +214,7 @@ export const IncentiveRecordBody = {
       DecCoin.encode(message.remainingCoin, writer.uint32(10).fork()).ldelim();
     }
     if (message.emissionRate !== "") {
-      writer.uint32(18).string(message.emissionRate);
+      writer.uint32(18).string(Decimal.fromUserInput(message.emissionRate, 18).atomics);
     }
     if (message.startTime !== undefined) {
       Timestamp.encode(toTimestamp(message.startTime), writer.uint32(26).fork()).ldelim();
@@ -231,7 +232,7 @@ export const IncentiveRecordBody = {
           message.remainingCoin = DecCoin.decode(reader, reader.uint32());
           break;
         case 2:
-          message.emissionRate = reader.string();
+          message.emissionRate = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 3:
           message.startTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));

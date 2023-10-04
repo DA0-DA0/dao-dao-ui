@@ -1,5 +1,6 @@
 import { Coin, CoinAmino, CoinSDKType } from "../../../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../../../binary";
+import { Decimal } from "@cosmjs/math";
 /** ===================== CalcOutAmtGivenIn */
 export interface CalcOutAmtGivenIn {
   /** token_in is the token to be sent to the pool. */
@@ -169,7 +170,7 @@ export const CalcOutAmtGivenIn = {
       writer.uint32(18).string(message.tokenOutDenom);
     }
     if (message.swapFee !== "") {
-      writer.uint32(26).string(message.swapFee);
+      writer.uint32(26).string(Decimal.fromUserInput(message.swapFee, 18).atomics);
     }
     return writer;
   },
@@ -187,7 +188,7 @@ export const CalcOutAmtGivenIn = {
           message.tokenOutDenom = reader.string();
           break;
         case 3:
-          message.swapFee = reader.string();
+          message.swapFee = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -390,7 +391,7 @@ export const CalcInAmtGivenOut = {
       writer.uint32(18).string(message.tokenInDenom);
     }
     if (message.swapFee !== "") {
-      writer.uint32(26).string(message.swapFee);
+      writer.uint32(26).string(Decimal.fromUserInput(message.swapFee, 18).atomics);
     }
     return writer;
   },
@@ -408,7 +409,7 @@ export const CalcInAmtGivenOut = {
           message.tokenInDenom = reader.string();
           break;
         case 3:
-          message.swapFee = reader.string();
+          message.swapFee = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);

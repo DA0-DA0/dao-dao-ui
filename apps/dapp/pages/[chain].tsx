@@ -10,12 +10,14 @@ import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
 import { commandModalVisibleAtom, walletChainIdAtom } from '@dao-dao/state'
 import {
   DaoCard,
+  LinkWrapper,
   ProfileDisconnectedCard,
   ProfileHomeCard,
   useLoadingFeaturedDaoCardInfos,
   useLoadingFollowingDaoCardInfos,
   useWallet,
 } from '@dao-dao/stateful'
+import { useFeed } from '@dao-dao/stateful/feed'
 import { Home } from '@dao-dao/stateless'
 import { getSupportedChains } from '@dao-dao/utils'
 
@@ -44,6 +46,11 @@ const ChainHomePage: NextPage = () => {
 
   const featuredDaosLoading = useLoadingFeaturedDaoCardInfos(chainId)
   const followingDaosLoading = useLoadingFollowingDaoCardInfos(chainId)
+  const feed = useFeed({
+    filter: {
+      chainId,
+    },
+  })
 
   // Pre-fetch other chains.
   useEffect(() => {
@@ -58,6 +65,10 @@ const ChainHomePage: NextPage = () => {
       featuredDaosProps={{
         Component: DaoCard,
         items: featuredDaosLoading,
+      }}
+      feedProps={{
+        state: feed,
+        LinkWrapper,
       }}
       followingDaosProps={{
         DaoCard,

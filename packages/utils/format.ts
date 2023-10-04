@@ -53,6 +53,13 @@ export const dateTimeFormatter = new Intl.DateTimeFormat('default', {
 })
 export const formatDateTime = (date: Date) => dateTimeFormatter.format(date)
 
+export const longDateTimeFormatter = new Intl.DateTimeFormat('default', {
+  dateStyle: 'long',
+  timeStyle: 'short',
+})
+export const formatLongDateTime = (date: Date) =>
+  longDateTimeFormatter.format(date)
+
 export const dateTimeTzFormatter = new Intl.DateTimeFormat('default', {
   month: '2-digit',
   day: '2-digit',

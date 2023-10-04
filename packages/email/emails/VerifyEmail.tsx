@@ -2,8 +2,6 @@ import { Button, Column, Row, Section, Text } from '@react-email/components'
 
 import { EmailRenderer, EmailWrapper, styles } from '../common'
 
-const name = 'inbox-verify'
-const subject = 'DAO DAO Email Verification'
 const Template = () => (
   <EmailWrapper>
     <Text
@@ -40,7 +38,7 @@ const Template = () => (
 )
 
 export const VerifyEmail: EmailRenderer = {
-  name,
-  subject,
+  name: 'inbox-verify',
+  subject: 'DAO DAO Email Verification',
   Template,
 }

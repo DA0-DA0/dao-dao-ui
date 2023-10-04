@@ -1,6 +1,7 @@
 //@ts-nocheck
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../binary";
+import { Decimal } from "@cosmjs/math";
 /** ===================== MsgCreatePosition */
 export interface MsgCreatePosition {
   poolId: bigint;
@@ -504,7 +505,7 @@ export const MsgCreatePositionResponse = {
       writer.uint32(26).string(message.amount1);
     }
     if (message.liquidityCreated !== "") {
-      writer.uint32(42).string(message.liquidityCreated);
+      writer.uint32(42).string(Decimal.fromUserInput(message.liquidityCreated, 18).atomics);
     }
     if (message.lowerTick !== BigInt(0)) {
       writer.uint32(48).int64(message.lowerTick);
@@ -531,7 +532,7 @@ export const MsgCreatePositionResponse = {
           message.amount1 = reader.string();
           break;
         case 5:
-          message.liquidityCreated = reader.string();
+          message.liquidityCreated = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 6:
           message.lowerTick = reader.int64();
@@ -819,7 +820,7 @@ export const MsgWithdrawPosition = {
       writer.uint32(18).string(message.sender);
     }
     if (message.liquidityAmount !== "") {
-      writer.uint32(26).string(message.liquidityAmount);
+      writer.uint32(26).string(Decimal.fromUserInput(message.liquidityAmount, 18).atomics);
     }
     return writer;
   },
@@ -837,7 +838,7 @@ export const MsgWithdrawPosition = {
           message.sender = reader.string();
           break;
         case 3:
-          message.liquidityAmount = reader.string();
+          message.liquidityAmount = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);

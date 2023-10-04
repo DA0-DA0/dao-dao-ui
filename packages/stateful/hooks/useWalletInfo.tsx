@@ -182,7 +182,7 @@ export const useWalletInfo = ({
       onUpdate?: () => void
     ): Promise<void> => {
       // PFPK uses Juno signatures for signing.
-      const { address: signer, signAmino } = junoWallet
+      const { address: signer, getOfflineSignerAmino } = junoWallet
       if (
         !signer ||
         !isWalletConnected ||
@@ -230,7 +230,9 @@ export const useWalletInfo = ({
         )
         const {
           signature: { signature },
-        } = await signAmino(signer, signDocAmino)
+        } = await (
+          await getOfflineSignerAmino()
+        ).signAmino(signer, signDocAmino)
 
         const response = await fetch(PFPK_API_BASE + `/${hexPublicKey.data}`, {
           method: 'POST',

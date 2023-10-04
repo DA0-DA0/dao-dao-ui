@@ -1,11 +1,22 @@
-import { useCallback, useState } from 'react'
+import { fromBase64, toBase64 } from '@cosmjs/encoding'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
-import { temporaryClearedInboxApiItemsAtom } from '@dao-dao/state'
-import { InboxApi, InboxApiConfig, InboxApiUpdateConfig } from '@dao-dao/types'
-import { INBOX_API_BASE, processError } from '@dao-dao/utils'
+import { temporaryClearedInboxItemsAtom } from '@dao-dao/state'
+import { useServiceWorker } from '@dao-dao/stateless'
+import {
+  InboxApi,
+  InboxConfig,
+  InboxUpdateConfig,
+  PushSubscriptionManager,
+} from '@dao-dao/types'
+import {
+  INBOX_API_BASE,
+  WEB_PUSH_PUBLIC_KEY,
+  processError,
+} from '@dao-dao/utils'
 
 import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
 import { useWallet } from './useWallet'
@@ -18,7 +29,7 @@ export const useInboxApi = (): InboxApi => {
   // all successful updates for the current session. This will be reset on page
   // refresh.
   const setTemporary = useSetRecoilState(
-    temporaryClearedInboxApiItemsAtom(address)
+    temporaryClearedInboxItemsAtom(address)
   )
 
   const [updating, setUpdating] = useState(false)
@@ -27,7 +38,45 @@ export const useInboxApi = (): InboxApi => {
     'Inbox'
   )
 
-  const [config, setConfig] = useState<InboxApiConfig>()
+  const [config, setConfig] = useState<InboxConfig>()
+
+  const serviceWorker = useServiceWorker()
+  const [pushSubscribed, setPushSubscribed] = useState(false)
+  const [pushSubscription, setPushSubscription] = useState<PushSubscription>()
+  const [pushUpdating, setPushUpdating] = useState(true)
+
+  // Load push service worker registration and subscription.
+  useEffect(() => {
+    if (!serviceWorker.ready) {
+      return
+    }
+
+    ;(async () => {
+      try {
+        if (!serviceWorker.registration) {
+          return
+        }
+
+        const subscription =
+          await serviceWorker.registration.pushManager.getSubscription()
+        if (
+          subscription &&
+          !(
+            subscription.expirationTime !== null &&
+            // If greater than 5 minutes until expiration, assume subscribed.
+            Date.now() > subscription.expirationTime - 5 * 60 * 1000
+          )
+        ) {
+          setPushSubscription(subscription)
+          setPushSubscribed(true)
+        }
+      } catch (err) {
+        console.error(err)
+      } finally {
+        setPushUpdating(false)
+      }
+    })()
+  }, [serviceWorker.ready, serviceWorker.registration])
 
   const clear = useCallback(
     async (idOrIds: string | string[]) => {
@@ -67,21 +116,39 @@ export const useInboxApi = (): InboxApi => {
   )
 
   const updateConfig = useCallback(
-    async (data: InboxApiUpdateConfig, signatureType = 'Save Inbox Config') => {
+    async (data: InboxUpdateConfig, signatureType = 'Save Inbox Config') => {
       if (!ready) {
         toast.error(t('error.logInToContinue'))
         return false
       }
-      if (updating) {
+      if (updating || pushUpdating) {
         return false
       }
 
       setUpdating(true)
 
       try {
-        const config = await postRequest<InboxApiConfig>(
+        const p256dhKey = pushSubscription?.getKey('p256dh')
+        const p256dh = p256dhKey
+          ? toBase64(new Uint8Array(p256dhKey))
+          : undefined
+
+        const push =
+          data.push ||
+          (p256dh
+            ? // If no push provided, just check if subscribed.
+              {
+                type: 'check',
+                p256dh,
+              }
+            : undefined)
+
+        const config = await postRequest<InboxConfig>(
           '/config',
-          data,
+          {
+            ...data,
+            ...(push && { push }),
+          },
           signatureType
         )
         setConfig(config)
@@ -96,75 +163,150 @@ export const useInboxApi = (): InboxApi => {
         setUpdating(false)
       }
     },
-    [postRequest, ready, t, updating]
+    [postRequest, pushSubscription, pushUpdating, ready, t, updating]
   )
 
   const loadConfig = useCallback(
-    async () => updateConfig({}, 'Load Inbox Config'),
+    () => updateConfig({}, 'Load Inbox Config'),
     [updateConfig]
   )
 
-  const resendVerificationEmail = useCallback(async () => {
-    if (!ready) {
-      toast.error(t('error.logInToContinue'))
-      return false
-    }
-    if (updating) {
-      return false
+  const resendVerificationEmail = useCallback(
+    () => updateConfig({ resend: true }, 'Resend Inbox Verification Email'),
+    [updateConfig]
+  )
+
+  const verify = useCallback(
+    (code: string) => updateConfig({ verify: code }, 'Verify Inbox Email'),
+    [updateConfig]
+  )
+
+  const subscribe = useCallback(async () => {
+    if (!WEB_PUSH_PUBLIC_KEY || pushUpdating || !serviceWorker.registration) {
+      return
     }
 
-    setUpdating(true)
-
+    setPushUpdating(true)
     try {
-      const config = await postRequest<InboxApiConfig>(
-        '/config',
-        { resend: true },
-        'Resend Inbox Verification Email'
-      )
-      setConfig(config)
+      const notificationPermission = await Notification.requestPermission()
+      if (notificationPermission === 'denied') {
+        toast.error(t('error.notificationsNotAllowed'))
+        return
+      }
 
-      return true
+      const subscription =
+        await serviceWorker.registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: fromBase64(WEB_PUSH_PUBLIC_KEY),
+        })
+
+      const saved = await updateConfig({
+        push: {
+          type: 'subscribe',
+          subscription: JSON.parse(JSON.stringify(subscription)),
+        },
+      })
+
+      if (saved) {
+        setPushSubscription(subscription)
+        setPushSubscribed(true)
+      } else {
+        // Unsubscribe if there was an error after the subscription was created.
+        await subscription.unsubscribe().catch(() => {})
+      }
     } catch (err) {
       console.error(err)
       toast.error(processError(err))
-
-      return false
     } finally {
-      setUpdating(false)
+      setPushUpdating(false)
     }
-  }, [postRequest, ready, t, updating])
+  }, [pushUpdating, serviceWorker.registration, t, updateConfig])
 
-  const verify = useCallback(
-    async (code: string) => {
-      if (!ready) {
-        toast.error(t('error.logInToContinue'))
-        return false
+  const unsubscribe = useCallback(async () => {
+    if (!pushSubscription || pushUpdating) {
+      return
+    }
+
+    setPushUpdating(true)
+    try {
+      let saved = true
+      // Key should always be found, but just in case.
+      const p256dhKey = pushSubscription.getKey('p256dh')
+      const p256dh = p256dhKey ? toBase64(new Uint8Array(p256dhKey)) : undefined
+      if (p256dh) {
+        saved = await updateConfig({
+          push: {
+            type: 'unsubscribe',
+            p256dh,
+          },
+        })
       }
-      if (updating) {
-        return false
+
+      // Unsubscribe locally once removed from server successfully. If key could
+      // not be found for some reason, just unsubscribe locally.
+      if (saved) {
+        await pushSubscription.unsubscribe()
+
+        setPushSubscription(undefined)
+        setPushSubscribed(false)
       }
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setPushUpdating(false)
+    }
+  }, [pushSubscription, pushUpdating, updateConfig])
 
-      setUpdating(true)
+  const unsubscribeAll = useCallback(async () => {
+    if (pushUpdating) {
+      return
+    }
 
-      try {
-        const config = await postRequest<InboxApiConfig>(
-          '/config',
-          { verify: code },
-          'Verify Inbox Email'
-        )
-        setConfig(config)
+    setPushUpdating(true)
+    try {
+      const saved = await updateConfig({
+        push: {
+          type: 'unsubscribe_all',
+        },
+      })
 
-        return true
-      } catch (err) {
-        console.error(err)
-        toast.error(processError(err))
+      if (saved) {
+        // Unsubscribe the current one if it exists.
+        await pushSubscription?.unsubscribe()
 
-        return false
-      } finally {
-        setUpdating(false)
+        setPushSubscription(undefined)
+        setPushSubscribed(false)
       }
-    },
-    [postRequest, ready, t, updating]
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setPushUpdating(false)
+    }
+  }, [pushSubscription, pushUpdating, updateConfig])
+
+  const push = useMemo(
+    (): PushSubscriptionManager => ({
+      ready: serviceWorker.ready,
+      supported: serviceWorker.ready && !!serviceWorker.registration,
+      updating: pushUpdating,
+      subscribed: pushSubscribed,
+      subscribe,
+      subscription: pushSubscription,
+      unsubscribe,
+      unsubscribeAll,
+    }),
+    [
+      serviceWorker.ready,
+      serviceWorker.registration,
+      pushUpdating,
+      pushSubscribed,
+      subscribe,
+      pushSubscription,
+      unsubscribe,
+      unsubscribeAll,
+    ]
   )
 
   return {
@@ -176,5 +318,6 @@ export const useInboxApi = (): InboxApi => {
     resendVerificationEmail,
     verify,
     config,
+    push,
   }
 }

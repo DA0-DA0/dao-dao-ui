@@ -1,4 +1,5 @@
 import { BinaryReader, BinaryWriter } from "../../../binary";
+import { Decimal } from "@cosmjs/math";
 /**
  * ValidatorPreference defines the message structure for
  * CreateValidatorSetPreference. It allows a user to set {val_addr, weight} in
@@ -100,7 +101,7 @@ export const ValidatorPreference = {
       writer.uint32(10).string(message.valOperAddress);
     }
     if (message.weight !== "") {
-      writer.uint32(18).string(message.weight);
+      writer.uint32(18).string(Decimal.fromUserInput(message.weight, 18).atomics);
     }
     return writer;
   },
@@ -115,7 +116,7 @@ export const ValidatorPreference = {
           message.valOperAddress = reader.string();
           break;
         case 2:
-          message.weight = reader.string();
+          message.weight = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);

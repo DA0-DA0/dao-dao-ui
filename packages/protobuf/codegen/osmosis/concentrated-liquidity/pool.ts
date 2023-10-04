@@ -1,5 +1,6 @@
 import { Timestamp } from "../../google/protobuf/timestamp";
 import { BinaryReader, BinaryWriter } from "../../binary";
+import { Decimal } from "@cosmjs/math";
 import { toTimestamp, fromTimestamp } from "../../helpers";
 export interface Pool {
   $typeUrl?: string;
@@ -116,7 +117,7 @@ export const Pool = {
       writer.uint32(32).uint64(message.id);
     }
     if (message.currentTickLiquidity !== "") {
-      writer.uint32(42).string(message.currentTickLiquidity);
+      writer.uint32(42).string(Decimal.fromUserInput(message.currentTickLiquidity, 18).atomics);
     }
     if (message.token0 !== "") {
       writer.uint32(50).string(message.token0);
@@ -137,7 +138,7 @@ export const Pool = {
       writer.uint32(88).int64(message.exponentAtPriceOne);
     }
     if (message.spreadFactor !== "") {
-      writer.uint32(98).string(message.spreadFactor);
+      writer.uint32(98).string(Decimal.fromUserInput(message.spreadFactor, 18).atomics);
     }
     if (message.lastLiquidityUpdate !== undefined) {
       Timestamp.encode(toTimestamp(message.lastLiquidityUpdate), writer.uint32(106).fork()).ldelim();
@@ -164,7 +165,7 @@ export const Pool = {
           message.id = reader.uint64();
           break;
         case 5:
-          message.currentTickLiquidity = reader.string();
+          message.currentTickLiquidity = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 6:
           message.token0 = reader.string();
@@ -185,7 +186,7 @@ export const Pool = {
           message.exponentAtPriceOne = reader.int64();
           break;
         case 12:
-          message.spreadFactor = reader.string();
+          message.spreadFactor = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 13:
           message.lastLiquidityUpdate = fromTimestamp(Timestamp.decode(reader, reader.uint32()));

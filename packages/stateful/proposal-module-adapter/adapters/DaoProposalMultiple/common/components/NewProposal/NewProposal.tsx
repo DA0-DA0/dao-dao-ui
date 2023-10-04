@@ -39,10 +39,12 @@ import {
   SuspenseLoaderProps,
 } from '@dao-dao/types'
 import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
+import { ActiveThreshold } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
 import {
   MAX_NUM_PROPOSAL_CHOICES,
   convertActionsToMessages,
   formatDateTime,
+  formatPercentOf100,
   formatTime,
   processError,
   validateRequired,
@@ -76,6 +78,8 @@ export interface NewProposalProps
   createProposal: (newProposalData: NewProposalData) => Promise<void>
   loading: boolean
   isPaused: boolean
+  isActive: boolean
+  activeThreshold: ActiveThreshold | null
   isMember: LoadingData<boolean>
   anyoneCanPropose: boolean
   depositUnsatisfied: boolean
@@ -91,6 +95,8 @@ export const NewProposal = ({
   createProposal,
   loading,
   isPaused,
+  isActive,
+  activeThreshold,
   isMember,
   anyoneCanPropose,
   depositUnsatisfied,
@@ -333,6 +339,23 @@ export const NewProposal = ({
                   ? t('error.notEnoughForDeposit')
                   : isPaused
                   ? t('error.daoIsPaused')
+                  : !isActive && activeThreshold
+                  ? t('error.daoIsInactive', {
+                      context:
+                        'percentage' in activeThreshold
+                          ? 'percent'
+                          : 'absolute',
+                      percent:
+                        'percentage' in activeThreshold
+                          ? formatPercentOf100(
+                              Number(activeThreshold.percentage.percent) * 100
+                            )
+                          : undefined,
+                      count:
+                        'percentage' in activeThreshold
+                          ? undefined
+                          : Number(activeThreshold.absolute_count.count),
+                    })
                   : choices.length < 2
                   ? t('error.tooFewChoices')
                   : choices.length > MAX_NUM_PROPOSAL_CHOICES
@@ -348,6 +371,7 @@ export const NewProposal = ({
                   (!anyoneCanPropose && !isMember.loading && !isMember.data) ||
                   depositUnsatisfied ||
                   isPaused ||
+                  !isActive ||
                   choices.length < 2 ||
                   choices.length > MAX_NUM_PROPOSAL_CHOICES
                 }
