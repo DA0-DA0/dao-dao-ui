@@ -205,10 +205,13 @@ export const DaoTreasuryHistoryGraph = ({
       ...data,
 
       pointRadius:
-        ('pointRadius' in data ? Number(data.pointRadius) : undefined) ?? 1,
+        ('pointRadius' in data
+          ? Number((data as any).pointRadius)
+          : undefined) ?? 1,
       pointHitRadius:
-        ('pointHitRadius' in data ? Number(data.pointHitRadius) : undefined) ??
-        10,
+        ('pointHitRadius' in data
+          ? Number((data as any).pointHitRadius)
+          : undefined) ?? 10,
     })
   )
 
