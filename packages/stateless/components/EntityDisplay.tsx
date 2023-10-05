@@ -10,7 +10,6 @@ import {
   concatAddressStartEnd,
   getFallbackImage,
   toAccessibleImageUrl,
-  toBech32Hash,
 } from '@dao-dao/utils'
 
 import { useChainContext, useDaoNavHelpers, useDetectTruncate } from '../hooks'
@@ -102,7 +101,7 @@ export const EntityDisplay = ({
               style={{
                 backgroundImage: `url(${
                   loadingEntity.loading
-                    ? getFallbackImage(toBech32Hash(address))
+                    ? getFallbackImage(address)
                     : toAccessibleImageUrl(loadingEntity.data.imageUrl)
                 })`,
                 width: imageSize,
