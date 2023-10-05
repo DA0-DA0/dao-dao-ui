@@ -1,12 +1,13 @@
+import { useChains } from '@cosmos-kit/react-lite'
 import { useTranslation } from 'react-i18next'
 
 import {
   ConnectWalletProps,
   ConnectWallet as StatelessConnectWallet,
   Tooltip,
+  useChainContextIfAvailable,
 } from '@dao-dao/stateless'
-
-import { useWallet } from '../hooks/useWallet'
+import { getSupportedChains } from '@dao-dao/utils'
 
 export type StatefulConnectWalletProps = Omit<
   ConnectWalletProps,
@@ -15,7 +16,19 @@ export type StatefulConnectWalletProps = Omit<
 
 export const ConnectWallet = (props: StatefulConnectWalletProps) => {
   const { t } = useTranslation()
-  const { connect, disconnect, isWalletConnecting } = useWallet()
+
+  const {
+    chain: { chain_name: currentChainName } = { chain_name: undefined },
+  } = useChainContextIfAvailable() ?? {}
+  const chainNames = getSupportedChains().map(({ chain }) => chain.chain_name)
+  const { connect, disconnect, isWalletConnecting } =
+    useChains(chainNames)[
+      // Use current chain if available, or just use first chain. Should not
+      // matter because connect/disconnect will sync to all chains, but in case
+      // the user only approves some chains and not others, we want to make sure
+      // the current chain is priority.
+      currentChainName || chainNames[0]
+    ]
 
   return (
     <Tooltip
