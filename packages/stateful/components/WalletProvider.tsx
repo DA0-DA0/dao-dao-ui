@@ -11,7 +11,7 @@ import { wallets as leapWallets } from '@cosmos-kit/leap'
 import { wallets as leapMetamaskWallets } from '@cosmos-kit/leap-metamask-cosmos-snap'
 import { wallets as okxWallets } from '@cosmos-kit/okxwallet'
 import { wallets as omniWallets } from '@cosmos-kit/omni'
-import { ChainProvider, walletContext } from '@cosmos-kit/react-lite'
+import { ChainProvider } from '@cosmos-kit/react-lite'
 import { wallets as shellWallets } from '@cosmos-kit/shell'
 import { wallets as stationWallets } from '@cosmos-kit/station'
 import { wallets as trustWallets } from '@cosmos-kit/trust'
@@ -24,7 +24,6 @@ import {
   PropsWithChildren,
   ReactNode,
   SetStateAction,
-  useContext,
   useEffect,
   useMemo,
 } from 'react'
@@ -213,17 +212,7 @@ export const WalletProvider = ({
 const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   useSyncWalletSigner()
 
-  const { isWalletDisconnected, chain, walletRepo } = useWallet()
-  // Re-run account restore logic on wallet chain switch to ensure connected.
-  const { walletManager } = useContext(walletContext)
-  useEffect(() => {
-    if (isWalletDisconnected) {
-      // @ts-ignore
-      walletManager._restoreAccounts()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chain.chain_id, walletManager])
-
+  const { isWalletDisconnected, walletRepo } = useWallet()
   // Auto-connect to Keplr mobile web if in that context.
   const isKeplrMobileWeb = useRecoilValue(isKeplrMobileWebAtom)
   useEffect(() => {
