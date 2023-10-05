@@ -4,7 +4,7 @@ import { VoteDisplay } from '@dao-dao/stateful/proposal-module-adapter/adapters/
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { EntityType } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { getFallbackImage, toBech32Hash } from '@dao-dao/utils'
+import { getFallbackImage } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../EntityDisplay'
 import { ProposalVotes, ProposalVotesProps } from './ProposalVotes'
@@ -45,7 +45,7 @@ export const makeProps = (): ProposalVotesProps<Vote> => ({
           chainId: CHAIN_ID,
           address: props.address,
           name: null,
-          imageUrl: getFallbackImage(toBech32Hash(props.address)),
+          imageUrl: getFallbackImage(props.address),
         },
       }}
       {...props}

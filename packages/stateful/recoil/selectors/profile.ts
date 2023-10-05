@@ -17,7 +17,6 @@ import {
   STARGAZE_NAMES_CONTRACT,
   getChainForChainId,
   getFallbackImage,
-  toBech32Hash,
   transformBech32Address,
 } from '@dao-dao/utils'
 
@@ -100,7 +99,7 @@ export const makeDefaultWalletProfileData = (
   loading,
   address,
   profile: { ...EMPTY_WALLET_PROFILE },
-  backupImageUrl: getFallbackImage(),
+  backupImageUrl: getFallbackImage(address),
 })
 
 // This selector returns the profile for a wallet with some helpful metadata,
@@ -135,7 +134,7 @@ export const walletProfileDataSelector = selectorFamily<
         profile.nft = pfpkProfile.nft
       }
 
-      const backupImageUrl = getFallbackImage(toBech32Hash(address))
+      const backupImageUrl = getFallbackImage(address)
 
       // Set `imageUrl` to PFPK image, defaulting to fallback image.
       profile.imageUrl = pfpkProfile?.nft?.imageUrl || backupImageUrl
