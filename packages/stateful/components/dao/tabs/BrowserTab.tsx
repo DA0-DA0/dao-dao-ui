@@ -82,12 +82,10 @@ export const BrowserTab = () => {
       address: addressForChainId(chainId),
     }),
     walletClientOverrides: {
-      // TODO(iframe): remove
       // @ts-ignore
       signAmino: (_chainId: string, _signer: string, signDoc: StdSignDoc) => {
         decodeAmino(signDoc)
       },
-      // TODO(iframe): remove
       // @ts-ignore
       signDirect: (
         _chainId: string,
