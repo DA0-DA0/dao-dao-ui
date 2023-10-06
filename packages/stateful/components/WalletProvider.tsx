@@ -212,7 +212,36 @@ export const WalletProvider = ({
 const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   useSyncWalletSigner()
 
-  const { isWalletDisconnected, walletRepo } = useWallet()
+  const { isWalletConnected, isWalletDisconnected, walletRepo, wallet } =
+    useWallet()
+
+  // Refresh connection on wallet change.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !isWalletConnected || !wallet) {
+      return
+    }
+
+    const refresh = async () => {
+      // Ensure connection still alive, and disconnect on failure.
+      try {
+        await walletRepo.connect(wallet.name)
+      } catch {
+        await walletRepo.disconnect(wallet.name).catch(console.error)
+      }
+    }
+
+    wallet.connectEventNamesOnWindow?.forEach((eventName) => {
+      window.addEventListener(eventName, refresh)
+    })
+
+    // Clean up on unmount.
+    return () => {
+      wallet.connectEventNamesOnWindow?.forEach((eventName) => {
+        window.removeEventListener(eventName, refresh)
+      })
+    }
+  }, [isWalletConnected, wallet, walletRepo])
+
   // Auto-connect to Keplr mobile web if in that context.
   const isKeplrMobileWeb = useRecoilValue(isKeplrMobileWebAtom)
   useEffect(() => {
