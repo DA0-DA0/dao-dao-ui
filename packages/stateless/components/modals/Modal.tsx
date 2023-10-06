@@ -76,7 +76,7 @@ export const Modal = ({
         >
           <div
             className={clsx(
-              'relative flex h-min max-h-[min(98vh,_100%)] max-w-[min(98vw,_100%)] cursor-auto flex-col overflow-x-hidden rounded-lg border border-border-secondary bg-background-base shadow-dp8 transition-transform duration-[120ms] sm:max-h-[82vh] sm:max-w-md',
+              'relative flex h-min max-h-[min(96vh,_100%)] max-w-[min(96vw,_100%)] cursor-auto flex-col overflow-x-hidden rounded-lg border border-border-secondary bg-background-base shadow-dp8 transition-transform duration-[120ms] sm:max-h-[82vh] sm:max-w-md',
               visible ? 'scale-100' : 'scale-90',
               // If no children, remove bottom padding since header has its own
               // padding.
