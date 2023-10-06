@@ -6,6 +6,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 import { v4 as uuidv4 } from 'uuid'
 
 import { TxBody } from '@dao-dao/protobuf/codegen/cosmos/tx/v1beta1/tx'
@@ -25,6 +26,7 @@ import {
   BaseNewProposalProps,
   CosmosMsgFor_Empty,
   PartialCategorizedActionKeyAndData,
+  PartialCategorizedActionKeyAndDataNoId,
   ProposalDraft,
 } from '@dao-dao/types'
 import {
@@ -42,6 +44,7 @@ import {
   matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
 } from '../../../proposal-module-adapter'
+import { NewProposalForm as NewSingleChoiceProposalForm } from '../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { SuspenseLoader } from '../../SuspenseLoader'
 
 export const BrowserTab = () => {
@@ -216,8 +219,8 @@ const ActionMatcherAndProposer = ({
   const decodedMessages = useMemo(() => decodeMessages(msgs), [msgs])
 
   // Call relevant action hooks in the same order every time.
-  const actionData: PartialCategorizedActionKeyAndData[] = decodedMessages.map(
-    (message) => {
+  const actionData: PartialCategorizedActionKeyAndDataNoId[] =
+    decodedMessages.map((message) => {
       const actionMatch = actionsForMatching
         .map(({ category, action }) => ({
           category,
@@ -233,23 +236,40 @@ const ActionMatcherAndProposer = ({
       }
 
       return {
-        _id: uuidv4(),
         categoryKey: actionMatch.category.key,
         actionKey: actionMatch.action.key,
         data: actionMatch.data,
       }
-    }
-  )
+    })
 
-  const formMethods = useForm({
+  const formMethods = useForm<NewSingleChoiceProposalForm>({
     mode: 'onChange',
     defaultValues: {
       title: '',
       description: '',
-      actionData,
+      actionData: actionData.map(
+        (data): PartialCategorizedActionKeyAndData => ({
+          _id: uuidv4(),
+          ...data,
+        })
+      ),
     },
   })
   const proposalData = formMethods.watch()
+
+  // If contents of matched action data change, update form.
+  useDeepCompareEffect(() => {
+    formMethods.reset({
+      title: proposalData.title,
+      description: proposalData.description,
+      actionData: actionData.map(
+        (data): PartialCategorizedActionKeyAndData => ({
+          _id: uuidv4(),
+          ...data,
+        })
+      ),
+    })
+  }, [actionData])
 
   const setProposalCreatedCardProps = useSetRecoilState(
     proposalCreatedCardPropsAtom
