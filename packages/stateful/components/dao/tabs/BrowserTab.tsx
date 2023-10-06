@@ -62,6 +62,16 @@ export const BrowserTab = () => {
   const addressForChainId = (chainId: string) =>
     (chainId === currentChainId ? coreAddress : polytoneProxies[chainId]) || ''
 
+  const enableAndConnect = (chainIds: string | string[]) =>
+    [chainIds].flat().some((chainId) => addressForChainId(chainId))
+      ? {
+          type: 'success',
+        }
+      : {
+          type: 'error',
+          error: `Unsupported chains: ${[chainIds].flat().join(', ')}.`,
+        }
+
   const { wallet, iframeRef } = useIframe({
     walletInfo: {
       prettyName: name,
@@ -92,24 +102,8 @@ export const BrowserTab = () => {
 
         decodeDirect(signDoc.bodyBytes)
       },
-      enable: (chainIds: string | string[]) =>
-        [chainIds].flat().every((chainId) => addressForChainId(chainId))
-          ? {
-              type: 'success',
-            }
-          : {
-              type: 'error',
-              error: 'Unsupported chain.',
-            },
-      connect: (chainIds: string | string[]) =>
-        [chainIds].flat().every((chainId) => addressForChainId(chainId))
-          ? {
-              type: 'success',
-            }
-          : {
-              type: 'error',
-              error: 'Unsupported chain.',
-            },
+      enable: enableAndConnect,
+      connect: enableAndConnect,
       sign: () => ({
         type: 'error',
         value: 'Unsupported.',
