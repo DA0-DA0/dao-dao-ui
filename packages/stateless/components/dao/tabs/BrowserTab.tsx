@@ -41,6 +41,7 @@ export const BrowserTab = ({ iframeRef }: BrowserTabProps) => {
       </div>
 
       <iframe
+        allow="clipboard-write"
         className="h-[75vh] rounded-md"
         ref={(ref) => {
           setIframe(ref)

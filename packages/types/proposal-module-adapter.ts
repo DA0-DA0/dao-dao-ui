@@ -217,7 +217,7 @@ export interface BaseNewProposalProps<FormData extends FieldValues = any> {
   draft?: ProposalDraft<FormData>
   saveDraft: () => void
   drafts: ProposalDraft[]
-  loadDraft: (index: number) => void
+  loadDraft?: (index: number) => void
   unloadDraft: () => void
   draftSaving: boolean
   deleteDraft: (index: number) => void

@@ -1,5 +1,6 @@
 import { State, WalletModalProps } from '@cosmos-kit/core'
 import { useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { Modal, WarningCard } from '@dao-dao/stateless'
@@ -94,13 +95,17 @@ export const WalletUi = (props: WalletModalProps) => {
         <WalletUiConnected walletRepo={walletRepo} />
       ) : (
         <WalletUiWalletList
-          connect={(wallet) => {
+          connect={async (wallet) => {
             // Reset QR State before next connection.
             setQRState(State.Init)
             setQRErrorMessage(undefined)
 
             // Connect to wallet.
-            walletRepo.connect(wallet.walletName)
+            try {
+              await walletRepo.connect(wallet.walletName)
+            } catch (err) {
+              toast.error(err instanceof Error ? err.message : `${err}`)
+            }
           }}
           walletRepo={walletRepo}
         />

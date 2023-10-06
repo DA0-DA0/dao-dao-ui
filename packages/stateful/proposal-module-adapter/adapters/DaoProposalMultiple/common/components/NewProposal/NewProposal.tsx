@@ -546,7 +546,7 @@ export const NewProposal = ({
           </>
         ) : (
           <>
-            {drafts.length > 0 && (
+            {drafts.length > 0 && !!loadDraft && (
               <FilterableItemPopup
                 filterableItemKeys={FILTERABLE_KEYS}
                 items={drafts.map(
