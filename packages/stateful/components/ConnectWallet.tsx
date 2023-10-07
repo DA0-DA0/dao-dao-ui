@@ -21,14 +21,17 @@ export const ConnectWallet = (props: StatefulConnectWalletProps) => {
     chain: { chain_name: currentChainName } = { chain_name: undefined },
   } = useChainContextIfAvailable() ?? {}
   const chainNames = getSupportedChains().map(({ chain }) => chain.chain_name)
+  const chainWallets = useChains(chainNames)
   const { connect, disconnect, isWalletConnecting } =
-    useChains(chainNames)[
+    chainWallets[
       // Use current chain if available, or just use first chain. Should not
       // matter because connect/disconnect will sync to all chains, but in case
       // the user only approves some chains and not others, we want to make sure
       // the current chain is priority.
       currentChainName || chainNames[0]
-    ]
+    ] ||
+    // In case current chain is not supported, fallback to first chain.
+    chainWallets[Object.keys(chainWallets)[0]]
 
   return (
     <Tooltip

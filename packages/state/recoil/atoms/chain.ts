@@ -1,9 +1,9 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { atom, atomFamily } from 'recoil'
 
-import { DEFAULT_CHAIN_ID } from '@dao-dao/utils'
+import { DEFAULT_CHAIN_ID, getSupportedChains } from '@dao-dao/utils'
 
-import { localStorageEffectJSON } from '../effects'
+import { localStorageEffect } from '../effects'
 
 export const signingCosmWasmClientAtom = atomFamily<
   SigningCosmWasmClient | undefined,
@@ -16,5 +16,13 @@ export const signingCosmWasmClientAtom = atomFamily<
 export const walletChainIdAtom = atom<string>({
   key: 'walletChainId',
   default: DEFAULT_CHAIN_ID,
-  effects: [localStorageEffectJSON],
+  effects: [
+    localStorageEffect(JSON.stringify, (jsonValue: string) => {
+      const value = JSON.parse(jsonValue)
+      // If no supported chain matches, set to default.
+      return getSupportedChains().some(({ chain }) => chain.chain_id === value)
+        ? value
+        : DEFAULT_CHAIN_ID
+    }),
+  ],
 })

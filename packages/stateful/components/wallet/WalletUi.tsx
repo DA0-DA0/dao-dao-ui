@@ -1,10 +1,15 @@
-import { State, WalletModalProps } from '@cosmos-kit/core'
+import { AssetList } from '@chain-registry/types'
+import { State, WalletModalProps, convertChain } from '@cosmos-kit/core'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import { Modal, WarningCard } from '@dao-dao/stateless'
-import { processError } from '@dao-dao/utils'
+import {
+  getSupportedChains,
+  maybeGetAssetListForChainId,
+  processError,
+} from '@dao-dao/utils'
 
 import { useWallet } from '../../hooks'
 import { WalletUiConnected } from './WalletUiConnected'
@@ -102,8 +107,28 @@ export const WalletUi = (props: WalletModalProps) => {
 
             // Connect to wallet.
             try {
+              // Ensure supported chains are added before connecting.
+              const supportedChains = getSupportedChains().map(({ chain }) =>
+                convertChain(
+                  chain,
+                  [maybeGetAssetListForChainId(chain.chain_id)].filter(
+                    (al): al is AssetList => !!al
+                  )
+                )
+              )
+
+              await Promise.all(
+                supportedChains.map((chainRecord) =>
+                  walletRepo
+                    .getWallet(wallet.walletName)
+                    ?.mainWallet.client.addChain?.(chainRecord)
+                    .catch(console.error)
+                )
+              )
+
               await walletRepo.connect(wallet.walletName)
             } catch (err) {
+              console.error(err)
               toast.error(err instanceof Error ? err.message : `${err}`)
             }
           }}
