@@ -23,7 +23,6 @@ export const useServiceWorker = (path = '/sw.js') => {
         await registration.update()
         setRegistration(registration)
       } catch (err) {
-        alert(err)
         console.error('Service Worker registration failed', err)
         setError(err)
       } finally {
