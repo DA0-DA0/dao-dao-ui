@@ -11,7 +11,7 @@ import {
 import { ActionKey, WidgetRendererProps } from '@dao-dao/types'
 import {
   getDaoProposalSinglePrefill,
-  loadableToLoadingData,
+  loadableToLoadingDataWithError,
 } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../../../actions'
@@ -39,25 +39,25 @@ export const TabRenderer = ({
     return () => clearInterval(interval)
   }, [setRefresh])
 
-  const vestingPaymentsLoading = loadableToLoadingData(
+  const vestingPaymentsLoading = loadableToLoadingDataWithError(
     useCachedLoadable(
       vestingInfosSelector({
         factory,
         chainId,
       })
-    ),
-    []
+    )
   )
 
   const vestingAction = useActionForKey(ActionKey.ManageVesting)
   const vestingActionDefaults = vestingAction?.action.useDefaults()
 
   // Vesting payments that need a slash registered.
-  const vestingPaymentsNeedingSlashRegistration = vestingPaymentsLoading.loading
-    ? []
-    : vestingPaymentsLoading.data.filter(
-        ({ hasUnregisteredSlashes }) => hasUnregisteredSlashes
-      )
+  const vestingPaymentsNeedingSlashRegistration =
+    vestingPaymentsLoading.loading || vestingPaymentsLoading.errored
+      ? []
+      : vestingPaymentsLoading.data.filter(
+          ({ hasUnregisteredSlashes }) => hasUnregisteredSlashes
+        )
 
   return (
     <StatelessTabRenderer

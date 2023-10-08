@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   DropdownIconButton,
+  ErrorPage,
   Loader,
   Modal,
   NoContent,
@@ -13,7 +14,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ButtonLinkProps,
-  LoadingData,
+  LoadingDataWithError,
   StatefulEntityDisplayProps,
   TransProps,
 } from '@dao-dao/types'
@@ -23,7 +24,7 @@ import { VESTING_PAYMENTS_WIDGET_ID } from '../../constants'
 import { VestingInfo } from '../../types'
 
 export interface TabRendererProps {
-  vestingPaymentsLoading: LoadingData<VestingInfo[]>
+  vestingPaymentsLoading: LoadingDataWithError<VestingInfo[]>
   isMember: boolean
   createVestingPaymentHref: string | undefined
   registerSlashesHref: string | undefined
@@ -65,28 +66,34 @@ export const TabRenderer = ({
   )
 
   // Vesting payments that need a slash registered.
-  const vestingPaymentsNeedingSlashRegistration = vestingPaymentsLoading.loading
-    ? []
-    : vestingPaymentsLoading.data.filter(
-        ({ hasUnregisteredSlashes }) => hasUnregisteredSlashes
-      )
+  const vestingPaymentsNeedingSlashRegistration =
+    vestingPaymentsLoading.loading || vestingPaymentsLoading.errored
+      ? []
+      : vestingPaymentsLoading.data.filter(
+          ({ hasUnregisteredSlashes }) => hasUnregisteredSlashes
+        )
 
   // Vesting payments that have not yet been funded or fully claimed.
-  const activeVestingPayments = vestingPaymentsLoading.loading
-    ? []
-    : vestingPaymentsLoading.data.filter(({ completed }) => !completed)
+  const activeVestingPayments =
+    vestingPaymentsLoading.loading || vestingPaymentsLoading.errored
+      ? []
+      : vestingPaymentsLoading.data.filter(({ completed }) => !completed)
   // Vesting payments that have been funded and fully claimed.
-  const completedVestingPayments = vestingPaymentsLoading.loading
-    ? []
-    : vestingPaymentsLoading.data.filter(({ completed }) => completed)
+  const completedVestingPayments =
+    vestingPaymentsLoading.loading || vestingPaymentsLoading.errored
+      ? []
+      : vestingPaymentsLoading.data.filter(({ completed }) => completed)
 
   const [showingCompleted, setShowingCompleted] = useState(false)
 
   const [vestingPaymentModalOpen, setVestingPaymentModalOpen] = useState(
     !!openVestingContract
   )
+
   const openVestingPayment =
-    vestingPaymentsLoading.loading || !openVestingContract
+    vestingPaymentsLoading.loading ||
+    vestingPaymentsLoading.errored ||
+    !openVestingContract
       ? undefined
       : vestingPaymentsLoading.data.find(
           ({ vestingContractAddress }) =>
@@ -147,8 +154,16 @@ export const TabRenderer = ({
       </div>
 
       <div className="mb-9">
-        {vestingPaymentsLoading.loading || !vestingPaymentsLoading.data ? (
+        {vestingPaymentsLoading.loading ? (
           <Loader fill={false} />
+        ) : vestingPaymentsLoading.errored ? (
+          <ErrorPage title={t('error.unexpectedError')}>
+            <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
+              {vestingPaymentsLoading.error instanceof Error
+                ? vestingPaymentsLoading.error.message
+                : `${vestingPaymentsLoading.error}`}
+            </pre>
+          </ErrorPage>
         ) : vestingPaymentsLoading.data.length ? (
           <div className="space-y-6 border-t border-border-secondary pt-6">
             {vestingPaymentsNeedingSlashRegistration.length > 0 && (
