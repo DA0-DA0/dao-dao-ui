@@ -1,4 +1,3 @@
-import { decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
 import {
   Block,
   Check,
@@ -244,11 +243,7 @@ const VoteFooter = ({
                       {/* You can cast weighted votes and vote on more than one option if you want, so this lists the weight for each one if there are more than one. Typically there will only be one, so no need to show 100% every time. */}
                       {existingVotesLoading.data!.length > 1 && (
                         <p className="text-text-secondary">
-                          {formatPercentOf100(
-                            decodeCosmosSdkDecFromProto(
-                              vote.weight
-                            ).toFloatApproximation() * 100
-                          )}
+                          {formatPercentOf100(Number(vote.weight) * 100)}
                         </p>
                       )}
                     </div>

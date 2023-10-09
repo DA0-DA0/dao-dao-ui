@@ -1,11 +1,6 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { fromBase64, toHex } from '@cosmjs/encoding'
-import {
-  Coin,
-  IndexedTx,
-  StargateClient,
-  decodeCosmosSdkDecFromProto,
-} from '@cosmjs/stargate'
+import { Coin, IndexedTx, StargateClient } from '@cosmjs/stargate'
 import { selector, selectorFamily, waitForAll, waitForAny } from 'recoil'
 
 import { cosmos, ibc, juno } from '@dao-dao/protobuf'
@@ -804,15 +799,9 @@ export const govParamsSelector = selectorFamily<AllGovParams, WithChainId<{}>>({
         minDeposit: depositParams.minDeposit,
         maxDepositPeriod: depositParams.maxDepositPeriod,
         votingPeriod: votingParams.votingPeriod,
-        quorum: decodeCosmosSdkDecFromProto(
-          tallyParams.quorum
-        ).toFloatApproximation(),
-        threshold: decodeCosmosSdkDecFromProto(
-          tallyParams.threshold
-        ).toFloatApproximation(),
-        vetoThreshold: decodeCosmosSdkDecFromProto(
-          tallyParams.vetoThreshold
-        ).toFloatApproximation(),
+        quorum: Number(tallyParams.quorum),
+        threshold: Number(tallyParams.threshold),
+        vetoThreshold: Number(tallyParams.vetoThreshold),
         // Cannot retrieve this from v1beta1 query, so just assume 0.25 as it is
         // a conservative estimate. Osmosis uses 0.25 and Juno uses 0.2 as of
         // 2023-08-13
@@ -955,11 +944,8 @@ export const communityPoolBalancesSelector = selectorFamily<
       const balances = tokens.map(
         (token, i): GenericTokenBalance => ({
           token,
-          balance: BigInt(
-            decodeCosmosSdkDecFromProto(pool[i].amount)
-              .floor()
-              .toFloatApproximation()
-          ).toString(),
+          // Truncate.
+          balance: pool[i].amount.split('.')[0],
         })
       )
 
@@ -1070,16 +1056,8 @@ export const nativeDelegationInfoSelector = selectorFamily<
                 return
               }
 
-              // pendingReward is represented as a Decimal Coin (DecCoin), which
-              // includes 18 decimals and no decimal point, so it needs to be
-              // converted manually. See issues:
-              // https://github.com/osmosis-labs/telescope/issues/247
-              // https://github.com/cosmos/cosmos-sdk/issues/10863
-              pendingReward.amount = decodeCosmosSdkDecFromProto(
-                pendingReward.amount
-              )
-                .floor()
-                .toString()
+              // Truncate.
+              pendingReward.amount = pendingReward.amount.split('.')[0]
 
               return {
                 validator: cosmosValidatorToValidator(validator),

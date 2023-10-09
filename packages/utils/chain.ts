@@ -1,8 +1,9 @@
 import { Buffer } from 'buffer'
 
-import { Chain, IBCInfo } from '@chain-registry/types'
+import { asset_lists } from '@chain-registry/assets'
+import { AssetList, Chain, IBCInfo } from '@chain-registry/types'
 import { fromBech32, fromHex, toBech32 } from '@cosmjs/encoding'
-import { GasPrice, decodeCosmosSdkDecFromProto } from '@cosmjs/stargate'
+import { GasPrice } from '@cosmjs/stargate'
 import { assets, chains, ibc } from 'chain-registry'
 import RIPEMD160 from 'ripemd160'
 
@@ -64,9 +65,7 @@ export const cosmosValidatorToValidator = ({
     website && (website.startsWith('http') ? website : `https://${website}`),
   details,
   commission: commission?.commissionRates
-    ? decodeCosmosSdkDecFromProto(
-        commission.commissionRates.rate
-      ).toFloatApproximation()
+    ? Number(commission.commissionRates.rate)
     : -1,
   status: bondStatusToJSON(status),
   tokens: Number(tokens),
@@ -124,6 +123,19 @@ export const getChainForChainId = (chainId: string): Chain => {
   }
 
   return chain
+}
+
+const cachedAssetListsById: Record<string, AssetList | undefined> = {}
+export const maybeGetAssetListForChainId = (
+  chainId: string
+): AssetList | undefined => {
+  const { chain_name: name } = maybeGetChainForChainId(chainId) ?? {}
+  if (name) {
+    cachedAssetListsById[chainId] ||= asset_lists.find(
+      ({ chain_name }) => chain_name === name
+    )
+  }
+  return cachedAssetListsById[chainId]
 }
 
 const cachedChainsByName: Record<string, Chain | undefined> = {}
