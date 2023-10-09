@@ -22,6 +22,7 @@ export const Default = Template.bind({})
 Default.args = {
   vestingPaymentsLoading: {
     loading: false,
+    errored: false,
     data: [],
   },
   isMember: true,
