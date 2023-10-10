@@ -19,6 +19,7 @@ export enum ActionCategoryKey {
   Treasury = 'treasury',
   Nfts = 'nfts',
   Press = 'press',
+  Wrappr = 'wrappr',
 }
 
 // TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
@@ -71,6 +72,10 @@ export enum ActionKey {
   CreatePost = 'createPost',
   UpdatePost = 'updatePost',
   DeletePost = 'deletePost',
+  // Wrappr
+  CreateWrappr = 'createWrappr',
+  ManageWrappr = 'manageWrappr',
+  DeleteWrappr =  'deleteWrappr',
 }
 
 export type CategorizedActionAndData = {

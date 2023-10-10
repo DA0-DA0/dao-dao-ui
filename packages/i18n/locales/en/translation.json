@@ -25,7 +25,9 @@
     "treasuryDescription_wallet": "Manage your tokens (for example, send payments, stake or swap tokens, etc.).",
     "treasuryLabel_dao": "DAO Treasury",
     "treasuryLabel_gov": "Community Pool",
-    "treasuryLabel_wallet": "Wallet"
+    "treasuryLabel_wallet": "Wallet",
+    "wrapprDescription": "Create, manage, and remove Wrappr Contracts",
+    "wrapprLabel": "Wrappr"
   },
   "button": {
     "acceptTerms": "I accept the terms",
@@ -127,6 +129,7 @@
     "newProposal": "New proposal",
     "newSubDao": "New SubDAO",
     "newVestingPayment": "New vesting payment",
+    "newWrappr": "New Wrappr",
     "nominate": "Nominate",
     "none": "None",
     "openInChainExplorer": "Open in chain explorer",
@@ -344,6 +347,7 @@
     "mustBeMemberToCreatePost": "You must be a member of the DAO to create a post.",
     "mustBeMemberToCreateProposal": "You must be a member of the DAO to create a proposal.",
     "mustBeMemberToCreateVestingPayment": "You must be a member of the DAO to create a vesting payment.",
+    "mustBeMemberToCreateWrappr": "You must be a member of the DAO to create a Wrappr.",
     "nameIncorrectLength": "A DAO's name must be between {{min}} and {{max}} characters.",
     "needsVote": "You must select a vote.",
     "nftCollectionNotChosen": "You must create an NFT collection or enter the address of an existing collection before using this action.",
@@ -627,7 +631,8 @@
     "whoIsCounterparty": "Who is the counterparty?",
     "whoTransferNftQuestion": "Where would you like to transfer the NFT?",
     "widget": "Widget",
-    "withdrawAddress": "Withdraw address"
+    "withdrawAddress": "Withdraw address",
+    "wrapprToDelete": "Wrappr to delete"
   },
   "format": {
     "estUsdValue": "${{amount}} est. USD value",
@@ -743,8 +748,11 @@
     "createStep3": "Voting configuration",
     "createStep4": "Review and approve",
     "createVestingContractManager": "To create vesting payments, you must first create a vesting contract manager.",
+    "createWrapprContract": "To create a Wrappr legal contract, you must first create a Wrappr contract manager.",
+    "createWrapprDescription": "To recognize a Wrappr legal contract with your DAO.",
     "createdPressContract": "The press contract has been created.",
     "createdVestingContractManager": "The vesting contract manager has been created.",
+    "createdWrapprContract": "The Wrappr contract has been created.",
     "creatingDao": "Creating DAO...",
     "customActionDescription_dao": "Perform any custom action a wallet can.",
     "customActionDescription_gov": "Perform any custom action.",
@@ -757,6 +765,7 @@
     "daosGovernedTooltip": "These DAOs use ${{tokenSymbol}} as their governance token.",
     "daosLogo": "DAO's Logo",
     "deletePostDescription": "Delete a post from the DAO's press.",
+    "deleteWrapprDescription": "Delete a wrappr from the DAO.",
     "depositFiatDescription": "Buy $USDC with a card or bank account, and it will be sent directly to the DAO's treasury. Balances may take some time to update once the Kado transaction completes.",
     "depositFromStargazeQuestion": "Deposit NFTs from Stargaze?",
     "depositNftsModalSubtitle": "Select the NFTs you want to deposit into {{daoName}} from your Stargaze wallet.",
@@ -826,6 +835,7 @@
     "manageTreasuryTokensDescription": "Manage Tokens displayed on your DAO's treasury page.",
     "manageVestingDescription": "Create a vesting contract that will release tokens to a recipient over time, or cancel an existing one.",
     "manageWidgetsDescription": "Add, update, and remove widgets.",
+    "manageWrapprDescription": "Manage Wrappr details.",
     "maxSlippageDescription": "As the transaction is executing, the swap price will fluctuate. If the price slips beyond this maximum slippage, the swap will not occur.",
     "meBalancesNftsDescription_all": "These are the NFTs you own on all DAO DAO-supported chains.",
     "meBalancesNftsDescription_chain": "These are the NFTs you own on {{chainName}}.",
@@ -870,6 +880,7 @@
     "noVestingPaymentsFound": "No vesting payments found.",
     "noVote": "No",
     "noWithVeto": "No with Veto",
+    "noWrapprsFound": "No Wrapprs found.",
     "nominateContributorDescription": "If you know of a contributor who deserves to be compensated but who did not submit a contribution this cycle, you can nominate them below. Doing so will allow them to be rated by the DAO members along with the rest of the contributors.",
     "none": "None",
     "notAdmin": "Your DAO is not the admin of this contract. The proposal will not be executable while this is the case.",
@@ -1192,6 +1203,7 @@
     "createPost": "Create Post",
     "createProposal": "Create proposal",
     "createValidator": "Create a validator",
+    "createWrappr": "Create a Wrappr",
     "created": "Created",
     "createdAccount": "Created account",
     "creator": "Creator",
@@ -1210,6 +1222,7 @@
     "date": "Date",
     "delegated": "Delegated",
     "deletePost": "Delete Post",
+    "deleteWrappr": "Delete a Wrappr",
     "deposit": "Deposit",
     "depositFiat": "Deposit fiat",
     "depositNfts": "Import NFTs",
@@ -1276,6 +1289,7 @@
     "manageTreasuryTokens": "Manage Treasury Tokens",
     "manageVesting": "Manage Vesting",
     "manageWidgets": "Manage Widgets",
+    "manageWrappr": "Manage Wrappr",
     "maxSlippage": "Maximum slippage",
     "me": "Me",
     "memberOfDao": "Member of {{daoName}}",
@@ -1436,6 +1450,7 @@
     "updateContractAdmin": "Update Contract Admin",
     "updateInfo": "Update Info",
     "updatePost": "Update Post",
+    "updateWrappr": "Update Wrappr",
     "upgradeToV2": "Upgrade to V2",
     "validatorActions": "Validator Actions",
     "verified": "Verified",
@@ -1470,7 +1485,8 @@
     "withdrawValidatorCommission": "Claim validator commission",
     "yourMembership": "Your membership",
     "yourNotifiers": "Your notifiers",
-    "yourSubmission": "Your submission"
+    "yourSubmission": "Your submission",
+    "wrapprs": "Wrapprs"
   },
   "unit": {
     "days": "Days",
@@ -1500,13 +1516,15 @@
     "press": "Publish posts to your DAO's press page.",
     "retroactive": "Reward contributors for work they've already done. Vote on how to distribute payments in regular cycles.",
     "vesting": "Vest funds to contributors at a constant rate, similar to a salary.",
-    "wynd_deposit": "Deposit any token on WYND DEX into your DAO."
+    "wynd_deposit": "Deposit any token on WYND DEX into your DAO.",
+    "wrappr": "Legal wrappers for your digital assets."
   },
   "widgetTitle": {
     "mint_nft": "Mint NFT",
     "press": "Press",
     "retroactive": "Retroactive Compensation",
     "vesting": "Vesting Payments",
-    "wynd_deposit": "WYND Deposit"
+    "wynd_deposit": "WYND Deposit",
+    "wrappr": "Wrappr Contracts"
   }
 }

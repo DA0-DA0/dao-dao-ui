@@ -5,6 +5,7 @@ import {
   RetroactiveCompensationWidget,
   VestingPaymentsWidget,
   WyndDepositWidget,
+  WrapprWidget,
 } from './widgets'
 
 // Add widgets here.
@@ -14,6 +15,7 @@ export const getWidgets = (chainId: string): readonly Widget[] => [
   VestingPaymentsWidget,
   RetroactiveCompensationWidget,
   PressWidget,
+  WrapprWidget,
 
   // WYND only available on Juno mainnet.
   ...(chainId === ChainId.JunoMainnet ? [WyndDepositWidget] : []),
