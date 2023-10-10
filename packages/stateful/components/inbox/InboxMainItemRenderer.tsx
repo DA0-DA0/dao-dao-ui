@@ -1,7 +1,8 @@
+import { Done } from '@mui/icons-material'
 import { ComponentType, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { WarningCard } from '@dao-dao/stateless'
+import { IconButton, Tooltip, WarningCard } from '@dao-dao/stateless'
 import {
   InboxItemRendererProps,
   InboxItemType,
@@ -19,7 +20,23 @@ export const InboxMainItemRenderer = ({ item }: InboxMainItemRendererProps) => {
   const Renderer = ITEM_RENDERER_MAP[item.type]
 
   return Renderer ? (
-    <Renderer clear={clear} data={item.data} item={item} />
+    <div className="flex flex-row items-stretch gap-1">
+      <div className="grow">
+        <Renderer clear={clear} data={item.data} item={item} />
+      </div>
+
+      <Tooltip title={t('button.clearNotification')}>
+        <div className="shrink-0">
+          <IconButton
+            Icon={Done}
+            className="!h-full"
+            onClick={clear}
+            size="sm"
+            variant="ghost"
+          />
+        </div>
+      </Tooltip>
+    </div>
   ) : (
     <WarningCard content={t('error.unknownInboxType')} />
   )
