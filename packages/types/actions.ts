@@ -184,7 +184,7 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   // Programmatic actions cannot be chosen or removed by the user. This is used
   // for actions should only be controlled by code. The user should not be able
   // to modify it at all, which also means the user cannot pick this action or
-  // go back to the category action picker. This includes both`hideFromPicker`
+  // go back to the category action picker. This includes both `hideFromPicker`
   // and `notReusable`, while also preventing the user from going back to the
   // category action picker or removing the action.
   programmaticOnly?: boolean
