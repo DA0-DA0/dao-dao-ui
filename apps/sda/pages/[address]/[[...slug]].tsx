@@ -7,7 +7,6 @@ import React, { useEffect } from 'react'
 
 import {
   ProfileDaoHomeCard,
-  SdaDaoHome,
   SuspenseLoader,
   useDaoTabs,
 } from '@dao-dao/stateful'
@@ -25,7 +24,7 @@ const DaoHomePage: NextPage = () => {
   const { coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()
 
-  const tabs = useDaoTabs({ includeHome: SdaDaoHome })
+  const tabs = useDaoTabs()
   const firstTabId = tabs[0].id
 
   // Pre-fetch tabs.

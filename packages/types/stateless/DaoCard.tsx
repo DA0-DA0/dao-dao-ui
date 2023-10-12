@@ -1,6 +1,6 @@
 import { ComponentType } from 'react'
 
-import { DaoParentInfo } from '../dao'
+import { DaoParentInfo, PolytoneProxies } from '../dao'
 import { LoadingData } from './common'
 import { IconButtonLinkProps } from './IconButtonLink'
 import { LinkWrapperProps } from './LinkWrapper'
@@ -18,6 +18,7 @@ export interface DaoCardInfo {
   name: string
   description: string
   imageUrl: string
+  polytoneProxies: PolytoneProxies
   established?: Date
   className?: string
   showIsMember?: boolean

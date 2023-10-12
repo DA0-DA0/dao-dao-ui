@@ -3,32 +3,34 @@ import {
   FiberSmartRecordOutlined,
   HomeOutlined,
   HowToVoteOutlined,
+  QuestionMark,
   WebOutlined,
 } from '@mui/icons-material'
-import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { useDaoInfoContext } from '@dao-dao/stateless'
-import { DaoTabId, DaoTabWithComponent, WidgetLocation } from '@dao-dao/types'
+import { useAppContext, useDaoInfoContext } from '@dao-dao/stateless'
+import {
+  DaoPageMode,
+  DaoTabId,
+  DaoTabWithComponent,
+  WidgetLocation,
+} from '@dao-dao/types'
 
 import {
   BrowserTab,
+  DaoWidgets,
   ProposalsTab,
+  SdaDaoHome,
   SubDaosTab,
   TreasuryAndNftsTab,
 } from '../components'
 import { useVotingModuleAdapter } from '../voting-module-adapter'
 import { useWidgets } from '../widgets'
 
-export type UseDaoTabsOptions = {
-  includeHome?: ComponentType
-}
-
-export const useDaoTabs = ({
-  includeHome,
-}: UseDaoTabsOptions = {}): DaoTabWithComponent[] => {
+export const useDaoTabs = (): DaoTabWithComponent[] => {
   const { t } = useTranslation()
 
+  const { mode } = useAppContext()
   const {
     components: { extraTabs },
   } = useVotingModuleAdapter()
@@ -49,18 +51,38 @@ export const useDaoTabs = ({
         }): DaoTabWithComponent => ({
           id,
           label: title,
-          Icon,
+          // Icon should always be defined for tab widgets, but just in case...
+          Icon: Icon || QuestionMark,
           Component: WidgetComponent,
         })
       )
 
+  // Add home tab with widgets if any widgets exist.
+  const loadingDaoHomeWidgets = useWidgets({
+    // In dApp, load widgets before rendering to decide if home with widgets is
+    // shown so that we know to select home by default when present. In SDA, no
+    // need to load widgets before rendering since the home is always shown.
+    suspendWhileLoading: mode === DaoPageMode.Dapp,
+    // Only load home widgets.
+    location: WidgetLocation.Home,
+  })
+  const hasHomeWidgets =
+    !loadingDaoHomeWidgets.loading && loadingDaoHomeWidgets.data.length > 0
+
+  const HomeTab =
+    mode === DaoPageMode.Sda
+      ? SdaDaoHome
+      : mode === DaoPageMode.Dapp && hasHomeWidgets
+      ? DaoWidgets
+      : undefined
+
   return [
-    ...(includeHome
+    ...(HomeTab
       ? [
           {
             id: DaoTabId.Home,
             label: t('title.home'),
-            Component: includeHome,
+            Component: HomeTab,
             Icon: HomeOutlined,
           },
         ]

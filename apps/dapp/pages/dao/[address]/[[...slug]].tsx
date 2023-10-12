@@ -12,7 +12,6 @@ import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
-  DaoWidgets,
   LinkWrapper,
   ProfileDaoHomeCard,
   SuspenseLoader,
@@ -22,14 +21,13 @@ import {
 } from '@dao-dao/stateful'
 import { useActionForKey } from '@dao-dao/stateful/actions'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
-import { useWidgets } from '@dao-dao/stateful/widgets'
 import {
   DaoDappTabbedHome,
   useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, DaoPageMode, WidgetLocation } from '@dao-dao/types'
+import { ActionKey, DaoPageMode } from '@dao-dao/types'
 import {
   SITE_URL,
   getDaoPath,
@@ -152,20 +150,7 @@ const InnerDaoHome = () => {
     useFollowingDaos(daoInfo.chainId)
   const following = isFollowing(daoInfo.coreAddress)
 
-  // Add home tab with widgets if any widgets exist.
-  const loadingDaoWidgets = useWidgets({
-    // Load widgets before rendering so that home is selected if there are
-    // widgets.
-    suspendWhileLoading: true,
-    // Only load home widgets.
-    location: WidgetLocation.Home,
-  })
-  const hasHomeWidgets =
-    !loadingDaoWidgets.loading && loadingDaoWidgets.data.length > 0
-
-  const tabs = useDaoTabs({
-    includeHome: hasHomeWidgets ? DaoWidgets : undefined,
-  })
+  const tabs = useDaoTabs()
   const firstTabId = tabs[0].id
 
   // Pre-fetch tabs.
