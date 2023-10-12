@@ -367,7 +367,6 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
       {context.type === ActionContextType.Dao && props.isCreating && (
         <ChainPickerInput
           className="mb-4"
-          disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
           labelMode="token"
           onChange={() => {
