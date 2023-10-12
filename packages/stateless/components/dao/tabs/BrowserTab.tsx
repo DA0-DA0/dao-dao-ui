@@ -66,6 +66,11 @@ const InnerBrowserTab = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [iframe])
 
+  // If no preset URL matching, choose the last one (custom) with empty URL.
+  const selectedPresetIndex = presets.findIndex(
+    ({ url: presetUrl }) => presetUrl === url || !presetUrl
+  )
+
   return (
     <div className={clsx('flex flex-col gap-2', className)}>
       <div
@@ -74,32 +79,41 @@ const InnerBrowserTab = ({
           fullScreen && 'px-safe-offset-4'
         )}
       >
-        {presets.map(({ name, imageUrl, url: presetUrl }) => (
-          <Button
-            key={presetUrl}
-            className={clsx(
-              'shrink-0 overflow-hidden border-2 !p-0 transition',
-              url === presetUrl
-                ? 'border-border-interactive-active'
-                : 'border-transparent'
-            )}
-            contentContainerClassName="flex-col items-stretch justify-end gap-1"
-            onClick={() => go(presetUrl)}
-            variant="none"
-          >
-            {/* Background. */}
-            <div
-              className="absolute top-0 left-0 bottom-0 right-0 z-0 bg-cover bg-center brightness-50"
-              style={{
-                backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
-              }}
-            ></div>
+        {presets.map(({ name, imageUrl, url: presetUrl }, index) => {
+          const isCustom = !presetUrl
+          const selected = index === selectedPresetIndex
 
-            <div className="relative z-10 flex h-24 w-36 items-center justify-center p-4">
-              <p className="primary-text break-words text-text-body">{name}</p>
-            </div>
-          </Button>
-        ))}
+          return (
+            <Button
+              key={presetUrl}
+              className={clsx(
+                'shrink-0 overflow-hidden border-2 !p-0 transition',
+                isCustom && 'border-dashed border-border-primary',
+                selected
+                  ? 'border-border-interactive-active'
+                  : !isCustom && 'border-transparent'
+              )}
+              onClick={() => go(presetUrl)}
+              variant="none"
+            >
+              {/* Background. */}
+              {!isCustom && (
+                <div
+                  className="absolute top-0 left-0 bottom-0 right-0 z-0 bg-cover bg-center brightness-50"
+                  style={{
+                    backgroundImage: `url(${toAccessibleImageUrl(imageUrl)})`,
+                  }}
+                ></div>
+              )}
+
+              <div className="relative z-10 flex h-24 w-36 items-center justify-center p-4">
+                <p className="primary-text break-words text-text-body">
+                  {isCustom ? t('title.custom') : name}
+                </p>
+              </div>
+            </Button>
+          )
+        })}
       </div>
 
       <div
@@ -119,6 +133,7 @@ const InnerBrowserTab = ({
               }
             }}
             placeholder={t('form.url')}
+            type="url"
             value={url}
           />
 
@@ -189,7 +204,7 @@ const presets: BrowserTabPreset[] = [
   {
     name: 'Osmosis',
     imageUrl: 'https://app.osmosis.zone/images/preview.jpg',
-    url: 'https://app.osmosis.zone/',
+    url: 'https://app.osmosis.zone',
   },
   {
     name: 'Stargaze Studio',
@@ -197,5 +212,12 @@ const presets: BrowserTabPreset[] = [
     url: MAINNET
       ? 'https://studio.stargaze.zone'
       : 'https://studio.publicawesome.dev',
+  },
+
+  // Must be last for index matching. Enables custom URL input.
+  {
+    name: '',
+    imageUrl: '',
+    url: '',
   },
 ]
