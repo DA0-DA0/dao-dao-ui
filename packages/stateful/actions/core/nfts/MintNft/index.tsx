@@ -76,6 +76,13 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
               (props.fieldNamePrefix + 'mintMsg.owner') as 'mintMsg.owner',
               newAddress
             )
+
+            // Also update instantiate chain ID.
+            setValue(
+              (props.fieldNamePrefix +
+                'instantiateData.chainId') as 'instantiateData.chainId',
+              chainId
+            )
           }}
         />
       )}
@@ -144,8 +151,8 @@ export const makeMintNftAction: ActionMaker<MintNftData> = ({
     contractChosen: false,
     collectionAddress: undefined,
 
-    instantiateMsg: {
-      minter: address,
+    instantiateData: {
+      chainId: currentChainId,
       name: '',
       symbol: '',
     },

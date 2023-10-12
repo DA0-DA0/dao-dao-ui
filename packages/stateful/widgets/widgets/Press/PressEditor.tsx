@@ -13,7 +13,6 @@ import {
 } from '@dao-dao/stateless'
 import { ActionKey, WidgetEditorProps } from '@dao-dao/types'
 import { InstantiateMsg as Cw721InstantiateMsg } from '@dao-dao/types/contracts/Cw721Base'
-import { InstantiateMsg as Sg721InstantiateMsg } from '@dao-dao/types/contracts/Sg721Base'
 
 import { useActionOptions } from '../../../actions'
 import { PressData } from './types'
@@ -40,7 +39,7 @@ export const PressEditor = ({
   const contract = watch((fieldNamePrefix + 'contract') as 'contract')
 
   // Ensure instantiate2 action exists with the right fields when editing.
-  const codeId = codeIds.Cw721Base || codeIds.Sg721Base || -1
+  const codeId = codeIds.Cw721Base || -1
   const codeDetailsLoading = useCachedLoading(
     codeId > -1
       ? codeDetailsSelector({
@@ -100,26 +99,11 @@ export const PressEditor = ({
           codeId,
           label: name,
           message: JSON.stringify(
-            codeIds.Cw721Base
-              ? ({
-                  minter: coreAddress,
-                  name,
-                  symbol: 'PRESS',
-                } as Cw721InstantiateMsg)
-              : codeIds.Sg721Base
-              ? ({
-                  collection_info: {
-                    creator: coreAddress,
-                    description: `${name} on DAO DAO`,
-                    // Yin Yang
-                    image:
-                      'ipfs://bafkreiefe4icv32rsn5l43p776d5rd4yk6expmiita5jt5tqqugc65mbua',
-                  },
-                  minter: coreAddress,
-                  name,
-                  symbol: 'PRESS',
-                } as Sg721InstantiateMsg)
-              : {},
+            {
+              minter: coreAddress,
+              name,
+              symbol: 'PRESS',
+            } as Cw721InstantiateMsg,
             null,
             2
           ),
@@ -136,7 +120,6 @@ export const PressEditor = ({
     codeDetailsLoading,
     codeId,
     codeIds.Cw721Base,
-    codeIds.Sg721Base,
     contract,
     coreAddress,
     daoName,

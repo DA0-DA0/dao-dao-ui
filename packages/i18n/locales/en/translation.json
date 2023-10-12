@@ -227,6 +227,7 @@
     "only_passed": "Only passed proposals"
   },
   "emoji": {
+    "artistPalette": "Artist palette",
     "baby": "Baby",
     "babyAngel": "Baby Angel",
     "ballotBox": "Ballot box",
@@ -291,6 +292,7 @@
     "cannotCreateCompensationCycleAlreadyActive": "You cannot create a new compensation cycle while one is already active.",
     "cannotStakeMoreThanYouHave": "You can't stake or unstake more tokens than you have.",
     "cannotTxZeroTokens": "You can't stake, unstake, or claim zero tokens.",
+    "cannotUseCreateNftCollectionOnStargaze": "You cannot create a new NFT Collection via this action on Stargaze. Use the embedded browser with Stargaze Studio instead.",
     "cantSpendMoreThanTreasury": "Can't spend more tokens than are in the treasury ({{amount}} ${{tokenSymbol}}).",
     "chainNotConnected": "Chain not connected.",
     "checkInternetOrTryAgain": "Check your internet connection, refresh the page, or try again later.",
@@ -981,7 +983,7 @@
     "stakedNftsExplanation": "These have been staked by DAO members to earn voting power.",
     "stakes": "Stakes",
     "stakingAddress": "Staking Contract",
-    "stargazeCreateCollectionFirst": "On Stargaze, you must first create the NFT Collection via a DAO proposal, and then you can mint the NFTs. Click below to replace this with the Create NFT Action.",
+    "stargazeCreateCollectionFirst": "On Stargaze, you must first create the NFT Collection via a DAO proposal, and then you can mint NFTs.",
     "startedAt": "Started at",
     "startsAt": "Starts at",
     "startsIn": "Starts in",

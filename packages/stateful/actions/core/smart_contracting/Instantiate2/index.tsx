@@ -28,8 +28,8 @@ import {
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   getNativeTokenForChainId,
-  makePolytoneExecuteMessage,
   makeWasmMessage,
+  maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -164,35 +164,29 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
           return
         }
 
-        const instantiateMsg = makeWasmMessage({
-          wasm: {
-            instantiate2: {
-              admin: admin || null,
-              code_id: codeId,
-              funds: funds.map(({ denom, amount }) => ({
-                denom,
-                amount: convertDenomToMicroDenomWithDecimals(
-                  amount,
-                  getNativeTokenForChainId(chainId).decimals
-                ).toString(),
-              })),
-              label,
-              msg,
-              salt,
-              fix_msg: false,
+        return maybeMakePolytoneExecuteMessage(
+          currentChainId,
+          chainId,
+          makeWasmMessage({
+            wasm: {
+              instantiate2: {
+                admin: admin || null,
+                code_id: codeId,
+                funds: funds.map(({ denom, amount }) => ({
+                  denom,
+                  amount: convertDenomToMicroDenomWithDecimals(
+                    amount,
+                    getNativeTokenForChainId(chainId).decimals
+                  ).toString(),
+                })),
+                label,
+                msg,
+                salt,
+                fix_msg: false,
+              },
             },
-          },
-        })
-
-        if (chainId === currentChainId) {
-          return instantiateMsg
-        } else {
-          return makePolytoneExecuteMessage(
-            currentChainId,
-            chainId,
-            instantiateMsg
-          )
-        }
+          })
+        )
       },
       []
     )

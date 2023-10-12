@@ -75,6 +75,10 @@ export const CameraEmoji = () => (
   <EmojiWrapper emoji="📸" labelI18nKey="emoji.camera" />
 )
 
+export const ArtistPaletteEmoji = () => (
+  <EmojiWrapper emoji="🎨" labelI18nKey="emoji.artistPalette" />
+)
+
 export const RobotEmoji = () => (
   <EmojiWrapper emoji="🤖" labelI18nKey="emoji.robot" />
 )

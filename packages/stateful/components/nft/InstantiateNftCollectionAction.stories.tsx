@@ -7,7 +7,6 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
 
-import { Trans } from '../Trans'
 import {
   InstantiateNftCollectionAction,
   InstantiateNftCollectionData,
@@ -22,13 +21,6 @@ export default {
       chainId: CHAIN_ID,
       name: '',
       symbol: '',
-      collectionInfo: {
-        type: 'vending',
-        description: '',
-        explicitContent: false,
-        image: '',
-        royalties: 5,
-      },
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),
   ],
@@ -50,7 +42,4 @@ Default.args = {
   data: {},
   isCreating: true,
   errors: {},
-  options: {
-    Trans,
-  },
 }

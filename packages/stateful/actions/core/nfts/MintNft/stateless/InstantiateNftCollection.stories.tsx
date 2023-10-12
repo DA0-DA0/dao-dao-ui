@@ -7,7 +7,6 @@ import {
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
 
-import { Trans } from '../../../../../components/Trans'
 import { MintNftData } from '../types'
 import { InstantiateNftCollection } from './InstantiateNftCollection'
 
@@ -49,6 +48,5 @@ Default.args = {
   options: {
     onInstantiate: async () => alert('instantiate'),
     instantiating: false,
-    Trans,
   },
 }

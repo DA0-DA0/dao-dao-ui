@@ -62,11 +62,3 @@ export const NUM_FEATURED_DAOS = 10
 // Neutron governance DAO.
 export const NEUTRON_GOVERNANCE_DAO =
   'neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff'
-
-// Stargaze NFT minting parameters.
-export const STARGAZE_MAINNET_BASE_MINTER_FACTORY = ''
-export const STARGAZE_MAINNET_VENDING_MINTER_FACTORY =
-  'stars1cadkattm22c7mn6l844r4y0n70x9k5e5dp0ez38w29rxxc8qnuss5hk94j'
-export const STARGAZE_MAINNET_VENDING_MINTER_FEES = 3000000000
-export const STARGAZE_TESTNET_BASE_MINTER_FACTORY = ''
-export const STARGAZE_TESTNET_VENDING_MINTER_FACTORY = ''

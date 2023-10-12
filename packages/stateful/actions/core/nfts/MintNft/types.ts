@@ -3,10 +3,7 @@ import { ComponentType } from 'react'
 import { AddressInputProps, NftCardInfo } from '@dao-dao/types'
 import { MintMsgForNullable_Empty } from '@dao-dao/types/contracts/Cw721Base'
 
-import {
-  InstantiateNftCollectionData,
-  InstantiateNftCollectionOptions,
-} from '../../../../components/nft/InstantiateNftCollectionAction'
+import { InstantiateNftCollectionData } from '../../../../components/nft/InstantiateNftCollectionAction'
 
 export interface MintNftData {
   chainId: string
@@ -33,7 +30,7 @@ export interface MintNftData {
   mintMsg: MintMsgForNullable_Empty
 }
 
-export type InstantiateOptions = InstantiateNftCollectionOptions & {
+export type InstantiateOptions = {
   instantiating: boolean
   onInstantiate: () => Promise<void>
 }
