@@ -27,13 +27,12 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-export interface InstantiateOptions {
+export type Instantiate2Options = {
   nativeBalances: LoadingData<GenericTokenBalance[]>
-  // Only present once executed.
   instantiatedAddress?: string
 }
 
-export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
+export const Instantiate2Component: ActionComponent<Instantiate2Options> = (
   props
 ) => {
   const {
@@ -58,7 +57,7 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
 
   return (
     <>
-      {instantiatedAddress && (
+      {!!instantiatedAddress && (
         <div className="flex flex-row items-center gap-6 text-text-primary">
           <InputLabel name={t('form.instantiatedAddress') + ':'} />
           <CopyToClipboard
@@ -94,6 +93,18 @@ export const InstantiateComponent: ActionComponent<InstantiateOptions> = (
           />
           <InputErrorMessage error={errors?.label} />
         </div>
+      </div>
+
+      <div className="flex grow flex-col items-stretch gap-1">
+        <InputLabel name={t('form.salt')} />
+        <TextInput
+          disabled={!isCreating}
+          error={errors?.salt}
+          fieldName={fieldNamePrefix + 'salt'}
+          register={register}
+          validation={[validateRequired]}
+        />
+        <InputErrorMessage error={errors?.salt} />
       </div>
 
       <div className="flex flex-col gap-1">

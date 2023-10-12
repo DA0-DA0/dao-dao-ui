@@ -15,6 +15,7 @@ export type ChainPickerInputProps = {
   labelMode?: 'chain' | 'token'
   disabled?: boolean
   onChange?: (chainId: string) => void
+  excludeChainIds?: string[]
   className?: string
 }
 
@@ -23,6 +24,7 @@ export const ChainPickerInput = ({
   labelMode = 'chain',
   disabled,
   onChange,
+  excludeChainIds,
   className,
 }: ChainPickerInputProps) => {
   const {
@@ -47,13 +49,15 @@ export const ChainPickerInput = ({
           chainId,
           // Other chains with Polytone.
           ...polytoneChains,
-        ].map((chainId) => ({
-          label:
-            labelMode === 'chain'
-              ? getDisplayNameForChainId(chainId)
-              : getNativeTokenForChainId(chainId).symbol,
-          value: chainId,
-        }))}
+        ]
+          .filter((chainId) => !excludeChainIds?.includes(chainId))
+          .map((chainId) => ({
+            label:
+              labelMode === 'chain'
+                ? getDisplayNameForChainId(chainId)
+                : getNativeTokenForChainId(chainId).symbol,
+            value: chainId,
+          }))}
         setValue={setValue}
         watch={watch}
       />

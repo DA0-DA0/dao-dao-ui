@@ -14,7 +14,7 @@ import {
   InputLabel,
   SelectInput,
 } from '@dao-dao/stateless'
-import { ActionComponent } from '@dao-dao/types/actions'
+import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
   getChainAddressForActionOptions,
   getChainForChainId,
@@ -97,14 +97,16 @@ export const ValidatorActionsComponent: ActionComponent = ({
 
   return (
     <>
-      <ChainPickerInput
-        className="mb-4"
-        disabled={!isCreating}
-        fieldName={fieldNamePrefix + 'chainId'}
-        onChange={(chainId) =>
-          updateChainValues(chainId, validatorActionTypeUrl)
-        }
-      />
+      {options.context.type === ActionContextType.Dao && (
+        <ChainPickerInput
+          className="mb-4"
+          disabled={!isCreating}
+          fieldName={fieldNamePrefix + 'chainId'}
+          onChange={(chainId) =>
+            updateChainValues(chainId, validatorActionTypeUrl)
+          }
+        />
+      )}
 
       <SelectInput
         disabled={!isCreating}

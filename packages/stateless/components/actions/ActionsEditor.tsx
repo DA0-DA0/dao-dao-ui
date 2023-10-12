@@ -78,8 +78,8 @@ export const ActionsEditor = ({
       const loadedAction = actionKey && loadedActions[actionKey]
 
       // Get category from loaded action if key is undefined. It should only be
-      // undefined if the action data is loaded from a duplicate/prefill or
-      // bulk import.
+      // undefined if the action data is loaded from a duplicate/prefill or bulk
+      // import.
       const category = categoryKey
         ? categories.find((c) => c.key === categoryKey)
         : loadedAction?.category
@@ -123,7 +123,7 @@ export const ActionsEditor = ({
           data,
         })
       } else {
-        // or create new group if previously adjacent group is for a different
+        // Or create new group if previously adjacent group is for a different
         // action.
         acc.push({
           category,
@@ -207,15 +207,24 @@ export const ActionEditor = ({
     control,
   })
   const addAction = useCallback(
-    (data: Omit<PartialCategorizedActionKeyAndData, '_id'>) =>
-      append({
+    (
+      data: Partial<PartialCategorizedActionKeyAndData>,
+      insertIndex?: number
+    ) => {
+      const actionData: PartialCategorizedActionKeyAndData = {
         // See `CategorizedActionKeyAndData` comment in
         // `packages/types/actions.ts` for an explanation of why we need to
         // append with a unique ID.
         _id: uuidv4(),
+        // Allow overriding ID if passed.
         ...data,
-      }),
-    [append]
+      }
+
+      return insertIndex !== undefined
+        ? insert(insertIndex, actionData)
+        : append(actionData)
+    },
+    [append, insert]
   )
 
   // All categorized actions from the form.
