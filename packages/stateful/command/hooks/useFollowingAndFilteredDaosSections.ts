@@ -9,7 +9,11 @@ import {
   CommandModalContextUseSectionsOptions,
   CommandModalDaoInfo,
 } from '@dao-dao/types'
-import { getFallbackImage, getSupportedChains } from '@dao-dao/utils'
+import {
+  getFallbackImage,
+  getSupportedChains,
+  polytoneNoteProxyMapToChainIdMap,
+} from '@dao-dao/utils'
 
 import {
   useLoadingFeaturedDaoCardInfos,
@@ -74,7 +78,9 @@ export const useFollowingAndFilteredDaosSections = ({
             coreAddress: contractAddress,
             name,
             imageUrl: image_url || getFallbackImage(contractAddress),
-            polytoneProxies: Object.values(polytoneProxies || {}),
+            polytoneProxies: polytoneProxies
+              ? polytoneNoteProxyMapToChainIdMap(chainId, polytoneProxies)
+              : {},
             // If DAO has no proposals, make it less visible and give it a
             // tooltip to indicate that it may not be active.
             ...(proposalCount === 0 && {
@@ -87,6 +93,12 @@ export const useFollowingAndFilteredDaosSections = ({
     featuredDaosLoading.loading
     ? []
     : featuredDaosLoading.data
+
+  // When filter present, use search results. Otherwise use featured DAOs.
+  const daosLoading = options.filter
+    ? queryResults.state === 'loading' ||
+      (queryResults.state === 'hasValue' && queryResults.updating)
+    : featuredDaosLoading.loading || !!featuredDaosLoading.updating
 
   const followingSection: CommandModalContextSection<CommandModalDaoInfo> = {
     name: t('title.following'),
@@ -102,9 +114,7 @@ export const useFollowingAndFilteredDaosSections = ({
     name: t('title.daos'),
     onChoose,
     items: daos,
-    loading:
-      queryResults.state === 'loading' ||
-      (queryResults.state === 'hasValue' && queryResults.updating),
+    loading: daosLoading,
   }
 
   return [followingSection, daosSection]

@@ -516,6 +516,7 @@ export const InnerCreateDaoForm = ({
               name,
               description,
               imageUrl: imageUrl || getFallbackImage(coreAddress),
+              polytoneProxies: {},
               established: new Date(),
               showIsMember: false,
               parentDao,

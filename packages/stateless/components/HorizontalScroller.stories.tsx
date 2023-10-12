@@ -23,6 +23,7 @@ const makeFeaturedDao = (): DaoCardInfo => ({
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
   imageUrl: `/placeholders/${(id % 5) + 1}.svg`,
+  polytoneProxies: {},
   established: new Date('May 14, 2022 00:00:00'),
   tokenSymbol: 'JUNO',
   showingEstimatedUsdValue: false,

@@ -1,5 +1,5 @@
 import Fuse from 'fuse.js'
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 
 import {
   CommandModalContextViewLoader,
@@ -20,11 +20,17 @@ export interface CommandModalContextViewProps {
 
 export const CommandModalContextView = (
   props: CommandModalContextViewProps
-) => (
-  <SuspenseLoader fallback={<CommandModalContextViewLoader />}>
-    <InnerCommandModalContextView {...props} />
-  </SuspenseLoader>
-)
+) => {
+  const Wrapper = props.contexts[props.contexts.length - 1]?.Wrapper ?? Fragment
+
+  return (
+    <SuspenseLoader fallback={<CommandModalContextViewLoader />}>
+      <Wrapper>
+        <InnerCommandModalContextView {...props} />
+      </Wrapper>
+    </SuspenseLoader>
+  )
+}
 
 export const InnerCommandModalContextView = ({
   filter,
