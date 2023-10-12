@@ -13,6 +13,8 @@ import {
   SwitchCard,
   TextAreaInput,
   TextInput,
+  Dropdown,
+  SegmentedControlsTitle,
 } from '@dao-dao/stateless'
 import { ActionComponent, LoadingData } from '@dao-dao/types'
 import { processError, uploadNft, validateRequired } from '@dao-dao/utils'
@@ -31,6 +33,24 @@ export type CreateWrapprData = {
     content: string
   }
 }
+
+const wrapprOptions = [
+  { value: 'llc', label: 'LLC' },
+  { value: 'nonProfit', label: 'NonProfit' },
+  // Add more options as needed
+];
+const initiallySelectedOption = 'option1';
+
+const llcJurisdictionOptions = [
+  { value: 'deleware', label: 'Deleware'},
+  { value: 'offshore', label: 'Offshore'},
+]
+
+const handleOptionSelect = (selectedOption, index) => {
+  console.log(`Selected: ${selectedOption} (index: ${index})`);
+  // You can perform additional actions here based on the selected option.
+};
+
 
 type CreateWrapprOptions = {
   wrapprLoading: LoadingData<Wrappr | undefined>
@@ -94,29 +114,44 @@ export const CreateWrapprComponent: ActionComponent<CreateWrapprOptions> = ({
 
   const now = new Date()
 
+  const mode = watch((fieldNamePrefix + 'mode') as 'mode')
+
   return isCreating && !uploaded ? (
     <>
 
+<div className="flex flex-col items-stretch gap-1">
+        <SegmentedControlsTitle
+          editable={isCreating}
+          fieldName={fieldNamePrefix + 'mode'}
+          tabs={[
+            {
+              label: t('info.createLLCWrappr'),
+              value: 'llc',
+            },
+            {
+              label: t('button.createNonProfitWrappr'),
+              value: 'nonProfit',
+            },
+          ]}
+        />
+      </div>
       
-      {/*
-      TODO: create components for the new wrappr UX
-      
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <div className="flex flex-col gap-1">
-          <InputLabel name={t('title.header')} optional />
-          <ImageDropInput
-            Trans={Trans}
-            className="aspect-square w-full shrink-0 sm:h-40 sm:w-40"
-            onSelect={(image, imageUrl) => {
-              setImage(image)
-              setImageUrl(imageUrl)
-            }}
-          />
-        </div>
+{mode === 'llc' && (
 
-        <div className="flex grow flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <InputLabel name={t('title.title')} />
+<div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+  <Dropdown
+  options={llcJurisdictionOptions}
+  placeholder="Select Wrappr Jurisdiction"
+  selected={initiallySelectedOption}
+  onSelect={handleOptionSelect}
+  containerClassName="optional-container-class" // Optional container class name
+  labelContainerClassName="optional-label-container-class" // Optional label container class name
+  labelClassName="optional-label-class" // Optional label class name
+  iconClassName="optional-icon-class" // Optional icon class name
+  keepOpenOnSelect={false} // Set to true to keep the dropdown open after selection
+/>
+<div className="flex flex-col gap-1">
+            <InputLabel name={t('title.name')} />
             <TextInput
               disabled={!isCreating}
               error={errors?.data?.title}
@@ -126,29 +161,25 @@ export const CreateWrapprComponent: ActionComponent<CreateWrapprOptions> = ({
             />
             <InputErrorMessage error={errors?.data?.title} />
           </div>
+</div>
+)}
 
-          <div className="flex flex-col gap-1">
-            <InputLabel
-              name={t('title.description')}
-              optional
-              tooltip={t('info.pressDescriptionTooltip')}
-            />
-            <TextAreaInput
-              disabled={!isCreating}
-              error={errors?.data?.description}
-              fieldName={
-                (fieldNamePrefix + 'data.description') as 'data.description'
-              }
-              register={register}
-              rows={2}
-            />
-            <InputErrorMessage error={errors?.data?.description} />
-          </div>
-        </div>
-      </div> */}
 
-      {/* <div className="flex flex-col gap-1">
-        <InputLabel name={t('title.content')} />
+{mode === 'nonProfit' && (
+   <div className="flex grow flex-col gap-4">
+   <div className="flex flex-col gap-1">
+     <InputLabel name={t('title.name')} />
+     <TextInput
+       disabled={!isCreating}
+       error={errors?.data?.title}
+       fieldName={(fieldNamePrefix + 'data.title') as 'data.title'}
+       register={register}
+       validation={[validateRequired]}
+     />
+     <InputErrorMessage error={errors?.data?.title} />
+   </div>
+   <div className="flex flex-col gap-1">
+        <InputLabel name={t('title.mission')} />
         <TextAreaInput
           disabled={!isCreating}
           error={errors?.data?.content}
@@ -158,36 +189,12 @@ export const CreateWrapprComponent: ActionComponent<CreateWrapprOptions> = ({
           validation={[validateRequired]}
         />
         <InputErrorMessage error={errors?.data?.content} />
-      </div> */}
-
-      <div className="flex flex-row items-end justify-between">
-        <SwitchCard
-          enabled={showPreview}
-          label={t('title.preview')}
-          onClick={() => setShowPreview((s) => !s)}
-          sizing="sm"
-        />
-
-        <Button loading={uploading} onClick={upload} variant="primary">
-          {t('button.save')}
-        </Button>
       </div>
+ </div>
 
-      {showPreview && (
-        <div className="mt-6 rounded-md border border-dashed border-border-primary p-20">
-          <WrapprMarkdown
-            wrappr={{
-              id: 'new',
-              title: data?.title ?? '',
-              content: data?.content ?? '',
-              image: imageUrl,
-              created: now,
-              pastVersions: [],
-              initiallyCreated: now,
-            }}
-          />
-        </div>
-      )}
+)}
+
+
     </>
   ) : wrapprLoading.loading || !wrapprLoading.data ? (
     <Loader />

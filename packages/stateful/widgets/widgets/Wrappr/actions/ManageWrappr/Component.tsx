@@ -179,67 +179,11 @@ export const ManageWrapprComponent: ActionComponent<ManageWrapprOptions> = ({
       </div>
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
-        <div className="flex flex-col gap-1">
-          <InputLabel name={t('title.header')} optional />
-          <ImageDropInput
-            Trans={Trans}
-            className="aspect-square w-full shrink-0 sm:h-40 sm:w-40"
-            currentImage={
-              imageUrl && transformIpfsUrlToHttpsIfNecessary(imageUrl)
-            }
-            onSelect={(image, imageUrl) => {
-              setImage(image)
-              setImageUrl(imageUrl)
-            }}
-          />
-        </div>
-
-        <div className="flex grow flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <InputLabel name={t('title.title')} />
-            <TextInput
-              disabled={!isCreating}
-              error={errors?.data?.title}
-              fieldName={(fieldNamePrefix + 'data.title') as 'data.title'}
-              register={register}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage error={errors?.data?.title} />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <InputLabel
-              name={t('title.description')}
-              optional
-              tooltip={t('info.pressDescriptionTooltip')}
-            />
-            <TextAreaInput
-              disabled={!isCreating}
-              error={errors?.data?.description}
-              fieldName={
-                (fieldNamePrefix + 'data.description') as 'data.description'
-              }
-              register={register}
-              rows={2}
-            />
-            <InputErrorMessage error={errors?.data?.description} />
-          </div>
-        </div>
+      
       </div>
-
       <div className="flex flex-col gap-1">
-        <InputLabel name={t('title.content')} />
-        <TextAreaInput
-          disabled={!isCreating}
-          error={errors?.data?.content}
-          fieldName={(fieldNamePrefix + 'data.content') as 'data.content'}
-          register={register}
-          rows={20}
-          validation={[validateRequired]}
-        />
-        <InputErrorMessage error={errors?.data?.content} />
-      </div>
 
+      </div>
       <div className="flex flex-row items-end justify-between">
         <SwitchCard
           enabled={showPreview}

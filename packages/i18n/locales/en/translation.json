@@ -80,6 +80,7 @@
     "createAToken": "Create a token",
     "createAccount": "Create account",
     "createDAO": "Create DAO",
+    "createNonProfitWrappr": "Non-Profit",
     "createSubDao": "Create SubDAO",
     "delete": "Delete",
     "deleteDraft": "Delete draft",
@@ -632,7 +633,8 @@
     "whoTransferNftQuestion": "Where would you like to transfer the NFT?",
     "widget": "Widget",
     "withdrawAddress": "Withdraw address",
-    "wrapprToDelete": "Wrappr to delete"
+    "wrapprToDelete": "Wrappr to delete",
+    "wrapprToManage": "Wrappr to manage"
   },
   "format": {
     "estUsdValue": "${{amount}} est. USD value",
@@ -741,6 +743,7 @@
     "createCrossChainAccountDescription": "Create an account for this DAO on another chain.",
     "createCrossChainAccountExplanation": "This action creates an account on another chain, allowing this DAO to perform actions on that chain.",
     "createFirstOneQuestion": "Create the first one?",
+    "createLLCWrappr": "LLC",
     "createPostDescription": "Create a post on the DAO's press.",
     "createPressContract": "To publish content, you must first create a press contract.",
     "createStep1": "Pick a DAO type and name it",
@@ -1300,6 +1303,7 @@
     "minimumOutputRequired": "Minimum output required",
     "mint": "Mint",
     "mintNft": "Mint NFT",
+    "name": "Name",
     "nativeBalanceOverTime": "{{denomLabel}} balance over time",
     "navigation": "Navigation",
     "needWalletToContinue": "You'll need a wallet to continue",
@@ -1331,6 +1335,7 @@
     "numSubDaos_other": "{{count}} SubDAOs",
     "numTasks_one": "{{count}} task",
     "numTasks_other": "{{count}} tasks",
+    "mission": "Mission",
     "openProposals": "Open proposals",
     "other": "Other",
     "otherMembers": "Other Members",

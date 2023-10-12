@@ -6,11 +6,12 @@ import {
   VestingPaymentsWidget,
   WyndDepositWidget,
   WrapprWidget,
+  MintNftWidget,
 } from './widgets'
 
 // Add widgets here.
 export const getWidgets = (chainId: string): readonly Widget[] => [
-  // MintNftWidget,
+  MintNftWidget,
 
   VestingPaymentsWidget,
   RetroactiveCompensationWidget,
