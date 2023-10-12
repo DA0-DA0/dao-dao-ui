@@ -8,7 +8,7 @@ import {
 } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { useAppContext, useDaoInfoContext } from '@dao-dao/stateless'
+import { useAppContext } from '@dao-dao/stateless'
 import {
   DaoPageMode,
   DaoTabId,
@@ -17,7 +17,7 @@ import {
 } from '@dao-dao/types'
 
 import {
-  BrowserTab,
+  AppsTab,
   DaoWidgets,
   ProposalsTab,
   SdaDaoHome,
@@ -34,7 +34,6 @@ export const useDaoTabs = (): DaoTabWithComponent[] => {
   const {
     components: { extraTabs },
   } = useVotingModuleAdapter()
-  const { items } = useDaoInfoContext()
 
   // Get widget tab components, if exist.
   const loadingWidgets = useWidgets({
@@ -105,17 +104,12 @@ export const useDaoTabs = (): DaoTabWithComponent[] => {
       Component: SubDaosTab,
       Icon: FiberSmartRecordOutlined,
     },
-    // Experimental Browser tab must be enabled through the DAO.
-    ...('browserEnabled' in items && items.browserEnabled === 'true'
-      ? [
-          {
-            id: DaoTabId.Browser,
-            label: t('title.browser'),
-            Component: BrowserTab,
-            Icon: WebOutlined,
-          },
-        ]
-      : []),
+    {
+      id: DaoTabId.Apps,
+      label: t('title.apps'),
+      Component: AppsTab,
+      Icon: WebOutlined,
+    },
     ...(extraTabs?.map(({ labelI18nKey, ...tab }) => ({
       label: t(labelI18nKey),
       ...tab,

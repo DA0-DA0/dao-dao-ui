@@ -1,4 +1,4 @@
-export * from './BrowserTab'
+export * from './AppsTab'
 export * from './GovProposalsTab'
 export * from './MembersTab'
 export * from './ProposalsTab'

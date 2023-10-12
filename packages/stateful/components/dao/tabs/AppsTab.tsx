@@ -18,7 +18,7 @@ import {
 import {
   Loader,
   Modal,
-  BrowserTab as StatelessBrowserTab,
+  AppsTab as StatelessAppsTab,
   useChainContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
@@ -47,7 +47,7 @@ import {
 import { NewProposalForm as NewSingleChoiceProposalForm } from '../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
 import { SuspenseLoader } from '../../SuspenseLoader'
 
-export const BrowserTab = () => {
+export const AppsTab = () => {
   const {
     name,
     imageUrl,
@@ -166,7 +166,7 @@ export const BrowserTab = () => {
 
   return (
     <>
-      <StatelessBrowserTab
+      <StatelessAppsTab
         fullScreen={fullScreen}
         iframeRef={iframeRef}
         setFullScreen={setFullScreen}

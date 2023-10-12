@@ -11,33 +11,57 @@ import {
 import { createPortal } from 'react-dom'
 import { useTranslation } from 'react-i18next'
 
-import { MAINNET, toAccessibleImageUrl } from '@dao-dao/utils'
+import { DAO_APPS, toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { Button } from '../../buttons'
 import { IconButton } from '../../icon_buttons'
 import { TextInput } from '../../inputs'
 import { Tooltip } from '../../tooltip'
 
-export type BrowserTabProps = {
+export type AppsTabProps = {
   iframeRef: RefCallback<HTMLIFrameElement | null>
   fullScreen: boolean
   setFullScreen: Dispatch<SetStateAction<boolean>>
 }
 
-type InnerBrowserTabProps = BrowserTabProps & {
+export const AppsTab = (props: AppsTabProps) => {
+  const router = useRouter()
+  // Load URL from query parameter.
+  const [url, setUrl] = useState(
+    (typeof router.query.url === 'string' && router.query.url) || ''
+  )
+
+  return props.fullScreen ? (
+    createPortal(
+      <div className="fixed top-0 left-0 z-[39] h-screen w-screen bg-background-base p-safe pt-safe-or-4">
+        <InnerAppsTab
+          className="h-full w-full"
+          setUrl={setUrl}
+          url={url}
+          {...props}
+        />
+      </div>,
+      document.body
+    )
+  ) : (
+    <InnerAppsTab setUrl={setUrl} url={url} {...props} />
+  )
+}
+
+type InnerAppsTabProps = AppsTabProps & {
   url: string
   setUrl: Dispatch<SetStateAction<string>>
   className?: string
 }
 
-const InnerBrowserTab = ({
+const InnerAppsTab = ({
   iframeRef,
   fullScreen,
   setFullScreen,
   url,
   setUrl,
   className,
-}: InnerBrowserTabProps) => {
+}: InnerAppsTabProps) => {
   const router = useRouter()
   const { t } = useTranslation()
   const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null)
@@ -66,9 +90,9 @@ const InnerBrowserTab = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [iframe])
 
-  // If no preset URL matching, choose the last one (custom) with empty URL.
-  const selectedPresetIndex = presets.findIndex(
-    ({ url: presetUrl }) => presetUrl === url || !presetUrl
+  // If no app URL matching, choose the last one (custom) with empty URL.
+  const selectedAppIndex = DAO_APPS.findIndex(
+    ({ url: appUrl }) => appUrl === url || !appUrl
   )
 
   return (
@@ -79,13 +103,13 @@ const InnerBrowserTab = ({
           fullScreen && 'px-safe-offset-4'
         )}
       >
-        {presets.map(({ name, imageUrl, url: presetUrl }, index) => {
-          const isCustom = !presetUrl
-          const selected = index === selectedPresetIndex
+        {DAO_APPS.map(({ name, imageUrl, url: appUrl }, index) => {
+          const isCustom = !appUrl
+          const selected = index === selectedAppIndex
 
           return (
             <Button
-              key={presetUrl}
+              key={appUrl}
               className={clsx(
                 'shrink-0 overflow-hidden border-2 !p-0 transition',
                 isCustom && 'border-dashed border-border-primary',
@@ -93,7 +117,7 @@ const InnerBrowserTab = ({
                   ? 'border-border-interactive-active'
                   : !isCustom && 'border-transparent'
               )}
-              onClick={() => go(presetUrl)}
+              onClick={() => go(appUrl)}
               variant="none"
             >
               {/* Background. */}
@@ -169,55 +193,3 @@ const InnerBrowserTab = ({
     </div>
   )
 }
-
-export const BrowserTab = (props: BrowserTabProps) => {
-  const router = useRouter()
-  // Load URL from query parameter.
-  const [url, setUrl] = useState(
-    (typeof router.query.url === 'string' && router.query.url) || ''
-  )
-
-  return props.fullScreen ? (
-    createPortal(
-      <div className="fixed top-0 left-0 z-[39] h-screen w-screen bg-background-base p-safe pt-safe-or-4">
-        <InnerBrowserTab
-          className="h-full w-full"
-          setUrl={setUrl}
-          url={url}
-          {...props}
-        />
-      </div>,
-      document.body
-    )
-  ) : (
-    <InnerBrowserTab setUrl={setUrl} url={url} {...props} />
-  )
-}
-
-type BrowserTabPreset = {
-  name: string
-  imageUrl: string
-  url: string
-}
-
-const presets: BrowserTabPreset[] = [
-  {
-    name: 'Osmosis',
-    imageUrl: 'https://app.osmosis.zone/images/preview.jpg',
-    url: 'https://app.osmosis.zone',
-  },
-  {
-    name: 'Stargaze Studio',
-    imageUrl: 'https://studio.stargaze.zone/assets/android-chrome-256x256.png',
-    url: MAINNET
-      ? 'https://studio.stargaze.zone'
-      : 'https://studio.publicawesome.dev',
-  },
-
-  // Must be last for index matching. Enables custom URL input.
-  {
-    name: '',
-    imageUrl: '',
-    url: '',
-  },
-]
