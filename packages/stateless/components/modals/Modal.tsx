@@ -62,7 +62,7 @@ export const Modal = ({
     ? createPortal(
         <div
           className={clsx(
-            'fixed top-0 left-0 z-40 flex h-full w-screen items-center justify-center p-4 backdrop-brightness-50 backdrop-filter transition-all duration-[120ms] p-safe',
+            'fixed top-0 left-0 z-40 flex h-screen w-screen items-center justify-center backdrop-brightness-50 backdrop-filter transition-all duration-[120ms] p-safe-or-4',
             visible ? 'opacity-100' : 'pointer-events-none opacity-0',
             onClose && 'cursor-pointer',
             backdropClassName

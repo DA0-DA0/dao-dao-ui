@@ -57,6 +57,7 @@ export const BrowserTab = () => {
   } = useDaoInfoContext()
 
   const [msgs, setMsgs] = useState<CosmosMsgFor_Empty[]>()
+  const [fullScreen, setFullScreen] = useState(false)
 
   const decodeDirect = (signDocBodyBytes: Uint8Array) => {
     const encodedMessages = TxBody.decode(signDocBodyBytes).messages
@@ -165,7 +166,12 @@ export const BrowserTab = () => {
 
   return (
     <>
-      <StatelessBrowserTab iframeRef={iframeRef} />
+      <StatelessBrowserTab
+        fullScreen={fullScreen}
+        iframeRef={iframeRef}
+        setFullScreen={setFullScreen}
+      />
+
       {msgs && (
         <ActionMatcherAndProposer
           key={JSON.stringify(msgs)}
@@ -394,7 +400,7 @@ const ActionMatcherAndProposer = ({
     <Modal
       containerClassName="sm:!max-w-[90vw] !w-full"
       header={{
-        title: 'Propose',
+        title: t('title.propose'),
       }}
       onClose={() => setMsgs(undefined)}
       visible
