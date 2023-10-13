@@ -1,5 +1,5 @@
-import { StdSignDoc } from '@cosmjs/amino'
-import { DirectSignDoc } from '@cosmos-kit/core'
+import { AccountData, StdSignDoc } from '@cosmjs/amino'
+import { DirectSignDoc, SimpleAccount, WalletAccount } from '@cosmos-kit/core'
 import { useIframe } from '@cosmos-kit/react-lite'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -89,9 +89,10 @@ export const AppsTab = () => {
       prettyName: name,
       logo: imageUrl || SITE_URL + getFallbackImage(coreAddress),
     },
-    accountReplacement: (chainId) => ({
+    accountReplacement: async (chainId) => ({
       username: name,
       address: addressForChainId(chainId),
+      pubkey: await getPubKey(chainId),
     }),
     walletClientOverrides: {
       // @ts-ignore
@@ -128,6 +129,24 @@ export const AppsTab = () => {
       addChain: () => ({
         type: 'success',
       }),
+      getAccount: async (chainId: string) => ({
+        type: 'success',
+        value: {
+          address: addressForChainId(chainId),
+          algo: 'secp256k1',
+          pubkey: await getPubKey(chainId),
+          username: name,
+        } as WalletAccount,
+      }),
+      getSimpleAccount: (chainId: string) => ({
+        type: 'success',
+        value: {
+          namespace: 'cosmos',
+          chainId,
+          address: addressForChainId(chainId),
+          username: name,
+        } as SimpleAccount,
+      }),
     },
     aminoSignerOverrides: {
       signAmino: (_signerAddress, signDoc) => {
@@ -138,6 +157,18 @@ export const AppsTab = () => {
           error: 'Handled by DAO browser.',
         }
       },
+      getAccounts: async () => ({
+        type: 'success',
+        // Will be overridden by `accountReplacement` function for the
+        // appropriate chain, so just put filler data.
+        value: [
+          {
+            address: coreAddress,
+            algo: 'secp256k1',
+            pubkey: await getPubKey(currentChainId),
+          },
+        ] as AccountData[],
+      }),
     },
     directSignerOverrides: {
       signDirect: (_signerAddress, signDoc) => {
@@ -148,8 +179,35 @@ export const AppsTab = () => {
           error: 'Handled by DAO browser.',
         }
       },
+      getAccounts: async () => ({
+        type: 'success',
+        // Will be overridden by `accountReplacement` function for the
+        // appropriate chain, so just put filler data.
+        value: [
+          {
+            address: coreAddress,
+            algo: 'secp256k1',
+            pubkey: await getPubKey(currentChainId),
+          },
+        ] as AccountData[],
+      }),
     },
   })
+
+  const getPubKey = async (chainId: string) => {
+    // Wallet account secp256k1 public keys are expected to be 33 bytes starting
+    // with 0x02 or 0x03. This will be used when simulating requests, but not
+    // when signing since we intercept messages. This may cause problems with
+    // some dApps if simulation fails...
+    let pubKey
+    try {
+      pubKey = (await wallet.client.getAccount?.(chainId))?.pubkey
+    } catch {
+      pubKey = new Uint8Array([0x02, ...[...new Array(32)].map(() => 0)])
+    }
+
+    return pubKey
+  }
 
   // Connect to iframe wallet on load if disconnected.
   const connectingRef = useRef(false)
