@@ -19,6 +19,7 @@ import {
   Loader,
   Modal,
   AppsTab as StatelessAppsTab,
+  WarningCard,
   useChainContext,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
@@ -51,13 +52,22 @@ import { SuspenseLoader } from '../../SuspenseLoader'
 import { ConnectedWalletDisplay, DisconnectWallet } from '../../wallet'
 
 export const AppsTab = () => {
+  const { t } = useTranslation()
   const {
     name,
     imageUrl,
     chainId: currentChainId,
     coreAddress,
     polytoneProxies,
+    proposalModules,
   } = useDaoInfoContext()
+
+  // Ensure we have a single choice proposal module to use for proposals.
+  const singleChoiceProposalModuleExists = proposalModules.some(
+    ({ contractName }) =>
+      matchProposalModuleAdapter(contractName)?.id ===
+      DaoProposalSingleAdapterId
+  )
 
   const [msgs, setMsgs] = useState<CosmosMsgFor_Empty[]>()
   const [fullScreen, setFullScreen] = useState(false)
@@ -225,7 +235,7 @@ export const AppsTab = () => {
     }
   }, [wallet])
 
-  return (
+  return singleChoiceProposalModuleExists ? (
     <>
       <StatelessAppsTab
         fullScreen={fullScreen}
@@ -241,6 +251,10 @@ export const AppsTab = () => {
         />
       )}
     </>
+  ) : (
+    <WarningCard
+      content={t('error.noSingleChoiceProposalModuleAppsDisabled')}
+    />
   )
 }
 
@@ -477,7 +491,8 @@ const ActionMatcherAndProposer = ({
         )
       }
       header={{
-        title: t('title.propose'),
+        title: t('title.createProposal'),
+        subtitle: t('info.appsProposalDescription'),
       }}
       onClose={() => setMsgs(undefined)}
       visible
