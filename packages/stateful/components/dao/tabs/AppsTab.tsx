@@ -40,12 +40,15 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionsForMatching } from '../../../actions'
+import { useWallet } from '../../../hooks/useWallet'
 import {
   matchAndLoadCommon,
   matchAdapter as matchProposalModuleAdapter,
 } from '../../../proposal-module-adapter'
 import { NewProposalForm as NewSingleChoiceProposalForm } from '../../../proposal-module-adapter/adapters/DaoProposalSingle/types'
+import { ConnectWallet } from '../../ConnectWallet'
 import { SuspenseLoader } from '../../SuspenseLoader'
+import { ConnectedWalletDisplay, DisconnectWallet } from '../../wallet'
 
 export const AppsTab = () => {
   const {
@@ -253,6 +256,7 @@ const ActionMatcherAndProposer = ({
   const { t } = useTranslation()
   const { coreAddress, proposalModules } = useDaoInfoContext()
   const { chain } = useChainContext()
+  const { isWalletConnected } = useWallet()
 
   const singleChoiceProposalModule = proposalModules.find(
     ({ contractName }) =>
@@ -456,7 +460,22 @@ const ActionMatcherAndProposer = ({
 
   return (
     <Modal
+      backdropClassName="!z-30"
       containerClassName="sm:!max-w-[90vw] !w-full"
+      footerContainerClassName="flex flex-row justify-between gap-8"
+      footerContent={
+        isWalletConnected ? (
+          <>
+            <ConnectedWalletDisplay className="min-w-0 overflow-hidden" />
+            <DisconnectWallet />
+          </>
+        ) : (
+          <>
+            <div></div>
+            <ConnectWallet />
+          </>
+        )
+      }
       header={{
         title: t('title.propose'),
       }}
