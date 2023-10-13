@@ -19,6 +19,7 @@
     "@cosmos-kit/core": "^2.7.0",
     "@cosmos-kit/cosmos-extension-metamask": "^0.2.1",
     "@cosmos-kit/cosmostation": "^2.4.2",
+    "@cosmos-kit/exodus": "^2.4.0",
     "@cosmos-kit/fin": "^2.4.1",
     "@cosmos-kit/frontier": "^2.4.1",
     "@cosmos-kit/keplr-extension": "^2.5.2",

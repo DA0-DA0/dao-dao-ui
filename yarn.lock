@@ -3115,17 +3115,6 @@
     events "3.3.0"
     uuid "^9.0.1"
 
-"@cosmos-kit/core@^2.6.8":
-  version "2.6.8"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.6.8.tgz#0341183075ee04911f38f74792120a360bcf31ff"
-  integrity sha512-hUx98ono6WYMx2MKdU4oz6yxHU1T6SOIZLwXCKDBt1C3MDRF3fpo41LSnAMoljFqQMpgJR/b9Q6xHUjyrG76Uw==
-  dependencies:
-    "@chain-registry/types" "0.17.0"
-    "@walletconnect/types" "2.7.2"
-    bowser "2.11.0"
-    events "3.3.0"
-    uuid "^9.0.1"
-
 "@cosmos-kit/core@^2.7.0":
   version "2.7.0"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.7.0.tgz#735ce434a07de2f8881bc6a0375193261486740d"
@@ -3170,6 +3159,21 @@
   dependencies:
     "@cosmos-kit/cosmostation-extension" "^2.5.2"
     "@cosmos-kit/cosmostation-mobile" "^2.4.1"
+
+"@cosmos-kit/exodus-extension@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/exodus-extension/-/exodus-extension-2.4.0.tgz#cee07ea735e0d1c6636e18d3d6ee8f5bcdde0d9f"
+  integrity sha512-1xzX/VdMXBFCVHMFiWhGHiVdTWmZ/dCwkERmQjzg9Y/QDMH5cft32rMRTIsIeLSEyyzi5q/Z3uBeSFDSDGlGdw==
+  dependencies:
+    "@cosmos-kit/core" "^2.7.0"
+    react-icons "4.4.0"
+
+"@cosmos-kit/exodus@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/exodus/-/exodus-2.4.0.tgz#f3a47d1b17fc5870ad2ad9a70dbc63f7815b7679"
+  integrity sha512-4/MbaTEoC1C0oYPu866KHUqmntPs9IjHRfPTTaWekkKb9gLV1e0QVW3E5tUwc8q+fW1qJiuY4tNcchjg3e8L2Q==
+  dependencies:
+    "@cosmos-kit/exodus-extension" "^2.4.0"
 
 "@cosmos-kit/fin-extension@^2.4.1":
   version "2.4.1"
@@ -3373,24 +3377,6 @@
     "@walletconnect/types" "^2.9.0"
     "@walletconnect/utils" "^2.9.0"
     events "3.3.0"
-
-"@cosmos-kit/web3auth@^2.3.12":
-  version "2.3.12"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/web3auth/-/web3auth-2.3.12.tgz#66fd87e3a446b26c29ec6a347e8ed3e00d8a3907"
-  integrity sha512-hYnz8v2U+I/294PIxRuI/w2BSr+yUgwpPad2Xy54u/8bed9ULc9SxIynpK2oAMaREsgNROnSR9A5vDZUET3e/g==
-  dependencies:
-    "@chain-registry/types" "0.17.0"
-    "@cosmos-kit/core" "^2.6.8"
-    "@solana/web3.js" "^1.77.3"
-    "@toruslabs/eccrypto" "^2.1.1"
-    "@web3auth/base" "^5.1.0"
-    "@web3auth/base-provider" "^6.1.4"
-    "@web3auth/ethereum-provider" "^6.1.5"
-    "@web3auth/no-modal" "^6.1.4"
-    "@web3auth/openlogin-adapter" "^6.1.4"
-    "@web3auth/solana-provider" "^6.1.4"
-    ethereum-cryptography "^2.1.2"
-    url "^0.11.1"
 
 "@cosmos-kit/web3auth@^2.4.0":
   version "2.4.0"
@@ -22003,6 +21989,11 @@ react-i18next@^11.0.0, react-i18next@^11.16.2:
   dependencies:
     "@babel/runtime" "^7.14.5"
     html-parse-stringify "^3.0.1"
+
+react-icons@4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.4.0.tgz#a13a8a20c254854e1ec9aecef28a95cdf24ef703"
+  integrity sha512-fSbvHeVYo/B5/L4VhB7sBA1i2tS8MkT0Hb9t2H1AVPkwGfVHLJCqyr2Py9dKMxsyM63Eng1GkdZfbWj+Fmv8Rg==
 
 react-inspector@^5.1.0:
   version "5.1.1"
