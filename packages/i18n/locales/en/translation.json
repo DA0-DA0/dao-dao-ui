@@ -304,6 +304,7 @@
     "couldntFindDAO": "We couldn't find a DAO with that address.",
     "couldntFindProposal": "We couldn't find a proposal with that ID.",
     "counterpartyBalanceInsufficient": "The counterparty's balance of {{amount}} ${{tokenSymbol}} is insufficient. They may be unable to complete this swap.",
+    "daoAccountNotFound": "The DAO account could not be found for this chain.",
     "daoAndSubDaosAlreadyOnV2": "This DAO (and all of its SubDAOs, if it has any) have already been upgraded.",
     "daoFeatureUnsupported": "{{name}} does not support {{feature}} yet.",
     "daoIsInactive_absolute_one": "This DAO is inactive. Proposals cannot be created until {{count}} token is staked.",

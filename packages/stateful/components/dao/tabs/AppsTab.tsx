@@ -4,6 +4,7 @@ import { useIframe } from '@cosmos-kit/react-lite'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { FormProvider, useForm } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import useDeepCompareEffect from 'use-deep-compare-effect'
@@ -37,6 +38,7 @@ import {
   decodeMessages,
   decodedStargateMsgToCw,
   getFallbackImage,
+  maybeMakePolytoneExecuteMessage,
   protobufToCwMsg,
 } from '@dao-dao/utils'
 
@@ -72,20 +74,48 @@ export const AppsTab = () => {
   const [msgs, setMsgs] = useState<CosmosMsgFor_Empty[]>()
   const [fullScreen, setFullScreen] = useState(false)
 
-  const decodeDirect = (signDocBodyBytes: Uint8Array) => {
+  const addressForChainId = (chainId: string) =>
+    (chainId === currentChainId ? coreAddress : polytoneProxies[chainId]) || ''
+  const chainIdForAddress = (address: string) =>
+    address === coreAddress
+      ? currentChainId
+      : Object.entries(polytoneProxies).find(
+          ([, chainAddress]) => chainAddress === address
+        )?.[0]
+
+  const decodeDirect = (sender: string, signDocBodyBytes: Uint8Array) => {
+    const chainId = chainIdForAddress(sender)
+    if (!chainId) {
+      toast.error(t('error.daoAccountNotFound'))
+      return
+    }
+
     const encodedMessages = TxBody.decode(signDocBodyBytes).messages
-    const messages = encodedMessages.map((msg) => protobufToCwMsg(msg).msg)
-    setMsgs(messages)
-  }
-  const decodeAmino = (signDoc: StdSignDoc) => {
-    const messages = signDoc.msgs.map(
-      (msg) => decodedStargateMsgToCw(aminoTypes.fromAmino(msg)).msg
+    const messages = encodedMessages.map((msg) =>
+      maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        protobufToCwMsg(msg).msg
+      )
     )
     setMsgs(messages)
   }
+  const decodeAmino = (sender: string, signDoc: StdSignDoc) => {
+    const chainId = chainIdForAddress(sender)
+    if (!chainId) {
+      toast.error(t('error.daoAccountNotFound'))
+      return
+    }
 
-  const addressForChainId = (chainId: string) =>
-    (chainId === currentChainId ? coreAddress : polytoneProxies[chainId]) || ''
+    const messages = signDoc.msgs.map((msg) =>
+      maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        decodedStargateMsgToCw(aminoTypes.fromAmino(msg)).msg
+      )
+    )
+    setMsgs(messages)
+  }
 
   const enableAndConnect = (chainIds: string | string[]) =>
     [chainIds].flat().some((chainId) => addressForChainId(chainId))
@@ -109,13 +139,13 @@ export const AppsTab = () => {
     }),
     walletClientOverrides: {
       // @ts-ignore
-      signAmino: (_chainId: string, _signer: string, signDoc: StdSignDoc) => {
-        decodeAmino(signDoc)
+      signAmino: (_chainId: string, signer: string, signDoc: StdSignDoc) => {
+        decodeAmino(signer, signDoc)
       },
       // @ts-ignore
       signDirect: (
         _chainId: string,
-        _signer: string,
+        signer: string,
         signDoc: DirectSignDoc
       ) => {
         if (!signDoc?.bodyBytes) {
@@ -124,7 +154,7 @@ export const AppsTab = () => {
           }
         }
 
-        decodeDirect(signDoc.bodyBytes)
+        decodeDirect(signer, signDoc.bodyBytes)
       },
       enable: enableAndConnect,
       connect: enableAndConnect,
@@ -162,8 +192,8 @@ export const AppsTab = () => {
       }),
     },
     aminoSignerOverrides: {
-      signAmino: (_signerAddress, signDoc) => {
-        decodeAmino(signDoc)
+      signAmino: (signerAddress, signDoc) => {
+        decodeAmino(signerAddress, signDoc)
 
         return {
           type: 'error',
@@ -184,8 +214,8 @@ export const AppsTab = () => {
       }),
     },
     directSignerOverrides: {
-      signDirect: (_signerAddress, signDoc) => {
-        decodeDirect(signDoc.bodyBytes)
+      signDirect: (signerAddress, signDoc) => {
+        decodeDirect(signerAddress, signDoc.bodyBytes)
 
         return {
           type: 'error',
