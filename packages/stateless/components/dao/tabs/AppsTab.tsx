@@ -33,7 +33,7 @@ export const AppsTab = (props: AppsTabProps) => {
 
   return props.fullScreen ? (
     createPortal(
-      <div className="fixed top-0 left-0 z-[39] h-screen w-screen bg-background-base p-safe pt-safe-or-4">
+      <div className="hd-screen wd-screen fixed top-0 left-0 z-[39] bg-background-base p-safe pt-safe-or-4">
         <InnerAppsTab
           className="h-full w-full"
           setUrl={setUrl}
@@ -184,7 +184,7 @@ const InnerAppsTab = ({
 
       <iframe
         allow="clipboard-write"
-        className={clsx('mt-2 min-h-[75vh] grow', !fullScreen && 'rounded-md')}
+        className={clsx('mt-2 grow', !fullScreen && 'min-h-[75dvh] rounded-md')}
         ref={(ref) => {
           setIframe(ref)
           iframeRef(ref)
