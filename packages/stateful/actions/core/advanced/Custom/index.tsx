@@ -11,11 +11,7 @@ import {
 } from '@dao-dao/types/actions'
 import { makeStargateMessage, makeWasmMessage } from '@dao-dao/utils'
 
-import { CustomComponent as Component } from './Component'
-
-interface CustomData {
-  message: string
-}
+import { CustomComponent as Component, CustomData } from './Component'
 
 const useDefaults: UseDefaults<CustomData> = () => ({
   message: '{}',

@@ -453,14 +453,15 @@ export const decodedStargateMsgToCw = ({
   }
 }
 
-export const typesRegistry = new Registry([
+export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   ...cosmosProtoRegistry,
   ...cosmwasmProtoRegistry,
-  ['/google.protobuf.Timestamp', google.protobuf.Timestamp],
+  ['/google.protobuf.Timestamp', google.protobuf.Timestamp as GeneratedType],
   ...junoProtoRegistry,
   ...osmosisProtoRegistry,
   ...ibcProtoRegistry,
-] as ReadonlyArray<[string, GeneratedType]>)
+]
+export const typesRegistry = new Registry(PROTOBUF_TYPES)
 
 export const aminoTypes = new AminoTypes({
   ...cosmosAminoConverters,
