@@ -55,6 +55,7 @@ export const CustomComponent: ActionComponent = ({
             label: key,
             type,
           }))}
+          labelClassName="break-words whitespace-normal"
           onSelect={({ key, type }) =>
             setValue(
               (fieldNamePrefix + 'message') as 'message',

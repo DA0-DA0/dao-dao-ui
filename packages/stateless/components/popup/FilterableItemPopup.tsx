@@ -43,6 +43,7 @@ export interface FilterableItemPopupProps<
   onSelect: (item: T, index: number) => void
   searchPlaceholder?: string
   listClassName?: string
+  labelClassName?: string
   closeOnSelect?: boolean
   getKeydownEventListener?: (
     open: boolean,
@@ -57,6 +58,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
   onSelect,
   searchPlaceholder,
   listClassName,
+  labelClassName,
   closeOnSelect = true,
   getKeydownEventListener,
 }: FilterableItemPopupProps<T>) => {
@@ -257,12 +259,13 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                 <div className="min-w-0 text-left">
                   <div className="flex flex-row items-center gap-2">
                     {item.selected && (
-                      <Check className="!h-4 !w-4 text-icon-brand" />
+                      <Check className="!h-4 !w-4 shrink-0 text-icon-brand" />
                     )}
 
                     <p
                       className={clsx(
-                        'link-text truncate break-words',
+                        'link-text min-w-0 grow truncate',
+                        labelClassName,
                         item.selected ? 'text-text-brand' : 'text-text-body'
                       )}
                     >
