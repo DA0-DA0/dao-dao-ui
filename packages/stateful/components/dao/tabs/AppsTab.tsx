@@ -210,6 +210,13 @@ export const AppsTab = () => {
             algo: 'secp256k1',
             pubkey: await getPubKey(currentChainId),
           },
+          ...(await Promise.all(
+            Object.entries(polytoneProxies).map(async ([chainId, address]) => ({
+              address,
+              algo: 'secp256k1',
+              pubkey: await getPubKey(chainId),
+            }))
+          )),
         ] as AccountData[],
       }),
     },
@@ -232,6 +239,13 @@ export const AppsTab = () => {
             algo: 'secp256k1',
             pubkey: await getPubKey(currentChainId),
           },
+          ...(await Promise.all(
+            Object.entries(polytoneProxies).map(async ([chainId, address]) => ({
+              address,
+              algo: 'secp256k1',
+              pubkey: await getPubKey(chainId),
+            }))
+          )),
         ] as AccountData[],
       }),
     },
