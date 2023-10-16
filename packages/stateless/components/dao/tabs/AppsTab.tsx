@@ -130,7 +130,7 @@ const InnerAppsTab = ({
                 ></div>
               )}
 
-              <div className="relative z-10 flex h-24 w-36 items-center justify-center p-4">
+              <div className="relative z-10 flex w-32 items-center justify-center p-4">
                 <p className="primary-text break-words text-text-body">
                   {isCustom ? t('title.custom') : name}
                 </p>
