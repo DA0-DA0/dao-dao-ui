@@ -544,6 +544,7 @@ const ActionMatcherAndProposer = ({
       <FormProvider {...formMethods}>
         <SuspenseLoader fallback={<Loader />}>
           <NewProposal
+            actionsReadOnlyMode
             deleteDraft={deleteDraft}
             draft={draft}
             draftSaving={draftSaving}

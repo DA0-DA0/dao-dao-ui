@@ -24,7 +24,7 @@ export const CrossChainExecuteComponent: ActionComponent<
 
   return (
     <>
-      <p className="title-text -mb-1 mt-1">{t('title.actions')}</p>
+      <p className="title-text -mb-1">{t('title.actions')}</p>
 
       {isCreating ? (
         <NestedActionsEditor {...props} />
