@@ -1,15 +1,26 @@
 import { Check, Close } from '@mui/icons-material'
 import JSON5 from 'json5'
+import { useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { CodeMirrorInput } from '@dao-dao/stateless'
+import {
+  CodeMirrorInput,
+  FilterableItemPopup,
+  useChain,
+} from '@dao-dao/stateless'
+import { ChainId } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 import {
+  PROTOBUF_TYPES,
   makeStargateMessage,
   makeWasmMessage,
   validateCosmosMsg,
 } from '@dao-dao/utils'
+
+export type CustomData = {
+  message: string
+}
 
 export const CustomComponent: ActionComponent = ({
   fieldNamePrefix,
@@ -17,14 +28,66 @@ export const CustomComponent: ActionComponent = ({
   isCreating,
 }) => {
   const { t } = useTranslation()
-  const { control } = useFormContext()
+  const { control, setValue } = useFormContext<CustomData>()
+  const { chain_id: chainId } = useChain()
+
+  const types = useMemo(
+    () =>
+      PROTOBUF_TYPES.filter(
+        ([type]) =>
+          // Only show protobuf message types.
+          type.split('.').pop()?.startsWith('Msg') &&
+          // Only show osmosis message types on Osmosis chains.
+          (!type.startsWith('/osmosis') ||
+            chainId === ChainId.OsmosisMainnet ||
+            chainId === ChainId.OsmosisTestnet)
+      ),
+    [chainId]
+  )
 
   return (
     <>
+      {isCreating && (
+        <FilterableItemPopup
+          filterableItemKeys={FILTERABLE_KEYS}
+          items={types.map(([key, type]) => ({
+            key,
+            label: key,
+            type,
+          }))}
+          labelClassName="break-words whitespace-normal"
+          onSelect={({ key, type }) =>
+            setValue(
+              (fieldNamePrefix + 'message') as 'message',
+              JSON.stringify(
+                {
+                  stargate: {
+                    typeUrl: key,
+                    // Decoding empty data returns default.
+                    value: type.decode(new Uint8Array()),
+                  },
+                },
+                null,
+                2
+              )
+            )
+          }
+          searchPlaceholder={t('info.searchMessages')}
+          trigger={{
+            type: 'button',
+            props: {
+              className: 'self-start',
+              variant: 'secondary',
+              children: t('button.loadMessageTemplate'),
+            },
+          }}
+        />
+      )}
+
       <CodeMirrorInput
         control={control}
         error={errors?.message}
-        fieldName={fieldNamePrefix + 'message'}
+        fieldName={(fieldNamePrefix + 'message') as 'message'}
         readOnly={!isCreating}
         validation={[
           (v: string) => {
@@ -34,14 +97,15 @@ export const CustomComponent: ActionComponent = ({
             } catch (e: any) {
               return e.message as string
             }
-            if (msg.wasm) {
-              msg = makeWasmMessage(msg)
-            }
-            if (msg.stargate) {
-              msg = makeStargateMessage(msg)
-            }
 
             try {
+              if (msg.wasm) {
+                msg = makeWasmMessage(msg)
+              }
+              if (msg.stargate) {
+                msg = makeStargateMessage(msg)
+              }
+
               validateCosmosMsg(msg)
             } catch (err) {
               return err instanceof Error ? err.message : `${err}`
@@ -77,3 +141,5 @@ export const CustomComponent: ActionComponent = ({
     </>
   )
 }
+
+const FILTERABLE_KEYS = ['label']
