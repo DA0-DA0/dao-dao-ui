@@ -332,8 +332,7 @@ export const decodePolytoneExecuteMsg = (
       decodedMsg.wasm.execute.msg.execute.msgs.length !== 0) ||
     (type === 'one' && decodedMsg.wasm.execute.msg.execute.msgs.length !== 1) ||
     (type === 'oneOrZero' &&
-      decodedMsg.wasm.execute.msg.execute.msgs.length > 1) ||
-    type === 'any'
+      decodedMsg.wasm.execute.msg.execute.msgs.length > 1)
   ) {
     return {
       match: false,
@@ -350,9 +349,7 @@ export const decodePolytoneExecuteMsg = (
     }
   }
 
-  const cosmosMsgs = decodedMsg.wasm.execute.msg.execute.msgs.length
-    ? decodedMsg.wasm.execute.msg.execute.msgs
-    : []
+  const cosmosMsgs = decodedMsg.wasm.execute.msg.execute.msgs
   const msgs = decodeMessages(cosmosMsgs)
 
   return {
