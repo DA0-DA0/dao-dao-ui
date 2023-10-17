@@ -51,6 +51,11 @@ export const createRPCQueryClient = async ({
     },
     ibc: {
       applications: {
+        interchain_accounts: {
+          controller: {
+            v1: (await import("./applications/interchain_accounts/controller/v1/query.rpc.Query")).createRpcQueryExtension(client)
+          }
+        },
         transfer: {
           v1: (await import("./applications/transfer/v1/query.rpc.Query")).createRpcQueryExtension(client)
         }
