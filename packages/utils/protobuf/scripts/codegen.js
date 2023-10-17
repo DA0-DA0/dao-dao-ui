@@ -56,6 +56,8 @@ telescope({
           'cosmwasm.wasm.v1',
           'google.protobuf',
           'ibc.applications.transfer.v1',
+          'ibc.applications.interchain_accounts.v1',
+          'ibc.applications.interchain_accounts.controller.v1',
           'ibc.core.channel.v1',
           'juno.feeshare.v1',
           'juno.mint',
