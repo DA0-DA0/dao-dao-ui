@@ -1,6 +1,7 @@
 import { ActionCategoryKey, ActionCategoryMaker } from '@dao-dao/types'
 
 import { makeBurnNftAction } from './BurnNft'
+import { makeCreateNftCollectionAction } from './CreateNftCollection'
 import { makeManageCw721Action } from './ManageCw721'
 import { makeMintNftAction } from './MintNft'
 import { makeTransferNftAction } from './TransferNft'
@@ -15,6 +16,7 @@ export const makeManageNftsActionCategory: ActionCategoryMaker = ({
     context: context.type,
   }),
   actionMakers: [
+    makeCreateNftCollectionAction,
     makeMintNftAction,
     makeTransferNftAction,
     makeBurnNftAction,

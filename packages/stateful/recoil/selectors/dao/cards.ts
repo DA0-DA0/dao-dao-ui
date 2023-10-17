@@ -13,6 +13,7 @@ import {
   DaoCardInfo,
   DaoCardInfoLazyData,
   DaoDropdownInfo,
+  DaoInfo,
   IndexerDumpState,
   WithChainId,
 } from '@dao-dao/types'
@@ -38,6 +39,7 @@ import { proposalModuleAdapterProposalCountSelector } from '../../../proposal-mo
 import {
   daoCoreProposalModulesSelector,
   daoCw20GovernanceTokenAddressSelector,
+  daoInfoSelector,
 } from './misc'
 
 export const daoCardInfoSelector = selectorFamily<
@@ -75,6 +77,13 @@ export const daoCardInfoSelector = selectorFamily<
           : get(
               contractInstantiateTimeSelector({ address: coreAddress, chainId })
             )
+
+      const polytoneProxies = get(
+        DaoCoreV2Selectors.polytoneProxiesSelector({
+          chainId,
+          contractAddress: coreAddress,
+        })
+      )
 
       // Get parent DAO if exists.
       let parentDao: DaoCardInfo['parentDao']
@@ -208,6 +217,7 @@ export const daoCardInfoSelector = selectorFamily<
         name: config.name,
         description: config.description,
         imageUrl: config.image_url || getFallbackImage(coreAddress),
+        polytoneProxies,
         established,
         parentDao,
         tokenDecimals: 6,
@@ -306,6 +316,31 @@ export const subDaoCardInfosSelector = selectorFamily<
           )
         )
       ).filter(Boolean) as DaoCardInfo[]
+    },
+})
+
+export const subDaoInfosSelector = selectorFamily<
+  DaoInfo[],
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'subDaoInfos',
+  get:
+    ({ coreAddress: contractAddress, chainId }) =>
+    ({ get }) => {
+      const subdaos = get(
+        DaoCoreV2Selectors.listAllSubDaosSelector({
+          contractAddress,
+          chainId,
+        })
+      )
+
+      return get(
+        waitForAll(
+          subdaos.map(({ addr }) =>
+            daoInfoSelector({ coreAddress: addr, chainId })
+          )
+        )
+      )
     },
 })
 

@@ -25,6 +25,7 @@ export const makeProps = (id = 1): DaoCardProps => ({
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
   imageUrl: `/placeholders/${id % 5}.svg`,
+  polytoneProxies: {},
   // Random date in the past 12 months.
   established: new Date(
     Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000)

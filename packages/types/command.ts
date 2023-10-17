@@ -1,7 +1,9 @@
-import { ComponentType } from 'react'
+import { ComponentType, ReactNode } from 'react'
 import { TFunction } from 'react-i18next'
 
-export interface StatefulCommandModalProps {
+import { PolytoneProxies } from './dao'
+
+export type StatefulCommandModalProps = {
   visible: boolean
   setVisible: (visible: boolean) => void
   // Root context maker can take no extra options.
@@ -23,13 +25,11 @@ export type CommandModalContextSectionItem<
       }
     | {
         imageUrl?: never
-        Icon: ComponentType<{ className?: string }>
+        Icon: ComponentType<{ className: string }>
       }
   )
 
-export interface CommandModalContextSection<
-  ExtraItemProperties extends {} = {}
-> {
+export type CommandModalContextSection<ExtraItemProperties extends {} = {}> = {
   name: string
   items: CommandModalContextSectionItem<ExtraItemProperties>[]
   onChoose: (item: CommandModalContextSectionItem<ExtraItemProperties>) => void
@@ -42,7 +42,7 @@ export interface CommandModalContextSection<
   loading?: boolean
 }
 
-export interface CommandModalContextUseSectionsOptions {
+export type CommandModalContextUseSectionsOptions = {
   filter: string
 }
 
@@ -50,11 +50,16 @@ export type CommandModalContextUseSections = (
   options: CommandModalContextUseSectionsOptions
 ) => CommandModalContextSection[]
 
-export interface CommandModalContext {
+export type CommandModalContext = {
   useSections: CommandModalContextUseSections
   name: string
   imageUrl?: string
+  // If defined, will wrap the context with this component around where
+  // `useSections` will be called.
+  Wrapper?: CommandModalContextWrapper
 }
+
+export type CommandModalContextWrapper = ComponentType<{ children: ReactNode }>
 
 export type CommandModalContextMakerOptions<MakerOptions extends {} = {}> =
   MakerOptions & {
@@ -66,10 +71,10 @@ export type CommandModalContextMaker<MakerOptions extends {} = {}> = (
   options: CommandModalContextMakerOptions<MakerOptions>
 ) => CommandModalContext
 
-export interface CommandModalDaoInfo {
+export type CommandModalDaoInfo = {
   chainId: string
   coreAddress: string
   name: string
   imageUrl: string
-  polytoneProxies?: string[]
+  polytoneProxies: PolytoneProxies
 }

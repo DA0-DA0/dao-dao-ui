@@ -29,12 +29,14 @@ export enum ActionKey {
   ManageStaking = 'manageStaking',
   ManageCw20 = 'manageCw20',
   ManageCw721 = 'manageCw721',
+  CreateNftCollection = 'createNftCollection',
   TransferNft = 'transferNft',
   MintNft = 'mintNft',
   BurnNft = 'burnNft',
   ManageSubDaos = 'manageSubDaos',
   UpdateInfo = 'updateInfo',
   Instantiate = 'instantiate',
+  Instantiate2 = 'instantiate2',
   Execute = 'execute',
   Migrate = 'migrate',
   UpdateAdmin = 'updateAdmin',
@@ -117,7 +119,9 @@ export type ActionComponentProps<O = undefined, D = any> = {
       errors: FieldErrors
       // Adds a new action to the form.
       addAction: (
-        action: Omit<PartialCategorizedActionKeyAndData, '_id'>
+        action: Partial<PartialCategorizedActionKeyAndData>,
+        // If omitted, the action will be appened to the end of the list.
+        insertIndex?: number
       ) => void
       // Removes this action from the form.
       remove: () => void
@@ -180,7 +184,7 @@ export interface Action<Data extends {} = any, Options extends {} = any> {
   // Programmatic actions cannot be chosen or removed by the user. This is used
   // for actions should only be controlled by code. The user should not be able
   // to modify it at all, which also means the user cannot pick this action or
-  // go back to the category action picker. This includes both`hideFromPicker`
+  // go back to the category action picker. This includes both `hideFromPicker`
   // and `notReusable`, while also preventing the user from going back to the
   // category action picker or removing the action.
   programmaticOnly?: boolean
