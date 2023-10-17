@@ -11,7 +11,6 @@ import {
   TokenCardInfo,
 } from '@dao-dao/types'
 import {
-  VALENCE_ACCOUNT_ITEM_KEY_PREFIX,
   getChainForChainId,
   getDisplayNameForChainId,
   getSupportedChainConfig,
@@ -67,11 +66,12 @@ export const DaoChainTreasuryAndNfts = <
   DaoTreasuryHistoryGraph,
 }: DaoChainTreasuryAndNftsProps<T, N>) => {
   const { t } = useTranslation()
-  const { chainId: daoChainId, items: daoItems } = useDaoInfoContext()
+  const { chainId: daoChainId } = useDaoInfoContext()
 
   const bech32Prefix = getChainForChainId(chainId).bech32_prefix
   const address = accounts.find(
     ({ type }) =>
+      // A chain either has a native or polytone account, but not both.
       type === DaoAccountType.Native || type === DaoAccountType.Polytone
   )?.address
   const valenceAccount = accounts.find(
@@ -110,8 +110,11 @@ export const DaoChainTreasuryAndNfts = <
       }
 
   const hasValenceTokens = valenceTokens.loading
-    ? // When tokens not yet loaded, check to see if valence account is set to determine if we should render UI and show loader.
-      !!daoItems[VALENCE_ACCOUNT_ITEM_KEY_PREFIX + chainId]
+    ? // When tokens not yet loaded, check to see if valence account exists to determine if we should render UI and show loader.
+      accounts.some(
+        (account) =>
+          account.chainId === chainId && account.type === DaoAccountType.Valence
+      )
     : valenceTokens.data.length > 0
 
   const [valenceAccountMode, setValenceAccountMode] = useState<

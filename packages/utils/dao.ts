@@ -1,8 +1,8 @@
 import {
   BreadcrumbCrumb,
   ContractVersion,
+  DaoAccount,
   DaoAccountType,
-  DaoInfo,
   DaoParentInfo,
   DaoWebSocketChannelInfo,
   PolytoneProxies,
@@ -10,7 +10,6 @@ import {
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
 
 import { getSupportedChainConfig } from './chain'
-import { VALENCE_ACCOUNT_ITEM_KEY_PREFIX } from './constants/other'
 import { getGovPath } from './url'
 
 export const getParentDaoBreadcrumbs = (
@@ -67,20 +66,34 @@ export const getFundsFromDaoInstantiateMsg = ({
   ...proposal_modules_instantiate_info.flatMap(({ funds }) => funds || []),
 ]
 
-// Gets the DAO account on the specified chain or undefined if not found.
-export const getDaoAccount = ({
-  daoInfo: { chainId: daoChainId, coreAddress, polytoneProxies, items },
+// Gets the DAO account address on the specified chain or undefined if
+// nonexistent. Returns either a native or polytone account.
+export const getDaoAccountAddress = ({
+  accounts,
   chainId,
-  accountType,
 }: {
-  daoInfo: DaoInfo
+  accounts: DaoAccount[]
   chainId: string
-  accountType: DaoAccountType
 }): string | undefined =>
-  accountType === DaoAccountType.Native && chainId === daoChainId
-    ? coreAddress
-    : accountType === DaoAccountType.Polytone && chainId !== daoChainId
-    ? polytoneProxies[chainId]
-    : accountType === DaoAccountType.Valence
-    ? items[VALENCE_ACCOUNT_ITEM_KEY_PREFIX + chainId]
-    : undefined
+  accounts.find(
+    (account) =>
+      (account.type === DaoAccountType.Native ||
+        account.type === DaoAccountType.Polytone) &&
+      account.chainId === chainId
+  )?.address
+
+// Gets the chain ID for an address or undefined if nonexistent. Returns either
+// a native or polytone account.
+export const getDaoAccountChainId = ({
+  accounts,
+  address,
+}: {
+  accounts: DaoAccount[]
+  address: string
+}): string | undefined =>
+  accounts.find(
+    (account) =>
+      (account.type === DaoAccountType.Native ||
+        account.type === DaoAccountType.Polytone) &&
+      account.address === address
+  )?.chainId

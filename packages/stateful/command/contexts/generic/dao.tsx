@@ -31,14 +31,11 @@ import { subDaoInfosSelector } from '../../../recoil'
 
 export const makeGenericDaoContext: CommandModalContextMaker<{
   dao: CommandModalDaoInfo
-}> = ({
-  dao: { chainId, coreAddress, name, imageUrl, polytoneProxies },
-  ...options
-}) => {
+}> = ({ dao: { chainId, coreAddress, name, imageUrl }, ...options }) => {
   const useSections = () => {
     const { t } = useTranslation()
     const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
-    const { supportedFeatures } = useDaoInfoContext()
+    const { accounts, supportedFeatures } = useDaoInfoContext()
     const loadingTabs = useDaoTabs({
       suspendWhileLoadingOverride: false,
     })
@@ -82,8 +79,6 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     useDeepCompareEffect(() => {
       routes.forEach((url) => router.prefetch(url))
     }, [routes])
-
-    const chains = [[chainId, coreAddress], ...Object.entries(polytoneProxies)]
 
     const actionsSection: CommandModalContextSection<
       { href: string } | { onChoose: () => void }
@@ -129,7 +124,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
             following ? setUnfollowing(coreAddress) : setFollowing(coreAddress),
           loading: updatingFollowing,
         },
-        ...chains.map(([chainId, address]) => ({
+        ...accounts.map(({ chainId, address }) => ({
           name:
             copied === chainId
               ? t('info.copiedDaoChainAddress', {
@@ -191,13 +186,11 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
               coreAddress,
               name,
               imageUrl,
-              polytoneProxies,
             }): CommandModalDaoInfo => ({
               chainId,
               coreAddress,
               name,
               imageUrl: imageUrl || getFallbackImage(coreAddress),
-              polytoneProxies,
             })
           ),
     }

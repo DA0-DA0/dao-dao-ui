@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom'
 import { FieldValues, Path, useFormContext } from 'react-hook-form'
 
 import { AddressInputProps, EntityType } from '@dao-dao/types'
-import { isValidBech32Address } from '@dao-dao/utils'
+import { getDaoAccountAddress, isValidBech32Address } from '@dao-dao/utils'
 
 import { useChain } from '../../hooks/useChainContext'
 import { useTrackDropdown } from '../../hooks/useTrackDropdown'
@@ -115,7 +115,10 @@ export const AddressInput = <
         selectedEntity.chainId === chainId
           ? selectedEntity.address
           : selectedEntity.type === EntityType.Dao &&
-            selectedEntity.daoInfo.polytoneProxies[chainId]
+            getDaoAccountAddress({
+              accounts: selectedEntity.daoInfo.accounts,
+              chainId,
+            })
       if (!address) {
         return
       }
