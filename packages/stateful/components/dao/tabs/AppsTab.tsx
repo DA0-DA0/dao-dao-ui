@@ -91,13 +91,14 @@ export const AppsTab = () => {
     }
 
     const encodedMessages = TxBody.decode(signDocBodyBytes).messages
-    const cwMessages = encodedMessages.map((msg) => protobufToCwMsg(msg).msg)
-
-    setMsgs(
-      currentChainId === chainId
-        ? cwMessages
-        : [maybeMakePolytoneExecuteMessage(currentChainId, chainId, cwMessages)]
+    const messages = encodedMessages.map((msg) =>
+      maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        protobufToCwMsg(msg).msg
+      )
     )
+    setMsgs(messages)
   }
   const decodeAmino = (sender: string, signDoc: StdSignDoc) => {
     const chainId = chainIdForAddress(sender)
@@ -106,15 +107,14 @@ export const AppsTab = () => {
       return
     }
 
-    const cwMessages = signDoc.msgs.map(
-      (msg) => decodedStargateMsgToCw(aminoTypes.fromAmino(msg)).msg
+    const messages = signDoc.msgs.map((msg) =>
+      maybeMakePolytoneExecuteMessage(
+        currentChainId,
+        chainId,
+        decodedStargateMsgToCw(aminoTypes.fromAmino(msg)).msg
+      )
     )
-
-    setMsgs(
-      currentChainId === chainId
-        ? cwMessages
-        : [maybeMakePolytoneExecuteMessage(currentChainId, chainId, cwMessages)]
-    )
+    setMsgs(messages)
   }
 
   const enableAndConnect = (chainIds: string | string[]) =>
