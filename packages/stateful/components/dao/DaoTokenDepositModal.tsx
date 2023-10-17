@@ -21,7 +21,6 @@ import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
-  getDaoAccount,
   processError,
 } from '@dao-dao/utils'
 
@@ -42,7 +41,7 @@ export const DaoTokenDepositModal = ({
   ...props
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
-  const daoInfo = useDaoInfoContext()
+  const { name: daoName, accounts } = useDaoInfoContext()
   const { isWalletConnected, address, getSigningCosmWasmClient } = useWallet({
     chainId: token.chainId,
   })
@@ -50,13 +49,10 @@ export const DaoTokenDepositModal = ({
     chainId: token.chainId,
   })
 
-  const daoName = daoInfo.name
   // Deposit address depends on what the account type is of the token owner.
-  const depositAddress = getDaoAccount({
-    daoInfo,
-    chainId: token.chainId,
-    accountType: daoOwnerType,
-  })
+  const depositAddress = accounts.find(
+    ({ chainId, type }) => chainId === token.chainId && type === daoOwnerType
+  )?.address
 
   const setRefreshDaoBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(depositAddress)

@@ -27,6 +27,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
+  getDaoAccountAddress,
   getNativeTokenForChainId,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
@@ -51,7 +52,7 @@ const Component: ActionComponent = (props) => {
   const {
     context,
     address,
-    chain: { chain_id: currentChainId, bech32_prefix: bech32Prefix },
+    chain: { bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
   const { watch, setValue } = useFormContext<Instantiate2Data>()
@@ -107,9 +108,10 @@ const Component: ActionComponent = (props) => {
             setValue((props.fieldNamePrefix + 'funds') as 'funds', [])
             setValue(
               (props.fieldNamePrefix + 'admin') as 'admin',
-              chainId === currentChainId
-                ? address
-                : context.info.polytoneProxies[chainId] ?? ''
+              getDaoAccountAddress({
+                accounts: context.info.accounts,
+                chainId,
+              }) || ''
             )
           }}
         />

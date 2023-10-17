@@ -25,6 +25,7 @@ import {
   decodePolytoneExecuteMsg,
   getChainForChainId,
   getChainForChainName,
+  getDaoAccountAddress,
   getIbcTransferInfoBetweenChains,
   getIbcTransferInfoFromChainSource,
   isDecodedStargateMsg,
@@ -170,7 +171,10 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
           fromChainId === currentChainId
             ? address
             : context.type === ActionContextType.Dao
-            ? context.info.polytoneProxies[fromChainId]
+            ? getDaoAccountAddress({
+                accounts: context.info.accounts,
+                chainId: fromChainId,
+              })
             : transformBech32Address(address, fromChainId)
         msg = makeStargateMessage({
           stargate: {

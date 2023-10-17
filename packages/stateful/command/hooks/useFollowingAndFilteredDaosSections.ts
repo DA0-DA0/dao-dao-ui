@@ -9,11 +9,7 @@ import {
   CommandModalContextUseSectionsOptions,
   CommandModalDaoInfo,
 } from '@dao-dao/types'
-import {
-  getFallbackImage,
-  getSupportedChains,
-  polytoneNoteProxyMapToChainIdMap,
-} from '@dao-dao/utils'
+import { getFallbackImage, getSupportedChains } from '@dao-dao/utils'
 
 import {
   useLoadingFeaturedDaoCardInfos,
@@ -71,16 +67,12 @@ export const useFollowingAndFilteredDaosSections = ({
             value: {
               config: { name, image_url },
               proposalCount,
-              polytoneProxies,
             },
           }): CommandModalContextSectionItem<CommandModalDaoInfo> => ({
             chainId,
             coreAddress: contractAddress,
             name,
             imageUrl: image_url || getFallbackImage(contractAddress),
-            polytoneProxies: polytoneProxies
-              ? polytoneNoteProxyMapToChainIdMap(chainId, polytoneProxies)
-              : {},
             // If DAO has no proposals, make it less visible and give it a
             // tooltip to indicate that it may not be active.
             ...(proposalCount === 0 && {

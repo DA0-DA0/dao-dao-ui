@@ -36,6 +36,7 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getChainForChainId,
   getChainForChainName,
+  getDaoAccountAddress,
   getImageUrlForChainId,
   makeValidateAddress,
   maybeGetChainForChainName,
@@ -121,11 +122,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     // account on the destination chain.
     else {
       newRecipient =
-        toChain.chain_id === currentEntity.chainId
-          ? currentEntity.address
-          : toChain.chain_id in currentEntity.daoInfo.polytoneProxies
-          ? currentEntity.daoInfo.polytoneProxies[toChain.chain_id]
-          : ''
+        getDaoAccountAddress({
+          accounts: currentEntity.daoInfo.accounts,
+          chainId: toChain.chain_id,
+        }) || ''
     }
 
     if (newRecipient !== recipient) {
