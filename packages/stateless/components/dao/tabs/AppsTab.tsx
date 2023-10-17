@@ -33,7 +33,7 @@ export const AppsTab = (props: AppsTabProps) => {
 
   return props.fullScreen ? (
     createPortal(
-      <div className="hd-screen wd-screen fixed top-0 left-0 z-[39] bg-background-base p-safe pt-safe-or-4">
+      <div className="hd-screen wd-screen fixed top-0 left-0 z-[38] bg-background-base p-safe pt-safe-or-4">
         <InnerAppsTab
           className="h-full w-full"
           setUrl={setUrl}

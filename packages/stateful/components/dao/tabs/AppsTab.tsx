@@ -518,7 +518,7 @@ const ActionMatcherAndProposer = ({
 
   return (
     <Modal
-      backdropClassName="!z-30"
+      backdropClassName="!z-[39]"
       containerClassName="sm:!max-w-[90dvw] !w-full"
       footerContainerClassName="flex flex-row justify-between gap-8"
       footerContent={
