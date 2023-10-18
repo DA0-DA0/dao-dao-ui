@@ -9,6 +9,13 @@ export const DAO_APPS: DaoApp[] = [
     url: 'https://app.osmosis.zone',
   },
   {
+    name: 'Stargaze',
+    imageUrl: 'https://stargaze.zone/TwitterCard.png',
+    url: MAINNET
+      ? 'https://stargaze.zone'
+      : 'https://testnet.publicawesome.dev',
+  },
+  {
     name: 'Stargaze Studio',
     imageUrl: 'https://studio.stargaze.zone/assets/android-chrome-256x256.png',
     url: MAINNET
