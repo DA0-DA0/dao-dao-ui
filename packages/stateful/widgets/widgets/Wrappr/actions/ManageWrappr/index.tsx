@@ -88,10 +88,10 @@ export const makeManageWrapprActionMaker = ({
             contract_addr: {},
             funds: {},
             msg: {
-              mint: {
-                owner: {},
-                token_id: {},
-                token_uri: {},
+              send_msg_evm: {
+                destination_chain: {},
+                destination_address: {},
+                message: {},
               },
             },
           },
@@ -120,10 +120,10 @@ export const makeManageWrapprActionMaker = ({
                 contract_addr: contract,
                 funds: [],
                 msg: {
-                  mint: {
-                    owner: address,
-                    token_id: tokenId,
-                    token_uri: tokenUri,
+                  send_msg_evm: {
+                    destination_chain: {},
+                    destination_address: {},
+                    message: {},
                   },
                 },
               },

@@ -1,3 +1,7 @@
+// TODO: 
+// - Call the contract that interacts with Axelar GMP
+// - handle fees & responses of GMP
+
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 
@@ -18,13 +22,26 @@ import { WrapprData } from '../../types'
 import { CreateWrapprComponent, CreateWrapprData } from './Component'
 
 const useDefaults: UseDefaults<CreateWrapprData> = () => ({
-  tokenId: '',
-  tokenUri: '',
+  // key of the type of Wrappr 
+  key: '',
+  // chain name of message destination: https://docs.axelar.dev/dev/reference/mainnet-chain-names
+  destination_chain: '',
+  // address of message destination
+  destination_address: '',
   uploaded: false,
+  // wrappr data 
   data: {
-    title: '',
+    name: '',
+    symbol: '',
     description: '',
-    content: '',
+    admin: '',
+    mintFee: '',
+    baseURI: '',
+    agreement: '',
+    attributes: {
+      trait_types: '',
+      value: '',
+    }
   },
 })
 
@@ -71,10 +88,10 @@ export const makeCreateWrapprActionMaker =
             contract_addr: {},
             funds: {},
             msg: {
-              mint: {
-                owner: {},
-                token_id: {},
-                token_uri: {},
+              send_msg_evm: {
+                destination_chain: {},
+                destination_address: {},
+                message: {},
               },
             },
           },
@@ -103,10 +120,10 @@ export const makeCreateWrapprActionMaker =
                 contract_addr: contract,
                 funds: [],
                 msg: {
-                  mint: {
-                    owner: address,
-                    token_id: tokenId,
-                    token_uri: tokenUri,
+                  send_msg_evm: {
+                    destination_chain: address,
+                    destination_address: tokenId,
+                    message: tokenUri,
                   },
                 },
               },

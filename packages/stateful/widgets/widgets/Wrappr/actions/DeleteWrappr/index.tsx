@@ -83,8 +83,10 @@ export const makeDeleteWrapprActionMaker = ({
             contract_addr: {},
             funds: {},
             msg: {
-              burn: {
-                token_id: {},
+              send_msg_evm: {
+                destination_chain: {},
+                destination_address: {},
+                message: {},
               },
             },
           },
@@ -109,8 +111,10 @@ export const makeDeleteWrapprActionMaker = ({
                 contract_addr: contract,
                 funds: [],
                 msg: {
-                  burn: {
-                    token_id: id,
+                  send_msg_evm: {
+                    destination_chain: {},
+                    destination_address: {},
+                    message: {},
                   },
                 },
               },
