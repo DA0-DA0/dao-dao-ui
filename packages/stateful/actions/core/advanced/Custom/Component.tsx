@@ -40,7 +40,11 @@ export const CustomComponent: ActionComponent = ({
           // Only show osmosis message types on Osmosis chains.
           (!type.startsWith('/osmosis') ||
             chainId === ChainId.OsmosisMainnet ||
-            chainId === ChainId.OsmosisTestnet)
+            chainId === ChainId.OsmosisTestnet) &&
+          // Only show stargaze message types on Stargaze chains.
+          (!type.startsWith('/publicawesome.stargaze') ||
+            chainId === ChainId.StargazeMainnet ||
+            chainId === ChainId.StargazeTestnet)
       ),
     [chainId]
   )
