@@ -263,7 +263,7 @@ export const makeConfigureRebalancerAction: ActionMaker<
         const msg: CosmosMsgFor_Empty = makeWasmMessage({
           wasm: {
             execute: {
-              // TODO: Get rebalancer address.
+              // TODO: Get valence account address.
               contract_addr: '',
               funds: [],
               msg: {

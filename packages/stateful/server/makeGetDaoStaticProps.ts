@@ -263,7 +263,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           // TODO(rebalancer): Get config
           const config: DaoValenceAccountConfig = {
             rebalancer: {
-              address: 'REBALANCER_ADDRESS',
               targets: [
                 {
                   source: {
