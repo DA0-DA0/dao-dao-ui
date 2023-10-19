@@ -30,6 +30,8 @@ import {
   junoProtoRegistry,
   osmosisAminoConverters,
   osmosisProtoRegistry,
+  publicawesomeAminoConverters as stargazeAminoConverters,
+  publicawesomeProtoRegistry as stargazeProtoRegistry,
 } from '@dao-dao/protobuf'
 import { MsgSend } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/tx'
 import {
@@ -460,6 +462,7 @@ export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   ...junoProtoRegistry,
   ...osmosisProtoRegistry,
   ...ibcProtoRegistry,
+  ...stargazeProtoRegistry,
 ]
 export const typesRegistry = new Registry(PROTOBUF_TYPES)
 
@@ -469,6 +472,7 @@ export const aminoTypes = new AminoTypes({
   ...junoAminoConverters,
   ...osmosisAminoConverters,
   ...ibcAminoConverters,
+  ...stargazeAminoConverters,
 })
 
 // Encodes a protobuf message value from its JSON representation into a byte
