@@ -1247,6 +1247,7 @@ export const valenceAccountSelector = selectorFamily<
       // TODO(rebalancer): Get config
       const config: DaoValenceAccountConfig = {
         rebalancer: {
+          address: 'REBALANCER_ADDRESS',
           targets: [
             {
               source: {
