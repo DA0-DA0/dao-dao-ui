@@ -74,7 +74,7 @@ export enum ActionKey {
   DeletePost = 'deletePost',
   // Wrappr
   CreateWrappr = 'createWrappr',
-  ManageWrappr = 'manageWrappr',
+  UpdateWrappr = 'manageWrappr',
   DeleteWrappr =  'deleteWrappr',
 }
 

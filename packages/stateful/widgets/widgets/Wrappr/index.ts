@@ -11,7 +11,7 @@ import { makeCreateWrapprActionMaker } from './actions/CreateWrappr'
 import { makeDeleteWrapprActionMaker } from './actions/DeleteWrappr'
 import { makeManageWrapprActionMaker } from './actions/ManageWrappr'
 import { WRAPPR_WIDGET_ID } from './constants'
-import { PressEditor as Editor } from './WrapprEditor'
+import { WrapprEditor as Editor } from './WrapprEditor'
 import { Renderer } from './Renderer'
 import { WrapprData } from './types'
 

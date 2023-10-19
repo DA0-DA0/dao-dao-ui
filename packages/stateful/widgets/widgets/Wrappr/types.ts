@@ -1,39 +1,18 @@
+import {
+  AssetConfig,
+  AssetInfoForChain,
+} from "@axelar-network/axelarjs-sdk";
+
+
 export type WrapprData = {
   // Wrappr  contract address.
   contract: string
 }
 
-// export type Wrappr = {
-//   // Unique ID of the wrappr, which is the IPFS CID.
-//   id: string
-//   // Name of the post.
-//   title: string
-//   // Entity type of the Wrappr.
-//   entity: string 
-//   // Jurisdiction of the Wrappr.
-//   jurisdiction: string
-//   // Description of the Wrappr.
-//   description?: string
-//   // Markdown content of the Wrappr.
-//   content: string
-//   // An optional header image to display above the title.
-//   image?: string
-//   // The date the Wrappr was created (i.e. proposed).
-//   created: Date
-//   // The earlier versions of this Wrappr.
-//   pastVersions: WrapprVersion[]
-//   // The first date the Wrappr was created (i.e. proposed). This is either the
-//   // Wrapprs's `created` date or the earliest `created` date of any of its
-//   // `pastVersions`.
-//   initiallyCreated: Date
-// }
-
-export type WrapprVersion = {
-  // The ID of the Wrappr.
-  id: string
-  // The date the Wrappr version was created (i.e. proposed).
-  created: Date
-}
+export type LLCJurisdictionOptions = {
+  value: string;
+  label: string;
+};
 
 // general types for Wrappr Widget
 export interface Contracts {
@@ -84,4 +63,38 @@ export type Create = {
 
 export interface Templates {
   [key: string]: string[]
+}
+
+// Axelar GMP types: [source - https://github.com/axelarnetwork/axelar-satellite/blob/main/src/types/index.ts#L34 ] 
+
+export type AssetAlias = Pick<
+  AssetInfoForChain,
+  | "assetSymbol"
+  | "assetName"
+  | "minDepositAmt"
+  | "tokenAddress"
+  | "ibcDenom"
+  | "fullDenomPath"
+  | "common_key"
+> & {
+  mintLimit: number;
+  iconSrc?: string;
+  decimals?: number;
+  addedViaSquid?: boolean;
+};
+
+export interface AssetConfigExtended extends AssetConfig {
+  id: string;
+  native_chain: string;
+  gas_token_id?: string;
+  wrapped_erc20: string;
+  is_gas_token: boolean;
+  isSquidAsset: boolean;
+  isSquidOnlyAsset?: boolean;
+  chain_aliases: Record<
+    // this overwrites the AssetInfo in the sdk because the sdk does not have all the values eg: mintLimit
+    string,
+    AssetAlias
+  >;
+  iconSrc?: string;
 }

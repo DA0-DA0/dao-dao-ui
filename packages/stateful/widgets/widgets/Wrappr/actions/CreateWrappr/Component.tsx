@@ -1,5 +1,5 @@
-import { ArrowBackIosRounded } from '@mui/icons-material'
-import { useState } from 'react'
+import { ArrowBackIosRounded, ArrowRightAltRounded, SubdirectoryArrowRightRounded } from '@mui/icons-material'
+import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { Trans, useTranslation } from 'react-i18next'
@@ -15,13 +15,18 @@ import {
   TextInput,
   Dropdown,
   SegmentedControlsTitle,
+  FormSwitchCard,
+  AddressInput,
+  TokenInput,
+  TokenAmountDisplay,
 } from '@dao-dao/stateless'
-import { ActionComponent, LoadingData } from '@dao-dao/types'
-import { processError, uploadNft, validateRequired } from '@dao-dao/utils'
+import { ActionComponent, ActionContextType, GenericTokenBalance, LoadingData } from '@dao-dao/types'
+import { convertMicroDenomToDenomWithDecimals, processError, uploadNft, validateRequired } from '@dao-dao/utils'
 
 // import { WrapprMarkdown } from '../../components/WrapprMarkdown'
-import { Wrappr } from '../../types'
+import { LLCJurisdictionOptions, Wrappr } from '../../types'
 import { wrapprMainnetChains } from '../../constants'
+import { useActionOptions } from '../../../../../actions'
 
 export type CreateWrapprData = {
   tokenId: string
@@ -35,89 +40,135 @@ export type CreateWrapprData = {
   }
 }
 
-const wrapprOptions = [
-  { value: 'llc', label: 'LLC' },
-  { value: 'nonProfit', label: 'NonProfit' },
-  // Add more options as needed
-];
+
 const initiallySelectedOption = 'option1';
 
-const llcJurisdictionOptions = [
+const llcJurisdictionOptions: LLCJurisdictionOptions[] = [
   { value: 'deleware', label: 'Deleware'},
   { value: 'offshore', label: 'Offshore'},
 ]
 
-const handleOptionSelect = (selectedOption, index) => {
-  console.log(`Selected: ${selectedOption} (index: ${index})`);
+const handleOptionSelect = (selectedOption: LLCJurisdictionOptions, index: number) => {
+  console.log(`Selected: ${selectedOption.value} (index: ${index})`);
   // You can perform additional actions here based on the selected option.
 };
 
 
 type CreateWrapprOptions = {
+  tokens: LoadingData<GenericTokenBalance[]>
   wrapprLoading: LoadingData<Wrappr | undefined>
 }
 
-export const CreateWrapprComponent: ActionComponent<CreateWrapprOptions> = ({
-  fieldNamePrefix,
-  errors,
-  isCreating,
-  options: { wrapprLoading },
-}) => {
+export const CreateWrapprComponent: ActionComponent<
+CreateWrapprOptions
+> = ({
+  fieldNamePrefix, errors, isCreating, options: { wrapprLoading, tokens }, }) => {
   const { t } = useTranslation()
-  const { register, watch, setValue } = useFormContext<CreateWrapprData>()
+  const { context } = useActionOptions()
+  const { register, watch, setValue, setError, clearErrors} =
+  useFormContext<CreateWrapprData>()
 
-  const uploaded = watch((fieldNamePrefix + 'uploaded') as 'uploaded')
-  const data = watch((fieldNamePrefix + 'data') as 'data')
+  const spendChainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
+  const spendAmount = watch((fieldNamePrefix + 'amount') as 'amount')
+  const spendDenom = watch((fieldNamePrefix + 'denom') as 'denom')
 
-  const [image, setImage] = useState<File>()
-  const [imageUrl, setImageUrl] = useState<string>()
-  const [showPreview, setShowPreview] = useState(false)
-  const [uploading, setUploading] = useState(false)
 
-  const upload = async () => {
-    if (!data) {
-      toast.error(t('error.loadingData'))
+  const validatePossibleSpend = useCallback(
+    (chainId: string, denom: string, amount: number): string | boolean => {
+      if (tokens.loading) {
+        return true
+      }
+
+      const insufficientBalanceI18nKey =
+        context.type === ActionContextType.Wallet
+          ? 'error.insufficientWalletBalance'
+          : 'error.cantSpendMoreThanTreasury'
+
+      const tokenBalance = tokens.data.find(
+        ({ token }) =>
+          token.chainId === chainId && token.denomOrAddress === denom
+      )
+      if (tokenBalance) {
+        return (
+          amount <= Number(tokenBalance.balance) ||
+          t(insufficientBalanceI18nKey, {
+            amount: convertMicroDenomToDenomWithDecimals(
+              tokenBalance.balance,
+              tokenBalance.token.decimals
+            ).toLocaleString(undefined, {
+              maximumFractionDigits: tokenBalance.token.decimals,
+            }),
+            tokenSymbol: tokenBalance.token.symbol,
+          })
+        )
+      }
+
+      return t('error.unknownDenom', { denom })
+    },
+    [context.type, t, tokens]
+  )
+
+
+  // Update amount+denom combo error each time either field is updated
+  // instead of setting errors individually on each field. Since we only
+  // show one or the other and can't detect which error is newer, this
+  // would lead to the error not updating if amount set an error and then
+  // denom was changed.
+  useEffect(() => {
+    // Prevent infinite loops by not setting errors if already set, and only
+    // clearing errors unless already set.
+    const currentError = errors?._error
+
+    if (!spendDenom || !spendAmount) {
+      if (currentError) {
+        clearErrors((fieldNamePrefix + '_error') as '_error')
+      }
       return
     }
 
-    setUploading(true)
-    try {
-      const now = new Date()
-      const { cid, metadataUrl } = await uploadNft(
-        data.title,
-        data.description,
-        image,
-        JSON.stringify({
-          properties: {
-            content: data.content,
-            created: now.toISOString(),
-            pastVersions: [],
-          },
+    const validation = validatePossibleSpend(
+      spendChainId,
+      spendDenom,
+      spendAmount
+    )
+    if (validation === true) {
+      if (currentError) {
+        clearErrors((fieldNamePrefix + '_error') as '_error')
+      }
+    } else if (typeof validation === 'string') {
+      if (!currentError || currentError.message !== validation) {
+        setError((fieldNamePrefix + '_error') as '_error', {
+          type: 'custom',
+          message: validation,
         })
-      )
-
-      setValue((fieldNamePrefix + 'tokenId') as 'tokenId', cid)
-      setValue((fieldNamePrefix + 'tokenUri') as 'tokenUri', metadataUrl)
-      setValue((fieldNamePrefix + 'uploaded') as 'uploaded', true)
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-    } finally {
-      setUploading(false)
+      }
     }
-  }
+  }, [
+    spendAmount,
+    spendDenom,
+    setError,
+    clearErrors,
+    validatePossibleSpend,
+    fieldNamePrefix,
+    errors?._error,
+    spendChainId,
+  ])
 
-  const continueEditing = () => {
-    setValue((fieldNamePrefix + 'tokenId') as 'tokenId', '')
-    setValue((fieldNamePrefix + 'tokenUri') as 'tokenUri', '')
-    setValue((fieldNamePrefix + 'uploaded') as 'uploaded', false)
-  }
+  const selectedToken = tokens.loading
+  ? undefined
+  : tokens.data.find(
+      ({ token }) =>
+        token.chainId === spendChainId && token.denomOrAddress === spendDenom
+    )
+const balance = convertMicroDenomToDenomWithDecimals(
+  selectedToken?.balance ?? 0,
+  selectedToken?.token.decimals ?? 0
+)
 
-  const now = new Date()
 
   const mode = watch((fieldNamePrefix + 'mode') as 'mode')
 
-  return isCreating && !uploaded ? (
+  return isCreating ? (
     <>
 
 <div className="flex flex-col items-stretch gap-1">
@@ -197,7 +248,7 @@ export const CreateWrapprComponent: ActionComponent<CreateWrapprOptions> = ({
 )}
 
 
- className="header-text truncate leading-[5rem]">{t('title.selectWrapprChain')}</p>
+<p className="header-text truncate leading-[5rem]">{t('title.selectWrapprChain')}</p>
 <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
   <Dropdown
   options={wrapprMainnetChains}
@@ -214,7 +265,71 @@ export const CreateWrapprComponent: ActionComponent<CreateWrapprOptions> = ({
 </div>
 <div className="flex flex-col gap-1">
 <p className="header-text truncate leading-[5rem]">{t('title.configureGasAndMint')}</p>
+<div className="flex min-w-0 flex-row flex-wrap items-stretch justify-between gap-x-3 gap-y-">
+        <TokenInput
+          amountError={errors?.amount}
+          amountFieldName={(fieldNamePrefix + 'amount') as 'amount'}
+          amountMax={balance}
+          amountMin={convertMicroDenomToDenomWithDecimals(
+            1,
+            selectedToken?.token.decimals ?? 0
+          )}
+          amountStep={convertMicroDenomToDenomWithDecimals(
+            1,
+            selectedToken?.token.decimals ?? 0
+          )}
+          onSelectToken={({ chainId, denomOrAddress }) => {
+            setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
+            setValue((fieldNamePrefix + 'denom') as 'denom', denomOrAddress)
+          }}
+          readOnly={!isCreating}
+          register={register}
+          selectedToken={selectedToken?.token}
+          setValue={setValue}
+          tokens={
+            tokens.loading
+              ? { loading: true }
+              : {
+                  loading: false,
+                  data: tokens.data.map(({ balance, token }) => ({
+                    ...token,
+                    description:
+                      t('title.balance') +
+                      ': ' +
+                      convertMicroDenomToDenomWithDecimals(
+                        balance,
+                        token.decimals
+                      ).toLocaleString(undefined, {
+                        maximumFractionDigits: token.decimals,
+                      }),
+                  })),
+                }
+          }
+          watch={watch}
+        />
+      </div>
 
+      {(errors?.amount || errors?.denom || errors?._error) && (
+        <div className="mt-1 flex flex-col gap-1">
+          <InputErrorMessage error={errors?.amount} />
+          <InputErrorMessage error={errors?.denom} />
+          <InputErrorMessage error={errors?._error} />
+        </div>
+      )}
+
+      {selectedToken && isCreating && (
+        <div className="mt-2 flex flex-row items-center gap-2">
+          <p className="secondary-text">{t('title.balance')}:</p>
+
+          <TokenAmountDisplay
+            amount={balance}
+            decimals={selectedToken.token.decimals}
+            iconUrl={selectedToken.token.imageUrl}
+            showFullAmount
+            symbol={selectedToken.token.symbol}
+          />
+        </div>
+      )}
 {/* TODO: Handle Fees.
 
 A static mint fee of X will be set to the DAO-DAO DAO treasury. 
@@ -245,7 +360,7 @@ To handle fees.
         </Button>
       )}
 
-      <WrapprMarkdown wrappr={wrapprLoading.data} />
+      {/* <WrapprMarkdown wrappr={wrapprLoading.data} /> */}
     </>
   )
 }

@@ -9,6 +9,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@axelar-network/axelarjs-sdk": "^0.13.6",
     "@confio/relayer": "^0.10.0",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
     "@cosmjs/encoding": "^0.31.0",

@@ -20,6 +20,8 @@ import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
 import { wrapprSelector } from '../../state'
 import { WrapprData } from '../../types'
 import { CreateWrapprComponent, CreateWrapprData } from './Component'
+import { useTokenBalances } from '../../../../../actions'
+import { ChainId, TokenType } from '@dao-dao/types'
 
 const useDefaults: UseDefaults<CreateWrapprData> = () => ({
   // key of the type of Wrappr 
@@ -63,10 +65,30 @@ const Component: ActionComponent = (props) => {
     undefined
   )
 
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
+  const denom = watch((props.fieldNamePrefix + 'denom') as 'denom')
+
+  const tokens = useTokenBalances({
+    filter: TokenType.Native,
+    allChains: true,
+    // Load selected token when not creating, in case it is no longer returned
+    // in the list of all tokens for the given account.
+    additionalTokens: props.isCreating
+      ? undefined
+      : [
+          {
+            chainId,
+            type: TokenType.Native,
+            denomOrAddress: denom,
+          },
+        ],
+  })
+  
   return (
     <CreateWrapprComponent
       {...props}
       options={{
+        tokens,
         wrapprLoading,
       }}
     />
@@ -75,11 +97,20 @@ const Component: ActionComponent = (props) => {
 
 export const makeCreateWrapprActionMaker =
   ({ contract }: WrapprData): ActionMaker<CreateWrapprData> =>
-  ({ t, context, address }) => {
+  ({ t, 
+    context,
+    address,
+    chain: { chain_id: currentChainId },
+  chainContext: { nativeToken },
+ }) => {
     // Only available in DAO context.
     if (context.type !== ActionContextType.Dao) {
       return null
     }
+      // Neutron does not use the x/distribution community pool.
+  if (currentChainId === ChainId.NeutronMainnet) {
+    return null
+  }
 
     const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateWrapprData> = (
       msg: Record<string, any>
