@@ -12,7 +12,7 @@ import {
 } from '@dao-dao/types/contracts/common'
 
 import { getSupportedChainConfig } from '../chain'
-import { POLYTONE_TIMEOUT_SECONDS } from '../constants'
+import { IBC_TIMEOUT_SECONDS } from '../constants'
 import { processError } from '../error'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import { MsgTransfer } from '../protobuf/codegen/ibc/applications/transfer/v1/tx'
@@ -294,7 +294,7 @@ export const maybeMakePolytoneExecuteMessage = (
         msg: {
           execute: {
             msgs: msg ? [msg].flat() : [],
-            timeout_seconds: POLYTONE_TIMEOUT_SECONDS.toString(),
+            timeout_seconds: IBC_TIMEOUT_SECONDS.toString(),
             callback: {
               msg: toBase64(toUtf8(uuidv4())),
               receiver: polytoneConnection?.listener,

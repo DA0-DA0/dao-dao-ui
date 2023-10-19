@@ -3,7 +3,7 @@
 export const SITE_IMAGE = '/social.jpg'
 
 // 3 days
-export const POLYTONE_TIMEOUT_SECONDS = 3 * 24 * 60 * 60
+export const IBC_TIMEOUT_SECONDS = 3 * 24 * 60 * 60
 
 // DAO name min/max and description max defined in core.
 export const MIN_DAO_NAME_LENGTH = 3

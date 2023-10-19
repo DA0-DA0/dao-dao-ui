@@ -354,6 +354,7 @@ export type DaoValenceAccountTypeConfig = {
 export type DaoValenceAccountConfig = {
   // If rebalancer setup, this will be defined.
   rebalancer?: {
+    address: string
     targets: DaoValenceAccountRebalancerTarget[]
   }
 }

@@ -2,9 +2,26 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useRecoilValueLoadable, waitForAll } from 'recoil'
 
+import { MsgSendTx } from '@dao-dao/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
+import {
+  CosmosTx,
+  InterchainAccountPacketData,
+  Type,
+} from '@dao-dao/protobuf/codegen/ibc/applications/interchain_accounts/v1/packet'
+import { icaRemoteAddressSelector } from '@dao-dao/state/recoil'
 import { historicalUsdPriceSelector } from '@dao-dao/state/recoil/selectors/osmosis'
-import { BalanceEmoji, ChainProvider } from '@dao-dao/stateless'
-import { ChainId, TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
+import {
+  BalanceEmoji,
+  ChainProvider,
+  Loader,
+  useCachedLoadingWithError,
+} from '@dao-dao/stateless'
+import {
+  ChainId,
+  CosmosMsgFor_Empty,
+  TokenType,
+  UseDecodedCosmosMsg,
+} from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -14,12 +31,18 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  IBC_TIMEOUT_SECONDS,
+  cwMsgToProtobuf,
   decodePolytoneExecuteMsg,
+  getIbcTransferInfoBetweenChains,
   getNativeIbcUsdc,
   getNativeTokenForChainId,
   loadableToLoadingData,
+  makeStargateMessage,
+  makeWasmMessage,
 } from '@dao-dao/utils'
 
+import { SuspenseLoader } from '../../../../components'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
 import {
@@ -65,6 +88,11 @@ const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
 const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   props
 ) => {
+  const {
+    address,
+    chain: { chain_id: srcChainId },
+    context,
+  } = useActionOptions()
   const { watch } = useFormContext<ConfigureRebalancerData>()
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const selectedTokens = watch((props.fieldNamePrefix + 'tokens') as 'tokens')
@@ -97,6 +125,17 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
       )
     ),
     undefined
+  )
+
+  // Load remote address for x/gov.
+  const icaRemoteAddressLoading = useCachedLoadingWithError(
+    context.type === ActionContextType.Gov
+      ? icaRemoteAddressSelector({
+          address,
+          srcChainId,
+          destChainId: chainId,
+        })
+      : undefined
   )
 
   // Get overlapping timestamps across all tokens.
@@ -164,24 +203,22 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
       )} */}
 
       <ChainProvider chainId={chainId}>
-        <StatelessConfigureRebalancerComponent
-          {...props}
-          options={{
-            nativeBalances,
-            historicalPrices,
-          }}
-        />
+        <SuspenseLoader
+          fallback={<Loader />}
+          forceFallback={icaRemoteAddressLoading.loading}
+        >
+          <StatelessConfigureRebalancerComponent
+            {...props}
+            options={{
+              nativeBalances,
+              historicalPrices,
+              icaRemoteAddressLoading,
+            }}
+          />
+        </SuspenseLoader>
       </ChainProvider>
     </>
   )
-}
-
-const useTransformToCosmos: UseTransformToCosmos<
-  ConfigureRebalancerData
-> = () => {
-  return useCallback(({ chainId, tokens, pid }: ConfigureRebalancerData) => {
-    return undefined
-  }, [])
 }
 
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
@@ -201,22 +238,87 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
 
 export const makeConfigureRebalancerAction: ActionMaker<
   ConfigureRebalancerData
-> = ({ t, context, chain: { chain_id: chainId } }) =>
-  chainId === ChainId.NeutronMainnet ||
-  // If not on Neutron mainnet but has a polytone account, can use rebalancer.
-  (context.type === ActionContextType.Dao &&
-    ChainId.NeutronMainnet in context.info.polytoneProxies)
-    ? {
-        key: ActionKey.ConfigureRebalancer,
-        Icon: BalanceEmoji,
-        label: t('title.configureRebalancer'),
-        description: t('info.configureRebalancerDescription', {
-          context: context.type,
-        }),
-        notReusable: true,
-        Component,
-        useDefaults,
-        useTransformToCosmos,
-        useDecodedCosmosMsg,
-      }
-    : null
+> = ({ t, address, context, chain: { chain_id: srcChainId } }) => {
+  // If not on Neutron mainnet and does not have a Neutron polytone account,
+  // cannot use rebalancer.
+  if (
+    srcChainId !== ChainId.NeutronMainnet &&
+    (context.type !== ActionContextType.Dao ||
+      !(ChainId.NeutronMainnet in context.info.polytoneProxies))
+  ) {
+    return null
+  }
+
+  const useTransformToCosmos: UseTransformToCosmos<
+    ConfigureRebalancerData
+  > = () => {
+    return useCallback(
+      ({
+        chainId: destChainId,
+        tokens,
+        pid,
+        icaRemoteAddress,
+      }: ConfigureRebalancerData) => {
+        // Get rebalancer address.
+        const msg: CosmosMsgFor_Empty = makeWasmMessage({
+          wasm: {
+            execute: {
+              // TODO: Get rebalancer address.
+              contract_addr: '',
+              funds: [],
+              msg: {
+                update_config: {},
+              },
+            },
+          },
+        })
+
+        if (context.type === ActionContextType.Gov) {
+          if (!icaRemoteAddress) {
+            throw new Error(t('error.icaAddressNotLoaded'))
+          }
+
+          const {
+            sourceChain: { connection_id: connectionId },
+          } = getIbcTransferInfoBetweenChains(srcChainId, destChainId)
+
+          return makeStargateMessage({
+            stargate: {
+              typeUrl: MsgSendTx.typeUrl,
+              value: MsgSendTx.fromPartial({
+                owner: address,
+                connectionId,
+                packetData: InterchainAccountPacketData.fromPartial({
+                  type: Type.TYPE_EXECUTE_TX,
+                  data: CosmosTx.toProto({
+                    messages: [cwMsgToProtobuf(msg, icaRemoteAddress)],
+                  }),
+                  memo: '',
+                }),
+                // Nanoseconds timeout from TX execution.
+                relativeTimeout: BigInt(IBC_TIMEOUT_SECONDS * 1e9),
+              }),
+            },
+          })
+        }
+
+        return msg
+      },
+      []
+    )
+  }
+
+  return {
+    key: ActionKey.ConfigureRebalancer,
+    Icon: BalanceEmoji,
+    label: t('title.configureRebalancer'),
+    description: t('info.configureRebalancerDescription', {
+      context: context.type,
+    }),
+    notReusable: true,
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
+}
