@@ -23,7 +23,11 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   }
 
   const votingModuleAdapterInstantiateMsg: InstantiateMsg = {
-    nft_address: existingGovernanceTokenDenomOrAddress,
+    nft_contract: {
+      existing: {
+        address: existingGovernanceTokenDenomOrAddress,
+      },
+    },
     unstaking_duration: convertDurationWithUnitsToDuration(unstakingDuration),
   }
 
@@ -41,6 +45,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
       JSON.stringify(votingModuleAdapterInstantiateMsg),
       'utf8'
     ).toString('base64'),
+    funds: [],
   }
 
   return msg

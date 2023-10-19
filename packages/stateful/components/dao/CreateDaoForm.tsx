@@ -332,6 +332,7 @@ export const InnerCreateDaoForm = ({
       // Placeholder. Should be replaced by creator's mutate function.
       voting_module_instantiate_info: {
         code_id: -1,
+        funds: [],
         label: '',
         msg: '',
       },

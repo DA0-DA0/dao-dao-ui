@@ -254,12 +254,14 @@ export type Admin =
       core_module: {}
     }
 
-// V2
+// Added in V2
 export interface ModuleInstantiateInfo {
   admin?: Admin | null
   code_id: number
   label: string
   msg: Binary
+  // Added in V2.3
+  funds: Coin[]
 }
 
 export interface ContractVersionInfo {
@@ -305,3 +307,15 @@ export enum ProposalStatus {
   ExecutionFailed = 'execution_failed',
   Closed = 'closed',
 }
+
+export type ActiveThreshold =
+  | {
+      absolute_count: {
+        count: Uint128
+      }
+    }
+  | {
+      percentage: {
+        percent: Decimal
+      }
+    }

@@ -1,8 +1,7 @@
 import { Buffer } from 'buffer'
 
-import { DaoCreatorMutate, TokenType } from '@dao-dao/types'
+import { ActiveThreshold, DaoCreatorMutate, TokenType } from '@dao-dao/types'
 import {
-  ActiveThreshold,
   Cw20Coin,
   InstantiateMsg as DaoVotingCw20StakedInstantiateMsg,
 } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
@@ -153,6 +152,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
       JSON.stringify(votingModuleAdapterInstantiateMsg),
       'utf8'
     ).toString('base64'),
+    funds: [],
   }
 
   return msg

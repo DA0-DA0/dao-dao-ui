@@ -1,15 +1,13 @@
 import cloneDeep from 'lodash.clonedeep'
 import { useTranslation } from 'react-i18next'
 
-import { ChainId, CreateDaoContext } from '@dao-dao/types'
+import { CreateDaoContext } from '@dao-dao/types'
 import {
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
-  MembershipBasedCreatorId,
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useChain } from '../../../../hooks'
 import { InputErrorMessage, TextAreaInput, TextInput } from '../../../inputs'
 import { DaoCreatorCard } from '../DaoCreatorCard'
 
@@ -22,7 +20,6 @@ export const CreateDaoStart = ({
   },
   availableCreators,
 }: CreateDaoContext) => {
-  const { chain_id: chainId } = useChain()
   const { t } = useTranslation()
 
   return (
@@ -103,12 +100,6 @@ export const CreateDaoStart = ({
               }
               selected={watch('creator.id') === id}
               supplies={t(suppliesI18nKey)}
-              underDevelopment={
-                id !== MembershipBasedCreatorId &&
-                // Only Juno supports non-multisigs right now.
-                chainId !== ChainId.JunoMainnet &&
-                chainId !== ChainId.JunoTestnet
-              }
             />
           )
         )}

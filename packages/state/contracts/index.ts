@@ -11,7 +11,7 @@ export {
 export { CwTokenSwapClient, CwTokenSwapQueryClient } from './CwTokenSwap'
 export { CwVestingClient, CwVestingQueryClient } from './CwVesting'
 export { DaoCoreV2Client, DaoCoreV2QueryClient } from './DaoCore.v2'
-export { DaoVotingCw4Client, DaoVotingCw4QueryClient } from './DaoVotingCw4'
+export { DaoVotingCw4QueryClient } from './DaoVotingCw4'
 export {
   DaoVotingCw20StakedClient,
   DaoVotingCw20StakedQueryClient,
@@ -20,6 +20,10 @@ export {
   DaoVotingNativeStakedClient,
   DaoVotingNativeStakedQueryClient,
 } from './DaoVotingNativeStaked'
+export {
+  DaoVotingTokenStakedClient,
+  DaoVotingTokenStakedQueryClient,
+} from './DaoVotingTokenStaked'
 export {
   PolytoneListenerClient,
   PolytoneListenerQueryClient,

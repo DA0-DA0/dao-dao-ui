@@ -23,8 +23,12 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   )
 
   const votingModuleAdapterInstantiateMsg: InstantiateMsg = {
-    cw4_group_code_id: codeIds.Cw4Group,
-    initial_members: initialMembers,
+    group_contract: {
+      new: {
+        cw4_group_code_id: codeIds.Cw4Group,
+        initial_members: initialMembers,
+      },
+    },
   }
 
   // Validate and throw error if invalid according to JSON schema.
@@ -41,6 +45,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
       JSON.stringify(votingModuleAdapterInstantiateMsg),
       'utf8'
     ).toString('base64'),
+    funds: [],
   }
 
   return msg
