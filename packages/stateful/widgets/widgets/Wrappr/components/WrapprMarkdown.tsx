@@ -12,7 +12,7 @@ import {
 
 import { Widget } from '../types'
 
-export type PostMarkdownProps = {
+export type WrapprMarkdownProps = {
   post: Widget
   className?: string
   addAnchors?: boolean
@@ -22,7 +22,7 @@ export const PostMarkdown = ({
   post: { title, content, image, created, initiallyCreated },
   className,
   addAnchors,
-}: PostMarkdownProps) => {
+}: WrapprMarkdownProps) => {
   const { t } = useTranslation()
 
   // Scroll to hash manually if available since this component and thus the

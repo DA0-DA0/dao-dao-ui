@@ -19,8 +19,9 @@ import {
 import { ActionComponent, LoadingData } from '@dao-dao/types'
 import { processError, uploadNft, validateRequired } from '@dao-dao/utils'
 
-import { WrapprMarkdown } from '../../components/WrapprMarkdown'
+// import { WrapprMarkdown } from '../../components/WrapprMarkdown'
 import { Wrappr } from '../../types'
+import { wrapprMainnetChains } from '../../constants'
 
 export type CreateWrapprData = {
   tokenId: string
@@ -120,6 +121,7 @@ export const CreateWrapprComponent: ActionComponent<CreateWrapprOptions> = ({
     <>
 
 <div className="flex flex-col items-stretch gap-1">
+<p className="header-text truncate leading-[5rem]">{t('title.selectWrapprType')}</p>
         <SegmentedControlsTitle
           editable={isCreating}
           fieldName={fieldNamePrefix + 'mode'}
@@ -195,6 +197,38 @@ export const CreateWrapprComponent: ActionComponent<CreateWrapprOptions> = ({
 )}
 
 
+ className="header-text truncate leading-[5rem]">{t('title.selectWrapprChain')}</p>
+<div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+  <Dropdown
+  options={wrapprMainnetChains}
+  placeholder="Select Chain To Mint Wrappr Contract"
+  selected={initiallySelectedOption}
+  onSelect={handleOptionSelect}
+  containerClassName="optional-container-class" 
+  labelContainerClassName="optional-label-container-class" 
+  labelClassName="optional-label-class" 
+  iconClassName="optional-icon-class" 
+  keepOpenOnSelect={false} 
+/>
+
+</div>
+<div className="flex flex-col gap-1">
+<p className="header-text truncate leading-[5rem]">{t('title.configureGasAndMint')}</p>
+
+{/* TODO: Handle Fees.
+
+A static mint fee of X will be set to the DAO-DAO DAO treasury. 
+A gas fee for Axelar's GMP protocol must be included.
+
+Users will be able to select between
+  - DAO Treasury
+  - Connected Wallet
+  - Create FeeGrant
+
+To handle fees.
+*/}
+
+</div> 
     </>
   ) : wrapprLoading.loading || !wrapprLoading.data ? (
     <Loader />
