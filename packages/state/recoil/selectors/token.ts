@@ -15,7 +15,7 @@ import {
   getChainForChainId,
   getChainForChainName,
   getFallbackImage,
-  getIbcTransferInfoFromChainSource,
+  getIbcTransferInfoFromChannel,
   getTokenForChainIdAndDenom,
   isValidContractAddress,
   isValidTokenFactoryDenom,
@@ -436,7 +436,7 @@ export const sourceChainAndDenomSelector = selectorFamily<
               sourceChainId = channels.reduce(
                 (currentChainId, channel) =>
                   getChainForChainName(
-                    getIbcTransferInfoFromChainSource(currentChainId, channel)
+                    getIbcTransferInfoFromChannel(currentChainId, channel)
                       .destinationChain.chain_name
                   ).chain_id,
                 chainId
