@@ -91,11 +91,14 @@ export const makeDeleteWrapprActionMaker = ({
             },
           },
         },
-      }) && msg.wasm.execute.contract_addr === contract
+      }) && msg.wasm.execute.contract_addr === contract &&
+            msg.wasm.execute.msg.send_msg_evm.destinationChain &&
+            msg.wasm.execute.msg.send_msg_evm.destinationAddress
         ? {
             match: true,
             data: {
-              id: msg.wasm.execute.msg.burn.token_id,
+              destinationChain: msg.wasm.execute.msg.burn.destinationChain,
+              destinationAddress: msg.wasm.execute.msg.send_msg_evm.destinationAddress,
             },
           }
         : {
@@ -112,9 +115,9 @@ export const makeDeleteWrapprActionMaker = ({
                 funds: [],
                 msg: {
                   send_msg_evm: {
-                    destination_chain: {},
-                    destination_address: {},
-                    message: {},
+                    destination_chain: destinationChain,
+                    destination_address: destinationAddress,
+                    message: solidityMessage,
                   },
                 },
               },

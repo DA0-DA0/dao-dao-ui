@@ -49,6 +49,8 @@ const Component: ActionComponent = (props) => {
   const { watch } = useFormContext<CreateWrapprData>()
   const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
   const tokenUri = watch((props.fieldNamePrefix + 'tokenUri') as 'tokenUri')
+  const destinationChain = watch ((props.fieldNamePrefix + 'destinationChain') as 'destinationChain')
+  const destinationAddress = watch ((props.fieldNamePrefix + 'destinationAddress') as 'destinationAddress')
   const uploaded = watch((props.fieldNamePrefix + 'uploaded') as 'uploaded')
 
   const wrapprLoading = useCachedLoading(
@@ -98,12 +100,13 @@ export const makeCreateWrapprActionMaker =
         },
       }) &&
       msg.wasm.execute.contract_addr === contract &&
-      msg.wasm.execute.msg.mint.token_uri
+      msg.wasm.execute.msg.send_msg_evm.destinationChain && 
+      msg.wasm.execute.msg.send_msg_evm.destinationAddress
         ? {
             match: true,
             data: {
-              tokenId: msg.wasm.execute.msg.mint.token_id,
-              tokenUri: msg.wasm.execute.msg.mint.token_uri,
+              destinationChain: msg.wasm.execute.msg.send_msg_evm.destinationChain,
+              destinationAddress: msg.wasm.execute.msg.send_msg_evm.destinationAddress,
               uploaded: true,
             },
           }
@@ -113,7 +116,7 @@ export const makeCreateWrapprActionMaker =
 
     const useTransformToCosmos: UseTransformToCosmos<CreateWrapprData> = () =>
       useCallback(
-        ({ tokenId, tokenUri }) =>
+        ({ destinationChain, destinationAddress, solidityMessage }) =>
           makeWasmMessage({
             wasm: {
               execute: {
@@ -121,9 +124,9 @@ export const makeCreateWrapprActionMaker =
                 funds: [],
                 msg: {
                   send_msg_evm: {
-                    destination_chain: address,
-                    destination_address: tokenId,
-                    message: tokenUri,
+                    destination_chain: destinationChain,
+                    destination_address: destinationAddress,
+                    message: solidityMessage,
                   },
                 },
               },

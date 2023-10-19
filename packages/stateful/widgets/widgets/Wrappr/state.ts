@@ -14,6 +14,7 @@ Wrappr[],
     ({ contractAddress, chainId }) =>
     ({ get }) => {
       const tokenIds = get(
+        // TODO: query via GMP 
         CommonNftSelectors.allTokensSelector({
           contractAddress,
           chainId,
@@ -21,6 +22,7 @@ Wrappr[],
       )
 
       const tokenInfos = get(
+        // TODO: query via GMP 
         waitForAll(
           tokenIds.map((tokenId) =>
             CommonNftSelectors.nftInfoSelector({
@@ -37,6 +39,7 @@ Wrappr[],
       )
 
       const wrapprs = get(
+          // TODO: query via GMP 
         waitForAll(
           tokenInfos.map((tokenInfo, index) =>
             tokenInfo.token_uri

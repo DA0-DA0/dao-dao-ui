@@ -42,13 +42,18 @@ export const makeManageWrapprActionMaker = ({
     const { watch } = useFormContext<ManageWrapprData>()
     const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
     const tokenUri = watch((props.fieldNamePrefix + 'tokenUri') as 'tokenUri')
+    const destinationChain = wathc ((props.fieldNamePrefix + 'destinationChain') as 'destinationChain')
+    const destinationAddress = wathc ((props.fieldNamePrefix + 'destinationAddress') as 'destinationAddress')
     const uploaded = watch((props.fieldNamePrefix + 'uploaded') as 'uploaded')
 
     const wrapprLoading = useCachedLoading(
-      uploaded && tokenId && tokenUri
+      uploaded && tokenId && tokenUri 
+      // && destinationChain && destinationAddress
         ? wrapprSelector({
             id: tokenId,
             metadataUri: tokenUri,
+            // chain: destinationChain,
+            // address: destinationAddress,
           })
         : undefined,
       undefined
@@ -98,12 +103,13 @@ export const makeManageWrapprActionMaker = ({
         },
       }) &&
       msg.wasm.execute.contract_addr === contract &&
-      msg.wasm.execute.msg.mint.token_uri
+      msg.wasm.execute.msg.send_msg_evm.destination_chain &&
+      msg.wasm.execute.msg.send_msg_evm.destination_address
         ? {
             match: true,
             data: {
-              tokenId: msg.wasm.execute.msg.mint.token_id,
-              tokenUri: msg.wasm.execute.msg.mint.token_uri,
+              destinationChain: msg.wasm.execute.msg.send_msg_evm.destination_chain,
+              destinationAddress: msg.wasm.execute.msg.send_msg_evm.destination_address,
               uploaded: true,
             },
           }
@@ -113,7 +119,7 @@ export const makeManageWrapprActionMaker = ({
 
     const useTransformToCosmos: UseTransformToCosmos<ManageWrapprData> = () =>
       useCallback(
-        ({ tokenId, tokenUri }) =>
+        ({ destinationChain, destinationAddress }) =>
           makeWasmMessage({
             wasm: {
               execute: {
@@ -121,9 +127,9 @@ export const makeManageWrapprActionMaker = ({
                 funds: [],
                 msg: {
                   send_msg_evm: {
-                    destination_chain: {},
-                    destination_address: {},
-                    message: {},
+                    destination_chain: destinationChain,
+                    destination_address: destinationAddress,
+                    message: solidityMessage,
                   },
                 },
               },

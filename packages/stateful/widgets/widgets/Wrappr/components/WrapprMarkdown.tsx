@@ -1,3 +1,4 @@
+//TODO: Display Wrappr IPFS agreements
 import clsx from 'clsx'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -61,7 +62,7 @@ export const PostMarkdown = ({
         ></div>
       )}
 
-      <p className="hero-text mb-1 text-4xl">{title}</p>
+      {/* <p className="hero-text mb-1 text-4xl">{title}</p>
 
       <Tooltip title={formatDateTimeTz(initiallyCreated)}>
         <p className="caption-text font-xs mb-8 self-start italic">
@@ -69,7 +70,7 @@ export const PostMarkdown = ({
             date: formatDateWithDayAndMaybeYear(initiallyCreated),
           })}
         </p>
-      </Tooltip>
+      </Tooltip> */}
       {/* If this post's creation date is different from when it was initially created, show last updated. */}
       {initiallyCreated.getTime() !== created.getTime() && (
         <Tooltip title={formatDateTimeTz(created)}>
@@ -81,11 +82,11 @@ export const PostMarkdown = ({
         </Tooltip>
       )}
 
-      <MarkdownRenderer
+      {/* <MarkdownRenderer
         addAnchors={addAnchors}
         className="!max-w-[38rem]"
         markdown={content}
-      />
+      /> */}
     </div>
   )
 }
