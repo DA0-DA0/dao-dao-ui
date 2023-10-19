@@ -16,6 +16,7 @@ import {
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
+  AccountType,
   LazyDaoCardProps,
   LazyNftCardInfo,
   MeTransactionSave,
@@ -242,7 +243,11 @@ export const walletTokenCardInfosSelector = selectorFamily<
             ) > 0
 
           const info: TokenCardInfo = {
-            owner: walletAddress,
+            owner: {
+              type: AccountType.Native,
+              chainId,
+              address: walletAddress,
+            },
             token,
             isGovernanceToken: false,
             unstakedBalance,
@@ -260,7 +265,11 @@ export const walletTokenCardInfosSelector = selectorFamily<
           )
 
           const info: TokenCardInfo = {
-            owner: walletAddress,
+            owner: {
+              type: AccountType.Native,
+              chainId,
+              address: walletAddress,
+            },
             token,
             isGovernanceToken: false,
             unstakedBalance,

@@ -16,7 +16,7 @@ import {
   useCachedLoading,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
-import { DaoAccountType } from '@dao-dao/types'
+import { Account } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
   convertDenomToMicroDenomStringWithDecimals,
@@ -31,17 +31,17 @@ export type DaoTokenDepositModalProps = Pick<
   TokenDepositModalProps,
   'token' | 'onClose' | 'visible'
 > & {
-  daoOwnerType: DaoAccountType
+  owner: Account
 }
 
 export const DaoTokenDepositModal = ({
   token,
   onClose,
-  daoOwnerType,
+  owner,
   ...props
 }: DaoTokenDepositModalProps) => {
   const { t } = useTranslation()
-  const { name: daoName, accounts } = useDaoInfoContext()
+  const { name: daoName } = useDaoInfoContext()
   const { isWalletConnected, address, getSigningCosmWasmClient } = useWallet({
     chainId: token.chainId,
   })
@@ -49,10 +49,7 @@ export const DaoTokenDepositModal = ({
     chainId: token.chainId,
   })
 
-  // Deposit address depends on what the account type is of the token owner.
-  const depositAddress = accounts.find(
-    ({ chainId, type }) => chainId === token.chainId && type === daoOwnerType
-  )?.address
+  const depositAddress = owner.address
 
   const setRefreshDaoBalancesId = useSetRecoilState(
     refreshWalletBalancesIdAtom(depositAddress)

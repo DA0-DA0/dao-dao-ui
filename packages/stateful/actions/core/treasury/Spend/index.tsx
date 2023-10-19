@@ -23,9 +23,9 @@ import {
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
+  getAccountAddress,
   getChainForChainId,
   getChainForChainName,
-  getDaoAccountAddress,
   getIbcTransferInfoBetweenChains,
   getIbcTransferInfoFromChannel,
   isDecodedStargateMsg,
@@ -171,7 +171,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
           fromChainId === currentChainId
             ? address
             : context.type === ActionContextType.Dao
-            ? getDaoAccountAddress({
+            ? getAccountAddress({
                 accounts: context.info.accounts,
                 chainId: fromChainId,
               })

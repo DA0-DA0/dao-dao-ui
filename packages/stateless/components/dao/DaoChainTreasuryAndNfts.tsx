@@ -4,17 +4,18 @@ import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  AccountType,
   ButtonLinkProps,
-  DaoAccountType,
   DaoChainTreasury,
   DaoTreasuryHistoryGraphProps,
   TokenCardInfo,
+  ValenceAccount,
 } from '@dao-dao/types'
 import {
+  areAccountsEqual,
   getChainForChainId,
   getDisplayNameForChainId,
   getSupportedChainConfig,
-  serializeTokenSource,
 } from '@dao-dao/utils'
 
 import {
@@ -23,14 +24,13 @@ import {
   NoContent,
   PAGINATION_MIN_PAGE,
   Pagination,
-  SwitchCard,
-  TooltipInfoIcon,
 } from '../../components'
 import { useDaoInfoContext } from '../../hooks'
 import { Button } from '../buttons'
 import { ChainLogo } from '../ChainLogo'
 import { DropdownIconButton } from '../icon_buttons'
 import { Loader } from '../logo'
+import { DaoTreasuryValenceAccount } from './DaoTreasuryValenceAccount'
 
 export type DaoChainTreasuryAndNftsProps<
   T extends TokenCardInfo,
@@ -72,15 +72,11 @@ export const DaoChainTreasuryAndNfts = <
   const address = accounts.find(
     ({ type }) =>
       // A chain either has a native or polytone account, but not both.
-      type === DaoAccountType.Native || type === DaoAccountType.Polytone
+      type === AccountType.Native || type === AccountType.Polytone
   )?.address
-  const valenceAccount = accounts.find(
-    ({ type }) => type === DaoAccountType.Valence
+  const valenceAccounts = accounts.filter(
+    (account): account is ValenceAccount => account.type === AccountType.Valence
   )
-  const valenceAccountRebalancerTargets =
-    valenceAccount?.config?.rebalancer?.targets.map(({ source }) =>
-      serializeTokenSource(source)
-    ) || []
   // Whether or not the treasury address is defined, meaning it is the current
   // chain or a polytone account has already been created on that chain.
   const exists = !!address
@@ -96,30 +92,9 @@ export const DaoChainTreasuryAndNfts = <
         loading: false,
         updating: tokens.updating,
         data: tokens.data.filter(
-          ({ daoOwnerType }) => daoOwnerType !== DaoAccountType.Valence
+          ({ owner }) => owner.type !== AccountType.Valence
         ),
       }
-  const valenceTokens: typeof tokens = tokens.loading
-    ? tokens
-    : {
-        loading: false,
-        updating: tokens.updating,
-        data: tokens.data.filter(
-          ({ daoOwnerType }) => daoOwnerType === DaoAccountType.Valence
-        ),
-      }
-
-  const hasValenceTokens = valenceTokens.loading
-    ? // When tokens not yet loaded, check to see if valence account exists to determine if we should render UI and show loader.
-      accounts.some(
-        (account) =>
-          account.chainId === chainId && account.type === DaoAccountType.Valence
-      )
-    : valenceTokens.data.length > 0
-
-  const [valenceAccountMode, setValenceAccountMode] = useState<
-    'all' | 'rebalancer'
-  >('all')
 
   return (
     <div className="flex flex-col gap-4 pl-8">
@@ -198,77 +173,27 @@ export const DaoChainTreasuryAndNfts = <
             )
           )}
 
-          {/* Valence Account */}
-          {hasValenceTokens && !!valenceAccount && (
-            <div className="mt-6 space-y-3">
-              <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-2">
-                <div className="flex flex-row items-center gap-1">
-                  <p className="primary-text">{t('title.valenceAccount')}</p>
-                  <TooltipInfoIcon
-                    size="sm"
-                    title={
-                      // TODO(rebalancer): Add description.
-                      'What is a Valence Account'
+          {/* Valence Accounts */}
+          {valenceAccounts.map((account) => (
+            <DaoTreasuryValenceAccount<T>
+              key={account.address}
+              DaoTreasuryHistoryGraph={DaoTreasuryHistoryGraph}
+              TokenCard={TokenCard}
+              account={account}
+              className="mt-6"
+              tokens={
+                tokens.loading
+                  ? tokens
+                  : {
+                      loading: false,
+                      updating: tokens.updating,
+                      data: tokens.data.filter(({ owner }) =>
+                        areAccountsEqual(owner, account)
+                      ),
                     }
-                  />
-                </div>
-
-                <CopyToClipboard
-                  className="!gap-2 rounded-md bg-background-tertiary p-2 font-mono transition hover:bg-background-secondary"
-                  takeStartEnd={{
-                    start: bech32Prefix.length + 6,
-                    end: 6,
-                  }}
-                  textClassName="!bg-transparent !p-0"
-                  tooltip={t('button.clickToCopyAddress')}
-                  value={valenceAccount.address}
-                />
-              </div>
-
-              <div className="flex flex-col gap-8 rounded-lg border border-dashed border-border-primary bg-background-tertiary p-3 sm:p-4 lg:p-5">
-                {valenceTokens.loading ||
-                (valenceTokens.updating && valenceTokens.data.length === 0) ? (
-                  <Loader className="my-12" size={48} />
-                ) : (
-                  valenceTokens.data.length > 0 && (
-                    <>
-                      <SwitchCard
-                        containerClassName="-mb-2 self-start"
-                        enabled={valenceAccountMode === 'rebalancer'}
-                        label="Only Rebalancer"
-                        onClick={() =>
-                          setValenceAccountMode((value) =>
-                            value === 'rebalancer' ? 'all' : 'rebalancer'
-                          )
-                        }
-                        sizing="sm"
-                      />
-
-                      <DaoTreasuryHistoryGraph
-                        account={valenceAccount}
-                        className="px-8"
-                        showRebalancer={valenceAccountMode === 'rebalancer'}
-                      />
-
-                      <GridCardContainer cardType="wide">
-                        {valenceTokens.data
-                          .filter(
-                            ({ token }) =>
-                              valenceAccountMode !== 'rebalancer' ||
-                              valenceAccountRebalancerTargets.includes(
-                                serializeTokenSource(token)
-                              )
-                          )
-                          .map((props, index) => (
-                            <TokenCard {...props} key={index} noExtraActions />
-                          ))}
-                      </GridCardContainer>
-                    </>
-                  )
-                )}
-              </div>
-            </div>
-          )}
+              }
+            />
+          ))}
 
           {nfts.loading || (nfts.updating && nfts.data.length === 0) ? (
             <Loader className="mt-6" />

@@ -18,7 +18,7 @@ import {
 import { AddressInputProps, Entity, EntityType } from '@dao-dao/types'
 import {
   POLYTONE_CONFIG_PER_CHAIN,
-  getDaoAccountAddress,
+  getAccountAddress,
   isValidBech32Address,
 } from '@dao-dao/utils'
 
@@ -112,7 +112,7 @@ export const AddressInput = <
             entity.state === 'hasValue' &&
             (entity.contents.chainId === currentChain.chain_id ||
               (entity.contents.type === EntityType.Dao &&
-                getDaoAccountAddress({
+                getAccountAddress({
                   accounts: entity.contents.daoInfo.accounts,
                   chainId: currentChain.chain_id,
                 })))

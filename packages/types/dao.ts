@@ -12,6 +12,7 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 
+import { Account } from './account'
 import { SupportedChainConfig } from './chain'
 import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './components'
 import {
@@ -26,7 +27,7 @@ import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
 } from './proposal-module-adapter'
-import { GenericToken, GenericTokenSource, TokenCardInfo } from './token'
+import { GenericToken, TokenCardInfo } from './token'
 import { DurationWithUnits } from './units'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
@@ -47,7 +48,7 @@ export type DaoInfo = {
   items: Record<string, string>
   // Map chain ID to polytone proxy address.
   polytoneProxies: PolytoneProxies
-  accounts: DaoAccount[]
+  accounts: Account[]
 
   parentDao: DaoParentInfo | null
   admin: string
@@ -315,7 +316,7 @@ export type DaoWebSocketChannelInfo = {
 
 export type DaoChainTreasury<T extends TokenCardInfo, N extends object> = {
   chainId: string
-  accounts: DaoAccount[]
+  accounts: Account[]
   tokens: LoadingData<T[]>
   nfts: LoadingData<(N & { key: string })[]>
 }
@@ -324,55 +325,4 @@ export type DaoApp = {
   name: string
   imageUrl: string
   url: string
-}
-
-// The type of account. `native` means it's the DAO address on its native chain.
-// `polytone` means it's a polytone account controlled by a DAO on another
-// chain. `valence` means it's a valence account controlled by a DAO on the same
-// or another chain.
-export enum DaoAccountType {
-  Native = 'native',
-  Polytone = 'polytone',
-  Valence = 'valence',
-}
-
-export type DaoNativeAccountTypeConfig = {
-  type: DaoAccountType.Native
-  config?: undefined
-}
-
-export type DaoPolytoneAccountTypeConfig = {
-  type: DaoAccountType.Polytone
-  config?: undefined
-}
-
-export type DaoValenceAccountTypeConfig = {
-  type: DaoAccountType.Valence
-  config: DaoValenceAccountConfig
-}
-
-export type DaoValenceAccountConfig = {
-  // If rebalancer setup, this will be defined.
-  rebalancer?: {
-    targets: DaoValenceAccountRebalancerTarget[]
-  }
-}
-
-export type DaoValenceAccountRebalancerTarget = {
-  // The source that uniquely identifies a token.
-  source: GenericTokenSource
-  targets: {
-    timestamp: number
-    // Proportion between 0 and 1.
-    target: number
-  }[]
-}
-
-export type DaoAccount = (
-  | DaoNativeAccountTypeConfig
-  | DaoPolytoneAccountTypeConfig
-  | DaoValenceAccountTypeConfig
-) & {
-  chainId: string
-  address: string
 }

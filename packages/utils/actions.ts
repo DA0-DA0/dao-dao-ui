@@ -7,7 +7,7 @@ import {
 } from '@dao-dao/types'
 
 import { transformBech32Address } from './conversion'
-import { getDaoAccountAddress } from './dao'
+import { getAccountAddress } from './dao'
 
 // Convert action data to a Cosmos message given all loaded actions.
 export const convertActionsToMessages = (
@@ -62,7 +62,7 @@ export const getChainAddressForActionOptions = (
     ? address
     : // If on different chain, return DAO's polytone proxy address.
     context.type === ActionContextType.Dao
-    ? getDaoAccountAddress({
+    ? getAccountAddress({
         accounts: context.info.accounts,
         chainId,
       }) || ''

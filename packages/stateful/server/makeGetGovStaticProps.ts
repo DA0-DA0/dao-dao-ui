@@ -5,8 +5,8 @@ import removeMarkdown from 'remove-markdown'
 
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
 import {
+  AccountType,
   ContractVersion,
-  DaoAccountType,
   Feature,
   GovProposalVersion,
   GovProposalWithDecodedContent,
@@ -140,7 +140,7 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
         polytoneProxies: {},
         accounts: [
           {
-            type: DaoAccountType.Native,
+            type: AccountType.Native,
             chainId: chain.chain_id,
             address: supportedChain.name,
           },
