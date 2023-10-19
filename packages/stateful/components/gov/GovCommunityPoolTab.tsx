@@ -5,7 +5,7 @@ import {
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
-import { TokenCardInfo } from '@dao-dao/types'
+import { AccountType, TokenCardInfo } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
@@ -34,7 +34,11 @@ export const GovCommunityPoolTab = () => {
           )
 
           return {
-            owner: '',
+            owner: {
+              type: AccountType.Native,
+              address: '',
+              chainId: token.chainId,
+            },
             token,
             isGovernanceToken:
               nativeToken.denomOrAddress === token.denomOrAddress,

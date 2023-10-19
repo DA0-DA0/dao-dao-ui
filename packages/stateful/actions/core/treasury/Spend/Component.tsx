@@ -26,8 +26,8 @@ import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  getAccountAddress,
   getChainForChainId,
-  getDaoAccountAddress,
   makeValidateAddress,
   maybeGetChainForChainName,
   toAccessibleImageUrl,
@@ -112,7 +112,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     // account on the destination chain.
     else {
       newRecipient =
-        getDaoAccountAddress({
+        getAccountAddress({
           accounts: currentEntity.daoInfo.accounts,
           chainId: toChain.chain_id,
         }) || ''

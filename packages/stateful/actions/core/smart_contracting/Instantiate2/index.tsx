@@ -27,7 +27,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
-  getDaoAccountAddress,
+  getAccountAddress,
   getNativeTokenForChainId,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
@@ -108,7 +108,7 @@ const Component: ActionComponent = (props) => {
             setValue((props.fieldNamePrefix + 'funds') as 'funds', [])
             setValue(
               (props.fieldNamePrefix + 'admin') as 'admin',
-              getDaoAccountAddress({
+              getAccountAddress({
                 accounts: context.info.accounts,
                 chainId,
               }) || ''

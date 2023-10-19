@@ -1,6 +1,7 @@
 export * from './messages'
 export * from './validation'
 
+export * from './account'
 export * from './actions'
 export * from './address'
 export * from './assets'

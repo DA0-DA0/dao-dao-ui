@@ -5,7 +5,7 @@ import { DaoPageWrapper } from '@dao-dao/stateful'
 import {
   ChainId,
   ContractVersion,
-  DaoAccountType,
+  AccountType,
   DaoInfo,
   DaoInfoSerializable,
 } from '@dao-dao/types'
@@ -41,7 +41,7 @@ export const makeDaoInfo = (): DaoInfo => ({
   polytoneProxies: {},
   accounts: [
     {
-      type: DaoAccountType.Native,
+      type: AccountType.Native,
       chainId: ChainId.JunoMainnet,
       address: 'junoDaoCoreAddress',
     },

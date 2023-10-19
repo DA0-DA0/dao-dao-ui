@@ -166,11 +166,6 @@ Default.args = {
         },
       ],
     },
-    icaRemoteAddressLoading: {
-      loading: false,
-      errored: false,
-      data: 'icaRemote',
-    },
   },
   isCreating: true,
   errors: {},

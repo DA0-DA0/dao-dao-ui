@@ -13,8 +13,8 @@ import {
   usdPriceSelector,
 } from '@dao-dao/state'
 import {
-  DaoAccount,
-  DaoAccountType,
+  Account,
+  AccountType,
   GenericToken,
   LoadingTokens,
   TokenCardInfo,
@@ -105,7 +105,7 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
                   type: 'native',
                   chainId,
                   address: coreAddress,
-                } as DaoAccount,
+                } as Account,
                 balances: loadable.contents,
               }
             : []
@@ -122,58 +122,56 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
 
         // Get token card infos for loaded tokens.
         const infos: TokenCardInfo[] = [
-          ...nativeBalances.flatMap(
-            ({ account: { address, type }, balances }) =>
-              balances.flatMap(({ token, balance }): TokenCardInfo | [] => {
-                const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-                  balance,
-                  token.decimals
+          ...nativeBalances.flatMap(({ account, balances }) =>
+            balances.flatMap(({ token, balance }): TokenCardInfo | [] => {
+              const unstakedBalance = convertMicroDenomToDenomWithDecimals(
+                balance,
+                token.decimals
+              )
+
+              let hasStakingInfo = false
+              // Staking info only exists for native token.
+              if (
+                token.denomOrAddress ===
+                getNativeTokenForChainId(chainId).denomOrAddress
+              ) {
+                // Check if anything staked.
+                const stakedBalance = get(
+                  noWait(
+                    nativeDelegatedBalanceSelector({
+                      chainId,
+                      address: account.address,
+                    })
+                  )
                 )
 
-                let hasStakingInfo = false
-                // Staking info only exists for native token.
-                if (
-                  token.denomOrAddress ===
-                  getNativeTokenForChainId(chainId).denomOrAddress
-                ) {
-                  // Check if anything staked.
-                  const stakedBalance = get(
-                    noWait(
-                      nativeDelegatedBalanceSelector({
-                        chainId,
-                        address,
-                      })
-                    )
-                  )
+                // Ignore this token until staking info loads.
+                if (stakedBalance.state === 'loading') {
+                  // Make sure updating is true if waiting on staking info.
+                  updating = true
 
-                  // Ignore this token until staking info loads.
-                  if (stakedBalance.state === 'loading') {
-                    // Make sure updating is true if waiting on staking info.
-                    updating = true
-
-                    return []
-                  }
-
-                  hasStakingInfo =
-                    stakedBalance.state === 'hasValue' &&
-                    stakedBalance.contents.amount !== '0'
+                  return []
                 }
 
-                return {
-                  owner: address,
-                  daoOwnerType: type,
-                  token,
-                  // True if native token DAO and using this denom.
-                  isGovernanceToken:
-                    nativeGovernanceTokenDenom === token.denomOrAddress,
-                  unstakedBalance,
-                  hasStakingInfo,
+                hasStakingInfo =
+                  stakedBalance.state === 'hasValue' &&
+                  stakedBalance.contents.amount !== '0'
+              }
 
-                  lazyInfo: { loading: true },
-                }
-              })
+              return {
+                owner: account,
+                token,
+                // True if native token DAO and using this denom.
+                isGovernanceToken:
+                  nativeGovernanceTokenDenom === token.denomOrAddress,
+                unstakedBalance,
+                hasStakingInfo,
+
+                lazyInfo: { loading: true },
+              }
+            })
           ),
-          ...cw20s.flatMap(({ account: { address, type }, balances }) =>
+          ...cw20s.flatMap(({ account, balances }) =>
             balances.map(
               ({ token, balance, isGovernanceToken }): TokenCardInfo => {
                 const unstakedBalance = convertMicroDenomToDenomWithDecimals(
@@ -182,8 +180,7 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
                 )
 
                 return {
-                  owner: address,
-                  daoOwnerType: type,
+                  owner: account,
                   token,
                   isGovernanceToken: isGovernanceToken ?? false,
                   unstakedBalance,
@@ -217,7 +214,7 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
     },
 })
 
-const ACCOUNT_FILTER_PROPERTIES: (keyof DaoAccount)[] = [
+const ACCOUNT_FILTER_PROPERTIES: (keyof Account)[] = [
   'type',
   'chainId',
   'address',
@@ -246,7 +243,7 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
     startSecondsAgo: number
     filter?: {
       // Filter by any of the account properties.
-      account?: Partial<DaoAccount>
+      account?: Partial<Account>
       // If `account` is a valence account and `rebalancerOnly` is true, only
       // show valence account assets that are being rebalanced.
       rebalancerOnly?: boolean
@@ -361,7 +358,7 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
           // Filter by rebalancer tokens in valence account.
           (!filter ||
             !filter.rebalancerOnly ||
-            filter.account?.type !== DaoAccountType.Valence ||
+            filter.account?.type !== AccountType.Valence ||
             !filter.account.config?.rebalancer ||
             filter.account.config.rebalancer.targets.some(
               ({ source }) =>

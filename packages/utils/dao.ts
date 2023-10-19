@@ -1,8 +1,8 @@
 import {
+  Account,
+  AccountType,
   BreadcrumbCrumb,
   ContractVersion,
-  DaoAccount,
-  DaoAccountType,
   DaoParentInfo,
   DaoWebSocketChannelInfo,
   PolytoneProxies,
@@ -66,34 +66,34 @@ export const getFundsFromDaoInstantiateMsg = ({
   ...proposal_modules_instantiate_info.flatMap(({ funds }) => funds || []),
 ]
 
-// Gets the DAO account address on the specified chain or undefined if
-// nonexistent. Returns either a native or polytone account.
-export const getDaoAccountAddress = ({
+// Gets the account address on the specified chain or undefined if nonexistent.
+// Returns either a native or polytone account.
+export const getAccountAddress = ({
   accounts,
   chainId,
 }: {
-  accounts: DaoAccount[]
+  accounts: Account[]
   chainId: string
 }): string | undefined =>
   accounts.find(
     (account) =>
-      (account.type === DaoAccountType.Native ||
-        account.type === DaoAccountType.Polytone) &&
+      (account.type === AccountType.Native ||
+        account.type === AccountType.Polytone) &&
       account.chainId === chainId
   )?.address
 
 // Gets the chain ID for an address or undefined if nonexistent. Returns either
 // a native or polytone account.
-export const getDaoAccountChainId = ({
+export const getAccountChainId = ({
   accounts,
   address,
 }: {
-  accounts: DaoAccount[]
+  accounts: Account[]
   address: string
 }): string | undefined =>
   accounts.find(
     (account) =>
-      (account.type === DaoAccountType.Native ||
-        account.type === DaoAccountType.Polytone) &&
+      (account.type === AccountType.Native ||
+        account.type === AccountType.Polytone) &&
       account.address === address
   )?.chainId

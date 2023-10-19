@@ -21,7 +21,7 @@ import {
   useDaoInfoContext,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
-import { DaoAccountType, DaoTreasuryHistoryGraphProps } from '@dao-dao/types'
+import { AccountType, DaoTreasuryHistoryGraphProps } from '@dao-dao/types'
 import {
   DISTRIBUTION_COLORS,
   formatDate,
@@ -101,7 +101,7 @@ export const DaoTreasuryHistoryGraph = ({
 
   const showTargets =
     !!account &&
-    account.type === DaoAccountType.Valence &&
+    account.type === AccountType.Valence &&
     !!account.config.rebalancer?.targets.length &&
     showRebalancer &&
     !treasuryValueHistory.loading &&

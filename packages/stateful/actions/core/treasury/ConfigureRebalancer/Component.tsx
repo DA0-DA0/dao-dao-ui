@@ -21,9 +21,9 @@ import {
   ChainId,
   GenericTokenBalance,
   LoadingData,
-  LoadingDataWithError,
+  ValenceAccount,
 } from '@dao-dao/types'
-import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
+import { ActionComponent } from '@dao-dao/types/actions'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
@@ -31,9 +31,10 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../react'
-
 export type ConfigureRebalancerData = {
+  // Will be set when a valence account is found so the transformation function
+  // has the address.
+  valenceAccount?: ValenceAccount
   chainId: string
   baseDenom: string
   tokens: {
@@ -45,10 +46,6 @@ export type ConfigureRebalancerData = {
     ki: number
     kd: number
   }
-  // If in x/gov module, this will be defined. If ICA remote address exists,
-  // this will be a string. Otherwise, null. If undefined, not in x/gov or not
-  // yet loaded.
-  icaRemoteAddress?: string | null
 }
 
 export type ConfigureRebalancerOptions = {
@@ -59,7 +56,6 @@ export type ConfigureRebalancerOptions = {
       prices: AmountWithTimestamp[]
     }[]
   >
-  icaRemoteAddressLoading: LoadingDataWithError<string | undefined>
 }
 
 export const ConfigureRebalancerComponent: ActionComponent<
@@ -68,10 +64,9 @@ export const ConfigureRebalancerComponent: ActionComponent<
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { nativeBalances, historicalPrices, icaRemoteAddressLoading },
+  options: { nativeBalances, historicalPrices },
 }) => {
   const { t } = useTranslation()
-  const { context } = useActionOptions()
   const { chain_id: chainId } = useChain()
 
   const allowedTokens =
@@ -147,47 +142,6 @@ export const ConfigureRebalancerComponent: ActionComponent<
         // projector expects number of rebalances to be one fewer than the
         // number of prices since the first price acts as the initial price.
         ?.slice(1) || []
-
-  // Set error and ICA remote address loader.
-  useEffect(() => {
-    if (context.type !== ActionContextType.Gov) {
-      return
-    }
-
-    setValue(
-      (fieldNamePrefix + 'icaRemoteAddress') as 'icaRemoteAddress',
-      undefined
-    )
-
-    if (icaRemoteAddressLoading.loading) {
-      setError((fieldNamePrefix + 'icaRemoteAddress') as 'icaRemoteAddress', {
-        type: 'manual',
-        message: t('info.loading'),
-      })
-    } else if (icaRemoteAddressLoading.errored) {
-      setError((fieldNamePrefix + 'icaRemoteAddress') as 'icaRemoteAddress', {
-        type: 'manual',
-        message:
-          icaRemoteAddressLoading.error instanceof Error
-            ? icaRemoteAddressLoading.error.message
-            : `${icaRemoteAddressLoading.error}`,
-      })
-    } else {
-      clearErrors((fieldNamePrefix + 'icaRemoteAddress') as 'icaRemoteAddress')
-      setValue(
-        (fieldNamePrefix + 'icaRemoteAddress') as 'icaRemoteAddress',
-        icaRemoteAddressLoading.data || null
-      )
-    }
-  }, [
-    clearErrors,
-    context.type,
-    fieldNamePrefix,
-    icaRemoteAddressLoading,
-    setError,
-    setValue,
-    t,
-  ])
 
   return (
     <>
@@ -414,16 +368,6 @@ export const ConfigureRebalancerComponent: ActionComponent<
             rebalanceTimestamps={rebalanceTimestamps}
           />
         ))}
-
-      {context.type === ActionContextType.Gov &&
-        !icaRemoteAddressLoading.loading &&
-        icaRemoteAddressLoading.errored &&
-        !!errors?.icaRemoteAddress?.message && (
-          <InputErrorMessage
-            className="mt-2"
-            error={errors?.icaRemoteAddress}
-          />
-        )}
     </>
   )
 }

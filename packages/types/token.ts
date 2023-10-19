@@ -1,5 +1,6 @@
 import { ComponentType } from 'react'
 
+import { Account } from './account'
 import { ChainId, Validator } from './chain'
 import {
   ButtonLinkProps,
@@ -9,7 +10,6 @@ import {
   LoadingDataWithError,
   StatefulEntityDisplayProps,
 } from './components'
-import { DaoAccountType } from './dao'
 import { AmountWithTimestamp } from './state'
 
 export enum TokenType {
@@ -103,10 +103,7 @@ export type TokenCardLazyInfo = {
 }
 
 export type TokenCardInfo = {
-  owner: string
-  // If this is token is owned by a DAO account, this is the type of the account
-  // that owns it.
-  daoOwnerType?: DaoAccountType
+  owner: Account
   token: GenericToken
   isGovernanceToken: boolean
   subtitle?: string

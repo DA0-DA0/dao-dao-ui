@@ -38,7 +38,7 @@ export const DaoTokenCard = ({
   noExtraActions = false,
   ...props
 }: DaoTokenCardProps) => {
-  const { token, owner, unstakedBalance, daoOwnerType } = props
+  const { token, owner, unstakedBalance } = props
 
   const { t } = useTranslation()
   const router = useRouter()
@@ -47,7 +47,7 @@ export const DaoTokenCard = ({
 
   const lazyInfo = useCachedLoading(
     tokenCardLazyInfoSelector({
-      owner,
+      owner: owner.address,
       token,
       unstakedBalance,
     }),
@@ -71,7 +71,7 @@ export const DaoTokenCard = ({
 
   // Refresh staking info.
   const setRefreshNativeTokenStakingInfo = useSetRecoilState(
-    refreshNativeTokenStakingInfoAtom(owner)
+    refreshNativeTokenStakingInfoAtom(owner.address)
   )
   const refreshNativeTokenStakingInfo = useCallback(
     () => setRefreshNativeTokenStakingInfo((id) => id + 1),
@@ -207,19 +207,16 @@ export const DaoTokenCard = ({
                 },
               ]
             : // Only show deposit button if not governance cw20 token. People
-            // accidentally deposit governance tokens into the DAO when
-            // they're trying to stake them. Also don't show unless owner type
-            // is set.
-            daoOwnerType
-            ? [
+              // accidentally deposit governance tokens into the DAO when
+              // they're trying to stake them.
+              [
                 {
                   Icon: AccountBalance,
                   label: t('button.deposit'),
                   closeOnClick: true,
                   onClick: showDeposit,
                 },
-              ]
-            : [],
+              ],
           extraSections: extraActionSections,
         }}
         lazyInfo={lazyInfo}
@@ -232,10 +229,10 @@ export const DaoTokenCard = ({
         <StakingModal onClose={() => setShowCw20StakingModal(false)} />
       )}
 
-      {!isCw20GovernanceToken && !!daoOwnerType && (
+      {!isCw20GovernanceToken && (
         <DaoTokenDepositModal
-          daoOwnerType={daoOwnerType}
           onClose={() => setDepositVisible(false)}
+          owner={owner}
           token={token}
           visible={depositVisible}
         />

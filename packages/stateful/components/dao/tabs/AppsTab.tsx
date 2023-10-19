@@ -36,8 +36,8 @@ import {
   aminoTypes,
   decodeMessages,
   decodedStargateMsgToCw,
-  getDaoAccountAddress,
-  getDaoAccountChainId,
+  getAccountAddress,
+  getAccountChainId,
   getFallbackImage,
   maybeMakePolytoneExecuteMessage,
   protobufToCwMsg,
@@ -78,12 +78,12 @@ export const AppsTab = () => {
   const [fullScreen, setFullScreen] = useState(false)
 
   const addressForChainId = (chainId: string) =>
-    getDaoAccountAddress({
+    getAccountAddress({
       accounts,
       chainId,
     }) || ''
   const chainIdForAddress = (address: string) =>
-    getDaoAccountChainId({
+    getAccountChainId({
       accounts,
       address,
     })
