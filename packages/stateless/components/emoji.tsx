@@ -244,3 +244,7 @@ export const PrinterEmoji = () => (
 export const BalanceEmoji = () => (
   <EmojiWrapper emoji="⚖️" labelI18nKey="emoji.balance" />
 )
+
+export const RocketShipEmoji = () => (
+  <EmojiWrapper emoji="🚀" labelI18nKey="emoji.rocketShip" />
+)

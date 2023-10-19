@@ -100,28 +100,26 @@ export const makeCreateIcaAccountAction: ActionMaker<CreateIcaAccountData> = ({
 
       const info = getIbcTransferInfoBetweenChains(sourceChainId, chainId)
 
-      return chainId
-        ? makeStargateMessage({
-            stargate: {
-              typeUrl: MsgRegisterInterchainAccount.typeUrl,
-              value: MsgRegisterInterchainAccount.fromPartial({
-                owner: address,
-                connectionId: info.sourceChain.connection_id,
-                version: JSON.stringify(
-                  Metadata.fromPartial({
-                    version: 'ics27-1',
-                    controllerConnectionId: info.sourceChain.connection_id,
-                    hostConnectionId: info.destinationChain.connection_id,
-                    // Empty when registering a new address.
-                    address: '',
-                    encoding: 'proto3',
-                    txType: 'sdk_multi_msg',
-                  })
-                ),
-              }),
-            },
-          })
-        : undefined
+      return makeStargateMessage({
+        stargate: {
+          typeUrl: MsgRegisterInterchainAccount.typeUrl,
+          value: MsgRegisterInterchainAccount.fromPartial({
+            owner: address,
+            connectionId: info.sourceChain.connection_id,
+            version: JSON.stringify(
+              Metadata.fromPartial({
+                version: 'ics27-1',
+                controllerConnectionId: info.sourceChain.connection_id,
+                hostConnectionId: info.destinationChain.connection_id,
+                // Empty when registering a new address.
+                address: '',
+                encoding: 'proto3',
+                txType: 'sdk_multi_msg',
+              })
+            ),
+          }),
+        },
+      })
     }, [])
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateIcaAccountData> = (

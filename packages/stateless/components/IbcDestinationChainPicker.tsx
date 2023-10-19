@@ -8,6 +8,7 @@ import {
   getChainForChainId,
   getChainForChainName,
   getImageUrlForChainId,
+  getSupportedChains,
   maybeGetChainForChainName,
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
@@ -19,6 +20,9 @@ export type IbcDestinationChainPickerProps = {
   sourceChainId: string
   // Whether or not to include the source chain in the list.
   includeSourceChain: boolean
+  // If defined, will filter potential destination chains by those supported by
+  // the DAO DAO UI.
+  onlySupportedChains?: boolean
   // The selected destination chain.
   selectedChainId: string
   // Chain selection handler.
@@ -38,6 +42,7 @@ export type IbcDestinationChainPickerProps = {
 export const IbcDestinationChainPicker = ({
   sourceChainId,
   includeSourceChain,
+  onlySupportedChains,
   selectedChainId,
   onChainSelected,
   disabled,
@@ -45,6 +50,7 @@ export const IbcDestinationChainPicker = ({
 }: IbcDestinationChainPickerProps) => {
   const { t } = useTranslation()
   const chains = useMemo(() => {
+    const supportedChains = onlySupportedChains ? getSupportedChains() : []
     const spendChain = getChainForChainId(sourceChainId)
     return [
       // Source chain.
@@ -74,8 +80,15 @@ export const IbcDestinationChainPicker = ({
         })
         // Remove nonexistent osmosis testnet chain.
         .filter((chain) => chain.chain_id !== 'osmo-test-4'),
-    ]
-  }, [includeSourceChain, sourceChainId])
+    ].filter(
+      (chain) =>
+        !onlySupportedChains ||
+        // Filter by supported chains.
+        supportedChains.some(
+          (supported) => supported.chain.chain_id === chain.chain_id
+        )
+    )
+  }, [includeSourceChain, onlySupportedChains, sourceChainId])
 
   const selectedChain = selectedChainId
     ? getChainForChainId(selectedChainId)

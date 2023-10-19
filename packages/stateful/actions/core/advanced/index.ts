@@ -4,6 +4,7 @@ import { makeBulkImportAction } from './BulkImport'
 import { makeCreateIcaAccountAction } from './CreateIcaAccount'
 import { makeCrossChainExecuteAction } from './CrossChainExecute'
 import { makeCustomAction } from './Custom'
+import { makeIcaExecuteAction } from './IcaExecute'
 
 export const makeAdvancedActionCategory: ActionCategoryMaker = ({ t }) => ({
   key: ActionCategoryKey.Custom,
@@ -13,6 +14,7 @@ export const makeAdvancedActionCategory: ActionCategoryMaker = ({ t }) => ({
     makeCustomAction,
     makeCrossChainExecuteAction,
     makeCreateIcaAccountAction,
+    makeIcaExecuteAction,
     makeBulkImportAction,
   ],
 })
