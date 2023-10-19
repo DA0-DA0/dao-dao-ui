@@ -1,6 +1,7 @@
 import { ActionCategoryKey, ActionCategoryMaker } from '@dao-dao/types'
 
 import { makeBulkImportAction } from './BulkImport'
+import { makeCreateIcaAccountAction } from './CreateIcaAccount'
 import { makeCrossChainExecuteAction } from './CrossChainExecute'
 import { makeCustomAction } from './Custom'
 
@@ -11,6 +12,7 @@ export const makeAdvancedActionCategory: ActionCategoryMaker = ({ t }) => ({
   actionMakers: [
     makeCustomAction,
     makeCrossChainExecuteAction,
+    makeCreateIcaAccountAction,
     makeBulkImportAction,
   ],
 })

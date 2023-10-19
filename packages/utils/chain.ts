@@ -287,6 +287,7 @@ export const getIbcTransferInfoBetweenChains = (
   destChainId: string
 ): {
   sourceChain: IBCInfo['chain_1']
+  destinationChain: IBCInfo['chain_1']
   sourceChannel: string
   info: IBCInfo
 } => {
@@ -313,12 +314,12 @@ export const getIbcTransferInfoBetweenChains = (
   }
 
   const srcChainNumber = info.chain_1.chain_name === srcChainName ? 1 : 2
+  const destChainNumber = info.chain_1.chain_name === destChainName ? 1 : 2
   const channel = info.channels.find(
     ({
       [`chain_${srcChainNumber}` as `chain_${typeof srcChainNumber}`]: srcChain,
-      [`chain_${
-        srcChainNumber === 1 ? 2 : 1
-      }` as `chain_${typeof srcChainNumber}`]: destChain,
+      [`chain_${destChainNumber}` as `chain_${typeof srcChainNumber}`]:
+        destChain,
       version,
     }) =>
       version === 'ics20-1' &&
@@ -334,19 +335,20 @@ export const getIbcTransferInfoBetweenChains = (
   return {
     sourceChain: info[`chain_${srcChainNumber}`],
     sourceChannel: channel[`chain_${srcChainNumber}`].channel_id,
+    destinationChain: info[`chain_${destChainNumber}`],
     info,
   }
 }
 
-export const getIbcTransferInfoFromChainSource = (
-  chainId: string,
+export const getIbcTransferInfoFromChannel = (
+  sourceChainId: string,
   sourceChannel: string
 ): {
   destinationChain: IBCInfo['chain_1']
   channel: IBCInfo['channels'][number]
   info: IBCInfo
 } => {
-  const { chain_name } = getChainForChainId(chainId)
+  const { chain_name } = getChainForChainId(sourceChainId)
 
   const info = ibc.find(
     ({ chain_1, chain_2, channels }) =>
@@ -369,7 +371,7 @@ export const getIbcTransferInfoFromChainSource = (
   )
   if (!info) {
     throw new Error(
-      `Failed to find IBC channel for chain ${chainId} and source channel ${sourceChannel}.`
+      `Failed to find IBC channel for chain ${sourceChainId} and source channel ${sourceChannel}.`
     )
   }
 
@@ -389,7 +391,7 @@ export const getIbcTransferInfoFromChainSource = (
   )
   if (!channel) {
     throw new Error(
-      `Failed to find IBC channel for chain ${chainId} and source channel ${sourceChannel}.`
+      `Failed to find IBC channel for chain ${sourceChainId} and source channel ${sourceChannel}.`
     )
   }
 
@@ -416,6 +418,43 @@ export const getConfiguredChains = ({
     chain: getChainForChainId(config.chainId),
     ...config,
   }))
+
+export const getIbcTransferInfoFromConnection = (
+  sourceChainId: string,
+  sourceConnectionId: string
+): {
+  info: IBCInfo
+  destinationChain: IBCInfo['chain_1']
+} => {
+  const { chain_name } = getChainForChainId(sourceChainId)
+
+  const info = ibc.find(
+    ({ chain_1, chain_2, channels }) =>
+      ((chain_1.chain_name === chain_name &&
+        chain_1.connection_id === sourceConnectionId) ||
+        (chain_2.chain_name === chain_name &&
+          chain_2.connection_id === sourceConnectionId)) &&
+      channels.some(
+        ({ chain_1, chain_2, version }) =>
+          version === 'ics20-1' &&
+          chain_1.port_id === 'transfer' &&
+          chain_2.port_id === 'transfer'
+      )
+  )
+  if (!info) {
+    throw new Error(
+      `Failed to find IBC info for source chain ${sourceChainId} and connection ${sourceConnectionId}.`
+    )
+  }
+
+  const thisChainNumber = info.chain_1.chain_name === chain_name ? 1 : 2
+  const destinationChain = info[`chain_${thisChainNumber === 1 ? 2 : 1}`]
+
+  return {
+    info,
+    destinationChain,
+  }
+}
 
 export const getSupportedChainConfig = (
   chainId: string

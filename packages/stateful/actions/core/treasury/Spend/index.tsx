@@ -27,7 +27,7 @@ import {
   getChainForChainName,
   getDaoAccountAddress,
   getIbcTransferInfoBetweenChains,
-  getIbcTransferInfoFromChainSource,
+  getIbcTransferInfoFromChannel,
   isDecodedStargateMsg,
   isValidBech32Address,
   isValidContractAddress,
@@ -296,7 +296,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   }
 
   if (isIbcTransfer) {
-    const { destinationChain } = getIbcTransferInfoFromChainSource(
+    const { destinationChain } = getIbcTransferInfoFromChannel(
       chainId,
       msg.stargate.value.sourceChannel
     )

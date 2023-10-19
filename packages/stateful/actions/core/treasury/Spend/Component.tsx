@@ -1,23 +1,15 @@
 import {
-  ArrowDropDown,
   ArrowRightAltRounded,
   SubdirectoryArrowRightRounded,
 } from '@mui/icons-material'
-import { ibc } from 'chain-registry'
 import clsx from 'clsx'
-import {
-  ComponentType,
-  RefAttributes,
-  useCallback,
-  useEffect,
-  useMemo,
-} from 'react'
+import { ComponentType, RefAttributes, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
   ChainProvider,
-  FilterableItemPopup,
+  IbcDestinationChainPicker,
   InputErrorMessage,
   TokenAmountDisplay,
   TokenInput,
@@ -35,9 +27,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getChainForChainId,
-  getChainForChainName,
   getDaoAccountAddress,
-  getImageUrlForChainId,
   makeValidateAddress,
   maybeGetChainForChainName,
   toAccessibleImageUrl,
@@ -132,37 +122,6 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       setValue((fieldNamePrefix + 'to') as 'to', newRecipient)
     }
   }, [context, currentEntity, fieldNamePrefix, recipient, setValue, toChain])
-
-  const possibleDestinationChains = useMemo(() => {
-    const spendChain = getChainForChainId(spendChainId)
-    return [
-      spendChain,
-      ...ibc
-        .filter(
-          ({ chain_1, chain_2, channels }) =>
-            // Either chain is the source spend chain.
-            (chain_1.chain_name === spendChain.chain_name ||
-              chain_2.chain_name === spendChain.chain_name) &&
-            // Both chains exist in the registry.
-            maybeGetChainForChainName(chain_1.chain_name) &&
-            maybeGetChainForChainName(chain_2.chain_name) &&
-            // An ics20 transfer channel exists.
-            channels.some(
-              ({ chain_1, chain_2, version }) =>
-                version === 'ics20-1' &&
-                chain_1.port_id === 'transfer' &&
-                chain_2.port_id === 'transfer'
-            )
-        )
-        .map(({ chain_1, chain_2 }) => {
-          const otherChain =
-            chain_1.chain_name === spendChain.chain_name ? chain_2 : chain_1
-          return getChainForChainName(otherChain.chain_name)
-        })
-        // Remove nonexistent osmosis testnet chain.
-        .filter((chain) => chain.chain_id !== 'osmo-test-4'),
-    ]
-  }, [spendChainId])
 
   const validatePossibleSpend = useCallback(
     (chainId: string, denom: string, amount: number): string | boolean => {
@@ -343,48 +302,18 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             ref={toContainerRef}
           >
             {(isCreating || spendChainId !== toChainId) && (
-              <FilterableItemPopup
-                filterableItemKeys={FILTERABLE_KEYS}
-                items={possibleDestinationChains.map((chain) => ({
-                  key: chain.chain_id,
-                  label: chain.pretty_name,
-                  iconUrl: getImageUrlForChainId(chain.chain_id),
-                  iconClassName: '!h-8 !w-8',
-                  contentContainerClassName: '!gap-3',
-                }))}
-                onSelect={({ key }) =>
-                  setValue((fieldNamePrefix + 'toChainId') as 'toChainId', key)
+              <IbcDestinationChainPicker
+                buttonClassName={toWrapped ? 'grow' : undefined}
+                disabled={!isCreating}
+                includeSourceChain
+                onChainSelected={(chainId) =>
+                  setValue(
+                    (fieldNamePrefix + 'toChainId') as 'toChainId',
+                    chainId
+                  )
                 }
-                searchPlaceholder={t('info.searchForChain')}
-                trigger={{
-                  type: 'button',
-                  props: {
-                    className: toWrapped ? 'grow' : undefined,
-                    contentContainerClassName:
-                      'justify-between text-icon-primary !gap-4',
-                    disabled: !isCreating,
-                    size: 'lg',
-                    variant: 'ghost_outline',
-                    children: (
-                      <>
-                        <div className="flex flex-row items-center gap-2">
-                          <div
-                            className="h-6 w-6 shrink-0 rounded-full bg-cover bg-center"
-                            style={{
-                              backgroundImage: `url(${toAccessibleImageUrl(
-                                getImageUrlForChainId(toChainId)
-                              )})`,
-                            }}
-                          />
-
-                          <p>{toChain.pretty_name}</p>
-                        </div>
-
-                        {isCreating && <ArrowDropDown className="!h-6 !w-6" />}
-                      </>
-                    ),
-                  },
-                }}
+                selectedChainId={toChainId}
+                sourceChainId={spendChainId}
               />
             )}
 
@@ -436,5 +365,3 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     </>
   )
 }
-
-const FILTERABLE_KEYS = ['key', 'label']
