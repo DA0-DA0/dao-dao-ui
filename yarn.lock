@@ -3115,17 +3115,6 @@
     events "3.3.0"
     uuid "^9.0.1"
 
-"@cosmos-kit/core@^2.7.1":
-  version "2.7.1"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.7.1.tgz#28eea8f5c45ebf3b50d8f5c553afe098b0414202"
-  integrity sha512-jYgEDbY/gjF6j24Twt39lFVvwOJa40xnhHCK7Zq2mQxn4zI3EzQ7ROhPBqjoW7QLOv+mhJLDYQvogJVL5i8qjw==
-  dependencies:
-    "@chain-registry/types" "0.17.0"
-    "@walletconnect/types" "2.7.2"
-    bowser "2.11.0"
-    events "3.3.0"
-    uuid "^9.0.1"
-
 "@cosmos-kit/core@^2.7.2":
   version "2.7.2"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.7.2.tgz#de279f20fdd63cc088e18e6bd769120ef7ad8b49"
@@ -3171,20 +3160,20 @@
     "@cosmos-kit/cosmostation-extension" "^2.5.4"
     "@cosmos-kit/cosmostation-mobile" "^2.4.3"
 
-"@cosmos-kit/exodus-extension@^2.4.1":
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/exodus-extension/-/exodus-extension-2.4.1.tgz#91d8addf96b40f49060a4cc8f76640058282b962"
-  integrity sha512-b5TIBpl4AaaMwEmAlS9VjBrcqppZKALOe5kjE21qP8NQSTmM4bsrLGKUJyAsjBKfsse6EE/R2xLR+Ov9ZRA1sw==
+"@cosmos-kit/exodus-extension@^2.4.2":
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/exodus-extension/-/exodus-extension-2.4.2.tgz#435f3b48207ddbd1ac6c9ebd03bfea1a8ec2e27f"
+  integrity sha512-lxvKhQXOgMVuu/WisfKaJRCojPh8grjiId59xD7Dzh7HZgwG9NlrgdP9DmNlX1F5ylLc1SbXK8MQb6ORUlQqFQ==
   dependencies:
-    "@cosmos-kit/core" "^2.7.1"
+    "@cosmos-kit/core" "^2.7.2"
     react-icons "4.4.0"
 
-"@cosmos-kit/exodus@^2.4.1":
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/exodus/-/exodus-2.4.1.tgz#32431a8cca8ff10c4c12b9a468ee8726ecba120d"
-  integrity sha512-cHx8mLl3NmQNjyfKGCvVriUcAJkjwriKwskr2GtzHRqnhA7iB3oXXMgW7NC+jKK9zuj2wcQDI6YfpZCPKCgpoA==
+"@cosmos-kit/exodus@^2.4.2":
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/exodus/-/exodus-2.4.2.tgz#072bbfdff8e693f3fac1543334f6f06d667fae67"
+  integrity sha512-x6H0wjZK8J0rI4RoZHOftIiWX8XMADt3kfyFua3UG9cDIP6kNNjVGLO+sixwvcZT0fPdLVbKR3ayjCoOYbYNlQ==
   dependencies:
-    "@cosmos-kit/exodus-extension" "^2.4.1"
+    "@cosmos-kit/exodus-extension" "^2.4.2"
 
 "@cosmos-kit/fin-extension@^2.4.3":
   version "2.4.3"
