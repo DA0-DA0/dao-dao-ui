@@ -15,8 +15,10 @@ export const InputErrorMessage = ({
     (typeof error === 'string'
       ? error
       : error instanceof Error ||
-        (typeof error === 'object' && 'message' in error)
-      ? error.message
+        (typeof error === 'object' &&
+          'message' in error &&
+          typeof (error as { message: string }).message === 'string')
+      ? (error as { message: string }).message
       : `${error}`)
 
   return message ? (
