@@ -24,6 +24,7 @@ import {
   ValenceAccount,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
+import { TargetOverrideStrategy } from '@dao-dao/types/contracts/ValenceServiceRebalancer'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
@@ -49,7 +50,7 @@ export type ConfigureRebalancerData = {
     kd: number
   }
   maxLimitBps?: number
-  targetOverrideStrategy: string
+  targetOverrideStrategy: TargetOverrideStrategy
 }
 
 export type ConfigureRebalancerOptions = {

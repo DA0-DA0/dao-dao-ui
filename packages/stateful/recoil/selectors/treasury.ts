@@ -14,8 +14,8 @@ import {
 } from '@dao-dao/state'
 import {
   Account,
-  AccountType,
   GenericToken,
+  GenericTokenSource,
   LoadingTokens,
   TokenCardInfo,
   TokenType,
@@ -214,11 +214,7 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
     },
 })
 
-const ACCOUNT_FILTER_PROPERTIES: (keyof Account)[] = [
-  'type',
-  'chainId',
-  'address',
-]
+const ACCOUNT_FILTER_PROPERTIES = ['type', 'chainId', 'address'] as const
 
 export const daoTreasuryValueHistorySelector = selectorFamily<
   {
@@ -243,10 +239,9 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
     startSecondsAgo: number
     filter?: {
       // Filter by any of the account properties.
-      account?: Partial<Account>
-      // If `account` is a valence account and `rebalancerOnly` is true, only
-      // show valence account assets that are being rebalanced.
-      rebalancerOnly?: boolean
+      account?: Partial<Pick<Account, typeof ACCOUNT_FILTER_PROPERTIES[number]>>
+      // If defined, only show these tokens.
+      tokens?: GenericTokenSource[]
     }
   }>
 >({
@@ -355,13 +350,10 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
         (token) =>
           // Can only compute price if token decimals loaded correctly.
           token.decimals > 0 &&
-          // Filter by rebalancer tokens in valence account.
-          (!filter ||
-            !filter.rebalancerOnly ||
-            filter.account?.type !== AccountType.Valence ||
-            !filter.account.config?.rebalancer ||
-            filter.account.config.rebalancer.targets.some(
-              ({ source }) =>
+          // Filter by tokens.
+          (!filter?.tokens ||
+            filter.tokens.some(
+              (source) =>
                 serializeTokenSource(source) === serializeTokenSource(token)
             ))
       )

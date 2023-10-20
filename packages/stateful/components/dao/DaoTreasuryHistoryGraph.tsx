@@ -70,7 +70,11 @@ export const DaoTreasuryHistoryGraph = ({
       precision,
       filter: account && {
         account,
-        rebalancerOnly: showRebalancer,
+        // Filter by rebalancer tokens.
+        tokens:
+          showRebalancer && account.type === AccountType.Valence
+            ? account.config.rebalancer?.targets.map(({ source }) => source)
+            : undefined,
       },
       startSecondsAgo,
     })
@@ -143,17 +147,17 @@ export const DaoTreasuryHistoryGraph = ({
                 return null
               }
 
-              const { target } = targets[targetIndex]
+              const { percentage } = targets[targetIndex]
 
               // The target at this point is based on the total value.
-              return totalValue * target
+              return totalValue * Number(percentage)
             }
           )
 
           // Add current target.
           const currentTarget =
             treasuryValueHistory.data.total.currentValue *
-            targets[targets.length - 1].target
+            Number(targets[targets.length - 1].percentage)
           data.push(currentTarget)
 
           const tokenIndex = treasuryValueHistory.data.tokens.findIndex(

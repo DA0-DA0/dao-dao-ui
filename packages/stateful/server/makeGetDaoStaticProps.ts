@@ -277,6 +277,19 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
                 // TODO(rebalancer): Get config
                 const config: ValenceAccountConfig = {
                   rebalancer: {
+                    config: {
+                      base_denom: '',
+                      has_min_balance: false,
+                      last_rebalance: '',
+                      max_limit: '',
+                      pid: {
+                        d: '',
+                        i: '',
+                        p: '',
+                      },
+                      target_override_strategy: 'proportional',
+                      targets: [],
+                    },
                     targets: [
                       {
                         source: {
@@ -286,7 +299,9 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
                         targets: [
                           {
                             timestamp: 0,
-                            target: 0.75,
+                            denom: 'untrn',
+                            last_i: ['', false],
+                            percentage: '0.75',
                           },
                         ],
                       },
@@ -298,7 +313,9 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
                         targets: [
                           {
                             timestamp: 0,
-                            target: 0.25,
+                            denom: 'untrn',
+                            last_i: ['', false],
+                            percentage: '0.25',
                           },
                         ],
                       },

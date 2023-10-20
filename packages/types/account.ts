@@ -2,6 +2,10 @@
 // address on the native chain. `polytone` means it's a polytone account
 // controlled by an account on another chain. `valence` means it's a valence
 
+import {
+  ParsedTarget,
+  RebalancerConfig,
+} from './contracts/ValenceServiceRebalancer'
 import { GenericTokenSource } from './token'
 
 // account controlled by an account on the same or another chain.
@@ -29,6 +33,8 @@ export type ValenceAccountTypeConfig = {
 export type ValenceAccountConfig = {
   // If rebalancer setup, this will be defined.
   rebalancer?: {
+    config: RebalancerConfig
+    // Process targest.
     targets: ValenceAccountRebalancerTarget[]
   }
 }
@@ -36,11 +42,10 @@ export type ValenceAccountConfig = {
 export type ValenceAccountRebalancerTarget = {
   // The source that uniquely identifies a token.
   source: GenericTokenSource
-  targets: {
+  // Target changes over time for this token.
+  targets: ({
     timestamp: number
-    // Proportion between 0 and 1.
-    target: number
-  }[]
+  } & ParsedTarget)[]
 }
 
 export type BaseAccount = {
