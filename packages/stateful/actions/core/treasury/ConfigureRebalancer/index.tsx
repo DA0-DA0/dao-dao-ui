@@ -3,8 +3,13 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useRecoilValueLoadable, waitForAll } from 'recoil'
 
+import { valenceAccountsSelector } from '@dao-dao/state'
 import { historicalUsdPriceSelector } from '@dao-dao/state/recoil/selectors/osmosis'
-import { BalanceEmoji, ChainProvider } from '@dao-dao/stateless'
+import {
+  BalanceEmoji,
+  ChainProvider,
+  useCachedLoadingWithError,
+} from '@dao-dao/stateless'
 import { ChainId, TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -14,8 +19,15 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { ExecuteMsg as ValenceAccountExecuteMsg } from '@dao-dao/types/contracts/ValenceAccount'
+import {
+  RebalancerData,
+  RebalancerUpdateData,
+} from '@dao-dao/types/contracts/ValenceServiceRebalancer'
 import {
   decodePolytoneExecuteMsg,
+  encodeMessageAsBase64,
+  getAccountAddress,
   getNativeIbcUsdc,
   getNativeTokenForChainId,
   loadableToLoadingData,
@@ -34,17 +46,61 @@ import {
 
 const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
   const {
+    address,
     chain: { chain_id: chainId },
+    context,
   } = useActionOptions()
 
-  const nativeDenom = getNativeTokenForChainId(chainId).denomOrAddress
-  const usdcDenom = getNativeIbcUsdc(chainId)?.denomOrAddress
+  // Get Neutron account.
+  const neutronAddress =
+    context.type === ActionContextType.Dao
+      ? getAccountAddress({
+          accounts: context.info.accounts,
+          chainId: ChainId.NeutronMainnet,
+        })
+      : chainId === ChainId.NeutronMainnet
+      ? address
+      : null
+  if (!neutronAddress) {
+    throw new Error('Missing Neutron account.')
+  }
+
+  const valenceAccountsLoading = useCachedLoadingWithError(
+    valenceAccountsSelector({
+      chainId: ChainId.NeutronMainnet,
+      address,
+    })
+  )
+  const valenceAccount =
+    valenceAccountsLoading.loading || valenceAccountsLoading.errored
+      ? undefined
+      : valenceAccountsLoading.data[0]
+
+  const nativeDenom = getNativeTokenForChainId(
+    ChainId.NeutronMainnet
+  ).denomOrAddress
+  const usdcDenom = getNativeIbcUsdc(ChainId.NeutronMainnet)?.denomOrAddress
+
+  const rebalancerConfig = valenceAccount?.config.rebalancer?.config
 
   return {
-    chainId,
+    valenceAccount,
+    chainId: ChainId.NeutronMainnet,
+    trustee: rebalancerConfig?.trustee || undefined,
     baseDenom:
-      REBALANCER_BASE_TOKEN_ALLOWLIST[chainId as ChainId]?.[0] ?? nativeDenom,
-    tokens: [
+      (rebalancerConfig?.base_denom ||
+        REBALANCER_BASE_TOKEN_ALLOWLIST[ChainId.NeutronMainnet]?.[0]) ??
+      nativeDenom,
+    tokens: rebalancerConfig?.targets.map(
+      ({ denom, percentage, min_balance }) => ({
+        denom,
+        percent: Number(percentage),
+        minBalance:
+          min_balance && !isNaN(Number(min_balance))
+            ? Number(min_balance)
+            : undefined,
+      })
+    ) || [
       {
         denom: nativeDenom,
         percent: 50,
@@ -58,17 +114,21 @@ const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
           ]
         : []),
     ],
-    // TODO: pick default
+    // TODO: pick defaults
     pid: {
-      kp: 0.1,
-      ki: 0.1,
-      kd: 0.1,
+      kp: Number(rebalancerConfig?.pid.p || 0.1),
+      ki: Number(rebalancerConfig?.pid.i || 0.1),
+      kd: Number(rebalancerConfig?.pid.d || 0.1),
     },
+    maxLimitBps:
+      rebalancerConfig?.max_limit && !isNaN(Number(rebalancerConfig.max_limit))
+        ? Number(rebalancerConfig.max_limit)
+        : // TODO: pick default
+          // 5%
+          500,
     // TODO: pick default
-    // 5%
-    maxLimitBps: 500,
-    // TODO: pick default
-    targetOverrideStrategy: 'proportional',
+    targetOverrideStrategy:
+      rebalancerConfig?.target_override_strategy || 'proportional',
   }
 }
 
@@ -244,6 +304,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
 
     if (
       serviceName !== 'rebalancer' ||
+      !data ||
       !objectMatchesStructure(data, {
         base_denom: {},
         targets: {},
@@ -263,7 +324,26 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
 
   return {
     match: true,
-    data: {},
+    data: {
+      chainId,
+      trustee: data.trustee || undefined,
+      baseDenom: data.base_denom,
+      tokens: data.targets.map(({ denom, min_balance, percentage }) => ({
+        denom,
+        percent: percentage,
+        minBalance:
+          min_balance && !isNaN(Number(min_balance))
+            ? Number(min_balance)
+            : undefined,
+      })),
+      pid: {
+        kp: Number(data.pid.p),
+        ki: Number(data.pid.i),
+        kd: Number(data.pid.d),
+      },
+      maxLimitBps: data.max_limit || undefined,
+      targetOverrideStrategy: data.target_override_strategy,
+    },
   }
 }
 
@@ -284,7 +364,16 @@ export const makeConfigureRebalancerAction: ActionMaker<
     ConfigureRebalancerData
   > = () => {
     return useCallback(
-      ({ valenceAccount, chainId, tokens, pid }: ConfigureRebalancerData) => {
+      ({
+        valenceAccount,
+        chainId,
+        trustee,
+        baseDenom,
+        tokens,
+        pid,
+        maxLimitBps,
+        targetOverrideStrategy,
+      }: ConfigureRebalancerData) => {
         if (!valenceAccount) {
           throw new Error('Missing valence account.')
         }
@@ -298,8 +387,26 @@ export const makeConfigureRebalancerAction: ActionMaker<
                 contract_addr: valenceAccount.address,
                 funds: [],
                 msg: {
-                  update_config: {},
-                },
+                  update_service: {
+                    data: encodeMessageAsBase64({
+                      base_denom: baseDenom,
+                      max_limit: maxLimitBps,
+                      pid: {
+                        p: pid.kp.toString(),
+                        i: pid.ki.toString(),
+                        d: pid.kd.toString(),
+                      },
+                      target_override_strategy: targetOverrideStrategy,
+                      targets: tokens.map(({ denom, percent, minBalance }) => ({
+                        denom,
+                        min_balance:
+                          minBalance && BigInt(minBalance).toString(),
+                        percentage: percent,
+                      })),
+                      trustee,
+                    } as RebalancerUpdateData),
+                  },
+                } as ValenceAccountExecuteMsg,
               },
             },
           })
