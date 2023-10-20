@@ -109,6 +109,10 @@ export type SupportedChainConfig = BaseChainConfig & {
   // particular version of a contract.
   historicalCodeIds?: Partial<Record<ContractVersion, Partial<CodeIdConfig>>>
   polytone?: PolytoneConfig
+  valence?: {
+    // Address of rebalancer contract.
+    rebalancer: string
+  }
 }
 
 export type SupportedChain = SupportedChainConfig & {

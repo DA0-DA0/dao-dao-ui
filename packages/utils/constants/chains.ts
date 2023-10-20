@@ -399,6 +399,10 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         DaoPreProposeMultiple: 1258,
         DaoProposalMultiple: 1261,
       },
+      valence: {
+        rebalancer:
+          'juno15she5505reyvgvg9cz5g4k6y5ktxg4eja5tuytxmj0x0gs0cyjwq2sjgr0',
+      },
     },
   },
   {
