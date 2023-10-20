@@ -36,16 +36,20 @@ export type ConfigureRebalancerData = {
   // has the address.
   valenceAccount?: ValenceAccount
   chainId: string
+  trustee?: string
   baseDenom: string
   tokens: {
     denom: string
     percent: number
+    minBalance?: number
   }[]
   pid: {
     kp: number
     ki: number
     kd: number
   }
+  maxLimitBps?: number
+  targetOverrideStrategy: string
 }
 
 export type ConfigureRebalancerOptions = {
@@ -174,6 +178,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
       <div className="flex flex-col gap-2">
         <InputLabel name={t('form.tokens')} />
 
+        {/* TODO: support minBalance */}
         {tokensFields.map(({ id }, index) => {
           const watchDenom = watch(
             (fieldNamePrefix +
