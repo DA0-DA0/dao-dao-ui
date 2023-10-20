@@ -282,7 +282,7 @@ export enum DaoTabId {
   Members = 'members',
   Staked = 'staked',
   Collection = 'collection',
-  Browser = 'browser',
+  Apps = 'apps',
 }
 
 export type DaoTab = {
@@ -311,4 +311,10 @@ export type DaoChainTreasury<T extends TokenCardInfo, N extends object> = {
   address: string | undefined
   tokens: LoadingData<T[]>
   nfts: LoadingData<(N & { key: string })[]>
+}
+
+export type DaoApp = {
+  name: string
+  imageUrl: string
+  url: string
 }

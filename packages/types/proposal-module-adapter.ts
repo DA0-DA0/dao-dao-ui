@@ -222,6 +222,9 @@ export interface BaseNewProposalProps<FormData extends FieldValues = any> {
   draftSaving: boolean
   deleteDraft: (index: number) => void
   proposalModuleSelector: ReactNode
+  // If true, will display actions as read only. This is useful when prompting a
+  // proposal to be created from preset actions. Default: false.
+  actionsReadOnlyMode?: boolean
 }
 
 export interface WalletVoteInfo<T> {

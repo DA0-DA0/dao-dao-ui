@@ -3,6 +3,7 @@ import { wallets as compassWallets } from '@cosmos-kit/compass'
 import { Endpoints, SignerOptions } from '@cosmos-kit/core'
 import { wallets as cosmosExtensionMetamaskWallets } from '@cosmos-kit/cosmos-extension-metamask'
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
+import { wallets as exodusWallets } from '@cosmos-kit/exodus'
 import { wallets as finWallets } from '@cosmos-kit/fin'
 import { wallets as frontierWallets } from '@cosmos-kit/frontier'
 import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
@@ -17,7 +18,7 @@ import { wallets as stationWallets } from '@cosmos-kit/station'
 import { wallets as trustWallets } from '@cosmos-kit/trust'
 import { wallets as vectisWallets } from '@cosmos-kit/vectis'
 import { PromptSign, makeWeb3AuthWallets } from '@cosmos-kit/web3auth'
-import { wallets as xdefiWallets } from '@cosmos-kit/xdefi-extension'
+import { wallets as xdefiWallets } from '@cosmos-kit/xdefi'
 import { assets, chains } from 'chain-registry'
 import {
   Dispatch,
@@ -157,6 +158,7 @@ export const WalletProvider = ({
       ...compassWallets,
       ...frontierWallets,
       ...cosmosExtensionMetamaskWallets,
+      ...exodusWallets,
     ].sort((a, b) =>
       a.walletInfo.prettyName.localeCompare(b.walletInfo.prettyName)
     ),

@@ -37,7 +37,7 @@ export const MigrateFollowingModal = ({
       }}
       visible={visible}
     >
-      <div className="styled-scrollbar -my-4 flex max-h-[30vh] flex-col gap-2 overflow-y-auto py-4">
+      <div className="styled-scrollbar -my-4 flex max-h-[30dvh] flex-col gap-2 overflow-y-auto py-4">
         {followedDaos.map((dao) => (
           <EntityDisplay key={dao} address={dao} />
         ))}

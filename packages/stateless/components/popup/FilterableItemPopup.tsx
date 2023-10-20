@@ -199,7 +199,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
       />
 
       <Modal
-        containerClassName="!w-[28rem] !max-w-[96vw] !h-[36rem] !max-h-[96vh]"
+        containerClassName="!w-[28rem] !max-w-[96dvw] !h-[36rem] !max-h-[96dvh]"
         contentContainerClassName="p-3 pt-4"
         headerContainerClassName="p-4"
         headerContent={
