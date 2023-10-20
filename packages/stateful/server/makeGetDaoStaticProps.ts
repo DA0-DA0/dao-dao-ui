@@ -14,7 +14,6 @@ import {
   Account,
   AccountType,
   ActiveThreshold,
-  ChainId,
   CommonProposalInfo,
   ContractVersion,
   ContractVersionInfo,
@@ -25,8 +24,6 @@ import {
   InfoResponse,
   PolytoneProxies,
   ProposalModule,
-  ValenceAccount,
-  ValenceAccountConfig,
 } from '@dao-dao/types'
 import { ConfigResponse as ConfigV1Response } from '@dao-dao/types/contracts/CwCore.v1'
 import {
@@ -250,92 +247,8 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             type: AccountType.Polytone,
           })
         ),
+        // Load valence accounts on frontend in DaoPageWrapper.
       ]
-
-      // Get valence accounts on potential chains.
-      const valenceAccounts = (
-        await Promise.all(
-          accounts.flatMap(
-            async ({ chainId, address }): Promise<ValenceAccount[]> => {
-              // Get valence accounts from indexer.
-              const valenceAccountAddresses = await queryIndexer({
-                type: 'wallet',
-                chainId,
-                address,
-                formula: 'valence/accounts',
-                required: true,
-              })
-
-              if (
-                !valenceAccountAddresses ||
-                !Array.isArray(valenceAccountAddresses)
-              ) {
-                return []
-              }
-
-              return valenceAccountAddresses.map((address): ValenceAccount => {
-                // TODO(rebalancer): Get config
-                const config: ValenceAccountConfig = {
-                  rebalancer: {
-                    config: {
-                      base_denom: '',
-                      has_min_balance: false,
-                      last_rebalance: '',
-                      max_limit: '',
-                      pid: {
-                        d: '',
-                        i: '',
-                        p: '',
-                      },
-                      target_override_strategy: 'proportional',
-                      targets: [],
-                    },
-                    targets: [
-                      {
-                        source: {
-                          chainId: ChainId.NeutronMainnet,
-                          denomOrAddress: 'untrn',
-                        },
-                        targets: [
-                          {
-                            timestamp: 0,
-                            denom: 'untrn',
-                            last_i: ['', false],
-                            percentage: '0.75',
-                          },
-                        ],
-                      },
-                      {
-                        source: {
-                          chainId: 'axelar-dojo-1',
-                          denomOrAddress: 'uusdc',
-                        },
-                        targets: [
-                          {
-                            timestamp: 0,
-                            denom: 'untrn',
-                            last_i: ['', false],
-                            percentage: '0.25',
-                          },
-                        ],
-                      },
-                    ],
-                  },
-                }
-
-                return {
-                  type: AccountType.Valence,
-                  chainId,
-                  address,
-                  config,
-                }
-              })
-            }
-          )
-        )
-      ).flat()
-
-      accounts.push(...valenceAccounts)
 
       // Must be called after server side translations has been awaited, because
       // props may use the `t` function, and it won't be available until after.
