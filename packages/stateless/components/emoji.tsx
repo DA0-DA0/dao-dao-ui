@@ -221,6 +221,10 @@ export const ChainEmoji = () => (
   <EmojiWrapper emoji="⛓️" labelI18nKey="emoji.chains" />
 )
 
+export const TelescopeEmoji = () => (
+  <EmojiWrapper emoji="🔭" labelI18nKey="emoji.telescope" />
+)
+
 export const CurvedDownArrowEmoji = () => (
   <EmojiWrapper emoji="⤵️" labelI18nKey="emoji.curvedDownArrow" />
 )

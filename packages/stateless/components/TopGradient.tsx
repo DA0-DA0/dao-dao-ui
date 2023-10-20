@@ -39,7 +39,7 @@ export const TopGradient = ({
           backgroundImage: `linear-gradient(270deg, rgb(var(--color-background-base)) 0%, rgba(var(--color-background-base), 0) 50%, rgb(var(--color-background-base)) 100%)`,
         }}
       >
-        <div className="h-[50vh]"></div>
+        <div className="h-[50dvh]"></div>
       </div>
     </div>
   )

@@ -63,6 +63,7 @@ export enum ActionKey {
   Mint = 'mint',
   ManageVesting = 'manageVesting',
   CreateCrossChainAccount = 'createCrossChainAccount',
+  CrossChainExecute = 'crossChainExecute',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',

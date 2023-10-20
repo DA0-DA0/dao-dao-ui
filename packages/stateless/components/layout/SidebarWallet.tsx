@@ -8,19 +8,24 @@ import {
 } from '../wallet'
 import { PAGE_HEADER_HEIGHT_CLASS_NAMES } from './PageHeader'
 
-export type SidebarWalletProps =
+export type SidebarWalletProps = { containerClasName?: string } & (
   | ({
       connected: true
     } & Omit<ConnectedWalletProps, 'className'>)
   | ({
       connected: false
     } & Omit<ConnectWalletProps, 'className'>)
+)
 
-export const SidebarWallet = (props: SidebarWalletProps) => (
+export const SidebarWallet = ({
+  containerClasName,
+  ...props
+}: SidebarWalletProps) => (
   <div
     className={clsx(
       'flex shrink-0 flex-col justify-center',
-      PAGE_HEADER_HEIGHT_CLASS_NAMES
+      PAGE_HEADER_HEIGHT_CLASS_NAMES,
+      containerClasName
     )}
   >
     {props.connected ? (

@@ -370,6 +370,16 @@ input[type='number']::-webkit-outer-spin-button {
 }
 
 @layer utilities {
+  .wd-screen {
+    /* dynamic viewport for mobile safari */
+    width: 100dvw;
+  }
+
+  .hd-screen {
+    /* dynamic viewport for mobile safari */
+    height: 100dvh;
+  }
+
   .styled-scrollbar {
     scrollbar-color: rgba(var(--light), 0.1);
     scrollbar-width: thin;

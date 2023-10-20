@@ -63,7 +63,7 @@ export const WalletUi = (props: WalletModalProps) => {
 
   return (
     <Modal
-      containerClassName="!w-[24rem] !max-w-[90vw]"
+      containerClassName="!w-[24rem] !max-w-[90dvw]"
       footerContent={
         isWalletError && errorMessage ? (
           <WarningCard

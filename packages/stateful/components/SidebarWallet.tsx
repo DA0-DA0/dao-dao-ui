@@ -1,9 +1,14 @@
-import { SidebarWallet as OriginalSidebarWallet } from '@dao-dao/stateless'
+import {
+  SidebarWallet as OriginalSidebarWallet,
+  SidebarWalletProps,
+} from '@dao-dao/stateless'
 
 import { useWallet } from '../hooks'
 import { SuspenseLoader } from './SuspenseLoader'
 
-export const SidebarWallet = () => {
+export const SidebarWallet = (
+  props: Pick<SidebarWalletProps, 'containerClasName'>
+) => {
   const { openView, isWalletConnected, address, username, wallet } = useWallet()
 
   return (
@@ -17,9 +22,14 @@ export const SidebarWallet = () => {
           walletAddress={address}
           walletLogo={wallet.logo}
           walletName={username || wallet?.prettyName}
+          {...props}
         />
       ) : (
-        <OriginalSidebarWallet connected={false} onConnect={openView} />
+        <OriginalSidebarWallet
+          connected={false}
+          onConnect={openView}
+          {...props}
+        />
       )}
     </SuspenseLoader>
   )

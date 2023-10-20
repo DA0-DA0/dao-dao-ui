@@ -44,7 +44,7 @@ export const KadoModal = ({
 
   return (
     <Modal
-      containerClassName={clsx('!h-[80vh] !max-w-lg', containerClassName)}
+      containerClassName={clsx('!h-[80dvh] !max-w-lg', containerClassName)}
       {...modalProps}
     >
       {toAddress && (
