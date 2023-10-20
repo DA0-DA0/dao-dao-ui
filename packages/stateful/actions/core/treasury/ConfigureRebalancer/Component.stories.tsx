@@ -37,6 +37,8 @@ export default {
         ki: 0.2,
         kd: 0.1,
       },
+      maxLimitBps: 500,
+      targetOverrideStrategy: 'proportional',
     }),
     makeDaoProvidersDecorator(makeDaoInfo()),
   ],

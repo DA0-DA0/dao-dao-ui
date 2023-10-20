@@ -1,3 +1,4 @@
+import { fromBase64, fromUtf8 } from '@cosmjs/encoding'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useRecoilValueLoadable, waitForAll } from 'recoil'
@@ -57,11 +58,17 @@ const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
           ]
         : []),
     ],
+    // TODO: pick default
     pid: {
       kp: 0.1,
       ki: 0.1,
       kd: 0.1,
     },
+    // TODO: pick default
+    // 5%
+    maxLimitBps: 500,
+    // TODO: pick default
+    targetOverrideStrategy: 'proportional',
   }
 }
 
@@ -189,8 +196,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
     msg = decodedPolytone.msg
   }
 
+  let serviceName: string | undefined
+  let data: RebalancerData | undefined
   if (
-    !objectMatchesStructure(msg, {
+    objectMatchesStructure(msg, {
       wasm: {
         execute: {
           contract_addr: {},
@@ -200,13 +209,61 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
       },
     })
   ) {
+    if (
+      objectMatchesStructure(msg.wasm.execute.msg, {
+        register_to_service: {
+          service_name: {},
+          data: {},
+        },
+      })
+    ) {
+      serviceName = msg.wasm.execute.msg.register_to_service
+        .service_name as string
+      data = JSON.parse(
+        fromUtf8(
+          fromBase64(msg.wasm.execute.msg.register_to_service.data as string)
+        )
+      )
+    } else if (
+      objectMatchesStructure(msg.wasm.execute.msg, {
+        update_service: {
+          service_name: {},
+          data: {},
+        },
+      })
+    ) {
+      serviceName = msg.wasm.execute.msg.update_service.service_name as string
+      data = JSON.parse(
+        fromUtf8(fromBase64(msg.wasm.execute.msg.update_service.data as string))
+      )
+    } else {
+      return {
+        match: false,
+      }
+    }
+
+    if (
+      serviceName !== 'rebalancer' ||
+      !objectMatchesStructure(data, {
+        base_denom: {},
+        targets: {},
+        pid: {},
+        target_override_strategy: {},
+      })
+    ) {
+      return {
+        match: false,
+      }
+    }
+  } else {
     return {
       match: false,
     }
   }
 
   return {
-    match: false,
+    match: true,
+    data: {},
   }
 }
 
