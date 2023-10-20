@@ -8,13 +8,14 @@ export const DAO_APPS: DaoApp[] = [
     imageUrl: 'https://app.osmosis.zone/images/preview.jpg',
     url: 'https://app.osmosis.zone',
   },
-  {
-    name: 'Stargaze',
-    imageUrl: 'https://stargaze.zone/TwitterCard.png',
-    url: MAINNET
-      ? 'https://stargaze.zone'
-      : 'https://testnet.publicawesome.dev',
-  },
+  // TODO(apps): uncomment when Stargaze works
+  // {
+  //   name: 'Stargaze',
+  //   imageUrl: 'https://stargaze.zone/TwitterCard.png',
+  //   url: MAINNET
+  //     ? 'https://stargaze.zone'
+  //     : 'https://testnet.publicawesome.dev',
+  // },
   {
     name: 'Stargaze Studio',
     imageUrl: 'https://studio.stargaze.zone/assets/android-chrome-256x256.png',
