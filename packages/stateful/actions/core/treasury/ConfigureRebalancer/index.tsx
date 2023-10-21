@@ -7,6 +7,7 @@ import { valenceAccountsSelector } from '@dao-dao/state'
 import { historicalUsdPriceSelector } from '@dao-dao/state/recoil/selectors/osmosis'
 import {
   BalanceEmoji,
+  ChainPickerInput,
   ChainProvider,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
@@ -41,6 +42,7 @@ import { useActionOptions } from '../../../react'
 import {
   ConfigureRebalancerData,
   REBALANCER_BASE_TOKEN_ALLOWLIST,
+  REBALANCER_TOKEN_ALLOWLIST,
   ConfigureRebalancerComponent as StatelessConfigureRebalancerComponent,
 } from './Component'
 
@@ -135,6 +137,7 @@ const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
 const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   props
 ) => {
+  const { context } = useActionOptions()
   const { watch } = useFormContext<ConfigureRebalancerData>()
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const selectedTokens = watch((props.fieldNamePrefix + 'tokens') as 'tokens')
@@ -218,20 +221,20 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
 
   return (
     <>
-      {/* TODO(rebalancer-cross-chain) */}
-      {/* {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
-          className="mb-4"
-          disabled={!props.isCreating}
-          fieldName={props.fieldNamePrefix + 'chainId'}
-          includeChainIds={
-            // Only include chains that have at least one allowed token.
-            Object.entries(REBALANCER_TOKEN_ALLOWLIST)
-              .filter(([, tokens]) => tokens.length > 0)
-              .map(([chainId]) => chainId)
-          }
-        />
-      )} */}
+      {context.type === ActionContextType.Dao &&
+        Object.keys(REBALANCER_TOKEN_ALLOWLIST).length > 1 && (
+          <ChainPickerInput
+            className="mb-4"
+            disabled={!props.isCreating}
+            fieldName={props.fieldNamePrefix + 'chainId'}
+            includeChainIds={
+              // Only include chains that have at least one allowed token.
+              Object.entries(REBALANCER_TOKEN_ALLOWLIST)
+                .filter(([, tokens]) => tokens.length > 0)
+                .map(([chainId]) => chainId)
+            }
+          />
+        )}
 
       <ChainProvider chainId={chainId}>
         <StatelessConfigureRebalancerComponent

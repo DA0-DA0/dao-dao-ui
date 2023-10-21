@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { KadoModal } from '@dao-dao/stateless'
 import { KadoModalProps, ModalProps } from '@dao-dao/types'
 
-import { useWallet } from '../hooks/useWallet'
+import { useWallet } from '../../hooks/useWallet'
 
 export const WalletFiatRampModal = (
   props: Omit<ModalProps, 'header'> & Pick<KadoModalProps, 'defaultMode'>

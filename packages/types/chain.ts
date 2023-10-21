@@ -110,6 +110,8 @@ export type SupportedChainConfig = BaseChainConfig & {
   historicalCodeIds?: Partial<Record<ContractVersion, Partial<CodeIdConfig>>>
   polytone?: PolytoneConfig
   valence?: {
+    // Address of services manager contract.
+    servicesManager: string
     // Address of rebalancer contract.
     rebalancer: string
   }

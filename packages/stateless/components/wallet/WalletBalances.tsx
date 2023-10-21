@@ -8,11 +8,11 @@ import {
   AccountType,
   FilterFn,
   LazyNftCardInfo,
-  MeBalancesProps,
   SortFn,
   TokenCardInfo,
   TypedOption,
   ValenceAccount,
+  WalletBalancesProps,
 } from '@dao-dao/types'
 import {
   areAccountsEqual,
@@ -31,12 +31,15 @@ import {
   Pagination,
   TooltipInfoIcon,
   ValenceAccountTreasury,
-} from '../components'
-import { useButtonPopupFilter, useButtonPopupSorter } from '../hooks'
+} from '..'
+import { useButtonPopupFilter, useButtonPopupSorter } from '../../hooks'
 
 const NFTS_PER_PAGE = 18
 
-export const MeBalances = <T extends TokenCardInfo, N extends LazyNftCardInfo>({
+export const WalletBalances = <
+  T extends TokenCardInfo,
+  N extends LazyNftCardInfo
+>({
   accounts,
   tokens,
   hiddenTokens,
@@ -44,7 +47,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends LazyNftCardInfo>({
   nfts,
   NftCard,
   TreasuryHistoryGraph,
-}: MeBalancesProps<T, N>) => {
+}: WalletBalancesProps<T, N>) => {
   const { t } = useTranslation()
 
   const uniqueChainIds = Array.from(

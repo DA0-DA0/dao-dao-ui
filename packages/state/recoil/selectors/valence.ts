@@ -1,4 +1,4 @@
-import { selectorFamily, waitForAll } from 'recoil'
+import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
   AccountType,
@@ -41,8 +41,9 @@ export const valenceAccountsSelector = selectorFamily<
 
       const rebalancerConfigs = rebalancerAddress
         ? get(
-            waitForAll(
+            waitForAllSettled(
               valenceAccountAddresses.map((addr) =>
+                // This will error when no rebalancer is configured.
                 ValenceServiceRebalancerSelectors.getConfigSelector({
                   contractAddress: rebalancerAddress,
                   chainId,
@@ -54,6 +55,8 @@ export const valenceAccountsSelector = selectorFamily<
                 })
               )
             )
+          ).flatMap((loadable) =>
+            loadable.state === 'hasValue' ? loadable.contents : []
           )
         : undefined
 

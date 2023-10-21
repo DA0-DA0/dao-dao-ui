@@ -40,14 +40,14 @@ import {
   useCfWorkerAuthPostRequest,
   useWallet,
   useWalletInfo,
-} from '../hooks'
+} from '../../hooks'
 import {
   hiddenBalancesSelector,
   temporaryHiddenBalancesAtom,
   tokenCardLazyInfoSelector,
-} from '../recoil'
-import { ButtonLink } from './ButtonLink'
-import { EntityDisplay } from './EntityDisplay'
+} from '../../recoil'
+import { ButtonLink } from '../ButtonLink'
+import { EntityDisplay } from '../EntityDisplay'
 import { WalletFiatRampModal } from './WalletFiatRampModal'
 import { WalletStakingModal } from './WalletStakingModal'
 

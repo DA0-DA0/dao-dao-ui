@@ -25,7 +25,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useAwaitNextBlock, useWallet, useWalletInfo } from '../hooks'
+import { useAwaitNextBlock, useWallet, useWalletInfo } from '../../hooks'
 
 export type WalletStakingModalProps = Pick<
   StakingModalProps,
