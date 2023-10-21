@@ -5,7 +5,7 @@ import {
 import { TokenCardInfo, TokenLineProps } from '@dao-dao/types'
 import { getDisplayNameForChainId } from '@dao-dao/utils'
 
-import { tokenCardLazyInfoSelector } from '../recoil'
+import { tokenCardLazyInfoSelector } from '../../recoil'
 import { WalletTokenCard } from './WalletTokenCard'
 
 export const WalletTokenLine = <T extends TokenCardInfo>(

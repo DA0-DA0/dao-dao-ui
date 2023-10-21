@@ -45,8 +45,8 @@ import {
   getSignerOptions,
 } from '@dao-dao/utils'
 
-import { useSyncWalletSigner, useWallet } from '../hooks'
-import { WalletUi } from './wallet'
+import { WalletUi } from '.'
+import { useSyncWalletSigner, useWallet } from '../../hooks'
 
 // Set better name for MetaMask wallets.
 leapMetamaskWallets[0].walletInfo.prettyName = 'MetaMask (Leap Snap)'

@@ -3,7 +3,7 @@ import { constSelector, useRecoilValue, waitForAllSettled } from 'recoil'
 
 import { accountsSelector } from '@dao-dao/state/recoil'
 import {
-  MeBalances as StatelessMeBalances,
+  WalletBalances as StatelessWalletBalances,
   useCachedLoading,
 } from '@dao-dao/stateless'
 import { LazyNftCardInfo, LoadingData, TokenCardInfo } from '@dao-dao/types'
@@ -13,6 +13,7 @@ import {
   transformBech32Address,
 } from '@dao-dao/utils'
 
+import { WalletTokenLine, WalletTokenLineReadonly } from '.'
 import {
   allWalletNftsSelector,
   hiddenBalancesSelector,
@@ -20,13 +21,14 @@ import {
   walletTokenCardInfosSelector,
 } from '../../recoil'
 import { TreasuryHistoryGraph } from '../TreasuryHistoryGraph'
-import { WalletTokenLine } from '../WalletTokenLine'
 
 export type WalletBalancesProps = {
   chainId: string
   address: string | undefined
   hexPublicKey: LoadingData<string>
   NftCard: ComponentType<LazyNftCardInfo>
+  // If true, use token card that has edit actions.
+  editable: boolean
 }
 
 export const WalletBalances = ({
@@ -34,6 +36,7 @@ export const WalletBalances = ({
   address,
   hexPublicKey,
   NftCard,
+  editable,
 }: WalletBalancesProps) => {
   const accounts =
     useRecoilValue(
@@ -117,9 +120,9 @@ export const WalletBalances = ({
   )
 
   return (
-    <StatelessMeBalances
+    <StatelessWalletBalances
       NftCard={NftCard}
-      TokenLine={WalletTokenLine}
+      TokenLine={editable ? WalletTokenLine : WalletTokenLineReadonly}
       TreasuryHistoryGraph={TreasuryHistoryGraph}
       accounts={accounts}
       hiddenTokens={hiddenTokens}

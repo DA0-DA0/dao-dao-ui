@@ -16,7 +16,7 @@ import { useActionForKey } from '../../actions'
 import { TransferNftData } from '../../actions/core/nfts/TransferNft/Component'
 import { useWalletInfo } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
-import { LazyNftCard } from './LazyNftCard'
+import { LazyNftCard } from '../nft'
 
 export const WalletLazyNftCard = (
   props: ComponentProps<typeof LazyNftCard>
