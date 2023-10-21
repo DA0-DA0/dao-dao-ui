@@ -18,10 +18,9 @@ import { OsmosisHistoricalPriceChartPrecision } from '@dao-dao/state/recoil'
 import {
   WarningCard,
   useCachedLoadingWithError,
-  useDaoInfoContext,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
-import { AccountType, DaoTreasuryHistoryGraphProps } from '@dao-dao/types'
+import { AccountType, TreasuryHistoryGraphProps } from '@dao-dao/types'
 import {
   DISTRIBUTION_COLORS,
   formatDate,
@@ -31,7 +30,7 @@ import {
   transformIbcSymbol,
 } from '@dao-dao/utils'
 
-import { daoTreasuryValueHistorySelector } from '../../recoil'
+import { treasuryValueHistorySelector } from '../recoil'
 
 ChartJS.register(
   CategoryScale,
@@ -44,13 +43,14 @@ ChartJS.register(
 )
 
 // TODO: add way to set base price denom to use instead of USD
-export const DaoTreasuryHistoryGraph = ({
+export const TreasuryHistoryGraph = ({
+  chainId,
+  address,
   account,
   showRebalancer = false,
   className,
-}: DaoTreasuryHistoryGraphProps) => {
+}: TreasuryHistoryGraphProps) => {
   const { t } = useTranslation()
-  const { chainId, coreAddress } = useDaoInfoContext()
 
   const textColor = useNamedThemeColor('text-tertiary')
   const borderColor = useNamedThemeColor('border-primary')
@@ -64,12 +64,16 @@ export const DaoTreasuryHistoryGraph = ({
     useState<OsmosisHistoricalPriceChartPrecision>('hour')
 
   const treasuryValueHistory = useCachedLoadingWithError(
-    daoTreasuryValueHistorySelector({
+    treasuryValueHistorySelector({
       chainId,
-      coreAddress,
+      address,
       precision,
       filter: account && {
-        account,
+        account: {
+          type: account.type,
+          chainId: account.chainId,
+          address: account.address,
+        },
         // Filter by rebalancer tokens.
         tokens:
           showRebalancer && account.type === AccountType.Valence

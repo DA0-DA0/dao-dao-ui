@@ -3,35 +3,35 @@ import { t } from 'i18next'
 import { ComponentType, useState } from 'react'
 
 import {
-  DaoTreasuryHistoryGraphProps,
   LoadingData,
   TokenCardInfo,
+  TreasuryHistoryGraphProps,
   ValenceAccount,
 } from '@dao-dao/types'
 import { serializeTokenSource } from '@dao-dao/utils'
 
-import { useChain } from '../../hooks'
-import { CopyToClipboard } from '../CopyToClipboard'
-import { GridCardContainer } from '../GridCardContainer'
-import { SwitchCard } from '../inputs/Switch'
-import { Loader } from '../logo'
-import { TooltipInfoIcon } from '../tooltip'
+import { useChain } from '../hooks'
+import { CopyToClipboard } from './CopyToClipboard'
+import { GridCardContainer } from './GridCardContainer'
+import { SwitchCard } from './inputs/Switch'
+import { Loader } from './logo'
+import { TooltipInfoIcon } from './tooltip'
 
-export type DaoTreasuryValenceAccountProps<T extends TokenCardInfo> = {
+export type ValenceAccountTreasuryProps<T extends TokenCardInfo> = {
   account: ValenceAccount
   tokens: LoadingData<T[]>
   TokenCard: ComponentType<T>
-  DaoTreasuryHistoryGraph: ComponentType<DaoTreasuryHistoryGraphProps>
+  TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
   className?: string
 }
 
-export const DaoTreasuryValenceAccount = <T extends TokenCardInfo>({
+export const ValenceAccountTreasury = <T extends TokenCardInfo>({
   account,
   tokens,
   TokenCard,
-  DaoTreasuryHistoryGraph,
+  TreasuryHistoryGraph,
   className,
-}: DaoTreasuryValenceAccountProps<T>) => {
+}: ValenceAccountTreasuryProps<T>) => {
   const [valenceAccountMode, setValenceAccountMode] = useState<
     'all' | 'rebalancer'
   >('all')
@@ -86,8 +86,10 @@ export const DaoTreasuryValenceAccount = <T extends TokenCardInfo>({
                 sizing="sm"
               />
 
-              <DaoTreasuryHistoryGraph
+              <TreasuryHistoryGraph
                 account={account}
+                address={account.address}
+                chainId={account.chainId}
                 className="px-8"
                 showRebalancer={valenceAccountMode === 'rebalancer'}
               />

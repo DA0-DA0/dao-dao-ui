@@ -67,13 +67,11 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
   })
 
   const lazyInfo = useCachedLoading(
-    walletAddress
-      ? tokenCardLazyInfoSelector({
-          owner: walletAddress,
-          token: props.token,
-          unstakedBalance: props.unstakedBalance,
-        })
-      : undefined,
+    tokenCardLazyInfoSelector({
+      owner: props.owner.address,
+      token: props.token,
+      unstakedBalance: props.unstakedBalance,
+    }),
     {
       usdUnitPrice: undefined,
       stakingInfo: undefined,

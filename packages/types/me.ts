@@ -1,12 +1,17 @@
 import { ComponentType, ReactNode } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 
+import { Account } from './account'
 import {
   ActionCategoryWithLabel,
   LoadedActions,
   PartialCategorizedActionKeyAndData,
 } from './actions'
-import { LoadingData, SuspenseLoaderProps } from './components'
+import {
+  LoadingData,
+  SuspenseLoaderProps,
+  TreasuryHistoryGraphProps,
+} from './components'
 import { CosmosMsgFor_Empty } from './contracts'
 import { LazyNftCardInfo } from './nft'
 import { WalletProfileData } from './profile'
@@ -63,10 +68,12 @@ export type MeBalancesProps<
   T extends TokenCardInfo,
   N extends LazyNftCardInfo
 > = {
+  accounts: Account[]
   tokens: LoadingData<T[]>
   // List of token denomOrAddress fields that should be hidden.
   hiddenTokens: LoadingData<string[]>
   TokenLine: ComponentType<T>
   nfts: LoadingData<N[]>
   NftCard: ComponentType<N>
+  TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
 }

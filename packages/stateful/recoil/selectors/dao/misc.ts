@@ -9,11 +9,12 @@ import {
   DaoCoreV2Selectors,
   DaoVotingCw20StakedSelectors,
   PolytoneProxySelectors,
+  accountsSelector,
   addressIsModuleSelector,
   contractInfoSelector,
   contractInstantiateTimeSelector,
   contractVersionSelector,
-  isContractSelector,
+  isDaoSelector,
   queryContractIndexerSelector,
 } from '@dao-dao/state'
 import {
@@ -212,8 +213,8 @@ export const daoInfoSelector: (param: {
               contractAddress: coreAddress,
               chainId,
             }),
-            DaoCoreV2Selectors.allAccountsSelector({
-              contractAddress: coreAddress,
+            accountsSelector({
+              address: coreAddress,
               chainId,
             }),
           ]),
@@ -269,16 +270,9 @@ export const daoInfoSelector: (param: {
             getChainForChainId(chainId).bech32_prefix
           ) &&
           get(
-            isContractSelector({
-              contractAddress: admin,
+            isDaoSelector({
+              address: admin,
               chainId,
-              names: [
-                // V1
-                'cw-core',
-                // V2
-                'cwd-core',
-                'dao-core',
-              ],
             })
           ) &&
           !ignoreAdmins?.includes(admin)

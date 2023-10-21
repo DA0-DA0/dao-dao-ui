@@ -4,11 +4,11 @@ import {
   AccountType,
   DaoChainTreasury,
   DaoFiatDepositModalProps,
-  DaoTreasuryHistoryGraphProps,
   LoadingNfts,
   LoadingTokens,
   TokenCardInfo,
   TokenType,
+  TreasuryHistoryGraphProps,
 } from '@dao-dao/types'
 import { getNativeTokenForChainId } from '@dao-dao/utils'
 
@@ -27,7 +27,7 @@ export type TreasuryAndNftsTabProps<
   tokens: LoadingTokens<T>
   nfts: LoadingNfts<N & { key: string }>
   FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
-  DaoTreasuryHistoryGraph: ComponentType<DaoTreasuryHistoryGraphProps>
+  TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
 } & Omit<
   DaoChainTreasuryAndNftsProps<T, N>,
   'treasury' | 'setDepositFiatChainId'
@@ -39,14 +39,18 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
   nfts,
   FiatDepositModal,
   createCrossChainAccountPrefillHref,
-  DaoTreasuryHistoryGraph,
+  TreasuryHistoryGraph,
   ...props
 }: TreasuryAndNftsTabProps<T, N>) => {
   const {
     chain: { chain_id: currentChainId },
     config: { polytone = {} },
   } = useSupportedChainContext()
-  const { accounts: allAccounts } = useDaoInfoContext()
+  const {
+    chainId: daoChainId,
+    coreAddress,
+    accounts: allAccounts,
+  } = useDaoInfoContext()
 
   // Tokens and NFTs on the various Polytone-supported chains.
   const treasuries = [currentChainId, ...Object.keys(polytone)].map(
@@ -110,7 +114,11 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
 
   return (
     <>
-      <DaoTreasuryHistoryGraph className="mb-8 mt-4 max-h-[20rem] px-8" />
+      <TreasuryHistoryGraph
+        address={coreAddress}
+        chainId={daoChainId}
+        className="mb-8 mt-4 max-h-[20rem] px-8"
+      />
 
       <div className="mb-9 mt-6">
         {
@@ -124,7 +132,7 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
               {treasuries.map((treasury) => (
                 <DaoChainTreasuryAndNfts
                   key={treasury.chainId}
-                  DaoTreasuryHistoryGraph={DaoTreasuryHistoryGraph}
+                  TreasuryHistoryGraph={TreasuryHistoryGraph}
                   connected={connected}
                   setDepositFiatChainId={setDepositFiatChainId}
                   treasury={treasury}

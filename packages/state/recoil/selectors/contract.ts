@@ -3,7 +3,11 @@ import { fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { selectorFamily } from 'recoil'
 
 import { ContractVersion, InfoResponse, WithChainId } from '@dao-dao/types'
-import { parseContractVersion } from '@dao-dao/utils'
+import {
+  getChainForChainId,
+  isValidContractAddress,
+  parseContractVersion,
+} from '@dao-dao/utils'
 
 import {
   blockHeightTimestampSafeSelector,
@@ -195,4 +199,31 @@ export const isContractSelector = selectorFamily<
         throw err
       }
     },
+})
+
+export const isDaoSelector = selectorFamily<
+  boolean,
+  WithChainId<{ address: string }>
+>({
+  key: 'isDao',
+  get:
+    ({ address, chainId }) =>
+    ({ get }) =>
+      isValidContractAddress(
+        address,
+        getChainForChainId(chainId).bech32_prefix
+      ) &&
+      get(
+        isContractSelector({
+          contractAddress: address,
+          chainId,
+          names: [
+            // V1
+            'cw-core',
+            // V2
+            'cwd-core',
+            'dao-core',
+          ],
+        })
+      ),
 })
