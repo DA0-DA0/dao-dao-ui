@@ -6,6 +6,7 @@ import {
   PartialCategorizedActionKeyAndDataNoId,
 } from '@dao-dao/types'
 
+import { getSupportedChainConfig } from './chain'
 import { DaoProposalSingleAdapterId } from './constants/adapters'
 
 // Create a path to a DAO page based on the app's page mode.
@@ -59,6 +60,25 @@ export const getGovProposalPath = (
   params?: Record<string, unknown>
 ) => {
   const base = getGovPath(chain, `${DaoTabId.Proposals}/${proposalId}`)
+  const query = params ? `?${queryString.stringify(params)}` : ''
+
+  return base + query
+}
+
+// Create a path to a wallet page.
+export const getWalletPath = (
+  chainId: string,
+  walletAddress: string,
+  path?: string,
+  params?: Record<string, unknown>
+) => {
+  const config = getSupportedChainConfig(chainId)
+  if (!config) {
+    throw new Error('Unsupported chain.')
+  }
+
+  const base =
+    `/wallet/${config.name}/${walletAddress}` + (path ? `/${path}` : '')
   const query = params ? `?${queryString.stringify(params)}` : ''
 
   return base + query

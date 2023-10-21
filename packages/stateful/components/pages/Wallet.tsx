@@ -1,7 +1,7 @@
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
@@ -14,18 +14,29 @@ import {
   CopyableAddress,
   ErrorPage,
   Loader,
+  PageHeaderContent,
+  RightSidebarContent,
   WalletProfileHeader,
   useCachedLoadable,
   useCachedLoadingWithError,
   useThemeContext,
 } from '@dao-dao/stateless'
 import { Theme } from '@dao-dao/types'
-import { SITE_URL, getSupportedChains } from '@dao-dao/utils'
+import {
+  SITE_URL,
+  getSupportedChainConfig,
+  getSupportedChains,
+  getWalletPath,
+  transformBech32Address,
+} from '@dao-dao/utils'
 
 import { walletProfileDataSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
+import { ChainSwitcher } from '../ChainSwitcher'
 import { LazyNftCard } from '../nft'
+import { ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
+import { TreasuryHistoryGraph } from '../TreasuryHistoryGraph'
 import { WalletBalances } from '../wallet'
 
 export const Wallet: NextPage = () => {
@@ -95,6 +106,8 @@ export const Wallet: NextPage = () => {
     averageImgColorLoadable.contents,
   ])
 
+  const [goingToChainId, setGoingToChainId] = useState<string>()
+
   return (
     <>
       <NextSeo
@@ -111,24 +124,62 @@ export const Wallet: NextPage = () => {
         title={t('title.wallet') + ': ' + walletAddress}
       />
 
-      {!hexPublicKey.loading && (hexPublicKey.errored || !hexPublicKey.data) ? (
-        <ErrorPage title={t('error.couldntFindWallet')}>
-          <ButtonLink href="/" variant="secondary">
-            {t('button.returnHome')}
-          </ButtonLink>
-        </ErrorPage>
-      ) : (
-        <ChainProvider chainId={supportedChain.chain.chain_id}>
-          <div className="space-y-6">
+      <RightSidebarContent>
+        <ProfileHomeCard />
+      </RightSidebarContent>
+      <PageHeaderContent
+        className="mx-auto max-w-5xl"
+        gradient
+        rightNode={
+          <ChainSwitcher
+            chainId={supportedChain.chain.chain_id}
+            loading={
+              !!goingToChainId &&
+              goingToChainId !== supportedChain.chain.chain_id
+            }
+            onSelect={(chainId) => {
+              const chainConfig = getSupportedChainConfig(chainId)
+              if (chainConfig) {
+                router.push(
+                  getWalletPath(
+                    chainId,
+                    transformBech32Address(walletAddress, chainId)
+                  )
+                )
+                setGoingToChainId(chainId)
+              }
+            }}
+          />
+        }
+        title={t('title.wallet')}
+      />
+
+      <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
+        {!hexPublicKey.loading &&
+        (hexPublicKey.errored || !hexPublicKey.data) ? (
+          <ErrorPage title={t('error.couldntFindWallet')}>
+            <ButtonLink href="/" variant="secondary">
+              {t('button.returnHome')}
+            </ButtonLink>
+          </ErrorPage>
+        ) : (
+          <ChainProvider chainId={supportedChain.chain.chain_id}>
             <WalletProfileHeader editable={false} profileData={profileData}>
               <CopyableAddress address={walletAddress} />
             </WalletProfileHeader>
 
             <SuspenseLoader fallback={<Loader />}>
+              <TreasuryHistoryGraph
+                address={walletAddress}
+                chainId={supportedChain.chain.chain_id}
+                className="sm:mb-4"
+              />
+
               <WalletBalances
                 NftCard={LazyNftCard}
                 address={walletAddress}
                 chainId={supportedChain.chain.chain_id}
+                chainMode="current"
                 editable={false}
                 hexPublicKey={
                   hexPublicKey.loading ||
@@ -143,9 +194,9 @@ export const Wallet: NextPage = () => {
                 }
               />
             </SuspenseLoader>
-          </div>
-        </ChainProvider>
-      )}
+          </ChainProvider>
+        )}
+      </div>
     </>
   )
 }
