@@ -15,6 +15,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ```json
 {
+  "chainId": "<CHAIN ID>",
   // Optional. If empty, the smart contract will have no admin and thus can
   // never be upgraded.
   "admin": "<ADMIN ADDRESS>",

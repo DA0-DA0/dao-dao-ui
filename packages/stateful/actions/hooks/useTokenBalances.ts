@@ -28,6 +28,8 @@ export type UseTokenBalancesOptions = {
   allChains?: boolean
 }
 
+// TODO: refactor to use accounts selector, make genericTokenBalancesSelector use accounts?
+
 // Get native and cw20 token balances for the current context address.
 export const useTokenBalances = ({
   filter,

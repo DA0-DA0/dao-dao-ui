@@ -14,11 +14,10 @@ import {
   RebalancerProjectorAsset,
   SwitchCard,
   TokenInput,
-  useChain,
+  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
   AmountWithTimestamp,
-  ChainId,
   GenericTokenBalance,
   LoadingData,
   ValenceAccount,
@@ -72,16 +71,20 @@ export const ConfigureRebalancerComponent: ActionComponent<
   options: { nativeBalances, historicalPrices },
 }) => {
   const { t } = useTranslation()
-  const { chain_id: chainId } = useChain()
+  const {
+    chainId,
+    config: { valence },
+  } = useSupportedChainContext()
 
-  const allowedTokens =
-    (chainId in REBALANCER_TOKEN_ALLOWLIST &&
-      REBALANCER_TOKEN_ALLOWLIST[chainId as ChainId]) ||
-    []
+  const allowedBaseTokenBalances = nativeBalances.loading
+    ? []
+    : nativeBalances.data.filter(({ token }) =>
+        valence?.rebalancer.baseTokenAllowlist.includes(token.denomOrAddress)
+      )
   const allowedTokenBalances = nativeBalances.loading
     ? []
     : nativeBalances.data.filter(({ token }) =>
-        allowedTokens.includes(token.denomOrAddress)
+        valence?.rebalancer.tokenAllowlist.includes(token.denomOrAddress)
       )
 
   const { control, watch, register, setValue, clearErrors, setError } =
@@ -161,7 +164,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
           }
           readOnly={!isCreating}
           selectedToken={
-            allowedTokenBalances.find(
+            allowedBaseTokenBalances.find(
               ({ token }) => token.denomOrAddress === baseDenom
             )?.token
           }
@@ -170,7 +173,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
               ? { loading: true }
               : {
                   loading: false,
-                  data: allowedTokenBalances.map(({ token }) => token),
+                  data: allowedBaseTokenBalances.map(({ token }) => token),
                 }
           }
         />
@@ -376,29 +379,4 @@ export const ConfigureRebalancerComponent: ActionComponent<
         ))}
     </>
   )
-}
-
-export const REBALANCER_TOKEN_ALLOWLIST: Partial<Record<ChainId, string[]>> = {
-  [ChainId.NeutronMainnet]: [
-    // NTRN
-    'untrn',
-    // ATOM
-    'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9',
-    // USDC
-    'ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349',
-  ],
-}
-
-export const REBALANCER_BASE_TOKEN_ALLOWLIST: Partial<
-  Record<ChainId, string[]>
-> = {
-  [ChainId.NeutronMainnet]: [
-    // First denom is the default.
-    // USDC
-    'ibc/F082B65C88E4B6D5EF1DB243CDA1D331D002759E938A0F5CD3FFDC5D53B3E349',
-    // NTRN
-    'untrn',
-    // ATOM
-    'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9',
-  ],
 }

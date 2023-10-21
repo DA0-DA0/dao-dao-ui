@@ -402,8 +402,12 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       valence: {
         servicesManager:
           'juno1gscdr8zw8njrqfad9m3jgw70s4zumqccka4k6cutlxen0krud08sxlqs9d',
-        rebalancer:
-          'juno15she5505reyvgvg9cz5g4k6y5ktxg4eja5tuytxmj0x0gs0cyjwq2sjgr0',
+        rebalancer: {
+          address:
+            'juno15she5505reyvgvg9cz5g4k6y5ktxg4eja5tuytxmj0x0gs0cyjwq2sjgr0',
+          tokenAllowlist: ['ujunox', 'uusdcx'],
+          baseTokenAllowlist: ['ujunox', 'uusdcx'],
+        },
       },
     },
   },
@@ -575,3 +579,7 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
   },
   ...SUPPORTED_CHAINS,
 ]
+
+export const VALENCE_SUPPORTED_CHAINS = Object.entries(SUPPORTED_CHAINS)
+  .filter(([, { valence }]) => valence)
+  .map(([chainId]) => chainId as ChainId)

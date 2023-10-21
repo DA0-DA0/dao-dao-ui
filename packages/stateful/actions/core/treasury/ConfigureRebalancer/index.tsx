@@ -11,7 +11,13 @@ import {
   ChainProvider,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { ChainId, TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
+import {
+  Account,
+  AccountType,
+  ChainId,
+  TokenType,
+  UseDecodedCosmosMsg,
+} from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -26,14 +32,15 @@ import {
   RebalancerUpdateData,
 } from '@dao-dao/types/contracts/ValenceServiceRebalancer'
 import {
+  VALENCE_SUPPORTED_CHAINS,
+  actionContextSupportsValence,
   decodePolytoneExecuteMsg,
   encodeMessageAsBase64,
-  getAccountAddress,
-  getNativeIbcUsdc,
-  getNativeTokenForChainId,
+  getAccount,
   loadableToLoadingData,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
+  mustGetSupportedChainConfig,
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
@@ -41,36 +48,44 @@ import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
 import {
   ConfigureRebalancerData,
-  REBALANCER_BASE_TOKEN_ALLOWLIST,
-  REBALANCER_TOKEN_ALLOWLIST,
   ConfigureRebalancerComponent as StatelessConfigureRebalancerComponent,
 } from './Component'
 
 const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
   const {
     address,
-    chain: { chain_id: chainId },
+    chain: { chain_id: currentChainId },
     context,
   } = useActionOptions()
 
-  // Get Neutron account.
-  const neutronAddress =
+  // Get account that can control valence accounts.
+  const valenceControllerAccount: Account | undefined =
     context.type === ActionContextType.Dao
-      ? getAccountAddress({
-          accounts: context.info.accounts,
-          chainId: ChainId.NeutronMainnet,
-        })
-      : chainId === ChainId.NeutronMainnet
-      ? address
-      : null
-  if (!neutronAddress) {
-    throw new Error('Missing Neutron account.')
+      ? // Get first account on any valence supported chain.
+        VALENCE_SUPPORTED_CHAINS.map((chainId) =>
+          getAccount({
+            accounts: context.info.accounts,
+            chainId,
+          })
+        ).find(Boolean)
+      : VALENCE_SUPPORTED_CHAINS.includes(currentChainId as ChainId)
+      ? {
+          type: AccountType.Native,
+          chainId: currentChainId,
+          address,
+        }
+      : undefined
+
+  // This action should not be allowed to be picked if there are no accounts
+  // that can control a Valence account, so this is just a type check.
+  if (!valenceControllerAccount) {
+    throw new Error('No valence controller account found.')
   }
 
   const valenceAccountsLoading = useCachedLoadingWithError(
     valenceAccountsSelector({
-      chainId: ChainId.NeutronMainnet,
-      address,
+      chainId: valenceControllerAccount.chainId,
+      address: valenceControllerAccount.address,
     })
   )
   const valenceAccount =
@@ -78,21 +93,22 @@ const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
       ? undefined
       : valenceAccountsLoading.data[0]
 
-  const nativeDenom = getNativeTokenForChainId(
-    ChainId.NeutronMainnet
-  ).denomOrAddress
-  const usdcDenom = getNativeIbcUsdc(ChainId.NeutronMainnet)?.denomOrAddress
+  const { chainId } = valenceControllerAccount
+
+  const defaultBaseDenom =
+    mustGetSupportedChainConfig(chainId).valence?.rebalancer
+      .baseTokenAllowlist?.[0]
+  if (!defaultBaseDenom) {
+    throw new Error('No default base denom found for rebalancer.')
+  }
 
   const rebalancerConfig = valenceAccount?.config.rebalancer?.config
 
   return {
     valenceAccount,
-    chainId: ChainId.NeutronMainnet,
+    chainId: valenceAccount?.chainId || chainId,
     trustee: rebalancerConfig?.trustee || undefined,
-    baseDenom:
-      (rebalancerConfig?.base_denom ||
-        REBALANCER_BASE_TOKEN_ALLOWLIST[ChainId.NeutronMainnet]?.[0]) ??
-      nativeDenom,
+    baseDenom: rebalancerConfig?.base_denom || defaultBaseDenom,
     tokens: rebalancerConfig?.targets.map(
       ({ denom, percentage, min_balance }) => ({
         denom,
@@ -104,17 +120,9 @@ const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
       })
     ) || [
       {
-        denom: nativeDenom,
-        percent: 50,
+        denom: defaultBaseDenom,
+        percent: 100,
       },
-      ...(usdcDenom
-        ? [
-            {
-              denom: usdcDenom,
-              percent: 50,
-            },
-          ]
-        : []),
     ],
     // TODO: pick defaults
     pid: {
@@ -128,7 +136,6 @@ const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
         : // TODO: pick default
           // 5%
           500,
-    // TODO: pick default
     targetOverrideStrategy:
       rebalancerConfig?.target_override_strategy || 'proportional',
   }
@@ -222,17 +229,12 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   return (
     <>
       {context.type === ActionContextType.Dao &&
-        Object.keys(REBALANCER_TOKEN_ALLOWLIST).length > 1 && (
+        VALENCE_SUPPORTED_CHAINS.length > 1 && (
           <ChainPickerInput
             className="mb-4"
             disabled={!props.isCreating}
             fieldName={props.fieldNamePrefix + 'chainId'}
-            includeChainIds={
-              // Only include chains that have at least one allowed token.
-              Object.entries(REBALANCER_TOKEN_ALLOWLIST)
-                .filter(([, tokens]) => tokens.length > 0)
-                .map(([chainId]) => chainId)
-            }
+            includeChainIds={VALENCE_SUPPORTED_CHAINS}
           />
         )}
 
@@ -272,33 +274,20 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
       },
     })
   ) {
+    const serviceData =
+      'register_to_service' in msg.wasm.execute.msg
+        ? msg.wasm.execute.msg.register_to_service
+        : 'update_service' in msg.wasm.execute.msg
+        ? msg.wasm.execute.msg.update_service
+        : undefined
     if (
-      objectMatchesStructure(msg.wasm.execute.msg, {
-        register_to_service: {
-          service_name: {},
-          data: {},
-        },
+      !objectMatchesStructure(serviceData, {
+        service_name: {},
+        data: {},
       })
     ) {
-      serviceName = msg.wasm.execute.msg.register_to_service
-        .service_name as string
-      data = JSON.parse(
-        fromUtf8(
-          fromBase64(msg.wasm.execute.msg.register_to_service.data as string)
-        )
-      )
-    } else if (
-      objectMatchesStructure(msg.wasm.execute.msg, {
-        update_service: {
-          service_name: {},
-          data: {},
-        },
-      })
-    ) {
-      serviceName = msg.wasm.execute.msg.update_service.service_name as string
-      data = JSON.parse(
-        fromUtf8(fromBase64(msg.wasm.execute.msg.update_service.data as string))
-      )
+      serviceName = serviceData.service_name as string
+      data = JSON.parse(fromUtf8(fromBase64(serviceData.data as string)))
     } else {
       return {
         match: false,
@@ -352,21 +341,21 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
 
 export const makeConfigureRebalancerAction: ActionMaker<
   ConfigureRebalancerData
-> = ({ t, context, chain: { chain_id: srcChainId } }) => {
-  // If not on Neutron mainnet and does not have a Neutron polytone account,
-  // cannot use rebalancer.
-  if (
-    srcChainId !== ChainId.NeutronMainnet &&
-    (context.type !== ActionContextType.Dao ||
-      !(ChainId.NeutronMainnet in context.info.polytoneProxies))
-  ) {
+> = (options) => {
+  if (!actionContextSupportsValence(options)) {
     return null
   }
 
+  const {
+    t,
+    context,
+    chain: { chain_id: srcChainId },
+  } = options
+
   const useTransformToCosmos: UseTransformToCosmos<
     ConfigureRebalancerData
-  > = () => {
-    return useCallback(
+  > = () =>
+    useCallback(
       ({
         valenceAccount,
         chainId,
@@ -390,7 +379,12 @@ export const makeConfigureRebalancerAction: ActionMaker<
                 contract_addr: valenceAccount.address,
                 funds: [],
                 msg: {
-                  update_service: {
+                  // If rebalancer already exists, update it. Otherwise,
+                  // register it.
+                  [valenceAccount.config.rebalancer
+                    ? 'update_service'
+                    : 'register_to_service']: {
+                    service_name: 'rebalancer',
                     data: encodeMessageAsBase64({
                       base_denom: baseDenom,
                       max_limit: maxLimitBps,
@@ -417,7 +411,6 @@ export const makeConfigureRebalancerAction: ActionMaker<
       },
       []
     )
-  }
 
   return {
     key: ActionKey.ConfigureRebalancer,

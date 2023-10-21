@@ -461,6 +461,17 @@ export const getSupportedChainConfig = (
 ): SupportedChainConfig | undefined =>
   SUPPORTED_CHAINS.find((config) => config.chainId === chainId)
 
+export const mustGetSupportedChainConfig = (
+  chainId: string
+): SupportedChainConfig => {
+  const config = getSupportedChainConfig(chainId)
+  if (!config) {
+    throw new Error(`Unsupported chain: ${chainId}`)
+  }
+
+  return config
+}
+
 export const getSupportedChains = ({
   mainnet = MAINNET,
 }: {

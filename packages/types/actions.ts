@@ -68,6 +68,7 @@ export enum ActionKey {
   UpdateStakingConfig = 'updateStakingConfig',
   CreateIcaAccount = 'createIcaAccount',
   IcaExecute = 'icaExecute',
+  CreateValenceAccount = 'createValenceAccount',
   ConfigureRebalancer = 'configureRebalancer',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
