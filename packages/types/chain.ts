@@ -112,8 +112,13 @@ export type SupportedChainConfig = BaseChainConfig & {
   valence?: {
     // Address of services manager contract.
     servicesManager: string
-    // Address of rebalancer contract.
-    rebalancer: string
+    rebalancer: {
+      // Address of rebalancer contract.
+      address: string
+      tokenAllowlist: string[]
+      // First denom is the default.
+      baseTokenAllowlist: string[]
+    }
   }
 }
 

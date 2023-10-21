@@ -235,6 +235,7 @@
   },
   "emoji": {
     "artistPalette": "Artist palette",
+    "atom": "Atom",
     "baby": "Baby",
     "babyAngel": "Baby Angel",
     "balance": "Balance",
@@ -426,7 +427,8 @@
     "txNotFound": "Transaction not found.",
     "unexpectedError": "An unexpected error occurred.",
     "unknownDenom": "Unknown denomination {{denom}}.",
-    "unknownInboxType": "Unknown inbox item type."
+    "unknownInboxType": "Unknown inbox item type.",
+    "unsupportedValenceChain": "Valence accounts are not supported on this chain."
   },
   "form": {
     "addAnImage": "Add an image",
@@ -793,6 +795,7 @@
     "createStep2": "Governance configuration",
     "createStep3": "Voting configuration",
     "createStep4": "Review and approve",
+    "createValenceAccountDescription": "Create a new Valence account.",
     "createVestingContractManager": "To create vesting payments, you must first create a vesting contract manager.",
     "createdPressContract": "The press contract has been created.",
     "createdVestingContractManager": "The vesting contract manager has been created.",
@@ -1259,6 +1262,7 @@
     "createNftCollection": "Create NFT Collection",
     "createPost": "Create Post",
     "createProposal": "Create proposal",
+    "createValenceAccount": "Create Valence Account",
     "createValidator": "Create a validator",
     "created": "Created",
     "createdAccount": "Created account",

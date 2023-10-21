@@ -14,7 +14,7 @@ import { ValenceServiceRebalancerSelectors } from './contracts'
 import { queryWalletIndexerSelector } from './indexer'
 import { genericTokenSelector } from './token'
 
-// Retrieve the valence accounts for a given address.
+// Retrieve the valence accounts owned by a given address.
 export const valenceAccountsSelector = selectorFamily<
   ValenceAccount[],
   WithChainId<{ address: string }>
@@ -24,7 +24,7 @@ export const valenceAccountsSelector = selectorFamily<
     ({ address, chainId }) =>
     async ({ get }) => {
       const rebalancerAddress =
-        getSupportedChainConfig(chainId)?.valence?.rebalancer
+        getSupportedChainConfig(chainId)?.valence?.rebalancer.address
 
       // Get valence accounts from indexer.
       const valenceAccountAddresses = get(

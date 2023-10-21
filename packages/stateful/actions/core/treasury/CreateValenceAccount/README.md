@@ -1,6 +1,6 @@
-# UpdateAdmin
+# CreateValenceAccount
 
-Update the admin of a smart contract.
+Create a Valence account.
 
 ## Bulk import format
 
@@ -9,14 +9,19 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ### Key
 
-`updateAdmin`
+`createValenceAccount`
 
 ### Data format
 
 ```json
 {
   "chainId": "<CHAIN ID>",
-  "contract": "<SMART CONTRACT ADDRESS>",
-  "newAdmin": "<NEW ADMIN ADDRESS>"
+  "funds": [
+    // Optional. If not provided, no funds will be sent.
+    {
+      "denom": "<DENOM>",
+      "amount": "<AMOUNT>"
+    }
+  ]
 }
 ```

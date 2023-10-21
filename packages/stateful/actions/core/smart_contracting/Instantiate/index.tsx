@@ -2,9 +2,12 @@ import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector } from 'recoil'
+import { constSelector, waitForAll } from 'recoil'
 
-import { PolytoneListenerSelectors } from '@dao-dao/state/recoil'
+import {
+  PolytoneListenerSelectors,
+  genericTokenSelector,
+} from '@dao-dao/state/recoil'
 import {
   BabyEmoji,
   ChainPickerInput,
@@ -26,7 +29,6 @@ import {
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   getChainAddressForActionOptions,
-  getNativeTokenForChainId,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
@@ -232,8 +234,13 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
     funds: [],
   })
 
-  const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () =>
-    useCallback(
+  const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () => {
+    const nativeBalances = useTokenBalances({
+      filter: TokenType.Native,
+      allChains: true,
+    })
+
+    return useCallback(
       ({ chainId, admin, codeId, label, message, funds }: InstantiateData) => {
         let msg
         try {
@@ -253,9 +260,17 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
                 code_id: codeId,
                 funds: funds.map(({ denom, amount }) => ({
                   denom,
-                  amount: convertDenomToMicroDenomWithDecimals(
-                    amount,
-                    getNativeTokenForChainId(chainId).decimals
+                  amount: BigInt(
+                    convertDenomToMicroDenomWithDecimals(
+                      amount,
+                      (!nativeBalances.loading &&
+                        nativeBalances.data.find(
+                          ({ token }) =>
+                            token.chainId === chainId &&
+                            token.denomOrAddress === denom
+                        )?.token.decimals) ||
+                        0
+                    )
                   ).toString(),
                 })),
                 label,
@@ -265,8 +280,9 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
           })
         )
       },
-      []
+      [nativeBalances]
     )
+  }
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
     msg: Record<string, any>
@@ -278,7 +294,7 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
       msg = decodedPolytone.msg
     }
 
-    return objectMatchesStructure(msg, {
+    const isInstantiateMsg = objectMatchesStructure(msg, {
       wasm: {
         instantiate: {
           code_id: {},
@@ -288,6 +304,23 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
         },
       },
     })
+
+    const fundTokens = useCachedLoading(
+      isInstantiateMsg
+        ? waitForAll(
+            (msg.wasm.instantiate.funds as Coin[]).map(({ denom }) =>
+              genericTokenSelector({
+                chainId,
+                type: TokenType.Native,
+                denomOrAddress: denom,
+              })
+            )
+          )
+        : undefined,
+      []
+    )
+
+    return isInstantiateMsg
       ? {
           match: true,
           data: {
@@ -299,11 +332,15 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
             funds: (msg.wasm.instantiate.funds as Coin[]).map(
               ({ denom, amount }) => ({
                 denom,
-                amount: Number(
-                  convertMicroDenomToDenomWithDecimals(
-                    amount,
-                    getNativeTokenForChainId(chainId).decimals
-                  )
+                amount: convertMicroDenomToDenomWithDecimals(
+                  amount,
+                  (!fundTokens.loading &&
+                    fundTokens.data.find(
+                      (token) =>
+                        token.chainId === chainId &&
+                        token.denomOrAddress === denom
+                    )?.decimals) ||
+                    0
                 ),
               })
             ),

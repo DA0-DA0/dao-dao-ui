@@ -19,7 +19,7 @@ export type ChainPickerInputProps = {
   disabled?: boolean
   onChange?: (chainId: string) => void
   // If defined, only include these chains.
-  includeChainIds?: string[]
+  includeChainIds?: string[] | readonly string[]
   // If defined, exclude these chains.
   excludeChainIds?: string[]
   // Whether to include only the chains the DAO has an account on (its native
