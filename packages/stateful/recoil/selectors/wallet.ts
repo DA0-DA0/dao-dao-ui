@@ -32,6 +32,7 @@ import {
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
   convertMicroDenomToDenomWithDecimals,
+  getChainForChainId,
   getConfiguredChains,
   getFallbackImage,
   getNativeTokenForChainId,
@@ -301,23 +302,28 @@ export const walletTokenCardInfosSelector = selectorFamily<
 export const allWalletNftsSelector = selectorFamily<
   LazyNftCardInfo[],
   // Can be any wallet address.
-  { walletAddress: string }
+  {
+    walletAddress: string
+    // Only retrieve NFTs for this chain if defined.
+    chainId?: string
+  }
 >({
   key: 'allWalletNfts',
   get:
-    ({ walletAddress }) =>
+    ({ walletAddress, chainId }) =>
     ({ get }) => {
-      const chains = getConfiguredChains().filter((c) => !c.noCosmWasm)
+      const chains = chainId
+        ? [getChainForChainId(chainId)]
+        : getConfiguredChains()
+            .filter(({ noCosmWasm }) => !noCosmWasm)
+            .map(({ chain }) => chain)
 
       const nativeNfts = get(
         waitForAll(
-          chains.map(({ chain }) =>
+          chains.map(({ chain_id: chainId }) =>
             walletLazyNftCardInfosSelector({
-              chainId: chain.chain_id,
-              walletAddress: transformBech32Address(
-                walletAddress,
-                chain.chain_id
-              ),
+              chainId,
+              walletAddress: transformBech32Address(walletAddress, chainId),
             })
           )
         )
@@ -333,13 +339,10 @@ export const allWalletNftsSelector = selectorFamily<
 
       const nativeStakedNfts = get(
         waitForAll(
-          chains.map(({ chain }) =>
+          chains.map(({ chain_id: chainId }) =>
             walletStakedLazyNftCardInfosSelector({
-              chainId: chain.chain_id,
-              walletAddress: transformBech32Address(
-                walletAddress,
-                chain.chain_id
-              ),
+              chainId,
+              walletAddress: transformBech32Address(walletAddress, chainId),
             })
           )
         )

@@ -15,6 +15,7 @@ export type WalletBalancesProps<
   // List of token denomOrAddress fields that should be hidden.
   hiddenTokens: LoadingData<string[]>
   TokenLine: ComponentType<T>
+  TokenCard: ComponentType<T>
   nfts: LoadingData<N[]>
   NftCard: ComponentType<N>
   TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>

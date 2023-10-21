@@ -13,7 +13,6 @@ import {
   transformBech32Address,
 } from '@dao-dao/utils'
 
-import { WalletTokenLine, WalletTokenLineReadonly } from '.'
 import {
   allWalletNftsSelector,
   hiddenBalancesSelector,
@@ -21,6 +20,10 @@ import {
   walletTokenCardInfosSelector,
 } from '../../recoil'
 import { TreasuryHistoryGraph } from '../TreasuryHistoryGraph'
+import { WalletTokenCard } from './WalletTokenCard'
+import { WalletTokenCardReadonly } from './WalletTokenCardReadonly'
+import { WalletTokenLine } from './WalletTokenLine'
+import { WalletTokenLineReadonly } from './WalletTokenLineReadonly'
 
 export type WalletBalancesProps = {
   chainId: string
@@ -29,6 +32,8 @@ export type WalletBalancesProps = {
   NftCard: ComponentType<LazyNftCardInfo>
   // If true, use token card that has edit actions.
   editable: boolean
+  // Whether to show only the current chain's tokens or all supported chains'.
+  chainMode: 'current' | 'all'
 }
 
 export const WalletBalances = ({
@@ -37,6 +42,7 @@ export const WalletBalances = ({
   hexPublicKey,
   NftCard,
   editable,
+  chainMode,
 }: WalletBalancesProps) => {
   const accounts =
     useRecoilValue(
@@ -51,12 +57,22 @@ export const WalletBalances = ({
   const tokensWithoutLazyInfo = useCachedLoading(
     address
       ? waitForAllSettled(
-          getConfiguredChains().map(({ chain }) =>
-            walletTokenCardInfosSelector({
-              chainId: chain.chain_id,
-              walletAddress: transformBech32Address(address, chain.chain_id),
-            })
-          )
+          chainMode === 'current'
+            ? [
+                walletTokenCardInfosSelector({
+                  chainId,
+                  walletAddress: address,
+                }),
+              ]
+            : getConfiguredChains().map(({ chain }) =>
+                walletTokenCardInfosSelector({
+                  chainId: chain.chain_id,
+                  walletAddress: transformBech32Address(
+                    address,
+                    chain.chain_id
+                  ),
+                })
+              )
         )
       : undefined,
     []
@@ -107,6 +123,7 @@ export const WalletBalances = ({
     address
       ? allWalletNftsSelector({
           walletAddress: address,
+          chainId: chainMode === 'current' ? chainId : undefined,
         })
       : undefined,
     []
@@ -122,6 +139,7 @@ export const WalletBalances = ({
   return (
     <StatelessWalletBalances
       NftCard={NftCard}
+      TokenCard={editable ? WalletTokenCard : WalletTokenCardReadonly}
       TokenLine={editable ? WalletTokenLine : WalletTokenLineReadonly}
       TreasuryHistoryGraph={TreasuryHistoryGraph}
       accounts={accounts}

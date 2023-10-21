@@ -15,6 +15,7 @@ export const MeBalances = () => {
       NftCard={WalletLazyNftCard}
       address={walletAddress}
       chainId={chainId}
+      chainMode="all"
       editable
       hexPublicKey={hexPublicKey}
     />

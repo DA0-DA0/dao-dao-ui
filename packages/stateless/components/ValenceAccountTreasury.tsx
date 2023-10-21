@@ -1,6 +1,6 @@
 import clsx from 'clsx'
-import { t } from 'i18next'
 import { ComponentType, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   LoadingData,
@@ -32,10 +32,12 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
   TreasuryHistoryGraph,
   className,
 }: ValenceAccountTreasuryProps<T>) => {
+  const { t } = useTranslation()
+  const { bech32_prefix: bech32Prefix } = useChain()
+
   const [valenceAccountMode, setValenceAccountMode] = useState<
     'all' | 'rebalancer'
   >('all')
-  const { bech32_prefix: bech32Prefix } = useChain()
 
   const valenceAccountRebalancerTargets =
     account.config?.rebalancer?.targets.map(({ source }) =>
@@ -43,7 +45,7 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
     ) || []
 
   return (
-    <div key={account.address} className={clsx('space-y-3', className)}>
+    <div className={clsx('space-y-3', className)}>
       <div className="flex flex-row flex-wrap items-center gap-x-4 gap-y-2">
         <div className="flex flex-row items-center gap-1">
           <p className="primary-text">{t('title.valenceAccount')}</p>
@@ -74,17 +76,19 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
         ) : (
           tokens.data.length > 0 && (
             <>
-              <SwitchCard
-                containerClassName="-mb-2 self-start"
-                enabled={valenceAccountMode === 'rebalancer'}
-                label="Only Rebalancer"
-                onClick={() =>
-                  setValenceAccountMode((value) =>
-                    value === 'rebalancer' ? 'all' : 'rebalancer'
-                  )
-                }
-                sizing="sm"
-              />
+              {account.config.rebalancer && (
+                <SwitchCard
+                  containerClassName="-mb-2 self-start"
+                  enabled={valenceAccountMode === 'rebalancer'}
+                  label="Only Rebalancer"
+                  onClick={() =>
+                    setValenceAccountMode((value) =>
+                      value === 'rebalancer' ? 'all' : 'rebalancer'
+                    )
+                  }
+                  sizing="sm"
+                />
+              )}
 
               <TreasuryHistoryGraph
                 account={account}

@@ -44,6 +44,7 @@ export const WalletBalances = <
   tokens,
   hiddenTokens,
   TokenLine,
+  TokenCard,
   nfts,
   NftCard,
   TreasuryHistoryGraph,
@@ -123,7 +124,7 @@ export const WalletBalances = <
   )
 
   return (
-    <div className="flex flex-col gap-8 pt-4 sm:pt-0">
+    <div className="flex flex-col gap-8">
       <div>
         {tokens.loading || hiddenTokens.loading ? (
           <Loader fill={false} />
@@ -156,6 +157,28 @@ export const WalletBalances = <
                 />
               ))}
             </div>
+
+            {/* Valence Accounts */}
+            {valenceAccounts.map((account) => (
+              <ValenceAccountTreasury<T>
+                key={account.address}
+                TokenCard={TokenCard}
+                TreasuryHistoryGraph={TreasuryHistoryGraph}
+                account={account}
+                className="mt-6"
+                tokens={
+                  tokens.loading
+                    ? tokens
+                    : {
+                        loading: false,
+                        updating: tokens.updating,
+                        data: tokens.data.filter(({ owner }) =>
+                          areAccountsEqual(owner, account)
+                        ),
+                      }
+                }
+              />
+            ))}
           </div>
         ) : (
           <p className="secondary-text">{t('info.nothingFound')}</p>
@@ -188,27 +211,6 @@ export const WalletBalances = <
                 />
               ))}
             </div>
-
-            {/* Valence Accounts */}
-            {valenceAccounts.map((account) => (
-              <ValenceAccountTreasury<T>
-                key={account.address}
-                TokenCard={TokenLine}
-                TreasuryHistoryGraph={TreasuryHistoryGraph}
-                account={account}
-                tokens={
-                  tokens.loading
-                    ? tokens
-                    : {
-                        loading: false,
-                        updating: tokens.updating,
-                        data: tokens.data.filter(({ owner }) =>
-                          areAccountsEqual(owner, account)
-                        ),
-                      }
-                }
-              />
-            ))}
           </div>
         )}
       </div>
