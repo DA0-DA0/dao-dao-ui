@@ -1,6 +1,9 @@
 import { Account } from '../account'
 
-export type DaoTreasuryHistoryGraphProps = {
+export type TreasuryHistoryGraphProps = {
+  // Base account.
+  chainId: string
+  address: string
   // If defined, only show history for this account.
   account?: Account
   // If account above is a valence account, and `showRebalancer` is true, only

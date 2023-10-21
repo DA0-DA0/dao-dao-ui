@@ -158,7 +158,7 @@ export const Me = ({
             className="mt-4"
             editingContainerClassName="h-8"
             nameClassName="!hero-text"
-            updateProfileName={updateProfileName}
+            updateProfileName={canEditProfile ? updateProfileName : undefined}
             walletProfileData={profileData}
           />
         </div>

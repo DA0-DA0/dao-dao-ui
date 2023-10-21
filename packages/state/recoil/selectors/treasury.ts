@@ -15,20 +15,15 @@ import {
 } from '@dao-dao/utils'
 
 import { refreshWalletBalancesIdAtom } from '../atoms'
+import { allBalancesSelector } from './account'
 import {
   blockHeightTimestampSafeSelector,
   communityPoolBalancesSelector,
   cosmWasmClientForChainSelector,
   nativeBalancesSelector,
 } from './chain'
-import { DaoCoreV2Selectors } from './contracts'
 import { queryWalletIndexerSelector } from './indexer'
-import {
-  genericTokenBalancesSelector,
-  genericTokenDelegatedBalanceSelector,
-  genericTokenSelector,
-  usdPriceSelector,
-} from './token'
+import { genericTokenSelector, usdPriceSelector } from './token'
 
 type TreasuryTransactionsParams = WithChainId<{
   address: string
@@ -174,77 +169,6 @@ export const transformedTreasuryTransactionsSelector = selectorFamily<
     },
 })
 
-export const allDaoBalancesSelector = selectorFamily<
-  // Map chain ID to token balances on that chain.
-  Record<string, GenericTokenBalance[]>,
-  WithChainId<{
-    coreAddress: string
-    cw20GovernanceTokenAddress?: string
-  }>
->({
-  key: 'allDaoBalances',
-  get:
-    ({ coreAddress, cw20GovernanceTokenAddress, chainId }) =>
-    ({ get }) => {
-      const allAccounts = get(
-        DaoCoreV2Selectors.allAccountsSelector({
-          chainId,
-          contractAddress: coreAddress,
-        })
-      )
-
-      // Neutron's modified DAOs do not support cw20s, so this may error. Ignore
-      // if so.
-      const cw20BalancesLoadable = get(
-        waitForAllSettled([
-          DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
-            contractAddress: coreAddress,
-            chainId,
-            governanceTokenAddress: cw20GovernanceTokenAddress,
-          }),
-        ])
-      )[0]
-
-      const allBalances = [
-        // Native balances.
-        ...get(
-          waitForAll(
-            allAccounts.flatMap(({ address, chainId }) => [
-              // All unstaked
-              genericTokenBalancesSelector({
-                chainId,
-                address,
-              }),
-              // Native staked
-              genericTokenDelegatedBalanceSelector({
-                chainId,
-                walletAddress: address,
-              }),
-            ])
-          )
-        ).flat(),
-        // Cw20s on native chain.
-        ...(cw20BalancesLoadable.state === 'hasValue'
-          ? cw20BalancesLoadable.contents
-          : []),
-      ]
-
-      const uniqueChainIds = [
-        ...new Set(allAccounts.map(({ chainId }) => chainId)),
-      ]
-
-      return uniqueChainIds.reduce(
-        (acc, chainId) => ({
-          ...acc,
-          [chainId]: allBalances.filter(
-            ({ token }) => token.chainId === chainId
-          ),
-        }),
-        {} as Record<string, GenericTokenBalance[]>
-      )
-    },
-})
-
 export const daoTvlSelector = selectorFamily<
   AmountWithTimestamp,
   WithChainId<{
@@ -254,12 +178,18 @@ export const daoTvlSelector = selectorFamily<
 >({
   key: 'daoTvl',
   get:
-    (params) =>
+    ({ chainId, coreAddress, cw20GovernanceTokenAddress }) =>
     ({ get }) => {
       const timestamp = new Date()
 
       const allBalances = Object.values(
-        get(allDaoBalancesSelector(params))
+        get(
+          allBalancesSelector({
+            chainId,
+            address: coreAddress,
+            cw20GovernanceTokenAddress,
+          })
+        )
       ).flat()
 
       const usdPrices = get(

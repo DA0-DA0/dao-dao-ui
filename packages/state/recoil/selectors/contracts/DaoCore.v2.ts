@@ -1,8 +1,6 @@
 import { selectorFamily, waitForAll, waitForAny } from 'recoil'
 
 import {
-  Account,
-  AccountType,
   GenericTokenBalance,
   PolytoneProxies,
   TokenType,
@@ -54,7 +52,6 @@ import { cosmWasmClientForChainSelector } from '../chain'
 import { contractInfoSelector } from '../contract'
 import { queryContractIndexerSelector } from '../indexer'
 import { genericTokenSelector } from '../token'
-import { valenceAccountsSelector } from '../valence'
 import * as Cw20BaseSelectors from './Cw20Base'
 
 type QueryClientParams = WithChainId<{
@@ -1210,52 +1207,3 @@ export const coreAddressForPolytoneProxySelector = selectorFamily<
         })
       ),
 })
-
-// Get all accounts controlled by this DAO, including its native chain, all
-// polytone proxies, and all valence accounts.
-export const allAccountsSelector = selectorFamily<Account[], QueryClientParams>(
-  {
-    key: 'daoCoreV2AllAccounts',
-    get:
-      (queryClientParams) =>
-      ({ get }) => {
-        const polytoneProxies = Object.entries(
-          get(polytoneProxiesSelector(queryClientParams))
-        )
-
-        const allAccounts: Account[] = [
-          // Current chain.
-          {
-            chainId: queryClientParams.chainId,
-            address: queryClientParams.contractAddress,
-            type: AccountType.Native,
-          },
-          // Polytone.
-          ...polytoneProxies.map(
-            ([chainId, address]): Account => ({
-              chainId,
-              address,
-              type: AccountType.Polytone,
-            })
-          ),
-        ]
-
-        // Get valence accounts on each potential chain.
-        const valenceAccounts = get(
-          waitForAll(
-            allAccounts.map(({ chainId, address }) =>
-              valenceAccountsSelector({
-                address,
-                chainId,
-              })
-            )
-          )
-        ).flat()
-
-        // Add valence accounts.
-        allAccounts.push(...valenceAccounts)
-
-        return allAccounts
-      },
-  }
-)

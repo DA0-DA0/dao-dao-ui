@@ -5,14 +5,20 @@ import { useTranslation } from 'react-i18next'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
+  AccountType,
   FilterFn,
   LazyNftCardInfo,
   MeBalancesProps,
   SortFn,
   TokenCardInfo,
   TypedOption,
+  ValenceAccount,
 } from '@dao-dao/types'
-import { getChainForChainId, getDisplayNameForChainId } from '@dao-dao/utils'
+import {
+  areAccountsEqual,
+  getChainForChainId,
+  getDisplayNameForChainId,
+} from '@dao-dao/utils'
 
 import {
   Button,
@@ -24,17 +30,20 @@ import {
   PAGINATION_MIN_PAGE,
   Pagination,
   TooltipInfoIcon,
+  ValenceAccountTreasury,
 } from '../components'
 import { useButtonPopupFilter, useButtonPopupSorter } from '../hooks'
 
 const NFTS_PER_PAGE = 18
 
 export const MeBalances = <T extends TokenCardInfo, N extends LazyNftCardInfo>({
+  accounts,
   tokens,
   hiddenTokens,
   TokenLine,
   nfts,
   NftCard,
+  TreasuryHistoryGraph,
 }: MeBalancesProps<T, N>) => {
   const { t } = useTranslation()
 
@@ -65,11 +74,20 @@ export const MeBalances = <T extends TokenCardInfo, N extends LazyNftCardInfo>({
     useDeepCompareMemoize([nftChains])
   )
 
+  const valenceAccounts = accounts.filter(
+    (account): account is ValenceAccount => account.type === AccountType.Valence
+  )
+  // Separate valence from non-valence account tokens and display valence
+  // separately.
+  const nonValenceTokens = tokens.loading
+    ? []
+    : tokens.data.filter(({ owner }) => owner.type !== AccountType.Valence)
+
   const {
     sortedData: sortedTokens,
     buttonPopupProps: sortTokenButtonPopupProps,
   } = useButtonPopupSorter({
-    data: tokens.loading ? [] : tokens.data,
+    data: nonValenceTokens,
     options: tokenSortOptions,
   })
 
@@ -167,6 +185,27 @@ export const MeBalances = <T extends TokenCardInfo, N extends LazyNftCardInfo>({
                 />
               ))}
             </div>
+
+            {/* Valence Accounts */}
+            {valenceAccounts.map((account) => (
+              <ValenceAccountTreasury<T>
+                key={account.address}
+                TokenCard={TokenLine}
+                TreasuryHistoryGraph={TreasuryHistoryGraph}
+                account={account}
+                tokens={
+                  tokens.loading
+                    ? tokens
+                    : {
+                        loading: false,
+                        updating: tokens.updating,
+                        data: tokens.data.filter(({ owner }) =>
+                          areAccountsEqual(owner, account)
+                        ),
+                      }
+                }
+              />
+            ))}
           </div>
         )}
       </div>

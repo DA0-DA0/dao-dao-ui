@@ -313,6 +313,7 @@
     "correctErrorsAbove": "Please correct the errors above.",
     "couldntFindDAO": "We couldn't find a DAO with that address.",
     "couldntFindProposal": "We couldn't find a proposal with that ID.",
+    "couldntFindWallet": "We couldn't find a wallet with that address.",
     "counterpartyBalanceInsufficient": "The counterparty's balance of {{amount}} ${{tokenSymbol}} is insufficient. They may be unable to complete this swap.",
     "daoAccountNotFound": "The DAO account could not be found for this chain.",
     "daoAndSubDaosAlreadyOnV2": "This DAO (and all of its SubDAOs, if it has any) have already been upgraded.",

@@ -7,8 +7,8 @@ import {
   AccountType,
   ButtonLinkProps,
   DaoChainTreasury,
-  DaoTreasuryHistoryGraphProps,
   TokenCardInfo,
+  TreasuryHistoryGraphProps,
   ValenceAccount,
 } from '@dao-dao/types'
 import {
@@ -30,7 +30,7 @@ import { Button } from '../buttons'
 import { ChainLogo } from '../ChainLogo'
 import { DropdownIconButton } from '../icon_buttons'
 import { Loader } from '../logo'
-import { DaoTreasuryValenceAccount } from './DaoTreasuryValenceAccount'
+import { ValenceAccountTreasury } from '../ValenceAccountTreasury'
 
 export type DaoChainTreasuryAndNftsProps<
   T extends TokenCardInfo,
@@ -45,7 +45,7 @@ export type DaoChainTreasuryAndNftsProps<
   TokenCard: ComponentType<T>
   NftCard: ComponentType<N>
   ButtonLink: ComponentType<ButtonLinkProps>
-  DaoTreasuryHistoryGraph: ComponentType<DaoTreasuryHistoryGraphProps>
+  TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
 }
 
 const NFTS_PER_PAGE = 18
@@ -63,7 +63,7 @@ export const DaoChainTreasuryAndNfts = <
   TokenCard,
   NftCard,
   ButtonLink,
-  DaoTreasuryHistoryGraph,
+  TreasuryHistoryGraph,
 }: DaoChainTreasuryAndNftsProps<T, N>) => {
   const { t } = useTranslation()
   const { chainId: daoChainId } = useDaoInfoContext()
@@ -175,10 +175,10 @@ export const DaoChainTreasuryAndNfts = <
 
           {/* Valence Accounts */}
           {valenceAccounts.map((account) => (
-            <DaoTreasuryValenceAccount<T>
+            <ValenceAccountTreasury<T>
               key={account.address}
-              DaoTreasuryHistoryGraph={DaoTreasuryHistoryGraph}
               TokenCard={TokenCard}
+              TreasuryHistoryGraph={TreasuryHistoryGraph}
               account={account}
               className="mt-6"
               tokens={

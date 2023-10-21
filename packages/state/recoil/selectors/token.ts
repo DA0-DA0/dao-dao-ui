@@ -29,7 +29,7 @@ import {
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
 } from './chain'
-import { isContractSelector } from './contract'
+import { isDaoSelector } from './contract'
 import { Cw20BaseSelectors, DaoCoreV2Selectors } from './contracts'
 import {
   osmosisDenomForTokenSelector,
@@ -245,16 +245,9 @@ export const genericTokenBalancesSelector = selectorFamily<
                 ) &&
                   // If is a DAO contract.
                   get(
-                    isContractSelector({
-                      contractAddress: address,
+                    isDaoSelector({
+                      address,
                       chainId,
-                      names: [
-                        // V1
-                        'cw-core',
-                        // V2
-                        'cwd-core',
-                        'dao-core',
-                      ],
                     })
                   )
                   ? [

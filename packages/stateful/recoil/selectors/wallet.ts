@@ -7,6 +7,7 @@ import {
 } from 'recoil'
 
 import {
+  accountsSelector,
   genericTokenSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
@@ -187,11 +188,22 @@ export const walletTokenCardInfosSelector = selectorFamily<
     ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(walletAddress))
 
-      const nativeBalances = get(
-        nativeBalancesSelector({
-          address: walletAddress,
+      const allAccounts = get(
+        accountsSelector({
           chainId,
+          address: walletAddress,
         })
+      )
+
+      const nativeBalances = get(
+        waitForAll(
+          allAccounts.map(({ chainId, address }) =>
+            nativeBalancesSelector({
+              address,
+              chainId,
+            })
+          )
+        )
       )
       const cw20ContractsLoadable: Loadable<ContractWithBalance[] | undefined> =
         get(
@@ -222,42 +234,40 @@ export const walletTokenCardInfosSelector = selectorFamily<
       )
 
       const infos: TokenCardInfo[] = [
-        ...nativeBalances.map(({ token, balance }) => {
-          const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-            balance,
-            token.decimals
-          )
+        ...nativeBalances.flatMap((accountBalances, accountIndex) =>
+          accountBalances.map(({ token, balance }) => {
+            const unstakedBalance = convertMicroDenomToDenomWithDecimals(
+              balance,
+              token.decimals
+            )
 
-          // Staking info only exists for native token.
-          const hasStakingInfo =
-            token.denomOrAddress ===
-              getNativeTokenForChainId(chainId).denomOrAddress &&
-            // Check if anything staked.
-            Number(
-              get(
-                nativeDelegatedBalanceSelector({
-                  address: walletAddress,
-                  chainId,
-                })
-              ).amount
-            ) > 0
+            // Staking info only exists for native token.
+            const hasStakingInfo =
+              token.denomOrAddress ===
+                getNativeTokenForChainId(chainId).denomOrAddress &&
+              // Check if anything staked.
+              Number(
+                get(
+                  nativeDelegatedBalanceSelector({
+                    address: walletAddress,
+                    chainId,
+                  })
+                ).amount
+              ) > 0
 
-          const info: TokenCardInfo = {
-            owner: {
-              type: AccountType.Native,
-              chainId,
-              address: walletAddress,
-            },
-            token,
-            isGovernanceToken: false,
-            unstakedBalance,
-            hasStakingInfo,
+            const info: TokenCardInfo = {
+              owner: allAccounts[accountIndex],
+              token,
+              isGovernanceToken: false,
+              unstakedBalance,
+              hasStakingInfo,
 
-            lazyInfo: { loading: true },
-          }
+              lazyInfo: { loading: true },
+            }
 
-          return info
-        }),
+            return info
+          })
+        ),
         ...cw20s.map((token, index) => {
           const unstakedBalance = convertMicroDenomToDenomWithDecimals(
             cw20Contracts[index].balance || '0',

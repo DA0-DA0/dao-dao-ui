@@ -3,7 +3,8 @@ import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
 import {
   DaoCoreV2Selectors,
   OsmosisHistoricalPriceChartPrecision,
-  allDaoBalancesSelector,
+  accountsSelector,
+  allBalancesSelector,
   historicalNativeBalancesByDenomSelector,
   historicalNativeBalancesSelector,
   historicalUsdPriceSelector,
@@ -50,9 +51,9 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
     }) =>
     ({ get }) => {
       const allAccounts = get(
-        DaoCoreV2Selectors.allAccountsSelector({
+        accountsSelector({
           chainId: nativeChainId,
-          contractAddress: coreAddress,
+          address: coreAddress,
         })
       )
 
@@ -216,7 +217,7 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
 
 const ACCOUNT_FILTER_PROPERTIES = ['type', 'chainId', 'address'] as const
 
-export const daoTreasuryValueHistorySelector = selectorFamily<
+export const treasuryValueHistorySelector = selectorFamily<
   {
     timestamps: Date[]
     tokens: {
@@ -234,7 +235,7 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
     }
   },
   WithChainId<{
-    coreAddress: string
+    address: string
     precision: OsmosisHistoricalPriceChartPrecision
     startSecondsAgo: number
     filter?: {
@@ -245,20 +246,14 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
     }
   }>
 >({
-  key: 'daoTreasuryValueHistory',
+  key: 'treasuryValueHistory',
   get:
-    ({
-      chainId: nativeChainId,
-      coreAddress,
-      precision,
-      startSecondsAgo,
-      filter,
-    }) =>
+    ({ chainId: nativeChainId, address, precision, startSecondsAgo, filter }) =>
     ({ get }) => {
       let allAccounts = get(
-        DaoCoreV2Selectors.allAccountsSelector({
+        accountsSelector({
           chainId: nativeChainId,
-          contractAddress: coreAddress,
+          address,
         })
       )
 
@@ -334,9 +329,9 @@ export const daoTreasuryValueHistorySelector = selectorFamily<
       // Current native balances.
       const currentBalances = Object.values(
         get(
-          allDaoBalancesSelector({
+          allBalancesSelector({
             chainId: nativeChainId,
-            coreAddress,
+            address: address,
           })
         )
       )
