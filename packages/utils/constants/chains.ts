@@ -25,28 +25,29 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       },
       codeIds: {
         // https://github.com/CosmWasm/cw-plus
-        Cw20Base: 1993, // v0.16
         Cw4Group: 1992, // v0.16
         // https://github.com/CosmWasm/cw-nfts
         Cw721Base: 1994, // v0.16
 
+        // ContractVersion.V230
+        CwPayrollFactory: 3822,
+        CwTokenSwap: 3823,
+        CwTokenfactoryIssuer: 3824,
+        CwVesting: 3825,
+        DaoCore: 3826,
+        DaoMigrator: 3827,
+        DaoPreProposeMultiple: 3828,
+        DaoPreProposeSingle: 3829,
+        DaoProposalMultiple: 3830,
+        DaoProposalSingle: 3831,
+        DaoVotingCw4: 3832,
+        DaoVotingCw721Staked: 3833,
+        DaoVotingTokenStaked: 3834,
+
+        // v2.1.0 and below, for migrating v1 to v2 DAOs
         // ContractVersion.V210
-        // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
         Cw20Stake: 2444,
-        CwAdminFactory: 2449,
-        CwPayrollFactory: 2451,
-        CwTokenSwap: 2452,
-        CwVesting: 2453,
-        DaoCore: 2454,
-        DaoMigrator: 2455,
-        DaoPreProposeMultiple: 2458,
-        DaoPreProposeSingle: 2459,
-        DaoProposalMultiple: 2461,
-        DaoProposalSingle: 2462,
         DaoVotingCw20Staked: 2463,
-        DaoVotingCw4: 2464,
-        DaoVotingCw721Staked: 2465,
-        DaoVotingNativeStaked: 2466,
       },
       polytone: {
         [ChainId.OsmosisMainnet]: {
@@ -118,28 +119,24 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       },
       codeIds: {
         // https://github.com/CosmWasm/cw-plus
-        Cw20Base: -1, // v0.16
         Cw4Group: 123, // v0.16
         // https://github.com/CosmWasm/cw-nfts
         Cw721Base: 124, // v0.16
 
-        // ContractVersion.V210
-        // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
-        Cw20Stake: -1,
-        CwAdminFactory: 113,
-        CwPayrollFactory: 114,
-        CwTokenSwap: 115,
-        CwVesting: 116,
-        DaoCore: 117,
-        DaoMigrator: -1,
-        DaoPreProposeMultiple: 118,
-        DaoPreProposeSingle: 119,
-        DaoProposalMultiple: 120,
-        DaoProposalSingle: 121,
-        DaoVotingCw20Staked: -1,
-        DaoVotingCw4: 122,
-        DaoVotingCw721Staked: -1,
-        DaoVotingNativeStaked: -1,
+        // ContractVersion.V230
+        CwPayrollFactory: 241,
+        CwTokenSwap: 242,
+        CwTokenfactoryIssuer: 243,
+        CwVesting: 244,
+        DaoCore: 245,
+        DaoMigrator: -1, // not needed since only v2 DAOs exist but it's 246
+        DaoPreProposeMultiple: 247,
+        DaoPreProposeSingle: 248,
+        DaoProposalMultiple: 249,
+        DaoProposalSingle: 250,
+        DaoVotingCw4: 251,
+        DaoVotingCw721Staked: 253,
+        DaoVotingTokenStaked: 252,
       },
       polytone: {
         [ChainId.JunoMainnet]: {
@@ -207,13 +204,9 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       },
       codeIds: {
         // https://github.com/CosmWasm/cw-plus
-        Cw20Base: -1, // v0.16
         Cw4Group: 83, // v0.16
 
         // ContractVersion.V210
-        // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
-        Cw20Stake: -1,
-        CwAdminFactory: 84,
         CwPayrollFactory: 85,
         CwTokenSwap: 86,
         CwVesting: 87,
@@ -223,10 +216,11 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoPreProposeSingle: 90,
         DaoProposalMultiple: 91,
         DaoProposalSingle: 92,
-        DaoVotingCw20Staked: -1,
         DaoVotingCw4: 93,
+        // ContractVersion.V230
         DaoVotingCw721Staked: -1,
-        DaoVotingNativeStaked: -1,
+        DaoVotingTokenStaked: -1,
+        CwTokenfactoryIssuer: -1,
       },
       polytone: {
         [ChainId.OsmosisMainnet]: {
@@ -294,28 +288,29 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       },
       codeIds: {
         // https://github.com/CosmWasm/cw-plus
-        Cw20Base: 177,
         Cw4Group: 178,
         // https://github.com/CosmWasm/cw-nfts
         Cw721Base: 179,
 
+        // ContractVersion.V230
+        CwPayrollFactory: 3797,
+        CwTokenSwap: 3798,
+        CwTokenfactoryIssuer: 3799,
+        CwVesting: 3800,
+        DaoCore: 3801,
+        DaoMigrator: 3802,
+        DaoPreProposeMultiple: 3803,
+        DaoPreProposeSingle: 3804,
+        DaoProposalMultiple: 3805,
+        DaoProposalSingle: 3806,
+        DaoVotingCw4: 3807,
+        DaoVotingCw721Staked: 3808,
+        DaoVotingTokenStaked: 3809,
+
+        // v2.1.0 and below, for migrating v1 to v2 DAOs
         // ContractVersion.V210
-        // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
         Cw20Stake: 1247,
-        CwAdminFactory: 1250,
-        CwPayrollFactory: 1252,
-        CwTokenSwap: 1253,
-        CwVesting: 1254,
-        DaoCore: 1255,
-        DaoMigrator: 1256,
-        DaoPreProposeMultiple: 1258,
-        DaoPreProposeSingle: 1259,
-        DaoProposalMultiple: 1261,
-        DaoProposalSingle: 1262,
         DaoVotingCw20Staked: 1263,
-        DaoVotingCw4: 1264,
-        DaoVotingCw721Staked: 1265,
-        DaoVotingNativeStaked: 1266,
       },
     },
     [ChainId.OsmosisTestnet]: {
@@ -338,28 +333,25 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       },
       codeIds: {
         // https://github.com/CosmWasm/cw-plus
-        Cw20Base: -1, // v0.16
         Cw4Group: 1327, // v0.16
         // https://github.com/CosmWasm/cw-nfts
         Cw721Base: 1326, // v0.16
 
         // ContractVersion.V210
         // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
-        Cw20Stake: -1,
-        CwAdminFactory: 1312,
-        CwPayrollFactory: 1313,
-        CwTokenSwap: 1314,
-        CwVesting: 1316,
-        DaoCore: 1318,
-        DaoMigrator: -1,
-        DaoPreProposeMultiple: 1319,
-        DaoPreProposeSingle: 1320,
-        DaoProposalMultiple: 1322,
-        DaoProposalSingle: 1323,
-        DaoVotingCw20Staked: -1,
-        DaoVotingCw4: 1324,
-        DaoVotingCw721Staked: -1,
-        DaoVotingNativeStaked: -1,
+        CwPayrollFactory: 4893,
+        CwTokenSwap: 4894,
+        CwTokenfactoryIssuer: 4895,
+        CwVesting: 4896,
+        DaoCore: 4897,
+        DaoMigrator: -1, // not needed since only v2 DAOs exist but it's 4898
+        DaoPreProposeMultiple: 4899,
+        DaoPreProposeSingle: 4900,
+        DaoProposalMultiple: 4901,
+        DaoProposalSingle: 4902,
+        DaoVotingCw4: 4903,
+        DaoVotingCw721Staked: 4904,
+        DaoVotingTokenStaked: 4905,
       },
     },
     [ChainId.StargazeTestnet]: {
@@ -382,26 +374,22 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       },
       codeIds: {
         // https://github.com/CosmWasm/cw-plus
-        Cw20Base: -1, // v0.16
         Cw4Group: 2887, // v0.16
 
-        // ContractVersion.V210
-        // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
-        Cw20Stake: -1,
-        CwAdminFactory: 2888,
-        CwPayrollFactory: 2889,
-        CwTokenSwap: 2890,
-        CwVesting: 2891,
-        DaoCore: 2892,
-        DaoMigrator: -1,
-        DaoPreProposeMultiple: 2882,
-        DaoPreProposeSingle: 2883,
-        DaoProposalMultiple: 2884,
-        DaoProposalSingle: 2885,
-        DaoVotingCw20Staked: -1,
-        DaoVotingCw4: 2886,
-        DaoVotingCw721Staked: -1,
-        DaoVotingNativeStaked: -1,
+        // ContractVersion.V230
+        CwPayrollFactory: 3225,
+        CwTokenSwap: 3226,
+        CwTokenfactoryIssuer: 3227,
+        CwVesting: 3228,
+        DaoCore: 3229,
+        DaoMigrator: -1, // not needed since only v2 DAOs exist but it's 3230
+        DaoPreProposeMultiple: 3231,
+        DaoPreProposeSingle: 3232,
+        DaoProposalMultiple: 3233,
+        DaoProposalSingle: 3234,
+        DaoVotingCw4: 3235,
+        DaoVotingCw721Staked: 3236,
+        DaoVotingTokenStaked: 3237,
       },
     },
     [ChainId.NeutronMainnet]: {
@@ -423,16 +411,14 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
       },
       codeIds: {
         // https://github.com/CosmWasm/cw-plus
-        Cw20Base: -1, // v0.16
         Cw4Group: 218, // v0.16
         Cw721Base: 232,
 
+        // TODO: upgrade to v2.3.0 once CW 1.1 is supported
         // ContractVersion.V210
-        // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
-        Cw20Stake: -1,
-        CwAdminFactory: 219,
         CwPayrollFactory: 220,
         CwTokenSwap: 221,
+        CwTokenfactoryIssuer: -1,
         CwVesting: 222,
         DaoCore: 223,
         DaoMigrator: -1,
@@ -440,10 +426,9 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoPreProposeSingle: 225,
         DaoProposalMultiple: 226,
         DaoProposalSingle: 227,
-        DaoVotingCw20Staked: -1,
         DaoVotingCw4: 228,
         DaoVotingCw721Staked: -1,
-        DaoVotingNativeStaked: -1,
+        DaoVotingTokenStaked: -1,
       },
     },
   }

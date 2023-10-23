@@ -22,7 +22,7 @@ import {
 } from '@dao-dao/stateless'
 import { NewDao } from '@dao-dao/types'
 import {
-  NEW_DAO_CW20_DECIMALS,
+  NEW_DAO_TOKEN_DECIMALS,
   formatPercentOf100,
   makeValidateAddress,
   validatePositive,
@@ -146,10 +146,10 @@ export const TierCard = ({
               containerClassName="grow"
               error={errors.creator?.data?.tiers?.[tierIndex]?.weight}
               fieldName={`creator.data.tiers.${tierIndex}.weight`}
-              min={1 / 10 ** NEW_DAO_CW20_DECIMALS}
+              min={1 / 10 ** NEW_DAO_TOKEN_DECIMALS}
               register={register}
               setValue={setValue}
-              step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
+              step={1 / 10 ** NEW_DAO_TOKEN_DECIMALS}
               validation={[validatePositive, validateRequired]}
               watch={watch}
             />
@@ -223,7 +223,7 @@ export const TierCard = ({
                     (tierVotingWeight / members.length / 100) *
                     data.newInfo.initialSupply
                   ).toLocaleString(undefined, {
-                    maximumFractionDigits: NEW_DAO_CW20_DECIMALS,
+                    maximumFractionDigits: NEW_DAO_TOKEN_DECIMALS,
                   }),
                   tokenSymbol: data.newInfo.symbol || t('info.tokens'),
                 })}

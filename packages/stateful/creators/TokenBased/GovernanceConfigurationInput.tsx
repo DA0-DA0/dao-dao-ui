@@ -6,11 +6,7 @@ import { useFieldArray } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import {
-  Cw20BaseSelectors,
-  genericTokenSelector,
-  nativeSupplySelector,
-} from '@dao-dao/state'
+import { genericTokenSelector, nativeSupplySelector } from '@dao-dao/state'
 import {
   Button,
   ImageSelector,
@@ -32,11 +28,10 @@ import {
 } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
-  NEW_DAO_CW20_DECIMALS,
+  NEW_DAO_TOKEN_DECIMALS,
+  convertDenomToMicroDenomWithDecimals,
   formatPercentOf100,
-  isValidContractAddress,
   isValidTokenFactoryDenom,
-  makeValidateContractAddress,
   makeValidateNativeOrFactoryTokenDenom,
   nativeTokenExists,
   validatePercent,
@@ -176,39 +171,28 @@ export const GovernanceConfigurationInput = ({
     initialTreasuryPercent + totalMemberPercent === 100
 
   //! Validate existing governance token.
-  const existingGovernanceTokenIsCw20 =
-    data.existingTokenType === TokenType.Cw20
-  const existingGovernanceTokenIsValid =
-    (data.tokenType === GovernanceTokenType.Existing &&
-      existingGovernanceTokenIsCw20 &&
-      isValidContractAddress(data.existingTokenDenomOrAddress, bech32Prefix)) ||
+  const governanceTokenIsValid =
     // Native token.
-    nativeTokenExists(chainId, data.existingTokenDenomOrAddress) ||
-    // Native factory token.
-    isValidTokenFactoryDenom(data.existingTokenDenomOrAddress, bech32Prefix)
+    nativeTokenExists(chainId, data.existingTokenDenom) ||
+    // Factory token.
+    isValidTokenFactoryDenom(data.existingTokenDenom, bech32Prefix)
   const existingGovernanceTokenLoadable = useRecoilValueLoadable(
-    existingGovernanceTokenIsValid
+    governanceTokenIsValid
       ? genericTokenSelector({
           chainId,
-          type: data.existingTokenType,
-          denomOrAddress: data.existingTokenDenomOrAddress,
+          type: TokenType.Native,
+          denomOrAddress: data.existingTokenDenom,
         })
       : constSelector(undefined)
   )
   const existingGovernanceTokenSupply = useRecoilValueLoadable<
     TokenInfoResponse | number | undefined
   >(
-    existingGovernanceTokenIsValid
-      ? existingGovernanceTokenIsCw20
-        ? Cw20BaseSelectors.tokenInfoSelector({
-            chainId,
-            contractAddress: data.existingTokenDenomOrAddress,
-            params: [],
-          })
-        : nativeSupplySelector({
-            chainId,
-            denom: data.existingTokenDenomOrAddress,
-          })
+    governanceTokenIsValid
+      ? nativeSupplySelector({
+          chainId,
+          denom: data.existingTokenDenom,
+        })
       : constSelector(undefined)
   )
   useEffect(() => {
@@ -240,14 +224,11 @@ export const GovernanceConfigurationInput = ({
     if (!errors?.creator?.data?.existingToken?._error) {
       setError('creator.data.existingToken._error', {
         type: 'manual',
-        message: existingGovernanceTokenIsCw20
-          ? t('error.failedToGetTokenInfo', { tokenType: 'CW20' })
-          : t('error.failedToGetFactoryTokenInfo'),
+        message: t('error.failedToGetFactoryTokenInfo'),
       })
     }
   }, [
     clearErrors,
-    existingGovernanceTokenIsCw20,
     errors?.creator?.data?.existingToken?._error,
     existingGovernanceTokenLoadable,
     setError,
@@ -301,7 +282,7 @@ export const GovernanceConfigurationInput = ({
         tabs={[
           {
             label: t('button.createAToken'),
-            value: GovernanceTokenType.NewCw20,
+            value: GovernanceTokenType.New,
           },
           {
             label: t('button.useExistingToken'),
@@ -310,7 +291,7 @@ export const GovernanceConfigurationInput = ({
         ]}
       />
 
-      {data.tokenType === GovernanceTokenType.NewCw20 ? (
+      {data.tokenType === GovernanceTokenType.New ? (
         <>
           <div className="mb-10 rounded-lg bg-background-tertiary">
             <div className="flex h-14 flex-row border-b border-border-base p-4">
@@ -386,7 +367,10 @@ export const GovernanceConfigurationInput = ({
                     fieldName="creator.data.newInfo.initialSupply"
                     ghost
                     register={register}
-                    step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
+                    step={convertDenomToMicroDenomWithDecimals(
+                      1,
+                      NEW_DAO_TOKEN_DECIMALS
+                    )}
                     validation={[validatePositive, validateRequired]}
                   />
                   <p className="symbol-small-body-text font-mono leading-5 text-text-tertiary">
@@ -545,26 +529,19 @@ export const GovernanceConfigurationInput = ({
             <div>
               <TextInput
                 className="symbol-small-body-text font-mono text-text-secondary"
-                error={errors.creator?.data?.existingTokenDenomOrAddress}
-                fieldName="creator.data.existingTokenDenomOrAddress"
+                error={errors.creator?.data?.existingTokenDenom}
+                fieldName="creator.data.existingTokenDenom"
                 ghost
-                placeholder={
-                  existingGovernanceTokenIsCw20
-                    ? bech32Prefix + '...'
-                    : `"denom" OR "factory/${bech32Prefix}.../denom"`
-                }
+                placeholder={`"denom" OR "factory/${bech32Prefix}.../denom"`}
                 register={register}
                 validation={[
                   validateRequired,
-                  makeValidateContractAddress(bech32Prefix),
-                  ...(existingGovernanceTokenIsCw20
-                    ? [makeValidateContractAddress(bech32Prefix)]
-                    : [makeValidateNativeOrFactoryTokenDenom(chainId)]),
+                  makeValidateNativeOrFactoryTokenDenom(chainId),
                 ]}
               />
               <InputErrorMessage
                 error={
-                  errors.creator?.data?.existingTokenDenomOrAddress ||
+                  errors.creator?.data?.existingTokenDenom ||
                   errors.creator?.data?.existingToken?._error
                 }
               />

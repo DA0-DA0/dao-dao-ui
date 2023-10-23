@@ -3,12 +3,10 @@ import {
   DurationWithUnits,
   GenericToken,
   NewDaoTier,
-  TokenType,
 } from '@dao-dao/types'
 
 export enum GovernanceTokenType {
-  NewCw20,
-  // CW20, native, or native token factory
+  New,
   Existing,
 }
 
@@ -24,8 +22,7 @@ export type CreatorData = {
     symbol: string
     name: string
   }
-  existingTokenType: TokenType.Cw20 | TokenType.Native
-  existingTokenDenomOrAddress: string
+  existingTokenDenom: string
   existingToken?: GenericToken & {
     _error?: undefined
   }

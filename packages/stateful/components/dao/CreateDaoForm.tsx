@@ -38,7 +38,7 @@ import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contra
 import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_schema.json'
 import {
   DaoProposalMultipleAdapterId,
-  NEW_DAO_CW20_DECIMALS,
+  NEW_DAO_TOKEN_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
   findWasmAttributeValue,
@@ -466,7 +466,7 @@ export const InnerCreateDaoForm = ({
                   {
                     tokenBalance:
                       daoVotingTokenBasedCreatorData.tokenType ===
-                      GovernanceTokenType.NewCw20
+                      GovernanceTokenType.New
                         ? daoVotingTokenBasedCreatorData.newInfo.initialSupply
                         : // If using existing token but no token info loaded (should
                         // be impossible), just display 0.
@@ -482,7 +482,7 @@ export const InnerCreateDaoForm = ({
                           ),
                     tokenSymbol:
                       daoVotingTokenBasedCreatorData.tokenType ===
-                      GovernanceTokenType.NewCw20
+                      GovernanceTokenType.New
                         ? daoVotingTokenBasedCreatorData.newInfo.symbol
                         : // If using existing token but no token info loaded (should
                         // be impossible), the tokenBalance above will be set to
@@ -501,7 +501,7 @@ export const InnerCreateDaoForm = ({
                           // (should be impossible), the tokenBalance above will
                           // be set to 0, so it doesn't matter that this is
                           // wrong.
-                          NEW_DAO_CW20_DECIMALS,
+                          NEW_DAO_TOKEN_DECIMALS,
                   }
                 : //! Otherwise display native token, which has a balance of 0 initially.
                   {
