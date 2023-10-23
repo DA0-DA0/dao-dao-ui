@@ -185,6 +185,45 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         },
       },
     },
+    [ChainId.NeutronMainnet]: {
+      name: 'neutron',
+      mainnet: true,
+      accentColor: '#000000',
+      factoryContractAddress:
+        'neutron1xms03jykg6e2g402dxj3cw4q6ygm0r5rctdt5d7j99xehwtevm3sxl52n5',
+      supportsV1GovProposals: false,
+      indexes: {
+        search: 'neutron_daos',
+        featured: 'neutron_featured_daos',
+      },
+      explorerUrlTemplates: {
+        tx: 'https://ping.pub/neutron/tx/REPLACE',
+        gov: 'https://ping.pub/neutron/gov',
+        govProp: 'https://ping.pub/neutron/gov/REPLACE',
+        wallet: 'https://ping.pub/neutron/account/REPLACE',
+      },
+      codeIds: {
+        // https://github.com/CosmWasm/cw-plus
+        Cw4Group: 218, // v0.16
+        Cw721Base: 232,
+
+        // TODO: upgrade to v2.3.0 once CW 1.1 is supported
+        // ContractVersion.V210
+        CwPayrollFactory: 220,
+        CwTokenSwap: 221,
+        CwTokenfactoryIssuer: -1,
+        CwVesting: 222,
+        DaoCore: 223,
+        DaoMigrator: -1,
+        DaoPreProposeMultiple: 224,
+        DaoPreProposeSingle: 225,
+        DaoProposalMultiple: 226,
+        DaoProposalSingle: 227,
+        DaoVotingCw4: 228,
+        DaoVotingCw721Staked: -1,
+        DaoVotingTokenStaked: -1,
+      },
+    },
     [ChainId.StargazeMainnet]: {
       name: 'stargaze',
       mainnet: true,
@@ -390,45 +429,6 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoVotingCw4: 3235,
         DaoVotingCw721Staked: 3236,
         DaoVotingTokenStaked: 3237,
-      },
-    },
-    [ChainId.NeutronMainnet]: {
-      name: 'neutron',
-      mainnet: true,
-      accentColor: '#000000',
-      factoryContractAddress:
-        'neutron1xms03jykg6e2g402dxj3cw4q6ygm0r5rctdt5d7j99xehwtevm3sxl52n5',
-      supportsV1GovProposals: false,
-      indexes: {
-        search: 'neutron_daos',
-        featured: 'neutron_featured_daos',
-      },
-      explorerUrlTemplates: {
-        tx: 'https://ping.pub/neutron/tx/REPLACE',
-        gov: 'https://ping.pub/neutron/gov',
-        govProp: 'https://ping.pub/neutron/gov/REPLACE',
-        wallet: 'https://ping.pub/neutron/account/REPLACE',
-      },
-      codeIds: {
-        // https://github.com/CosmWasm/cw-plus
-        Cw4Group: 218, // v0.16
-        Cw721Base: 232,
-
-        // TODO: upgrade to v2.3.0 once CW 1.1 is supported
-        // ContractVersion.V210
-        CwPayrollFactory: 220,
-        CwTokenSwap: 221,
-        CwTokenfactoryIssuer: -1,
-        CwVesting: 222,
-        DaoCore: 223,
-        DaoMigrator: -1,
-        DaoPreProposeMultiple: 224,
-        DaoPreProposeSingle: 225,
-        DaoProposalMultiple: 226,
-        DaoProposalSingle: 227,
-        DaoVotingCw4: 228,
-        DaoVotingCw721Staked: -1,
-        DaoVotingTokenStaked: -1,
       },
     },
   }
