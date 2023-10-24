@@ -13,7 +13,10 @@ import {
 } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
 
 import { DaoVotingCw20StakedQueryClient } from '../../../contracts/DaoVotingCw20Staked'
-import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
+import {
+  refreshDaoVotingPowerAtom,
+  refreshWalletBalancesIdAtom,
+} from '../../atoms/refresh'
 import { cosmWasmClientForChainSelector } from '../chain'
 import { queryContractIndexerSelector } from '../indexer'
 
@@ -156,7 +159,9 @@ export const totalPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const id = get(refreshWalletBalancesIdAtom(undefined))
+      const id =
+        get(refreshWalletBalancesIdAtom(undefined)) +
+        get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
 
       const totalPower = get(
         queryContractIndexerSelector({

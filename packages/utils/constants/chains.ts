@@ -256,6 +256,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoProposalMultiple: 91,
         DaoProposalSingle: 92,
         DaoVotingCw4: 93,
+        // TODO: add once multisig deploys, and add to indexer
         // ContractVersion.V230
         DaoVotingCw721Staked: -1,
         DaoVotingTokenStaked: -1,

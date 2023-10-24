@@ -16,7 +16,11 @@ import {
   DaoVotingNativeStakedQueryClient,
 } from '../../../contracts/DaoVotingNativeStaked'
 import { signingCosmWasmClientAtom } from '../../atoms'
-import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
+import {
+  refreshClaimsIdAtom,
+  refreshDaoVotingPowerAtom,
+  refreshWalletBalancesIdAtom,
+} from '../../atoms/refresh'
 import { cosmWasmClientForChainSelector } from '../chain'
 import { queryContractIndexerSelector } from '../indexer'
 
@@ -118,11 +122,14 @@ export const claimsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshClaimsIdAtom(params[0].address))
+
       const claims = get(
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'daoVotingNativeStaked/claims',
           args: params[0],
+          id,
         })
       )
       // Null when indexer fails. Undefined if no claims.
@@ -206,7 +213,9 @@ export const totalPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const id = get(refreshWalletBalancesIdAtom(undefined))
+      const id =
+        get(refreshWalletBalancesIdAtom(undefined)) +
+        get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
 
       const totalPower = get(
         queryContractIndexerSelector({

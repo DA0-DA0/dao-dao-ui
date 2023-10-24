@@ -1,7 +1,12 @@
 import { Coin, coin } from '@cosmjs/stargate'
 import { useCallback, useMemo } from 'react'
+import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { MsgMint } from '@dao-dao/protobuf/codegen/osmosis/tokenfactory/v1beta1/tx'
+import {
+  DaoVotingTokenStakedSelectors,
+  isContractSelector,
+} from '@dao-dao/state/recoil'
 import { HerbEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -9,6 +14,7 @@ import {
   ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
+  UseHideFromPicker,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
@@ -19,6 +25,7 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../../../actions'
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo } from '../../hooks'
 import { MintComponent as StatelessMintComponent } from './MintComponent'
 
@@ -101,6 +108,42 @@ const Component: ActionComponent = (props) => {
   )
 }
 
+// Show in picker if using cw-tokenfactory-issuer contract.
+const useHideFromPicker: UseHideFromPicker = () => {
+  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+  const { governanceTokenAddress } = useGovernanceTokenInfo()
+  const isFactory = governanceTokenAddress.startsWith('factory/')
+
+  const tfIssuerLoadable = useRecoilValueLoadable(
+    isFactory
+      ? DaoVotingTokenStakedSelectors.tokenContractSelector({
+          contractAddress: votingModuleAddress,
+          chainId,
+          params: [],
+        })
+      : constSelector(undefined)
+  )
+  const tfIssuer =
+    tfIssuerLoadable.state === 'hasValue'
+      ? tfIssuerLoadable.contents
+      : undefined
+
+  const isTfIssuerLoadable = useRecoilValueLoadable(
+    tfIssuer
+      ? isContractSelector({
+          contractAddress: tfIssuer,
+          chainId,
+          name: 'cw-tokenfactory-issuer',
+        })
+      : constSelector(undefined)
+  )
+  const isTfIssuer =
+    isTfIssuerLoadable.state === 'hasValue' && isTfIssuerLoadable.contents
+
+  const showAction = isFactory && !!isTfIssuer
+  return !showAction
+}
+
 export const makeMintAction: ActionMaker<MintData> = ({ t }) => ({
   key: ActionKey.Mint,
   Icon: HerbEmoji,
@@ -110,4 +153,5 @@ export const makeMintAction: ActionMaker<MintData> = ({ t }) => ({
   useDefaults,
   useTransformToCosmos,
   useDecodedCosmosMsg,
+  useHideFromPicker,
 })
