@@ -2,9 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "InstantiateMsg",
   "type": "object",
-  "required": [
-    "token_info"
-  ],
+  "required": ["token_info"],
   "properties": {
     "active_threshold": {
       "description": "The number or percentage of tokens that must be staked for the DAO to be active",
@@ -45,15 +43,11 @@
         {
           "description": "The absolute number of tokens that must be staked for the module to be active.",
           "type": "object",
-          "required": [
-            "absolute_count"
-          ],
+          "required": ["absolute_count"],
           "properties": {
             "absolute_count": {
               "type": "object",
-              "required": [
-                "count"
-              ],
+              "required": ["count"],
               "properties": {
                 "count": {
                   "$ref": "#/definitions/Uint128"
@@ -67,15 +61,11 @@
         {
           "description": "The percentage of tokens that must be staked for the module to be active. Computed as `staked / total_supply`.",
           "type": "object",
-          "required": [
-            "percentage"
-          ],
+          "required": ["percentage"],
           "properties": {
             "percentage": {
               "type": "object",
-              "required": [
-                "percent"
-              ],
+              "required": ["percent"],
               "properties": {
                 "percent": {
                   "$ref": "#/definitions/Decimal"
@@ -99,11 +89,7 @@
     "DenomUnit": {
       "description": "DenomUnit represents a struct that describes a given denomination unit of the basic token.",
       "type": "object",
-      "required": [
-        "aliases",
-        "denom",
-        "exponent"
-      ],
+      "required": ["aliases", "denom", "exponent"],
       "properties": {
         "aliases": {
           "description": "aliases is a list of string aliases for the given denom",
@@ -129,9 +115,7 @@
       "oneOf": [
         {
           "type": "object",
-          "required": [
-            "height"
-          ],
+          "required": ["height"],
           "properties": {
             "height": {
               "type": "integer",
@@ -144,9 +128,7 @@
         {
           "description": "Time in seconds",
           "type": "object",
-          "required": [
-            "time"
-          ],
+          "required": ["time"],
           "properties": {
             "time": {
               "type": "integer",
@@ -160,10 +142,7 @@
     },
     "InitialBalance": {
       "type": "object",
-      "required": [
-        "address",
-        "amount"
-      ],
+      "required": ["address", "amount"],
       "properties": {
         "address": {
           "type": "string"
@@ -176,19 +155,11 @@
     },
     "NewDenomMetadata": {
       "type": "object",
-      "required": [
-        "description",
-        "display",
-        "name",
-        "symbol"
-      ],
+      "required": ["description", "display", "name", "symbol"],
       "properties": {
         "additional_denom_units": {
           "description": "Used define additional units of the token (e.g. \"tiger\") These must have an exponent larger than 0.",
-          "type": [
-            "array",
-            "null"
-          ],
+          "type": ["array", "null"],
           "items": {
             "$ref": "#/definitions/DenomUnit"
           }
@@ -214,11 +185,7 @@
     },
     "NewTokenInfo": {
       "type": "object",
-      "required": [
-        "initial_balances",
-        "subdenom",
-        "token_issuer_code_id"
-      ],
+      "required": ["initial_balances", "subdenom", "token_issuer_code_id"],
       "properties": {
         "initial_balances": {
           "description": "The initial balances to set for the token, cannot be empty.",
@@ -267,15 +234,11 @@
         {
           "description": "Uses an existing Token Factory token and creates a new issuer contract. Full setup, such as transferring ownership or setting up MsgSetBeforeSendHook, must be done manually.",
           "type": "object",
-          "required": [
-            "existing"
-          ],
+          "required": ["existing"],
           "properties": {
             "existing": {
               "type": "object",
-              "required": [
-                "denom"
-              ],
+              "required": ["denom"],
               "properties": {
                 "denom": {
                   "description": "Token factory denom",
@@ -290,9 +253,7 @@
         {
           "description": "Creates a new Token Factory token via the issue contract with the DAO automatically setup as admin and owner.",
           "type": "object",
-          "required": [
-            "new"
-          ],
+          "required": ["new"],
           "properties": {
             "new": {
               "$ref": "#/definitions/NewTokenInfo"
@@ -303,9 +264,7 @@
         {
           "description": "Uses a factory contract that must return the denom, optionally a Token Contract address. The binary must serialize to a `WasmMsg::Execute` message. Validation happens in the factory contract itself, so be sure to use a trusted factory contract.",
           "type": "object",
-          "required": [
-            "factory"
-          ],
+          "required": ["factory"],
           "properties": {
             "factory": {
               "$ref": "#/definitions/Binary"
