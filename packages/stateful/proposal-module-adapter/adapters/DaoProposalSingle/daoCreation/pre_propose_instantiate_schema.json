@@ -28,6 +28,7 @@
       "type": "boolean"
     }
   },
+  "additionalProperties": false,
   "definitions": {
     "DepositRefundPolicy": {
       "oneOf": [
@@ -63,18 +64,20 @@
                 "denom": {
                   "$ref": "#/definitions/UncheckedDenom"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
         },
         {
-          "description": "Use the token address of the associated DAO's voting module. NOTE: in order to use the token address of the voting module the voting module must (1) use a cw20 token and (2) implement the `TokenContract {}` query type defined by `cw_core_macros::token_query`. Failing to implement that and using this option will cause instantiation to fail.",
+          "description": "Use the token address of the associated DAO's voting module. NOTE: in order to use the token address of the voting module the voting module must (1) use a cw20 token and (2) implement the `TokenContract {}` query type defined by `dao_dao_macros::token_query`. Failing to implement that and using this option will cause instantiation to fail.",
           "type": "object",
           "required": ["voting_module_token"],
           "properties": {
             "voting_module_token": {
-              "type": "object"
+              "type": "object",
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
@@ -145,7 +148,8 @@
             }
           ]
         }
-      }
+      },
+      "additionalProperties": false
     }
   }
 }
