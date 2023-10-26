@@ -39,43 +39,42 @@ export const CreateValenceAccountComponent: ActionComponent<
 
   return (
     <>
-      <div className="flex flex-col gap-1">
-        <InputLabel name={t('form.funds')} />
-        <div className="flex flex-col items-stretch gap-2">
-          {coins.map(({ id }, index) => (
-            <NativeCoinSelector
-              key={id}
-              {...({
-                ...props,
-                chainId,
-                onRemove: props.isCreating
-                  ? () => removeCoin(index)
-                  : undefined,
-              } as NativeCoinSelectorProps)}
-              errors={props.errors?.funds?.[index]}
-              fieldNamePrefix={props.fieldNamePrefix + `funds.${index}.`}
-            />
-          ))}
-          {!props.isCreating && coins.length === 0 && (
-            <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
-              {t('info.none')}
-            </p>
-          )}
-          {props.isCreating && (
-            <Button
-              className="mb-2 self-start"
-              onClick={() =>
-                appendCoin({
-                  amount: 1,
-                  denom: getNativeTokenForChainId(chainId).denomOrAddress,
-                })
-              }
-              variant="secondary"
-            >
-              {t('button.addPayment')}
-            </Button>
-          )}
-        </div>
+      <div className="flex flex-col gap-2">
+        <InputLabel name={t('form.initialBalances')} />
+
+        {coins.map(({ id }, index) => (
+          <NativeCoinSelector
+            key={id}
+            {...({
+              ...props,
+              chainId,
+              onRemove: props.isCreating ? () => removeCoin(index) : undefined,
+            } as NativeCoinSelectorProps)}
+            errors={props.errors?.funds?.[index]}
+            fieldNamePrefix={props.fieldNamePrefix + `funds.${index}.`}
+          />
+        ))}
+
+        {!props.isCreating && coins.length === 0 && (
+          <p className="-mt-1 text-xs italic text-text-tertiary">
+            {t('info.none')}
+          </p>
+        )}
+
+        {props.isCreating && (
+          <Button
+            className="self-start"
+            onClick={() =>
+              appendCoin({
+                amount: 1,
+                denom: getNativeTokenForChainId(chainId).denomOrAddress,
+              })
+            }
+            variant="secondary"
+          >
+            {t('button.addToken')}
+          </Button>
+        )}
       </div>
     </>
   )

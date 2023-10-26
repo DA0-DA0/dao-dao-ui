@@ -531,6 +531,7 @@
     "iContributedPlaceholder": "I contributed...",
     "image": "Image",
     "imageUrlTooltip": "A link to an image. For example: https://moonphase.is/image.svg",
+    "initialBalances": "Initial balances",
     "initialDeposit": "Initial deposit",
     "initialSupply": "Total token supply",
     "instantiatedAddress": "Instantiated address",

@@ -11,19 +11,14 @@ import {
   ChainProvider,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import {
-  Account,
-  AccountType,
-  ChainId,
-  TokenType,
-  UseDecodedCosmosMsg,
-} from '@dao-dao/types'
+import { TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
   ActionKey,
   ActionMaker,
   UseDefaults,
+  UseHideFromPicker,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import { ExecuteMsg as ValenceAccountExecuteMsg } from '@dao-dao/types/contracts/ValenceAccount'
@@ -36,7 +31,7 @@ import {
   actionContextSupportsValence,
   decodePolytoneExecuteMsg,
   encodeMessageAsBase64,
-  getAccount,
+  getValenceControllerAccount,
   loadableToLoadingData,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
@@ -50,96 +45,6 @@ import {
   ConfigureRebalancerData,
   ConfigureRebalancerComponent as StatelessConfigureRebalancerComponent,
 } from './Component'
-
-const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
-  const {
-    address,
-    chain: { chain_id: currentChainId },
-    context,
-  } = useActionOptions()
-
-  // Get account that can control valence accounts.
-  const valenceControllerAccount: Account | undefined =
-    context.type === ActionContextType.Dao
-      ? // Get first account on any valence supported chain.
-        VALENCE_SUPPORTED_CHAINS.map((chainId) =>
-          getAccount({
-            accounts: context.info.accounts,
-            chainId,
-          })
-        ).find(Boolean)
-      : VALENCE_SUPPORTED_CHAINS.includes(currentChainId as ChainId)
-      ? {
-          type: AccountType.Native,
-          chainId: currentChainId,
-          address,
-        }
-      : undefined
-
-  // This action should not be allowed to be picked if there are no accounts
-  // that can control a Valence account, so this is just a type check.
-  if (!valenceControllerAccount) {
-    throw new Error('No valence controller account found.')
-  }
-
-  const valenceAccountsLoading = useCachedLoadingWithError(
-    valenceAccountsSelector({
-      chainId: valenceControllerAccount.chainId,
-      address: valenceControllerAccount.address,
-    })
-  )
-  const valenceAccount =
-    valenceAccountsLoading.loading || valenceAccountsLoading.errored
-      ? undefined
-      : valenceAccountsLoading.data[0]
-
-  const { chainId } = valenceControllerAccount
-
-  const defaultBaseDenom =
-    mustGetSupportedChainConfig(chainId).valence?.rebalancer
-      .baseTokenAllowlist?.[0]
-  if (!defaultBaseDenom) {
-    throw new Error('No default base denom found for rebalancer.')
-  }
-
-  const rebalancerConfig = valenceAccount?.config.rebalancer?.config
-
-  return {
-    valenceAccount,
-    chainId: valenceAccount?.chainId || chainId,
-    trustee: rebalancerConfig?.trustee || undefined,
-    baseDenom: rebalancerConfig?.base_denom || defaultBaseDenom,
-    tokens: rebalancerConfig?.targets.map(
-      ({ denom, percentage, min_balance }) => ({
-        denom,
-        percent: Number(percentage),
-        minBalance:
-          min_balance && !isNaN(Number(min_balance))
-            ? Number(min_balance)
-            : undefined,
-      })
-    ) || [
-      {
-        denom: defaultBaseDenom,
-        percent: 100,
-      },
-    ],
-    // TODO: pick defaults
-    pid: {
-      kp: Number(rebalancerConfig?.pid.p || 0.1),
-      ki: Number(rebalancerConfig?.pid.i || 0.1),
-      kd: Number(rebalancerConfig?.pid.d || 0.1),
-    },
-    maxLimitBps:
-      rebalancerConfig?.max_limit && !isNaN(Number(rebalancerConfig.max_limit))
-        ? Number(rebalancerConfig.max_limit)
-        : // TODO: pick default
-          // 5%
-          500,
-    targetOverrideStrategy:
-      rebalancerConfig?.target_override_strategy || 'proportional',
-  }
-}
 
 const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   props
@@ -348,9 +253,79 @@ export const makeConfigureRebalancerAction: ActionMaker<
 
   const {
     t,
-    context,
     chain: { chain_id: srcChainId },
+    context,
   } = options
+
+  // Get account that can control valence accounts.
+  const valenceControllerAccount = getValenceControllerAccount(options)
+
+  const useDefaults: UseDefaults<ConfigureRebalancerData> = () => {
+    // This action should not be allowed to be picked if there are no accounts
+    // that can control a Valence account, so this is just a type check.
+    if (!valenceControllerAccount) {
+      throw new Error('No valence controller account found.')
+    }
+
+    const valenceAccountsLoading = useCachedLoadingWithError(
+      valenceAccountsSelector({
+        chainId: valenceControllerAccount.chainId,
+        address: valenceControllerAccount.address,
+      })
+    )
+    const valenceAccount =
+      valenceAccountsLoading.loading || valenceAccountsLoading.errored
+        ? undefined
+        : valenceAccountsLoading.data[0]
+
+    const { chainId } = valenceControllerAccount
+
+    const defaultBaseDenom =
+      mustGetSupportedChainConfig(chainId).valence?.rebalancer
+        .baseTokenAllowlist?.[0]
+    if (!defaultBaseDenom) {
+      throw new Error('No default base denom found for rebalancer.')
+    }
+
+    const rebalancerConfig = valenceAccount?.config.rebalancer?.config
+
+    return {
+      valenceAccount,
+      chainId: valenceAccount?.chainId || chainId,
+      trustee: rebalancerConfig?.trustee || undefined,
+      baseDenom: rebalancerConfig?.base_denom || defaultBaseDenom,
+      tokens: rebalancerConfig?.targets.map(
+        ({ denom, percentage, min_balance }) => ({
+          denom,
+          percent: Number(percentage),
+          minBalance:
+            min_balance && !isNaN(Number(min_balance))
+              ? Number(min_balance)
+              : undefined,
+        })
+      ) || [
+        {
+          denom: defaultBaseDenom,
+          percent: 100,
+        },
+      ],
+      // TODO: pick defaults
+      pid: {
+        kp: Number(rebalancerConfig?.pid.p || 0.1),
+        ki: Number(rebalancerConfig?.pid.i || 0.1),
+        kd: Number(rebalancerConfig?.pid.d || 0.1),
+      },
+      maxLimitBps:
+        rebalancerConfig?.max_limit &&
+        !isNaN(Number(rebalancerConfig.max_limit))
+          ? Number(rebalancerConfig.max_limit)
+          : // TODO: pick default
+            // 5%
+            500,
+      targetOverrideStrategy:
+        rebalancerConfig?.target_override_strategy || 'proportional',
+    }
+  }
 
   const useTransformToCosmos: UseTransformToCosmos<
     ConfigureRebalancerData
@@ -412,6 +387,25 @@ export const makeConfigureRebalancerAction: ActionMaker<
       []
     )
 
+  // Disallow selection if there are no valence accounts.
+  const useHideFromPicker: UseHideFromPicker = () => {
+    const valenceAccountsLoading = useCachedLoadingWithError(
+      valenceControllerAccount
+        ? valenceAccountsSelector({
+            chainId: valenceControllerAccount.chainId,
+            address: valenceControllerAccount.address,
+          })
+        : undefined
+    )
+
+    return (
+      !valenceControllerAccount ||
+      valenceAccountsLoading.loading ||
+      valenceAccountsLoading.errored ||
+      valenceAccountsLoading.data.length === 0
+    )
+  }
+
   return {
     key: ActionKey.ConfigureRebalancer,
     Icon: BalanceEmoji,
@@ -424,5 +418,6 @@ export const makeConfigureRebalancerAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
+    useHideFromPicker,
   }
 }

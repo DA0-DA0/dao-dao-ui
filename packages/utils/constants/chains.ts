@@ -393,21 +393,23 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V210
       Cw20Stake: 1247,
       DaoVotingCw20Staked: 1263,
+
+      ValenceAccount: 3794,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
         DaoPreProposeMultiple: 1258,
         DaoProposalMultiple: 1261,
       },
-      valence: {
-        servicesManager:
-          'juno1gscdr8zw8njrqfad9m3jgw70s4zumqccka4k6cutlxen0krud08sxlqs9d',
-        rebalancer: {
-          address:
-            'juno15she5505reyvgvg9cz5g4k6y5ktxg4eja5tuytxmj0x0gs0cyjwq2sjgr0',
-          tokenAllowlist: ['ujunox', 'uusdcx'],
-          baseTokenAllowlist: ['ujunox', 'uusdcx'],
-        },
+    },
+    valence: {
+      servicesManager:
+        'juno1gscdr8zw8njrqfad9m3jgw70s4zumqccka4k6cutlxen0krud08sxlqs9d',
+      rebalancer: {
+        address:
+          'juno15she5505reyvgvg9cz5g4k6y5ktxg4eja5tuytxmj0x0gs0cyjwq2sjgr0',
+        tokenAllowlist: ['ujunox', 'uusdcx'],
+        baseTokenAllowlist: ['ujunox', 'uusdcx'],
       },
     },
   },
