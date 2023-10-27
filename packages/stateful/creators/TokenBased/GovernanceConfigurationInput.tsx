@@ -494,34 +494,10 @@ export const GovernanceConfigurationInput = ({
         </>
       ) : data.tokenType === GovernanceTokenType.Existing ? (
         <div className="rounded-lg bg-background-tertiary">
-          {/* TODO(token factory): Remove h-14 when native/TF DAOs are allowed. */}
-          <div className="flex h-14 flex-row border-b border-border-base p-4">
-            {/* TODO(token factory): Replace title with selection input below. */}
+          <div className="flex h-14 flex-row items-center border-b border-border-base p-4">
             <p className="primary-text text-text-body">
               {t('form.tokenContractAddressTitle')}
             </p>
-
-            {/* TODO(token factory): Uncomment when native/TF DAOs are allowed. */}
-            {/* <SegmentedControls<TokenType.Cw20 | TokenType.Native>
-              onSelect={(value) => {
-                setValue('creator.data.existingTokenType', value)
-                setValue(
-                  'creator.data.existingTokenDenomOrAddress',
-                  ''
-                )
-              }}
-              selected={data.existingTokenType}
-              tabs={[
-                {
-                  label: t('form.cw20Token'),
-                  value: TokenType.Cw20,
-                },
-                {
-                  label: t('form.nativeOrFactoryToken'),
-                  value: TokenType.Native,
-                },
-              ]}
-            /> */}
           </div>
 
           <div className="space-y-2 p-4">
