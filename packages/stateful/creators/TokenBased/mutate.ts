@@ -82,7 +82,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
               {
                 aliases: [],
                 denom: symbol,
-                exponent: NEW_DAO_TOKEN_DECIMALS,
+                exponent: `${NEW_DAO_TOKEN_DECIMALS}`,
               },
             ],
             description: `${daoName}'s Governance Token`,

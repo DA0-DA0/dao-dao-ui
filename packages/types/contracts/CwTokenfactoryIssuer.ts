@@ -94,13 +94,12 @@ export interface Metadata {
   display: string
   name: string
   symbol: string
-  [k: string]: unknown
 }
 export interface DenomUnit {
   aliases: string[]
   denom: string
-  exponent: number
-  [k: string]: unknown
+  // Serialized as string for some reason.
+  exponent: string
 }
 export type QueryMsg =
   | {
