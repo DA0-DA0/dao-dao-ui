@@ -207,7 +207,7 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         Cw4Group: 218, // v0.16
         Cw721Base: 232,
 
-        // TODO: upgrade to v2.3.0 once CW 1.1 is supported
+        // TODO(neutron-2.3.0): upgrade to v2.3.0 once CW 1.1 is supported
         // ContractVersion.V210
         CwPayrollFactory: 220,
         CwTokenSwap: 221,
