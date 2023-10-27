@@ -174,6 +174,7 @@ export const isActiveSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      get(refreshWalletBalancesIdAtom(undefined))
       const client = get(queryClient(queryClientParams))
       return await client.isActive(...params)
     },
