@@ -5,6 +5,7 @@ import {
   DaoVotingCw20StakedSelectors,
   PolytoneProxySelectors,
   addressIsModuleSelector,
+  contractInfoSelector,
   contractInstantiateTimeSelector,
   contractVersionSelector,
   isContractSelector,
@@ -68,13 +69,11 @@ export const daoCw20GovernanceTokenAddressSelector = selectorFamily<
           params: [],
         })
       )
-      // All `info` queries are the same, so just use core's info query.
       const votingModuleInfo = votingModuleAddress
         ? get(
-            DaoCoreV2Selectors.infoSelector({
+            contractInfoSelector({
               contractAddress: votingModuleAddress,
               chainId,
-              params: [],
             })
           )
         : undefined
@@ -172,12 +171,10 @@ export const daoInfoSelector: (param: {
         })
       )
 
-      // All `info` queries are the same, so just use DAO core's info query.
       const votingModuleInfo = get(
-        DaoCoreV2Selectors.infoSelector({
+        contractInfoSelector({
           contractAddress: dumpState.voting_module,
           chainId,
-          params: [],
         })
       )
       const votingModuleContractName =

@@ -1,6 +1,7 @@
 import { selectorFamily } from 'recoil'
 
 import {
+  contractInfoSelector,
   cosmWasmClientForChainSelector,
   queryContractIndexerSelector,
   refreshProposalIdAtom,
@@ -10,7 +11,6 @@ import {
 import { WithChainId } from '@dao-dao/types'
 import {
   ConfigResponse,
-  InfoResponse,
   ListProposalsResponse,
   ProposalCountResponse,
   ProposalHooksResponse,
@@ -317,23 +317,4 @@ export const voteHooksSelector = selectorFamily<
       return await client.voteHooks()
     },
 })
-export const infoSelector = selectorFamily<InfoResponse, QueryClientParams>({
-  key: 'cwProposalSingleV1Info',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const info = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'info',
-        })
-      )
-      if (info) {
-        return { info }
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.info()
-    },
-})
+export const infoSelector = contractInfoSelector

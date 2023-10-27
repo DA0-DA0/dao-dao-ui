@@ -3,6 +3,7 @@ import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 import {
   DaoCoreV2Selectors,
   addressIsModuleSelector,
+  contractInfoSelector,
   contractInstantiateTimeSelector,
   contractVersionSelector,
   daoTvlSelector,
@@ -146,13 +147,14 @@ export const daoCardInfoSelector = selectorFamily<
                 params: [],
               })
             )
-            const { version } = get(
-              DaoCoreV2Selectors.infoSelector({
+            const {
+              info: { version },
+            } = get(
+              contractInfoSelector({
                 contractAddress: admin,
                 chainId,
-                params: [],
               })
-            ).info
+            )
             const adminVersion = parseContractVersion(version)
 
             if (adminVersion) {

@@ -4,7 +4,6 @@ import { WithChainId } from '@dao-dao/types'
 import {
   ActiveThresholdResponse,
   DaoResponse,
-  InfoResponse,
   IsActiveResponse,
   StakingContractResponse,
   TokenContractResponse,
@@ -18,6 +17,7 @@ import {
   refreshWalletBalancesIdAtom,
 } from '../../atoms/refresh'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { contractInfoSelector } from '../contract'
 import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
@@ -183,31 +183,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
       return await client.totalPowerAtHeight(...params)
     },
 })
-export const infoSelector = selectorFamily<
-  InfoResponse,
-  QueryClientParams & {
-    params: Parameters<DaoVotingCw20StakedQueryClient['info']>
-  }
->({
-  key: 'daoVotingCw20StakedInfo',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const info = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'info',
-        })
-      )
-      if (info) {
-        return { info }
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.info(...params)
-    },
-})
+export const infoSelector = contractInfoSelector
 export const tokenContractSelector = selectorFamily<
   TokenContractResponse,
   QueryClientParams & {

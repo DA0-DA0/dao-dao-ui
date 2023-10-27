@@ -19,7 +19,6 @@ import {
   DaoURIResponse,
   DumpStateResponse,
   GetItemResponse,
-  InfoResponse,
   ListItemsResponse,
   ListSubDaosResponse,
   PauseInfoResponse,
@@ -50,6 +49,7 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { contractInfoSelector } from '../contract'
 import { queryContractIndexerSelector } from '../indexer'
 import { genericTokenSelector } from '../token'
 import * as Cw20BaseSelectors from './Cw20Base'
@@ -511,32 +511,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
     },
 })
 
-export const infoSelector = selectorFamily<
-  InfoResponse,
-  QueryClientParams & {
-    params: Parameters<DaoCoreV2QueryClient['info']>
-  }
->({
-  key: 'daoCoreV2Info',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const info = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'info',
-          required: true,
-        })
-      )
-      if (info) {
-        return { info }
-      }
-
-      // If indexer query fails, fallback to chain query.
-      const client = get(queryClient(queryClientParams))
-      return await client.info(...params)
-    },
-})
+export const infoSelector = contractInfoSelector
 
 ///! Custom selectors
 
