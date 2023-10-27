@@ -22,7 +22,13 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   {
     tiers,
     tokenType,
-    newInfo: { initialSupply, imageUrl, symbol, name },
+    newInfo: {
+      initialSupply,
+      // TODO(tokenfactory-image): add back in once token factory supports URI metadata
+      imageUrl: _imageUrl,
+      symbol,
+      name,
+    },
     existingTokenDenom,
     unstakingDuration,
     activeThreshold,

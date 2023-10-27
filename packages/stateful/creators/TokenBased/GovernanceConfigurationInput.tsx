@@ -9,7 +9,6 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 import { genericTokenSelector, nativeSupplySelector } from '@dao-dao/state'
 import {
   Button,
-  ImageSelector,
   InputErrorMessage,
   InputLabel,
   Loader,
@@ -42,7 +41,6 @@ import {
 
 import { TokenBasedCreator } from '.'
 import { EntityDisplay } from '../../components/EntityDisplay'
-import { Trans } from '../../components/Trans'
 import { useWallet } from '../../hooks/useWallet'
 import { TierCard } from './TierCard'
 import { CreatorData, GovernanceTokenType } from './types'
@@ -302,7 +300,8 @@ export const GovernanceConfigurationInput = ({
 
             <div className="flex flex-col items-stretch sm:flex-row">
               <div className="flex flex-col items-stretch sm:flex-row">
-                <div className="flex flex-col items-center gap-5 py-6 px-10">
+                {/* TODO(tokenfactory-image): add back in once token factory supports URI metadata */}
+                {/* <div className="flex flex-col items-center gap-5 py-6 px-10 sm:border-border-secondary sm:border-r">
                   <InputLabel name={t('form.image')} />
                   <ImageSelector
                     Trans={Trans}
@@ -313,8 +312,8 @@ export const GovernanceConfigurationInput = ({
                     size={40}
                     watch={watch}
                   />
-                </div>
-                <div className="flex flex-col gap-5 border-y border-border-secondary py-6 px-8 sm:border-y-0 sm:border-x">
+                </div> */}
+                <div className="flex flex-col gap-5 border-y border-border-secondary py-6 px-8 sm:border-y-0 sm:border-r">
                   <InputLabel name={t('form.symbol')} />
                   <div className="flex flex-col">
                     <div className="flex flex-row items-center gap-2">
