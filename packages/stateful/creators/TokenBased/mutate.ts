@@ -32,6 +32,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     existingTokenDenom,
     unstakingDuration,
     activeThreshold,
+    tokenFactoryDenomCreationFee,
   },
   t,
   codeIds
@@ -133,7 +134,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
       JSON.stringify(votingModuleAdapterInstantiateMsg),
       'utf8'
     ).toString('base64'),
-    funds: [],
+    funds: tokenFactoryDenomCreationFee || [],
   }
 
   return msg

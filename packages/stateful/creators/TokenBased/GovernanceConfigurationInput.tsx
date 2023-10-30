@@ -6,7 +6,11 @@ import { useFieldArray } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { genericTokenSelector, nativeSupplySelector } from '@dao-dao/state'
+import {
+  genericTokenSelector,
+  nativeSupplySelector,
+  tokenFactoryDenomCreationFeeSelector,
+} from '@dao-dao/state'
 import {
   Button,
   InputErrorMessage,
@@ -18,6 +22,7 @@ import {
   VOTING_POWER_DISTRIBUTION_COLORS,
   VotingPowerDistribution,
   VotingPowerDistributionEntry,
+  useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
 import {
@@ -82,6 +87,20 @@ export const GovernanceConfigurationInput = ({
       block: 'end',
     })
   }, [appendTier])
+
+  // Load token factory denom creation fee.
+  const tokenFactoryDenomCreationFeeLoading = useCachedLoading(
+    tokenFactoryDenomCreationFeeSelector(chainId),
+    undefined
+  )
+  useEffect(() => {
+    if (!tokenFactoryDenomCreationFeeLoading.loading) {
+      setValue(
+        'creator.data.tokenFactoryDenomCreationFee',
+        tokenFactoryDenomCreationFeeLoading.data
+      )
+    }
+  }, [setValue, tokenFactoryDenomCreationFeeLoading])
 
   // Fill in default first tier info if tiers not yet edited.
   const [loadedPage, setLoadedPage] = useState(false)

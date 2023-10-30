@@ -1,3 +1,5 @@
+import { Coin } from '@cosmjs/amino'
+
 import {
   DaoCreationVotingConfigWithActiveThreshold,
   DurationWithUnits,
@@ -28,4 +30,6 @@ export type CreatorData = {
   }
   existingTokenSupply?: string
   unstakingDuration: DurationWithUnits
+  // If token factory denom requires a creation fee, this should be set.
+  tokenFactoryDenomCreationFee?: Coin[]
 } & DaoCreationVotingConfigWithActiveThreshold
