@@ -19,6 +19,7 @@ import {
   ImageSelector,
   PageHeaderContent,
   RightSidebarContent,
+  TooltipInfoIcon,
   useAppContext,
   useCachedLoadable,
   useDaoNavHelpers,
@@ -37,12 +38,14 @@ import {
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
 import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_schema.json'
 import {
+  CHAIN_GAS_MULTIPLIER,
   DaoProposalMultipleAdapterId,
-  NEW_DAO_CW20_DECIMALS,
+  NEW_DAO_TOKEN_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
   findWasmAttributeValue,
   getFallbackImage,
+  getFundsFromDaoInstantiateMsg,
   getNativeTokenForChainId,
   getSupportedChainConfig,
   makeValidateMsg,
@@ -70,6 +73,7 @@ import {
 import { ChainSwitcher } from '../ChainSwitcher'
 import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
+import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Trans } from '../Trans'
 import { loadCommonVotingConfigItems } from './commonVotingConfig'
 
@@ -332,6 +336,7 @@ export const InnerCreateDaoForm = ({
       // Placeholder. Should be replaced by creator's mutate function.
       voting_module_instantiate_info: {
         code_id: -1,
+        funds: [],
         label: '',
         msg: '',
       },
@@ -381,14 +386,19 @@ export const InnerCreateDaoForm = ({
   const createDaoWithFactory = useCallback(async () => {
     const cwCoreInstantiateMsg = generateInstantiateMsg()
 
-    const { logs } = await instantiateWithFactory({
-      codeId: codeIds.DaoCore,
-      instantiateMsg: Buffer.from(
-        JSON.stringify(cwCoreInstantiateMsg),
-        'utf8'
-      ).toString('base64'),
-      label: cwCoreInstantiateMsg.name,
-    })
+    const { logs } = await instantiateWithFactory(
+      {
+        codeId: codeIds.DaoCore,
+        instantiateMsg: Buffer.from(
+          JSON.stringify(cwCoreInstantiateMsg),
+          'utf8'
+        ).toString('base64'),
+        label: cwCoreInstantiateMsg.name,
+      },
+      CHAIN_GAS_MULTIPLIER,
+      undefined,
+      getFundsFromDaoInstantiateMsg(cwCoreInstantiateMsg)
+    )
     return findWasmAttributeValue(
       logs,
       factoryContractAddress,
@@ -465,7 +475,7 @@ export const InnerCreateDaoForm = ({
                   {
                     tokenBalance:
                       daoVotingTokenBasedCreatorData.tokenType ===
-                      GovernanceTokenType.NewCw20
+                      GovernanceTokenType.New
                         ? daoVotingTokenBasedCreatorData.newInfo.initialSupply
                         : // If using existing token but no token info loaded (should
                         // be impossible), just display 0.
@@ -481,7 +491,7 @@ export const InnerCreateDaoForm = ({
                           ),
                     tokenSymbol:
                       daoVotingTokenBasedCreatorData.tokenType ===
-                      GovernanceTokenType.NewCw20
+                      GovernanceTokenType.New
                         ? daoVotingTokenBasedCreatorData.newInfo.symbol
                         : // If using existing token but no token info loaded (should
                         // be impossible), the tokenBalance above will be set to
@@ -500,7 +510,7 @@ export const InnerCreateDaoForm = ({
                           // (should be impossible), the tokenBalance above will
                           // be set to 0, so it doesn't matter that this is
                           // wrong.
-                          NEW_DAO_CW20_DECIMALS,
+                          NEW_DAO_TOKEN_DECIMALS,
                   }
                 : //! Otherwise display native token, which has a balance of 0 initially.
                   {
@@ -655,6 +665,16 @@ export const InnerCreateDaoForm = ({
 
   const Page = CreateDaoPages[pageIndex]
 
+  const onReviewPage = pageIndex === CreateDaoPages.length - 1
+  const instantiateMsgFunds = useMemo(
+    () =>
+      // Only compute when on review page.
+      onReviewPage
+        ? getFundsFromDaoInstantiateMsg(generateInstantiateMsg())
+        : null,
+    [generateInstantiateMsg, onReviewPage]
+  )
+
   return (
     <>
       <RightSidebarContent>
@@ -720,6 +740,33 @@ export const InnerCreateDaoForm = ({
 
         <div className="mb-14">
           <Page {...createDaoContext} />
+
+          {/* If funds are required, display. */}
+          {!!instantiateMsgFunds?.length &&
+            instantiateMsgFunds.some(({ amount }) => amount !== '0') && (
+              <div className="mt-6 -mb-8 flex flex-row justify-end">
+                <div className="flex flex-col items-end gap-2">
+                  <div className="flex flex-row items-center gap-1 self-start">
+                    <p className="primary-text text-text-body">
+                      {t('title.fees')}
+                    </p>
+                    <TooltipInfoIcon
+                      size="sm"
+                      title={t('info.createDaoFeesExplanation')}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    {instantiateMsgFunds.map((coin, index) => (
+                      <TokenAmountDisplay
+                        key={coin.denom + index}
+                        coin={coin}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
         </div>
 
         <div
@@ -740,6 +787,7 @@ export const InnerCreateDaoForm = ({
               <p>{t(CreateDaoSubmitValue.Back)}</p>
             </Button>
           )}
+
           <Button loading={creating} type="submit" value={submitValue}>
             {submitLabel}
           </Button>

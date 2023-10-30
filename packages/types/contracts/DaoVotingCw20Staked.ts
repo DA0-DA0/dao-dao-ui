@@ -1,43 +1,28 @@
 import {
+  ActiveThreshold,
   Binary,
   ContractVersionInfo,
-  Decimal,
   Duration,
   Uint128,
 } from './common'
 
-export type ActiveThreshold =
-  | {
-      absolute_count: {
-        count: Uint128
-      }
-    }
-  | {
-      percentage: {
-        percent: Decimal
-      }
-    }
 export interface ActiveThresholdResponse {
   active_threshold?: ActiveThreshold | null
-  [k: string]: unknown
 }
 export type DaoResponse = string
 export type ExecuteMsg = {
   update_active_threshold: {
     new_threshold?: ActiveThreshold | null
-    [k: string]: unknown
   }
 }
 export interface InfoResponse {
   info: ContractVersionInfo
-  [k: string]: unknown
 }
 export type TokenInfo =
   | {
       existing: {
         address: string
         staking_contract: StakingInfo
-        [k: string]: unknown
       }
     }
   | {
@@ -52,21 +37,18 @@ export type TokenInfo =
         staking_code_id: number
         symbol: string
         unstaking_duration?: Duration | null
-        [k: string]: unknown
       }
     }
 export type StakingInfo =
   | {
       existing: {
         staking_contract_address: string
-        [k: string]: unknown
       }
     }
   | {
       new: {
         staking_code_id: number
         unstaking_duration?: Duration | null
-        [k: string]: unknown
       }
     }
 export type Logo =
@@ -86,70 +68,50 @@ export type EmbeddedLogo =
 export interface InstantiateMsg {
   active_threshold?: ActiveThreshold | null
   token_info: TokenInfo
-  [k: string]: unknown
 }
 export interface Cw20Coin {
   address: string
   amount: Uint128
-  [k: string]: unknown
 }
 export interface InstantiateMarketingInfo {
   description?: string | null
   logo?: Logo | null
   marketing?: string | null
   project?: string | null
-  [k: string]: unknown
 }
 export interface IsActiveResponse {
   active: boolean
-  [k: string]: unknown
 }
-export interface MigrateMsg {
-  [k: string]: unknown
-}
+export interface MigrateMsg {}
 export type QueryMsg =
   | {
-      staking_contract: {
-        [k: string]: unknown
-      }
+      staking_contract: {}
     }
   | {
-      dao: {
-        [k: string]: unknown
-      }
+      dao: {}
     }
   | {
-      active_threshold: {
-        [k: string]: unknown
-      }
+      active_threshold: {}
     }
   | {
       voting_power_at_height: {
         address: string
         height?: number | null
-        [k: string]: unknown
       }
     }
   | {
       total_power_at_height: {
         height?: number | null
-        [k: string]: unknown
       }
     }
   | {
-      info: {
-        [k: string]: unknown
-      }
+      info: {}
     }
   | {
-      token_contract: {
-        [k: string]: unknown
-      }
+      token_contract: {}
     }
   | {
-      is_active: {
-        [k: string]: unknown
-      }
+      is_active: {}
     }
 export type StakingContractResponse = string
 export type TokenContractResponse = string
@@ -157,11 +119,9 @@ export interface TotalPowerAtHeightResponse {
   // Optional because the indexer does not provide this.
   height?: number
   power: Uint128
-  [k: string]: unknown
 }
 export interface VotingPowerAtHeightResponse {
   // Optional because the indexer does not provide this.
   height?: number
   power: Uint128
-  [k: string]: unknown
 }

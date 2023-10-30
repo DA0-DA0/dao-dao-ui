@@ -34,6 +34,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionCategoryWithLabel,
+  ActiveThreshold,
   BaseNewProposalProps,
   LoadedAction,
   LoadedActions,
@@ -41,7 +42,6 @@ import {
   StatefulEntityDisplayProps,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
-import { ActiveThreshold } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
 import {
   convertActionsToMessages,
   formatDateTime,

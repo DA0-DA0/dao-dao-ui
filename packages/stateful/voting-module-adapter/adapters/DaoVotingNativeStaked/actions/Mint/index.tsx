@@ -101,7 +101,6 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-// TODO: Only show if using factory and DAO can mint.
 export const makeMintAction: ActionMaker<MintData> = ({ t }) => ({
   key: ActionKey.Mint,
   Icon: HerbEmoji,

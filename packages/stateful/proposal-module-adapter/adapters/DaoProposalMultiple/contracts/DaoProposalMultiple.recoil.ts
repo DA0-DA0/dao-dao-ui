@@ -1,13 +1,14 @@
 import { selectorFamily } from 'recoil'
 
 import {
+  contractInfoSelector,
   cosmWasmClientForChainSelector,
   queryContractIndexerSelector,
   refreshProposalIdAtom,
   refreshProposalsIdAtom,
   signingCosmWasmClientAtom,
 } from '@dao-dao/state'
-import { Addr, InfoResponse, WithChainId } from '@dao-dao/types'
+import { Addr, WithChainId } from '@dao-dao/types'
 import {
   Config,
   HooksResponse,
@@ -356,31 +357,7 @@ export const daoSelector = selectorFamily<
       return await client.dao(...params)
     },
 })
-export const infoSelector = selectorFamily<
-  InfoResponse,
-  QueryClientParams & {
-    params: Parameters<DaoProposalMultipleQueryClient['info']>
-  }
->({
-  key: 'daoProposalMultipleInfo',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const info = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'info',
-        })
-      )
-      if (info) {
-        return { info }
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.info(...params)
-    },
-})
+export const infoSelector = contractInfoSelector
 
 const LIST_ALL_VOTES_LIMIT = 30
 export const listAllVotesSelector = selectorFamily<

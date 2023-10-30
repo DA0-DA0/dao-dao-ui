@@ -90,6 +90,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
             JSON.stringify(preProposeMultipleInstantiateMsg),
             'utf8'
           ).toString('base64'),
+          funds: [],
         },
       },
     },
@@ -108,6 +109,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
     code_id: codeIds.DaoProposalMultiple,
     label: `DAO_${name}_${DaoProposalMultipleAdapterId}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
+    funds: [],
   }
 }
 

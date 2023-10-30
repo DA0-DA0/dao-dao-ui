@@ -5,7 +5,6 @@ export type ExecuteMsg = {
     code_id: number
     instantiate_msg: Binary
     label: string
-    [k: string]: unknown
   }
 }
 export interface InstantiateMsg {}

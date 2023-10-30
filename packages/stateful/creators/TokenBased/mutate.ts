@@ -1,22 +1,19 @@
 import { Buffer } from 'buffer'
 
-import { DaoCreatorMutate, TokenType } from '@dao-dao/types'
+import { ActiveThreshold, DaoCreatorMutate } from '@dao-dao/types'
 import {
-  ActiveThreshold,
-  Cw20Coin,
-  InstantiateMsg as DaoVotingCw20StakedInstantiateMsg,
-} from '@dao-dao/types/contracts/DaoVotingCw20Staked'
-import { InstantiateMsg as DaoVotingNativeStakedInstantiateMsg } from '@dao-dao/types/contracts/DaoVotingNativeStaked'
+  InstantiateMsg as DaoVotingTokenStakedInstantiateMsg,
+  InitialBalance,
+} from '@dao-dao/types/contracts/DaoVotingTokenStaked'
 import {
-  NEW_DAO_CW20_DECIMALS,
+  NEW_DAO_TOKEN_DECIMALS,
   TokenBasedCreatorId,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
-import cw20InstantiateSchema from './instantiate_schema_cw20.json'
-import nativeInstantiateSchema from './instantiate_schema_native.json'
+import instantiateSchema from './instantiate_schema.json'
 import { CreatorData, GovernanceTokenType } from './types'
 
 export const mutate: DaoCreatorMutate<CreatorData> = (
@@ -25,22 +22,22 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   {
     tiers,
     tokenType,
-    newInfo: { initialSupply, imageUrl, symbol, name },
-    existingTokenType,
-    existingTokenDenomOrAddress,
+    newInfo: {
+      initialSupply,
+      // TODO(tokenfactory-image): add back in once token factory supports URI metadata
+      imageUrl: _imageUrl,
+      symbol,
+      name,
+    },
+    existingTokenDenom,
     unstakingDuration,
     activeThreshold,
+    tokenFactoryDenomCreationFee,
   },
   t,
   codeIds
 ) => {
-  const isCw20 =
-    tokenType === GovernanceTokenType.NewCw20 ||
-    existingTokenType === TokenType.Cw20
-
-  let votingModuleAdapterInstantiateMsg:
-    | DaoVotingCw20StakedInstantiateMsg
-    | DaoVotingNativeStakedInstantiateMsg
+  let votingModuleAdapterInstantiateMsg: DaoVotingTokenStakedInstantiateMsg
 
   const active_threshold: ActiveThreshold | null = activeThreshold?.enabled
     ? !activeThreshold.type || activeThreshold.type === 'percent'
@@ -56,8 +53,8 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
         }
     : null
 
-  if (tokenType === GovernanceTokenType.NewCw20) {
-    const microInitialBalances: Cw20Coin[] = tiers.flatMap(
+  if (tokenType === GovernanceTokenType.New) {
+    const microInitialBalances: InitialBalance[] = tiers.flatMap(
       ({ weight, members }) =>
         members.map(({ address }) => ({
           address,
@@ -65,7 +62,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
             // Governance Token-based DAOs distribute tier weights
             // evenly amongst members.
             (weight / members.length / 100) * initialSupply,
-            NEW_DAO_CW20_DECIMALS
+            NEW_DAO_TOKEN_DECIMALS
           ).toString(),
         }))
     )
@@ -74,7 +71,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     const microInitialTreasuryBalance = (
       convertDenomToMicroDenomWithDecimals(
         initialSupply,
-        NEW_DAO_CW20_DECIMALS
+        NEW_DAO_TOKEN_DECIMALS
       ) -
       microInitialBalances.reduce((acc, { amount }) => acc + Number(amount), 0)
     ).toString()
@@ -83,22 +80,29 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
       active_threshold,
       token_info: {
         new: {
-          code_id: codeIds.Cw20Base,
-          decimals: NEW_DAO_CW20_DECIMALS,
+          token_issuer_code_id: codeIds.CwTokenfactoryIssuer,
+          subdenom: symbol.toLowerCase(),
           initial_balances: microInitialBalances,
           initial_dao_balance: microInitialTreasuryBalance,
-          label: name,
-          marketing: imageUrl ? { logo: { url: imageUrl } } : null,
-          name,
-          staking_code_id: codeIds.Cw20Stake,
-          symbol,
-          unstaking_duration:
-            convertDurationWithUnitsToDuration(unstakingDuration),
+          metadata: {
+            additional_denom_units: [
+              {
+                aliases: [],
+                denom: symbol,
+                exponent: `${NEW_DAO_TOKEN_DECIMALS}`,
+              },
+            ],
+            description: `${daoName}'s Governance Token`,
+            display: symbol,
+            name,
+            symbol,
+          },
         },
       },
+      unstaking_duration: convertDurationWithUnitsToDuration(unstakingDuration),
     }
-  } else if (isCw20) {
-    if (!existingTokenDenomOrAddress) {
+  } else {
+    if (!existingTokenDenom) {
       throw new Error(t('error.missingGovernanceTokenAddress'))
     }
 
@@ -106,26 +110,9 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
       active_threshold,
       token_info: {
         existing: {
-          address: existingTokenDenomOrAddress,
-          staking_contract: {
-            new: {
-              staking_code_id: codeIds.Cw20Stake,
-              unstaking_duration:
-                convertDurationWithUnitsToDuration(unstakingDuration),
-            },
-          },
+          denom: existingTokenDenom,
         },
       },
-    }
-  } else {
-    if (!existingTokenDenomOrAddress) {
-      throw new Error(t('error.missingGovernanceTokenAddress'))
-    }
-
-    votingModuleAdapterInstantiateMsg = {
-      active_threshold,
-      denom: existingTokenDenomOrAddress,
-      owner: { core_module: {} },
       unstaking_duration:
         unstakingDuration.value === 0
           ? null
@@ -134,25 +121,20 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   }
 
   // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<
-    DaoVotingCw20StakedInstantiateMsg | DaoVotingNativeStakedInstantiateMsg
-  >(
-    isCw20 ? cw20InstantiateSchema : nativeInstantiateSchema,
+  makeValidateMsg<DaoVotingTokenStakedInstantiateMsg>(
+    instantiateSchema,
     t
   )(votingModuleAdapterInstantiateMsg)
 
   msg.voting_module_instantiate_info = {
     admin: { core_module: {} },
-    code_id: isCw20
-      ? codeIds.DaoVotingCw20Staked
-      : codeIds.DaoVotingNativeStaked,
-    label: `DAO_${daoName}_${TokenBasedCreatorId}_${
-      isCw20 ? 'cw20' : 'native'
-    }`,
+    code_id: codeIds.DaoVotingTokenStaked,
+    label: `DAO_${daoName}_${TokenBasedCreatorId}`,
     msg: Buffer.from(
       JSON.stringify(votingModuleAdapterInstantiateMsg),
       'utf8'
     ).toString('base64'),
+    funds: tokenFactoryDenomCreationFee || [],
   }
 
   return msg

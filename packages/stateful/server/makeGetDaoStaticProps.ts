@@ -12,6 +12,7 @@ import {
   queryIndexer,
 } from '@dao-dao/state'
 import {
+  ActiveThreshold,
   CommonProposalInfo,
   ContractVersion,
   ContractVersionInfo,
@@ -29,7 +30,6 @@ import {
   ListItemsResponse,
   ProposalModuleWithInfo,
 } from '@dao-dao/types/contracts/DaoCore.v2'
-import { ActiveThreshold } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
 import {
   CI,
   DAO_CORE_ACCENT_ITEM_KEY,

@@ -20,7 +20,6 @@ export interface ConfigResponse {
   min_voting_period?: Duration | null
   only_members_execute: boolean
   threshold: Threshold
-  [k: string]: unknown
 }
 export type DaoResponse = string
 export type ExecuteMsg =
@@ -30,26 +29,22 @@ export type ExecuteMsg =
         msgs: CosmosMsgFor_Empty[]
         proposer?: string | null
         title: string
-        [k: string]: unknown
       }
     }
   | {
       vote: {
         proposal_id: number
         vote: Vote
-        [k: string]: unknown
       }
     }
   | {
       execute: {
         proposal_id: number
-        [k: string]: unknown
       }
     }
   | {
       close: {
         proposal_id: number
-        [k: string]: unknown
       }
     }
   | {
@@ -61,37 +56,31 @@ export type ExecuteMsg =
         min_voting_period?: Duration | null
         only_members_execute: boolean
         threshold: Threshold
-        [k: string]: unknown
       }
     }
   | {
       update_pre_propose_info: {
         info: PreProposeInfo
-        [k: string]: unknown
       }
     }
   | {
       add_proposal_hook: {
         address: string
-        [k: string]: unknown
       }
     }
   | {
       remove_proposal_hook: {
         address: string
-        [k: string]: unknown
       }
     }
   | {
       add_vote_hook: {
         address: string
-        [k: string]: unknown
       }
     }
   | {
       remove_vote_hook: {
         address: string
-        [k: string]: unknown
       }
     }
 export type PreProposeInfo =
@@ -107,7 +96,6 @@ export type GovernanceModulesResponse = Addr[]
 export type ExtensionResponse = Binary
 export interface InfoResponse {
   info: ContractVersionInfo
-  [k: string]: unknown
 }
 export interface InstantiateMsg {
   allow_revoting: boolean
@@ -117,16 +105,18 @@ export interface InstantiateMsg {
   only_members_execute: boolean
   pre_propose_info: PreProposeInfo
   threshold: Threshold
-  [k: string]: unknown
 }
 export interface ListProposalsResponse {
   proposals: ProposalResponse[]
-  [k: string]: unknown
 }
 export interface ProposalResponse {
   id: number
   proposal: SingleChoiceProposal
-  [k: string]: unknown
+  // Indexer may return these.
+  createdAt?: string
+  completedAt?: string
+  executedAt?: string
+  closedAt?: string
 }
 export interface SingleChoiceProposal {
   allow_revoting: boolean
@@ -143,20 +133,16 @@ export interface SingleChoiceProposal {
   title: string
   total_power: Uint128
   votes: Votes
-  [k: string]: unknown
 }
 export type MigrateMsg =
   | {
       from_v1: {
         close_proposal_on_execution_failure: boolean
         pre_propose_info: PreProposeInfo
-        [k: string]: unknown
       }
     }
   | {
-      from_compatible: {
-        [k: string]: unknown
-      }
+      from_compatible: {}
     }
 export type ProposalCountResponse = number
 // v2 changed case.
@@ -179,44 +165,35 @@ export type ProposalCreationPolicyResponse =
     }
 export interface ProposalHooksResponse {
   hooks: string[]
-  [k: string]: unknown
 }
 export type QueryMsg =
   | {
-      config: {
-        [k: string]: unknown
-      }
+      config: {}
     }
   | {
       proposal: {
         proposal_id: number
-        [k: string]: unknown
       }
     }
   | {
       list_proposals: {
         limit?: number | null
         start_after?: number | null
-        [k: string]: unknown
       }
     }
   | {
       reverse_proposals: {
         limit?: number | null
         start_before?: number | null
-        [k: string]: unknown
       }
     }
   | {
-      proposal_count: {
-        [k: string]: unknown
-      }
+      proposal_count: {}
     }
   | {
       get_vote: {
         proposal_id: number
         voter: string
-        [k: string]: unknown
       }
     }
   | {
@@ -224,39 +201,26 @@ export type QueryMsg =
         limit?: number | null
         proposal_id: number
         start_after?: string | null
-        [k: string]: unknown
       }
     }
   | {
-      proposal_creation_policy: {
-        [k: string]: unknown
-      }
+      proposal_creation_policy: {}
     }
   | {
-      proposal_hooks: {
-        [k: string]: unknown
-      }
+      proposal_hooks: {}
     }
   | {
-      vote_hooks: {
-        [k: string]: unknown
-      }
+      vote_hooks: {}
     }
   | {
-      dao: {
-        [k: string]: unknown
-      }
+      dao: {}
     }
   | {
-      info: {
-        [k: string]: unknown
-      }
+      info: {}
     }
 export interface ReverseProposalsResponse {
   proposals: ProposalResponse[]
-  [k: string]: unknown
 }
 export interface VoteHooksResponse {
   hooks: string[]
-  [k: string]: unknown
 }
