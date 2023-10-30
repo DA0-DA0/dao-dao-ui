@@ -2,9 +2,10 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "InstantiateMsg",
   "type": "object",
-  "required": ["nft_address"],
+  "required": ["nft_contract"],
   "properties": {
     "active_threshold": {
+      "description": "The number or percentage of tokens that must be staked for the DAO to be active",
       "anyOf": [
         {
           "$ref": "#/definitions/ActiveThreshold"
@@ -13,12 +14,34 @@
           "type": "null"
         }
       ]
+    },
+    "nft_contract": {
+      "description": "Address of the cw721 NFT contract that may be staked.",
+      "allOf": [
+        {
+          "$ref": "#/definitions/NftContract"
+        }
+      ]
+    },
+    "unstaking_duration": {
+      "description": "Amount of time between unstaking and tokens being avaliable. To unstake with no delay, leave as `None`.",
+      "anyOf": [
+        {
+          "$ref": "#/definitions/Duration"
+        },
+        {
+          "type": "null"
+        }
+      ]
     }
   },
+  "additionalProperties": false,
   "definitions": {
     "ActiveThreshold": {
+      "description": "The threshold of tokens that must be staked in order for this voting module to be active. If this is not reached, this module will response to `is_active` queries with false and proposal modules which respect active thresholds will not allow the creation of proposals.",
       "oneOf": [
         {
+          "description": "The absolute number of tokens that must be staked for the module to be active.",
           "type": "object",
           "required": ["absolute_count"],
           "properties": {
@@ -29,12 +52,14 @@
                 "count": {
                   "$ref": "#/definitions/Uint128"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
         },
         {
+          "description": "The percentage of tokens that must be staked for the module to be active. Computed as `staked / total_supply`.",
           "type": "object",
           "required": ["percentage"],
           "properties": {
@@ -45,12 +70,17 @@
                 "percent": {
                   "$ref": "#/definitions/Decimal"
                 }
-              }
+              },
+              "additionalProperties": false
             }
           },
           "additionalProperties": false
         }
       ]
+    },
+    "Binary": {
+      "description": "Binary is a wrapper around Vec<u8> to add base64 de/serialization with serde. It also adds some helper methods to help encode inline.\n\nThis is only needed as serde-json-{core,wasm} has a horrible encoding for Vec<u8>. See also <https://github.com/CosmWasm/cosmwasm/blob/main/docs/MESSAGE_TYPES.md>.",
+      "type": "string"
     },
     "Decimal": {
       "description": "A fixed-point decimal value with 18 fractional digits, i.e. Decimal(1_000_000_000_000_000_000) == 1.0\n\nThe greatest possible value that can be represented is 340282366920938463463.374607431768211455 (which is (2^128 - 1) / 10^18)",
@@ -84,20 +114,68 @@
         }
       ]
     },
-    "StakingInfo": {
+    "NftContract": {
       "oneOf": [
         {
+          "description": "Uses an existing cw721 or sg721 token contract.",
           "type": "object",
           "required": ["existing"],
           "properties": {
             "existing": {
               "type": "object",
-              "required": ["staking_contract_address"],
+              "required": ["address"],
               "properties": {
-                "staking_contract_address": {
+                "address": {
+                  "description": "Address of an already instantiated cw721 or sg721 token contract.",
                   "type": "string"
                 }
-              }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Creates a new NFT collection used for staking and governance.",
+          "type": "object",
+          "required": ["new"],
+          "properties": {
+            "new": {
+              "type": "object",
+              "required": ["code_id", "initial_nfts", "label", "msg"],
+              "properties": {
+                "code_id": {
+                  "description": "Code ID for cw721 token contract.",
+                  "type": "integer",
+                  "minimum": 0.0
+                },
+                "initial_nfts": {
+                  "description": "Initial NFTs to mint when creating the NFT contract. If empty, an error is thrown. The binary should be a valid mint message for the corresponding cw721 contract.",
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Binary"
+                  }
+                },
+                "label": {
+                  "description": "Label to use for instantiated cw721 contract.",
+                  "type": "string"
+                },
+                "msg": {
+                  "$ref": "#/definitions/Binary"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "description": "Uses a factory contract that must return the address of the NFT contract. The binary must serialize to a `WasmMsg::Execute` message. Validation happens in the factory contract itself, so be sure to use a trusted factory contract.",
+          "type": "object",
+          "required": ["factory"],
+          "properties": {
+            "factory": {
+              "$ref": "#/definitions/Binary"
             }
           },
           "additionalProperties": false
