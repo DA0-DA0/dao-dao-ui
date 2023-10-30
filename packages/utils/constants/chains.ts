@@ -245,18 +245,17 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         // https://github.com/CosmWasm/cw-plus
         Cw4Group: 83, // v0.16
 
-        // ContractVersion.V210
-        CwPayrollFactory: 85,
-        CwTokenSwap: 86,
-        CwVesting: 87,
-        DaoCore: 88,
-        DaoMigrator: -1,
-        DaoPreProposeMultiple: 89,
-        DaoPreProposeSingle: 90,
-        DaoProposalMultiple: 91,
-        DaoProposalSingle: 92,
-        DaoVotingCw4: 93,
         // ContractVersion.V230
+        CwPayrollFactory: 124,
+        CwTokenSwap: 125,
+        CwVesting: 126,
+        DaoCore: 127,
+        DaoMigrator: -1, // not needed since only v2 DAOs exist but it's 128
+        DaoPreProposeMultiple: 129,
+        DaoPreProposeSingle: 130,
+        DaoProposalMultiple: 131,
+        DaoProposalSingle: 132,
+        DaoVotingCw4: 133,
         DaoVotingCw721Staked: 120,
         DaoVotingTokenStaked: 121,
         CwTokenfactoryIssuer: 122,
