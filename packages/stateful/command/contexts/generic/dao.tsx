@@ -39,7 +39,9 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     const { t } = useTranslation()
     const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
     const { coreVersion } = useDaoInfoContext()
-    const tabs = useDaoTabs()
+    const loadingTabs = useDaoTabs({
+      suspendWhileLoadingOverride: false,
+    })
 
     const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
       useFollowingDaos(chainId)
@@ -72,7 +74,9 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     const routes = [
       daoPageHref,
       createProposalHref,
-      ...tabs.map(({ id }) => getDaoPath(coreAddress, id)),
+      ...(loadingTabs.loading
+        ? []
+        : loadingTabs.data.map(({ id }) => getDaoPath(coreAddress, id))),
     ]
     useDeepCompareEffect(() => {
       routes.forEach((url) => router.prefetch(url))
@@ -153,16 +157,19 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
           setNavigatingToHref(href)
         }
       },
-      items: tabs.map(({ id, label, Icon }) => {
-        const href = getDaoPath(coreAddress, id)
+      loading: loadingTabs.loading || loadingTabs.updating,
+      items: (loadingTabs.loading ? [] : loadingTabs.data).map(
+        ({ id, label, Icon }) => {
+          const href = getDaoPath(coreAddress, id)
 
-        return {
-          name: label,
-          Icon,
-          href,
-          loading: navigatingToHref === href,
+          return {
+            name: label,
+            Icon,
+            href,
+            loading: navigatingToHref === href,
+          }
         }
-      }),
+      ),
     }
 
     const subDaosSection: CommandModalContextSection<CommandModalDaoInfo> = {
@@ -174,7 +181,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
             dao,
           })
         ),
-      loading: subDaosLoading.loading,
+      loading: subDaosLoading.loading || subDaosLoading.updating,
       items: subDaosLoading.loading
         ? []
         : subDaosLoading.data.map(

@@ -100,11 +100,12 @@ export type CreateDaoCustomValidator = (setNewErrors: boolean) => void
 
 export interface CreateDaoContext<CreatorData extends FieldValues = any> {
   form: UseFormReturn<NewDao<CreatorData>>
+  instantiateMsg: DaoCoreV2InstantiateMsg | undefined
+  instantiateMsgError: string | undefined
   commonVotingConfig: DaoCreationCommonVotingConfigItems
   availableCreators: readonly DaoCreator[]
   creator: DaoCreator
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
-  generateInstantiateMsg: () => DaoCoreV2InstantiateMsg
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }

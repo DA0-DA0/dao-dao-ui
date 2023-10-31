@@ -2,20 +2,59 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "InstantiateMsg",
   "type": "object",
-  "required": ["cw4_group_code_id", "initial_members"],
+  "required": ["group_contract"],
   "properties": {
-    "cw4_group_code_id": {
-      "type": "integer",
-      "minimum": 0.0
-    },
-    "initial_members": {
-      "type": "array",
-      "items": {
-        "$ref": "#/definitions/Member"
-      }
+    "group_contract": {
+      "$ref": "#/definitions/GroupContract"
     }
   },
+  "additionalProperties": false,
   "definitions": {
+    "GroupContract": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["existing"],
+          "properties": {
+            "existing": {
+              "type": "object",
+              "required": ["address"],
+              "properties": {
+                "address": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["new"],
+          "properties": {
+            "new": {
+              "type": "object",
+              "required": ["cw4_group_code_id", "initial_members"],
+              "properties": {
+                "cw4_group_code_id": {
+                  "type": "integer",
+                  "minimum": 0.0
+                },
+                "initial_members": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Member"
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
     "Member": {
       "description": "A group member has a weight associated with them. This may all be equal, or may have meaning in the app that makes use of the group (eg. voting power)",
       "type": "object",
@@ -28,7 +67,8 @@
           "type": "integer",
           "minimum": 0.0
         }
-      }
+      },
+      "additionalProperties": false
     }
   }
 }

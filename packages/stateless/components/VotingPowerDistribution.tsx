@@ -52,7 +52,7 @@ export const VotingPowerDistribution = ({
                 : votingPowerPercent.data
 
             return (
-              <Fragment key={address}>
+              <Fragment key={(address || '') + index}>
                 {address ? (
                   <EntityDisplay address={address} />
                 ) : (

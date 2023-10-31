@@ -1,16 +1,17 @@
 import { Buffer } from 'buffer'
 
-import { DaoCreatorMutate } from '@dao-dao/types'
+import { ChainId, DaoCreatorMutate } from '@dao-dao/types'
 import { InstantiateMsg, Member } from '@dao-dao/types/contracts/DaoVotingCw4'
 import { MembershipBasedCreatorId } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
 import instantiateSchema from './instantiate_schema.json'
+import instantiateSchema21 from './instantiate_schema_2.1.json'
 import { CreatorData } from './types'
 
 export const mutate: DaoCreatorMutate<CreatorData> = (
   msg,
-  { name },
+  { chainId, name },
   { tiers },
   t,
   codeIds
@@ -22,18 +23,27 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     }))
   )
 
-  const votingModuleAdapterInstantiateMsg: InstantiateMsg = {
-    group_contract: {
-      new: {
-        cw4_group_code_id: codeIds.Cw4Group,
-        initial_members: initialMembers,
-      },
-    },
+  const newData = {
+    cw4_group_code_id: codeIds.Cw4Group,
+    initial_members: initialMembers,
   }
+
+  const votingModuleAdapterInstantiateMsg: InstantiateMsg =
+    // TODO(neutron-2.3.0): remove this once upgraded.
+    chainId === ChainId.NeutronMainnet
+      ? (newData as any)
+      : {
+          group_contract: {
+            new: newData,
+          },
+        }
 
   // Validate and throw error if invalid according to JSON schema.
   makeValidateMsg<InstantiateMsg>(
-    instantiateSchema,
+    // TODO(neutron-2.3.0): remove this once upgraded.
+    chainId === ChainId.NeutronMainnet
+      ? instantiateSchema21
+      : instantiateSchema,
     t
   )(votingModuleAdapterInstantiateMsg)
 
@@ -45,7 +55,10 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
       JSON.stringify(votingModuleAdapterInstantiateMsg),
       'utf8'
     ).toString('base64'),
-    funds: [],
+    // TODO(neutron-2.3.0): add back in here and in dao-core instantiate schema.
+    ...(chainId !== ChainId.NeutronMainnet && {
+      funds: [],
+    }),
   }
 
   return msg
