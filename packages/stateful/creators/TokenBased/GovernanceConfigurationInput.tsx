@@ -515,7 +515,7 @@ export const GovernanceConfigurationInput = ({
         <div className="rounded-lg bg-background-tertiary">
           <div className="flex h-14 flex-row items-center border-b border-border-base p-4">
             <p className="primary-text text-text-body">
-              {t('form.tokenContractAddressTitle')}
+              {t('form.tokenIdentifier')}
             </p>
           </div>
 
