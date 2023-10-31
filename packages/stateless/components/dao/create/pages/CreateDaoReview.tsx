@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import cloneDeep from 'lodash.clonedeep'
+import { useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { CreateDaoContext } from '@dao-dao/types'
@@ -13,7 +14,8 @@ export const CreateDaoReview = ({
   commonVotingConfig,
   creator,
   proposalModuleDaoCreationAdapters,
-  generateInstantiateMsg,
+  instantiateMsg,
+  instantiateMsgError,
 }: CreateDaoContext) => {
   const { t } = useTranslation()
 
@@ -24,91 +26,54 @@ export const CreateDaoReview = ({
     votingConfig,
   } = newDao
 
-  const [decodeModuleMessages, setDecodeModuleMessages] = useState(true)
   const togglePreviewRef = useRef<HTMLDivElement>(null)
-  const [previewJson, setPreviewJson] = useState<string>()
-  const [previewError, setPreviewError] = useState<string>()
-  const [scrollToPreview, setScrollToPreview] = useState(false)
-  const generatePreview = useCallback(
-    (scroll = true) => {
-      setPreviewJson(undefined)
-      setPreviewError(undefined)
+  const [decodeModuleMessages, setDecodeModuleMessages] = useState(true)
+  const [showingPreview, setShowingPreview] = useState(false)
 
-      try {
-        const msg = generateInstantiateMsg()
-        // Convert encoded module instantiation messages back to readable JSON.
-        if (decodeModuleMessages) {
-          msg.proposal_modules_instantiate_info.forEach((info) => {
-            const msg = parseEncodedMessage(info.msg)
+  let previewJson: string | undefined
+  let previewError: string | undefined
+  try {
+    if (!instantiateMsg) {
+      throw new Error(t('error.daoCreationIncomplete'))
+    } else if (instantiateMsgError) {
+      throw new Error(instantiateMsgError)
+    }
 
-            // Convert encoded pre_propose_info message back to readable JSON.
-            if (
-              'pre_propose_info' in msg &&
-              'module_may_propose' in msg.pre_propose_info &&
-              'info' in msg.pre_propose_info.module_may_propose &&
-              'msg' in msg.pre_propose_info.module_may_propose.info
-            ) {
-              msg.pre_propose_info.module_may_propose.info.msg =
-                parseEncodedMessage(
-                  msg.pre_propose_info.module_may_propose.info.msg
-                )
-            }
+    const msg = cloneDeep(instantiateMsg)
+    // Convert encoded module instantiation messages back to readable JSON.
+    if (decodeModuleMessages) {
+      msg.proposal_modules_instantiate_info.forEach((info) => {
+        const msg = parseEncodedMessage(info.msg)
 
-            info.msg = msg
-          })
-          msg.voting_module_instantiate_info.msg = parseEncodedMessage(
-            msg.voting_module_instantiate_info.msg
-          )
+        // Convert encoded pre_propose_info message back to readable JSON.
+        if (
+          'pre_propose_info' in msg &&
+          'module_may_propose' in msg.pre_propose_info &&
+          'info' in msg.pre_propose_info.module_may_propose &&
+          'msg' in msg.pre_propose_info.module_may_propose.info
+        ) {
+          msg.pre_propose_info.module_may_propose.info.msg =
+            parseEncodedMessage(
+              msg.pre_propose_info.module_may_propose.info.msg
+            )
         }
-        // Pretty print output.
-        setPreviewJson(JSON.stringify(msg, undefined, 2))
-      } catch (err) {
-        console.error(err)
-        setPreviewError(processError(err))
-      } finally {
-        // Scroll to preview output or error once the state updates.
-        setScrollToPreview(scroll)
-      }
-    },
-    [decodeModuleMessages, generateInstantiateMsg]
-  )
-  // When scrollToPreview is true and either previewJson or previewError is set,
-  // scroll to it. This effect waits for the state to update before scrolling,
-  // since the DOM needs time to render.
-  useEffect(() => {
-    if (!scrollToPreview || (!previewJson && !previewError)) {
-      return
-    }
 
-    // Scroll.
-    togglePreviewRef.current?.scrollIntoView({
-      behavior: 'smooth',
+        info.msg = msg
+      })
+      msg.voting_module_instantiate_info.msg = parseEncodedMessage(
+        msg.voting_module_instantiate_info.msg
+      )
+    }
+    // Pretty print output.
+    previewJson = JSON.stringify(msg, undefined, 2)
+  } catch (err) {
+    console.error(err)
+    previewError = processError(err, {
+      forceCapture: false,
     })
+  }
 
-    setScrollToPreview(false)
-  }, [previewJson, previewError, scrollToPreview])
-
-  const togglePreview = useCallback(() => {
-    // If already displaying and error does not exist (should always be true
-    // together), clear. Otherwise generate the preview. This ensures that if an
-    // error occurred, it will still try again.
-    if (previewJson && !previewError) {
-      setPreviewJson(undefined)
-      setPreviewError(undefined)
-    } else {
-      generatePreview()
-    }
-  }, [generatePreview, previewError, previewJson])
-
-  // If a message is showing and the function reference updates, indicating that
-  // some input (from the dependency array of the useCallback hook) has changed,
-  // regenerate the preview but don't forcibly scroll.
-  useEffect(() => {
-    if (previewJson) {
-      generatePreview(false)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [generatePreview])
+  const togglePreview = () => setShowingPreview((s) => !s)
 
   return (
     <>
@@ -217,14 +182,13 @@ export const CreateDaoReview = ({
         ref={togglePreviewRef}
       >
         <div className="flex flex-row items-center gap-2">
-          <Checkbox checked={!!previewJson} onClick={togglePreview} />
-
+          <Checkbox checked={showingPreview} onClick={togglePreview} />
           <p className="body-text cursor-pointer" onClick={togglePreview}>
             {t('button.showInstantiateMessage')}
           </p>
         </div>
 
-        {!!previewJson && (
+        {showingPreview && (
           <div className="flex flex-row items-center gap-2">
             <Checkbox
               checked={decodeModuleMessages}
@@ -240,12 +204,13 @@ export const CreateDaoReview = ({
           </div>
         )}
       </div>
-      {previewJson && (
+
+      {showingPreview && !!previewJson && (
         <div className="mt-4">
           <CosmosMessageDisplay value={previewJson} />
         </div>
       )}
-      {previewError && (
+      {!!previewError && (
         <p className="mt-4 text-text-interactive-error">{previewError}</p>
       )}
     </>
