@@ -8,7 +8,7 @@ export class AjvInvalidMessageError extends Error {
     errors: ErrorObject<string, Record<string, any>, unknown>[],
     t?: TFunction
   ) {
-    console.log(errors)
+    console.error('AJV:', errors)
     super(
       (t?.('error.invalidMessage') ?? 'Invalid message') +
         ': ' +

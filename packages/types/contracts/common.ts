@@ -261,7 +261,9 @@ export interface ModuleInstantiateInfo {
   label: string
   msg: Binary
   // Added in V2.3
-  funds: Coin[]
+  // TODO(neutron-2.3.0): make not optional once upgraded and add back into
+  // instantiate schemas.
+  funds?: Coin[]
 }
 
 export interface ContractVersionInfo {

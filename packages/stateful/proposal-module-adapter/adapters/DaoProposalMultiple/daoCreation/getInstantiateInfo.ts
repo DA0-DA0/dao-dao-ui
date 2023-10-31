@@ -1,6 +1,7 @@
 import { Buffer } from 'buffer'
 
 import {
+  ChainId,
   DaoCreationGetInstantiateInfo,
   PercentOrMajorityValue,
 } from '@dao-dao/types'
@@ -22,6 +23,7 @@ import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
   codeIds,
   {
+    chainId,
     name,
     votingConfig: {
       quorum,
@@ -90,7 +92,10 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
             JSON.stringify(preProposeMultipleInstantiateMsg),
             'utf8'
           ).toString('base64'),
-          funds: [],
+          // TODO(neutron-2.3.0): add back in here and in instantiate schema.
+          ...(chainId !== ChainId.NeutronMainnet && {
+            funds: [],
+          }),
         },
       },
     },
@@ -109,7 +114,10 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
     code_id: codeIds.DaoProposalMultiple,
     label: `DAO_${name}_${DaoProposalMultipleAdapterId}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
-    funds: [],
+    // TODO(neutron-2.3.0): add back in here and in instantiate schema.
+    ...(chainId !== ChainId.NeutronMainnet && {
+      funds: [],
+    }),
   }
 }
 

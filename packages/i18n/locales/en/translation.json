@@ -307,6 +307,7 @@
     "counterpartyBalanceInsufficient": "The counterparty's balance of {{amount}} ${{tokenSymbol}} is insufficient. They may be unable to complete this swap.",
     "daoAccountNotFound": "The DAO account could not be found for this chain.",
     "daoAndSubDaosAlreadyOnV2": "This DAO (and all of its SubDAOs, if it has any) have already been upgraded.",
+    "daoCreationIncomplete": "DAO creation is incomplete. Ensure all required fields have been filled out.",
     "daoFeatureUnsupported": "{{name}} does not support {{feature}} yet.",
     "daoIsInactive_absolute_one": "This DAO is inactive. Proposals cannot be created until {{count}} token is staked.",
     "daoIsInactive_absolute_other": "This DAO is inactive. Proposals cannot be created until {{count}} tokens are staked.",
