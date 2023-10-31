@@ -372,10 +372,10 @@ export const InnerCreateDaoForm = ({
     })
 
   const createDaoWithFactory = async () => {
-    if (!instantiateMsg) {
-      throw new Error(t('error.loadingData'))
-    } else if (instantiateMsgError) {
+    if (instantiateMsgError) {
       throw new Error(instantiateMsgError)
+    } else if (!instantiateMsg) {
+      throw new Error(t('error.loadingData'))
     }
 
     const { logs } = await instantiateWithFactory(

@@ -33,10 +33,10 @@ export const CreateDaoReview = ({
   let previewJson: string | undefined
   let previewError: string | undefined
   try {
-    if (!instantiateMsg) {
-      throw new Error(t('error.daoCreationIncomplete'))
-    } else if (instantiateMsgError) {
+    if (instantiateMsgError) {
       throw new Error(instantiateMsgError)
+    } else if (!instantiateMsg) {
+      throw new Error(t('error.daoCreationIncomplete'))
     }
 
     const msg = cloneDeep(instantiateMsg)
