@@ -54,7 +54,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
     daoCreatedCardPropsAtom
   )
 
-  const tabs = useDaoTabs()
+  const loadingTabs = useDaoTabs()
 
   return (
     <StatelessSdaLayout
@@ -62,7 +62,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
       connectWalletButton={<ConnectWallet variant="secondary" />}
       connected={isWalletConnected}
       navigationProps={{
-        tabs,
+        tabs: loadingTabs.loading ? [] : loadingTabs.data,
         LinkWrapper,
         version: '2.0',
         compact,

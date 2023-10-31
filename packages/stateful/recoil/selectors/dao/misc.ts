@@ -1,4 +1,9 @@
-import { RecoilValueReadOnly, selectorFamily, waitForAllSettled } from 'recoil'
+import {
+  RecoilValueReadOnly,
+  selectorFamily,
+  waitForAll,
+  waitForAllSettled,
+} from 'recoil'
 
 import {
   DaoCoreV2Selectors,
@@ -164,38 +169,68 @@ export const daoInfoSelector: (param: {
         throw new Error('DAO failed to dump state.')
       }
 
-      const coreVersion = get(
-        contractVersionSelector({
-          contractAddress: coreAddress,
-          chainId,
-        })
+      const [
+        // Non-loadables
+        [
+          coreVersion,
+          votingModuleInfo,
+          proposalModules,
+          created,
+          _items,
+          polytoneProxies,
+        ],
+        // Loadables
+        [isActiveResponse, activeThresholdResponse],
+      ] = get(
+        waitForAll([
+          // Non-loadables
+          waitForAll([
+            contractVersionSelector({
+              contractAddress: coreAddress,
+              chainId,
+            }),
+            contractInfoSelector({
+              contractAddress: dumpState.voting_module,
+              chainId,
+            }),
+            daoCoreProposalModulesSelector({
+              coreAddress,
+              chainId,
+            }),
+            contractInstantiateTimeSelector({
+              address: coreAddress,
+              chainId,
+            }),
+            DaoCoreV2Selectors.listAllItemsSelector({
+              contractAddress: coreAddress,
+              chainId,
+            }),
+            DaoCoreV2Selectors.polytoneProxiesSelector({
+              contractAddress: coreAddress,
+              chainId,
+            }),
+          ]),
+          // Loadables
+          waitForAllSettled([
+            // All voting modules use the same active threshold queries, so it's
+            // safe to use the cw20-staked selector.
+            DaoVotingCw20StakedSelectors.isActiveSelector({
+              contractAddress: dumpState.voting_module,
+              chainId,
+              params: [],
+            }),
+            DaoVotingCw20StakedSelectors.activeThresholdSelector({
+              contractAddress: dumpState.voting_module,
+              chainId,
+              params: [],
+            }),
+          ]),
+        ])
       )
 
-      const votingModuleInfo = get(
-        contractInfoSelector({
-          contractAddress: dumpState.voting_module,
-          chainId,
-        })
-      )
       const votingModuleContractName =
         votingModuleInfo?.info.contract || 'fallback'
 
-      // All voting modules use the same isActive query, so it's safe to just
-      // use one here.
-      const [isActiveResponse, activeThresholdResponse] = get(
-        waitForAllSettled([
-          DaoVotingCw20StakedSelectors.isActiveSelector({
-            contractAddress: dumpState.voting_module,
-            chainId,
-            params: [],
-          }),
-          DaoVotingCw20StakedSelectors.activeThresholdSelector({
-            contractAddress: dumpState.voting_module,
-            chainId,
-            params: [],
-          }),
-        ])
-      )
       // Some voting modules don't support the isActive query, so if the query
       // fails, assume active.
       const isActive =
@@ -207,26 +242,6 @@ export const daoInfoSelector: (param: {
           activeThresholdResponse.contents.active_threshold) ||
         null
 
-      const proposalModules = get(
-        daoCoreProposalModulesSelector({
-          coreAddress,
-          chainId,
-        })
-      )
-
-      const created = get(
-        contractInstantiateTimeSelector({
-          address: coreAddress,
-          chainId,
-        })
-      )
-
-      const _items = get(
-        DaoCoreV2Selectors.listAllItemsSelector({
-          contractAddress: coreAddress,
-          chainId,
-        })
-      )
       // Convert items list into map.
       const items = _items.reduce(
         (acc, [key, value]) => ({
@@ -234,13 +249,6 @@ export const daoInfoSelector: (param: {
           [key]: value,
         }),
         {} as Record<string, string>
-      )
-
-      const polytoneProxies = get(
-        DaoCoreV2Selectors.polytoneProxiesSelector({
-          contractAddress: coreAddress,
-          chainId,
-        })
       )
 
       const { admin } = dumpState
