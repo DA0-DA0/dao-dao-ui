@@ -162,9 +162,8 @@ export const InnerCreateDaoForm = ({
 
     // Merge defaults in case there are any new fields.
     const creator = getCreatorById(cached.creator.id)
-    merge(
-      // Merges into this object.
-      cached.creator.data,
+    cached.creator.data = merge(
+      {},
       // Start with defaults.
       creator?.defaultConfig,
       // Overwrite with existing values.
@@ -173,9 +172,8 @@ export const InnerCreateDaoForm = ({
 
     cached.proposalModuleAdapters?.forEach((adapter) => {
       const proposalModuleAdapter = getProposalModuleAdapterById(adapter.id)
-      merge(
-        // Merges into this object.
-        adapter.data,
+      adapter.data = merge(
+        {},
         // Start with defaults.
         proposalModuleAdapter?.daoCreation?.extraVotingConfig?.default,
         // Overwrite with existing values.
@@ -187,9 +185,8 @@ export const InnerCreateDaoForm = ({
     if (!cached.votingConfig) {
       cached.votingConfig = defaultNewDao.votingConfig
     }
-    merge(
-      // Merge into this object.
-      cached.votingConfig,
+    cached.votingConfig = merge(
+      {},
       // Start with defaults.
       defaultNewDao.votingConfig,
       // Overwrite with existing values.
