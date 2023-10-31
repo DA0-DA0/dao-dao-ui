@@ -1,6 +1,6 @@
 import { Buffer } from 'buffer'
 
-import { DaoCreatorMutate } from '@dao-dao/types'
+import { ChainId, DaoCreatorMutate } from '@dao-dao/types'
 import { InstantiateMsg, Member } from '@dao-dao/types/contracts/DaoVotingCw4'
 import { MembershipBasedCreatorId } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
@@ -10,7 +10,7 @@ import { CreatorData } from './types'
 
 export const mutate: DaoCreatorMutate<CreatorData> = (
   msg,
-  { name },
+  { chainId, name },
   { tiers },
   t,
   codeIds
@@ -45,7 +45,10 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
       JSON.stringify(votingModuleAdapterInstantiateMsg),
       'utf8'
     ).toString('base64'),
-    funds: [],
+    // TODO(neutron-2.3.0): add back in.
+    ...(chainId !== ChainId.NeutronMainnet && {
+      funds: [],
+    }),
   }
 
   return msg
