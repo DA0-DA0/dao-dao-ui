@@ -1438,6 +1438,7 @@
     "timeRemaining": "Time remaining",
     "title": "Title",
     "token": "Token",
+    "tokenIdentifier": "Token identifier",
     "tokenSwap": "Token Swap",
     "topAbsolute": "Top {{count}}",
     "topPercent": "Top {{percent}}%",
