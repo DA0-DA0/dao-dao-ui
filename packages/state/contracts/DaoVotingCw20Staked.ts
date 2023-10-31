@@ -5,8 +5,8 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
+import { ActiveThreshold } from '@dao-dao/types/contracts/common'
 import {
-  ActiveThreshold,
   ActiveThresholdResponse,
   DaoResponse,
   InfoResponse,

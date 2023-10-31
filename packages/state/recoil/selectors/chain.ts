@@ -3,7 +3,7 @@ import { fromBase64, toHex } from '@cosmjs/encoding'
 import { Coin, IndexedTx, StargateClient } from '@cosmjs/stargate'
 import { selector, selectorFamily, waitForAll, waitForAny } from 'recoil'
 
-import { cosmos, ibc, juno } from '@dao-dao/protobuf'
+import { cosmos, ibc, juno, osmosis } from '@dao-dao/protobuf'
 import { ModuleAccount } from '@dao-dao/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { Metadata } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/bank'
 import {
@@ -96,6 +96,17 @@ export const ibcRpcClientForChainSelector = selectorFamily({
         rpcEndpoint: getRpcForChainId(chainId),
       })
     ).ibc,
+  dangerouslyAllowMutability: true,
+})
+
+export const osmosisRpcClientForChainSelector = selectorFamily({
+  key: 'osmosisRpcClientForChain',
+  get: (chainId: string) => async () =>
+    (
+      await osmosis.ClientFactory.createRPCQueryClient({
+        rpcEndpoint: getRpcForChainId(chainId),
+      })
+    ).osmosis,
   dangerouslyAllowMutability: true,
 })
 
@@ -281,6 +292,20 @@ export const nativeBalanceSelector = selectorFamily<
         address,
         getNativeTokenForChainId(chainId).denomOrAddress
       )
+    },
+})
+
+export const tokenFactoryDenomCreationFeeSelector = selectorFamily<
+  Coin[] | undefined,
+  string
+>({
+  key: 'tokenFactoryDenomCreationFee',
+  get:
+    (chainId) =>
+    async ({ get }) => {
+      const client = get(osmosisRpcClientForChainSelector(chainId))
+      return (await client.tokenfactory.v1beta1.params()).params
+        ?.denomCreationFee
     },
 })
 

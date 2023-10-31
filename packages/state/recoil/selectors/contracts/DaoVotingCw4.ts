@@ -4,17 +4,13 @@ import { WithChainId } from '@dao-dao/types'
 import {
   DaoResponse,
   GroupContractResponse,
-  InfoResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoVotingCw4'
 
-import {
-  DaoVotingCw4Client,
-  DaoVotingCw4QueryClient,
-} from '../../../contracts/DaoVotingCw4'
-import { signingCosmWasmClientAtom } from '../../atoms'
+import { DaoVotingCw4QueryClient } from '../../../contracts/DaoVotingCw4'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { contractInfoSelector } from '../contract'
 import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
@@ -31,26 +27,6 @@ export const queryClient = selectorFamily<
     ({ get }) => {
       const client = get(cosmWasmClientForChainSelector(chainId))
       return new DaoVotingCw4QueryClient(client, contractAddress)
-    },
-  dangerouslyAllowMutability: true,
-})
-
-export type ExecuteClientParams = WithChainId<{
-  contractAddress: string
-  sender: string
-}>
-
-export const executeClient = selectorFamily<
-  DaoVotingCw4Client | undefined,
-  ExecuteClientParams
->({
-  key: 'daoVotingCw4ExecuteClient',
-  get:
-    ({ chainId, contractAddress, sender }) =>
-    ({ get }) => {
-      const client = get(signingCosmWasmClientAtom({ chainId }))
-      if (!client) return
-      return new DaoVotingCw4Client(client, sender, contractAddress)
     },
   dangerouslyAllowMutability: true,
 })
@@ -166,28 +142,4 @@ export const totalPowerAtHeightSelector = selectorFamily<
       return await client.totalPowerAtHeight(...params)
     },
 })
-export const infoSelector = selectorFamily<
-  InfoResponse,
-  QueryClientParams & {
-    params: Parameters<DaoVotingCw4QueryClient['info']>
-  }
->({
-  key: 'daoVotingCw4Info',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const info = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'info',
-        })
-      )
-      if (info) {
-        return { info }
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.info(...params)
-    },
-})
+export const infoSelector = contractInfoSelector

@@ -4,11 +4,35 @@
  * and run the @cosmwasm/ts-codegen generate command to regenerate this file.
  */
 
-import { Addr, Admin, Binary, Duration, Expiration, Uint128 } from './common'
+import {
+  ActiveThreshold,
+  Addr,
+  Binary,
+  Duration,
+  Expiration,
+  Uint128,
+} from './common'
 
+export type NftContract =
+  | {
+      existing: {
+        address: string
+      }
+    }
+  | {
+      new: {
+        code_id: number
+        initial_nfts: Binary[]
+        label: string
+        msg: Binary
+      }
+    }
+  | {
+      factory: Binary
+    }
 export interface InstantiateMsg {
-  nft_address: string
-  owner?: Admin | null
+  active_threshold?: ActiveThreshold | null
+  nft_contract: NftContract
   unstaking_duration?: Duration | null
 }
 export type ExecuteMsg =
@@ -26,7 +50,6 @@ export type ExecuteMsg =
   | {
       update_config: {
         duration?: Duration | null
-        owner?: string | null
       }
     }
   | {
@@ -37,6 +60,11 @@ export type ExecuteMsg =
   | {
       remove_hook: {
         addr: string
+      }
+    }
+  | {
+      update_active_threshold: {
+        new_threshold?: ActiveThreshold | null
       }
     }
 export interface Cw721ReceiveMsg {
@@ -64,6 +92,12 @@ export type QueryMsg =
       }
     }
   | {
+      active_threshold: {}
+    }
+  | {
+      is_active: {}
+    }
+  | {
       voting_power_at_height: {
         address: string
         height?: number | null
@@ -75,11 +109,13 @@ export type QueryMsg =
       }
     }
   | {
+      dao: {}
+    }
+  | {
       info: {}
     }
 export interface Config {
   nft_address: Addr
-  owner?: Addr | null
   unstaking_duration?: Duration | null
 }
 export interface HooksResponse {

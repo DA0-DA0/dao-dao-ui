@@ -1,5 +1,5 @@
 import { DaoEmoji } from '@dao-dao/stateless'
-import { DaoCreator, DurationUnits, TokenType } from '@dao-dao/types'
+import { DaoCreator, DurationUnits } from '@dao-dao/types'
 import { TokenBasedCreatorId } from '@dao-dao/utils'
 
 import { makeActiveThresholdVotingConfigItem } from '../../components/dao/commonVotingConfig/ActiveThresholdVotingConfigItem'
@@ -30,15 +30,14 @@ export const TokenBasedCreator: DaoCreator<CreatorData> = {
         ],
       },
     ],
-    tokenType: GovernanceTokenType.NewCw20,
+    tokenType: GovernanceTokenType.New,
     newInfo: {
       initialSupply: 10000000,
       initialTreasuryPercent: 90,
       symbol: '',
       name: '',
     },
-    existingTokenType: TokenType.Cw20,
-    existingTokenDenomOrAddress: '',
+    existingTokenDenom: '',
     unstakingDuration: {
       value: 2,
       units: DurationUnits.Weeks,

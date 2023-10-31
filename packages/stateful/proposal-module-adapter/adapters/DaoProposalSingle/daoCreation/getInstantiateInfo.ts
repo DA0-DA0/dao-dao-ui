@@ -91,6 +91,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
             JSON.stringify(preProposeSingleInstantiateMsg),
             'utf8'
           ).toString('base64'),
+          funds: [],
         },
       },
     },
@@ -111,6 +112,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     code_id: codeIds.DaoProposalSingle,
     label: `DAO_${name}_${DaoProposalSingleAdapterId}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
+    funds: [],
   }
 }
 

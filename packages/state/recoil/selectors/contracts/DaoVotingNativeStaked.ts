@@ -5,7 +5,6 @@ import {
   ClaimsResponse,
   DaoResponse,
   GetConfigResponse,
-  InfoResponse,
   ListStakersResponse,
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
@@ -16,8 +15,13 @@ import {
   DaoVotingNativeStakedQueryClient,
 } from '../../../contracts/DaoVotingNativeStaked'
 import { signingCosmWasmClientAtom } from '../../atoms'
-import { refreshWalletBalancesIdAtom } from '../../atoms/refresh'
+import {
+  refreshClaimsIdAtom,
+  refreshDaoVotingPowerAtom,
+  refreshWalletBalancesIdAtom,
+} from '../../atoms/refresh'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { contractInfoSelector } from '../contract'
 import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
@@ -118,11 +122,14 @@ export const claimsSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      const id = get(refreshClaimsIdAtom(params[0].address))
+
       const claims = get(
         queryContractIndexerSelector({
           ...queryClientParams,
           formula: 'daoVotingNativeStaked/claims',
           args: params[0],
+          id,
         })
       )
       // Null when indexer fails. Undefined if no claims.
@@ -206,7 +213,9 @@ export const totalPowerAtHeightSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
-      const id = get(refreshWalletBalancesIdAtom(undefined))
+      const id =
+        get(refreshWalletBalancesIdAtom(undefined)) +
+        get(refreshDaoVotingPowerAtom(queryClientParams.contractAddress))
 
       const totalPower = get(
         queryContractIndexerSelector({
@@ -228,31 +237,7 @@ export const totalPowerAtHeightSelector = selectorFamily<
       return await client.totalPowerAtHeight(...params)
     },
 })
-export const infoSelector = selectorFamily<
-  InfoResponse,
-  QueryClientParams & {
-    params: Parameters<DaoVotingNativeStakedQueryClient['info']>
-  }
->({
-  key: 'daoVotingNativeStakedInfo',
-  get:
-    ({ params, ...queryClientParams }) =>
-    async ({ get }) => {
-      const info = get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'info',
-        })
-      )
-      if (info) {
-        return { info }
-      }
-
-      // If indexer query fails, fallback to contract query.
-      const client = get(queryClient(queryClientParams))
-      return await client.info(...params)
-    },
-})
+export const infoSelector = contractInfoSelector
 
 ///! Custom selectors
 

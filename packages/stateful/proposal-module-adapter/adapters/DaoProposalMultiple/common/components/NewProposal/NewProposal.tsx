@@ -32,6 +32,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionCategoryWithLabel,
+  ActiveThreshold,
   BaseNewProposalProps,
   LoadedActions,
   LoadingData,
@@ -39,7 +40,6 @@ import {
   SuspenseLoaderProps,
 } from '@dao-dao/types'
 import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { ActiveThreshold } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
 import {
   MAX_NUM_PROPOSAL_CHOICES,
   convertActionsToMessages,

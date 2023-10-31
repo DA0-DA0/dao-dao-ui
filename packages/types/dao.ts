@@ -13,9 +13,12 @@ import {
 } from 'react-hook-form'
 
 import { ContractVersion } from './chain'
-import { DepositRefundPolicy, ModuleInstantiateInfo } from './contracts/common'
+import {
+  ActiveThreshold,
+  DepositRefundPolicy,
+  ModuleInstantiateInfo,
+} from './contracts/common'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
-import { ActiveThreshold } from './contracts/DaoVotingCw20Staked'
 import { DaoCreator } from './creators'
 import {
   PercentOrMajorityValue,
