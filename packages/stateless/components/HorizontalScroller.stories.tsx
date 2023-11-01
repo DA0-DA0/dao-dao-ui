@@ -30,6 +30,7 @@ const makeFeaturedDao = (): DaoCardInfo => ({
   tokenDecimals: 6,
 
   parentDao: {
+    chainId: CHAIN_ID,
     coreAddress: 'parent',
     coreVersion: ContractVersion.V2Alpha,
     name: 'parent',

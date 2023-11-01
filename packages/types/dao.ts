@@ -52,6 +52,7 @@ export type DaoInfo = {
 }
 
 export type DaoParentInfo = {
+  chainId: string
   coreAddress: string
   coreVersion: ContractVersion
   name: string

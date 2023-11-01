@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { ContractVersion } from '@dao-dao/types'
 
 import { IconButtonLink } from '../icon_buttons'
@@ -19,7 +20,7 @@ const Template: ComponentStory<typeof DaoCard> = (args) => (
 )
 
 export const makeProps = (id = 1): DaoCardProps => ({
-  chainId: 'uni-6',
+  chainId: CHAIN_ID,
   coreAddress: 'daoCoreAddress',
   name: 'Modern DAO',
   description:
@@ -41,6 +42,7 @@ export const makeProps = (id = 1): DaoCardProps => ({
   },
 
   parentDao: {
+    chainId: CHAIN_ID,
     coreAddress: 'parentDaoCoreAddress',
     coreVersion: ContractVersion.V2Alpha,
     name: 'parent',

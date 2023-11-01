@@ -116,6 +116,7 @@ export const daoCardInfoSelector = selectorFamily<
 
               if (coreVersion) {
                 parentDao = {
+                  chainId,
                   coreAddress: admin,
                   coreVersion,
                   name,
@@ -183,6 +184,7 @@ export const daoCardInfoSelector = selectorFamily<
                     false
 
               parentDao = {
+                chainId,
                 coreAddress: admin,
                 coreVersion: adminVersion,
                 name,
@@ -203,6 +205,7 @@ export const daoCardInfoSelector = selectorFamily<
           // Chain module account.
           const chainConfig = getSupportedChainConfig(chainId)
           parentDao = chainConfig && {
+            chainId,
             coreAddress: chainConfig.name,
             coreVersion: ContractVersion.Gov,
             name: getDisplayNameForChainId(chainId),

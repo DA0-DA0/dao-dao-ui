@@ -304,6 +304,7 @@ export const daoInfoSelector: (param: {
           // Chain module account.
           const chainConfig = getSupportedChainConfig(chainId)
           parentDaoInfo = chainConfig && {
+            chainId,
             coreAddress: chainConfig.name,
             coreVersion: ContractVersion.Gov,
             name: getDisplayNameForChainId(chainId),
@@ -331,6 +332,7 @@ export const daoInfoSelector: (param: {
         polytoneProxies,
         parentDao: parentDaoInfo
           ? {
+              chainId: parentDaoInfo.chainId,
               coreAddress: parentDaoInfo.coreAddress,
               coreVersion: parentDaoInfo.coreVersion,
               name: parentDaoInfo.name,
