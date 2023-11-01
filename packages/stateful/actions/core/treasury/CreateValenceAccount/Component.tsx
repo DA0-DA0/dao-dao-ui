@@ -44,7 +44,7 @@ export const CreateValenceAccountComponent: ActionComponent<
 
         {coins.map(({ id }, index) => (
           <NativeCoinSelector
-            key={id}
+            key={id + index}
             {...({
               ...props,
               chainId,
