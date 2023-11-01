@@ -48,7 +48,9 @@ export type ConfigureRebalancerData = {
     ki: number
     kd: number
   }
-  maxLimitBps?: number
+  // TODO(rebalancer): Support setting this
+  maxLimit?: number
+  // TODO(rebalancer): Support setting this
   targetOverrideStrategy: TargetOverrideStrategy
 }
 
