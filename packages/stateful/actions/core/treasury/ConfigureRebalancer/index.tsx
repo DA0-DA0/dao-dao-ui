@@ -225,9 +225,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
       chainId,
       trustee: data.trustee || undefined,
       baseDenom: data.base_denom,
-      tokens: data.targets.map(({ denom, min_balance, percentage }) => ({
+      tokens: data.targets.map(({ denom, min_balance, bps }) => ({
         denom,
-        percent: percentage,
+        percent: bps / 100,
         minBalance:
           min_balance && !isNaN(Number(min_balance))
             ? Number(min_balance)
@@ -238,7 +238,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
         ki: Number(data.pid.i),
         kd: Number(data.pid.d),
       },
-      maxLimitBps: data.max_limit || undefined,
+      maxLimit:
+        typeof data.max_limit_bps === 'number'
+          ? data.max_limit_bps / 100
+          : undefined,
       targetOverrideStrategy: data.target_override_strategy,
     },
   }
@@ -338,7 +341,7 @@ export const makeConfigureRebalancerAction: ActionMaker<
         baseDenom,
         tokens,
         pid,
-        maxLimitBps,
+        maxLimit,
         targetOverrideStrategy,
       }: ConfigureRebalancerData) => {
         if (!valenceAccount) {
@@ -361,22 +364,48 @@ export const makeConfigureRebalancerAction: ActionMaker<
                     : 'register_to_service']: {
                     service_name: 'rebalancer',
                     data: encodeMessageAsBase64({
-                      base_denom: baseDenom,
-                      max_limit: maxLimitBps,
-                      pid: {
-                        p: pid.kp.toString(),
-                        i: pid.ki.toString(),
-                        d: pid.kd.toString(),
-                      },
-                      target_override_strategy: targetOverrideStrategy,
-                      targets: tokens.map(({ denom, percent, minBalance }) => ({
-                        denom,
-                        min_balance:
-                          minBalance && BigInt(minBalance).toString(),
-                        percentage: percent,
-                      })),
-                      trustee,
-                    } as RebalancerUpdateData),
+                      // Common options.
+                      ...({
+                        base_denom: baseDenom,
+                        // BPS
+                        max_limit: maxLimit && maxLimit * 100,
+                        pid: {
+                          p: pid.kp.toString(),
+                          i: pid.ki.toString(),
+                          d: pid.kd.toString(),
+                        },
+                        target_override_strategy: targetOverrideStrategy,
+                        targets: tokens.map(
+                          ({ denom, percent, minBalance }) => ({
+                            denom,
+                            min_balance:
+                              minBalance && BigInt(minBalance).toString(),
+                            // BPS
+                            bps: percent * 100,
+                          })
+                        ),
+                        trustee,
+                      } as Pick<
+                        RebalancerData,
+                        keyof RebalancerData & keyof RebalancerUpdateData
+                      >),
+                      // Differences between data and update.
+                      ...(valenceAccount.config.rebalancer
+                        ? ({
+                            // BPS
+                            max_limit: maxLimit && maxLimit * 100,
+                          } as Omit<
+                            RebalancerUpdateData,
+                            keyof RebalancerData & keyof RebalancerUpdateData
+                          >)
+                        : ({
+                            // BPS
+                            max_limit_bps: maxLimit && maxLimit * 100,
+                          } as Omit<
+                            RebalancerData,
+                            keyof RebalancerData & keyof RebalancerUpdateData
+                          >)),
+                    }),
                   },
                 } as ValenceAccountExecuteMsg,
               },

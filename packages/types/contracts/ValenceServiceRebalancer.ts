@@ -50,7 +50,7 @@ export type OptionalFieldForString =
     }
 export interface RebalancerData {
   base_denom: string
-  max_limit?: number | null
+  max_limit_bps?: number | null
   pid: PID
   target_override_strategy: TargetOverrideStrategy
   targets: Target[]
@@ -63,8 +63,8 @@ export interface PID {
 }
 export interface Target {
   denom: string
+  bps: number
   min_balance?: Uint128 | null
-  percentage: number
 }
 export interface RebalancerUpdateData {
   base_denom?: string | null
