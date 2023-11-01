@@ -167,7 +167,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
   }
 
   let serviceName: string | undefined
-  let data: RebalancerData | undefined
+  let data: RebalancerData | RebalancerUpdateData | undefined
   if (
     objectMatchesStructure(msg, {
       wasm: {
@@ -186,7 +186,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
         ? msg.wasm.execute.msg.update_service
         : undefined
     if (
-      !objectMatchesStructure(serviceData, {
+      objectMatchesStructure(serviceData, {
         service_name: {},
         data: {},
       })
@@ -219,12 +219,36 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
     }
   }
 
+  const defaultBaseDenom =
+    mustGetSupportedChainConfig(chainId).valence?.rebalancer
+      .baseTokenAllowlist?.[0]
+  if (!defaultBaseDenom) {
+    throw new Error('No default base denom found for rebalancer.')
+  }
+
+  const maxLimitBps =
+    'max_limit' in data
+      ? data.max_limit
+      : 'max_limit_bps' in data
+      ? data.max_limit_bps
+      : undefined
+
   return {
     match: true,
     data: {
       chainId,
-      trustee: data.trustee || undefined,
-      baseDenom: data.base_denom,
+      trustee:
+        typeof data.trustee === 'string'
+          ? 'update_service' in msg.wasm.execute.msg && data.trustee === 'clear'
+            ? undefined
+            : data.trustee
+          : 'update_service' in msg.wasm.execute.msg &&
+            typeof data.trustee === 'object' &&
+            data.trustee &&
+            'set' in data.trustee
+          ? data.trustee.set
+          : undefined,
+      baseDenom: data.base_denom || defaultBaseDenom,
       tokens: data.targets.map(({ denom, min_balance, bps }) => ({
         denom,
         percent: bps / 100,
@@ -234,15 +258,12 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
             : undefined,
       })),
       pid: {
-        kp: Number(data.pid.p),
-        ki: Number(data.pid.i),
-        kd: Number(data.pid.d),
+        kp: Number(data.pid?.p || -1),
+        ki: Number(data.pid?.i || -1),
+        kd: Number(data.pid?.d || -1),
       },
-      maxLimit:
-        typeof data.max_limit_bps === 'number'
-          ? data.max_limit_bps / 100
-          : undefined,
-      targetOverrideStrategy: data.target_override_strategy,
+      maxLimit: typeof maxLimitBps === 'number' ? maxLimitBps / 100 : undefined,
+      targetOverrideStrategy: data.target_override_strategy || 'proportional',
     },
   }
 }

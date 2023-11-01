@@ -160,6 +160,7 @@ export const TokenInput = <
 
           <p className="min-w-[4rem] grow truncate text-left">
             {readOnly &&
+              amountField &&
               amount.toLocaleString(undefined, {
                 // Show as many decimals as possible (max is 20).
                 maximumFractionDigits: 20,
@@ -180,6 +181,7 @@ export const TokenInput = <
       ),
     [
       amount,
+      amountField,
       disabled,
       readOnly,
       selectedToken,
