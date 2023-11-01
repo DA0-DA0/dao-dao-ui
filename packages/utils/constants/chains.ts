@@ -248,11 +248,29 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw4: 228,
       DaoVotingCw721Staked: -1,
       DaoVotingTokenStaked: -1,
+
+      ValenceAccount: 442,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
         DaoPreProposeMultiple: 224,
         DaoProposalMultiple: 226,
+      },
+    },
+    valence: {
+      servicesManager:
+        'neutron1g4ylhl0x2k5gjmd7vhyqv2q7cwhd6gmpwspgktlqcq8s38c7f3gs90rv07',
+      rebalancer: {
+        address:
+          'neutron1jreurhf7g43l0zdxu26fa8aahnjxyng8sjh5vvwjpn4lucwq8tsq7jxl5t',
+        tokenAllowlist: [
+          'untrn',
+          'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9',
+        ],
+        baseTokenAllowlist: [
+          'untrn',
+          'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9',
+        ],
       },
     },
   },
@@ -393,23 +411,11 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // ContractVersion.V210
       Cw20Stake: 1247,
       DaoVotingCw20Staked: 1263,
-
-      ValenceAccount: 3794,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
         DaoPreProposeMultiple: 1258,
         DaoProposalMultiple: 1261,
-      },
-      valence: {
-        servicesManager:
-          'juno1gscdr8zw8njrqfad9m3jgw70s4zumqccka4k6cutlxen0krud08sxlqs9d',
-        rebalancer: {
-          address:
-            'juno15she5505reyvgvg9cz5g4k6y5ktxg4eja5tuytxmj0x0gs0cyjwq2sjgr0',
-          tokenAllowlist: ['ujunox', 'uusdcx'],
-          baseTokenAllowlist: ['ujunox', 'uusdcx'],
-        },
       },
     },
   },
