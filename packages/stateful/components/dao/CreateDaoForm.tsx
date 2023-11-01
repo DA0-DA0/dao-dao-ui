@@ -7,7 +7,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
 import { averageColorSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
@@ -94,7 +94,11 @@ export interface CreateDaoFormProps {
 }
 
 export const CreateDaoForm = (props: CreateDaoFormProps) => {
-  const chainId = useRecoilValue(walletChainIdAtom)
+  const chainId = useRecoilValue(
+    // If parent DAO exists, we're making a SubDAO, so use the parent DAO's
+    // chain ID.
+    props.parentDao ? constSelector(props.parentDao.chainId) : walletChainIdAtom
+  )
   const config = getSupportedChainConfig(chainId)
   if (!config) {
     throw new Error('Unsupported chain.')
@@ -631,7 +635,7 @@ export const InnerCreateDaoForm = ({
         }}
         className="mx-auto max-w-4xl"
         gradient
-        rightNode={<ChainSwitcher />}
+        rightNode={!makingSubDao && <ChainSwitcher />}
       />
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
