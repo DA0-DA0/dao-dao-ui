@@ -204,21 +204,11 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
 
         case ContractExecutionAuthorization.typeUrl:
         case ContractMigrationAuthorization.typeUrl: {
-          // Make sure value is not decoded before trying to decode it.
-          if (!(grantMsg.grant!.authorization!.value instanceof Uint8Array)) {
-            return { match: false }
-          }
-
-          let grants: ContractGrant[] = []
-          if (authorizationTypeUrl === ContractExecutionAuthorization.typeUrl) {
-            grants = ContractExecutionAuthorization.decode(
-              grantMsg.grant!.authorization!.value
-            ).grants
-          } else {
-            grants = ContractMigrationAuthorization.decode(
-              grantMsg.grant!.authorization!.value
-            ).grants
-          }
+          const grants: ContractGrant[] = (
+            grantMsg.grant!.authorization as
+              | ContractExecutionAuthorization
+              | ContractMigrationAuthorization
+          ).grants
 
           if (grants.length !== 1) {
             return { match: false }
@@ -234,7 +224,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
               ({ type: { typeUrl } }) => typeUrl === limit.$typeUrl
             ) ||
             !FILTER_TYPES.some(
-              ({ type: { typeUrl } }) => typeUrl === limit.$typeUrl
+              ({ type: { typeUrl } }) => typeUrl === filter.$typeUrl
             )
           ) {
             return { match: false }
