@@ -482,6 +482,7 @@ const loadParentDaoInfo = async (
       const chainConfig = getSupportedChainConfig(chainId)
       return chainConfig
         ? {
+            chainId,
             coreAddress: chainConfig.name,
             coreVersion: ContractVersion.Gov,
             name: getDisplayNameForChainId(chainId),
@@ -512,6 +513,7 @@ const loadParentDaoInfo = async (
     ])
 
     return {
+      chainId,
       coreAddress: potentialParentAddress,
       coreVersion: version,
       name: name,
