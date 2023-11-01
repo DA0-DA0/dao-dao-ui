@@ -55,16 +55,16 @@ export const valenceAccountsSelector = selectorFamily<
                 })
               )
             )
-          ).flatMap((loadable) =>
-            loadable.state === 'hasValue' ? loadable.contents : []
+          ).map((loadable) =>
+            loadable.state === 'hasValue' ? loadable.contents : undefined
           )
-        : undefined
+        : []
 
       const uniqueDenoms = [
         ...new Set(
-          rebalancerConfigs?.flatMap((config) =>
-            config.targets.map(({ denom }) => denom)
-          ) ?? []
+          rebalancerConfigs.flatMap(
+            (config) => config?.targets.map(({ denom }) => denom) || []
+          )
         ),
       ]
       // Map token denom to token.
@@ -87,8 +87,8 @@ export const valenceAccountsSelector = selectorFamily<
       )
 
       const accounts = valenceAccountAddresses.map(
-        (address): ValenceAccount => {
-          const rebalancerConfig = rebalancerConfigs?.[address]
+        (address, index): ValenceAccount => {
+          const rebalancerConfig = rebalancerConfigs?.[index]
 
           const config: ValenceAccountConfig = {
             rebalancer: rebalancerConfig && {
