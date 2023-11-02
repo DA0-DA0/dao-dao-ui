@@ -38,6 +38,12 @@ export function convertDenomToMicroDenomWithDecimals(
   return isNaN(amount) ? 0 : amount
 }
 
+// Using BigInt.toString() ensures the value is not abbreviated. The
+// Number.toString() function abbreviates large numbers like 1e20.
+export const convertDenomToMicroDenomStringWithDecimals = (
+  ...params: Parameters<typeof convertDenomToMicroDenomWithDecimals>
+) => BigInt(convertDenomToMicroDenomWithDecimals(...params)).toString()
+
 export function convertFromMicroDenom(denom: string) {
   return denom?.substring(1).toUpperCase()
 }

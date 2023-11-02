@@ -333,7 +333,7 @@ export const InnerCreateDaoForm = ({
       automatically_add_cw721s: true,
       description,
       image_url: imageUrl ?? null,
-      name,
+      name: name.trim(),
       proposal_modules_instantiate_info: proposalModuleInstantiateInfos,
       // Placeholder. Should be replaced by creator's mutate function.
       voting_module_instantiate_info: {

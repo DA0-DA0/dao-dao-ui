@@ -19,7 +19,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   CHAIN_GAS_MULTIPLIER,
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   cwMsgToEncodeObject,
   processError,
@@ -110,10 +110,10 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
 
     setLoading(true)
     try {
-      const microAmount = convertDenomToMicroDenomWithDecimals(
+      const microAmount = convertDenomToMicroDenomStringWithDecimals(
         amount,
         nativeToken.decimals
-      ).toString()
+      )
 
       if (mode === StakingMode.Stake) {
         await signingCosmWasmClient.signAndBroadcast(

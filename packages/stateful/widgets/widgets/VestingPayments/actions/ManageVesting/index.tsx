@@ -35,7 +35,7 @@ import {
 } from '@dao-dao/types/contracts/CwPayrollFactory'
 import { InstantiateMsg as VestingInstantiateMsg } from '@dao-dao/types/contracts/CwVesting'
 import {
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   convertSecondsToDurationWithUnits,
@@ -518,10 +518,10 @@ export const makeManageVestingActionMaker = ({
               throw new Error(`Unknown token: ${begin.denomOrAddress}`)
             }
 
-            const amount = convertDenomToMicroDenomWithDecimals(
+            const amount = convertDenomToMicroDenomStringWithDecimals(
               begin.amount,
               token.decimals
-            ).toString()
+            )
 
             const instantiateMsg: VestingInstantiateMsg = {
               denom:

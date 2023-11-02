@@ -1,4 +1,4 @@
-import { waitForAll, waitForAllSettled } from 'recoil'
+import { waitForAllSettled } from 'recoil'
 
 import {
   MeBalances as StatelessMeBalances,
@@ -28,7 +28,7 @@ export const MeBalances = () => {
 
   const tokensWithoutLazyInfo = useCachedLoading(
     walletAddress
-      ? waitForAll(
+      ? waitForAllSettled(
           getSupportedChains().map(({ chain }) =>
             walletTokenCardInfosSelector({
               chainId: chain.chain_id,
@@ -45,7 +45,9 @@ export const MeBalances = () => {
 
   const flattenedTokensWithoutLazyInfo = tokensWithoutLazyInfo.loading
     ? []
-    : tokensWithoutLazyInfo.data.flat()
+    : tokensWithoutLazyInfo.data.flatMap((loadable) =>
+        loadable.state === 'hasValue' ? loadable.contents : []
+      )
 
   // Load separately so they cache separately.
   const tokenLazyInfos = useCachedLoading(
@@ -64,7 +66,9 @@ export const MeBalances = () => {
   )
 
   const tokens: LoadingData<TokenCardInfo[]> =
-    tokensWithoutLazyInfo.loading || tokenLazyInfos.loading
+    tokensWithoutLazyInfo.loading ||
+    tokenLazyInfos.loading ||
+    flattenedTokensWithoutLazyInfo.length !== tokenLazyInfos.data.length
       ? {
           loading: true,
         }
