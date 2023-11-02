@@ -285,7 +285,7 @@ export const NewGovProposal = () => {
 
           setLoading(true)
           try {
-            // TODO: Fix amino support.
+            // TODO(authz-fix): Fix amino support.
             const offlineSignerDirect = await getOfflineSignerDirect()
             const stargateClient =
               await SigningStargateClient.connectWithSigner(
