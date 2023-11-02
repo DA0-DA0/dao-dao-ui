@@ -18,7 +18,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   isDecodedStargateMsg,
   makeStargateMessage,
@@ -44,16 +44,18 @@ const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
 
   return useCallback(
     (data: MintData) => {
-      const amount = convertDenomToMicroDenomWithDecimals(
-        data.amount,
-        governanceTokenInfo.decimals
-      )
       return makeStargateMessage({
         stargate: {
           typeUrl: MsgMint.typeUrl,
           value: {
             sender: address,
-            amount: coin(amount, governanceTokenAddress),
+            amount: coin(
+              convertDenomToMicroDenomStringWithDecimals(
+                data.amount,
+                governanceTokenInfo.decimals
+              ),
+              governanceTokenAddress
+            ),
           } as MsgMint,
         },
       })

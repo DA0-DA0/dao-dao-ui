@@ -21,7 +21,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   getChainForChainId,
@@ -155,9 +155,10 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
         throw new Error(`Unknown token: ${denom}`)
       }
 
-      const amount = BigInt(
-        convertDenomToMicroDenomWithDecimals(_amount, token.decimals)
-      ).toString()
+      const amount = convertDenomToMicroDenomStringWithDecimals(
+        _amount,
+        token.decimals
+      )
 
       let msg: CosmosMsgForEmpty | undefined
       if (toChainId !== fromChainId) {

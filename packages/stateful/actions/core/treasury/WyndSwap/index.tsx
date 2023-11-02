@@ -41,6 +41,7 @@ import { ExecuteSwapOperationsMsg } from '@dao-dao/types/contracts/WyndexMultiHo
 import {
   DAO_DAO_DAO_ADDRESS,
   WYND_MULTI_HOP_CONTRACT,
+  convertDenomToMicroDenomStringWithDecimals,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   encodeMessageAsBase64,
@@ -525,16 +526,16 @@ const useTransformToCosmos: UseTransformToCosmos<WyndSwapData> = () => {
         return
       }
 
-      const inAmount = convertDenomToMicroDenomWithDecimals(
+      const inAmount = convertDenomToMicroDenomStringWithDecimals(
         tokenInAmount,
         tokenIn.decimals
-      ).toString()
+      )
       const minOutAmount =
         _minOutAmount !== undefined
-          ? convertDenomToMicroDenomWithDecimals(
+          ? convertDenomToMicroDenomStringWithDecimals(
               _minOutAmount,
               tokenOut.decimals
-            ).toString()
+            )
           : undefined
 
       const msg: ExecuteSwapOperationsMsg = {

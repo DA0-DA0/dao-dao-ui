@@ -46,7 +46,7 @@ import {
 } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   getGovPath,
@@ -297,7 +297,7 @@ const InnerProposalStatusAndInfo = ({
           proposalId: Long.fromString(proposalId.toString()),
           depositor: walletAddress,
           amount: coins(
-            convertDenomToMicroDenomWithDecimals(
+            convertDenomToMicroDenomStringWithDecimals(
               depositValue,
               depositToken.decimals
             ),
