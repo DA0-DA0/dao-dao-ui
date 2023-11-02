@@ -129,7 +129,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   msg.voting_module_instantiate_info = {
     admin: { core_module: {} },
     code_id: codeIds.DaoVotingTokenStaked,
-    label: `DAO_${daoName}_${TokenBasedCreatorId}`,
+    label: `DAO_${daoName.trim()}_${TokenBasedCreatorId}`,
     msg: Buffer.from(
       JSON.stringify(votingModuleAdapterInstantiateMsg),
       'utf8'
