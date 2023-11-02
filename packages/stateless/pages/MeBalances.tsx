@@ -127,7 +127,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
             <div className="space-y-1">
               {visibleBalances.map((props, index) => (
                 <TokenLine
-                  key={props.token.denomOrAddress}
+                  key={props.token.denomOrAddress + index}
                   transparentBackground={index % 2 !== 0}
                   {...(props as T)}
                 />
@@ -159,7 +159,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
             <div className={clsx('space-y-1', !showingHidden && 'hidden')}>
               {hiddenBalances.map((props, index) => (
                 <TokenLine
-                  key={props.token.denomOrAddress}
+                  key={props.token.denomOrAddress + index}
                   transparentBackground={index % 2 !== 0}
                   {...(props as T)}
                 />
