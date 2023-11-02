@@ -1226,6 +1226,8 @@ export const AcceptedMessagesFilter = {
 export const Cosmwasm_wasmv1ContractAuthzLimitX_InterfaceDecoder = (input: BinaryReader | Uint8Array): MaxCallsLimit | MaxFundsLimit | CombinedLimit | Any => {
   const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
   const data = Any.decode(reader, reader.uint32());
+  // TODO(authz-fix): add flag to telescope when using toAmino
+  return data;
   switch (data.typeUrl) {
     case "/cosmwasm.wasm.v1.MaxCallsLimit":
       return MaxCallsLimit.decode(data.value);
@@ -1282,6 +1284,8 @@ export const Cosmwasm_wasmv1ContractAuthzLimitX_ToAmino = (content: Any) => {
 export const Cosmwasm_wasmv1ContractAuthzFilterX_InterfaceDecoder = (input: BinaryReader | Uint8Array): AllowAllMessagesFilter | AcceptedMessageKeysFilter | AcceptedMessagesFilter | Any => {
   const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
   const data = Any.decode(reader, reader.uint32());
+  // TODO(authz-fix): add flag to telescope when using toAmino
+  return data;
   switch (data.typeUrl) {
     case "/cosmwasm.wasm.v1.AllowAllMessagesFilter":
       return AllowAllMessagesFilter.decode(data.value);

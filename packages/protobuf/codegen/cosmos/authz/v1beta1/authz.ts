@@ -464,6 +464,8 @@ export const GrantQueueItem = {
 export const Cosmos_authzv1beta1Authorization_InterfaceDecoder = (input: BinaryReader | Uint8Array): GenericAuthorization | SendAuthorization | StakeAuthorization | StoreCodeAuthorization | ContractExecutionAuthorization | ContractMigrationAuthorization | TransferAuthorization | Any => {
   const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
   const data = Any.decode(reader, reader.uint32());
+  // TODO(authz-fix): add flag to telescope when using toAmino
+  return data;
   switch (data.typeUrl) {
     case "/cosmos.authz.v1beta1.GenericAuthorization":
       return GenericAuthorization.decode(data.value);

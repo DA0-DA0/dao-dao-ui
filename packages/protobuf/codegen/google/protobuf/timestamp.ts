@@ -327,7 +327,8 @@ export const Timestamp = {
     return fromJsonTimestamp(object);
   },
   toAmino(message: Timestamp): TimestampAmino {
-    return fromTimestamp(message).toString();
+  // TODO(authz-fix): fix telescope directly
+    return fromTimestamp(message).toISOString();
   },
   fromAminoMsg(object: TimestampAminoMsg): Timestamp {
     return Timestamp.fromAmino(object.value);
