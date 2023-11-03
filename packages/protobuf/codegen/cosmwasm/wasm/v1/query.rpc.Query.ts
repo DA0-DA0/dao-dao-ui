@@ -43,102 +43,102 @@ export class QueryClientImpl implements Query {
     this.params = this.params.bind(this);
     this.contractsByCreator = this.contractsByCreator.bind(this);
   }
-  contractInfo(request: QueryContractInfoRequest): Promise<QueryContractInfoResponse> {
+  contractInfo(request: QueryContractInfoRequest, useInterfaces: boolean = true): Promise<QueryContractInfoResponse> {
     const data = QueryContractInfoRequest.encode(request).finish();
     const promise = this.rpc.request("cosmwasm.wasm.v1.Query", "ContractInfo", data);
-    return promise.then(data => QueryContractInfoResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryContractInfoResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  contractHistory(request: QueryContractHistoryRequest): Promise<QueryContractHistoryResponse> {
+  contractHistory(request: QueryContractHistoryRequest, useInterfaces: boolean = true): Promise<QueryContractHistoryResponse> {
     const data = QueryContractHistoryRequest.encode(request).finish();
     const promise = this.rpc.request("cosmwasm.wasm.v1.Query", "ContractHistory", data);
-    return promise.then(data => QueryContractHistoryResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryContractHistoryResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  contractsByCode(request: QueryContractsByCodeRequest): Promise<QueryContractsByCodeResponse> {
+  contractsByCode(request: QueryContractsByCodeRequest, useInterfaces: boolean = true): Promise<QueryContractsByCodeResponse> {
     const data = QueryContractsByCodeRequest.encode(request).finish();
     const promise = this.rpc.request("cosmwasm.wasm.v1.Query", "ContractsByCode", data);
-    return promise.then(data => QueryContractsByCodeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryContractsByCodeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  allContractState(request: QueryAllContractStateRequest): Promise<QueryAllContractStateResponse> {
+  allContractState(request: QueryAllContractStateRequest, useInterfaces: boolean = true): Promise<QueryAllContractStateResponse> {
     const data = QueryAllContractStateRequest.encode(request).finish();
     const promise = this.rpc.request("cosmwasm.wasm.v1.Query", "AllContractState", data);
-    return promise.then(data => QueryAllContractStateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryAllContractStateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  rawContractState(request: QueryRawContractStateRequest): Promise<QueryRawContractStateResponse> {
+  rawContractState(request: QueryRawContractStateRequest, useInterfaces: boolean = true): Promise<QueryRawContractStateResponse> {
     const data = QueryRawContractStateRequest.encode(request).finish();
     const promise = this.rpc.request("cosmwasm.wasm.v1.Query", "RawContractState", data);
-    return promise.then(data => QueryRawContractStateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryRawContractStateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  smartContractState(request: QuerySmartContractStateRequest): Promise<QuerySmartContractStateResponse> {
+  smartContractState(request: QuerySmartContractStateRequest, useInterfaces: boolean = true): Promise<QuerySmartContractStateResponse> {
     const data = QuerySmartContractStateRequest.encode(request).finish();
     const promise = this.rpc.request("cosmwasm.wasm.v1.Query", "SmartContractState", data);
-    return promise.then(data => QuerySmartContractStateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QuerySmartContractStateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  code(request: QueryCodeRequest): Promise<QueryCodeResponse> {
+  code(request: QueryCodeRequest, useInterfaces: boolean = true): Promise<QueryCodeResponse> {
     const data = QueryCodeRequest.encode(request).finish();
     const promise = this.rpc.request("cosmwasm.wasm.v1.Query", "Code", data);
-    return promise.then(data => QueryCodeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryCodeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   codes(request: QueryCodesRequest = {
     pagination: undefined
-  }): Promise<QueryCodesResponse> {
+  }, useInterfaces: boolean = true): Promise<QueryCodesResponse> {
     const data = QueryCodesRequest.encode(request).finish();
     const promise = this.rpc.request("cosmwasm.wasm.v1.Query", "Codes", data);
-    return promise.then(data => QueryCodesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryCodesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   pinnedCodes(request: QueryPinnedCodesRequest = {
     pagination: undefined
-  }): Promise<QueryPinnedCodesResponse> {
+  }, useInterfaces: boolean = true): Promise<QueryPinnedCodesResponse> {
     const data = QueryPinnedCodesRequest.encode(request).finish();
     const promise = this.rpc.request("cosmwasm.wasm.v1.Query", "PinnedCodes", data);
-    return promise.then(data => QueryPinnedCodesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryPinnedCodesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmwasm.wasm.v1.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  contractsByCreator(request: QueryContractsByCreatorRequest): Promise<QueryContractsByCreatorResponse> {
+  contractsByCreator(request: QueryContractsByCreatorRequest, useInterfaces: boolean = true): Promise<QueryContractsByCreatorResponse> {
     const data = QueryContractsByCreatorRequest.encode(request).finish();
     const promise = this.rpc.request("cosmwasm.wasm.v1.Query", "ContractsByCreator", data);
-    return promise.then(data => QueryContractsByCreatorResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryContractsByCreatorResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    contractInfo(request: QueryContractInfoRequest): Promise<QueryContractInfoResponse> {
-      return queryService.contractInfo(request);
+    contractInfo(request: QueryContractInfoRequest, useInterfaces: boolean = true): Promise<QueryContractInfoResponse> {
+      return queryService.contractInfo(request, useInterfaces);
     },
-    contractHistory(request: QueryContractHistoryRequest): Promise<QueryContractHistoryResponse> {
-      return queryService.contractHistory(request);
+    contractHistory(request: QueryContractHistoryRequest, useInterfaces: boolean = true): Promise<QueryContractHistoryResponse> {
+      return queryService.contractHistory(request, useInterfaces);
     },
-    contractsByCode(request: QueryContractsByCodeRequest): Promise<QueryContractsByCodeResponse> {
-      return queryService.contractsByCode(request);
+    contractsByCode(request: QueryContractsByCodeRequest, useInterfaces: boolean = true): Promise<QueryContractsByCodeResponse> {
+      return queryService.contractsByCode(request, useInterfaces);
     },
-    allContractState(request: QueryAllContractStateRequest): Promise<QueryAllContractStateResponse> {
-      return queryService.allContractState(request);
+    allContractState(request: QueryAllContractStateRequest, useInterfaces: boolean = true): Promise<QueryAllContractStateResponse> {
+      return queryService.allContractState(request, useInterfaces);
     },
-    rawContractState(request: QueryRawContractStateRequest): Promise<QueryRawContractStateResponse> {
-      return queryService.rawContractState(request);
+    rawContractState(request: QueryRawContractStateRequest, useInterfaces: boolean = true): Promise<QueryRawContractStateResponse> {
+      return queryService.rawContractState(request, useInterfaces);
     },
-    smartContractState(request: QuerySmartContractStateRequest): Promise<QuerySmartContractStateResponse> {
-      return queryService.smartContractState(request);
+    smartContractState(request: QuerySmartContractStateRequest, useInterfaces: boolean = true): Promise<QuerySmartContractStateResponse> {
+      return queryService.smartContractState(request, useInterfaces);
     },
-    code(request: QueryCodeRequest): Promise<QueryCodeResponse> {
-      return queryService.code(request);
+    code(request: QueryCodeRequest, useInterfaces: boolean = true): Promise<QueryCodeResponse> {
+      return queryService.code(request, useInterfaces);
     },
-    codes(request?: QueryCodesRequest): Promise<QueryCodesResponse> {
-      return queryService.codes(request);
+    codes(request?: QueryCodesRequest, useInterfaces: boolean = true): Promise<QueryCodesResponse> {
+      return queryService.codes(request, useInterfaces);
     },
-    pinnedCodes(request?: QueryPinnedCodesRequest): Promise<QueryPinnedCodesResponse> {
-      return queryService.pinnedCodes(request);
+    pinnedCodes(request?: QueryPinnedCodesRequest, useInterfaces: boolean = true): Promise<QueryPinnedCodesResponse> {
+      return queryService.pinnedCodes(request, useInterfaces);
     },
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    contractsByCreator(request: QueryContractsByCreatorRequest): Promise<QueryContractsByCreatorResponse> {
-      return queryService.contractsByCreator(request);
+    contractsByCreator(request: QueryContractsByCreatorRequest, useInterfaces: boolean = true): Promise<QueryContractsByCreatorResponse> {
+      return queryService.contractsByCreator(request, useInterfaces);
     }
   };
 };

@@ -21,14 +21,14 @@ export class MsgClientImpl implements Msg {
     this.createVestingAccount = this.createVestingAccount.bind(this);
     this.fundFairburnPool = this.fundFairburnPool.bind(this);
   }
-  createVestingAccount(request: MsgCreateVestingAccount): Promise<MsgCreateVestingAccountResponse> {
+  createVestingAccount(request: MsgCreateVestingAccount, useInterfaces: boolean = true): Promise<MsgCreateVestingAccountResponse> {
     const data = MsgCreateVestingAccount.encode(request).finish();
     const promise = this.rpc.request("publicawesome.stargaze.alloc.v1beta1.Msg", "CreateVestingAccount", data);
-    return promise.then(data => MsgCreateVestingAccountResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgCreateVestingAccountResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  fundFairburnPool(request: MsgFundFairburnPool): Promise<MsgFundFairburnPoolResponse> {
+  fundFairburnPool(request: MsgFundFairburnPool, useInterfaces: boolean = true): Promise<MsgFundFairburnPoolResponse> {
     const data = MsgFundFairburnPool.encode(request).finish();
     const promise = this.rpc.request("publicawesome.stargaze.alloc.v1beta1.Msg", "FundFairburnPool", data);
-    return promise.then(data => MsgFundFairburnPoolResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgFundFairburnPoolResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

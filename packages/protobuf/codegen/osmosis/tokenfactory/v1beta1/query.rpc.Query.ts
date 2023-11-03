@@ -34,42 +34,42 @@ export class QueryClientImpl implements Query {
     this.denomsFromCreator = this.denomsFromCreator.bind(this);
     this.beforeSendHookAddress = this.beforeSendHookAddress.bind(this);
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.tokenfactory.v1beta1.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  denomAuthorityMetadata(request: QueryDenomAuthorityMetadataRequest): Promise<QueryDenomAuthorityMetadataResponse> {
+  denomAuthorityMetadata(request: QueryDenomAuthorityMetadataRequest, useInterfaces: boolean = true): Promise<QueryDenomAuthorityMetadataResponse> {
     const data = QueryDenomAuthorityMetadataRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.tokenfactory.v1beta1.Query", "DenomAuthorityMetadata", data);
-    return promise.then(data => QueryDenomAuthorityMetadataResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDenomAuthorityMetadataResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  denomsFromCreator(request: QueryDenomsFromCreatorRequest): Promise<QueryDenomsFromCreatorResponse> {
+  denomsFromCreator(request: QueryDenomsFromCreatorRequest, useInterfaces: boolean = true): Promise<QueryDenomsFromCreatorResponse> {
     const data = QueryDenomsFromCreatorRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.tokenfactory.v1beta1.Query", "DenomsFromCreator", data);
-    return promise.then(data => QueryDenomsFromCreatorResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDenomsFromCreatorResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  beforeSendHookAddress(request: QueryBeforeSendHookAddressRequest): Promise<QueryBeforeSendHookAddressResponse> {
+  beforeSendHookAddress(request: QueryBeforeSendHookAddressRequest, useInterfaces: boolean = true): Promise<QueryBeforeSendHookAddressResponse> {
     const data = QueryBeforeSendHookAddressRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.tokenfactory.v1beta1.Query", "BeforeSendHookAddress", data);
-    return promise.then(data => QueryBeforeSendHookAddressResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryBeforeSendHookAddressResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    denomAuthorityMetadata(request: QueryDenomAuthorityMetadataRequest): Promise<QueryDenomAuthorityMetadataResponse> {
-      return queryService.denomAuthorityMetadata(request);
+    denomAuthorityMetadata(request: QueryDenomAuthorityMetadataRequest, useInterfaces: boolean = true): Promise<QueryDenomAuthorityMetadataResponse> {
+      return queryService.denomAuthorityMetadata(request, useInterfaces);
     },
-    denomsFromCreator(request: QueryDenomsFromCreatorRequest): Promise<QueryDenomsFromCreatorResponse> {
-      return queryService.denomsFromCreator(request);
+    denomsFromCreator(request: QueryDenomsFromCreatorRequest, useInterfaces: boolean = true): Promise<QueryDenomsFromCreatorResponse> {
+      return queryService.denomsFromCreator(request, useInterfaces);
     },
-    beforeSendHookAddress(request: QueryBeforeSendHookAddressRequest): Promise<QueryBeforeSendHookAddressResponse> {
-      return queryService.beforeSendHookAddress(request);
+    beforeSendHookAddress(request: QueryBeforeSendHookAddressRequest, useInterfaces: boolean = true): Promise<QueryBeforeSendHookAddressResponse> {
+      return queryService.beforeSendHookAddress(request, useInterfaces);
     }
   };
 };

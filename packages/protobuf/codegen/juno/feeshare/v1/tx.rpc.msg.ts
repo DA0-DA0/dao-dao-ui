@@ -24,24 +24,24 @@ export class MsgClientImpl implements Msg {
     this.cancelFeeShare = this.cancelFeeShare.bind(this);
     this.updateParams = this.updateParams.bind(this);
   }
-  registerFeeShare(request: MsgRegisterFeeShare): Promise<MsgRegisterFeeShareResponse> {
+  registerFeeShare(request: MsgRegisterFeeShare, useInterfaces: boolean = true): Promise<MsgRegisterFeeShareResponse> {
     const data = MsgRegisterFeeShare.encode(request).finish();
     const promise = this.rpc.request("juno.feeshare.v1.Msg", "RegisterFeeShare", data);
-    return promise.then(data => MsgRegisterFeeShareResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgRegisterFeeShareResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  updateFeeShare(request: MsgUpdateFeeShare): Promise<MsgUpdateFeeShareResponse> {
+  updateFeeShare(request: MsgUpdateFeeShare, useInterfaces: boolean = true): Promise<MsgUpdateFeeShareResponse> {
     const data = MsgUpdateFeeShare.encode(request).finish();
     const promise = this.rpc.request("juno.feeshare.v1.Msg", "UpdateFeeShare", data);
-    return promise.then(data => MsgUpdateFeeShareResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUpdateFeeShareResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  cancelFeeShare(request: MsgCancelFeeShare): Promise<MsgCancelFeeShareResponse> {
+  cancelFeeShare(request: MsgCancelFeeShare, useInterfaces: boolean = true): Promise<MsgCancelFeeShareResponse> {
     const data = MsgCancelFeeShare.encode(request).finish();
     const promise = this.rpc.request("juno.feeshare.v1.Msg", "CancelFeeShare", data);
-    return promise.then(data => MsgCancelFeeShareResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgCancelFeeShareResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  updateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse> {
+  updateParams(request: MsgUpdateParams, useInterfaces: boolean = true): Promise<MsgUpdateParamsResponse> {
     const data = MsgUpdateParams.encode(request).finish();
     const promise = this.rpc.request("juno.feeshare.v1.Msg", "UpdateParams", data);
-    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

@@ -25,42 +25,42 @@ export class QueryClientImpl implements Query {
     this.denomPoolId = this.denomPoolId.bind(this);
     this.baseDenom = this.baseDenom.bind(this);
   }
-  feeTokens(request: QueryFeeTokensRequest = {}): Promise<QueryFeeTokensResponse> {
+  feeTokens(request: QueryFeeTokensRequest = {}, useInterfaces: boolean = true): Promise<QueryFeeTokensResponse> {
     const data = QueryFeeTokensRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.txfees.v1beta1.Query", "FeeTokens", data);
-    return promise.then(data => QueryFeeTokensResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryFeeTokensResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  denomSpotPrice(request: QueryDenomSpotPriceRequest): Promise<QueryDenomSpotPriceResponse> {
+  denomSpotPrice(request: QueryDenomSpotPriceRequest, useInterfaces: boolean = true): Promise<QueryDenomSpotPriceResponse> {
     const data = QueryDenomSpotPriceRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.txfees.v1beta1.Query", "DenomSpotPrice", data);
-    return promise.then(data => QueryDenomSpotPriceResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDenomSpotPriceResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  denomPoolId(request: QueryDenomPoolIdRequest): Promise<QueryDenomPoolIdResponse> {
+  denomPoolId(request: QueryDenomPoolIdRequest, useInterfaces: boolean = true): Promise<QueryDenomPoolIdResponse> {
     const data = QueryDenomPoolIdRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.txfees.v1beta1.Query", "DenomPoolId", data);
-    return promise.then(data => QueryDenomPoolIdResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDenomPoolIdResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  baseDenom(request: QueryBaseDenomRequest = {}): Promise<QueryBaseDenomResponse> {
+  baseDenom(request: QueryBaseDenomRequest = {}, useInterfaces: boolean = true): Promise<QueryBaseDenomResponse> {
     const data = QueryBaseDenomRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.txfees.v1beta1.Query", "BaseDenom", data);
-    return promise.then(data => QueryBaseDenomResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryBaseDenomResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    feeTokens(request?: QueryFeeTokensRequest): Promise<QueryFeeTokensResponse> {
-      return queryService.feeTokens(request);
+    feeTokens(request?: QueryFeeTokensRequest, useInterfaces: boolean = true): Promise<QueryFeeTokensResponse> {
+      return queryService.feeTokens(request, useInterfaces);
     },
-    denomSpotPrice(request: QueryDenomSpotPriceRequest): Promise<QueryDenomSpotPriceResponse> {
-      return queryService.denomSpotPrice(request);
+    denomSpotPrice(request: QueryDenomSpotPriceRequest, useInterfaces: boolean = true): Promise<QueryDenomSpotPriceResponse> {
+      return queryService.denomSpotPrice(request, useInterfaces);
     },
-    denomPoolId(request: QueryDenomPoolIdRequest): Promise<QueryDenomPoolIdResponse> {
-      return queryService.denomPoolId(request);
+    denomPoolId(request: QueryDenomPoolIdRequest, useInterfaces: boolean = true): Promise<QueryDenomPoolIdResponse> {
+      return queryService.denomPoolId(request, useInterfaces);
     },
-    baseDenom(request?: QueryBaseDenomRequest): Promise<QueryBaseDenomResponse> {
-      return queryService.baseDenom(request);
+    baseDenom(request?: QueryBaseDenomRequest, useInterfaces: boolean = true): Promise<QueryBaseDenomResponse> {
+      return queryService.baseDenom(request, useInterfaces);
     }
   };
 };

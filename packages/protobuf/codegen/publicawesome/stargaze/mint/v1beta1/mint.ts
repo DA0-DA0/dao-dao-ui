@@ -46,7 +46,7 @@ export interface ParamsAmino {
   /** type of coin to mint */
   mint_denom: string;
   /** the time the chain starts */
-  start_time?: Date | undefined;
+  start_time?: string | undefined;
   /** initial annual provisions */
   initial_annual_provisions: string;
   /** factor to reduce inflation by each year */
@@ -79,7 +79,7 @@ export const Minter = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Minter {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Minter {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMinter();
@@ -106,7 +106,7 @@ export const Minter = {
       annualProvisions: object.annual_provisions
     };
   },
-  toAmino(message: Minter): MinterAmino {
+  toAmino(message: Minter, useInterfaces: boolean = false): MinterAmino {
     const obj: any = {};
     obj.annual_provisions = message.annualProvisions;
     return obj;
@@ -114,8 +114,8 @@ export const Minter = {
   fromAminoMsg(object: MinterAminoMsg): Minter {
     return Minter.fromAmino(object.value);
   },
-  fromProtoMsg(message: MinterProtoMsg): Minter {
-    return Minter.decode(message.value);
+  fromProtoMsg(message: MinterProtoMsg, useInterfaces: boolean = false): Minter {
+    return Minter.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Minter): Uint8Array {
     return Minter.encode(message).finish();
@@ -156,7 +156,7 @@ export const Params = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Params {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Params {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
@@ -197,16 +197,16 @@ export const Params = {
   fromAmino(object: ParamsAmino): Params {
     return {
       mintDenom: object.mint_denom,
-      startTime: object.start_time,
+      startTime: object?.start_time ? fromTimestamp(Timestamp.fromAmino(object.start_time)) : undefined,
       initialAnnualProvisions: object.initial_annual_provisions,
       reductionFactor: object.reduction_factor,
       blocksPerYear: BigInt(object.blocks_per_year)
     };
   },
-  toAmino(message: Params): ParamsAmino {
+  toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
     obj.mint_denom = message.mintDenom;
-    obj.start_time = message.startTime;
+    obj.start_time = message.startTime ? Timestamp.toAmino(toTimestamp(message.startTime)) : undefined;
     obj.initial_annual_provisions = message.initialAnnualProvisions;
     obj.reduction_factor = message.reductionFactor;
     obj.blocks_per_year = message.blocksPerYear ? message.blocksPerYear.toString() : undefined;
@@ -215,8 +215,8 @@ export const Params = {
   fromAminoMsg(object: ParamsAminoMsg): Params {
     return Params.fromAmino(object.value);
   },
-  fromProtoMsg(message: ParamsProtoMsg): Params {
-    return Params.decode(message.value);
+  fromProtoMsg(message: ParamsProtoMsg, useInterfaces: boolean = false): Params {
+    return Params.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Params): Uint8Array {
     return Params.encode(message).finish();

@@ -82,7 +82,7 @@ export const MsgCreateConcentratedPool = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCreateConcentratedPool {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCreateConcentratedPool {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateConcentratedPool();
@@ -129,7 +129,7 @@ export const MsgCreateConcentratedPool = {
       spreadFactor: object.spread_factor
     };
   },
-  toAmino(message: MsgCreateConcentratedPool): MsgCreateConcentratedPoolAmino {
+  toAmino(message: MsgCreateConcentratedPool, useInterfaces: boolean = false): MsgCreateConcentratedPoolAmino {
     const obj: any = {};
     obj.sender = message.sender;
     obj.denom0 = message.denom0;
@@ -141,14 +141,14 @@ export const MsgCreateConcentratedPool = {
   fromAminoMsg(object: MsgCreateConcentratedPoolAminoMsg): MsgCreateConcentratedPool {
     return MsgCreateConcentratedPool.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCreateConcentratedPool): MsgCreateConcentratedPoolAminoMsg {
+  toAminoMsg(message: MsgCreateConcentratedPool, useInterfaces: boolean = false): MsgCreateConcentratedPoolAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/poolmodel/concentrated/create-concentrated-pool",
-      value: MsgCreateConcentratedPool.toAmino(message)
+      value: MsgCreateConcentratedPool.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgCreateConcentratedPoolProtoMsg): MsgCreateConcentratedPool {
-    return MsgCreateConcentratedPool.decode(message.value);
+  fromProtoMsg(message: MsgCreateConcentratedPoolProtoMsg, useInterfaces: boolean = false): MsgCreateConcentratedPool {
+    return MsgCreateConcentratedPool.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCreateConcentratedPool): Uint8Array {
     return MsgCreateConcentratedPool.encode(message).finish();
@@ -173,7 +173,7 @@ export const MsgCreateConcentratedPoolResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCreateConcentratedPoolResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCreateConcentratedPoolResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateConcentratedPoolResponse();
@@ -200,7 +200,7 @@ export const MsgCreateConcentratedPoolResponse = {
       poolId: BigInt(object.pool_id)
     };
   },
-  toAmino(message: MsgCreateConcentratedPoolResponse): MsgCreateConcentratedPoolResponseAmino {
+  toAmino(message: MsgCreateConcentratedPoolResponse, useInterfaces: boolean = false): MsgCreateConcentratedPoolResponseAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     return obj;
@@ -208,14 +208,14 @@ export const MsgCreateConcentratedPoolResponse = {
   fromAminoMsg(object: MsgCreateConcentratedPoolResponseAminoMsg): MsgCreateConcentratedPoolResponse {
     return MsgCreateConcentratedPoolResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCreateConcentratedPoolResponse): MsgCreateConcentratedPoolResponseAminoMsg {
+  toAminoMsg(message: MsgCreateConcentratedPoolResponse, useInterfaces: boolean = false): MsgCreateConcentratedPoolResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/poolmodel/concentrated/create-concentrated-pool-response",
-      value: MsgCreateConcentratedPoolResponse.toAmino(message)
+      value: MsgCreateConcentratedPoolResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgCreateConcentratedPoolResponseProtoMsg): MsgCreateConcentratedPoolResponse {
-    return MsgCreateConcentratedPoolResponse.decode(message.value);
+  fromProtoMsg(message: MsgCreateConcentratedPoolResponseProtoMsg, useInterfaces: boolean = false): MsgCreateConcentratedPoolResponse {
+    return MsgCreateConcentratedPoolResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCreateConcentratedPoolResponse): Uint8Array {
     return MsgCreateConcentratedPoolResponse.encode(message).finish();

@@ -388,7 +388,7 @@ export const MsgCreatePosition = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCreatePosition {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCreatePosition {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreatePosition();
@@ -408,7 +408,7 @@ export const MsgCreatePosition = {
           message.upperTick = reader.int64();
           break;
         case 5:
-          message.tokensProvided.push(Coin.decode(reader, reader.uint32()));
+          message.tokensProvided.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 6:
           message.tokenMinAmount0 = reader.string();
@@ -445,14 +445,14 @@ export const MsgCreatePosition = {
       tokenMinAmount1: object.token_min_amount1
     };
   },
-  toAmino(message: MsgCreatePosition): MsgCreatePositionAmino {
+  toAmino(message: MsgCreatePosition, useInterfaces: boolean = false): MsgCreatePositionAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.sender = message.sender;
     obj.lower_tick = message.lowerTick ? message.lowerTick.toString() : undefined;
     obj.upper_tick = message.upperTick ? message.upperTick.toString() : undefined;
     if (message.tokensProvided) {
-      obj.tokens_provided = message.tokensProvided.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.tokens_provided = message.tokensProvided.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.tokens_provided = [];
     }
@@ -463,14 +463,14 @@ export const MsgCreatePosition = {
   fromAminoMsg(object: MsgCreatePositionAminoMsg): MsgCreatePosition {
     return MsgCreatePosition.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCreatePosition): MsgCreatePositionAminoMsg {
+  toAminoMsg(message: MsgCreatePosition, useInterfaces: boolean = false): MsgCreatePositionAminoMsg {
     return {
       type: "osmosis/cl-create-position",
-      value: MsgCreatePosition.toAmino(message)
+      value: MsgCreatePosition.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgCreatePositionProtoMsg): MsgCreatePosition {
-    return MsgCreatePosition.decode(message.value);
+  fromProtoMsg(message: MsgCreatePositionProtoMsg, useInterfaces: boolean = false): MsgCreatePosition {
+    return MsgCreatePosition.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCreatePosition): Uint8Array {
     return MsgCreatePosition.encode(message).finish();
@@ -515,7 +515,7 @@ export const MsgCreatePositionResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCreatePositionResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCreatePositionResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreatePositionResponse();
@@ -567,7 +567,7 @@ export const MsgCreatePositionResponse = {
       upperTick: BigInt(object.upper_tick)
     };
   },
-  toAmino(message: MsgCreatePositionResponse): MsgCreatePositionResponseAmino {
+  toAmino(message: MsgCreatePositionResponse, useInterfaces: boolean = false): MsgCreatePositionResponseAmino {
     const obj: any = {};
     obj.position_id = message.positionId ? message.positionId.toString() : undefined;
     obj.amount0 = message.amount0;
@@ -580,14 +580,14 @@ export const MsgCreatePositionResponse = {
   fromAminoMsg(object: MsgCreatePositionResponseAminoMsg): MsgCreatePositionResponse {
     return MsgCreatePositionResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCreatePositionResponse): MsgCreatePositionResponseAminoMsg {
+  toAminoMsg(message: MsgCreatePositionResponse, useInterfaces: boolean = false): MsgCreatePositionResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/create-position-response",
-      value: MsgCreatePositionResponse.toAmino(message)
+      value: MsgCreatePositionResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgCreatePositionResponseProtoMsg): MsgCreatePositionResponse {
-    return MsgCreatePositionResponse.decode(message.value);
+  fromProtoMsg(message: MsgCreatePositionResponseProtoMsg, useInterfaces: boolean = false): MsgCreatePositionResponse {
+    return MsgCreatePositionResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCreatePositionResponse): Uint8Array {
     return MsgCreatePositionResponse.encode(message).finish();
@@ -632,7 +632,7 @@ export const MsgAddToPosition = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgAddToPosition {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgAddToPosition {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgAddToPosition();
@@ -684,7 +684,7 @@ export const MsgAddToPosition = {
       tokenMinAmount1: object.token_min_amount1
     };
   },
-  toAmino(message: MsgAddToPosition): MsgAddToPositionAmino {
+  toAmino(message: MsgAddToPosition, useInterfaces: boolean = false): MsgAddToPositionAmino {
     const obj: any = {};
     obj.position_id = message.positionId ? message.positionId.toString() : undefined;
     obj.sender = message.sender;
@@ -697,14 +697,14 @@ export const MsgAddToPosition = {
   fromAminoMsg(object: MsgAddToPositionAminoMsg): MsgAddToPosition {
     return MsgAddToPosition.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgAddToPosition): MsgAddToPositionAminoMsg {
+  toAminoMsg(message: MsgAddToPosition, useInterfaces: boolean = false): MsgAddToPositionAminoMsg {
     return {
       type: "osmosis/cl-add-to-position",
-      value: MsgAddToPosition.toAmino(message)
+      value: MsgAddToPosition.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgAddToPositionProtoMsg): MsgAddToPosition {
-    return MsgAddToPosition.decode(message.value);
+  fromProtoMsg(message: MsgAddToPositionProtoMsg, useInterfaces: boolean = false): MsgAddToPosition {
+    return MsgAddToPosition.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgAddToPosition): Uint8Array {
     return MsgAddToPosition.encode(message).finish();
@@ -737,7 +737,7 @@ export const MsgAddToPositionResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgAddToPositionResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgAddToPositionResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgAddToPositionResponse();
@@ -774,7 +774,7 @@ export const MsgAddToPositionResponse = {
       amount1: object.amount1
     };
   },
-  toAmino(message: MsgAddToPositionResponse): MsgAddToPositionResponseAmino {
+  toAmino(message: MsgAddToPositionResponse, useInterfaces: boolean = false): MsgAddToPositionResponseAmino {
     const obj: any = {};
     obj.position_id = message.positionId ? message.positionId.toString() : undefined;
     obj.amount0 = message.amount0;
@@ -784,14 +784,14 @@ export const MsgAddToPositionResponse = {
   fromAminoMsg(object: MsgAddToPositionResponseAminoMsg): MsgAddToPositionResponse {
     return MsgAddToPositionResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgAddToPositionResponse): MsgAddToPositionResponseAminoMsg {
+  toAminoMsg(message: MsgAddToPositionResponse, useInterfaces: boolean = false): MsgAddToPositionResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/add-to-position-response",
-      value: MsgAddToPositionResponse.toAmino(message)
+      value: MsgAddToPositionResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgAddToPositionResponseProtoMsg): MsgAddToPositionResponse {
-    return MsgAddToPositionResponse.decode(message.value);
+  fromProtoMsg(message: MsgAddToPositionResponseProtoMsg, useInterfaces: boolean = false): MsgAddToPositionResponse {
+    return MsgAddToPositionResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgAddToPositionResponse): Uint8Array {
     return MsgAddToPositionResponse.encode(message).finish();
@@ -824,7 +824,7 @@ export const MsgWithdrawPosition = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgWithdrawPosition {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgWithdrawPosition {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgWithdrawPosition();
@@ -861,7 +861,7 @@ export const MsgWithdrawPosition = {
       liquidityAmount: object.liquidity_amount
     };
   },
-  toAmino(message: MsgWithdrawPosition): MsgWithdrawPositionAmino {
+  toAmino(message: MsgWithdrawPosition, useInterfaces: boolean = false): MsgWithdrawPositionAmino {
     const obj: any = {};
     obj.position_id = message.positionId ? message.positionId.toString() : undefined;
     obj.sender = message.sender;
@@ -871,14 +871,14 @@ export const MsgWithdrawPosition = {
   fromAminoMsg(object: MsgWithdrawPositionAminoMsg): MsgWithdrawPosition {
     return MsgWithdrawPosition.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgWithdrawPosition): MsgWithdrawPositionAminoMsg {
+  toAminoMsg(message: MsgWithdrawPosition, useInterfaces: boolean = false): MsgWithdrawPositionAminoMsg {
     return {
       type: "osmosis/cl-withdraw-position",
-      value: MsgWithdrawPosition.toAmino(message)
+      value: MsgWithdrawPosition.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgWithdrawPositionProtoMsg): MsgWithdrawPosition {
-    return MsgWithdrawPosition.decode(message.value);
+  fromProtoMsg(message: MsgWithdrawPositionProtoMsg, useInterfaces: boolean = false): MsgWithdrawPosition {
+    return MsgWithdrawPosition.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgWithdrawPosition): Uint8Array {
     return MsgWithdrawPosition.encode(message).finish();
@@ -907,7 +907,7 @@ export const MsgWithdrawPositionResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgWithdrawPositionResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgWithdrawPositionResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgWithdrawPositionResponse();
@@ -939,7 +939,7 @@ export const MsgWithdrawPositionResponse = {
       amount1: object.amount1
     };
   },
-  toAmino(message: MsgWithdrawPositionResponse): MsgWithdrawPositionResponseAmino {
+  toAmino(message: MsgWithdrawPositionResponse, useInterfaces: boolean = false): MsgWithdrawPositionResponseAmino {
     const obj: any = {};
     obj.amount0 = message.amount0;
     obj.amount1 = message.amount1;
@@ -948,14 +948,14 @@ export const MsgWithdrawPositionResponse = {
   fromAminoMsg(object: MsgWithdrawPositionResponseAminoMsg): MsgWithdrawPositionResponse {
     return MsgWithdrawPositionResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgWithdrawPositionResponse): MsgWithdrawPositionResponseAminoMsg {
+  toAminoMsg(message: MsgWithdrawPositionResponse, useInterfaces: boolean = false): MsgWithdrawPositionResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/withdraw-position-response",
-      value: MsgWithdrawPositionResponse.toAmino(message)
+      value: MsgWithdrawPositionResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgWithdrawPositionResponseProtoMsg): MsgWithdrawPositionResponse {
-    return MsgWithdrawPositionResponse.decode(message.value);
+  fromProtoMsg(message: MsgWithdrawPositionResponseProtoMsg, useInterfaces: boolean = false): MsgWithdrawPositionResponse {
+    return MsgWithdrawPositionResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgWithdrawPositionResponse): Uint8Array {
     return MsgWithdrawPositionResponse.encode(message).finish();
@@ -986,7 +986,7 @@ export const MsgCollectSpreadRewards = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCollectSpreadRewards {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCollectSpreadRewards {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCollectSpreadRewards();
@@ -1025,7 +1025,7 @@ export const MsgCollectSpreadRewards = {
       sender: object.sender
     };
   },
-  toAmino(message: MsgCollectSpreadRewards): MsgCollectSpreadRewardsAmino {
+  toAmino(message: MsgCollectSpreadRewards, useInterfaces: boolean = false): MsgCollectSpreadRewardsAmino {
     const obj: any = {};
     if (message.positionIds) {
       obj.position_ids = message.positionIds.map(e => e.toString());
@@ -1038,14 +1038,14 @@ export const MsgCollectSpreadRewards = {
   fromAminoMsg(object: MsgCollectSpreadRewardsAminoMsg): MsgCollectSpreadRewards {
     return MsgCollectSpreadRewards.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCollectSpreadRewards): MsgCollectSpreadRewardsAminoMsg {
+  toAminoMsg(message: MsgCollectSpreadRewards, useInterfaces: boolean = false): MsgCollectSpreadRewardsAminoMsg {
     return {
       type: "osmosis/cl-col-sp-rewards",
-      value: MsgCollectSpreadRewards.toAmino(message)
+      value: MsgCollectSpreadRewards.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgCollectSpreadRewardsProtoMsg): MsgCollectSpreadRewards {
-    return MsgCollectSpreadRewards.decode(message.value);
+  fromProtoMsg(message: MsgCollectSpreadRewardsProtoMsg, useInterfaces: boolean = false): MsgCollectSpreadRewards {
+    return MsgCollectSpreadRewards.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCollectSpreadRewards): Uint8Array {
     return MsgCollectSpreadRewards.encode(message).finish();
@@ -1070,7 +1070,7 @@ export const MsgCollectSpreadRewardsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCollectSpreadRewardsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCollectSpreadRewardsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCollectSpreadRewardsResponse();
@@ -1078,7 +1078,7 @@ export const MsgCollectSpreadRewardsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.collectedSpreadRewards.push(Coin.decode(reader, reader.uint32()));
+          message.collectedSpreadRewards.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1097,10 +1097,10 @@ export const MsgCollectSpreadRewardsResponse = {
       collectedSpreadRewards: Array.isArray(object?.collected_spread_rewards) ? object.collected_spread_rewards.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: MsgCollectSpreadRewardsResponse): MsgCollectSpreadRewardsResponseAmino {
+  toAmino(message: MsgCollectSpreadRewardsResponse, useInterfaces: boolean = false): MsgCollectSpreadRewardsResponseAmino {
     const obj: any = {};
     if (message.collectedSpreadRewards) {
-      obj.collected_spread_rewards = message.collectedSpreadRewards.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.collected_spread_rewards = message.collectedSpreadRewards.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.collected_spread_rewards = [];
     }
@@ -1109,14 +1109,14 @@ export const MsgCollectSpreadRewardsResponse = {
   fromAminoMsg(object: MsgCollectSpreadRewardsResponseAminoMsg): MsgCollectSpreadRewardsResponse {
     return MsgCollectSpreadRewardsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCollectSpreadRewardsResponse): MsgCollectSpreadRewardsResponseAminoMsg {
+  toAminoMsg(message: MsgCollectSpreadRewardsResponse, useInterfaces: boolean = false): MsgCollectSpreadRewardsResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/collect-spread-rewards-response",
-      value: MsgCollectSpreadRewardsResponse.toAmino(message)
+      value: MsgCollectSpreadRewardsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgCollectSpreadRewardsResponseProtoMsg): MsgCollectSpreadRewardsResponse {
-    return MsgCollectSpreadRewardsResponse.decode(message.value);
+  fromProtoMsg(message: MsgCollectSpreadRewardsResponseProtoMsg, useInterfaces: boolean = false): MsgCollectSpreadRewardsResponse {
+    return MsgCollectSpreadRewardsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCollectSpreadRewardsResponse): Uint8Array {
     return MsgCollectSpreadRewardsResponse.encode(message).finish();
@@ -1147,7 +1147,7 @@ export const MsgCollectIncentives = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCollectIncentives {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCollectIncentives {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCollectIncentives();
@@ -1186,7 +1186,7 @@ export const MsgCollectIncentives = {
       sender: object.sender
     };
   },
-  toAmino(message: MsgCollectIncentives): MsgCollectIncentivesAmino {
+  toAmino(message: MsgCollectIncentives, useInterfaces: boolean = false): MsgCollectIncentivesAmino {
     const obj: any = {};
     if (message.positionIds) {
       obj.position_ids = message.positionIds.map(e => e.toString());
@@ -1199,14 +1199,14 @@ export const MsgCollectIncentives = {
   fromAminoMsg(object: MsgCollectIncentivesAminoMsg): MsgCollectIncentives {
     return MsgCollectIncentives.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCollectIncentives): MsgCollectIncentivesAminoMsg {
+  toAminoMsg(message: MsgCollectIncentives, useInterfaces: boolean = false): MsgCollectIncentivesAminoMsg {
     return {
       type: "osmosis/cl-collect-incentives",
-      value: MsgCollectIncentives.toAmino(message)
+      value: MsgCollectIncentives.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgCollectIncentivesProtoMsg): MsgCollectIncentives {
-    return MsgCollectIncentives.decode(message.value);
+  fromProtoMsg(message: MsgCollectIncentivesProtoMsg, useInterfaces: boolean = false): MsgCollectIncentives {
+    return MsgCollectIncentives.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCollectIncentives): Uint8Array {
     return MsgCollectIncentives.encode(message).finish();
@@ -1235,7 +1235,7 @@ export const MsgCollectIncentivesResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCollectIncentivesResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCollectIncentivesResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCollectIncentivesResponse();
@@ -1243,10 +1243,10 @@ export const MsgCollectIncentivesResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.collectedIncentives.push(Coin.decode(reader, reader.uint32()));
+          message.collectedIncentives.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.forfeitedIncentives.push(Coin.decode(reader, reader.uint32()));
+          message.forfeitedIncentives.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1267,15 +1267,15 @@ export const MsgCollectIncentivesResponse = {
       forfeitedIncentives: Array.isArray(object?.forfeited_incentives) ? object.forfeited_incentives.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: MsgCollectIncentivesResponse): MsgCollectIncentivesResponseAmino {
+  toAmino(message: MsgCollectIncentivesResponse, useInterfaces: boolean = false): MsgCollectIncentivesResponseAmino {
     const obj: any = {};
     if (message.collectedIncentives) {
-      obj.collected_incentives = message.collectedIncentives.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.collected_incentives = message.collectedIncentives.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.collected_incentives = [];
     }
     if (message.forfeitedIncentives) {
-      obj.forfeited_incentives = message.forfeitedIncentives.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.forfeited_incentives = message.forfeitedIncentives.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.forfeited_incentives = [];
     }
@@ -1284,14 +1284,14 @@ export const MsgCollectIncentivesResponse = {
   fromAminoMsg(object: MsgCollectIncentivesResponseAminoMsg): MsgCollectIncentivesResponse {
     return MsgCollectIncentivesResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCollectIncentivesResponse): MsgCollectIncentivesResponseAminoMsg {
+  toAminoMsg(message: MsgCollectIncentivesResponse, useInterfaces: boolean = false): MsgCollectIncentivesResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/collect-incentives-response",
-      value: MsgCollectIncentivesResponse.toAmino(message)
+      value: MsgCollectIncentivesResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgCollectIncentivesResponseProtoMsg): MsgCollectIncentivesResponse {
-    return MsgCollectIncentivesResponse.decode(message.value);
+  fromProtoMsg(message: MsgCollectIncentivesResponseProtoMsg, useInterfaces: boolean = false): MsgCollectIncentivesResponse {
+    return MsgCollectIncentivesResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCollectIncentivesResponse): Uint8Array {
     return MsgCollectIncentivesResponse.encode(message).finish();
@@ -1322,7 +1322,7 @@ export const MsgFungifyChargedPositions = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgFungifyChargedPositions {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgFungifyChargedPositions {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgFungifyChargedPositions();
@@ -1361,7 +1361,7 @@ export const MsgFungifyChargedPositions = {
       sender: object.sender
     };
   },
-  toAmino(message: MsgFungifyChargedPositions): MsgFungifyChargedPositionsAmino {
+  toAmino(message: MsgFungifyChargedPositions, useInterfaces: boolean = false): MsgFungifyChargedPositionsAmino {
     const obj: any = {};
     if (message.positionIds) {
       obj.position_ids = message.positionIds.map(e => e.toString());
@@ -1374,14 +1374,14 @@ export const MsgFungifyChargedPositions = {
   fromAminoMsg(object: MsgFungifyChargedPositionsAminoMsg): MsgFungifyChargedPositions {
     return MsgFungifyChargedPositions.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgFungifyChargedPositions): MsgFungifyChargedPositionsAminoMsg {
+  toAminoMsg(message: MsgFungifyChargedPositions, useInterfaces: boolean = false): MsgFungifyChargedPositionsAminoMsg {
     return {
       type: "osmosis/cl-fungify-charged-positions",
-      value: MsgFungifyChargedPositions.toAmino(message)
+      value: MsgFungifyChargedPositions.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgFungifyChargedPositionsProtoMsg): MsgFungifyChargedPositions {
-    return MsgFungifyChargedPositions.decode(message.value);
+  fromProtoMsg(message: MsgFungifyChargedPositionsProtoMsg, useInterfaces: boolean = false): MsgFungifyChargedPositions {
+    return MsgFungifyChargedPositions.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgFungifyChargedPositions): Uint8Array {
     return MsgFungifyChargedPositions.encode(message).finish();
@@ -1406,7 +1406,7 @@ export const MsgFungifyChargedPositionsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgFungifyChargedPositionsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgFungifyChargedPositionsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgFungifyChargedPositionsResponse();
@@ -1433,7 +1433,7 @@ export const MsgFungifyChargedPositionsResponse = {
       newPositionId: BigInt(object.new_position_id)
     };
   },
-  toAmino(message: MsgFungifyChargedPositionsResponse): MsgFungifyChargedPositionsResponseAmino {
+  toAmino(message: MsgFungifyChargedPositionsResponse, useInterfaces: boolean = false): MsgFungifyChargedPositionsResponseAmino {
     const obj: any = {};
     obj.new_position_id = message.newPositionId ? message.newPositionId.toString() : undefined;
     return obj;
@@ -1441,14 +1441,14 @@ export const MsgFungifyChargedPositionsResponse = {
   fromAminoMsg(object: MsgFungifyChargedPositionsResponseAminoMsg): MsgFungifyChargedPositionsResponse {
     return MsgFungifyChargedPositionsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgFungifyChargedPositionsResponse): MsgFungifyChargedPositionsResponseAminoMsg {
+  toAminoMsg(message: MsgFungifyChargedPositionsResponse, useInterfaces: boolean = false): MsgFungifyChargedPositionsResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/fungify-charged-positions-response",
-      value: MsgFungifyChargedPositionsResponse.toAmino(message)
+      value: MsgFungifyChargedPositionsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgFungifyChargedPositionsResponseProtoMsg): MsgFungifyChargedPositionsResponse {
-    return MsgFungifyChargedPositionsResponse.decode(message.value);
+  fromProtoMsg(message: MsgFungifyChargedPositionsResponseProtoMsg, useInterfaces: boolean = false): MsgFungifyChargedPositionsResponse {
+    return MsgFungifyChargedPositionsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgFungifyChargedPositionsResponse): Uint8Array {
     return MsgFungifyChargedPositionsResponse.encode(message).finish();

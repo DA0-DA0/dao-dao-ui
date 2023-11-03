@@ -34,7 +34,7 @@ export interface Plan {
    * If this field is not empty, an error will be thrown.
    */
   /** @deprecated */
-  upgradedClientState: Any | undefined;
+  upgradedClientState?: Any | undefined;
 }
 export interface PlanProtoMsg {
   typeUrl: "/cosmos.upgrade.v1beta1.Plan";
@@ -58,7 +58,7 @@ export interface PlanAmino {
    * If this field is not empty, an error will be thrown.
    */
   /** @deprecated */
-  time?: Date | undefined;
+  time?: string | undefined;
   /** The height at which the upgrade must be performed. */
   height: string;
   /**
@@ -86,7 +86,7 @@ export interface PlanSDKType {
   height: bigint;
   info: string;
   /** @deprecated */
-  upgraded_client_state: AnySDKType | undefined;
+  upgraded_client_state?: AnySDKType | undefined;
 }
 /**
  * SoftwareUpgradeProposal is a gov Content type for initiating a software
@@ -96,7 +96,7 @@ export interface PlanSDKType {
  */
 /** @deprecated */
 export interface SoftwareUpgradeProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal";
   /** title of the proposal */
   title: string;
   /** description of the proposal */
@@ -135,7 +135,7 @@ export interface SoftwareUpgradeProposalAminoMsg {
  */
 /** @deprecated */
 export interface SoftwareUpgradeProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal";
   title: string;
   description: string;
   plan: PlanSDKType | undefined;
@@ -148,7 +148,7 @@ export interface SoftwareUpgradeProposalSDKType {
  */
 /** @deprecated */
 export interface CancelSoftwareUpgradeProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal";
   /** title of the proposal */
   title: string;
   /** description of the proposal */
@@ -183,7 +183,7 @@ export interface CancelSoftwareUpgradeProposalAminoMsg {
  */
 /** @deprecated */
 export interface CancelSoftwareUpgradeProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal";
   title: string;
   description: string;
 }
@@ -232,7 +232,7 @@ function createBasePlan(): Plan {
     time: new Date(),
     height: BigInt(0),
     info: "",
-    upgradedClientState: Any.fromPartial({})
+    upgradedClientState: undefined
   };
 }
 export const Plan = {
@@ -255,7 +255,7 @@ export const Plan = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Plan {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Plan {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePlan();
@@ -275,7 +275,7 @@ export const Plan = {
           message.info = reader.string();
           break;
         case 5:
-          message.upgradedClientState = Any.decode(reader, reader.uint32());
+          message.upgradedClientState = Any.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -296,32 +296,32 @@ export const Plan = {
   fromAmino(object: PlanAmino): Plan {
     return {
       name: object.name,
-      time: object.time,
+      time: object?.time ? fromTimestamp(Timestamp.fromAmino(object.time)) : undefined,
       height: BigInt(object.height),
       info: object.info,
       upgradedClientState: object?.upgraded_client_state ? Any.fromAmino(object.upgraded_client_state) : undefined
     };
   },
-  toAmino(message: Plan): PlanAmino {
+  toAmino(message: Plan, useInterfaces: boolean = false): PlanAmino {
     const obj: any = {};
     obj.name = message.name;
-    obj.time = message.time;
+    obj.time = message.time ? Timestamp.toAmino(toTimestamp(message.time)) : undefined;
     obj.height = message.height ? message.height.toString() : undefined;
     obj.info = message.info;
-    obj.upgraded_client_state = message.upgradedClientState ? Any.toAmino(message.upgradedClientState) : undefined;
+    obj.upgraded_client_state = message.upgradedClientState ? Any.toAmino(message.upgradedClientState, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: PlanAminoMsg): Plan {
     return Plan.fromAmino(object.value);
   },
-  toAminoMsg(message: Plan): PlanAminoMsg {
+  toAminoMsg(message: Plan, useInterfaces: boolean = false): PlanAminoMsg {
     return {
       type: "cosmos-sdk/Plan",
-      value: Plan.toAmino(message)
+      value: Plan.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PlanProtoMsg): Plan {
-    return Plan.decode(message.value);
+  fromProtoMsg(message: PlanProtoMsg, useInterfaces: boolean = false): Plan {
+    return Plan.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Plan): Uint8Array {
     return Plan.encode(message).finish();
@@ -355,7 +355,7 @@ export const SoftwareUpgradeProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SoftwareUpgradeProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SoftwareUpgradeProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSoftwareUpgradeProposal();
@@ -369,7 +369,7 @@ export const SoftwareUpgradeProposal = {
           message.description = reader.string();
           break;
         case 3:
-          message.plan = Plan.decode(reader, reader.uint32());
+          message.plan = Plan.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -392,24 +392,24 @@ export const SoftwareUpgradeProposal = {
       plan: object?.plan ? Plan.fromAmino(object.plan) : undefined
     };
   },
-  toAmino(message: SoftwareUpgradeProposal): SoftwareUpgradeProposalAmino {
+  toAmino(message: SoftwareUpgradeProposal, useInterfaces: boolean = false): SoftwareUpgradeProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
-    obj.plan = message.plan ? Plan.toAmino(message.plan) : undefined;
+    obj.plan = message.plan ? Plan.toAmino(message.plan, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: SoftwareUpgradeProposalAminoMsg): SoftwareUpgradeProposal {
     return SoftwareUpgradeProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: SoftwareUpgradeProposal): SoftwareUpgradeProposalAminoMsg {
+  toAminoMsg(message: SoftwareUpgradeProposal, useInterfaces: boolean = false): SoftwareUpgradeProposalAminoMsg {
     return {
       type: "cosmos-sdk/SoftwareUpgradeProposal",
-      value: SoftwareUpgradeProposal.toAmino(message)
+      value: SoftwareUpgradeProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SoftwareUpgradeProposalProtoMsg): SoftwareUpgradeProposal {
-    return SoftwareUpgradeProposal.decode(message.value);
+  fromProtoMsg(message: SoftwareUpgradeProposalProtoMsg, useInterfaces: boolean = false): SoftwareUpgradeProposal {
+    return SoftwareUpgradeProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SoftwareUpgradeProposal): Uint8Array {
     return SoftwareUpgradeProposal.encode(message).finish();
@@ -439,7 +439,7 @@ export const CancelSoftwareUpgradeProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CancelSoftwareUpgradeProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CancelSoftwareUpgradeProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCancelSoftwareUpgradeProposal();
@@ -471,7 +471,7 @@ export const CancelSoftwareUpgradeProposal = {
       description: object.description
     };
   },
-  toAmino(message: CancelSoftwareUpgradeProposal): CancelSoftwareUpgradeProposalAmino {
+  toAmino(message: CancelSoftwareUpgradeProposal, useInterfaces: boolean = false): CancelSoftwareUpgradeProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -480,14 +480,14 @@ export const CancelSoftwareUpgradeProposal = {
   fromAminoMsg(object: CancelSoftwareUpgradeProposalAminoMsg): CancelSoftwareUpgradeProposal {
     return CancelSoftwareUpgradeProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: CancelSoftwareUpgradeProposal): CancelSoftwareUpgradeProposalAminoMsg {
+  toAminoMsg(message: CancelSoftwareUpgradeProposal, useInterfaces: boolean = false): CancelSoftwareUpgradeProposalAminoMsg {
     return {
       type: "cosmos-sdk/CancelSoftwareUpgradeProposal",
-      value: CancelSoftwareUpgradeProposal.toAmino(message)
+      value: CancelSoftwareUpgradeProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CancelSoftwareUpgradeProposalProtoMsg): CancelSoftwareUpgradeProposal {
-    return CancelSoftwareUpgradeProposal.decode(message.value);
+  fromProtoMsg(message: CancelSoftwareUpgradeProposalProtoMsg, useInterfaces: boolean = false): CancelSoftwareUpgradeProposal {
+    return CancelSoftwareUpgradeProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CancelSoftwareUpgradeProposal): Uint8Array {
     return CancelSoftwareUpgradeProposal.encode(message).finish();
@@ -516,7 +516,7 @@ export const ModuleVersion = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ModuleVersion {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ModuleVersion {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleVersion();
@@ -548,7 +548,7 @@ export const ModuleVersion = {
       version: BigInt(object.version)
     };
   },
-  toAmino(message: ModuleVersion): ModuleVersionAmino {
+  toAmino(message: ModuleVersion, useInterfaces: boolean = false): ModuleVersionAmino {
     const obj: any = {};
     obj.name = message.name;
     obj.version = message.version ? message.version.toString() : undefined;
@@ -557,14 +557,14 @@ export const ModuleVersion = {
   fromAminoMsg(object: ModuleVersionAminoMsg): ModuleVersion {
     return ModuleVersion.fromAmino(object.value);
   },
-  toAminoMsg(message: ModuleVersion): ModuleVersionAminoMsg {
+  toAminoMsg(message: ModuleVersion, useInterfaces: boolean = false): ModuleVersionAminoMsg {
     return {
       type: "cosmos-sdk/ModuleVersion",
-      value: ModuleVersion.toAmino(message)
+      value: ModuleVersion.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ModuleVersionProtoMsg): ModuleVersion {
-    return ModuleVersion.decode(message.value);
+  fromProtoMsg(message: ModuleVersionProtoMsg, useInterfaces: boolean = false): ModuleVersion {
+    return ModuleVersion.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ModuleVersion): Uint8Array {
     return ModuleVersion.encode(message).finish();

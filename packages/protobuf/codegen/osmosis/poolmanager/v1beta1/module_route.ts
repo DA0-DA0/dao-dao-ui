@@ -115,7 +115,7 @@ export const ModuleRoute = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ModuleRoute {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ModuleRoute {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleRoute();
@@ -147,7 +147,7 @@ export const ModuleRoute = {
       poolId: object?.pool_id ? BigInt(object.pool_id) : undefined
     };
   },
-  toAmino(message: ModuleRoute): ModuleRouteAmino {
+  toAmino(message: ModuleRoute, useInterfaces: boolean = false): ModuleRouteAmino {
     const obj: any = {};
     obj.pool_type = message.poolType;
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
@@ -156,14 +156,14 @@ export const ModuleRoute = {
   fromAminoMsg(object: ModuleRouteAminoMsg): ModuleRoute {
     return ModuleRoute.fromAmino(object.value);
   },
-  toAminoMsg(message: ModuleRoute): ModuleRouteAminoMsg {
+  toAminoMsg(message: ModuleRoute, useInterfaces: boolean = false): ModuleRouteAminoMsg {
     return {
       type: "osmosis/poolmanager/module-route",
-      value: ModuleRoute.toAmino(message)
+      value: ModuleRoute.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ModuleRouteProtoMsg): ModuleRoute {
-    return ModuleRoute.decode(message.value);
+  fromProtoMsg(message: ModuleRouteProtoMsg, useInterfaces: boolean = false): ModuleRoute {
+    return ModuleRoute.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ModuleRoute): Uint8Array {
     return ModuleRoute.encode(message).finish();

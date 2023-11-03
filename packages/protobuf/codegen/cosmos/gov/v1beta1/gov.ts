@@ -196,7 +196,7 @@ export interface WeightedVoteOptionSDKType {
  * manually updated in case of approval.
  */
 export interface TextProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmos.gov.v1beta1.TextProposal";
   /** title of the proposal. */
   title: string;
   /** description associated with the proposal. */
@@ -225,7 +225,7 @@ export interface TextProposalAminoMsg {
  * manually updated in case of approval.
  */
 export interface TextProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmos.gov.v1beta1.TextProposal";
   title: string;
   description: string;
 }
@@ -275,7 +275,7 @@ export interface Proposal {
   /** proposal_id defines the unique id of the proposal. */
   proposalId: bigint;
   /** content is the proposal's content. */
-  content: (TextProposal & CommunityPoolSpendProposal & CommunityPoolSpendProposalWithDeposit & ParameterChangeProposal & SoftwareUpgradeProposal & CancelSoftwareUpgradeProposal & StoreCodeProposal & InstantiateContractProposal & InstantiateContract2Proposal & MigrateContractProposal & SudoContractProposal & ExecuteContractProposal & UpdateAdminProposal & ClearAdminProposal & PinCodesProposal & UnpinCodesProposal & UpdateInstantiateConfigProposal & StoreAndInstantiateContractProposal & ClientUpdateProposal & UpgradeProposal & ReplaceMigrationRecordsProposal & UpdateMigrationRecordsProposal & CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal & SetScalingFactorControllerProposal & ReplacePoolIncentivesProposal & UpdatePoolIncentivesProposal & SetProtoRevEnabledProposal & SetProtoRevAdminAccountProposal & SetSuperfluidAssetsProposal & RemoveSuperfluidAssetsProposal & UpdateUnpoolWhiteListProposal & UpdateFeeTokenProposal & PromoteToPrivilegedContractProposal & DemotePrivilegedContractProposal & SetCodeAuthorizationProposal & RemoveCodeAuthorizationProposal & SetContractAuthorizationProposal & RemoveContractAuthorizationProposal & Any) | undefined;
+  content?: (TextProposal & CommunityPoolSpendProposal & CommunityPoolSpendProposalWithDeposit & ParameterChangeProposal & SoftwareUpgradeProposal & CancelSoftwareUpgradeProposal & StoreCodeProposal & InstantiateContractProposal & InstantiateContract2Proposal & MigrateContractProposal & SudoContractProposal & ExecuteContractProposal & UpdateAdminProposal & ClearAdminProposal & PinCodesProposal & UnpinCodesProposal & UpdateInstantiateConfigProposal & StoreAndInstantiateContractProposal & ClientUpdateProposal & UpgradeProposal & ReplaceMigrationRecordsProposal & UpdateMigrationRecordsProposal & CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal & SetScalingFactorControllerProposal & ReplacePoolIncentivesProposal & UpdatePoolIncentivesProposal & SetProtoRevEnabledProposal & SetProtoRevAdminAccountProposal & SetSuperfluidAssetsProposal & RemoveSuperfluidAssetsProposal & UpdateUnpoolWhiteListProposal & UpdateFeeTokenProposal & PromoteToPrivilegedContractProposal & DemotePrivilegedContractProposal & SetCodeAuthorizationProposal & RemoveCodeAuthorizationProposal & SetContractAuthorizationProposal & RemoveContractAuthorizationProposal & Any) | undefined;
   /** status defines the proposal status. */
   status: ProposalStatus;
   /**
@@ -317,15 +317,15 @@ export interface ProposalAmino {
    */
   final_tally_result?: TallyResultAmino | undefined;
   /** submit_time is the time of proposal submission. */
-  submit_time?: Date | undefined;
+  submit_time?: string | undefined;
   /** deposit_end_time is the end time for deposition. */
-  deposit_end_time?: Date | undefined;
+  deposit_end_time?: string | undefined;
   /** total_deposit is the total deposit on the proposal. */
   total_deposit: CoinAmino[];
   /** voting_start_time is the starting time to vote on a proposal. */
-  voting_start_time?: Date | undefined;
+  voting_start_time?: string | undefined;
   /** voting_end_time is the end time of voting on a proposal. */
-  voting_end_time?: Date | undefined;
+  voting_end_time?: string | undefined;
 }
 export interface ProposalAminoMsg {
   type: "cosmos-sdk/Proposal";
@@ -334,7 +334,7 @@ export interface ProposalAminoMsg {
 /** Proposal defines the core field members of a governance proposal. */
 export interface ProposalSDKType {
   proposal_id: bigint;
-  content: TextProposalSDKType | CommunityPoolSpendProposalSDKType | CommunityPoolSpendProposalWithDepositSDKType | ParameterChangeProposalSDKType | SoftwareUpgradeProposalSDKType | CancelSoftwareUpgradeProposalSDKType | StoreCodeProposalSDKType | InstantiateContractProposalSDKType | InstantiateContract2ProposalSDKType | MigrateContractProposalSDKType | SudoContractProposalSDKType | ExecuteContractProposalSDKType | UpdateAdminProposalSDKType | ClearAdminProposalSDKType | PinCodesProposalSDKType | UnpinCodesProposalSDKType | UpdateInstantiateConfigProposalSDKType | StoreAndInstantiateContractProposalSDKType | ClientUpdateProposalSDKType | UpgradeProposalSDKType | ReplaceMigrationRecordsProposalSDKType | UpdateMigrationRecordsProposalSDKType | CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalSDKType | SetScalingFactorControllerProposalSDKType | ReplacePoolIncentivesProposalSDKType | UpdatePoolIncentivesProposalSDKType | SetProtoRevEnabledProposalSDKType | SetProtoRevAdminAccountProposalSDKType | SetSuperfluidAssetsProposalSDKType | RemoveSuperfluidAssetsProposalSDKType | UpdateUnpoolWhiteListProposalSDKType | UpdateFeeTokenProposalSDKType | PromoteToPrivilegedContractProposalSDKType | DemotePrivilegedContractProposalSDKType | SetCodeAuthorizationProposalSDKType | RemoveCodeAuthorizationProposalSDKType | SetContractAuthorizationProposalSDKType | RemoveContractAuthorizationProposalSDKType | AnySDKType | undefined;
+  content?: TextProposalSDKType | CommunityPoolSpendProposalSDKType | CommunityPoolSpendProposalWithDepositSDKType | ParameterChangeProposalSDKType | SoftwareUpgradeProposalSDKType | CancelSoftwareUpgradeProposalSDKType | StoreCodeProposalSDKType | InstantiateContractProposalSDKType | InstantiateContract2ProposalSDKType | MigrateContractProposalSDKType | SudoContractProposalSDKType | ExecuteContractProposalSDKType | UpdateAdminProposalSDKType | ClearAdminProposalSDKType | PinCodesProposalSDKType | UnpinCodesProposalSDKType | UpdateInstantiateConfigProposalSDKType | StoreAndInstantiateContractProposalSDKType | ClientUpdateProposalSDKType | UpgradeProposalSDKType | ReplaceMigrationRecordsProposalSDKType | UpdateMigrationRecordsProposalSDKType | CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalSDKType | SetScalingFactorControllerProposalSDKType | ReplacePoolIncentivesProposalSDKType | UpdatePoolIncentivesProposalSDKType | SetProtoRevEnabledProposalSDKType | SetProtoRevAdminAccountProposalSDKType | SetSuperfluidAssetsProposalSDKType | RemoveSuperfluidAssetsProposalSDKType | UpdateUnpoolWhiteListProposalSDKType | UpdateFeeTokenProposalSDKType | PromoteToPrivilegedContractProposalSDKType | DemotePrivilegedContractProposalSDKType | SetCodeAuthorizationProposalSDKType | RemoveCodeAuthorizationProposalSDKType | SetContractAuthorizationProposalSDKType | RemoveContractAuthorizationProposalSDKType | AnySDKType | undefined;
   status: ProposalStatus;
   final_tally_result: TallyResultSDKType | undefined;
   submit_time: Date | undefined;
@@ -561,7 +561,7 @@ export const WeightedVoteOption = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): WeightedVoteOption {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): WeightedVoteOption {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseWeightedVoteOption();
@@ -593,7 +593,7 @@ export const WeightedVoteOption = {
       weight: object.weight
     };
   },
-  toAmino(message: WeightedVoteOption): WeightedVoteOptionAmino {
+  toAmino(message: WeightedVoteOption, useInterfaces: boolean = false): WeightedVoteOptionAmino {
     const obj: any = {};
     obj.option = message.option;
     obj.weight = message.weight;
@@ -602,14 +602,14 @@ export const WeightedVoteOption = {
   fromAminoMsg(object: WeightedVoteOptionAminoMsg): WeightedVoteOption {
     return WeightedVoteOption.fromAmino(object.value);
   },
-  toAminoMsg(message: WeightedVoteOption): WeightedVoteOptionAminoMsg {
+  toAminoMsg(message: WeightedVoteOption, useInterfaces: boolean = false): WeightedVoteOptionAminoMsg {
     return {
       type: "cosmos-sdk/WeightedVoteOption",
-      value: WeightedVoteOption.toAmino(message)
+      value: WeightedVoteOption.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: WeightedVoteOptionProtoMsg): WeightedVoteOption {
-    return WeightedVoteOption.decode(message.value);
+  fromProtoMsg(message: WeightedVoteOptionProtoMsg, useInterfaces: boolean = false): WeightedVoteOption {
+    return WeightedVoteOption.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: WeightedVoteOption): Uint8Array {
     return WeightedVoteOption.encode(message).finish();
@@ -639,7 +639,7 @@ export const TextProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TextProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TextProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTextProposal();
@@ -671,7 +671,7 @@ export const TextProposal = {
       description: object.description
     };
   },
-  toAmino(message: TextProposal): TextProposalAmino {
+  toAmino(message: TextProposal, useInterfaces: boolean = false): TextProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -680,14 +680,14 @@ export const TextProposal = {
   fromAminoMsg(object: TextProposalAminoMsg): TextProposal {
     return TextProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: TextProposal): TextProposalAminoMsg {
+  toAminoMsg(message: TextProposal, useInterfaces: boolean = false): TextProposalAminoMsg {
     return {
       type: "cosmos-sdk/TextProposal",
-      value: TextProposal.toAmino(message)
+      value: TextProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TextProposalProtoMsg): TextProposal {
-    return TextProposal.decode(message.value);
+  fromProtoMsg(message: TextProposalProtoMsg, useInterfaces: boolean = false): TextProposal {
+    return TextProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TextProposal): Uint8Array {
     return TextProposal.encode(message).finish();
@@ -720,7 +720,7 @@ export const Deposit = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Deposit {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Deposit {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDeposit();
@@ -734,7 +734,7 @@ export const Deposit = {
           message.depositor = reader.string();
           break;
         case 3:
-          message.amount.push(Coin.decode(reader, reader.uint32()));
+          message.amount.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -757,12 +757,12 @@ export const Deposit = {
       amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: Deposit): DepositAmino {
+  toAmino(message: Deposit, useInterfaces: boolean = false): DepositAmino {
     const obj: any = {};
     obj.proposal_id = message.proposalId ? message.proposalId.toString() : undefined;
     obj.depositor = message.depositor;
     if (message.amount) {
-      obj.amount = message.amount.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.amount = message.amount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.amount = [];
     }
@@ -771,14 +771,14 @@ export const Deposit = {
   fromAminoMsg(object: DepositAminoMsg): Deposit {
     return Deposit.fromAmino(object.value);
   },
-  toAminoMsg(message: Deposit): DepositAminoMsg {
+  toAminoMsg(message: Deposit, useInterfaces: boolean = false): DepositAminoMsg {
     return {
       type: "cosmos-sdk/Deposit",
-      value: Deposit.toAmino(message)
+      value: Deposit.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: DepositProtoMsg): Deposit {
-    return Deposit.decode(message.value);
+  fromProtoMsg(message: DepositProtoMsg, useInterfaces: boolean = false): Deposit {
+    return Deposit.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Deposit): Uint8Array {
     return Deposit.encode(message).finish();
@@ -793,7 +793,7 @@ export const Deposit = {
 function createBaseProposal(): Proposal {
   return {
     proposalId: BigInt(0),
-    content: Any.fromPartial({}),
+    content: undefined,
     status: 0,
     finalTallyResult: TallyResult.fromPartial({}),
     submitTime: new Date(),
@@ -835,7 +835,7 @@ export const Proposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Proposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Proposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProposal();
@@ -846,13 +846,13 @@ export const Proposal = {
           message.proposalId = reader.uint64();
           break;
         case 2:
-          message.content = (Cosmos_govv1beta1Content_InterfaceDecoder(reader) as Any);
+          message.content = useInterfaces ? (Cosmos_govv1beta1Content_InterfaceDecoder(reader) as Any) : Any.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
           message.status = (reader.int32() as any);
           break;
         case 4:
-          message.finalTallyResult = TallyResult.decode(reader, reader.uint32());
+          message.finalTallyResult = TallyResult.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 5:
           message.submitTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
@@ -861,7 +861,7 @@ export const Proposal = {
           message.depositEndTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 7:
-          message.totalDeposit.push(Coin.decode(reader, reader.uint32()));
+          message.totalDeposit.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 8:
           message.votingStartTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
@@ -895,41 +895,41 @@ export const Proposal = {
       content: object?.content ? Cosmos_govv1beta1Content_FromAmino(object.content) : undefined,
       status: isSet(object.status) ? proposalStatusFromJSON(object.status) : -1,
       finalTallyResult: object?.final_tally_result ? TallyResult.fromAmino(object.final_tally_result) : undefined,
-      submitTime: object.submit_time,
-      depositEndTime: object.deposit_end_time,
+      submitTime: object?.submit_time ? fromTimestamp(Timestamp.fromAmino(object.submit_time)) : undefined,
+      depositEndTime: object?.deposit_end_time ? fromTimestamp(Timestamp.fromAmino(object.deposit_end_time)) : undefined,
       totalDeposit: Array.isArray(object?.total_deposit) ? object.total_deposit.map((e: any) => Coin.fromAmino(e)) : [],
-      votingStartTime: object.voting_start_time,
-      votingEndTime: object.voting_end_time
+      votingStartTime: object?.voting_start_time ? fromTimestamp(Timestamp.fromAmino(object.voting_start_time)) : undefined,
+      votingEndTime: object?.voting_end_time ? fromTimestamp(Timestamp.fromAmino(object.voting_end_time)) : undefined
     };
   },
-  toAmino(message: Proposal): ProposalAmino {
+  toAmino(message: Proposal, useInterfaces: boolean = false): ProposalAmino {
     const obj: any = {};
     obj.proposal_id = message.proposalId ? message.proposalId.toString() : undefined;
-    obj.content = message.content ? Cosmos_govv1beta1Content_ToAmino((message.content as Any)) : undefined;
+    obj.content = message.content ? Cosmos_govv1beta1Content_ToAmino((message.content as Any), useInterfaces) : undefined;
     obj.status = message.status;
-    obj.final_tally_result = message.finalTallyResult ? TallyResult.toAmino(message.finalTallyResult) : undefined;
-    obj.submit_time = message.submitTime;
-    obj.deposit_end_time = message.depositEndTime;
+    obj.final_tally_result = message.finalTallyResult ? TallyResult.toAmino(message.finalTallyResult, useInterfaces) : undefined;
+    obj.submit_time = message.submitTime ? Timestamp.toAmino(toTimestamp(message.submitTime)) : undefined;
+    obj.deposit_end_time = message.depositEndTime ? Timestamp.toAmino(toTimestamp(message.depositEndTime)) : undefined;
     if (message.totalDeposit) {
-      obj.total_deposit = message.totalDeposit.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.total_deposit = message.totalDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.total_deposit = [];
     }
-    obj.voting_start_time = message.votingStartTime;
-    obj.voting_end_time = message.votingEndTime;
+    obj.voting_start_time = message.votingStartTime ? Timestamp.toAmino(toTimestamp(message.votingStartTime)) : undefined;
+    obj.voting_end_time = message.votingEndTime ? Timestamp.toAmino(toTimestamp(message.votingEndTime)) : undefined;
     return obj;
   },
   fromAminoMsg(object: ProposalAminoMsg): Proposal {
     return Proposal.fromAmino(object.value);
   },
-  toAminoMsg(message: Proposal): ProposalAminoMsg {
+  toAminoMsg(message: Proposal, useInterfaces: boolean = false): ProposalAminoMsg {
     return {
       type: "cosmos-sdk/Proposal",
-      value: Proposal.toAmino(message)
+      value: Proposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ProposalProtoMsg): Proposal {
-    return Proposal.decode(message.value);
+  fromProtoMsg(message: ProposalProtoMsg, useInterfaces: boolean = false): Proposal {
+    return Proposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Proposal): Uint8Array {
     return Proposal.encode(message).finish();
@@ -966,7 +966,7 @@ export const TallyResult = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TallyResult {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TallyResult {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTallyResult();
@@ -1008,7 +1008,7 @@ export const TallyResult = {
       noWithVeto: object.no_with_veto
     };
   },
-  toAmino(message: TallyResult): TallyResultAmino {
+  toAmino(message: TallyResult, useInterfaces: boolean = false): TallyResultAmino {
     const obj: any = {};
     obj.yes = message.yes;
     obj.abstain = message.abstain;
@@ -1019,14 +1019,14 @@ export const TallyResult = {
   fromAminoMsg(object: TallyResultAminoMsg): TallyResult {
     return TallyResult.fromAmino(object.value);
   },
-  toAminoMsg(message: TallyResult): TallyResultAminoMsg {
+  toAminoMsg(message: TallyResult, useInterfaces: boolean = false): TallyResultAminoMsg {
     return {
       type: "cosmos-sdk/TallyResult",
-      value: TallyResult.toAmino(message)
+      value: TallyResult.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TallyResultProtoMsg): TallyResult {
-    return TallyResult.decode(message.value);
+  fromProtoMsg(message: TallyResultProtoMsg, useInterfaces: boolean = false): TallyResult {
+    return TallyResult.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TallyResult): Uint8Array {
     return TallyResult.encode(message).finish();
@@ -1063,7 +1063,7 @@ export const Vote = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Vote {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Vote {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVote();
@@ -1080,7 +1080,7 @@ export const Vote = {
           message.option = (reader.int32() as any);
           break;
         case 4:
-          message.options.push(WeightedVoteOption.decode(reader, reader.uint32()));
+          message.options.push(WeightedVoteOption.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1105,13 +1105,13 @@ export const Vote = {
       options: Array.isArray(object?.options) ? object.options.map((e: any) => WeightedVoteOption.fromAmino(e)) : []
     };
   },
-  toAmino(message: Vote): VoteAmino {
+  toAmino(message: Vote, useInterfaces: boolean = false): VoteAmino {
     const obj: any = {};
     obj.proposal_id = message.proposalId ? message.proposalId.toString() : undefined;
     obj.voter = message.voter;
     obj.option = message.option;
     if (message.options) {
-      obj.options = message.options.map(e => e ? WeightedVoteOption.toAmino(e) : undefined);
+      obj.options = message.options.map(e => e ? WeightedVoteOption.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.options = [];
     }
@@ -1120,14 +1120,14 @@ export const Vote = {
   fromAminoMsg(object: VoteAminoMsg): Vote {
     return Vote.fromAmino(object.value);
   },
-  toAminoMsg(message: Vote): VoteAminoMsg {
+  toAminoMsg(message: Vote, useInterfaces: boolean = false): VoteAminoMsg {
     return {
       type: "cosmos-sdk/Vote",
-      value: Vote.toAmino(message)
+      value: Vote.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: VoteProtoMsg): Vote {
-    return Vote.decode(message.value);
+  fromProtoMsg(message: VoteProtoMsg, useInterfaces: boolean = false): Vote {
+    return Vote.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Vote): Uint8Array {
     return Vote.encode(message).finish();
@@ -1156,7 +1156,7 @@ export const DepositParams = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): DepositParams {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): DepositParams {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDepositParams();
@@ -1164,10 +1164,10 @@ export const DepositParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.minDeposit.push(Coin.decode(reader, reader.uint32()));
+          message.minDeposit.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.maxDepositPeriod = Duration.decode(reader, reader.uint32());
+          message.maxDepositPeriod = Duration.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1188,27 +1188,27 @@ export const DepositParams = {
       maxDepositPeriod: object?.max_deposit_period ? Duration.fromAmino(object.max_deposit_period) : undefined
     };
   },
-  toAmino(message: DepositParams): DepositParamsAmino {
+  toAmino(message: DepositParams, useInterfaces: boolean = false): DepositParamsAmino {
     const obj: any = {};
     if (message.minDeposit) {
-      obj.min_deposit = message.minDeposit.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.min_deposit = message.minDeposit.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.min_deposit = [];
     }
-    obj.max_deposit_period = message.maxDepositPeriod ? Duration.toAmino(message.maxDepositPeriod) : undefined;
+    obj.max_deposit_period = message.maxDepositPeriod ? Duration.toAmino(message.maxDepositPeriod, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: DepositParamsAminoMsg): DepositParams {
     return DepositParams.fromAmino(object.value);
   },
-  toAminoMsg(message: DepositParams): DepositParamsAminoMsg {
+  toAminoMsg(message: DepositParams, useInterfaces: boolean = false): DepositParamsAminoMsg {
     return {
       type: "cosmos-sdk/DepositParams",
-      value: DepositParams.toAmino(message)
+      value: DepositParams.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: DepositParamsProtoMsg): DepositParams {
-    return DepositParams.decode(message.value);
+  fromProtoMsg(message: DepositParamsProtoMsg, useInterfaces: boolean = false): DepositParams {
+    return DepositParams.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: DepositParams): Uint8Array {
     return DepositParams.encode(message).finish();
@@ -1233,7 +1233,7 @@ export const VotingParams = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): VotingParams {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): VotingParams {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVotingParams();
@@ -1241,7 +1241,7 @@ export const VotingParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.votingPeriod = Duration.decode(reader, reader.uint32());
+          message.votingPeriod = Duration.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1260,22 +1260,22 @@ export const VotingParams = {
       votingPeriod: object?.voting_period ? Duration.fromAmino(object.voting_period) : undefined
     };
   },
-  toAmino(message: VotingParams): VotingParamsAmino {
+  toAmino(message: VotingParams, useInterfaces: boolean = false): VotingParamsAmino {
     const obj: any = {};
-    obj.voting_period = message.votingPeriod ? Duration.toAmino(message.votingPeriod) : undefined;
+    obj.voting_period = message.votingPeriod ? Duration.toAmino(message.votingPeriod, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: VotingParamsAminoMsg): VotingParams {
     return VotingParams.fromAmino(object.value);
   },
-  toAminoMsg(message: VotingParams): VotingParamsAminoMsg {
+  toAminoMsg(message: VotingParams, useInterfaces: boolean = false): VotingParamsAminoMsg {
     return {
       type: "cosmos-sdk/VotingParams",
-      value: VotingParams.toAmino(message)
+      value: VotingParams.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: VotingParamsProtoMsg): VotingParams {
-    return VotingParams.decode(message.value);
+  fromProtoMsg(message: VotingParamsProtoMsg, useInterfaces: boolean = false): VotingParams {
+    return VotingParams.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: VotingParams): Uint8Array {
     return VotingParams.encode(message).finish();
@@ -1308,7 +1308,7 @@ export const TallyParams = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TallyParams {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TallyParams {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTallyParams();
@@ -1345,7 +1345,7 @@ export const TallyParams = {
       vetoThreshold: object.veto_threshold
     };
   },
-  toAmino(message: TallyParams): TallyParamsAmino {
+  toAmino(message: TallyParams, useInterfaces: boolean = false): TallyParamsAmino {
     const obj: any = {};
     obj.quorum = message.quorum;
     obj.threshold = message.threshold;
@@ -1355,14 +1355,14 @@ export const TallyParams = {
   fromAminoMsg(object: TallyParamsAminoMsg): TallyParams {
     return TallyParams.fromAmino(object.value);
   },
-  toAminoMsg(message: TallyParams): TallyParamsAminoMsg {
+  toAminoMsg(message: TallyParams, useInterfaces: boolean = false): TallyParamsAminoMsg {
     return {
       type: "cosmos-sdk/TallyParams",
-      value: TallyParams.toAmino(message)
+      value: TallyParams.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TallyParamsProtoMsg): TallyParams {
-    return TallyParams.decode(message.value);
+  fromProtoMsg(message: TallyParamsProtoMsg, useInterfaces: boolean = false): TallyParams {
+    return TallyParams.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TallyParams): Uint8Array {
     return TallyParams.encode(message).finish();
@@ -1376,84 +1376,84 @@ export const TallyParams = {
 };
 export const Cosmos_govv1beta1Content_InterfaceDecoder = (input: BinaryReader | Uint8Array): CommunityPoolSpendProposal | CommunityPoolSpendProposalWithDeposit | TextProposal | ParameterChangeProposal | SoftwareUpgradeProposal | CancelSoftwareUpgradeProposal | StoreCodeProposal | InstantiateContractProposal | InstantiateContract2Proposal | MigrateContractProposal | SudoContractProposal | ExecuteContractProposal | UpdateAdminProposal | ClearAdminProposal | PinCodesProposal | UnpinCodesProposal | UpdateInstantiateConfigProposal | StoreAndInstantiateContractProposal | ClientUpdateProposal | UpgradeProposal | ReplaceMigrationRecordsProposal | UpdateMigrationRecordsProposal | CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal | SetScalingFactorControllerProposal | ReplacePoolIncentivesProposal | UpdatePoolIncentivesProposal | SetProtoRevEnabledProposal | SetProtoRevAdminAccountProposal | SetSuperfluidAssetsProposal | RemoveSuperfluidAssetsProposal | UpdateUnpoolWhiteListProposal | UpdateFeeTokenProposal | PromoteToPrivilegedContractProposal | DemotePrivilegedContractProposal | SetCodeAuthorizationProposal | RemoveCodeAuthorizationProposal | SetContractAuthorizationProposal | RemoveContractAuthorizationProposal | Any => {
   const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-  const data = Any.decode(reader, reader.uint32());
+  const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
     case "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal":
-      return CommunityPoolSpendProposal.decode(data.value);
+      return CommunityPoolSpendProposal.decode(data.value, undefined, true);
     case "/cosmos.distribution.v1beta1.CommunityPoolSpendProposalWithDeposit":
-      return CommunityPoolSpendProposalWithDeposit.decode(data.value);
+      return CommunityPoolSpendProposalWithDeposit.decode(data.value, undefined, true);
     case "/cosmos.gov.v1beta1.TextProposal":
-      return TextProposal.decode(data.value);
+      return TextProposal.decode(data.value, undefined, true);
     case "/cosmos.params.v1beta1.ParameterChangeProposal":
-      return ParameterChangeProposal.decode(data.value);
+      return ParameterChangeProposal.decode(data.value, undefined, true);
     case "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal":
-      return SoftwareUpgradeProposal.decode(data.value);
+      return SoftwareUpgradeProposal.decode(data.value, undefined, true);
     case "/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal":
-      return CancelSoftwareUpgradeProposal.decode(data.value);
+      return CancelSoftwareUpgradeProposal.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.StoreCodeProposal":
-      return StoreCodeProposal.decode(data.value);
+      return StoreCodeProposal.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.InstantiateContractProposal":
-      return InstantiateContractProposal.decode(data.value);
+      return InstantiateContractProposal.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.InstantiateContract2Proposal":
-      return InstantiateContract2Proposal.decode(data.value);
+      return InstantiateContract2Proposal.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.MigrateContractProposal":
-      return MigrateContractProposal.decode(data.value);
+      return MigrateContractProposal.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.SudoContractProposal":
-      return SudoContractProposal.decode(data.value);
+      return SudoContractProposal.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.ExecuteContractProposal":
-      return ExecuteContractProposal.decode(data.value);
+      return ExecuteContractProposal.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.UpdateAdminProposal":
-      return UpdateAdminProposal.decode(data.value);
+      return UpdateAdminProposal.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.ClearAdminProposal":
-      return ClearAdminProposal.decode(data.value);
+      return ClearAdminProposal.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.PinCodesProposal":
-      return PinCodesProposal.decode(data.value);
+      return PinCodesProposal.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.UnpinCodesProposal":
-      return UnpinCodesProposal.decode(data.value);
+      return UnpinCodesProposal.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.UpdateInstantiateConfigProposal":
-      return UpdateInstantiateConfigProposal.decode(data.value);
+      return UpdateInstantiateConfigProposal.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.StoreAndInstantiateContractProposal":
-      return StoreAndInstantiateContractProposal.decode(data.value);
+      return StoreAndInstantiateContractProposal.decode(data.value, undefined, true);
     case "/ibc.core.client.v1.ClientUpdateProposal":
-      return ClientUpdateProposal.decode(data.value);
+      return ClientUpdateProposal.decode(data.value, undefined, true);
     case "/ibc.core.client.v1.UpgradeProposal":
-      return UpgradeProposal.decode(data.value);
+      return UpgradeProposal.decode(data.value, undefined, true);
     case "/osmosis.gamm.v1beta1.ReplaceMigrationRecordsProposal":
-      return ReplaceMigrationRecordsProposal.decode(data.value);
+      return ReplaceMigrationRecordsProposal.decode(data.value, undefined, true);
     case "/osmosis.gamm.v1beta1.UpdateMigrationRecordsProposal":
-      return UpdateMigrationRecordsProposal.decode(data.value);
+      return UpdateMigrationRecordsProposal.decode(data.value, undefined, true);
     case "/osmosis.gamm.v1beta1.CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal":
-      return CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.decode(data.value);
+      return CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.decode(data.value, undefined, true);
     case "/osmosis.gamm.v1beta1.SetScalingFactorControllerProposal":
-      return SetScalingFactorControllerProposal.decode(data.value);
+      return SetScalingFactorControllerProposal.decode(data.value, undefined, true);
     case "/osmosis.poolincentives.v1beta1.ReplacePoolIncentivesProposal":
-      return ReplacePoolIncentivesProposal.decode(data.value);
+      return ReplacePoolIncentivesProposal.decode(data.value, undefined, true);
     case "/osmosis.poolincentives.v1beta1.UpdatePoolIncentivesProposal":
-      return UpdatePoolIncentivesProposal.decode(data.value);
+      return UpdatePoolIncentivesProposal.decode(data.value, undefined, true);
     case "/osmosis.protorev.v1beta1.SetProtoRevEnabledProposal":
-      return SetProtoRevEnabledProposal.decode(data.value);
+      return SetProtoRevEnabledProposal.decode(data.value, undefined, true);
     case "/osmosis.protorev.v1beta1.SetProtoRevAdminAccountProposal":
-      return SetProtoRevAdminAccountProposal.decode(data.value);
+      return SetProtoRevAdminAccountProposal.decode(data.value, undefined, true);
     case "/osmosis.superfluid.v1beta1.SetSuperfluidAssetsProposal":
-      return SetSuperfluidAssetsProposal.decode(data.value);
+      return SetSuperfluidAssetsProposal.decode(data.value, undefined, true);
     case "/osmosis.superfluid.v1beta1.RemoveSuperfluidAssetsProposal":
-      return RemoveSuperfluidAssetsProposal.decode(data.value);
+      return RemoveSuperfluidAssetsProposal.decode(data.value, undefined, true);
     case "/osmosis.superfluid.v1beta1.UpdateUnpoolWhiteListProposal":
-      return UpdateUnpoolWhiteListProposal.decode(data.value);
+      return UpdateUnpoolWhiteListProposal.decode(data.value, undefined, true);
     case "/osmosis.txfees.v1beta1.UpdateFeeTokenProposal":
-      return UpdateFeeTokenProposal.decode(data.value);
+      return UpdateFeeTokenProposal.decode(data.value, undefined, true);
     case "/publicawesome.stargaze.cron.v1.PromoteToPrivilegedContractProposal":
-      return PromoteToPrivilegedContractProposal.decode(data.value);
+      return PromoteToPrivilegedContractProposal.decode(data.value, undefined, true);
     case "/publicawesome.stargaze.cron.v1.DemotePrivilegedContractProposal":
-      return DemotePrivilegedContractProposal.decode(data.value);
+      return DemotePrivilegedContractProposal.decode(data.value, undefined, true);
     case "/publicawesome.stargaze.globalfee.v1.SetCodeAuthorizationProposal":
-      return SetCodeAuthorizationProposal.decode(data.value);
+      return SetCodeAuthorizationProposal.decode(data.value, undefined, true);
     case "/publicawesome.stargaze.globalfee.v1.RemoveCodeAuthorizationProposal":
-      return RemoveCodeAuthorizationProposal.decode(data.value);
+      return RemoveCodeAuthorizationProposal.decode(data.value, undefined, true);
     case "/publicawesome.stargaze.globalfee.v1.SetContractAuthorizationProposal":
-      return SetContractAuthorizationProposal.decode(data.value);
+      return SetContractAuthorizationProposal.decode(data.value, undefined, true);
     case "/publicawesome.stargaze.globalfee.v1.RemoveContractAuthorizationProposal":
-      return RemoveContractAuthorizationProposal.decode(data.value);
+      return RemoveContractAuthorizationProposal.decode(data.value, undefined, true);
     default:
       return data;
   }
@@ -1654,199 +1654,199 @@ export const Cosmos_govv1beta1Content_FromAmino = (content: AnyAmino) => {
       return Any.fromAmino(content);
   }
 };
-export const Cosmos_govv1beta1Content_ToAmino = (content: Any) => {
+export const Cosmos_govv1beta1Content_ToAmino = (content: Any, useInterfaces: boolean = false) => {
   switch (content.typeUrl) {
     case "/cosmos.distribution.v1beta1.CommunityPoolSpendProposal":
       return {
         type: "cosmos-sdk/CommunityPoolSpendProposal",
-        value: CommunityPoolSpendProposal.toAmino(CommunityPoolSpendProposal.decode(content.value))
+        value: CommunityPoolSpendProposal.toAmino(CommunityPoolSpendProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmos.distribution.v1beta1.CommunityPoolSpendProposalWithDeposit":
       return {
         type: "cosmos-sdk/CommunityPoolSpendProposalWithDeposit",
-        value: CommunityPoolSpendProposalWithDeposit.toAmino(CommunityPoolSpendProposalWithDeposit.decode(content.value))
+        value: CommunityPoolSpendProposalWithDeposit.toAmino(CommunityPoolSpendProposalWithDeposit.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmos.gov.v1beta1.TextProposal":
       return {
         type: "cosmos-sdk/TextProposal",
-        value: TextProposal.toAmino(TextProposal.decode(content.value))
+        value: TextProposal.toAmino(TextProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmos.params.v1beta1.ParameterChangeProposal":
       return {
         type: "cosmos-sdk/ParameterChangeProposal",
-        value: ParameterChangeProposal.toAmino(ParameterChangeProposal.decode(content.value))
+        value: ParameterChangeProposal.toAmino(ParameterChangeProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal":
       return {
         type: "cosmos-sdk/SoftwareUpgradeProposal",
-        value: SoftwareUpgradeProposal.toAmino(SoftwareUpgradeProposal.decode(content.value))
+        value: SoftwareUpgradeProposal.toAmino(SoftwareUpgradeProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal":
       return {
         type: "cosmos-sdk/CancelSoftwareUpgradeProposal",
-        value: CancelSoftwareUpgradeProposal.toAmino(CancelSoftwareUpgradeProposal.decode(content.value))
+        value: CancelSoftwareUpgradeProposal.toAmino(CancelSoftwareUpgradeProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmwasm.wasm.v1.StoreCodeProposal":
       return {
         type: "wasm/StoreCodeProposal",
-        value: StoreCodeProposal.toAmino(StoreCodeProposal.decode(content.value))
+        value: StoreCodeProposal.toAmino(StoreCodeProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmwasm.wasm.v1.InstantiateContractProposal":
       return {
         type: "wasm/InstantiateContractProposal",
-        value: InstantiateContractProposal.toAmino(InstantiateContractProposal.decode(content.value))
+        value: InstantiateContractProposal.toAmino(InstantiateContractProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmwasm.wasm.v1.InstantiateContract2Proposal":
       return {
         type: "wasm/InstantiateContract2Proposal",
-        value: InstantiateContract2Proposal.toAmino(InstantiateContract2Proposal.decode(content.value))
+        value: InstantiateContract2Proposal.toAmino(InstantiateContract2Proposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmwasm.wasm.v1.MigrateContractProposal":
       return {
         type: "wasm/MigrateContractProposal",
-        value: MigrateContractProposal.toAmino(MigrateContractProposal.decode(content.value))
+        value: MigrateContractProposal.toAmino(MigrateContractProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmwasm.wasm.v1.SudoContractProposal":
       return {
         type: "wasm/SudoContractProposal",
-        value: SudoContractProposal.toAmino(SudoContractProposal.decode(content.value))
+        value: SudoContractProposal.toAmino(SudoContractProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmwasm.wasm.v1.ExecuteContractProposal":
       return {
         type: "wasm/ExecuteContractProposal",
-        value: ExecuteContractProposal.toAmino(ExecuteContractProposal.decode(content.value))
+        value: ExecuteContractProposal.toAmino(ExecuteContractProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmwasm.wasm.v1.UpdateAdminProposal":
       return {
         type: "wasm/UpdateAdminProposal",
-        value: UpdateAdminProposal.toAmino(UpdateAdminProposal.decode(content.value))
+        value: UpdateAdminProposal.toAmino(UpdateAdminProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmwasm.wasm.v1.ClearAdminProposal":
       return {
         type: "wasm/ClearAdminProposal",
-        value: ClearAdminProposal.toAmino(ClearAdminProposal.decode(content.value))
+        value: ClearAdminProposal.toAmino(ClearAdminProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmwasm.wasm.v1.PinCodesProposal":
       return {
         type: "wasm/PinCodesProposal",
-        value: PinCodesProposal.toAmino(PinCodesProposal.decode(content.value))
+        value: PinCodesProposal.toAmino(PinCodesProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmwasm.wasm.v1.UnpinCodesProposal":
       return {
         type: "wasm/UnpinCodesProposal",
-        value: UnpinCodesProposal.toAmino(UnpinCodesProposal.decode(content.value))
+        value: UnpinCodesProposal.toAmino(UnpinCodesProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmwasm.wasm.v1.UpdateInstantiateConfigProposal":
       return {
         type: "wasm/UpdateInstantiateConfigProposal",
-        value: UpdateInstantiateConfigProposal.toAmino(UpdateInstantiateConfigProposal.decode(content.value))
+        value: UpdateInstantiateConfigProposal.toAmino(UpdateInstantiateConfigProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/cosmwasm.wasm.v1.StoreAndInstantiateContractProposal":
       return {
         type: "wasm/StoreAndInstantiateContractProposal",
-        value: StoreAndInstantiateContractProposal.toAmino(StoreAndInstantiateContractProposal.decode(content.value))
+        value: StoreAndInstantiateContractProposal.toAmino(StoreAndInstantiateContractProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/ibc.core.client.v1.ClientUpdateProposal":
       return {
         type: "cosmos-sdk/ClientUpdateProposal",
-        value: ClientUpdateProposal.toAmino(ClientUpdateProposal.decode(content.value))
+        value: ClientUpdateProposal.toAmino(ClientUpdateProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/ibc.core.client.v1.UpgradeProposal":
       return {
         type: "cosmos-sdk/UpgradeProposal",
-        value: UpgradeProposal.toAmino(UpgradeProposal.decode(content.value))
+        value: UpgradeProposal.toAmino(UpgradeProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.gamm.v1beta1.ReplaceMigrationRecordsProposal":
       return {
         type: "osmosis/ReplaceMigrationRecordsProposal",
-        value: ReplaceMigrationRecordsProposal.toAmino(ReplaceMigrationRecordsProposal.decode(content.value))
+        value: ReplaceMigrationRecordsProposal.toAmino(ReplaceMigrationRecordsProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.gamm.v1beta1.UpdateMigrationRecordsProposal":
       return {
         type: "osmosis/UpdateMigrationRecordsProposal",
-        value: UpdateMigrationRecordsProposal.toAmino(UpdateMigrationRecordsProposal.decode(content.value))
+        value: UpdateMigrationRecordsProposal.toAmino(UpdateMigrationRecordsProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.gamm.v1beta1.CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal":
       return {
         type: "osmosis/CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal",
-        value: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.toAmino(CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.decode(content.value))
+        value: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.toAmino(CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.gamm.v1beta1.SetScalingFactorControllerProposal":
       return {
         type: "osmosis/SetScalingFactorControllerProposal",
-        value: SetScalingFactorControllerProposal.toAmino(SetScalingFactorControllerProposal.decode(content.value))
+        value: SetScalingFactorControllerProposal.toAmino(SetScalingFactorControllerProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.poolincentives.v1beta1.ReplacePoolIncentivesProposal":
       return {
         type: "osmosis/ReplacePoolIncentivesProposal",
-        value: ReplacePoolIncentivesProposal.toAmino(ReplacePoolIncentivesProposal.decode(content.value))
+        value: ReplacePoolIncentivesProposal.toAmino(ReplacePoolIncentivesProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.poolincentives.v1beta1.UpdatePoolIncentivesProposal":
       return {
         type: "osmosis/UpdatePoolIncentivesProposal",
-        value: UpdatePoolIncentivesProposal.toAmino(UpdatePoolIncentivesProposal.decode(content.value))
+        value: UpdatePoolIncentivesProposal.toAmino(UpdatePoolIncentivesProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.protorev.v1beta1.SetProtoRevEnabledProposal":
       return {
         type: "osmosis/SetProtoRevEnabledProposal",
-        value: SetProtoRevEnabledProposal.toAmino(SetProtoRevEnabledProposal.decode(content.value))
+        value: SetProtoRevEnabledProposal.toAmino(SetProtoRevEnabledProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.protorev.v1beta1.SetProtoRevAdminAccountProposal":
       return {
         type: "osmosis/SetProtoRevAdminAccountProposal",
-        value: SetProtoRevAdminAccountProposal.toAmino(SetProtoRevAdminAccountProposal.decode(content.value))
+        value: SetProtoRevAdminAccountProposal.toAmino(SetProtoRevAdminAccountProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.superfluid.v1beta1.SetSuperfluidAssetsProposal":
       return {
         type: "osmosis/set-superfluid-assets-proposal",
-        value: SetSuperfluidAssetsProposal.toAmino(SetSuperfluidAssetsProposal.decode(content.value))
+        value: SetSuperfluidAssetsProposal.toAmino(SetSuperfluidAssetsProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.superfluid.v1beta1.RemoveSuperfluidAssetsProposal":
       return {
         type: "osmosis/del-superfluid-assets-proposal",
-        value: RemoveSuperfluidAssetsProposal.toAmino(RemoveSuperfluidAssetsProposal.decode(content.value))
+        value: RemoveSuperfluidAssetsProposal.toAmino(RemoveSuperfluidAssetsProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.superfluid.v1beta1.UpdateUnpoolWhiteListProposal":
       return {
         type: "osmosis/update-unpool-whitelist",
-        value: UpdateUnpoolWhiteListProposal.toAmino(UpdateUnpoolWhiteListProposal.decode(content.value))
+        value: UpdateUnpoolWhiteListProposal.toAmino(UpdateUnpoolWhiteListProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.txfees.v1beta1.UpdateFeeTokenProposal":
       return {
         type: "osmosis/UpdateFeeTokenProposal",
-        value: UpdateFeeTokenProposal.toAmino(UpdateFeeTokenProposal.decode(content.value))
+        value: UpdateFeeTokenProposal.toAmino(UpdateFeeTokenProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/publicawesome.stargaze.cron.v1.PromoteToPrivilegedContractProposal":
       return {
         type: "/publicawesome.stargaze.cron.v1.PromoteToPrivilegedContractProposal",
-        value: PromoteToPrivilegedContractProposal.toAmino(PromoteToPrivilegedContractProposal.decode(content.value))
+        value: PromoteToPrivilegedContractProposal.toAmino(PromoteToPrivilegedContractProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/publicawesome.stargaze.cron.v1.DemotePrivilegedContractProposal":
       return {
         type: "/publicawesome.stargaze.cron.v1.DemotePrivilegedContractProposal",
-        value: DemotePrivilegedContractProposal.toAmino(DemotePrivilegedContractProposal.decode(content.value))
+        value: DemotePrivilegedContractProposal.toAmino(DemotePrivilegedContractProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/publicawesome.stargaze.globalfee.v1.SetCodeAuthorizationProposal":
       return {
         type: "/publicawesome.stargaze.globalfee.v1.SetCodeAuthorizationProposal",
-        value: SetCodeAuthorizationProposal.toAmino(SetCodeAuthorizationProposal.decode(content.value))
+        value: SetCodeAuthorizationProposal.toAmino(SetCodeAuthorizationProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/publicawesome.stargaze.globalfee.v1.RemoveCodeAuthorizationProposal":
       return {
         type: "/publicawesome.stargaze.globalfee.v1.RemoveCodeAuthorizationProposal",
-        value: RemoveCodeAuthorizationProposal.toAmino(RemoveCodeAuthorizationProposal.decode(content.value))
+        value: RemoveCodeAuthorizationProposal.toAmino(RemoveCodeAuthorizationProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/publicawesome.stargaze.globalfee.v1.SetContractAuthorizationProposal":
       return {
         type: "/publicawesome.stargaze.globalfee.v1.SetContractAuthorizationProposal",
-        value: SetContractAuthorizationProposal.toAmino(SetContractAuthorizationProposal.decode(content.value))
+        value: SetContractAuthorizationProposal.toAmino(SetContractAuthorizationProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/publicawesome.stargaze.globalfee.v1.RemoveContractAuthorizationProposal":
       return {
         type: "/publicawesome.stargaze.globalfee.v1.RemoveContractAuthorizationProposal",
-        value: RemoveContractAuthorizationProposal.toAmino(RemoveContractAuthorizationProposal.decode(content.value))
+        value: RemoveContractAuthorizationProposal.toAmino(RemoveContractAuthorizationProposal.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     default:
-      return Any.toAmino(content);
+      return Any.toAmino(content, useInterfaces);
   }
 };

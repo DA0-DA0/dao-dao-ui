@@ -96,7 +96,7 @@ export const SwapAmountInRoute = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SwapAmountInRoute {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SwapAmountInRoute {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSwapAmountInRoute();
@@ -128,7 +128,7 @@ export const SwapAmountInRoute = {
       tokenOutDenom: object.token_out_denom
     };
   },
-  toAmino(message: SwapAmountInRoute): SwapAmountInRouteAmino {
+  toAmino(message: SwapAmountInRoute, useInterfaces: boolean = false): SwapAmountInRouteAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.token_out_denom = message.tokenOutDenom;
@@ -137,14 +137,14 @@ export const SwapAmountInRoute = {
   fromAminoMsg(object: SwapAmountInRouteAminoMsg): SwapAmountInRoute {
     return SwapAmountInRoute.fromAmino(object.value);
   },
-  toAminoMsg(message: SwapAmountInRoute): SwapAmountInRouteAminoMsg {
+  toAminoMsg(message: SwapAmountInRoute, useInterfaces: boolean = false): SwapAmountInRouteAminoMsg {
     return {
       type: "osmosis/poolmanager/swap-amount-in-route",
-      value: SwapAmountInRoute.toAmino(message)
+      value: SwapAmountInRoute.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SwapAmountInRouteProtoMsg): SwapAmountInRoute {
-    return SwapAmountInRoute.decode(message.value);
+  fromProtoMsg(message: SwapAmountInRouteProtoMsg, useInterfaces: boolean = false): SwapAmountInRoute {
+    return SwapAmountInRoute.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SwapAmountInRoute): Uint8Array {
     return SwapAmountInRoute.encode(message).finish();
@@ -173,7 +173,7 @@ export const SwapAmountOutRoute = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SwapAmountOutRoute {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SwapAmountOutRoute {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSwapAmountOutRoute();
@@ -205,7 +205,7 @@ export const SwapAmountOutRoute = {
       tokenInDenom: object.token_in_denom
     };
   },
-  toAmino(message: SwapAmountOutRoute): SwapAmountOutRouteAmino {
+  toAmino(message: SwapAmountOutRoute, useInterfaces: boolean = false): SwapAmountOutRouteAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.token_in_denom = message.tokenInDenom;
@@ -214,14 +214,14 @@ export const SwapAmountOutRoute = {
   fromAminoMsg(object: SwapAmountOutRouteAminoMsg): SwapAmountOutRoute {
     return SwapAmountOutRoute.fromAmino(object.value);
   },
-  toAminoMsg(message: SwapAmountOutRoute): SwapAmountOutRouteAminoMsg {
+  toAminoMsg(message: SwapAmountOutRoute, useInterfaces: boolean = false): SwapAmountOutRouteAminoMsg {
     return {
       type: "osmosis/poolmanager/swap-amount-out-route",
-      value: SwapAmountOutRoute.toAmino(message)
+      value: SwapAmountOutRoute.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SwapAmountOutRouteProtoMsg): SwapAmountOutRoute {
-    return SwapAmountOutRoute.decode(message.value);
+  fromProtoMsg(message: SwapAmountOutRouteProtoMsg, useInterfaces: boolean = false): SwapAmountOutRoute {
+    return SwapAmountOutRoute.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SwapAmountOutRoute): Uint8Array {
     return SwapAmountOutRoute.encode(message).finish();
@@ -250,7 +250,7 @@ export const SwapAmountInSplitRoute = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SwapAmountInSplitRoute {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SwapAmountInSplitRoute {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSwapAmountInSplitRoute();
@@ -258,7 +258,7 @@ export const SwapAmountInSplitRoute = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.pools.push(SwapAmountInRoute.decode(reader, reader.uint32()));
+          message.pools.push(SwapAmountInRoute.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
           message.tokenInAmount = reader.string();
@@ -282,10 +282,10 @@ export const SwapAmountInSplitRoute = {
       tokenInAmount: object.token_in_amount
     };
   },
-  toAmino(message: SwapAmountInSplitRoute): SwapAmountInSplitRouteAmino {
+  toAmino(message: SwapAmountInSplitRoute, useInterfaces: boolean = false): SwapAmountInSplitRouteAmino {
     const obj: any = {};
     if (message.pools) {
-      obj.pools = message.pools.map(e => e ? SwapAmountInRoute.toAmino(e) : undefined);
+      obj.pools = message.pools.map(e => e ? SwapAmountInRoute.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.pools = [];
     }
@@ -295,14 +295,14 @@ export const SwapAmountInSplitRoute = {
   fromAminoMsg(object: SwapAmountInSplitRouteAminoMsg): SwapAmountInSplitRoute {
     return SwapAmountInSplitRoute.fromAmino(object.value);
   },
-  toAminoMsg(message: SwapAmountInSplitRoute): SwapAmountInSplitRouteAminoMsg {
+  toAminoMsg(message: SwapAmountInSplitRoute, useInterfaces: boolean = false): SwapAmountInSplitRouteAminoMsg {
     return {
       type: "osmosis/poolmanager/swap-amount-in-split-route",
-      value: SwapAmountInSplitRoute.toAmino(message)
+      value: SwapAmountInSplitRoute.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SwapAmountInSplitRouteProtoMsg): SwapAmountInSplitRoute {
-    return SwapAmountInSplitRoute.decode(message.value);
+  fromProtoMsg(message: SwapAmountInSplitRouteProtoMsg, useInterfaces: boolean = false): SwapAmountInSplitRoute {
+    return SwapAmountInSplitRoute.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SwapAmountInSplitRoute): Uint8Array {
     return SwapAmountInSplitRoute.encode(message).finish();
@@ -331,7 +331,7 @@ export const SwapAmountOutSplitRoute = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SwapAmountOutSplitRoute {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SwapAmountOutSplitRoute {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSwapAmountOutSplitRoute();
@@ -339,7 +339,7 @@ export const SwapAmountOutSplitRoute = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.pools.push(SwapAmountOutRoute.decode(reader, reader.uint32()));
+          message.pools.push(SwapAmountOutRoute.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
           message.tokenOutAmount = reader.string();
@@ -363,10 +363,10 @@ export const SwapAmountOutSplitRoute = {
       tokenOutAmount: object.token_out_amount
     };
   },
-  toAmino(message: SwapAmountOutSplitRoute): SwapAmountOutSplitRouteAmino {
+  toAmino(message: SwapAmountOutSplitRoute, useInterfaces: boolean = false): SwapAmountOutSplitRouteAmino {
     const obj: any = {};
     if (message.pools) {
-      obj.pools = message.pools.map(e => e ? SwapAmountOutRoute.toAmino(e) : undefined);
+      obj.pools = message.pools.map(e => e ? SwapAmountOutRoute.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.pools = [];
     }
@@ -376,14 +376,14 @@ export const SwapAmountOutSplitRoute = {
   fromAminoMsg(object: SwapAmountOutSplitRouteAminoMsg): SwapAmountOutSplitRoute {
     return SwapAmountOutSplitRoute.fromAmino(object.value);
   },
-  toAminoMsg(message: SwapAmountOutSplitRoute): SwapAmountOutSplitRouteAminoMsg {
+  toAminoMsg(message: SwapAmountOutSplitRoute, useInterfaces: boolean = false): SwapAmountOutSplitRouteAminoMsg {
     return {
       type: "osmosis/poolmanager/swap-amount-out-split-route",
-      value: SwapAmountOutSplitRoute.toAmino(message)
+      value: SwapAmountOutSplitRoute.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SwapAmountOutSplitRouteProtoMsg): SwapAmountOutSplitRoute {
-    return SwapAmountOutSplitRoute.decode(message.value);
+  fromProtoMsg(message: SwapAmountOutSplitRouteProtoMsg, useInterfaces: boolean = false): SwapAmountOutSplitRoute {
+    return SwapAmountOutSplitRoute.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SwapAmountOutSplitRoute): Uint8Array {
     return SwapAmountOutSplitRoute.encode(message).finish();

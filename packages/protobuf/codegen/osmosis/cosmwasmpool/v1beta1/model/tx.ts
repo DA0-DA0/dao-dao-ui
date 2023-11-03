@@ -67,7 +67,7 @@ export const MsgCreateCosmWasmPool = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCreateCosmWasmPool {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCreateCosmWasmPool {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateCosmWasmPool();
@@ -104,7 +104,7 @@ export const MsgCreateCosmWasmPool = {
       sender: object.sender
     };
   },
-  toAmino(message: MsgCreateCosmWasmPool): MsgCreateCosmWasmPoolAmino {
+  toAmino(message: MsgCreateCosmWasmPool, useInterfaces: boolean = false): MsgCreateCosmWasmPoolAmino {
     const obj: any = {};
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
     obj.instantiate_msg = message.instantiateMsg;
@@ -114,14 +114,14 @@ export const MsgCreateCosmWasmPool = {
   fromAminoMsg(object: MsgCreateCosmWasmPoolAminoMsg): MsgCreateCosmWasmPool {
     return MsgCreateCosmWasmPool.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCreateCosmWasmPool): MsgCreateCosmWasmPoolAminoMsg {
+  toAminoMsg(message: MsgCreateCosmWasmPool, useInterfaces: boolean = false): MsgCreateCosmWasmPoolAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/create-cosm-wasm-pool",
-      value: MsgCreateCosmWasmPool.toAmino(message)
+      value: MsgCreateCosmWasmPool.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgCreateCosmWasmPoolProtoMsg): MsgCreateCosmWasmPool {
-    return MsgCreateCosmWasmPool.decode(message.value);
+  fromProtoMsg(message: MsgCreateCosmWasmPoolProtoMsg, useInterfaces: boolean = false): MsgCreateCosmWasmPool {
+    return MsgCreateCosmWasmPool.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCreateCosmWasmPool): Uint8Array {
     return MsgCreateCosmWasmPool.encode(message).finish();
@@ -146,7 +146,7 @@ export const MsgCreateCosmWasmPoolResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCreateCosmWasmPoolResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCreateCosmWasmPoolResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateCosmWasmPoolResponse();
@@ -173,7 +173,7 @@ export const MsgCreateCosmWasmPoolResponse = {
       poolId: BigInt(object.pool_id)
     };
   },
-  toAmino(message: MsgCreateCosmWasmPoolResponse): MsgCreateCosmWasmPoolResponseAmino {
+  toAmino(message: MsgCreateCosmWasmPoolResponse, useInterfaces: boolean = false): MsgCreateCosmWasmPoolResponseAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     return obj;
@@ -181,14 +181,14 @@ export const MsgCreateCosmWasmPoolResponse = {
   fromAminoMsg(object: MsgCreateCosmWasmPoolResponseAminoMsg): MsgCreateCosmWasmPoolResponse {
     return MsgCreateCosmWasmPoolResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCreateCosmWasmPoolResponse): MsgCreateCosmWasmPoolResponseAminoMsg {
+  toAminoMsg(message: MsgCreateCosmWasmPoolResponse, useInterfaces: boolean = false): MsgCreateCosmWasmPoolResponseAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/create-cosm-wasm-pool-response",
-      value: MsgCreateCosmWasmPoolResponse.toAmino(message)
+      value: MsgCreateCosmWasmPoolResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgCreateCosmWasmPoolResponseProtoMsg): MsgCreateCosmWasmPoolResponse {
-    return MsgCreateCosmWasmPoolResponse.decode(message.value);
+  fromProtoMsg(message: MsgCreateCosmWasmPoolResponseProtoMsg, useInterfaces: boolean = false): MsgCreateCosmWasmPoolResponse {
+    return MsgCreateCosmWasmPoolResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCreateCosmWasmPoolResponse): Uint8Array {
     return MsgCreateCosmWasmPoolResponse.encode(message).finish();

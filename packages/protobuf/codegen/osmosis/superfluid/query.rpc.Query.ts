@@ -76,148 +76,148 @@ export class QueryClientImpl implements Query {
     this.userConcentratedSuperfluidPositionsDelegated = this.userConcentratedSuperfluidPositionsDelegated.bind(this);
     this.userConcentratedSuperfluidPositionsUndelegating = this.userConcentratedSuperfluidPositionsUndelegating.bind(this);
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  assetType(request: AssetTypeRequest): Promise<AssetTypeResponse> {
+  assetType(request: AssetTypeRequest, useInterfaces: boolean = true): Promise<AssetTypeResponse> {
     const data = AssetTypeRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "AssetType", data);
-    return promise.then(data => AssetTypeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AssetTypeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  allAssets(request: AllAssetsRequest = {}): Promise<AllAssetsResponse> {
+  allAssets(request: AllAssetsRequest = {}, useInterfaces: boolean = true): Promise<AllAssetsResponse> {
     const data = AllAssetsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "AllAssets", data);
-    return promise.then(data => AllAssetsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AllAssetsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  assetMultiplier(request: AssetMultiplierRequest): Promise<AssetMultiplierResponse> {
+  assetMultiplier(request: AssetMultiplierRequest, useInterfaces: boolean = true): Promise<AssetMultiplierResponse> {
     const data = AssetMultiplierRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "AssetMultiplier", data);
-    return promise.then(data => AssetMultiplierResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AssetMultiplierResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   allIntermediaryAccounts(request: AllIntermediaryAccountsRequest = {
     pagination: undefined
-  }): Promise<AllIntermediaryAccountsResponse> {
+  }, useInterfaces: boolean = true): Promise<AllIntermediaryAccountsResponse> {
     const data = AllIntermediaryAccountsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "AllIntermediaryAccounts", data);
-    return promise.then(data => AllIntermediaryAccountsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AllIntermediaryAccountsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  connectedIntermediaryAccount(request: ConnectedIntermediaryAccountRequest): Promise<ConnectedIntermediaryAccountResponse> {
+  connectedIntermediaryAccount(request: ConnectedIntermediaryAccountRequest, useInterfaces: boolean = true): Promise<ConnectedIntermediaryAccountResponse> {
     const data = ConnectedIntermediaryAccountRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "ConnectedIntermediaryAccount", data);
-    return promise.then(data => ConnectedIntermediaryAccountResponse.decode(new BinaryReader(data)));
+    return promise.then(data => ConnectedIntermediaryAccountResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  totalDelegationByValidatorForDenom(request: QueryTotalDelegationByValidatorForDenomRequest): Promise<QueryTotalDelegationByValidatorForDenomResponse> {
+  totalDelegationByValidatorForDenom(request: QueryTotalDelegationByValidatorForDenomRequest, useInterfaces: boolean = true): Promise<QueryTotalDelegationByValidatorForDenomResponse> {
     const data = QueryTotalDelegationByValidatorForDenomRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "TotalDelegationByValidatorForDenom", data);
-    return promise.then(data => QueryTotalDelegationByValidatorForDenomResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryTotalDelegationByValidatorForDenomResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  totalSuperfluidDelegations(request: TotalSuperfluidDelegationsRequest = {}): Promise<TotalSuperfluidDelegationsResponse> {
+  totalSuperfluidDelegations(request: TotalSuperfluidDelegationsRequest = {}, useInterfaces: boolean = true): Promise<TotalSuperfluidDelegationsResponse> {
     const data = TotalSuperfluidDelegationsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "TotalSuperfluidDelegations", data);
-    return promise.then(data => TotalSuperfluidDelegationsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => TotalSuperfluidDelegationsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  superfluidDelegationAmount(request: SuperfluidDelegationAmountRequest): Promise<SuperfluidDelegationAmountResponse> {
+  superfluidDelegationAmount(request: SuperfluidDelegationAmountRequest, useInterfaces: boolean = true): Promise<SuperfluidDelegationAmountResponse> {
     const data = SuperfluidDelegationAmountRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "SuperfluidDelegationAmount", data);
-    return promise.then(data => SuperfluidDelegationAmountResponse.decode(new BinaryReader(data)));
+    return promise.then(data => SuperfluidDelegationAmountResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  superfluidDelegationsByDelegator(request: SuperfluidDelegationsByDelegatorRequest): Promise<SuperfluidDelegationsByDelegatorResponse> {
+  superfluidDelegationsByDelegator(request: SuperfluidDelegationsByDelegatorRequest, useInterfaces: boolean = true): Promise<SuperfluidDelegationsByDelegatorResponse> {
     const data = SuperfluidDelegationsByDelegatorRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "SuperfluidDelegationsByDelegator", data);
-    return promise.then(data => SuperfluidDelegationsByDelegatorResponse.decode(new BinaryReader(data)));
+    return promise.then(data => SuperfluidDelegationsByDelegatorResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  superfluidUndelegationsByDelegator(request: SuperfluidUndelegationsByDelegatorRequest): Promise<SuperfluidUndelegationsByDelegatorResponse> {
+  superfluidUndelegationsByDelegator(request: SuperfluidUndelegationsByDelegatorRequest, useInterfaces: boolean = true): Promise<SuperfluidUndelegationsByDelegatorResponse> {
     const data = SuperfluidUndelegationsByDelegatorRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "SuperfluidUndelegationsByDelegator", data);
-    return promise.then(data => SuperfluidUndelegationsByDelegatorResponse.decode(new BinaryReader(data)));
+    return promise.then(data => SuperfluidUndelegationsByDelegatorResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  superfluidDelegationsByValidatorDenom(request: SuperfluidDelegationsByValidatorDenomRequest): Promise<SuperfluidDelegationsByValidatorDenomResponse> {
+  superfluidDelegationsByValidatorDenom(request: SuperfluidDelegationsByValidatorDenomRequest, useInterfaces: boolean = true): Promise<SuperfluidDelegationsByValidatorDenomResponse> {
     const data = SuperfluidDelegationsByValidatorDenomRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "SuperfluidDelegationsByValidatorDenom", data);
-    return promise.then(data => SuperfluidDelegationsByValidatorDenomResponse.decode(new BinaryReader(data)));
+    return promise.then(data => SuperfluidDelegationsByValidatorDenomResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  estimateSuperfluidDelegatedAmountByValidatorDenom(request: EstimateSuperfluidDelegatedAmountByValidatorDenomRequest): Promise<EstimateSuperfluidDelegatedAmountByValidatorDenomResponse> {
+  estimateSuperfluidDelegatedAmountByValidatorDenom(request: EstimateSuperfluidDelegatedAmountByValidatorDenomRequest, useInterfaces: boolean = true): Promise<EstimateSuperfluidDelegatedAmountByValidatorDenomResponse> {
     const data = EstimateSuperfluidDelegatedAmountByValidatorDenomRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "EstimateSuperfluidDelegatedAmountByValidatorDenom", data);
-    return promise.then(data => EstimateSuperfluidDelegatedAmountByValidatorDenomResponse.decode(new BinaryReader(data)));
+    return promise.then(data => EstimateSuperfluidDelegatedAmountByValidatorDenomResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  totalDelegationByDelegator(request: QueryTotalDelegationByDelegatorRequest): Promise<QueryTotalDelegationByDelegatorResponse> {
+  totalDelegationByDelegator(request: QueryTotalDelegationByDelegatorRequest, useInterfaces: boolean = true): Promise<QueryTotalDelegationByDelegatorResponse> {
     const data = QueryTotalDelegationByDelegatorRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "TotalDelegationByDelegator", data);
-    return promise.then(data => QueryTotalDelegationByDelegatorResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryTotalDelegationByDelegatorResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  unpoolWhitelist(request: QueryUnpoolWhitelistRequest = {}): Promise<QueryUnpoolWhitelistResponse> {
+  unpoolWhitelist(request: QueryUnpoolWhitelistRequest = {}, useInterfaces: boolean = true): Promise<QueryUnpoolWhitelistResponse> {
     const data = QueryUnpoolWhitelistRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "UnpoolWhitelist", data);
-    return promise.then(data => QueryUnpoolWhitelistResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryUnpoolWhitelistResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  userConcentratedSuperfluidPositionsDelegated(request: UserConcentratedSuperfluidPositionsDelegatedRequest): Promise<UserConcentratedSuperfluidPositionsDelegatedResponse> {
+  userConcentratedSuperfluidPositionsDelegated(request: UserConcentratedSuperfluidPositionsDelegatedRequest, useInterfaces: boolean = true): Promise<UserConcentratedSuperfluidPositionsDelegatedResponse> {
     const data = UserConcentratedSuperfluidPositionsDelegatedRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "UserConcentratedSuperfluidPositionsDelegated", data);
-    return promise.then(data => UserConcentratedSuperfluidPositionsDelegatedResponse.decode(new BinaryReader(data)));
+    return promise.then(data => UserConcentratedSuperfluidPositionsDelegatedResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  userConcentratedSuperfluidPositionsUndelegating(request: UserConcentratedSuperfluidPositionsUndelegatingRequest): Promise<UserConcentratedSuperfluidPositionsUndelegatingResponse> {
+  userConcentratedSuperfluidPositionsUndelegating(request: UserConcentratedSuperfluidPositionsUndelegatingRequest, useInterfaces: boolean = true): Promise<UserConcentratedSuperfluidPositionsUndelegatingResponse> {
     const data = UserConcentratedSuperfluidPositionsUndelegatingRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Query", "UserConcentratedSuperfluidPositionsUndelegating", data);
-    return promise.then(data => UserConcentratedSuperfluidPositionsUndelegatingResponse.decode(new BinaryReader(data)));
+    return promise.then(data => UserConcentratedSuperfluidPositionsUndelegatingResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    assetType(request: AssetTypeRequest): Promise<AssetTypeResponse> {
-      return queryService.assetType(request);
+    assetType(request: AssetTypeRequest, useInterfaces: boolean = true): Promise<AssetTypeResponse> {
+      return queryService.assetType(request, useInterfaces);
     },
-    allAssets(request?: AllAssetsRequest): Promise<AllAssetsResponse> {
-      return queryService.allAssets(request);
+    allAssets(request?: AllAssetsRequest, useInterfaces: boolean = true): Promise<AllAssetsResponse> {
+      return queryService.allAssets(request, useInterfaces);
     },
-    assetMultiplier(request: AssetMultiplierRequest): Promise<AssetMultiplierResponse> {
-      return queryService.assetMultiplier(request);
+    assetMultiplier(request: AssetMultiplierRequest, useInterfaces: boolean = true): Promise<AssetMultiplierResponse> {
+      return queryService.assetMultiplier(request, useInterfaces);
     },
-    allIntermediaryAccounts(request?: AllIntermediaryAccountsRequest): Promise<AllIntermediaryAccountsResponse> {
-      return queryService.allIntermediaryAccounts(request);
+    allIntermediaryAccounts(request?: AllIntermediaryAccountsRequest, useInterfaces: boolean = true): Promise<AllIntermediaryAccountsResponse> {
+      return queryService.allIntermediaryAccounts(request, useInterfaces);
     },
-    connectedIntermediaryAccount(request: ConnectedIntermediaryAccountRequest): Promise<ConnectedIntermediaryAccountResponse> {
-      return queryService.connectedIntermediaryAccount(request);
+    connectedIntermediaryAccount(request: ConnectedIntermediaryAccountRequest, useInterfaces: boolean = true): Promise<ConnectedIntermediaryAccountResponse> {
+      return queryService.connectedIntermediaryAccount(request, useInterfaces);
     },
-    totalDelegationByValidatorForDenom(request: QueryTotalDelegationByValidatorForDenomRequest): Promise<QueryTotalDelegationByValidatorForDenomResponse> {
-      return queryService.totalDelegationByValidatorForDenom(request);
+    totalDelegationByValidatorForDenom(request: QueryTotalDelegationByValidatorForDenomRequest, useInterfaces: boolean = true): Promise<QueryTotalDelegationByValidatorForDenomResponse> {
+      return queryService.totalDelegationByValidatorForDenom(request, useInterfaces);
     },
-    totalSuperfluidDelegations(request?: TotalSuperfluidDelegationsRequest): Promise<TotalSuperfluidDelegationsResponse> {
-      return queryService.totalSuperfluidDelegations(request);
+    totalSuperfluidDelegations(request?: TotalSuperfluidDelegationsRequest, useInterfaces: boolean = true): Promise<TotalSuperfluidDelegationsResponse> {
+      return queryService.totalSuperfluidDelegations(request, useInterfaces);
     },
-    superfluidDelegationAmount(request: SuperfluidDelegationAmountRequest): Promise<SuperfluidDelegationAmountResponse> {
-      return queryService.superfluidDelegationAmount(request);
+    superfluidDelegationAmount(request: SuperfluidDelegationAmountRequest, useInterfaces: boolean = true): Promise<SuperfluidDelegationAmountResponse> {
+      return queryService.superfluidDelegationAmount(request, useInterfaces);
     },
-    superfluidDelegationsByDelegator(request: SuperfluidDelegationsByDelegatorRequest): Promise<SuperfluidDelegationsByDelegatorResponse> {
-      return queryService.superfluidDelegationsByDelegator(request);
+    superfluidDelegationsByDelegator(request: SuperfluidDelegationsByDelegatorRequest, useInterfaces: boolean = true): Promise<SuperfluidDelegationsByDelegatorResponse> {
+      return queryService.superfluidDelegationsByDelegator(request, useInterfaces);
     },
-    superfluidUndelegationsByDelegator(request: SuperfluidUndelegationsByDelegatorRequest): Promise<SuperfluidUndelegationsByDelegatorResponse> {
-      return queryService.superfluidUndelegationsByDelegator(request);
+    superfluidUndelegationsByDelegator(request: SuperfluidUndelegationsByDelegatorRequest, useInterfaces: boolean = true): Promise<SuperfluidUndelegationsByDelegatorResponse> {
+      return queryService.superfluidUndelegationsByDelegator(request, useInterfaces);
     },
-    superfluidDelegationsByValidatorDenom(request: SuperfluidDelegationsByValidatorDenomRequest): Promise<SuperfluidDelegationsByValidatorDenomResponse> {
-      return queryService.superfluidDelegationsByValidatorDenom(request);
+    superfluidDelegationsByValidatorDenom(request: SuperfluidDelegationsByValidatorDenomRequest, useInterfaces: boolean = true): Promise<SuperfluidDelegationsByValidatorDenomResponse> {
+      return queryService.superfluidDelegationsByValidatorDenom(request, useInterfaces);
     },
-    estimateSuperfluidDelegatedAmountByValidatorDenom(request: EstimateSuperfluidDelegatedAmountByValidatorDenomRequest): Promise<EstimateSuperfluidDelegatedAmountByValidatorDenomResponse> {
-      return queryService.estimateSuperfluidDelegatedAmountByValidatorDenom(request);
+    estimateSuperfluidDelegatedAmountByValidatorDenom(request: EstimateSuperfluidDelegatedAmountByValidatorDenomRequest, useInterfaces: boolean = true): Promise<EstimateSuperfluidDelegatedAmountByValidatorDenomResponse> {
+      return queryService.estimateSuperfluidDelegatedAmountByValidatorDenom(request, useInterfaces);
     },
-    totalDelegationByDelegator(request: QueryTotalDelegationByDelegatorRequest): Promise<QueryTotalDelegationByDelegatorResponse> {
-      return queryService.totalDelegationByDelegator(request);
+    totalDelegationByDelegator(request: QueryTotalDelegationByDelegatorRequest, useInterfaces: boolean = true): Promise<QueryTotalDelegationByDelegatorResponse> {
+      return queryService.totalDelegationByDelegator(request, useInterfaces);
     },
-    unpoolWhitelist(request?: QueryUnpoolWhitelistRequest): Promise<QueryUnpoolWhitelistResponse> {
-      return queryService.unpoolWhitelist(request);
+    unpoolWhitelist(request?: QueryUnpoolWhitelistRequest, useInterfaces: boolean = true): Promise<QueryUnpoolWhitelistResponse> {
+      return queryService.unpoolWhitelist(request, useInterfaces);
     },
-    userConcentratedSuperfluidPositionsDelegated(request: UserConcentratedSuperfluidPositionsDelegatedRequest): Promise<UserConcentratedSuperfluidPositionsDelegatedResponse> {
-      return queryService.userConcentratedSuperfluidPositionsDelegated(request);
+    userConcentratedSuperfluidPositionsDelegated(request: UserConcentratedSuperfluidPositionsDelegatedRequest, useInterfaces: boolean = true): Promise<UserConcentratedSuperfluidPositionsDelegatedResponse> {
+      return queryService.userConcentratedSuperfluidPositionsDelegated(request, useInterfaces);
     },
-    userConcentratedSuperfluidPositionsUndelegating(request: UserConcentratedSuperfluidPositionsUndelegatingRequest): Promise<UserConcentratedSuperfluidPositionsUndelegatingResponse> {
-      return queryService.userConcentratedSuperfluidPositionsUndelegating(request);
+    userConcentratedSuperfluidPositionsUndelegating(request: UserConcentratedSuperfluidPositionsUndelegatingRequest, useInterfaces: boolean = true): Promise<UserConcentratedSuperfluidPositionsUndelegatingResponse> {
+      return queryService.userConcentratedSuperfluidPositionsUndelegating(request, useInterfaces);
     }
   };
 };

@@ -135,7 +135,7 @@ export const MsgPromoteToPrivilegedContract = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgPromoteToPrivilegedContract {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgPromoteToPrivilegedContract {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgPromoteToPrivilegedContract();
@@ -167,7 +167,7 @@ export const MsgPromoteToPrivilegedContract = {
       contract: object.contract
     };
   },
-  toAmino(message: MsgPromoteToPrivilegedContract): MsgPromoteToPrivilegedContractAmino {
+  toAmino(message: MsgPromoteToPrivilegedContract, useInterfaces: boolean = false): MsgPromoteToPrivilegedContractAmino {
     const obj: any = {};
     obj.authority = message.authority;
     obj.contract = message.contract;
@@ -176,8 +176,8 @@ export const MsgPromoteToPrivilegedContract = {
   fromAminoMsg(object: MsgPromoteToPrivilegedContractAminoMsg): MsgPromoteToPrivilegedContract {
     return MsgPromoteToPrivilegedContract.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgPromoteToPrivilegedContractProtoMsg): MsgPromoteToPrivilegedContract {
-    return MsgPromoteToPrivilegedContract.decode(message.value);
+  fromProtoMsg(message: MsgPromoteToPrivilegedContractProtoMsg, useInterfaces: boolean = false): MsgPromoteToPrivilegedContract {
+    return MsgPromoteToPrivilegedContract.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgPromoteToPrivilegedContract): Uint8Array {
     return MsgPromoteToPrivilegedContract.encode(message).finish();
@@ -197,7 +197,7 @@ export const MsgPromoteToPrivilegedContractResponse = {
   encode(_: MsgPromoteToPrivilegedContractResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgPromoteToPrivilegedContractResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgPromoteToPrivilegedContractResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgPromoteToPrivilegedContractResponse();
@@ -218,15 +218,15 @@ export const MsgPromoteToPrivilegedContractResponse = {
   fromAmino(_: MsgPromoteToPrivilegedContractResponseAmino): MsgPromoteToPrivilegedContractResponse {
     return {};
   },
-  toAmino(_: MsgPromoteToPrivilegedContractResponse): MsgPromoteToPrivilegedContractResponseAmino {
+  toAmino(_: MsgPromoteToPrivilegedContractResponse, useInterfaces: boolean = false): MsgPromoteToPrivilegedContractResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgPromoteToPrivilegedContractResponseAminoMsg): MsgPromoteToPrivilegedContractResponse {
     return MsgPromoteToPrivilegedContractResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgPromoteToPrivilegedContractResponseProtoMsg): MsgPromoteToPrivilegedContractResponse {
-    return MsgPromoteToPrivilegedContractResponse.decode(message.value);
+  fromProtoMsg(message: MsgPromoteToPrivilegedContractResponseProtoMsg, useInterfaces: boolean = false): MsgPromoteToPrivilegedContractResponse {
+    return MsgPromoteToPrivilegedContractResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgPromoteToPrivilegedContractResponse): Uint8Array {
     return MsgPromoteToPrivilegedContractResponse.encode(message).finish();
@@ -255,7 +255,7 @@ export const MsgDemoteFromPrivilegedContract = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgDemoteFromPrivilegedContract {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgDemoteFromPrivilegedContract {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDemoteFromPrivilegedContract();
@@ -287,7 +287,7 @@ export const MsgDemoteFromPrivilegedContract = {
       contract: object.contract
     };
   },
-  toAmino(message: MsgDemoteFromPrivilegedContract): MsgDemoteFromPrivilegedContractAmino {
+  toAmino(message: MsgDemoteFromPrivilegedContract, useInterfaces: boolean = false): MsgDemoteFromPrivilegedContractAmino {
     const obj: any = {};
     obj.authority = message.authority;
     obj.contract = message.contract;
@@ -296,8 +296,8 @@ export const MsgDemoteFromPrivilegedContract = {
   fromAminoMsg(object: MsgDemoteFromPrivilegedContractAminoMsg): MsgDemoteFromPrivilegedContract {
     return MsgDemoteFromPrivilegedContract.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgDemoteFromPrivilegedContractProtoMsg): MsgDemoteFromPrivilegedContract {
-    return MsgDemoteFromPrivilegedContract.decode(message.value);
+  fromProtoMsg(message: MsgDemoteFromPrivilegedContractProtoMsg, useInterfaces: boolean = false): MsgDemoteFromPrivilegedContract {
+    return MsgDemoteFromPrivilegedContract.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgDemoteFromPrivilegedContract): Uint8Array {
     return MsgDemoteFromPrivilegedContract.encode(message).finish();
@@ -317,7 +317,7 @@ export const MsgDemoteFromPrivilegedContractResponse = {
   encode(_: MsgDemoteFromPrivilegedContractResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgDemoteFromPrivilegedContractResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgDemoteFromPrivilegedContractResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDemoteFromPrivilegedContractResponse();
@@ -338,15 +338,15 @@ export const MsgDemoteFromPrivilegedContractResponse = {
   fromAmino(_: MsgDemoteFromPrivilegedContractResponseAmino): MsgDemoteFromPrivilegedContractResponse {
     return {};
   },
-  toAmino(_: MsgDemoteFromPrivilegedContractResponse): MsgDemoteFromPrivilegedContractResponseAmino {
+  toAmino(_: MsgDemoteFromPrivilegedContractResponse, useInterfaces: boolean = false): MsgDemoteFromPrivilegedContractResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgDemoteFromPrivilegedContractResponseAminoMsg): MsgDemoteFromPrivilegedContractResponse {
     return MsgDemoteFromPrivilegedContractResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgDemoteFromPrivilegedContractResponseProtoMsg): MsgDemoteFromPrivilegedContractResponse {
-    return MsgDemoteFromPrivilegedContractResponse.decode(message.value);
+  fromProtoMsg(message: MsgDemoteFromPrivilegedContractResponseProtoMsg, useInterfaces: boolean = false): MsgDemoteFromPrivilegedContractResponse {
+    return MsgDemoteFromPrivilegedContractResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgDemoteFromPrivilegedContractResponse): Uint8Array {
     return MsgDemoteFromPrivilegedContractResponse.encode(message).finish();
@@ -375,7 +375,7 @@ export const MsgUpdateParams = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgUpdateParams {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgUpdateParams {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUpdateParams();
@@ -386,7 +386,7 @@ export const MsgUpdateParams = {
           message.authority = reader.string();
           break;
         case 2:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -407,17 +407,17 @@ export const MsgUpdateParams = {
       params: object?.params ? Params.fromAmino(object.params) : undefined
     };
   },
-  toAmino(message: MsgUpdateParams): MsgUpdateParamsAmino {
+  toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
     obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {
     return MsgUpdateParams.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgUpdateParamsProtoMsg): MsgUpdateParams {
-    return MsgUpdateParams.decode(message.value);
+  fromProtoMsg(message: MsgUpdateParamsProtoMsg, useInterfaces: boolean = false): MsgUpdateParams {
+    return MsgUpdateParams.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgUpdateParams): Uint8Array {
     return MsgUpdateParams.encode(message).finish();
@@ -437,7 +437,7 @@ export const MsgUpdateParamsResponse = {
   encode(_: MsgUpdateParamsResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgUpdateParamsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgUpdateParamsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUpdateParamsResponse();
@@ -458,15 +458,15 @@ export const MsgUpdateParamsResponse = {
   fromAmino(_: MsgUpdateParamsResponseAmino): MsgUpdateParamsResponse {
     return {};
   },
-  toAmino(_: MsgUpdateParamsResponse): MsgUpdateParamsResponseAmino {
+  toAmino(_: MsgUpdateParamsResponse, useInterfaces: boolean = false): MsgUpdateParamsResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsResponseAminoMsg): MsgUpdateParamsResponse {
     return MsgUpdateParamsResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgUpdateParamsResponseProtoMsg): MsgUpdateParamsResponse {
-    return MsgUpdateParamsResponse.decode(message.value);
+  fromProtoMsg(message: MsgUpdateParamsResponseProtoMsg, useInterfaces: boolean = false): MsgUpdateParamsResponse {
+    return MsgUpdateParamsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgUpdateParamsResponse): Uint8Array {
     return MsgUpdateParamsResponse.encode(message).finish();

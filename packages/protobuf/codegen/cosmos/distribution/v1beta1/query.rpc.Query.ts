@@ -43,90 +43,90 @@ export class QueryClientImpl implements Query {
     this.delegatorWithdrawAddress = this.delegatorWithdrawAddress.bind(this);
     this.communityPool = this.communityPool.bind(this);
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  validatorDistributionInfo(request: QueryValidatorDistributionInfoRequest): Promise<QueryValidatorDistributionInfoResponse> {
+  validatorDistributionInfo(request: QueryValidatorDistributionInfoRequest, useInterfaces: boolean = true): Promise<QueryValidatorDistributionInfoResponse> {
     const data = QueryValidatorDistributionInfoRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Query", "ValidatorDistributionInfo", data);
-    return promise.then(data => QueryValidatorDistributionInfoResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryValidatorDistributionInfoResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  validatorOutstandingRewards(request: QueryValidatorOutstandingRewardsRequest): Promise<QueryValidatorOutstandingRewardsResponse> {
+  validatorOutstandingRewards(request: QueryValidatorOutstandingRewardsRequest, useInterfaces: boolean = true): Promise<QueryValidatorOutstandingRewardsResponse> {
     const data = QueryValidatorOutstandingRewardsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Query", "ValidatorOutstandingRewards", data);
-    return promise.then(data => QueryValidatorOutstandingRewardsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryValidatorOutstandingRewardsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  validatorCommission(request: QueryValidatorCommissionRequest): Promise<QueryValidatorCommissionResponse> {
+  validatorCommission(request: QueryValidatorCommissionRequest, useInterfaces: boolean = true): Promise<QueryValidatorCommissionResponse> {
     const data = QueryValidatorCommissionRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Query", "ValidatorCommission", data);
-    return promise.then(data => QueryValidatorCommissionResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryValidatorCommissionResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  validatorSlashes(request: QueryValidatorSlashesRequest): Promise<QueryValidatorSlashesResponse> {
+  validatorSlashes(request: QueryValidatorSlashesRequest, useInterfaces: boolean = true): Promise<QueryValidatorSlashesResponse> {
     const data = QueryValidatorSlashesRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Query", "ValidatorSlashes", data);
-    return promise.then(data => QueryValidatorSlashesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryValidatorSlashesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  delegationRewards(request: QueryDelegationRewardsRequest): Promise<QueryDelegationRewardsResponse> {
+  delegationRewards(request: QueryDelegationRewardsRequest, useInterfaces: boolean = true): Promise<QueryDelegationRewardsResponse> {
     const data = QueryDelegationRewardsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Query", "DelegationRewards", data);
-    return promise.then(data => QueryDelegationRewardsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDelegationRewardsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  delegationTotalRewards(request: QueryDelegationTotalRewardsRequest): Promise<QueryDelegationTotalRewardsResponse> {
+  delegationTotalRewards(request: QueryDelegationTotalRewardsRequest, useInterfaces: boolean = true): Promise<QueryDelegationTotalRewardsResponse> {
     const data = QueryDelegationTotalRewardsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Query", "DelegationTotalRewards", data);
-    return promise.then(data => QueryDelegationTotalRewardsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDelegationTotalRewardsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  delegatorValidators(request: QueryDelegatorValidatorsRequest): Promise<QueryDelegatorValidatorsResponse> {
+  delegatorValidators(request: QueryDelegatorValidatorsRequest, useInterfaces: boolean = true): Promise<QueryDelegatorValidatorsResponse> {
     const data = QueryDelegatorValidatorsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Query", "DelegatorValidators", data);
-    return promise.then(data => QueryDelegatorValidatorsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDelegatorValidatorsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  delegatorWithdrawAddress(request: QueryDelegatorWithdrawAddressRequest): Promise<QueryDelegatorWithdrawAddressResponse> {
+  delegatorWithdrawAddress(request: QueryDelegatorWithdrawAddressRequest, useInterfaces: boolean = true): Promise<QueryDelegatorWithdrawAddressResponse> {
     const data = QueryDelegatorWithdrawAddressRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Query", "DelegatorWithdrawAddress", data);
-    return promise.then(data => QueryDelegatorWithdrawAddressResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDelegatorWithdrawAddressResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  communityPool(request: QueryCommunityPoolRequest = {}): Promise<QueryCommunityPoolResponse> {
+  communityPool(request: QueryCommunityPoolRequest = {}, useInterfaces: boolean = true): Promise<QueryCommunityPoolResponse> {
     const data = QueryCommunityPoolRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Query", "CommunityPool", data);
-    return promise.then(data => QueryCommunityPoolResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryCommunityPoolResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    validatorDistributionInfo(request: QueryValidatorDistributionInfoRequest): Promise<QueryValidatorDistributionInfoResponse> {
-      return queryService.validatorDistributionInfo(request);
+    validatorDistributionInfo(request: QueryValidatorDistributionInfoRequest, useInterfaces: boolean = true): Promise<QueryValidatorDistributionInfoResponse> {
+      return queryService.validatorDistributionInfo(request, useInterfaces);
     },
-    validatorOutstandingRewards(request: QueryValidatorOutstandingRewardsRequest): Promise<QueryValidatorOutstandingRewardsResponse> {
-      return queryService.validatorOutstandingRewards(request);
+    validatorOutstandingRewards(request: QueryValidatorOutstandingRewardsRequest, useInterfaces: boolean = true): Promise<QueryValidatorOutstandingRewardsResponse> {
+      return queryService.validatorOutstandingRewards(request, useInterfaces);
     },
-    validatorCommission(request: QueryValidatorCommissionRequest): Promise<QueryValidatorCommissionResponse> {
-      return queryService.validatorCommission(request);
+    validatorCommission(request: QueryValidatorCommissionRequest, useInterfaces: boolean = true): Promise<QueryValidatorCommissionResponse> {
+      return queryService.validatorCommission(request, useInterfaces);
     },
-    validatorSlashes(request: QueryValidatorSlashesRequest): Promise<QueryValidatorSlashesResponse> {
-      return queryService.validatorSlashes(request);
+    validatorSlashes(request: QueryValidatorSlashesRequest, useInterfaces: boolean = true): Promise<QueryValidatorSlashesResponse> {
+      return queryService.validatorSlashes(request, useInterfaces);
     },
-    delegationRewards(request: QueryDelegationRewardsRequest): Promise<QueryDelegationRewardsResponse> {
-      return queryService.delegationRewards(request);
+    delegationRewards(request: QueryDelegationRewardsRequest, useInterfaces: boolean = true): Promise<QueryDelegationRewardsResponse> {
+      return queryService.delegationRewards(request, useInterfaces);
     },
-    delegationTotalRewards(request: QueryDelegationTotalRewardsRequest): Promise<QueryDelegationTotalRewardsResponse> {
-      return queryService.delegationTotalRewards(request);
+    delegationTotalRewards(request: QueryDelegationTotalRewardsRequest, useInterfaces: boolean = true): Promise<QueryDelegationTotalRewardsResponse> {
+      return queryService.delegationTotalRewards(request, useInterfaces);
     },
-    delegatorValidators(request: QueryDelegatorValidatorsRequest): Promise<QueryDelegatorValidatorsResponse> {
-      return queryService.delegatorValidators(request);
+    delegatorValidators(request: QueryDelegatorValidatorsRequest, useInterfaces: boolean = true): Promise<QueryDelegatorValidatorsResponse> {
+      return queryService.delegatorValidators(request, useInterfaces);
     },
-    delegatorWithdrawAddress(request: QueryDelegatorWithdrawAddressRequest): Promise<QueryDelegatorWithdrawAddressResponse> {
-      return queryService.delegatorWithdrawAddress(request);
+    delegatorWithdrawAddress(request: QueryDelegatorWithdrawAddressRequest, useInterfaces: boolean = true): Promise<QueryDelegatorWithdrawAddressResponse> {
+      return queryService.delegatorWithdrawAddress(request, useInterfaces);
     },
-    communityPool(request?: QueryCommunityPoolRequest): Promise<QueryCommunityPoolResponse> {
-      return queryService.communityPool(request);
+    communityPool(request?: QueryCommunityPoolRequest, useInterfaces: boolean = true): Promise<QueryCommunityPoolResponse> {
+      return queryService.communityPool(request, useInterfaces);
     }
   };
 };

@@ -31,7 +31,7 @@ export interface PositionAmino {
   pool_id: string;
   lower_tick: string;
   upper_tick: string;
-  join_time?: Date | undefined;
+  join_time?: string | undefined;
   liquidity: string;
 }
 export interface PositionAminoMsg {
@@ -167,7 +167,7 @@ export const Position = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Position {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Position {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePosition();
@@ -220,32 +220,32 @@ export const Position = {
       poolId: BigInt(object.pool_id),
       lowerTick: BigInt(object.lower_tick),
       upperTick: BigInt(object.upper_tick),
-      joinTime: object.join_time,
+      joinTime: object?.join_time ? fromTimestamp(Timestamp.fromAmino(object.join_time)) : undefined,
       liquidity: object.liquidity
     };
   },
-  toAmino(message: Position): PositionAmino {
+  toAmino(message: Position, useInterfaces: boolean = false): PositionAmino {
     const obj: any = {};
     obj.position_id = message.positionId ? message.positionId.toString() : undefined;
     obj.address = message.address;
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.lower_tick = message.lowerTick ? message.lowerTick.toString() : undefined;
     obj.upper_tick = message.upperTick ? message.upperTick.toString() : undefined;
-    obj.join_time = message.joinTime;
+    obj.join_time = message.joinTime ? Timestamp.toAmino(toTimestamp(message.joinTime)) : undefined;
     obj.liquidity = message.liquidity;
     return obj;
   },
   fromAminoMsg(object: PositionAminoMsg): Position {
     return Position.fromAmino(object.value);
   },
-  toAminoMsg(message: Position): PositionAminoMsg {
+  toAminoMsg(message: Position, useInterfaces: boolean = false): PositionAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/position",
-      value: Position.toAmino(message)
+      value: Position.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PositionProtoMsg): Position {
-    return Position.decode(message.value);
+  fromProtoMsg(message: PositionProtoMsg, useInterfaces: boolean = false): Position {
+    return Position.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Position): Uint8Array {
     return Position.encode(message).finish();
@@ -290,7 +290,7 @@ export const FullPositionBreakdown = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): FullPositionBreakdown {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): FullPositionBreakdown {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFullPositionBreakdown();
@@ -298,22 +298,22 @@ export const FullPositionBreakdown = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.position = Position.decode(reader, reader.uint32());
+          message.position = Position.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.asset0 = Coin.decode(reader, reader.uint32());
+          message.asset0 = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
-          message.asset1 = Coin.decode(reader, reader.uint32());
+          message.asset1 = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
-          message.claimableSpreadRewards.push(Coin.decode(reader, reader.uint32()));
+          message.claimableSpreadRewards.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 5:
-          message.claimableIncentives.push(Coin.decode(reader, reader.uint32()));
+          message.claimableIncentives.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 6:
-          message.forfeitedIncentives.push(Coin.decode(reader, reader.uint32()));
+          message.forfeitedIncentives.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -342,23 +342,23 @@ export const FullPositionBreakdown = {
       forfeitedIncentives: Array.isArray(object?.forfeited_incentives) ? object.forfeited_incentives.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: FullPositionBreakdown): FullPositionBreakdownAmino {
+  toAmino(message: FullPositionBreakdown, useInterfaces: boolean = false): FullPositionBreakdownAmino {
     const obj: any = {};
-    obj.position = message.position ? Position.toAmino(message.position) : undefined;
-    obj.asset0 = message.asset0 ? Coin.toAmino(message.asset0) : undefined;
-    obj.asset1 = message.asset1 ? Coin.toAmino(message.asset1) : undefined;
+    obj.position = message.position ? Position.toAmino(message.position, useInterfaces) : undefined;
+    obj.asset0 = message.asset0 ? Coin.toAmino(message.asset0, useInterfaces) : undefined;
+    obj.asset1 = message.asset1 ? Coin.toAmino(message.asset1, useInterfaces) : undefined;
     if (message.claimableSpreadRewards) {
-      obj.claimable_spread_rewards = message.claimableSpreadRewards.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.claimable_spread_rewards = message.claimableSpreadRewards.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.claimable_spread_rewards = [];
     }
     if (message.claimableIncentives) {
-      obj.claimable_incentives = message.claimableIncentives.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.claimable_incentives = message.claimableIncentives.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.claimable_incentives = [];
     }
     if (message.forfeitedIncentives) {
-      obj.forfeited_incentives = message.forfeitedIncentives.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.forfeited_incentives = message.forfeitedIncentives.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.forfeited_incentives = [];
     }
@@ -367,14 +367,14 @@ export const FullPositionBreakdown = {
   fromAminoMsg(object: FullPositionBreakdownAminoMsg): FullPositionBreakdown {
     return FullPositionBreakdown.fromAmino(object.value);
   },
-  toAminoMsg(message: FullPositionBreakdown): FullPositionBreakdownAminoMsg {
+  toAminoMsg(message: FullPositionBreakdown, useInterfaces: boolean = false): FullPositionBreakdownAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/full-position-breakdown",
-      value: FullPositionBreakdown.toAmino(message)
+      value: FullPositionBreakdown.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: FullPositionBreakdownProtoMsg): FullPositionBreakdown {
-    return FullPositionBreakdown.decode(message.value);
+  fromProtoMsg(message: FullPositionBreakdownProtoMsg, useInterfaces: boolean = false): FullPositionBreakdown {
+    return FullPositionBreakdown.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: FullPositionBreakdown): Uint8Array {
     return FullPositionBreakdown.encode(message).finish();
@@ -403,7 +403,7 @@ export const PositionWithPeriodLock = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PositionWithPeriodLock {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PositionWithPeriodLock {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePositionWithPeriodLock();
@@ -411,10 +411,10 @@ export const PositionWithPeriodLock = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.position = Position.decode(reader, reader.uint32());
+          message.position = Position.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.locks = PeriodLock.decode(reader, reader.uint32());
+          message.locks = PeriodLock.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -435,23 +435,23 @@ export const PositionWithPeriodLock = {
       locks: object?.locks ? PeriodLock.fromAmino(object.locks) : undefined
     };
   },
-  toAmino(message: PositionWithPeriodLock): PositionWithPeriodLockAmino {
+  toAmino(message: PositionWithPeriodLock, useInterfaces: boolean = false): PositionWithPeriodLockAmino {
     const obj: any = {};
-    obj.position = message.position ? Position.toAmino(message.position) : undefined;
-    obj.locks = message.locks ? PeriodLock.toAmino(message.locks) : undefined;
+    obj.position = message.position ? Position.toAmino(message.position, useInterfaces) : undefined;
+    obj.locks = message.locks ? PeriodLock.toAmino(message.locks, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: PositionWithPeriodLockAminoMsg): PositionWithPeriodLock {
     return PositionWithPeriodLock.fromAmino(object.value);
   },
-  toAminoMsg(message: PositionWithPeriodLock): PositionWithPeriodLockAminoMsg {
+  toAminoMsg(message: PositionWithPeriodLock, useInterfaces: boolean = false): PositionWithPeriodLockAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/position-with-period-lock",
-      value: PositionWithPeriodLock.toAmino(message)
+      value: PositionWithPeriodLock.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PositionWithPeriodLockProtoMsg): PositionWithPeriodLock {
-    return PositionWithPeriodLock.decode(message.value);
+  fromProtoMsg(message: PositionWithPeriodLockProtoMsg, useInterfaces: boolean = false): PositionWithPeriodLock {
+    return PositionWithPeriodLock.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PositionWithPeriodLock): Uint8Array {
     return PositionWithPeriodLock.encode(message).finish();

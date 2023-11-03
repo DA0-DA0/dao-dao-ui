@@ -37,82 +37,82 @@ export class QueryClientImpl implements Query {
     this.deposits = this.deposits.bind(this);
     this.tallyResult = this.tallyResult.bind(this);
   }
-  constitution(request: QueryConstitutionRequest = {}): Promise<QueryConstitutionResponse> {
+  constitution(request: QueryConstitutionRequest = {}, useInterfaces: boolean = true): Promise<QueryConstitutionResponse> {
     const data = QueryConstitutionRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Query", "Constitution", data);
-    return promise.then(data => QueryConstitutionResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryConstitutionResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  proposal(request: QueryProposalRequest): Promise<QueryProposalResponse> {
+  proposal(request: QueryProposalRequest, useInterfaces: boolean = true): Promise<QueryProposalResponse> {
     const data = QueryProposalRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Query", "Proposal", data);
-    return promise.then(data => QueryProposalResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryProposalResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  proposals(request: QueryProposalsRequest): Promise<QueryProposalsResponse> {
+  proposals(request: QueryProposalsRequest, useInterfaces: boolean = true): Promise<QueryProposalsResponse> {
     const data = QueryProposalsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Query", "Proposals", data);
-    return promise.then(data => QueryProposalsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryProposalsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  vote(request: QueryVoteRequest): Promise<QueryVoteResponse> {
+  vote(request: QueryVoteRequest, useInterfaces: boolean = true): Promise<QueryVoteResponse> {
     const data = QueryVoteRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Query", "Vote", data);
-    return promise.then(data => QueryVoteResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryVoteResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  votes(request: QueryVotesRequest): Promise<QueryVotesResponse> {
+  votes(request: QueryVotesRequest, useInterfaces: boolean = true): Promise<QueryVotesResponse> {
     const data = QueryVotesRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Query", "Votes", data);
-    return promise.then(data => QueryVotesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryVotesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  deposit(request: QueryDepositRequest): Promise<QueryDepositResponse> {
+  deposit(request: QueryDepositRequest, useInterfaces: boolean = true): Promise<QueryDepositResponse> {
     const data = QueryDepositRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Query", "Deposit", data);
-    return promise.then(data => QueryDepositResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDepositResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  deposits(request: QueryDepositsRequest): Promise<QueryDepositsResponse> {
+  deposits(request: QueryDepositsRequest, useInterfaces: boolean = true): Promise<QueryDepositsResponse> {
     const data = QueryDepositsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Query", "Deposits", data);
-    return promise.then(data => QueryDepositsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDepositsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  tallyResult(request: QueryTallyResultRequest): Promise<QueryTallyResultResponse> {
+  tallyResult(request: QueryTallyResultRequest, useInterfaces: boolean = true): Promise<QueryTallyResultResponse> {
     const data = QueryTallyResultRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Query", "TallyResult", data);
-    return promise.then(data => QueryTallyResultResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryTallyResultResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    constitution(request?: QueryConstitutionRequest): Promise<QueryConstitutionResponse> {
-      return queryService.constitution(request);
+    constitution(request?: QueryConstitutionRequest, useInterfaces: boolean = true): Promise<QueryConstitutionResponse> {
+      return queryService.constitution(request, useInterfaces);
     },
-    proposal(request: QueryProposalRequest): Promise<QueryProposalResponse> {
-      return queryService.proposal(request);
+    proposal(request: QueryProposalRequest, useInterfaces: boolean = true): Promise<QueryProposalResponse> {
+      return queryService.proposal(request, useInterfaces);
     },
-    proposals(request: QueryProposalsRequest): Promise<QueryProposalsResponse> {
-      return queryService.proposals(request);
+    proposals(request: QueryProposalsRequest, useInterfaces: boolean = true): Promise<QueryProposalsResponse> {
+      return queryService.proposals(request, useInterfaces);
     },
-    vote(request: QueryVoteRequest): Promise<QueryVoteResponse> {
-      return queryService.vote(request);
+    vote(request: QueryVoteRequest, useInterfaces: boolean = true): Promise<QueryVoteResponse> {
+      return queryService.vote(request, useInterfaces);
     },
-    votes(request: QueryVotesRequest): Promise<QueryVotesResponse> {
-      return queryService.votes(request);
+    votes(request: QueryVotesRequest, useInterfaces: boolean = true): Promise<QueryVotesResponse> {
+      return queryService.votes(request, useInterfaces);
     },
-    params(request: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    deposit(request: QueryDepositRequest): Promise<QueryDepositResponse> {
-      return queryService.deposit(request);
+    deposit(request: QueryDepositRequest, useInterfaces: boolean = true): Promise<QueryDepositResponse> {
+      return queryService.deposit(request, useInterfaces);
     },
-    deposits(request: QueryDepositsRequest): Promise<QueryDepositsResponse> {
-      return queryService.deposits(request);
+    deposits(request: QueryDepositsRequest, useInterfaces: boolean = true): Promise<QueryDepositsResponse> {
+      return queryService.deposits(request, useInterfaces);
     },
-    tallyResult(request: QueryTallyResultRequest): Promise<QueryTallyResultResponse> {
-      return queryService.tallyResult(request);
+    tallyResult(request: QueryTallyResultRequest, useInterfaces: boolean = true): Promise<QueryTallyResultResponse> {
+      return queryService.tallyResult(request, useInterfaces);
     }
   };
 };

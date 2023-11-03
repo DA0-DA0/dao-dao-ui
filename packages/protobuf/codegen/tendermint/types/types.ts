@@ -156,7 +156,7 @@ export interface HeaderAmino {
   version?: ConsensusAmino | undefined;
   chain_id: string;
   height: string;
-  time?: Date | undefined;
+  time?: string | undefined;
   /** prev block info */
   last_block_id?: BlockIDAmino | undefined;
   /** hashes of block data */
@@ -269,7 +269,7 @@ export interface VoteAmino {
   height: string;
   round: number;
   block_id?: BlockIDAmino | undefined;
-  timestamp?: Date | undefined;
+  timestamp?: string | undefined;
   validator_address: Uint8Array;
   validator_index: number;
   /**
@@ -353,7 +353,7 @@ export interface CommitSigProtoMsg {
 export interface CommitSigAmino {
   block_id_flag: BlockIDFlag;
   validator_address: Uint8Array;
-  timestamp?: Date | undefined;
+  timestamp?: string | undefined;
   signature: Uint8Array;
 }
 export interface CommitSigAminoMsg {
@@ -420,7 +420,7 @@ export interface ExtendedCommitSigProtoMsg {
 export interface ExtendedCommitSigAmino {
   block_id_flag: BlockIDFlag;
   validator_address: Uint8Array;
-  timestamp?: Date | undefined;
+  timestamp?: string | undefined;
   signature: Uint8Array;
   /** Vote extension data */
   extension: Uint8Array;
@@ -463,7 +463,7 @@ export interface ProposalAmino {
   round: number;
   pol_round: number;
   block_id?: BlockIDAmino | undefined;
-  timestamp?: Date | undefined;
+  timestamp?: string | undefined;
   signature: Uint8Array;
 }
 export interface ProposalAminoMsg {
@@ -480,8 +480,8 @@ export interface ProposalSDKType {
   signature: Uint8Array;
 }
 export interface SignedHeader {
-  header: Header | undefined;
-  commit: Commit | undefined;
+  header?: Header | undefined;
+  commit?: Commit | undefined;
 }
 export interface SignedHeaderProtoMsg {
   typeUrl: "/tendermint.types.SignedHeader";
@@ -496,12 +496,12 @@ export interface SignedHeaderAminoMsg {
   value: SignedHeaderAmino;
 }
 export interface SignedHeaderSDKType {
-  header: HeaderSDKType | undefined;
-  commit: CommitSDKType | undefined;
+  header?: HeaderSDKType | undefined;
+  commit?: CommitSDKType | undefined;
 }
 export interface LightBlock {
-  signedHeader: SignedHeader | undefined;
-  validatorSet: ValidatorSet | undefined;
+  signedHeader?: SignedHeader | undefined;
+  validatorSet?: ValidatorSet | undefined;
 }
 export interface LightBlockProtoMsg {
   typeUrl: "/tendermint.types.LightBlock";
@@ -516,8 +516,8 @@ export interface LightBlockAminoMsg {
   value: LightBlockAmino;
 }
 export interface LightBlockSDKType {
-  signed_header: SignedHeaderSDKType | undefined;
-  validator_set: ValidatorSetSDKType | undefined;
+  signed_header?: SignedHeaderSDKType | undefined;
+  validator_set?: ValidatorSetSDKType | undefined;
 }
 export interface BlockMeta {
   blockId: BlockID | undefined;
@@ -549,7 +549,7 @@ export interface BlockMetaSDKType {
 export interface TxProof {
   rootHash: Uint8Array;
   data: Uint8Array;
-  proof: Proof | undefined;
+  proof?: Proof | undefined;
 }
 export interface TxProofProtoMsg {
   typeUrl: "/tendermint.types.TxProof";
@@ -569,7 +569,7 @@ export interface TxProofAminoMsg {
 export interface TxProofSDKType {
   root_hash: Uint8Array;
   data: Uint8Array;
-  proof: ProofSDKType | undefined;
+  proof?: ProofSDKType | undefined;
 }
 function createBasePartSetHeader(): PartSetHeader {
   return {
@@ -588,7 +588,7 @@ export const PartSetHeader = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PartSetHeader {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PartSetHeader {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePartSetHeader();
@@ -620,7 +620,7 @@ export const PartSetHeader = {
       hash: object.hash
     };
   },
-  toAmino(message: PartSetHeader): PartSetHeaderAmino {
+  toAmino(message: PartSetHeader, useInterfaces: boolean = false): PartSetHeaderAmino {
     const obj: any = {};
     obj.total = message.total;
     obj.hash = message.hash;
@@ -629,8 +629,8 @@ export const PartSetHeader = {
   fromAminoMsg(object: PartSetHeaderAminoMsg): PartSetHeader {
     return PartSetHeader.fromAmino(object.value);
   },
-  fromProtoMsg(message: PartSetHeaderProtoMsg): PartSetHeader {
-    return PartSetHeader.decode(message.value);
+  fromProtoMsg(message: PartSetHeaderProtoMsg, useInterfaces: boolean = false): PartSetHeader {
+    return PartSetHeader.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PartSetHeader): Uint8Array {
     return PartSetHeader.encode(message).finish();
@@ -663,7 +663,7 @@ export const Part = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Part {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Part {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePart();
@@ -677,7 +677,7 @@ export const Part = {
           message.bytes = reader.bytes();
           break;
         case 3:
-          message.proof = Proof.decode(reader, reader.uint32());
+          message.proof = Proof.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -700,18 +700,18 @@ export const Part = {
       proof: object?.proof ? Proof.fromAmino(object.proof) : undefined
     };
   },
-  toAmino(message: Part): PartAmino {
+  toAmino(message: Part, useInterfaces: boolean = false): PartAmino {
     const obj: any = {};
     obj.index = message.index;
     obj.bytes = message.bytes;
-    obj.proof = message.proof ? Proof.toAmino(message.proof) : undefined;
+    obj.proof = message.proof ? Proof.toAmino(message.proof, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: PartAminoMsg): Part {
     return Part.fromAmino(object.value);
   },
-  fromProtoMsg(message: PartProtoMsg): Part {
-    return Part.decode(message.value);
+  fromProtoMsg(message: PartProtoMsg, useInterfaces: boolean = false): Part {
+    return Part.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Part): Uint8Array {
     return Part.encode(message).finish();
@@ -740,7 +740,7 @@ export const BlockID = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): BlockID {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): BlockID {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBlockID();
@@ -751,7 +751,7 @@ export const BlockID = {
           message.hash = reader.bytes();
           break;
         case 2:
-          message.partSetHeader = PartSetHeader.decode(reader, reader.uint32());
+          message.partSetHeader = PartSetHeader.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -772,17 +772,17 @@ export const BlockID = {
       partSetHeader: object?.part_set_header ? PartSetHeader.fromAmino(object.part_set_header) : undefined
     };
   },
-  toAmino(message: BlockID): BlockIDAmino {
+  toAmino(message: BlockID, useInterfaces: boolean = false): BlockIDAmino {
     const obj: any = {};
     obj.hash = message.hash;
-    obj.part_set_header = message.partSetHeader ? PartSetHeader.toAmino(message.partSetHeader) : undefined;
+    obj.part_set_header = message.partSetHeader ? PartSetHeader.toAmino(message.partSetHeader, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: BlockIDAminoMsg): BlockID {
     return BlockID.fromAmino(object.value);
   },
-  fromProtoMsg(message: BlockIDProtoMsg): BlockID {
-    return BlockID.decode(message.value);
+  fromProtoMsg(message: BlockIDProtoMsg, useInterfaces: boolean = false): BlockID {
+    return BlockID.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: BlockID): Uint8Array {
     return BlockID.encode(message).finish();
@@ -859,7 +859,7 @@ export const Header = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Header {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Header {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHeader();
@@ -867,7 +867,7 @@ export const Header = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.version = Consensus.decode(reader, reader.uint32());
+          message.version = Consensus.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
           message.chainId = reader.string();
@@ -879,7 +879,7 @@ export const Header = {
           message.time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 5:
-          message.lastBlockId = BlockID.decode(reader, reader.uint32());
+          message.lastBlockId = BlockID.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 6:
           message.lastCommitHash = reader.bytes();
@@ -938,7 +938,7 @@ export const Header = {
       version: object?.version ? Consensus.fromAmino(object.version) : undefined,
       chainId: object.chain_id,
       height: BigInt(object.height),
-      time: object.time,
+      time: object?.time ? fromTimestamp(Timestamp.fromAmino(object.time)) : undefined,
       lastBlockId: object?.last_block_id ? BlockID.fromAmino(object.last_block_id) : undefined,
       lastCommitHash: object.last_commit_hash,
       dataHash: object.data_hash,
@@ -951,13 +951,13 @@ export const Header = {
       proposerAddress: object.proposer_address
     };
   },
-  toAmino(message: Header): HeaderAmino {
+  toAmino(message: Header, useInterfaces: boolean = false): HeaderAmino {
     const obj: any = {};
-    obj.version = message.version ? Consensus.toAmino(message.version) : undefined;
+    obj.version = message.version ? Consensus.toAmino(message.version, useInterfaces) : undefined;
     obj.chain_id = message.chainId;
     obj.height = message.height ? message.height.toString() : undefined;
-    obj.time = message.time;
-    obj.last_block_id = message.lastBlockId ? BlockID.toAmino(message.lastBlockId) : undefined;
+    obj.time = message.time ? Timestamp.toAmino(toTimestamp(message.time)) : undefined;
+    obj.last_block_id = message.lastBlockId ? BlockID.toAmino(message.lastBlockId, useInterfaces) : undefined;
     obj.last_commit_hash = message.lastCommitHash;
     obj.data_hash = message.dataHash;
     obj.validators_hash = message.validatorsHash;
@@ -972,8 +972,8 @@ export const Header = {
   fromAminoMsg(object: HeaderAminoMsg): Header {
     return Header.fromAmino(object.value);
   },
-  fromProtoMsg(message: HeaderProtoMsg): Header {
-    return Header.decode(message.value);
+  fromProtoMsg(message: HeaderProtoMsg, useInterfaces: boolean = false): Header {
+    return Header.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Header): Uint8Array {
     return Header.encode(message).finish();
@@ -998,7 +998,7 @@ export const Data = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Data {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Data {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseData();
@@ -1025,7 +1025,7 @@ export const Data = {
       txs: Array.isArray(object?.txs) ? object.txs.map((e: any) => e) : []
     };
   },
-  toAmino(message: Data): DataAmino {
+  toAmino(message: Data, useInterfaces: boolean = false): DataAmino {
     const obj: any = {};
     if (message.txs) {
       obj.txs = message.txs.map(e => e);
@@ -1037,8 +1037,8 @@ export const Data = {
   fromAminoMsg(object: DataAminoMsg): Data {
     return Data.fromAmino(object.value);
   },
-  fromProtoMsg(message: DataProtoMsg): Data {
-    return Data.decode(message.value);
+  fromProtoMsg(message: DataProtoMsg, useInterfaces: boolean = false): Data {
+    return Data.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Data): Uint8Array {
     return Data.encode(message).finish();
@@ -1099,7 +1099,7 @@ export const Vote = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Vote {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Vote {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVote();
@@ -1116,7 +1116,7 @@ export const Vote = {
           message.round = reader.int32();
           break;
         case 4:
-          message.blockId = BlockID.decode(reader, reader.uint32());
+          message.blockId = BlockID.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 5:
           message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
@@ -1163,7 +1163,7 @@ export const Vote = {
       height: BigInt(object.height),
       round: object.round,
       blockId: object?.block_id ? BlockID.fromAmino(object.block_id) : undefined,
-      timestamp: object.timestamp,
+      timestamp: object?.timestamp ? fromTimestamp(Timestamp.fromAmino(object.timestamp)) : undefined,
       validatorAddress: object.validator_address,
       validatorIndex: object.validator_index,
       signature: object.signature,
@@ -1171,13 +1171,13 @@ export const Vote = {
       extensionSignature: object.extension_signature
     };
   },
-  toAmino(message: Vote): VoteAmino {
+  toAmino(message: Vote, useInterfaces: boolean = false): VoteAmino {
     const obj: any = {};
     obj.type = message.type;
     obj.height = message.height ? message.height.toString() : undefined;
     obj.round = message.round;
-    obj.block_id = message.blockId ? BlockID.toAmino(message.blockId) : undefined;
-    obj.timestamp = message.timestamp;
+    obj.block_id = message.blockId ? BlockID.toAmino(message.blockId, useInterfaces) : undefined;
+    obj.timestamp = message.timestamp ? Timestamp.toAmino(toTimestamp(message.timestamp)) : undefined;
     obj.validator_address = message.validatorAddress;
     obj.validator_index = message.validatorIndex;
     obj.signature = message.signature;
@@ -1188,8 +1188,8 @@ export const Vote = {
   fromAminoMsg(object: VoteAminoMsg): Vote {
     return Vote.fromAmino(object.value);
   },
-  fromProtoMsg(message: VoteProtoMsg): Vote {
-    return Vote.decode(message.value);
+  fromProtoMsg(message: VoteProtoMsg, useInterfaces: boolean = false): Vote {
+    return Vote.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Vote): Uint8Array {
     return Vote.encode(message).finish();
@@ -1226,7 +1226,7 @@ export const Commit = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Commit {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Commit {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCommit();
@@ -1240,10 +1240,10 @@ export const Commit = {
           message.round = reader.int32();
           break;
         case 3:
-          message.blockId = BlockID.decode(reader, reader.uint32());
+          message.blockId = BlockID.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
-          message.signatures.push(CommitSig.decode(reader, reader.uint32()));
+          message.signatures.push(CommitSig.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1268,13 +1268,13 @@ export const Commit = {
       signatures: Array.isArray(object?.signatures) ? object.signatures.map((e: any) => CommitSig.fromAmino(e)) : []
     };
   },
-  toAmino(message: Commit): CommitAmino {
+  toAmino(message: Commit, useInterfaces: boolean = false): CommitAmino {
     const obj: any = {};
     obj.height = message.height ? message.height.toString() : undefined;
     obj.round = message.round;
-    obj.block_id = message.blockId ? BlockID.toAmino(message.blockId) : undefined;
+    obj.block_id = message.blockId ? BlockID.toAmino(message.blockId, useInterfaces) : undefined;
     if (message.signatures) {
-      obj.signatures = message.signatures.map(e => e ? CommitSig.toAmino(e) : undefined);
+      obj.signatures = message.signatures.map(e => e ? CommitSig.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.signatures = [];
     }
@@ -1283,8 +1283,8 @@ export const Commit = {
   fromAminoMsg(object: CommitAminoMsg): Commit {
     return Commit.fromAmino(object.value);
   },
-  fromProtoMsg(message: CommitProtoMsg): Commit {
-    return Commit.decode(message.value);
+  fromProtoMsg(message: CommitProtoMsg, useInterfaces: boolean = false): Commit {
+    return Commit.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Commit): Uint8Array {
     return Commit.encode(message).finish();
@@ -1321,7 +1321,7 @@ export const CommitSig = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CommitSig {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CommitSig {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCommitSig();
@@ -1359,23 +1359,23 @@ export const CommitSig = {
     return {
       blockIdFlag: isSet(object.block_id_flag) ? blockIDFlagFromJSON(object.block_id_flag) : -1,
       validatorAddress: object.validator_address,
-      timestamp: object.timestamp,
+      timestamp: object?.timestamp ? fromTimestamp(Timestamp.fromAmino(object.timestamp)) : undefined,
       signature: object.signature
     };
   },
-  toAmino(message: CommitSig): CommitSigAmino {
+  toAmino(message: CommitSig, useInterfaces: boolean = false): CommitSigAmino {
     const obj: any = {};
     obj.block_id_flag = message.blockIdFlag;
     obj.validator_address = message.validatorAddress;
-    obj.timestamp = message.timestamp;
+    obj.timestamp = message.timestamp ? Timestamp.toAmino(toTimestamp(message.timestamp)) : undefined;
     obj.signature = message.signature;
     return obj;
   },
   fromAminoMsg(object: CommitSigAminoMsg): CommitSig {
     return CommitSig.fromAmino(object.value);
   },
-  fromProtoMsg(message: CommitSigProtoMsg): CommitSig {
-    return CommitSig.decode(message.value);
+  fromProtoMsg(message: CommitSigProtoMsg, useInterfaces: boolean = false): CommitSig {
+    return CommitSig.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CommitSig): Uint8Array {
     return CommitSig.encode(message).finish();
@@ -1412,7 +1412,7 @@ export const ExtendedCommit = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ExtendedCommit {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ExtendedCommit {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseExtendedCommit();
@@ -1426,10 +1426,10 @@ export const ExtendedCommit = {
           message.round = reader.int32();
           break;
         case 3:
-          message.blockId = BlockID.decode(reader, reader.uint32());
+          message.blockId = BlockID.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
-          message.extendedSignatures.push(ExtendedCommitSig.decode(reader, reader.uint32()));
+          message.extendedSignatures.push(ExtendedCommitSig.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1454,13 +1454,13 @@ export const ExtendedCommit = {
       extendedSignatures: Array.isArray(object?.extended_signatures) ? object.extended_signatures.map((e: any) => ExtendedCommitSig.fromAmino(e)) : []
     };
   },
-  toAmino(message: ExtendedCommit): ExtendedCommitAmino {
+  toAmino(message: ExtendedCommit, useInterfaces: boolean = false): ExtendedCommitAmino {
     const obj: any = {};
     obj.height = message.height ? message.height.toString() : undefined;
     obj.round = message.round;
-    obj.block_id = message.blockId ? BlockID.toAmino(message.blockId) : undefined;
+    obj.block_id = message.blockId ? BlockID.toAmino(message.blockId, useInterfaces) : undefined;
     if (message.extendedSignatures) {
-      obj.extended_signatures = message.extendedSignatures.map(e => e ? ExtendedCommitSig.toAmino(e) : undefined);
+      obj.extended_signatures = message.extendedSignatures.map(e => e ? ExtendedCommitSig.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.extended_signatures = [];
     }
@@ -1469,8 +1469,8 @@ export const ExtendedCommit = {
   fromAminoMsg(object: ExtendedCommitAminoMsg): ExtendedCommit {
     return ExtendedCommit.fromAmino(object.value);
   },
-  fromProtoMsg(message: ExtendedCommitProtoMsg): ExtendedCommit {
-    return ExtendedCommit.decode(message.value);
+  fromProtoMsg(message: ExtendedCommitProtoMsg, useInterfaces: boolean = false): ExtendedCommit {
+    return ExtendedCommit.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ExtendedCommit): Uint8Array {
     return ExtendedCommit.encode(message).finish();
@@ -1515,7 +1515,7 @@ export const ExtendedCommitSig = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ExtendedCommitSig {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ExtendedCommitSig {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseExtendedCommitSig();
@@ -1561,17 +1561,17 @@ export const ExtendedCommitSig = {
     return {
       blockIdFlag: isSet(object.block_id_flag) ? blockIDFlagFromJSON(object.block_id_flag) : -1,
       validatorAddress: object.validator_address,
-      timestamp: object.timestamp,
+      timestamp: object?.timestamp ? fromTimestamp(Timestamp.fromAmino(object.timestamp)) : undefined,
       signature: object.signature,
       extension: object.extension,
       extensionSignature: object.extension_signature
     };
   },
-  toAmino(message: ExtendedCommitSig): ExtendedCommitSigAmino {
+  toAmino(message: ExtendedCommitSig, useInterfaces: boolean = false): ExtendedCommitSigAmino {
     const obj: any = {};
     obj.block_id_flag = message.blockIdFlag;
     obj.validator_address = message.validatorAddress;
-    obj.timestamp = message.timestamp;
+    obj.timestamp = message.timestamp ? Timestamp.toAmino(toTimestamp(message.timestamp)) : undefined;
     obj.signature = message.signature;
     obj.extension = message.extension;
     obj.extension_signature = message.extensionSignature;
@@ -1580,8 +1580,8 @@ export const ExtendedCommitSig = {
   fromAminoMsg(object: ExtendedCommitSigAminoMsg): ExtendedCommitSig {
     return ExtendedCommitSig.fromAmino(object.value);
   },
-  fromProtoMsg(message: ExtendedCommitSigProtoMsg): ExtendedCommitSig {
-    return ExtendedCommitSig.decode(message.value);
+  fromProtoMsg(message: ExtendedCommitSigProtoMsg, useInterfaces: boolean = false): ExtendedCommitSig {
+    return ExtendedCommitSig.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ExtendedCommitSig): Uint8Array {
     return ExtendedCommitSig.encode(message).finish();
@@ -1630,7 +1630,7 @@ export const Proposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Proposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Proposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProposal();
@@ -1650,7 +1650,7 @@ export const Proposal = {
           message.polRound = reader.int32();
           break;
         case 5:
-          message.blockId = BlockID.decode(reader, reader.uint32());
+          message.blockId = BlockID.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 6:
           message.timestamp = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
@@ -1683,26 +1683,26 @@ export const Proposal = {
       round: object.round,
       polRound: object.pol_round,
       blockId: object?.block_id ? BlockID.fromAmino(object.block_id) : undefined,
-      timestamp: object.timestamp,
+      timestamp: object?.timestamp ? fromTimestamp(Timestamp.fromAmino(object.timestamp)) : undefined,
       signature: object.signature
     };
   },
-  toAmino(message: Proposal): ProposalAmino {
+  toAmino(message: Proposal, useInterfaces: boolean = false): ProposalAmino {
     const obj: any = {};
     obj.type = message.type;
     obj.height = message.height ? message.height.toString() : undefined;
     obj.round = message.round;
     obj.pol_round = message.polRound;
-    obj.block_id = message.blockId ? BlockID.toAmino(message.blockId) : undefined;
-    obj.timestamp = message.timestamp;
+    obj.block_id = message.blockId ? BlockID.toAmino(message.blockId, useInterfaces) : undefined;
+    obj.timestamp = message.timestamp ? Timestamp.toAmino(toTimestamp(message.timestamp)) : undefined;
     obj.signature = message.signature;
     return obj;
   },
   fromAminoMsg(object: ProposalAminoMsg): Proposal {
     return Proposal.fromAmino(object.value);
   },
-  fromProtoMsg(message: ProposalProtoMsg): Proposal {
-    return Proposal.decode(message.value);
+  fromProtoMsg(message: ProposalProtoMsg, useInterfaces: boolean = false): Proposal {
+    return Proposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Proposal): Uint8Array {
     return Proposal.encode(message).finish();
@@ -1716,8 +1716,8 @@ export const Proposal = {
 };
 function createBaseSignedHeader(): SignedHeader {
   return {
-    header: Header.fromPartial({}),
-    commit: Commit.fromPartial({})
+    header: undefined,
+    commit: undefined
   };
 }
 export const SignedHeader = {
@@ -1731,7 +1731,7 @@ export const SignedHeader = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SignedHeader {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SignedHeader {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSignedHeader();
@@ -1739,10 +1739,10 @@ export const SignedHeader = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.header = Header.decode(reader, reader.uint32());
+          message.header = Header.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.commit = Commit.decode(reader, reader.uint32());
+          message.commit = Commit.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1763,17 +1763,17 @@ export const SignedHeader = {
       commit: object?.commit ? Commit.fromAmino(object.commit) : undefined
     };
   },
-  toAmino(message: SignedHeader): SignedHeaderAmino {
+  toAmino(message: SignedHeader, useInterfaces: boolean = false): SignedHeaderAmino {
     const obj: any = {};
-    obj.header = message.header ? Header.toAmino(message.header) : undefined;
-    obj.commit = message.commit ? Commit.toAmino(message.commit) : undefined;
+    obj.header = message.header ? Header.toAmino(message.header, useInterfaces) : undefined;
+    obj.commit = message.commit ? Commit.toAmino(message.commit, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: SignedHeaderAminoMsg): SignedHeader {
     return SignedHeader.fromAmino(object.value);
   },
-  fromProtoMsg(message: SignedHeaderProtoMsg): SignedHeader {
-    return SignedHeader.decode(message.value);
+  fromProtoMsg(message: SignedHeaderProtoMsg, useInterfaces: boolean = false): SignedHeader {
+    return SignedHeader.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SignedHeader): Uint8Array {
     return SignedHeader.encode(message).finish();
@@ -1787,8 +1787,8 @@ export const SignedHeader = {
 };
 function createBaseLightBlock(): LightBlock {
   return {
-    signedHeader: SignedHeader.fromPartial({}),
-    validatorSet: ValidatorSet.fromPartial({})
+    signedHeader: undefined,
+    validatorSet: undefined
   };
 }
 export const LightBlock = {
@@ -1802,7 +1802,7 @@ export const LightBlock = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): LightBlock {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): LightBlock {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLightBlock();
@@ -1810,10 +1810,10 @@ export const LightBlock = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.signedHeader = SignedHeader.decode(reader, reader.uint32());
+          message.signedHeader = SignedHeader.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.validatorSet = ValidatorSet.decode(reader, reader.uint32());
+          message.validatorSet = ValidatorSet.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1834,17 +1834,17 @@ export const LightBlock = {
       validatorSet: object?.validator_set ? ValidatorSet.fromAmino(object.validator_set) : undefined
     };
   },
-  toAmino(message: LightBlock): LightBlockAmino {
+  toAmino(message: LightBlock, useInterfaces: boolean = false): LightBlockAmino {
     const obj: any = {};
-    obj.signed_header = message.signedHeader ? SignedHeader.toAmino(message.signedHeader) : undefined;
-    obj.validator_set = message.validatorSet ? ValidatorSet.toAmino(message.validatorSet) : undefined;
+    obj.signed_header = message.signedHeader ? SignedHeader.toAmino(message.signedHeader, useInterfaces) : undefined;
+    obj.validator_set = message.validatorSet ? ValidatorSet.toAmino(message.validatorSet, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: LightBlockAminoMsg): LightBlock {
     return LightBlock.fromAmino(object.value);
   },
-  fromProtoMsg(message: LightBlockProtoMsg): LightBlock {
-    return LightBlock.decode(message.value);
+  fromProtoMsg(message: LightBlockProtoMsg, useInterfaces: boolean = false): LightBlock {
+    return LightBlock.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: LightBlock): Uint8Array {
     return LightBlock.encode(message).finish();
@@ -1881,7 +1881,7 @@ export const BlockMeta = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): BlockMeta {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): BlockMeta {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBlockMeta();
@@ -1889,13 +1889,13 @@ export const BlockMeta = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.blockId = BlockID.decode(reader, reader.uint32());
+          message.blockId = BlockID.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
           message.blockSize = reader.int64();
           break;
         case 3:
-          message.header = Header.decode(reader, reader.uint32());
+          message.header = Header.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
           message.numTxs = reader.int64();
@@ -1923,19 +1923,19 @@ export const BlockMeta = {
       numTxs: BigInt(object.num_txs)
     };
   },
-  toAmino(message: BlockMeta): BlockMetaAmino {
+  toAmino(message: BlockMeta, useInterfaces: boolean = false): BlockMetaAmino {
     const obj: any = {};
-    obj.block_id = message.blockId ? BlockID.toAmino(message.blockId) : undefined;
+    obj.block_id = message.blockId ? BlockID.toAmino(message.blockId, useInterfaces) : undefined;
     obj.block_size = message.blockSize ? message.blockSize.toString() : undefined;
-    obj.header = message.header ? Header.toAmino(message.header) : undefined;
+    obj.header = message.header ? Header.toAmino(message.header, useInterfaces) : undefined;
     obj.num_txs = message.numTxs ? message.numTxs.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: BlockMetaAminoMsg): BlockMeta {
     return BlockMeta.fromAmino(object.value);
   },
-  fromProtoMsg(message: BlockMetaProtoMsg): BlockMeta {
-    return BlockMeta.decode(message.value);
+  fromProtoMsg(message: BlockMetaProtoMsg, useInterfaces: boolean = false): BlockMeta {
+    return BlockMeta.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: BlockMeta): Uint8Array {
     return BlockMeta.encode(message).finish();
@@ -1951,7 +1951,7 @@ function createBaseTxProof(): TxProof {
   return {
     rootHash: new Uint8Array(),
     data: new Uint8Array(),
-    proof: Proof.fromPartial({})
+    proof: undefined
   };
 }
 export const TxProof = {
@@ -1968,7 +1968,7 @@ export const TxProof = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TxProof {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TxProof {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTxProof();
@@ -1982,7 +1982,7 @@ export const TxProof = {
           message.data = reader.bytes();
           break;
         case 3:
-          message.proof = Proof.decode(reader, reader.uint32());
+          message.proof = Proof.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -2005,18 +2005,18 @@ export const TxProof = {
       proof: object?.proof ? Proof.fromAmino(object.proof) : undefined
     };
   },
-  toAmino(message: TxProof): TxProofAmino {
+  toAmino(message: TxProof, useInterfaces: boolean = false): TxProofAmino {
     const obj: any = {};
     obj.root_hash = message.rootHash;
     obj.data = message.data;
-    obj.proof = message.proof ? Proof.toAmino(message.proof) : undefined;
+    obj.proof = message.proof ? Proof.toAmino(message.proof, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: TxProofAminoMsg): TxProof {
     return TxProof.fromAmino(object.value);
   },
-  fromProtoMsg(message: TxProofProtoMsg): TxProof {
-    return TxProof.decode(message.value);
+  fromProtoMsg(message: TxProofProtoMsg, useInterfaces: boolean = false): TxProof {
+    return TxProof.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TxProof): Uint8Array {
     return TxProof.encode(message).finish();

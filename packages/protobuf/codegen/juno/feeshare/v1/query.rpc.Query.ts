@@ -33,50 +33,50 @@ export class QueryClientImpl implements Query {
   }
   feeShares(request: QueryFeeSharesRequest = {
     pagination: undefined
-  }): Promise<QueryFeeSharesResponse> {
+  }, useInterfaces: boolean = true): Promise<QueryFeeSharesResponse> {
     const data = QueryFeeSharesRequest.encode(request).finish();
     const promise = this.rpc.request("juno.feeshare.v1.Query", "FeeShares", data);
-    return promise.then(data => QueryFeeSharesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryFeeSharesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  feeShare(request: QueryFeeShareRequest): Promise<QueryFeeShareResponse> {
+  feeShare(request: QueryFeeShareRequest, useInterfaces: boolean = true): Promise<QueryFeeShareResponse> {
     const data = QueryFeeShareRequest.encode(request).finish();
     const promise = this.rpc.request("juno.feeshare.v1.Query", "FeeShare", data);
-    return promise.then(data => QueryFeeShareResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryFeeShareResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("juno.feeshare.v1.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  deployerFeeShares(request: QueryDeployerFeeSharesRequest): Promise<QueryDeployerFeeSharesResponse> {
+  deployerFeeShares(request: QueryDeployerFeeSharesRequest, useInterfaces: boolean = true): Promise<QueryDeployerFeeSharesResponse> {
     const data = QueryDeployerFeeSharesRequest.encode(request).finish();
     const promise = this.rpc.request("juno.feeshare.v1.Query", "DeployerFeeShares", data);
-    return promise.then(data => QueryDeployerFeeSharesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDeployerFeeSharesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  withdrawerFeeShares(request: QueryWithdrawerFeeSharesRequest): Promise<QueryWithdrawerFeeSharesResponse> {
+  withdrawerFeeShares(request: QueryWithdrawerFeeSharesRequest, useInterfaces: boolean = true): Promise<QueryWithdrawerFeeSharesResponse> {
     const data = QueryWithdrawerFeeSharesRequest.encode(request).finish();
     const promise = this.rpc.request("juno.feeshare.v1.Query", "WithdrawerFeeShares", data);
-    return promise.then(data => QueryWithdrawerFeeSharesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryWithdrawerFeeSharesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    feeShares(request?: QueryFeeSharesRequest): Promise<QueryFeeSharesResponse> {
-      return queryService.feeShares(request);
+    feeShares(request?: QueryFeeSharesRequest, useInterfaces: boolean = true): Promise<QueryFeeSharesResponse> {
+      return queryService.feeShares(request, useInterfaces);
     },
-    feeShare(request: QueryFeeShareRequest): Promise<QueryFeeShareResponse> {
-      return queryService.feeShare(request);
+    feeShare(request: QueryFeeShareRequest, useInterfaces: boolean = true): Promise<QueryFeeShareResponse> {
+      return queryService.feeShare(request, useInterfaces);
     },
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    deployerFeeShares(request: QueryDeployerFeeSharesRequest): Promise<QueryDeployerFeeSharesResponse> {
-      return queryService.deployerFeeShares(request);
+    deployerFeeShares(request: QueryDeployerFeeSharesRequest, useInterfaces: boolean = true): Promise<QueryDeployerFeeSharesResponse> {
+      return queryService.deployerFeeShares(request, useInterfaces);
     },
-    withdrawerFeeShares(request: QueryWithdrawerFeeSharesRequest): Promise<QueryWithdrawerFeeSharesResponse> {
-      return queryService.withdrawerFeeShares(request);
+    withdrawerFeeShares(request: QueryWithdrawerFeeSharesRequest, useInterfaces: boolean = true): Promise<QueryWithdrawerFeeSharesResponse> {
+      return queryService.withdrawerFeeShares(request, useInterfaces);
     }
   };
 };

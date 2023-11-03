@@ -28,60 +28,60 @@ export class QueryClientImpl implements Query {
     this.escrowAddress = this.escrowAddress.bind(this);
     this.totalEscrowForDenom = this.totalEscrowForDenom.bind(this);
   }
-  denomTrace(request: QueryDenomTraceRequest): Promise<QueryDenomTraceResponse> {
+  denomTrace(request: QueryDenomTraceRequest, useInterfaces: boolean = true): Promise<QueryDenomTraceResponse> {
     const data = QueryDenomTraceRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.applications.transfer.v1.Query", "DenomTrace", data);
-    return promise.then(data => QueryDenomTraceResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDenomTraceResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   denomTraces(request: QueryDenomTracesRequest = {
     pagination: undefined
-  }): Promise<QueryDenomTracesResponse> {
+  }, useInterfaces: boolean = true): Promise<QueryDenomTracesResponse> {
     const data = QueryDenomTracesRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.applications.transfer.v1.Query", "DenomTraces", data);
-    return promise.then(data => QueryDenomTracesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDenomTracesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.applications.transfer.v1.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  denomHash(request: QueryDenomHashRequest): Promise<QueryDenomHashResponse> {
+  denomHash(request: QueryDenomHashRequest, useInterfaces: boolean = true): Promise<QueryDenomHashResponse> {
     const data = QueryDenomHashRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.applications.transfer.v1.Query", "DenomHash", data);
-    return promise.then(data => QueryDenomHashResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDenomHashResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  escrowAddress(request: QueryEscrowAddressRequest): Promise<QueryEscrowAddressResponse> {
+  escrowAddress(request: QueryEscrowAddressRequest, useInterfaces: boolean = true): Promise<QueryEscrowAddressResponse> {
     const data = QueryEscrowAddressRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.applications.transfer.v1.Query", "EscrowAddress", data);
-    return promise.then(data => QueryEscrowAddressResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryEscrowAddressResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  totalEscrowForDenom(request: QueryTotalEscrowForDenomRequest): Promise<QueryTotalEscrowForDenomResponse> {
+  totalEscrowForDenom(request: QueryTotalEscrowForDenomRequest, useInterfaces: boolean = true): Promise<QueryTotalEscrowForDenomResponse> {
     const data = QueryTotalEscrowForDenomRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.applications.transfer.v1.Query", "TotalEscrowForDenom", data);
-    return promise.then(data => QueryTotalEscrowForDenomResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryTotalEscrowForDenomResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    denomTrace(request: QueryDenomTraceRequest): Promise<QueryDenomTraceResponse> {
-      return queryService.denomTrace(request);
+    denomTrace(request: QueryDenomTraceRequest, useInterfaces: boolean = true): Promise<QueryDenomTraceResponse> {
+      return queryService.denomTrace(request, useInterfaces);
     },
-    denomTraces(request?: QueryDenomTracesRequest): Promise<QueryDenomTracesResponse> {
-      return queryService.denomTraces(request);
+    denomTraces(request?: QueryDenomTracesRequest, useInterfaces: boolean = true): Promise<QueryDenomTracesResponse> {
+      return queryService.denomTraces(request, useInterfaces);
     },
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    denomHash(request: QueryDenomHashRequest): Promise<QueryDenomHashResponse> {
-      return queryService.denomHash(request);
+    denomHash(request: QueryDenomHashRequest, useInterfaces: boolean = true): Promise<QueryDenomHashResponse> {
+      return queryService.denomHash(request, useInterfaces);
     },
-    escrowAddress(request: QueryEscrowAddressRequest): Promise<QueryEscrowAddressResponse> {
-      return queryService.escrowAddress(request);
+    escrowAddress(request: QueryEscrowAddressRequest, useInterfaces: boolean = true): Promise<QueryEscrowAddressResponse> {
+      return queryService.escrowAddress(request, useInterfaces);
     },
-    totalEscrowForDenom(request: QueryTotalEscrowForDenomRequest): Promise<QueryTotalEscrowForDenomResponse> {
-      return queryService.totalEscrowForDenom(request);
+    totalEscrowForDenom(request: QueryTotalEscrowForDenomRequest, useInterfaces: boolean = true): Promise<QueryTotalEscrowForDenomResponse> {
+      return queryService.totalEscrowForDenom(request, useInterfaces);
     }
   };
 };

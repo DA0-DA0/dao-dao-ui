@@ -37,68 +37,68 @@ export class ServiceClientImpl implements Service {
     this.getValidatorSetByHeight = this.getValidatorSetByHeight.bind(this);
     this.aBCIQuery = this.aBCIQuery.bind(this);
   }
-  getNodeInfo(request: GetNodeInfoRequest = {}): Promise<GetNodeInfoResponse> {
+  getNodeInfo(request: GetNodeInfoRequest = {}, useInterfaces: boolean = true): Promise<GetNodeInfoResponse> {
     const data = GetNodeInfoRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.base.tendermint.v1beta1.Service", "GetNodeInfo", data);
-    return promise.then(data => GetNodeInfoResponse.decode(new BinaryReader(data)));
+    return promise.then(data => GetNodeInfoResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  getSyncing(request: GetSyncingRequest = {}): Promise<GetSyncingResponse> {
+  getSyncing(request: GetSyncingRequest = {}, useInterfaces: boolean = true): Promise<GetSyncingResponse> {
     const data = GetSyncingRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.base.tendermint.v1beta1.Service", "GetSyncing", data);
-    return promise.then(data => GetSyncingResponse.decode(new BinaryReader(data)));
+    return promise.then(data => GetSyncingResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  getLatestBlock(request: GetLatestBlockRequest = {}): Promise<GetLatestBlockResponse> {
+  getLatestBlock(request: GetLatestBlockRequest = {}, useInterfaces: boolean = true): Promise<GetLatestBlockResponse> {
     const data = GetLatestBlockRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.base.tendermint.v1beta1.Service", "GetLatestBlock", data);
-    return promise.then(data => GetLatestBlockResponse.decode(new BinaryReader(data)));
+    return promise.then(data => GetLatestBlockResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  getBlockByHeight(request: GetBlockByHeightRequest): Promise<GetBlockByHeightResponse> {
+  getBlockByHeight(request: GetBlockByHeightRequest, useInterfaces: boolean = true): Promise<GetBlockByHeightResponse> {
     const data = GetBlockByHeightRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.base.tendermint.v1beta1.Service", "GetBlockByHeight", data);
-    return promise.then(data => GetBlockByHeightResponse.decode(new BinaryReader(data)));
+    return promise.then(data => GetBlockByHeightResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   getLatestValidatorSet(request: GetLatestValidatorSetRequest = {
     pagination: undefined
-  }): Promise<GetLatestValidatorSetResponse> {
+  }, useInterfaces: boolean = true): Promise<GetLatestValidatorSetResponse> {
     const data = GetLatestValidatorSetRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.base.tendermint.v1beta1.Service", "GetLatestValidatorSet", data);
-    return promise.then(data => GetLatestValidatorSetResponse.decode(new BinaryReader(data)));
+    return promise.then(data => GetLatestValidatorSetResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  getValidatorSetByHeight(request: GetValidatorSetByHeightRequest): Promise<GetValidatorSetByHeightResponse> {
+  getValidatorSetByHeight(request: GetValidatorSetByHeightRequest, useInterfaces: boolean = true): Promise<GetValidatorSetByHeightResponse> {
     const data = GetValidatorSetByHeightRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.base.tendermint.v1beta1.Service", "GetValidatorSetByHeight", data);
-    return promise.then(data => GetValidatorSetByHeightResponse.decode(new BinaryReader(data)));
+    return promise.then(data => GetValidatorSetByHeightResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  aBCIQuery(request: ABCIQueryRequest): Promise<ABCIQueryResponse> {
+  aBCIQuery(request: ABCIQueryRequest, useInterfaces: boolean = true): Promise<ABCIQueryResponse> {
     const data = ABCIQueryRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.base.tendermint.v1beta1.Service", "ABCIQuery", data);
-    return promise.then(data => ABCIQueryResponse.decode(new BinaryReader(data)));
+    return promise.then(data => ABCIQueryResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new ServiceClientImpl(rpc);
   return {
-    getNodeInfo(request?: GetNodeInfoRequest): Promise<GetNodeInfoResponse> {
-      return queryService.getNodeInfo(request);
+    getNodeInfo(request?: GetNodeInfoRequest, useInterfaces: boolean = true): Promise<GetNodeInfoResponse> {
+      return queryService.getNodeInfo(request, useInterfaces);
     },
-    getSyncing(request?: GetSyncingRequest): Promise<GetSyncingResponse> {
-      return queryService.getSyncing(request);
+    getSyncing(request?: GetSyncingRequest, useInterfaces: boolean = true): Promise<GetSyncingResponse> {
+      return queryService.getSyncing(request, useInterfaces);
     },
-    getLatestBlock(request?: GetLatestBlockRequest): Promise<GetLatestBlockResponse> {
-      return queryService.getLatestBlock(request);
+    getLatestBlock(request?: GetLatestBlockRequest, useInterfaces: boolean = true): Promise<GetLatestBlockResponse> {
+      return queryService.getLatestBlock(request, useInterfaces);
     },
-    getBlockByHeight(request: GetBlockByHeightRequest): Promise<GetBlockByHeightResponse> {
-      return queryService.getBlockByHeight(request);
+    getBlockByHeight(request: GetBlockByHeightRequest, useInterfaces: boolean = true): Promise<GetBlockByHeightResponse> {
+      return queryService.getBlockByHeight(request, useInterfaces);
     },
-    getLatestValidatorSet(request?: GetLatestValidatorSetRequest): Promise<GetLatestValidatorSetResponse> {
-      return queryService.getLatestValidatorSet(request);
+    getLatestValidatorSet(request?: GetLatestValidatorSetRequest, useInterfaces: boolean = true): Promise<GetLatestValidatorSetResponse> {
+      return queryService.getLatestValidatorSet(request, useInterfaces);
     },
-    getValidatorSetByHeight(request: GetValidatorSetByHeightRequest): Promise<GetValidatorSetByHeightResponse> {
-      return queryService.getValidatorSetByHeight(request);
+    getValidatorSetByHeight(request: GetValidatorSetByHeightRequest, useInterfaces: boolean = true): Promise<GetValidatorSetByHeightResponse> {
+      return queryService.getValidatorSetByHeight(request, useInterfaces);
     },
-    aBCIQuery(request: ABCIQueryRequest): Promise<ABCIQueryResponse> {
-      return queryService.aBCIQuery(request);
+    aBCIQuery(request: ABCIQueryRequest, useInterfaces: boolean = true): Promise<ABCIQueryResponse> {
+      return queryService.aBCIQuery(request, useInterfaces);
     }
   };
 };

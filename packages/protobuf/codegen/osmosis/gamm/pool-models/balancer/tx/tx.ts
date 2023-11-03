@@ -4,7 +4,7 @@ import { BinaryReader, BinaryWriter } from "../../../../../binary";
 /** ===================== MsgCreatePool */
 export interface MsgCreateBalancerPool {
   sender: string;
-  poolParams: PoolParams | undefined;
+  poolParams?: PoolParams | undefined;
   poolAssets: PoolAsset[];
   futurePoolGovernor: string;
 }
@@ -26,7 +26,7 @@ export interface MsgCreateBalancerPoolAminoMsg {
 /** ===================== MsgCreatePool */
 export interface MsgCreateBalancerPoolSDKType {
   sender: string;
-  pool_params: PoolParamsSDKType | undefined;
+  pool_params?: PoolParamsSDKType | undefined;
   pool_assets: PoolAssetSDKType[];
   future_pool_governor: string;
 }
@@ -53,7 +53,7 @@ export interface MsgCreateBalancerPoolResponseSDKType {
 function createBaseMsgCreateBalancerPool(): MsgCreateBalancerPool {
   return {
     sender: "",
-    poolParams: PoolParams.fromPartial({}),
+    poolParams: undefined,
     poolAssets: [],
     futurePoolGovernor: ""
   };
@@ -75,7 +75,7 @@ export const MsgCreateBalancerPool = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCreateBalancerPool {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCreateBalancerPool {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateBalancerPool();
@@ -86,10 +86,10 @@ export const MsgCreateBalancerPool = {
           message.sender = reader.string();
           break;
         case 2:
-          message.poolParams = PoolParams.decode(reader, reader.uint32());
+          message.poolParams = PoolParams.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
-          message.poolAssets.push(PoolAsset.decode(reader, reader.uint32()));
+          message.poolAssets.push(PoolAsset.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
           message.futurePoolGovernor = reader.string();
@@ -117,12 +117,12 @@ export const MsgCreateBalancerPool = {
       futurePoolGovernor: object.future_pool_governor
     };
   },
-  toAmino(message: MsgCreateBalancerPool): MsgCreateBalancerPoolAmino {
+  toAmino(message: MsgCreateBalancerPool, useInterfaces: boolean = false): MsgCreateBalancerPoolAmino {
     const obj: any = {};
     obj.sender = message.sender;
-    obj.pool_params = message.poolParams ? PoolParams.toAmino(message.poolParams) : undefined;
+    obj.pool_params = message.poolParams ? PoolParams.toAmino(message.poolParams, useInterfaces) : undefined;
     if (message.poolAssets) {
-      obj.pool_assets = message.poolAssets.map(e => e ? PoolAsset.toAmino(e) : undefined);
+      obj.pool_assets = message.poolAssets.map(e => e ? PoolAsset.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.pool_assets = [];
     }
@@ -132,14 +132,14 @@ export const MsgCreateBalancerPool = {
   fromAminoMsg(object: MsgCreateBalancerPoolAminoMsg): MsgCreateBalancerPool {
     return MsgCreateBalancerPool.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCreateBalancerPool): MsgCreateBalancerPoolAminoMsg {
+  toAminoMsg(message: MsgCreateBalancerPool, useInterfaces: boolean = false): MsgCreateBalancerPoolAminoMsg {
     return {
       type: "osmosis/gamm/create-balancer-pool",
-      value: MsgCreateBalancerPool.toAmino(message)
+      value: MsgCreateBalancerPool.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgCreateBalancerPoolProtoMsg): MsgCreateBalancerPool {
-    return MsgCreateBalancerPool.decode(message.value);
+  fromProtoMsg(message: MsgCreateBalancerPoolProtoMsg, useInterfaces: boolean = false): MsgCreateBalancerPool {
+    return MsgCreateBalancerPool.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCreateBalancerPool): Uint8Array {
     return MsgCreateBalancerPool.encode(message).finish();
@@ -164,7 +164,7 @@ export const MsgCreateBalancerPoolResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCreateBalancerPoolResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCreateBalancerPoolResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateBalancerPoolResponse();
@@ -191,7 +191,7 @@ export const MsgCreateBalancerPoolResponse = {
       poolId: BigInt(object.pool_id)
     };
   },
-  toAmino(message: MsgCreateBalancerPoolResponse): MsgCreateBalancerPoolResponseAmino {
+  toAmino(message: MsgCreateBalancerPoolResponse, useInterfaces: boolean = false): MsgCreateBalancerPoolResponseAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     return obj;
@@ -199,14 +199,14 @@ export const MsgCreateBalancerPoolResponse = {
   fromAminoMsg(object: MsgCreateBalancerPoolResponseAminoMsg): MsgCreateBalancerPoolResponse {
     return MsgCreateBalancerPoolResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgCreateBalancerPoolResponse): MsgCreateBalancerPoolResponseAminoMsg {
+  toAminoMsg(message: MsgCreateBalancerPoolResponse, useInterfaces: boolean = false): MsgCreateBalancerPoolResponseAminoMsg {
     return {
       type: "osmosis/gamm/poolmodels/balancer/create-balancer-pool-response",
-      value: MsgCreateBalancerPoolResponse.toAmino(message)
+      value: MsgCreateBalancerPoolResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgCreateBalancerPoolResponseProtoMsg): MsgCreateBalancerPoolResponse {
-    return MsgCreateBalancerPoolResponse.decode(message.value);
+  fromProtoMsg(message: MsgCreateBalancerPoolResponseProtoMsg, useInterfaces: boolean = false): MsgCreateBalancerPoolResponse {
+    return MsgCreateBalancerPoolResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCreateBalancerPoolResponse): Uint8Array {
     return MsgCreateBalancerPoolResponse.encode(message).finish();

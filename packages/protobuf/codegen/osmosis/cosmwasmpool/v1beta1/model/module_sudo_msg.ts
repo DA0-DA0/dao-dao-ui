@@ -210,7 +210,7 @@ export const SwapExactAmountIn = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SwapExactAmountIn {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SwapExactAmountIn {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSwapExactAmountIn();
@@ -221,7 +221,7 @@ export const SwapExactAmountIn = {
           message.sender = reader.string();
           break;
         case 2:
-          message.tokenIn = Coin.decode(reader, reader.uint32());
+          message.tokenIn = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
           message.tokenOutDenom = reader.string();
@@ -257,10 +257,10 @@ export const SwapExactAmountIn = {
       swapFee: object.swap_fee
     };
   },
-  toAmino(message: SwapExactAmountIn): SwapExactAmountInAmino {
+  toAmino(message: SwapExactAmountIn, useInterfaces: boolean = false): SwapExactAmountInAmino {
     const obj: any = {};
     obj.sender = message.sender;
-    obj.token_in = message.tokenIn ? Coin.toAmino(message.tokenIn) : undefined;
+    obj.token_in = message.tokenIn ? Coin.toAmino(message.tokenIn, useInterfaces) : undefined;
     obj.token_out_denom = message.tokenOutDenom;
     obj.token_out_min_amount = message.tokenOutMinAmount;
     obj.swap_fee = message.swapFee;
@@ -269,14 +269,14 @@ export const SwapExactAmountIn = {
   fromAminoMsg(object: SwapExactAmountInAminoMsg): SwapExactAmountIn {
     return SwapExactAmountIn.fromAmino(object.value);
   },
-  toAminoMsg(message: SwapExactAmountIn): SwapExactAmountInAminoMsg {
+  toAminoMsg(message: SwapExactAmountIn, useInterfaces: boolean = false): SwapExactAmountInAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/swap-exact-amount-in",
-      value: SwapExactAmountIn.toAmino(message)
+      value: SwapExactAmountIn.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SwapExactAmountInProtoMsg): SwapExactAmountIn {
-    return SwapExactAmountIn.decode(message.value);
+  fromProtoMsg(message: SwapExactAmountInProtoMsg, useInterfaces: boolean = false): SwapExactAmountIn {
+    return SwapExactAmountIn.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SwapExactAmountIn): Uint8Array {
     return SwapExactAmountIn.encode(message).finish();
@@ -301,7 +301,7 @@ export const SwapExactAmountInSudoMsg = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SwapExactAmountInSudoMsg {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SwapExactAmountInSudoMsg {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSwapExactAmountInSudoMsg();
@@ -309,7 +309,7 @@ export const SwapExactAmountInSudoMsg = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.swapExactAmountIn = SwapExactAmountIn.decode(reader, reader.uint32());
+          message.swapExactAmountIn = SwapExactAmountIn.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -328,22 +328,22 @@ export const SwapExactAmountInSudoMsg = {
       swapExactAmountIn: object?.swap_exact_amount_in ? SwapExactAmountIn.fromAmino(object.swap_exact_amount_in) : undefined
     };
   },
-  toAmino(message: SwapExactAmountInSudoMsg): SwapExactAmountInSudoMsgAmino {
+  toAmino(message: SwapExactAmountInSudoMsg, useInterfaces: boolean = false): SwapExactAmountInSudoMsgAmino {
     const obj: any = {};
-    obj.swap_exact_amount_in = message.swapExactAmountIn ? SwapExactAmountIn.toAmino(message.swapExactAmountIn) : undefined;
+    obj.swap_exact_amount_in = message.swapExactAmountIn ? SwapExactAmountIn.toAmino(message.swapExactAmountIn, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: SwapExactAmountInSudoMsgAminoMsg): SwapExactAmountInSudoMsg {
     return SwapExactAmountInSudoMsg.fromAmino(object.value);
   },
-  toAminoMsg(message: SwapExactAmountInSudoMsg): SwapExactAmountInSudoMsgAminoMsg {
+  toAminoMsg(message: SwapExactAmountInSudoMsg, useInterfaces: boolean = false): SwapExactAmountInSudoMsgAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/swap-exact-amount-in-sudo-msg",
-      value: SwapExactAmountInSudoMsg.toAmino(message)
+      value: SwapExactAmountInSudoMsg.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SwapExactAmountInSudoMsgProtoMsg): SwapExactAmountInSudoMsg {
-    return SwapExactAmountInSudoMsg.decode(message.value);
+  fromProtoMsg(message: SwapExactAmountInSudoMsgProtoMsg, useInterfaces: boolean = false): SwapExactAmountInSudoMsg {
+    return SwapExactAmountInSudoMsg.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SwapExactAmountInSudoMsg): Uint8Array {
     return SwapExactAmountInSudoMsg.encode(message).finish();
@@ -368,7 +368,7 @@ export const SwapExactAmountInSudoMsgResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SwapExactAmountInSudoMsgResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SwapExactAmountInSudoMsgResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSwapExactAmountInSudoMsgResponse();
@@ -395,7 +395,7 @@ export const SwapExactAmountInSudoMsgResponse = {
       tokenOutAmount: object.token_out_amount
     };
   },
-  toAmino(message: SwapExactAmountInSudoMsgResponse): SwapExactAmountInSudoMsgResponseAmino {
+  toAmino(message: SwapExactAmountInSudoMsgResponse, useInterfaces: boolean = false): SwapExactAmountInSudoMsgResponseAmino {
     const obj: any = {};
     obj.token_out_amount = message.tokenOutAmount;
     return obj;
@@ -403,14 +403,14 @@ export const SwapExactAmountInSudoMsgResponse = {
   fromAminoMsg(object: SwapExactAmountInSudoMsgResponseAminoMsg): SwapExactAmountInSudoMsgResponse {
     return SwapExactAmountInSudoMsgResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: SwapExactAmountInSudoMsgResponse): SwapExactAmountInSudoMsgResponseAminoMsg {
+  toAminoMsg(message: SwapExactAmountInSudoMsgResponse, useInterfaces: boolean = false): SwapExactAmountInSudoMsgResponseAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/swap-exact-amount-in-sudo-msg-response",
-      value: SwapExactAmountInSudoMsgResponse.toAmino(message)
+      value: SwapExactAmountInSudoMsgResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SwapExactAmountInSudoMsgResponseProtoMsg): SwapExactAmountInSudoMsgResponse {
-    return SwapExactAmountInSudoMsgResponse.decode(message.value);
+  fromProtoMsg(message: SwapExactAmountInSudoMsgResponseProtoMsg, useInterfaces: boolean = false): SwapExactAmountInSudoMsgResponse {
+    return SwapExactAmountInSudoMsgResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SwapExactAmountInSudoMsgResponse): Uint8Array {
     return SwapExactAmountInSudoMsgResponse.encode(message).finish();
@@ -451,7 +451,7 @@ export const SwapExactAmountOut = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SwapExactAmountOut {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SwapExactAmountOut {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSwapExactAmountOut();
@@ -462,7 +462,7 @@ export const SwapExactAmountOut = {
           message.sender = reader.string();
           break;
         case 2:
-          message.tokenOut = Coin.decode(reader, reader.uint32());
+          message.tokenOut = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
           message.tokenInDenom = reader.string();
@@ -498,10 +498,10 @@ export const SwapExactAmountOut = {
       swapFee: object.swap_fee
     };
   },
-  toAmino(message: SwapExactAmountOut): SwapExactAmountOutAmino {
+  toAmino(message: SwapExactAmountOut, useInterfaces: boolean = false): SwapExactAmountOutAmino {
     const obj: any = {};
     obj.sender = message.sender;
-    obj.token_out = message.tokenOut ? Coin.toAmino(message.tokenOut) : undefined;
+    obj.token_out = message.tokenOut ? Coin.toAmino(message.tokenOut, useInterfaces) : undefined;
     obj.token_in_denom = message.tokenInDenom;
     obj.token_in_max_amount = message.tokenInMaxAmount;
     obj.swap_fee = message.swapFee;
@@ -510,14 +510,14 @@ export const SwapExactAmountOut = {
   fromAminoMsg(object: SwapExactAmountOutAminoMsg): SwapExactAmountOut {
     return SwapExactAmountOut.fromAmino(object.value);
   },
-  toAminoMsg(message: SwapExactAmountOut): SwapExactAmountOutAminoMsg {
+  toAminoMsg(message: SwapExactAmountOut, useInterfaces: boolean = false): SwapExactAmountOutAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/swap-exact-amount-out",
-      value: SwapExactAmountOut.toAmino(message)
+      value: SwapExactAmountOut.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SwapExactAmountOutProtoMsg): SwapExactAmountOut {
-    return SwapExactAmountOut.decode(message.value);
+  fromProtoMsg(message: SwapExactAmountOutProtoMsg, useInterfaces: boolean = false): SwapExactAmountOut {
+    return SwapExactAmountOut.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SwapExactAmountOut): Uint8Array {
     return SwapExactAmountOut.encode(message).finish();
@@ -542,7 +542,7 @@ export const SwapExactAmountOutSudoMsg = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SwapExactAmountOutSudoMsg {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SwapExactAmountOutSudoMsg {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSwapExactAmountOutSudoMsg();
@@ -550,7 +550,7 @@ export const SwapExactAmountOutSudoMsg = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.swapExactAmountOut = SwapExactAmountOut.decode(reader, reader.uint32());
+          message.swapExactAmountOut = SwapExactAmountOut.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -569,22 +569,22 @@ export const SwapExactAmountOutSudoMsg = {
       swapExactAmountOut: object?.swap_exact_amount_out ? SwapExactAmountOut.fromAmino(object.swap_exact_amount_out) : undefined
     };
   },
-  toAmino(message: SwapExactAmountOutSudoMsg): SwapExactAmountOutSudoMsgAmino {
+  toAmino(message: SwapExactAmountOutSudoMsg, useInterfaces: boolean = false): SwapExactAmountOutSudoMsgAmino {
     const obj: any = {};
-    obj.swap_exact_amount_out = message.swapExactAmountOut ? SwapExactAmountOut.toAmino(message.swapExactAmountOut) : undefined;
+    obj.swap_exact_amount_out = message.swapExactAmountOut ? SwapExactAmountOut.toAmino(message.swapExactAmountOut, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: SwapExactAmountOutSudoMsgAminoMsg): SwapExactAmountOutSudoMsg {
     return SwapExactAmountOutSudoMsg.fromAmino(object.value);
   },
-  toAminoMsg(message: SwapExactAmountOutSudoMsg): SwapExactAmountOutSudoMsgAminoMsg {
+  toAminoMsg(message: SwapExactAmountOutSudoMsg, useInterfaces: boolean = false): SwapExactAmountOutSudoMsgAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/swap-exact-amount-out-sudo-msg",
-      value: SwapExactAmountOutSudoMsg.toAmino(message)
+      value: SwapExactAmountOutSudoMsg.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SwapExactAmountOutSudoMsgProtoMsg): SwapExactAmountOutSudoMsg {
-    return SwapExactAmountOutSudoMsg.decode(message.value);
+  fromProtoMsg(message: SwapExactAmountOutSudoMsgProtoMsg, useInterfaces: boolean = false): SwapExactAmountOutSudoMsg {
+    return SwapExactAmountOutSudoMsg.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SwapExactAmountOutSudoMsg): Uint8Array {
     return SwapExactAmountOutSudoMsg.encode(message).finish();
@@ -609,7 +609,7 @@ export const SwapExactAmountOutSudoMsgResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SwapExactAmountOutSudoMsgResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SwapExactAmountOutSudoMsgResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSwapExactAmountOutSudoMsgResponse();
@@ -636,7 +636,7 @@ export const SwapExactAmountOutSudoMsgResponse = {
       tokenInAmount: object.token_in_amount
     };
   },
-  toAmino(message: SwapExactAmountOutSudoMsgResponse): SwapExactAmountOutSudoMsgResponseAmino {
+  toAmino(message: SwapExactAmountOutSudoMsgResponse, useInterfaces: boolean = false): SwapExactAmountOutSudoMsgResponseAmino {
     const obj: any = {};
     obj.token_in_amount = message.tokenInAmount;
     return obj;
@@ -644,14 +644,14 @@ export const SwapExactAmountOutSudoMsgResponse = {
   fromAminoMsg(object: SwapExactAmountOutSudoMsgResponseAminoMsg): SwapExactAmountOutSudoMsgResponse {
     return SwapExactAmountOutSudoMsgResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: SwapExactAmountOutSudoMsgResponse): SwapExactAmountOutSudoMsgResponseAminoMsg {
+  toAminoMsg(message: SwapExactAmountOutSudoMsgResponse, useInterfaces: boolean = false): SwapExactAmountOutSudoMsgResponseAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/swap-exact-amount-out-sudo-msg-response",
-      value: SwapExactAmountOutSudoMsgResponse.toAmino(message)
+      value: SwapExactAmountOutSudoMsgResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SwapExactAmountOutSudoMsgResponseProtoMsg): SwapExactAmountOutSudoMsgResponse {
-    return SwapExactAmountOutSudoMsgResponse.decode(message.value);
+  fromProtoMsg(message: SwapExactAmountOutSudoMsgResponseProtoMsg, useInterfaces: boolean = false): SwapExactAmountOutSudoMsgResponse {
+    return SwapExactAmountOutSudoMsgResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SwapExactAmountOutSudoMsgResponse): Uint8Array {
     return SwapExactAmountOutSudoMsgResponse.encode(message).finish();

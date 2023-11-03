@@ -236,7 +236,7 @@ export const Params = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Params {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Params {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
@@ -244,10 +244,10 @@ export const Params = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.poolCreationFee.push(Coin.decode(reader, reader.uint32()));
+          message.poolCreationFee.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.takerFeeParams = TakerFeeParams.decode(reader, reader.uint32());
+          message.takerFeeParams = TakerFeeParams.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
           message.authorizedQuoteDenoms.push(reader.string());
@@ -273,14 +273,14 @@ export const Params = {
       authorizedQuoteDenoms: Array.isArray(object?.authorized_quote_denoms) ? object.authorized_quote_denoms.map((e: any) => e) : []
     };
   },
-  toAmino(message: Params): ParamsAmino {
+  toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
     if (message.poolCreationFee) {
-      obj.pool_creation_fee = message.poolCreationFee.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.pool_creation_fee = message.poolCreationFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.pool_creation_fee = [];
     }
-    obj.taker_fee_params = message.takerFeeParams ? TakerFeeParams.toAmino(message.takerFeeParams) : undefined;
+    obj.taker_fee_params = message.takerFeeParams ? TakerFeeParams.toAmino(message.takerFeeParams, useInterfaces) : undefined;
     if (message.authorizedQuoteDenoms) {
       obj.authorized_quote_denoms = message.authorizedQuoteDenoms.map(e => e);
     } else {
@@ -291,14 +291,14 @@ export const Params = {
   fromAminoMsg(object: ParamsAminoMsg): Params {
     return Params.fromAmino(object.value);
   },
-  toAminoMsg(message: Params): ParamsAminoMsg {
+  toAminoMsg(message: Params, useInterfaces: boolean = false): ParamsAminoMsg {
     return {
       type: "osmosis/poolmanager/params",
-      value: Params.toAmino(message)
+      value: Params.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ParamsProtoMsg): Params {
-    return Params.decode(message.value);
+  fromProtoMsg(message: ParamsProtoMsg, useInterfaces: boolean = false): Params {
+    return Params.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Params): Uint8Array {
     return Params.encode(message).finish();
@@ -331,7 +331,7 @@ export const GenesisState = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): GenesisState {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): GenesisState {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
@@ -342,10 +342,10 @@ export const GenesisState = {
           message.nextPoolId = reader.uint64();
           break;
         case 2:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
-          message.poolRoutes.push(ModuleRoute.decode(reader, reader.uint32()));
+          message.poolRoutes.push(ModuleRoute.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -368,12 +368,12 @@ export const GenesisState = {
       poolRoutes: Array.isArray(object?.pool_routes) ? object.pool_routes.map((e: any) => ModuleRoute.fromAmino(e)) : []
     };
   },
-  toAmino(message: GenesisState): GenesisStateAmino {
+  toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
     obj.next_pool_id = message.nextPoolId ? message.nextPoolId.toString() : undefined;
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     if (message.poolRoutes) {
-      obj.pool_routes = message.poolRoutes.map(e => e ? ModuleRoute.toAmino(e) : undefined);
+      obj.pool_routes = message.poolRoutes.map(e => e ? ModuleRoute.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.pool_routes = [];
     }
@@ -382,14 +382,14 @@ export const GenesisState = {
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {
     return GenesisState.fromAmino(object.value);
   },
-  toAminoMsg(message: GenesisState): GenesisStateAminoMsg {
+  toAminoMsg(message: GenesisState, useInterfaces: boolean = false): GenesisStateAminoMsg {
     return {
       type: "osmosis/poolmanager/genesis-state",
-      value: GenesisState.toAmino(message)
+      value: GenesisState.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: GenesisStateProtoMsg): GenesisState {
-    return GenesisState.decode(message.value);
+  fromProtoMsg(message: GenesisStateProtoMsg, useInterfaces: boolean = false): GenesisState {
+    return GenesisState.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: GenesisState): Uint8Array {
     return GenesisState.encode(message).finish();
@@ -430,7 +430,7 @@ export const TakerFeeParams = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TakerFeeParams {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TakerFeeParams {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTakerFeeParams();
@@ -441,10 +441,10 @@ export const TakerFeeParams = {
           message.defaultTakerFee = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 2:
-          message.osmoTakerFeeDistribution = TakerFeeDistributionPercentage.decode(reader, reader.uint32());
+          message.osmoTakerFeeDistribution = TakerFeeDistributionPercentage.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
-          message.nonOsmoTakerFeeDistribution = TakerFeeDistributionPercentage.decode(reader, reader.uint32());
+          message.nonOsmoTakerFeeDistribution = TakerFeeDistributionPercentage.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
           message.adminAddresses.push(reader.string());
@@ -477,11 +477,11 @@ export const TakerFeeParams = {
       communityPoolDenomToSwapNonWhitelistedAssetsTo: object.community_pool_denom_to_swap_non_whitelisted_assets_to
     };
   },
-  toAmino(message: TakerFeeParams): TakerFeeParamsAmino {
+  toAmino(message: TakerFeeParams, useInterfaces: boolean = false): TakerFeeParamsAmino {
     const obj: any = {};
     obj.default_taker_fee = message.defaultTakerFee;
-    obj.osmo_taker_fee_distribution = message.osmoTakerFeeDistribution ? TakerFeeDistributionPercentage.toAmino(message.osmoTakerFeeDistribution) : undefined;
-    obj.non_osmo_taker_fee_distribution = message.nonOsmoTakerFeeDistribution ? TakerFeeDistributionPercentage.toAmino(message.nonOsmoTakerFeeDistribution) : undefined;
+    obj.osmo_taker_fee_distribution = message.osmoTakerFeeDistribution ? TakerFeeDistributionPercentage.toAmino(message.osmoTakerFeeDistribution, useInterfaces) : undefined;
+    obj.non_osmo_taker_fee_distribution = message.nonOsmoTakerFeeDistribution ? TakerFeeDistributionPercentage.toAmino(message.nonOsmoTakerFeeDistribution, useInterfaces) : undefined;
     if (message.adminAddresses) {
       obj.admin_addresses = message.adminAddresses.map(e => e);
     } else {
@@ -493,14 +493,14 @@ export const TakerFeeParams = {
   fromAminoMsg(object: TakerFeeParamsAminoMsg): TakerFeeParams {
     return TakerFeeParams.fromAmino(object.value);
   },
-  toAminoMsg(message: TakerFeeParams): TakerFeeParamsAminoMsg {
+  toAminoMsg(message: TakerFeeParams, useInterfaces: boolean = false): TakerFeeParamsAminoMsg {
     return {
       type: "osmosis/poolmanager/taker-fee-params",
-      value: TakerFeeParams.toAmino(message)
+      value: TakerFeeParams.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TakerFeeParamsProtoMsg): TakerFeeParams {
-    return TakerFeeParams.decode(message.value);
+  fromProtoMsg(message: TakerFeeParamsProtoMsg, useInterfaces: boolean = false): TakerFeeParams {
+    return TakerFeeParams.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TakerFeeParams): Uint8Array {
     return TakerFeeParams.encode(message).finish();
@@ -529,7 +529,7 @@ export const TakerFeeDistributionPercentage = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TakerFeeDistributionPercentage {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TakerFeeDistributionPercentage {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTakerFeeDistributionPercentage();
@@ -561,7 +561,7 @@ export const TakerFeeDistributionPercentage = {
       communityPool: object.community_pool
     };
   },
-  toAmino(message: TakerFeeDistributionPercentage): TakerFeeDistributionPercentageAmino {
+  toAmino(message: TakerFeeDistributionPercentage, useInterfaces: boolean = false): TakerFeeDistributionPercentageAmino {
     const obj: any = {};
     obj.staking_rewards = message.stakingRewards;
     obj.community_pool = message.communityPool;
@@ -570,14 +570,14 @@ export const TakerFeeDistributionPercentage = {
   fromAminoMsg(object: TakerFeeDistributionPercentageAminoMsg): TakerFeeDistributionPercentage {
     return TakerFeeDistributionPercentage.fromAmino(object.value);
   },
-  toAminoMsg(message: TakerFeeDistributionPercentage): TakerFeeDistributionPercentageAminoMsg {
+  toAminoMsg(message: TakerFeeDistributionPercentage, useInterfaces: boolean = false): TakerFeeDistributionPercentageAminoMsg {
     return {
       type: "osmosis/poolmanager/taker-fee-distribution-percentage",
-      value: TakerFeeDistributionPercentage.toAmino(message)
+      value: TakerFeeDistributionPercentage.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TakerFeeDistributionPercentageProtoMsg): TakerFeeDistributionPercentage {
-    return TakerFeeDistributionPercentage.decode(message.value);
+  fromProtoMsg(message: TakerFeeDistributionPercentageProtoMsg, useInterfaces: boolean = false): TakerFeeDistributionPercentage {
+    return TakerFeeDistributionPercentage.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TakerFeeDistributionPercentage): Uint8Array {
     return TakerFeeDistributionPercentage.encode(message).finish();

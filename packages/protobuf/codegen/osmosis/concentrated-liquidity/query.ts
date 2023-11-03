@@ -22,7 +22,7 @@ import { Decimal } from "@cosmjs/math";
 export interface UserPositionsRequest {
   address: string;
   poolId: bigint;
-  pagination: PageRequest | undefined;
+  pagination?: PageRequest | undefined;
 }
 export interface UserPositionsRequestProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.UserPositionsRequest";
@@ -42,11 +42,11 @@ export interface UserPositionsRequestAminoMsg {
 export interface UserPositionsRequestSDKType {
   address: string;
   pool_id: bigint;
-  pagination: PageRequestSDKType | undefined;
+  pagination?: PageRequestSDKType | undefined;
 }
 export interface UserPositionsResponse {
   positions: FullPositionBreakdown[];
-  pagination: PageResponse | undefined;
+  pagination?: PageResponse | undefined;
 }
 export interface UserPositionsResponseProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.UserPositionsResponse";
@@ -62,7 +62,7 @@ export interface UserPositionsResponseAminoMsg {
 }
 export interface UserPositionsResponseSDKType {
   positions: FullPositionBreakdownSDKType[];
-  pagination: PageResponseSDKType | undefined;
+  pagination?: PageResponseSDKType | undefined;
 }
 /** =============================== PositionById */
 export interface PositionByIdRequest {
@@ -104,7 +104,7 @@ export interface PositionByIdResponseSDKType {
 /** =============================== Pools */
 export interface PoolsRequest {
   /** pagination defines an optional pagination for the request. */
-  pagination: PageRequest | undefined;
+  pagination?: PageRequest | undefined;
 }
 export interface PoolsRequestProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.PoolsRequest";
@@ -121,12 +121,12 @@ export interface PoolsRequestAminoMsg {
 }
 /** =============================== Pools */
 export interface PoolsRequestSDKType {
-  pagination: PageRequestSDKType | undefined;
+  pagination?: PageRequestSDKType | undefined;
 }
 export interface PoolsResponse {
   pools: (Pool1 & CosmWasmPool & Pool2 & Pool3 & Any)[] | Any[];
   /** pagination defines the pagination in the response. */
-  pagination: PageResponse | undefined;
+  pagination?: PageResponse | undefined;
 }
 export interface PoolsResponseProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.PoolsResponse";
@@ -146,7 +146,7 @@ export interface PoolsResponseAminoMsg {
 }
 export interface PoolsResponseSDKType {
   pools: (Pool1SDKType | CosmWasmPoolSDKType | Pool2SDKType | Pool3SDKType | AnySDKType)[];
-  pagination: PageResponseSDKType | undefined;
+  pagination?: PageResponseSDKType | undefined;
 }
 /** =============================== ModuleParams */
 export interface ParamsRequest {}
@@ -480,7 +480,7 @@ export interface TickAccumulatorTrackersResponseSDKType {
 /** ===================== QueryIncentiveRecords */
 export interface IncentiveRecordsRequest {
   poolId: bigint;
-  pagination: PageRequest | undefined;
+  pagination?: PageRequest | undefined;
 }
 export interface IncentiveRecordsRequestProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.IncentiveRecordsRequest";
@@ -498,12 +498,12 @@ export interface IncentiveRecordsRequestAminoMsg {
 /** ===================== QueryIncentiveRecords */
 export interface IncentiveRecordsRequestSDKType {
   pool_id: bigint;
-  pagination: PageRequestSDKType | undefined;
+  pagination?: PageRequestSDKType | undefined;
 }
 export interface IncentiveRecordsResponse {
   incentiveRecords: IncentiveRecord[];
   /** pagination defines the pagination in the response. */
-  pagination: PageResponse | undefined;
+  pagination?: PageResponse | undefined;
 }
 export interface IncentiveRecordsResponseProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.IncentiveRecordsResponse";
@@ -520,7 +520,7 @@ export interface IncentiveRecordsResponseAminoMsg {
 }
 export interface IncentiveRecordsResponseSDKType {
   incentive_records: IncentiveRecordSDKType[];
-  pagination: PageResponseSDKType | undefined;
+  pagination?: PageResponseSDKType | undefined;
 }
 /** =============================== CFMMPoolIdLinkFromConcentratedPoolId */
 export interface CFMMPoolIdLinkFromConcentratedPoolIdRequest {
@@ -680,7 +680,7 @@ function createBaseUserPositionsRequest(): UserPositionsRequest {
   return {
     address: "",
     poolId: BigInt(0),
-    pagination: PageRequest.fromPartial({})
+    pagination: undefined
   };
 }
 export const UserPositionsRequest = {
@@ -697,7 +697,7 @@ export const UserPositionsRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): UserPositionsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): UserPositionsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUserPositionsRequest();
@@ -711,7 +711,7 @@ export const UserPositionsRequest = {
           message.poolId = reader.uint64();
           break;
         case 3:
-          message.pagination = PageRequest.decode(reader, reader.uint32());
+          message.pagination = PageRequest.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -734,24 +734,24 @@ export const UserPositionsRequest = {
       pagination: object?.pagination ? PageRequest.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: UserPositionsRequest): UserPositionsRequestAmino {
+  toAmino(message: UserPositionsRequest, useInterfaces: boolean = false): UserPositionsRequestAmino {
     const obj: any = {};
     obj.address = message.address;
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: UserPositionsRequestAminoMsg): UserPositionsRequest {
     return UserPositionsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: UserPositionsRequest): UserPositionsRequestAminoMsg {
+  toAminoMsg(message: UserPositionsRequest, useInterfaces: boolean = false): UserPositionsRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/user-positions-request",
-      value: UserPositionsRequest.toAmino(message)
+      value: UserPositionsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: UserPositionsRequestProtoMsg): UserPositionsRequest {
-    return UserPositionsRequest.decode(message.value);
+  fromProtoMsg(message: UserPositionsRequestProtoMsg, useInterfaces: boolean = false): UserPositionsRequest {
+    return UserPositionsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: UserPositionsRequest): Uint8Array {
     return UserPositionsRequest.encode(message).finish();
@@ -766,7 +766,7 @@ export const UserPositionsRequest = {
 function createBaseUserPositionsResponse(): UserPositionsResponse {
   return {
     positions: [],
-    pagination: PageResponse.fromPartial({})
+    pagination: undefined
   };
 }
 export const UserPositionsResponse = {
@@ -780,7 +780,7 @@ export const UserPositionsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): UserPositionsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): UserPositionsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUserPositionsResponse();
@@ -788,10 +788,10 @@ export const UserPositionsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.positions.push(FullPositionBreakdown.decode(reader, reader.uint32()));
+          message.positions.push(FullPositionBreakdown.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.pagination = PageResponse.decode(reader, reader.uint32());
+          message.pagination = PageResponse.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -812,27 +812,27 @@ export const UserPositionsResponse = {
       pagination: object?.pagination ? PageResponse.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: UserPositionsResponse): UserPositionsResponseAmino {
+  toAmino(message: UserPositionsResponse, useInterfaces: boolean = false): UserPositionsResponseAmino {
     const obj: any = {};
     if (message.positions) {
-      obj.positions = message.positions.map(e => e ? FullPositionBreakdown.toAmino(e) : undefined);
+      obj.positions = message.positions.map(e => e ? FullPositionBreakdown.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.positions = [];
     }
-    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: UserPositionsResponseAminoMsg): UserPositionsResponse {
     return UserPositionsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: UserPositionsResponse): UserPositionsResponseAminoMsg {
+  toAminoMsg(message: UserPositionsResponse, useInterfaces: boolean = false): UserPositionsResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/user-positions-response",
-      value: UserPositionsResponse.toAmino(message)
+      value: UserPositionsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: UserPositionsResponseProtoMsg): UserPositionsResponse {
-    return UserPositionsResponse.decode(message.value);
+  fromProtoMsg(message: UserPositionsResponseProtoMsg, useInterfaces: boolean = false): UserPositionsResponse {
+    return UserPositionsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: UserPositionsResponse): Uint8Array {
     return UserPositionsResponse.encode(message).finish();
@@ -857,7 +857,7 @@ export const PositionByIdRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PositionByIdRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PositionByIdRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePositionByIdRequest();
@@ -884,7 +884,7 @@ export const PositionByIdRequest = {
       positionId: BigInt(object.position_id)
     };
   },
-  toAmino(message: PositionByIdRequest): PositionByIdRequestAmino {
+  toAmino(message: PositionByIdRequest, useInterfaces: boolean = false): PositionByIdRequestAmino {
     const obj: any = {};
     obj.position_id = message.positionId ? message.positionId.toString() : undefined;
     return obj;
@@ -892,14 +892,14 @@ export const PositionByIdRequest = {
   fromAminoMsg(object: PositionByIdRequestAminoMsg): PositionByIdRequest {
     return PositionByIdRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: PositionByIdRequest): PositionByIdRequestAminoMsg {
+  toAminoMsg(message: PositionByIdRequest, useInterfaces: boolean = false): PositionByIdRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/position-by-id-request",
-      value: PositionByIdRequest.toAmino(message)
+      value: PositionByIdRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PositionByIdRequestProtoMsg): PositionByIdRequest {
-    return PositionByIdRequest.decode(message.value);
+  fromProtoMsg(message: PositionByIdRequestProtoMsg, useInterfaces: boolean = false): PositionByIdRequest {
+    return PositionByIdRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PositionByIdRequest): Uint8Array {
     return PositionByIdRequest.encode(message).finish();
@@ -924,7 +924,7 @@ export const PositionByIdResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PositionByIdResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PositionByIdResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePositionByIdResponse();
@@ -932,7 +932,7 @@ export const PositionByIdResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.position = FullPositionBreakdown.decode(reader, reader.uint32());
+          message.position = FullPositionBreakdown.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -951,22 +951,22 @@ export const PositionByIdResponse = {
       position: object?.position ? FullPositionBreakdown.fromAmino(object.position) : undefined
     };
   },
-  toAmino(message: PositionByIdResponse): PositionByIdResponseAmino {
+  toAmino(message: PositionByIdResponse, useInterfaces: boolean = false): PositionByIdResponseAmino {
     const obj: any = {};
-    obj.position = message.position ? FullPositionBreakdown.toAmino(message.position) : undefined;
+    obj.position = message.position ? FullPositionBreakdown.toAmino(message.position, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: PositionByIdResponseAminoMsg): PositionByIdResponse {
     return PositionByIdResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: PositionByIdResponse): PositionByIdResponseAminoMsg {
+  toAminoMsg(message: PositionByIdResponse, useInterfaces: boolean = false): PositionByIdResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/position-by-id-response",
-      value: PositionByIdResponse.toAmino(message)
+      value: PositionByIdResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PositionByIdResponseProtoMsg): PositionByIdResponse {
-    return PositionByIdResponse.decode(message.value);
+  fromProtoMsg(message: PositionByIdResponseProtoMsg, useInterfaces: boolean = false): PositionByIdResponse {
+    return PositionByIdResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PositionByIdResponse): Uint8Array {
     return PositionByIdResponse.encode(message).finish();
@@ -980,7 +980,7 @@ export const PositionByIdResponse = {
 };
 function createBasePoolsRequest(): PoolsRequest {
   return {
-    pagination: PageRequest.fromPartial({})
+    pagination: undefined
   };
 }
 export const PoolsRequest = {
@@ -991,7 +991,7 @@ export const PoolsRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PoolsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PoolsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolsRequest();
@@ -999,7 +999,7 @@ export const PoolsRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 2:
-          message.pagination = PageRequest.decode(reader, reader.uint32());
+          message.pagination = PageRequest.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1018,22 +1018,22 @@ export const PoolsRequest = {
       pagination: object?.pagination ? PageRequest.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: PoolsRequest): PoolsRequestAmino {
+  toAmino(message: PoolsRequest, useInterfaces: boolean = false): PoolsRequestAmino {
     const obj: any = {};
-    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: PoolsRequestAminoMsg): PoolsRequest {
     return PoolsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: PoolsRequest): PoolsRequestAminoMsg {
+  toAminoMsg(message: PoolsRequest, useInterfaces: boolean = false): PoolsRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/pools-request",
-      value: PoolsRequest.toAmino(message)
+      value: PoolsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PoolsRequestProtoMsg): PoolsRequest {
-    return PoolsRequest.decode(message.value);
+  fromProtoMsg(message: PoolsRequestProtoMsg, useInterfaces: boolean = false): PoolsRequest {
+    return PoolsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PoolsRequest): Uint8Array {
     return PoolsRequest.encode(message).finish();
@@ -1048,7 +1048,7 @@ export const PoolsRequest = {
 function createBasePoolsResponse(): PoolsResponse {
   return {
     pools: [],
-    pagination: PageResponse.fromPartial({})
+    pagination: undefined
   };
 }
 export const PoolsResponse = {
@@ -1062,7 +1062,7 @@ export const PoolsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PoolsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PoolsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolsResponse();
@@ -1070,10 +1070,10 @@ export const PoolsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.pools.push((PoolI_InterfaceDecoder(reader) as Any));
+          message.pools.push(useInterfaces ? (PoolI_InterfaceDecoder(reader) as Any) : Any.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.pagination = PageResponse.decode(reader, reader.uint32());
+          message.pagination = PageResponse.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1094,27 +1094,27 @@ export const PoolsResponse = {
       pagination: object?.pagination ? PageResponse.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: PoolsResponse): PoolsResponseAmino {
+  toAmino(message: PoolsResponse, useInterfaces: boolean = false): PoolsResponseAmino {
     const obj: any = {};
     if (message.pools) {
-      obj.pools = message.pools.map(e => e ? PoolI_ToAmino((e as Any)) : undefined);
+      obj.pools = message.pools.map(e => e ? PoolI_ToAmino((e as Any), useInterfaces) : undefined);
     } else {
       obj.pools = [];
     }
-    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: PoolsResponseAminoMsg): PoolsResponse {
     return PoolsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: PoolsResponse): PoolsResponseAminoMsg {
+  toAminoMsg(message: PoolsResponse, useInterfaces: boolean = false): PoolsResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/pools-response",
-      value: PoolsResponse.toAmino(message)
+      value: PoolsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PoolsResponseProtoMsg): PoolsResponse {
-    return PoolsResponse.decode(message.value);
+  fromProtoMsg(message: PoolsResponseProtoMsg, useInterfaces: boolean = false): PoolsResponse {
+    return PoolsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PoolsResponse): Uint8Array {
     return PoolsResponse.encode(message).finish();
@@ -1134,7 +1134,7 @@ export const ParamsRequest = {
   encode(_: ParamsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ParamsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ParamsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsRequest();
@@ -1155,21 +1155,21 @@ export const ParamsRequest = {
   fromAmino(_: ParamsRequestAmino): ParamsRequest {
     return {};
   },
-  toAmino(_: ParamsRequest): ParamsRequestAmino {
+  toAmino(_: ParamsRequest, useInterfaces: boolean = false): ParamsRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: ParamsRequestAminoMsg): ParamsRequest {
     return ParamsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: ParamsRequest): ParamsRequestAminoMsg {
+  toAminoMsg(message: ParamsRequest, useInterfaces: boolean = false): ParamsRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/params-request",
-      value: ParamsRequest.toAmino(message)
+      value: ParamsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ParamsRequestProtoMsg): ParamsRequest {
-    return ParamsRequest.decode(message.value);
+  fromProtoMsg(message: ParamsRequestProtoMsg, useInterfaces: boolean = false): ParamsRequest {
+    return ParamsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ParamsRequest): Uint8Array {
     return ParamsRequest.encode(message).finish();
@@ -1194,7 +1194,7 @@ export const ParamsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ParamsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ParamsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsResponse();
@@ -1202,7 +1202,7 @@ export const ParamsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1221,22 +1221,22 @@ export const ParamsResponse = {
       params: object?.params ? Params.fromAmino(object.params) : undefined
     };
   },
-  toAmino(message: ParamsResponse): ParamsResponseAmino {
+  toAmino(message: ParamsResponse, useInterfaces: boolean = false): ParamsResponseAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsResponseAminoMsg): ParamsResponse {
     return ParamsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: ParamsResponse): ParamsResponseAminoMsg {
+  toAminoMsg(message: ParamsResponse, useInterfaces: boolean = false): ParamsResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/params-response",
-      value: ParamsResponse.toAmino(message)
+      value: ParamsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ParamsResponseProtoMsg): ParamsResponse {
-    return ParamsResponse.decode(message.value);
+  fromProtoMsg(message: ParamsResponseProtoMsg, useInterfaces: boolean = false): ParamsResponse {
+    return ParamsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ParamsResponse): Uint8Array {
     return ParamsResponse.encode(message).finish();
@@ -1265,7 +1265,7 @@ export const TickLiquidityNet = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TickLiquidityNet {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TickLiquidityNet {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTickLiquidityNet();
@@ -1297,7 +1297,7 @@ export const TickLiquidityNet = {
       tickIndex: BigInt(object.tick_index)
     };
   },
-  toAmino(message: TickLiquidityNet): TickLiquidityNetAmino {
+  toAmino(message: TickLiquidityNet, useInterfaces: boolean = false): TickLiquidityNetAmino {
     const obj: any = {};
     obj.liquidity_net = message.liquidityNet;
     obj.tick_index = message.tickIndex ? message.tickIndex.toString() : undefined;
@@ -1306,14 +1306,14 @@ export const TickLiquidityNet = {
   fromAminoMsg(object: TickLiquidityNetAminoMsg): TickLiquidityNet {
     return TickLiquidityNet.fromAmino(object.value);
   },
-  toAminoMsg(message: TickLiquidityNet): TickLiquidityNetAminoMsg {
+  toAminoMsg(message: TickLiquidityNet, useInterfaces: boolean = false): TickLiquidityNetAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/tick-liquidity-net",
-      value: TickLiquidityNet.toAmino(message)
+      value: TickLiquidityNet.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TickLiquidityNetProtoMsg): TickLiquidityNet {
-    return TickLiquidityNet.decode(message.value);
+  fromProtoMsg(message: TickLiquidityNetProtoMsg, useInterfaces: boolean = false): TickLiquidityNet {
+    return TickLiquidityNet.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TickLiquidityNet): Uint8Array {
     return TickLiquidityNet.encode(message).finish();
@@ -1346,7 +1346,7 @@ export const LiquidityDepthWithRange = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): LiquidityDepthWithRange {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): LiquidityDepthWithRange {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLiquidityDepthWithRange();
@@ -1383,7 +1383,7 @@ export const LiquidityDepthWithRange = {
       upperTick: BigInt(object.upper_tick)
     };
   },
-  toAmino(message: LiquidityDepthWithRange): LiquidityDepthWithRangeAmino {
+  toAmino(message: LiquidityDepthWithRange, useInterfaces: boolean = false): LiquidityDepthWithRangeAmino {
     const obj: any = {};
     obj.liquidity_amount = message.liquidityAmount;
     obj.lower_tick = message.lowerTick ? message.lowerTick.toString() : undefined;
@@ -1393,14 +1393,14 @@ export const LiquidityDepthWithRange = {
   fromAminoMsg(object: LiquidityDepthWithRangeAminoMsg): LiquidityDepthWithRange {
     return LiquidityDepthWithRange.fromAmino(object.value);
   },
-  toAminoMsg(message: LiquidityDepthWithRange): LiquidityDepthWithRangeAminoMsg {
+  toAminoMsg(message: LiquidityDepthWithRange, useInterfaces: boolean = false): LiquidityDepthWithRangeAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/liquidity-depth-with-range",
-      value: LiquidityDepthWithRange.toAmino(message)
+      value: LiquidityDepthWithRange.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: LiquidityDepthWithRangeProtoMsg): LiquidityDepthWithRange {
-    return LiquidityDepthWithRange.decode(message.value);
+  fromProtoMsg(message: LiquidityDepthWithRangeProtoMsg, useInterfaces: boolean = false): LiquidityDepthWithRange {
+    return LiquidityDepthWithRange.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: LiquidityDepthWithRange): Uint8Array {
     return LiquidityDepthWithRange.encode(message).finish();
@@ -1445,7 +1445,7 @@ export const LiquidityNetInDirectionRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): LiquidityNetInDirectionRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): LiquidityNetInDirectionRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLiquidityNetInDirectionRequest();
@@ -1497,7 +1497,7 @@ export const LiquidityNetInDirectionRequest = {
       useNoBound: object.use_no_bound
     };
   },
-  toAmino(message: LiquidityNetInDirectionRequest): LiquidityNetInDirectionRequestAmino {
+  toAmino(message: LiquidityNetInDirectionRequest, useInterfaces: boolean = false): LiquidityNetInDirectionRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.token_in = message.tokenIn;
@@ -1510,14 +1510,14 @@ export const LiquidityNetInDirectionRequest = {
   fromAminoMsg(object: LiquidityNetInDirectionRequestAminoMsg): LiquidityNetInDirectionRequest {
     return LiquidityNetInDirectionRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: LiquidityNetInDirectionRequest): LiquidityNetInDirectionRequestAminoMsg {
+  toAminoMsg(message: LiquidityNetInDirectionRequest, useInterfaces: boolean = false): LiquidityNetInDirectionRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/liquidity-net-in-direction-request",
-      value: LiquidityNetInDirectionRequest.toAmino(message)
+      value: LiquidityNetInDirectionRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: LiquidityNetInDirectionRequestProtoMsg): LiquidityNetInDirectionRequest {
-    return LiquidityNetInDirectionRequest.decode(message.value);
+  fromProtoMsg(message: LiquidityNetInDirectionRequestProtoMsg, useInterfaces: boolean = false): LiquidityNetInDirectionRequest {
+    return LiquidityNetInDirectionRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: LiquidityNetInDirectionRequest): Uint8Array {
     return LiquidityNetInDirectionRequest.encode(message).finish();
@@ -1550,7 +1550,7 @@ export const LiquidityNetInDirectionResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): LiquidityNetInDirectionResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): LiquidityNetInDirectionResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLiquidityNetInDirectionResponse();
@@ -1558,7 +1558,7 @@ export const LiquidityNetInDirectionResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.liquidityDepths.push(TickLiquidityNet.decode(reader, reader.uint32()));
+          message.liquidityDepths.push(TickLiquidityNet.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
           message.currentTick = reader.int64();
@@ -1587,10 +1587,10 @@ export const LiquidityNetInDirectionResponse = {
       currentLiquidity: object.current_liquidity
     };
   },
-  toAmino(message: LiquidityNetInDirectionResponse): LiquidityNetInDirectionResponseAmino {
+  toAmino(message: LiquidityNetInDirectionResponse, useInterfaces: boolean = false): LiquidityNetInDirectionResponseAmino {
     const obj: any = {};
     if (message.liquidityDepths) {
-      obj.liquidity_depths = message.liquidityDepths.map(e => e ? TickLiquidityNet.toAmino(e) : undefined);
+      obj.liquidity_depths = message.liquidityDepths.map(e => e ? TickLiquidityNet.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.liquidity_depths = [];
     }
@@ -1601,14 +1601,14 @@ export const LiquidityNetInDirectionResponse = {
   fromAminoMsg(object: LiquidityNetInDirectionResponseAminoMsg): LiquidityNetInDirectionResponse {
     return LiquidityNetInDirectionResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: LiquidityNetInDirectionResponse): LiquidityNetInDirectionResponseAminoMsg {
+  toAminoMsg(message: LiquidityNetInDirectionResponse, useInterfaces: boolean = false): LiquidityNetInDirectionResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/liquidity-net-in-direction-response",
-      value: LiquidityNetInDirectionResponse.toAmino(message)
+      value: LiquidityNetInDirectionResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: LiquidityNetInDirectionResponseProtoMsg): LiquidityNetInDirectionResponse {
-    return LiquidityNetInDirectionResponse.decode(message.value);
+  fromProtoMsg(message: LiquidityNetInDirectionResponseProtoMsg, useInterfaces: boolean = false): LiquidityNetInDirectionResponse {
+    return LiquidityNetInDirectionResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: LiquidityNetInDirectionResponse): Uint8Array {
     return LiquidityNetInDirectionResponse.encode(message).finish();
@@ -1633,7 +1633,7 @@ export const LiquidityPerTickRangeRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): LiquidityPerTickRangeRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): LiquidityPerTickRangeRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLiquidityPerTickRangeRequest();
@@ -1660,7 +1660,7 @@ export const LiquidityPerTickRangeRequest = {
       poolId: BigInt(object.pool_id)
     };
   },
-  toAmino(message: LiquidityPerTickRangeRequest): LiquidityPerTickRangeRequestAmino {
+  toAmino(message: LiquidityPerTickRangeRequest, useInterfaces: boolean = false): LiquidityPerTickRangeRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     return obj;
@@ -1668,14 +1668,14 @@ export const LiquidityPerTickRangeRequest = {
   fromAminoMsg(object: LiquidityPerTickRangeRequestAminoMsg): LiquidityPerTickRangeRequest {
     return LiquidityPerTickRangeRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: LiquidityPerTickRangeRequest): LiquidityPerTickRangeRequestAminoMsg {
+  toAminoMsg(message: LiquidityPerTickRangeRequest, useInterfaces: boolean = false): LiquidityPerTickRangeRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/liquidity-per-tick-range-request",
-      value: LiquidityPerTickRangeRequest.toAmino(message)
+      value: LiquidityPerTickRangeRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: LiquidityPerTickRangeRequestProtoMsg): LiquidityPerTickRangeRequest {
-    return LiquidityPerTickRangeRequest.decode(message.value);
+  fromProtoMsg(message: LiquidityPerTickRangeRequestProtoMsg, useInterfaces: boolean = false): LiquidityPerTickRangeRequest {
+    return LiquidityPerTickRangeRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: LiquidityPerTickRangeRequest): Uint8Array {
     return LiquidityPerTickRangeRequest.encode(message).finish();
@@ -1700,7 +1700,7 @@ export const LiquidityPerTickRangeResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): LiquidityPerTickRangeResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): LiquidityPerTickRangeResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLiquidityPerTickRangeResponse();
@@ -1708,7 +1708,7 @@ export const LiquidityPerTickRangeResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.liquidity.push(LiquidityDepthWithRange.decode(reader, reader.uint32()));
+          message.liquidity.push(LiquidityDepthWithRange.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1727,10 +1727,10 @@ export const LiquidityPerTickRangeResponse = {
       liquidity: Array.isArray(object?.liquidity) ? object.liquidity.map((e: any) => LiquidityDepthWithRange.fromAmino(e)) : []
     };
   },
-  toAmino(message: LiquidityPerTickRangeResponse): LiquidityPerTickRangeResponseAmino {
+  toAmino(message: LiquidityPerTickRangeResponse, useInterfaces: boolean = false): LiquidityPerTickRangeResponseAmino {
     const obj: any = {};
     if (message.liquidity) {
-      obj.liquidity = message.liquidity.map(e => e ? LiquidityDepthWithRange.toAmino(e) : undefined);
+      obj.liquidity = message.liquidity.map(e => e ? LiquidityDepthWithRange.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.liquidity = [];
     }
@@ -1739,14 +1739,14 @@ export const LiquidityPerTickRangeResponse = {
   fromAminoMsg(object: LiquidityPerTickRangeResponseAminoMsg): LiquidityPerTickRangeResponse {
     return LiquidityPerTickRangeResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: LiquidityPerTickRangeResponse): LiquidityPerTickRangeResponseAminoMsg {
+  toAminoMsg(message: LiquidityPerTickRangeResponse, useInterfaces: boolean = false): LiquidityPerTickRangeResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/liquidity-per-tick-range-response",
-      value: LiquidityPerTickRangeResponse.toAmino(message)
+      value: LiquidityPerTickRangeResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: LiquidityPerTickRangeResponseProtoMsg): LiquidityPerTickRangeResponse {
-    return LiquidityPerTickRangeResponse.decode(message.value);
+  fromProtoMsg(message: LiquidityPerTickRangeResponseProtoMsg, useInterfaces: boolean = false): LiquidityPerTickRangeResponse {
+    return LiquidityPerTickRangeResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: LiquidityPerTickRangeResponse): Uint8Array {
     return LiquidityPerTickRangeResponse.encode(message).finish();
@@ -1771,7 +1771,7 @@ export const ClaimableSpreadRewardsRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ClaimableSpreadRewardsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ClaimableSpreadRewardsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClaimableSpreadRewardsRequest();
@@ -1798,7 +1798,7 @@ export const ClaimableSpreadRewardsRequest = {
       positionId: BigInt(object.position_id)
     };
   },
-  toAmino(message: ClaimableSpreadRewardsRequest): ClaimableSpreadRewardsRequestAmino {
+  toAmino(message: ClaimableSpreadRewardsRequest, useInterfaces: boolean = false): ClaimableSpreadRewardsRequestAmino {
     const obj: any = {};
     obj.position_id = message.positionId ? message.positionId.toString() : undefined;
     return obj;
@@ -1806,14 +1806,14 @@ export const ClaimableSpreadRewardsRequest = {
   fromAminoMsg(object: ClaimableSpreadRewardsRequestAminoMsg): ClaimableSpreadRewardsRequest {
     return ClaimableSpreadRewardsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: ClaimableSpreadRewardsRequest): ClaimableSpreadRewardsRequestAminoMsg {
+  toAminoMsg(message: ClaimableSpreadRewardsRequest, useInterfaces: boolean = false): ClaimableSpreadRewardsRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/claimable-spread-rewards-request",
-      value: ClaimableSpreadRewardsRequest.toAmino(message)
+      value: ClaimableSpreadRewardsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ClaimableSpreadRewardsRequestProtoMsg): ClaimableSpreadRewardsRequest {
-    return ClaimableSpreadRewardsRequest.decode(message.value);
+  fromProtoMsg(message: ClaimableSpreadRewardsRequestProtoMsg, useInterfaces: boolean = false): ClaimableSpreadRewardsRequest {
+    return ClaimableSpreadRewardsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ClaimableSpreadRewardsRequest): Uint8Array {
     return ClaimableSpreadRewardsRequest.encode(message).finish();
@@ -1838,7 +1838,7 @@ export const ClaimableSpreadRewardsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ClaimableSpreadRewardsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ClaimableSpreadRewardsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClaimableSpreadRewardsResponse();
@@ -1846,7 +1846,7 @@ export const ClaimableSpreadRewardsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.claimableSpreadRewards.push(Coin.decode(reader, reader.uint32()));
+          message.claimableSpreadRewards.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1865,10 +1865,10 @@ export const ClaimableSpreadRewardsResponse = {
       claimableSpreadRewards: Array.isArray(object?.claimable_spread_rewards) ? object.claimable_spread_rewards.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: ClaimableSpreadRewardsResponse): ClaimableSpreadRewardsResponseAmino {
+  toAmino(message: ClaimableSpreadRewardsResponse, useInterfaces: boolean = false): ClaimableSpreadRewardsResponseAmino {
     const obj: any = {};
     if (message.claimableSpreadRewards) {
-      obj.claimable_spread_rewards = message.claimableSpreadRewards.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.claimable_spread_rewards = message.claimableSpreadRewards.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.claimable_spread_rewards = [];
     }
@@ -1877,14 +1877,14 @@ export const ClaimableSpreadRewardsResponse = {
   fromAminoMsg(object: ClaimableSpreadRewardsResponseAminoMsg): ClaimableSpreadRewardsResponse {
     return ClaimableSpreadRewardsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: ClaimableSpreadRewardsResponse): ClaimableSpreadRewardsResponseAminoMsg {
+  toAminoMsg(message: ClaimableSpreadRewardsResponse, useInterfaces: boolean = false): ClaimableSpreadRewardsResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/claimable-spread-rewards-response",
-      value: ClaimableSpreadRewardsResponse.toAmino(message)
+      value: ClaimableSpreadRewardsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ClaimableSpreadRewardsResponseProtoMsg): ClaimableSpreadRewardsResponse {
-    return ClaimableSpreadRewardsResponse.decode(message.value);
+  fromProtoMsg(message: ClaimableSpreadRewardsResponseProtoMsg, useInterfaces: boolean = false): ClaimableSpreadRewardsResponse {
+    return ClaimableSpreadRewardsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ClaimableSpreadRewardsResponse): Uint8Array {
     return ClaimableSpreadRewardsResponse.encode(message).finish();
@@ -1909,7 +1909,7 @@ export const ClaimableIncentivesRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ClaimableIncentivesRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ClaimableIncentivesRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClaimableIncentivesRequest();
@@ -1936,7 +1936,7 @@ export const ClaimableIncentivesRequest = {
       positionId: BigInt(object.position_id)
     };
   },
-  toAmino(message: ClaimableIncentivesRequest): ClaimableIncentivesRequestAmino {
+  toAmino(message: ClaimableIncentivesRequest, useInterfaces: boolean = false): ClaimableIncentivesRequestAmino {
     const obj: any = {};
     obj.position_id = message.positionId ? message.positionId.toString() : undefined;
     return obj;
@@ -1944,14 +1944,14 @@ export const ClaimableIncentivesRequest = {
   fromAminoMsg(object: ClaimableIncentivesRequestAminoMsg): ClaimableIncentivesRequest {
     return ClaimableIncentivesRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: ClaimableIncentivesRequest): ClaimableIncentivesRequestAminoMsg {
+  toAminoMsg(message: ClaimableIncentivesRequest, useInterfaces: boolean = false): ClaimableIncentivesRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/claimable-incentives-request",
-      value: ClaimableIncentivesRequest.toAmino(message)
+      value: ClaimableIncentivesRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ClaimableIncentivesRequestProtoMsg): ClaimableIncentivesRequest {
-    return ClaimableIncentivesRequest.decode(message.value);
+  fromProtoMsg(message: ClaimableIncentivesRequestProtoMsg, useInterfaces: boolean = false): ClaimableIncentivesRequest {
+    return ClaimableIncentivesRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ClaimableIncentivesRequest): Uint8Array {
     return ClaimableIncentivesRequest.encode(message).finish();
@@ -1980,7 +1980,7 @@ export const ClaimableIncentivesResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ClaimableIncentivesResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ClaimableIncentivesResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClaimableIncentivesResponse();
@@ -1988,10 +1988,10 @@ export const ClaimableIncentivesResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.claimableIncentives.push(Coin.decode(reader, reader.uint32()));
+          message.claimableIncentives.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.forfeitedIncentives.push(Coin.decode(reader, reader.uint32()));
+          message.forfeitedIncentives.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -2012,15 +2012,15 @@ export const ClaimableIncentivesResponse = {
       forfeitedIncentives: Array.isArray(object?.forfeited_incentives) ? object.forfeited_incentives.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: ClaimableIncentivesResponse): ClaimableIncentivesResponseAmino {
+  toAmino(message: ClaimableIncentivesResponse, useInterfaces: boolean = false): ClaimableIncentivesResponseAmino {
     const obj: any = {};
     if (message.claimableIncentives) {
-      obj.claimable_incentives = message.claimableIncentives.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.claimable_incentives = message.claimableIncentives.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.claimable_incentives = [];
     }
     if (message.forfeitedIncentives) {
-      obj.forfeited_incentives = message.forfeitedIncentives.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.forfeited_incentives = message.forfeitedIncentives.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.forfeited_incentives = [];
     }
@@ -2029,14 +2029,14 @@ export const ClaimableIncentivesResponse = {
   fromAminoMsg(object: ClaimableIncentivesResponseAminoMsg): ClaimableIncentivesResponse {
     return ClaimableIncentivesResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: ClaimableIncentivesResponse): ClaimableIncentivesResponseAminoMsg {
+  toAminoMsg(message: ClaimableIncentivesResponse, useInterfaces: boolean = false): ClaimableIncentivesResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/claimable-incentives-response",
-      value: ClaimableIncentivesResponse.toAmino(message)
+      value: ClaimableIncentivesResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ClaimableIncentivesResponseProtoMsg): ClaimableIncentivesResponse {
-    return ClaimableIncentivesResponse.decode(message.value);
+  fromProtoMsg(message: ClaimableIncentivesResponseProtoMsg, useInterfaces: boolean = false): ClaimableIncentivesResponse {
+    return ClaimableIncentivesResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ClaimableIncentivesResponse): Uint8Array {
     return ClaimableIncentivesResponse.encode(message).finish();
@@ -2061,7 +2061,7 @@ export const PoolAccumulatorRewardsRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PoolAccumulatorRewardsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PoolAccumulatorRewardsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolAccumulatorRewardsRequest();
@@ -2088,7 +2088,7 @@ export const PoolAccumulatorRewardsRequest = {
       poolId: BigInt(object.pool_id)
     };
   },
-  toAmino(message: PoolAccumulatorRewardsRequest): PoolAccumulatorRewardsRequestAmino {
+  toAmino(message: PoolAccumulatorRewardsRequest, useInterfaces: boolean = false): PoolAccumulatorRewardsRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     return obj;
@@ -2096,14 +2096,14 @@ export const PoolAccumulatorRewardsRequest = {
   fromAminoMsg(object: PoolAccumulatorRewardsRequestAminoMsg): PoolAccumulatorRewardsRequest {
     return PoolAccumulatorRewardsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: PoolAccumulatorRewardsRequest): PoolAccumulatorRewardsRequestAminoMsg {
+  toAminoMsg(message: PoolAccumulatorRewardsRequest, useInterfaces: boolean = false): PoolAccumulatorRewardsRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/pool-accumulator-rewards-request",
-      value: PoolAccumulatorRewardsRequest.toAmino(message)
+      value: PoolAccumulatorRewardsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PoolAccumulatorRewardsRequestProtoMsg): PoolAccumulatorRewardsRequest {
-    return PoolAccumulatorRewardsRequest.decode(message.value);
+  fromProtoMsg(message: PoolAccumulatorRewardsRequestProtoMsg, useInterfaces: boolean = false): PoolAccumulatorRewardsRequest {
+    return PoolAccumulatorRewardsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PoolAccumulatorRewardsRequest): Uint8Array {
     return PoolAccumulatorRewardsRequest.encode(message).finish();
@@ -2132,7 +2132,7 @@ export const PoolAccumulatorRewardsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PoolAccumulatorRewardsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PoolAccumulatorRewardsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolAccumulatorRewardsResponse();
@@ -2140,10 +2140,10 @@ export const PoolAccumulatorRewardsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.spreadRewardGrowthGlobal.push(DecCoin.decode(reader, reader.uint32()));
+          message.spreadRewardGrowthGlobal.push(DecCoin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.uptimeGrowthGlobal.push(UptimeTracker.decode(reader, reader.uint32()));
+          message.uptimeGrowthGlobal.push(UptimeTracker.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -2164,15 +2164,15 @@ export const PoolAccumulatorRewardsResponse = {
       uptimeGrowthGlobal: Array.isArray(object?.uptime_growth_global) ? object.uptime_growth_global.map((e: any) => UptimeTracker.fromAmino(e)) : []
     };
   },
-  toAmino(message: PoolAccumulatorRewardsResponse): PoolAccumulatorRewardsResponseAmino {
+  toAmino(message: PoolAccumulatorRewardsResponse, useInterfaces: boolean = false): PoolAccumulatorRewardsResponseAmino {
     const obj: any = {};
     if (message.spreadRewardGrowthGlobal) {
-      obj.spread_reward_growth_global = message.spreadRewardGrowthGlobal.map(e => e ? DecCoin.toAmino(e) : undefined);
+      obj.spread_reward_growth_global = message.spreadRewardGrowthGlobal.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.spread_reward_growth_global = [];
     }
     if (message.uptimeGrowthGlobal) {
-      obj.uptime_growth_global = message.uptimeGrowthGlobal.map(e => e ? UptimeTracker.toAmino(e) : undefined);
+      obj.uptime_growth_global = message.uptimeGrowthGlobal.map(e => e ? UptimeTracker.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.uptime_growth_global = [];
     }
@@ -2181,14 +2181,14 @@ export const PoolAccumulatorRewardsResponse = {
   fromAminoMsg(object: PoolAccumulatorRewardsResponseAminoMsg): PoolAccumulatorRewardsResponse {
     return PoolAccumulatorRewardsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: PoolAccumulatorRewardsResponse): PoolAccumulatorRewardsResponseAminoMsg {
+  toAminoMsg(message: PoolAccumulatorRewardsResponse, useInterfaces: boolean = false): PoolAccumulatorRewardsResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/pool-accumulator-rewards-response",
-      value: PoolAccumulatorRewardsResponse.toAmino(message)
+      value: PoolAccumulatorRewardsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PoolAccumulatorRewardsResponseProtoMsg): PoolAccumulatorRewardsResponse {
-    return PoolAccumulatorRewardsResponse.decode(message.value);
+  fromProtoMsg(message: PoolAccumulatorRewardsResponseProtoMsg, useInterfaces: boolean = false): PoolAccumulatorRewardsResponse {
+    return PoolAccumulatorRewardsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PoolAccumulatorRewardsResponse): Uint8Array {
     return PoolAccumulatorRewardsResponse.encode(message).finish();
@@ -2217,7 +2217,7 @@ export const TickAccumulatorTrackersRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TickAccumulatorTrackersRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TickAccumulatorTrackersRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTickAccumulatorTrackersRequest();
@@ -2249,7 +2249,7 @@ export const TickAccumulatorTrackersRequest = {
       tickIndex: BigInt(object.tick_index)
     };
   },
-  toAmino(message: TickAccumulatorTrackersRequest): TickAccumulatorTrackersRequestAmino {
+  toAmino(message: TickAccumulatorTrackersRequest, useInterfaces: boolean = false): TickAccumulatorTrackersRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.tick_index = message.tickIndex ? message.tickIndex.toString() : undefined;
@@ -2258,14 +2258,14 @@ export const TickAccumulatorTrackersRequest = {
   fromAminoMsg(object: TickAccumulatorTrackersRequestAminoMsg): TickAccumulatorTrackersRequest {
     return TickAccumulatorTrackersRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: TickAccumulatorTrackersRequest): TickAccumulatorTrackersRequestAminoMsg {
+  toAminoMsg(message: TickAccumulatorTrackersRequest, useInterfaces: boolean = false): TickAccumulatorTrackersRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/tick-accumulator-trackers-request",
-      value: TickAccumulatorTrackersRequest.toAmino(message)
+      value: TickAccumulatorTrackersRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TickAccumulatorTrackersRequestProtoMsg): TickAccumulatorTrackersRequest {
-    return TickAccumulatorTrackersRequest.decode(message.value);
+  fromProtoMsg(message: TickAccumulatorTrackersRequestProtoMsg, useInterfaces: boolean = false): TickAccumulatorTrackersRequest {
+    return TickAccumulatorTrackersRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TickAccumulatorTrackersRequest): Uint8Array {
     return TickAccumulatorTrackersRequest.encode(message).finish();
@@ -2294,7 +2294,7 @@ export const TickAccumulatorTrackersResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TickAccumulatorTrackersResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TickAccumulatorTrackersResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTickAccumulatorTrackersResponse();
@@ -2302,10 +2302,10 @@ export const TickAccumulatorTrackersResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.spreadRewardGrowthOppositeDirectionOfLastTraversal.push(DecCoin.decode(reader, reader.uint32()));
+          message.spreadRewardGrowthOppositeDirectionOfLastTraversal.push(DecCoin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.uptimeTrackers.push(UptimeTracker.decode(reader, reader.uint32()));
+          message.uptimeTrackers.push(UptimeTracker.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -2326,15 +2326,15 @@ export const TickAccumulatorTrackersResponse = {
       uptimeTrackers: Array.isArray(object?.uptime_trackers) ? object.uptime_trackers.map((e: any) => UptimeTracker.fromAmino(e)) : []
     };
   },
-  toAmino(message: TickAccumulatorTrackersResponse): TickAccumulatorTrackersResponseAmino {
+  toAmino(message: TickAccumulatorTrackersResponse, useInterfaces: boolean = false): TickAccumulatorTrackersResponseAmino {
     const obj: any = {};
     if (message.spreadRewardGrowthOppositeDirectionOfLastTraversal) {
-      obj.spread_reward_growth_opposite_direction_of_last_traversal = message.spreadRewardGrowthOppositeDirectionOfLastTraversal.map(e => e ? DecCoin.toAmino(e) : undefined);
+      obj.spread_reward_growth_opposite_direction_of_last_traversal = message.spreadRewardGrowthOppositeDirectionOfLastTraversal.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.spread_reward_growth_opposite_direction_of_last_traversal = [];
     }
     if (message.uptimeTrackers) {
-      obj.uptime_trackers = message.uptimeTrackers.map(e => e ? UptimeTracker.toAmino(e) : undefined);
+      obj.uptime_trackers = message.uptimeTrackers.map(e => e ? UptimeTracker.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.uptime_trackers = [];
     }
@@ -2343,14 +2343,14 @@ export const TickAccumulatorTrackersResponse = {
   fromAminoMsg(object: TickAccumulatorTrackersResponseAminoMsg): TickAccumulatorTrackersResponse {
     return TickAccumulatorTrackersResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: TickAccumulatorTrackersResponse): TickAccumulatorTrackersResponseAminoMsg {
+  toAminoMsg(message: TickAccumulatorTrackersResponse, useInterfaces: boolean = false): TickAccumulatorTrackersResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/tick-accumulator-trackers-response",
-      value: TickAccumulatorTrackersResponse.toAmino(message)
+      value: TickAccumulatorTrackersResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TickAccumulatorTrackersResponseProtoMsg): TickAccumulatorTrackersResponse {
-    return TickAccumulatorTrackersResponse.decode(message.value);
+  fromProtoMsg(message: TickAccumulatorTrackersResponseProtoMsg, useInterfaces: boolean = false): TickAccumulatorTrackersResponse {
+    return TickAccumulatorTrackersResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TickAccumulatorTrackersResponse): Uint8Array {
     return TickAccumulatorTrackersResponse.encode(message).finish();
@@ -2365,7 +2365,7 @@ export const TickAccumulatorTrackersResponse = {
 function createBaseIncentiveRecordsRequest(): IncentiveRecordsRequest {
   return {
     poolId: BigInt(0),
-    pagination: PageRequest.fromPartial({})
+    pagination: undefined
   };
 }
 export const IncentiveRecordsRequest = {
@@ -2379,7 +2379,7 @@ export const IncentiveRecordsRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): IncentiveRecordsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): IncentiveRecordsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIncentiveRecordsRequest();
@@ -2390,7 +2390,7 @@ export const IncentiveRecordsRequest = {
           message.poolId = reader.uint64();
           break;
         case 2:
-          message.pagination = PageRequest.decode(reader, reader.uint32());
+          message.pagination = PageRequest.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -2411,23 +2411,23 @@ export const IncentiveRecordsRequest = {
       pagination: object?.pagination ? PageRequest.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: IncentiveRecordsRequest): IncentiveRecordsRequestAmino {
+  toAmino(message: IncentiveRecordsRequest, useInterfaces: boolean = false): IncentiveRecordsRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: IncentiveRecordsRequestAminoMsg): IncentiveRecordsRequest {
     return IncentiveRecordsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: IncentiveRecordsRequest): IncentiveRecordsRequestAminoMsg {
+  toAminoMsg(message: IncentiveRecordsRequest, useInterfaces: boolean = false): IncentiveRecordsRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/incentive-records-request",
-      value: IncentiveRecordsRequest.toAmino(message)
+      value: IncentiveRecordsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: IncentiveRecordsRequestProtoMsg): IncentiveRecordsRequest {
-    return IncentiveRecordsRequest.decode(message.value);
+  fromProtoMsg(message: IncentiveRecordsRequestProtoMsg, useInterfaces: boolean = false): IncentiveRecordsRequest {
+    return IncentiveRecordsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: IncentiveRecordsRequest): Uint8Array {
     return IncentiveRecordsRequest.encode(message).finish();
@@ -2442,7 +2442,7 @@ export const IncentiveRecordsRequest = {
 function createBaseIncentiveRecordsResponse(): IncentiveRecordsResponse {
   return {
     incentiveRecords: [],
-    pagination: PageResponse.fromPartial({})
+    pagination: undefined
   };
 }
 export const IncentiveRecordsResponse = {
@@ -2456,7 +2456,7 @@ export const IncentiveRecordsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): IncentiveRecordsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): IncentiveRecordsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIncentiveRecordsResponse();
@@ -2464,10 +2464,10 @@ export const IncentiveRecordsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.incentiveRecords.push(IncentiveRecord.decode(reader, reader.uint32()));
+          message.incentiveRecords.push(IncentiveRecord.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.pagination = PageResponse.decode(reader, reader.uint32());
+          message.pagination = PageResponse.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -2488,27 +2488,27 @@ export const IncentiveRecordsResponse = {
       pagination: object?.pagination ? PageResponse.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: IncentiveRecordsResponse): IncentiveRecordsResponseAmino {
+  toAmino(message: IncentiveRecordsResponse, useInterfaces: boolean = false): IncentiveRecordsResponseAmino {
     const obj: any = {};
     if (message.incentiveRecords) {
-      obj.incentive_records = message.incentiveRecords.map(e => e ? IncentiveRecord.toAmino(e) : undefined);
+      obj.incentive_records = message.incentiveRecords.map(e => e ? IncentiveRecord.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.incentive_records = [];
     }
-    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: IncentiveRecordsResponseAminoMsg): IncentiveRecordsResponse {
     return IncentiveRecordsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: IncentiveRecordsResponse): IncentiveRecordsResponseAminoMsg {
+  toAminoMsg(message: IncentiveRecordsResponse, useInterfaces: boolean = false): IncentiveRecordsResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/incentive-records-response",
-      value: IncentiveRecordsResponse.toAmino(message)
+      value: IncentiveRecordsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: IncentiveRecordsResponseProtoMsg): IncentiveRecordsResponse {
-    return IncentiveRecordsResponse.decode(message.value);
+  fromProtoMsg(message: IncentiveRecordsResponseProtoMsg, useInterfaces: boolean = false): IncentiveRecordsResponse {
+    return IncentiveRecordsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: IncentiveRecordsResponse): Uint8Array {
     return IncentiveRecordsResponse.encode(message).finish();
@@ -2533,7 +2533,7 @@ export const CFMMPoolIdLinkFromConcentratedPoolIdRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CFMMPoolIdLinkFromConcentratedPoolIdRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CFMMPoolIdLinkFromConcentratedPoolIdRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCFMMPoolIdLinkFromConcentratedPoolIdRequest();
@@ -2560,7 +2560,7 @@ export const CFMMPoolIdLinkFromConcentratedPoolIdRequest = {
       concentratedPoolId: BigInt(object.concentrated_pool_id)
     };
   },
-  toAmino(message: CFMMPoolIdLinkFromConcentratedPoolIdRequest): CFMMPoolIdLinkFromConcentratedPoolIdRequestAmino {
+  toAmino(message: CFMMPoolIdLinkFromConcentratedPoolIdRequest, useInterfaces: boolean = false): CFMMPoolIdLinkFromConcentratedPoolIdRequestAmino {
     const obj: any = {};
     obj.concentrated_pool_id = message.concentratedPoolId ? message.concentratedPoolId.toString() : undefined;
     return obj;
@@ -2568,14 +2568,14 @@ export const CFMMPoolIdLinkFromConcentratedPoolIdRequest = {
   fromAminoMsg(object: CFMMPoolIdLinkFromConcentratedPoolIdRequestAminoMsg): CFMMPoolIdLinkFromConcentratedPoolIdRequest {
     return CFMMPoolIdLinkFromConcentratedPoolIdRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: CFMMPoolIdLinkFromConcentratedPoolIdRequest): CFMMPoolIdLinkFromConcentratedPoolIdRequestAminoMsg {
+  toAminoMsg(message: CFMMPoolIdLinkFromConcentratedPoolIdRequest, useInterfaces: boolean = false): CFMMPoolIdLinkFromConcentratedPoolIdRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/cfmmpool-id-link-from-concentrated-pool-id-request",
-      value: CFMMPoolIdLinkFromConcentratedPoolIdRequest.toAmino(message)
+      value: CFMMPoolIdLinkFromConcentratedPoolIdRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CFMMPoolIdLinkFromConcentratedPoolIdRequestProtoMsg): CFMMPoolIdLinkFromConcentratedPoolIdRequest {
-    return CFMMPoolIdLinkFromConcentratedPoolIdRequest.decode(message.value);
+  fromProtoMsg(message: CFMMPoolIdLinkFromConcentratedPoolIdRequestProtoMsg, useInterfaces: boolean = false): CFMMPoolIdLinkFromConcentratedPoolIdRequest {
+    return CFMMPoolIdLinkFromConcentratedPoolIdRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CFMMPoolIdLinkFromConcentratedPoolIdRequest): Uint8Array {
     return CFMMPoolIdLinkFromConcentratedPoolIdRequest.encode(message).finish();
@@ -2600,7 +2600,7 @@ export const CFMMPoolIdLinkFromConcentratedPoolIdResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CFMMPoolIdLinkFromConcentratedPoolIdResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CFMMPoolIdLinkFromConcentratedPoolIdResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCFMMPoolIdLinkFromConcentratedPoolIdResponse();
@@ -2627,7 +2627,7 @@ export const CFMMPoolIdLinkFromConcentratedPoolIdResponse = {
       cfmmPoolId: BigInt(object.cfmm_pool_id)
     };
   },
-  toAmino(message: CFMMPoolIdLinkFromConcentratedPoolIdResponse): CFMMPoolIdLinkFromConcentratedPoolIdResponseAmino {
+  toAmino(message: CFMMPoolIdLinkFromConcentratedPoolIdResponse, useInterfaces: boolean = false): CFMMPoolIdLinkFromConcentratedPoolIdResponseAmino {
     const obj: any = {};
     obj.cfmm_pool_id = message.cfmmPoolId ? message.cfmmPoolId.toString() : undefined;
     return obj;
@@ -2635,14 +2635,14 @@ export const CFMMPoolIdLinkFromConcentratedPoolIdResponse = {
   fromAminoMsg(object: CFMMPoolIdLinkFromConcentratedPoolIdResponseAminoMsg): CFMMPoolIdLinkFromConcentratedPoolIdResponse {
     return CFMMPoolIdLinkFromConcentratedPoolIdResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: CFMMPoolIdLinkFromConcentratedPoolIdResponse): CFMMPoolIdLinkFromConcentratedPoolIdResponseAminoMsg {
+  toAminoMsg(message: CFMMPoolIdLinkFromConcentratedPoolIdResponse, useInterfaces: boolean = false): CFMMPoolIdLinkFromConcentratedPoolIdResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/cfmmpool-id-link-from-concentrated-pool-id-response",
-      value: CFMMPoolIdLinkFromConcentratedPoolIdResponse.toAmino(message)
+      value: CFMMPoolIdLinkFromConcentratedPoolIdResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CFMMPoolIdLinkFromConcentratedPoolIdResponseProtoMsg): CFMMPoolIdLinkFromConcentratedPoolIdResponse {
-    return CFMMPoolIdLinkFromConcentratedPoolIdResponse.decode(message.value);
+  fromProtoMsg(message: CFMMPoolIdLinkFromConcentratedPoolIdResponseProtoMsg, useInterfaces: boolean = false): CFMMPoolIdLinkFromConcentratedPoolIdResponse {
+    return CFMMPoolIdLinkFromConcentratedPoolIdResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CFMMPoolIdLinkFromConcentratedPoolIdResponse): Uint8Array {
     return CFMMPoolIdLinkFromConcentratedPoolIdResponse.encode(message).finish();
@@ -2667,7 +2667,7 @@ export const UserUnbondingPositionsRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): UserUnbondingPositionsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): UserUnbondingPositionsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUserUnbondingPositionsRequest();
@@ -2694,7 +2694,7 @@ export const UserUnbondingPositionsRequest = {
       address: object.address
     };
   },
-  toAmino(message: UserUnbondingPositionsRequest): UserUnbondingPositionsRequestAmino {
+  toAmino(message: UserUnbondingPositionsRequest, useInterfaces: boolean = false): UserUnbondingPositionsRequestAmino {
     const obj: any = {};
     obj.address = message.address;
     return obj;
@@ -2702,14 +2702,14 @@ export const UserUnbondingPositionsRequest = {
   fromAminoMsg(object: UserUnbondingPositionsRequestAminoMsg): UserUnbondingPositionsRequest {
     return UserUnbondingPositionsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: UserUnbondingPositionsRequest): UserUnbondingPositionsRequestAminoMsg {
+  toAminoMsg(message: UserUnbondingPositionsRequest, useInterfaces: boolean = false): UserUnbondingPositionsRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/user-unbonding-positions-request",
-      value: UserUnbondingPositionsRequest.toAmino(message)
+      value: UserUnbondingPositionsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: UserUnbondingPositionsRequestProtoMsg): UserUnbondingPositionsRequest {
-    return UserUnbondingPositionsRequest.decode(message.value);
+  fromProtoMsg(message: UserUnbondingPositionsRequestProtoMsg, useInterfaces: boolean = false): UserUnbondingPositionsRequest {
+    return UserUnbondingPositionsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: UserUnbondingPositionsRequest): Uint8Array {
     return UserUnbondingPositionsRequest.encode(message).finish();
@@ -2734,7 +2734,7 @@ export const UserUnbondingPositionsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): UserUnbondingPositionsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): UserUnbondingPositionsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUserUnbondingPositionsResponse();
@@ -2742,7 +2742,7 @@ export const UserUnbondingPositionsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.positionsWithPeriodLock.push(PositionWithPeriodLock.decode(reader, reader.uint32()));
+          message.positionsWithPeriodLock.push(PositionWithPeriodLock.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -2761,10 +2761,10 @@ export const UserUnbondingPositionsResponse = {
       positionsWithPeriodLock: Array.isArray(object?.positions_with_period_lock) ? object.positions_with_period_lock.map((e: any) => PositionWithPeriodLock.fromAmino(e)) : []
     };
   },
-  toAmino(message: UserUnbondingPositionsResponse): UserUnbondingPositionsResponseAmino {
+  toAmino(message: UserUnbondingPositionsResponse, useInterfaces: boolean = false): UserUnbondingPositionsResponseAmino {
     const obj: any = {};
     if (message.positionsWithPeriodLock) {
-      obj.positions_with_period_lock = message.positionsWithPeriodLock.map(e => e ? PositionWithPeriodLock.toAmino(e) : undefined);
+      obj.positions_with_period_lock = message.positionsWithPeriodLock.map(e => e ? PositionWithPeriodLock.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.positions_with_period_lock = [];
     }
@@ -2773,14 +2773,14 @@ export const UserUnbondingPositionsResponse = {
   fromAminoMsg(object: UserUnbondingPositionsResponseAminoMsg): UserUnbondingPositionsResponse {
     return UserUnbondingPositionsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: UserUnbondingPositionsResponse): UserUnbondingPositionsResponseAminoMsg {
+  toAminoMsg(message: UserUnbondingPositionsResponse, useInterfaces: boolean = false): UserUnbondingPositionsResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/user-unbonding-positions-response",
-      value: UserUnbondingPositionsResponse.toAmino(message)
+      value: UserUnbondingPositionsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: UserUnbondingPositionsResponseProtoMsg): UserUnbondingPositionsResponse {
-    return UserUnbondingPositionsResponse.decode(message.value);
+  fromProtoMsg(message: UserUnbondingPositionsResponseProtoMsg, useInterfaces: boolean = false): UserUnbondingPositionsResponse {
+    return UserUnbondingPositionsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: UserUnbondingPositionsResponse): Uint8Array {
     return UserUnbondingPositionsResponse.encode(message).finish();
@@ -2800,7 +2800,7 @@ export const GetTotalLiquidityRequest = {
   encode(_: GetTotalLiquidityRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): GetTotalLiquidityRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): GetTotalLiquidityRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetTotalLiquidityRequest();
@@ -2821,21 +2821,21 @@ export const GetTotalLiquidityRequest = {
   fromAmino(_: GetTotalLiquidityRequestAmino): GetTotalLiquidityRequest {
     return {};
   },
-  toAmino(_: GetTotalLiquidityRequest): GetTotalLiquidityRequestAmino {
+  toAmino(_: GetTotalLiquidityRequest, useInterfaces: boolean = false): GetTotalLiquidityRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: GetTotalLiquidityRequestAminoMsg): GetTotalLiquidityRequest {
     return GetTotalLiquidityRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: GetTotalLiquidityRequest): GetTotalLiquidityRequestAminoMsg {
+  toAminoMsg(message: GetTotalLiquidityRequest, useInterfaces: boolean = false): GetTotalLiquidityRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/get-total-liquidity-request",
-      value: GetTotalLiquidityRequest.toAmino(message)
+      value: GetTotalLiquidityRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: GetTotalLiquidityRequestProtoMsg): GetTotalLiquidityRequest {
-    return GetTotalLiquidityRequest.decode(message.value);
+  fromProtoMsg(message: GetTotalLiquidityRequestProtoMsg, useInterfaces: boolean = false): GetTotalLiquidityRequest {
+    return GetTotalLiquidityRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: GetTotalLiquidityRequest): Uint8Array {
     return GetTotalLiquidityRequest.encode(message).finish();
@@ -2860,7 +2860,7 @@ export const GetTotalLiquidityResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): GetTotalLiquidityResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): GetTotalLiquidityResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetTotalLiquidityResponse();
@@ -2868,7 +2868,7 @@ export const GetTotalLiquidityResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.totalLiquidity.push(Coin.decode(reader, reader.uint32()));
+          message.totalLiquidity.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -2887,10 +2887,10 @@ export const GetTotalLiquidityResponse = {
       totalLiquidity: Array.isArray(object?.total_liquidity) ? object.total_liquidity.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: GetTotalLiquidityResponse): GetTotalLiquidityResponseAmino {
+  toAmino(message: GetTotalLiquidityResponse, useInterfaces: boolean = false): GetTotalLiquidityResponseAmino {
     const obj: any = {};
     if (message.totalLiquidity) {
-      obj.total_liquidity = message.totalLiquidity.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.total_liquidity = message.totalLiquidity.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.total_liquidity = [];
     }
@@ -2899,14 +2899,14 @@ export const GetTotalLiquidityResponse = {
   fromAminoMsg(object: GetTotalLiquidityResponseAminoMsg): GetTotalLiquidityResponse {
     return GetTotalLiquidityResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: GetTotalLiquidityResponse): GetTotalLiquidityResponseAminoMsg {
+  toAminoMsg(message: GetTotalLiquidityResponse, useInterfaces: boolean = false): GetTotalLiquidityResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/get-total-liquidity-response",
-      value: GetTotalLiquidityResponse.toAmino(message)
+      value: GetTotalLiquidityResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: GetTotalLiquidityResponseProtoMsg): GetTotalLiquidityResponse {
-    return GetTotalLiquidityResponse.decode(message.value);
+  fromProtoMsg(message: GetTotalLiquidityResponseProtoMsg, useInterfaces: boolean = false): GetTotalLiquidityResponse {
+    return GetTotalLiquidityResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: GetTotalLiquidityResponse): Uint8Array {
     return GetTotalLiquidityResponse.encode(message).finish();
@@ -2939,7 +2939,7 @@ export const NumNextInitializedTicksRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): NumNextInitializedTicksRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): NumNextInitializedTicksRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNumNextInitializedTicksRequest();
@@ -2976,7 +2976,7 @@ export const NumNextInitializedTicksRequest = {
       numNextInitializedTicks: BigInt(object.num_next_initialized_ticks)
     };
   },
-  toAmino(message: NumNextInitializedTicksRequest): NumNextInitializedTicksRequestAmino {
+  toAmino(message: NumNextInitializedTicksRequest, useInterfaces: boolean = false): NumNextInitializedTicksRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.token_in_denom = message.tokenInDenom;
@@ -2986,14 +2986,14 @@ export const NumNextInitializedTicksRequest = {
   fromAminoMsg(object: NumNextInitializedTicksRequestAminoMsg): NumNextInitializedTicksRequest {
     return NumNextInitializedTicksRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: NumNextInitializedTicksRequest): NumNextInitializedTicksRequestAminoMsg {
+  toAminoMsg(message: NumNextInitializedTicksRequest, useInterfaces: boolean = false): NumNextInitializedTicksRequestAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/num-next-initialized-ticks-request",
-      value: NumNextInitializedTicksRequest.toAmino(message)
+      value: NumNextInitializedTicksRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: NumNextInitializedTicksRequestProtoMsg): NumNextInitializedTicksRequest {
-    return NumNextInitializedTicksRequest.decode(message.value);
+  fromProtoMsg(message: NumNextInitializedTicksRequestProtoMsg, useInterfaces: boolean = false): NumNextInitializedTicksRequest {
+    return NumNextInitializedTicksRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: NumNextInitializedTicksRequest): Uint8Array {
     return NumNextInitializedTicksRequest.encode(message).finish();
@@ -3026,7 +3026,7 @@ export const NumNextInitializedTicksResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): NumNextInitializedTicksResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): NumNextInitializedTicksResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNumNextInitializedTicksResponse();
@@ -3034,7 +3034,7 @@ export const NumNextInitializedTicksResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.liquidityDepths.push(TickLiquidityNet.decode(reader, reader.uint32()));
+          message.liquidityDepths.push(TickLiquidityNet.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
           message.currentTick = reader.int64();
@@ -3063,10 +3063,10 @@ export const NumNextInitializedTicksResponse = {
       currentLiquidity: object.current_liquidity
     };
   },
-  toAmino(message: NumNextInitializedTicksResponse): NumNextInitializedTicksResponseAmino {
+  toAmino(message: NumNextInitializedTicksResponse, useInterfaces: boolean = false): NumNextInitializedTicksResponseAmino {
     const obj: any = {};
     if (message.liquidityDepths) {
-      obj.liquidity_depths = message.liquidityDepths.map(e => e ? TickLiquidityNet.toAmino(e) : undefined);
+      obj.liquidity_depths = message.liquidityDepths.map(e => e ? TickLiquidityNet.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.liquidity_depths = [];
     }
@@ -3077,14 +3077,14 @@ export const NumNextInitializedTicksResponse = {
   fromAminoMsg(object: NumNextInitializedTicksResponseAminoMsg): NumNextInitializedTicksResponse {
     return NumNextInitializedTicksResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: NumNextInitializedTicksResponse): NumNextInitializedTicksResponseAminoMsg {
+  toAminoMsg(message: NumNextInitializedTicksResponse, useInterfaces: boolean = false): NumNextInitializedTicksResponseAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/num-next-initialized-ticks-response",
-      value: NumNextInitializedTicksResponse.toAmino(message)
+      value: NumNextInitializedTicksResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: NumNextInitializedTicksResponseProtoMsg): NumNextInitializedTicksResponse {
-    return NumNextInitializedTicksResponse.decode(message.value);
+  fromProtoMsg(message: NumNextInitializedTicksResponseProtoMsg, useInterfaces: boolean = false): NumNextInitializedTicksResponse {
+    return NumNextInitializedTicksResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: NumNextInitializedTicksResponse): Uint8Array {
     return NumNextInitializedTicksResponse.encode(message).finish();
@@ -3098,16 +3098,16 @@ export const NumNextInitializedTicksResponse = {
 };
 export const PoolI_InterfaceDecoder = (input: BinaryReader | Uint8Array): Pool1 | CosmWasmPool | Pool2 | Pool3 | Any => {
   const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-  const data = Any.decode(reader, reader.uint32());
+  const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
-      return Pool1.decode(data.value);
+      return Pool1.decode(data.value, undefined, true);
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
-      return CosmWasmPool.decode(data.value);
+      return CosmWasmPool.decode(data.value, undefined, true);
     case "/osmosis.gamm.v1beta1.Pool":
-      return Pool2.decode(data.value);
+      return Pool2.decode(data.value, undefined, true);
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
-      return Pool3.decode(data.value);
+      return Pool3.decode(data.value, undefined, true);
     default:
       return data;
   }
@@ -3138,29 +3138,29 @@ export const PoolI_FromAmino = (content: AnyAmino) => {
       return Any.fromAmino(content);
   }
 };
-export const PoolI_ToAmino = (content: Any) => {
+export const PoolI_ToAmino = (content: Any, useInterfaces: boolean = false) => {
   switch (content.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
       return {
         type: "osmosis/concentratedliquidity/pool",
-        value: Pool1.toAmino(Pool1.decode(content.value))
+        value: Pool1.toAmino(Pool1.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
       return {
         type: "osmosis/cosmwasmpool/cosm-wasm-pool",
-        value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value))
+        value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.gamm.v1beta1.Pool":
       return {
         type: "osmosis/gamm/BalancerPool",
-        value: Pool2.toAmino(Pool2.decode(content.value))
+        value: Pool2.toAmino(Pool2.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
       return {
         type: "osmosis/gamm/StableswapPool",
-        value: Pool3.toAmino(Pool3.decode(content.value))
+        value: Pool3.toAmino(Pool3.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     default:
-      return Any.toAmino(content);
+      return Any.toAmino(content, useInterfaces);
   }
 };

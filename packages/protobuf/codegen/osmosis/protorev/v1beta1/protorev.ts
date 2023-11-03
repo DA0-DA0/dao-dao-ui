@@ -470,7 +470,7 @@ export const TokenPairArbRoutes = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TokenPairArbRoutes {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TokenPairArbRoutes {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTokenPairArbRoutes();
@@ -478,7 +478,7 @@ export const TokenPairArbRoutes = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.arbRoutes.push(Route.decode(reader, reader.uint32()));
+          message.arbRoutes.push(Route.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
           message.tokenIn = reader.string();
@@ -507,10 +507,10 @@ export const TokenPairArbRoutes = {
       tokenOut: object.token_out
     };
   },
-  toAmino(message: TokenPairArbRoutes): TokenPairArbRoutesAmino {
+  toAmino(message: TokenPairArbRoutes, useInterfaces: boolean = false): TokenPairArbRoutesAmino {
     const obj: any = {};
     if (message.arbRoutes) {
-      obj.arb_routes = message.arbRoutes.map(e => e ? Route.toAmino(e) : undefined);
+      obj.arb_routes = message.arbRoutes.map(e => e ? Route.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.arb_routes = [];
     }
@@ -521,14 +521,14 @@ export const TokenPairArbRoutes = {
   fromAminoMsg(object: TokenPairArbRoutesAminoMsg): TokenPairArbRoutes {
     return TokenPairArbRoutes.fromAmino(object.value);
   },
-  toAminoMsg(message: TokenPairArbRoutes): TokenPairArbRoutesAminoMsg {
+  toAminoMsg(message: TokenPairArbRoutes, useInterfaces: boolean = false): TokenPairArbRoutesAminoMsg {
     return {
       type: "osmosis/protorev/token-pair-arb-routes",
-      value: TokenPairArbRoutes.toAmino(message)
+      value: TokenPairArbRoutes.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TokenPairArbRoutesProtoMsg): TokenPairArbRoutes {
-    return TokenPairArbRoutes.decode(message.value);
+  fromProtoMsg(message: TokenPairArbRoutesProtoMsg, useInterfaces: boolean = false): TokenPairArbRoutes {
+    return TokenPairArbRoutes.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TokenPairArbRoutes): Uint8Array {
     return TokenPairArbRoutes.encode(message).finish();
@@ -557,7 +557,7 @@ export const Route = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Route {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Route {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRoute();
@@ -565,7 +565,7 @@ export const Route = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.trades.push(Trade.decode(reader, reader.uint32()));
+          message.trades.push(Trade.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
           message.stepSize = reader.string();
@@ -589,10 +589,10 @@ export const Route = {
       stepSize: object.step_size
     };
   },
-  toAmino(message: Route): RouteAmino {
+  toAmino(message: Route, useInterfaces: boolean = false): RouteAmino {
     const obj: any = {};
     if (message.trades) {
-      obj.trades = message.trades.map(e => e ? Trade.toAmino(e) : undefined);
+      obj.trades = message.trades.map(e => e ? Trade.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.trades = [];
     }
@@ -602,14 +602,14 @@ export const Route = {
   fromAminoMsg(object: RouteAminoMsg): Route {
     return Route.fromAmino(object.value);
   },
-  toAminoMsg(message: Route): RouteAminoMsg {
+  toAminoMsg(message: Route, useInterfaces: boolean = false): RouteAminoMsg {
     return {
       type: "osmosis/protorev/route",
-      value: Route.toAmino(message)
+      value: Route.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: RouteProtoMsg): Route {
-    return Route.decode(message.value);
+  fromProtoMsg(message: RouteProtoMsg, useInterfaces: boolean = false): Route {
+    return Route.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Route): Uint8Array {
     return Route.encode(message).finish();
@@ -642,7 +642,7 @@ export const Trade = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Trade {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Trade {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTrade();
@@ -679,7 +679,7 @@ export const Trade = {
       tokenOut: object.token_out
     };
   },
-  toAmino(message: Trade): TradeAmino {
+  toAmino(message: Trade, useInterfaces: boolean = false): TradeAmino {
     const obj: any = {};
     obj.pool = message.pool ? message.pool.toString() : undefined;
     obj.token_in = message.tokenIn;
@@ -689,14 +689,14 @@ export const Trade = {
   fromAminoMsg(object: TradeAminoMsg): Trade {
     return Trade.fromAmino(object.value);
   },
-  toAminoMsg(message: Trade): TradeAminoMsg {
+  toAminoMsg(message: Trade, useInterfaces: boolean = false): TradeAminoMsg {
     return {
       type: "osmosis/protorev/trade",
-      value: Trade.toAmino(message)
+      value: Trade.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TradeProtoMsg): Trade {
-    return Trade.decode(message.value);
+  fromProtoMsg(message: TradeProtoMsg, useInterfaces: boolean = false): Trade {
+    return Trade.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Trade): Uint8Array {
     return Trade.encode(message).finish();
@@ -731,7 +731,7 @@ export const RouteStatistics = {
     writer.ldelim();
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RouteStatistics {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RouteStatistics {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRouteStatistics();
@@ -739,7 +739,7 @@ export const RouteStatistics = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.profits.push(Coin.decode(reader, reader.uint32()));
+          message.profits.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
           message.numberOfTrades = reader.string();
@@ -775,10 +775,10 @@ export const RouteStatistics = {
       route: Array.isArray(object?.route) ? object.route.map((e: any) => BigInt(e)) : []
     };
   },
-  toAmino(message: RouteStatistics): RouteStatisticsAmino {
+  toAmino(message: RouteStatistics, useInterfaces: boolean = false): RouteStatisticsAmino {
     const obj: any = {};
     if (message.profits) {
-      obj.profits = message.profits.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.profits = message.profits.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.profits = [];
     }
@@ -793,14 +793,14 @@ export const RouteStatistics = {
   fromAminoMsg(object: RouteStatisticsAminoMsg): RouteStatistics {
     return RouteStatistics.fromAmino(object.value);
   },
-  toAminoMsg(message: RouteStatistics): RouteStatisticsAminoMsg {
+  toAminoMsg(message: RouteStatistics, useInterfaces: boolean = false): RouteStatisticsAminoMsg {
     return {
       type: "osmosis/protorev/route-statistics",
-      value: RouteStatistics.toAmino(message)
+      value: RouteStatistics.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: RouteStatisticsProtoMsg): RouteStatistics {
-    return RouteStatistics.decode(message.value);
+  fromProtoMsg(message: RouteStatisticsProtoMsg, useInterfaces: boolean = false): RouteStatistics {
+    return RouteStatistics.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RouteStatistics): Uint8Array {
     return RouteStatistics.encode(message).finish();
@@ -837,7 +837,7 @@ export const PoolWeights = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PoolWeights {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PoolWeights {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolWeights();
@@ -879,7 +879,7 @@ export const PoolWeights = {
       cosmwasmWeight: BigInt(object.cosmwasm_weight)
     };
   },
-  toAmino(message: PoolWeights): PoolWeightsAmino {
+  toAmino(message: PoolWeights, useInterfaces: boolean = false): PoolWeightsAmino {
     const obj: any = {};
     obj.stable_weight = message.stableWeight ? message.stableWeight.toString() : undefined;
     obj.balancer_weight = message.balancerWeight ? message.balancerWeight.toString() : undefined;
@@ -890,14 +890,14 @@ export const PoolWeights = {
   fromAminoMsg(object: PoolWeightsAminoMsg): PoolWeights {
     return PoolWeights.fromAmino(object.value);
   },
-  toAminoMsg(message: PoolWeights): PoolWeightsAminoMsg {
+  toAminoMsg(message: PoolWeights, useInterfaces: boolean = false): PoolWeightsAminoMsg {
     return {
       type: "osmosis/protorev/pool-weights",
-      value: PoolWeights.toAmino(message)
+      value: PoolWeights.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PoolWeightsProtoMsg): PoolWeights {
-    return PoolWeights.decode(message.value);
+  fromProtoMsg(message: PoolWeightsProtoMsg, useInterfaces: boolean = false): PoolWeights {
+    return PoolWeights.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PoolWeights): Uint8Array {
     return PoolWeights.encode(message).finish();
@@ -934,7 +934,7 @@ export const InfoByPoolType = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): InfoByPoolType {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): InfoByPoolType {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInfoByPoolType();
@@ -942,16 +942,16 @@ export const InfoByPoolType = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.stable = StablePoolInfo.decode(reader, reader.uint32());
+          message.stable = StablePoolInfo.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.balancer = BalancerPoolInfo.decode(reader, reader.uint32());
+          message.balancer = BalancerPoolInfo.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
-          message.concentrated = ConcentratedPoolInfo.decode(reader, reader.uint32());
+          message.concentrated = ConcentratedPoolInfo.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
-          message.cosmwasm = CosmwasmPoolInfo.decode(reader, reader.uint32());
+          message.cosmwasm = CosmwasmPoolInfo.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -976,25 +976,25 @@ export const InfoByPoolType = {
       cosmwasm: object?.cosmwasm ? CosmwasmPoolInfo.fromAmino(object.cosmwasm) : undefined
     };
   },
-  toAmino(message: InfoByPoolType): InfoByPoolTypeAmino {
+  toAmino(message: InfoByPoolType, useInterfaces: boolean = false): InfoByPoolTypeAmino {
     const obj: any = {};
-    obj.stable = message.stable ? StablePoolInfo.toAmino(message.stable) : undefined;
-    obj.balancer = message.balancer ? BalancerPoolInfo.toAmino(message.balancer) : undefined;
-    obj.concentrated = message.concentrated ? ConcentratedPoolInfo.toAmino(message.concentrated) : undefined;
-    obj.cosmwasm = message.cosmwasm ? CosmwasmPoolInfo.toAmino(message.cosmwasm) : undefined;
+    obj.stable = message.stable ? StablePoolInfo.toAmino(message.stable, useInterfaces) : undefined;
+    obj.balancer = message.balancer ? BalancerPoolInfo.toAmino(message.balancer, useInterfaces) : undefined;
+    obj.concentrated = message.concentrated ? ConcentratedPoolInfo.toAmino(message.concentrated, useInterfaces) : undefined;
+    obj.cosmwasm = message.cosmwasm ? CosmwasmPoolInfo.toAmino(message.cosmwasm, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: InfoByPoolTypeAminoMsg): InfoByPoolType {
     return InfoByPoolType.fromAmino(object.value);
   },
-  toAminoMsg(message: InfoByPoolType): InfoByPoolTypeAminoMsg {
+  toAminoMsg(message: InfoByPoolType, useInterfaces: boolean = false): InfoByPoolTypeAminoMsg {
     return {
       type: "osmosis/protorev/info-by-pool-type",
-      value: InfoByPoolType.toAmino(message)
+      value: InfoByPoolType.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: InfoByPoolTypeProtoMsg): InfoByPoolType {
-    return InfoByPoolType.decode(message.value);
+  fromProtoMsg(message: InfoByPoolTypeProtoMsg, useInterfaces: boolean = false): InfoByPoolType {
+    return InfoByPoolType.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: InfoByPoolType): Uint8Array {
     return InfoByPoolType.encode(message).finish();
@@ -1019,7 +1019,7 @@ export const StablePoolInfo = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): StablePoolInfo {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): StablePoolInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseStablePoolInfo();
@@ -1046,7 +1046,7 @@ export const StablePoolInfo = {
       weight: BigInt(object.weight)
     };
   },
-  toAmino(message: StablePoolInfo): StablePoolInfoAmino {
+  toAmino(message: StablePoolInfo, useInterfaces: boolean = false): StablePoolInfoAmino {
     const obj: any = {};
     obj.weight = message.weight ? message.weight.toString() : undefined;
     return obj;
@@ -1054,14 +1054,14 @@ export const StablePoolInfo = {
   fromAminoMsg(object: StablePoolInfoAminoMsg): StablePoolInfo {
     return StablePoolInfo.fromAmino(object.value);
   },
-  toAminoMsg(message: StablePoolInfo): StablePoolInfoAminoMsg {
+  toAminoMsg(message: StablePoolInfo, useInterfaces: boolean = false): StablePoolInfoAminoMsg {
     return {
       type: "osmosis/protorev/stable-pool-info",
-      value: StablePoolInfo.toAmino(message)
+      value: StablePoolInfo.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: StablePoolInfoProtoMsg): StablePoolInfo {
-    return StablePoolInfo.decode(message.value);
+  fromProtoMsg(message: StablePoolInfoProtoMsg, useInterfaces: boolean = false): StablePoolInfo {
+    return StablePoolInfo.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: StablePoolInfo): Uint8Array {
     return StablePoolInfo.encode(message).finish();
@@ -1086,7 +1086,7 @@ export const BalancerPoolInfo = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): BalancerPoolInfo {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): BalancerPoolInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBalancerPoolInfo();
@@ -1113,7 +1113,7 @@ export const BalancerPoolInfo = {
       weight: BigInt(object.weight)
     };
   },
-  toAmino(message: BalancerPoolInfo): BalancerPoolInfoAmino {
+  toAmino(message: BalancerPoolInfo, useInterfaces: boolean = false): BalancerPoolInfoAmino {
     const obj: any = {};
     obj.weight = message.weight ? message.weight.toString() : undefined;
     return obj;
@@ -1121,14 +1121,14 @@ export const BalancerPoolInfo = {
   fromAminoMsg(object: BalancerPoolInfoAminoMsg): BalancerPoolInfo {
     return BalancerPoolInfo.fromAmino(object.value);
   },
-  toAminoMsg(message: BalancerPoolInfo): BalancerPoolInfoAminoMsg {
+  toAminoMsg(message: BalancerPoolInfo, useInterfaces: boolean = false): BalancerPoolInfoAminoMsg {
     return {
       type: "osmosis/protorev/balancer-pool-info",
-      value: BalancerPoolInfo.toAmino(message)
+      value: BalancerPoolInfo.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: BalancerPoolInfoProtoMsg): BalancerPoolInfo {
-    return BalancerPoolInfo.decode(message.value);
+  fromProtoMsg(message: BalancerPoolInfoProtoMsg, useInterfaces: boolean = false): BalancerPoolInfo {
+    return BalancerPoolInfo.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: BalancerPoolInfo): Uint8Array {
     return BalancerPoolInfo.encode(message).finish();
@@ -1157,7 +1157,7 @@ export const ConcentratedPoolInfo = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ConcentratedPoolInfo {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ConcentratedPoolInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConcentratedPoolInfo();
@@ -1189,7 +1189,7 @@ export const ConcentratedPoolInfo = {
       maxTicksCrossed: BigInt(object.max_ticks_crossed)
     };
   },
-  toAmino(message: ConcentratedPoolInfo): ConcentratedPoolInfoAmino {
+  toAmino(message: ConcentratedPoolInfo, useInterfaces: boolean = false): ConcentratedPoolInfoAmino {
     const obj: any = {};
     obj.weight = message.weight ? message.weight.toString() : undefined;
     obj.max_ticks_crossed = message.maxTicksCrossed ? message.maxTicksCrossed.toString() : undefined;
@@ -1198,14 +1198,14 @@ export const ConcentratedPoolInfo = {
   fromAminoMsg(object: ConcentratedPoolInfoAminoMsg): ConcentratedPoolInfo {
     return ConcentratedPoolInfo.fromAmino(object.value);
   },
-  toAminoMsg(message: ConcentratedPoolInfo): ConcentratedPoolInfoAminoMsg {
+  toAminoMsg(message: ConcentratedPoolInfo, useInterfaces: boolean = false): ConcentratedPoolInfoAminoMsg {
     return {
       type: "osmosis/protorev/concentrated-pool-info",
-      value: ConcentratedPoolInfo.toAmino(message)
+      value: ConcentratedPoolInfo.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ConcentratedPoolInfoProtoMsg): ConcentratedPoolInfo {
-    return ConcentratedPoolInfo.decode(message.value);
+  fromProtoMsg(message: ConcentratedPoolInfoProtoMsg, useInterfaces: boolean = false): ConcentratedPoolInfo {
+    return ConcentratedPoolInfo.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ConcentratedPoolInfo): Uint8Array {
     return ConcentratedPoolInfo.encode(message).finish();
@@ -1230,7 +1230,7 @@ export const CosmwasmPoolInfo = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CosmwasmPoolInfo {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CosmwasmPoolInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCosmwasmPoolInfo();
@@ -1238,7 +1238,7 @@ export const CosmwasmPoolInfo = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.weightMaps.push(WeightMap.decode(reader, reader.uint32()));
+          message.weightMaps.push(WeightMap.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1257,10 +1257,10 @@ export const CosmwasmPoolInfo = {
       weightMaps: Array.isArray(object?.weight_maps) ? object.weight_maps.map((e: any) => WeightMap.fromAmino(e)) : []
     };
   },
-  toAmino(message: CosmwasmPoolInfo): CosmwasmPoolInfoAmino {
+  toAmino(message: CosmwasmPoolInfo, useInterfaces: boolean = false): CosmwasmPoolInfoAmino {
     const obj: any = {};
     if (message.weightMaps) {
-      obj.weight_maps = message.weightMaps.map(e => e ? WeightMap.toAmino(e) : undefined);
+      obj.weight_maps = message.weightMaps.map(e => e ? WeightMap.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.weight_maps = [];
     }
@@ -1269,14 +1269,14 @@ export const CosmwasmPoolInfo = {
   fromAminoMsg(object: CosmwasmPoolInfoAminoMsg): CosmwasmPoolInfo {
     return CosmwasmPoolInfo.fromAmino(object.value);
   },
-  toAminoMsg(message: CosmwasmPoolInfo): CosmwasmPoolInfoAminoMsg {
+  toAminoMsg(message: CosmwasmPoolInfo, useInterfaces: boolean = false): CosmwasmPoolInfoAminoMsg {
     return {
       type: "osmosis/protorev/cosmwasm-pool-info",
-      value: CosmwasmPoolInfo.toAmino(message)
+      value: CosmwasmPoolInfo.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CosmwasmPoolInfoProtoMsg): CosmwasmPoolInfo {
-    return CosmwasmPoolInfo.decode(message.value);
+  fromProtoMsg(message: CosmwasmPoolInfoProtoMsg, useInterfaces: boolean = false): CosmwasmPoolInfo {
+    return CosmwasmPoolInfo.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CosmwasmPoolInfo): Uint8Array {
     return CosmwasmPoolInfo.encode(message).finish();
@@ -1305,7 +1305,7 @@ export const WeightMap = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): WeightMap {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): WeightMap {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseWeightMap();
@@ -1337,7 +1337,7 @@ export const WeightMap = {
       contractAddress: object.contract_address
     };
   },
-  toAmino(message: WeightMap): WeightMapAmino {
+  toAmino(message: WeightMap, useInterfaces: boolean = false): WeightMapAmino {
     const obj: any = {};
     obj.weight = message.weight ? message.weight.toString() : undefined;
     obj.contract_address = message.contractAddress;
@@ -1346,14 +1346,14 @@ export const WeightMap = {
   fromAminoMsg(object: WeightMapAminoMsg): WeightMap {
     return WeightMap.fromAmino(object.value);
   },
-  toAminoMsg(message: WeightMap): WeightMapAminoMsg {
+  toAminoMsg(message: WeightMap, useInterfaces: boolean = false): WeightMapAminoMsg {
     return {
       type: "osmosis/protorev/weight-map",
-      value: WeightMap.toAmino(message)
+      value: WeightMap.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: WeightMapProtoMsg): WeightMap {
-    return WeightMap.decode(message.value);
+  fromProtoMsg(message: WeightMapProtoMsg, useInterfaces: boolean = false): WeightMap {
+    return WeightMap.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: WeightMap): Uint8Array {
     return WeightMap.encode(message).finish();
@@ -1382,7 +1382,7 @@ export const BaseDenom = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): BaseDenom {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): BaseDenom {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBaseDenom();
@@ -1414,7 +1414,7 @@ export const BaseDenom = {
       stepSize: object.step_size
     };
   },
-  toAmino(message: BaseDenom): BaseDenomAmino {
+  toAmino(message: BaseDenom, useInterfaces: boolean = false): BaseDenomAmino {
     const obj: any = {};
     obj.denom = message.denom;
     obj.step_size = message.stepSize;
@@ -1423,14 +1423,14 @@ export const BaseDenom = {
   fromAminoMsg(object: BaseDenomAminoMsg): BaseDenom {
     return BaseDenom.fromAmino(object.value);
   },
-  toAminoMsg(message: BaseDenom): BaseDenomAminoMsg {
+  toAminoMsg(message: BaseDenom, useInterfaces: boolean = false): BaseDenomAminoMsg {
     return {
       type: "osmosis/protorev/base-denom",
-      value: BaseDenom.toAmino(message)
+      value: BaseDenom.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: BaseDenomProtoMsg): BaseDenom {
-    return BaseDenom.decode(message.value);
+  fromProtoMsg(message: BaseDenomProtoMsg, useInterfaces: boolean = false): BaseDenom {
+    return BaseDenom.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: BaseDenom): Uint8Array {
     return BaseDenom.encode(message).finish();

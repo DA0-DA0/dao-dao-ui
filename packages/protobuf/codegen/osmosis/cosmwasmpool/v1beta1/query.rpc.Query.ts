@@ -19,34 +19,34 @@ export class QueryClientImpl implements Query {
   }
   pools(request: PoolsRequest = {
     pagination: undefined
-  }): Promise<PoolsResponse> {
+  }, useInterfaces: boolean = true): Promise<PoolsResponse> {
     const data = PoolsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.cosmwasmpool.v1beta1.Query", "Pools", data);
-    return promise.then(data => PoolsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => PoolsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  params(request: ParamsRequest = {}): Promise<ParamsResponse> {
+  params(request: ParamsRequest = {}, useInterfaces: boolean = true): Promise<ParamsResponse> {
     const data = ParamsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.cosmwasmpool.v1beta1.Query", "Params", data);
-    return promise.then(data => ParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => ParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  contractInfoByPoolId(request: ContractInfoByPoolIdRequest): Promise<ContractInfoByPoolIdResponse> {
+  contractInfoByPoolId(request: ContractInfoByPoolIdRequest, useInterfaces: boolean = true): Promise<ContractInfoByPoolIdResponse> {
     const data = ContractInfoByPoolIdRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.cosmwasmpool.v1beta1.Query", "ContractInfoByPoolId", data);
-    return promise.then(data => ContractInfoByPoolIdResponse.decode(new BinaryReader(data)));
+    return promise.then(data => ContractInfoByPoolIdResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    pools(request?: PoolsRequest): Promise<PoolsResponse> {
-      return queryService.pools(request);
+    pools(request?: PoolsRequest, useInterfaces: boolean = true): Promise<PoolsResponse> {
+      return queryService.pools(request, useInterfaces);
     },
-    params(request?: ParamsRequest): Promise<ParamsResponse> {
-      return queryService.params(request);
+    params(request?: ParamsRequest, useInterfaces: boolean = true): Promise<ParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    contractInfoByPoolId(request: ContractInfoByPoolIdRequest): Promise<ContractInfoByPoolIdResponse> {
-      return queryService.contractInfoByPoolId(request);
+    contractInfoByPoolId(request: ContractInfoByPoolIdRequest, useInterfaces: boolean = true): Promise<ContractInfoByPoolIdResponse> {
+      return queryService.contractInfoByPoolId(request, useInterfaces);
     }
   };
 };

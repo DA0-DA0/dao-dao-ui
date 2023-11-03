@@ -41,54 +41,54 @@ export class MsgClientImpl implements Msg {
     this.addToConcentratedLiquiditySuperfluidPosition = this.addToConcentratedLiquiditySuperfluidPosition.bind(this);
     this.unbondConvertAndStake = this.unbondConvertAndStake.bind(this);
   }
-  superfluidDelegate(request: MsgSuperfluidDelegate): Promise<MsgSuperfluidDelegateResponse> {
+  superfluidDelegate(request: MsgSuperfluidDelegate, useInterfaces: boolean = true): Promise<MsgSuperfluidDelegateResponse> {
     const data = MsgSuperfluidDelegate.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Msg", "SuperfluidDelegate", data);
-    return promise.then(data => MsgSuperfluidDelegateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSuperfluidDelegateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  superfluidUndelegate(request: MsgSuperfluidUndelegate): Promise<MsgSuperfluidUndelegateResponse> {
+  superfluidUndelegate(request: MsgSuperfluidUndelegate, useInterfaces: boolean = true): Promise<MsgSuperfluidUndelegateResponse> {
     const data = MsgSuperfluidUndelegate.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Msg", "SuperfluidUndelegate", data);
-    return promise.then(data => MsgSuperfluidUndelegateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSuperfluidUndelegateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  superfluidUnbondLock(request: MsgSuperfluidUnbondLock): Promise<MsgSuperfluidUnbondLockResponse> {
+  superfluidUnbondLock(request: MsgSuperfluidUnbondLock, useInterfaces: boolean = true): Promise<MsgSuperfluidUnbondLockResponse> {
     const data = MsgSuperfluidUnbondLock.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Msg", "SuperfluidUnbondLock", data);
-    return promise.then(data => MsgSuperfluidUnbondLockResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSuperfluidUnbondLockResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  superfluidUndelegateAndUnbondLock(request: MsgSuperfluidUndelegateAndUnbondLock): Promise<MsgSuperfluidUndelegateAndUnbondLockResponse> {
+  superfluidUndelegateAndUnbondLock(request: MsgSuperfluidUndelegateAndUnbondLock, useInterfaces: boolean = true): Promise<MsgSuperfluidUndelegateAndUnbondLockResponse> {
     const data = MsgSuperfluidUndelegateAndUnbondLock.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Msg", "SuperfluidUndelegateAndUnbondLock", data);
-    return promise.then(data => MsgSuperfluidUndelegateAndUnbondLockResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSuperfluidUndelegateAndUnbondLockResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  lockAndSuperfluidDelegate(request: MsgLockAndSuperfluidDelegate): Promise<MsgLockAndSuperfluidDelegateResponse> {
+  lockAndSuperfluidDelegate(request: MsgLockAndSuperfluidDelegate, useInterfaces: boolean = true): Promise<MsgLockAndSuperfluidDelegateResponse> {
     const data = MsgLockAndSuperfluidDelegate.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Msg", "LockAndSuperfluidDelegate", data);
-    return promise.then(data => MsgLockAndSuperfluidDelegateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgLockAndSuperfluidDelegateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  createFullRangePositionAndSuperfluidDelegate(request: MsgCreateFullRangePositionAndSuperfluidDelegate): Promise<MsgCreateFullRangePositionAndSuperfluidDelegateResponse> {
+  createFullRangePositionAndSuperfluidDelegate(request: MsgCreateFullRangePositionAndSuperfluidDelegate, useInterfaces: boolean = true): Promise<MsgCreateFullRangePositionAndSuperfluidDelegateResponse> {
     const data = MsgCreateFullRangePositionAndSuperfluidDelegate.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Msg", "CreateFullRangePositionAndSuperfluidDelegate", data);
-    return promise.then(data => MsgCreateFullRangePositionAndSuperfluidDelegateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgCreateFullRangePositionAndSuperfluidDelegateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  unPoolWhitelistedPool(request: MsgUnPoolWhitelistedPool): Promise<MsgUnPoolWhitelistedPoolResponse> {
+  unPoolWhitelistedPool(request: MsgUnPoolWhitelistedPool, useInterfaces: boolean = true): Promise<MsgUnPoolWhitelistedPoolResponse> {
     const data = MsgUnPoolWhitelistedPool.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Msg", "UnPoolWhitelistedPool", data);
-    return promise.then(data => MsgUnPoolWhitelistedPoolResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUnPoolWhitelistedPoolResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  unlockAndMigrateSharesToFullRangeConcentratedPosition(request: MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition): Promise<MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse> {
+  unlockAndMigrateSharesToFullRangeConcentratedPosition(request: MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition, useInterfaces: boolean = true): Promise<MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse> {
     const data = MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Msg", "UnlockAndMigrateSharesToFullRangeConcentratedPosition", data);
-    return promise.then(data => MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  addToConcentratedLiquiditySuperfluidPosition(request: MsgAddToConcentratedLiquiditySuperfluidPosition): Promise<MsgAddToConcentratedLiquiditySuperfluidPositionResponse> {
+  addToConcentratedLiquiditySuperfluidPosition(request: MsgAddToConcentratedLiquiditySuperfluidPosition, useInterfaces: boolean = true): Promise<MsgAddToConcentratedLiquiditySuperfluidPositionResponse> {
     const data = MsgAddToConcentratedLiquiditySuperfluidPosition.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Msg", "AddToConcentratedLiquiditySuperfluidPosition", data);
-    return promise.then(data => MsgAddToConcentratedLiquiditySuperfluidPositionResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgAddToConcentratedLiquiditySuperfluidPositionResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  unbondConvertAndStake(request: MsgUnbondConvertAndStake): Promise<MsgUnbondConvertAndStakeResponse> {
+  unbondConvertAndStake(request: MsgUnbondConvertAndStake, useInterfaces: boolean = true): Promise<MsgUnbondConvertAndStakeResponse> {
     const data = MsgUnbondConvertAndStake.encode(request).finish();
     const promise = this.rpc.request("osmosis.superfluid.Msg", "UnbondConvertAndStake", data);
-    return promise.then(data => MsgUnbondConvertAndStakeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUnbondConvertAndStakeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

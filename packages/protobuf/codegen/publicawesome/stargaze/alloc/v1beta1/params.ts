@@ -101,7 +101,7 @@ export const WeightedAddress = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): WeightedAddress {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): WeightedAddress {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseWeightedAddress();
@@ -133,7 +133,7 @@ export const WeightedAddress = {
       weight: object.weight
     };
   },
-  toAmino(message: WeightedAddress): WeightedAddressAmino {
+  toAmino(message: WeightedAddress, useInterfaces: boolean = false): WeightedAddressAmino {
     const obj: any = {};
     obj.address = message.address;
     obj.weight = message.weight;
@@ -142,8 +142,8 @@ export const WeightedAddress = {
   fromAminoMsg(object: WeightedAddressAminoMsg): WeightedAddress {
     return WeightedAddress.fromAmino(object.value);
   },
-  fromProtoMsg(message: WeightedAddressProtoMsg): WeightedAddress {
-    return WeightedAddress.decode(message.value);
+  fromProtoMsg(message: WeightedAddressProtoMsg, useInterfaces: boolean = false): WeightedAddress {
+    return WeightedAddress.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: WeightedAddress): Uint8Array {
     return WeightedAddress.encode(message).finish();
@@ -176,7 +176,7 @@ export const DistributionProportions = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): DistributionProportions {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): DistributionProportions {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDistributionProportions();
@@ -213,7 +213,7 @@ export const DistributionProportions = {
       communityPool: object.community_pool
     };
   },
-  toAmino(message: DistributionProportions): DistributionProportionsAmino {
+  toAmino(message: DistributionProportions, useInterfaces: boolean = false): DistributionProportionsAmino {
     const obj: any = {};
     obj.nft_incentives = message.nftIncentives;
     obj.developer_rewards = message.developerRewards;
@@ -223,8 +223,8 @@ export const DistributionProportions = {
   fromAminoMsg(object: DistributionProportionsAminoMsg): DistributionProportions {
     return DistributionProportions.fromAmino(object.value);
   },
-  fromProtoMsg(message: DistributionProportionsProtoMsg): DistributionProportions {
-    return DistributionProportions.decode(message.value);
+  fromProtoMsg(message: DistributionProportionsProtoMsg, useInterfaces: boolean = false): DistributionProportions {
+    return DistributionProportions.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: DistributionProportions): Uint8Array {
     return DistributionProportions.encode(message).finish();
@@ -261,7 +261,7 @@ export const Params = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Params {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Params {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
@@ -269,16 +269,16 @@ export const Params = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.distributionProportions = DistributionProportions.decode(reader, reader.uint32());
+          message.distributionProportions = DistributionProportions.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.weightedDeveloperRewardsReceivers.push(WeightedAddress.decode(reader, reader.uint32()));
+          message.weightedDeveloperRewardsReceivers.push(WeightedAddress.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 3:
-          message.weightedIncentivesRewardsReceivers.push(WeightedAddress.decode(reader, reader.uint32()));
+          message.weightedIncentivesRewardsReceivers.push(WeightedAddress.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
-          message.supplementAmount.push(Coin.decode(reader, reader.uint32()));
+          message.supplementAmount.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -303,21 +303,21 @@ export const Params = {
       supplementAmount: Array.isArray(object?.supplement_amount) ? object.supplement_amount.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: Params): ParamsAmino {
+  toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
-    obj.distribution_proportions = message.distributionProportions ? DistributionProportions.toAmino(message.distributionProportions) : undefined;
+    obj.distribution_proportions = message.distributionProportions ? DistributionProportions.toAmino(message.distributionProportions, useInterfaces) : undefined;
     if (message.weightedDeveloperRewardsReceivers) {
-      obj.weighted_developer_rewards_receivers = message.weightedDeveloperRewardsReceivers.map(e => e ? WeightedAddress.toAmino(e) : undefined);
+      obj.weighted_developer_rewards_receivers = message.weightedDeveloperRewardsReceivers.map(e => e ? WeightedAddress.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.weighted_developer_rewards_receivers = [];
     }
     if (message.weightedIncentivesRewardsReceivers) {
-      obj.weighted_incentives_rewards_receivers = message.weightedIncentivesRewardsReceivers.map(e => e ? WeightedAddress.toAmino(e) : undefined);
+      obj.weighted_incentives_rewards_receivers = message.weightedIncentivesRewardsReceivers.map(e => e ? WeightedAddress.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.weighted_incentives_rewards_receivers = [];
     }
     if (message.supplementAmount) {
-      obj.supplement_amount = message.supplementAmount.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.supplement_amount = message.supplementAmount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.supplement_amount = [];
     }
@@ -326,8 +326,8 @@ export const Params = {
   fromAminoMsg(object: ParamsAminoMsg): Params {
     return Params.fromAmino(object.value);
   },
-  fromProtoMsg(message: ParamsProtoMsg): Params {
-    return Params.decode(message.value);
+  fromProtoMsg(message: ParamsProtoMsg, useInterfaces: boolean = false): Params {
+    return Params.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Params): Uint8Array {
     return Params.encode(message).finish();

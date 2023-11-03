@@ -15,14 +15,14 @@ export class MsgClientImpl implements Msg {
     this.transfer = this.transfer.bind(this);
     this.updateParams = this.updateParams.bind(this);
   }
-  transfer(request: MsgTransfer): Promise<MsgTransferResponse> {
+  transfer(request: MsgTransfer, useInterfaces: boolean = true): Promise<MsgTransferResponse> {
     const data = MsgTransfer.encode(request).finish();
     const promise = this.rpc.request("ibc.applications.transfer.v1.Msg", "Transfer", data);
-    return promise.then(data => MsgTransferResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgTransferResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  updateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse> {
+  updateParams(request: MsgUpdateParams, useInterfaces: boolean = true): Promise<MsgUpdateParamsResponse> {
     const data = MsgUpdateParams.encode(request).finish();
     const promise = this.rpc.request("ibc.applications.transfer.v1.Msg", "UpdateParams", data);
-    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

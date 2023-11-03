@@ -59,39 +59,39 @@ export class MsgClientImpl implements Msg {
     this.communityPoolSpend = this.communityPoolSpend.bind(this);
     this.depositValidatorRewardsPool = this.depositValidatorRewardsPool.bind(this);
   }
-  setWithdrawAddress(request: MsgSetWithdrawAddress): Promise<MsgSetWithdrawAddressResponse> {
+  setWithdrawAddress(request: MsgSetWithdrawAddress, useInterfaces: boolean = true): Promise<MsgSetWithdrawAddressResponse> {
     const data = MsgSetWithdrawAddress.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Msg", "SetWithdrawAddress", data);
-    return promise.then(data => MsgSetWithdrawAddressResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSetWithdrawAddressResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  withdrawDelegatorReward(request: MsgWithdrawDelegatorReward): Promise<MsgWithdrawDelegatorRewardResponse> {
+  withdrawDelegatorReward(request: MsgWithdrawDelegatorReward, useInterfaces: boolean = true): Promise<MsgWithdrawDelegatorRewardResponse> {
     const data = MsgWithdrawDelegatorReward.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Msg", "WithdrawDelegatorReward", data);
-    return promise.then(data => MsgWithdrawDelegatorRewardResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgWithdrawDelegatorRewardResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  withdrawValidatorCommission(request: MsgWithdrawValidatorCommission): Promise<MsgWithdrawValidatorCommissionResponse> {
+  withdrawValidatorCommission(request: MsgWithdrawValidatorCommission, useInterfaces: boolean = true): Promise<MsgWithdrawValidatorCommissionResponse> {
     const data = MsgWithdrawValidatorCommission.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Msg", "WithdrawValidatorCommission", data);
-    return promise.then(data => MsgWithdrawValidatorCommissionResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgWithdrawValidatorCommissionResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  fundCommunityPool(request: MsgFundCommunityPool): Promise<MsgFundCommunityPoolResponse> {
+  fundCommunityPool(request: MsgFundCommunityPool, useInterfaces: boolean = true): Promise<MsgFundCommunityPoolResponse> {
     const data = MsgFundCommunityPool.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Msg", "FundCommunityPool", data);
-    return promise.then(data => MsgFundCommunityPoolResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgFundCommunityPoolResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  updateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse> {
+  updateParams(request: MsgUpdateParams, useInterfaces: boolean = true): Promise<MsgUpdateParamsResponse> {
     const data = MsgUpdateParams.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Msg", "UpdateParams", data);
-    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  communityPoolSpend(request: MsgCommunityPoolSpend): Promise<MsgCommunityPoolSpendResponse> {
+  communityPoolSpend(request: MsgCommunityPoolSpend, useInterfaces: boolean = true): Promise<MsgCommunityPoolSpendResponse> {
     const data = MsgCommunityPoolSpend.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Msg", "CommunityPoolSpend", data);
-    return promise.then(data => MsgCommunityPoolSpendResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgCommunityPoolSpendResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  depositValidatorRewardsPool(request: MsgDepositValidatorRewardsPool): Promise<MsgDepositValidatorRewardsPoolResponse> {
+  depositValidatorRewardsPool(request: MsgDepositValidatorRewardsPool, useInterfaces: boolean = true): Promise<MsgDepositValidatorRewardsPoolResponse> {
     const data = MsgDepositValidatorRewardsPool.encode(request).finish();
     const promise = this.rpc.request("cosmos.distribution.v1beta1.Msg", "DepositValidatorRewardsPool", data);
-    return promise.then(data => MsgDepositValidatorRewardsPoolResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgDepositValidatorRewardsPoolResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

@@ -57,7 +57,7 @@ export const DenomPairTakerFeeProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): DenomPairTakerFeeProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): DenomPairTakerFeeProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDenomPairTakerFeeProposal();
@@ -71,7 +71,7 @@ export const DenomPairTakerFeeProposal = {
           message.description = reader.string();
           break;
         case 3:
-          message.denomPairTakerFee.push(DenomPairTakerFee.decode(reader, reader.uint32()));
+          message.denomPairTakerFee.push(DenomPairTakerFee.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -94,12 +94,12 @@ export const DenomPairTakerFeeProposal = {
       denomPairTakerFee: Array.isArray(object?.denom_pair_taker_fee) ? object.denom_pair_taker_fee.map((e: any) => DenomPairTakerFee.fromAmino(e)) : []
     };
   },
-  toAmino(message: DenomPairTakerFeeProposal): DenomPairTakerFeeProposalAmino {
+  toAmino(message: DenomPairTakerFeeProposal, useInterfaces: boolean = false): DenomPairTakerFeeProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
     if (message.denomPairTakerFee) {
-      obj.denom_pair_taker_fee = message.denomPairTakerFee.map(e => e ? DenomPairTakerFee.toAmino(e) : undefined);
+      obj.denom_pair_taker_fee = message.denomPairTakerFee.map(e => e ? DenomPairTakerFee.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.denom_pair_taker_fee = [];
     }
@@ -108,14 +108,14 @@ export const DenomPairTakerFeeProposal = {
   fromAminoMsg(object: DenomPairTakerFeeProposalAminoMsg): DenomPairTakerFeeProposal {
     return DenomPairTakerFeeProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: DenomPairTakerFeeProposal): DenomPairTakerFeeProposalAminoMsg {
+  toAminoMsg(message: DenomPairTakerFeeProposal, useInterfaces: boolean = false): DenomPairTakerFeeProposalAminoMsg {
     return {
       type: "osmosis/poolmanager/denom-pair-taker-fee-proposal",
-      value: DenomPairTakerFeeProposal.toAmino(message)
+      value: DenomPairTakerFeeProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: DenomPairTakerFeeProposalProtoMsg): DenomPairTakerFeeProposal {
-    return DenomPairTakerFeeProposal.decode(message.value);
+  fromProtoMsg(message: DenomPairTakerFeeProposalProtoMsg, useInterfaces: boolean = false): DenomPairTakerFeeProposal {
+    return DenomPairTakerFeeProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: DenomPairTakerFeeProposal): Uint8Array {
     return DenomPairTakerFeeProposal.encode(message).finish();

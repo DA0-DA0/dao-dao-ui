@@ -281,7 +281,7 @@ export interface PoolRequestSDKType {
   pool_id: bigint;
 }
 export interface PoolResponse {
-  pool: (Pool1 & CosmWasmPool & Pool2 & Pool3 & Any) | undefined;
+  pool?: (Pool1 & CosmWasmPool & Pool2 & Pool3 & Any) | undefined;
 }
 export interface PoolResponseProtoMsg {
   typeUrl: "/osmosis.poolmanager.v1beta1.PoolResponse";
@@ -298,7 +298,7 @@ export interface PoolResponseAminoMsg {
   value: PoolResponseAmino;
 }
 export interface PoolResponseSDKType {
-  pool: Pool1SDKType | CosmWasmPoolSDKType | Pool2SDKType | Pool3SDKType | AnySDKType | undefined;
+  pool?: Pool1SDKType | CosmWasmPoolSDKType | Pool2SDKType | Pool3SDKType | AnySDKType | undefined;
 }
 /** =============================== AllPools */
 export interface AllPoolsRequest {}
@@ -476,7 +476,7 @@ export const ParamsRequest = {
   encode(_: ParamsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ParamsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ParamsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsRequest();
@@ -497,21 +497,21 @@ export const ParamsRequest = {
   fromAmino(_: ParamsRequestAmino): ParamsRequest {
     return {};
   },
-  toAmino(_: ParamsRequest): ParamsRequestAmino {
+  toAmino(_: ParamsRequest, useInterfaces: boolean = false): ParamsRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: ParamsRequestAminoMsg): ParamsRequest {
     return ParamsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: ParamsRequest): ParamsRequestAminoMsg {
+  toAminoMsg(message: ParamsRequest, useInterfaces: boolean = false): ParamsRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/params-request",
-      value: ParamsRequest.toAmino(message)
+      value: ParamsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ParamsRequestProtoMsg): ParamsRequest {
-    return ParamsRequest.decode(message.value);
+  fromProtoMsg(message: ParamsRequestProtoMsg, useInterfaces: boolean = false): ParamsRequest {
+    return ParamsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ParamsRequest): Uint8Array {
     return ParamsRequest.encode(message).finish();
@@ -536,7 +536,7 @@ export const ParamsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ParamsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ParamsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsResponse();
@@ -544,7 +544,7 @@ export const ParamsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -563,22 +563,22 @@ export const ParamsResponse = {
       params: object?.params ? Params.fromAmino(object.params) : undefined
     };
   },
-  toAmino(message: ParamsResponse): ParamsResponseAmino {
+  toAmino(message: ParamsResponse, useInterfaces: boolean = false): ParamsResponseAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsResponseAminoMsg): ParamsResponse {
     return ParamsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: ParamsResponse): ParamsResponseAminoMsg {
+  toAminoMsg(message: ParamsResponse, useInterfaces: boolean = false): ParamsResponseAminoMsg {
     return {
       type: "osmosis/poolmanager/params-response",
-      value: ParamsResponse.toAmino(message)
+      value: ParamsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ParamsResponseProtoMsg): ParamsResponse {
-    return ParamsResponse.decode(message.value);
+  fromProtoMsg(message: ParamsResponseProtoMsg, useInterfaces: boolean = false): ParamsResponse {
+    return ParamsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ParamsResponse): Uint8Array {
     return ParamsResponse.encode(message).finish();
@@ -611,7 +611,7 @@ export const EstimateSwapExactAmountInRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EstimateSwapExactAmountInRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EstimateSwapExactAmountInRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSwapExactAmountInRequest();
@@ -625,7 +625,7 @@ export const EstimateSwapExactAmountInRequest = {
           message.tokenIn = reader.string();
           break;
         case 4:
-          message.routes.push(SwapAmountInRoute.decode(reader, reader.uint32()));
+          message.routes.push(SwapAmountInRoute.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -648,12 +648,12 @@ export const EstimateSwapExactAmountInRequest = {
       routes: Array.isArray(object?.routes) ? object.routes.map((e: any) => SwapAmountInRoute.fromAmino(e)) : []
     };
   },
-  toAmino(message: EstimateSwapExactAmountInRequest): EstimateSwapExactAmountInRequestAmino {
+  toAmino(message: EstimateSwapExactAmountInRequest, useInterfaces: boolean = false): EstimateSwapExactAmountInRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.token_in = message.tokenIn;
     if (message.routes) {
-      obj.routes = message.routes.map(e => e ? SwapAmountInRoute.toAmino(e) : undefined);
+      obj.routes = message.routes.map(e => e ? SwapAmountInRoute.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.routes = [];
     }
@@ -662,14 +662,14 @@ export const EstimateSwapExactAmountInRequest = {
   fromAminoMsg(object: EstimateSwapExactAmountInRequestAminoMsg): EstimateSwapExactAmountInRequest {
     return EstimateSwapExactAmountInRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: EstimateSwapExactAmountInRequest): EstimateSwapExactAmountInRequestAminoMsg {
+  toAminoMsg(message: EstimateSwapExactAmountInRequest, useInterfaces: boolean = false): EstimateSwapExactAmountInRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/estimate-swap-exact-amount-in-request",
-      value: EstimateSwapExactAmountInRequest.toAmino(message)
+      value: EstimateSwapExactAmountInRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: EstimateSwapExactAmountInRequestProtoMsg): EstimateSwapExactAmountInRequest {
-    return EstimateSwapExactAmountInRequest.decode(message.value);
+  fromProtoMsg(message: EstimateSwapExactAmountInRequestProtoMsg, useInterfaces: boolean = false): EstimateSwapExactAmountInRequest {
+    return EstimateSwapExactAmountInRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EstimateSwapExactAmountInRequest): Uint8Array {
     return EstimateSwapExactAmountInRequest.encode(message).finish();
@@ -708,7 +708,7 @@ export const EstimateSwapExactAmountInWithPrimitiveTypesRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EstimateSwapExactAmountInWithPrimitiveTypesRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EstimateSwapExactAmountInWithPrimitiveTypesRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSwapExactAmountInWithPrimitiveTypesRequest();
@@ -757,7 +757,7 @@ export const EstimateSwapExactAmountInWithPrimitiveTypesRequest = {
       routesTokenOutDenom: Array.isArray(object?.routes_token_out_denom) ? object.routes_token_out_denom.map((e: any) => e) : []
     };
   },
-  toAmino(message: EstimateSwapExactAmountInWithPrimitiveTypesRequest): EstimateSwapExactAmountInWithPrimitiveTypesRequestAmino {
+  toAmino(message: EstimateSwapExactAmountInWithPrimitiveTypesRequest, useInterfaces: boolean = false): EstimateSwapExactAmountInWithPrimitiveTypesRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.token_in = message.tokenIn;
@@ -776,14 +776,14 @@ export const EstimateSwapExactAmountInWithPrimitiveTypesRequest = {
   fromAminoMsg(object: EstimateSwapExactAmountInWithPrimitiveTypesRequestAminoMsg): EstimateSwapExactAmountInWithPrimitiveTypesRequest {
     return EstimateSwapExactAmountInWithPrimitiveTypesRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: EstimateSwapExactAmountInWithPrimitiveTypesRequest): EstimateSwapExactAmountInWithPrimitiveTypesRequestAminoMsg {
+  toAminoMsg(message: EstimateSwapExactAmountInWithPrimitiveTypesRequest, useInterfaces: boolean = false): EstimateSwapExactAmountInWithPrimitiveTypesRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/estimate-swap-exact-amount-in-with-primitive-types-request",
-      value: EstimateSwapExactAmountInWithPrimitiveTypesRequest.toAmino(message)
+      value: EstimateSwapExactAmountInWithPrimitiveTypesRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: EstimateSwapExactAmountInWithPrimitiveTypesRequestProtoMsg): EstimateSwapExactAmountInWithPrimitiveTypesRequest {
-    return EstimateSwapExactAmountInWithPrimitiveTypesRequest.decode(message.value);
+  fromProtoMsg(message: EstimateSwapExactAmountInWithPrimitiveTypesRequestProtoMsg, useInterfaces: boolean = false): EstimateSwapExactAmountInWithPrimitiveTypesRequest {
+    return EstimateSwapExactAmountInWithPrimitiveTypesRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EstimateSwapExactAmountInWithPrimitiveTypesRequest): Uint8Array {
     return EstimateSwapExactAmountInWithPrimitiveTypesRequest.encode(message).finish();
@@ -816,7 +816,7 @@ export const EstimateSinglePoolSwapExactAmountInRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EstimateSinglePoolSwapExactAmountInRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EstimateSinglePoolSwapExactAmountInRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSinglePoolSwapExactAmountInRequest();
@@ -853,7 +853,7 @@ export const EstimateSinglePoolSwapExactAmountInRequest = {
       tokenOutDenom: object.token_out_denom
     };
   },
-  toAmino(message: EstimateSinglePoolSwapExactAmountInRequest): EstimateSinglePoolSwapExactAmountInRequestAmino {
+  toAmino(message: EstimateSinglePoolSwapExactAmountInRequest, useInterfaces: boolean = false): EstimateSinglePoolSwapExactAmountInRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.token_in = message.tokenIn;
@@ -863,14 +863,14 @@ export const EstimateSinglePoolSwapExactAmountInRequest = {
   fromAminoMsg(object: EstimateSinglePoolSwapExactAmountInRequestAminoMsg): EstimateSinglePoolSwapExactAmountInRequest {
     return EstimateSinglePoolSwapExactAmountInRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: EstimateSinglePoolSwapExactAmountInRequest): EstimateSinglePoolSwapExactAmountInRequestAminoMsg {
+  toAminoMsg(message: EstimateSinglePoolSwapExactAmountInRequest, useInterfaces: boolean = false): EstimateSinglePoolSwapExactAmountInRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/estimate-single-pool-swap-exact-amount-in-request",
-      value: EstimateSinglePoolSwapExactAmountInRequest.toAmino(message)
+      value: EstimateSinglePoolSwapExactAmountInRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: EstimateSinglePoolSwapExactAmountInRequestProtoMsg): EstimateSinglePoolSwapExactAmountInRequest {
-    return EstimateSinglePoolSwapExactAmountInRequest.decode(message.value);
+  fromProtoMsg(message: EstimateSinglePoolSwapExactAmountInRequestProtoMsg, useInterfaces: boolean = false): EstimateSinglePoolSwapExactAmountInRequest {
+    return EstimateSinglePoolSwapExactAmountInRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EstimateSinglePoolSwapExactAmountInRequest): Uint8Array {
     return EstimateSinglePoolSwapExactAmountInRequest.encode(message).finish();
@@ -895,7 +895,7 @@ export const EstimateSwapExactAmountInResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EstimateSwapExactAmountInResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EstimateSwapExactAmountInResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSwapExactAmountInResponse();
@@ -922,7 +922,7 @@ export const EstimateSwapExactAmountInResponse = {
       tokenOutAmount: object.token_out_amount
     };
   },
-  toAmino(message: EstimateSwapExactAmountInResponse): EstimateSwapExactAmountInResponseAmino {
+  toAmino(message: EstimateSwapExactAmountInResponse, useInterfaces: boolean = false): EstimateSwapExactAmountInResponseAmino {
     const obj: any = {};
     obj.token_out_amount = message.tokenOutAmount;
     return obj;
@@ -930,14 +930,14 @@ export const EstimateSwapExactAmountInResponse = {
   fromAminoMsg(object: EstimateSwapExactAmountInResponseAminoMsg): EstimateSwapExactAmountInResponse {
     return EstimateSwapExactAmountInResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: EstimateSwapExactAmountInResponse): EstimateSwapExactAmountInResponseAminoMsg {
+  toAminoMsg(message: EstimateSwapExactAmountInResponse, useInterfaces: boolean = false): EstimateSwapExactAmountInResponseAminoMsg {
     return {
       type: "osmosis/poolmanager/estimate-swap-exact-amount-in-response",
-      value: EstimateSwapExactAmountInResponse.toAmino(message)
+      value: EstimateSwapExactAmountInResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: EstimateSwapExactAmountInResponseProtoMsg): EstimateSwapExactAmountInResponse {
-    return EstimateSwapExactAmountInResponse.decode(message.value);
+  fromProtoMsg(message: EstimateSwapExactAmountInResponseProtoMsg, useInterfaces: boolean = false): EstimateSwapExactAmountInResponse {
+    return EstimateSwapExactAmountInResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EstimateSwapExactAmountInResponse): Uint8Array {
     return EstimateSwapExactAmountInResponse.encode(message).finish();
@@ -970,7 +970,7 @@ export const EstimateSwapExactAmountOutRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EstimateSwapExactAmountOutRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EstimateSwapExactAmountOutRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSwapExactAmountOutRequest();
@@ -981,7 +981,7 @@ export const EstimateSwapExactAmountOutRequest = {
           message.poolId = reader.uint64();
           break;
         case 3:
-          message.routes.push(SwapAmountOutRoute.decode(reader, reader.uint32()));
+          message.routes.push(SwapAmountOutRoute.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
           message.tokenOut = reader.string();
@@ -1007,11 +1007,11 @@ export const EstimateSwapExactAmountOutRequest = {
       tokenOut: object.token_out
     };
   },
-  toAmino(message: EstimateSwapExactAmountOutRequest): EstimateSwapExactAmountOutRequestAmino {
+  toAmino(message: EstimateSwapExactAmountOutRequest, useInterfaces: boolean = false): EstimateSwapExactAmountOutRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     if (message.routes) {
-      obj.routes = message.routes.map(e => e ? SwapAmountOutRoute.toAmino(e) : undefined);
+      obj.routes = message.routes.map(e => e ? SwapAmountOutRoute.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.routes = [];
     }
@@ -1021,14 +1021,14 @@ export const EstimateSwapExactAmountOutRequest = {
   fromAminoMsg(object: EstimateSwapExactAmountOutRequestAminoMsg): EstimateSwapExactAmountOutRequest {
     return EstimateSwapExactAmountOutRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: EstimateSwapExactAmountOutRequest): EstimateSwapExactAmountOutRequestAminoMsg {
+  toAminoMsg(message: EstimateSwapExactAmountOutRequest, useInterfaces: boolean = false): EstimateSwapExactAmountOutRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/estimate-swap-exact-amount-out-request",
-      value: EstimateSwapExactAmountOutRequest.toAmino(message)
+      value: EstimateSwapExactAmountOutRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: EstimateSwapExactAmountOutRequestProtoMsg): EstimateSwapExactAmountOutRequest {
-    return EstimateSwapExactAmountOutRequest.decode(message.value);
+  fromProtoMsg(message: EstimateSwapExactAmountOutRequestProtoMsg, useInterfaces: boolean = false): EstimateSwapExactAmountOutRequest {
+    return EstimateSwapExactAmountOutRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EstimateSwapExactAmountOutRequest): Uint8Array {
     return EstimateSwapExactAmountOutRequest.encode(message).finish();
@@ -1067,7 +1067,7 @@ export const EstimateSwapExactAmountOutWithPrimitiveTypesRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSwapExactAmountOutWithPrimitiveTypesRequest();
@@ -1116,7 +1116,7 @@ export const EstimateSwapExactAmountOutWithPrimitiveTypesRequest = {
       tokenOut: object.token_out
     };
   },
-  toAmino(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequest): EstimateSwapExactAmountOutWithPrimitiveTypesRequestAmino {
+  toAmino(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequest, useInterfaces: boolean = false): EstimateSwapExactAmountOutWithPrimitiveTypesRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     if (message.routesPoolId) {
@@ -1135,14 +1135,14 @@ export const EstimateSwapExactAmountOutWithPrimitiveTypesRequest = {
   fromAminoMsg(object: EstimateSwapExactAmountOutWithPrimitiveTypesRequestAminoMsg): EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
     return EstimateSwapExactAmountOutWithPrimitiveTypesRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequest): EstimateSwapExactAmountOutWithPrimitiveTypesRequestAminoMsg {
+  toAminoMsg(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequest, useInterfaces: boolean = false): EstimateSwapExactAmountOutWithPrimitiveTypesRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/estimate-swap-exact-amount-out-with-primitive-types-request",
-      value: EstimateSwapExactAmountOutWithPrimitiveTypesRequest.toAmino(message)
+      value: EstimateSwapExactAmountOutWithPrimitiveTypesRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequestProtoMsg): EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
-    return EstimateSwapExactAmountOutWithPrimitiveTypesRequest.decode(message.value);
+  fromProtoMsg(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequestProtoMsg, useInterfaces: boolean = false): EstimateSwapExactAmountOutWithPrimitiveTypesRequest {
+    return EstimateSwapExactAmountOutWithPrimitiveTypesRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EstimateSwapExactAmountOutWithPrimitiveTypesRequest): Uint8Array {
     return EstimateSwapExactAmountOutWithPrimitiveTypesRequest.encode(message).finish();
@@ -1175,7 +1175,7 @@ export const EstimateSinglePoolSwapExactAmountOutRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EstimateSinglePoolSwapExactAmountOutRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EstimateSinglePoolSwapExactAmountOutRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSinglePoolSwapExactAmountOutRequest();
@@ -1212,7 +1212,7 @@ export const EstimateSinglePoolSwapExactAmountOutRequest = {
       tokenOut: object.token_out
     };
   },
-  toAmino(message: EstimateSinglePoolSwapExactAmountOutRequest): EstimateSinglePoolSwapExactAmountOutRequestAmino {
+  toAmino(message: EstimateSinglePoolSwapExactAmountOutRequest, useInterfaces: boolean = false): EstimateSinglePoolSwapExactAmountOutRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.token_in_denom = message.tokenInDenom;
@@ -1222,14 +1222,14 @@ export const EstimateSinglePoolSwapExactAmountOutRequest = {
   fromAminoMsg(object: EstimateSinglePoolSwapExactAmountOutRequestAminoMsg): EstimateSinglePoolSwapExactAmountOutRequest {
     return EstimateSinglePoolSwapExactAmountOutRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: EstimateSinglePoolSwapExactAmountOutRequest): EstimateSinglePoolSwapExactAmountOutRequestAminoMsg {
+  toAminoMsg(message: EstimateSinglePoolSwapExactAmountOutRequest, useInterfaces: boolean = false): EstimateSinglePoolSwapExactAmountOutRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/estimate-single-pool-swap-exact-amount-out-request",
-      value: EstimateSinglePoolSwapExactAmountOutRequest.toAmino(message)
+      value: EstimateSinglePoolSwapExactAmountOutRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: EstimateSinglePoolSwapExactAmountOutRequestProtoMsg): EstimateSinglePoolSwapExactAmountOutRequest {
-    return EstimateSinglePoolSwapExactAmountOutRequest.decode(message.value);
+  fromProtoMsg(message: EstimateSinglePoolSwapExactAmountOutRequestProtoMsg, useInterfaces: boolean = false): EstimateSinglePoolSwapExactAmountOutRequest {
+    return EstimateSinglePoolSwapExactAmountOutRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EstimateSinglePoolSwapExactAmountOutRequest): Uint8Array {
     return EstimateSinglePoolSwapExactAmountOutRequest.encode(message).finish();
@@ -1254,7 +1254,7 @@ export const EstimateSwapExactAmountOutResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EstimateSwapExactAmountOutResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EstimateSwapExactAmountOutResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEstimateSwapExactAmountOutResponse();
@@ -1281,7 +1281,7 @@ export const EstimateSwapExactAmountOutResponse = {
       tokenInAmount: object.token_in_amount
     };
   },
-  toAmino(message: EstimateSwapExactAmountOutResponse): EstimateSwapExactAmountOutResponseAmino {
+  toAmino(message: EstimateSwapExactAmountOutResponse, useInterfaces: boolean = false): EstimateSwapExactAmountOutResponseAmino {
     const obj: any = {};
     obj.token_in_amount = message.tokenInAmount;
     return obj;
@@ -1289,14 +1289,14 @@ export const EstimateSwapExactAmountOutResponse = {
   fromAminoMsg(object: EstimateSwapExactAmountOutResponseAminoMsg): EstimateSwapExactAmountOutResponse {
     return EstimateSwapExactAmountOutResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: EstimateSwapExactAmountOutResponse): EstimateSwapExactAmountOutResponseAminoMsg {
+  toAminoMsg(message: EstimateSwapExactAmountOutResponse, useInterfaces: boolean = false): EstimateSwapExactAmountOutResponseAminoMsg {
     return {
       type: "osmosis/poolmanager/estimate-swap-exact-amount-out-response",
-      value: EstimateSwapExactAmountOutResponse.toAmino(message)
+      value: EstimateSwapExactAmountOutResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: EstimateSwapExactAmountOutResponseProtoMsg): EstimateSwapExactAmountOutResponse {
-    return EstimateSwapExactAmountOutResponse.decode(message.value);
+  fromProtoMsg(message: EstimateSwapExactAmountOutResponseProtoMsg, useInterfaces: boolean = false): EstimateSwapExactAmountOutResponse {
+    return EstimateSwapExactAmountOutResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EstimateSwapExactAmountOutResponse): Uint8Array {
     return EstimateSwapExactAmountOutResponse.encode(message).finish();
@@ -1316,7 +1316,7 @@ export const NumPoolsRequest = {
   encode(_: NumPoolsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): NumPoolsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): NumPoolsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNumPoolsRequest();
@@ -1337,21 +1337,21 @@ export const NumPoolsRequest = {
   fromAmino(_: NumPoolsRequestAmino): NumPoolsRequest {
     return {};
   },
-  toAmino(_: NumPoolsRequest): NumPoolsRequestAmino {
+  toAmino(_: NumPoolsRequest, useInterfaces: boolean = false): NumPoolsRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: NumPoolsRequestAminoMsg): NumPoolsRequest {
     return NumPoolsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: NumPoolsRequest): NumPoolsRequestAminoMsg {
+  toAminoMsg(message: NumPoolsRequest, useInterfaces: boolean = false): NumPoolsRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/num-pools-request",
-      value: NumPoolsRequest.toAmino(message)
+      value: NumPoolsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: NumPoolsRequestProtoMsg): NumPoolsRequest {
-    return NumPoolsRequest.decode(message.value);
+  fromProtoMsg(message: NumPoolsRequestProtoMsg, useInterfaces: boolean = false): NumPoolsRequest {
+    return NumPoolsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: NumPoolsRequest): Uint8Array {
     return NumPoolsRequest.encode(message).finish();
@@ -1376,7 +1376,7 @@ export const NumPoolsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): NumPoolsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): NumPoolsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNumPoolsResponse();
@@ -1403,7 +1403,7 @@ export const NumPoolsResponse = {
       numPools: BigInt(object.num_pools)
     };
   },
-  toAmino(message: NumPoolsResponse): NumPoolsResponseAmino {
+  toAmino(message: NumPoolsResponse, useInterfaces: boolean = false): NumPoolsResponseAmino {
     const obj: any = {};
     obj.num_pools = message.numPools ? message.numPools.toString() : undefined;
     return obj;
@@ -1411,14 +1411,14 @@ export const NumPoolsResponse = {
   fromAminoMsg(object: NumPoolsResponseAminoMsg): NumPoolsResponse {
     return NumPoolsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: NumPoolsResponse): NumPoolsResponseAminoMsg {
+  toAminoMsg(message: NumPoolsResponse, useInterfaces: boolean = false): NumPoolsResponseAminoMsg {
     return {
       type: "osmosis/poolmanager/num-pools-response",
-      value: NumPoolsResponse.toAmino(message)
+      value: NumPoolsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: NumPoolsResponseProtoMsg): NumPoolsResponse {
-    return NumPoolsResponse.decode(message.value);
+  fromProtoMsg(message: NumPoolsResponseProtoMsg, useInterfaces: boolean = false): NumPoolsResponse {
+    return NumPoolsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: NumPoolsResponse): Uint8Array {
     return NumPoolsResponse.encode(message).finish();
@@ -1443,7 +1443,7 @@ export const PoolRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PoolRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PoolRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolRequest();
@@ -1470,7 +1470,7 @@ export const PoolRequest = {
       poolId: BigInt(object.pool_id)
     };
   },
-  toAmino(message: PoolRequest): PoolRequestAmino {
+  toAmino(message: PoolRequest, useInterfaces: boolean = false): PoolRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     return obj;
@@ -1478,14 +1478,14 @@ export const PoolRequest = {
   fromAminoMsg(object: PoolRequestAminoMsg): PoolRequest {
     return PoolRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: PoolRequest): PoolRequestAminoMsg {
+  toAminoMsg(message: PoolRequest, useInterfaces: boolean = false): PoolRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/pool-request",
-      value: PoolRequest.toAmino(message)
+      value: PoolRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PoolRequestProtoMsg): PoolRequest {
-    return PoolRequest.decode(message.value);
+  fromProtoMsg(message: PoolRequestProtoMsg, useInterfaces: boolean = false): PoolRequest {
+    return PoolRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PoolRequest): Uint8Array {
     return PoolRequest.encode(message).finish();
@@ -1499,7 +1499,7 @@ export const PoolRequest = {
 };
 function createBasePoolResponse(): PoolResponse {
   return {
-    pool: Any.fromPartial({})
+    pool: undefined
   };
 }
 export const PoolResponse = {
@@ -1510,7 +1510,7 @@ export const PoolResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PoolResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PoolResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolResponse();
@@ -1518,7 +1518,7 @@ export const PoolResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.pool = (PoolI_InterfaceDecoder(reader) as Any);
+          message.pool = useInterfaces ? (PoolI_InterfaceDecoder(reader) as Any) : Any.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1537,22 +1537,22 @@ export const PoolResponse = {
       pool: object?.pool ? PoolI_FromAmino(object.pool) : undefined
     };
   },
-  toAmino(message: PoolResponse): PoolResponseAmino {
+  toAmino(message: PoolResponse, useInterfaces: boolean = false): PoolResponseAmino {
     const obj: any = {};
-    obj.pool = message.pool ? PoolI_ToAmino((message.pool as Any)) : undefined;
+    obj.pool = message.pool ? PoolI_ToAmino((message.pool as Any), useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: PoolResponseAminoMsg): PoolResponse {
     return PoolResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: PoolResponse): PoolResponseAminoMsg {
+  toAminoMsg(message: PoolResponse, useInterfaces: boolean = false): PoolResponseAminoMsg {
     return {
       type: "osmosis/poolmanager/pool-response",
-      value: PoolResponse.toAmino(message)
+      value: PoolResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PoolResponseProtoMsg): PoolResponse {
-    return PoolResponse.decode(message.value);
+  fromProtoMsg(message: PoolResponseProtoMsg, useInterfaces: boolean = false): PoolResponse {
+    return PoolResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PoolResponse): Uint8Array {
     return PoolResponse.encode(message).finish();
@@ -1572,7 +1572,7 @@ export const AllPoolsRequest = {
   encode(_: AllPoolsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): AllPoolsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): AllPoolsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllPoolsRequest();
@@ -1593,21 +1593,21 @@ export const AllPoolsRequest = {
   fromAmino(_: AllPoolsRequestAmino): AllPoolsRequest {
     return {};
   },
-  toAmino(_: AllPoolsRequest): AllPoolsRequestAmino {
+  toAmino(_: AllPoolsRequest, useInterfaces: boolean = false): AllPoolsRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: AllPoolsRequestAminoMsg): AllPoolsRequest {
     return AllPoolsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: AllPoolsRequest): AllPoolsRequestAminoMsg {
+  toAminoMsg(message: AllPoolsRequest, useInterfaces: boolean = false): AllPoolsRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/all-pools-request",
-      value: AllPoolsRequest.toAmino(message)
+      value: AllPoolsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: AllPoolsRequestProtoMsg): AllPoolsRequest {
-    return AllPoolsRequest.decode(message.value);
+  fromProtoMsg(message: AllPoolsRequestProtoMsg, useInterfaces: boolean = false): AllPoolsRequest {
+    return AllPoolsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: AllPoolsRequest): Uint8Array {
     return AllPoolsRequest.encode(message).finish();
@@ -1632,7 +1632,7 @@ export const AllPoolsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): AllPoolsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): AllPoolsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllPoolsResponse();
@@ -1640,7 +1640,7 @@ export const AllPoolsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.pools.push((PoolI_InterfaceDecoder(reader) as Any));
+          message.pools.push(useInterfaces ? (PoolI_InterfaceDecoder(reader) as Any) : Any.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1659,10 +1659,10 @@ export const AllPoolsResponse = {
       pools: Array.isArray(object?.pools) ? object.pools.map((e: any) => PoolI_FromAmino(e)) : []
     };
   },
-  toAmino(message: AllPoolsResponse): AllPoolsResponseAmino {
+  toAmino(message: AllPoolsResponse, useInterfaces: boolean = false): AllPoolsResponseAmino {
     const obj: any = {};
     if (message.pools) {
-      obj.pools = message.pools.map(e => e ? PoolI_ToAmino((e as Any)) : undefined);
+      obj.pools = message.pools.map(e => e ? PoolI_ToAmino((e as Any), useInterfaces) : undefined);
     } else {
       obj.pools = [];
     }
@@ -1671,14 +1671,14 @@ export const AllPoolsResponse = {
   fromAminoMsg(object: AllPoolsResponseAminoMsg): AllPoolsResponse {
     return AllPoolsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: AllPoolsResponse): AllPoolsResponseAminoMsg {
+  toAminoMsg(message: AllPoolsResponse, useInterfaces: boolean = false): AllPoolsResponseAminoMsg {
     return {
       type: "osmosis/poolmanager/all-pools-response",
-      value: AllPoolsResponse.toAmino(message)
+      value: AllPoolsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: AllPoolsResponseProtoMsg): AllPoolsResponse {
-    return AllPoolsResponse.decode(message.value);
+  fromProtoMsg(message: AllPoolsResponseProtoMsg, useInterfaces: boolean = false): AllPoolsResponse {
+    return AllPoolsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: AllPoolsResponse): Uint8Array {
     return AllPoolsResponse.encode(message).finish();
@@ -1711,7 +1711,7 @@ export const SpotPriceRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SpotPriceRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SpotPriceRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSpotPriceRequest();
@@ -1748,7 +1748,7 @@ export const SpotPriceRequest = {
       quoteAssetDenom: object.quote_asset_denom
     };
   },
-  toAmino(message: SpotPriceRequest): SpotPriceRequestAmino {
+  toAmino(message: SpotPriceRequest, useInterfaces: boolean = false): SpotPriceRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.base_asset_denom = message.baseAssetDenom;
@@ -1758,14 +1758,14 @@ export const SpotPriceRequest = {
   fromAminoMsg(object: SpotPriceRequestAminoMsg): SpotPriceRequest {
     return SpotPriceRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: SpotPriceRequest): SpotPriceRequestAminoMsg {
+  toAminoMsg(message: SpotPriceRequest, useInterfaces: boolean = false): SpotPriceRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/spot-price-request",
-      value: SpotPriceRequest.toAmino(message)
+      value: SpotPriceRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SpotPriceRequestProtoMsg): SpotPriceRequest {
-    return SpotPriceRequest.decode(message.value);
+  fromProtoMsg(message: SpotPriceRequestProtoMsg, useInterfaces: boolean = false): SpotPriceRequest {
+    return SpotPriceRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SpotPriceRequest): Uint8Array {
     return SpotPriceRequest.encode(message).finish();
@@ -1790,7 +1790,7 @@ export const SpotPriceResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SpotPriceResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SpotPriceResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSpotPriceResponse();
@@ -1817,7 +1817,7 @@ export const SpotPriceResponse = {
       spotPrice: object.spot_price
     };
   },
-  toAmino(message: SpotPriceResponse): SpotPriceResponseAmino {
+  toAmino(message: SpotPriceResponse, useInterfaces: boolean = false): SpotPriceResponseAmino {
     const obj: any = {};
     obj.spot_price = message.spotPrice;
     return obj;
@@ -1825,14 +1825,14 @@ export const SpotPriceResponse = {
   fromAminoMsg(object: SpotPriceResponseAminoMsg): SpotPriceResponse {
     return SpotPriceResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: SpotPriceResponse): SpotPriceResponseAminoMsg {
+  toAminoMsg(message: SpotPriceResponse, useInterfaces: boolean = false): SpotPriceResponseAminoMsg {
     return {
       type: "osmosis/poolmanager/spot-price-response",
-      value: SpotPriceResponse.toAmino(message)
+      value: SpotPriceResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SpotPriceResponseProtoMsg): SpotPriceResponse {
-    return SpotPriceResponse.decode(message.value);
+  fromProtoMsg(message: SpotPriceResponseProtoMsg, useInterfaces: boolean = false): SpotPriceResponse {
+    return SpotPriceResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SpotPriceResponse): Uint8Array {
     return SpotPriceResponse.encode(message).finish();
@@ -1857,7 +1857,7 @@ export const TotalPoolLiquidityRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TotalPoolLiquidityRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TotalPoolLiquidityRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTotalPoolLiquidityRequest();
@@ -1884,7 +1884,7 @@ export const TotalPoolLiquidityRequest = {
       poolId: BigInt(object.pool_id)
     };
   },
-  toAmino(message: TotalPoolLiquidityRequest): TotalPoolLiquidityRequestAmino {
+  toAmino(message: TotalPoolLiquidityRequest, useInterfaces: boolean = false): TotalPoolLiquidityRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     return obj;
@@ -1892,14 +1892,14 @@ export const TotalPoolLiquidityRequest = {
   fromAminoMsg(object: TotalPoolLiquidityRequestAminoMsg): TotalPoolLiquidityRequest {
     return TotalPoolLiquidityRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: TotalPoolLiquidityRequest): TotalPoolLiquidityRequestAminoMsg {
+  toAminoMsg(message: TotalPoolLiquidityRequest, useInterfaces: boolean = false): TotalPoolLiquidityRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/total-pool-liquidity-request",
-      value: TotalPoolLiquidityRequest.toAmino(message)
+      value: TotalPoolLiquidityRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TotalPoolLiquidityRequestProtoMsg): TotalPoolLiquidityRequest {
-    return TotalPoolLiquidityRequest.decode(message.value);
+  fromProtoMsg(message: TotalPoolLiquidityRequestProtoMsg, useInterfaces: boolean = false): TotalPoolLiquidityRequest {
+    return TotalPoolLiquidityRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TotalPoolLiquidityRequest): Uint8Array {
     return TotalPoolLiquidityRequest.encode(message).finish();
@@ -1924,7 +1924,7 @@ export const TotalPoolLiquidityResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TotalPoolLiquidityResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TotalPoolLiquidityResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTotalPoolLiquidityResponse();
@@ -1932,7 +1932,7 @@ export const TotalPoolLiquidityResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.liquidity.push(Coin.decode(reader, reader.uint32()));
+          message.liquidity.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1951,10 +1951,10 @@ export const TotalPoolLiquidityResponse = {
       liquidity: Array.isArray(object?.liquidity) ? object.liquidity.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: TotalPoolLiquidityResponse): TotalPoolLiquidityResponseAmino {
+  toAmino(message: TotalPoolLiquidityResponse, useInterfaces: boolean = false): TotalPoolLiquidityResponseAmino {
     const obj: any = {};
     if (message.liquidity) {
-      obj.liquidity = message.liquidity.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.liquidity = message.liquidity.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.liquidity = [];
     }
@@ -1963,14 +1963,14 @@ export const TotalPoolLiquidityResponse = {
   fromAminoMsg(object: TotalPoolLiquidityResponseAminoMsg): TotalPoolLiquidityResponse {
     return TotalPoolLiquidityResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: TotalPoolLiquidityResponse): TotalPoolLiquidityResponseAminoMsg {
+  toAminoMsg(message: TotalPoolLiquidityResponse, useInterfaces: boolean = false): TotalPoolLiquidityResponseAminoMsg {
     return {
       type: "osmosis/poolmanager/total-pool-liquidity-response",
-      value: TotalPoolLiquidityResponse.toAmino(message)
+      value: TotalPoolLiquidityResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TotalPoolLiquidityResponseProtoMsg): TotalPoolLiquidityResponse {
-    return TotalPoolLiquidityResponse.decode(message.value);
+  fromProtoMsg(message: TotalPoolLiquidityResponseProtoMsg, useInterfaces: boolean = false): TotalPoolLiquidityResponse {
+    return TotalPoolLiquidityResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TotalPoolLiquidityResponse): Uint8Array {
     return TotalPoolLiquidityResponse.encode(message).finish();
@@ -1990,7 +1990,7 @@ export const TotalLiquidityRequest = {
   encode(_: TotalLiquidityRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TotalLiquidityRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TotalLiquidityRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTotalLiquidityRequest();
@@ -2011,21 +2011,21 @@ export const TotalLiquidityRequest = {
   fromAmino(_: TotalLiquidityRequestAmino): TotalLiquidityRequest {
     return {};
   },
-  toAmino(_: TotalLiquidityRequest): TotalLiquidityRequestAmino {
+  toAmino(_: TotalLiquidityRequest, useInterfaces: boolean = false): TotalLiquidityRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: TotalLiquidityRequestAminoMsg): TotalLiquidityRequest {
     return TotalLiquidityRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: TotalLiquidityRequest): TotalLiquidityRequestAminoMsg {
+  toAminoMsg(message: TotalLiquidityRequest, useInterfaces: boolean = false): TotalLiquidityRequestAminoMsg {
     return {
       type: "osmosis/poolmanager/total-liquidity-request",
-      value: TotalLiquidityRequest.toAmino(message)
+      value: TotalLiquidityRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TotalLiquidityRequestProtoMsg): TotalLiquidityRequest {
-    return TotalLiquidityRequest.decode(message.value);
+  fromProtoMsg(message: TotalLiquidityRequestProtoMsg, useInterfaces: boolean = false): TotalLiquidityRequest {
+    return TotalLiquidityRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TotalLiquidityRequest): Uint8Array {
     return TotalLiquidityRequest.encode(message).finish();
@@ -2050,7 +2050,7 @@ export const TotalLiquidityResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TotalLiquidityResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TotalLiquidityResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTotalLiquidityResponse();
@@ -2058,7 +2058,7 @@ export const TotalLiquidityResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.liquidity.push(Coin.decode(reader, reader.uint32()));
+          message.liquidity.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -2077,10 +2077,10 @@ export const TotalLiquidityResponse = {
       liquidity: Array.isArray(object?.liquidity) ? object.liquidity.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: TotalLiquidityResponse): TotalLiquidityResponseAmino {
+  toAmino(message: TotalLiquidityResponse, useInterfaces: boolean = false): TotalLiquidityResponseAmino {
     const obj: any = {};
     if (message.liquidity) {
-      obj.liquidity = message.liquidity.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.liquidity = message.liquidity.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.liquidity = [];
     }
@@ -2089,14 +2089,14 @@ export const TotalLiquidityResponse = {
   fromAminoMsg(object: TotalLiquidityResponseAminoMsg): TotalLiquidityResponse {
     return TotalLiquidityResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: TotalLiquidityResponse): TotalLiquidityResponseAminoMsg {
+  toAminoMsg(message: TotalLiquidityResponse, useInterfaces: boolean = false): TotalLiquidityResponseAminoMsg {
     return {
       type: "osmosis/poolmanager/total-liquidity-response",
-      value: TotalLiquidityResponse.toAmino(message)
+      value: TotalLiquidityResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TotalLiquidityResponseProtoMsg): TotalLiquidityResponse {
-    return TotalLiquidityResponse.decode(message.value);
+  fromProtoMsg(message: TotalLiquidityResponseProtoMsg, useInterfaces: boolean = false): TotalLiquidityResponse {
+    return TotalLiquidityResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TotalLiquidityResponse): Uint8Array {
     return TotalLiquidityResponse.encode(message).finish();
@@ -2110,16 +2110,16 @@ export const TotalLiquidityResponse = {
 };
 export const PoolI_InterfaceDecoder = (input: BinaryReader | Uint8Array): Pool1 | CosmWasmPool | Pool2 | Pool3 | Any => {
   const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-  const data = Any.decode(reader, reader.uint32());
+  const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
-      return Pool1.decode(data.value);
+      return Pool1.decode(data.value, undefined, true);
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
-      return CosmWasmPool.decode(data.value);
+      return CosmWasmPool.decode(data.value, undefined, true);
     case "/osmosis.gamm.v1beta1.Pool":
-      return Pool2.decode(data.value);
+      return Pool2.decode(data.value, undefined, true);
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
-      return Pool3.decode(data.value);
+      return Pool3.decode(data.value, undefined, true);
     default:
       return data;
   }
@@ -2150,29 +2150,29 @@ export const PoolI_FromAmino = (content: AnyAmino) => {
       return Any.fromAmino(content);
   }
 };
-export const PoolI_ToAmino = (content: Any) => {
+export const PoolI_ToAmino = (content: Any, useInterfaces: boolean = false) => {
   switch (content.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
       return {
         type: "osmosis/concentratedliquidity/pool",
-        value: Pool1.toAmino(Pool1.decode(content.value))
+        value: Pool1.toAmino(Pool1.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
       return {
         type: "osmosis/cosmwasmpool/cosm-wasm-pool",
-        value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value))
+        value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.gamm.v1beta1.Pool":
       return {
         type: "osmosis/gamm/BalancerPool",
-        value: Pool2.toAmino(Pool2.decode(content.value))
+        value: Pool2.toAmino(Pool2.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
       return {
         type: "osmosis/gamm/StableswapPool",
-        value: Pool3.toAmino(Pool3.decode(content.value))
+        value: Pool3.toAmino(Pool3.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     default:
-      return Any.toAmino(content);
+      return Any.toAmino(content, useInterfaces);
   }
 };

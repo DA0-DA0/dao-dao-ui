@@ -46,34 +46,34 @@ export class MsgClientImpl implements Msg {
     this.withdrawDelegationRewards = this.withdrawDelegationRewards.bind(this);
     this.delegateBondedTokens = this.delegateBondedTokens.bind(this);
   }
-  setValidatorSetPreference(request: MsgSetValidatorSetPreference): Promise<MsgSetValidatorSetPreferenceResponse> {
+  setValidatorSetPreference(request: MsgSetValidatorSetPreference, useInterfaces: boolean = true): Promise<MsgSetValidatorSetPreferenceResponse> {
     const data = MsgSetValidatorSetPreference.encode(request).finish();
     const promise = this.rpc.request("osmosis.valsetpref.v1beta1.Msg", "SetValidatorSetPreference", data);
-    return promise.then(data => MsgSetValidatorSetPreferenceResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSetValidatorSetPreferenceResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  delegateToValidatorSet(request: MsgDelegateToValidatorSet): Promise<MsgDelegateToValidatorSetResponse> {
+  delegateToValidatorSet(request: MsgDelegateToValidatorSet, useInterfaces: boolean = true): Promise<MsgDelegateToValidatorSetResponse> {
     const data = MsgDelegateToValidatorSet.encode(request).finish();
     const promise = this.rpc.request("osmosis.valsetpref.v1beta1.Msg", "DelegateToValidatorSet", data);
-    return promise.then(data => MsgDelegateToValidatorSetResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgDelegateToValidatorSetResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  undelegateFromValidatorSet(request: MsgUndelegateFromValidatorSet): Promise<MsgUndelegateFromValidatorSetResponse> {
+  undelegateFromValidatorSet(request: MsgUndelegateFromValidatorSet, useInterfaces: boolean = true): Promise<MsgUndelegateFromValidatorSetResponse> {
     const data = MsgUndelegateFromValidatorSet.encode(request).finish();
     const promise = this.rpc.request("osmosis.valsetpref.v1beta1.Msg", "UndelegateFromValidatorSet", data);
-    return promise.then(data => MsgUndelegateFromValidatorSetResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUndelegateFromValidatorSetResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  redelegateValidatorSet(request: MsgRedelegateValidatorSet): Promise<MsgRedelegateValidatorSetResponse> {
+  redelegateValidatorSet(request: MsgRedelegateValidatorSet, useInterfaces: boolean = true): Promise<MsgRedelegateValidatorSetResponse> {
     const data = MsgRedelegateValidatorSet.encode(request).finish();
     const promise = this.rpc.request("osmosis.valsetpref.v1beta1.Msg", "RedelegateValidatorSet", data);
-    return promise.then(data => MsgRedelegateValidatorSetResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgRedelegateValidatorSetResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  withdrawDelegationRewards(request: MsgWithdrawDelegationRewards): Promise<MsgWithdrawDelegationRewardsResponse> {
+  withdrawDelegationRewards(request: MsgWithdrawDelegationRewards, useInterfaces: boolean = true): Promise<MsgWithdrawDelegationRewardsResponse> {
     const data = MsgWithdrawDelegationRewards.encode(request).finish();
     const promise = this.rpc.request("osmosis.valsetpref.v1beta1.Msg", "WithdrawDelegationRewards", data);
-    return promise.then(data => MsgWithdrawDelegationRewardsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgWithdrawDelegationRewardsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  delegateBondedTokens(request: MsgDelegateBondedTokens): Promise<MsgDelegateBondedTokensResponse> {
+  delegateBondedTokens(request: MsgDelegateBondedTokens, useInterfaces: boolean = true): Promise<MsgDelegateBondedTokensResponse> {
     const data = MsgDelegateBondedTokens.encode(request).finish();
     const promise = this.rpc.request("osmosis.valsetpref.v1beta1.Msg", "DelegateBondedTokens", data);
-    return promise.then(data => MsgDelegateBondedTokensResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgDelegateBondedTokensResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

@@ -24,14 +24,14 @@ export class MsgClientImpl implements Msg {
     this.softwareUpgrade = this.softwareUpgrade.bind(this);
     this.cancelUpgrade = this.cancelUpgrade.bind(this);
   }
-  softwareUpgrade(request: MsgSoftwareUpgrade): Promise<MsgSoftwareUpgradeResponse> {
+  softwareUpgrade(request: MsgSoftwareUpgrade, useInterfaces: boolean = true): Promise<MsgSoftwareUpgradeResponse> {
     const data = MsgSoftwareUpgrade.encode(request).finish();
     const promise = this.rpc.request("cosmos.upgrade.v1beta1.Msg", "SoftwareUpgrade", data);
-    return promise.then(data => MsgSoftwareUpgradeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSoftwareUpgradeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  cancelUpgrade(request: MsgCancelUpgrade): Promise<MsgCancelUpgradeResponse> {
+  cancelUpgrade(request: MsgCancelUpgrade, useInterfaces: boolean = true): Promise<MsgCancelUpgradeResponse> {
     const data = MsgCancelUpgrade.encode(request).finish();
     const promise = this.rpc.request("cosmos.upgrade.v1beta1.Msg", "CancelUpgrade", data);
-    return promise.then(data => MsgCancelUpgradeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgCancelUpgradeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

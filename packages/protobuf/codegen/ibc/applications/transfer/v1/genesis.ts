@@ -64,7 +64,7 @@ export const GenesisState = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): GenesisState {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): GenesisState {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
@@ -75,13 +75,13 @@ export const GenesisState = {
           message.portId = reader.string();
           break;
         case 2:
-          message.denomTraces.push(DenomTrace.decode(reader, reader.uint32()));
+          message.denomTraces.push(DenomTrace.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 3:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
-          message.totalEscrowed.push(Coin.decode(reader, reader.uint32()));
+          message.totalEscrowed.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -106,17 +106,17 @@ export const GenesisState = {
       totalEscrowed: Array.isArray(object?.total_escrowed) ? object.total_escrowed.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: GenesisState): GenesisStateAmino {
+  toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
     obj.port_id = message.portId;
     if (message.denomTraces) {
-      obj.denom_traces = message.denomTraces.map(e => e ? DenomTrace.toAmino(e) : undefined);
+      obj.denom_traces = message.denomTraces.map(e => e ? DenomTrace.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.denom_traces = [];
     }
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     if (message.totalEscrowed) {
-      obj.total_escrowed = message.totalEscrowed.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.total_escrowed = message.totalEscrowed.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.total_escrowed = [];
     }
@@ -125,14 +125,14 @@ export const GenesisState = {
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {
     return GenesisState.fromAmino(object.value);
   },
-  toAminoMsg(message: GenesisState): GenesisStateAminoMsg {
+  toAminoMsg(message: GenesisState, useInterfaces: boolean = false): GenesisStateAminoMsg {
     return {
       type: "cosmos-sdk/GenesisState",
-      value: GenesisState.toAmino(message)
+      value: GenesisState.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: GenesisStateProtoMsg): GenesisState {
-    return GenesisState.decode(message.value);
+  fromProtoMsg(message: GenesisStateProtoMsg, useInterfaces: boolean = false): GenesisState {
+    return GenesisState.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: GenesisState): Uint8Array {
     return GenesisState.encode(message).finish();

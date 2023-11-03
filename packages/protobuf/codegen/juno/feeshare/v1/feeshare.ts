@@ -79,7 +79,7 @@ export const FeeShare = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): FeeShare {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): FeeShare {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFeeShare();
@@ -116,7 +116,7 @@ export const FeeShare = {
       withdrawerAddress: object.withdrawer_address
     };
   },
-  toAmino(message: FeeShare): FeeShareAmino {
+  toAmino(message: FeeShare, useInterfaces: boolean = false): FeeShareAmino {
     const obj: any = {};
     obj.contract_address = message.contractAddress;
     obj.deployer_address = message.deployerAddress;
@@ -126,8 +126,8 @@ export const FeeShare = {
   fromAminoMsg(object: FeeShareAminoMsg): FeeShare {
     return FeeShare.fromAmino(object.value);
   },
-  fromProtoMsg(message: FeeShareProtoMsg): FeeShare {
-    return FeeShare.decode(message.value);
+  fromProtoMsg(message: FeeShareProtoMsg, useInterfaces: boolean = false): FeeShare {
+    return FeeShare.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: FeeShare): Uint8Array {
     return FeeShare.encode(message).finish();

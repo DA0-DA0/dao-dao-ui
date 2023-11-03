@@ -84,7 +84,7 @@ export const EventGrant = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EventGrant {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EventGrant {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEventGrant();
@@ -121,7 +121,7 @@ export const EventGrant = {
       grantee: object.grantee
     };
   },
-  toAmino(message: EventGrant): EventGrantAmino {
+  toAmino(message: EventGrant, useInterfaces: boolean = false): EventGrantAmino {
     const obj: any = {};
     obj.msg_type_url = message.msgTypeUrl;
     obj.granter = message.granter;
@@ -131,14 +131,14 @@ export const EventGrant = {
   fromAminoMsg(object: EventGrantAminoMsg): EventGrant {
     return EventGrant.fromAmino(object.value);
   },
-  toAminoMsg(message: EventGrant): EventGrantAminoMsg {
+  toAminoMsg(message: EventGrant, useInterfaces: boolean = false): EventGrantAminoMsg {
     return {
       type: "cosmos-sdk/EventGrant",
-      value: EventGrant.toAmino(message)
+      value: EventGrant.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: EventGrantProtoMsg): EventGrant {
-    return EventGrant.decode(message.value);
+  fromProtoMsg(message: EventGrantProtoMsg, useInterfaces: boolean = false): EventGrant {
+    return EventGrant.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EventGrant): Uint8Array {
     return EventGrant.encode(message).finish();
@@ -171,7 +171,7 @@ export const EventRevoke = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EventRevoke {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EventRevoke {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEventRevoke();
@@ -208,7 +208,7 @@ export const EventRevoke = {
       grantee: object.grantee
     };
   },
-  toAmino(message: EventRevoke): EventRevokeAmino {
+  toAmino(message: EventRevoke, useInterfaces: boolean = false): EventRevokeAmino {
     const obj: any = {};
     obj.msg_type_url = message.msgTypeUrl;
     obj.granter = message.granter;
@@ -218,14 +218,14 @@ export const EventRevoke = {
   fromAminoMsg(object: EventRevokeAminoMsg): EventRevoke {
     return EventRevoke.fromAmino(object.value);
   },
-  toAminoMsg(message: EventRevoke): EventRevokeAminoMsg {
+  toAminoMsg(message: EventRevoke, useInterfaces: boolean = false): EventRevokeAminoMsg {
     return {
       type: "cosmos-sdk/EventRevoke",
-      value: EventRevoke.toAmino(message)
+      value: EventRevoke.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: EventRevokeProtoMsg): EventRevoke {
-    return EventRevoke.decode(message.value);
+  fromProtoMsg(message: EventRevokeProtoMsg, useInterfaces: boolean = false): EventRevoke {
+    return EventRevoke.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EventRevoke): Uint8Array {
     return EventRevoke.encode(message).finish();

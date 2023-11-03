@@ -27,34 +27,34 @@ export class QueryClientImpl implements Query {
     this.granterGrants = this.granterGrants.bind(this);
     this.granteeGrants = this.granteeGrants.bind(this);
   }
-  grants(request: QueryGrantsRequest): Promise<QueryGrantsResponse> {
+  grants(request: QueryGrantsRequest, useInterfaces: boolean = true): Promise<QueryGrantsResponse> {
     const data = QueryGrantsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.authz.v1beta1.Query", "Grants", data);
-    return promise.then(data => QueryGrantsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryGrantsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  granterGrants(request: QueryGranterGrantsRequest): Promise<QueryGranterGrantsResponse> {
+  granterGrants(request: QueryGranterGrantsRequest, useInterfaces: boolean = true): Promise<QueryGranterGrantsResponse> {
     const data = QueryGranterGrantsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.authz.v1beta1.Query", "GranterGrants", data);
-    return promise.then(data => QueryGranterGrantsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryGranterGrantsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  granteeGrants(request: QueryGranteeGrantsRequest): Promise<QueryGranteeGrantsResponse> {
+  granteeGrants(request: QueryGranteeGrantsRequest, useInterfaces: boolean = true): Promise<QueryGranteeGrantsResponse> {
     const data = QueryGranteeGrantsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.authz.v1beta1.Query", "GranteeGrants", data);
-    return promise.then(data => QueryGranteeGrantsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryGranteeGrantsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    grants(request: QueryGrantsRequest): Promise<QueryGrantsResponse> {
-      return queryService.grants(request);
+    grants(request: QueryGrantsRequest, useInterfaces: boolean = true): Promise<QueryGrantsResponse> {
+      return queryService.grants(request, useInterfaces);
     },
-    granterGrants(request: QueryGranterGrantsRequest): Promise<QueryGranterGrantsResponse> {
-      return queryService.granterGrants(request);
+    granterGrants(request: QueryGranterGrantsRequest, useInterfaces: boolean = true): Promise<QueryGranterGrantsResponse> {
+      return queryService.granterGrants(request, useInterfaces);
     },
-    granteeGrants(request: QueryGranteeGrantsRequest): Promise<QueryGranteeGrantsResponse> {
-      return queryService.granteeGrants(request);
+    granteeGrants(request: QueryGranteeGrantsRequest, useInterfaces: boolean = true): Promise<QueryGranteeGrantsResponse> {
+      return queryService.granteeGrants(request, useInterfaces);
     }
   };
 };

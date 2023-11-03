@@ -270,7 +270,7 @@ export const MsgRegisterFeeShare = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgRegisterFeeShare {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgRegisterFeeShare {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRegisterFeeShare();
@@ -307,7 +307,7 @@ export const MsgRegisterFeeShare = {
       withdrawerAddress: object.withdrawer_address
     };
   },
-  toAmino(message: MsgRegisterFeeShare): MsgRegisterFeeShareAmino {
+  toAmino(message: MsgRegisterFeeShare, useInterfaces: boolean = false): MsgRegisterFeeShareAmino {
     const obj: any = {};
     obj.contract_address = message.contractAddress;
     obj.deployer_address = message.deployerAddress;
@@ -317,8 +317,8 @@ export const MsgRegisterFeeShare = {
   fromAminoMsg(object: MsgRegisterFeeShareAminoMsg): MsgRegisterFeeShare {
     return MsgRegisterFeeShare.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgRegisterFeeShareProtoMsg): MsgRegisterFeeShare {
-    return MsgRegisterFeeShare.decode(message.value);
+  fromProtoMsg(message: MsgRegisterFeeShareProtoMsg, useInterfaces: boolean = false): MsgRegisterFeeShare {
+    return MsgRegisterFeeShare.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgRegisterFeeShare): Uint8Array {
     return MsgRegisterFeeShare.encode(message).finish();
@@ -338,7 +338,7 @@ export const MsgRegisterFeeShareResponse = {
   encode(_: MsgRegisterFeeShareResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgRegisterFeeShareResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgRegisterFeeShareResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRegisterFeeShareResponse();
@@ -359,15 +359,15 @@ export const MsgRegisterFeeShareResponse = {
   fromAmino(_: MsgRegisterFeeShareResponseAmino): MsgRegisterFeeShareResponse {
     return {};
   },
-  toAmino(_: MsgRegisterFeeShareResponse): MsgRegisterFeeShareResponseAmino {
+  toAmino(_: MsgRegisterFeeShareResponse, useInterfaces: boolean = false): MsgRegisterFeeShareResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgRegisterFeeShareResponseAminoMsg): MsgRegisterFeeShareResponse {
     return MsgRegisterFeeShareResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgRegisterFeeShareResponseProtoMsg): MsgRegisterFeeShareResponse {
-    return MsgRegisterFeeShareResponse.decode(message.value);
+  fromProtoMsg(message: MsgRegisterFeeShareResponseProtoMsg, useInterfaces: boolean = false): MsgRegisterFeeShareResponse {
+    return MsgRegisterFeeShareResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgRegisterFeeShareResponse): Uint8Array {
     return MsgRegisterFeeShareResponse.encode(message).finish();
@@ -400,7 +400,7 @@ export const MsgUpdateFeeShare = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgUpdateFeeShare {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgUpdateFeeShare {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUpdateFeeShare();
@@ -437,7 +437,7 @@ export const MsgUpdateFeeShare = {
       withdrawerAddress: object.withdrawer_address
     };
   },
-  toAmino(message: MsgUpdateFeeShare): MsgUpdateFeeShareAmino {
+  toAmino(message: MsgUpdateFeeShare, useInterfaces: boolean = false): MsgUpdateFeeShareAmino {
     const obj: any = {};
     obj.contract_address = message.contractAddress;
     obj.deployer_address = message.deployerAddress;
@@ -447,8 +447,8 @@ export const MsgUpdateFeeShare = {
   fromAminoMsg(object: MsgUpdateFeeShareAminoMsg): MsgUpdateFeeShare {
     return MsgUpdateFeeShare.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgUpdateFeeShareProtoMsg): MsgUpdateFeeShare {
-    return MsgUpdateFeeShare.decode(message.value);
+  fromProtoMsg(message: MsgUpdateFeeShareProtoMsg, useInterfaces: boolean = false): MsgUpdateFeeShare {
+    return MsgUpdateFeeShare.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgUpdateFeeShare): Uint8Array {
     return MsgUpdateFeeShare.encode(message).finish();
@@ -468,7 +468,7 @@ export const MsgUpdateFeeShareResponse = {
   encode(_: MsgUpdateFeeShareResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgUpdateFeeShareResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgUpdateFeeShareResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUpdateFeeShareResponse();
@@ -489,15 +489,15 @@ export const MsgUpdateFeeShareResponse = {
   fromAmino(_: MsgUpdateFeeShareResponseAmino): MsgUpdateFeeShareResponse {
     return {};
   },
-  toAmino(_: MsgUpdateFeeShareResponse): MsgUpdateFeeShareResponseAmino {
+  toAmino(_: MsgUpdateFeeShareResponse, useInterfaces: boolean = false): MsgUpdateFeeShareResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgUpdateFeeShareResponseAminoMsg): MsgUpdateFeeShareResponse {
     return MsgUpdateFeeShareResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgUpdateFeeShareResponseProtoMsg): MsgUpdateFeeShareResponse {
-    return MsgUpdateFeeShareResponse.decode(message.value);
+  fromProtoMsg(message: MsgUpdateFeeShareResponseProtoMsg, useInterfaces: boolean = false): MsgUpdateFeeShareResponse {
+    return MsgUpdateFeeShareResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgUpdateFeeShareResponse): Uint8Array {
     return MsgUpdateFeeShareResponse.encode(message).finish();
@@ -526,7 +526,7 @@ export const MsgCancelFeeShare = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCancelFeeShare {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCancelFeeShare {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCancelFeeShare();
@@ -558,7 +558,7 @@ export const MsgCancelFeeShare = {
       deployerAddress: object.deployer_address
     };
   },
-  toAmino(message: MsgCancelFeeShare): MsgCancelFeeShareAmino {
+  toAmino(message: MsgCancelFeeShare, useInterfaces: boolean = false): MsgCancelFeeShareAmino {
     const obj: any = {};
     obj.contract_address = message.contractAddress;
     obj.deployer_address = message.deployerAddress;
@@ -567,8 +567,8 @@ export const MsgCancelFeeShare = {
   fromAminoMsg(object: MsgCancelFeeShareAminoMsg): MsgCancelFeeShare {
     return MsgCancelFeeShare.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgCancelFeeShareProtoMsg): MsgCancelFeeShare {
-    return MsgCancelFeeShare.decode(message.value);
+  fromProtoMsg(message: MsgCancelFeeShareProtoMsg, useInterfaces: boolean = false): MsgCancelFeeShare {
+    return MsgCancelFeeShare.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCancelFeeShare): Uint8Array {
     return MsgCancelFeeShare.encode(message).finish();
@@ -588,7 +588,7 @@ export const MsgCancelFeeShareResponse = {
   encode(_: MsgCancelFeeShareResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCancelFeeShareResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCancelFeeShareResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCancelFeeShareResponse();
@@ -609,15 +609,15 @@ export const MsgCancelFeeShareResponse = {
   fromAmino(_: MsgCancelFeeShareResponseAmino): MsgCancelFeeShareResponse {
     return {};
   },
-  toAmino(_: MsgCancelFeeShareResponse): MsgCancelFeeShareResponseAmino {
+  toAmino(_: MsgCancelFeeShareResponse, useInterfaces: boolean = false): MsgCancelFeeShareResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgCancelFeeShareResponseAminoMsg): MsgCancelFeeShareResponse {
     return MsgCancelFeeShareResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgCancelFeeShareResponseProtoMsg): MsgCancelFeeShareResponse {
-    return MsgCancelFeeShareResponse.decode(message.value);
+  fromProtoMsg(message: MsgCancelFeeShareResponseProtoMsg, useInterfaces: boolean = false): MsgCancelFeeShareResponse {
+    return MsgCancelFeeShareResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCancelFeeShareResponse): Uint8Array {
     return MsgCancelFeeShareResponse.encode(message).finish();
@@ -646,7 +646,7 @@ export const MsgUpdateParams = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgUpdateParams {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgUpdateParams {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUpdateParams();
@@ -657,7 +657,7 @@ export const MsgUpdateParams = {
           message.authority = reader.string();
           break;
         case 2:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -678,17 +678,17 @@ export const MsgUpdateParams = {
       params: object?.params ? Params.fromAmino(object.params) : undefined
     };
   },
-  toAmino(message: MsgUpdateParams): MsgUpdateParamsAmino {
+  toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
     obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {
     return MsgUpdateParams.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgUpdateParamsProtoMsg): MsgUpdateParams {
-    return MsgUpdateParams.decode(message.value);
+  fromProtoMsg(message: MsgUpdateParamsProtoMsg, useInterfaces: boolean = false): MsgUpdateParams {
+    return MsgUpdateParams.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgUpdateParams): Uint8Array {
     return MsgUpdateParams.encode(message).finish();
@@ -708,7 +708,7 @@ export const MsgUpdateParamsResponse = {
   encode(_: MsgUpdateParamsResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgUpdateParamsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgUpdateParamsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUpdateParamsResponse();
@@ -729,15 +729,15 @@ export const MsgUpdateParamsResponse = {
   fromAmino(_: MsgUpdateParamsResponseAmino): MsgUpdateParamsResponse {
     return {};
   },
-  toAmino(_: MsgUpdateParamsResponse): MsgUpdateParamsResponseAmino {
+  toAmino(_: MsgUpdateParamsResponse, useInterfaces: boolean = false): MsgUpdateParamsResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsResponseAminoMsg): MsgUpdateParamsResponse {
     return MsgUpdateParamsResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgUpdateParamsResponseProtoMsg): MsgUpdateParamsResponse {
-    return MsgUpdateParamsResponse.decode(message.value);
+  fromProtoMsg(message: MsgUpdateParamsResponseProtoMsg, useInterfaces: boolean = false): MsgUpdateParamsResponse {
+    return MsgUpdateParamsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgUpdateParamsResponse): Uint8Array {
     return MsgUpdateParamsResponse.encode(message).finish();

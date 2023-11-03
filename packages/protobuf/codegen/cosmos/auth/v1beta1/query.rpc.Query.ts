@@ -73,90 +73,90 @@ export class QueryClientImpl implements Query {
   }
   accounts(request: QueryAccountsRequest = {
     pagination: undefined
-  }): Promise<QueryAccountsResponse> {
+  }, useInterfaces: boolean = true): Promise<QueryAccountsResponse> {
     const data = QueryAccountsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.auth.v1beta1.Query", "Accounts", data);
-    return promise.then(data => QueryAccountsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryAccountsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  account(request: QueryAccountRequest): Promise<QueryAccountResponse> {
+  account(request: QueryAccountRequest, useInterfaces: boolean = true): Promise<QueryAccountResponse> {
     const data = QueryAccountRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.auth.v1beta1.Query", "Account", data);
-    return promise.then(data => QueryAccountResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryAccountResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountAddressByID(request: QueryAccountAddressByIDRequest): Promise<QueryAccountAddressByIDResponse> {
+  accountAddressByID(request: QueryAccountAddressByIDRequest, useInterfaces: boolean = true): Promise<QueryAccountAddressByIDResponse> {
     const data = QueryAccountAddressByIDRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.auth.v1beta1.Query", "AccountAddressByID", data);
-    return promise.then(data => QueryAccountAddressByIDResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryAccountAddressByIDResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.auth.v1beta1.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  moduleAccounts(request: QueryModuleAccountsRequest = {}): Promise<QueryModuleAccountsResponse> {
+  moduleAccounts(request: QueryModuleAccountsRequest = {}, useInterfaces: boolean = true): Promise<QueryModuleAccountsResponse> {
     const data = QueryModuleAccountsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.auth.v1beta1.Query", "ModuleAccounts", data);
-    return promise.then(data => QueryModuleAccountsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryModuleAccountsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  moduleAccountByName(request: QueryModuleAccountByNameRequest): Promise<QueryModuleAccountByNameResponse> {
+  moduleAccountByName(request: QueryModuleAccountByNameRequest, useInterfaces: boolean = true): Promise<QueryModuleAccountByNameResponse> {
     const data = QueryModuleAccountByNameRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.auth.v1beta1.Query", "ModuleAccountByName", data);
-    return promise.then(data => QueryModuleAccountByNameResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryModuleAccountByNameResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  bech32Prefix(request: Bech32PrefixRequest = {}): Promise<Bech32PrefixResponse> {
+  bech32Prefix(request: Bech32PrefixRequest = {}, useInterfaces: boolean = true): Promise<Bech32PrefixResponse> {
     const data = Bech32PrefixRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.auth.v1beta1.Query", "Bech32Prefix", data);
-    return promise.then(data => Bech32PrefixResponse.decode(new BinaryReader(data)));
+    return promise.then(data => Bech32PrefixResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  addressBytesToString(request: AddressBytesToStringRequest): Promise<AddressBytesToStringResponse> {
+  addressBytesToString(request: AddressBytesToStringRequest, useInterfaces: boolean = true): Promise<AddressBytesToStringResponse> {
     const data = AddressBytesToStringRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.auth.v1beta1.Query", "AddressBytesToString", data);
-    return promise.then(data => AddressBytesToStringResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AddressBytesToStringResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  addressStringToBytes(request: AddressStringToBytesRequest): Promise<AddressStringToBytesResponse> {
+  addressStringToBytes(request: AddressStringToBytesRequest, useInterfaces: boolean = true): Promise<AddressStringToBytesResponse> {
     const data = AddressStringToBytesRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.auth.v1beta1.Query", "AddressStringToBytes", data);
-    return promise.then(data => AddressStringToBytesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AddressStringToBytesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountInfo(request: QueryAccountInfoRequest): Promise<QueryAccountInfoResponse> {
+  accountInfo(request: QueryAccountInfoRequest, useInterfaces: boolean = true): Promise<QueryAccountInfoResponse> {
     const data = QueryAccountInfoRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.auth.v1beta1.Query", "AccountInfo", data);
-    return promise.then(data => QueryAccountInfoResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryAccountInfoResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    accounts(request?: QueryAccountsRequest): Promise<QueryAccountsResponse> {
-      return queryService.accounts(request);
+    accounts(request?: QueryAccountsRequest, useInterfaces: boolean = true): Promise<QueryAccountsResponse> {
+      return queryService.accounts(request, useInterfaces);
     },
-    account(request: QueryAccountRequest): Promise<QueryAccountResponse> {
-      return queryService.account(request);
+    account(request: QueryAccountRequest, useInterfaces: boolean = true): Promise<QueryAccountResponse> {
+      return queryService.account(request, useInterfaces);
     },
-    accountAddressByID(request: QueryAccountAddressByIDRequest): Promise<QueryAccountAddressByIDResponse> {
-      return queryService.accountAddressByID(request);
+    accountAddressByID(request: QueryAccountAddressByIDRequest, useInterfaces: boolean = true): Promise<QueryAccountAddressByIDResponse> {
+      return queryService.accountAddressByID(request, useInterfaces);
     },
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    moduleAccounts(request?: QueryModuleAccountsRequest): Promise<QueryModuleAccountsResponse> {
-      return queryService.moduleAccounts(request);
+    moduleAccounts(request?: QueryModuleAccountsRequest, useInterfaces: boolean = true): Promise<QueryModuleAccountsResponse> {
+      return queryService.moduleAccounts(request, useInterfaces);
     },
-    moduleAccountByName(request: QueryModuleAccountByNameRequest): Promise<QueryModuleAccountByNameResponse> {
-      return queryService.moduleAccountByName(request);
+    moduleAccountByName(request: QueryModuleAccountByNameRequest, useInterfaces: boolean = true): Promise<QueryModuleAccountByNameResponse> {
+      return queryService.moduleAccountByName(request, useInterfaces);
     },
-    bech32Prefix(request?: Bech32PrefixRequest): Promise<Bech32PrefixResponse> {
-      return queryService.bech32Prefix(request);
+    bech32Prefix(request?: Bech32PrefixRequest, useInterfaces: boolean = true): Promise<Bech32PrefixResponse> {
+      return queryService.bech32Prefix(request, useInterfaces);
     },
-    addressBytesToString(request: AddressBytesToStringRequest): Promise<AddressBytesToStringResponse> {
-      return queryService.addressBytesToString(request);
+    addressBytesToString(request: AddressBytesToStringRequest, useInterfaces: boolean = true): Promise<AddressBytesToStringResponse> {
+      return queryService.addressBytesToString(request, useInterfaces);
     },
-    addressStringToBytes(request: AddressStringToBytesRequest): Promise<AddressStringToBytesResponse> {
-      return queryService.addressStringToBytes(request);
+    addressStringToBytes(request: AddressStringToBytesRequest, useInterfaces: boolean = true): Promise<AddressStringToBytesResponse> {
+      return queryService.addressStringToBytes(request, useInterfaces);
     },
-    accountInfo(request: QueryAccountInfoRequest): Promise<QueryAccountInfoResponse> {
-      return queryService.accountInfo(request);
+    accountInfo(request: QueryAccountInfoRequest, useInterfaces: boolean = true): Promise<QueryAccountInfoResponse> {
+      return queryService.accountInfo(request, useInterfaces);
     }
   };
 };

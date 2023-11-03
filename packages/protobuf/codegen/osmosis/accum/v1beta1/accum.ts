@@ -85,7 +85,7 @@ export interface Record {
    * into a single one.
    */
   unclaimedRewardsTotal: DecCoin[];
-  options: Options | undefined;
+  options?: Options | undefined;
 }
 export interface RecordProtoMsg {
   typeUrl: "/osmosis.accum.v1beta1.Record";
@@ -143,7 +143,7 @@ export interface RecordSDKType {
   num_shares: string;
   accum_value_per_share: DecCoinSDKType[];
   unclaimed_rewards_total: DecCoinSDKType[];
-  options: OptionsSDKType | undefined;
+  options?: OptionsSDKType | undefined;
 }
 function createBaseAccumulatorContent(): AccumulatorContent {
   return {
@@ -162,7 +162,7 @@ export const AccumulatorContent = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): AccumulatorContent {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): AccumulatorContent {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccumulatorContent();
@@ -170,7 +170,7 @@ export const AccumulatorContent = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.accumValue.push(DecCoin.decode(reader, reader.uint32()));
+          message.accumValue.push(DecCoin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
           message.totalShares = Decimal.fromAtomics(reader.string(), 18).toString();
@@ -194,10 +194,10 @@ export const AccumulatorContent = {
       totalShares: object.total_shares
     };
   },
-  toAmino(message: AccumulatorContent): AccumulatorContentAmino {
+  toAmino(message: AccumulatorContent, useInterfaces: boolean = false): AccumulatorContentAmino {
     const obj: any = {};
     if (message.accumValue) {
-      obj.accum_value = message.accumValue.map(e => e ? DecCoin.toAmino(e) : undefined);
+      obj.accum_value = message.accumValue.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.accum_value = [];
     }
@@ -207,14 +207,14 @@ export const AccumulatorContent = {
   fromAminoMsg(object: AccumulatorContentAminoMsg): AccumulatorContent {
     return AccumulatorContent.fromAmino(object.value);
   },
-  toAminoMsg(message: AccumulatorContent): AccumulatorContentAminoMsg {
+  toAminoMsg(message: AccumulatorContent, useInterfaces: boolean = false): AccumulatorContentAminoMsg {
     return {
       type: "osmosis/accum/accumulator-content",
-      value: AccumulatorContent.toAmino(message)
+      value: AccumulatorContent.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: AccumulatorContentProtoMsg): AccumulatorContent {
-    return AccumulatorContent.decode(message.value);
+  fromProtoMsg(message: AccumulatorContentProtoMsg, useInterfaces: boolean = false): AccumulatorContent {
+    return AccumulatorContent.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: AccumulatorContent): Uint8Array {
     return AccumulatorContent.encode(message).finish();
@@ -234,7 +234,7 @@ export const Options = {
   encode(_: Options, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Options {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Options {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseOptions();
@@ -255,21 +255,21 @@ export const Options = {
   fromAmino(_: OptionsAmino): Options {
     return {};
   },
-  toAmino(_: Options): OptionsAmino {
+  toAmino(_: Options, useInterfaces: boolean = false): OptionsAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: OptionsAminoMsg): Options {
     return Options.fromAmino(object.value);
   },
-  toAminoMsg(message: Options): OptionsAminoMsg {
+  toAminoMsg(message: Options, useInterfaces: boolean = false): OptionsAminoMsg {
     return {
       type: "osmosis/accum/options",
-      value: Options.toAmino(message)
+      value: Options.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: OptionsProtoMsg): Options {
-    return Options.decode(message.value);
+  fromProtoMsg(message: OptionsProtoMsg, useInterfaces: boolean = false): Options {
+    return Options.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Options): Uint8Array {
     return Options.encode(message).finish();
@@ -286,7 +286,7 @@ function createBaseRecord(): Record {
     numShares: "",
     accumValuePerShare: [],
     unclaimedRewardsTotal: [],
-    options: Options.fromPartial({})
+    options: undefined
   };
 }
 export const Record = {
@@ -306,7 +306,7 @@ export const Record = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Record {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Record {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRecord();
@@ -317,13 +317,13 @@ export const Record = {
           message.numShares = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 2:
-          message.accumValuePerShare.push(DecCoin.decode(reader, reader.uint32()));
+          message.accumValuePerShare.push(DecCoin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 3:
-          message.unclaimedRewardsTotal.push(DecCoin.decode(reader, reader.uint32()));
+          message.unclaimedRewardsTotal.push(DecCoin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
-          message.options = Options.decode(reader, reader.uint32());
+          message.options = Options.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -348,33 +348,33 @@ export const Record = {
       options: object?.options ? Options.fromAmino(object.options) : undefined
     };
   },
-  toAmino(message: Record): RecordAmino {
+  toAmino(message: Record, useInterfaces: boolean = false): RecordAmino {
     const obj: any = {};
     obj.num_shares = message.numShares;
     if (message.accumValuePerShare) {
-      obj.accum_value_per_share = message.accumValuePerShare.map(e => e ? DecCoin.toAmino(e) : undefined);
+      obj.accum_value_per_share = message.accumValuePerShare.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.accum_value_per_share = [];
     }
     if (message.unclaimedRewardsTotal) {
-      obj.unclaimed_rewards_total = message.unclaimedRewardsTotal.map(e => e ? DecCoin.toAmino(e) : undefined);
+      obj.unclaimed_rewards_total = message.unclaimedRewardsTotal.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.unclaimed_rewards_total = [];
     }
-    obj.options = message.options ? Options.toAmino(message.options) : undefined;
+    obj.options = message.options ? Options.toAmino(message.options, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: RecordAminoMsg): Record {
     return Record.fromAmino(object.value);
   },
-  toAminoMsg(message: Record): RecordAminoMsg {
+  toAminoMsg(message: Record, useInterfaces: boolean = false): RecordAminoMsg {
     return {
       type: "osmosis/accum/record",
-      value: Record.toAmino(message)
+      value: Record.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: RecordProtoMsg): Record {
-    return Record.decode(message.value);
+  fromProtoMsg(message: RecordProtoMsg, useInterfaces: boolean = false): Record {
+    return Record.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Record): Uint8Array {
     return Record.encode(message).finish();

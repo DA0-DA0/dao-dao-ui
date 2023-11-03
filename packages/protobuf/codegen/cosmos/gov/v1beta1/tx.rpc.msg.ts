@@ -25,24 +25,24 @@ export class MsgClientImpl implements Msg {
     this.voteWeighted = this.voteWeighted.bind(this);
     this.deposit = this.deposit.bind(this);
   }
-  submitProposal(request: MsgSubmitProposal): Promise<MsgSubmitProposalResponse> {
+  submitProposal(request: MsgSubmitProposal, useInterfaces: boolean = true): Promise<MsgSubmitProposalResponse> {
     const data = MsgSubmitProposal.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1beta1.Msg", "SubmitProposal", data);
-    return promise.then(data => MsgSubmitProposalResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSubmitProposalResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  vote(request: MsgVote): Promise<MsgVoteResponse> {
+  vote(request: MsgVote, useInterfaces: boolean = true): Promise<MsgVoteResponse> {
     const data = MsgVote.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1beta1.Msg", "Vote", data);
-    return promise.then(data => MsgVoteResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgVoteResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  voteWeighted(request: MsgVoteWeighted): Promise<MsgVoteWeightedResponse> {
+  voteWeighted(request: MsgVoteWeighted, useInterfaces: boolean = true): Promise<MsgVoteWeightedResponse> {
     const data = MsgVoteWeighted.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1beta1.Msg", "VoteWeighted", data);
-    return promise.then(data => MsgVoteWeightedResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgVoteWeightedResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  deposit(request: MsgDeposit): Promise<MsgDepositResponse> {
+  deposit(request: MsgDeposit, useInterfaces: boolean = true): Promise<MsgDepositResponse> {
     const data = MsgDeposit.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1beta1.Msg", "Deposit", data);
-    return promise.then(data => MsgDepositResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgDepositResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

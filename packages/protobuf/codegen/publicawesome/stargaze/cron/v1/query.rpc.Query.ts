@@ -15,26 +15,26 @@ export class QueryClientImpl implements Query {
     this.listPrivileged = this.listPrivileged.bind(this);
     this.params = this.params.bind(this);
   }
-  listPrivileged(request: QueryListPrivilegedRequest = {}): Promise<QueryListPrivilegedResponse> {
+  listPrivileged(request: QueryListPrivilegedRequest = {}, useInterfaces: boolean = true): Promise<QueryListPrivilegedResponse> {
     const data = QueryListPrivilegedRequest.encode(request).finish();
     const promise = this.rpc.request("publicawesome.stargaze.cron.v1.Query", "ListPrivileged", data);
-    return promise.then(data => QueryListPrivilegedResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryListPrivilegedResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("publicawesome.stargaze.cron.v1.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    listPrivileged(request?: QueryListPrivilegedRequest): Promise<QueryListPrivilegedResponse> {
-      return queryService.listPrivileged(request);
+    listPrivileged(request?: QueryListPrivilegedRequest, useInterfaces: boolean = true): Promise<QueryListPrivilegedResponse> {
+      return queryService.listPrivileged(request, useInterfaces);
     },
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     }
   };
 };

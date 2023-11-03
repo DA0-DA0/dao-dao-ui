@@ -40,50 +40,50 @@ export class QueryClientImpl implements Query {
     this.moduleVersions = this.moduleVersions.bind(this);
     this.authority = this.authority.bind(this);
   }
-  currentPlan(request: QueryCurrentPlanRequest = {}): Promise<QueryCurrentPlanResponse> {
+  currentPlan(request: QueryCurrentPlanRequest = {}, useInterfaces: boolean = true): Promise<QueryCurrentPlanResponse> {
     const data = QueryCurrentPlanRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.upgrade.v1beta1.Query", "CurrentPlan", data);
-    return promise.then(data => QueryCurrentPlanResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryCurrentPlanResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  appliedPlan(request: QueryAppliedPlanRequest): Promise<QueryAppliedPlanResponse> {
+  appliedPlan(request: QueryAppliedPlanRequest, useInterfaces: boolean = true): Promise<QueryAppliedPlanResponse> {
     const data = QueryAppliedPlanRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.upgrade.v1beta1.Query", "AppliedPlan", data);
-    return promise.then(data => QueryAppliedPlanResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryAppliedPlanResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  upgradedConsensusState(request: QueryUpgradedConsensusStateRequest): Promise<QueryUpgradedConsensusStateResponse> {
+  upgradedConsensusState(request: QueryUpgradedConsensusStateRequest, useInterfaces: boolean = true): Promise<QueryUpgradedConsensusStateResponse> {
     const data = QueryUpgradedConsensusStateRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.upgrade.v1beta1.Query", "UpgradedConsensusState", data);
-    return promise.then(data => QueryUpgradedConsensusStateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryUpgradedConsensusStateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  moduleVersions(request: QueryModuleVersionsRequest): Promise<QueryModuleVersionsResponse> {
+  moduleVersions(request: QueryModuleVersionsRequest, useInterfaces: boolean = true): Promise<QueryModuleVersionsResponse> {
     const data = QueryModuleVersionsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.upgrade.v1beta1.Query", "ModuleVersions", data);
-    return promise.then(data => QueryModuleVersionsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryModuleVersionsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  authority(request: QueryAuthorityRequest = {}): Promise<QueryAuthorityResponse> {
+  authority(request: QueryAuthorityRequest = {}, useInterfaces: boolean = true): Promise<QueryAuthorityResponse> {
     const data = QueryAuthorityRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.upgrade.v1beta1.Query", "Authority", data);
-    return promise.then(data => QueryAuthorityResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryAuthorityResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    currentPlan(request?: QueryCurrentPlanRequest): Promise<QueryCurrentPlanResponse> {
-      return queryService.currentPlan(request);
+    currentPlan(request?: QueryCurrentPlanRequest, useInterfaces: boolean = true): Promise<QueryCurrentPlanResponse> {
+      return queryService.currentPlan(request, useInterfaces);
     },
-    appliedPlan(request: QueryAppliedPlanRequest): Promise<QueryAppliedPlanResponse> {
-      return queryService.appliedPlan(request);
+    appliedPlan(request: QueryAppliedPlanRequest, useInterfaces: boolean = true): Promise<QueryAppliedPlanResponse> {
+      return queryService.appliedPlan(request, useInterfaces);
     },
-    upgradedConsensusState(request: QueryUpgradedConsensusStateRequest): Promise<QueryUpgradedConsensusStateResponse> {
-      return queryService.upgradedConsensusState(request);
+    upgradedConsensusState(request: QueryUpgradedConsensusStateRequest, useInterfaces: boolean = true): Promise<QueryUpgradedConsensusStateResponse> {
+      return queryService.upgradedConsensusState(request, useInterfaces);
     },
-    moduleVersions(request: QueryModuleVersionsRequest): Promise<QueryModuleVersionsResponse> {
-      return queryService.moduleVersions(request);
+    moduleVersions(request: QueryModuleVersionsRequest, useInterfaces: boolean = true): Promise<QueryModuleVersionsResponse> {
+      return queryService.moduleVersions(request, useInterfaces);
     },
-    authority(request?: QueryAuthorityRequest): Promise<QueryAuthorityResponse> {
-      return queryService.authority(request);
+    authority(request?: QueryAuthorityRequest, useInterfaces: boolean = true): Promise<QueryAuthorityResponse> {
+      return queryService.authority(request, useInterfaces);
     }
   };
 };

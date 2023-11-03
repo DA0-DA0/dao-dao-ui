@@ -3,7 +3,7 @@ import { BinaryReader, BinaryWriter } from "../../binary";
 import { Decimal } from "@cosmjs/math";
 import { toTimestamp, fromTimestamp } from "../../helpers";
 export interface Pool {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.concentratedliquidity.v1beta1.Pool";
   /** pool's address holding all liquidity tokens. */
   address: string;
   /** address holding the incentives liquidity. */
@@ -61,14 +61,14 @@ export interface PoolAmino {
    * last_liquidity_update is the last time either the pool liquidity or the
    * active tick changed
    */
-  last_liquidity_update?: Date | undefined;
+  last_liquidity_update?: string | undefined;
 }
 export interface PoolAminoMsg {
   type: "osmosis/concentratedliquidity/pool";
   value: PoolAmino;
 }
 export interface PoolSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.concentratedliquidity.v1beta1.Pool";
   address: string;
   incentives_address: string;
   spread_rewards_address: string;
@@ -145,7 +145,7 @@ export const Pool = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Pool {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Pool {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePool();
@@ -229,10 +229,10 @@ export const Pool = {
       tickSpacing: BigInt(object.tick_spacing),
       exponentAtPriceOne: BigInt(object.exponent_at_price_one),
       spreadFactor: object.spread_factor,
-      lastLiquidityUpdate: object.last_liquidity_update
+      lastLiquidityUpdate: object?.last_liquidity_update ? fromTimestamp(Timestamp.fromAmino(object.last_liquidity_update)) : undefined
     };
   },
-  toAmino(message: Pool): PoolAmino {
+  toAmino(message: Pool, useInterfaces: boolean = false): PoolAmino {
     const obj: any = {};
     obj.address = message.address;
     obj.incentives_address = message.incentivesAddress;
@@ -246,20 +246,20 @@ export const Pool = {
     obj.tick_spacing = message.tickSpacing ? message.tickSpacing.toString() : undefined;
     obj.exponent_at_price_one = message.exponentAtPriceOne ? message.exponentAtPriceOne.toString() : undefined;
     obj.spread_factor = message.spreadFactor;
-    obj.last_liquidity_update = message.lastLiquidityUpdate;
+    obj.last_liquidity_update = message.lastLiquidityUpdate ? Timestamp.toAmino(toTimestamp(message.lastLiquidityUpdate)) : undefined;
     return obj;
   },
   fromAminoMsg(object: PoolAminoMsg): Pool {
     return Pool.fromAmino(object.value);
   },
-  toAminoMsg(message: Pool): PoolAminoMsg {
+  toAminoMsg(message: Pool, useInterfaces: boolean = false): PoolAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/pool",
-      value: Pool.toAmino(message)
+      value: Pool.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PoolProtoMsg): Pool {
-    return Pool.decode(message.value);
+  fromProtoMsg(message: PoolProtoMsg, useInterfaces: boolean = false): Pool {
+    return Pool.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Pool): Uint8Array {
     return Pool.encode(message).finish();

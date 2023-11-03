@@ -12,7 +12,7 @@ export interface Block {
   header: Header | undefined;
   data: Data | undefined;
   evidence: EvidenceList | undefined;
-  lastCommit: Commit | undefined;
+  lastCommit?: Commit | undefined;
 }
 export interface BlockProtoMsg {
   typeUrl: "/cosmos.base.tendermint.v1beta1.Block";
@@ -40,7 +40,7 @@ export interface BlockSDKType {
   header: HeaderSDKType | undefined;
   data: DataSDKType | undefined;
   evidence: EvidenceListSDKType | undefined;
-  last_commit: CommitSDKType | undefined;
+  last_commit?: CommitSDKType | undefined;
 }
 /** Header defines the structure of a Tendermint block header. */
 export interface Header {
@@ -82,7 +82,7 @@ export interface HeaderAmino {
   version?: ConsensusAmino | undefined;
   chain_id: string;
   height: string;
-  time?: Date | undefined;
+  time?: string | undefined;
   /** prev block info */
   last_block_id?: BlockIDAmino | undefined;
   /** hashes of block data */
@@ -132,7 +132,7 @@ function createBaseBlock(): Block {
     header: Header.fromPartial({}),
     data: Data.fromPartial({}),
     evidence: EvidenceList.fromPartial({}),
-    lastCommit: Commit.fromPartial({})
+    lastCommit: undefined
   };
 }
 export const Block = {
@@ -152,7 +152,7 @@ export const Block = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Block {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Block {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBlock();
@@ -160,16 +160,16 @@ export const Block = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.header = Header.decode(reader, reader.uint32());
+          message.header = Header.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.data = Data.decode(reader, reader.uint32());
+          message.data = Data.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
-          message.evidence = EvidenceList.decode(reader, reader.uint32());
+          message.evidence = EvidenceList.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
-          message.lastCommit = Commit.decode(reader, reader.uint32());
+          message.lastCommit = Commit.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -194,25 +194,25 @@ export const Block = {
       lastCommit: object?.last_commit ? Commit.fromAmino(object.last_commit) : undefined
     };
   },
-  toAmino(message: Block): BlockAmino {
+  toAmino(message: Block, useInterfaces: boolean = false): BlockAmino {
     const obj: any = {};
-    obj.header = message.header ? Header.toAmino(message.header) : undefined;
-    obj.data = message.data ? Data.toAmino(message.data) : undefined;
-    obj.evidence = message.evidence ? EvidenceList.toAmino(message.evidence) : undefined;
-    obj.last_commit = message.lastCommit ? Commit.toAmino(message.lastCommit) : undefined;
+    obj.header = message.header ? Header.toAmino(message.header, useInterfaces) : undefined;
+    obj.data = message.data ? Data.toAmino(message.data, useInterfaces) : undefined;
+    obj.evidence = message.evidence ? EvidenceList.toAmino(message.evidence, useInterfaces) : undefined;
+    obj.last_commit = message.lastCommit ? Commit.toAmino(message.lastCommit, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: BlockAminoMsg): Block {
     return Block.fromAmino(object.value);
   },
-  toAminoMsg(message: Block): BlockAminoMsg {
+  toAminoMsg(message: Block, useInterfaces: boolean = false): BlockAminoMsg {
     return {
       type: "cosmos-sdk/Block",
-      value: Block.toAmino(message)
+      value: Block.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: BlockProtoMsg): Block {
-    return Block.decode(message.value);
+  fromProtoMsg(message: BlockProtoMsg, useInterfaces: boolean = false): Block {
+    return Block.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Block): Uint8Array {
     return Block.encode(message).finish();
@@ -289,7 +289,7 @@ export const Header = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Header {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Header {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHeader();
@@ -297,7 +297,7 @@ export const Header = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.version = Consensus.decode(reader, reader.uint32());
+          message.version = Consensus.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
           message.chainId = reader.string();
@@ -309,7 +309,7 @@ export const Header = {
           message.time = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
           break;
         case 5:
-          message.lastBlockId = BlockID.decode(reader, reader.uint32());
+          message.lastBlockId = BlockID.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 6:
           message.lastCommitHash = reader.bytes();
@@ -368,7 +368,7 @@ export const Header = {
       version: object?.version ? Consensus.fromAmino(object.version) : undefined,
       chainId: object.chain_id,
       height: BigInt(object.height),
-      time: object.time,
+      time: object?.time ? fromTimestamp(Timestamp.fromAmino(object.time)) : undefined,
       lastBlockId: object?.last_block_id ? BlockID.fromAmino(object.last_block_id) : undefined,
       lastCommitHash: object.last_commit_hash,
       dataHash: object.data_hash,
@@ -381,13 +381,13 @@ export const Header = {
       proposerAddress: object.proposer_address
     };
   },
-  toAmino(message: Header): HeaderAmino {
+  toAmino(message: Header, useInterfaces: boolean = false): HeaderAmino {
     const obj: any = {};
-    obj.version = message.version ? Consensus.toAmino(message.version) : undefined;
+    obj.version = message.version ? Consensus.toAmino(message.version, useInterfaces) : undefined;
     obj.chain_id = message.chainId;
     obj.height = message.height ? message.height.toString() : undefined;
-    obj.time = message.time;
-    obj.last_block_id = message.lastBlockId ? BlockID.toAmino(message.lastBlockId) : undefined;
+    obj.time = message.time ? Timestamp.toAmino(toTimestamp(message.time)) : undefined;
+    obj.last_block_id = message.lastBlockId ? BlockID.toAmino(message.lastBlockId, useInterfaces) : undefined;
     obj.last_commit_hash = message.lastCommitHash;
     obj.data_hash = message.dataHash;
     obj.validators_hash = message.validatorsHash;
@@ -402,14 +402,14 @@ export const Header = {
   fromAminoMsg(object: HeaderAminoMsg): Header {
     return Header.fromAmino(object.value);
   },
-  toAminoMsg(message: Header): HeaderAminoMsg {
+  toAminoMsg(message: Header, useInterfaces: boolean = false): HeaderAminoMsg {
     return {
       type: "cosmos-sdk/Header",
-      value: Header.toAmino(message)
+      value: Header.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: HeaderProtoMsg): Header {
-    return Header.decode(message.value);
+  fromProtoMsg(message: HeaderProtoMsg, useInterfaces: boolean = false): Header {
+    return Header.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Header): Uint8Array {
     return Header.encode(message).finish();

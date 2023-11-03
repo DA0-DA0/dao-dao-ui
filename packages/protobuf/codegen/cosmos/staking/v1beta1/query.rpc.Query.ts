@@ -95,122 +95,122 @@ export class QueryClientImpl implements Query {
     this.pool = this.pool.bind(this);
     this.params = this.params.bind(this);
   }
-  validators(request: QueryValidatorsRequest): Promise<QueryValidatorsResponse> {
+  validators(request: QueryValidatorsRequest, useInterfaces: boolean = true): Promise<QueryValidatorsResponse> {
     const data = QueryValidatorsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "Validators", data);
-    return promise.then(data => QueryValidatorsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryValidatorsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  validator(request: QueryValidatorRequest): Promise<QueryValidatorResponse> {
+  validator(request: QueryValidatorRequest, useInterfaces: boolean = true): Promise<QueryValidatorResponse> {
     const data = QueryValidatorRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "Validator", data);
-    return promise.then(data => QueryValidatorResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryValidatorResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  validatorDelegations(request: QueryValidatorDelegationsRequest): Promise<QueryValidatorDelegationsResponse> {
+  validatorDelegations(request: QueryValidatorDelegationsRequest, useInterfaces: boolean = true): Promise<QueryValidatorDelegationsResponse> {
     const data = QueryValidatorDelegationsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "ValidatorDelegations", data);
-    return promise.then(data => QueryValidatorDelegationsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryValidatorDelegationsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  validatorUnbondingDelegations(request: QueryValidatorUnbondingDelegationsRequest): Promise<QueryValidatorUnbondingDelegationsResponse> {
+  validatorUnbondingDelegations(request: QueryValidatorUnbondingDelegationsRequest, useInterfaces: boolean = true): Promise<QueryValidatorUnbondingDelegationsResponse> {
     const data = QueryValidatorUnbondingDelegationsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "ValidatorUnbondingDelegations", data);
-    return promise.then(data => QueryValidatorUnbondingDelegationsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryValidatorUnbondingDelegationsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  delegation(request: QueryDelegationRequest): Promise<QueryDelegationResponse> {
+  delegation(request: QueryDelegationRequest, useInterfaces: boolean = true): Promise<QueryDelegationResponse> {
     const data = QueryDelegationRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "Delegation", data);
-    return promise.then(data => QueryDelegationResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDelegationResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  unbondingDelegation(request: QueryUnbondingDelegationRequest): Promise<QueryUnbondingDelegationResponse> {
+  unbondingDelegation(request: QueryUnbondingDelegationRequest, useInterfaces: boolean = true): Promise<QueryUnbondingDelegationResponse> {
     const data = QueryUnbondingDelegationRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "UnbondingDelegation", data);
-    return promise.then(data => QueryUnbondingDelegationResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryUnbondingDelegationResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  delegatorDelegations(request: QueryDelegatorDelegationsRequest): Promise<QueryDelegatorDelegationsResponse> {
+  delegatorDelegations(request: QueryDelegatorDelegationsRequest, useInterfaces: boolean = true): Promise<QueryDelegatorDelegationsResponse> {
     const data = QueryDelegatorDelegationsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "DelegatorDelegations", data);
-    return promise.then(data => QueryDelegatorDelegationsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDelegatorDelegationsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  delegatorUnbondingDelegations(request: QueryDelegatorUnbondingDelegationsRequest): Promise<QueryDelegatorUnbondingDelegationsResponse> {
+  delegatorUnbondingDelegations(request: QueryDelegatorUnbondingDelegationsRequest, useInterfaces: boolean = true): Promise<QueryDelegatorUnbondingDelegationsResponse> {
     const data = QueryDelegatorUnbondingDelegationsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "DelegatorUnbondingDelegations", data);
-    return promise.then(data => QueryDelegatorUnbondingDelegationsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDelegatorUnbondingDelegationsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  redelegations(request: QueryRedelegationsRequest): Promise<QueryRedelegationsResponse> {
+  redelegations(request: QueryRedelegationsRequest, useInterfaces: boolean = true): Promise<QueryRedelegationsResponse> {
     const data = QueryRedelegationsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "Redelegations", data);
-    return promise.then(data => QueryRedelegationsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryRedelegationsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  delegatorValidators(request: QueryDelegatorValidatorsRequest): Promise<QueryDelegatorValidatorsResponse> {
+  delegatorValidators(request: QueryDelegatorValidatorsRequest, useInterfaces: boolean = true): Promise<QueryDelegatorValidatorsResponse> {
     const data = QueryDelegatorValidatorsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "DelegatorValidators", data);
-    return promise.then(data => QueryDelegatorValidatorsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDelegatorValidatorsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  delegatorValidator(request: QueryDelegatorValidatorRequest): Promise<QueryDelegatorValidatorResponse> {
+  delegatorValidator(request: QueryDelegatorValidatorRequest, useInterfaces: boolean = true): Promise<QueryDelegatorValidatorResponse> {
     const data = QueryDelegatorValidatorRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "DelegatorValidator", data);
-    return promise.then(data => QueryDelegatorValidatorResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDelegatorValidatorResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  historicalInfo(request: QueryHistoricalInfoRequest): Promise<QueryHistoricalInfoResponse> {
+  historicalInfo(request: QueryHistoricalInfoRequest, useInterfaces: boolean = true): Promise<QueryHistoricalInfoResponse> {
     const data = QueryHistoricalInfoRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "HistoricalInfo", data);
-    return promise.then(data => QueryHistoricalInfoResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryHistoricalInfoResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  pool(request: QueryPoolRequest = {}): Promise<QueryPoolResponse> {
+  pool(request: QueryPoolRequest = {}, useInterfaces: boolean = true): Promise<QueryPoolResponse> {
     const data = QueryPoolRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "Pool", data);
-    return promise.then(data => QueryPoolResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryPoolResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    validators(request: QueryValidatorsRequest): Promise<QueryValidatorsResponse> {
-      return queryService.validators(request);
+    validators(request: QueryValidatorsRequest, useInterfaces: boolean = true): Promise<QueryValidatorsResponse> {
+      return queryService.validators(request, useInterfaces);
     },
-    validator(request: QueryValidatorRequest): Promise<QueryValidatorResponse> {
-      return queryService.validator(request);
+    validator(request: QueryValidatorRequest, useInterfaces: boolean = true): Promise<QueryValidatorResponse> {
+      return queryService.validator(request, useInterfaces);
     },
-    validatorDelegations(request: QueryValidatorDelegationsRequest): Promise<QueryValidatorDelegationsResponse> {
-      return queryService.validatorDelegations(request);
+    validatorDelegations(request: QueryValidatorDelegationsRequest, useInterfaces: boolean = true): Promise<QueryValidatorDelegationsResponse> {
+      return queryService.validatorDelegations(request, useInterfaces);
     },
-    validatorUnbondingDelegations(request: QueryValidatorUnbondingDelegationsRequest): Promise<QueryValidatorUnbondingDelegationsResponse> {
-      return queryService.validatorUnbondingDelegations(request);
+    validatorUnbondingDelegations(request: QueryValidatorUnbondingDelegationsRequest, useInterfaces: boolean = true): Promise<QueryValidatorUnbondingDelegationsResponse> {
+      return queryService.validatorUnbondingDelegations(request, useInterfaces);
     },
-    delegation(request: QueryDelegationRequest): Promise<QueryDelegationResponse> {
-      return queryService.delegation(request);
+    delegation(request: QueryDelegationRequest, useInterfaces: boolean = true): Promise<QueryDelegationResponse> {
+      return queryService.delegation(request, useInterfaces);
     },
-    unbondingDelegation(request: QueryUnbondingDelegationRequest): Promise<QueryUnbondingDelegationResponse> {
-      return queryService.unbondingDelegation(request);
+    unbondingDelegation(request: QueryUnbondingDelegationRequest, useInterfaces: boolean = true): Promise<QueryUnbondingDelegationResponse> {
+      return queryService.unbondingDelegation(request, useInterfaces);
     },
-    delegatorDelegations(request: QueryDelegatorDelegationsRequest): Promise<QueryDelegatorDelegationsResponse> {
-      return queryService.delegatorDelegations(request);
+    delegatorDelegations(request: QueryDelegatorDelegationsRequest, useInterfaces: boolean = true): Promise<QueryDelegatorDelegationsResponse> {
+      return queryService.delegatorDelegations(request, useInterfaces);
     },
-    delegatorUnbondingDelegations(request: QueryDelegatorUnbondingDelegationsRequest): Promise<QueryDelegatorUnbondingDelegationsResponse> {
-      return queryService.delegatorUnbondingDelegations(request);
+    delegatorUnbondingDelegations(request: QueryDelegatorUnbondingDelegationsRequest, useInterfaces: boolean = true): Promise<QueryDelegatorUnbondingDelegationsResponse> {
+      return queryService.delegatorUnbondingDelegations(request, useInterfaces);
     },
-    redelegations(request: QueryRedelegationsRequest): Promise<QueryRedelegationsResponse> {
-      return queryService.redelegations(request);
+    redelegations(request: QueryRedelegationsRequest, useInterfaces: boolean = true): Promise<QueryRedelegationsResponse> {
+      return queryService.redelegations(request, useInterfaces);
     },
-    delegatorValidators(request: QueryDelegatorValidatorsRequest): Promise<QueryDelegatorValidatorsResponse> {
-      return queryService.delegatorValidators(request);
+    delegatorValidators(request: QueryDelegatorValidatorsRequest, useInterfaces: boolean = true): Promise<QueryDelegatorValidatorsResponse> {
+      return queryService.delegatorValidators(request, useInterfaces);
     },
-    delegatorValidator(request: QueryDelegatorValidatorRequest): Promise<QueryDelegatorValidatorResponse> {
-      return queryService.delegatorValidator(request);
+    delegatorValidator(request: QueryDelegatorValidatorRequest, useInterfaces: boolean = true): Promise<QueryDelegatorValidatorResponse> {
+      return queryService.delegatorValidator(request, useInterfaces);
     },
-    historicalInfo(request: QueryHistoricalInfoRequest): Promise<QueryHistoricalInfoResponse> {
-      return queryService.historicalInfo(request);
+    historicalInfo(request: QueryHistoricalInfoRequest, useInterfaces: boolean = true): Promise<QueryHistoricalInfoResponse> {
+      return queryService.historicalInfo(request, useInterfaces);
     },
-    pool(request?: QueryPoolRequest): Promise<QueryPoolResponse> {
-      return queryService.pool(request);
+    pool(request?: QueryPoolRequest, useInterfaces: boolean = true): Promise<QueryPoolResponse> {
+      return queryService.pool(request, useInterfaces);
     },
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     }
   };
 };

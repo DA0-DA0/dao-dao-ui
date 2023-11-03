@@ -62,7 +62,7 @@ export const Params = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Params {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Params {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
@@ -70,7 +70,7 @@ export const Params = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.denomCreationFee.push(Coin.decode(reader, reader.uint32()));
+          message.denomCreationFee.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
           message.denomCreationGasConsume = reader.uint64();
@@ -94,10 +94,10 @@ export const Params = {
       denomCreationGasConsume: object?.denom_creation_gas_consume ? BigInt(object.denom_creation_gas_consume) : undefined
     };
   },
-  toAmino(message: Params): ParamsAmino {
+  toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
     if (message.denomCreationFee) {
-      obj.denom_creation_fee = message.denomCreationFee.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.denom_creation_fee = message.denomCreationFee.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.denom_creation_fee = [];
     }
@@ -107,14 +107,14 @@ export const Params = {
   fromAminoMsg(object: ParamsAminoMsg): Params {
     return Params.fromAmino(object.value);
   },
-  toAminoMsg(message: Params): ParamsAminoMsg {
+  toAminoMsg(message: Params, useInterfaces: boolean = false): ParamsAminoMsg {
     return {
       type: "osmosis/tokenfactory/params",
-      value: Params.toAmino(message)
+      value: Params.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ParamsProtoMsg): Params {
-    return Params.decode(message.value);
+  fromProtoMsg(message: ParamsProtoMsg, useInterfaces: boolean = false): Params {
+    return Params.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Params): Uint8Array {
     return Params.encode(message).finish();

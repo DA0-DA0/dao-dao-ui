@@ -2,10 +2,10 @@ import { CodeAuthorization, CodeAuthorizationAmino, CodeAuthorizationSDKType, Co
 import { BinaryReader, BinaryWriter } from "../../../../binary";
 /** @deprecated */
 export interface SetCodeAuthorizationProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/publicawesome.stargaze.globalfee.v1.SetCodeAuthorizationProposal";
   title: string;
   description: string;
-  codeAuthorization: CodeAuthorization | undefined;
+  codeAuthorization?: CodeAuthorization | undefined;
 }
 export interface SetCodeAuthorizationProposalProtoMsg {
   typeUrl: "/publicawesome.stargaze.globalfee.v1.SetCodeAuthorizationProposal";
@@ -23,14 +23,14 @@ export interface SetCodeAuthorizationProposalAminoMsg {
 }
 /** @deprecated */
 export interface SetCodeAuthorizationProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/publicawesome.stargaze.globalfee.v1.SetCodeAuthorizationProposal";
   title: string;
   description: string;
-  code_authorization: CodeAuthorizationSDKType | undefined;
+  code_authorization?: CodeAuthorizationSDKType | undefined;
 }
 /** @deprecated */
 export interface RemoveCodeAuthorizationProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/publicawesome.stargaze.globalfee.v1.RemoveCodeAuthorizationProposal";
   title: string;
   description: string;
   codeId: bigint;
@@ -51,17 +51,17 @@ export interface RemoveCodeAuthorizationProposalAminoMsg {
 }
 /** @deprecated */
 export interface RemoveCodeAuthorizationProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/publicawesome.stargaze.globalfee.v1.RemoveCodeAuthorizationProposal";
   title: string;
   description: string;
   code_id: bigint;
 }
 /** @deprecated */
 export interface SetContractAuthorizationProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/publicawesome.stargaze.globalfee.v1.SetContractAuthorizationProposal";
   title: string;
   description: string;
-  contractAuthorization: ContractAuthorization | undefined;
+  contractAuthorization?: ContractAuthorization | undefined;
 }
 export interface SetContractAuthorizationProposalProtoMsg {
   typeUrl: "/publicawesome.stargaze.globalfee.v1.SetContractAuthorizationProposal";
@@ -79,14 +79,14 @@ export interface SetContractAuthorizationProposalAminoMsg {
 }
 /** @deprecated */
 export interface SetContractAuthorizationProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/publicawesome.stargaze.globalfee.v1.SetContractAuthorizationProposal";
   title: string;
   description: string;
-  contract_authorization: ContractAuthorizationSDKType | undefined;
+  contract_authorization?: ContractAuthorizationSDKType | undefined;
 }
 /** @deprecated */
 export interface RemoveContractAuthorizationProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/publicawesome.stargaze.globalfee.v1.RemoveContractAuthorizationProposal";
   title: string;
   description: string;
   contractAddress: string;
@@ -107,7 +107,7 @@ export interface RemoveContractAuthorizationProposalAminoMsg {
 }
 /** @deprecated */
 export interface RemoveContractAuthorizationProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/publicawesome.stargaze.globalfee.v1.RemoveContractAuthorizationProposal";
   title: string;
   description: string;
   contract_address: string;
@@ -117,7 +117,7 @@ function createBaseSetCodeAuthorizationProposal(): SetCodeAuthorizationProposal 
     $typeUrl: "/publicawesome.stargaze.globalfee.v1.SetCodeAuthorizationProposal",
     title: "",
     description: "",
-    codeAuthorization: CodeAuthorization.fromPartial({})
+    codeAuthorization: undefined
   };
 }
 export const SetCodeAuthorizationProposal = {
@@ -134,7 +134,7 @@ export const SetCodeAuthorizationProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SetCodeAuthorizationProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SetCodeAuthorizationProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetCodeAuthorizationProposal();
@@ -148,7 +148,7 @@ export const SetCodeAuthorizationProposal = {
           message.description = reader.string();
           break;
         case 3:
-          message.codeAuthorization = CodeAuthorization.decode(reader, reader.uint32());
+          message.codeAuthorization = CodeAuthorization.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -171,18 +171,18 @@ export const SetCodeAuthorizationProposal = {
       codeAuthorization: object?.code_authorization ? CodeAuthorization.fromAmino(object.code_authorization) : undefined
     };
   },
-  toAmino(message: SetCodeAuthorizationProposal): SetCodeAuthorizationProposalAmino {
+  toAmino(message: SetCodeAuthorizationProposal, useInterfaces: boolean = false): SetCodeAuthorizationProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
-    obj.code_authorization = message.codeAuthorization ? CodeAuthorization.toAmino(message.codeAuthorization) : undefined;
+    obj.code_authorization = message.codeAuthorization ? CodeAuthorization.toAmino(message.codeAuthorization, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: SetCodeAuthorizationProposalAminoMsg): SetCodeAuthorizationProposal {
     return SetCodeAuthorizationProposal.fromAmino(object.value);
   },
-  fromProtoMsg(message: SetCodeAuthorizationProposalProtoMsg): SetCodeAuthorizationProposal {
-    return SetCodeAuthorizationProposal.decode(message.value);
+  fromProtoMsg(message: SetCodeAuthorizationProposalProtoMsg, useInterfaces: boolean = false): SetCodeAuthorizationProposal {
+    return SetCodeAuthorizationProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SetCodeAuthorizationProposal): Uint8Array {
     return SetCodeAuthorizationProposal.encode(message).finish();
@@ -216,7 +216,7 @@ export const RemoveCodeAuthorizationProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RemoveCodeAuthorizationProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RemoveCodeAuthorizationProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRemoveCodeAuthorizationProposal();
@@ -253,7 +253,7 @@ export const RemoveCodeAuthorizationProposal = {
       codeId: BigInt(object.code_id)
     };
   },
-  toAmino(message: RemoveCodeAuthorizationProposal): RemoveCodeAuthorizationProposalAmino {
+  toAmino(message: RemoveCodeAuthorizationProposal, useInterfaces: boolean = false): RemoveCodeAuthorizationProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -263,8 +263,8 @@ export const RemoveCodeAuthorizationProposal = {
   fromAminoMsg(object: RemoveCodeAuthorizationProposalAminoMsg): RemoveCodeAuthorizationProposal {
     return RemoveCodeAuthorizationProposal.fromAmino(object.value);
   },
-  fromProtoMsg(message: RemoveCodeAuthorizationProposalProtoMsg): RemoveCodeAuthorizationProposal {
-    return RemoveCodeAuthorizationProposal.decode(message.value);
+  fromProtoMsg(message: RemoveCodeAuthorizationProposalProtoMsg, useInterfaces: boolean = false): RemoveCodeAuthorizationProposal {
+    return RemoveCodeAuthorizationProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RemoveCodeAuthorizationProposal): Uint8Array {
     return RemoveCodeAuthorizationProposal.encode(message).finish();
@@ -281,7 +281,7 @@ function createBaseSetContractAuthorizationProposal(): SetContractAuthorizationP
     $typeUrl: "/publicawesome.stargaze.globalfee.v1.SetContractAuthorizationProposal",
     title: "",
     description: "",
-    contractAuthorization: ContractAuthorization.fromPartial({})
+    contractAuthorization: undefined
   };
 }
 export const SetContractAuthorizationProposal = {
@@ -298,7 +298,7 @@ export const SetContractAuthorizationProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SetContractAuthorizationProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SetContractAuthorizationProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetContractAuthorizationProposal();
@@ -312,7 +312,7 @@ export const SetContractAuthorizationProposal = {
           message.description = reader.string();
           break;
         case 3:
-          message.contractAuthorization = ContractAuthorization.decode(reader, reader.uint32());
+          message.contractAuthorization = ContractAuthorization.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -335,18 +335,18 @@ export const SetContractAuthorizationProposal = {
       contractAuthorization: object?.contract_authorization ? ContractAuthorization.fromAmino(object.contract_authorization) : undefined
     };
   },
-  toAmino(message: SetContractAuthorizationProposal): SetContractAuthorizationProposalAmino {
+  toAmino(message: SetContractAuthorizationProposal, useInterfaces: boolean = false): SetContractAuthorizationProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
-    obj.contract_authorization = message.contractAuthorization ? ContractAuthorization.toAmino(message.contractAuthorization) : undefined;
+    obj.contract_authorization = message.contractAuthorization ? ContractAuthorization.toAmino(message.contractAuthorization, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: SetContractAuthorizationProposalAminoMsg): SetContractAuthorizationProposal {
     return SetContractAuthorizationProposal.fromAmino(object.value);
   },
-  fromProtoMsg(message: SetContractAuthorizationProposalProtoMsg): SetContractAuthorizationProposal {
-    return SetContractAuthorizationProposal.decode(message.value);
+  fromProtoMsg(message: SetContractAuthorizationProposalProtoMsg, useInterfaces: boolean = false): SetContractAuthorizationProposal {
+    return SetContractAuthorizationProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SetContractAuthorizationProposal): Uint8Array {
     return SetContractAuthorizationProposal.encode(message).finish();
@@ -380,7 +380,7 @@ export const RemoveContractAuthorizationProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RemoveContractAuthorizationProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RemoveContractAuthorizationProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRemoveContractAuthorizationProposal();
@@ -417,7 +417,7 @@ export const RemoveContractAuthorizationProposal = {
       contractAddress: object.contract_address
     };
   },
-  toAmino(message: RemoveContractAuthorizationProposal): RemoveContractAuthorizationProposalAmino {
+  toAmino(message: RemoveContractAuthorizationProposal, useInterfaces: boolean = false): RemoveContractAuthorizationProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -427,8 +427,8 @@ export const RemoveContractAuthorizationProposal = {
   fromAminoMsg(object: RemoveContractAuthorizationProposalAminoMsg): RemoveContractAuthorizationProposal {
     return RemoveContractAuthorizationProposal.fromAmino(object.value);
   },
-  fromProtoMsg(message: RemoveContractAuthorizationProposalProtoMsg): RemoveContractAuthorizationProposal {
-    return RemoveContractAuthorizationProposal.decode(message.value);
+  fromProtoMsg(message: RemoveContractAuthorizationProposalProtoMsg, useInterfaces: boolean = false): RemoveContractAuthorizationProposal {
+    return RemoveContractAuthorizationProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RemoveContractAuthorizationProposal): Uint8Array {
     return RemoveContractAuthorizationProposal.encode(message).finish();

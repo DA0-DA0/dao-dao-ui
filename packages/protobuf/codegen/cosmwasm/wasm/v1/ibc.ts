@@ -121,7 +121,7 @@ export const MsgIBCSend = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgIBCSend {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgIBCSend {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgIBCSend();
@@ -163,7 +163,7 @@ export const MsgIBCSend = {
       data: object.data
     };
   },
-  toAmino(message: MsgIBCSend): MsgIBCSendAmino {
+  toAmino(message: MsgIBCSend, useInterfaces: boolean = false): MsgIBCSendAmino {
     const obj: any = {};
     obj.channel = message.channel;
     obj.timeout_height = message.timeoutHeight ? message.timeoutHeight.toString() : undefined;
@@ -174,14 +174,14 @@ export const MsgIBCSend = {
   fromAminoMsg(object: MsgIBCSendAminoMsg): MsgIBCSend {
     return MsgIBCSend.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgIBCSend): MsgIBCSendAminoMsg {
+  toAminoMsg(message: MsgIBCSend, useInterfaces: boolean = false): MsgIBCSendAminoMsg {
     return {
       type: "wasm/MsgIBCSend",
-      value: MsgIBCSend.toAmino(message)
+      value: MsgIBCSend.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgIBCSendProtoMsg): MsgIBCSend {
-    return MsgIBCSend.decode(message.value);
+  fromProtoMsg(message: MsgIBCSendProtoMsg, useInterfaces: boolean = false): MsgIBCSend {
+    return MsgIBCSend.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgIBCSend): Uint8Array {
     return MsgIBCSend.encode(message).finish();
@@ -206,7 +206,7 @@ export const MsgIBCSendResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgIBCSendResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgIBCSendResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgIBCSendResponse();
@@ -233,7 +233,7 @@ export const MsgIBCSendResponse = {
       sequence: BigInt(object.sequence)
     };
   },
-  toAmino(message: MsgIBCSendResponse): MsgIBCSendResponseAmino {
+  toAmino(message: MsgIBCSendResponse, useInterfaces: boolean = false): MsgIBCSendResponseAmino {
     const obj: any = {};
     obj.sequence = message.sequence ? message.sequence.toString() : undefined;
     return obj;
@@ -241,14 +241,14 @@ export const MsgIBCSendResponse = {
   fromAminoMsg(object: MsgIBCSendResponseAminoMsg): MsgIBCSendResponse {
     return MsgIBCSendResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgIBCSendResponse): MsgIBCSendResponseAminoMsg {
+  toAminoMsg(message: MsgIBCSendResponse, useInterfaces: boolean = false): MsgIBCSendResponseAminoMsg {
     return {
       type: "wasm/MsgIBCSendResponse",
-      value: MsgIBCSendResponse.toAmino(message)
+      value: MsgIBCSendResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgIBCSendResponseProtoMsg): MsgIBCSendResponse {
-    return MsgIBCSendResponse.decode(message.value);
+  fromProtoMsg(message: MsgIBCSendResponseProtoMsg, useInterfaces: boolean = false): MsgIBCSendResponse {
+    return MsgIBCSendResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgIBCSendResponse): Uint8Array {
     return MsgIBCSendResponse.encode(message).finish();
@@ -273,7 +273,7 @@ export const MsgIBCCloseChannel = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgIBCCloseChannel {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgIBCCloseChannel {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgIBCCloseChannel();
@@ -300,7 +300,7 @@ export const MsgIBCCloseChannel = {
       channel: object.channel
     };
   },
-  toAmino(message: MsgIBCCloseChannel): MsgIBCCloseChannelAmino {
+  toAmino(message: MsgIBCCloseChannel, useInterfaces: boolean = false): MsgIBCCloseChannelAmino {
     const obj: any = {};
     obj.channel = message.channel;
     return obj;
@@ -308,14 +308,14 @@ export const MsgIBCCloseChannel = {
   fromAminoMsg(object: MsgIBCCloseChannelAminoMsg): MsgIBCCloseChannel {
     return MsgIBCCloseChannel.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgIBCCloseChannel): MsgIBCCloseChannelAminoMsg {
+  toAminoMsg(message: MsgIBCCloseChannel, useInterfaces: boolean = false): MsgIBCCloseChannelAminoMsg {
     return {
       type: "wasm/MsgIBCCloseChannel",
-      value: MsgIBCCloseChannel.toAmino(message)
+      value: MsgIBCCloseChannel.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgIBCCloseChannelProtoMsg): MsgIBCCloseChannel {
-    return MsgIBCCloseChannel.decode(message.value);
+  fromProtoMsg(message: MsgIBCCloseChannelProtoMsg, useInterfaces: boolean = false): MsgIBCCloseChannel {
+    return MsgIBCCloseChannel.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgIBCCloseChannel): Uint8Array {
     return MsgIBCCloseChannel.encode(message).finish();

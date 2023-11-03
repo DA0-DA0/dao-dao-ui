@@ -98,7 +98,7 @@ export const Params = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Params {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Params {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
@@ -109,7 +109,7 @@ export const Params = {
           message.privilegedAddresses.push(reader.string());
           break;
         case 2:
-          message.minimumGasPrices.push(DecCoin.decode(reader, reader.uint32()));
+          message.minimumGasPrices.push(DecCoin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -130,7 +130,7 @@ export const Params = {
       minimumGasPrices: Array.isArray(object?.minimum_gas_prices) ? object.minimum_gas_prices.map((e: any) => DecCoin.fromAmino(e)) : []
     };
   },
-  toAmino(message: Params): ParamsAmino {
+  toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
     if (message.privilegedAddresses) {
       obj.privileged_addresses = message.privilegedAddresses.map(e => e);
@@ -138,7 +138,7 @@ export const Params = {
       obj.privileged_addresses = [];
     }
     if (message.minimumGasPrices) {
-      obj.minimum_gas_prices = message.minimumGasPrices.map(e => e ? DecCoin.toAmino(e) : undefined);
+      obj.minimum_gas_prices = message.minimumGasPrices.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.minimum_gas_prices = [];
     }
@@ -147,8 +147,8 @@ export const Params = {
   fromAminoMsg(object: ParamsAminoMsg): Params {
     return Params.fromAmino(object.value);
   },
-  fromProtoMsg(message: ParamsProtoMsg): Params {
-    return Params.decode(message.value);
+  fromProtoMsg(message: ParamsProtoMsg, useInterfaces: boolean = false): Params {
+    return Params.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Params): Uint8Array {
     return Params.encode(message).finish();
@@ -177,7 +177,7 @@ export const CodeAuthorization = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CodeAuthorization {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CodeAuthorization {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCodeAuthorization();
@@ -209,7 +209,7 @@ export const CodeAuthorization = {
       methods: Array.isArray(object?.methods) ? object.methods.map((e: any) => e) : []
     };
   },
-  toAmino(message: CodeAuthorization): CodeAuthorizationAmino {
+  toAmino(message: CodeAuthorization, useInterfaces: boolean = false): CodeAuthorizationAmino {
     const obj: any = {};
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
     if (message.methods) {
@@ -222,8 +222,8 @@ export const CodeAuthorization = {
   fromAminoMsg(object: CodeAuthorizationAminoMsg): CodeAuthorization {
     return CodeAuthorization.fromAmino(object.value);
   },
-  fromProtoMsg(message: CodeAuthorizationProtoMsg): CodeAuthorization {
-    return CodeAuthorization.decode(message.value);
+  fromProtoMsg(message: CodeAuthorizationProtoMsg, useInterfaces: boolean = false): CodeAuthorization {
+    return CodeAuthorization.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CodeAuthorization): Uint8Array {
     return CodeAuthorization.encode(message).finish();
@@ -252,7 +252,7 @@ export const ContractAuthorization = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ContractAuthorization {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ContractAuthorization {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractAuthorization();
@@ -284,7 +284,7 @@ export const ContractAuthorization = {
       methods: Array.isArray(object?.methods) ? object.methods.map((e: any) => e) : []
     };
   },
-  toAmino(message: ContractAuthorization): ContractAuthorizationAmino {
+  toAmino(message: ContractAuthorization, useInterfaces: boolean = false): ContractAuthorizationAmino {
     const obj: any = {};
     obj.contract_address = message.contractAddress;
     if (message.methods) {
@@ -297,8 +297,8 @@ export const ContractAuthorization = {
   fromAminoMsg(object: ContractAuthorizationAminoMsg): ContractAuthorization {
     return ContractAuthorization.fromAmino(object.value);
   },
-  fromProtoMsg(message: ContractAuthorizationProtoMsg): ContractAuthorization {
-    return ContractAuthorization.decode(message.value);
+  fromProtoMsg(message: ContractAuthorizationProtoMsg, useInterfaces: boolean = false): ContractAuthorization {
+    return ContractAuthorization.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ContractAuthorization): Uint8Array {
     return ContractAuthorization.encode(message).finish();

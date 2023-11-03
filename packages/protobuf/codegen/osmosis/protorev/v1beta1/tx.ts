@@ -324,7 +324,7 @@ export const MsgSetHotRoutes = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetHotRoutes {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetHotRoutes {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetHotRoutes();
@@ -335,7 +335,7 @@ export const MsgSetHotRoutes = {
           message.admin = reader.string();
           break;
         case 2:
-          message.hotRoutes.push(TokenPairArbRoutes.decode(reader, reader.uint32()));
+          message.hotRoutes.push(TokenPairArbRoutes.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -356,11 +356,11 @@ export const MsgSetHotRoutes = {
       hotRoutes: Array.isArray(object?.hot_routes) ? object.hot_routes.map((e: any) => TokenPairArbRoutes.fromAmino(e)) : []
     };
   },
-  toAmino(message: MsgSetHotRoutes): MsgSetHotRoutesAmino {
+  toAmino(message: MsgSetHotRoutes, useInterfaces: boolean = false): MsgSetHotRoutesAmino {
     const obj: any = {};
     obj.admin = message.admin;
     if (message.hotRoutes) {
-      obj.hot_routes = message.hotRoutes.map(e => e ? TokenPairArbRoutes.toAmino(e) : undefined);
+      obj.hot_routes = message.hotRoutes.map(e => e ? TokenPairArbRoutes.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.hot_routes = [];
     }
@@ -369,14 +369,14 @@ export const MsgSetHotRoutes = {
   fromAminoMsg(object: MsgSetHotRoutesAminoMsg): MsgSetHotRoutes {
     return MsgSetHotRoutes.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetHotRoutes): MsgSetHotRoutesAminoMsg {
+  toAminoMsg(message: MsgSetHotRoutes, useInterfaces: boolean = false): MsgSetHotRoutesAminoMsg {
     return {
       type: "osmosis/MsgSetHotRoutes",
-      value: MsgSetHotRoutes.toAmino(message)
+      value: MsgSetHotRoutes.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetHotRoutesProtoMsg): MsgSetHotRoutes {
-    return MsgSetHotRoutes.decode(message.value);
+  fromProtoMsg(message: MsgSetHotRoutesProtoMsg, useInterfaces: boolean = false): MsgSetHotRoutes {
+    return MsgSetHotRoutes.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetHotRoutes): Uint8Array {
     return MsgSetHotRoutes.encode(message).finish();
@@ -396,7 +396,7 @@ export const MsgSetHotRoutesResponse = {
   encode(_: MsgSetHotRoutesResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetHotRoutesResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetHotRoutesResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetHotRoutesResponse();
@@ -417,21 +417,21 @@ export const MsgSetHotRoutesResponse = {
   fromAmino(_: MsgSetHotRoutesResponseAmino): MsgSetHotRoutesResponse {
     return {};
   },
-  toAmino(_: MsgSetHotRoutesResponse): MsgSetHotRoutesResponseAmino {
+  toAmino(_: MsgSetHotRoutesResponse, useInterfaces: boolean = false): MsgSetHotRoutesResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgSetHotRoutesResponseAminoMsg): MsgSetHotRoutesResponse {
     return MsgSetHotRoutesResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetHotRoutesResponse): MsgSetHotRoutesResponseAminoMsg {
+  toAminoMsg(message: MsgSetHotRoutesResponse, useInterfaces: boolean = false): MsgSetHotRoutesResponseAminoMsg {
     return {
       type: "osmosis/protorev/set-hot-routes-response",
-      value: MsgSetHotRoutesResponse.toAmino(message)
+      value: MsgSetHotRoutesResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetHotRoutesResponseProtoMsg): MsgSetHotRoutesResponse {
-    return MsgSetHotRoutesResponse.decode(message.value);
+  fromProtoMsg(message: MsgSetHotRoutesResponseProtoMsg, useInterfaces: boolean = false): MsgSetHotRoutesResponse {
+    return MsgSetHotRoutesResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetHotRoutesResponse): Uint8Array {
     return MsgSetHotRoutesResponse.encode(message).finish();
@@ -460,7 +460,7 @@ export const MsgSetDeveloperAccount = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetDeveloperAccount {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetDeveloperAccount {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetDeveloperAccount();
@@ -492,7 +492,7 @@ export const MsgSetDeveloperAccount = {
       developerAccount: object.developer_account
     };
   },
-  toAmino(message: MsgSetDeveloperAccount): MsgSetDeveloperAccountAmino {
+  toAmino(message: MsgSetDeveloperAccount, useInterfaces: boolean = false): MsgSetDeveloperAccountAmino {
     const obj: any = {};
     obj.admin = message.admin;
     obj.developer_account = message.developerAccount;
@@ -501,14 +501,14 @@ export const MsgSetDeveloperAccount = {
   fromAminoMsg(object: MsgSetDeveloperAccountAminoMsg): MsgSetDeveloperAccount {
     return MsgSetDeveloperAccount.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetDeveloperAccount): MsgSetDeveloperAccountAminoMsg {
+  toAminoMsg(message: MsgSetDeveloperAccount, useInterfaces: boolean = false): MsgSetDeveloperAccountAminoMsg {
     return {
       type: "osmosis/MsgSetDeveloperAccount",
-      value: MsgSetDeveloperAccount.toAmino(message)
+      value: MsgSetDeveloperAccount.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetDeveloperAccountProtoMsg): MsgSetDeveloperAccount {
-    return MsgSetDeveloperAccount.decode(message.value);
+  fromProtoMsg(message: MsgSetDeveloperAccountProtoMsg, useInterfaces: boolean = false): MsgSetDeveloperAccount {
+    return MsgSetDeveloperAccount.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetDeveloperAccount): Uint8Array {
     return MsgSetDeveloperAccount.encode(message).finish();
@@ -528,7 +528,7 @@ export const MsgSetDeveloperAccountResponse = {
   encode(_: MsgSetDeveloperAccountResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetDeveloperAccountResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetDeveloperAccountResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetDeveloperAccountResponse();
@@ -549,21 +549,21 @@ export const MsgSetDeveloperAccountResponse = {
   fromAmino(_: MsgSetDeveloperAccountResponseAmino): MsgSetDeveloperAccountResponse {
     return {};
   },
-  toAmino(_: MsgSetDeveloperAccountResponse): MsgSetDeveloperAccountResponseAmino {
+  toAmino(_: MsgSetDeveloperAccountResponse, useInterfaces: boolean = false): MsgSetDeveloperAccountResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgSetDeveloperAccountResponseAminoMsg): MsgSetDeveloperAccountResponse {
     return MsgSetDeveloperAccountResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetDeveloperAccountResponse): MsgSetDeveloperAccountResponseAminoMsg {
+  toAminoMsg(message: MsgSetDeveloperAccountResponse, useInterfaces: boolean = false): MsgSetDeveloperAccountResponseAminoMsg {
     return {
       type: "osmosis/protorev/set-developer-account-response",
-      value: MsgSetDeveloperAccountResponse.toAmino(message)
+      value: MsgSetDeveloperAccountResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetDeveloperAccountResponseProtoMsg): MsgSetDeveloperAccountResponse {
-    return MsgSetDeveloperAccountResponse.decode(message.value);
+  fromProtoMsg(message: MsgSetDeveloperAccountResponseProtoMsg, useInterfaces: boolean = false): MsgSetDeveloperAccountResponse {
+    return MsgSetDeveloperAccountResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetDeveloperAccountResponse): Uint8Array {
     return MsgSetDeveloperAccountResponse.encode(message).finish();
@@ -592,7 +592,7 @@ export const MsgSetInfoByPoolType = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetInfoByPoolType {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetInfoByPoolType {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetInfoByPoolType();
@@ -603,7 +603,7 @@ export const MsgSetInfoByPoolType = {
           message.admin = reader.string();
           break;
         case 2:
-          message.infoByPoolType = InfoByPoolType.decode(reader, reader.uint32());
+          message.infoByPoolType = InfoByPoolType.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -624,23 +624,23 @@ export const MsgSetInfoByPoolType = {
       infoByPoolType: object?.info_by_pool_type ? InfoByPoolType.fromAmino(object.info_by_pool_type) : undefined
     };
   },
-  toAmino(message: MsgSetInfoByPoolType): MsgSetInfoByPoolTypeAmino {
+  toAmino(message: MsgSetInfoByPoolType, useInterfaces: boolean = false): MsgSetInfoByPoolTypeAmino {
     const obj: any = {};
     obj.admin = message.admin;
-    obj.info_by_pool_type = message.infoByPoolType ? InfoByPoolType.toAmino(message.infoByPoolType) : undefined;
+    obj.info_by_pool_type = message.infoByPoolType ? InfoByPoolType.toAmino(message.infoByPoolType, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgSetInfoByPoolTypeAminoMsg): MsgSetInfoByPoolType {
     return MsgSetInfoByPoolType.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetInfoByPoolType): MsgSetInfoByPoolTypeAminoMsg {
+  toAminoMsg(message: MsgSetInfoByPoolType, useInterfaces: boolean = false): MsgSetInfoByPoolTypeAminoMsg {
     return {
       type: "osmosis/MsgSetInfoByPoolType",
-      value: MsgSetInfoByPoolType.toAmino(message)
+      value: MsgSetInfoByPoolType.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetInfoByPoolTypeProtoMsg): MsgSetInfoByPoolType {
-    return MsgSetInfoByPoolType.decode(message.value);
+  fromProtoMsg(message: MsgSetInfoByPoolTypeProtoMsg, useInterfaces: boolean = false): MsgSetInfoByPoolType {
+    return MsgSetInfoByPoolType.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetInfoByPoolType): Uint8Array {
     return MsgSetInfoByPoolType.encode(message).finish();
@@ -660,7 +660,7 @@ export const MsgSetInfoByPoolTypeResponse = {
   encode(_: MsgSetInfoByPoolTypeResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetInfoByPoolTypeResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetInfoByPoolTypeResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetInfoByPoolTypeResponse();
@@ -681,21 +681,21 @@ export const MsgSetInfoByPoolTypeResponse = {
   fromAmino(_: MsgSetInfoByPoolTypeResponseAmino): MsgSetInfoByPoolTypeResponse {
     return {};
   },
-  toAmino(_: MsgSetInfoByPoolTypeResponse): MsgSetInfoByPoolTypeResponseAmino {
+  toAmino(_: MsgSetInfoByPoolTypeResponse, useInterfaces: boolean = false): MsgSetInfoByPoolTypeResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgSetInfoByPoolTypeResponseAminoMsg): MsgSetInfoByPoolTypeResponse {
     return MsgSetInfoByPoolTypeResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetInfoByPoolTypeResponse): MsgSetInfoByPoolTypeResponseAminoMsg {
+  toAminoMsg(message: MsgSetInfoByPoolTypeResponse, useInterfaces: boolean = false): MsgSetInfoByPoolTypeResponseAminoMsg {
     return {
       type: "osmosis/protorev/set-info-by-pool-type-response",
-      value: MsgSetInfoByPoolTypeResponse.toAmino(message)
+      value: MsgSetInfoByPoolTypeResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetInfoByPoolTypeResponseProtoMsg): MsgSetInfoByPoolTypeResponse {
-    return MsgSetInfoByPoolTypeResponse.decode(message.value);
+  fromProtoMsg(message: MsgSetInfoByPoolTypeResponseProtoMsg, useInterfaces: boolean = false): MsgSetInfoByPoolTypeResponse {
+    return MsgSetInfoByPoolTypeResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetInfoByPoolTypeResponse): Uint8Array {
     return MsgSetInfoByPoolTypeResponse.encode(message).finish();
@@ -724,7 +724,7 @@ export const MsgSetMaxPoolPointsPerTx = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetMaxPoolPointsPerTx {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerTx {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetMaxPoolPointsPerTx();
@@ -756,7 +756,7 @@ export const MsgSetMaxPoolPointsPerTx = {
       maxPoolPointsPerTx: BigInt(object.max_pool_points_per_tx)
     };
   },
-  toAmino(message: MsgSetMaxPoolPointsPerTx): MsgSetMaxPoolPointsPerTxAmino {
+  toAmino(message: MsgSetMaxPoolPointsPerTx, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerTxAmino {
     const obj: any = {};
     obj.admin = message.admin;
     obj.max_pool_points_per_tx = message.maxPoolPointsPerTx ? message.maxPoolPointsPerTx.toString() : undefined;
@@ -765,14 +765,14 @@ export const MsgSetMaxPoolPointsPerTx = {
   fromAminoMsg(object: MsgSetMaxPoolPointsPerTxAminoMsg): MsgSetMaxPoolPointsPerTx {
     return MsgSetMaxPoolPointsPerTx.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetMaxPoolPointsPerTx): MsgSetMaxPoolPointsPerTxAminoMsg {
+  toAminoMsg(message: MsgSetMaxPoolPointsPerTx, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerTxAminoMsg {
     return {
       type: "osmosis/MsgSetMaxPoolPointsPerTx",
-      value: MsgSetMaxPoolPointsPerTx.toAmino(message)
+      value: MsgSetMaxPoolPointsPerTx.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetMaxPoolPointsPerTxProtoMsg): MsgSetMaxPoolPointsPerTx {
-    return MsgSetMaxPoolPointsPerTx.decode(message.value);
+  fromProtoMsg(message: MsgSetMaxPoolPointsPerTxProtoMsg, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerTx {
+    return MsgSetMaxPoolPointsPerTx.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetMaxPoolPointsPerTx): Uint8Array {
     return MsgSetMaxPoolPointsPerTx.encode(message).finish();
@@ -792,7 +792,7 @@ export const MsgSetMaxPoolPointsPerTxResponse = {
   encode(_: MsgSetMaxPoolPointsPerTxResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetMaxPoolPointsPerTxResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerTxResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetMaxPoolPointsPerTxResponse();
@@ -813,21 +813,21 @@ export const MsgSetMaxPoolPointsPerTxResponse = {
   fromAmino(_: MsgSetMaxPoolPointsPerTxResponseAmino): MsgSetMaxPoolPointsPerTxResponse {
     return {};
   },
-  toAmino(_: MsgSetMaxPoolPointsPerTxResponse): MsgSetMaxPoolPointsPerTxResponseAmino {
+  toAmino(_: MsgSetMaxPoolPointsPerTxResponse, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerTxResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgSetMaxPoolPointsPerTxResponseAminoMsg): MsgSetMaxPoolPointsPerTxResponse {
     return MsgSetMaxPoolPointsPerTxResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetMaxPoolPointsPerTxResponse): MsgSetMaxPoolPointsPerTxResponseAminoMsg {
+  toAminoMsg(message: MsgSetMaxPoolPointsPerTxResponse, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerTxResponseAminoMsg {
     return {
       type: "osmosis/protorev/set-max-pool-points-per-tx-response",
-      value: MsgSetMaxPoolPointsPerTxResponse.toAmino(message)
+      value: MsgSetMaxPoolPointsPerTxResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetMaxPoolPointsPerTxResponseProtoMsg): MsgSetMaxPoolPointsPerTxResponse {
-    return MsgSetMaxPoolPointsPerTxResponse.decode(message.value);
+  fromProtoMsg(message: MsgSetMaxPoolPointsPerTxResponseProtoMsg, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerTxResponse {
+    return MsgSetMaxPoolPointsPerTxResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetMaxPoolPointsPerTxResponse): Uint8Array {
     return MsgSetMaxPoolPointsPerTxResponse.encode(message).finish();
@@ -856,7 +856,7 @@ export const MsgSetMaxPoolPointsPerBlock = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetMaxPoolPointsPerBlock {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerBlock {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetMaxPoolPointsPerBlock();
@@ -888,7 +888,7 @@ export const MsgSetMaxPoolPointsPerBlock = {
       maxPoolPointsPerBlock: BigInt(object.max_pool_points_per_block)
     };
   },
-  toAmino(message: MsgSetMaxPoolPointsPerBlock): MsgSetMaxPoolPointsPerBlockAmino {
+  toAmino(message: MsgSetMaxPoolPointsPerBlock, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerBlockAmino {
     const obj: any = {};
     obj.admin = message.admin;
     obj.max_pool_points_per_block = message.maxPoolPointsPerBlock ? message.maxPoolPointsPerBlock.toString() : undefined;
@@ -897,14 +897,14 @@ export const MsgSetMaxPoolPointsPerBlock = {
   fromAminoMsg(object: MsgSetMaxPoolPointsPerBlockAminoMsg): MsgSetMaxPoolPointsPerBlock {
     return MsgSetMaxPoolPointsPerBlock.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetMaxPoolPointsPerBlock): MsgSetMaxPoolPointsPerBlockAminoMsg {
+  toAminoMsg(message: MsgSetMaxPoolPointsPerBlock, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerBlockAminoMsg {
     return {
       type: "osmosis/MsgSetPoolWeights",
-      value: MsgSetMaxPoolPointsPerBlock.toAmino(message)
+      value: MsgSetMaxPoolPointsPerBlock.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetMaxPoolPointsPerBlockProtoMsg): MsgSetMaxPoolPointsPerBlock {
-    return MsgSetMaxPoolPointsPerBlock.decode(message.value);
+  fromProtoMsg(message: MsgSetMaxPoolPointsPerBlockProtoMsg, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerBlock {
+    return MsgSetMaxPoolPointsPerBlock.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetMaxPoolPointsPerBlock): Uint8Array {
     return MsgSetMaxPoolPointsPerBlock.encode(message).finish();
@@ -924,7 +924,7 @@ export const MsgSetMaxPoolPointsPerBlockResponse = {
   encode(_: MsgSetMaxPoolPointsPerBlockResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetMaxPoolPointsPerBlockResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerBlockResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetMaxPoolPointsPerBlockResponse();
@@ -945,21 +945,21 @@ export const MsgSetMaxPoolPointsPerBlockResponse = {
   fromAmino(_: MsgSetMaxPoolPointsPerBlockResponseAmino): MsgSetMaxPoolPointsPerBlockResponse {
     return {};
   },
-  toAmino(_: MsgSetMaxPoolPointsPerBlockResponse): MsgSetMaxPoolPointsPerBlockResponseAmino {
+  toAmino(_: MsgSetMaxPoolPointsPerBlockResponse, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerBlockResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgSetMaxPoolPointsPerBlockResponseAminoMsg): MsgSetMaxPoolPointsPerBlockResponse {
     return MsgSetMaxPoolPointsPerBlockResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetMaxPoolPointsPerBlockResponse): MsgSetMaxPoolPointsPerBlockResponseAminoMsg {
+  toAminoMsg(message: MsgSetMaxPoolPointsPerBlockResponse, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerBlockResponseAminoMsg {
     return {
       type: "osmosis/protorev/set-max-pool-points-per-block-response",
-      value: MsgSetMaxPoolPointsPerBlockResponse.toAmino(message)
+      value: MsgSetMaxPoolPointsPerBlockResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetMaxPoolPointsPerBlockResponseProtoMsg): MsgSetMaxPoolPointsPerBlockResponse {
-    return MsgSetMaxPoolPointsPerBlockResponse.decode(message.value);
+  fromProtoMsg(message: MsgSetMaxPoolPointsPerBlockResponseProtoMsg, useInterfaces: boolean = false): MsgSetMaxPoolPointsPerBlockResponse {
+    return MsgSetMaxPoolPointsPerBlockResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetMaxPoolPointsPerBlockResponse): Uint8Array {
     return MsgSetMaxPoolPointsPerBlockResponse.encode(message).finish();
@@ -988,7 +988,7 @@ export const MsgSetBaseDenoms = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetBaseDenoms {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetBaseDenoms {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetBaseDenoms();
@@ -999,7 +999,7 @@ export const MsgSetBaseDenoms = {
           message.admin = reader.string();
           break;
         case 2:
-          message.baseDenoms.push(BaseDenom.decode(reader, reader.uint32()));
+          message.baseDenoms.push(BaseDenom.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1020,11 +1020,11 @@ export const MsgSetBaseDenoms = {
       baseDenoms: Array.isArray(object?.base_denoms) ? object.base_denoms.map((e: any) => BaseDenom.fromAmino(e)) : []
     };
   },
-  toAmino(message: MsgSetBaseDenoms): MsgSetBaseDenomsAmino {
+  toAmino(message: MsgSetBaseDenoms, useInterfaces: boolean = false): MsgSetBaseDenomsAmino {
     const obj: any = {};
     obj.admin = message.admin;
     if (message.baseDenoms) {
-      obj.base_denoms = message.baseDenoms.map(e => e ? BaseDenom.toAmino(e) : undefined);
+      obj.base_denoms = message.baseDenoms.map(e => e ? BaseDenom.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.base_denoms = [];
     }
@@ -1033,14 +1033,14 @@ export const MsgSetBaseDenoms = {
   fromAminoMsg(object: MsgSetBaseDenomsAminoMsg): MsgSetBaseDenoms {
     return MsgSetBaseDenoms.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetBaseDenoms): MsgSetBaseDenomsAminoMsg {
+  toAminoMsg(message: MsgSetBaseDenoms, useInterfaces: boolean = false): MsgSetBaseDenomsAminoMsg {
     return {
       type: "osmosis/MsgSetBaseDenoms",
-      value: MsgSetBaseDenoms.toAmino(message)
+      value: MsgSetBaseDenoms.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetBaseDenomsProtoMsg): MsgSetBaseDenoms {
-    return MsgSetBaseDenoms.decode(message.value);
+  fromProtoMsg(message: MsgSetBaseDenomsProtoMsg, useInterfaces: boolean = false): MsgSetBaseDenoms {
+    return MsgSetBaseDenoms.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetBaseDenoms): Uint8Array {
     return MsgSetBaseDenoms.encode(message).finish();
@@ -1060,7 +1060,7 @@ export const MsgSetBaseDenomsResponse = {
   encode(_: MsgSetBaseDenomsResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetBaseDenomsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetBaseDenomsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetBaseDenomsResponse();
@@ -1081,21 +1081,21 @@ export const MsgSetBaseDenomsResponse = {
   fromAmino(_: MsgSetBaseDenomsResponseAmino): MsgSetBaseDenomsResponse {
     return {};
   },
-  toAmino(_: MsgSetBaseDenomsResponse): MsgSetBaseDenomsResponseAmino {
+  toAmino(_: MsgSetBaseDenomsResponse, useInterfaces: boolean = false): MsgSetBaseDenomsResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgSetBaseDenomsResponseAminoMsg): MsgSetBaseDenomsResponse {
     return MsgSetBaseDenomsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetBaseDenomsResponse): MsgSetBaseDenomsResponseAminoMsg {
+  toAminoMsg(message: MsgSetBaseDenomsResponse, useInterfaces: boolean = false): MsgSetBaseDenomsResponseAminoMsg {
     return {
       type: "osmosis/protorev/set-base-denoms-response",
-      value: MsgSetBaseDenomsResponse.toAmino(message)
+      value: MsgSetBaseDenomsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetBaseDenomsResponseProtoMsg): MsgSetBaseDenomsResponse {
-    return MsgSetBaseDenomsResponse.decode(message.value);
+  fromProtoMsg(message: MsgSetBaseDenomsResponseProtoMsg, useInterfaces: boolean = false): MsgSetBaseDenomsResponse {
+    return MsgSetBaseDenomsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetBaseDenomsResponse): Uint8Array {
     return MsgSetBaseDenomsResponse.encode(message).finish();

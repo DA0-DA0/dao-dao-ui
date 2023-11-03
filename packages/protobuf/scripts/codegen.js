@@ -13,6 +13,8 @@ telescope({
   options: {
     interfaces: {
       enabled: true,
+      useByDefault: false,
+      useByDefaultRpc: true,
       useUnionTypes: false,
     },
     tsDisable: {

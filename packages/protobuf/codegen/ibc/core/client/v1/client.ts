@@ -9,7 +9,7 @@ export interface IdentifiedClientState {
   /** client identifier */
   clientId: string;
   /** client state */
-  clientState: Any | undefined;
+  clientState?: Any | undefined;
 }
 export interface IdentifiedClientStateProtoMsg {
   typeUrl: "/ibc.core.client.v1.IdentifiedClientState";
@@ -35,7 +35,7 @@ export interface IdentifiedClientStateAminoMsg {
  */
 export interface IdentifiedClientStateSDKType {
   client_id: string;
-  client_state: AnySDKType | undefined;
+  client_state?: AnySDKType | undefined;
 }
 /**
  * ConsensusStateWithHeight defines a consensus state with an additional height
@@ -45,7 +45,7 @@ export interface ConsensusStateWithHeight {
   /** consensus state height */
   height: Height | undefined;
   /** consensus state */
-  consensusState: Any | undefined;
+  consensusState?: Any | undefined;
 }
 export interface ConsensusStateWithHeightProtoMsg {
   typeUrl: "/ibc.core.client.v1.ConsensusStateWithHeight";
@@ -71,7 +71,7 @@ export interface ConsensusStateWithHeightAminoMsg {
  */
 export interface ConsensusStateWithHeightSDKType {
   height: HeightSDKType | undefined;
-  consensus_state: AnySDKType | undefined;
+  consensus_state?: AnySDKType | undefined;
 }
 /**
  * ClientConsensusStates defines all the stored consensus states for a given
@@ -116,7 +116,7 @@ export interface ClientConsensusStatesSDKType {
  * chain parameters (with exception to latest height, frozen height, and chain-id).
  */
 export interface ClientUpdateProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/ibc.core.client.v1.ClientUpdateProposal";
   /** the title of the update proposal */
   title: string;
   /** the description of the proposal */
@@ -163,7 +163,7 @@ export interface ClientUpdateProposalAminoMsg {
  * chain parameters (with exception to latest height, frozen height, and chain-id).
  */
 export interface ClientUpdateProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/ibc.core.client.v1.ClientUpdateProposal";
   title: string;
   description: string;
   subject_client_id: string;
@@ -174,7 +174,7 @@ export interface ClientUpdateProposalSDKType {
  * upgrade.
  */
 export interface UpgradeProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/ibc.core.client.v1.UpgradeProposal";
   title: string;
   description: string;
   plan: Plan | undefined;
@@ -186,7 +186,7 @@ export interface UpgradeProposal {
    * of the chain. This will allow IBC connections to persist smoothly across
    * planned chain upgrades
    */
-  upgradedClientState: Any | undefined;
+  upgradedClientState?: Any | undefined;
 }
 export interface UpgradeProposalProtoMsg {
   typeUrl: "/ibc.core.client.v1.UpgradeProposal";
@@ -219,11 +219,11 @@ export interface UpgradeProposalAminoMsg {
  * upgrade.
  */
 export interface UpgradeProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/ibc.core.client.v1.UpgradeProposal";
   title: string;
   description: string;
   plan: PlanSDKType | undefined;
-  upgraded_client_state: AnySDKType | undefined;
+  upgraded_client_state?: AnySDKType | undefined;
 }
 /**
  * Height is a monotonically increasing data type
@@ -318,7 +318,7 @@ export interface ParamsSDKType {
 function createBaseIdentifiedClientState(): IdentifiedClientState {
   return {
     clientId: "",
-    clientState: Any.fromPartial({})
+    clientState: undefined
   };
 }
 export const IdentifiedClientState = {
@@ -332,7 +332,7 @@ export const IdentifiedClientState = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): IdentifiedClientState {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): IdentifiedClientState {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIdentifiedClientState();
@@ -343,7 +343,7 @@ export const IdentifiedClientState = {
           message.clientId = reader.string();
           break;
         case 2:
-          message.clientState = Any.decode(reader, reader.uint32());
+          message.clientState = Any.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -364,23 +364,23 @@ export const IdentifiedClientState = {
       clientState: object?.client_state ? Any.fromAmino(object.client_state) : undefined
     };
   },
-  toAmino(message: IdentifiedClientState): IdentifiedClientStateAmino {
+  toAmino(message: IdentifiedClientState, useInterfaces: boolean = false): IdentifiedClientStateAmino {
     const obj: any = {};
     obj.client_id = message.clientId;
-    obj.client_state = message.clientState ? Any.toAmino(message.clientState) : undefined;
+    obj.client_state = message.clientState ? Any.toAmino(message.clientState, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: IdentifiedClientStateAminoMsg): IdentifiedClientState {
     return IdentifiedClientState.fromAmino(object.value);
   },
-  toAminoMsg(message: IdentifiedClientState): IdentifiedClientStateAminoMsg {
+  toAminoMsg(message: IdentifiedClientState, useInterfaces: boolean = false): IdentifiedClientStateAminoMsg {
     return {
       type: "cosmos-sdk/IdentifiedClientState",
-      value: IdentifiedClientState.toAmino(message)
+      value: IdentifiedClientState.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: IdentifiedClientStateProtoMsg): IdentifiedClientState {
-    return IdentifiedClientState.decode(message.value);
+  fromProtoMsg(message: IdentifiedClientStateProtoMsg, useInterfaces: boolean = false): IdentifiedClientState {
+    return IdentifiedClientState.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: IdentifiedClientState): Uint8Array {
     return IdentifiedClientState.encode(message).finish();
@@ -395,7 +395,7 @@ export const IdentifiedClientState = {
 function createBaseConsensusStateWithHeight(): ConsensusStateWithHeight {
   return {
     height: Height.fromPartial({}),
-    consensusState: Any.fromPartial({})
+    consensusState: undefined
   };
 }
 export const ConsensusStateWithHeight = {
@@ -409,7 +409,7 @@ export const ConsensusStateWithHeight = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ConsensusStateWithHeight {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ConsensusStateWithHeight {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConsensusStateWithHeight();
@@ -417,10 +417,10 @@ export const ConsensusStateWithHeight = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.height = Height.decode(reader, reader.uint32());
+          message.height = Height.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.consensusState = Any.decode(reader, reader.uint32());
+          message.consensusState = Any.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -441,23 +441,23 @@ export const ConsensusStateWithHeight = {
       consensusState: object?.consensus_state ? Any.fromAmino(object.consensus_state) : undefined
     };
   },
-  toAmino(message: ConsensusStateWithHeight): ConsensusStateWithHeightAmino {
+  toAmino(message: ConsensusStateWithHeight, useInterfaces: boolean = false): ConsensusStateWithHeightAmino {
     const obj: any = {};
-    obj.height = message.height ? Height.toAmino(message.height) : undefined;
-    obj.consensus_state = message.consensusState ? Any.toAmino(message.consensusState) : undefined;
+    obj.height = message.height ? Height.toAmino(message.height, useInterfaces) : undefined;
+    obj.consensus_state = message.consensusState ? Any.toAmino(message.consensusState, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: ConsensusStateWithHeightAminoMsg): ConsensusStateWithHeight {
     return ConsensusStateWithHeight.fromAmino(object.value);
   },
-  toAminoMsg(message: ConsensusStateWithHeight): ConsensusStateWithHeightAminoMsg {
+  toAminoMsg(message: ConsensusStateWithHeight, useInterfaces: boolean = false): ConsensusStateWithHeightAminoMsg {
     return {
       type: "cosmos-sdk/ConsensusStateWithHeight",
-      value: ConsensusStateWithHeight.toAmino(message)
+      value: ConsensusStateWithHeight.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ConsensusStateWithHeightProtoMsg): ConsensusStateWithHeight {
-    return ConsensusStateWithHeight.decode(message.value);
+  fromProtoMsg(message: ConsensusStateWithHeightProtoMsg, useInterfaces: boolean = false): ConsensusStateWithHeight {
+    return ConsensusStateWithHeight.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ConsensusStateWithHeight): Uint8Array {
     return ConsensusStateWithHeight.encode(message).finish();
@@ -486,7 +486,7 @@ export const ClientConsensusStates = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ClientConsensusStates {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ClientConsensusStates {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClientConsensusStates();
@@ -497,7 +497,7 @@ export const ClientConsensusStates = {
           message.clientId = reader.string();
           break;
         case 2:
-          message.consensusStates.push(ConsensusStateWithHeight.decode(reader, reader.uint32()));
+          message.consensusStates.push(ConsensusStateWithHeight.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -518,11 +518,11 @@ export const ClientConsensusStates = {
       consensusStates: Array.isArray(object?.consensus_states) ? object.consensus_states.map((e: any) => ConsensusStateWithHeight.fromAmino(e)) : []
     };
   },
-  toAmino(message: ClientConsensusStates): ClientConsensusStatesAmino {
+  toAmino(message: ClientConsensusStates, useInterfaces: boolean = false): ClientConsensusStatesAmino {
     const obj: any = {};
     obj.client_id = message.clientId;
     if (message.consensusStates) {
-      obj.consensus_states = message.consensusStates.map(e => e ? ConsensusStateWithHeight.toAmino(e) : undefined);
+      obj.consensus_states = message.consensusStates.map(e => e ? ConsensusStateWithHeight.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.consensus_states = [];
     }
@@ -531,14 +531,14 @@ export const ClientConsensusStates = {
   fromAminoMsg(object: ClientConsensusStatesAminoMsg): ClientConsensusStates {
     return ClientConsensusStates.fromAmino(object.value);
   },
-  toAminoMsg(message: ClientConsensusStates): ClientConsensusStatesAminoMsg {
+  toAminoMsg(message: ClientConsensusStates, useInterfaces: boolean = false): ClientConsensusStatesAminoMsg {
     return {
       type: "cosmos-sdk/ClientConsensusStates",
-      value: ClientConsensusStates.toAmino(message)
+      value: ClientConsensusStates.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ClientConsensusStatesProtoMsg): ClientConsensusStates {
-    return ClientConsensusStates.decode(message.value);
+  fromProtoMsg(message: ClientConsensusStatesProtoMsg, useInterfaces: boolean = false): ClientConsensusStates {
+    return ClientConsensusStates.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ClientConsensusStates): Uint8Array {
     return ClientConsensusStates.encode(message).finish();
@@ -576,7 +576,7 @@ export const ClientUpdateProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ClientUpdateProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ClientUpdateProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClientUpdateProposal();
@@ -618,7 +618,7 @@ export const ClientUpdateProposal = {
       substituteClientId: object.substitute_client_id
     };
   },
-  toAmino(message: ClientUpdateProposal): ClientUpdateProposalAmino {
+  toAmino(message: ClientUpdateProposal, useInterfaces: boolean = false): ClientUpdateProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -629,14 +629,14 @@ export const ClientUpdateProposal = {
   fromAminoMsg(object: ClientUpdateProposalAminoMsg): ClientUpdateProposal {
     return ClientUpdateProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: ClientUpdateProposal): ClientUpdateProposalAminoMsg {
+  toAminoMsg(message: ClientUpdateProposal, useInterfaces: boolean = false): ClientUpdateProposalAminoMsg {
     return {
       type: "cosmos-sdk/ClientUpdateProposal",
-      value: ClientUpdateProposal.toAmino(message)
+      value: ClientUpdateProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ClientUpdateProposalProtoMsg): ClientUpdateProposal {
-    return ClientUpdateProposal.decode(message.value);
+  fromProtoMsg(message: ClientUpdateProposalProtoMsg, useInterfaces: boolean = false): ClientUpdateProposal {
+    return ClientUpdateProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ClientUpdateProposal): Uint8Array {
     return ClientUpdateProposal.encode(message).finish();
@@ -654,7 +654,7 @@ function createBaseUpgradeProposal(): UpgradeProposal {
     title: "",
     description: "",
     plan: Plan.fromPartial({}),
-    upgradedClientState: Any.fromPartial({})
+    upgradedClientState: undefined
   };
 }
 export const UpgradeProposal = {
@@ -674,7 +674,7 @@ export const UpgradeProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): UpgradeProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): UpgradeProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpgradeProposal();
@@ -688,10 +688,10 @@ export const UpgradeProposal = {
           message.description = reader.string();
           break;
         case 3:
-          message.plan = Plan.decode(reader, reader.uint32());
+          message.plan = Plan.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
-          message.upgradedClientState = Any.decode(reader, reader.uint32());
+          message.upgradedClientState = Any.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -716,25 +716,25 @@ export const UpgradeProposal = {
       upgradedClientState: object?.upgraded_client_state ? Any.fromAmino(object.upgraded_client_state) : undefined
     };
   },
-  toAmino(message: UpgradeProposal): UpgradeProposalAmino {
+  toAmino(message: UpgradeProposal, useInterfaces: boolean = false): UpgradeProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
-    obj.plan = message.plan ? Plan.toAmino(message.plan) : undefined;
-    obj.upgraded_client_state = message.upgradedClientState ? Any.toAmino(message.upgradedClientState) : undefined;
+    obj.plan = message.plan ? Plan.toAmino(message.plan, useInterfaces) : undefined;
+    obj.upgraded_client_state = message.upgradedClientState ? Any.toAmino(message.upgradedClientState, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: UpgradeProposalAminoMsg): UpgradeProposal {
     return UpgradeProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: UpgradeProposal): UpgradeProposalAminoMsg {
+  toAminoMsg(message: UpgradeProposal, useInterfaces: boolean = false): UpgradeProposalAminoMsg {
     return {
       type: "cosmos-sdk/UpgradeProposal",
-      value: UpgradeProposal.toAmino(message)
+      value: UpgradeProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: UpgradeProposalProtoMsg): UpgradeProposal {
-    return UpgradeProposal.decode(message.value);
+  fromProtoMsg(message: UpgradeProposalProtoMsg, useInterfaces: boolean = false): UpgradeProposal {
+    return UpgradeProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: UpgradeProposal): Uint8Array {
     return UpgradeProposal.encode(message).finish();
@@ -763,7 +763,7 @@ export const Height = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Height {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Height {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHeight();
@@ -795,7 +795,7 @@ export const Height = {
       revisionHeight: BigInt(object.revision_height || "0")
     };
   },
-  toAmino(message: Height): HeightAmino {
+  toAmino(message: Height, useInterfaces: boolean = false): HeightAmino {
     const obj: any = {};
     obj.revision_number = message.revisionNumber ? message.revisionNumber.toString() : undefined;
     obj.revision_height = message.revisionHeight ? message.revisionHeight.toString() : undefined;
@@ -804,14 +804,14 @@ export const Height = {
   fromAminoMsg(object: HeightAminoMsg): Height {
     return Height.fromAmino(object.value);
   },
-  toAminoMsg(message: Height): HeightAminoMsg {
+  toAminoMsg(message: Height, useInterfaces: boolean = false): HeightAminoMsg {
     return {
       type: "cosmos-sdk/Height",
-      value: Height.toAmino(message)
+      value: Height.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: HeightProtoMsg): Height {
-    return Height.decode(message.value);
+  fromProtoMsg(message: HeightProtoMsg, useInterfaces: boolean = false): Height {
+    return Height.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Height): Uint8Array {
     return Height.encode(message).finish();
@@ -836,7 +836,7 @@ export const Params = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Params {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Params {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
@@ -863,7 +863,7 @@ export const Params = {
       allowedClients: Array.isArray(object?.allowed_clients) ? object.allowed_clients.map((e: any) => e) : []
     };
   },
-  toAmino(message: Params): ParamsAmino {
+  toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
     if (message.allowedClients) {
       obj.allowed_clients = message.allowedClients.map(e => e);
@@ -875,14 +875,14 @@ export const Params = {
   fromAminoMsg(object: ParamsAminoMsg): Params {
     return Params.fromAmino(object.value);
   },
-  toAminoMsg(message: Params): ParamsAminoMsg {
+  toAminoMsg(message: Params, useInterfaces: boolean = false): ParamsAminoMsg {
     return {
       type: "cosmos-sdk/Params",
-      value: Params.toAmino(message)
+      value: Params.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ParamsProtoMsg): Params {
-    return Params.decode(message.value);
+  fromProtoMsg(message: ParamsProtoMsg, useInterfaces: boolean = false): Params {
+    return Params.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Params): Uint8Array {
     return Params.encode(message).finish();

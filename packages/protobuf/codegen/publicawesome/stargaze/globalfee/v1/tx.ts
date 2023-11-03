@@ -3,7 +3,7 @@ import { CodeAuthorization, CodeAuthorizationAmino, CodeAuthorizationSDKType, Co
 import { BinaryReader, BinaryWriter } from "../../../../binary";
 export interface MsgSetCodeAuthorization {
   sender: string;
-  codeAuthorization: CodeAuthorization | undefined;
+  codeAuthorization?: CodeAuthorization | undefined;
 }
 export interface MsgSetCodeAuthorizationProtoMsg {
   typeUrl: "/publicawesome.stargaze.globalfee.v1.MsgSetCodeAuthorization";
@@ -19,7 +19,7 @@ export interface MsgSetCodeAuthorizationAminoMsg {
 }
 export interface MsgSetCodeAuthorizationSDKType {
   sender: string;
-  code_authorization: CodeAuthorizationSDKType | undefined;
+  code_authorization?: CodeAuthorizationSDKType | undefined;
 }
 export interface MsgSetCodeAuthorizationResponse {}
 export interface MsgSetCodeAuthorizationResponseProtoMsg {
@@ -65,7 +65,7 @@ export interface MsgRemoveCodeAuthorizationResponseAminoMsg {
 export interface MsgRemoveCodeAuthorizationResponseSDKType {}
 export interface MsgSetContractAuthorization {
   sender: string;
-  contractAuthorization: ContractAuthorization | undefined;
+  contractAuthorization?: ContractAuthorization | undefined;
 }
 export interface MsgSetContractAuthorizationProtoMsg {
   typeUrl: "/publicawesome.stargaze.globalfee.v1.MsgSetContractAuthorization";
@@ -81,7 +81,7 @@ export interface MsgSetContractAuthorizationAminoMsg {
 }
 export interface MsgSetContractAuthorizationSDKType {
   sender: string;
-  contract_authorization: ContractAuthorizationSDKType | undefined;
+  contract_authorization?: ContractAuthorizationSDKType | undefined;
 }
 export interface MsgSetContractAuthorizationResponse {}
 export interface MsgSetContractAuthorizationResponseProtoMsg {
@@ -161,7 +161,7 @@ export interface MsgUpdateParamsResponseSDKType {}
 function createBaseMsgSetCodeAuthorization(): MsgSetCodeAuthorization {
   return {
     sender: "",
-    codeAuthorization: CodeAuthorization.fromPartial({})
+    codeAuthorization: undefined
   };
 }
 export const MsgSetCodeAuthorization = {
@@ -175,7 +175,7 @@ export const MsgSetCodeAuthorization = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetCodeAuthorization {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetCodeAuthorization {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetCodeAuthorization();
@@ -186,7 +186,7 @@ export const MsgSetCodeAuthorization = {
           message.sender = reader.string();
           break;
         case 2:
-          message.codeAuthorization = CodeAuthorization.decode(reader, reader.uint32());
+          message.codeAuthorization = CodeAuthorization.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -207,17 +207,17 @@ export const MsgSetCodeAuthorization = {
       codeAuthorization: object?.code_authorization ? CodeAuthorization.fromAmino(object.code_authorization) : undefined
     };
   },
-  toAmino(message: MsgSetCodeAuthorization): MsgSetCodeAuthorizationAmino {
+  toAmino(message: MsgSetCodeAuthorization, useInterfaces: boolean = false): MsgSetCodeAuthorizationAmino {
     const obj: any = {};
     obj.sender = message.sender;
-    obj.code_authorization = message.codeAuthorization ? CodeAuthorization.toAmino(message.codeAuthorization) : undefined;
+    obj.code_authorization = message.codeAuthorization ? CodeAuthorization.toAmino(message.codeAuthorization, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgSetCodeAuthorizationAminoMsg): MsgSetCodeAuthorization {
     return MsgSetCodeAuthorization.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgSetCodeAuthorizationProtoMsg): MsgSetCodeAuthorization {
-    return MsgSetCodeAuthorization.decode(message.value);
+  fromProtoMsg(message: MsgSetCodeAuthorizationProtoMsg, useInterfaces: boolean = false): MsgSetCodeAuthorization {
+    return MsgSetCodeAuthorization.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetCodeAuthorization): Uint8Array {
     return MsgSetCodeAuthorization.encode(message).finish();
@@ -237,7 +237,7 @@ export const MsgSetCodeAuthorizationResponse = {
   encode(_: MsgSetCodeAuthorizationResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetCodeAuthorizationResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetCodeAuthorizationResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetCodeAuthorizationResponse();
@@ -258,15 +258,15 @@ export const MsgSetCodeAuthorizationResponse = {
   fromAmino(_: MsgSetCodeAuthorizationResponseAmino): MsgSetCodeAuthorizationResponse {
     return {};
   },
-  toAmino(_: MsgSetCodeAuthorizationResponse): MsgSetCodeAuthorizationResponseAmino {
+  toAmino(_: MsgSetCodeAuthorizationResponse, useInterfaces: boolean = false): MsgSetCodeAuthorizationResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgSetCodeAuthorizationResponseAminoMsg): MsgSetCodeAuthorizationResponse {
     return MsgSetCodeAuthorizationResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgSetCodeAuthorizationResponseProtoMsg): MsgSetCodeAuthorizationResponse {
-    return MsgSetCodeAuthorizationResponse.decode(message.value);
+  fromProtoMsg(message: MsgSetCodeAuthorizationResponseProtoMsg, useInterfaces: boolean = false): MsgSetCodeAuthorizationResponse {
+    return MsgSetCodeAuthorizationResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetCodeAuthorizationResponse): Uint8Array {
     return MsgSetCodeAuthorizationResponse.encode(message).finish();
@@ -295,7 +295,7 @@ export const MsgRemoveCodeAuthorization = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgRemoveCodeAuthorization {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgRemoveCodeAuthorization {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRemoveCodeAuthorization();
@@ -327,7 +327,7 @@ export const MsgRemoveCodeAuthorization = {
       codeId: BigInt(object.code_id)
     };
   },
-  toAmino(message: MsgRemoveCodeAuthorization): MsgRemoveCodeAuthorizationAmino {
+  toAmino(message: MsgRemoveCodeAuthorization, useInterfaces: boolean = false): MsgRemoveCodeAuthorizationAmino {
     const obj: any = {};
     obj.sender = message.sender;
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
@@ -336,8 +336,8 @@ export const MsgRemoveCodeAuthorization = {
   fromAminoMsg(object: MsgRemoveCodeAuthorizationAminoMsg): MsgRemoveCodeAuthorization {
     return MsgRemoveCodeAuthorization.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgRemoveCodeAuthorizationProtoMsg): MsgRemoveCodeAuthorization {
-    return MsgRemoveCodeAuthorization.decode(message.value);
+  fromProtoMsg(message: MsgRemoveCodeAuthorizationProtoMsg, useInterfaces: boolean = false): MsgRemoveCodeAuthorization {
+    return MsgRemoveCodeAuthorization.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgRemoveCodeAuthorization): Uint8Array {
     return MsgRemoveCodeAuthorization.encode(message).finish();
@@ -357,7 +357,7 @@ export const MsgRemoveCodeAuthorizationResponse = {
   encode(_: MsgRemoveCodeAuthorizationResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgRemoveCodeAuthorizationResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgRemoveCodeAuthorizationResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRemoveCodeAuthorizationResponse();
@@ -378,15 +378,15 @@ export const MsgRemoveCodeAuthorizationResponse = {
   fromAmino(_: MsgRemoveCodeAuthorizationResponseAmino): MsgRemoveCodeAuthorizationResponse {
     return {};
   },
-  toAmino(_: MsgRemoveCodeAuthorizationResponse): MsgRemoveCodeAuthorizationResponseAmino {
+  toAmino(_: MsgRemoveCodeAuthorizationResponse, useInterfaces: boolean = false): MsgRemoveCodeAuthorizationResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgRemoveCodeAuthorizationResponseAminoMsg): MsgRemoveCodeAuthorizationResponse {
     return MsgRemoveCodeAuthorizationResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgRemoveCodeAuthorizationResponseProtoMsg): MsgRemoveCodeAuthorizationResponse {
-    return MsgRemoveCodeAuthorizationResponse.decode(message.value);
+  fromProtoMsg(message: MsgRemoveCodeAuthorizationResponseProtoMsg, useInterfaces: boolean = false): MsgRemoveCodeAuthorizationResponse {
+    return MsgRemoveCodeAuthorizationResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgRemoveCodeAuthorizationResponse): Uint8Array {
     return MsgRemoveCodeAuthorizationResponse.encode(message).finish();
@@ -401,7 +401,7 @@ export const MsgRemoveCodeAuthorizationResponse = {
 function createBaseMsgSetContractAuthorization(): MsgSetContractAuthorization {
   return {
     sender: "",
-    contractAuthorization: ContractAuthorization.fromPartial({})
+    contractAuthorization: undefined
   };
 }
 export const MsgSetContractAuthorization = {
@@ -415,7 +415,7 @@ export const MsgSetContractAuthorization = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetContractAuthorization {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetContractAuthorization {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetContractAuthorization();
@@ -426,7 +426,7 @@ export const MsgSetContractAuthorization = {
           message.sender = reader.string();
           break;
         case 2:
-          message.contractAuthorization = ContractAuthorization.decode(reader, reader.uint32());
+          message.contractAuthorization = ContractAuthorization.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -447,17 +447,17 @@ export const MsgSetContractAuthorization = {
       contractAuthorization: object?.contract_authorization ? ContractAuthorization.fromAmino(object.contract_authorization) : undefined
     };
   },
-  toAmino(message: MsgSetContractAuthorization): MsgSetContractAuthorizationAmino {
+  toAmino(message: MsgSetContractAuthorization, useInterfaces: boolean = false): MsgSetContractAuthorizationAmino {
     const obj: any = {};
     obj.sender = message.sender;
-    obj.contract_authorization = message.contractAuthorization ? ContractAuthorization.toAmino(message.contractAuthorization) : undefined;
+    obj.contract_authorization = message.contractAuthorization ? ContractAuthorization.toAmino(message.contractAuthorization, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgSetContractAuthorizationAminoMsg): MsgSetContractAuthorization {
     return MsgSetContractAuthorization.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgSetContractAuthorizationProtoMsg): MsgSetContractAuthorization {
-    return MsgSetContractAuthorization.decode(message.value);
+  fromProtoMsg(message: MsgSetContractAuthorizationProtoMsg, useInterfaces: boolean = false): MsgSetContractAuthorization {
+    return MsgSetContractAuthorization.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetContractAuthorization): Uint8Array {
     return MsgSetContractAuthorization.encode(message).finish();
@@ -477,7 +477,7 @@ export const MsgSetContractAuthorizationResponse = {
   encode(_: MsgSetContractAuthorizationResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetContractAuthorizationResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetContractAuthorizationResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetContractAuthorizationResponse();
@@ -498,15 +498,15 @@ export const MsgSetContractAuthorizationResponse = {
   fromAmino(_: MsgSetContractAuthorizationResponseAmino): MsgSetContractAuthorizationResponse {
     return {};
   },
-  toAmino(_: MsgSetContractAuthorizationResponse): MsgSetContractAuthorizationResponseAmino {
+  toAmino(_: MsgSetContractAuthorizationResponse, useInterfaces: boolean = false): MsgSetContractAuthorizationResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgSetContractAuthorizationResponseAminoMsg): MsgSetContractAuthorizationResponse {
     return MsgSetContractAuthorizationResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgSetContractAuthorizationResponseProtoMsg): MsgSetContractAuthorizationResponse {
-    return MsgSetContractAuthorizationResponse.decode(message.value);
+  fromProtoMsg(message: MsgSetContractAuthorizationResponseProtoMsg, useInterfaces: boolean = false): MsgSetContractAuthorizationResponse {
+    return MsgSetContractAuthorizationResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetContractAuthorizationResponse): Uint8Array {
     return MsgSetContractAuthorizationResponse.encode(message).finish();
@@ -535,7 +535,7 @@ export const MsgRemoveContractAuthorization = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgRemoveContractAuthorization {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgRemoveContractAuthorization {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRemoveContractAuthorization();
@@ -567,7 +567,7 @@ export const MsgRemoveContractAuthorization = {
       contractAddress: object.contract_address
     };
   },
-  toAmino(message: MsgRemoveContractAuthorization): MsgRemoveContractAuthorizationAmino {
+  toAmino(message: MsgRemoveContractAuthorization, useInterfaces: boolean = false): MsgRemoveContractAuthorizationAmino {
     const obj: any = {};
     obj.sender = message.sender;
     obj.contract_address = message.contractAddress;
@@ -576,8 +576,8 @@ export const MsgRemoveContractAuthorization = {
   fromAminoMsg(object: MsgRemoveContractAuthorizationAminoMsg): MsgRemoveContractAuthorization {
     return MsgRemoveContractAuthorization.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgRemoveContractAuthorizationProtoMsg): MsgRemoveContractAuthorization {
-    return MsgRemoveContractAuthorization.decode(message.value);
+  fromProtoMsg(message: MsgRemoveContractAuthorizationProtoMsg, useInterfaces: boolean = false): MsgRemoveContractAuthorization {
+    return MsgRemoveContractAuthorization.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgRemoveContractAuthorization): Uint8Array {
     return MsgRemoveContractAuthorization.encode(message).finish();
@@ -597,7 +597,7 @@ export const MsgRemoveContractAuthorizationResponse = {
   encode(_: MsgRemoveContractAuthorizationResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgRemoveContractAuthorizationResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgRemoveContractAuthorizationResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRemoveContractAuthorizationResponse();
@@ -618,15 +618,15 @@ export const MsgRemoveContractAuthorizationResponse = {
   fromAmino(_: MsgRemoveContractAuthorizationResponseAmino): MsgRemoveContractAuthorizationResponse {
     return {};
   },
-  toAmino(_: MsgRemoveContractAuthorizationResponse): MsgRemoveContractAuthorizationResponseAmino {
+  toAmino(_: MsgRemoveContractAuthorizationResponse, useInterfaces: boolean = false): MsgRemoveContractAuthorizationResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgRemoveContractAuthorizationResponseAminoMsg): MsgRemoveContractAuthorizationResponse {
     return MsgRemoveContractAuthorizationResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgRemoveContractAuthorizationResponseProtoMsg): MsgRemoveContractAuthorizationResponse {
-    return MsgRemoveContractAuthorizationResponse.decode(message.value);
+  fromProtoMsg(message: MsgRemoveContractAuthorizationResponseProtoMsg, useInterfaces: boolean = false): MsgRemoveContractAuthorizationResponse {
+    return MsgRemoveContractAuthorizationResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgRemoveContractAuthorizationResponse): Uint8Array {
     return MsgRemoveContractAuthorizationResponse.encode(message).finish();
@@ -655,7 +655,7 @@ export const MsgUpdateParams = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgUpdateParams {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgUpdateParams {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUpdateParams();
@@ -666,7 +666,7 @@ export const MsgUpdateParams = {
           message.sender = reader.string();
           break;
         case 2:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -687,17 +687,17 @@ export const MsgUpdateParams = {
       params: object?.params ? Params.fromAmino(object.params) : undefined
     };
   },
-  toAmino(message: MsgUpdateParams): MsgUpdateParamsAmino {
+  toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
     obj.sender = message.sender;
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {
     return MsgUpdateParams.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgUpdateParamsProtoMsg): MsgUpdateParams {
-    return MsgUpdateParams.decode(message.value);
+  fromProtoMsg(message: MsgUpdateParamsProtoMsg, useInterfaces: boolean = false): MsgUpdateParams {
+    return MsgUpdateParams.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgUpdateParams): Uint8Array {
     return MsgUpdateParams.encode(message).finish();
@@ -717,7 +717,7 @@ export const MsgUpdateParamsResponse = {
   encode(_: MsgUpdateParamsResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgUpdateParamsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgUpdateParamsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUpdateParamsResponse();
@@ -738,15 +738,15 @@ export const MsgUpdateParamsResponse = {
   fromAmino(_: MsgUpdateParamsResponseAmino): MsgUpdateParamsResponse {
     return {};
   },
-  toAmino(_: MsgUpdateParamsResponse): MsgUpdateParamsResponseAmino {
+  toAmino(_: MsgUpdateParamsResponse, useInterfaces: boolean = false): MsgUpdateParamsResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsResponseAminoMsg): MsgUpdateParamsResponse {
     return MsgUpdateParamsResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgUpdateParamsResponseProtoMsg): MsgUpdateParamsResponse {
-    return MsgUpdateParamsResponse.decode(message.value);
+  fromProtoMsg(message: MsgUpdateParamsResponseProtoMsg, useInterfaces: boolean = false): MsgUpdateParamsResponse {
+    return MsgUpdateParamsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgUpdateParamsResponse): Uint8Array {
     return MsgUpdateParamsResponse.encode(message).finish();

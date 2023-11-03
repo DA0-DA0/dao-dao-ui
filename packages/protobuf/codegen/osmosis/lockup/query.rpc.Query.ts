@@ -79,170 +79,170 @@ export class QueryClientImpl implements Query {
     this.accountLockedLongerDurationDenom = this.accountLockedLongerDurationDenom.bind(this);
     this.params = this.params.bind(this);
   }
-  moduleBalance(request: ModuleBalanceRequest = {}): Promise<ModuleBalanceResponse> {
+  moduleBalance(request: ModuleBalanceRequest = {}, useInterfaces: boolean = true): Promise<ModuleBalanceResponse> {
     const data = ModuleBalanceRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "ModuleBalance", data);
-    return promise.then(data => ModuleBalanceResponse.decode(new BinaryReader(data)));
+    return promise.then(data => ModuleBalanceResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  moduleLockedAmount(request: ModuleLockedAmountRequest = {}): Promise<ModuleLockedAmountResponse> {
+  moduleLockedAmount(request: ModuleLockedAmountRequest = {}, useInterfaces: boolean = true): Promise<ModuleLockedAmountResponse> {
     const data = ModuleLockedAmountRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "ModuleLockedAmount", data);
-    return promise.then(data => ModuleLockedAmountResponse.decode(new BinaryReader(data)));
+    return promise.then(data => ModuleLockedAmountResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountUnlockableCoins(request: AccountUnlockableCoinsRequest): Promise<AccountUnlockableCoinsResponse> {
+  accountUnlockableCoins(request: AccountUnlockableCoinsRequest, useInterfaces: boolean = true): Promise<AccountUnlockableCoinsResponse> {
     const data = AccountUnlockableCoinsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "AccountUnlockableCoins", data);
-    return promise.then(data => AccountUnlockableCoinsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AccountUnlockableCoinsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountUnlockingCoins(request: AccountUnlockingCoinsRequest): Promise<AccountUnlockingCoinsResponse> {
+  accountUnlockingCoins(request: AccountUnlockingCoinsRequest, useInterfaces: boolean = true): Promise<AccountUnlockingCoinsResponse> {
     const data = AccountUnlockingCoinsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "AccountUnlockingCoins", data);
-    return promise.then(data => AccountUnlockingCoinsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AccountUnlockingCoinsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountLockedCoins(request: AccountLockedCoinsRequest): Promise<AccountLockedCoinsResponse> {
+  accountLockedCoins(request: AccountLockedCoinsRequest, useInterfaces: boolean = true): Promise<AccountLockedCoinsResponse> {
     const data = AccountLockedCoinsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "AccountLockedCoins", data);
-    return promise.then(data => AccountLockedCoinsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AccountLockedCoinsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountLockedPastTime(request: AccountLockedPastTimeRequest): Promise<AccountLockedPastTimeResponse> {
+  accountLockedPastTime(request: AccountLockedPastTimeRequest, useInterfaces: boolean = true): Promise<AccountLockedPastTimeResponse> {
     const data = AccountLockedPastTimeRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "AccountLockedPastTime", data);
-    return promise.then(data => AccountLockedPastTimeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AccountLockedPastTimeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountLockedPastTimeNotUnlockingOnly(request: AccountLockedPastTimeNotUnlockingOnlyRequest): Promise<AccountLockedPastTimeNotUnlockingOnlyResponse> {
+  accountLockedPastTimeNotUnlockingOnly(request: AccountLockedPastTimeNotUnlockingOnlyRequest, useInterfaces: boolean = true): Promise<AccountLockedPastTimeNotUnlockingOnlyResponse> {
     const data = AccountLockedPastTimeNotUnlockingOnlyRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "AccountLockedPastTimeNotUnlockingOnly", data);
-    return promise.then(data => AccountLockedPastTimeNotUnlockingOnlyResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AccountLockedPastTimeNotUnlockingOnlyResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountUnlockedBeforeTime(request: AccountUnlockedBeforeTimeRequest): Promise<AccountUnlockedBeforeTimeResponse> {
+  accountUnlockedBeforeTime(request: AccountUnlockedBeforeTimeRequest, useInterfaces: boolean = true): Promise<AccountUnlockedBeforeTimeResponse> {
     const data = AccountUnlockedBeforeTimeRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "AccountUnlockedBeforeTime", data);
-    return promise.then(data => AccountUnlockedBeforeTimeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AccountUnlockedBeforeTimeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountLockedPastTimeDenom(request: AccountLockedPastTimeDenomRequest): Promise<AccountLockedPastTimeDenomResponse> {
+  accountLockedPastTimeDenom(request: AccountLockedPastTimeDenomRequest, useInterfaces: boolean = true): Promise<AccountLockedPastTimeDenomResponse> {
     const data = AccountLockedPastTimeDenomRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "AccountLockedPastTimeDenom", data);
-    return promise.then(data => AccountLockedPastTimeDenomResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AccountLockedPastTimeDenomResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  lockedDenom(request: LockedDenomRequest): Promise<LockedDenomResponse> {
+  lockedDenom(request: LockedDenomRequest, useInterfaces: boolean = true): Promise<LockedDenomResponse> {
     const data = LockedDenomRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "LockedDenom", data);
-    return promise.then(data => LockedDenomResponse.decode(new BinaryReader(data)));
+    return promise.then(data => LockedDenomResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  lockedByID(request: LockedRequest): Promise<LockedResponse> {
+  lockedByID(request: LockedRequest, useInterfaces: boolean = true): Promise<LockedResponse> {
     const data = LockedRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "LockedByID", data);
-    return promise.then(data => LockedResponse.decode(new BinaryReader(data)));
+    return promise.then(data => LockedResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  lockRewardReceiver(request: LockRewardReceiverRequest): Promise<LockRewardReceiverResponse> {
+  lockRewardReceiver(request: LockRewardReceiverRequest, useInterfaces: boolean = true): Promise<LockRewardReceiverResponse> {
     const data = LockRewardReceiverRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "LockRewardReceiver", data);
-    return promise.then(data => LockRewardReceiverResponse.decode(new BinaryReader(data)));
+    return promise.then(data => LockRewardReceiverResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  nextLockID(request: NextLockIDRequest = {}): Promise<NextLockIDResponse> {
+  nextLockID(request: NextLockIDRequest = {}, useInterfaces: boolean = true): Promise<NextLockIDResponse> {
     const data = NextLockIDRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "NextLockID", data);
-    return promise.then(data => NextLockIDResponse.decode(new BinaryReader(data)));
+    return promise.then(data => NextLockIDResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  syntheticLockupsByLockupID(request: SyntheticLockupsByLockupIDRequest): Promise<SyntheticLockupsByLockupIDResponse> {
+  syntheticLockupsByLockupID(request: SyntheticLockupsByLockupIDRequest, useInterfaces: boolean = true): Promise<SyntheticLockupsByLockupIDResponse> {
     const data = SyntheticLockupsByLockupIDRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "SyntheticLockupsByLockupID", data);
-    return promise.then(data => SyntheticLockupsByLockupIDResponse.decode(new BinaryReader(data)));
+    return promise.then(data => SyntheticLockupsByLockupIDResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  syntheticLockupByLockupID(request: SyntheticLockupByLockupIDRequest): Promise<SyntheticLockupByLockupIDResponse> {
+  syntheticLockupByLockupID(request: SyntheticLockupByLockupIDRequest, useInterfaces: boolean = true): Promise<SyntheticLockupByLockupIDResponse> {
     const data = SyntheticLockupByLockupIDRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "SyntheticLockupByLockupID", data);
-    return promise.then(data => SyntheticLockupByLockupIDResponse.decode(new BinaryReader(data)));
+    return promise.then(data => SyntheticLockupByLockupIDResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountLockedLongerDuration(request: AccountLockedLongerDurationRequest): Promise<AccountLockedLongerDurationResponse> {
+  accountLockedLongerDuration(request: AccountLockedLongerDurationRequest, useInterfaces: boolean = true): Promise<AccountLockedLongerDurationResponse> {
     const data = AccountLockedLongerDurationRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "AccountLockedLongerDuration", data);
-    return promise.then(data => AccountLockedLongerDurationResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AccountLockedLongerDurationResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountLockedDuration(request: AccountLockedDurationRequest): Promise<AccountLockedDurationResponse> {
+  accountLockedDuration(request: AccountLockedDurationRequest, useInterfaces: boolean = true): Promise<AccountLockedDurationResponse> {
     const data = AccountLockedDurationRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "AccountLockedDuration", data);
-    return promise.then(data => AccountLockedDurationResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AccountLockedDurationResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountLockedLongerDurationNotUnlockingOnly(request: AccountLockedLongerDurationNotUnlockingOnlyRequest): Promise<AccountLockedLongerDurationNotUnlockingOnlyResponse> {
+  accountLockedLongerDurationNotUnlockingOnly(request: AccountLockedLongerDurationNotUnlockingOnlyRequest, useInterfaces: boolean = true): Promise<AccountLockedLongerDurationNotUnlockingOnlyResponse> {
     const data = AccountLockedLongerDurationNotUnlockingOnlyRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "AccountLockedLongerDurationNotUnlockingOnly", data);
-    return promise.then(data => AccountLockedLongerDurationNotUnlockingOnlyResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AccountLockedLongerDurationNotUnlockingOnlyResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  accountLockedLongerDurationDenom(request: AccountLockedLongerDurationDenomRequest): Promise<AccountLockedLongerDurationDenomResponse> {
+  accountLockedLongerDurationDenom(request: AccountLockedLongerDurationDenomRequest, useInterfaces: boolean = true): Promise<AccountLockedLongerDurationDenomResponse> {
     const data = AccountLockedLongerDurationDenomRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "AccountLockedLongerDurationDenom", data);
-    return promise.then(data => AccountLockedLongerDurationDenomResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AccountLockedLongerDurationDenomResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    moduleBalance(request?: ModuleBalanceRequest): Promise<ModuleBalanceResponse> {
-      return queryService.moduleBalance(request);
+    moduleBalance(request?: ModuleBalanceRequest, useInterfaces: boolean = true): Promise<ModuleBalanceResponse> {
+      return queryService.moduleBalance(request, useInterfaces);
     },
-    moduleLockedAmount(request?: ModuleLockedAmountRequest): Promise<ModuleLockedAmountResponse> {
-      return queryService.moduleLockedAmount(request);
+    moduleLockedAmount(request?: ModuleLockedAmountRequest, useInterfaces: boolean = true): Promise<ModuleLockedAmountResponse> {
+      return queryService.moduleLockedAmount(request, useInterfaces);
     },
-    accountUnlockableCoins(request: AccountUnlockableCoinsRequest): Promise<AccountUnlockableCoinsResponse> {
-      return queryService.accountUnlockableCoins(request);
+    accountUnlockableCoins(request: AccountUnlockableCoinsRequest, useInterfaces: boolean = true): Promise<AccountUnlockableCoinsResponse> {
+      return queryService.accountUnlockableCoins(request, useInterfaces);
     },
-    accountUnlockingCoins(request: AccountUnlockingCoinsRequest): Promise<AccountUnlockingCoinsResponse> {
-      return queryService.accountUnlockingCoins(request);
+    accountUnlockingCoins(request: AccountUnlockingCoinsRequest, useInterfaces: boolean = true): Promise<AccountUnlockingCoinsResponse> {
+      return queryService.accountUnlockingCoins(request, useInterfaces);
     },
-    accountLockedCoins(request: AccountLockedCoinsRequest): Promise<AccountLockedCoinsResponse> {
-      return queryService.accountLockedCoins(request);
+    accountLockedCoins(request: AccountLockedCoinsRequest, useInterfaces: boolean = true): Promise<AccountLockedCoinsResponse> {
+      return queryService.accountLockedCoins(request, useInterfaces);
     },
-    accountLockedPastTime(request: AccountLockedPastTimeRequest): Promise<AccountLockedPastTimeResponse> {
-      return queryService.accountLockedPastTime(request);
+    accountLockedPastTime(request: AccountLockedPastTimeRequest, useInterfaces: boolean = true): Promise<AccountLockedPastTimeResponse> {
+      return queryService.accountLockedPastTime(request, useInterfaces);
     },
-    accountLockedPastTimeNotUnlockingOnly(request: AccountLockedPastTimeNotUnlockingOnlyRequest): Promise<AccountLockedPastTimeNotUnlockingOnlyResponse> {
-      return queryService.accountLockedPastTimeNotUnlockingOnly(request);
+    accountLockedPastTimeNotUnlockingOnly(request: AccountLockedPastTimeNotUnlockingOnlyRequest, useInterfaces: boolean = true): Promise<AccountLockedPastTimeNotUnlockingOnlyResponse> {
+      return queryService.accountLockedPastTimeNotUnlockingOnly(request, useInterfaces);
     },
-    accountUnlockedBeforeTime(request: AccountUnlockedBeforeTimeRequest): Promise<AccountUnlockedBeforeTimeResponse> {
-      return queryService.accountUnlockedBeforeTime(request);
+    accountUnlockedBeforeTime(request: AccountUnlockedBeforeTimeRequest, useInterfaces: boolean = true): Promise<AccountUnlockedBeforeTimeResponse> {
+      return queryService.accountUnlockedBeforeTime(request, useInterfaces);
     },
-    accountLockedPastTimeDenom(request: AccountLockedPastTimeDenomRequest): Promise<AccountLockedPastTimeDenomResponse> {
-      return queryService.accountLockedPastTimeDenom(request);
+    accountLockedPastTimeDenom(request: AccountLockedPastTimeDenomRequest, useInterfaces: boolean = true): Promise<AccountLockedPastTimeDenomResponse> {
+      return queryService.accountLockedPastTimeDenom(request, useInterfaces);
     },
-    lockedDenom(request: LockedDenomRequest): Promise<LockedDenomResponse> {
-      return queryService.lockedDenom(request);
+    lockedDenom(request: LockedDenomRequest, useInterfaces: boolean = true): Promise<LockedDenomResponse> {
+      return queryService.lockedDenom(request, useInterfaces);
     },
-    lockedByID(request: LockedRequest): Promise<LockedResponse> {
-      return queryService.lockedByID(request);
+    lockedByID(request: LockedRequest, useInterfaces: boolean = true): Promise<LockedResponse> {
+      return queryService.lockedByID(request, useInterfaces);
     },
-    lockRewardReceiver(request: LockRewardReceiverRequest): Promise<LockRewardReceiverResponse> {
-      return queryService.lockRewardReceiver(request);
+    lockRewardReceiver(request: LockRewardReceiverRequest, useInterfaces: boolean = true): Promise<LockRewardReceiverResponse> {
+      return queryService.lockRewardReceiver(request, useInterfaces);
     },
-    nextLockID(request?: NextLockIDRequest): Promise<NextLockIDResponse> {
-      return queryService.nextLockID(request);
+    nextLockID(request?: NextLockIDRequest, useInterfaces: boolean = true): Promise<NextLockIDResponse> {
+      return queryService.nextLockID(request, useInterfaces);
     },
-    syntheticLockupsByLockupID(request: SyntheticLockupsByLockupIDRequest): Promise<SyntheticLockupsByLockupIDResponse> {
-      return queryService.syntheticLockupsByLockupID(request);
+    syntheticLockupsByLockupID(request: SyntheticLockupsByLockupIDRequest, useInterfaces: boolean = true): Promise<SyntheticLockupsByLockupIDResponse> {
+      return queryService.syntheticLockupsByLockupID(request, useInterfaces);
     },
-    syntheticLockupByLockupID(request: SyntheticLockupByLockupIDRequest): Promise<SyntheticLockupByLockupIDResponse> {
-      return queryService.syntheticLockupByLockupID(request);
+    syntheticLockupByLockupID(request: SyntheticLockupByLockupIDRequest, useInterfaces: boolean = true): Promise<SyntheticLockupByLockupIDResponse> {
+      return queryService.syntheticLockupByLockupID(request, useInterfaces);
     },
-    accountLockedLongerDuration(request: AccountLockedLongerDurationRequest): Promise<AccountLockedLongerDurationResponse> {
-      return queryService.accountLockedLongerDuration(request);
+    accountLockedLongerDuration(request: AccountLockedLongerDurationRequest, useInterfaces: boolean = true): Promise<AccountLockedLongerDurationResponse> {
+      return queryService.accountLockedLongerDuration(request, useInterfaces);
     },
-    accountLockedDuration(request: AccountLockedDurationRequest): Promise<AccountLockedDurationResponse> {
-      return queryService.accountLockedDuration(request);
+    accountLockedDuration(request: AccountLockedDurationRequest, useInterfaces: boolean = true): Promise<AccountLockedDurationResponse> {
+      return queryService.accountLockedDuration(request, useInterfaces);
     },
-    accountLockedLongerDurationNotUnlockingOnly(request: AccountLockedLongerDurationNotUnlockingOnlyRequest): Promise<AccountLockedLongerDurationNotUnlockingOnlyResponse> {
-      return queryService.accountLockedLongerDurationNotUnlockingOnly(request);
+    accountLockedLongerDurationNotUnlockingOnly(request: AccountLockedLongerDurationNotUnlockingOnlyRequest, useInterfaces: boolean = true): Promise<AccountLockedLongerDurationNotUnlockingOnlyResponse> {
+      return queryService.accountLockedLongerDurationNotUnlockingOnly(request, useInterfaces);
     },
-    accountLockedLongerDurationDenom(request: AccountLockedLongerDurationDenomRequest): Promise<AccountLockedLongerDurationDenomResponse> {
-      return queryService.accountLockedLongerDurationDenom(request);
+    accountLockedLongerDurationDenom(request: AccountLockedLongerDurationDenomRequest, useInterfaces: boolean = true): Promise<AccountLockedLongerDurationDenomResponse> {
+      return queryService.accountLockedLongerDurationDenom(request, useInterfaces);
     },
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     }
   };
 };

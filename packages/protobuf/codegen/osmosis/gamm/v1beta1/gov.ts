@@ -10,7 +10,7 @@ import { Decimal } from "@cosmjs/math";
  * a single concentrated pool.
  */
 export interface ReplaceMigrationRecordsProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.ReplaceMigrationRecordsProposal";
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLink[];
@@ -43,7 +43,7 @@ export interface ReplaceMigrationRecordsProposalAminoMsg {
  * a single concentrated pool.
  */
 export interface ReplaceMigrationRecordsProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.ReplaceMigrationRecordsProposal";
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLinkSDKType[];
@@ -59,7 +59,7 @@ export interface ReplaceMigrationRecordsProposalSDKType {
  * [(Balancer 1, CL 5), (Balancer 3, CL 4), (Balancer 4, CL 10)]
  */
 export interface UpdateMigrationRecordsProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.UpdateMigrationRecordsProposal";
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLink[];
@@ -98,7 +98,7 @@ export interface UpdateMigrationRecordsProposalAminoMsg {
  * [(Balancer 1, CL 5), (Balancer 3, CL 4), (Balancer 4, CL 10)]
  */
 export interface UpdateMigrationRecordsProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.UpdateMigrationRecordsProposal";
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLinkSDKType[];
@@ -140,7 +140,7 @@ export interface PoolRecordWithCFMMLinkSDKType {
  * for creating concentrated liquidity pools and linking it to a CFMM pool.
  */
 export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal";
   title: string;
   description: string;
   poolRecordsWithCfmmLink: PoolRecordWithCFMMLink[];
@@ -167,7 +167,7 @@ export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAminoMsg {
  * for creating concentrated liquidity pools and linking it to a CFMM pool.
  */
 export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal";
   title: string;
   description: string;
   pool_records_with_cfmm_link: PoolRecordWithCFMMLinkSDKType[];
@@ -177,7 +177,7 @@ export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalSDKType {
  * scaling factor controller address of a stableswap pool
  */
 export interface SetScalingFactorControllerProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.SetScalingFactorControllerProposal";
   title: string;
   description: string;
   poolId: bigint;
@@ -206,7 +206,7 @@ export interface SetScalingFactorControllerProposalAminoMsg {
  * scaling factor controller address of a stableswap pool
  */
 export interface SetScalingFactorControllerProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.SetScalingFactorControllerProposal";
   title: string;
   description: string;
   pool_id: bigint;
@@ -234,7 +234,7 @@ export const ReplaceMigrationRecordsProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ReplaceMigrationRecordsProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ReplaceMigrationRecordsProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseReplaceMigrationRecordsProposal();
@@ -248,7 +248,7 @@ export const ReplaceMigrationRecordsProposal = {
           message.description = reader.string();
           break;
         case 3:
-          message.records.push(BalancerToConcentratedPoolLink.decode(reader, reader.uint32()));
+          message.records.push(BalancerToConcentratedPoolLink.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -271,12 +271,12 @@ export const ReplaceMigrationRecordsProposal = {
       records: Array.isArray(object?.records) ? object.records.map((e: any) => BalancerToConcentratedPoolLink.fromAmino(e)) : []
     };
   },
-  toAmino(message: ReplaceMigrationRecordsProposal): ReplaceMigrationRecordsProposalAmino {
+  toAmino(message: ReplaceMigrationRecordsProposal, useInterfaces: boolean = false): ReplaceMigrationRecordsProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
     if (message.records) {
-      obj.records = message.records.map(e => e ? BalancerToConcentratedPoolLink.toAmino(e) : undefined);
+      obj.records = message.records.map(e => e ? BalancerToConcentratedPoolLink.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.records = [];
     }
@@ -285,14 +285,14 @@ export const ReplaceMigrationRecordsProposal = {
   fromAminoMsg(object: ReplaceMigrationRecordsProposalAminoMsg): ReplaceMigrationRecordsProposal {
     return ReplaceMigrationRecordsProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: ReplaceMigrationRecordsProposal): ReplaceMigrationRecordsProposalAminoMsg {
+  toAminoMsg(message: ReplaceMigrationRecordsProposal, useInterfaces: boolean = false): ReplaceMigrationRecordsProposalAminoMsg {
     return {
       type: "osmosis/ReplaceMigrationRecordsProposal",
-      value: ReplaceMigrationRecordsProposal.toAmino(message)
+      value: ReplaceMigrationRecordsProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ReplaceMigrationRecordsProposalProtoMsg): ReplaceMigrationRecordsProposal {
-    return ReplaceMigrationRecordsProposal.decode(message.value);
+  fromProtoMsg(message: ReplaceMigrationRecordsProposalProtoMsg, useInterfaces: boolean = false): ReplaceMigrationRecordsProposal {
+    return ReplaceMigrationRecordsProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ReplaceMigrationRecordsProposal): Uint8Array {
     return ReplaceMigrationRecordsProposal.encode(message).finish();
@@ -326,7 +326,7 @@ export const UpdateMigrationRecordsProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateMigrationRecordsProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): UpdateMigrationRecordsProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateMigrationRecordsProposal();
@@ -340,7 +340,7 @@ export const UpdateMigrationRecordsProposal = {
           message.description = reader.string();
           break;
         case 3:
-          message.records.push(BalancerToConcentratedPoolLink.decode(reader, reader.uint32()));
+          message.records.push(BalancerToConcentratedPoolLink.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -363,12 +363,12 @@ export const UpdateMigrationRecordsProposal = {
       records: Array.isArray(object?.records) ? object.records.map((e: any) => BalancerToConcentratedPoolLink.fromAmino(e)) : []
     };
   },
-  toAmino(message: UpdateMigrationRecordsProposal): UpdateMigrationRecordsProposalAmino {
+  toAmino(message: UpdateMigrationRecordsProposal, useInterfaces: boolean = false): UpdateMigrationRecordsProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
     if (message.records) {
-      obj.records = message.records.map(e => e ? BalancerToConcentratedPoolLink.toAmino(e) : undefined);
+      obj.records = message.records.map(e => e ? BalancerToConcentratedPoolLink.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.records = [];
     }
@@ -377,14 +377,14 @@ export const UpdateMigrationRecordsProposal = {
   fromAminoMsg(object: UpdateMigrationRecordsProposalAminoMsg): UpdateMigrationRecordsProposal {
     return UpdateMigrationRecordsProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: UpdateMigrationRecordsProposal): UpdateMigrationRecordsProposalAminoMsg {
+  toAminoMsg(message: UpdateMigrationRecordsProposal, useInterfaces: boolean = false): UpdateMigrationRecordsProposalAminoMsg {
     return {
       type: "osmosis/UpdateMigrationRecordsProposal",
-      value: UpdateMigrationRecordsProposal.toAmino(message)
+      value: UpdateMigrationRecordsProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: UpdateMigrationRecordsProposalProtoMsg): UpdateMigrationRecordsProposal {
-    return UpdateMigrationRecordsProposal.decode(message.value);
+  fromProtoMsg(message: UpdateMigrationRecordsProposalProtoMsg, useInterfaces: boolean = false): UpdateMigrationRecordsProposal {
+    return UpdateMigrationRecordsProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: UpdateMigrationRecordsProposal): Uint8Array {
     return UpdateMigrationRecordsProposal.encode(message).finish();
@@ -429,7 +429,7 @@ export const PoolRecordWithCFMMLink = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PoolRecordWithCFMMLink {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PoolRecordWithCFMMLink {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolRecordWithCFMMLink();
@@ -481,7 +481,7 @@ export const PoolRecordWithCFMMLink = {
       balancerPoolId: BigInt(object.balancer_pool_id)
     };
   },
-  toAmino(message: PoolRecordWithCFMMLink): PoolRecordWithCFMMLinkAmino {
+  toAmino(message: PoolRecordWithCFMMLink, useInterfaces: boolean = false): PoolRecordWithCFMMLinkAmino {
     const obj: any = {};
     obj.denom0 = message.denom0;
     obj.denom1 = message.denom1;
@@ -494,14 +494,14 @@ export const PoolRecordWithCFMMLink = {
   fromAminoMsg(object: PoolRecordWithCFMMLinkAminoMsg): PoolRecordWithCFMMLink {
     return PoolRecordWithCFMMLink.fromAmino(object.value);
   },
-  toAminoMsg(message: PoolRecordWithCFMMLink): PoolRecordWithCFMMLinkAminoMsg {
+  toAminoMsg(message: PoolRecordWithCFMMLink, useInterfaces: boolean = false): PoolRecordWithCFMMLinkAminoMsg {
     return {
       type: "osmosis/gamm/pool-record-with-cfmm-link",
-      value: PoolRecordWithCFMMLink.toAmino(message)
+      value: PoolRecordWithCFMMLink.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PoolRecordWithCFMMLinkProtoMsg): PoolRecordWithCFMMLink {
-    return PoolRecordWithCFMMLink.decode(message.value);
+  fromProtoMsg(message: PoolRecordWithCFMMLinkProtoMsg, useInterfaces: boolean = false): PoolRecordWithCFMMLink {
+    return PoolRecordWithCFMMLink.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PoolRecordWithCFMMLink): Uint8Array {
     return PoolRecordWithCFMMLink.encode(message).finish();
@@ -535,7 +535,7 @@ export const CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateConcentratedLiquidityPoolsAndLinktoCFMMProposal();
@@ -549,7 +549,7 @@ export const CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal = {
           message.description = reader.string();
           break;
         case 3:
-          message.poolRecordsWithCfmmLink.push(PoolRecordWithCFMMLink.decode(reader, reader.uint32()));
+          message.poolRecordsWithCfmmLink.push(PoolRecordWithCFMMLink.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -572,12 +572,12 @@ export const CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal = {
       poolRecordsWithCfmmLink: Array.isArray(object?.pool_records_with_cfmm_link) ? object.pool_records_with_cfmm_link.map((e: any) => PoolRecordWithCFMMLink.fromAmino(e)) : []
     };
   },
-  toAmino(message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAmino {
+  toAmino(message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal, useInterfaces: boolean = false): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
     if (message.poolRecordsWithCfmmLink) {
-      obj.pool_records_with_cfmm_link = message.poolRecordsWithCfmmLink.map(e => e ? PoolRecordWithCFMMLink.toAmino(e) : undefined);
+      obj.pool_records_with_cfmm_link = message.poolRecordsWithCfmmLink.map(e => e ? PoolRecordWithCFMMLink.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.pool_records_with_cfmm_link = [];
     }
@@ -586,14 +586,14 @@ export const CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal = {
   fromAminoMsg(object: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAminoMsg): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
     return CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAminoMsg {
+  toAminoMsg(message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal, useInterfaces: boolean = false): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAminoMsg {
     return {
       type: "osmosis/CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal",
-      value: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.toAmino(message)
+      value: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalProtoMsg): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
-    return CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.decode(message.value);
+  fromProtoMsg(message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalProtoMsg, useInterfaces: boolean = false): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
+    return CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal): Uint8Array {
     return CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.encode(message).finish();
@@ -631,7 +631,7 @@ export const SetScalingFactorControllerProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SetScalingFactorControllerProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SetScalingFactorControllerProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetScalingFactorControllerProposal();
@@ -673,7 +673,7 @@ export const SetScalingFactorControllerProposal = {
       controllerAddress: object.controller_address
     };
   },
-  toAmino(message: SetScalingFactorControllerProposal): SetScalingFactorControllerProposalAmino {
+  toAmino(message: SetScalingFactorControllerProposal, useInterfaces: boolean = false): SetScalingFactorControllerProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -684,14 +684,14 @@ export const SetScalingFactorControllerProposal = {
   fromAminoMsg(object: SetScalingFactorControllerProposalAminoMsg): SetScalingFactorControllerProposal {
     return SetScalingFactorControllerProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: SetScalingFactorControllerProposal): SetScalingFactorControllerProposalAminoMsg {
+  toAminoMsg(message: SetScalingFactorControllerProposal, useInterfaces: boolean = false): SetScalingFactorControllerProposalAminoMsg {
     return {
       type: "osmosis/SetScalingFactorControllerProposal",
-      value: SetScalingFactorControllerProposal.toAmino(message)
+      value: SetScalingFactorControllerProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SetScalingFactorControllerProposalProtoMsg): SetScalingFactorControllerProposal {
-    return SetScalingFactorControllerProposal.decode(message.value);
+  fromProtoMsg(message: SetScalingFactorControllerProposalProtoMsg, useInterfaces: boolean = false): SetScalingFactorControllerProposal {
+    return SetScalingFactorControllerProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SetScalingFactorControllerProposal): Uint8Array {
     return SetScalingFactorControllerProposal.encode(message).finish();

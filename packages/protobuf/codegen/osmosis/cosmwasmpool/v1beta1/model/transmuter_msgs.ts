@@ -96,7 +96,7 @@ export const EmptyRequest = {
   encode(_: EmptyRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EmptyRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EmptyRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEmptyRequest();
@@ -117,21 +117,21 @@ export const EmptyRequest = {
   fromAmino(_: EmptyRequestAmino): EmptyRequest {
     return {};
   },
-  toAmino(_: EmptyRequest): EmptyRequestAmino {
+  toAmino(_: EmptyRequest, useInterfaces: boolean = false): EmptyRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: EmptyRequestAminoMsg): EmptyRequest {
     return EmptyRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: EmptyRequest): EmptyRequestAminoMsg {
+  toAminoMsg(message: EmptyRequest, useInterfaces: boolean = false): EmptyRequestAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/empty-request",
-      value: EmptyRequest.toAmino(message)
+      value: EmptyRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: EmptyRequestProtoMsg): EmptyRequest {
-    return EmptyRequest.decode(message.value);
+  fromProtoMsg(message: EmptyRequestProtoMsg, useInterfaces: boolean = false): EmptyRequest {
+    return EmptyRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EmptyRequest): Uint8Array {
     return EmptyRequest.encode(message).finish();
@@ -156,7 +156,7 @@ export const JoinPoolExecuteMsgRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): JoinPoolExecuteMsgRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): JoinPoolExecuteMsgRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseJoinPoolExecuteMsgRequest();
@@ -164,7 +164,7 @@ export const JoinPoolExecuteMsgRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.joinPool = EmptyRequest.decode(reader, reader.uint32());
+          message.joinPool = EmptyRequest.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -183,22 +183,22 @@ export const JoinPoolExecuteMsgRequest = {
       joinPool: object?.join_pool ? EmptyRequest.fromAmino(object.join_pool) : undefined
     };
   },
-  toAmino(message: JoinPoolExecuteMsgRequest): JoinPoolExecuteMsgRequestAmino {
+  toAmino(message: JoinPoolExecuteMsgRequest, useInterfaces: boolean = false): JoinPoolExecuteMsgRequestAmino {
     const obj: any = {};
-    obj.join_pool = message.joinPool ? EmptyRequest.toAmino(message.joinPool) : undefined;
+    obj.join_pool = message.joinPool ? EmptyRequest.toAmino(message.joinPool, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: JoinPoolExecuteMsgRequestAminoMsg): JoinPoolExecuteMsgRequest {
     return JoinPoolExecuteMsgRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: JoinPoolExecuteMsgRequest): JoinPoolExecuteMsgRequestAminoMsg {
+  toAminoMsg(message: JoinPoolExecuteMsgRequest, useInterfaces: boolean = false): JoinPoolExecuteMsgRequestAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/join-pool-execute-msg-request",
-      value: JoinPoolExecuteMsgRequest.toAmino(message)
+      value: JoinPoolExecuteMsgRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: JoinPoolExecuteMsgRequestProtoMsg): JoinPoolExecuteMsgRequest {
-    return JoinPoolExecuteMsgRequest.decode(message.value);
+  fromProtoMsg(message: JoinPoolExecuteMsgRequestProtoMsg, useInterfaces: boolean = false): JoinPoolExecuteMsgRequest {
+    return JoinPoolExecuteMsgRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: JoinPoolExecuteMsgRequest): Uint8Array {
     return JoinPoolExecuteMsgRequest.encode(message).finish();
@@ -218,7 +218,7 @@ export const JoinPoolExecuteMsgResponse = {
   encode(_: JoinPoolExecuteMsgResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): JoinPoolExecuteMsgResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): JoinPoolExecuteMsgResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseJoinPoolExecuteMsgResponse();
@@ -239,21 +239,21 @@ export const JoinPoolExecuteMsgResponse = {
   fromAmino(_: JoinPoolExecuteMsgResponseAmino): JoinPoolExecuteMsgResponse {
     return {};
   },
-  toAmino(_: JoinPoolExecuteMsgResponse): JoinPoolExecuteMsgResponseAmino {
+  toAmino(_: JoinPoolExecuteMsgResponse, useInterfaces: boolean = false): JoinPoolExecuteMsgResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: JoinPoolExecuteMsgResponseAminoMsg): JoinPoolExecuteMsgResponse {
     return JoinPoolExecuteMsgResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: JoinPoolExecuteMsgResponse): JoinPoolExecuteMsgResponseAminoMsg {
+  toAminoMsg(message: JoinPoolExecuteMsgResponse, useInterfaces: boolean = false): JoinPoolExecuteMsgResponseAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/join-pool-execute-msg-response",
-      value: JoinPoolExecuteMsgResponse.toAmino(message)
+      value: JoinPoolExecuteMsgResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: JoinPoolExecuteMsgResponseProtoMsg): JoinPoolExecuteMsgResponse {
-    return JoinPoolExecuteMsgResponse.decode(message.value);
+  fromProtoMsg(message: JoinPoolExecuteMsgResponseProtoMsg, useInterfaces: boolean = false): JoinPoolExecuteMsgResponse {
+    return JoinPoolExecuteMsgResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: JoinPoolExecuteMsgResponse): Uint8Array {
     return JoinPoolExecuteMsgResponse.encode(message).finish();
@@ -278,7 +278,7 @@ export const ExitPoolExecuteMsgRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ExitPoolExecuteMsgRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ExitPoolExecuteMsgRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseExitPoolExecuteMsgRequest();
@@ -286,7 +286,7 @@ export const ExitPoolExecuteMsgRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.exitPool = EmptyRequest.decode(reader, reader.uint32());
+          message.exitPool = EmptyRequest.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -305,22 +305,22 @@ export const ExitPoolExecuteMsgRequest = {
       exitPool: object?.exit_pool ? EmptyRequest.fromAmino(object.exit_pool) : undefined
     };
   },
-  toAmino(message: ExitPoolExecuteMsgRequest): ExitPoolExecuteMsgRequestAmino {
+  toAmino(message: ExitPoolExecuteMsgRequest, useInterfaces: boolean = false): ExitPoolExecuteMsgRequestAmino {
     const obj: any = {};
-    obj.exit_pool = message.exitPool ? EmptyRequest.toAmino(message.exitPool) : undefined;
+    obj.exit_pool = message.exitPool ? EmptyRequest.toAmino(message.exitPool, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: ExitPoolExecuteMsgRequestAminoMsg): ExitPoolExecuteMsgRequest {
     return ExitPoolExecuteMsgRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: ExitPoolExecuteMsgRequest): ExitPoolExecuteMsgRequestAminoMsg {
+  toAminoMsg(message: ExitPoolExecuteMsgRequest, useInterfaces: boolean = false): ExitPoolExecuteMsgRequestAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/exit-pool-execute-msg-request",
-      value: ExitPoolExecuteMsgRequest.toAmino(message)
+      value: ExitPoolExecuteMsgRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ExitPoolExecuteMsgRequestProtoMsg): ExitPoolExecuteMsgRequest {
-    return ExitPoolExecuteMsgRequest.decode(message.value);
+  fromProtoMsg(message: ExitPoolExecuteMsgRequestProtoMsg, useInterfaces: boolean = false): ExitPoolExecuteMsgRequest {
+    return ExitPoolExecuteMsgRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ExitPoolExecuteMsgRequest): Uint8Array {
     return ExitPoolExecuteMsgRequest.encode(message).finish();
@@ -340,7 +340,7 @@ export const ExitPoolExecuteMsgResponse = {
   encode(_: ExitPoolExecuteMsgResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ExitPoolExecuteMsgResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ExitPoolExecuteMsgResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseExitPoolExecuteMsgResponse();
@@ -361,21 +361,21 @@ export const ExitPoolExecuteMsgResponse = {
   fromAmino(_: ExitPoolExecuteMsgResponseAmino): ExitPoolExecuteMsgResponse {
     return {};
   },
-  toAmino(_: ExitPoolExecuteMsgResponse): ExitPoolExecuteMsgResponseAmino {
+  toAmino(_: ExitPoolExecuteMsgResponse, useInterfaces: boolean = false): ExitPoolExecuteMsgResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: ExitPoolExecuteMsgResponseAminoMsg): ExitPoolExecuteMsgResponse {
     return ExitPoolExecuteMsgResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: ExitPoolExecuteMsgResponse): ExitPoolExecuteMsgResponseAminoMsg {
+  toAminoMsg(message: ExitPoolExecuteMsgResponse, useInterfaces: boolean = false): ExitPoolExecuteMsgResponseAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/exit-pool-execute-msg-response",
-      value: ExitPoolExecuteMsgResponse.toAmino(message)
+      value: ExitPoolExecuteMsgResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ExitPoolExecuteMsgResponseProtoMsg): ExitPoolExecuteMsgResponse {
-    return ExitPoolExecuteMsgResponse.decode(message.value);
+  fromProtoMsg(message: ExitPoolExecuteMsgResponseProtoMsg, useInterfaces: boolean = false): ExitPoolExecuteMsgResponse {
+    return ExitPoolExecuteMsgResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ExitPoolExecuteMsgResponse): Uint8Array {
     return ExitPoolExecuteMsgResponse.encode(message).finish();

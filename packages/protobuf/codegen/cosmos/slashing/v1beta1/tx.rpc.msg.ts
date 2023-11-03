@@ -24,14 +24,14 @@ export class MsgClientImpl implements Msg {
     this.unjail = this.unjail.bind(this);
     this.updateParams = this.updateParams.bind(this);
   }
-  unjail(request: MsgUnjail): Promise<MsgUnjailResponse> {
+  unjail(request: MsgUnjail, useInterfaces: boolean = true): Promise<MsgUnjailResponse> {
     const data = MsgUnjail.encode(request).finish();
     const promise = this.rpc.request("cosmos.slashing.v1beta1.Msg", "Unjail", data);
-    return promise.then(data => MsgUnjailResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUnjailResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  updateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse> {
+  updateParams(request: MsgUpdateParams, useInterfaces: boolean = true): Promise<MsgUpdateParamsResponse> {
     const data = MsgUpdateParams.encode(request).finish();
     const promise = this.rpc.request("cosmos.slashing.v1beta1.Msg", "UpdateParams", data);
-    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

@@ -182,7 +182,7 @@ export const GenesisState = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): GenesisState {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): GenesisState {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
@@ -190,22 +190,22 @@ export const GenesisState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.tokenPairArbRoutes.push(TokenPairArbRoutes.decode(reader, reader.uint32()));
+          message.tokenPairArbRoutes.push(TokenPairArbRoutes.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 3:
-          message.baseDenoms.push(BaseDenom.decode(reader, reader.uint32()));
+          message.baseDenoms.push(BaseDenom.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
-          message.poolWeights = PoolWeights.decode(reader, reader.uint32());
+          message.poolWeights = PoolWeights.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 5:
           message.daysSinceModuleGenesis = reader.uint64();
           break;
         case 6:
-          message.developerFees.push(Coin.decode(reader, reader.uint32()));
+          message.developerFees.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 7:
           message.latestBlockHeight = reader.uint64();
@@ -223,10 +223,10 @@ export const GenesisState = {
           message.pointCountForBlock = reader.uint64();
           break;
         case 12:
-          message.profits.push(Coin.decode(reader, reader.uint32()));
+          message.profits.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 13:
-          message.infoByPoolType = InfoByPoolType.decode(reader, reader.uint32());
+          message.infoByPoolType = InfoByPoolType.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -269,23 +269,23 @@ export const GenesisState = {
       infoByPoolType: object?.info_by_pool_type ? InfoByPoolType.fromAmino(object.info_by_pool_type) : undefined
     };
   },
-  toAmino(message: GenesisState): GenesisStateAmino {
+  toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     if (message.tokenPairArbRoutes) {
-      obj.token_pair_arb_routes = message.tokenPairArbRoutes.map(e => e ? TokenPairArbRoutes.toAmino(e) : undefined);
+      obj.token_pair_arb_routes = message.tokenPairArbRoutes.map(e => e ? TokenPairArbRoutes.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.token_pair_arb_routes = [];
     }
     if (message.baseDenoms) {
-      obj.base_denoms = message.baseDenoms.map(e => e ? BaseDenom.toAmino(e) : undefined);
+      obj.base_denoms = message.baseDenoms.map(e => e ? BaseDenom.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.base_denoms = [];
     }
-    obj.pool_weights = message.poolWeights ? PoolWeights.toAmino(message.poolWeights) : undefined;
+    obj.pool_weights = message.poolWeights ? PoolWeights.toAmino(message.poolWeights, useInterfaces) : undefined;
     obj.days_since_module_genesis = message.daysSinceModuleGenesis ? message.daysSinceModuleGenesis.toString() : undefined;
     if (message.developerFees) {
-      obj.developer_fees = message.developerFees.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.developer_fees = message.developerFees.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.developer_fees = [];
     }
@@ -295,24 +295,24 @@ export const GenesisState = {
     obj.max_pool_points_per_tx = message.maxPoolPointsPerTx ? message.maxPoolPointsPerTx.toString() : undefined;
     obj.point_count_for_block = message.pointCountForBlock ? message.pointCountForBlock.toString() : undefined;
     if (message.profits) {
-      obj.profits = message.profits.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.profits = message.profits.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.profits = [];
     }
-    obj.info_by_pool_type = message.infoByPoolType ? InfoByPoolType.toAmino(message.infoByPoolType) : undefined;
+    obj.info_by_pool_type = message.infoByPoolType ? InfoByPoolType.toAmino(message.infoByPoolType, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {
     return GenesisState.fromAmino(object.value);
   },
-  toAminoMsg(message: GenesisState): GenesisStateAminoMsg {
+  toAminoMsg(message: GenesisState, useInterfaces: boolean = false): GenesisStateAminoMsg {
     return {
       type: "osmosis/protorev/genesis-state",
-      value: GenesisState.toAmino(message)
+      value: GenesisState.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: GenesisStateProtoMsg): GenesisState {
-    return GenesisState.decode(message.value);
+  fromProtoMsg(message: GenesisStateProtoMsg, useInterfaces: boolean = false): GenesisState {
+    return GenesisState.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: GenesisState): Uint8Array {
     return GenesisState.encode(message).finish();

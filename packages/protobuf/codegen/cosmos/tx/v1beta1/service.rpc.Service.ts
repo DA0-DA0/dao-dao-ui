@@ -57,82 +57,82 @@ export class ServiceClientImpl implements Service {
     this.txEncodeAmino = this.txEncodeAmino.bind(this);
     this.txDecodeAmino = this.txDecodeAmino.bind(this);
   }
-  simulate(request: SimulateRequest): Promise<SimulateResponse> {
+  simulate(request: SimulateRequest, useInterfaces: boolean = true): Promise<SimulateResponse> {
     const data = SimulateRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.tx.v1beta1.Service", "Simulate", data);
-    return promise.then(data => SimulateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => SimulateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  getTx(request: GetTxRequest): Promise<GetTxResponse> {
+  getTx(request: GetTxRequest, useInterfaces: boolean = true): Promise<GetTxResponse> {
     const data = GetTxRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.tx.v1beta1.Service", "GetTx", data);
-    return promise.then(data => GetTxResponse.decode(new BinaryReader(data)));
+    return promise.then(data => GetTxResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  broadcastTx(request: BroadcastTxRequest): Promise<BroadcastTxResponse> {
+  broadcastTx(request: BroadcastTxRequest, useInterfaces: boolean = true): Promise<BroadcastTxResponse> {
     const data = BroadcastTxRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.tx.v1beta1.Service", "BroadcastTx", data);
-    return promise.then(data => BroadcastTxResponse.decode(new BinaryReader(data)));
+    return promise.then(data => BroadcastTxResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  getTxsEvent(request: GetTxsEventRequest): Promise<GetTxsEventResponse> {
+  getTxsEvent(request: GetTxsEventRequest, useInterfaces: boolean = true): Promise<GetTxsEventResponse> {
     const data = GetTxsEventRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.tx.v1beta1.Service", "GetTxsEvent", data);
-    return promise.then(data => GetTxsEventResponse.decode(new BinaryReader(data)));
+    return promise.then(data => GetTxsEventResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  getBlockWithTxs(request: GetBlockWithTxsRequest): Promise<GetBlockWithTxsResponse> {
+  getBlockWithTxs(request: GetBlockWithTxsRequest, useInterfaces: boolean = true): Promise<GetBlockWithTxsResponse> {
     const data = GetBlockWithTxsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.tx.v1beta1.Service", "GetBlockWithTxs", data);
-    return promise.then(data => GetBlockWithTxsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => GetBlockWithTxsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  txDecode(request: TxDecodeRequest): Promise<TxDecodeResponse> {
+  txDecode(request: TxDecodeRequest, useInterfaces: boolean = true): Promise<TxDecodeResponse> {
     const data = TxDecodeRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.tx.v1beta1.Service", "TxDecode", data);
-    return promise.then(data => TxDecodeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => TxDecodeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  txEncode(request: TxEncodeRequest): Promise<TxEncodeResponse> {
+  txEncode(request: TxEncodeRequest, useInterfaces: boolean = true): Promise<TxEncodeResponse> {
     const data = TxEncodeRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.tx.v1beta1.Service", "TxEncode", data);
-    return promise.then(data => TxEncodeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => TxEncodeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  txEncodeAmino(request: TxEncodeAminoRequest): Promise<TxEncodeAminoResponse> {
+  txEncodeAmino(request: TxEncodeAminoRequest, useInterfaces: boolean = true): Promise<TxEncodeAminoResponse> {
     const data = TxEncodeAminoRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.tx.v1beta1.Service", "TxEncodeAmino", data);
-    return promise.then(data => TxEncodeAminoResponse.decode(new BinaryReader(data)));
+    return promise.then(data => TxEncodeAminoResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  txDecodeAmino(request: TxDecodeAminoRequest): Promise<TxDecodeAminoResponse> {
+  txDecodeAmino(request: TxDecodeAminoRequest, useInterfaces: boolean = true): Promise<TxDecodeAminoResponse> {
     const data = TxDecodeAminoRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.tx.v1beta1.Service", "TxDecodeAmino", data);
-    return promise.then(data => TxDecodeAminoResponse.decode(new BinaryReader(data)));
+    return promise.then(data => TxDecodeAminoResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new ServiceClientImpl(rpc);
   return {
-    simulate(request: SimulateRequest): Promise<SimulateResponse> {
-      return queryService.simulate(request);
+    simulate(request: SimulateRequest, useInterfaces: boolean = true): Promise<SimulateResponse> {
+      return queryService.simulate(request, useInterfaces);
     },
-    getTx(request: GetTxRequest): Promise<GetTxResponse> {
-      return queryService.getTx(request);
+    getTx(request: GetTxRequest, useInterfaces: boolean = true): Promise<GetTxResponse> {
+      return queryService.getTx(request, useInterfaces);
     },
-    broadcastTx(request: BroadcastTxRequest): Promise<BroadcastTxResponse> {
-      return queryService.broadcastTx(request);
+    broadcastTx(request: BroadcastTxRequest, useInterfaces: boolean = true): Promise<BroadcastTxResponse> {
+      return queryService.broadcastTx(request, useInterfaces);
     },
-    getTxsEvent(request: GetTxsEventRequest): Promise<GetTxsEventResponse> {
-      return queryService.getTxsEvent(request);
+    getTxsEvent(request: GetTxsEventRequest, useInterfaces: boolean = true): Promise<GetTxsEventResponse> {
+      return queryService.getTxsEvent(request, useInterfaces);
     },
-    getBlockWithTxs(request: GetBlockWithTxsRequest): Promise<GetBlockWithTxsResponse> {
-      return queryService.getBlockWithTxs(request);
+    getBlockWithTxs(request: GetBlockWithTxsRequest, useInterfaces: boolean = true): Promise<GetBlockWithTxsResponse> {
+      return queryService.getBlockWithTxs(request, useInterfaces);
     },
-    txDecode(request: TxDecodeRequest): Promise<TxDecodeResponse> {
-      return queryService.txDecode(request);
+    txDecode(request: TxDecodeRequest, useInterfaces: boolean = true): Promise<TxDecodeResponse> {
+      return queryService.txDecode(request, useInterfaces);
     },
-    txEncode(request: TxEncodeRequest): Promise<TxEncodeResponse> {
-      return queryService.txEncode(request);
+    txEncode(request: TxEncodeRequest, useInterfaces: boolean = true): Promise<TxEncodeResponse> {
+      return queryService.txEncode(request, useInterfaces);
     },
-    txEncodeAmino(request: TxEncodeAminoRequest): Promise<TxEncodeAminoResponse> {
-      return queryService.txEncodeAmino(request);
+    txEncodeAmino(request: TxEncodeAminoRequest, useInterfaces: boolean = true): Promise<TxEncodeAminoResponse> {
+      return queryService.txEncodeAmino(request, useInterfaces);
     },
-    txDecodeAmino(request: TxDecodeAminoRequest): Promise<TxDecodeAminoResponse> {
-      return queryService.txDecodeAmino(request);
+    txDecodeAmino(request: TxDecodeAminoRequest, useInterfaces: boolean = true): Promise<TxDecodeAminoResponse> {
+      return queryService.txDecodeAmino(request, useInterfaces);
     }
   };
 };

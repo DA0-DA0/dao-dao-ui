@@ -48,39 +48,39 @@ export class MsgClientImpl implements Msg {
     this.cancelUnbondingDelegation = this.cancelUnbondingDelegation.bind(this);
     this.updateParams = this.updateParams.bind(this);
   }
-  createValidator(request: MsgCreateValidator): Promise<MsgCreateValidatorResponse> {
+  createValidator(request: MsgCreateValidator, useInterfaces: boolean = true): Promise<MsgCreateValidatorResponse> {
     const data = MsgCreateValidator.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "CreateValidator", data);
-    return promise.then(data => MsgCreateValidatorResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgCreateValidatorResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  editValidator(request: MsgEditValidator): Promise<MsgEditValidatorResponse> {
+  editValidator(request: MsgEditValidator, useInterfaces: boolean = true): Promise<MsgEditValidatorResponse> {
     const data = MsgEditValidator.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "EditValidator", data);
-    return promise.then(data => MsgEditValidatorResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgEditValidatorResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  delegate(request: MsgDelegate): Promise<MsgDelegateResponse> {
+  delegate(request: MsgDelegate, useInterfaces: boolean = true): Promise<MsgDelegateResponse> {
     const data = MsgDelegate.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "Delegate", data);
-    return promise.then(data => MsgDelegateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgDelegateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  beginRedelegate(request: MsgBeginRedelegate): Promise<MsgBeginRedelegateResponse> {
+  beginRedelegate(request: MsgBeginRedelegate, useInterfaces: boolean = true): Promise<MsgBeginRedelegateResponse> {
     const data = MsgBeginRedelegate.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "BeginRedelegate", data);
-    return promise.then(data => MsgBeginRedelegateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgBeginRedelegateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  undelegate(request: MsgUndelegate): Promise<MsgUndelegateResponse> {
+  undelegate(request: MsgUndelegate, useInterfaces: boolean = true): Promise<MsgUndelegateResponse> {
     const data = MsgUndelegate.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "Undelegate", data);
-    return promise.then(data => MsgUndelegateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUndelegateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  cancelUnbondingDelegation(request: MsgCancelUnbondingDelegation): Promise<MsgCancelUnbondingDelegationResponse> {
+  cancelUnbondingDelegation(request: MsgCancelUnbondingDelegation, useInterfaces: boolean = true): Promise<MsgCancelUnbondingDelegationResponse> {
     const data = MsgCancelUnbondingDelegation.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "CancelUnbondingDelegation", data);
-    return promise.then(data => MsgCancelUnbondingDelegationResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgCancelUnbondingDelegationResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  updateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse> {
+  updateParams(request: MsgUpdateParams, useInterfaces: boolean = true): Promise<MsgUpdateParamsResponse> {
     const data = MsgUpdateParams.encode(request).finish();
     const promise = this.rpc.request("cosmos.staking.v1beta1.Msg", "UpdateParams", data);
-    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

@@ -12,14 +12,14 @@ export class MsgClientImpl implements Msg {
     this.createStableswapPool = this.createStableswapPool.bind(this);
     this.stableSwapAdjustScalingFactors = this.stableSwapAdjustScalingFactors.bind(this);
   }
-  createStableswapPool(request: MsgCreateStableswapPool): Promise<MsgCreateStableswapPoolResponse> {
+  createStableswapPool(request: MsgCreateStableswapPool, useInterfaces: boolean = true): Promise<MsgCreateStableswapPoolResponse> {
     const data = MsgCreateStableswapPool.encode(request).finish();
     const promise = this.rpc.request("osmosis.gamm.poolmodels.stableswap.v1beta1.Msg", "CreateStableswapPool", data);
-    return promise.then(data => MsgCreateStableswapPoolResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgCreateStableswapPoolResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  stableSwapAdjustScalingFactors(request: MsgStableSwapAdjustScalingFactors): Promise<MsgStableSwapAdjustScalingFactorsResponse> {
+  stableSwapAdjustScalingFactors(request: MsgStableSwapAdjustScalingFactors, useInterfaces: boolean = true): Promise<MsgStableSwapAdjustScalingFactorsResponse> {
     const data = MsgStableSwapAdjustScalingFactors.encode(request).finish();
     const promise = this.rpc.request("osmosis.gamm.poolmodels.stableswap.v1beta1.Msg", "StableSwapAdjustScalingFactors", data);
-    return promise.then(data => MsgStableSwapAdjustScalingFactorsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgStableSwapAdjustScalingFactorsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

@@ -9,7 +9,7 @@ import { BinaryReader, BinaryWriter } from "../../../binary";
  * set to 0, it will remove the denom from the whitelisted set.
  */
 export interface UpdateFeeTokenProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.txfees.v1beta1.UpdateFeeTokenProposal";
   title: string;
   description: string;
   feetokens: FeeToken[];
@@ -42,7 +42,7 @@ export interface UpdateFeeTokenProposalAminoMsg {
  * set to 0, it will remove the denom from the whitelisted set.
  */
 export interface UpdateFeeTokenProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.txfees.v1beta1.UpdateFeeTokenProposal";
   title: string;
   description: string;
   feetokens: FeeTokenSDKType[];
@@ -69,7 +69,7 @@ export const UpdateFeeTokenProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateFeeTokenProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): UpdateFeeTokenProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateFeeTokenProposal();
@@ -83,7 +83,7 @@ export const UpdateFeeTokenProposal = {
           message.description = reader.string();
           break;
         case 3:
-          message.feetokens.push(FeeToken.decode(reader, reader.uint32()));
+          message.feetokens.push(FeeToken.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -106,12 +106,12 @@ export const UpdateFeeTokenProposal = {
       feetokens: Array.isArray(object?.feetokens) ? object.feetokens.map((e: any) => FeeToken.fromAmino(e)) : []
     };
   },
-  toAmino(message: UpdateFeeTokenProposal): UpdateFeeTokenProposalAmino {
+  toAmino(message: UpdateFeeTokenProposal, useInterfaces: boolean = false): UpdateFeeTokenProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
     if (message.feetokens) {
-      obj.feetokens = message.feetokens.map(e => e ? FeeToken.toAmino(e) : undefined);
+      obj.feetokens = message.feetokens.map(e => e ? FeeToken.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.feetokens = [];
     }
@@ -120,14 +120,14 @@ export const UpdateFeeTokenProposal = {
   fromAminoMsg(object: UpdateFeeTokenProposalAminoMsg): UpdateFeeTokenProposal {
     return UpdateFeeTokenProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: UpdateFeeTokenProposal): UpdateFeeTokenProposalAminoMsg {
+  toAminoMsg(message: UpdateFeeTokenProposal, useInterfaces: boolean = false): UpdateFeeTokenProposalAminoMsg {
     return {
       type: "osmosis/UpdateFeeTokenProposal",
-      value: UpdateFeeTokenProposal.toAmino(message)
+      value: UpdateFeeTokenProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: UpdateFeeTokenProposalProtoMsg): UpdateFeeTokenProposal {
-    return UpdateFeeTokenProposal.decode(message.value);
+  fromProtoMsg(message: UpdateFeeTokenProposalProtoMsg, useInterfaces: boolean = false): UpdateFeeTokenProposal {
+    return UpdateFeeTokenProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: UpdateFeeTokenProposal): Uint8Array {
     return UpdateFeeTokenProposal.encode(message).finish();

@@ -12,14 +12,14 @@ export class MsgClientImpl implements Msg {
     this.createGauge = this.createGauge.bind(this);
     this.addToGauge = this.addToGauge.bind(this);
   }
-  createGauge(request: MsgCreateGauge): Promise<MsgCreateGaugeResponse> {
+  createGauge(request: MsgCreateGauge, useInterfaces: boolean = true): Promise<MsgCreateGaugeResponse> {
     const data = MsgCreateGauge.encode(request).finish();
     const promise = this.rpc.request("osmosis.incentives.Msg", "CreateGauge", data);
-    return promise.then(data => MsgCreateGaugeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgCreateGaugeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  addToGauge(request: MsgAddToGauge): Promise<MsgAddToGaugeResponse> {
+  addToGauge(request: MsgAddToGauge, useInterfaces: boolean = true): Promise<MsgAddToGaugeResponse> {
     const data = MsgAddToGauge.encode(request).finish();
     const promise = this.rpc.request("osmosis.incentives.Msg", "AddToGauge", data);
-    return promise.then(data => MsgAddToGaugeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgAddToGaugeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

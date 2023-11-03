@@ -44,34 +44,34 @@ export class MsgClientImpl implements Msg {
     this.setInfoByPoolType = this.setInfoByPoolType.bind(this);
     this.setBaseDenoms = this.setBaseDenoms.bind(this);
   }
-  setHotRoutes(request: MsgSetHotRoutes): Promise<MsgSetHotRoutesResponse> {
+  setHotRoutes(request: MsgSetHotRoutes, useInterfaces: boolean = true): Promise<MsgSetHotRoutesResponse> {
     const data = MsgSetHotRoutes.encode(request).finish();
     const promise = this.rpc.request("osmosis.protorev.v1beta1.Msg", "SetHotRoutes", data);
-    return promise.then(data => MsgSetHotRoutesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSetHotRoutesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  setDeveloperAccount(request: MsgSetDeveloperAccount): Promise<MsgSetDeveloperAccountResponse> {
+  setDeveloperAccount(request: MsgSetDeveloperAccount, useInterfaces: boolean = true): Promise<MsgSetDeveloperAccountResponse> {
     const data = MsgSetDeveloperAccount.encode(request).finish();
     const promise = this.rpc.request("osmosis.protorev.v1beta1.Msg", "SetDeveloperAccount", data);
-    return promise.then(data => MsgSetDeveloperAccountResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSetDeveloperAccountResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  setMaxPoolPointsPerTx(request: MsgSetMaxPoolPointsPerTx): Promise<MsgSetMaxPoolPointsPerTxResponse> {
+  setMaxPoolPointsPerTx(request: MsgSetMaxPoolPointsPerTx, useInterfaces: boolean = true): Promise<MsgSetMaxPoolPointsPerTxResponse> {
     const data = MsgSetMaxPoolPointsPerTx.encode(request).finish();
     const promise = this.rpc.request("osmosis.protorev.v1beta1.Msg", "SetMaxPoolPointsPerTx", data);
-    return promise.then(data => MsgSetMaxPoolPointsPerTxResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSetMaxPoolPointsPerTxResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  setMaxPoolPointsPerBlock(request: MsgSetMaxPoolPointsPerBlock): Promise<MsgSetMaxPoolPointsPerBlockResponse> {
+  setMaxPoolPointsPerBlock(request: MsgSetMaxPoolPointsPerBlock, useInterfaces: boolean = true): Promise<MsgSetMaxPoolPointsPerBlockResponse> {
     const data = MsgSetMaxPoolPointsPerBlock.encode(request).finish();
     const promise = this.rpc.request("osmosis.protorev.v1beta1.Msg", "SetMaxPoolPointsPerBlock", data);
-    return promise.then(data => MsgSetMaxPoolPointsPerBlockResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSetMaxPoolPointsPerBlockResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  setInfoByPoolType(request: MsgSetInfoByPoolType): Promise<MsgSetInfoByPoolTypeResponse> {
+  setInfoByPoolType(request: MsgSetInfoByPoolType, useInterfaces: boolean = true): Promise<MsgSetInfoByPoolTypeResponse> {
     const data = MsgSetInfoByPoolType.encode(request).finish();
     const promise = this.rpc.request("osmosis.protorev.v1beta1.Msg", "SetInfoByPoolType", data);
-    return promise.then(data => MsgSetInfoByPoolTypeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSetInfoByPoolTypeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  setBaseDenoms(request: MsgSetBaseDenoms): Promise<MsgSetBaseDenomsResponse> {
+  setBaseDenoms(request: MsgSetBaseDenoms, useInterfaces: boolean = true): Promise<MsgSetBaseDenomsResponse> {
     const data = MsgSetBaseDenoms.encode(request).finish();
     const promise = this.rpc.request("osmosis.protorev.v1beta1.Msg", "SetBaseDenoms", data);
-    return promise.then(data => MsgSetBaseDenomsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSetBaseDenomsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

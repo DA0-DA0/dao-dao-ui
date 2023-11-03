@@ -19,34 +19,34 @@ export class QueryClientImpl implements Query {
     this.inflation = this.inflation.bind(this);
     this.annualProvisions = this.annualProvisions.bind(this);
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("juno.mint.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  inflation(request: QueryInflationRequest = {}): Promise<QueryInflationResponse> {
+  inflation(request: QueryInflationRequest = {}, useInterfaces: boolean = true): Promise<QueryInflationResponse> {
     const data = QueryInflationRequest.encode(request).finish();
     const promise = this.rpc.request("juno.mint.Query", "Inflation", data);
-    return promise.then(data => QueryInflationResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryInflationResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  annualProvisions(request: QueryAnnualProvisionsRequest = {}): Promise<QueryAnnualProvisionsResponse> {
+  annualProvisions(request: QueryAnnualProvisionsRequest = {}, useInterfaces: boolean = true): Promise<QueryAnnualProvisionsResponse> {
     const data = QueryAnnualProvisionsRequest.encode(request).finish();
     const promise = this.rpc.request("juno.mint.Query", "AnnualProvisions", data);
-    return promise.then(data => QueryAnnualProvisionsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryAnnualProvisionsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    inflation(request?: QueryInflationRequest): Promise<QueryInflationResponse> {
-      return queryService.inflation(request);
+    inflation(request?: QueryInflationRequest, useInterfaces: boolean = true): Promise<QueryInflationResponse> {
+      return queryService.inflation(request, useInterfaces);
     },
-    annualProvisions(request?: QueryAnnualProvisionsRequest): Promise<QueryAnnualProvisionsResponse> {
-      return queryService.annualProvisions(request);
+    annualProvisions(request?: QueryAnnualProvisionsRequest, useInterfaces: boolean = true): Promise<QueryAnnualProvisionsResponse> {
+      return queryService.annualProvisions(request, useInterfaces);
     }
   };
 };

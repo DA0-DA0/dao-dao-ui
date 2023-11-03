@@ -47,7 +47,7 @@ export interface ParamsResponseSDKType {
 /** =============================== Pools */
 export interface PoolsRequest {
   /** pagination defines an optional pagination for the request. */
-  pagination: PageRequest | undefined;
+  pagination?: PageRequest | undefined;
 }
 export interface PoolsRequestProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.PoolsRequest";
@@ -64,12 +64,12 @@ export interface PoolsRequestAminoMsg {
 }
 /** =============================== Pools */
 export interface PoolsRequestSDKType {
-  pagination: PageRequestSDKType | undefined;
+  pagination?: PageRequestSDKType | undefined;
 }
 export interface PoolsResponse {
   pools: (Pool1 & CosmWasmPool & Pool2 & Pool3 & Any)[] | Any[];
   /** pagination defines the pagination in the response. */
-  pagination: PageResponse | undefined;
+  pagination?: PageResponse | undefined;
 }
 export interface PoolsResponseProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.PoolsResponse";
@@ -89,7 +89,7 @@ export interface PoolsResponseAminoMsg {
 }
 export interface PoolsResponseSDKType {
   pools: (Pool1SDKType | CosmWasmPoolSDKType | Pool2SDKType | Pool3SDKType | AnySDKType)[];
-  pagination: PageResponseSDKType | undefined;
+  pagination?: PageResponseSDKType | undefined;
 }
 /** =============================== ContractInfoByPoolId */
 export interface ContractInfoByPoolIdRequest {
@@ -151,7 +151,7 @@ export const ParamsRequest = {
   encode(_: ParamsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ParamsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ParamsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsRequest();
@@ -172,21 +172,21 @@ export const ParamsRequest = {
   fromAmino(_: ParamsRequestAmino): ParamsRequest {
     return {};
   },
-  toAmino(_: ParamsRequest): ParamsRequestAmino {
+  toAmino(_: ParamsRequest, useInterfaces: boolean = false): ParamsRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: ParamsRequestAminoMsg): ParamsRequest {
     return ParamsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: ParamsRequest): ParamsRequestAminoMsg {
+  toAminoMsg(message: ParamsRequest, useInterfaces: boolean = false): ParamsRequestAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/params-request",
-      value: ParamsRequest.toAmino(message)
+      value: ParamsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ParamsRequestProtoMsg): ParamsRequest {
-    return ParamsRequest.decode(message.value);
+  fromProtoMsg(message: ParamsRequestProtoMsg, useInterfaces: boolean = false): ParamsRequest {
+    return ParamsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ParamsRequest): Uint8Array {
     return ParamsRequest.encode(message).finish();
@@ -211,7 +211,7 @@ export const ParamsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ParamsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ParamsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsResponse();
@@ -219,7 +219,7 @@ export const ParamsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -238,22 +238,22 @@ export const ParamsResponse = {
       params: object?.params ? Params.fromAmino(object.params) : undefined
     };
   },
-  toAmino(message: ParamsResponse): ParamsResponseAmino {
+  toAmino(message: ParamsResponse, useInterfaces: boolean = false): ParamsResponseAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsResponseAminoMsg): ParamsResponse {
     return ParamsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: ParamsResponse): ParamsResponseAminoMsg {
+  toAminoMsg(message: ParamsResponse, useInterfaces: boolean = false): ParamsResponseAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/params-response",
-      value: ParamsResponse.toAmino(message)
+      value: ParamsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ParamsResponseProtoMsg): ParamsResponse {
-    return ParamsResponse.decode(message.value);
+  fromProtoMsg(message: ParamsResponseProtoMsg, useInterfaces: boolean = false): ParamsResponse {
+    return ParamsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ParamsResponse): Uint8Array {
     return ParamsResponse.encode(message).finish();
@@ -267,7 +267,7 @@ export const ParamsResponse = {
 };
 function createBasePoolsRequest(): PoolsRequest {
   return {
-    pagination: PageRequest.fromPartial({})
+    pagination: undefined
   };
 }
 export const PoolsRequest = {
@@ -278,7 +278,7 @@ export const PoolsRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PoolsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PoolsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolsRequest();
@@ -286,7 +286,7 @@ export const PoolsRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 2:
-          message.pagination = PageRequest.decode(reader, reader.uint32());
+          message.pagination = PageRequest.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -305,22 +305,22 @@ export const PoolsRequest = {
       pagination: object?.pagination ? PageRequest.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: PoolsRequest): PoolsRequestAmino {
+  toAmino(message: PoolsRequest, useInterfaces: boolean = false): PoolsRequestAmino {
     const obj: any = {};
-    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: PoolsRequestAminoMsg): PoolsRequest {
     return PoolsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: PoolsRequest): PoolsRequestAminoMsg {
+  toAminoMsg(message: PoolsRequest, useInterfaces: boolean = false): PoolsRequestAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/pools-request",
-      value: PoolsRequest.toAmino(message)
+      value: PoolsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PoolsRequestProtoMsg): PoolsRequest {
-    return PoolsRequest.decode(message.value);
+  fromProtoMsg(message: PoolsRequestProtoMsg, useInterfaces: boolean = false): PoolsRequest {
+    return PoolsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PoolsRequest): Uint8Array {
     return PoolsRequest.encode(message).finish();
@@ -335,7 +335,7 @@ export const PoolsRequest = {
 function createBasePoolsResponse(): PoolsResponse {
   return {
     pools: [],
-    pagination: PageResponse.fromPartial({})
+    pagination: undefined
   };
 }
 export const PoolsResponse = {
@@ -349,7 +349,7 @@ export const PoolsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PoolsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PoolsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolsResponse();
@@ -357,10 +357,10 @@ export const PoolsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.pools.push((PoolI_InterfaceDecoder(reader) as Any));
+          message.pools.push(useInterfaces ? (PoolI_InterfaceDecoder(reader) as Any) : Any.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.pagination = PageResponse.decode(reader, reader.uint32());
+          message.pagination = PageResponse.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -381,27 +381,27 @@ export const PoolsResponse = {
       pagination: object?.pagination ? PageResponse.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: PoolsResponse): PoolsResponseAmino {
+  toAmino(message: PoolsResponse, useInterfaces: boolean = false): PoolsResponseAmino {
     const obj: any = {};
     if (message.pools) {
-      obj.pools = message.pools.map(e => e ? PoolI_ToAmino((e as Any)) : undefined);
+      obj.pools = message.pools.map(e => e ? PoolI_ToAmino((e as Any), useInterfaces) : undefined);
     } else {
       obj.pools = [];
     }
-    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: PoolsResponseAminoMsg): PoolsResponse {
     return PoolsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: PoolsResponse): PoolsResponseAminoMsg {
+  toAminoMsg(message: PoolsResponse, useInterfaces: boolean = false): PoolsResponseAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/pools-response",
-      value: PoolsResponse.toAmino(message)
+      value: PoolsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PoolsResponseProtoMsg): PoolsResponse {
-    return PoolsResponse.decode(message.value);
+  fromProtoMsg(message: PoolsResponseProtoMsg, useInterfaces: boolean = false): PoolsResponse {
+    return PoolsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PoolsResponse): Uint8Array {
     return PoolsResponse.encode(message).finish();
@@ -426,7 +426,7 @@ export const ContractInfoByPoolIdRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ContractInfoByPoolIdRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ContractInfoByPoolIdRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractInfoByPoolIdRequest();
@@ -453,7 +453,7 @@ export const ContractInfoByPoolIdRequest = {
       poolId: BigInt(object.pool_id)
     };
   },
-  toAmino(message: ContractInfoByPoolIdRequest): ContractInfoByPoolIdRequestAmino {
+  toAmino(message: ContractInfoByPoolIdRequest, useInterfaces: boolean = false): ContractInfoByPoolIdRequestAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     return obj;
@@ -461,14 +461,14 @@ export const ContractInfoByPoolIdRequest = {
   fromAminoMsg(object: ContractInfoByPoolIdRequestAminoMsg): ContractInfoByPoolIdRequest {
     return ContractInfoByPoolIdRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: ContractInfoByPoolIdRequest): ContractInfoByPoolIdRequestAminoMsg {
+  toAminoMsg(message: ContractInfoByPoolIdRequest, useInterfaces: boolean = false): ContractInfoByPoolIdRequestAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/contract-info-by-pool-id-request",
-      value: ContractInfoByPoolIdRequest.toAmino(message)
+      value: ContractInfoByPoolIdRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ContractInfoByPoolIdRequestProtoMsg): ContractInfoByPoolIdRequest {
-    return ContractInfoByPoolIdRequest.decode(message.value);
+  fromProtoMsg(message: ContractInfoByPoolIdRequestProtoMsg, useInterfaces: boolean = false): ContractInfoByPoolIdRequest {
+    return ContractInfoByPoolIdRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ContractInfoByPoolIdRequest): Uint8Array {
     return ContractInfoByPoolIdRequest.encode(message).finish();
@@ -497,7 +497,7 @@ export const ContractInfoByPoolIdResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ContractInfoByPoolIdResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ContractInfoByPoolIdResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractInfoByPoolIdResponse();
@@ -529,7 +529,7 @@ export const ContractInfoByPoolIdResponse = {
       codeId: BigInt(object.code_id)
     };
   },
-  toAmino(message: ContractInfoByPoolIdResponse): ContractInfoByPoolIdResponseAmino {
+  toAmino(message: ContractInfoByPoolIdResponse, useInterfaces: boolean = false): ContractInfoByPoolIdResponseAmino {
     const obj: any = {};
     obj.contract_address = message.contractAddress;
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
@@ -538,14 +538,14 @@ export const ContractInfoByPoolIdResponse = {
   fromAminoMsg(object: ContractInfoByPoolIdResponseAminoMsg): ContractInfoByPoolIdResponse {
     return ContractInfoByPoolIdResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: ContractInfoByPoolIdResponse): ContractInfoByPoolIdResponseAminoMsg {
+  toAminoMsg(message: ContractInfoByPoolIdResponse, useInterfaces: boolean = false): ContractInfoByPoolIdResponseAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/contract-info-by-pool-id-response",
-      value: ContractInfoByPoolIdResponse.toAmino(message)
+      value: ContractInfoByPoolIdResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ContractInfoByPoolIdResponseProtoMsg): ContractInfoByPoolIdResponse {
-    return ContractInfoByPoolIdResponse.decode(message.value);
+  fromProtoMsg(message: ContractInfoByPoolIdResponseProtoMsg, useInterfaces: boolean = false): ContractInfoByPoolIdResponse {
+    return ContractInfoByPoolIdResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ContractInfoByPoolIdResponse): Uint8Array {
     return ContractInfoByPoolIdResponse.encode(message).finish();
@@ -559,16 +559,16 @@ export const ContractInfoByPoolIdResponse = {
 };
 export const PoolI_InterfaceDecoder = (input: BinaryReader | Uint8Array): Pool1 | CosmWasmPool | Pool2 | Pool3 | Any => {
   const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-  const data = Any.decode(reader, reader.uint32());
+  const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
-      return Pool1.decode(data.value);
+      return Pool1.decode(data.value, undefined, true);
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
-      return CosmWasmPool.decode(data.value);
+      return CosmWasmPool.decode(data.value, undefined, true);
     case "/osmosis.gamm.v1beta1.Pool":
-      return Pool2.decode(data.value);
+      return Pool2.decode(data.value, undefined, true);
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
-      return Pool3.decode(data.value);
+      return Pool3.decode(data.value, undefined, true);
     default:
       return data;
   }
@@ -599,29 +599,29 @@ export const PoolI_FromAmino = (content: AnyAmino) => {
       return Any.fromAmino(content);
   }
 };
-export const PoolI_ToAmino = (content: Any) => {
+export const PoolI_ToAmino = (content: Any, useInterfaces: boolean = false) => {
   switch (content.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
       return {
         type: "osmosis/concentratedliquidity/pool",
-        value: Pool1.toAmino(Pool1.decode(content.value))
+        value: Pool1.toAmino(Pool1.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
       return {
         type: "osmosis/cosmwasmpool/cosm-wasm-pool",
-        value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value))
+        value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.gamm.v1beta1.Pool":
       return {
         type: "osmosis/gamm/BalancerPool",
-        value: Pool2.toAmino(Pool2.decode(content.value))
+        value: Pool2.toAmino(Pool2.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
       return {
         type: "osmosis/gamm/StableswapPool",
-        value: Pool3.toAmino(Pool3.decode(content.value))
+        value: Pool3.toAmino(Pool3.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     default:
-      return Any.toAmino(content);
+      return Any.toAmino(content, useInterfaces);
   }
 };

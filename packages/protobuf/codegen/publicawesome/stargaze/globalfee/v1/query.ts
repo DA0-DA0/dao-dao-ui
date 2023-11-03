@@ -81,7 +81,7 @@ export interface QueryParamsRequestAminoMsg {
 }
 export interface QueryParamsRequestSDKType {}
 export interface QueryParamsResponse {
-  params: Params | undefined;
+  params?: Params | undefined;
 }
 export interface QueryParamsResponseProtoMsg {
   typeUrl: "/publicawesome.stargaze.globalfee.v1.QueryParamsResponse";
@@ -95,7 +95,7 @@ export interface QueryParamsResponseAminoMsg {
   value: QueryParamsResponseAmino;
 }
 export interface QueryParamsResponseSDKType {
-  params: ParamsSDKType | undefined;
+  params?: ParamsSDKType | undefined;
 }
 export interface QueryAuthorizationsRequest {}
 export interface QueryAuthorizationsRequestProtoMsg {
@@ -141,7 +141,7 @@ export const QueryCodeAuthorizationRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryCodeAuthorizationRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryCodeAuthorizationRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCodeAuthorizationRequest();
@@ -168,7 +168,7 @@ export const QueryCodeAuthorizationRequest = {
       codeId: BigInt(object.code_id)
     };
   },
-  toAmino(message: QueryCodeAuthorizationRequest): QueryCodeAuthorizationRequestAmino {
+  toAmino(message: QueryCodeAuthorizationRequest, useInterfaces: boolean = false): QueryCodeAuthorizationRequestAmino {
     const obj: any = {};
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
     return obj;
@@ -176,8 +176,8 @@ export const QueryCodeAuthorizationRequest = {
   fromAminoMsg(object: QueryCodeAuthorizationRequestAminoMsg): QueryCodeAuthorizationRequest {
     return QueryCodeAuthorizationRequest.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryCodeAuthorizationRequestProtoMsg): QueryCodeAuthorizationRequest {
-    return QueryCodeAuthorizationRequest.decode(message.value);
+  fromProtoMsg(message: QueryCodeAuthorizationRequestProtoMsg, useInterfaces: boolean = false): QueryCodeAuthorizationRequest {
+    return QueryCodeAuthorizationRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryCodeAuthorizationRequest): Uint8Array {
     return QueryCodeAuthorizationRequest.encode(message).finish();
@@ -202,7 +202,7 @@ export const QueryCodeAuthorizationResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryCodeAuthorizationResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryCodeAuthorizationResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCodeAuthorizationResponse();
@@ -229,7 +229,7 @@ export const QueryCodeAuthorizationResponse = {
       methods: Array.isArray(object?.methods) ? object.methods.map((e: any) => e) : []
     };
   },
-  toAmino(message: QueryCodeAuthorizationResponse): QueryCodeAuthorizationResponseAmino {
+  toAmino(message: QueryCodeAuthorizationResponse, useInterfaces: boolean = false): QueryCodeAuthorizationResponseAmino {
     const obj: any = {};
     if (message.methods) {
       obj.methods = message.methods.map(e => e);
@@ -241,8 +241,8 @@ export const QueryCodeAuthorizationResponse = {
   fromAminoMsg(object: QueryCodeAuthorizationResponseAminoMsg): QueryCodeAuthorizationResponse {
     return QueryCodeAuthorizationResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryCodeAuthorizationResponseProtoMsg): QueryCodeAuthorizationResponse {
-    return QueryCodeAuthorizationResponse.decode(message.value);
+  fromProtoMsg(message: QueryCodeAuthorizationResponseProtoMsg, useInterfaces: boolean = false): QueryCodeAuthorizationResponse {
+    return QueryCodeAuthorizationResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryCodeAuthorizationResponse): Uint8Array {
     return QueryCodeAuthorizationResponse.encode(message).finish();
@@ -267,7 +267,7 @@ export const QueryContractAuthorizationRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryContractAuthorizationRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryContractAuthorizationRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryContractAuthorizationRequest();
@@ -294,7 +294,7 @@ export const QueryContractAuthorizationRequest = {
       contractAddress: object.contract_address
     };
   },
-  toAmino(message: QueryContractAuthorizationRequest): QueryContractAuthorizationRequestAmino {
+  toAmino(message: QueryContractAuthorizationRequest, useInterfaces: boolean = false): QueryContractAuthorizationRequestAmino {
     const obj: any = {};
     obj.contract_address = message.contractAddress;
     return obj;
@@ -302,8 +302,8 @@ export const QueryContractAuthorizationRequest = {
   fromAminoMsg(object: QueryContractAuthorizationRequestAminoMsg): QueryContractAuthorizationRequest {
     return QueryContractAuthorizationRequest.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryContractAuthorizationRequestProtoMsg): QueryContractAuthorizationRequest {
-    return QueryContractAuthorizationRequest.decode(message.value);
+  fromProtoMsg(message: QueryContractAuthorizationRequestProtoMsg, useInterfaces: boolean = false): QueryContractAuthorizationRequest {
+    return QueryContractAuthorizationRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryContractAuthorizationRequest): Uint8Array {
     return QueryContractAuthorizationRequest.encode(message).finish();
@@ -328,7 +328,7 @@ export const QueryContractAuthorizationResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryContractAuthorizationResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryContractAuthorizationResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryContractAuthorizationResponse();
@@ -355,7 +355,7 @@ export const QueryContractAuthorizationResponse = {
       methods: Array.isArray(object?.methods) ? object.methods.map((e: any) => e) : []
     };
   },
-  toAmino(message: QueryContractAuthorizationResponse): QueryContractAuthorizationResponseAmino {
+  toAmino(message: QueryContractAuthorizationResponse, useInterfaces: boolean = false): QueryContractAuthorizationResponseAmino {
     const obj: any = {};
     if (message.methods) {
       obj.methods = message.methods.map(e => e);
@@ -367,8 +367,8 @@ export const QueryContractAuthorizationResponse = {
   fromAminoMsg(object: QueryContractAuthorizationResponseAminoMsg): QueryContractAuthorizationResponse {
     return QueryContractAuthorizationResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryContractAuthorizationResponseProtoMsg): QueryContractAuthorizationResponse {
-    return QueryContractAuthorizationResponse.decode(message.value);
+  fromProtoMsg(message: QueryContractAuthorizationResponseProtoMsg, useInterfaces: boolean = false): QueryContractAuthorizationResponse {
+    return QueryContractAuthorizationResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryContractAuthorizationResponse): Uint8Array {
     return QueryContractAuthorizationResponse.encode(message).finish();
@@ -388,7 +388,7 @@ export const QueryParamsRequest = {
   encode(_: QueryParamsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryParamsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryParamsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
@@ -409,15 +409,15 @@ export const QueryParamsRequest = {
   fromAmino(_: QueryParamsRequestAmino): QueryParamsRequest {
     return {};
   },
-  toAmino(_: QueryParamsRequest): QueryParamsRequestAmino {
+  toAmino(_: QueryParamsRequest, useInterfaces: boolean = false): QueryParamsRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryParamsRequestAminoMsg): QueryParamsRequest {
     return QueryParamsRequest.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryParamsRequestProtoMsg): QueryParamsRequest {
-    return QueryParamsRequest.decode(message.value);
+  fromProtoMsg(message: QueryParamsRequestProtoMsg, useInterfaces: boolean = false): QueryParamsRequest {
+    return QueryParamsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryParamsRequest): Uint8Array {
     return QueryParamsRequest.encode(message).finish();
@@ -431,7 +431,7 @@ export const QueryParamsRequest = {
 };
 function createBaseQueryParamsResponse(): QueryParamsResponse {
   return {
-    params: Params.fromPartial({})
+    params: undefined
   };
 }
 export const QueryParamsResponse = {
@@ -442,7 +442,7 @@ export const QueryParamsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryParamsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryParamsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
@@ -450,7 +450,7 @@ export const QueryParamsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -469,16 +469,16 @@ export const QueryParamsResponse = {
       params: object?.params ? Params.fromAmino(object.params) : undefined
     };
   },
-  toAmino(message: QueryParamsResponse): QueryParamsResponseAmino {
+  toAmino(message: QueryParamsResponse, useInterfaces: boolean = false): QueryParamsResponseAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryParamsResponseAminoMsg): QueryParamsResponse {
     return QueryParamsResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryParamsResponseProtoMsg): QueryParamsResponse {
-    return QueryParamsResponse.decode(message.value);
+  fromProtoMsg(message: QueryParamsResponseProtoMsg, useInterfaces: boolean = false): QueryParamsResponse {
+    return QueryParamsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryParamsResponse): Uint8Array {
     return QueryParamsResponse.encode(message).finish();
@@ -498,7 +498,7 @@ export const QueryAuthorizationsRequest = {
   encode(_: QueryAuthorizationsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryAuthorizationsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAuthorizationsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryAuthorizationsRequest();
@@ -519,15 +519,15 @@ export const QueryAuthorizationsRequest = {
   fromAmino(_: QueryAuthorizationsRequestAmino): QueryAuthorizationsRequest {
     return {};
   },
-  toAmino(_: QueryAuthorizationsRequest): QueryAuthorizationsRequestAmino {
+  toAmino(_: QueryAuthorizationsRequest, useInterfaces: boolean = false): QueryAuthorizationsRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryAuthorizationsRequestAminoMsg): QueryAuthorizationsRequest {
     return QueryAuthorizationsRequest.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryAuthorizationsRequestProtoMsg): QueryAuthorizationsRequest {
-    return QueryAuthorizationsRequest.decode(message.value);
+  fromProtoMsg(message: QueryAuthorizationsRequestProtoMsg, useInterfaces: boolean = false): QueryAuthorizationsRequest {
+    return QueryAuthorizationsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryAuthorizationsRequest): Uint8Array {
     return QueryAuthorizationsRequest.encode(message).finish();
@@ -556,7 +556,7 @@ export const QueryAuthorizationsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryAuthorizationsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryAuthorizationsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryAuthorizationsResponse();
@@ -564,10 +564,10 @@ export const QueryAuthorizationsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.codeAuthorizations.push(CodeAuthorization.decode(reader, reader.uint32()));
+          message.codeAuthorizations.push(CodeAuthorization.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.contractAuthorizations.push(ContractAuthorization.decode(reader, reader.uint32()));
+          message.contractAuthorizations.push(ContractAuthorization.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -588,15 +588,15 @@ export const QueryAuthorizationsResponse = {
       contractAuthorizations: Array.isArray(object?.contract_authorizations) ? object.contract_authorizations.map((e: any) => ContractAuthorization.fromAmino(e)) : []
     };
   },
-  toAmino(message: QueryAuthorizationsResponse): QueryAuthorizationsResponseAmino {
+  toAmino(message: QueryAuthorizationsResponse, useInterfaces: boolean = false): QueryAuthorizationsResponseAmino {
     const obj: any = {};
     if (message.codeAuthorizations) {
-      obj.code_authorizations = message.codeAuthorizations.map(e => e ? CodeAuthorization.toAmino(e) : undefined);
+      obj.code_authorizations = message.codeAuthorizations.map(e => e ? CodeAuthorization.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.code_authorizations = [];
     }
     if (message.contractAuthorizations) {
-      obj.contract_authorizations = message.contractAuthorizations.map(e => e ? ContractAuthorization.toAmino(e) : undefined);
+      obj.contract_authorizations = message.contractAuthorizations.map(e => e ? ContractAuthorization.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.contract_authorizations = [];
     }
@@ -605,8 +605,8 @@ export const QueryAuthorizationsResponse = {
   fromAminoMsg(object: QueryAuthorizationsResponseAminoMsg): QueryAuthorizationsResponse {
     return QueryAuthorizationsResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryAuthorizationsResponseProtoMsg): QueryAuthorizationsResponse {
-    return QueryAuthorizationsResponse.decode(message.value);
+  fromProtoMsg(message: QueryAuthorizationsResponseProtoMsg, useInterfaces: boolean = false): QueryAuthorizationsResponse {
+    return QueryAuthorizationsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryAuthorizationsResponse): Uint8Array {
     return QueryAuthorizationsResponse.encode(message).finish();

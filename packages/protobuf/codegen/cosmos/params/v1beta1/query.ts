@@ -169,7 +169,7 @@ export const QueryParamsRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryParamsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryParamsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
@@ -201,7 +201,7 @@ export const QueryParamsRequest = {
       key: object.key
     };
   },
-  toAmino(message: QueryParamsRequest): QueryParamsRequestAmino {
+  toAmino(message: QueryParamsRequest, useInterfaces: boolean = false): QueryParamsRequestAmino {
     const obj: any = {};
     obj.subspace = message.subspace;
     obj.key = message.key;
@@ -210,14 +210,14 @@ export const QueryParamsRequest = {
   fromAminoMsg(object: QueryParamsRequestAminoMsg): QueryParamsRequest {
     return QueryParamsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryParamsRequest): QueryParamsRequestAminoMsg {
+  toAminoMsg(message: QueryParamsRequest, useInterfaces: boolean = false): QueryParamsRequestAminoMsg {
     return {
       type: "cosmos-sdk/QueryParamsRequest",
-      value: QueryParamsRequest.toAmino(message)
+      value: QueryParamsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryParamsRequestProtoMsg): QueryParamsRequest {
-    return QueryParamsRequest.decode(message.value);
+  fromProtoMsg(message: QueryParamsRequestProtoMsg, useInterfaces: boolean = false): QueryParamsRequest {
+    return QueryParamsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryParamsRequest): Uint8Array {
     return QueryParamsRequest.encode(message).finish();
@@ -242,7 +242,7 @@ export const QueryParamsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryParamsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryParamsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
@@ -250,7 +250,7 @@ export const QueryParamsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.param = ParamChange.decode(reader, reader.uint32());
+          message.param = ParamChange.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -269,22 +269,22 @@ export const QueryParamsResponse = {
       param: object?.param ? ParamChange.fromAmino(object.param) : undefined
     };
   },
-  toAmino(message: QueryParamsResponse): QueryParamsResponseAmino {
+  toAmino(message: QueryParamsResponse, useInterfaces: boolean = false): QueryParamsResponseAmino {
     const obj: any = {};
-    obj.param = message.param ? ParamChange.toAmino(message.param) : undefined;
+    obj.param = message.param ? ParamChange.toAmino(message.param, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryParamsResponseAminoMsg): QueryParamsResponse {
     return QueryParamsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryParamsResponse): QueryParamsResponseAminoMsg {
+  toAminoMsg(message: QueryParamsResponse, useInterfaces: boolean = false): QueryParamsResponseAminoMsg {
     return {
       type: "cosmos-sdk/QueryParamsResponse",
-      value: QueryParamsResponse.toAmino(message)
+      value: QueryParamsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryParamsResponseProtoMsg): QueryParamsResponse {
-    return QueryParamsResponse.decode(message.value);
+  fromProtoMsg(message: QueryParamsResponseProtoMsg, useInterfaces: boolean = false): QueryParamsResponse {
+    return QueryParamsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryParamsResponse): Uint8Array {
     return QueryParamsResponse.encode(message).finish();
@@ -304,7 +304,7 @@ export const QuerySubspacesRequest = {
   encode(_: QuerySubspacesRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QuerySubspacesRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySubspacesRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuerySubspacesRequest();
@@ -325,21 +325,21 @@ export const QuerySubspacesRequest = {
   fromAmino(_: QuerySubspacesRequestAmino): QuerySubspacesRequest {
     return {};
   },
-  toAmino(_: QuerySubspacesRequest): QuerySubspacesRequestAmino {
+  toAmino(_: QuerySubspacesRequest, useInterfaces: boolean = false): QuerySubspacesRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QuerySubspacesRequestAminoMsg): QuerySubspacesRequest {
     return QuerySubspacesRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QuerySubspacesRequest): QuerySubspacesRequestAminoMsg {
+  toAminoMsg(message: QuerySubspacesRequest, useInterfaces: boolean = false): QuerySubspacesRequestAminoMsg {
     return {
       type: "cosmos-sdk/QuerySubspacesRequest",
-      value: QuerySubspacesRequest.toAmino(message)
+      value: QuerySubspacesRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QuerySubspacesRequestProtoMsg): QuerySubspacesRequest {
-    return QuerySubspacesRequest.decode(message.value);
+  fromProtoMsg(message: QuerySubspacesRequestProtoMsg, useInterfaces: boolean = false): QuerySubspacesRequest {
+    return QuerySubspacesRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QuerySubspacesRequest): Uint8Array {
     return QuerySubspacesRequest.encode(message).finish();
@@ -364,7 +364,7 @@ export const QuerySubspacesResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QuerySubspacesResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QuerySubspacesResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQuerySubspacesResponse();
@@ -372,7 +372,7 @@ export const QuerySubspacesResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.subspaces.push(Subspace.decode(reader, reader.uint32()));
+          message.subspaces.push(Subspace.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -391,10 +391,10 @@ export const QuerySubspacesResponse = {
       subspaces: Array.isArray(object?.subspaces) ? object.subspaces.map((e: any) => Subspace.fromAmino(e)) : []
     };
   },
-  toAmino(message: QuerySubspacesResponse): QuerySubspacesResponseAmino {
+  toAmino(message: QuerySubspacesResponse, useInterfaces: boolean = false): QuerySubspacesResponseAmino {
     const obj: any = {};
     if (message.subspaces) {
-      obj.subspaces = message.subspaces.map(e => e ? Subspace.toAmino(e) : undefined);
+      obj.subspaces = message.subspaces.map(e => e ? Subspace.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.subspaces = [];
     }
@@ -403,14 +403,14 @@ export const QuerySubspacesResponse = {
   fromAminoMsg(object: QuerySubspacesResponseAminoMsg): QuerySubspacesResponse {
     return QuerySubspacesResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QuerySubspacesResponse): QuerySubspacesResponseAminoMsg {
+  toAminoMsg(message: QuerySubspacesResponse, useInterfaces: boolean = false): QuerySubspacesResponseAminoMsg {
     return {
       type: "cosmos-sdk/QuerySubspacesResponse",
-      value: QuerySubspacesResponse.toAmino(message)
+      value: QuerySubspacesResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QuerySubspacesResponseProtoMsg): QuerySubspacesResponse {
-    return QuerySubspacesResponse.decode(message.value);
+  fromProtoMsg(message: QuerySubspacesResponseProtoMsg, useInterfaces: boolean = false): QuerySubspacesResponse {
+    return QuerySubspacesResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QuerySubspacesResponse): Uint8Array {
     return QuerySubspacesResponse.encode(message).finish();
@@ -439,7 +439,7 @@ export const Subspace = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Subspace {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Subspace {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSubspace();
@@ -471,7 +471,7 @@ export const Subspace = {
       keys: Array.isArray(object?.keys) ? object.keys.map((e: any) => e) : []
     };
   },
-  toAmino(message: Subspace): SubspaceAmino {
+  toAmino(message: Subspace, useInterfaces: boolean = false): SubspaceAmino {
     const obj: any = {};
     obj.subspace = message.subspace;
     if (message.keys) {
@@ -484,14 +484,14 @@ export const Subspace = {
   fromAminoMsg(object: SubspaceAminoMsg): Subspace {
     return Subspace.fromAmino(object.value);
   },
-  toAminoMsg(message: Subspace): SubspaceAminoMsg {
+  toAminoMsg(message: Subspace, useInterfaces: boolean = false): SubspaceAminoMsg {
     return {
       type: "cosmos-sdk/Subspace",
-      value: Subspace.toAmino(message)
+      value: Subspace.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SubspaceProtoMsg): Subspace {
-    return Subspace.decode(message.value);
+  fromProtoMsg(message: SubspaceProtoMsg, useInterfaces: boolean = false): Subspace {
+    return Subspace.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Subspace): Uint8Array {
     return Subspace.encode(message).finish();

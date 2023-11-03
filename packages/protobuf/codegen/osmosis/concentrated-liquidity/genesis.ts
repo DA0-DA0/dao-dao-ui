@@ -63,7 +63,7 @@ export interface FullTickSDKType {
  */
 export interface PoolData {
   /** pool struct */
-  pool: (Pool1 & CosmWasmPool & Pool2 & Pool3 & Any) | undefined;
+  pool?: (Pool1 & CosmWasmPool & Pool2 & Pool3 & Any) | undefined;
   /** pool's ticks */
   ticks: FullTick[];
   spreadRewardAccumulator: AccumObject | undefined;
@@ -101,14 +101,14 @@ export interface PoolDataAminoMsg {
  * for genesis state.
  */
 export interface PoolDataSDKType {
-  pool: Pool1SDKType | CosmWasmPoolSDKType | Pool2SDKType | Pool3SDKType | AnySDKType | undefined;
+  pool?: Pool1SDKType | CosmWasmPoolSDKType | Pool2SDKType | Pool3SDKType | AnySDKType | undefined;
   ticks: FullTickSDKType[];
   spread_reward_accumulator: AccumObjectSDKType | undefined;
   incentives_accumulators: AccumObjectSDKType[];
   incentive_records: IncentiveRecordSDKType[];
 }
 export interface PositionData {
-  position: Position | undefined;
+  position?: Position | undefined;
   lockId: bigint;
   spreadRewardAccumRecord: Record | undefined;
   uptimeAccumRecords: Record[];
@@ -128,7 +128,7 @@ export interface PositionDataAminoMsg {
   value: PositionDataAmino;
 }
 export interface PositionDataSDKType {
-  position: PositionSDKType | undefined;
+  position?: PositionSDKType | undefined;
   lock_id: bigint;
   spread_reward_accum_record: RecordSDKType | undefined;
   uptime_accum_records: RecordSDKType[];
@@ -172,7 +172,7 @@ export interface GenesisStateSDKType {
 export interface AccumObject {
   /** Accumulator's name (pulled from AccumulatorContent) */
   name: string;
-  accumContent: AccumulatorContent | undefined;
+  accumContent?: AccumulatorContent | undefined;
 }
 export interface AccumObjectProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.AccumObject";
@@ -189,7 +189,7 @@ export interface AccumObjectAminoMsg {
 }
 export interface AccumObjectSDKType {
   name: string;
-  accum_content: AccumulatorContentSDKType | undefined;
+  accum_content?: AccumulatorContentSDKType | undefined;
 }
 function createBaseFullTick(): FullTick {
   return {
@@ -212,7 +212,7 @@ export const FullTick = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): FullTick {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): FullTick {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFullTick();
@@ -226,7 +226,7 @@ export const FullTick = {
           message.tickIndex = reader.int64();
           break;
         case 3:
-          message.info = TickInfo.decode(reader, reader.uint32());
+          message.info = TickInfo.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -249,24 +249,24 @@ export const FullTick = {
       info: object?.info ? TickInfo.fromAmino(object.info) : undefined
     };
   },
-  toAmino(message: FullTick): FullTickAmino {
+  toAmino(message: FullTick, useInterfaces: boolean = false): FullTickAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     obj.tick_index = message.tickIndex ? message.tickIndex.toString() : undefined;
-    obj.info = message.info ? TickInfo.toAmino(message.info) : undefined;
+    obj.info = message.info ? TickInfo.toAmino(message.info, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: FullTickAminoMsg): FullTick {
     return FullTick.fromAmino(object.value);
   },
-  toAminoMsg(message: FullTick): FullTickAminoMsg {
+  toAminoMsg(message: FullTick, useInterfaces: boolean = false): FullTickAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/full-tick",
-      value: FullTick.toAmino(message)
+      value: FullTick.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: FullTickProtoMsg): FullTick {
-    return FullTick.decode(message.value);
+  fromProtoMsg(message: FullTickProtoMsg, useInterfaces: boolean = false): FullTick {
+    return FullTick.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: FullTick): Uint8Array {
     return FullTick.encode(message).finish();
@@ -280,7 +280,7 @@ export const FullTick = {
 };
 function createBasePoolData(): PoolData {
   return {
-    pool: Any.fromPartial({}),
+    pool: undefined,
     ticks: [],
     spreadRewardAccumulator: AccumObject.fromPartial({}),
     incentivesAccumulators: [],
@@ -307,7 +307,7 @@ export const PoolData = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PoolData {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PoolData {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolData();
@@ -315,19 +315,19 @@ export const PoolData = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.pool = (PoolI_InterfaceDecoder(reader) as Any);
+          message.pool = useInterfaces ? (PoolI_InterfaceDecoder(reader) as Any) : Any.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.ticks.push(FullTick.decode(reader, reader.uint32()));
+          message.ticks.push(FullTick.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 3:
-          message.spreadRewardAccumulator = AccumObject.decode(reader, reader.uint32());
+          message.spreadRewardAccumulator = AccumObject.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
-          message.incentivesAccumulators.push(AccumObject.decode(reader, reader.uint32()));
+          message.incentivesAccumulators.push(AccumObject.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 5:
-          message.incentiveRecords.push(IncentiveRecord.decode(reader, reader.uint32()));
+          message.incentiveRecords.push(IncentiveRecord.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -354,22 +354,22 @@ export const PoolData = {
       incentiveRecords: Array.isArray(object?.incentive_records) ? object.incentive_records.map((e: any) => IncentiveRecord.fromAmino(e)) : []
     };
   },
-  toAmino(message: PoolData): PoolDataAmino {
+  toAmino(message: PoolData, useInterfaces: boolean = false): PoolDataAmino {
     const obj: any = {};
-    obj.pool = message.pool ? PoolI_ToAmino((message.pool as Any)) : undefined;
+    obj.pool = message.pool ? PoolI_ToAmino((message.pool as Any), useInterfaces) : undefined;
     if (message.ticks) {
-      obj.ticks = message.ticks.map(e => e ? FullTick.toAmino(e) : undefined);
+      obj.ticks = message.ticks.map(e => e ? FullTick.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.ticks = [];
     }
-    obj.spread_reward_accumulator = message.spreadRewardAccumulator ? AccumObject.toAmino(message.spreadRewardAccumulator) : undefined;
+    obj.spread_reward_accumulator = message.spreadRewardAccumulator ? AccumObject.toAmino(message.spreadRewardAccumulator, useInterfaces) : undefined;
     if (message.incentivesAccumulators) {
-      obj.incentives_accumulators = message.incentivesAccumulators.map(e => e ? AccumObject.toAmino(e) : undefined);
+      obj.incentives_accumulators = message.incentivesAccumulators.map(e => e ? AccumObject.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.incentives_accumulators = [];
     }
     if (message.incentiveRecords) {
-      obj.incentive_records = message.incentiveRecords.map(e => e ? IncentiveRecord.toAmino(e) : undefined);
+      obj.incentive_records = message.incentiveRecords.map(e => e ? IncentiveRecord.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.incentive_records = [];
     }
@@ -378,14 +378,14 @@ export const PoolData = {
   fromAminoMsg(object: PoolDataAminoMsg): PoolData {
     return PoolData.fromAmino(object.value);
   },
-  toAminoMsg(message: PoolData): PoolDataAminoMsg {
+  toAminoMsg(message: PoolData, useInterfaces: boolean = false): PoolDataAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/pool-data",
-      value: PoolData.toAmino(message)
+      value: PoolData.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PoolDataProtoMsg): PoolData {
-    return PoolData.decode(message.value);
+  fromProtoMsg(message: PoolDataProtoMsg, useInterfaces: boolean = false): PoolData {
+    return PoolData.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PoolData): Uint8Array {
     return PoolData.encode(message).finish();
@@ -399,7 +399,7 @@ export const PoolData = {
 };
 function createBasePositionData(): PositionData {
   return {
-    position: Position.fromPartial({}),
+    position: undefined,
     lockId: BigInt(0),
     spreadRewardAccumRecord: Record.fromPartial({}),
     uptimeAccumRecords: []
@@ -422,7 +422,7 @@ export const PositionData = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PositionData {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PositionData {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePositionData();
@@ -430,16 +430,16 @@ export const PositionData = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.position = Position.decode(reader, reader.uint32());
+          message.position = Position.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
           message.lockId = reader.uint64();
           break;
         case 3:
-          message.spreadRewardAccumRecord = Record.decode(reader, reader.uint32());
+          message.spreadRewardAccumRecord = Record.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
-          message.uptimeAccumRecords.push(Record.decode(reader, reader.uint32()));
+          message.uptimeAccumRecords.push(Record.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -464,13 +464,13 @@ export const PositionData = {
       uptimeAccumRecords: Array.isArray(object?.uptime_accum_records) ? object.uptime_accum_records.map((e: any) => Record.fromAmino(e)) : []
     };
   },
-  toAmino(message: PositionData): PositionDataAmino {
+  toAmino(message: PositionData, useInterfaces: boolean = false): PositionDataAmino {
     const obj: any = {};
-    obj.position = message.position ? Position.toAmino(message.position) : undefined;
+    obj.position = message.position ? Position.toAmino(message.position, useInterfaces) : undefined;
     obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
-    obj.spread_reward_accum_record = message.spreadRewardAccumRecord ? Record.toAmino(message.spreadRewardAccumRecord) : undefined;
+    obj.spread_reward_accum_record = message.spreadRewardAccumRecord ? Record.toAmino(message.spreadRewardAccumRecord, useInterfaces) : undefined;
     if (message.uptimeAccumRecords) {
-      obj.uptime_accum_records = message.uptimeAccumRecords.map(e => e ? Record.toAmino(e) : undefined);
+      obj.uptime_accum_records = message.uptimeAccumRecords.map(e => e ? Record.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.uptime_accum_records = [];
     }
@@ -479,14 +479,14 @@ export const PositionData = {
   fromAminoMsg(object: PositionDataAminoMsg): PositionData {
     return PositionData.fromAmino(object.value);
   },
-  toAminoMsg(message: PositionData): PositionDataAminoMsg {
+  toAminoMsg(message: PositionData, useInterfaces: boolean = false): PositionDataAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/position-data",
-      value: PositionData.toAmino(message)
+      value: PositionData.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: PositionDataProtoMsg): PositionData {
-    return PositionData.decode(message.value);
+  fromProtoMsg(message: PositionDataProtoMsg, useInterfaces: boolean = false): PositionData {
+    return PositionData.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PositionData): Uint8Array {
     return PositionData.encode(message).finish();
@@ -527,7 +527,7 @@ export const GenesisState = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): GenesisState {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): GenesisState {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
@@ -535,13 +535,13 @@ export const GenesisState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.poolData.push(PoolData.decode(reader, reader.uint32()));
+          message.poolData.push(PoolData.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 3:
-          message.positionData.push(PositionData.decode(reader, reader.uint32()));
+          message.positionData.push(PositionData.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
           message.nextPositionId = reader.uint64();
@@ -574,16 +574,16 @@ export const GenesisState = {
       nextIncentiveRecordId: BigInt(object.next_incentive_record_id)
     };
   },
-  toAmino(message: GenesisState): GenesisStateAmino {
+  toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     if (message.poolData) {
-      obj.pool_data = message.poolData.map(e => e ? PoolData.toAmino(e) : undefined);
+      obj.pool_data = message.poolData.map(e => e ? PoolData.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.pool_data = [];
     }
     if (message.positionData) {
-      obj.position_data = message.positionData.map(e => e ? PositionData.toAmino(e) : undefined);
+      obj.position_data = message.positionData.map(e => e ? PositionData.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.position_data = [];
     }
@@ -594,14 +594,14 @@ export const GenesisState = {
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {
     return GenesisState.fromAmino(object.value);
   },
-  toAminoMsg(message: GenesisState): GenesisStateAminoMsg {
+  toAminoMsg(message: GenesisState, useInterfaces: boolean = false): GenesisStateAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/genesis-state",
-      value: GenesisState.toAmino(message)
+      value: GenesisState.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: GenesisStateProtoMsg): GenesisState {
-    return GenesisState.decode(message.value);
+  fromProtoMsg(message: GenesisStateProtoMsg, useInterfaces: boolean = false): GenesisState {
+    return GenesisState.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: GenesisState): Uint8Array {
     return GenesisState.encode(message).finish();
@@ -616,7 +616,7 @@ export const GenesisState = {
 function createBaseAccumObject(): AccumObject {
   return {
     name: "",
-    accumContent: AccumulatorContent.fromPartial({})
+    accumContent: undefined
   };
 }
 export const AccumObject = {
@@ -630,7 +630,7 @@ export const AccumObject = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): AccumObject {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): AccumObject {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccumObject();
@@ -641,7 +641,7 @@ export const AccumObject = {
           message.name = reader.string();
           break;
         case 2:
-          message.accumContent = AccumulatorContent.decode(reader, reader.uint32());
+          message.accumContent = AccumulatorContent.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -662,23 +662,23 @@ export const AccumObject = {
       accumContent: object?.accum_content ? AccumulatorContent.fromAmino(object.accum_content) : undefined
     };
   },
-  toAmino(message: AccumObject): AccumObjectAmino {
+  toAmino(message: AccumObject, useInterfaces: boolean = false): AccumObjectAmino {
     const obj: any = {};
     obj.name = message.name;
-    obj.accum_content = message.accumContent ? AccumulatorContent.toAmino(message.accumContent) : undefined;
+    obj.accum_content = message.accumContent ? AccumulatorContent.toAmino(message.accumContent, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: AccumObjectAminoMsg): AccumObject {
     return AccumObject.fromAmino(object.value);
   },
-  toAminoMsg(message: AccumObject): AccumObjectAminoMsg {
+  toAminoMsg(message: AccumObject, useInterfaces: boolean = false): AccumObjectAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/accum-object",
-      value: AccumObject.toAmino(message)
+      value: AccumObject.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: AccumObjectProtoMsg): AccumObject {
-    return AccumObject.decode(message.value);
+  fromProtoMsg(message: AccumObjectProtoMsg, useInterfaces: boolean = false): AccumObject {
+    return AccumObject.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: AccumObject): Uint8Array {
     return AccumObject.encode(message).finish();
@@ -692,16 +692,16 @@ export const AccumObject = {
 };
 export const PoolI_InterfaceDecoder = (input: BinaryReader | Uint8Array): Pool1 | CosmWasmPool | Pool2 | Pool3 | Any => {
   const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
-  const data = Any.decode(reader, reader.uint32());
+  const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
-      return Pool1.decode(data.value);
+      return Pool1.decode(data.value, undefined, true);
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
-      return CosmWasmPool.decode(data.value);
+      return CosmWasmPool.decode(data.value, undefined, true);
     case "/osmosis.gamm.v1beta1.Pool":
-      return Pool2.decode(data.value);
+      return Pool2.decode(data.value, undefined, true);
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
-      return Pool3.decode(data.value);
+      return Pool3.decode(data.value, undefined, true);
     default:
       return data;
   }
@@ -732,29 +732,29 @@ export const PoolI_FromAmino = (content: AnyAmino) => {
       return Any.fromAmino(content);
   }
 };
-export const PoolI_ToAmino = (content: Any) => {
+export const PoolI_ToAmino = (content: Any, useInterfaces: boolean = false) => {
   switch (content.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
       return {
         type: "osmosis/concentratedliquidity/pool",
-        value: Pool1.toAmino(Pool1.decode(content.value))
+        value: Pool1.toAmino(Pool1.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
       return {
         type: "osmosis/cosmwasmpool/cosm-wasm-pool",
-        value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value))
+        value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.gamm.v1beta1.Pool":
       return {
         type: "osmosis/gamm/BalancerPool",
-        value: Pool2.toAmino(Pool2.decode(content.value))
+        value: Pool2.toAmino(Pool2.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
       return {
         type: "osmosis/gamm/StableswapPool",
-        value: Pool3.toAmino(Pool3.decode(content.value))
+        value: Pool3.toAmino(Pool3.decode(content.value, undefined, useInterfaces), useInterfaces)
       };
     default:
-      return Any.toAmino(content);
+      return Any.toAmino(content, useInterfaces);
   }
 };

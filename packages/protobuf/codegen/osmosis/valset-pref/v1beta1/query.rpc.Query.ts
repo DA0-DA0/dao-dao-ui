@@ -13,18 +13,18 @@ export class QueryClientImpl implements Query {
     this.rpc = rpc;
     this.userValidatorPreferences = this.userValidatorPreferences.bind(this);
   }
-  userValidatorPreferences(request: UserValidatorPreferencesRequest): Promise<UserValidatorPreferencesResponse> {
+  userValidatorPreferences(request: UserValidatorPreferencesRequest, useInterfaces: boolean = true): Promise<UserValidatorPreferencesResponse> {
     const data = UserValidatorPreferencesRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.valsetpref.v1beta1.Query", "UserValidatorPreferences", data);
-    return promise.then(data => UserValidatorPreferencesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => UserValidatorPreferencesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    userValidatorPreferences(request: UserValidatorPreferencesRequest): Promise<UserValidatorPreferencesResponse> {
-      return queryService.userValidatorPreferences(request);
+    userValidatorPreferences(request: UserValidatorPreferencesRequest, useInterfaces: boolean = true): Promise<UserValidatorPreferencesResponse> {
+      return queryService.userValidatorPreferences(request, useInterfaces);
     }
   };
 };

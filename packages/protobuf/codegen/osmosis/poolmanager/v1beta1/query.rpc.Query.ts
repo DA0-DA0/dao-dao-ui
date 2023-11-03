@@ -59,114 +59,114 @@ export class QueryClientImpl implements Query {
     this.totalPoolLiquidity = this.totalPoolLiquidity.bind(this);
     this.totalLiquidity = this.totalLiquidity.bind(this);
   }
-  params(request: ParamsRequest = {}): Promise<ParamsResponse> {
+  params(request: ParamsRequest = {}, useInterfaces: boolean = true): Promise<ParamsResponse> {
     const data = ParamsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "Params", data);
-    return promise.then(data => ParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => ParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  estimateSwapExactAmountIn(request: EstimateSwapExactAmountInRequest): Promise<EstimateSwapExactAmountInResponse> {
+  estimateSwapExactAmountIn(request: EstimateSwapExactAmountInRequest, useInterfaces: boolean = true): Promise<EstimateSwapExactAmountInResponse> {
     const data = EstimateSwapExactAmountInRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "EstimateSwapExactAmountIn", data);
-    return promise.then(data => EstimateSwapExactAmountInResponse.decode(new BinaryReader(data)));
+    return promise.then(data => EstimateSwapExactAmountInResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  estimateSwapExactAmountInWithPrimitiveTypes(request: EstimateSwapExactAmountInWithPrimitiveTypesRequest): Promise<EstimateSwapExactAmountInResponse> {
+  estimateSwapExactAmountInWithPrimitiveTypes(request: EstimateSwapExactAmountInWithPrimitiveTypesRequest, useInterfaces: boolean = true): Promise<EstimateSwapExactAmountInResponse> {
     const data = EstimateSwapExactAmountInWithPrimitiveTypesRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "EstimateSwapExactAmountInWithPrimitiveTypes", data);
-    return promise.then(data => EstimateSwapExactAmountInResponse.decode(new BinaryReader(data)));
+    return promise.then(data => EstimateSwapExactAmountInResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  estimateSinglePoolSwapExactAmountIn(request: EstimateSinglePoolSwapExactAmountInRequest): Promise<EstimateSwapExactAmountInResponse> {
+  estimateSinglePoolSwapExactAmountIn(request: EstimateSinglePoolSwapExactAmountInRequest, useInterfaces: boolean = true): Promise<EstimateSwapExactAmountInResponse> {
     const data = EstimateSinglePoolSwapExactAmountInRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "EstimateSinglePoolSwapExactAmountIn", data);
-    return promise.then(data => EstimateSwapExactAmountInResponse.decode(new BinaryReader(data)));
+    return promise.then(data => EstimateSwapExactAmountInResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  estimateSwapExactAmountOut(request: EstimateSwapExactAmountOutRequest): Promise<EstimateSwapExactAmountOutResponse> {
+  estimateSwapExactAmountOut(request: EstimateSwapExactAmountOutRequest, useInterfaces: boolean = true): Promise<EstimateSwapExactAmountOutResponse> {
     const data = EstimateSwapExactAmountOutRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "EstimateSwapExactAmountOut", data);
-    return promise.then(data => EstimateSwapExactAmountOutResponse.decode(new BinaryReader(data)));
+    return promise.then(data => EstimateSwapExactAmountOutResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  estimateSwapExactAmountOutWithPrimitiveTypes(request: EstimateSwapExactAmountOutWithPrimitiveTypesRequest): Promise<EstimateSwapExactAmountOutResponse> {
+  estimateSwapExactAmountOutWithPrimitiveTypes(request: EstimateSwapExactAmountOutWithPrimitiveTypesRequest, useInterfaces: boolean = true): Promise<EstimateSwapExactAmountOutResponse> {
     const data = EstimateSwapExactAmountOutWithPrimitiveTypesRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "EstimateSwapExactAmountOutWithPrimitiveTypes", data);
-    return promise.then(data => EstimateSwapExactAmountOutResponse.decode(new BinaryReader(data)));
+    return promise.then(data => EstimateSwapExactAmountOutResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  estimateSinglePoolSwapExactAmountOut(request: EstimateSinglePoolSwapExactAmountOutRequest): Promise<EstimateSwapExactAmountOutResponse> {
+  estimateSinglePoolSwapExactAmountOut(request: EstimateSinglePoolSwapExactAmountOutRequest, useInterfaces: boolean = true): Promise<EstimateSwapExactAmountOutResponse> {
     const data = EstimateSinglePoolSwapExactAmountOutRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "EstimateSinglePoolSwapExactAmountOut", data);
-    return promise.then(data => EstimateSwapExactAmountOutResponse.decode(new BinaryReader(data)));
+    return promise.then(data => EstimateSwapExactAmountOutResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  numPools(request: NumPoolsRequest = {}): Promise<NumPoolsResponse> {
+  numPools(request: NumPoolsRequest = {}, useInterfaces: boolean = true): Promise<NumPoolsResponse> {
     const data = NumPoolsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "NumPools", data);
-    return promise.then(data => NumPoolsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => NumPoolsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  pool(request: PoolRequest): Promise<PoolResponse> {
+  pool(request: PoolRequest, useInterfaces: boolean = true): Promise<PoolResponse> {
     const data = PoolRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "Pool", data);
-    return promise.then(data => PoolResponse.decode(new BinaryReader(data)));
+    return promise.then(data => PoolResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  allPools(request: AllPoolsRequest = {}): Promise<AllPoolsResponse> {
+  allPools(request: AllPoolsRequest = {}, useInterfaces: boolean = true): Promise<AllPoolsResponse> {
     const data = AllPoolsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "AllPools", data);
-    return promise.then(data => AllPoolsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => AllPoolsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  spotPrice(request: SpotPriceRequest): Promise<SpotPriceResponse> {
+  spotPrice(request: SpotPriceRequest, useInterfaces: boolean = true): Promise<SpotPriceResponse> {
     const data = SpotPriceRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "SpotPrice", data);
-    return promise.then(data => SpotPriceResponse.decode(new BinaryReader(data)));
+    return promise.then(data => SpotPriceResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  totalPoolLiquidity(request: TotalPoolLiquidityRequest): Promise<TotalPoolLiquidityResponse> {
+  totalPoolLiquidity(request: TotalPoolLiquidityRequest, useInterfaces: boolean = true): Promise<TotalPoolLiquidityResponse> {
     const data = TotalPoolLiquidityRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "TotalPoolLiquidity", data);
-    return promise.then(data => TotalPoolLiquidityResponse.decode(new BinaryReader(data)));
+    return promise.then(data => TotalPoolLiquidityResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  totalLiquidity(request: TotalLiquidityRequest = {}): Promise<TotalLiquidityResponse> {
+  totalLiquidity(request: TotalLiquidityRequest = {}, useInterfaces: boolean = true): Promise<TotalLiquidityResponse> {
     const data = TotalLiquidityRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Query", "TotalLiquidity", data);
-    return promise.then(data => TotalLiquidityResponse.decode(new BinaryReader(data)));
+    return promise.then(data => TotalLiquidityResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    params(request?: ParamsRequest): Promise<ParamsResponse> {
-      return queryService.params(request);
+    params(request?: ParamsRequest, useInterfaces: boolean = true): Promise<ParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    estimateSwapExactAmountIn(request: EstimateSwapExactAmountInRequest): Promise<EstimateSwapExactAmountInResponse> {
-      return queryService.estimateSwapExactAmountIn(request);
+    estimateSwapExactAmountIn(request: EstimateSwapExactAmountInRequest, useInterfaces: boolean = true): Promise<EstimateSwapExactAmountInResponse> {
+      return queryService.estimateSwapExactAmountIn(request, useInterfaces);
     },
-    estimateSwapExactAmountInWithPrimitiveTypes(request: EstimateSwapExactAmountInWithPrimitiveTypesRequest): Promise<EstimateSwapExactAmountInResponse> {
-      return queryService.estimateSwapExactAmountInWithPrimitiveTypes(request);
+    estimateSwapExactAmountInWithPrimitiveTypes(request: EstimateSwapExactAmountInWithPrimitiveTypesRequest, useInterfaces: boolean = true): Promise<EstimateSwapExactAmountInResponse> {
+      return queryService.estimateSwapExactAmountInWithPrimitiveTypes(request, useInterfaces);
     },
-    estimateSinglePoolSwapExactAmountIn(request: EstimateSinglePoolSwapExactAmountInRequest): Promise<EstimateSwapExactAmountInResponse> {
-      return queryService.estimateSinglePoolSwapExactAmountIn(request);
+    estimateSinglePoolSwapExactAmountIn(request: EstimateSinglePoolSwapExactAmountInRequest, useInterfaces: boolean = true): Promise<EstimateSwapExactAmountInResponse> {
+      return queryService.estimateSinglePoolSwapExactAmountIn(request, useInterfaces);
     },
-    estimateSwapExactAmountOut(request: EstimateSwapExactAmountOutRequest): Promise<EstimateSwapExactAmountOutResponse> {
-      return queryService.estimateSwapExactAmountOut(request);
+    estimateSwapExactAmountOut(request: EstimateSwapExactAmountOutRequest, useInterfaces: boolean = true): Promise<EstimateSwapExactAmountOutResponse> {
+      return queryService.estimateSwapExactAmountOut(request, useInterfaces);
     },
-    estimateSwapExactAmountOutWithPrimitiveTypes(request: EstimateSwapExactAmountOutWithPrimitiveTypesRequest): Promise<EstimateSwapExactAmountOutResponse> {
-      return queryService.estimateSwapExactAmountOutWithPrimitiveTypes(request);
+    estimateSwapExactAmountOutWithPrimitiveTypes(request: EstimateSwapExactAmountOutWithPrimitiveTypesRequest, useInterfaces: boolean = true): Promise<EstimateSwapExactAmountOutResponse> {
+      return queryService.estimateSwapExactAmountOutWithPrimitiveTypes(request, useInterfaces);
     },
-    estimateSinglePoolSwapExactAmountOut(request: EstimateSinglePoolSwapExactAmountOutRequest): Promise<EstimateSwapExactAmountOutResponse> {
-      return queryService.estimateSinglePoolSwapExactAmountOut(request);
+    estimateSinglePoolSwapExactAmountOut(request: EstimateSinglePoolSwapExactAmountOutRequest, useInterfaces: boolean = true): Promise<EstimateSwapExactAmountOutResponse> {
+      return queryService.estimateSinglePoolSwapExactAmountOut(request, useInterfaces);
     },
-    numPools(request?: NumPoolsRequest): Promise<NumPoolsResponse> {
-      return queryService.numPools(request);
+    numPools(request?: NumPoolsRequest, useInterfaces: boolean = true): Promise<NumPoolsResponse> {
+      return queryService.numPools(request, useInterfaces);
     },
-    pool(request: PoolRequest): Promise<PoolResponse> {
-      return queryService.pool(request);
+    pool(request: PoolRequest, useInterfaces: boolean = true): Promise<PoolResponse> {
+      return queryService.pool(request, useInterfaces);
     },
-    allPools(request?: AllPoolsRequest): Promise<AllPoolsResponse> {
-      return queryService.allPools(request);
+    allPools(request?: AllPoolsRequest, useInterfaces: boolean = true): Promise<AllPoolsResponse> {
+      return queryService.allPools(request, useInterfaces);
     },
-    spotPrice(request: SpotPriceRequest): Promise<SpotPriceResponse> {
-      return queryService.spotPrice(request);
+    spotPrice(request: SpotPriceRequest, useInterfaces: boolean = true): Promise<SpotPriceResponse> {
+      return queryService.spotPrice(request, useInterfaces);
     },
-    totalPoolLiquidity(request: TotalPoolLiquidityRequest): Promise<TotalPoolLiquidityResponse> {
-      return queryService.totalPoolLiquidity(request);
+    totalPoolLiquidity(request: TotalPoolLiquidityRequest, useInterfaces: boolean = true): Promise<TotalPoolLiquidityResponse> {
+      return queryService.totalPoolLiquidity(request, useInterfaces);
     },
-    totalLiquidity(request?: TotalLiquidityRequest): Promise<TotalLiquidityResponse> {
-      return queryService.totalLiquidity(request);
+    totalLiquidity(request?: TotalLiquidityRequest, useInterfaces: boolean = true): Promise<TotalLiquidityResponse> {
+      return queryService.totalLiquidity(request, useInterfaces);
     }
   };
 };

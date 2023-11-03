@@ -124,7 +124,7 @@ export const NetAddress = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): NetAddress {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): NetAddress {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNetAddress();
@@ -161,7 +161,7 @@ export const NetAddress = {
       port: object.port
     };
   },
-  toAmino(message: NetAddress): NetAddressAmino {
+  toAmino(message: NetAddress, useInterfaces: boolean = false): NetAddressAmino {
     const obj: any = {};
     obj.id = message.id;
     obj.ip = message.ip;
@@ -171,8 +171,8 @@ export const NetAddress = {
   fromAminoMsg(object: NetAddressAminoMsg): NetAddress {
     return NetAddress.fromAmino(object.value);
   },
-  fromProtoMsg(message: NetAddressProtoMsg): NetAddress {
-    return NetAddress.decode(message.value);
+  fromProtoMsg(message: NetAddressProtoMsg, useInterfaces: boolean = false): NetAddress {
+    return NetAddress.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: NetAddress): Uint8Array {
     return NetAddress.encode(message).finish();
@@ -205,7 +205,7 @@ export const ProtocolVersion = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ProtocolVersion {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ProtocolVersion {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseProtocolVersion();
@@ -242,7 +242,7 @@ export const ProtocolVersion = {
       app: BigInt(object.app)
     };
   },
-  toAmino(message: ProtocolVersion): ProtocolVersionAmino {
+  toAmino(message: ProtocolVersion, useInterfaces: boolean = false): ProtocolVersionAmino {
     const obj: any = {};
     obj.p2p = message.p2p ? message.p2p.toString() : undefined;
     obj.block = message.block ? message.block.toString() : undefined;
@@ -252,8 +252,8 @@ export const ProtocolVersion = {
   fromAminoMsg(object: ProtocolVersionAminoMsg): ProtocolVersion {
     return ProtocolVersion.fromAmino(object.value);
   },
-  fromProtoMsg(message: ProtocolVersionProtoMsg): ProtocolVersion {
-    return ProtocolVersion.decode(message.value);
+  fromProtoMsg(message: ProtocolVersionProtoMsg, useInterfaces: boolean = false): ProtocolVersion {
+    return ProtocolVersion.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ProtocolVersion): Uint8Array {
     return ProtocolVersion.encode(message).finish();
@@ -306,7 +306,7 @@ export const DefaultNodeInfo = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): DefaultNodeInfo {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): DefaultNodeInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDefaultNodeInfo();
@@ -314,7 +314,7 @@ export const DefaultNodeInfo = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.protocolVersion = ProtocolVersion.decode(reader, reader.uint32());
+          message.protocolVersion = ProtocolVersion.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
           message.defaultNodeId = reader.string();
@@ -335,7 +335,7 @@ export const DefaultNodeInfo = {
           message.moniker = reader.string();
           break;
         case 8:
-          message.other = DefaultNodeInfoOther.decode(reader, reader.uint32());
+          message.other = DefaultNodeInfoOther.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -368,23 +368,23 @@ export const DefaultNodeInfo = {
       other: object?.other ? DefaultNodeInfoOther.fromAmino(object.other) : undefined
     };
   },
-  toAmino(message: DefaultNodeInfo): DefaultNodeInfoAmino {
+  toAmino(message: DefaultNodeInfo, useInterfaces: boolean = false): DefaultNodeInfoAmino {
     const obj: any = {};
-    obj.protocol_version = message.protocolVersion ? ProtocolVersion.toAmino(message.protocolVersion) : undefined;
+    obj.protocol_version = message.protocolVersion ? ProtocolVersion.toAmino(message.protocolVersion, useInterfaces) : undefined;
     obj.default_node_id = message.defaultNodeId;
     obj.listen_addr = message.listenAddr;
     obj.network = message.network;
     obj.version = message.version;
     obj.channels = message.channels;
     obj.moniker = message.moniker;
-    obj.other = message.other ? DefaultNodeInfoOther.toAmino(message.other) : undefined;
+    obj.other = message.other ? DefaultNodeInfoOther.toAmino(message.other, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: DefaultNodeInfoAminoMsg): DefaultNodeInfo {
     return DefaultNodeInfo.fromAmino(object.value);
   },
-  fromProtoMsg(message: DefaultNodeInfoProtoMsg): DefaultNodeInfo {
-    return DefaultNodeInfo.decode(message.value);
+  fromProtoMsg(message: DefaultNodeInfoProtoMsg, useInterfaces: boolean = false): DefaultNodeInfo {
+    return DefaultNodeInfo.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: DefaultNodeInfo): Uint8Array {
     return DefaultNodeInfo.encode(message).finish();
@@ -413,7 +413,7 @@ export const DefaultNodeInfoOther = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): DefaultNodeInfoOther {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): DefaultNodeInfoOther {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDefaultNodeInfoOther();
@@ -445,7 +445,7 @@ export const DefaultNodeInfoOther = {
       rpcAddress: object.rpc_address
     };
   },
-  toAmino(message: DefaultNodeInfoOther): DefaultNodeInfoOtherAmino {
+  toAmino(message: DefaultNodeInfoOther, useInterfaces: boolean = false): DefaultNodeInfoOtherAmino {
     const obj: any = {};
     obj.tx_index = message.txIndex;
     obj.rpc_address = message.rpcAddress;
@@ -454,8 +454,8 @@ export const DefaultNodeInfoOther = {
   fromAminoMsg(object: DefaultNodeInfoOtherAminoMsg): DefaultNodeInfoOther {
     return DefaultNodeInfoOther.fromAmino(object.value);
   },
-  fromProtoMsg(message: DefaultNodeInfoOtherProtoMsg): DefaultNodeInfoOther {
-    return DefaultNodeInfoOther.decode(message.value);
+  fromProtoMsg(message: DefaultNodeInfoOtherProtoMsg, useInterfaces: boolean = false): DefaultNodeInfoOther {
+    return DefaultNodeInfoOther.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: DefaultNodeInfoOther): Uint8Array {
     return DefaultNodeInfoOther.encode(message).finish();

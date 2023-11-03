@@ -1,6 +1,6 @@
 import { BinaryReader, BinaryWriter } from "../../../../binary";
 export interface CosmWasmPool {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
   contractAddress: string;
   poolId: bigint;
   codeId: bigint;
@@ -21,7 +21,7 @@ export interface CosmWasmPoolAminoMsg {
   value: CosmWasmPoolAmino;
 }
 export interface CosmWasmPoolSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
   contract_address: string;
   pool_id: bigint;
   code_id: bigint;
@@ -53,7 +53,7 @@ export const CosmWasmPool = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CosmWasmPool {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CosmWasmPool {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCosmWasmPool();
@@ -95,7 +95,7 @@ export const CosmWasmPool = {
       instantiateMsg: object.instantiate_msg
     };
   },
-  toAmino(message: CosmWasmPool): CosmWasmPoolAmino {
+  toAmino(message: CosmWasmPool, useInterfaces: boolean = false): CosmWasmPoolAmino {
     const obj: any = {};
     obj.contract_address = message.contractAddress;
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
@@ -106,14 +106,14 @@ export const CosmWasmPool = {
   fromAminoMsg(object: CosmWasmPoolAminoMsg): CosmWasmPool {
     return CosmWasmPool.fromAmino(object.value);
   },
-  toAminoMsg(message: CosmWasmPool): CosmWasmPoolAminoMsg {
+  toAminoMsg(message: CosmWasmPool, useInterfaces: boolean = false): CosmWasmPoolAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/cosm-wasm-pool",
-      value: CosmWasmPool.toAmino(message)
+      value: CosmWasmPool.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CosmWasmPoolProtoMsg): CosmWasmPool {
-    return CosmWasmPool.decode(message.value);
+  fromProtoMsg(message: CosmWasmPoolProtoMsg, useInterfaces: boolean = false): CosmWasmPool {
+    return CosmWasmPool.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CosmWasmPool): Uint8Array {
     return CosmWasmPool.encode(message).finish();

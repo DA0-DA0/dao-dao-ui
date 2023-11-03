@@ -400,7 +400,7 @@ export interface RequestInfoSDKType {
 export interface RequestInitChain {
   time: Date | undefined;
   chainId: string;
-  consensusParams: ConsensusParams | undefined;
+  consensusParams?: ConsensusParams | undefined;
   validators: ValidatorUpdate[];
   appStateBytes: Uint8Array;
   initialHeight: bigint;
@@ -410,7 +410,7 @@ export interface RequestInitChainProtoMsg {
   value: Uint8Array;
 }
 export interface RequestInitChainAmino {
-  time?: Date | undefined;
+  time?: string | undefined;
   chain_id: string;
   consensus_params?: ConsensusParamsAmino | undefined;
   validators: ValidatorUpdateAmino[];
@@ -424,7 +424,7 @@ export interface RequestInitChainAminoMsg {
 export interface RequestInitChainSDKType {
   time: Date | undefined;
   chain_id: string;
-  consensus_params: ConsensusParamsSDKType | undefined;
+  consensus_params?: ConsensusParamsSDKType | undefined;
   validators: ValidatorUpdateSDKType[];
   app_state_bytes: Uint8Array;
   initial_height: bigint;
@@ -503,7 +503,7 @@ export interface RequestListSnapshotsSDKType {}
 /** offers a snapshot to the application */
 export interface RequestOfferSnapshot {
   /** snapshot offered by peers */
-  snapshot: Snapshot | undefined;
+  snapshot?: Snapshot | undefined;
   /** light client-verified app hash for snapshot height */
   appHash: Uint8Array;
 }
@@ -524,7 +524,7 @@ export interface RequestOfferSnapshotAminoMsg {
 }
 /** offers a snapshot to the application */
 export interface RequestOfferSnapshotSDKType {
-  snapshot: SnapshotSDKType | undefined;
+  snapshot?: SnapshotSDKType | undefined;
   app_hash: Uint8Array;
 }
 /** loads a snapshot chunk */
@@ -610,7 +610,7 @@ export interface RequestPrepareProposalAmino {
   local_last_commit?: ExtendedCommitInfoAmino | undefined;
   misbehavior: MisbehaviorAmino[];
   height: string;
-  time?: Date | undefined;
+  time?: string | undefined;
   next_validators_hash: Uint8Array;
   /** address of the public key of the validator proposing the block. */
   proposer_address: Uint8Array;
@@ -652,7 +652,7 @@ export interface RequestProcessProposalAmino {
   /** hash is the merkle root hash of the fields of the proposed block. */
   hash: Uint8Array;
   height: string;
-  time?: Date | undefined;
+  time?: string | undefined;
   next_validators_hash: Uint8Array;
   /** address of the public key of the original proposer of the block. */
   proposer_address: Uint8Array;
@@ -754,7 +754,7 @@ export interface RequestFinalizeBlockAmino {
   /** hash is the merkle root hash of the fields of the decided block. */
   hash: Uint8Array;
   height: string;
-  time?: Date | undefined;
+  time?: string | undefined;
   next_validators_hash: Uint8Array;
   /** proposer_address is the address of the public key of the original proposer of the block. */
   proposer_address: Uint8Array;
@@ -916,7 +916,7 @@ export interface ResponseInfoSDKType {
   last_block_app_hash: Uint8Array;
 }
 export interface ResponseInitChain {
-  consensusParams: ConsensusParams | undefined;
+  consensusParams?: ConsensusParams | undefined;
   validators: ValidatorUpdate[];
   appHash: Uint8Array;
 }
@@ -934,7 +934,7 @@ export interface ResponseInitChainAminoMsg {
   value: ResponseInitChainAmino;
 }
 export interface ResponseInitChainSDKType {
-  consensus_params: ConsensusParamsSDKType | undefined;
+  consensus_params?: ConsensusParamsSDKType | undefined;
   validators: ValidatorUpdateSDKType[];
   app_hash: Uint8Array;
 }
@@ -947,7 +947,7 @@ export interface ResponseQuery {
   index: bigint;
   key: Uint8Array;
   value: Uint8Array;
-  proofOps: ProofOps | undefined;
+  proofOps?: ProofOps | undefined;
   height: bigint;
   codespace: string;
 }
@@ -979,7 +979,7 @@ export interface ResponseQuerySDKType {
   index: bigint;
   key: Uint8Array;
   value: Uint8Array;
-  proof_ops: ProofOpsSDKType | undefined;
+  proof_ops?: ProofOpsSDKType | undefined;
   height: bigint;
   codespace: string;
 }
@@ -1200,7 +1200,7 @@ export interface ResponseFinalizeBlock {
   /** a list of updates to the validator set. These will reflect the validator set at current height + 2. */
   validatorUpdates: ValidatorUpdate[];
   /** updates to the consensus params, if any. */
-  consensusParamUpdates: ConsensusParams | undefined;
+  consensusParamUpdates?: ConsensusParams | undefined;
   /** app_hash is the hash of the applications' state which is used to confirm that execution of the transactions was deterministic. It is up to the application to decide which algorithm to use. */
   appHash: Uint8Array;
 }
@@ -1232,7 +1232,7 @@ export interface ResponseFinalizeBlockSDKType {
   events: EventSDKType[];
   tx_results: ExecTxResultSDKType[];
   validator_updates: ValidatorUpdateSDKType[];
-  consensus_param_updates: ConsensusParamsSDKType | undefined;
+  consensus_param_updates?: ConsensusParamsSDKType | undefined;
   app_hash: Uint8Array;
 }
 export interface CommitInfo {
@@ -1591,7 +1591,7 @@ export interface MisbehaviorAmino {
   /** The height when the offense occurred */
   height: string;
   /** The corresponding time where the offense occurred */
-  time?: Date | undefined;
+  time?: string | undefined;
   /**
    * Total voting power of the validator set in case the ABCI application does
    * not store historical validators.
@@ -1722,7 +1722,7 @@ export const Request = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Request {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Request {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequest();
@@ -1730,52 +1730,52 @@ export const Request = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.echo = RequestEcho.decode(reader, reader.uint32());
+          message.echo = RequestEcho.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.flush = RequestFlush.decode(reader, reader.uint32());
+          message.flush = RequestFlush.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
-          message.info = RequestInfo.decode(reader, reader.uint32());
+          message.info = RequestInfo.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 5:
-          message.initChain = RequestInitChain.decode(reader, reader.uint32());
+          message.initChain = RequestInitChain.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 6:
-          message.query = RequestQuery.decode(reader, reader.uint32());
+          message.query = RequestQuery.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 8:
-          message.checkTx = RequestCheckTx.decode(reader, reader.uint32());
+          message.checkTx = RequestCheckTx.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 11:
-          message.commit = RequestCommit.decode(reader, reader.uint32());
+          message.commit = RequestCommit.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 12:
-          message.listSnapshots = RequestListSnapshots.decode(reader, reader.uint32());
+          message.listSnapshots = RequestListSnapshots.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 13:
-          message.offerSnapshot = RequestOfferSnapshot.decode(reader, reader.uint32());
+          message.offerSnapshot = RequestOfferSnapshot.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 14:
-          message.loadSnapshotChunk = RequestLoadSnapshotChunk.decode(reader, reader.uint32());
+          message.loadSnapshotChunk = RequestLoadSnapshotChunk.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 15:
-          message.applySnapshotChunk = RequestApplySnapshotChunk.decode(reader, reader.uint32());
+          message.applySnapshotChunk = RequestApplySnapshotChunk.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 16:
-          message.prepareProposal = RequestPrepareProposal.decode(reader, reader.uint32());
+          message.prepareProposal = RequestPrepareProposal.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 17:
-          message.processProposal = RequestProcessProposal.decode(reader, reader.uint32());
+          message.processProposal = RequestProcessProposal.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 18:
-          message.extendVote = RequestExtendVote.decode(reader, reader.uint32());
+          message.extendVote = RequestExtendVote.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 19:
-          message.verifyVoteExtension = RequestVerifyVoteExtension.decode(reader, reader.uint32());
+          message.verifyVoteExtension = RequestVerifyVoteExtension.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 20:
-          message.finalizeBlock = RequestFinalizeBlock.decode(reader, reader.uint32());
+          message.finalizeBlock = RequestFinalizeBlock.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1824,31 +1824,31 @@ export const Request = {
       finalizeBlock: object?.finalize_block ? RequestFinalizeBlock.fromAmino(object.finalize_block) : undefined
     };
   },
-  toAmino(message: Request): RequestAmino {
+  toAmino(message: Request, useInterfaces: boolean = false): RequestAmino {
     const obj: any = {};
-    obj.echo = message.echo ? RequestEcho.toAmino(message.echo) : undefined;
-    obj.flush = message.flush ? RequestFlush.toAmino(message.flush) : undefined;
-    obj.info = message.info ? RequestInfo.toAmino(message.info) : undefined;
-    obj.init_chain = message.initChain ? RequestInitChain.toAmino(message.initChain) : undefined;
-    obj.query = message.query ? RequestQuery.toAmino(message.query) : undefined;
-    obj.check_tx = message.checkTx ? RequestCheckTx.toAmino(message.checkTx) : undefined;
-    obj.commit = message.commit ? RequestCommit.toAmino(message.commit) : undefined;
-    obj.list_snapshots = message.listSnapshots ? RequestListSnapshots.toAmino(message.listSnapshots) : undefined;
-    obj.offer_snapshot = message.offerSnapshot ? RequestOfferSnapshot.toAmino(message.offerSnapshot) : undefined;
-    obj.load_snapshot_chunk = message.loadSnapshotChunk ? RequestLoadSnapshotChunk.toAmino(message.loadSnapshotChunk) : undefined;
-    obj.apply_snapshot_chunk = message.applySnapshotChunk ? RequestApplySnapshotChunk.toAmino(message.applySnapshotChunk) : undefined;
-    obj.prepare_proposal = message.prepareProposal ? RequestPrepareProposal.toAmino(message.prepareProposal) : undefined;
-    obj.process_proposal = message.processProposal ? RequestProcessProposal.toAmino(message.processProposal) : undefined;
-    obj.extend_vote = message.extendVote ? RequestExtendVote.toAmino(message.extendVote) : undefined;
-    obj.verify_vote_extension = message.verifyVoteExtension ? RequestVerifyVoteExtension.toAmino(message.verifyVoteExtension) : undefined;
-    obj.finalize_block = message.finalizeBlock ? RequestFinalizeBlock.toAmino(message.finalizeBlock) : undefined;
+    obj.echo = message.echo ? RequestEcho.toAmino(message.echo, useInterfaces) : undefined;
+    obj.flush = message.flush ? RequestFlush.toAmino(message.flush, useInterfaces) : undefined;
+    obj.info = message.info ? RequestInfo.toAmino(message.info, useInterfaces) : undefined;
+    obj.init_chain = message.initChain ? RequestInitChain.toAmino(message.initChain, useInterfaces) : undefined;
+    obj.query = message.query ? RequestQuery.toAmino(message.query, useInterfaces) : undefined;
+    obj.check_tx = message.checkTx ? RequestCheckTx.toAmino(message.checkTx, useInterfaces) : undefined;
+    obj.commit = message.commit ? RequestCommit.toAmino(message.commit, useInterfaces) : undefined;
+    obj.list_snapshots = message.listSnapshots ? RequestListSnapshots.toAmino(message.listSnapshots, useInterfaces) : undefined;
+    obj.offer_snapshot = message.offerSnapshot ? RequestOfferSnapshot.toAmino(message.offerSnapshot, useInterfaces) : undefined;
+    obj.load_snapshot_chunk = message.loadSnapshotChunk ? RequestLoadSnapshotChunk.toAmino(message.loadSnapshotChunk, useInterfaces) : undefined;
+    obj.apply_snapshot_chunk = message.applySnapshotChunk ? RequestApplySnapshotChunk.toAmino(message.applySnapshotChunk, useInterfaces) : undefined;
+    obj.prepare_proposal = message.prepareProposal ? RequestPrepareProposal.toAmino(message.prepareProposal, useInterfaces) : undefined;
+    obj.process_proposal = message.processProposal ? RequestProcessProposal.toAmino(message.processProposal, useInterfaces) : undefined;
+    obj.extend_vote = message.extendVote ? RequestExtendVote.toAmino(message.extendVote, useInterfaces) : undefined;
+    obj.verify_vote_extension = message.verifyVoteExtension ? RequestVerifyVoteExtension.toAmino(message.verifyVoteExtension, useInterfaces) : undefined;
+    obj.finalize_block = message.finalizeBlock ? RequestFinalizeBlock.toAmino(message.finalizeBlock, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: RequestAminoMsg): Request {
     return Request.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestProtoMsg): Request {
-    return Request.decode(message.value);
+  fromProtoMsg(message: RequestProtoMsg, useInterfaces: boolean = false): Request {
+    return Request.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Request): Uint8Array {
     return Request.encode(message).finish();
@@ -1873,7 +1873,7 @@ export const RequestEcho = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestEcho {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestEcho {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestEcho();
@@ -1900,7 +1900,7 @@ export const RequestEcho = {
       message: object.message
     };
   },
-  toAmino(message: RequestEcho): RequestEchoAmino {
+  toAmino(message: RequestEcho, useInterfaces: boolean = false): RequestEchoAmino {
     const obj: any = {};
     obj.message = message.message;
     return obj;
@@ -1908,8 +1908,8 @@ export const RequestEcho = {
   fromAminoMsg(object: RequestEchoAminoMsg): RequestEcho {
     return RequestEcho.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestEchoProtoMsg): RequestEcho {
-    return RequestEcho.decode(message.value);
+  fromProtoMsg(message: RequestEchoProtoMsg, useInterfaces: boolean = false): RequestEcho {
+    return RequestEcho.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestEcho): Uint8Array {
     return RequestEcho.encode(message).finish();
@@ -1929,7 +1929,7 @@ export const RequestFlush = {
   encode(_: RequestFlush, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestFlush {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestFlush {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestFlush();
@@ -1950,15 +1950,15 @@ export const RequestFlush = {
   fromAmino(_: RequestFlushAmino): RequestFlush {
     return {};
   },
-  toAmino(_: RequestFlush): RequestFlushAmino {
+  toAmino(_: RequestFlush, useInterfaces: boolean = false): RequestFlushAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: RequestFlushAminoMsg): RequestFlush {
     return RequestFlush.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestFlushProtoMsg): RequestFlush {
-    return RequestFlush.decode(message.value);
+  fromProtoMsg(message: RequestFlushProtoMsg, useInterfaces: boolean = false): RequestFlush {
+    return RequestFlush.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestFlush): Uint8Array {
     return RequestFlush.encode(message).finish();
@@ -1995,7 +1995,7 @@ export const RequestInfo = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestInfo {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestInfo();
@@ -2037,7 +2037,7 @@ export const RequestInfo = {
       abciVersion: object.abci_version
     };
   },
-  toAmino(message: RequestInfo): RequestInfoAmino {
+  toAmino(message: RequestInfo, useInterfaces: boolean = false): RequestInfoAmino {
     const obj: any = {};
     obj.version = message.version;
     obj.block_version = message.blockVersion ? message.blockVersion.toString() : undefined;
@@ -2048,8 +2048,8 @@ export const RequestInfo = {
   fromAminoMsg(object: RequestInfoAminoMsg): RequestInfo {
     return RequestInfo.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestInfoProtoMsg): RequestInfo {
-    return RequestInfo.decode(message.value);
+  fromProtoMsg(message: RequestInfoProtoMsg, useInterfaces: boolean = false): RequestInfo {
+    return RequestInfo.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestInfo): Uint8Array {
     return RequestInfo.encode(message).finish();
@@ -2065,7 +2065,7 @@ function createBaseRequestInitChain(): RequestInitChain {
   return {
     time: new Date(),
     chainId: "",
-    consensusParams: ConsensusParams.fromPartial({}),
+    consensusParams: undefined,
     validators: [],
     appStateBytes: new Uint8Array(),
     initialHeight: BigInt(0)
@@ -2094,7 +2094,7 @@ export const RequestInitChain = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestInitChain {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestInitChain {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestInitChain();
@@ -2108,10 +2108,10 @@ export const RequestInitChain = {
           message.chainId = reader.string();
           break;
         case 3:
-          message.consensusParams = ConsensusParams.decode(reader, reader.uint32());
+          message.consensusParams = ConsensusParams.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
-          message.validators.push(ValidatorUpdate.decode(reader, reader.uint32()));
+          message.validators.push(ValidatorUpdate.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 5:
           message.appStateBytes = reader.bytes();
@@ -2138,7 +2138,7 @@ export const RequestInitChain = {
   },
   fromAmino(object: RequestInitChainAmino): RequestInitChain {
     return {
-      time: object.time,
+      time: object?.time ? fromTimestamp(Timestamp.fromAmino(object.time)) : undefined,
       chainId: object.chain_id,
       consensusParams: object?.consensus_params ? ConsensusParams.fromAmino(object.consensus_params) : undefined,
       validators: Array.isArray(object?.validators) ? object.validators.map((e: any) => ValidatorUpdate.fromAmino(e)) : [],
@@ -2146,13 +2146,13 @@ export const RequestInitChain = {
       initialHeight: BigInt(object.initial_height)
     };
   },
-  toAmino(message: RequestInitChain): RequestInitChainAmino {
+  toAmino(message: RequestInitChain, useInterfaces: boolean = false): RequestInitChainAmino {
     const obj: any = {};
-    obj.time = message.time;
+    obj.time = message.time ? Timestamp.toAmino(toTimestamp(message.time)) : undefined;
     obj.chain_id = message.chainId;
-    obj.consensus_params = message.consensusParams ? ConsensusParams.toAmino(message.consensusParams) : undefined;
+    obj.consensus_params = message.consensusParams ? ConsensusParams.toAmino(message.consensusParams, useInterfaces) : undefined;
     if (message.validators) {
-      obj.validators = message.validators.map(e => e ? ValidatorUpdate.toAmino(e) : undefined);
+      obj.validators = message.validators.map(e => e ? ValidatorUpdate.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.validators = [];
     }
@@ -2163,8 +2163,8 @@ export const RequestInitChain = {
   fromAminoMsg(object: RequestInitChainAminoMsg): RequestInitChain {
     return RequestInitChain.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestInitChainProtoMsg): RequestInitChain {
-    return RequestInitChain.decode(message.value);
+  fromProtoMsg(message: RequestInitChainProtoMsg, useInterfaces: boolean = false): RequestInitChain {
+    return RequestInitChain.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestInitChain): Uint8Array {
     return RequestInitChain.encode(message).finish();
@@ -2201,7 +2201,7 @@ export const RequestQuery = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestQuery {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestQuery {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestQuery();
@@ -2243,7 +2243,7 @@ export const RequestQuery = {
       prove: object.prove
     };
   },
-  toAmino(message: RequestQuery): RequestQueryAmino {
+  toAmino(message: RequestQuery, useInterfaces: boolean = false): RequestQueryAmino {
     const obj: any = {};
     obj.data = message.data;
     obj.path = message.path;
@@ -2254,8 +2254,8 @@ export const RequestQuery = {
   fromAminoMsg(object: RequestQueryAminoMsg): RequestQuery {
     return RequestQuery.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestQueryProtoMsg): RequestQuery {
-    return RequestQuery.decode(message.value);
+  fromProtoMsg(message: RequestQueryProtoMsg, useInterfaces: boolean = false): RequestQuery {
+    return RequestQuery.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestQuery): Uint8Array {
     return RequestQuery.encode(message).finish();
@@ -2284,7 +2284,7 @@ export const RequestCheckTx = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestCheckTx {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestCheckTx {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestCheckTx();
@@ -2316,7 +2316,7 @@ export const RequestCheckTx = {
       type: isSet(object.type) ? checkTxTypeFromJSON(object.type) : -1
     };
   },
-  toAmino(message: RequestCheckTx): RequestCheckTxAmino {
+  toAmino(message: RequestCheckTx, useInterfaces: boolean = false): RequestCheckTxAmino {
     const obj: any = {};
     obj.tx = message.tx;
     obj.type = message.type;
@@ -2325,8 +2325,8 @@ export const RequestCheckTx = {
   fromAminoMsg(object: RequestCheckTxAminoMsg): RequestCheckTx {
     return RequestCheckTx.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestCheckTxProtoMsg): RequestCheckTx {
-    return RequestCheckTx.decode(message.value);
+  fromProtoMsg(message: RequestCheckTxProtoMsg, useInterfaces: boolean = false): RequestCheckTx {
+    return RequestCheckTx.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestCheckTx): Uint8Array {
     return RequestCheckTx.encode(message).finish();
@@ -2346,7 +2346,7 @@ export const RequestCommit = {
   encode(_: RequestCommit, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestCommit {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestCommit {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestCommit();
@@ -2367,15 +2367,15 @@ export const RequestCommit = {
   fromAmino(_: RequestCommitAmino): RequestCommit {
     return {};
   },
-  toAmino(_: RequestCommit): RequestCommitAmino {
+  toAmino(_: RequestCommit, useInterfaces: boolean = false): RequestCommitAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: RequestCommitAminoMsg): RequestCommit {
     return RequestCommit.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestCommitProtoMsg): RequestCommit {
-    return RequestCommit.decode(message.value);
+  fromProtoMsg(message: RequestCommitProtoMsg, useInterfaces: boolean = false): RequestCommit {
+    return RequestCommit.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestCommit): Uint8Array {
     return RequestCommit.encode(message).finish();
@@ -2395,7 +2395,7 @@ export const RequestListSnapshots = {
   encode(_: RequestListSnapshots, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestListSnapshots {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestListSnapshots {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestListSnapshots();
@@ -2416,15 +2416,15 @@ export const RequestListSnapshots = {
   fromAmino(_: RequestListSnapshotsAmino): RequestListSnapshots {
     return {};
   },
-  toAmino(_: RequestListSnapshots): RequestListSnapshotsAmino {
+  toAmino(_: RequestListSnapshots, useInterfaces: boolean = false): RequestListSnapshotsAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: RequestListSnapshotsAminoMsg): RequestListSnapshots {
     return RequestListSnapshots.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestListSnapshotsProtoMsg): RequestListSnapshots {
-    return RequestListSnapshots.decode(message.value);
+  fromProtoMsg(message: RequestListSnapshotsProtoMsg, useInterfaces: boolean = false): RequestListSnapshots {
+    return RequestListSnapshots.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestListSnapshots): Uint8Array {
     return RequestListSnapshots.encode(message).finish();
@@ -2438,7 +2438,7 @@ export const RequestListSnapshots = {
 };
 function createBaseRequestOfferSnapshot(): RequestOfferSnapshot {
   return {
-    snapshot: Snapshot.fromPartial({}),
+    snapshot: undefined,
     appHash: new Uint8Array()
   };
 }
@@ -2453,7 +2453,7 @@ export const RequestOfferSnapshot = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestOfferSnapshot {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestOfferSnapshot {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestOfferSnapshot();
@@ -2461,7 +2461,7 @@ export const RequestOfferSnapshot = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.snapshot = Snapshot.decode(reader, reader.uint32());
+          message.snapshot = Snapshot.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
           message.appHash = reader.bytes();
@@ -2485,17 +2485,17 @@ export const RequestOfferSnapshot = {
       appHash: object.app_hash
     };
   },
-  toAmino(message: RequestOfferSnapshot): RequestOfferSnapshotAmino {
+  toAmino(message: RequestOfferSnapshot, useInterfaces: boolean = false): RequestOfferSnapshotAmino {
     const obj: any = {};
-    obj.snapshot = message.snapshot ? Snapshot.toAmino(message.snapshot) : undefined;
+    obj.snapshot = message.snapshot ? Snapshot.toAmino(message.snapshot, useInterfaces) : undefined;
     obj.app_hash = message.appHash;
     return obj;
   },
   fromAminoMsg(object: RequestOfferSnapshotAminoMsg): RequestOfferSnapshot {
     return RequestOfferSnapshot.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestOfferSnapshotProtoMsg): RequestOfferSnapshot {
-    return RequestOfferSnapshot.decode(message.value);
+  fromProtoMsg(message: RequestOfferSnapshotProtoMsg, useInterfaces: boolean = false): RequestOfferSnapshot {
+    return RequestOfferSnapshot.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestOfferSnapshot): Uint8Array {
     return RequestOfferSnapshot.encode(message).finish();
@@ -2528,7 +2528,7 @@ export const RequestLoadSnapshotChunk = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestLoadSnapshotChunk {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestLoadSnapshotChunk {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestLoadSnapshotChunk();
@@ -2565,7 +2565,7 @@ export const RequestLoadSnapshotChunk = {
       chunk: object.chunk
     };
   },
-  toAmino(message: RequestLoadSnapshotChunk): RequestLoadSnapshotChunkAmino {
+  toAmino(message: RequestLoadSnapshotChunk, useInterfaces: boolean = false): RequestLoadSnapshotChunkAmino {
     const obj: any = {};
     obj.height = message.height ? message.height.toString() : undefined;
     obj.format = message.format;
@@ -2575,8 +2575,8 @@ export const RequestLoadSnapshotChunk = {
   fromAminoMsg(object: RequestLoadSnapshotChunkAminoMsg): RequestLoadSnapshotChunk {
     return RequestLoadSnapshotChunk.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestLoadSnapshotChunkProtoMsg): RequestLoadSnapshotChunk {
-    return RequestLoadSnapshotChunk.decode(message.value);
+  fromProtoMsg(message: RequestLoadSnapshotChunkProtoMsg, useInterfaces: boolean = false): RequestLoadSnapshotChunk {
+    return RequestLoadSnapshotChunk.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestLoadSnapshotChunk): Uint8Array {
     return RequestLoadSnapshotChunk.encode(message).finish();
@@ -2609,7 +2609,7 @@ export const RequestApplySnapshotChunk = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestApplySnapshotChunk {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestApplySnapshotChunk {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestApplySnapshotChunk();
@@ -2646,7 +2646,7 @@ export const RequestApplySnapshotChunk = {
       sender: object.sender
     };
   },
-  toAmino(message: RequestApplySnapshotChunk): RequestApplySnapshotChunkAmino {
+  toAmino(message: RequestApplySnapshotChunk, useInterfaces: boolean = false): RequestApplySnapshotChunkAmino {
     const obj: any = {};
     obj.index = message.index;
     obj.chunk = message.chunk;
@@ -2656,8 +2656,8 @@ export const RequestApplySnapshotChunk = {
   fromAminoMsg(object: RequestApplySnapshotChunkAminoMsg): RequestApplySnapshotChunk {
     return RequestApplySnapshotChunk.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestApplySnapshotChunkProtoMsg): RequestApplySnapshotChunk {
-    return RequestApplySnapshotChunk.decode(message.value);
+  fromProtoMsg(message: RequestApplySnapshotChunkProtoMsg, useInterfaces: boolean = false): RequestApplySnapshotChunk {
+    return RequestApplySnapshotChunk.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestApplySnapshotChunk): Uint8Array {
     return RequestApplySnapshotChunk.encode(message).finish();
@@ -2710,7 +2710,7 @@ export const RequestPrepareProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestPrepareProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestPrepareProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestPrepareProposal();
@@ -2724,10 +2724,10 @@ export const RequestPrepareProposal = {
           message.txs.push(reader.bytes());
           break;
         case 3:
-          message.localLastCommit = ExtendedCommitInfo.decode(reader, reader.uint32());
+          message.localLastCommit = ExtendedCommitInfo.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
-          message.misbehavior.push(Misbehavior.decode(reader, reader.uint32()));
+          message.misbehavior.push(Misbehavior.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 5:
           message.height = reader.int64();
@@ -2767,12 +2767,12 @@ export const RequestPrepareProposal = {
       localLastCommit: object?.local_last_commit ? ExtendedCommitInfo.fromAmino(object.local_last_commit) : undefined,
       misbehavior: Array.isArray(object?.misbehavior) ? object.misbehavior.map((e: any) => Misbehavior.fromAmino(e)) : [],
       height: BigInt(object.height),
-      time: object.time,
+      time: object?.time ? fromTimestamp(Timestamp.fromAmino(object.time)) : undefined,
       nextValidatorsHash: object.next_validators_hash,
       proposerAddress: object.proposer_address
     };
   },
-  toAmino(message: RequestPrepareProposal): RequestPrepareProposalAmino {
+  toAmino(message: RequestPrepareProposal, useInterfaces: boolean = false): RequestPrepareProposalAmino {
     const obj: any = {};
     obj.max_tx_bytes = message.maxTxBytes ? message.maxTxBytes.toString() : undefined;
     if (message.txs) {
@@ -2780,14 +2780,14 @@ export const RequestPrepareProposal = {
     } else {
       obj.txs = [];
     }
-    obj.local_last_commit = message.localLastCommit ? ExtendedCommitInfo.toAmino(message.localLastCommit) : undefined;
+    obj.local_last_commit = message.localLastCommit ? ExtendedCommitInfo.toAmino(message.localLastCommit, useInterfaces) : undefined;
     if (message.misbehavior) {
-      obj.misbehavior = message.misbehavior.map(e => e ? Misbehavior.toAmino(e) : undefined);
+      obj.misbehavior = message.misbehavior.map(e => e ? Misbehavior.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.misbehavior = [];
     }
     obj.height = message.height ? message.height.toString() : undefined;
-    obj.time = message.time;
+    obj.time = message.time ? Timestamp.toAmino(toTimestamp(message.time)) : undefined;
     obj.next_validators_hash = message.nextValidatorsHash;
     obj.proposer_address = message.proposerAddress;
     return obj;
@@ -2795,8 +2795,8 @@ export const RequestPrepareProposal = {
   fromAminoMsg(object: RequestPrepareProposalAminoMsg): RequestPrepareProposal {
     return RequestPrepareProposal.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestPrepareProposalProtoMsg): RequestPrepareProposal {
-    return RequestPrepareProposal.decode(message.value);
+  fromProtoMsg(message: RequestPrepareProposalProtoMsg, useInterfaces: boolean = false): RequestPrepareProposal {
+    return RequestPrepareProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestPrepareProposal): Uint8Array {
     return RequestPrepareProposal.encode(message).finish();
@@ -2849,7 +2849,7 @@ export const RequestProcessProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestProcessProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestProcessProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestProcessProposal();
@@ -2860,10 +2860,10 @@ export const RequestProcessProposal = {
           message.txs.push(reader.bytes());
           break;
         case 2:
-          message.proposedLastCommit = CommitInfo.decode(reader, reader.uint32());
+          message.proposedLastCommit = CommitInfo.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
-          message.misbehavior.push(Misbehavior.decode(reader, reader.uint32()));
+          message.misbehavior.push(Misbehavior.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
           message.hash = reader.bytes();
@@ -2906,27 +2906,27 @@ export const RequestProcessProposal = {
       misbehavior: Array.isArray(object?.misbehavior) ? object.misbehavior.map((e: any) => Misbehavior.fromAmino(e)) : [],
       hash: object.hash,
       height: BigInt(object.height),
-      time: object.time,
+      time: object?.time ? fromTimestamp(Timestamp.fromAmino(object.time)) : undefined,
       nextValidatorsHash: object.next_validators_hash,
       proposerAddress: object.proposer_address
     };
   },
-  toAmino(message: RequestProcessProposal): RequestProcessProposalAmino {
+  toAmino(message: RequestProcessProposal, useInterfaces: boolean = false): RequestProcessProposalAmino {
     const obj: any = {};
     if (message.txs) {
       obj.txs = message.txs.map(e => e);
     } else {
       obj.txs = [];
     }
-    obj.proposed_last_commit = message.proposedLastCommit ? CommitInfo.toAmino(message.proposedLastCommit) : undefined;
+    obj.proposed_last_commit = message.proposedLastCommit ? CommitInfo.toAmino(message.proposedLastCommit, useInterfaces) : undefined;
     if (message.misbehavior) {
-      obj.misbehavior = message.misbehavior.map(e => e ? Misbehavior.toAmino(e) : undefined);
+      obj.misbehavior = message.misbehavior.map(e => e ? Misbehavior.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.misbehavior = [];
     }
     obj.hash = message.hash;
     obj.height = message.height ? message.height.toString() : undefined;
-    obj.time = message.time;
+    obj.time = message.time ? Timestamp.toAmino(toTimestamp(message.time)) : undefined;
     obj.next_validators_hash = message.nextValidatorsHash;
     obj.proposer_address = message.proposerAddress;
     return obj;
@@ -2934,8 +2934,8 @@ export const RequestProcessProposal = {
   fromAminoMsg(object: RequestProcessProposalAminoMsg): RequestProcessProposal {
     return RequestProcessProposal.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestProcessProposalProtoMsg): RequestProcessProposal {
-    return RequestProcessProposal.decode(message.value);
+  fromProtoMsg(message: RequestProcessProposalProtoMsg, useInterfaces: boolean = false): RequestProcessProposal {
+    return RequestProcessProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestProcessProposal): Uint8Array {
     return RequestProcessProposal.encode(message).finish();
@@ -2964,7 +2964,7 @@ export const RequestExtendVote = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestExtendVote {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestExtendVote {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestExtendVote();
@@ -2996,7 +2996,7 @@ export const RequestExtendVote = {
       height: BigInt(object.height)
     };
   },
-  toAmino(message: RequestExtendVote): RequestExtendVoteAmino {
+  toAmino(message: RequestExtendVote, useInterfaces: boolean = false): RequestExtendVoteAmino {
     const obj: any = {};
     obj.hash = message.hash;
     obj.height = message.height ? message.height.toString() : undefined;
@@ -3005,8 +3005,8 @@ export const RequestExtendVote = {
   fromAminoMsg(object: RequestExtendVoteAminoMsg): RequestExtendVote {
     return RequestExtendVote.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestExtendVoteProtoMsg): RequestExtendVote {
-    return RequestExtendVote.decode(message.value);
+  fromProtoMsg(message: RequestExtendVoteProtoMsg, useInterfaces: boolean = false): RequestExtendVote {
+    return RequestExtendVote.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestExtendVote): Uint8Array {
     return RequestExtendVote.encode(message).finish();
@@ -3043,7 +3043,7 @@ export const RequestVerifyVoteExtension = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestVerifyVoteExtension {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestVerifyVoteExtension {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestVerifyVoteExtension();
@@ -3085,7 +3085,7 @@ export const RequestVerifyVoteExtension = {
       voteExtension: object.vote_extension
     };
   },
-  toAmino(message: RequestVerifyVoteExtension): RequestVerifyVoteExtensionAmino {
+  toAmino(message: RequestVerifyVoteExtension, useInterfaces: boolean = false): RequestVerifyVoteExtensionAmino {
     const obj: any = {};
     obj.hash = message.hash;
     obj.validator_address = message.validatorAddress;
@@ -3096,8 +3096,8 @@ export const RequestVerifyVoteExtension = {
   fromAminoMsg(object: RequestVerifyVoteExtensionAminoMsg): RequestVerifyVoteExtension {
     return RequestVerifyVoteExtension.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestVerifyVoteExtensionProtoMsg): RequestVerifyVoteExtension {
-    return RequestVerifyVoteExtension.decode(message.value);
+  fromProtoMsg(message: RequestVerifyVoteExtensionProtoMsg, useInterfaces: boolean = false): RequestVerifyVoteExtension {
+    return RequestVerifyVoteExtension.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestVerifyVoteExtension): Uint8Array {
     return RequestVerifyVoteExtension.encode(message).finish();
@@ -3150,7 +3150,7 @@ export const RequestFinalizeBlock = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RequestFinalizeBlock {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RequestFinalizeBlock {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRequestFinalizeBlock();
@@ -3161,10 +3161,10 @@ export const RequestFinalizeBlock = {
           message.txs.push(reader.bytes());
           break;
         case 2:
-          message.decidedLastCommit = CommitInfo.decode(reader, reader.uint32());
+          message.decidedLastCommit = CommitInfo.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
-          message.misbehavior.push(Misbehavior.decode(reader, reader.uint32()));
+          message.misbehavior.push(Misbehavior.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
           message.hash = reader.bytes();
@@ -3207,27 +3207,27 @@ export const RequestFinalizeBlock = {
       misbehavior: Array.isArray(object?.misbehavior) ? object.misbehavior.map((e: any) => Misbehavior.fromAmino(e)) : [],
       hash: object.hash,
       height: BigInt(object.height),
-      time: object.time,
+      time: object?.time ? fromTimestamp(Timestamp.fromAmino(object.time)) : undefined,
       nextValidatorsHash: object.next_validators_hash,
       proposerAddress: object.proposer_address
     };
   },
-  toAmino(message: RequestFinalizeBlock): RequestFinalizeBlockAmino {
+  toAmino(message: RequestFinalizeBlock, useInterfaces: boolean = false): RequestFinalizeBlockAmino {
     const obj: any = {};
     if (message.txs) {
       obj.txs = message.txs.map(e => e);
     } else {
       obj.txs = [];
     }
-    obj.decided_last_commit = message.decidedLastCommit ? CommitInfo.toAmino(message.decidedLastCommit) : undefined;
+    obj.decided_last_commit = message.decidedLastCommit ? CommitInfo.toAmino(message.decidedLastCommit, useInterfaces) : undefined;
     if (message.misbehavior) {
-      obj.misbehavior = message.misbehavior.map(e => e ? Misbehavior.toAmino(e) : undefined);
+      obj.misbehavior = message.misbehavior.map(e => e ? Misbehavior.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.misbehavior = [];
     }
     obj.hash = message.hash;
     obj.height = message.height ? message.height.toString() : undefined;
-    obj.time = message.time;
+    obj.time = message.time ? Timestamp.toAmino(toTimestamp(message.time)) : undefined;
     obj.next_validators_hash = message.nextValidatorsHash;
     obj.proposer_address = message.proposerAddress;
     return obj;
@@ -3235,8 +3235,8 @@ export const RequestFinalizeBlock = {
   fromAminoMsg(object: RequestFinalizeBlockAminoMsg): RequestFinalizeBlock {
     return RequestFinalizeBlock.fromAmino(object.value);
   },
-  fromProtoMsg(message: RequestFinalizeBlockProtoMsg): RequestFinalizeBlock {
-    return RequestFinalizeBlock.decode(message.value);
+  fromProtoMsg(message: RequestFinalizeBlockProtoMsg, useInterfaces: boolean = false): RequestFinalizeBlock {
+    return RequestFinalizeBlock.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RequestFinalizeBlock): Uint8Array {
     return RequestFinalizeBlock.encode(message).finish();
@@ -3325,7 +3325,7 @@ export const Response = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Response {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Response {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponse();
@@ -3333,55 +3333,55 @@ export const Response = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.exception = ResponseException.decode(reader, reader.uint32());
+          message.exception = ResponseException.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.echo = ResponseEcho.decode(reader, reader.uint32());
+          message.echo = ResponseEcho.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
-          message.flush = ResponseFlush.decode(reader, reader.uint32());
+          message.flush = ResponseFlush.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 4:
-          message.info = ResponseInfo.decode(reader, reader.uint32());
+          message.info = ResponseInfo.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 6:
-          message.initChain = ResponseInitChain.decode(reader, reader.uint32());
+          message.initChain = ResponseInitChain.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 7:
-          message.query = ResponseQuery.decode(reader, reader.uint32());
+          message.query = ResponseQuery.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 9:
-          message.checkTx = ResponseCheckTx.decode(reader, reader.uint32());
+          message.checkTx = ResponseCheckTx.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 12:
-          message.commit = ResponseCommit.decode(reader, reader.uint32());
+          message.commit = ResponseCommit.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 13:
-          message.listSnapshots = ResponseListSnapshots.decode(reader, reader.uint32());
+          message.listSnapshots = ResponseListSnapshots.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 14:
-          message.offerSnapshot = ResponseOfferSnapshot.decode(reader, reader.uint32());
+          message.offerSnapshot = ResponseOfferSnapshot.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 15:
-          message.loadSnapshotChunk = ResponseLoadSnapshotChunk.decode(reader, reader.uint32());
+          message.loadSnapshotChunk = ResponseLoadSnapshotChunk.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 16:
-          message.applySnapshotChunk = ResponseApplySnapshotChunk.decode(reader, reader.uint32());
+          message.applySnapshotChunk = ResponseApplySnapshotChunk.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 17:
-          message.prepareProposal = ResponsePrepareProposal.decode(reader, reader.uint32());
+          message.prepareProposal = ResponsePrepareProposal.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 18:
-          message.processProposal = ResponseProcessProposal.decode(reader, reader.uint32());
+          message.processProposal = ResponseProcessProposal.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 19:
-          message.extendVote = ResponseExtendVote.decode(reader, reader.uint32());
+          message.extendVote = ResponseExtendVote.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 20:
-          message.verifyVoteExtension = ResponseVerifyVoteExtension.decode(reader, reader.uint32());
+          message.verifyVoteExtension = ResponseVerifyVoteExtension.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 21:
-          message.finalizeBlock = ResponseFinalizeBlock.decode(reader, reader.uint32());
+          message.finalizeBlock = ResponseFinalizeBlock.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -3432,32 +3432,32 @@ export const Response = {
       finalizeBlock: object?.finalize_block ? ResponseFinalizeBlock.fromAmino(object.finalize_block) : undefined
     };
   },
-  toAmino(message: Response): ResponseAmino {
+  toAmino(message: Response, useInterfaces: boolean = false): ResponseAmino {
     const obj: any = {};
-    obj.exception = message.exception ? ResponseException.toAmino(message.exception) : undefined;
-    obj.echo = message.echo ? ResponseEcho.toAmino(message.echo) : undefined;
-    obj.flush = message.flush ? ResponseFlush.toAmino(message.flush) : undefined;
-    obj.info = message.info ? ResponseInfo.toAmino(message.info) : undefined;
-    obj.init_chain = message.initChain ? ResponseInitChain.toAmino(message.initChain) : undefined;
-    obj.query = message.query ? ResponseQuery.toAmino(message.query) : undefined;
-    obj.check_tx = message.checkTx ? ResponseCheckTx.toAmino(message.checkTx) : undefined;
-    obj.commit = message.commit ? ResponseCommit.toAmino(message.commit) : undefined;
-    obj.list_snapshots = message.listSnapshots ? ResponseListSnapshots.toAmino(message.listSnapshots) : undefined;
-    obj.offer_snapshot = message.offerSnapshot ? ResponseOfferSnapshot.toAmino(message.offerSnapshot) : undefined;
-    obj.load_snapshot_chunk = message.loadSnapshotChunk ? ResponseLoadSnapshotChunk.toAmino(message.loadSnapshotChunk) : undefined;
-    obj.apply_snapshot_chunk = message.applySnapshotChunk ? ResponseApplySnapshotChunk.toAmino(message.applySnapshotChunk) : undefined;
-    obj.prepare_proposal = message.prepareProposal ? ResponsePrepareProposal.toAmino(message.prepareProposal) : undefined;
-    obj.process_proposal = message.processProposal ? ResponseProcessProposal.toAmino(message.processProposal) : undefined;
-    obj.extend_vote = message.extendVote ? ResponseExtendVote.toAmino(message.extendVote) : undefined;
-    obj.verify_vote_extension = message.verifyVoteExtension ? ResponseVerifyVoteExtension.toAmino(message.verifyVoteExtension) : undefined;
-    obj.finalize_block = message.finalizeBlock ? ResponseFinalizeBlock.toAmino(message.finalizeBlock) : undefined;
+    obj.exception = message.exception ? ResponseException.toAmino(message.exception, useInterfaces) : undefined;
+    obj.echo = message.echo ? ResponseEcho.toAmino(message.echo, useInterfaces) : undefined;
+    obj.flush = message.flush ? ResponseFlush.toAmino(message.flush, useInterfaces) : undefined;
+    obj.info = message.info ? ResponseInfo.toAmino(message.info, useInterfaces) : undefined;
+    obj.init_chain = message.initChain ? ResponseInitChain.toAmino(message.initChain, useInterfaces) : undefined;
+    obj.query = message.query ? ResponseQuery.toAmino(message.query, useInterfaces) : undefined;
+    obj.check_tx = message.checkTx ? ResponseCheckTx.toAmino(message.checkTx, useInterfaces) : undefined;
+    obj.commit = message.commit ? ResponseCommit.toAmino(message.commit, useInterfaces) : undefined;
+    obj.list_snapshots = message.listSnapshots ? ResponseListSnapshots.toAmino(message.listSnapshots, useInterfaces) : undefined;
+    obj.offer_snapshot = message.offerSnapshot ? ResponseOfferSnapshot.toAmino(message.offerSnapshot, useInterfaces) : undefined;
+    obj.load_snapshot_chunk = message.loadSnapshotChunk ? ResponseLoadSnapshotChunk.toAmino(message.loadSnapshotChunk, useInterfaces) : undefined;
+    obj.apply_snapshot_chunk = message.applySnapshotChunk ? ResponseApplySnapshotChunk.toAmino(message.applySnapshotChunk, useInterfaces) : undefined;
+    obj.prepare_proposal = message.prepareProposal ? ResponsePrepareProposal.toAmino(message.prepareProposal, useInterfaces) : undefined;
+    obj.process_proposal = message.processProposal ? ResponseProcessProposal.toAmino(message.processProposal, useInterfaces) : undefined;
+    obj.extend_vote = message.extendVote ? ResponseExtendVote.toAmino(message.extendVote, useInterfaces) : undefined;
+    obj.verify_vote_extension = message.verifyVoteExtension ? ResponseVerifyVoteExtension.toAmino(message.verifyVoteExtension, useInterfaces) : undefined;
+    obj.finalize_block = message.finalizeBlock ? ResponseFinalizeBlock.toAmino(message.finalizeBlock, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: ResponseAminoMsg): Response {
     return Response.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseProtoMsg): Response {
-    return Response.decode(message.value);
+  fromProtoMsg(message: ResponseProtoMsg, useInterfaces: boolean = false): Response {
+    return Response.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Response): Uint8Array {
     return Response.encode(message).finish();
@@ -3482,7 +3482,7 @@ export const ResponseException = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseException {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseException {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseException();
@@ -3509,7 +3509,7 @@ export const ResponseException = {
       error: object.error
     };
   },
-  toAmino(message: ResponseException): ResponseExceptionAmino {
+  toAmino(message: ResponseException, useInterfaces: boolean = false): ResponseExceptionAmino {
     const obj: any = {};
     obj.error = message.error;
     return obj;
@@ -3517,8 +3517,8 @@ export const ResponseException = {
   fromAminoMsg(object: ResponseExceptionAminoMsg): ResponseException {
     return ResponseException.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseExceptionProtoMsg): ResponseException {
-    return ResponseException.decode(message.value);
+  fromProtoMsg(message: ResponseExceptionProtoMsg, useInterfaces: boolean = false): ResponseException {
+    return ResponseException.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseException): Uint8Array {
     return ResponseException.encode(message).finish();
@@ -3543,7 +3543,7 @@ export const ResponseEcho = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseEcho {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseEcho {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseEcho();
@@ -3570,7 +3570,7 @@ export const ResponseEcho = {
       message: object.message
     };
   },
-  toAmino(message: ResponseEcho): ResponseEchoAmino {
+  toAmino(message: ResponseEcho, useInterfaces: boolean = false): ResponseEchoAmino {
     const obj: any = {};
     obj.message = message.message;
     return obj;
@@ -3578,8 +3578,8 @@ export const ResponseEcho = {
   fromAminoMsg(object: ResponseEchoAminoMsg): ResponseEcho {
     return ResponseEcho.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseEchoProtoMsg): ResponseEcho {
-    return ResponseEcho.decode(message.value);
+  fromProtoMsg(message: ResponseEchoProtoMsg, useInterfaces: boolean = false): ResponseEcho {
+    return ResponseEcho.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseEcho): Uint8Array {
     return ResponseEcho.encode(message).finish();
@@ -3599,7 +3599,7 @@ export const ResponseFlush = {
   encode(_: ResponseFlush, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseFlush {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseFlush {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseFlush();
@@ -3620,15 +3620,15 @@ export const ResponseFlush = {
   fromAmino(_: ResponseFlushAmino): ResponseFlush {
     return {};
   },
-  toAmino(_: ResponseFlush): ResponseFlushAmino {
+  toAmino(_: ResponseFlush, useInterfaces: boolean = false): ResponseFlushAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: ResponseFlushAminoMsg): ResponseFlush {
     return ResponseFlush.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseFlushProtoMsg): ResponseFlush {
-    return ResponseFlush.decode(message.value);
+  fromProtoMsg(message: ResponseFlushProtoMsg, useInterfaces: boolean = false): ResponseFlush {
+    return ResponseFlush.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseFlush): Uint8Array {
     return ResponseFlush.encode(message).finish();
@@ -3669,7 +3669,7 @@ export const ResponseInfo = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseInfo {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseInfo();
@@ -3716,7 +3716,7 @@ export const ResponseInfo = {
       lastBlockAppHash: object.last_block_app_hash
     };
   },
-  toAmino(message: ResponseInfo): ResponseInfoAmino {
+  toAmino(message: ResponseInfo, useInterfaces: boolean = false): ResponseInfoAmino {
     const obj: any = {};
     obj.data = message.data;
     obj.version = message.version;
@@ -3728,8 +3728,8 @@ export const ResponseInfo = {
   fromAminoMsg(object: ResponseInfoAminoMsg): ResponseInfo {
     return ResponseInfo.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseInfoProtoMsg): ResponseInfo {
-    return ResponseInfo.decode(message.value);
+  fromProtoMsg(message: ResponseInfoProtoMsg, useInterfaces: boolean = false): ResponseInfo {
+    return ResponseInfo.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseInfo): Uint8Array {
     return ResponseInfo.encode(message).finish();
@@ -3743,7 +3743,7 @@ export const ResponseInfo = {
 };
 function createBaseResponseInitChain(): ResponseInitChain {
   return {
-    consensusParams: ConsensusParams.fromPartial({}),
+    consensusParams: undefined,
     validators: [],
     appHash: new Uint8Array()
   };
@@ -3762,7 +3762,7 @@ export const ResponseInitChain = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseInitChain {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseInitChain {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseInitChain();
@@ -3770,10 +3770,10 @@ export const ResponseInitChain = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.consensusParams = ConsensusParams.decode(reader, reader.uint32());
+          message.consensusParams = ConsensusParams.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.validators.push(ValidatorUpdate.decode(reader, reader.uint32()));
+          message.validators.push(ValidatorUpdate.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 3:
           message.appHash = reader.bytes();
@@ -3799,11 +3799,11 @@ export const ResponseInitChain = {
       appHash: object.app_hash
     };
   },
-  toAmino(message: ResponseInitChain): ResponseInitChainAmino {
+  toAmino(message: ResponseInitChain, useInterfaces: boolean = false): ResponseInitChainAmino {
     const obj: any = {};
-    obj.consensus_params = message.consensusParams ? ConsensusParams.toAmino(message.consensusParams) : undefined;
+    obj.consensus_params = message.consensusParams ? ConsensusParams.toAmino(message.consensusParams, useInterfaces) : undefined;
     if (message.validators) {
-      obj.validators = message.validators.map(e => e ? ValidatorUpdate.toAmino(e) : undefined);
+      obj.validators = message.validators.map(e => e ? ValidatorUpdate.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.validators = [];
     }
@@ -3813,8 +3813,8 @@ export const ResponseInitChain = {
   fromAminoMsg(object: ResponseInitChainAminoMsg): ResponseInitChain {
     return ResponseInitChain.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseInitChainProtoMsg): ResponseInitChain {
-    return ResponseInitChain.decode(message.value);
+  fromProtoMsg(message: ResponseInitChainProtoMsg, useInterfaces: boolean = false): ResponseInitChain {
+    return ResponseInitChain.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseInitChain): Uint8Array {
     return ResponseInitChain.encode(message).finish();
@@ -3834,7 +3834,7 @@ function createBaseResponseQuery(): ResponseQuery {
     index: BigInt(0),
     key: new Uint8Array(),
     value: new Uint8Array(),
-    proofOps: ProofOps.fromPartial({}),
+    proofOps: undefined,
     height: BigInt(0),
     codespace: ""
   };
@@ -3871,7 +3871,7 @@ export const ResponseQuery = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseQuery {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseQuery {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseQuery();
@@ -3897,7 +3897,7 @@ export const ResponseQuery = {
           message.value = reader.bytes();
           break;
         case 8:
-          message.proofOps = ProofOps.decode(reader, reader.uint32());
+          message.proofOps = ProofOps.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 9:
           message.height = reader.int64();
@@ -3938,7 +3938,7 @@ export const ResponseQuery = {
       codespace: object.codespace
     };
   },
-  toAmino(message: ResponseQuery): ResponseQueryAmino {
+  toAmino(message: ResponseQuery, useInterfaces: boolean = false): ResponseQueryAmino {
     const obj: any = {};
     obj.code = message.code;
     obj.log = message.log;
@@ -3946,7 +3946,7 @@ export const ResponseQuery = {
     obj.index = message.index ? message.index.toString() : undefined;
     obj.key = message.key;
     obj.value = message.value;
-    obj.proof_ops = message.proofOps ? ProofOps.toAmino(message.proofOps) : undefined;
+    obj.proof_ops = message.proofOps ? ProofOps.toAmino(message.proofOps, useInterfaces) : undefined;
     obj.height = message.height ? message.height.toString() : undefined;
     obj.codespace = message.codespace;
     return obj;
@@ -3954,8 +3954,8 @@ export const ResponseQuery = {
   fromAminoMsg(object: ResponseQueryAminoMsg): ResponseQuery {
     return ResponseQuery.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseQueryProtoMsg): ResponseQuery {
-    return ResponseQuery.decode(message.value);
+  fromProtoMsg(message: ResponseQueryProtoMsg, useInterfaces: boolean = false): ResponseQuery {
+    return ResponseQuery.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseQuery): Uint8Array {
     return ResponseQuery.encode(message).finish();
@@ -4008,7 +4008,7 @@ export const ResponseCheckTx = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseCheckTx {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseCheckTx {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseCheckTx();
@@ -4034,7 +4034,7 @@ export const ResponseCheckTx = {
           message.gasUsed = reader.int64();
           break;
         case 7:
-          message.events.push(Event.decode(reader, reader.uint32()));
+          message.events.push(Event.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 8:
           message.codespace = reader.string();
@@ -4070,7 +4070,7 @@ export const ResponseCheckTx = {
       codespace: object.codespace
     };
   },
-  toAmino(message: ResponseCheckTx): ResponseCheckTxAmino {
+  toAmino(message: ResponseCheckTx, useInterfaces: boolean = false): ResponseCheckTxAmino {
     const obj: any = {};
     obj.code = message.code;
     obj.data = message.data;
@@ -4079,7 +4079,7 @@ export const ResponseCheckTx = {
     obj.gas_wanted = message.gasWanted ? message.gasWanted.toString() : undefined;
     obj.gas_used = message.gasUsed ? message.gasUsed.toString() : undefined;
     if (message.events) {
-      obj.events = message.events.map(e => e ? Event.toAmino(e) : undefined);
+      obj.events = message.events.map(e => e ? Event.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.events = [];
     }
@@ -4089,8 +4089,8 @@ export const ResponseCheckTx = {
   fromAminoMsg(object: ResponseCheckTxAminoMsg): ResponseCheckTx {
     return ResponseCheckTx.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseCheckTxProtoMsg): ResponseCheckTx {
-    return ResponseCheckTx.decode(message.value);
+  fromProtoMsg(message: ResponseCheckTxProtoMsg, useInterfaces: boolean = false): ResponseCheckTx {
+    return ResponseCheckTx.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseCheckTx): Uint8Array {
     return ResponseCheckTx.encode(message).finish();
@@ -4115,7 +4115,7 @@ export const ResponseCommit = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseCommit {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseCommit {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseCommit();
@@ -4142,7 +4142,7 @@ export const ResponseCommit = {
       retainHeight: BigInt(object.retain_height)
     };
   },
-  toAmino(message: ResponseCommit): ResponseCommitAmino {
+  toAmino(message: ResponseCommit, useInterfaces: boolean = false): ResponseCommitAmino {
     const obj: any = {};
     obj.retain_height = message.retainHeight ? message.retainHeight.toString() : undefined;
     return obj;
@@ -4150,8 +4150,8 @@ export const ResponseCommit = {
   fromAminoMsg(object: ResponseCommitAminoMsg): ResponseCommit {
     return ResponseCommit.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseCommitProtoMsg): ResponseCommit {
-    return ResponseCommit.decode(message.value);
+  fromProtoMsg(message: ResponseCommitProtoMsg, useInterfaces: boolean = false): ResponseCommit {
+    return ResponseCommit.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseCommit): Uint8Array {
     return ResponseCommit.encode(message).finish();
@@ -4176,7 +4176,7 @@ export const ResponseListSnapshots = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseListSnapshots {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseListSnapshots {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseListSnapshots();
@@ -4184,7 +4184,7 @@ export const ResponseListSnapshots = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.snapshots.push(Snapshot.decode(reader, reader.uint32()));
+          message.snapshots.push(Snapshot.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -4203,10 +4203,10 @@ export const ResponseListSnapshots = {
       snapshots: Array.isArray(object?.snapshots) ? object.snapshots.map((e: any) => Snapshot.fromAmino(e)) : []
     };
   },
-  toAmino(message: ResponseListSnapshots): ResponseListSnapshotsAmino {
+  toAmino(message: ResponseListSnapshots, useInterfaces: boolean = false): ResponseListSnapshotsAmino {
     const obj: any = {};
     if (message.snapshots) {
-      obj.snapshots = message.snapshots.map(e => e ? Snapshot.toAmino(e) : undefined);
+      obj.snapshots = message.snapshots.map(e => e ? Snapshot.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.snapshots = [];
     }
@@ -4215,8 +4215,8 @@ export const ResponseListSnapshots = {
   fromAminoMsg(object: ResponseListSnapshotsAminoMsg): ResponseListSnapshots {
     return ResponseListSnapshots.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseListSnapshotsProtoMsg): ResponseListSnapshots {
-    return ResponseListSnapshots.decode(message.value);
+  fromProtoMsg(message: ResponseListSnapshotsProtoMsg, useInterfaces: boolean = false): ResponseListSnapshots {
+    return ResponseListSnapshots.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseListSnapshots): Uint8Array {
     return ResponseListSnapshots.encode(message).finish();
@@ -4241,7 +4241,7 @@ export const ResponseOfferSnapshot = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseOfferSnapshot {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseOfferSnapshot {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseOfferSnapshot();
@@ -4268,7 +4268,7 @@ export const ResponseOfferSnapshot = {
       result: isSet(object.result) ? responseOfferSnapshot_ResultFromJSON(object.result) : -1
     };
   },
-  toAmino(message: ResponseOfferSnapshot): ResponseOfferSnapshotAmino {
+  toAmino(message: ResponseOfferSnapshot, useInterfaces: boolean = false): ResponseOfferSnapshotAmino {
     const obj: any = {};
     obj.result = message.result;
     return obj;
@@ -4276,8 +4276,8 @@ export const ResponseOfferSnapshot = {
   fromAminoMsg(object: ResponseOfferSnapshotAminoMsg): ResponseOfferSnapshot {
     return ResponseOfferSnapshot.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseOfferSnapshotProtoMsg): ResponseOfferSnapshot {
-    return ResponseOfferSnapshot.decode(message.value);
+  fromProtoMsg(message: ResponseOfferSnapshotProtoMsg, useInterfaces: boolean = false): ResponseOfferSnapshot {
+    return ResponseOfferSnapshot.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseOfferSnapshot): Uint8Array {
     return ResponseOfferSnapshot.encode(message).finish();
@@ -4302,7 +4302,7 @@ export const ResponseLoadSnapshotChunk = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseLoadSnapshotChunk {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseLoadSnapshotChunk {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseLoadSnapshotChunk();
@@ -4329,7 +4329,7 @@ export const ResponseLoadSnapshotChunk = {
       chunk: object.chunk
     };
   },
-  toAmino(message: ResponseLoadSnapshotChunk): ResponseLoadSnapshotChunkAmino {
+  toAmino(message: ResponseLoadSnapshotChunk, useInterfaces: boolean = false): ResponseLoadSnapshotChunkAmino {
     const obj: any = {};
     obj.chunk = message.chunk;
     return obj;
@@ -4337,8 +4337,8 @@ export const ResponseLoadSnapshotChunk = {
   fromAminoMsg(object: ResponseLoadSnapshotChunkAminoMsg): ResponseLoadSnapshotChunk {
     return ResponseLoadSnapshotChunk.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseLoadSnapshotChunkProtoMsg): ResponseLoadSnapshotChunk {
-    return ResponseLoadSnapshotChunk.decode(message.value);
+  fromProtoMsg(message: ResponseLoadSnapshotChunkProtoMsg, useInterfaces: boolean = false): ResponseLoadSnapshotChunk {
+    return ResponseLoadSnapshotChunk.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseLoadSnapshotChunk): Uint8Array {
     return ResponseLoadSnapshotChunk.encode(message).finish();
@@ -4373,7 +4373,7 @@ export const ResponseApplySnapshotChunk = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseApplySnapshotChunk {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseApplySnapshotChunk {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseApplySnapshotChunk();
@@ -4417,7 +4417,7 @@ export const ResponseApplySnapshotChunk = {
       rejectSenders: Array.isArray(object?.reject_senders) ? object.reject_senders.map((e: any) => e) : []
     };
   },
-  toAmino(message: ResponseApplySnapshotChunk): ResponseApplySnapshotChunkAmino {
+  toAmino(message: ResponseApplySnapshotChunk, useInterfaces: boolean = false): ResponseApplySnapshotChunkAmino {
     const obj: any = {};
     obj.result = message.result;
     if (message.refetchChunks) {
@@ -4435,8 +4435,8 @@ export const ResponseApplySnapshotChunk = {
   fromAminoMsg(object: ResponseApplySnapshotChunkAminoMsg): ResponseApplySnapshotChunk {
     return ResponseApplySnapshotChunk.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseApplySnapshotChunkProtoMsg): ResponseApplySnapshotChunk {
-    return ResponseApplySnapshotChunk.decode(message.value);
+  fromProtoMsg(message: ResponseApplySnapshotChunkProtoMsg, useInterfaces: boolean = false): ResponseApplySnapshotChunk {
+    return ResponseApplySnapshotChunk.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseApplySnapshotChunk): Uint8Array {
     return ResponseApplySnapshotChunk.encode(message).finish();
@@ -4461,7 +4461,7 @@ export const ResponsePrepareProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponsePrepareProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponsePrepareProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponsePrepareProposal();
@@ -4488,7 +4488,7 @@ export const ResponsePrepareProposal = {
       txs: Array.isArray(object?.txs) ? object.txs.map((e: any) => e) : []
     };
   },
-  toAmino(message: ResponsePrepareProposal): ResponsePrepareProposalAmino {
+  toAmino(message: ResponsePrepareProposal, useInterfaces: boolean = false): ResponsePrepareProposalAmino {
     const obj: any = {};
     if (message.txs) {
       obj.txs = message.txs.map(e => e);
@@ -4500,8 +4500,8 @@ export const ResponsePrepareProposal = {
   fromAminoMsg(object: ResponsePrepareProposalAminoMsg): ResponsePrepareProposal {
     return ResponsePrepareProposal.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponsePrepareProposalProtoMsg): ResponsePrepareProposal {
-    return ResponsePrepareProposal.decode(message.value);
+  fromProtoMsg(message: ResponsePrepareProposalProtoMsg, useInterfaces: boolean = false): ResponsePrepareProposal {
+    return ResponsePrepareProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponsePrepareProposal): Uint8Array {
     return ResponsePrepareProposal.encode(message).finish();
@@ -4526,7 +4526,7 @@ export const ResponseProcessProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseProcessProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseProcessProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseProcessProposal();
@@ -4553,7 +4553,7 @@ export const ResponseProcessProposal = {
       status: isSet(object.status) ? responseProcessProposal_ProposalStatusFromJSON(object.status) : -1
     };
   },
-  toAmino(message: ResponseProcessProposal): ResponseProcessProposalAmino {
+  toAmino(message: ResponseProcessProposal, useInterfaces: boolean = false): ResponseProcessProposalAmino {
     const obj: any = {};
     obj.status = message.status;
     return obj;
@@ -4561,8 +4561,8 @@ export const ResponseProcessProposal = {
   fromAminoMsg(object: ResponseProcessProposalAminoMsg): ResponseProcessProposal {
     return ResponseProcessProposal.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseProcessProposalProtoMsg): ResponseProcessProposal {
-    return ResponseProcessProposal.decode(message.value);
+  fromProtoMsg(message: ResponseProcessProposalProtoMsg, useInterfaces: boolean = false): ResponseProcessProposal {
+    return ResponseProcessProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseProcessProposal): Uint8Array {
     return ResponseProcessProposal.encode(message).finish();
@@ -4587,7 +4587,7 @@ export const ResponseExtendVote = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseExtendVote {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseExtendVote {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseExtendVote();
@@ -4614,7 +4614,7 @@ export const ResponseExtendVote = {
       voteExtension: object.vote_extension
     };
   },
-  toAmino(message: ResponseExtendVote): ResponseExtendVoteAmino {
+  toAmino(message: ResponseExtendVote, useInterfaces: boolean = false): ResponseExtendVoteAmino {
     const obj: any = {};
     obj.vote_extension = message.voteExtension;
     return obj;
@@ -4622,8 +4622,8 @@ export const ResponseExtendVote = {
   fromAminoMsg(object: ResponseExtendVoteAminoMsg): ResponseExtendVote {
     return ResponseExtendVote.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseExtendVoteProtoMsg): ResponseExtendVote {
-    return ResponseExtendVote.decode(message.value);
+  fromProtoMsg(message: ResponseExtendVoteProtoMsg, useInterfaces: boolean = false): ResponseExtendVote {
+    return ResponseExtendVote.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseExtendVote): Uint8Array {
     return ResponseExtendVote.encode(message).finish();
@@ -4648,7 +4648,7 @@ export const ResponseVerifyVoteExtension = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseVerifyVoteExtension {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseVerifyVoteExtension {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseVerifyVoteExtension();
@@ -4675,7 +4675,7 @@ export const ResponseVerifyVoteExtension = {
       status: isSet(object.status) ? responseVerifyVoteExtension_VerifyStatusFromJSON(object.status) : -1
     };
   },
-  toAmino(message: ResponseVerifyVoteExtension): ResponseVerifyVoteExtensionAmino {
+  toAmino(message: ResponseVerifyVoteExtension, useInterfaces: boolean = false): ResponseVerifyVoteExtensionAmino {
     const obj: any = {};
     obj.status = message.status;
     return obj;
@@ -4683,8 +4683,8 @@ export const ResponseVerifyVoteExtension = {
   fromAminoMsg(object: ResponseVerifyVoteExtensionAminoMsg): ResponseVerifyVoteExtension {
     return ResponseVerifyVoteExtension.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseVerifyVoteExtensionProtoMsg): ResponseVerifyVoteExtension {
-    return ResponseVerifyVoteExtension.decode(message.value);
+  fromProtoMsg(message: ResponseVerifyVoteExtensionProtoMsg, useInterfaces: boolean = false): ResponseVerifyVoteExtension {
+    return ResponseVerifyVoteExtension.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseVerifyVoteExtension): Uint8Array {
     return ResponseVerifyVoteExtension.encode(message).finish();
@@ -4701,7 +4701,7 @@ function createBaseResponseFinalizeBlock(): ResponseFinalizeBlock {
     events: [],
     txResults: [],
     validatorUpdates: [],
-    consensusParamUpdates: ConsensusParams.fromPartial({}),
+    consensusParamUpdates: undefined,
     appHash: new Uint8Array()
   };
 }
@@ -4725,7 +4725,7 @@ export const ResponseFinalizeBlock = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ResponseFinalizeBlock {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ResponseFinalizeBlock {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseResponseFinalizeBlock();
@@ -4733,16 +4733,16 @@ export const ResponseFinalizeBlock = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.events.push(Event.decode(reader, reader.uint32()));
+          message.events.push(Event.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.txResults.push(ExecTxResult.decode(reader, reader.uint32()));
+          message.txResults.push(ExecTxResult.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 3:
-          message.validatorUpdates.push(ValidatorUpdate.decode(reader, reader.uint32()));
+          message.validatorUpdates.push(ValidatorUpdate.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
-          message.consensusParamUpdates = ConsensusParams.decode(reader, reader.uint32());
+          message.consensusParamUpdates = ConsensusParams.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 5:
           message.appHash = reader.bytes();
@@ -4772,32 +4772,32 @@ export const ResponseFinalizeBlock = {
       appHash: object.app_hash
     };
   },
-  toAmino(message: ResponseFinalizeBlock): ResponseFinalizeBlockAmino {
+  toAmino(message: ResponseFinalizeBlock, useInterfaces: boolean = false): ResponseFinalizeBlockAmino {
     const obj: any = {};
     if (message.events) {
-      obj.events = message.events.map(e => e ? Event.toAmino(e) : undefined);
+      obj.events = message.events.map(e => e ? Event.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.events = [];
     }
     if (message.txResults) {
-      obj.tx_results = message.txResults.map(e => e ? ExecTxResult.toAmino(e) : undefined);
+      obj.tx_results = message.txResults.map(e => e ? ExecTxResult.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.tx_results = [];
     }
     if (message.validatorUpdates) {
-      obj.validator_updates = message.validatorUpdates.map(e => e ? ValidatorUpdate.toAmino(e) : undefined);
+      obj.validator_updates = message.validatorUpdates.map(e => e ? ValidatorUpdate.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.validator_updates = [];
     }
-    obj.consensus_param_updates = message.consensusParamUpdates ? ConsensusParams.toAmino(message.consensusParamUpdates) : undefined;
+    obj.consensus_param_updates = message.consensusParamUpdates ? ConsensusParams.toAmino(message.consensusParamUpdates, useInterfaces) : undefined;
     obj.app_hash = message.appHash;
     return obj;
   },
   fromAminoMsg(object: ResponseFinalizeBlockAminoMsg): ResponseFinalizeBlock {
     return ResponseFinalizeBlock.fromAmino(object.value);
   },
-  fromProtoMsg(message: ResponseFinalizeBlockProtoMsg): ResponseFinalizeBlock {
-    return ResponseFinalizeBlock.decode(message.value);
+  fromProtoMsg(message: ResponseFinalizeBlockProtoMsg, useInterfaces: boolean = false): ResponseFinalizeBlock {
+    return ResponseFinalizeBlock.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ResponseFinalizeBlock): Uint8Array {
     return ResponseFinalizeBlock.encode(message).finish();
@@ -4826,7 +4826,7 @@ export const CommitInfo = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CommitInfo {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CommitInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCommitInfo();
@@ -4837,7 +4837,7 @@ export const CommitInfo = {
           message.round = reader.int32();
           break;
         case 2:
-          message.votes.push(VoteInfo.decode(reader, reader.uint32()));
+          message.votes.push(VoteInfo.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -4858,11 +4858,11 @@ export const CommitInfo = {
       votes: Array.isArray(object?.votes) ? object.votes.map((e: any) => VoteInfo.fromAmino(e)) : []
     };
   },
-  toAmino(message: CommitInfo): CommitInfoAmino {
+  toAmino(message: CommitInfo, useInterfaces: boolean = false): CommitInfoAmino {
     const obj: any = {};
     obj.round = message.round;
     if (message.votes) {
-      obj.votes = message.votes.map(e => e ? VoteInfo.toAmino(e) : undefined);
+      obj.votes = message.votes.map(e => e ? VoteInfo.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.votes = [];
     }
@@ -4871,8 +4871,8 @@ export const CommitInfo = {
   fromAminoMsg(object: CommitInfoAminoMsg): CommitInfo {
     return CommitInfo.fromAmino(object.value);
   },
-  fromProtoMsg(message: CommitInfoProtoMsg): CommitInfo {
-    return CommitInfo.decode(message.value);
+  fromProtoMsg(message: CommitInfoProtoMsg, useInterfaces: boolean = false): CommitInfo {
+    return CommitInfo.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CommitInfo): Uint8Array {
     return CommitInfo.encode(message).finish();
@@ -4901,7 +4901,7 @@ export const ExtendedCommitInfo = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ExtendedCommitInfo {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ExtendedCommitInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseExtendedCommitInfo();
@@ -4912,7 +4912,7 @@ export const ExtendedCommitInfo = {
           message.round = reader.int32();
           break;
         case 2:
-          message.votes.push(ExtendedVoteInfo.decode(reader, reader.uint32()));
+          message.votes.push(ExtendedVoteInfo.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -4933,11 +4933,11 @@ export const ExtendedCommitInfo = {
       votes: Array.isArray(object?.votes) ? object.votes.map((e: any) => ExtendedVoteInfo.fromAmino(e)) : []
     };
   },
-  toAmino(message: ExtendedCommitInfo): ExtendedCommitInfoAmino {
+  toAmino(message: ExtendedCommitInfo, useInterfaces: boolean = false): ExtendedCommitInfoAmino {
     const obj: any = {};
     obj.round = message.round;
     if (message.votes) {
-      obj.votes = message.votes.map(e => e ? ExtendedVoteInfo.toAmino(e) : undefined);
+      obj.votes = message.votes.map(e => e ? ExtendedVoteInfo.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.votes = [];
     }
@@ -4946,8 +4946,8 @@ export const ExtendedCommitInfo = {
   fromAminoMsg(object: ExtendedCommitInfoAminoMsg): ExtendedCommitInfo {
     return ExtendedCommitInfo.fromAmino(object.value);
   },
-  fromProtoMsg(message: ExtendedCommitInfoProtoMsg): ExtendedCommitInfo {
-    return ExtendedCommitInfo.decode(message.value);
+  fromProtoMsg(message: ExtendedCommitInfoProtoMsg, useInterfaces: boolean = false): ExtendedCommitInfo {
+    return ExtendedCommitInfo.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ExtendedCommitInfo): Uint8Array {
     return ExtendedCommitInfo.encode(message).finish();
@@ -4976,7 +4976,7 @@ export const Event = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Event {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Event {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEvent();
@@ -4987,7 +4987,7 @@ export const Event = {
           message.type = reader.string();
           break;
         case 2:
-          message.attributes.push(EventAttribute.decode(reader, reader.uint32()));
+          message.attributes.push(EventAttribute.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -5008,11 +5008,11 @@ export const Event = {
       attributes: Array.isArray(object?.attributes) ? object.attributes.map((e: any) => EventAttribute.fromAmino(e)) : []
     };
   },
-  toAmino(message: Event): EventAmino {
+  toAmino(message: Event, useInterfaces: boolean = false): EventAmino {
     const obj: any = {};
     obj.type = message.type;
     if (message.attributes) {
-      obj.attributes = message.attributes.map(e => e ? EventAttribute.toAmino(e) : undefined);
+      obj.attributes = message.attributes.map(e => e ? EventAttribute.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.attributes = [];
     }
@@ -5021,8 +5021,8 @@ export const Event = {
   fromAminoMsg(object: EventAminoMsg): Event {
     return Event.fromAmino(object.value);
   },
-  fromProtoMsg(message: EventProtoMsg): Event {
-    return Event.decode(message.value);
+  fromProtoMsg(message: EventProtoMsg, useInterfaces: boolean = false): Event {
+    return Event.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Event): Uint8Array {
     return Event.encode(message).finish();
@@ -5055,7 +5055,7 @@ export const EventAttribute = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EventAttribute {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EventAttribute {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEventAttribute();
@@ -5092,7 +5092,7 @@ export const EventAttribute = {
       index: object.index
     };
   },
-  toAmino(message: EventAttribute): EventAttributeAmino {
+  toAmino(message: EventAttribute, useInterfaces: boolean = false): EventAttributeAmino {
     const obj: any = {};
     obj.key = message.key;
     obj.value = message.value;
@@ -5102,8 +5102,8 @@ export const EventAttribute = {
   fromAminoMsg(object: EventAttributeAminoMsg): EventAttribute {
     return EventAttribute.fromAmino(object.value);
   },
-  fromProtoMsg(message: EventAttributeProtoMsg): EventAttribute {
-    return EventAttribute.decode(message.value);
+  fromProtoMsg(message: EventAttributeProtoMsg, useInterfaces: boolean = false): EventAttribute {
+    return EventAttribute.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EventAttribute): Uint8Array {
     return EventAttribute.encode(message).finish();
@@ -5156,7 +5156,7 @@ export const ExecTxResult = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ExecTxResult {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ExecTxResult {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseExecTxResult();
@@ -5182,7 +5182,7 @@ export const ExecTxResult = {
           message.gasUsed = reader.int64();
           break;
         case 7:
-          message.events.push(Event.decode(reader, reader.uint32()));
+          message.events.push(Event.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 8:
           message.codespace = reader.string();
@@ -5218,7 +5218,7 @@ export const ExecTxResult = {
       codespace: object.codespace
     };
   },
-  toAmino(message: ExecTxResult): ExecTxResultAmino {
+  toAmino(message: ExecTxResult, useInterfaces: boolean = false): ExecTxResultAmino {
     const obj: any = {};
     obj.code = message.code;
     obj.data = message.data;
@@ -5227,7 +5227,7 @@ export const ExecTxResult = {
     obj.gas_wanted = message.gasWanted ? message.gasWanted.toString() : undefined;
     obj.gas_used = message.gasUsed ? message.gasUsed.toString() : undefined;
     if (message.events) {
-      obj.events = message.events.map(e => e ? Event.toAmino(e) : undefined);
+      obj.events = message.events.map(e => e ? Event.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.events = [];
     }
@@ -5237,8 +5237,8 @@ export const ExecTxResult = {
   fromAminoMsg(object: ExecTxResultAminoMsg): ExecTxResult {
     return ExecTxResult.fromAmino(object.value);
   },
-  fromProtoMsg(message: ExecTxResultProtoMsg): ExecTxResult {
-    return ExecTxResult.decode(message.value);
+  fromProtoMsg(message: ExecTxResultProtoMsg, useInterfaces: boolean = false): ExecTxResult {
+    return ExecTxResult.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ExecTxResult): Uint8Array {
     return ExecTxResult.encode(message).finish();
@@ -5275,7 +5275,7 @@ export const TxResult = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TxResult {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TxResult {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTxResult();
@@ -5292,7 +5292,7 @@ export const TxResult = {
           message.tx = reader.bytes();
           break;
         case 4:
-          message.result = ExecTxResult.decode(reader, reader.uint32());
+          message.result = ExecTxResult.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -5317,19 +5317,19 @@ export const TxResult = {
       result: object?.result ? ExecTxResult.fromAmino(object.result) : undefined
     };
   },
-  toAmino(message: TxResult): TxResultAmino {
+  toAmino(message: TxResult, useInterfaces: boolean = false): TxResultAmino {
     const obj: any = {};
     obj.height = message.height ? message.height.toString() : undefined;
     obj.index = message.index;
     obj.tx = message.tx;
-    obj.result = message.result ? ExecTxResult.toAmino(message.result) : undefined;
+    obj.result = message.result ? ExecTxResult.toAmino(message.result, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: TxResultAminoMsg): TxResult {
     return TxResult.fromAmino(object.value);
   },
-  fromProtoMsg(message: TxResultProtoMsg): TxResult {
-    return TxResult.decode(message.value);
+  fromProtoMsg(message: TxResultProtoMsg, useInterfaces: boolean = false): TxResult {
+    return TxResult.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TxResult): Uint8Array {
     return TxResult.encode(message).finish();
@@ -5358,7 +5358,7 @@ export const Validator = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Validator {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Validator {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidator();
@@ -5390,7 +5390,7 @@ export const Validator = {
       power: BigInt(object.power)
     };
   },
-  toAmino(message: Validator): ValidatorAmino {
+  toAmino(message: Validator, useInterfaces: boolean = false): ValidatorAmino {
     const obj: any = {};
     obj.address = message.address;
     obj.power = message.power ? message.power.toString() : undefined;
@@ -5399,8 +5399,8 @@ export const Validator = {
   fromAminoMsg(object: ValidatorAminoMsg): Validator {
     return Validator.fromAmino(object.value);
   },
-  fromProtoMsg(message: ValidatorProtoMsg): Validator {
-    return Validator.decode(message.value);
+  fromProtoMsg(message: ValidatorProtoMsg, useInterfaces: boolean = false): Validator {
+    return Validator.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Validator): Uint8Array {
     return Validator.encode(message).finish();
@@ -5429,7 +5429,7 @@ export const ValidatorUpdate = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ValidatorUpdate {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ValidatorUpdate {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorUpdate();
@@ -5437,7 +5437,7 @@ export const ValidatorUpdate = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.pubKey = PublicKey.decode(reader, reader.uint32());
+          message.pubKey = PublicKey.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
           message.power = reader.int64();
@@ -5461,17 +5461,17 @@ export const ValidatorUpdate = {
       power: BigInt(object.power)
     };
   },
-  toAmino(message: ValidatorUpdate): ValidatorUpdateAmino {
+  toAmino(message: ValidatorUpdate, useInterfaces: boolean = false): ValidatorUpdateAmino {
     const obj: any = {};
-    obj.pub_key = message.pubKey ? PublicKey.toAmino(message.pubKey) : undefined;
+    obj.pub_key = message.pubKey ? PublicKey.toAmino(message.pubKey, useInterfaces) : undefined;
     obj.power = message.power ? message.power.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: ValidatorUpdateAminoMsg): ValidatorUpdate {
     return ValidatorUpdate.fromAmino(object.value);
   },
-  fromProtoMsg(message: ValidatorUpdateProtoMsg): ValidatorUpdate {
-    return ValidatorUpdate.decode(message.value);
+  fromProtoMsg(message: ValidatorUpdateProtoMsg, useInterfaces: boolean = false): ValidatorUpdate {
+    return ValidatorUpdate.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ValidatorUpdate): Uint8Array {
     return ValidatorUpdate.encode(message).finish();
@@ -5500,7 +5500,7 @@ export const VoteInfo = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): VoteInfo {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): VoteInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVoteInfo();
@@ -5508,7 +5508,7 @@ export const VoteInfo = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.validator = Validator.decode(reader, reader.uint32());
+          message.validator = Validator.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
           message.blockIdFlag = (reader.int32() as any);
@@ -5532,17 +5532,17 @@ export const VoteInfo = {
       blockIdFlag: isSet(object.block_id_flag) ? blockIDFlagFromJSON(object.block_id_flag) : -1
     };
   },
-  toAmino(message: VoteInfo): VoteInfoAmino {
+  toAmino(message: VoteInfo, useInterfaces: boolean = false): VoteInfoAmino {
     const obj: any = {};
-    obj.validator = message.validator ? Validator.toAmino(message.validator) : undefined;
+    obj.validator = message.validator ? Validator.toAmino(message.validator, useInterfaces) : undefined;
     obj.block_id_flag = message.blockIdFlag;
     return obj;
   },
   fromAminoMsg(object: VoteInfoAminoMsg): VoteInfo {
     return VoteInfo.fromAmino(object.value);
   },
-  fromProtoMsg(message: VoteInfoProtoMsg): VoteInfo {
-    return VoteInfo.decode(message.value);
+  fromProtoMsg(message: VoteInfoProtoMsg, useInterfaces: boolean = false): VoteInfo {
+    return VoteInfo.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: VoteInfo): Uint8Array {
     return VoteInfo.encode(message).finish();
@@ -5579,7 +5579,7 @@ export const ExtendedVoteInfo = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ExtendedVoteInfo {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ExtendedVoteInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseExtendedVoteInfo();
@@ -5587,7 +5587,7 @@ export const ExtendedVoteInfo = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.validator = Validator.decode(reader, reader.uint32());
+          message.validator = Validator.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
           message.voteExtension = reader.bytes();
@@ -5621,9 +5621,9 @@ export const ExtendedVoteInfo = {
       blockIdFlag: isSet(object.block_id_flag) ? blockIDFlagFromJSON(object.block_id_flag) : -1
     };
   },
-  toAmino(message: ExtendedVoteInfo): ExtendedVoteInfoAmino {
+  toAmino(message: ExtendedVoteInfo, useInterfaces: boolean = false): ExtendedVoteInfoAmino {
     const obj: any = {};
-    obj.validator = message.validator ? Validator.toAmino(message.validator) : undefined;
+    obj.validator = message.validator ? Validator.toAmino(message.validator, useInterfaces) : undefined;
     obj.vote_extension = message.voteExtension;
     obj.extension_signature = message.extensionSignature;
     obj.block_id_flag = message.blockIdFlag;
@@ -5632,8 +5632,8 @@ export const ExtendedVoteInfo = {
   fromAminoMsg(object: ExtendedVoteInfoAminoMsg): ExtendedVoteInfo {
     return ExtendedVoteInfo.fromAmino(object.value);
   },
-  fromProtoMsg(message: ExtendedVoteInfoProtoMsg): ExtendedVoteInfo {
-    return ExtendedVoteInfo.decode(message.value);
+  fromProtoMsg(message: ExtendedVoteInfoProtoMsg, useInterfaces: boolean = false): ExtendedVoteInfo {
+    return ExtendedVoteInfo.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ExtendedVoteInfo): Uint8Array {
     return ExtendedVoteInfo.encode(message).finish();
@@ -5674,7 +5674,7 @@ export const Misbehavior = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Misbehavior {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Misbehavior {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMisbehavior();
@@ -5685,7 +5685,7 @@ export const Misbehavior = {
           message.type = (reader.int32() as any);
           break;
         case 2:
-          message.validator = Validator.decode(reader, reader.uint32());
+          message.validator = Validator.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
           message.height = reader.int64();
@@ -5717,24 +5717,24 @@ export const Misbehavior = {
       type: isSet(object.type) ? misbehaviorTypeFromJSON(object.type) : -1,
       validator: object?.validator ? Validator.fromAmino(object.validator) : undefined,
       height: BigInt(object.height),
-      time: object.time,
+      time: object?.time ? fromTimestamp(Timestamp.fromAmino(object.time)) : undefined,
       totalVotingPower: BigInt(object.total_voting_power)
     };
   },
-  toAmino(message: Misbehavior): MisbehaviorAmino {
+  toAmino(message: Misbehavior, useInterfaces: boolean = false): MisbehaviorAmino {
     const obj: any = {};
     obj.type = message.type;
-    obj.validator = message.validator ? Validator.toAmino(message.validator) : undefined;
+    obj.validator = message.validator ? Validator.toAmino(message.validator, useInterfaces) : undefined;
     obj.height = message.height ? message.height.toString() : undefined;
-    obj.time = message.time;
+    obj.time = message.time ? Timestamp.toAmino(toTimestamp(message.time)) : undefined;
     obj.total_voting_power = message.totalVotingPower ? message.totalVotingPower.toString() : undefined;
     return obj;
   },
   fromAminoMsg(object: MisbehaviorAminoMsg): Misbehavior {
     return Misbehavior.fromAmino(object.value);
   },
-  fromProtoMsg(message: MisbehaviorProtoMsg): Misbehavior {
-    return Misbehavior.decode(message.value);
+  fromProtoMsg(message: MisbehaviorProtoMsg, useInterfaces: boolean = false): Misbehavior {
+    return Misbehavior.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Misbehavior): Uint8Array {
     return Misbehavior.encode(message).finish();
@@ -5775,7 +5775,7 @@ export const Snapshot = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Snapshot {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Snapshot {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSnapshot();
@@ -5822,7 +5822,7 @@ export const Snapshot = {
       metadata: object.metadata
     };
   },
-  toAmino(message: Snapshot): SnapshotAmino {
+  toAmino(message: Snapshot, useInterfaces: boolean = false): SnapshotAmino {
     const obj: any = {};
     obj.height = message.height ? message.height.toString() : undefined;
     obj.format = message.format;
@@ -5834,8 +5834,8 @@ export const Snapshot = {
   fromAminoMsg(object: SnapshotAminoMsg): Snapshot {
     return Snapshot.fromAmino(object.value);
   },
-  fromProtoMsg(message: SnapshotProtoMsg): Snapshot {
-    return Snapshot.decode(message.value);
+  fromProtoMsg(message: SnapshotProtoMsg, useInterfaces: boolean = false): Snapshot {
+    return Snapshot.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Snapshot): Uint8Array {
     return Snapshot.encode(message).finish();

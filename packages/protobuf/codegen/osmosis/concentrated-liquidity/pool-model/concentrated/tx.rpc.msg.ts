@@ -10,9 +10,9 @@ export class MsgClientImpl implements Msg {
     this.rpc = rpc;
     this.createConcentratedPool = this.createConcentratedPool.bind(this);
   }
-  createConcentratedPool(request: MsgCreateConcentratedPool): Promise<MsgCreateConcentratedPoolResponse> {
+  createConcentratedPool(request: MsgCreateConcentratedPool, useInterfaces: boolean = true): Promise<MsgCreateConcentratedPoolResponse> {
     const data = MsgCreateConcentratedPool.encode(request).finish();
     const promise = this.rpc.request("osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1.Msg", "CreateConcentratedPool", data);
-    return promise.then(data => MsgCreateConcentratedPoolResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgCreateConcentratedPoolResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

@@ -47,88 +47,88 @@ export class QueryClientImpl implements Query {
     this.rewardsEst = this.rewardsEst.bind(this);
     this.lockableDurations = this.lockableDurations.bind(this);
   }
-  moduleToDistributeCoins(request: ModuleToDistributeCoinsRequest = {}): Promise<ModuleToDistributeCoinsResponse> {
+  moduleToDistributeCoins(request: ModuleToDistributeCoinsRequest = {}, useInterfaces: boolean = true): Promise<ModuleToDistributeCoinsResponse> {
     const data = ModuleToDistributeCoinsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.incentives.Query", "ModuleToDistributeCoins", data);
-    return promise.then(data => ModuleToDistributeCoinsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => ModuleToDistributeCoinsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  gaugeByID(request: GaugeByIDRequest): Promise<GaugeByIDResponse> {
+  gaugeByID(request: GaugeByIDRequest, useInterfaces: boolean = true): Promise<GaugeByIDResponse> {
     const data = GaugeByIDRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.incentives.Query", "GaugeByID", data);
-    return promise.then(data => GaugeByIDResponse.decode(new BinaryReader(data)));
+    return promise.then(data => GaugeByIDResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   gauges(request: GaugesRequest = {
     pagination: undefined
-  }): Promise<GaugesResponse> {
+  }, useInterfaces: boolean = true): Promise<GaugesResponse> {
     const data = GaugesRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.incentives.Query", "Gauges", data);
-    return promise.then(data => GaugesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => GaugesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   activeGauges(request: ActiveGaugesRequest = {
     pagination: undefined
-  }): Promise<ActiveGaugesResponse> {
+  }, useInterfaces: boolean = true): Promise<ActiveGaugesResponse> {
     const data = ActiveGaugesRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.incentives.Query", "ActiveGauges", data);
-    return promise.then(data => ActiveGaugesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => ActiveGaugesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  activeGaugesPerDenom(request: ActiveGaugesPerDenomRequest): Promise<ActiveGaugesPerDenomResponse> {
+  activeGaugesPerDenom(request: ActiveGaugesPerDenomRequest, useInterfaces: boolean = true): Promise<ActiveGaugesPerDenomResponse> {
     const data = ActiveGaugesPerDenomRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.incentives.Query", "ActiveGaugesPerDenom", data);
-    return promise.then(data => ActiveGaugesPerDenomResponse.decode(new BinaryReader(data)));
+    return promise.then(data => ActiveGaugesPerDenomResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   upcomingGauges(request: UpcomingGaugesRequest = {
     pagination: undefined
-  }): Promise<UpcomingGaugesResponse> {
+  }, useInterfaces: boolean = true): Promise<UpcomingGaugesResponse> {
     const data = UpcomingGaugesRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.incentives.Query", "UpcomingGauges", data);
-    return promise.then(data => UpcomingGaugesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => UpcomingGaugesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  upcomingGaugesPerDenom(request: UpcomingGaugesPerDenomRequest): Promise<UpcomingGaugesPerDenomResponse> {
+  upcomingGaugesPerDenom(request: UpcomingGaugesPerDenomRequest, useInterfaces: boolean = true): Promise<UpcomingGaugesPerDenomResponse> {
     const data = UpcomingGaugesPerDenomRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.incentives.Query", "UpcomingGaugesPerDenom", data);
-    return promise.then(data => UpcomingGaugesPerDenomResponse.decode(new BinaryReader(data)));
+    return promise.then(data => UpcomingGaugesPerDenomResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  rewardsEst(request: RewardsEstRequest): Promise<RewardsEstResponse> {
+  rewardsEst(request: RewardsEstRequest, useInterfaces: boolean = true): Promise<RewardsEstResponse> {
     const data = RewardsEstRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.incentives.Query", "RewardsEst", data);
-    return promise.then(data => RewardsEstResponse.decode(new BinaryReader(data)));
+    return promise.then(data => RewardsEstResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  lockableDurations(request: QueryLockableDurationsRequest = {}): Promise<QueryLockableDurationsResponse> {
+  lockableDurations(request: QueryLockableDurationsRequest = {}, useInterfaces: boolean = true): Promise<QueryLockableDurationsResponse> {
     const data = QueryLockableDurationsRequest.encode(request).finish();
     const promise = this.rpc.request("osmosis.incentives.Query", "LockableDurations", data);
-    return promise.then(data => QueryLockableDurationsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryLockableDurationsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    moduleToDistributeCoins(request?: ModuleToDistributeCoinsRequest): Promise<ModuleToDistributeCoinsResponse> {
-      return queryService.moduleToDistributeCoins(request);
+    moduleToDistributeCoins(request?: ModuleToDistributeCoinsRequest, useInterfaces: boolean = true): Promise<ModuleToDistributeCoinsResponse> {
+      return queryService.moduleToDistributeCoins(request, useInterfaces);
     },
-    gaugeByID(request: GaugeByIDRequest): Promise<GaugeByIDResponse> {
-      return queryService.gaugeByID(request);
+    gaugeByID(request: GaugeByIDRequest, useInterfaces: boolean = true): Promise<GaugeByIDResponse> {
+      return queryService.gaugeByID(request, useInterfaces);
     },
-    gauges(request?: GaugesRequest): Promise<GaugesResponse> {
-      return queryService.gauges(request);
+    gauges(request?: GaugesRequest, useInterfaces: boolean = true): Promise<GaugesResponse> {
+      return queryService.gauges(request, useInterfaces);
     },
-    activeGauges(request?: ActiveGaugesRequest): Promise<ActiveGaugesResponse> {
-      return queryService.activeGauges(request);
+    activeGauges(request?: ActiveGaugesRequest, useInterfaces: boolean = true): Promise<ActiveGaugesResponse> {
+      return queryService.activeGauges(request, useInterfaces);
     },
-    activeGaugesPerDenom(request: ActiveGaugesPerDenomRequest): Promise<ActiveGaugesPerDenomResponse> {
-      return queryService.activeGaugesPerDenom(request);
+    activeGaugesPerDenom(request: ActiveGaugesPerDenomRequest, useInterfaces: boolean = true): Promise<ActiveGaugesPerDenomResponse> {
+      return queryService.activeGaugesPerDenom(request, useInterfaces);
     },
-    upcomingGauges(request?: UpcomingGaugesRequest): Promise<UpcomingGaugesResponse> {
-      return queryService.upcomingGauges(request);
+    upcomingGauges(request?: UpcomingGaugesRequest, useInterfaces: boolean = true): Promise<UpcomingGaugesResponse> {
+      return queryService.upcomingGauges(request, useInterfaces);
     },
-    upcomingGaugesPerDenom(request: UpcomingGaugesPerDenomRequest): Promise<UpcomingGaugesPerDenomResponse> {
-      return queryService.upcomingGaugesPerDenom(request);
+    upcomingGaugesPerDenom(request: UpcomingGaugesPerDenomRequest, useInterfaces: boolean = true): Promise<UpcomingGaugesPerDenomResponse> {
+      return queryService.upcomingGaugesPerDenom(request, useInterfaces);
     },
-    rewardsEst(request: RewardsEstRequest): Promise<RewardsEstResponse> {
-      return queryService.rewardsEst(request);
+    rewardsEst(request: RewardsEstRequest, useInterfaces: boolean = true): Promise<RewardsEstResponse> {
+      return queryService.rewardsEst(request, useInterfaces);
     },
-    lockableDurations(request?: QueryLockableDurationsRequest): Promise<QueryLockableDurationsResponse> {
-      return queryService.lockableDurations(request);
+    lockableDurations(request?: QueryLockableDurationsRequest, useInterfaces: boolean = true): Promise<QueryLockableDurationsResponse> {
+      return queryService.lockableDurations(request, useInterfaces);
     }
   };
 };

@@ -25,8 +25,8 @@ export interface EvidenceSDKType {
 }
 /** DuplicateVoteEvidence contains evidence of a validator signed two conflicting votes. */
 export interface DuplicateVoteEvidence {
-  voteA: Vote | undefined;
-  voteB: Vote | undefined;
+  voteA?: Vote | undefined;
+  voteB?: Vote | undefined;
   totalVotingPower: bigint;
   validatorPower: bigint;
   timestamp: Date | undefined;
@@ -41,7 +41,7 @@ export interface DuplicateVoteEvidenceAmino {
   vote_b?: VoteAmino | undefined;
   total_voting_power: string;
   validator_power: string;
-  timestamp?: Date | undefined;
+  timestamp?: string | undefined;
 }
 export interface DuplicateVoteEvidenceAminoMsg {
   type: "/tendermint.types.DuplicateVoteEvidence";
@@ -49,15 +49,15 @@ export interface DuplicateVoteEvidenceAminoMsg {
 }
 /** DuplicateVoteEvidence contains evidence of a validator signed two conflicting votes. */
 export interface DuplicateVoteEvidenceSDKType {
-  vote_a: VoteSDKType | undefined;
-  vote_b: VoteSDKType | undefined;
+  vote_a?: VoteSDKType | undefined;
+  vote_b?: VoteSDKType | undefined;
   total_voting_power: bigint;
   validator_power: bigint;
   timestamp: Date | undefined;
 }
 /** LightClientAttackEvidence contains evidence of a set of validators attempting to mislead a light client. */
 export interface LightClientAttackEvidence {
-  conflictingBlock: LightBlock | undefined;
+  conflictingBlock?: LightBlock | undefined;
   commonHeight: bigint;
   byzantineValidators: Validator[];
   totalVotingPower: bigint;
@@ -73,7 +73,7 @@ export interface LightClientAttackEvidenceAmino {
   common_height: string;
   byzantine_validators: ValidatorAmino[];
   total_voting_power: string;
-  timestamp?: Date | undefined;
+  timestamp?: string | undefined;
 }
 export interface LightClientAttackEvidenceAminoMsg {
   type: "/tendermint.types.LightClientAttackEvidence";
@@ -81,7 +81,7 @@ export interface LightClientAttackEvidenceAminoMsg {
 }
 /** LightClientAttackEvidence contains evidence of a set of validators attempting to mislead a light client. */
 export interface LightClientAttackEvidenceSDKType {
-  conflicting_block: LightBlockSDKType | undefined;
+  conflicting_block?: LightBlockSDKType | undefined;
   common_height: bigint;
   byzantine_validators: ValidatorSDKType[];
   total_voting_power: bigint;
@@ -121,7 +121,7 @@ export const Evidence = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Evidence {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Evidence {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEvidence();
@@ -129,10 +129,10 @@ export const Evidence = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.duplicateVoteEvidence = DuplicateVoteEvidence.decode(reader, reader.uint32());
+          message.duplicateVoteEvidence = DuplicateVoteEvidence.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.lightClientAttackEvidence = LightClientAttackEvidence.decode(reader, reader.uint32());
+          message.lightClientAttackEvidence = LightClientAttackEvidence.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -153,17 +153,17 @@ export const Evidence = {
       lightClientAttackEvidence: object?.light_client_attack_evidence ? LightClientAttackEvidence.fromAmino(object.light_client_attack_evidence) : undefined
     };
   },
-  toAmino(message: Evidence): EvidenceAmino {
+  toAmino(message: Evidence, useInterfaces: boolean = false): EvidenceAmino {
     const obj: any = {};
-    obj.duplicate_vote_evidence = message.duplicateVoteEvidence ? DuplicateVoteEvidence.toAmino(message.duplicateVoteEvidence) : undefined;
-    obj.light_client_attack_evidence = message.lightClientAttackEvidence ? LightClientAttackEvidence.toAmino(message.lightClientAttackEvidence) : undefined;
+    obj.duplicate_vote_evidence = message.duplicateVoteEvidence ? DuplicateVoteEvidence.toAmino(message.duplicateVoteEvidence, useInterfaces) : undefined;
+    obj.light_client_attack_evidence = message.lightClientAttackEvidence ? LightClientAttackEvidence.toAmino(message.lightClientAttackEvidence, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: EvidenceAminoMsg): Evidence {
     return Evidence.fromAmino(object.value);
   },
-  fromProtoMsg(message: EvidenceProtoMsg): Evidence {
-    return Evidence.decode(message.value);
+  fromProtoMsg(message: EvidenceProtoMsg, useInterfaces: boolean = false): Evidence {
+    return Evidence.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Evidence): Uint8Array {
     return Evidence.encode(message).finish();
@@ -177,8 +177,8 @@ export const Evidence = {
 };
 function createBaseDuplicateVoteEvidence(): DuplicateVoteEvidence {
   return {
-    voteA: Vote.fromPartial({}),
-    voteB: Vote.fromPartial({}),
+    voteA: undefined,
+    voteB: undefined,
     totalVotingPower: BigInt(0),
     validatorPower: BigInt(0),
     timestamp: new Date()
@@ -204,7 +204,7 @@ export const DuplicateVoteEvidence = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): DuplicateVoteEvidence {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): DuplicateVoteEvidence {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDuplicateVoteEvidence();
@@ -212,10 +212,10 @@ export const DuplicateVoteEvidence = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.voteA = Vote.decode(reader, reader.uint32());
+          message.voteA = Vote.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.voteB = Vote.decode(reader, reader.uint32());
+          message.voteB = Vote.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
           message.totalVotingPower = reader.int64();
@@ -248,23 +248,23 @@ export const DuplicateVoteEvidence = {
       voteB: object?.vote_b ? Vote.fromAmino(object.vote_b) : undefined,
       totalVotingPower: BigInt(object.total_voting_power),
       validatorPower: BigInt(object.validator_power),
-      timestamp: object.timestamp
+      timestamp: object?.timestamp ? fromTimestamp(Timestamp.fromAmino(object.timestamp)) : undefined
     };
   },
-  toAmino(message: DuplicateVoteEvidence): DuplicateVoteEvidenceAmino {
+  toAmino(message: DuplicateVoteEvidence, useInterfaces: boolean = false): DuplicateVoteEvidenceAmino {
     const obj: any = {};
-    obj.vote_a = message.voteA ? Vote.toAmino(message.voteA) : undefined;
-    obj.vote_b = message.voteB ? Vote.toAmino(message.voteB) : undefined;
+    obj.vote_a = message.voteA ? Vote.toAmino(message.voteA, useInterfaces) : undefined;
+    obj.vote_b = message.voteB ? Vote.toAmino(message.voteB, useInterfaces) : undefined;
     obj.total_voting_power = message.totalVotingPower ? message.totalVotingPower.toString() : undefined;
     obj.validator_power = message.validatorPower ? message.validatorPower.toString() : undefined;
-    obj.timestamp = message.timestamp;
+    obj.timestamp = message.timestamp ? Timestamp.toAmino(toTimestamp(message.timestamp)) : undefined;
     return obj;
   },
   fromAminoMsg(object: DuplicateVoteEvidenceAminoMsg): DuplicateVoteEvidence {
     return DuplicateVoteEvidence.fromAmino(object.value);
   },
-  fromProtoMsg(message: DuplicateVoteEvidenceProtoMsg): DuplicateVoteEvidence {
-    return DuplicateVoteEvidence.decode(message.value);
+  fromProtoMsg(message: DuplicateVoteEvidenceProtoMsg, useInterfaces: boolean = false): DuplicateVoteEvidence {
+    return DuplicateVoteEvidence.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: DuplicateVoteEvidence): Uint8Array {
     return DuplicateVoteEvidence.encode(message).finish();
@@ -278,7 +278,7 @@ export const DuplicateVoteEvidence = {
 };
 function createBaseLightClientAttackEvidence(): LightClientAttackEvidence {
   return {
-    conflictingBlock: LightBlock.fromPartial({}),
+    conflictingBlock: undefined,
     commonHeight: BigInt(0),
     byzantineValidators: [],
     totalVotingPower: BigInt(0),
@@ -305,7 +305,7 @@ export const LightClientAttackEvidence = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): LightClientAttackEvidence {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): LightClientAttackEvidence {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLightClientAttackEvidence();
@@ -313,13 +313,13 @@ export const LightClientAttackEvidence = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.conflictingBlock = LightBlock.decode(reader, reader.uint32());
+          message.conflictingBlock = LightBlock.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
           message.commonHeight = reader.int64();
           break;
         case 3:
-          message.byzantineValidators.push(Validator.decode(reader, reader.uint32()));
+          message.byzantineValidators.push(Validator.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
           message.totalVotingPower = reader.int64();
@@ -349,27 +349,27 @@ export const LightClientAttackEvidence = {
       commonHeight: BigInt(object.common_height),
       byzantineValidators: Array.isArray(object?.byzantine_validators) ? object.byzantine_validators.map((e: any) => Validator.fromAmino(e)) : [],
       totalVotingPower: BigInt(object.total_voting_power),
-      timestamp: object.timestamp
+      timestamp: object?.timestamp ? fromTimestamp(Timestamp.fromAmino(object.timestamp)) : undefined
     };
   },
-  toAmino(message: LightClientAttackEvidence): LightClientAttackEvidenceAmino {
+  toAmino(message: LightClientAttackEvidence, useInterfaces: boolean = false): LightClientAttackEvidenceAmino {
     const obj: any = {};
-    obj.conflicting_block = message.conflictingBlock ? LightBlock.toAmino(message.conflictingBlock) : undefined;
+    obj.conflicting_block = message.conflictingBlock ? LightBlock.toAmino(message.conflictingBlock, useInterfaces) : undefined;
     obj.common_height = message.commonHeight ? message.commonHeight.toString() : undefined;
     if (message.byzantineValidators) {
-      obj.byzantine_validators = message.byzantineValidators.map(e => e ? Validator.toAmino(e) : undefined);
+      obj.byzantine_validators = message.byzantineValidators.map(e => e ? Validator.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.byzantine_validators = [];
     }
     obj.total_voting_power = message.totalVotingPower ? message.totalVotingPower.toString() : undefined;
-    obj.timestamp = message.timestamp;
+    obj.timestamp = message.timestamp ? Timestamp.toAmino(toTimestamp(message.timestamp)) : undefined;
     return obj;
   },
   fromAminoMsg(object: LightClientAttackEvidenceAminoMsg): LightClientAttackEvidence {
     return LightClientAttackEvidence.fromAmino(object.value);
   },
-  fromProtoMsg(message: LightClientAttackEvidenceProtoMsg): LightClientAttackEvidence {
-    return LightClientAttackEvidence.decode(message.value);
+  fromProtoMsg(message: LightClientAttackEvidenceProtoMsg, useInterfaces: boolean = false): LightClientAttackEvidence {
+    return LightClientAttackEvidence.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: LightClientAttackEvidence): Uint8Array {
     return LightClientAttackEvidence.encode(message).finish();
@@ -394,7 +394,7 @@ export const EvidenceList = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): EvidenceList {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): EvidenceList {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEvidenceList();
@@ -402,7 +402,7 @@ export const EvidenceList = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.evidence.push(Evidence.decode(reader, reader.uint32()));
+          message.evidence.push(Evidence.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -421,10 +421,10 @@ export const EvidenceList = {
       evidence: Array.isArray(object?.evidence) ? object.evidence.map((e: any) => Evidence.fromAmino(e)) : []
     };
   },
-  toAmino(message: EvidenceList): EvidenceListAmino {
+  toAmino(message: EvidenceList, useInterfaces: boolean = false): EvidenceListAmino {
     const obj: any = {};
     if (message.evidence) {
-      obj.evidence = message.evidence.map(e => e ? Evidence.toAmino(e) : undefined);
+      obj.evidence = message.evidence.map(e => e ? Evidence.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.evidence = [];
     }
@@ -433,8 +433,8 @@ export const EvidenceList = {
   fromAminoMsg(object: EvidenceListAminoMsg): EvidenceList {
     return EvidenceList.fromAmino(object.value);
   },
-  fromProtoMsg(message: EvidenceListProtoMsg): EvidenceList {
-    return EvidenceList.decode(message.value);
+  fromProtoMsg(message: EvidenceListProtoMsg, useInterfaces: boolean = false): EvidenceList {
+    return EvidenceList.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: EvidenceList): Uint8Array {
     return EvidenceList.encode(message).finish();

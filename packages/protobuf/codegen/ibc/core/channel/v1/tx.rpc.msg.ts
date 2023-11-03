@@ -42,54 +42,54 @@ export class MsgClientImpl implements Msg {
     this.timeoutOnClose = this.timeoutOnClose.bind(this);
     this.acknowledgement = this.acknowledgement.bind(this);
   }
-  channelOpenInit(request: MsgChannelOpenInit): Promise<MsgChannelOpenInitResponse> {
+  channelOpenInit(request: MsgChannelOpenInit, useInterfaces: boolean = true): Promise<MsgChannelOpenInitResponse> {
     const data = MsgChannelOpenInit.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Msg", "ChannelOpenInit", data);
-    return promise.then(data => MsgChannelOpenInitResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgChannelOpenInitResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  channelOpenTry(request: MsgChannelOpenTry): Promise<MsgChannelOpenTryResponse> {
+  channelOpenTry(request: MsgChannelOpenTry, useInterfaces: boolean = true): Promise<MsgChannelOpenTryResponse> {
     const data = MsgChannelOpenTry.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Msg", "ChannelOpenTry", data);
-    return promise.then(data => MsgChannelOpenTryResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgChannelOpenTryResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  channelOpenAck(request: MsgChannelOpenAck): Promise<MsgChannelOpenAckResponse> {
+  channelOpenAck(request: MsgChannelOpenAck, useInterfaces: boolean = true): Promise<MsgChannelOpenAckResponse> {
     const data = MsgChannelOpenAck.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Msg", "ChannelOpenAck", data);
-    return promise.then(data => MsgChannelOpenAckResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgChannelOpenAckResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  channelOpenConfirm(request: MsgChannelOpenConfirm): Promise<MsgChannelOpenConfirmResponse> {
+  channelOpenConfirm(request: MsgChannelOpenConfirm, useInterfaces: boolean = true): Promise<MsgChannelOpenConfirmResponse> {
     const data = MsgChannelOpenConfirm.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Msg", "ChannelOpenConfirm", data);
-    return promise.then(data => MsgChannelOpenConfirmResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgChannelOpenConfirmResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  channelCloseInit(request: MsgChannelCloseInit): Promise<MsgChannelCloseInitResponse> {
+  channelCloseInit(request: MsgChannelCloseInit, useInterfaces: boolean = true): Promise<MsgChannelCloseInitResponse> {
     const data = MsgChannelCloseInit.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Msg", "ChannelCloseInit", data);
-    return promise.then(data => MsgChannelCloseInitResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgChannelCloseInitResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  channelCloseConfirm(request: MsgChannelCloseConfirm): Promise<MsgChannelCloseConfirmResponse> {
+  channelCloseConfirm(request: MsgChannelCloseConfirm, useInterfaces: boolean = true): Promise<MsgChannelCloseConfirmResponse> {
     const data = MsgChannelCloseConfirm.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Msg", "ChannelCloseConfirm", data);
-    return promise.then(data => MsgChannelCloseConfirmResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgChannelCloseConfirmResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  recvPacket(request: MsgRecvPacket): Promise<MsgRecvPacketResponse> {
+  recvPacket(request: MsgRecvPacket, useInterfaces: boolean = true): Promise<MsgRecvPacketResponse> {
     const data = MsgRecvPacket.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Msg", "RecvPacket", data);
-    return promise.then(data => MsgRecvPacketResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgRecvPacketResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  timeout(request: MsgTimeout): Promise<MsgTimeoutResponse> {
+  timeout(request: MsgTimeout, useInterfaces: boolean = true): Promise<MsgTimeoutResponse> {
     const data = MsgTimeout.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Msg", "Timeout", data);
-    return promise.then(data => MsgTimeoutResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgTimeoutResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  timeoutOnClose(request: MsgTimeoutOnClose): Promise<MsgTimeoutOnCloseResponse> {
+  timeoutOnClose(request: MsgTimeoutOnClose, useInterfaces: boolean = true): Promise<MsgTimeoutOnCloseResponse> {
     const data = MsgTimeoutOnClose.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Msg", "TimeoutOnClose", data);
-    return promise.then(data => MsgTimeoutOnCloseResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgTimeoutOnCloseResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  acknowledgement(request: MsgAcknowledgement): Promise<MsgAcknowledgementResponse> {
+  acknowledgement(request: MsgAcknowledgement, useInterfaces: boolean = true): Promise<MsgAcknowledgementResponse> {
     const data = MsgAcknowledgement.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Msg", "Acknowledgement", data);
-    return promise.then(data => MsgAcknowledgementResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgAcknowledgementResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

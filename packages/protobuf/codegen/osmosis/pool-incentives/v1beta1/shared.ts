@@ -103,7 +103,7 @@ export const MigrationRecords = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MigrationRecords {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MigrationRecords {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMigrationRecords();
@@ -111,7 +111,7 @@ export const MigrationRecords = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.balancerToConcentratedPoolLinks.push(BalancerToConcentratedPoolLink.decode(reader, reader.uint32()));
+          message.balancerToConcentratedPoolLinks.push(BalancerToConcentratedPoolLink.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -130,10 +130,10 @@ export const MigrationRecords = {
       balancerToConcentratedPoolLinks: Array.isArray(object?.balancer_to_concentrated_pool_links) ? object.balancer_to_concentrated_pool_links.map((e: any) => BalancerToConcentratedPoolLink.fromAmino(e)) : []
     };
   },
-  toAmino(message: MigrationRecords): MigrationRecordsAmino {
+  toAmino(message: MigrationRecords, useInterfaces: boolean = false): MigrationRecordsAmino {
     const obj: any = {};
     if (message.balancerToConcentratedPoolLinks) {
-      obj.balancer_to_concentrated_pool_links = message.balancerToConcentratedPoolLinks.map(e => e ? BalancerToConcentratedPoolLink.toAmino(e) : undefined);
+      obj.balancer_to_concentrated_pool_links = message.balancerToConcentratedPoolLinks.map(e => e ? BalancerToConcentratedPoolLink.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.balancer_to_concentrated_pool_links = [];
     }
@@ -142,14 +142,14 @@ export const MigrationRecords = {
   fromAminoMsg(object: MigrationRecordsAminoMsg): MigrationRecords {
     return MigrationRecords.fromAmino(object.value);
   },
-  toAminoMsg(message: MigrationRecords): MigrationRecordsAminoMsg {
+  toAminoMsg(message: MigrationRecords, useInterfaces: boolean = false): MigrationRecordsAminoMsg {
     return {
       type: "osmosis/poolincentives/migration-records",
-      value: MigrationRecords.toAmino(message)
+      value: MigrationRecords.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MigrationRecordsProtoMsg): MigrationRecords {
-    return MigrationRecords.decode(message.value);
+  fromProtoMsg(message: MigrationRecordsProtoMsg, useInterfaces: boolean = false): MigrationRecords {
+    return MigrationRecords.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MigrationRecords): Uint8Array {
     return MigrationRecords.encode(message).finish();
@@ -178,7 +178,7 @@ export const BalancerToConcentratedPoolLink = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): BalancerToConcentratedPoolLink {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): BalancerToConcentratedPoolLink {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBalancerToConcentratedPoolLink();
@@ -210,7 +210,7 @@ export const BalancerToConcentratedPoolLink = {
       clPoolId: BigInt(object.cl_pool_id)
     };
   },
-  toAmino(message: BalancerToConcentratedPoolLink): BalancerToConcentratedPoolLinkAmino {
+  toAmino(message: BalancerToConcentratedPoolLink, useInterfaces: boolean = false): BalancerToConcentratedPoolLinkAmino {
     const obj: any = {};
     obj.balancer_pool_id = message.balancerPoolId ? message.balancerPoolId.toString() : undefined;
     obj.cl_pool_id = message.clPoolId ? message.clPoolId.toString() : undefined;
@@ -219,14 +219,14 @@ export const BalancerToConcentratedPoolLink = {
   fromAminoMsg(object: BalancerToConcentratedPoolLinkAminoMsg): BalancerToConcentratedPoolLink {
     return BalancerToConcentratedPoolLink.fromAmino(object.value);
   },
-  toAminoMsg(message: BalancerToConcentratedPoolLink): BalancerToConcentratedPoolLinkAminoMsg {
+  toAminoMsg(message: BalancerToConcentratedPoolLink, useInterfaces: boolean = false): BalancerToConcentratedPoolLinkAminoMsg {
     return {
       type: "osmosis/poolincentives/balancer-to-concentrated-pool-link",
-      value: BalancerToConcentratedPoolLink.toAmino(message)
+      value: BalancerToConcentratedPoolLink.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: BalancerToConcentratedPoolLinkProtoMsg): BalancerToConcentratedPoolLink {
-    return BalancerToConcentratedPoolLink.decode(message.value);
+  fromProtoMsg(message: BalancerToConcentratedPoolLinkProtoMsg, useInterfaces: boolean = false): BalancerToConcentratedPoolLink {
+    return BalancerToConcentratedPoolLink.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: BalancerToConcentratedPoolLink): Uint8Array {
     return BalancerToConcentratedPoolLink.encode(message).finish();

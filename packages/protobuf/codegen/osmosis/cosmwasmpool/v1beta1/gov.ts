@@ -210,7 +210,7 @@ export const UploadCosmWasmPoolCodeAndWhiteListProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): UploadCosmWasmPoolCodeAndWhiteListProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): UploadCosmWasmPoolCodeAndWhiteListProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUploadCosmWasmPoolCodeAndWhiteListProposal();
@@ -247,7 +247,7 @@ export const UploadCosmWasmPoolCodeAndWhiteListProposal = {
       wasmByteCode: fromBase64(object.wasm_byte_code)
     };
   },
-  toAmino(message: UploadCosmWasmPoolCodeAndWhiteListProposal): UploadCosmWasmPoolCodeAndWhiteListProposalAmino {
+  toAmino(message: UploadCosmWasmPoolCodeAndWhiteListProposal, useInterfaces: boolean = false): UploadCosmWasmPoolCodeAndWhiteListProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -257,14 +257,14 @@ export const UploadCosmWasmPoolCodeAndWhiteListProposal = {
   fromAminoMsg(object: UploadCosmWasmPoolCodeAndWhiteListProposalAminoMsg): UploadCosmWasmPoolCodeAndWhiteListProposal {
     return UploadCosmWasmPoolCodeAndWhiteListProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: UploadCosmWasmPoolCodeAndWhiteListProposal): UploadCosmWasmPoolCodeAndWhiteListProposalAminoMsg {
+  toAminoMsg(message: UploadCosmWasmPoolCodeAndWhiteListProposal, useInterfaces: boolean = false): UploadCosmWasmPoolCodeAndWhiteListProposalAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/upload-cosm-wasm-pool-code-and-white-list-proposal",
-      value: UploadCosmWasmPoolCodeAndWhiteListProposal.toAmino(message)
+      value: UploadCosmWasmPoolCodeAndWhiteListProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: UploadCosmWasmPoolCodeAndWhiteListProposalProtoMsg): UploadCosmWasmPoolCodeAndWhiteListProposal {
-    return UploadCosmWasmPoolCodeAndWhiteListProposal.decode(message.value);
+  fromProtoMsg(message: UploadCosmWasmPoolCodeAndWhiteListProposalProtoMsg, useInterfaces: boolean = false): UploadCosmWasmPoolCodeAndWhiteListProposal {
+    return UploadCosmWasmPoolCodeAndWhiteListProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: UploadCosmWasmPoolCodeAndWhiteListProposal): Uint8Array {
     return UploadCosmWasmPoolCodeAndWhiteListProposal.encode(message).finish();
@@ -311,7 +311,7 @@ export const MigratePoolContractsProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MigratePoolContractsProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MigratePoolContractsProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMigratePoolContractsProposal();
@@ -370,7 +370,7 @@ export const MigratePoolContractsProposal = {
       migrateMsg: object.migrate_msg
     };
   },
-  toAmino(message: MigratePoolContractsProposal): MigratePoolContractsProposalAmino {
+  toAmino(message: MigratePoolContractsProposal, useInterfaces: boolean = false): MigratePoolContractsProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -387,14 +387,14 @@ export const MigratePoolContractsProposal = {
   fromAminoMsg(object: MigratePoolContractsProposalAminoMsg): MigratePoolContractsProposal {
     return MigratePoolContractsProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: MigratePoolContractsProposal): MigratePoolContractsProposalAminoMsg {
+  toAminoMsg(message: MigratePoolContractsProposal, useInterfaces: boolean = false): MigratePoolContractsProposalAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/migrate-pool-contracts-proposal",
-      value: MigratePoolContractsProposal.toAmino(message)
+      value: MigratePoolContractsProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MigratePoolContractsProposalProtoMsg): MigratePoolContractsProposal {
-    return MigratePoolContractsProposal.decode(message.value);
+  fromProtoMsg(message: MigratePoolContractsProposalProtoMsg, useInterfaces: boolean = false): MigratePoolContractsProposal {
+    return MigratePoolContractsProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MigratePoolContractsProposal): Uint8Array {
     return MigratePoolContractsProposal.encode(message).finish();

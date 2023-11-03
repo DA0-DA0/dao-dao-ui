@@ -42,39 +42,39 @@ export class MsgClientImpl implements Msg {
     this.updateParams = this.updateParams.bind(this);
     this.cancelProposal = this.cancelProposal.bind(this);
   }
-  submitProposal(request: MsgSubmitProposal): Promise<MsgSubmitProposalResponse> {
+  submitProposal(request: MsgSubmitProposal, useInterfaces: boolean = true): Promise<MsgSubmitProposalResponse> {
     const data = MsgSubmitProposal.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Msg", "SubmitProposal", data);
-    return promise.then(data => MsgSubmitProposalResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSubmitProposalResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  execLegacyContent(request: MsgExecLegacyContent): Promise<MsgExecLegacyContentResponse> {
+  execLegacyContent(request: MsgExecLegacyContent, useInterfaces: boolean = true): Promise<MsgExecLegacyContentResponse> {
     const data = MsgExecLegacyContent.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Msg", "ExecLegacyContent", data);
-    return promise.then(data => MsgExecLegacyContentResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgExecLegacyContentResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  vote(request: MsgVote): Promise<MsgVoteResponse> {
+  vote(request: MsgVote, useInterfaces: boolean = true): Promise<MsgVoteResponse> {
     const data = MsgVote.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Msg", "Vote", data);
-    return promise.then(data => MsgVoteResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgVoteResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  voteWeighted(request: MsgVoteWeighted): Promise<MsgVoteWeightedResponse> {
+  voteWeighted(request: MsgVoteWeighted, useInterfaces: boolean = true): Promise<MsgVoteWeightedResponse> {
     const data = MsgVoteWeighted.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Msg", "VoteWeighted", data);
-    return promise.then(data => MsgVoteWeightedResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgVoteWeightedResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  deposit(request: MsgDeposit): Promise<MsgDepositResponse> {
+  deposit(request: MsgDeposit, useInterfaces: boolean = true): Promise<MsgDepositResponse> {
     const data = MsgDeposit.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Msg", "Deposit", data);
-    return promise.then(data => MsgDepositResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgDepositResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  updateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse> {
+  updateParams(request: MsgUpdateParams, useInterfaces: boolean = true): Promise<MsgUpdateParamsResponse> {
     const data = MsgUpdateParams.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Msg", "UpdateParams", data);
-    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  cancelProposal(request: MsgCancelProposal): Promise<MsgCancelProposalResponse> {
+  cancelProposal(request: MsgCancelProposal, useInterfaces: boolean = true): Promise<MsgCancelProposalResponse> {
     const data = MsgCancelProposal.encode(request).finish();
     const promise = this.rpc.request("cosmos.gov.v1.Msg", "CancelProposal", data);
-    return promise.then(data => MsgCancelProposalResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgCancelProposalResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

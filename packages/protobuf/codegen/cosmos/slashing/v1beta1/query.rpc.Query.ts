@@ -19,36 +19,36 @@ export class QueryClientImpl implements Query {
     this.signingInfo = this.signingInfo.bind(this);
     this.signingInfos = this.signingInfos.bind(this);
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.slashing.v1beta1.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  signingInfo(request: QuerySigningInfoRequest): Promise<QuerySigningInfoResponse> {
+  signingInfo(request: QuerySigningInfoRequest, useInterfaces: boolean = true): Promise<QuerySigningInfoResponse> {
     const data = QuerySigningInfoRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.slashing.v1beta1.Query", "SigningInfo", data);
-    return promise.then(data => QuerySigningInfoResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QuerySigningInfoResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   signingInfos(request: QuerySigningInfosRequest = {
     pagination: undefined
-  }): Promise<QuerySigningInfosResponse> {
+  }, useInterfaces: boolean = true): Promise<QuerySigningInfosResponse> {
     const data = QuerySigningInfosRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.slashing.v1beta1.Query", "SigningInfos", data);
-    return promise.then(data => QuerySigningInfosResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QuerySigningInfosResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    signingInfo(request: QuerySigningInfoRequest): Promise<QuerySigningInfoResponse> {
-      return queryService.signingInfo(request);
+    signingInfo(request: QuerySigningInfoRequest, useInterfaces: boolean = true): Promise<QuerySigningInfoResponse> {
+      return queryService.signingInfo(request, useInterfaces);
     },
-    signingInfos(request?: QuerySigningInfosRequest): Promise<QuerySigningInfosResponse> {
-      return queryService.signingInfos(request);
+    signingInfos(request?: QuerySigningInfosRequest, useInterfaces: boolean = true): Promise<QuerySigningInfosResponse> {
+      return queryService.signingInfos(request, useInterfaces);
     }
   };
 };

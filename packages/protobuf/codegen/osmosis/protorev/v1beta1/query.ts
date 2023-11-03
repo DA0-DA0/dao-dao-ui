@@ -130,7 +130,7 @@ export interface QueryGetProtoRevProfitsByDenomRequestSDKType {
  */
 export interface QueryGetProtoRevProfitsByDenomResponse {
   /** profit is the profits of the module by the selected denom */
-  profit: Coin | undefined;
+  profit?: Coin | undefined;
 }
 export interface QueryGetProtoRevProfitsByDenomResponseProtoMsg {
   typeUrl: "/osmosis.protorev.v1beta1.QueryGetProtoRevProfitsByDenomResponse";
@@ -153,7 +153,7 @@ export interface QueryGetProtoRevProfitsByDenomResponseAminoMsg {
  * Query/GetProtoRevProfitsByDenom RPC method.
  */
 export interface QueryGetProtoRevProfitsByDenomResponseSDKType {
-  profit: CoinSDKType | undefined;
+  profit?: CoinSDKType | undefined;
 }
 /**
  * QueryGetProtoRevAllProfitsRequest is request type for the
@@ -874,7 +874,7 @@ export const QueryParamsRequest = {
   encode(_: QueryParamsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryParamsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryParamsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
@@ -895,21 +895,21 @@ export const QueryParamsRequest = {
   fromAmino(_: QueryParamsRequestAmino): QueryParamsRequest {
     return {};
   },
-  toAmino(_: QueryParamsRequest): QueryParamsRequestAmino {
+  toAmino(_: QueryParamsRequest, useInterfaces: boolean = false): QueryParamsRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryParamsRequestAminoMsg): QueryParamsRequest {
     return QueryParamsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryParamsRequest): QueryParamsRequestAminoMsg {
+  toAminoMsg(message: QueryParamsRequest, useInterfaces: boolean = false): QueryParamsRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-params-request",
-      value: QueryParamsRequest.toAmino(message)
+      value: QueryParamsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryParamsRequestProtoMsg): QueryParamsRequest {
-    return QueryParamsRequest.decode(message.value);
+  fromProtoMsg(message: QueryParamsRequestProtoMsg, useInterfaces: boolean = false): QueryParamsRequest {
+    return QueryParamsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryParamsRequest): Uint8Array {
     return QueryParamsRequest.encode(message).finish();
@@ -934,7 +934,7 @@ export const QueryParamsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryParamsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryParamsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
@@ -942,7 +942,7 @@ export const QueryParamsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -961,22 +961,22 @@ export const QueryParamsResponse = {
       params: object?.params ? Params.fromAmino(object.params) : undefined
     };
   },
-  toAmino(message: QueryParamsResponse): QueryParamsResponseAmino {
+  toAmino(message: QueryParamsResponse, useInterfaces: boolean = false): QueryParamsResponseAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryParamsResponseAminoMsg): QueryParamsResponse {
     return QueryParamsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryParamsResponse): QueryParamsResponseAminoMsg {
+  toAminoMsg(message: QueryParamsResponse, useInterfaces: boolean = false): QueryParamsResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-params-response",
-      value: QueryParamsResponse.toAmino(message)
+      value: QueryParamsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryParamsResponseProtoMsg): QueryParamsResponse {
-    return QueryParamsResponse.decode(message.value);
+  fromProtoMsg(message: QueryParamsResponseProtoMsg, useInterfaces: boolean = false): QueryParamsResponse {
+    return QueryParamsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryParamsResponse): Uint8Array {
     return QueryParamsResponse.encode(message).finish();
@@ -996,7 +996,7 @@ export const QueryGetProtoRevNumberOfTradesRequest = {
   encode(_: QueryGetProtoRevNumberOfTradesRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevNumberOfTradesRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevNumberOfTradesRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevNumberOfTradesRequest();
@@ -1017,21 +1017,21 @@ export const QueryGetProtoRevNumberOfTradesRequest = {
   fromAmino(_: QueryGetProtoRevNumberOfTradesRequestAmino): QueryGetProtoRevNumberOfTradesRequest {
     return {};
   },
-  toAmino(_: QueryGetProtoRevNumberOfTradesRequest): QueryGetProtoRevNumberOfTradesRequestAmino {
+  toAmino(_: QueryGetProtoRevNumberOfTradesRequest, useInterfaces: boolean = false): QueryGetProtoRevNumberOfTradesRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevNumberOfTradesRequestAminoMsg): QueryGetProtoRevNumberOfTradesRequest {
     return QueryGetProtoRevNumberOfTradesRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevNumberOfTradesRequest): QueryGetProtoRevNumberOfTradesRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevNumberOfTradesRequest, useInterfaces: boolean = false): QueryGetProtoRevNumberOfTradesRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-number-of-trades-request",
-      value: QueryGetProtoRevNumberOfTradesRequest.toAmino(message)
+      value: QueryGetProtoRevNumberOfTradesRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevNumberOfTradesRequestProtoMsg): QueryGetProtoRevNumberOfTradesRequest {
-    return QueryGetProtoRevNumberOfTradesRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevNumberOfTradesRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevNumberOfTradesRequest {
+    return QueryGetProtoRevNumberOfTradesRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevNumberOfTradesRequest): Uint8Array {
     return QueryGetProtoRevNumberOfTradesRequest.encode(message).finish();
@@ -1056,7 +1056,7 @@ export const QueryGetProtoRevNumberOfTradesResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevNumberOfTradesResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevNumberOfTradesResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevNumberOfTradesResponse();
@@ -1083,7 +1083,7 @@ export const QueryGetProtoRevNumberOfTradesResponse = {
       numberOfTrades: object.number_of_trades
     };
   },
-  toAmino(message: QueryGetProtoRevNumberOfTradesResponse): QueryGetProtoRevNumberOfTradesResponseAmino {
+  toAmino(message: QueryGetProtoRevNumberOfTradesResponse, useInterfaces: boolean = false): QueryGetProtoRevNumberOfTradesResponseAmino {
     const obj: any = {};
     obj.number_of_trades = message.numberOfTrades;
     return obj;
@@ -1091,14 +1091,14 @@ export const QueryGetProtoRevNumberOfTradesResponse = {
   fromAminoMsg(object: QueryGetProtoRevNumberOfTradesResponseAminoMsg): QueryGetProtoRevNumberOfTradesResponse {
     return QueryGetProtoRevNumberOfTradesResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevNumberOfTradesResponse): QueryGetProtoRevNumberOfTradesResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevNumberOfTradesResponse, useInterfaces: boolean = false): QueryGetProtoRevNumberOfTradesResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-number-of-trades-response",
-      value: QueryGetProtoRevNumberOfTradesResponse.toAmino(message)
+      value: QueryGetProtoRevNumberOfTradesResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevNumberOfTradesResponseProtoMsg): QueryGetProtoRevNumberOfTradesResponse {
-    return QueryGetProtoRevNumberOfTradesResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevNumberOfTradesResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevNumberOfTradesResponse {
+    return QueryGetProtoRevNumberOfTradesResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevNumberOfTradesResponse): Uint8Array {
     return QueryGetProtoRevNumberOfTradesResponse.encode(message).finish();
@@ -1123,7 +1123,7 @@ export const QueryGetProtoRevProfitsByDenomRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevProfitsByDenomRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevProfitsByDenomRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevProfitsByDenomRequest();
@@ -1150,7 +1150,7 @@ export const QueryGetProtoRevProfitsByDenomRequest = {
       denom: object.denom
     };
   },
-  toAmino(message: QueryGetProtoRevProfitsByDenomRequest): QueryGetProtoRevProfitsByDenomRequestAmino {
+  toAmino(message: QueryGetProtoRevProfitsByDenomRequest, useInterfaces: boolean = false): QueryGetProtoRevProfitsByDenomRequestAmino {
     const obj: any = {};
     obj.denom = message.denom;
     return obj;
@@ -1158,14 +1158,14 @@ export const QueryGetProtoRevProfitsByDenomRequest = {
   fromAminoMsg(object: QueryGetProtoRevProfitsByDenomRequestAminoMsg): QueryGetProtoRevProfitsByDenomRequest {
     return QueryGetProtoRevProfitsByDenomRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevProfitsByDenomRequest): QueryGetProtoRevProfitsByDenomRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevProfitsByDenomRequest, useInterfaces: boolean = false): QueryGetProtoRevProfitsByDenomRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-profits-by-denom-request",
-      value: QueryGetProtoRevProfitsByDenomRequest.toAmino(message)
+      value: QueryGetProtoRevProfitsByDenomRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevProfitsByDenomRequestProtoMsg): QueryGetProtoRevProfitsByDenomRequest {
-    return QueryGetProtoRevProfitsByDenomRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevProfitsByDenomRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevProfitsByDenomRequest {
+    return QueryGetProtoRevProfitsByDenomRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevProfitsByDenomRequest): Uint8Array {
     return QueryGetProtoRevProfitsByDenomRequest.encode(message).finish();
@@ -1179,7 +1179,7 @@ export const QueryGetProtoRevProfitsByDenomRequest = {
 };
 function createBaseQueryGetProtoRevProfitsByDenomResponse(): QueryGetProtoRevProfitsByDenomResponse {
   return {
-    profit: Coin.fromPartial({})
+    profit: undefined
   };
 }
 export const QueryGetProtoRevProfitsByDenomResponse = {
@@ -1190,7 +1190,7 @@ export const QueryGetProtoRevProfitsByDenomResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevProfitsByDenomResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevProfitsByDenomResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevProfitsByDenomResponse();
@@ -1198,7 +1198,7 @@ export const QueryGetProtoRevProfitsByDenomResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.profit = Coin.decode(reader, reader.uint32());
+          message.profit = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1217,22 +1217,22 @@ export const QueryGetProtoRevProfitsByDenomResponse = {
       profit: object?.profit ? Coin.fromAmino(object.profit) : undefined
     };
   },
-  toAmino(message: QueryGetProtoRevProfitsByDenomResponse): QueryGetProtoRevProfitsByDenomResponseAmino {
+  toAmino(message: QueryGetProtoRevProfitsByDenomResponse, useInterfaces: boolean = false): QueryGetProtoRevProfitsByDenomResponseAmino {
     const obj: any = {};
-    obj.profit = message.profit ? Coin.toAmino(message.profit) : undefined;
+    obj.profit = message.profit ? Coin.toAmino(message.profit, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevProfitsByDenomResponseAminoMsg): QueryGetProtoRevProfitsByDenomResponse {
     return QueryGetProtoRevProfitsByDenomResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevProfitsByDenomResponse): QueryGetProtoRevProfitsByDenomResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevProfitsByDenomResponse, useInterfaces: boolean = false): QueryGetProtoRevProfitsByDenomResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-profits-by-denom-response",
-      value: QueryGetProtoRevProfitsByDenomResponse.toAmino(message)
+      value: QueryGetProtoRevProfitsByDenomResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevProfitsByDenomResponseProtoMsg): QueryGetProtoRevProfitsByDenomResponse {
-    return QueryGetProtoRevProfitsByDenomResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevProfitsByDenomResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevProfitsByDenomResponse {
+    return QueryGetProtoRevProfitsByDenomResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevProfitsByDenomResponse): Uint8Array {
     return QueryGetProtoRevProfitsByDenomResponse.encode(message).finish();
@@ -1252,7 +1252,7 @@ export const QueryGetProtoRevAllProfitsRequest = {
   encode(_: QueryGetProtoRevAllProfitsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevAllProfitsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevAllProfitsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevAllProfitsRequest();
@@ -1273,21 +1273,21 @@ export const QueryGetProtoRevAllProfitsRequest = {
   fromAmino(_: QueryGetProtoRevAllProfitsRequestAmino): QueryGetProtoRevAllProfitsRequest {
     return {};
   },
-  toAmino(_: QueryGetProtoRevAllProfitsRequest): QueryGetProtoRevAllProfitsRequestAmino {
+  toAmino(_: QueryGetProtoRevAllProfitsRequest, useInterfaces: boolean = false): QueryGetProtoRevAllProfitsRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevAllProfitsRequestAminoMsg): QueryGetProtoRevAllProfitsRequest {
     return QueryGetProtoRevAllProfitsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevAllProfitsRequest): QueryGetProtoRevAllProfitsRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevAllProfitsRequest, useInterfaces: boolean = false): QueryGetProtoRevAllProfitsRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-all-profits-request",
-      value: QueryGetProtoRevAllProfitsRequest.toAmino(message)
+      value: QueryGetProtoRevAllProfitsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevAllProfitsRequestProtoMsg): QueryGetProtoRevAllProfitsRequest {
-    return QueryGetProtoRevAllProfitsRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevAllProfitsRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevAllProfitsRequest {
+    return QueryGetProtoRevAllProfitsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevAllProfitsRequest): Uint8Array {
     return QueryGetProtoRevAllProfitsRequest.encode(message).finish();
@@ -1312,7 +1312,7 @@ export const QueryGetProtoRevAllProfitsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevAllProfitsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevAllProfitsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevAllProfitsResponse();
@@ -1320,7 +1320,7 @@ export const QueryGetProtoRevAllProfitsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.profits.push(Coin.decode(reader, reader.uint32()));
+          message.profits.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1339,10 +1339,10 @@ export const QueryGetProtoRevAllProfitsResponse = {
       profits: Array.isArray(object?.profits) ? object.profits.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: QueryGetProtoRevAllProfitsResponse): QueryGetProtoRevAllProfitsResponseAmino {
+  toAmino(message: QueryGetProtoRevAllProfitsResponse, useInterfaces: boolean = false): QueryGetProtoRevAllProfitsResponseAmino {
     const obj: any = {};
     if (message.profits) {
-      obj.profits = message.profits.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.profits = message.profits.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.profits = [];
     }
@@ -1351,14 +1351,14 @@ export const QueryGetProtoRevAllProfitsResponse = {
   fromAminoMsg(object: QueryGetProtoRevAllProfitsResponseAminoMsg): QueryGetProtoRevAllProfitsResponse {
     return QueryGetProtoRevAllProfitsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevAllProfitsResponse): QueryGetProtoRevAllProfitsResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevAllProfitsResponse, useInterfaces: boolean = false): QueryGetProtoRevAllProfitsResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-all-profits-response",
-      value: QueryGetProtoRevAllProfitsResponse.toAmino(message)
+      value: QueryGetProtoRevAllProfitsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevAllProfitsResponseProtoMsg): QueryGetProtoRevAllProfitsResponse {
-    return QueryGetProtoRevAllProfitsResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevAllProfitsResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevAllProfitsResponse {
+    return QueryGetProtoRevAllProfitsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevAllProfitsResponse): Uint8Array {
     return QueryGetProtoRevAllProfitsResponse.encode(message).finish();
@@ -1385,7 +1385,7 @@ export const QueryGetProtoRevStatisticsByRouteRequest = {
     writer.ldelim();
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevStatisticsByRouteRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevStatisticsByRouteRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevStatisticsByRouteRequest();
@@ -1419,7 +1419,7 @@ export const QueryGetProtoRevStatisticsByRouteRequest = {
       route: Array.isArray(object?.route) ? object.route.map((e: any) => BigInt(e)) : []
     };
   },
-  toAmino(message: QueryGetProtoRevStatisticsByRouteRequest): QueryGetProtoRevStatisticsByRouteRequestAmino {
+  toAmino(message: QueryGetProtoRevStatisticsByRouteRequest, useInterfaces: boolean = false): QueryGetProtoRevStatisticsByRouteRequestAmino {
     const obj: any = {};
     if (message.route) {
       obj.route = message.route.map(e => e.toString());
@@ -1431,14 +1431,14 @@ export const QueryGetProtoRevStatisticsByRouteRequest = {
   fromAminoMsg(object: QueryGetProtoRevStatisticsByRouteRequestAminoMsg): QueryGetProtoRevStatisticsByRouteRequest {
     return QueryGetProtoRevStatisticsByRouteRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevStatisticsByRouteRequest): QueryGetProtoRevStatisticsByRouteRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevStatisticsByRouteRequest, useInterfaces: boolean = false): QueryGetProtoRevStatisticsByRouteRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-statistics-by-route-request",
-      value: QueryGetProtoRevStatisticsByRouteRequest.toAmino(message)
+      value: QueryGetProtoRevStatisticsByRouteRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevStatisticsByRouteRequestProtoMsg): QueryGetProtoRevStatisticsByRouteRequest {
-    return QueryGetProtoRevStatisticsByRouteRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevStatisticsByRouteRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevStatisticsByRouteRequest {
+    return QueryGetProtoRevStatisticsByRouteRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevStatisticsByRouteRequest): Uint8Array {
     return QueryGetProtoRevStatisticsByRouteRequest.encode(message).finish();
@@ -1463,7 +1463,7 @@ export const QueryGetProtoRevStatisticsByRouteResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevStatisticsByRouteResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevStatisticsByRouteResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevStatisticsByRouteResponse();
@@ -1471,7 +1471,7 @@ export const QueryGetProtoRevStatisticsByRouteResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.statistics = RouteStatistics.decode(reader, reader.uint32());
+          message.statistics = RouteStatistics.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -1490,22 +1490,22 @@ export const QueryGetProtoRevStatisticsByRouteResponse = {
       statistics: object?.statistics ? RouteStatistics.fromAmino(object.statistics) : undefined
     };
   },
-  toAmino(message: QueryGetProtoRevStatisticsByRouteResponse): QueryGetProtoRevStatisticsByRouteResponseAmino {
+  toAmino(message: QueryGetProtoRevStatisticsByRouteResponse, useInterfaces: boolean = false): QueryGetProtoRevStatisticsByRouteResponseAmino {
     const obj: any = {};
-    obj.statistics = message.statistics ? RouteStatistics.toAmino(message.statistics) : undefined;
+    obj.statistics = message.statistics ? RouteStatistics.toAmino(message.statistics, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevStatisticsByRouteResponseAminoMsg): QueryGetProtoRevStatisticsByRouteResponse {
     return QueryGetProtoRevStatisticsByRouteResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevStatisticsByRouteResponse): QueryGetProtoRevStatisticsByRouteResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevStatisticsByRouteResponse, useInterfaces: boolean = false): QueryGetProtoRevStatisticsByRouteResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-statistics-by-route-response",
-      value: QueryGetProtoRevStatisticsByRouteResponse.toAmino(message)
+      value: QueryGetProtoRevStatisticsByRouteResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevStatisticsByRouteResponseProtoMsg): QueryGetProtoRevStatisticsByRouteResponse {
-    return QueryGetProtoRevStatisticsByRouteResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevStatisticsByRouteResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevStatisticsByRouteResponse {
+    return QueryGetProtoRevStatisticsByRouteResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevStatisticsByRouteResponse): Uint8Array {
     return QueryGetProtoRevStatisticsByRouteResponse.encode(message).finish();
@@ -1525,7 +1525,7 @@ export const QueryGetProtoRevAllRouteStatisticsRequest = {
   encode(_: QueryGetProtoRevAllRouteStatisticsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevAllRouteStatisticsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevAllRouteStatisticsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevAllRouteStatisticsRequest();
@@ -1546,21 +1546,21 @@ export const QueryGetProtoRevAllRouteStatisticsRequest = {
   fromAmino(_: QueryGetProtoRevAllRouteStatisticsRequestAmino): QueryGetProtoRevAllRouteStatisticsRequest {
     return {};
   },
-  toAmino(_: QueryGetProtoRevAllRouteStatisticsRequest): QueryGetProtoRevAllRouteStatisticsRequestAmino {
+  toAmino(_: QueryGetProtoRevAllRouteStatisticsRequest, useInterfaces: boolean = false): QueryGetProtoRevAllRouteStatisticsRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevAllRouteStatisticsRequestAminoMsg): QueryGetProtoRevAllRouteStatisticsRequest {
     return QueryGetProtoRevAllRouteStatisticsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevAllRouteStatisticsRequest): QueryGetProtoRevAllRouteStatisticsRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevAllRouteStatisticsRequest, useInterfaces: boolean = false): QueryGetProtoRevAllRouteStatisticsRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-all-route-statistics-request",
-      value: QueryGetProtoRevAllRouteStatisticsRequest.toAmino(message)
+      value: QueryGetProtoRevAllRouteStatisticsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevAllRouteStatisticsRequestProtoMsg): QueryGetProtoRevAllRouteStatisticsRequest {
-    return QueryGetProtoRevAllRouteStatisticsRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevAllRouteStatisticsRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevAllRouteStatisticsRequest {
+    return QueryGetProtoRevAllRouteStatisticsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevAllRouteStatisticsRequest): Uint8Array {
     return QueryGetProtoRevAllRouteStatisticsRequest.encode(message).finish();
@@ -1585,7 +1585,7 @@ export const QueryGetProtoRevAllRouteStatisticsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevAllRouteStatisticsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevAllRouteStatisticsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevAllRouteStatisticsResponse();
@@ -1593,7 +1593,7 @@ export const QueryGetProtoRevAllRouteStatisticsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.statistics.push(RouteStatistics.decode(reader, reader.uint32()));
+          message.statistics.push(RouteStatistics.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1612,10 +1612,10 @@ export const QueryGetProtoRevAllRouteStatisticsResponse = {
       statistics: Array.isArray(object?.statistics) ? object.statistics.map((e: any) => RouteStatistics.fromAmino(e)) : []
     };
   },
-  toAmino(message: QueryGetProtoRevAllRouteStatisticsResponse): QueryGetProtoRevAllRouteStatisticsResponseAmino {
+  toAmino(message: QueryGetProtoRevAllRouteStatisticsResponse, useInterfaces: boolean = false): QueryGetProtoRevAllRouteStatisticsResponseAmino {
     const obj: any = {};
     if (message.statistics) {
-      obj.statistics = message.statistics.map(e => e ? RouteStatistics.toAmino(e) : undefined);
+      obj.statistics = message.statistics.map(e => e ? RouteStatistics.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.statistics = [];
     }
@@ -1624,14 +1624,14 @@ export const QueryGetProtoRevAllRouteStatisticsResponse = {
   fromAminoMsg(object: QueryGetProtoRevAllRouteStatisticsResponseAminoMsg): QueryGetProtoRevAllRouteStatisticsResponse {
     return QueryGetProtoRevAllRouteStatisticsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevAllRouteStatisticsResponse): QueryGetProtoRevAllRouteStatisticsResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevAllRouteStatisticsResponse, useInterfaces: boolean = false): QueryGetProtoRevAllRouteStatisticsResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-all-route-statistics-response",
-      value: QueryGetProtoRevAllRouteStatisticsResponse.toAmino(message)
+      value: QueryGetProtoRevAllRouteStatisticsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevAllRouteStatisticsResponseProtoMsg): QueryGetProtoRevAllRouteStatisticsResponse {
-    return QueryGetProtoRevAllRouteStatisticsResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevAllRouteStatisticsResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevAllRouteStatisticsResponse {
+    return QueryGetProtoRevAllRouteStatisticsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevAllRouteStatisticsResponse): Uint8Array {
     return QueryGetProtoRevAllRouteStatisticsResponse.encode(message).finish();
@@ -1651,7 +1651,7 @@ export const QueryGetProtoRevTokenPairArbRoutesRequest = {
   encode(_: QueryGetProtoRevTokenPairArbRoutesRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevTokenPairArbRoutesRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevTokenPairArbRoutesRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevTokenPairArbRoutesRequest();
@@ -1672,21 +1672,21 @@ export const QueryGetProtoRevTokenPairArbRoutesRequest = {
   fromAmino(_: QueryGetProtoRevTokenPairArbRoutesRequestAmino): QueryGetProtoRevTokenPairArbRoutesRequest {
     return {};
   },
-  toAmino(_: QueryGetProtoRevTokenPairArbRoutesRequest): QueryGetProtoRevTokenPairArbRoutesRequestAmino {
+  toAmino(_: QueryGetProtoRevTokenPairArbRoutesRequest, useInterfaces: boolean = false): QueryGetProtoRevTokenPairArbRoutesRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevTokenPairArbRoutesRequestAminoMsg): QueryGetProtoRevTokenPairArbRoutesRequest {
     return QueryGetProtoRevTokenPairArbRoutesRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevTokenPairArbRoutesRequest): QueryGetProtoRevTokenPairArbRoutesRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevTokenPairArbRoutesRequest, useInterfaces: boolean = false): QueryGetProtoRevTokenPairArbRoutesRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-token-pair-arb-routes-request",
-      value: QueryGetProtoRevTokenPairArbRoutesRequest.toAmino(message)
+      value: QueryGetProtoRevTokenPairArbRoutesRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevTokenPairArbRoutesRequestProtoMsg): QueryGetProtoRevTokenPairArbRoutesRequest {
-    return QueryGetProtoRevTokenPairArbRoutesRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevTokenPairArbRoutesRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevTokenPairArbRoutesRequest {
+    return QueryGetProtoRevTokenPairArbRoutesRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevTokenPairArbRoutesRequest): Uint8Array {
     return QueryGetProtoRevTokenPairArbRoutesRequest.encode(message).finish();
@@ -1711,7 +1711,7 @@ export const QueryGetProtoRevTokenPairArbRoutesResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevTokenPairArbRoutesResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevTokenPairArbRoutesResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevTokenPairArbRoutesResponse();
@@ -1719,7 +1719,7 @@ export const QueryGetProtoRevTokenPairArbRoutesResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.routes.push(TokenPairArbRoutes.decode(reader, reader.uint32()));
+          message.routes.push(TokenPairArbRoutes.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -1738,10 +1738,10 @@ export const QueryGetProtoRevTokenPairArbRoutesResponse = {
       routes: Array.isArray(object?.routes) ? object.routes.map((e: any) => TokenPairArbRoutes.fromAmino(e)) : []
     };
   },
-  toAmino(message: QueryGetProtoRevTokenPairArbRoutesResponse): QueryGetProtoRevTokenPairArbRoutesResponseAmino {
+  toAmino(message: QueryGetProtoRevTokenPairArbRoutesResponse, useInterfaces: boolean = false): QueryGetProtoRevTokenPairArbRoutesResponseAmino {
     const obj: any = {};
     if (message.routes) {
-      obj.routes = message.routes.map(e => e ? TokenPairArbRoutes.toAmino(e) : undefined);
+      obj.routes = message.routes.map(e => e ? TokenPairArbRoutes.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.routes = [];
     }
@@ -1750,14 +1750,14 @@ export const QueryGetProtoRevTokenPairArbRoutesResponse = {
   fromAminoMsg(object: QueryGetProtoRevTokenPairArbRoutesResponseAminoMsg): QueryGetProtoRevTokenPairArbRoutesResponse {
     return QueryGetProtoRevTokenPairArbRoutesResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevTokenPairArbRoutesResponse): QueryGetProtoRevTokenPairArbRoutesResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevTokenPairArbRoutesResponse, useInterfaces: boolean = false): QueryGetProtoRevTokenPairArbRoutesResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-token-pair-arb-routes-response",
-      value: QueryGetProtoRevTokenPairArbRoutesResponse.toAmino(message)
+      value: QueryGetProtoRevTokenPairArbRoutesResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevTokenPairArbRoutesResponseProtoMsg): QueryGetProtoRevTokenPairArbRoutesResponse {
-    return QueryGetProtoRevTokenPairArbRoutesResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevTokenPairArbRoutesResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevTokenPairArbRoutesResponse {
+    return QueryGetProtoRevTokenPairArbRoutesResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevTokenPairArbRoutesResponse): Uint8Array {
     return QueryGetProtoRevTokenPairArbRoutesResponse.encode(message).finish();
@@ -1777,7 +1777,7 @@ export const QueryGetProtoRevAdminAccountRequest = {
   encode(_: QueryGetProtoRevAdminAccountRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevAdminAccountRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevAdminAccountRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevAdminAccountRequest();
@@ -1798,21 +1798,21 @@ export const QueryGetProtoRevAdminAccountRequest = {
   fromAmino(_: QueryGetProtoRevAdminAccountRequestAmino): QueryGetProtoRevAdminAccountRequest {
     return {};
   },
-  toAmino(_: QueryGetProtoRevAdminAccountRequest): QueryGetProtoRevAdminAccountRequestAmino {
+  toAmino(_: QueryGetProtoRevAdminAccountRequest, useInterfaces: boolean = false): QueryGetProtoRevAdminAccountRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevAdminAccountRequestAminoMsg): QueryGetProtoRevAdminAccountRequest {
     return QueryGetProtoRevAdminAccountRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevAdminAccountRequest): QueryGetProtoRevAdminAccountRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevAdminAccountRequest, useInterfaces: boolean = false): QueryGetProtoRevAdminAccountRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-admin-account-request",
-      value: QueryGetProtoRevAdminAccountRequest.toAmino(message)
+      value: QueryGetProtoRevAdminAccountRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevAdminAccountRequestProtoMsg): QueryGetProtoRevAdminAccountRequest {
-    return QueryGetProtoRevAdminAccountRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevAdminAccountRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevAdminAccountRequest {
+    return QueryGetProtoRevAdminAccountRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevAdminAccountRequest): Uint8Array {
     return QueryGetProtoRevAdminAccountRequest.encode(message).finish();
@@ -1837,7 +1837,7 @@ export const QueryGetProtoRevAdminAccountResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevAdminAccountResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevAdminAccountResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevAdminAccountResponse();
@@ -1864,7 +1864,7 @@ export const QueryGetProtoRevAdminAccountResponse = {
       adminAccount: object.admin_account
     };
   },
-  toAmino(message: QueryGetProtoRevAdminAccountResponse): QueryGetProtoRevAdminAccountResponseAmino {
+  toAmino(message: QueryGetProtoRevAdminAccountResponse, useInterfaces: boolean = false): QueryGetProtoRevAdminAccountResponseAmino {
     const obj: any = {};
     obj.admin_account = message.adminAccount;
     return obj;
@@ -1872,14 +1872,14 @@ export const QueryGetProtoRevAdminAccountResponse = {
   fromAminoMsg(object: QueryGetProtoRevAdminAccountResponseAminoMsg): QueryGetProtoRevAdminAccountResponse {
     return QueryGetProtoRevAdminAccountResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevAdminAccountResponse): QueryGetProtoRevAdminAccountResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevAdminAccountResponse, useInterfaces: boolean = false): QueryGetProtoRevAdminAccountResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-admin-account-response",
-      value: QueryGetProtoRevAdminAccountResponse.toAmino(message)
+      value: QueryGetProtoRevAdminAccountResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevAdminAccountResponseProtoMsg): QueryGetProtoRevAdminAccountResponse {
-    return QueryGetProtoRevAdminAccountResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevAdminAccountResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevAdminAccountResponse {
+    return QueryGetProtoRevAdminAccountResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevAdminAccountResponse): Uint8Array {
     return QueryGetProtoRevAdminAccountResponse.encode(message).finish();
@@ -1899,7 +1899,7 @@ export const QueryGetProtoRevDeveloperAccountRequest = {
   encode(_: QueryGetProtoRevDeveloperAccountRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevDeveloperAccountRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevDeveloperAccountRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevDeveloperAccountRequest();
@@ -1920,21 +1920,21 @@ export const QueryGetProtoRevDeveloperAccountRequest = {
   fromAmino(_: QueryGetProtoRevDeveloperAccountRequestAmino): QueryGetProtoRevDeveloperAccountRequest {
     return {};
   },
-  toAmino(_: QueryGetProtoRevDeveloperAccountRequest): QueryGetProtoRevDeveloperAccountRequestAmino {
+  toAmino(_: QueryGetProtoRevDeveloperAccountRequest, useInterfaces: boolean = false): QueryGetProtoRevDeveloperAccountRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevDeveloperAccountRequestAminoMsg): QueryGetProtoRevDeveloperAccountRequest {
     return QueryGetProtoRevDeveloperAccountRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevDeveloperAccountRequest): QueryGetProtoRevDeveloperAccountRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevDeveloperAccountRequest, useInterfaces: boolean = false): QueryGetProtoRevDeveloperAccountRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-developer-account-request",
-      value: QueryGetProtoRevDeveloperAccountRequest.toAmino(message)
+      value: QueryGetProtoRevDeveloperAccountRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevDeveloperAccountRequestProtoMsg): QueryGetProtoRevDeveloperAccountRequest {
-    return QueryGetProtoRevDeveloperAccountRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevDeveloperAccountRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevDeveloperAccountRequest {
+    return QueryGetProtoRevDeveloperAccountRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevDeveloperAccountRequest): Uint8Array {
     return QueryGetProtoRevDeveloperAccountRequest.encode(message).finish();
@@ -1959,7 +1959,7 @@ export const QueryGetProtoRevDeveloperAccountResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevDeveloperAccountResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevDeveloperAccountResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevDeveloperAccountResponse();
@@ -1986,7 +1986,7 @@ export const QueryGetProtoRevDeveloperAccountResponse = {
       developerAccount: object.developer_account
     };
   },
-  toAmino(message: QueryGetProtoRevDeveloperAccountResponse): QueryGetProtoRevDeveloperAccountResponseAmino {
+  toAmino(message: QueryGetProtoRevDeveloperAccountResponse, useInterfaces: boolean = false): QueryGetProtoRevDeveloperAccountResponseAmino {
     const obj: any = {};
     obj.developer_account = message.developerAccount;
     return obj;
@@ -1994,14 +1994,14 @@ export const QueryGetProtoRevDeveloperAccountResponse = {
   fromAminoMsg(object: QueryGetProtoRevDeveloperAccountResponseAminoMsg): QueryGetProtoRevDeveloperAccountResponse {
     return QueryGetProtoRevDeveloperAccountResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevDeveloperAccountResponse): QueryGetProtoRevDeveloperAccountResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevDeveloperAccountResponse, useInterfaces: boolean = false): QueryGetProtoRevDeveloperAccountResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-developer-account-response",
-      value: QueryGetProtoRevDeveloperAccountResponse.toAmino(message)
+      value: QueryGetProtoRevDeveloperAccountResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevDeveloperAccountResponseProtoMsg): QueryGetProtoRevDeveloperAccountResponse {
-    return QueryGetProtoRevDeveloperAccountResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevDeveloperAccountResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevDeveloperAccountResponse {
+    return QueryGetProtoRevDeveloperAccountResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevDeveloperAccountResponse): Uint8Array {
     return QueryGetProtoRevDeveloperAccountResponse.encode(message).finish();
@@ -2021,7 +2021,7 @@ export const QueryGetProtoRevInfoByPoolTypeRequest = {
   encode(_: QueryGetProtoRevInfoByPoolTypeRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevInfoByPoolTypeRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevInfoByPoolTypeRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevInfoByPoolTypeRequest();
@@ -2042,21 +2042,21 @@ export const QueryGetProtoRevInfoByPoolTypeRequest = {
   fromAmino(_: QueryGetProtoRevInfoByPoolTypeRequestAmino): QueryGetProtoRevInfoByPoolTypeRequest {
     return {};
   },
-  toAmino(_: QueryGetProtoRevInfoByPoolTypeRequest): QueryGetProtoRevInfoByPoolTypeRequestAmino {
+  toAmino(_: QueryGetProtoRevInfoByPoolTypeRequest, useInterfaces: boolean = false): QueryGetProtoRevInfoByPoolTypeRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevInfoByPoolTypeRequestAminoMsg): QueryGetProtoRevInfoByPoolTypeRequest {
     return QueryGetProtoRevInfoByPoolTypeRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevInfoByPoolTypeRequest): QueryGetProtoRevInfoByPoolTypeRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevInfoByPoolTypeRequest, useInterfaces: boolean = false): QueryGetProtoRevInfoByPoolTypeRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-info-by-pool-type-request",
-      value: QueryGetProtoRevInfoByPoolTypeRequest.toAmino(message)
+      value: QueryGetProtoRevInfoByPoolTypeRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevInfoByPoolTypeRequestProtoMsg): QueryGetProtoRevInfoByPoolTypeRequest {
-    return QueryGetProtoRevInfoByPoolTypeRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevInfoByPoolTypeRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevInfoByPoolTypeRequest {
+    return QueryGetProtoRevInfoByPoolTypeRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevInfoByPoolTypeRequest): Uint8Array {
     return QueryGetProtoRevInfoByPoolTypeRequest.encode(message).finish();
@@ -2081,7 +2081,7 @@ export const QueryGetProtoRevInfoByPoolTypeResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevInfoByPoolTypeResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevInfoByPoolTypeResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevInfoByPoolTypeResponse();
@@ -2089,7 +2089,7 @@ export const QueryGetProtoRevInfoByPoolTypeResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.infoByPoolType = InfoByPoolType.decode(reader, reader.uint32());
+          message.infoByPoolType = InfoByPoolType.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -2108,22 +2108,22 @@ export const QueryGetProtoRevInfoByPoolTypeResponse = {
       infoByPoolType: object?.info_by_pool_type ? InfoByPoolType.fromAmino(object.info_by_pool_type) : undefined
     };
   },
-  toAmino(message: QueryGetProtoRevInfoByPoolTypeResponse): QueryGetProtoRevInfoByPoolTypeResponseAmino {
+  toAmino(message: QueryGetProtoRevInfoByPoolTypeResponse, useInterfaces: boolean = false): QueryGetProtoRevInfoByPoolTypeResponseAmino {
     const obj: any = {};
-    obj.info_by_pool_type = message.infoByPoolType ? InfoByPoolType.toAmino(message.infoByPoolType) : undefined;
+    obj.info_by_pool_type = message.infoByPoolType ? InfoByPoolType.toAmino(message.infoByPoolType, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevInfoByPoolTypeResponseAminoMsg): QueryGetProtoRevInfoByPoolTypeResponse {
     return QueryGetProtoRevInfoByPoolTypeResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevInfoByPoolTypeResponse): QueryGetProtoRevInfoByPoolTypeResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevInfoByPoolTypeResponse, useInterfaces: boolean = false): QueryGetProtoRevInfoByPoolTypeResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-info-by-pool-type-response",
-      value: QueryGetProtoRevInfoByPoolTypeResponse.toAmino(message)
+      value: QueryGetProtoRevInfoByPoolTypeResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevInfoByPoolTypeResponseProtoMsg): QueryGetProtoRevInfoByPoolTypeResponse {
-    return QueryGetProtoRevInfoByPoolTypeResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevInfoByPoolTypeResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevInfoByPoolTypeResponse {
+    return QueryGetProtoRevInfoByPoolTypeResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevInfoByPoolTypeResponse): Uint8Array {
     return QueryGetProtoRevInfoByPoolTypeResponse.encode(message).finish();
@@ -2143,7 +2143,7 @@ export const QueryGetProtoRevMaxPoolPointsPerBlockRequest = {
   encode(_: QueryGetProtoRevMaxPoolPointsPerBlockRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevMaxPoolPointsPerBlockRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerBlockRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevMaxPoolPointsPerBlockRequest();
@@ -2164,21 +2164,21 @@ export const QueryGetProtoRevMaxPoolPointsPerBlockRequest = {
   fromAmino(_: QueryGetProtoRevMaxPoolPointsPerBlockRequestAmino): QueryGetProtoRevMaxPoolPointsPerBlockRequest {
     return {};
   },
-  toAmino(_: QueryGetProtoRevMaxPoolPointsPerBlockRequest): QueryGetProtoRevMaxPoolPointsPerBlockRequestAmino {
+  toAmino(_: QueryGetProtoRevMaxPoolPointsPerBlockRequest, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerBlockRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevMaxPoolPointsPerBlockRequestAminoMsg): QueryGetProtoRevMaxPoolPointsPerBlockRequest {
     return QueryGetProtoRevMaxPoolPointsPerBlockRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevMaxPoolPointsPerBlockRequest): QueryGetProtoRevMaxPoolPointsPerBlockRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevMaxPoolPointsPerBlockRequest, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerBlockRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-max-pool-points-per-block-request",
-      value: QueryGetProtoRevMaxPoolPointsPerBlockRequest.toAmino(message)
+      value: QueryGetProtoRevMaxPoolPointsPerBlockRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevMaxPoolPointsPerBlockRequestProtoMsg): QueryGetProtoRevMaxPoolPointsPerBlockRequest {
-    return QueryGetProtoRevMaxPoolPointsPerBlockRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevMaxPoolPointsPerBlockRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerBlockRequest {
+    return QueryGetProtoRevMaxPoolPointsPerBlockRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevMaxPoolPointsPerBlockRequest): Uint8Array {
     return QueryGetProtoRevMaxPoolPointsPerBlockRequest.encode(message).finish();
@@ -2203,7 +2203,7 @@ export const QueryGetProtoRevMaxPoolPointsPerBlockResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevMaxPoolPointsPerBlockResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerBlockResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevMaxPoolPointsPerBlockResponse();
@@ -2230,7 +2230,7 @@ export const QueryGetProtoRevMaxPoolPointsPerBlockResponse = {
       maxPoolPointsPerBlock: BigInt(object.max_pool_points_per_block)
     };
   },
-  toAmino(message: QueryGetProtoRevMaxPoolPointsPerBlockResponse): QueryGetProtoRevMaxPoolPointsPerBlockResponseAmino {
+  toAmino(message: QueryGetProtoRevMaxPoolPointsPerBlockResponse, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerBlockResponseAmino {
     const obj: any = {};
     obj.max_pool_points_per_block = message.maxPoolPointsPerBlock ? message.maxPoolPointsPerBlock.toString() : undefined;
     return obj;
@@ -2238,14 +2238,14 @@ export const QueryGetProtoRevMaxPoolPointsPerBlockResponse = {
   fromAminoMsg(object: QueryGetProtoRevMaxPoolPointsPerBlockResponseAminoMsg): QueryGetProtoRevMaxPoolPointsPerBlockResponse {
     return QueryGetProtoRevMaxPoolPointsPerBlockResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevMaxPoolPointsPerBlockResponse): QueryGetProtoRevMaxPoolPointsPerBlockResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevMaxPoolPointsPerBlockResponse, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerBlockResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-max-pool-points-per-block-response",
-      value: QueryGetProtoRevMaxPoolPointsPerBlockResponse.toAmino(message)
+      value: QueryGetProtoRevMaxPoolPointsPerBlockResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevMaxPoolPointsPerBlockResponseProtoMsg): QueryGetProtoRevMaxPoolPointsPerBlockResponse {
-    return QueryGetProtoRevMaxPoolPointsPerBlockResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevMaxPoolPointsPerBlockResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerBlockResponse {
+    return QueryGetProtoRevMaxPoolPointsPerBlockResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevMaxPoolPointsPerBlockResponse): Uint8Array {
     return QueryGetProtoRevMaxPoolPointsPerBlockResponse.encode(message).finish();
@@ -2265,7 +2265,7 @@ export const QueryGetProtoRevMaxPoolPointsPerTxRequest = {
   encode(_: QueryGetProtoRevMaxPoolPointsPerTxRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevMaxPoolPointsPerTxRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerTxRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevMaxPoolPointsPerTxRequest();
@@ -2286,21 +2286,21 @@ export const QueryGetProtoRevMaxPoolPointsPerTxRequest = {
   fromAmino(_: QueryGetProtoRevMaxPoolPointsPerTxRequestAmino): QueryGetProtoRevMaxPoolPointsPerTxRequest {
     return {};
   },
-  toAmino(_: QueryGetProtoRevMaxPoolPointsPerTxRequest): QueryGetProtoRevMaxPoolPointsPerTxRequestAmino {
+  toAmino(_: QueryGetProtoRevMaxPoolPointsPerTxRequest, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerTxRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevMaxPoolPointsPerTxRequestAminoMsg): QueryGetProtoRevMaxPoolPointsPerTxRequest {
     return QueryGetProtoRevMaxPoolPointsPerTxRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevMaxPoolPointsPerTxRequest): QueryGetProtoRevMaxPoolPointsPerTxRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevMaxPoolPointsPerTxRequest, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerTxRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-max-pool-points-per-tx-request",
-      value: QueryGetProtoRevMaxPoolPointsPerTxRequest.toAmino(message)
+      value: QueryGetProtoRevMaxPoolPointsPerTxRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevMaxPoolPointsPerTxRequestProtoMsg): QueryGetProtoRevMaxPoolPointsPerTxRequest {
-    return QueryGetProtoRevMaxPoolPointsPerTxRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevMaxPoolPointsPerTxRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerTxRequest {
+    return QueryGetProtoRevMaxPoolPointsPerTxRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevMaxPoolPointsPerTxRequest): Uint8Array {
     return QueryGetProtoRevMaxPoolPointsPerTxRequest.encode(message).finish();
@@ -2325,7 +2325,7 @@ export const QueryGetProtoRevMaxPoolPointsPerTxResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevMaxPoolPointsPerTxResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerTxResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevMaxPoolPointsPerTxResponse();
@@ -2352,7 +2352,7 @@ export const QueryGetProtoRevMaxPoolPointsPerTxResponse = {
       maxPoolPointsPerTx: BigInt(object.max_pool_points_per_tx)
     };
   },
-  toAmino(message: QueryGetProtoRevMaxPoolPointsPerTxResponse): QueryGetProtoRevMaxPoolPointsPerTxResponseAmino {
+  toAmino(message: QueryGetProtoRevMaxPoolPointsPerTxResponse, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerTxResponseAmino {
     const obj: any = {};
     obj.max_pool_points_per_tx = message.maxPoolPointsPerTx ? message.maxPoolPointsPerTx.toString() : undefined;
     return obj;
@@ -2360,14 +2360,14 @@ export const QueryGetProtoRevMaxPoolPointsPerTxResponse = {
   fromAminoMsg(object: QueryGetProtoRevMaxPoolPointsPerTxResponseAminoMsg): QueryGetProtoRevMaxPoolPointsPerTxResponse {
     return QueryGetProtoRevMaxPoolPointsPerTxResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevMaxPoolPointsPerTxResponse): QueryGetProtoRevMaxPoolPointsPerTxResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevMaxPoolPointsPerTxResponse, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerTxResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-max-pool-points-per-tx-response",
-      value: QueryGetProtoRevMaxPoolPointsPerTxResponse.toAmino(message)
+      value: QueryGetProtoRevMaxPoolPointsPerTxResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevMaxPoolPointsPerTxResponseProtoMsg): QueryGetProtoRevMaxPoolPointsPerTxResponse {
-    return QueryGetProtoRevMaxPoolPointsPerTxResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevMaxPoolPointsPerTxResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevMaxPoolPointsPerTxResponse {
+    return QueryGetProtoRevMaxPoolPointsPerTxResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevMaxPoolPointsPerTxResponse): Uint8Array {
     return QueryGetProtoRevMaxPoolPointsPerTxResponse.encode(message).finish();
@@ -2387,7 +2387,7 @@ export const QueryGetProtoRevBaseDenomsRequest = {
   encode(_: QueryGetProtoRevBaseDenomsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevBaseDenomsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevBaseDenomsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevBaseDenomsRequest();
@@ -2408,21 +2408,21 @@ export const QueryGetProtoRevBaseDenomsRequest = {
   fromAmino(_: QueryGetProtoRevBaseDenomsRequestAmino): QueryGetProtoRevBaseDenomsRequest {
     return {};
   },
-  toAmino(_: QueryGetProtoRevBaseDenomsRequest): QueryGetProtoRevBaseDenomsRequestAmino {
+  toAmino(_: QueryGetProtoRevBaseDenomsRequest, useInterfaces: boolean = false): QueryGetProtoRevBaseDenomsRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevBaseDenomsRequestAminoMsg): QueryGetProtoRevBaseDenomsRequest {
     return QueryGetProtoRevBaseDenomsRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevBaseDenomsRequest): QueryGetProtoRevBaseDenomsRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevBaseDenomsRequest, useInterfaces: boolean = false): QueryGetProtoRevBaseDenomsRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-base-denoms-request",
-      value: QueryGetProtoRevBaseDenomsRequest.toAmino(message)
+      value: QueryGetProtoRevBaseDenomsRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevBaseDenomsRequestProtoMsg): QueryGetProtoRevBaseDenomsRequest {
-    return QueryGetProtoRevBaseDenomsRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevBaseDenomsRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevBaseDenomsRequest {
+    return QueryGetProtoRevBaseDenomsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevBaseDenomsRequest): Uint8Array {
     return QueryGetProtoRevBaseDenomsRequest.encode(message).finish();
@@ -2447,7 +2447,7 @@ export const QueryGetProtoRevBaseDenomsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevBaseDenomsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevBaseDenomsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevBaseDenomsResponse();
@@ -2455,7 +2455,7 @@ export const QueryGetProtoRevBaseDenomsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.baseDenoms.push(BaseDenom.decode(reader, reader.uint32()));
+          message.baseDenoms.push(BaseDenom.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -2474,10 +2474,10 @@ export const QueryGetProtoRevBaseDenomsResponse = {
       baseDenoms: Array.isArray(object?.base_denoms) ? object.base_denoms.map((e: any) => BaseDenom.fromAmino(e)) : []
     };
   },
-  toAmino(message: QueryGetProtoRevBaseDenomsResponse): QueryGetProtoRevBaseDenomsResponseAmino {
+  toAmino(message: QueryGetProtoRevBaseDenomsResponse, useInterfaces: boolean = false): QueryGetProtoRevBaseDenomsResponseAmino {
     const obj: any = {};
     if (message.baseDenoms) {
-      obj.base_denoms = message.baseDenoms.map(e => e ? BaseDenom.toAmino(e) : undefined);
+      obj.base_denoms = message.baseDenoms.map(e => e ? BaseDenom.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.base_denoms = [];
     }
@@ -2486,14 +2486,14 @@ export const QueryGetProtoRevBaseDenomsResponse = {
   fromAminoMsg(object: QueryGetProtoRevBaseDenomsResponseAminoMsg): QueryGetProtoRevBaseDenomsResponse {
     return QueryGetProtoRevBaseDenomsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevBaseDenomsResponse): QueryGetProtoRevBaseDenomsResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevBaseDenomsResponse, useInterfaces: boolean = false): QueryGetProtoRevBaseDenomsResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-base-denoms-response",
-      value: QueryGetProtoRevBaseDenomsResponse.toAmino(message)
+      value: QueryGetProtoRevBaseDenomsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevBaseDenomsResponseProtoMsg): QueryGetProtoRevBaseDenomsResponse {
-    return QueryGetProtoRevBaseDenomsResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevBaseDenomsResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevBaseDenomsResponse {
+    return QueryGetProtoRevBaseDenomsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevBaseDenomsResponse): Uint8Array {
     return QueryGetProtoRevBaseDenomsResponse.encode(message).finish();
@@ -2513,7 +2513,7 @@ export const QueryGetProtoRevEnabledRequest = {
   encode(_: QueryGetProtoRevEnabledRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevEnabledRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevEnabledRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevEnabledRequest();
@@ -2534,21 +2534,21 @@ export const QueryGetProtoRevEnabledRequest = {
   fromAmino(_: QueryGetProtoRevEnabledRequestAmino): QueryGetProtoRevEnabledRequest {
     return {};
   },
-  toAmino(_: QueryGetProtoRevEnabledRequest): QueryGetProtoRevEnabledRequestAmino {
+  toAmino(_: QueryGetProtoRevEnabledRequest, useInterfaces: boolean = false): QueryGetProtoRevEnabledRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryGetProtoRevEnabledRequestAminoMsg): QueryGetProtoRevEnabledRequest {
     return QueryGetProtoRevEnabledRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevEnabledRequest): QueryGetProtoRevEnabledRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevEnabledRequest, useInterfaces: boolean = false): QueryGetProtoRevEnabledRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-enabled-request",
-      value: QueryGetProtoRevEnabledRequest.toAmino(message)
+      value: QueryGetProtoRevEnabledRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevEnabledRequestProtoMsg): QueryGetProtoRevEnabledRequest {
-    return QueryGetProtoRevEnabledRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevEnabledRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevEnabledRequest {
+    return QueryGetProtoRevEnabledRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevEnabledRequest): Uint8Array {
     return QueryGetProtoRevEnabledRequest.encode(message).finish();
@@ -2573,7 +2573,7 @@ export const QueryGetProtoRevEnabledResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevEnabledResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevEnabledResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevEnabledResponse();
@@ -2600,7 +2600,7 @@ export const QueryGetProtoRevEnabledResponse = {
       enabled: object.enabled
     };
   },
-  toAmino(message: QueryGetProtoRevEnabledResponse): QueryGetProtoRevEnabledResponseAmino {
+  toAmino(message: QueryGetProtoRevEnabledResponse, useInterfaces: boolean = false): QueryGetProtoRevEnabledResponseAmino {
     const obj: any = {};
     obj.enabled = message.enabled;
     return obj;
@@ -2608,14 +2608,14 @@ export const QueryGetProtoRevEnabledResponse = {
   fromAminoMsg(object: QueryGetProtoRevEnabledResponseAminoMsg): QueryGetProtoRevEnabledResponse {
     return QueryGetProtoRevEnabledResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevEnabledResponse): QueryGetProtoRevEnabledResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevEnabledResponse, useInterfaces: boolean = false): QueryGetProtoRevEnabledResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-enabled-response",
-      value: QueryGetProtoRevEnabledResponse.toAmino(message)
+      value: QueryGetProtoRevEnabledResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevEnabledResponseProtoMsg): QueryGetProtoRevEnabledResponse {
-    return QueryGetProtoRevEnabledResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevEnabledResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevEnabledResponse {
+    return QueryGetProtoRevEnabledResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevEnabledResponse): Uint8Array {
     return QueryGetProtoRevEnabledResponse.encode(message).finish();
@@ -2644,7 +2644,7 @@ export const QueryGetProtoRevPoolRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevPoolRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevPoolRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevPoolRequest();
@@ -2676,7 +2676,7 @@ export const QueryGetProtoRevPoolRequest = {
       otherDenom: object.other_denom
     };
   },
-  toAmino(message: QueryGetProtoRevPoolRequest): QueryGetProtoRevPoolRequestAmino {
+  toAmino(message: QueryGetProtoRevPoolRequest, useInterfaces: boolean = false): QueryGetProtoRevPoolRequestAmino {
     const obj: any = {};
     obj.base_denom = message.baseDenom;
     obj.other_denom = message.otherDenom;
@@ -2685,14 +2685,14 @@ export const QueryGetProtoRevPoolRequest = {
   fromAminoMsg(object: QueryGetProtoRevPoolRequestAminoMsg): QueryGetProtoRevPoolRequest {
     return QueryGetProtoRevPoolRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevPoolRequest): QueryGetProtoRevPoolRequestAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevPoolRequest, useInterfaces: boolean = false): QueryGetProtoRevPoolRequestAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-pool-request",
-      value: QueryGetProtoRevPoolRequest.toAmino(message)
+      value: QueryGetProtoRevPoolRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevPoolRequestProtoMsg): QueryGetProtoRevPoolRequest {
-    return QueryGetProtoRevPoolRequest.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevPoolRequestProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevPoolRequest {
+    return QueryGetProtoRevPoolRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevPoolRequest): Uint8Array {
     return QueryGetProtoRevPoolRequest.encode(message).finish();
@@ -2717,7 +2717,7 @@ export const QueryGetProtoRevPoolResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryGetProtoRevPoolResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryGetProtoRevPoolResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryGetProtoRevPoolResponse();
@@ -2744,7 +2744,7 @@ export const QueryGetProtoRevPoolResponse = {
       poolId: BigInt(object.pool_id)
     };
   },
-  toAmino(message: QueryGetProtoRevPoolResponse): QueryGetProtoRevPoolResponseAmino {
+  toAmino(message: QueryGetProtoRevPoolResponse, useInterfaces: boolean = false): QueryGetProtoRevPoolResponseAmino {
     const obj: any = {};
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
     return obj;
@@ -2752,14 +2752,14 @@ export const QueryGetProtoRevPoolResponse = {
   fromAminoMsg(object: QueryGetProtoRevPoolResponseAminoMsg): QueryGetProtoRevPoolResponse {
     return QueryGetProtoRevPoolResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: QueryGetProtoRevPoolResponse): QueryGetProtoRevPoolResponseAminoMsg {
+  toAminoMsg(message: QueryGetProtoRevPoolResponse, useInterfaces: boolean = false): QueryGetProtoRevPoolResponseAminoMsg {
     return {
       type: "osmosis/protorev/query-get-proto-rev-pool-response",
-      value: QueryGetProtoRevPoolResponse.toAmino(message)
+      value: QueryGetProtoRevPoolResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: QueryGetProtoRevPoolResponseProtoMsg): QueryGetProtoRevPoolResponse {
-    return QueryGetProtoRevPoolResponse.decode(message.value);
+  fromProtoMsg(message: QueryGetProtoRevPoolResponseProtoMsg, useInterfaces: boolean = false): QueryGetProtoRevPoolResponse {
+    return QueryGetProtoRevPoolResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryGetProtoRevPoolResponse): Uint8Array {
     return QueryGetProtoRevPoolResponse.encode(message).finish();

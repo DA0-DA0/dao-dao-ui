@@ -138,7 +138,7 @@ export const GenesisState = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): GenesisState {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): GenesisState {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
@@ -146,16 +146,16 @@ export const GenesisState = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
-          message.codes.push(Code.decode(reader, reader.uint32()));
+          message.codes.push(Code.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 3:
-          message.contracts.push(Contract.decode(reader, reader.uint32()));
+          message.contracts.push(Contract.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
-          message.sequences.push(Sequence.decode(reader, reader.uint32()));
+          message.sequences.push(Sequence.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -180,21 +180,21 @@ export const GenesisState = {
       sequences: Array.isArray(object?.sequences) ? object.sequences.map((e: any) => Sequence.fromAmino(e)) : []
     };
   },
-  toAmino(message: GenesisState): GenesisStateAmino {
+  toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     if (message.codes) {
-      obj.codes = message.codes.map(e => e ? Code.toAmino(e) : undefined);
+      obj.codes = message.codes.map(e => e ? Code.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.codes = [];
     }
     if (message.contracts) {
-      obj.contracts = message.contracts.map(e => e ? Contract.toAmino(e) : undefined);
+      obj.contracts = message.contracts.map(e => e ? Contract.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.contracts = [];
     }
     if (message.sequences) {
-      obj.sequences = message.sequences.map(e => e ? Sequence.toAmino(e) : undefined);
+      obj.sequences = message.sequences.map(e => e ? Sequence.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.sequences = [];
     }
@@ -203,14 +203,14 @@ export const GenesisState = {
   fromAminoMsg(object: GenesisStateAminoMsg): GenesisState {
     return GenesisState.fromAmino(object.value);
   },
-  toAminoMsg(message: GenesisState): GenesisStateAminoMsg {
+  toAminoMsg(message: GenesisState, useInterfaces: boolean = false): GenesisStateAminoMsg {
     return {
       type: "wasm/GenesisState",
-      value: GenesisState.toAmino(message)
+      value: GenesisState.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: GenesisStateProtoMsg): GenesisState {
-    return GenesisState.decode(message.value);
+  fromProtoMsg(message: GenesisStateProtoMsg, useInterfaces: boolean = false): GenesisState {
+    return GenesisState.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: GenesisState): Uint8Array {
     return GenesisState.encode(message).finish();
@@ -247,7 +247,7 @@ export const Code = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Code {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Code {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCode();
@@ -258,7 +258,7 @@ export const Code = {
           message.codeId = reader.uint64();
           break;
         case 2:
-          message.codeInfo = CodeInfo.decode(reader, reader.uint32());
+          message.codeInfo = CodeInfo.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
           message.codeBytes = reader.bytes();
@@ -289,10 +289,10 @@ export const Code = {
       pinned: object.pinned
     };
   },
-  toAmino(message: Code): CodeAmino {
+  toAmino(message: Code, useInterfaces: boolean = false): CodeAmino {
     const obj: any = {};
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
-    obj.code_info = message.codeInfo ? CodeInfo.toAmino(message.codeInfo) : undefined;
+    obj.code_info = message.codeInfo ? CodeInfo.toAmino(message.codeInfo, useInterfaces) : undefined;
     obj.code_bytes = message.codeBytes;
     obj.pinned = message.pinned;
     return obj;
@@ -300,14 +300,14 @@ export const Code = {
   fromAminoMsg(object: CodeAminoMsg): Code {
     return Code.fromAmino(object.value);
   },
-  toAminoMsg(message: Code): CodeAminoMsg {
+  toAminoMsg(message: Code, useInterfaces: boolean = false): CodeAminoMsg {
     return {
       type: "wasm/Code",
-      value: Code.toAmino(message)
+      value: Code.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CodeProtoMsg): Code {
-    return Code.decode(message.value);
+  fromProtoMsg(message: CodeProtoMsg, useInterfaces: boolean = false): Code {
+    return Code.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Code): Uint8Array {
     return Code.encode(message).finish();
@@ -344,7 +344,7 @@ export const Contract = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Contract {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Contract {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContract();
@@ -355,13 +355,13 @@ export const Contract = {
           message.contractAddress = reader.string();
           break;
         case 2:
-          message.contractInfo = ContractInfo.decode(reader, reader.uint32());
+          message.contractInfo = ContractInfo.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 3:
-          message.contractState.push(Model.decode(reader, reader.uint32()));
+          message.contractState.push(Model.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
-          message.contractCodeHistory.push(ContractCodeHistoryEntry.decode(reader, reader.uint32()));
+          message.contractCodeHistory.push(ContractCodeHistoryEntry.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -386,17 +386,17 @@ export const Contract = {
       contractCodeHistory: Array.isArray(object?.contract_code_history) ? object.contract_code_history.map((e: any) => ContractCodeHistoryEntry.fromAmino(e)) : []
     };
   },
-  toAmino(message: Contract): ContractAmino {
+  toAmino(message: Contract, useInterfaces: boolean = false): ContractAmino {
     const obj: any = {};
     obj.contract_address = message.contractAddress;
-    obj.contract_info = message.contractInfo ? ContractInfo.toAmino(message.contractInfo) : undefined;
+    obj.contract_info = message.contractInfo ? ContractInfo.toAmino(message.contractInfo, useInterfaces) : undefined;
     if (message.contractState) {
-      obj.contract_state = message.contractState.map(e => e ? Model.toAmino(e) : undefined);
+      obj.contract_state = message.contractState.map(e => e ? Model.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.contract_state = [];
     }
     if (message.contractCodeHistory) {
-      obj.contract_code_history = message.contractCodeHistory.map(e => e ? ContractCodeHistoryEntry.toAmino(e) : undefined);
+      obj.contract_code_history = message.contractCodeHistory.map(e => e ? ContractCodeHistoryEntry.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.contract_code_history = [];
     }
@@ -405,14 +405,14 @@ export const Contract = {
   fromAminoMsg(object: ContractAminoMsg): Contract {
     return Contract.fromAmino(object.value);
   },
-  toAminoMsg(message: Contract): ContractAminoMsg {
+  toAminoMsg(message: Contract, useInterfaces: boolean = false): ContractAminoMsg {
     return {
       type: "wasm/Contract",
-      value: Contract.toAmino(message)
+      value: Contract.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ContractProtoMsg): Contract {
-    return Contract.decode(message.value);
+  fromProtoMsg(message: ContractProtoMsg, useInterfaces: boolean = false): Contract {
+    return Contract.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Contract): Uint8Array {
     return Contract.encode(message).finish();
@@ -441,7 +441,7 @@ export const Sequence = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): Sequence {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): Sequence {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSequence();
@@ -473,7 +473,7 @@ export const Sequence = {
       value: BigInt(object.value)
     };
   },
-  toAmino(message: Sequence): SequenceAmino {
+  toAmino(message: Sequence, useInterfaces: boolean = false): SequenceAmino {
     const obj: any = {};
     obj.id_key = message.idKey;
     obj.value = message.value ? message.value.toString() : undefined;
@@ -482,14 +482,14 @@ export const Sequence = {
   fromAminoMsg(object: SequenceAminoMsg): Sequence {
     return Sequence.fromAmino(object.value);
   },
-  toAminoMsg(message: Sequence): SequenceAminoMsg {
+  toAminoMsg(message: Sequence, useInterfaces: boolean = false): SequenceAminoMsg {
     return {
       type: "wasm/Sequence",
-      value: Sequence.toAmino(message)
+      value: Sequence.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SequenceProtoMsg): Sequence {
-    return Sequence.decode(message.value);
+  fromProtoMsg(message: SequenceProtoMsg, useInterfaces: boolean = false): Sequence {
+    return Sequence.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: Sequence): Uint8Array {
     return Sequence.encode(message).finish();

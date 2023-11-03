@@ -6,7 +6,7 @@ import { BinaryReader, BinaryWriter } from "../../../../binary";
  */
 /** @deprecated */
 export interface PromoteToPrivilegedContractProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/publicawesome.stargaze.cron.v1.PromoteToPrivilegedContractProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -43,7 +43,7 @@ export interface PromoteToPrivilegedContractProposalAminoMsg {
  */
 /** @deprecated */
 export interface PromoteToPrivilegedContractProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/publicawesome.stargaze.cron.v1.PromoteToPrivilegedContractProposal";
   title: string;
   description: string;
   contract: string;
@@ -55,7 +55,7 @@ export interface PromoteToPrivilegedContractProposalSDKType {
  */
 /** @deprecated */
 export interface DemotePrivilegedContractProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/publicawesome.stargaze.cron.v1.DemotePrivilegedContractProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -92,7 +92,7 @@ export interface DemotePrivilegedContractProposalAminoMsg {
  */
 /** @deprecated */
 export interface DemotePrivilegedContractProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/publicawesome.stargaze.cron.v1.DemotePrivilegedContractProposal";
   title: string;
   description: string;
   contract: string;
@@ -119,7 +119,7 @@ export const PromoteToPrivilegedContractProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): PromoteToPrivilegedContractProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): PromoteToPrivilegedContractProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePromoteToPrivilegedContractProposal();
@@ -156,7 +156,7 @@ export const PromoteToPrivilegedContractProposal = {
       contract: object.contract
     };
   },
-  toAmino(message: PromoteToPrivilegedContractProposal): PromoteToPrivilegedContractProposalAmino {
+  toAmino(message: PromoteToPrivilegedContractProposal, useInterfaces: boolean = false): PromoteToPrivilegedContractProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -166,8 +166,8 @@ export const PromoteToPrivilegedContractProposal = {
   fromAminoMsg(object: PromoteToPrivilegedContractProposalAminoMsg): PromoteToPrivilegedContractProposal {
     return PromoteToPrivilegedContractProposal.fromAmino(object.value);
   },
-  fromProtoMsg(message: PromoteToPrivilegedContractProposalProtoMsg): PromoteToPrivilegedContractProposal {
-    return PromoteToPrivilegedContractProposal.decode(message.value);
+  fromProtoMsg(message: PromoteToPrivilegedContractProposalProtoMsg, useInterfaces: boolean = false): PromoteToPrivilegedContractProposal {
+    return PromoteToPrivilegedContractProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: PromoteToPrivilegedContractProposal): Uint8Array {
     return PromoteToPrivilegedContractProposal.encode(message).finish();
@@ -201,7 +201,7 @@ export const DemotePrivilegedContractProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): DemotePrivilegedContractProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): DemotePrivilegedContractProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDemotePrivilegedContractProposal();
@@ -238,7 +238,7 @@ export const DemotePrivilegedContractProposal = {
       contract: object.contract
     };
   },
-  toAmino(message: DemotePrivilegedContractProposal): DemotePrivilegedContractProposalAmino {
+  toAmino(message: DemotePrivilegedContractProposal, useInterfaces: boolean = false): DemotePrivilegedContractProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -248,8 +248,8 @@ export const DemotePrivilegedContractProposal = {
   fromAminoMsg(object: DemotePrivilegedContractProposalAminoMsg): DemotePrivilegedContractProposal {
     return DemotePrivilegedContractProposal.fromAmino(object.value);
   },
-  fromProtoMsg(message: DemotePrivilegedContractProposalProtoMsg): DemotePrivilegedContractProposal {
-    return DemotePrivilegedContractProposal.decode(message.value);
+  fromProtoMsg(message: DemotePrivilegedContractProposalProtoMsg, useInterfaces: boolean = false): DemotePrivilegedContractProposal {
+    return DemotePrivilegedContractProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: DemotePrivilegedContractProposal): Uint8Array {
     return DemotePrivilegedContractProposal.encode(message).finish();

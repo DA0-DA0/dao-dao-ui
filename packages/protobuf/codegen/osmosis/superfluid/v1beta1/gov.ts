@@ -6,7 +6,7 @@ import { BinaryReader, BinaryWriter } from "../../../binary";
  * assets
  */
 export interface SetSuperfluidAssetsProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.superfluid.v1beta1.SetSuperfluidAssetsProposal";
   title: string;
   description: string;
   assets: SuperfluidAsset[];
@@ -33,7 +33,7 @@ export interface SetSuperfluidAssetsProposalAminoMsg {
  * assets
  */
 export interface SetSuperfluidAssetsProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.superfluid.v1beta1.SetSuperfluidAssetsProposal";
   title: string;
   description: string;
   assets: SuperfluidAssetSDKType[];
@@ -43,7 +43,7 @@ export interface SetSuperfluidAssetsProposalSDKType {
  * assets by denom
  */
 export interface RemoveSuperfluidAssetsProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.superfluid.v1beta1.RemoveSuperfluidAssetsProposal";
   title: string;
   description: string;
   superfluidAssetDenoms: string[];
@@ -70,7 +70,7 @@ export interface RemoveSuperfluidAssetsProposalAminoMsg {
  * assets by denom
  */
 export interface RemoveSuperfluidAssetsProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.superfluid.v1beta1.RemoveSuperfluidAssetsProposal";
   title: string;
   description: string;
   superfluid_asset_denoms: string[];
@@ -80,7 +80,7 @@ export interface RemoveSuperfluidAssetsProposalSDKType {
  * allowed list of pool ids.
  */
 export interface UpdateUnpoolWhiteListProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.superfluid.v1beta1.UpdateUnpoolWhiteListProposal";
   title: string;
   description: string;
   ids: bigint[];
@@ -109,7 +109,7 @@ export interface UpdateUnpoolWhiteListProposalAminoMsg {
  * allowed list of pool ids.
  */
 export interface UpdateUnpoolWhiteListProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.superfluid.v1beta1.UpdateUnpoolWhiteListProposal";
   title: string;
   description: string;
   ids: bigint[];
@@ -137,7 +137,7 @@ export const SetSuperfluidAssetsProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SetSuperfluidAssetsProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SetSuperfluidAssetsProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetSuperfluidAssetsProposal();
@@ -151,7 +151,7 @@ export const SetSuperfluidAssetsProposal = {
           message.description = reader.string();
           break;
         case 3:
-          message.assets.push(SuperfluidAsset.decode(reader, reader.uint32()));
+          message.assets.push(SuperfluidAsset.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -174,12 +174,12 @@ export const SetSuperfluidAssetsProposal = {
       assets: Array.isArray(object?.assets) ? object.assets.map((e: any) => SuperfluidAsset.fromAmino(e)) : []
     };
   },
-  toAmino(message: SetSuperfluidAssetsProposal): SetSuperfluidAssetsProposalAmino {
+  toAmino(message: SetSuperfluidAssetsProposal, useInterfaces: boolean = false): SetSuperfluidAssetsProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
     if (message.assets) {
-      obj.assets = message.assets.map(e => e ? SuperfluidAsset.toAmino(e) : undefined);
+      obj.assets = message.assets.map(e => e ? SuperfluidAsset.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.assets = [];
     }
@@ -188,14 +188,14 @@ export const SetSuperfluidAssetsProposal = {
   fromAminoMsg(object: SetSuperfluidAssetsProposalAminoMsg): SetSuperfluidAssetsProposal {
     return SetSuperfluidAssetsProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: SetSuperfluidAssetsProposal): SetSuperfluidAssetsProposalAminoMsg {
+  toAminoMsg(message: SetSuperfluidAssetsProposal, useInterfaces: boolean = false): SetSuperfluidAssetsProposalAminoMsg {
     return {
       type: "osmosis/set-superfluid-assets-proposal",
-      value: SetSuperfluidAssetsProposal.toAmino(message)
+      value: SetSuperfluidAssetsProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SetSuperfluidAssetsProposalProtoMsg): SetSuperfluidAssetsProposal {
-    return SetSuperfluidAssetsProposal.decode(message.value);
+  fromProtoMsg(message: SetSuperfluidAssetsProposalProtoMsg, useInterfaces: boolean = false): SetSuperfluidAssetsProposal {
+    return SetSuperfluidAssetsProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SetSuperfluidAssetsProposal): Uint8Array {
     return SetSuperfluidAssetsProposal.encode(message).finish();
@@ -229,7 +229,7 @@ export const RemoveSuperfluidAssetsProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): RemoveSuperfluidAssetsProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): RemoveSuperfluidAssetsProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRemoveSuperfluidAssetsProposal();
@@ -266,7 +266,7 @@ export const RemoveSuperfluidAssetsProposal = {
       superfluidAssetDenoms: Array.isArray(object?.superfluid_asset_denoms) ? object.superfluid_asset_denoms.map((e: any) => e) : []
     };
   },
-  toAmino(message: RemoveSuperfluidAssetsProposal): RemoveSuperfluidAssetsProposalAmino {
+  toAmino(message: RemoveSuperfluidAssetsProposal, useInterfaces: boolean = false): RemoveSuperfluidAssetsProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -280,14 +280,14 @@ export const RemoveSuperfluidAssetsProposal = {
   fromAminoMsg(object: RemoveSuperfluidAssetsProposalAminoMsg): RemoveSuperfluidAssetsProposal {
     return RemoveSuperfluidAssetsProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: RemoveSuperfluidAssetsProposal): RemoveSuperfluidAssetsProposalAminoMsg {
+  toAminoMsg(message: RemoveSuperfluidAssetsProposal, useInterfaces: boolean = false): RemoveSuperfluidAssetsProposalAminoMsg {
     return {
       type: "osmosis/del-superfluid-assets-proposal",
-      value: RemoveSuperfluidAssetsProposal.toAmino(message)
+      value: RemoveSuperfluidAssetsProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: RemoveSuperfluidAssetsProposalProtoMsg): RemoveSuperfluidAssetsProposal {
-    return RemoveSuperfluidAssetsProposal.decode(message.value);
+  fromProtoMsg(message: RemoveSuperfluidAssetsProposalProtoMsg, useInterfaces: boolean = false): RemoveSuperfluidAssetsProposal {
+    return RemoveSuperfluidAssetsProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: RemoveSuperfluidAssetsProposal): Uint8Array {
     return RemoveSuperfluidAssetsProposal.encode(message).finish();
@@ -327,7 +327,7 @@ export const UpdateUnpoolWhiteListProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): UpdateUnpoolWhiteListProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): UpdateUnpoolWhiteListProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateUnpoolWhiteListProposal();
@@ -376,7 +376,7 @@ export const UpdateUnpoolWhiteListProposal = {
       isOverwrite: object.is_overwrite
     };
   },
-  toAmino(message: UpdateUnpoolWhiteListProposal): UpdateUnpoolWhiteListProposalAmino {
+  toAmino(message: UpdateUnpoolWhiteListProposal, useInterfaces: boolean = false): UpdateUnpoolWhiteListProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -391,14 +391,14 @@ export const UpdateUnpoolWhiteListProposal = {
   fromAminoMsg(object: UpdateUnpoolWhiteListProposalAminoMsg): UpdateUnpoolWhiteListProposal {
     return UpdateUnpoolWhiteListProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: UpdateUnpoolWhiteListProposal): UpdateUnpoolWhiteListProposalAminoMsg {
+  toAminoMsg(message: UpdateUnpoolWhiteListProposal, useInterfaces: boolean = false): UpdateUnpoolWhiteListProposalAminoMsg {
     return {
       type: "osmosis/update-unpool-whitelist",
-      value: UpdateUnpoolWhiteListProposal.toAmino(message)
+      value: UpdateUnpoolWhiteListProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: UpdateUnpoolWhiteListProposalProtoMsg): UpdateUnpoolWhiteListProposal {
-    return UpdateUnpoolWhiteListProposal.decode(message.value);
+  fromProtoMsg(message: UpdateUnpoolWhiteListProposalProtoMsg, useInterfaces: boolean = false): UpdateUnpoolWhiteListProposal {
+    return UpdateUnpoolWhiteListProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: UpdateUnpoolWhiteListProposal): Uint8Array {
     return UpdateUnpoolWhiteListProposal.encode(message).finish();

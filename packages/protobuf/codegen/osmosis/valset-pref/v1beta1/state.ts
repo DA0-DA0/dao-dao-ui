@@ -105,7 +105,7 @@ export const ValidatorPreference = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ValidatorPreference {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ValidatorPreference {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorPreference();
@@ -137,7 +137,7 @@ export const ValidatorPreference = {
       weight: object.weight
     };
   },
-  toAmino(message: ValidatorPreference): ValidatorPreferenceAmino {
+  toAmino(message: ValidatorPreference, useInterfaces: boolean = false): ValidatorPreferenceAmino {
     const obj: any = {};
     obj.val_oper_address = message.valOperAddress;
     obj.weight = message.weight;
@@ -146,14 +146,14 @@ export const ValidatorPreference = {
   fromAminoMsg(object: ValidatorPreferenceAminoMsg): ValidatorPreference {
     return ValidatorPreference.fromAmino(object.value);
   },
-  toAminoMsg(message: ValidatorPreference): ValidatorPreferenceAminoMsg {
+  toAminoMsg(message: ValidatorPreference, useInterfaces: boolean = false): ValidatorPreferenceAminoMsg {
     return {
       type: "osmosis/valsetpref/validator-preference",
-      value: ValidatorPreference.toAmino(message)
+      value: ValidatorPreference.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ValidatorPreferenceProtoMsg): ValidatorPreference {
-    return ValidatorPreference.decode(message.value);
+  fromProtoMsg(message: ValidatorPreferenceProtoMsg, useInterfaces: boolean = false): ValidatorPreference {
+    return ValidatorPreference.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ValidatorPreference): Uint8Array {
     return ValidatorPreference.encode(message).finish();
@@ -178,7 +178,7 @@ export const ValidatorSetPreferences = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): ValidatorSetPreferences {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): ValidatorSetPreferences {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorSetPreferences();
@@ -186,7 +186,7 @@ export const ValidatorSetPreferences = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 2:
-          message.preferences.push(ValidatorPreference.decode(reader, reader.uint32()));
+          message.preferences.push(ValidatorPreference.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -205,10 +205,10 @@ export const ValidatorSetPreferences = {
       preferences: Array.isArray(object?.preferences) ? object.preferences.map((e: any) => ValidatorPreference.fromAmino(e)) : []
     };
   },
-  toAmino(message: ValidatorSetPreferences): ValidatorSetPreferencesAmino {
+  toAmino(message: ValidatorSetPreferences, useInterfaces: boolean = false): ValidatorSetPreferencesAmino {
     const obj: any = {};
     if (message.preferences) {
-      obj.preferences = message.preferences.map(e => e ? ValidatorPreference.toAmino(e) : undefined);
+      obj.preferences = message.preferences.map(e => e ? ValidatorPreference.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.preferences = [];
     }
@@ -217,14 +217,14 @@ export const ValidatorSetPreferences = {
   fromAminoMsg(object: ValidatorSetPreferencesAminoMsg): ValidatorSetPreferences {
     return ValidatorSetPreferences.fromAmino(object.value);
   },
-  toAminoMsg(message: ValidatorSetPreferences): ValidatorSetPreferencesAminoMsg {
+  toAminoMsg(message: ValidatorSetPreferences, useInterfaces: boolean = false): ValidatorSetPreferencesAminoMsg {
     return {
       type: "osmosis/valsetpref/validator-set-preferences",
-      value: ValidatorSetPreferences.toAmino(message)
+      value: ValidatorSetPreferences.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: ValidatorSetPreferencesProtoMsg): ValidatorSetPreferences {
-    return ValidatorSetPreferences.decode(message.value);
+  fromProtoMsg(message: ValidatorSetPreferencesProtoMsg, useInterfaces: boolean = false): ValidatorSetPreferences {
+    return ValidatorSetPreferences.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: ValidatorSetPreferences): Uint8Array {
     return ValidatorSetPreferences.encode(message).finish();

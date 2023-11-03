@@ -156,7 +156,7 @@ export const MsgCreateVestingAccount = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCreateVestingAccount {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCreateVestingAccount {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateVestingAccount();
@@ -170,7 +170,7 @@ export const MsgCreateVestingAccount = {
           message.toAddress = reader.string();
           break;
         case 3:
-          message.amount.push(Coin.decode(reader, reader.uint32()));
+          message.amount.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
           message.startTime = reader.int64();
@@ -208,12 +208,12 @@ export const MsgCreateVestingAccount = {
       delayed: object.delayed
     };
   },
-  toAmino(message: MsgCreateVestingAccount): MsgCreateVestingAccountAmino {
+  toAmino(message: MsgCreateVestingAccount, useInterfaces: boolean = false): MsgCreateVestingAccountAmino {
     const obj: any = {};
     obj.from_address = message.fromAddress;
     obj.to_address = message.toAddress;
     if (message.amount) {
-      obj.amount = message.amount.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.amount = message.amount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.amount = [];
     }
@@ -225,8 +225,8 @@ export const MsgCreateVestingAccount = {
   fromAminoMsg(object: MsgCreateVestingAccountAminoMsg): MsgCreateVestingAccount {
     return MsgCreateVestingAccount.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgCreateVestingAccountProtoMsg): MsgCreateVestingAccount {
-    return MsgCreateVestingAccount.decode(message.value);
+  fromProtoMsg(message: MsgCreateVestingAccountProtoMsg, useInterfaces: boolean = false): MsgCreateVestingAccount {
+    return MsgCreateVestingAccount.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCreateVestingAccount): Uint8Array {
     return MsgCreateVestingAccount.encode(message).finish();
@@ -246,7 +246,7 @@ export const MsgCreateVestingAccountResponse = {
   encode(_: MsgCreateVestingAccountResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgCreateVestingAccountResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgCreateVestingAccountResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateVestingAccountResponse();
@@ -267,15 +267,15 @@ export const MsgCreateVestingAccountResponse = {
   fromAmino(_: MsgCreateVestingAccountResponseAmino): MsgCreateVestingAccountResponse {
     return {};
   },
-  toAmino(_: MsgCreateVestingAccountResponse): MsgCreateVestingAccountResponseAmino {
+  toAmino(_: MsgCreateVestingAccountResponse, useInterfaces: boolean = false): MsgCreateVestingAccountResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgCreateVestingAccountResponseAminoMsg): MsgCreateVestingAccountResponse {
     return MsgCreateVestingAccountResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgCreateVestingAccountResponseProtoMsg): MsgCreateVestingAccountResponse {
-    return MsgCreateVestingAccountResponse.decode(message.value);
+  fromProtoMsg(message: MsgCreateVestingAccountResponseProtoMsg, useInterfaces: boolean = false): MsgCreateVestingAccountResponse {
+    return MsgCreateVestingAccountResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgCreateVestingAccountResponse): Uint8Array {
     return MsgCreateVestingAccountResponse.encode(message).finish();
@@ -304,7 +304,7 @@ export const MsgFundFairburnPool = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgFundFairburnPool {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgFundFairburnPool {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgFundFairburnPool();
@@ -315,7 +315,7 @@ export const MsgFundFairburnPool = {
           message.sender = reader.string();
           break;
         case 2:
-          message.amount.push(Coin.decode(reader, reader.uint32()));
+          message.amount.push(Coin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -336,11 +336,11 @@ export const MsgFundFairburnPool = {
       amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromAmino(e)) : []
     };
   },
-  toAmino(message: MsgFundFairburnPool): MsgFundFairburnPoolAmino {
+  toAmino(message: MsgFundFairburnPool, useInterfaces: boolean = false): MsgFundFairburnPoolAmino {
     const obj: any = {};
     obj.sender = message.sender;
     if (message.amount) {
-      obj.amount = message.amount.map(e => e ? Coin.toAmino(e) : undefined);
+      obj.amount = message.amount.map(e => e ? Coin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.amount = [];
     }
@@ -349,8 +349,8 @@ export const MsgFundFairburnPool = {
   fromAminoMsg(object: MsgFundFairburnPoolAminoMsg): MsgFundFairburnPool {
     return MsgFundFairburnPool.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgFundFairburnPoolProtoMsg): MsgFundFairburnPool {
-    return MsgFundFairburnPool.decode(message.value);
+  fromProtoMsg(message: MsgFundFairburnPoolProtoMsg, useInterfaces: boolean = false): MsgFundFairburnPool {
+    return MsgFundFairburnPool.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgFundFairburnPool): Uint8Array {
     return MsgFundFairburnPool.encode(message).finish();
@@ -370,7 +370,7 @@ export const MsgFundFairburnPoolResponse = {
   encode(_: MsgFundFairburnPoolResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgFundFairburnPoolResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgFundFairburnPoolResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgFundFairburnPoolResponse();
@@ -391,15 +391,15 @@ export const MsgFundFairburnPoolResponse = {
   fromAmino(_: MsgFundFairburnPoolResponseAmino): MsgFundFairburnPoolResponse {
     return {};
   },
-  toAmino(_: MsgFundFairburnPoolResponse): MsgFundFairburnPoolResponseAmino {
+  toAmino(_: MsgFundFairburnPoolResponse, useInterfaces: boolean = false): MsgFundFairburnPoolResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgFundFairburnPoolResponseAminoMsg): MsgFundFairburnPoolResponse {
     return MsgFundFairburnPoolResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: MsgFundFairburnPoolResponseProtoMsg): MsgFundFairburnPoolResponse {
-    return MsgFundFairburnPoolResponse.decode(message.value);
+  fromProtoMsg(message: MsgFundFairburnPoolResponseProtoMsg, useInterfaces: boolean = false): MsgFundFairburnPoolResponse {
+    return MsgFundFairburnPoolResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgFundFairburnPoolResponse): Uint8Array {
     return MsgFundFairburnPoolResponse.encode(message).finish();

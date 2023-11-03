@@ -174,7 +174,7 @@ export const CalcOutAmtGivenIn = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CalcOutAmtGivenIn {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CalcOutAmtGivenIn {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCalcOutAmtGivenIn();
@@ -182,7 +182,7 @@ export const CalcOutAmtGivenIn = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.tokenIn = Coin.decode(reader, reader.uint32());
+          message.tokenIn = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
           message.tokenOutDenom = reader.string();
@@ -211,9 +211,9 @@ export const CalcOutAmtGivenIn = {
       swapFee: object.swap_fee
     };
   },
-  toAmino(message: CalcOutAmtGivenIn): CalcOutAmtGivenInAmino {
+  toAmino(message: CalcOutAmtGivenIn, useInterfaces: boolean = false): CalcOutAmtGivenInAmino {
     const obj: any = {};
-    obj.token_in = message.tokenIn ? Coin.toAmino(message.tokenIn) : undefined;
+    obj.token_in = message.tokenIn ? Coin.toAmino(message.tokenIn, useInterfaces) : undefined;
     obj.token_out_denom = message.tokenOutDenom;
     obj.swap_fee = message.swapFee;
     return obj;
@@ -221,14 +221,14 @@ export const CalcOutAmtGivenIn = {
   fromAminoMsg(object: CalcOutAmtGivenInAminoMsg): CalcOutAmtGivenIn {
     return CalcOutAmtGivenIn.fromAmino(object.value);
   },
-  toAminoMsg(message: CalcOutAmtGivenIn): CalcOutAmtGivenInAminoMsg {
+  toAminoMsg(message: CalcOutAmtGivenIn, useInterfaces: boolean = false): CalcOutAmtGivenInAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/calc-out-amt-given-in",
-      value: CalcOutAmtGivenIn.toAmino(message)
+      value: CalcOutAmtGivenIn.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CalcOutAmtGivenInProtoMsg): CalcOutAmtGivenIn {
-    return CalcOutAmtGivenIn.decode(message.value);
+  fromProtoMsg(message: CalcOutAmtGivenInProtoMsg, useInterfaces: boolean = false): CalcOutAmtGivenIn {
+    return CalcOutAmtGivenIn.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CalcOutAmtGivenIn): Uint8Array {
     return CalcOutAmtGivenIn.encode(message).finish();
@@ -253,7 +253,7 @@ export const CalcOutAmtGivenInRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CalcOutAmtGivenInRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CalcOutAmtGivenInRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCalcOutAmtGivenInRequest();
@@ -261,7 +261,7 @@ export const CalcOutAmtGivenInRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.calcOutAmtGivenIn = CalcOutAmtGivenIn.decode(reader, reader.uint32());
+          message.calcOutAmtGivenIn = CalcOutAmtGivenIn.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -280,22 +280,22 @@ export const CalcOutAmtGivenInRequest = {
       calcOutAmtGivenIn: object?.calc_out_amt_given_in ? CalcOutAmtGivenIn.fromAmino(object.calc_out_amt_given_in) : undefined
     };
   },
-  toAmino(message: CalcOutAmtGivenInRequest): CalcOutAmtGivenInRequestAmino {
+  toAmino(message: CalcOutAmtGivenInRequest, useInterfaces: boolean = false): CalcOutAmtGivenInRequestAmino {
     const obj: any = {};
-    obj.calc_out_amt_given_in = message.calcOutAmtGivenIn ? CalcOutAmtGivenIn.toAmino(message.calcOutAmtGivenIn) : undefined;
+    obj.calc_out_amt_given_in = message.calcOutAmtGivenIn ? CalcOutAmtGivenIn.toAmino(message.calcOutAmtGivenIn, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: CalcOutAmtGivenInRequestAminoMsg): CalcOutAmtGivenInRequest {
     return CalcOutAmtGivenInRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: CalcOutAmtGivenInRequest): CalcOutAmtGivenInRequestAminoMsg {
+  toAminoMsg(message: CalcOutAmtGivenInRequest, useInterfaces: boolean = false): CalcOutAmtGivenInRequestAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/calc-out-amt-given-in-request",
-      value: CalcOutAmtGivenInRequest.toAmino(message)
+      value: CalcOutAmtGivenInRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CalcOutAmtGivenInRequestProtoMsg): CalcOutAmtGivenInRequest {
-    return CalcOutAmtGivenInRequest.decode(message.value);
+  fromProtoMsg(message: CalcOutAmtGivenInRequestProtoMsg, useInterfaces: boolean = false): CalcOutAmtGivenInRequest {
+    return CalcOutAmtGivenInRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CalcOutAmtGivenInRequest): Uint8Array {
     return CalcOutAmtGivenInRequest.encode(message).finish();
@@ -320,7 +320,7 @@ export const CalcOutAmtGivenInResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CalcOutAmtGivenInResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CalcOutAmtGivenInResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCalcOutAmtGivenInResponse();
@@ -328,7 +328,7 @@ export const CalcOutAmtGivenInResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.tokenOut = Coin.decode(reader, reader.uint32());
+          message.tokenOut = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -347,22 +347,22 @@ export const CalcOutAmtGivenInResponse = {
       tokenOut: object?.token_out ? Coin.fromAmino(object.token_out) : undefined
     };
   },
-  toAmino(message: CalcOutAmtGivenInResponse): CalcOutAmtGivenInResponseAmino {
+  toAmino(message: CalcOutAmtGivenInResponse, useInterfaces: boolean = false): CalcOutAmtGivenInResponseAmino {
     const obj: any = {};
-    obj.token_out = message.tokenOut ? Coin.toAmino(message.tokenOut) : undefined;
+    obj.token_out = message.tokenOut ? Coin.toAmino(message.tokenOut, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: CalcOutAmtGivenInResponseAminoMsg): CalcOutAmtGivenInResponse {
     return CalcOutAmtGivenInResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: CalcOutAmtGivenInResponse): CalcOutAmtGivenInResponseAminoMsg {
+  toAminoMsg(message: CalcOutAmtGivenInResponse, useInterfaces: boolean = false): CalcOutAmtGivenInResponseAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/calc-out-amt-given-in-response",
-      value: CalcOutAmtGivenInResponse.toAmino(message)
+      value: CalcOutAmtGivenInResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CalcOutAmtGivenInResponseProtoMsg): CalcOutAmtGivenInResponse {
-    return CalcOutAmtGivenInResponse.decode(message.value);
+  fromProtoMsg(message: CalcOutAmtGivenInResponseProtoMsg, useInterfaces: boolean = false): CalcOutAmtGivenInResponse {
+    return CalcOutAmtGivenInResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CalcOutAmtGivenInResponse): Uint8Array {
     return CalcOutAmtGivenInResponse.encode(message).finish();
@@ -395,7 +395,7 @@ export const CalcInAmtGivenOut = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CalcInAmtGivenOut {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CalcInAmtGivenOut {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCalcInAmtGivenOut();
@@ -403,7 +403,7 @@ export const CalcInAmtGivenOut = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.tokenOut = Coin.decode(reader, reader.uint32());
+          message.tokenOut = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
           message.tokenInDenom = reader.string();
@@ -432,9 +432,9 @@ export const CalcInAmtGivenOut = {
       swapFee: object.swap_fee
     };
   },
-  toAmino(message: CalcInAmtGivenOut): CalcInAmtGivenOutAmino {
+  toAmino(message: CalcInAmtGivenOut, useInterfaces: boolean = false): CalcInAmtGivenOutAmino {
     const obj: any = {};
-    obj.token_out = message.tokenOut ? Coin.toAmino(message.tokenOut) : undefined;
+    obj.token_out = message.tokenOut ? Coin.toAmino(message.tokenOut, useInterfaces) : undefined;
     obj.token_in_denom = message.tokenInDenom;
     obj.swap_fee = message.swapFee;
     return obj;
@@ -442,14 +442,14 @@ export const CalcInAmtGivenOut = {
   fromAminoMsg(object: CalcInAmtGivenOutAminoMsg): CalcInAmtGivenOut {
     return CalcInAmtGivenOut.fromAmino(object.value);
   },
-  toAminoMsg(message: CalcInAmtGivenOut): CalcInAmtGivenOutAminoMsg {
+  toAminoMsg(message: CalcInAmtGivenOut, useInterfaces: boolean = false): CalcInAmtGivenOutAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/calc-in-amt-given-out",
-      value: CalcInAmtGivenOut.toAmino(message)
+      value: CalcInAmtGivenOut.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CalcInAmtGivenOutProtoMsg): CalcInAmtGivenOut {
-    return CalcInAmtGivenOut.decode(message.value);
+  fromProtoMsg(message: CalcInAmtGivenOutProtoMsg, useInterfaces: boolean = false): CalcInAmtGivenOut {
+    return CalcInAmtGivenOut.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CalcInAmtGivenOut): Uint8Array {
     return CalcInAmtGivenOut.encode(message).finish();
@@ -474,7 +474,7 @@ export const CalcInAmtGivenOutRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CalcInAmtGivenOutRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CalcInAmtGivenOutRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCalcInAmtGivenOutRequest();
@@ -482,7 +482,7 @@ export const CalcInAmtGivenOutRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.calcInAmtGivenOut = CalcInAmtGivenOut.decode(reader, reader.uint32());
+          message.calcInAmtGivenOut = CalcInAmtGivenOut.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -501,22 +501,22 @@ export const CalcInAmtGivenOutRequest = {
       calcInAmtGivenOut: object?.calc_in_amt_given_out ? CalcInAmtGivenOut.fromAmino(object.calc_in_amt_given_out) : undefined
     };
   },
-  toAmino(message: CalcInAmtGivenOutRequest): CalcInAmtGivenOutRequestAmino {
+  toAmino(message: CalcInAmtGivenOutRequest, useInterfaces: boolean = false): CalcInAmtGivenOutRequestAmino {
     const obj: any = {};
-    obj.calc_in_amt_given_out = message.calcInAmtGivenOut ? CalcInAmtGivenOut.toAmino(message.calcInAmtGivenOut) : undefined;
+    obj.calc_in_amt_given_out = message.calcInAmtGivenOut ? CalcInAmtGivenOut.toAmino(message.calcInAmtGivenOut, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: CalcInAmtGivenOutRequestAminoMsg): CalcInAmtGivenOutRequest {
     return CalcInAmtGivenOutRequest.fromAmino(object.value);
   },
-  toAminoMsg(message: CalcInAmtGivenOutRequest): CalcInAmtGivenOutRequestAminoMsg {
+  toAminoMsg(message: CalcInAmtGivenOutRequest, useInterfaces: boolean = false): CalcInAmtGivenOutRequestAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/calc-in-amt-given-out-request",
-      value: CalcInAmtGivenOutRequest.toAmino(message)
+      value: CalcInAmtGivenOutRequest.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CalcInAmtGivenOutRequestProtoMsg): CalcInAmtGivenOutRequest {
-    return CalcInAmtGivenOutRequest.decode(message.value);
+  fromProtoMsg(message: CalcInAmtGivenOutRequestProtoMsg, useInterfaces: boolean = false): CalcInAmtGivenOutRequest {
+    return CalcInAmtGivenOutRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CalcInAmtGivenOutRequest): Uint8Array {
     return CalcInAmtGivenOutRequest.encode(message).finish();
@@ -541,7 +541,7 @@ export const CalcInAmtGivenOutResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): CalcInAmtGivenOutResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): CalcInAmtGivenOutResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCalcInAmtGivenOutResponse();
@@ -549,7 +549,7 @@ export const CalcInAmtGivenOutResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.tokenIn = Coin.decode(reader, reader.uint32());
+          message.tokenIn = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -568,22 +568,22 @@ export const CalcInAmtGivenOutResponse = {
       tokenIn: object?.token_in ? Coin.fromAmino(object.token_in) : undefined
     };
   },
-  toAmino(message: CalcInAmtGivenOutResponse): CalcInAmtGivenOutResponseAmino {
+  toAmino(message: CalcInAmtGivenOutResponse, useInterfaces: boolean = false): CalcInAmtGivenOutResponseAmino {
     const obj: any = {};
-    obj.token_in = message.tokenIn ? Coin.toAmino(message.tokenIn) : undefined;
+    obj.token_in = message.tokenIn ? Coin.toAmino(message.tokenIn, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: CalcInAmtGivenOutResponseAminoMsg): CalcInAmtGivenOutResponse {
     return CalcInAmtGivenOutResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: CalcInAmtGivenOutResponse): CalcInAmtGivenOutResponseAminoMsg {
+  toAminoMsg(message: CalcInAmtGivenOutResponse, useInterfaces: boolean = false): CalcInAmtGivenOutResponseAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/calc-in-amt-given-out-response",
-      value: CalcInAmtGivenOutResponse.toAmino(message)
+      value: CalcInAmtGivenOutResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: CalcInAmtGivenOutResponseProtoMsg): CalcInAmtGivenOutResponse {
-    return CalcInAmtGivenOutResponse.decode(message.value);
+  fromProtoMsg(message: CalcInAmtGivenOutResponseProtoMsg, useInterfaces: boolean = false): CalcInAmtGivenOutResponse {
+    return CalcInAmtGivenOutResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: CalcInAmtGivenOutResponse): Uint8Array {
     return CalcInAmtGivenOutResponse.encode(message).finish();

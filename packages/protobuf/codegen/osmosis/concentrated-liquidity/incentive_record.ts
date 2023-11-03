@@ -88,7 +88,7 @@ export interface IncentiveRecordBodyAmino {
   /** emission_rate is the incentive emission rate per second */
   emission_rate: string;
   /** start_time is the time when the incentive starts distributing */
-  start_time?: Date | undefined;
+  start_time?: string | undefined;
 }
 export interface IncentiveRecordBodyAminoMsg {
   type: "osmosis/concentratedliquidity/incentive-record-body";
@@ -128,7 +128,7 @@ export const IncentiveRecord = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): IncentiveRecord {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): IncentiveRecord {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIncentiveRecord();
@@ -142,10 +142,10 @@ export const IncentiveRecord = {
           message.poolId = reader.uint64();
           break;
         case 4:
-          message.incentiveRecordBody = IncentiveRecordBody.decode(reader, reader.uint32());
+          message.incentiveRecordBody = IncentiveRecordBody.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 5:
-          message.minUptime = Duration.decode(reader, reader.uint32());
+          message.minUptime = Duration.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -170,25 +170,25 @@ export const IncentiveRecord = {
       minUptime: object?.min_uptime ? Duration.fromAmino(object.min_uptime) : undefined
     };
   },
-  toAmino(message: IncentiveRecord): IncentiveRecordAmino {
+  toAmino(message: IncentiveRecord, useInterfaces: boolean = false): IncentiveRecordAmino {
     const obj: any = {};
     obj.incentive_id = message.incentiveId ? message.incentiveId.toString() : undefined;
     obj.pool_id = message.poolId ? message.poolId.toString() : undefined;
-    obj.incentive_record_body = message.incentiveRecordBody ? IncentiveRecordBody.toAmino(message.incentiveRecordBody) : undefined;
-    obj.min_uptime = message.minUptime ? Duration.toAmino(message.minUptime) : undefined;
+    obj.incentive_record_body = message.incentiveRecordBody ? IncentiveRecordBody.toAmino(message.incentiveRecordBody, useInterfaces) : undefined;
+    obj.min_uptime = message.minUptime ? Duration.toAmino(message.minUptime, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: IncentiveRecordAminoMsg): IncentiveRecord {
     return IncentiveRecord.fromAmino(object.value);
   },
-  toAminoMsg(message: IncentiveRecord): IncentiveRecordAminoMsg {
+  toAminoMsg(message: IncentiveRecord, useInterfaces: boolean = false): IncentiveRecordAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/incentive-record",
-      value: IncentiveRecord.toAmino(message)
+      value: IncentiveRecord.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: IncentiveRecordProtoMsg): IncentiveRecord {
-    return IncentiveRecord.decode(message.value);
+  fromProtoMsg(message: IncentiveRecordProtoMsg, useInterfaces: boolean = false): IncentiveRecord {
+    return IncentiveRecord.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: IncentiveRecord): Uint8Array {
     return IncentiveRecord.encode(message).finish();
@@ -221,7 +221,7 @@ export const IncentiveRecordBody = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): IncentiveRecordBody {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): IncentiveRecordBody {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIncentiveRecordBody();
@@ -229,7 +229,7 @@ export const IncentiveRecordBody = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.remainingCoin = DecCoin.decode(reader, reader.uint32());
+          message.remainingCoin = DecCoin.decode(reader, reader.uint32(), useInterfaces);
           break;
         case 2:
           message.emissionRate = Decimal.fromAtomics(reader.string(), 18).toString();
@@ -255,27 +255,27 @@ export const IncentiveRecordBody = {
     return {
       remainingCoin: object?.remaining_coin ? DecCoin.fromAmino(object.remaining_coin) : undefined,
       emissionRate: object.emission_rate,
-      startTime: object.start_time
+      startTime: object?.start_time ? fromTimestamp(Timestamp.fromAmino(object.start_time)) : undefined
     };
   },
-  toAmino(message: IncentiveRecordBody): IncentiveRecordBodyAmino {
+  toAmino(message: IncentiveRecordBody, useInterfaces: boolean = false): IncentiveRecordBodyAmino {
     const obj: any = {};
-    obj.remaining_coin = message.remainingCoin ? DecCoin.toAmino(message.remainingCoin) : undefined;
+    obj.remaining_coin = message.remainingCoin ? DecCoin.toAmino(message.remainingCoin, useInterfaces) : undefined;
     obj.emission_rate = message.emissionRate;
-    obj.start_time = message.startTime;
+    obj.start_time = message.startTime ? Timestamp.toAmino(toTimestamp(message.startTime)) : undefined;
     return obj;
   },
   fromAminoMsg(object: IncentiveRecordBodyAminoMsg): IncentiveRecordBody {
     return IncentiveRecordBody.fromAmino(object.value);
   },
-  toAminoMsg(message: IncentiveRecordBody): IncentiveRecordBodyAminoMsg {
+  toAminoMsg(message: IncentiveRecordBody, useInterfaces: boolean = false): IncentiveRecordBodyAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/incentive-record-body",
-      value: IncentiveRecordBody.toAmino(message)
+      value: IncentiveRecordBody.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: IncentiveRecordBodyProtoMsg): IncentiveRecordBody {
-    return IncentiveRecordBody.decode(message.value);
+  fromProtoMsg(message: IncentiveRecordBodyProtoMsg, useInterfaces: boolean = false): IncentiveRecordBody {
+    return IncentiveRecordBody.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: IncentiveRecordBody): Uint8Array {
     return IncentiveRecordBody.encode(message).finish();

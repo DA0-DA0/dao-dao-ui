@@ -288,7 +288,7 @@ export const MsgSetValidatorSetPreference = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetValidatorSetPreference {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetValidatorSetPreference {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetValidatorSetPreference();
@@ -299,7 +299,7 @@ export const MsgSetValidatorSetPreference = {
           message.delegator = reader.string();
           break;
         case 2:
-          message.preferences.push(ValidatorPreference.decode(reader, reader.uint32()));
+          message.preferences.push(ValidatorPreference.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -320,11 +320,11 @@ export const MsgSetValidatorSetPreference = {
       preferences: Array.isArray(object?.preferences) ? object.preferences.map((e: any) => ValidatorPreference.fromAmino(e)) : []
     };
   },
-  toAmino(message: MsgSetValidatorSetPreference): MsgSetValidatorSetPreferenceAmino {
+  toAmino(message: MsgSetValidatorSetPreference, useInterfaces: boolean = false): MsgSetValidatorSetPreferenceAmino {
     const obj: any = {};
     obj.delegator = message.delegator;
     if (message.preferences) {
-      obj.preferences = message.preferences.map(e => e ? ValidatorPreference.toAmino(e) : undefined);
+      obj.preferences = message.preferences.map(e => e ? ValidatorPreference.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.preferences = [];
     }
@@ -333,14 +333,14 @@ export const MsgSetValidatorSetPreference = {
   fromAminoMsg(object: MsgSetValidatorSetPreferenceAminoMsg): MsgSetValidatorSetPreference {
     return MsgSetValidatorSetPreference.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetValidatorSetPreference): MsgSetValidatorSetPreferenceAminoMsg {
+  toAminoMsg(message: MsgSetValidatorSetPreference, useInterfaces: boolean = false): MsgSetValidatorSetPreferenceAminoMsg {
     return {
       type: "osmosis/MsgSetValidatorSetPreference",
-      value: MsgSetValidatorSetPreference.toAmino(message)
+      value: MsgSetValidatorSetPreference.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetValidatorSetPreferenceProtoMsg): MsgSetValidatorSetPreference {
-    return MsgSetValidatorSetPreference.decode(message.value);
+  fromProtoMsg(message: MsgSetValidatorSetPreferenceProtoMsg, useInterfaces: boolean = false): MsgSetValidatorSetPreference {
+    return MsgSetValidatorSetPreference.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetValidatorSetPreference): Uint8Array {
     return MsgSetValidatorSetPreference.encode(message).finish();
@@ -360,7 +360,7 @@ export const MsgSetValidatorSetPreferenceResponse = {
   encode(_: MsgSetValidatorSetPreferenceResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgSetValidatorSetPreferenceResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgSetValidatorSetPreferenceResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSetValidatorSetPreferenceResponse();
@@ -381,21 +381,21 @@ export const MsgSetValidatorSetPreferenceResponse = {
   fromAmino(_: MsgSetValidatorSetPreferenceResponseAmino): MsgSetValidatorSetPreferenceResponse {
     return {};
   },
-  toAmino(_: MsgSetValidatorSetPreferenceResponse): MsgSetValidatorSetPreferenceResponseAmino {
+  toAmino(_: MsgSetValidatorSetPreferenceResponse, useInterfaces: boolean = false): MsgSetValidatorSetPreferenceResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgSetValidatorSetPreferenceResponseAminoMsg): MsgSetValidatorSetPreferenceResponse {
     return MsgSetValidatorSetPreferenceResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgSetValidatorSetPreferenceResponse): MsgSetValidatorSetPreferenceResponseAminoMsg {
+  toAminoMsg(message: MsgSetValidatorSetPreferenceResponse, useInterfaces: boolean = false): MsgSetValidatorSetPreferenceResponseAminoMsg {
     return {
       type: "osmosis/valsetpref/set-validator-set-preference-response",
-      value: MsgSetValidatorSetPreferenceResponse.toAmino(message)
+      value: MsgSetValidatorSetPreferenceResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgSetValidatorSetPreferenceResponseProtoMsg): MsgSetValidatorSetPreferenceResponse {
-    return MsgSetValidatorSetPreferenceResponse.decode(message.value);
+  fromProtoMsg(message: MsgSetValidatorSetPreferenceResponseProtoMsg, useInterfaces: boolean = false): MsgSetValidatorSetPreferenceResponse {
+    return MsgSetValidatorSetPreferenceResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgSetValidatorSetPreferenceResponse): Uint8Array {
     return MsgSetValidatorSetPreferenceResponse.encode(message).finish();
@@ -424,7 +424,7 @@ export const MsgDelegateToValidatorSet = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgDelegateToValidatorSet {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgDelegateToValidatorSet {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDelegateToValidatorSet();
@@ -435,7 +435,7 @@ export const MsgDelegateToValidatorSet = {
           message.delegator = reader.string();
           break;
         case 2:
-          message.coin = Coin.decode(reader, reader.uint32());
+          message.coin = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -456,23 +456,23 @@ export const MsgDelegateToValidatorSet = {
       coin: object?.coin ? Coin.fromAmino(object.coin) : undefined
     };
   },
-  toAmino(message: MsgDelegateToValidatorSet): MsgDelegateToValidatorSetAmino {
+  toAmino(message: MsgDelegateToValidatorSet, useInterfaces: boolean = false): MsgDelegateToValidatorSetAmino {
     const obj: any = {};
     obj.delegator = message.delegator;
-    obj.coin = message.coin ? Coin.toAmino(message.coin) : undefined;
+    obj.coin = message.coin ? Coin.toAmino(message.coin, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgDelegateToValidatorSetAminoMsg): MsgDelegateToValidatorSet {
     return MsgDelegateToValidatorSet.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgDelegateToValidatorSet): MsgDelegateToValidatorSetAminoMsg {
+  toAminoMsg(message: MsgDelegateToValidatorSet, useInterfaces: boolean = false): MsgDelegateToValidatorSetAminoMsg {
     return {
       type: "osmosis/MsgDelegateToValidatorSet",
-      value: MsgDelegateToValidatorSet.toAmino(message)
+      value: MsgDelegateToValidatorSet.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgDelegateToValidatorSetProtoMsg): MsgDelegateToValidatorSet {
-    return MsgDelegateToValidatorSet.decode(message.value);
+  fromProtoMsg(message: MsgDelegateToValidatorSetProtoMsg, useInterfaces: boolean = false): MsgDelegateToValidatorSet {
+    return MsgDelegateToValidatorSet.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgDelegateToValidatorSet): Uint8Array {
     return MsgDelegateToValidatorSet.encode(message).finish();
@@ -492,7 +492,7 @@ export const MsgDelegateToValidatorSetResponse = {
   encode(_: MsgDelegateToValidatorSetResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgDelegateToValidatorSetResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgDelegateToValidatorSetResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDelegateToValidatorSetResponse();
@@ -513,21 +513,21 @@ export const MsgDelegateToValidatorSetResponse = {
   fromAmino(_: MsgDelegateToValidatorSetResponseAmino): MsgDelegateToValidatorSetResponse {
     return {};
   },
-  toAmino(_: MsgDelegateToValidatorSetResponse): MsgDelegateToValidatorSetResponseAmino {
+  toAmino(_: MsgDelegateToValidatorSetResponse, useInterfaces: boolean = false): MsgDelegateToValidatorSetResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgDelegateToValidatorSetResponseAminoMsg): MsgDelegateToValidatorSetResponse {
     return MsgDelegateToValidatorSetResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgDelegateToValidatorSetResponse): MsgDelegateToValidatorSetResponseAminoMsg {
+  toAminoMsg(message: MsgDelegateToValidatorSetResponse, useInterfaces: boolean = false): MsgDelegateToValidatorSetResponseAminoMsg {
     return {
       type: "osmosis/valsetpref/delegate-to-validator-set-response",
-      value: MsgDelegateToValidatorSetResponse.toAmino(message)
+      value: MsgDelegateToValidatorSetResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgDelegateToValidatorSetResponseProtoMsg): MsgDelegateToValidatorSetResponse {
-    return MsgDelegateToValidatorSetResponse.decode(message.value);
+  fromProtoMsg(message: MsgDelegateToValidatorSetResponseProtoMsg, useInterfaces: boolean = false): MsgDelegateToValidatorSetResponse {
+    return MsgDelegateToValidatorSetResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgDelegateToValidatorSetResponse): Uint8Array {
     return MsgDelegateToValidatorSetResponse.encode(message).finish();
@@ -556,7 +556,7 @@ export const MsgUndelegateFromValidatorSet = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgUndelegateFromValidatorSet {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgUndelegateFromValidatorSet {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUndelegateFromValidatorSet();
@@ -567,7 +567,7 @@ export const MsgUndelegateFromValidatorSet = {
           message.delegator = reader.string();
           break;
         case 3:
-          message.coin = Coin.decode(reader, reader.uint32());
+          message.coin = Coin.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -588,23 +588,23 @@ export const MsgUndelegateFromValidatorSet = {
       coin: object?.coin ? Coin.fromAmino(object.coin) : undefined
     };
   },
-  toAmino(message: MsgUndelegateFromValidatorSet): MsgUndelegateFromValidatorSetAmino {
+  toAmino(message: MsgUndelegateFromValidatorSet, useInterfaces: boolean = false): MsgUndelegateFromValidatorSetAmino {
     const obj: any = {};
     obj.delegator = message.delegator;
-    obj.coin = message.coin ? Coin.toAmino(message.coin) : undefined;
+    obj.coin = message.coin ? Coin.toAmino(message.coin, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgUndelegateFromValidatorSetAminoMsg): MsgUndelegateFromValidatorSet {
     return MsgUndelegateFromValidatorSet.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgUndelegateFromValidatorSet): MsgUndelegateFromValidatorSetAminoMsg {
+  toAminoMsg(message: MsgUndelegateFromValidatorSet, useInterfaces: boolean = false): MsgUndelegateFromValidatorSetAminoMsg {
     return {
       type: "osmosis/MsgUndelegateFromValidatorSet",
-      value: MsgUndelegateFromValidatorSet.toAmino(message)
+      value: MsgUndelegateFromValidatorSet.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgUndelegateFromValidatorSetProtoMsg): MsgUndelegateFromValidatorSet {
-    return MsgUndelegateFromValidatorSet.decode(message.value);
+  fromProtoMsg(message: MsgUndelegateFromValidatorSetProtoMsg, useInterfaces: boolean = false): MsgUndelegateFromValidatorSet {
+    return MsgUndelegateFromValidatorSet.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgUndelegateFromValidatorSet): Uint8Array {
     return MsgUndelegateFromValidatorSet.encode(message).finish();
@@ -624,7 +624,7 @@ export const MsgUndelegateFromValidatorSetResponse = {
   encode(_: MsgUndelegateFromValidatorSetResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgUndelegateFromValidatorSetResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgUndelegateFromValidatorSetResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgUndelegateFromValidatorSetResponse();
@@ -645,21 +645,21 @@ export const MsgUndelegateFromValidatorSetResponse = {
   fromAmino(_: MsgUndelegateFromValidatorSetResponseAmino): MsgUndelegateFromValidatorSetResponse {
     return {};
   },
-  toAmino(_: MsgUndelegateFromValidatorSetResponse): MsgUndelegateFromValidatorSetResponseAmino {
+  toAmino(_: MsgUndelegateFromValidatorSetResponse, useInterfaces: boolean = false): MsgUndelegateFromValidatorSetResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgUndelegateFromValidatorSetResponseAminoMsg): MsgUndelegateFromValidatorSetResponse {
     return MsgUndelegateFromValidatorSetResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgUndelegateFromValidatorSetResponse): MsgUndelegateFromValidatorSetResponseAminoMsg {
+  toAminoMsg(message: MsgUndelegateFromValidatorSetResponse, useInterfaces: boolean = false): MsgUndelegateFromValidatorSetResponseAminoMsg {
     return {
       type: "osmosis/valsetpref/undelegate-from-validator-set-response",
-      value: MsgUndelegateFromValidatorSetResponse.toAmino(message)
+      value: MsgUndelegateFromValidatorSetResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgUndelegateFromValidatorSetResponseProtoMsg): MsgUndelegateFromValidatorSetResponse {
-    return MsgUndelegateFromValidatorSetResponse.decode(message.value);
+  fromProtoMsg(message: MsgUndelegateFromValidatorSetResponseProtoMsg, useInterfaces: boolean = false): MsgUndelegateFromValidatorSetResponse {
+    return MsgUndelegateFromValidatorSetResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgUndelegateFromValidatorSetResponse): Uint8Array {
     return MsgUndelegateFromValidatorSetResponse.encode(message).finish();
@@ -688,7 +688,7 @@ export const MsgRedelegateValidatorSet = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgRedelegateValidatorSet {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgRedelegateValidatorSet {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRedelegateValidatorSet();
@@ -699,7 +699,7 @@ export const MsgRedelegateValidatorSet = {
           message.delegator = reader.string();
           break;
         case 2:
-          message.preferences.push(ValidatorPreference.decode(reader, reader.uint32()));
+          message.preferences.push(ValidatorPreference.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -720,11 +720,11 @@ export const MsgRedelegateValidatorSet = {
       preferences: Array.isArray(object?.preferences) ? object.preferences.map((e: any) => ValidatorPreference.fromAmino(e)) : []
     };
   },
-  toAmino(message: MsgRedelegateValidatorSet): MsgRedelegateValidatorSetAmino {
+  toAmino(message: MsgRedelegateValidatorSet, useInterfaces: boolean = false): MsgRedelegateValidatorSetAmino {
     const obj: any = {};
     obj.delegator = message.delegator;
     if (message.preferences) {
-      obj.preferences = message.preferences.map(e => e ? ValidatorPreference.toAmino(e) : undefined);
+      obj.preferences = message.preferences.map(e => e ? ValidatorPreference.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.preferences = [];
     }
@@ -733,14 +733,14 @@ export const MsgRedelegateValidatorSet = {
   fromAminoMsg(object: MsgRedelegateValidatorSetAminoMsg): MsgRedelegateValidatorSet {
     return MsgRedelegateValidatorSet.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgRedelegateValidatorSet): MsgRedelegateValidatorSetAminoMsg {
+  toAminoMsg(message: MsgRedelegateValidatorSet, useInterfaces: boolean = false): MsgRedelegateValidatorSetAminoMsg {
     return {
       type: "osmosis/MsgRedelegateValidatorSet",
-      value: MsgRedelegateValidatorSet.toAmino(message)
+      value: MsgRedelegateValidatorSet.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgRedelegateValidatorSetProtoMsg): MsgRedelegateValidatorSet {
-    return MsgRedelegateValidatorSet.decode(message.value);
+  fromProtoMsg(message: MsgRedelegateValidatorSetProtoMsg, useInterfaces: boolean = false): MsgRedelegateValidatorSet {
+    return MsgRedelegateValidatorSet.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgRedelegateValidatorSet): Uint8Array {
     return MsgRedelegateValidatorSet.encode(message).finish();
@@ -760,7 +760,7 @@ export const MsgRedelegateValidatorSetResponse = {
   encode(_: MsgRedelegateValidatorSetResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgRedelegateValidatorSetResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgRedelegateValidatorSetResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgRedelegateValidatorSetResponse();
@@ -781,21 +781,21 @@ export const MsgRedelegateValidatorSetResponse = {
   fromAmino(_: MsgRedelegateValidatorSetResponseAmino): MsgRedelegateValidatorSetResponse {
     return {};
   },
-  toAmino(_: MsgRedelegateValidatorSetResponse): MsgRedelegateValidatorSetResponseAmino {
+  toAmino(_: MsgRedelegateValidatorSetResponse, useInterfaces: boolean = false): MsgRedelegateValidatorSetResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgRedelegateValidatorSetResponseAminoMsg): MsgRedelegateValidatorSetResponse {
     return MsgRedelegateValidatorSetResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgRedelegateValidatorSetResponse): MsgRedelegateValidatorSetResponseAminoMsg {
+  toAminoMsg(message: MsgRedelegateValidatorSetResponse, useInterfaces: boolean = false): MsgRedelegateValidatorSetResponseAminoMsg {
     return {
       type: "osmosis/valsetpref/redelegate-validator-set-response",
-      value: MsgRedelegateValidatorSetResponse.toAmino(message)
+      value: MsgRedelegateValidatorSetResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgRedelegateValidatorSetResponseProtoMsg): MsgRedelegateValidatorSetResponse {
-    return MsgRedelegateValidatorSetResponse.decode(message.value);
+  fromProtoMsg(message: MsgRedelegateValidatorSetResponseProtoMsg, useInterfaces: boolean = false): MsgRedelegateValidatorSetResponse {
+    return MsgRedelegateValidatorSetResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgRedelegateValidatorSetResponse): Uint8Array {
     return MsgRedelegateValidatorSetResponse.encode(message).finish();
@@ -820,7 +820,7 @@ export const MsgWithdrawDelegationRewards = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgWithdrawDelegationRewards {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgWithdrawDelegationRewards {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgWithdrawDelegationRewards();
@@ -847,7 +847,7 @@ export const MsgWithdrawDelegationRewards = {
       delegator: object.delegator
     };
   },
-  toAmino(message: MsgWithdrawDelegationRewards): MsgWithdrawDelegationRewardsAmino {
+  toAmino(message: MsgWithdrawDelegationRewards, useInterfaces: boolean = false): MsgWithdrawDelegationRewardsAmino {
     const obj: any = {};
     obj.delegator = message.delegator;
     return obj;
@@ -855,14 +855,14 @@ export const MsgWithdrawDelegationRewards = {
   fromAminoMsg(object: MsgWithdrawDelegationRewardsAminoMsg): MsgWithdrawDelegationRewards {
     return MsgWithdrawDelegationRewards.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgWithdrawDelegationRewards): MsgWithdrawDelegationRewardsAminoMsg {
+  toAminoMsg(message: MsgWithdrawDelegationRewards, useInterfaces: boolean = false): MsgWithdrawDelegationRewardsAminoMsg {
     return {
       type: "osmosis/MsgWithdrawDelegationRewards",
-      value: MsgWithdrawDelegationRewards.toAmino(message)
+      value: MsgWithdrawDelegationRewards.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgWithdrawDelegationRewardsProtoMsg): MsgWithdrawDelegationRewards {
-    return MsgWithdrawDelegationRewards.decode(message.value);
+  fromProtoMsg(message: MsgWithdrawDelegationRewardsProtoMsg, useInterfaces: boolean = false): MsgWithdrawDelegationRewards {
+    return MsgWithdrawDelegationRewards.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgWithdrawDelegationRewards): Uint8Array {
     return MsgWithdrawDelegationRewards.encode(message).finish();
@@ -882,7 +882,7 @@ export const MsgWithdrawDelegationRewardsResponse = {
   encode(_: MsgWithdrawDelegationRewardsResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgWithdrawDelegationRewardsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgWithdrawDelegationRewardsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgWithdrawDelegationRewardsResponse();
@@ -903,21 +903,21 @@ export const MsgWithdrawDelegationRewardsResponse = {
   fromAmino(_: MsgWithdrawDelegationRewardsResponseAmino): MsgWithdrawDelegationRewardsResponse {
     return {};
   },
-  toAmino(_: MsgWithdrawDelegationRewardsResponse): MsgWithdrawDelegationRewardsResponseAmino {
+  toAmino(_: MsgWithdrawDelegationRewardsResponse, useInterfaces: boolean = false): MsgWithdrawDelegationRewardsResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgWithdrawDelegationRewardsResponseAminoMsg): MsgWithdrawDelegationRewardsResponse {
     return MsgWithdrawDelegationRewardsResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgWithdrawDelegationRewardsResponse): MsgWithdrawDelegationRewardsResponseAminoMsg {
+  toAminoMsg(message: MsgWithdrawDelegationRewardsResponse, useInterfaces: boolean = false): MsgWithdrawDelegationRewardsResponseAminoMsg {
     return {
       type: "osmosis/valsetpref/withdraw-delegation-rewards-response",
-      value: MsgWithdrawDelegationRewardsResponse.toAmino(message)
+      value: MsgWithdrawDelegationRewardsResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgWithdrawDelegationRewardsResponseProtoMsg): MsgWithdrawDelegationRewardsResponse {
-    return MsgWithdrawDelegationRewardsResponse.decode(message.value);
+  fromProtoMsg(message: MsgWithdrawDelegationRewardsResponseProtoMsg, useInterfaces: boolean = false): MsgWithdrawDelegationRewardsResponse {
+    return MsgWithdrawDelegationRewardsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgWithdrawDelegationRewardsResponse): Uint8Array {
     return MsgWithdrawDelegationRewardsResponse.encode(message).finish();
@@ -946,7 +946,7 @@ export const MsgDelegateBondedTokens = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgDelegateBondedTokens {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgDelegateBondedTokens {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDelegateBondedTokens();
@@ -978,7 +978,7 @@ export const MsgDelegateBondedTokens = {
       lockID: BigInt(object.lockID)
     };
   },
-  toAmino(message: MsgDelegateBondedTokens): MsgDelegateBondedTokensAmino {
+  toAmino(message: MsgDelegateBondedTokens, useInterfaces: boolean = false): MsgDelegateBondedTokensAmino {
     const obj: any = {};
     obj.delegator = message.delegator;
     obj.lockID = message.lockID ? message.lockID.toString() : undefined;
@@ -987,14 +987,14 @@ export const MsgDelegateBondedTokens = {
   fromAminoMsg(object: MsgDelegateBondedTokensAminoMsg): MsgDelegateBondedTokens {
     return MsgDelegateBondedTokens.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgDelegateBondedTokens): MsgDelegateBondedTokensAminoMsg {
+  toAminoMsg(message: MsgDelegateBondedTokens, useInterfaces: boolean = false): MsgDelegateBondedTokensAminoMsg {
     return {
       type: "osmosis/valsetpref/delegate-bonded-tokens",
-      value: MsgDelegateBondedTokens.toAmino(message)
+      value: MsgDelegateBondedTokens.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgDelegateBondedTokensProtoMsg): MsgDelegateBondedTokens {
-    return MsgDelegateBondedTokens.decode(message.value);
+  fromProtoMsg(message: MsgDelegateBondedTokensProtoMsg, useInterfaces: boolean = false): MsgDelegateBondedTokens {
+    return MsgDelegateBondedTokens.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgDelegateBondedTokens): Uint8Array {
     return MsgDelegateBondedTokens.encode(message).finish();
@@ -1014,7 +1014,7 @@ export const MsgDelegateBondedTokensResponse = {
   encode(_: MsgDelegateBondedTokensResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): MsgDelegateBondedTokensResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): MsgDelegateBondedTokensResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgDelegateBondedTokensResponse();
@@ -1035,21 +1035,21 @@ export const MsgDelegateBondedTokensResponse = {
   fromAmino(_: MsgDelegateBondedTokensResponseAmino): MsgDelegateBondedTokensResponse {
     return {};
   },
-  toAmino(_: MsgDelegateBondedTokensResponse): MsgDelegateBondedTokensResponseAmino {
+  toAmino(_: MsgDelegateBondedTokensResponse, useInterfaces: boolean = false): MsgDelegateBondedTokensResponseAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: MsgDelegateBondedTokensResponseAminoMsg): MsgDelegateBondedTokensResponse {
     return MsgDelegateBondedTokensResponse.fromAmino(object.value);
   },
-  toAminoMsg(message: MsgDelegateBondedTokensResponse): MsgDelegateBondedTokensResponseAminoMsg {
+  toAminoMsg(message: MsgDelegateBondedTokensResponse, useInterfaces: boolean = false): MsgDelegateBondedTokensResponseAminoMsg {
     return {
       type: "osmosis/valsetpref/delegate-bonded-tokens-response",
-      value: MsgDelegateBondedTokensResponse.toAmino(message)
+      value: MsgDelegateBondedTokensResponse.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: MsgDelegateBondedTokensResponseProtoMsg): MsgDelegateBondedTokensResponse {
-    return MsgDelegateBondedTokensResponse.decode(message.value);
+  fromProtoMsg(message: MsgDelegateBondedTokensResponseProtoMsg, useInterfaces: boolean = false): MsgDelegateBondedTokensResponse {
+    return MsgDelegateBondedTokensResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: MsgDelegateBondedTokensResponse): Uint8Array {
     return MsgDelegateBondedTokensResponse.encode(message).finish();

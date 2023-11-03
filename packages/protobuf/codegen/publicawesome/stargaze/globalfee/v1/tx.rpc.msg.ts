@@ -19,29 +19,29 @@ export class MsgClientImpl implements Msg {
     this.removeContractAuthorization = this.removeContractAuthorization.bind(this);
     this.updateParams = this.updateParams.bind(this);
   }
-  setCodeAuthorization(request: MsgSetCodeAuthorization): Promise<MsgSetCodeAuthorizationResponse> {
+  setCodeAuthorization(request: MsgSetCodeAuthorization, useInterfaces: boolean = true): Promise<MsgSetCodeAuthorizationResponse> {
     const data = MsgSetCodeAuthorization.encode(request).finish();
     const promise = this.rpc.request("publicawesome.stargaze.globalfee.v1.Msg", "SetCodeAuthorization", data);
-    return promise.then(data => MsgSetCodeAuthorizationResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSetCodeAuthorizationResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  removeCodeAuthorization(request: MsgRemoveCodeAuthorization): Promise<MsgRemoveCodeAuthorizationResponse> {
+  removeCodeAuthorization(request: MsgRemoveCodeAuthorization, useInterfaces: boolean = true): Promise<MsgRemoveCodeAuthorizationResponse> {
     const data = MsgRemoveCodeAuthorization.encode(request).finish();
     const promise = this.rpc.request("publicawesome.stargaze.globalfee.v1.Msg", "RemoveCodeAuthorization", data);
-    return promise.then(data => MsgRemoveCodeAuthorizationResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgRemoveCodeAuthorizationResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  setContractAuthorization(request: MsgSetContractAuthorization): Promise<MsgSetContractAuthorizationResponse> {
+  setContractAuthorization(request: MsgSetContractAuthorization, useInterfaces: boolean = true): Promise<MsgSetContractAuthorizationResponse> {
     const data = MsgSetContractAuthorization.encode(request).finish();
     const promise = this.rpc.request("publicawesome.stargaze.globalfee.v1.Msg", "SetContractAuthorization", data);
-    return promise.then(data => MsgSetContractAuthorizationResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSetContractAuthorizationResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  removeContractAuthorization(request: MsgRemoveContractAuthorization): Promise<MsgRemoveContractAuthorizationResponse> {
+  removeContractAuthorization(request: MsgRemoveContractAuthorization, useInterfaces: boolean = true): Promise<MsgRemoveContractAuthorizationResponse> {
     const data = MsgRemoveContractAuthorization.encode(request).finish();
     const promise = this.rpc.request("publicawesome.stargaze.globalfee.v1.Msg", "RemoveContractAuthorization", data);
-    return promise.then(data => MsgRemoveContractAuthorizationResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgRemoveContractAuthorizationResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  updateParams(request: MsgUpdateParams): Promise<MsgUpdateParamsResponse> {
+  updateParams(request: MsgUpdateParams, useInterfaces: boolean = true): Promise<MsgUpdateParamsResponse> {
     const data = MsgUpdateParams.encode(request).finish();
     const promise = this.rpc.request("publicawesome.stargaze.globalfee.v1.Msg", "UpdateParams", data);
-    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgUpdateParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

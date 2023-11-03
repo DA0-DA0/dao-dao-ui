@@ -76,124 +76,124 @@ export class QueryClientImpl implements Query {
     this.nextSequenceReceive = this.nextSequenceReceive.bind(this);
     this.nextSequenceSend = this.nextSequenceSend.bind(this);
   }
-  channel(request: QueryChannelRequest): Promise<QueryChannelResponse> {
+  channel(request: QueryChannelRequest, useInterfaces: boolean = true): Promise<QueryChannelResponse> {
     const data = QueryChannelRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "Channel", data);
-    return promise.then(data => QueryChannelResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryChannelResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   channels(request: QueryChannelsRequest = {
     pagination: undefined
-  }): Promise<QueryChannelsResponse> {
+  }, useInterfaces: boolean = true): Promise<QueryChannelsResponse> {
     const data = QueryChannelsRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "Channels", data);
-    return promise.then(data => QueryChannelsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryChannelsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  connectionChannels(request: QueryConnectionChannelsRequest): Promise<QueryConnectionChannelsResponse> {
+  connectionChannels(request: QueryConnectionChannelsRequest, useInterfaces: boolean = true): Promise<QueryConnectionChannelsResponse> {
     const data = QueryConnectionChannelsRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "ConnectionChannels", data);
-    return promise.then(data => QueryConnectionChannelsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryConnectionChannelsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  channelClientState(request: QueryChannelClientStateRequest): Promise<QueryChannelClientStateResponse> {
+  channelClientState(request: QueryChannelClientStateRequest, useInterfaces: boolean = true): Promise<QueryChannelClientStateResponse> {
     const data = QueryChannelClientStateRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "ChannelClientState", data);
-    return promise.then(data => QueryChannelClientStateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryChannelClientStateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  channelConsensusState(request: QueryChannelConsensusStateRequest): Promise<QueryChannelConsensusStateResponse> {
+  channelConsensusState(request: QueryChannelConsensusStateRequest, useInterfaces: boolean = true): Promise<QueryChannelConsensusStateResponse> {
     const data = QueryChannelConsensusStateRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "ChannelConsensusState", data);
-    return promise.then(data => QueryChannelConsensusStateResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryChannelConsensusStateResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  packetCommitment(request: QueryPacketCommitmentRequest): Promise<QueryPacketCommitmentResponse> {
+  packetCommitment(request: QueryPacketCommitmentRequest, useInterfaces: boolean = true): Promise<QueryPacketCommitmentResponse> {
     const data = QueryPacketCommitmentRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "PacketCommitment", data);
-    return promise.then(data => QueryPacketCommitmentResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryPacketCommitmentResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  packetCommitments(request: QueryPacketCommitmentsRequest): Promise<QueryPacketCommitmentsResponse> {
+  packetCommitments(request: QueryPacketCommitmentsRequest, useInterfaces: boolean = true): Promise<QueryPacketCommitmentsResponse> {
     const data = QueryPacketCommitmentsRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "PacketCommitments", data);
-    return promise.then(data => QueryPacketCommitmentsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryPacketCommitmentsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  packetReceipt(request: QueryPacketReceiptRequest): Promise<QueryPacketReceiptResponse> {
+  packetReceipt(request: QueryPacketReceiptRequest, useInterfaces: boolean = true): Promise<QueryPacketReceiptResponse> {
     const data = QueryPacketReceiptRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "PacketReceipt", data);
-    return promise.then(data => QueryPacketReceiptResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryPacketReceiptResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  packetAcknowledgement(request: QueryPacketAcknowledgementRequest): Promise<QueryPacketAcknowledgementResponse> {
+  packetAcknowledgement(request: QueryPacketAcknowledgementRequest, useInterfaces: boolean = true): Promise<QueryPacketAcknowledgementResponse> {
     const data = QueryPacketAcknowledgementRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "PacketAcknowledgement", data);
-    return promise.then(data => QueryPacketAcknowledgementResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryPacketAcknowledgementResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  packetAcknowledgements(request: QueryPacketAcknowledgementsRequest): Promise<QueryPacketAcknowledgementsResponse> {
+  packetAcknowledgements(request: QueryPacketAcknowledgementsRequest, useInterfaces: boolean = true): Promise<QueryPacketAcknowledgementsResponse> {
     const data = QueryPacketAcknowledgementsRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "PacketAcknowledgements", data);
-    return promise.then(data => QueryPacketAcknowledgementsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryPacketAcknowledgementsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  unreceivedPackets(request: QueryUnreceivedPacketsRequest): Promise<QueryUnreceivedPacketsResponse> {
+  unreceivedPackets(request: QueryUnreceivedPacketsRequest, useInterfaces: boolean = true): Promise<QueryUnreceivedPacketsResponse> {
     const data = QueryUnreceivedPacketsRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "UnreceivedPackets", data);
-    return promise.then(data => QueryUnreceivedPacketsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryUnreceivedPacketsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  unreceivedAcks(request: QueryUnreceivedAcksRequest): Promise<QueryUnreceivedAcksResponse> {
+  unreceivedAcks(request: QueryUnreceivedAcksRequest, useInterfaces: boolean = true): Promise<QueryUnreceivedAcksResponse> {
     const data = QueryUnreceivedAcksRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "UnreceivedAcks", data);
-    return promise.then(data => QueryUnreceivedAcksResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryUnreceivedAcksResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  nextSequenceReceive(request: QueryNextSequenceReceiveRequest): Promise<QueryNextSequenceReceiveResponse> {
+  nextSequenceReceive(request: QueryNextSequenceReceiveRequest, useInterfaces: boolean = true): Promise<QueryNextSequenceReceiveResponse> {
     const data = QueryNextSequenceReceiveRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "NextSequenceReceive", data);
-    return promise.then(data => QueryNextSequenceReceiveResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryNextSequenceReceiveResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  nextSequenceSend(request: QueryNextSequenceSendRequest): Promise<QueryNextSequenceSendResponse> {
+  nextSequenceSend(request: QueryNextSequenceSendRequest, useInterfaces: boolean = true): Promise<QueryNextSequenceSendResponse> {
     const data = QueryNextSequenceSendRequest.encode(request).finish();
     const promise = this.rpc.request("ibc.core.channel.v1.Query", "NextSequenceSend", data);
-    return promise.then(data => QueryNextSequenceSendResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryNextSequenceSendResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    channel(request: QueryChannelRequest): Promise<QueryChannelResponse> {
-      return queryService.channel(request);
+    channel(request: QueryChannelRequest, useInterfaces: boolean = true): Promise<QueryChannelResponse> {
+      return queryService.channel(request, useInterfaces);
     },
-    channels(request?: QueryChannelsRequest): Promise<QueryChannelsResponse> {
-      return queryService.channels(request);
+    channels(request?: QueryChannelsRequest, useInterfaces: boolean = true): Promise<QueryChannelsResponse> {
+      return queryService.channels(request, useInterfaces);
     },
-    connectionChannels(request: QueryConnectionChannelsRequest): Promise<QueryConnectionChannelsResponse> {
-      return queryService.connectionChannels(request);
+    connectionChannels(request: QueryConnectionChannelsRequest, useInterfaces: boolean = true): Promise<QueryConnectionChannelsResponse> {
+      return queryService.connectionChannels(request, useInterfaces);
     },
-    channelClientState(request: QueryChannelClientStateRequest): Promise<QueryChannelClientStateResponse> {
-      return queryService.channelClientState(request);
+    channelClientState(request: QueryChannelClientStateRequest, useInterfaces: boolean = true): Promise<QueryChannelClientStateResponse> {
+      return queryService.channelClientState(request, useInterfaces);
     },
-    channelConsensusState(request: QueryChannelConsensusStateRequest): Promise<QueryChannelConsensusStateResponse> {
-      return queryService.channelConsensusState(request);
+    channelConsensusState(request: QueryChannelConsensusStateRequest, useInterfaces: boolean = true): Promise<QueryChannelConsensusStateResponse> {
+      return queryService.channelConsensusState(request, useInterfaces);
     },
-    packetCommitment(request: QueryPacketCommitmentRequest): Promise<QueryPacketCommitmentResponse> {
-      return queryService.packetCommitment(request);
+    packetCommitment(request: QueryPacketCommitmentRequest, useInterfaces: boolean = true): Promise<QueryPacketCommitmentResponse> {
+      return queryService.packetCommitment(request, useInterfaces);
     },
-    packetCommitments(request: QueryPacketCommitmentsRequest): Promise<QueryPacketCommitmentsResponse> {
-      return queryService.packetCommitments(request);
+    packetCommitments(request: QueryPacketCommitmentsRequest, useInterfaces: boolean = true): Promise<QueryPacketCommitmentsResponse> {
+      return queryService.packetCommitments(request, useInterfaces);
     },
-    packetReceipt(request: QueryPacketReceiptRequest): Promise<QueryPacketReceiptResponse> {
-      return queryService.packetReceipt(request);
+    packetReceipt(request: QueryPacketReceiptRequest, useInterfaces: boolean = true): Promise<QueryPacketReceiptResponse> {
+      return queryService.packetReceipt(request, useInterfaces);
     },
-    packetAcknowledgement(request: QueryPacketAcknowledgementRequest): Promise<QueryPacketAcknowledgementResponse> {
-      return queryService.packetAcknowledgement(request);
+    packetAcknowledgement(request: QueryPacketAcknowledgementRequest, useInterfaces: boolean = true): Promise<QueryPacketAcknowledgementResponse> {
+      return queryService.packetAcknowledgement(request, useInterfaces);
     },
-    packetAcknowledgements(request: QueryPacketAcknowledgementsRequest): Promise<QueryPacketAcknowledgementsResponse> {
-      return queryService.packetAcknowledgements(request);
+    packetAcknowledgements(request: QueryPacketAcknowledgementsRequest, useInterfaces: boolean = true): Promise<QueryPacketAcknowledgementsResponse> {
+      return queryService.packetAcknowledgements(request, useInterfaces);
     },
-    unreceivedPackets(request: QueryUnreceivedPacketsRequest): Promise<QueryUnreceivedPacketsResponse> {
-      return queryService.unreceivedPackets(request);
+    unreceivedPackets(request: QueryUnreceivedPacketsRequest, useInterfaces: boolean = true): Promise<QueryUnreceivedPacketsResponse> {
+      return queryService.unreceivedPackets(request, useInterfaces);
     },
-    unreceivedAcks(request: QueryUnreceivedAcksRequest): Promise<QueryUnreceivedAcksResponse> {
-      return queryService.unreceivedAcks(request);
+    unreceivedAcks(request: QueryUnreceivedAcksRequest, useInterfaces: boolean = true): Promise<QueryUnreceivedAcksResponse> {
+      return queryService.unreceivedAcks(request, useInterfaces);
     },
-    nextSequenceReceive(request: QueryNextSequenceReceiveRequest): Promise<QueryNextSequenceReceiveResponse> {
-      return queryService.nextSequenceReceive(request);
+    nextSequenceReceive(request: QueryNextSequenceReceiveRequest, useInterfaces: boolean = true): Promise<QueryNextSequenceReceiveResponse> {
+      return queryService.nextSequenceReceive(request, useInterfaces);
     },
-    nextSequenceSend(request: QueryNextSequenceSendRequest): Promise<QueryNextSequenceSendResponse> {
-      return queryService.nextSequenceSend(request);
+    nextSequenceSend(request: QueryNextSequenceSendRequest, useInterfaces: boolean = true): Promise<QueryNextSequenceSendResponse> {
+      return queryService.nextSequenceSend(request, useInterfaces);
     }
   };
 };

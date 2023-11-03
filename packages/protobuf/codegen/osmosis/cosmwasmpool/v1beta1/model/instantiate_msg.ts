@@ -40,7 +40,7 @@ export const InstantiateMsg = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): InstantiateMsg {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): InstantiateMsg {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInstantiateMsg();
@@ -67,7 +67,7 @@ export const InstantiateMsg = {
       poolAssetDenoms: Array.isArray(object?.pool_asset_denoms) ? object.pool_asset_denoms.map((e: any) => e) : []
     };
   },
-  toAmino(message: InstantiateMsg): InstantiateMsgAmino {
+  toAmino(message: InstantiateMsg, useInterfaces: boolean = false): InstantiateMsgAmino {
     const obj: any = {};
     if (message.poolAssetDenoms) {
       obj.pool_asset_denoms = message.poolAssetDenoms.map(e => e);
@@ -79,14 +79,14 @@ export const InstantiateMsg = {
   fromAminoMsg(object: InstantiateMsgAminoMsg): InstantiateMsg {
     return InstantiateMsg.fromAmino(object.value);
   },
-  toAminoMsg(message: InstantiateMsg): InstantiateMsgAminoMsg {
+  toAminoMsg(message: InstantiateMsg, useInterfaces: boolean = false): InstantiateMsgAminoMsg {
     return {
       type: "osmosis/cosmwasmpool/instantiate-msg",
-      value: InstantiateMsg.toAmino(message)
+      value: InstantiateMsg.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: InstantiateMsgProtoMsg): InstantiateMsg {
-    return InstantiateMsg.decode(message.value);
+  fromProtoMsg(message: InstantiateMsgProtoMsg, useInterfaces: boolean = false): InstantiateMsg {
+    return InstantiateMsg.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: InstantiateMsg): Uint8Array {
     return InstantiateMsg.encode(message).finish();

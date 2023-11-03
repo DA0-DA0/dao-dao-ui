@@ -26,34 +26,34 @@ export class MsgClientImpl implements Msg {
     this.forceUnlock = this.forceUnlock.bind(this);
     this.setRewardReceiverAddress = this.setRewardReceiverAddress.bind(this);
   }
-  lockTokens(request: MsgLockTokens): Promise<MsgLockTokensResponse> {
+  lockTokens(request: MsgLockTokens, useInterfaces: boolean = true): Promise<MsgLockTokensResponse> {
     const data = MsgLockTokens.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Msg", "LockTokens", data);
-    return promise.then(data => MsgLockTokensResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgLockTokensResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  beginUnlockingAll(request: MsgBeginUnlockingAll): Promise<MsgBeginUnlockingAllResponse> {
+  beginUnlockingAll(request: MsgBeginUnlockingAll, useInterfaces: boolean = true): Promise<MsgBeginUnlockingAllResponse> {
     const data = MsgBeginUnlockingAll.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Msg", "BeginUnlockingAll", data);
-    return promise.then(data => MsgBeginUnlockingAllResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgBeginUnlockingAllResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  beginUnlocking(request: MsgBeginUnlocking): Promise<MsgBeginUnlockingResponse> {
+  beginUnlocking(request: MsgBeginUnlocking, useInterfaces: boolean = true): Promise<MsgBeginUnlockingResponse> {
     const data = MsgBeginUnlocking.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Msg", "BeginUnlocking", data);
-    return promise.then(data => MsgBeginUnlockingResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgBeginUnlockingResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  extendLockup(request: MsgExtendLockup): Promise<MsgExtendLockupResponse> {
+  extendLockup(request: MsgExtendLockup, useInterfaces: boolean = true): Promise<MsgExtendLockupResponse> {
     const data = MsgExtendLockup.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Msg", "ExtendLockup", data);
-    return promise.then(data => MsgExtendLockupResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgExtendLockupResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  forceUnlock(request: MsgForceUnlock): Promise<MsgForceUnlockResponse> {
+  forceUnlock(request: MsgForceUnlock, useInterfaces: boolean = true): Promise<MsgForceUnlockResponse> {
     const data = MsgForceUnlock.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Msg", "ForceUnlock", data);
-    return promise.then(data => MsgForceUnlockResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgForceUnlockResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  setRewardReceiverAddress(request: MsgSetRewardReceiverAddress): Promise<MsgSetRewardReceiverAddressResponse> {
+  setRewardReceiverAddress(request: MsgSetRewardReceiverAddress, useInterfaces: boolean = true): Promise<MsgSetRewardReceiverAddressResponse> {
     const data = MsgSetRewardReceiverAddress.encode(request).finish();
     const promise = this.rpc.request("osmosis.lockup.Msg", "SetRewardReceiverAddress", data);
-    return promise.then(data => MsgSetRewardReceiverAddressResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSetRewardReceiverAddressResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

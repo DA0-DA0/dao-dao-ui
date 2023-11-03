@@ -96,110 +96,110 @@ export class QueryClientImpl implements Query {
     this.denomOwners = this.denomOwners.bind(this);
     this.sendEnabled = this.sendEnabled.bind(this);
   }
-  balance(request: QueryBalanceRequest): Promise<QueryBalanceResponse> {
+  balance(request: QueryBalanceRequest, useInterfaces: boolean = true): Promise<QueryBalanceResponse> {
     const data = QueryBalanceRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.bank.v1beta1.Query", "Balance", data);
-    return promise.then(data => QueryBalanceResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryBalanceResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  allBalances(request: QueryAllBalancesRequest): Promise<QueryAllBalancesResponse> {
+  allBalances(request: QueryAllBalancesRequest, useInterfaces: boolean = true): Promise<QueryAllBalancesResponse> {
     const data = QueryAllBalancesRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.bank.v1beta1.Query", "AllBalances", data);
-    return promise.then(data => QueryAllBalancesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryAllBalancesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  spendableBalances(request: QuerySpendableBalancesRequest): Promise<QuerySpendableBalancesResponse> {
+  spendableBalances(request: QuerySpendableBalancesRequest, useInterfaces: boolean = true): Promise<QuerySpendableBalancesResponse> {
     const data = QuerySpendableBalancesRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.bank.v1beta1.Query", "SpendableBalances", data);
-    return promise.then(data => QuerySpendableBalancesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QuerySpendableBalancesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  spendableBalanceByDenom(request: QuerySpendableBalanceByDenomRequest): Promise<QuerySpendableBalanceByDenomResponse> {
+  spendableBalanceByDenom(request: QuerySpendableBalanceByDenomRequest, useInterfaces: boolean = true): Promise<QuerySpendableBalanceByDenomResponse> {
     const data = QuerySpendableBalanceByDenomRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.bank.v1beta1.Query", "SpendableBalanceByDenom", data);
-    return promise.then(data => QuerySpendableBalanceByDenomResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QuerySpendableBalanceByDenomResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   totalSupply(request: QueryTotalSupplyRequest = {
     pagination: undefined
-  }): Promise<QueryTotalSupplyResponse> {
+  }, useInterfaces: boolean = true): Promise<QueryTotalSupplyResponse> {
     const data = QueryTotalSupplyRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.bank.v1beta1.Query", "TotalSupply", data);
-    return promise.then(data => QueryTotalSupplyResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryTotalSupplyResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  supplyOf(request: QuerySupplyOfRequest): Promise<QuerySupplyOfResponse> {
+  supplyOf(request: QuerySupplyOfRequest, useInterfaces: boolean = true): Promise<QuerySupplyOfResponse> {
     const data = QuerySupplyOfRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.bank.v1beta1.Query", "SupplyOf", data);
-    return promise.then(data => QuerySupplyOfResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QuerySupplyOfResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  params(request: QueryParamsRequest = {}): Promise<QueryParamsResponse> {
+  params(request: QueryParamsRequest = {}, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
     const data = QueryParamsRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.bank.v1beta1.Query", "Params", data);
-    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryParamsResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  denomMetadata(request: QueryDenomMetadataRequest): Promise<QueryDenomMetadataResponse> {
+  denomMetadata(request: QueryDenomMetadataRequest, useInterfaces: boolean = true): Promise<QueryDenomMetadataResponse> {
     const data = QueryDenomMetadataRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.bank.v1beta1.Query", "DenomMetadata", data);
-    return promise.then(data => QueryDenomMetadataResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDenomMetadataResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  denomMetadataByQueryString(request: QueryDenomMetadataByQueryStringRequest): Promise<QueryDenomMetadataByQueryStringResponse> {
+  denomMetadataByQueryString(request: QueryDenomMetadataByQueryStringRequest, useInterfaces: boolean = true): Promise<QueryDenomMetadataByQueryStringResponse> {
     const data = QueryDenomMetadataByQueryStringRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.bank.v1beta1.Query", "DenomMetadataByQueryString", data);
-    return promise.then(data => QueryDenomMetadataByQueryStringResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDenomMetadataByQueryStringResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
   denomsMetadata(request: QueryDenomsMetadataRequest = {
     pagination: undefined
-  }): Promise<QueryDenomsMetadataResponse> {
+  }, useInterfaces: boolean = true): Promise<QueryDenomsMetadataResponse> {
     const data = QueryDenomsMetadataRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.bank.v1beta1.Query", "DenomsMetadata", data);
-    return promise.then(data => QueryDenomsMetadataResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDenomsMetadataResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  denomOwners(request: QueryDenomOwnersRequest): Promise<QueryDenomOwnersResponse> {
+  denomOwners(request: QueryDenomOwnersRequest, useInterfaces: boolean = true): Promise<QueryDenomOwnersResponse> {
     const data = QueryDenomOwnersRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.bank.v1beta1.Query", "DenomOwners", data);
-    return promise.then(data => QueryDenomOwnersResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryDenomOwnersResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  sendEnabled(request: QuerySendEnabledRequest): Promise<QuerySendEnabledResponse> {
+  sendEnabled(request: QuerySendEnabledRequest, useInterfaces: boolean = true): Promise<QuerySendEnabledResponse> {
     const data = QuerySendEnabledRequest.encode(request).finish();
     const promise = this.rpc.request("cosmos.bank.v1beta1.Query", "SendEnabled", data);
-    return promise.then(data => QuerySendEnabledResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QuerySendEnabledResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    balance(request: QueryBalanceRequest): Promise<QueryBalanceResponse> {
-      return queryService.balance(request);
+    balance(request: QueryBalanceRequest, useInterfaces: boolean = true): Promise<QueryBalanceResponse> {
+      return queryService.balance(request, useInterfaces);
     },
-    allBalances(request: QueryAllBalancesRequest): Promise<QueryAllBalancesResponse> {
-      return queryService.allBalances(request);
+    allBalances(request: QueryAllBalancesRequest, useInterfaces: boolean = true): Promise<QueryAllBalancesResponse> {
+      return queryService.allBalances(request, useInterfaces);
     },
-    spendableBalances(request: QuerySpendableBalancesRequest): Promise<QuerySpendableBalancesResponse> {
-      return queryService.spendableBalances(request);
+    spendableBalances(request: QuerySpendableBalancesRequest, useInterfaces: boolean = true): Promise<QuerySpendableBalancesResponse> {
+      return queryService.spendableBalances(request, useInterfaces);
     },
-    spendableBalanceByDenom(request: QuerySpendableBalanceByDenomRequest): Promise<QuerySpendableBalanceByDenomResponse> {
-      return queryService.spendableBalanceByDenom(request);
+    spendableBalanceByDenom(request: QuerySpendableBalanceByDenomRequest, useInterfaces: boolean = true): Promise<QuerySpendableBalanceByDenomResponse> {
+      return queryService.spendableBalanceByDenom(request, useInterfaces);
     },
-    totalSupply(request?: QueryTotalSupplyRequest): Promise<QueryTotalSupplyResponse> {
-      return queryService.totalSupply(request);
+    totalSupply(request?: QueryTotalSupplyRequest, useInterfaces: boolean = true): Promise<QueryTotalSupplyResponse> {
+      return queryService.totalSupply(request, useInterfaces);
     },
-    supplyOf(request: QuerySupplyOfRequest): Promise<QuerySupplyOfResponse> {
-      return queryService.supplyOf(request);
+    supplyOf(request: QuerySupplyOfRequest, useInterfaces: boolean = true): Promise<QuerySupplyOfResponse> {
+      return queryService.supplyOf(request, useInterfaces);
     },
-    params(request?: QueryParamsRequest): Promise<QueryParamsResponse> {
-      return queryService.params(request);
+    params(request?: QueryParamsRequest, useInterfaces: boolean = true): Promise<QueryParamsResponse> {
+      return queryService.params(request, useInterfaces);
     },
-    denomMetadata(request: QueryDenomMetadataRequest): Promise<QueryDenomMetadataResponse> {
-      return queryService.denomMetadata(request);
+    denomMetadata(request: QueryDenomMetadataRequest, useInterfaces: boolean = true): Promise<QueryDenomMetadataResponse> {
+      return queryService.denomMetadata(request, useInterfaces);
     },
-    denomMetadataByQueryString(request: QueryDenomMetadataByQueryStringRequest): Promise<QueryDenomMetadataByQueryStringResponse> {
-      return queryService.denomMetadataByQueryString(request);
+    denomMetadataByQueryString(request: QueryDenomMetadataByQueryStringRequest, useInterfaces: boolean = true): Promise<QueryDenomMetadataByQueryStringResponse> {
+      return queryService.denomMetadataByQueryString(request, useInterfaces);
     },
-    denomsMetadata(request?: QueryDenomsMetadataRequest): Promise<QueryDenomsMetadataResponse> {
-      return queryService.denomsMetadata(request);
+    denomsMetadata(request?: QueryDenomsMetadataRequest, useInterfaces: boolean = true): Promise<QueryDenomsMetadataResponse> {
+      return queryService.denomsMetadata(request, useInterfaces);
     },
-    denomOwners(request: QueryDenomOwnersRequest): Promise<QueryDenomOwnersResponse> {
-      return queryService.denomOwners(request);
+    denomOwners(request: QueryDenomOwnersRequest, useInterfaces: boolean = true): Promise<QueryDenomOwnersResponse> {
+      return queryService.denomOwners(request, useInterfaces);
     },
-    sendEnabled(request: QuerySendEnabledRequest): Promise<QuerySendEnabledResponse> {
-      return queryService.sendEnabled(request);
+    sendEnabled(request: QuerySendEnabledRequest, useInterfaces: boolean = true): Promise<QuerySendEnabledResponse> {
+      return queryService.sendEnabled(request, useInterfaces);
     }
   };
 };

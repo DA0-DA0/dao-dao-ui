@@ -5,7 +5,7 @@ import { BinaryReader, BinaryWriter } from "../../../binary";
  * protorev module is enabled
  */
 export interface SetProtoRevEnabledProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.protorev.v1beta1.SetProtoRevEnabledProposal";
   title: string;
   description: string;
   enabled: boolean;
@@ -32,7 +32,7 @@ export interface SetProtoRevEnabledProposalAminoMsg {
  * protorev module is enabled
  */
 export interface SetProtoRevEnabledProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.protorev.v1beta1.SetProtoRevEnabledProposal";
   title: string;
   description: string;
   enabled: boolean;
@@ -43,7 +43,7 @@ export interface SetProtoRevEnabledProposalSDKType {
  * developer address that will be receiving a share of profits from the module
  */
 export interface SetProtoRevAdminAccountProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.protorev.v1beta1.SetProtoRevAdminAccountProposal";
   title: string;
   description: string;
   account: string;
@@ -72,7 +72,7 @@ export interface SetProtoRevAdminAccountProposalAminoMsg {
  * developer address that will be receiving a share of profits from the module
  */
 export interface SetProtoRevAdminAccountProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.protorev.v1beta1.SetProtoRevAdminAccountProposal";
   title: string;
   description: string;
   account: string;
@@ -99,7 +99,7 @@ export const SetProtoRevEnabledProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SetProtoRevEnabledProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SetProtoRevEnabledProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetProtoRevEnabledProposal();
@@ -136,7 +136,7 @@ export const SetProtoRevEnabledProposal = {
       enabled: object.enabled
     };
   },
-  toAmino(message: SetProtoRevEnabledProposal): SetProtoRevEnabledProposalAmino {
+  toAmino(message: SetProtoRevEnabledProposal, useInterfaces: boolean = false): SetProtoRevEnabledProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -146,14 +146,14 @@ export const SetProtoRevEnabledProposal = {
   fromAminoMsg(object: SetProtoRevEnabledProposalAminoMsg): SetProtoRevEnabledProposal {
     return SetProtoRevEnabledProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: SetProtoRevEnabledProposal): SetProtoRevEnabledProposalAminoMsg {
+  toAminoMsg(message: SetProtoRevEnabledProposal, useInterfaces: boolean = false): SetProtoRevEnabledProposalAminoMsg {
     return {
       type: "osmosis/SetProtoRevEnabledProposal",
-      value: SetProtoRevEnabledProposal.toAmino(message)
+      value: SetProtoRevEnabledProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SetProtoRevEnabledProposalProtoMsg): SetProtoRevEnabledProposal {
-    return SetProtoRevEnabledProposal.decode(message.value);
+  fromProtoMsg(message: SetProtoRevEnabledProposalProtoMsg, useInterfaces: boolean = false): SetProtoRevEnabledProposal {
+    return SetProtoRevEnabledProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SetProtoRevEnabledProposal): Uint8Array {
     return SetProtoRevEnabledProposal.encode(message).finish();
@@ -187,7 +187,7 @@ export const SetProtoRevAdminAccountProposal = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): SetProtoRevAdminAccountProposal {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): SetProtoRevAdminAccountProposal {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetProtoRevAdminAccountProposal();
@@ -224,7 +224,7 @@ export const SetProtoRevAdminAccountProposal = {
       account: object.account
     };
   },
-  toAmino(message: SetProtoRevAdminAccountProposal): SetProtoRevAdminAccountProposalAmino {
+  toAmino(message: SetProtoRevAdminAccountProposal, useInterfaces: boolean = false): SetProtoRevAdminAccountProposalAmino {
     const obj: any = {};
     obj.title = message.title;
     obj.description = message.description;
@@ -234,14 +234,14 @@ export const SetProtoRevAdminAccountProposal = {
   fromAminoMsg(object: SetProtoRevAdminAccountProposalAminoMsg): SetProtoRevAdminAccountProposal {
     return SetProtoRevAdminAccountProposal.fromAmino(object.value);
   },
-  toAminoMsg(message: SetProtoRevAdminAccountProposal): SetProtoRevAdminAccountProposalAminoMsg {
+  toAminoMsg(message: SetProtoRevAdminAccountProposal, useInterfaces: boolean = false): SetProtoRevAdminAccountProposalAminoMsg {
     return {
       type: "osmosis/SetProtoRevAdminAccountProposal",
-      value: SetProtoRevAdminAccountProposal.toAmino(message)
+      value: SetProtoRevAdminAccountProposal.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: SetProtoRevAdminAccountProposalProtoMsg): SetProtoRevAdminAccountProposal {
-    return SetProtoRevAdminAccountProposal.decode(message.value);
+  fromProtoMsg(message: SetProtoRevAdminAccountProposalProtoMsg, useInterfaces: boolean = false): SetProtoRevAdminAccountProposal {
+    return SetProtoRevAdminAccountProposal.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: SetProtoRevAdminAccountProposal): Uint8Array {
     return SetProtoRevAdminAccountProposal.encode(message).finish();

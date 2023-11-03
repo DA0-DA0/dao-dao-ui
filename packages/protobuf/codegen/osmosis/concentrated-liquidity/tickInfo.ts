@@ -98,7 +98,7 @@ export const TickInfo = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): TickInfo {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): TickInfo {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTickInfo();
@@ -112,10 +112,10 @@ export const TickInfo = {
           message.liquidityNet = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 3:
-          message.spreadRewardGrowthOppositeDirectionOfLastTraversal.push(DecCoin.decode(reader, reader.uint32()));
+          message.spreadRewardGrowthOppositeDirectionOfLastTraversal.push(DecCoin.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 4:
-          message.uptimeTrackers = UptimeTrackers.decode(reader, reader.uint32());
+          message.uptimeTrackers = UptimeTrackers.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -140,29 +140,29 @@ export const TickInfo = {
       uptimeTrackers: object?.uptime_trackers ? UptimeTrackers.fromAmino(object.uptime_trackers) : undefined
     };
   },
-  toAmino(message: TickInfo): TickInfoAmino {
+  toAmino(message: TickInfo, useInterfaces: boolean = false): TickInfoAmino {
     const obj: any = {};
     obj.liquidity_gross = message.liquidityGross;
     obj.liquidity_net = message.liquidityNet;
     if (message.spreadRewardGrowthOppositeDirectionOfLastTraversal) {
-      obj.spread_reward_growth_opposite_direction_of_last_traversal = message.spreadRewardGrowthOppositeDirectionOfLastTraversal.map(e => e ? DecCoin.toAmino(e) : undefined);
+      obj.spread_reward_growth_opposite_direction_of_last_traversal = message.spreadRewardGrowthOppositeDirectionOfLastTraversal.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.spread_reward_growth_opposite_direction_of_last_traversal = [];
     }
-    obj.uptime_trackers = message.uptimeTrackers ? UptimeTrackers.toAmino(message.uptimeTrackers) : undefined;
+    obj.uptime_trackers = message.uptimeTrackers ? UptimeTrackers.toAmino(message.uptimeTrackers, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: TickInfoAminoMsg): TickInfo {
     return TickInfo.fromAmino(object.value);
   },
-  toAminoMsg(message: TickInfo): TickInfoAminoMsg {
+  toAminoMsg(message: TickInfo, useInterfaces: boolean = false): TickInfoAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/tick-info",
-      value: TickInfo.toAmino(message)
+      value: TickInfo.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: TickInfoProtoMsg): TickInfo {
-    return TickInfo.decode(message.value);
+  fromProtoMsg(message: TickInfoProtoMsg, useInterfaces: boolean = false): TickInfo {
+    return TickInfo.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: TickInfo): Uint8Array {
     return TickInfo.encode(message).finish();
@@ -187,7 +187,7 @@ export const UptimeTrackers = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): UptimeTrackers {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): UptimeTrackers {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUptimeTrackers();
@@ -195,7 +195,7 @@ export const UptimeTrackers = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.list.push(UptimeTracker.decode(reader, reader.uint32()));
+          message.list.push(UptimeTracker.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -214,10 +214,10 @@ export const UptimeTrackers = {
       list: Array.isArray(object?.list) ? object.list.map((e: any) => UptimeTracker.fromAmino(e)) : []
     };
   },
-  toAmino(message: UptimeTrackers): UptimeTrackersAmino {
+  toAmino(message: UptimeTrackers, useInterfaces: boolean = false): UptimeTrackersAmino {
     const obj: any = {};
     if (message.list) {
-      obj.list = message.list.map(e => e ? UptimeTracker.toAmino(e) : undefined);
+      obj.list = message.list.map(e => e ? UptimeTracker.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.list = [];
     }
@@ -226,14 +226,14 @@ export const UptimeTrackers = {
   fromAminoMsg(object: UptimeTrackersAminoMsg): UptimeTrackers {
     return UptimeTrackers.fromAmino(object.value);
   },
-  toAminoMsg(message: UptimeTrackers): UptimeTrackersAminoMsg {
+  toAminoMsg(message: UptimeTrackers, useInterfaces: boolean = false): UptimeTrackersAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/uptime-trackers",
-      value: UptimeTrackers.toAmino(message)
+      value: UptimeTrackers.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: UptimeTrackersProtoMsg): UptimeTrackers {
-    return UptimeTrackers.decode(message.value);
+  fromProtoMsg(message: UptimeTrackersProtoMsg, useInterfaces: boolean = false): UptimeTrackers {
+    return UptimeTrackers.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: UptimeTrackers): Uint8Array {
     return UptimeTrackers.encode(message).finish();
@@ -258,7 +258,7 @@ export const UptimeTracker = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): UptimeTracker {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): UptimeTracker {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUptimeTracker();
@@ -266,7 +266,7 @@ export const UptimeTracker = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.uptimeGrowthOutside.push(DecCoin.decode(reader, reader.uint32()));
+          message.uptimeGrowthOutside.push(DecCoin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -285,10 +285,10 @@ export const UptimeTracker = {
       uptimeGrowthOutside: Array.isArray(object?.uptime_growth_outside) ? object.uptime_growth_outside.map((e: any) => DecCoin.fromAmino(e)) : []
     };
   },
-  toAmino(message: UptimeTracker): UptimeTrackerAmino {
+  toAmino(message: UptimeTracker, useInterfaces: boolean = false): UptimeTrackerAmino {
     const obj: any = {};
     if (message.uptimeGrowthOutside) {
-      obj.uptime_growth_outside = message.uptimeGrowthOutside.map(e => e ? DecCoin.toAmino(e) : undefined);
+      obj.uptime_growth_outside = message.uptimeGrowthOutside.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.uptime_growth_outside = [];
     }
@@ -297,14 +297,14 @@ export const UptimeTracker = {
   fromAminoMsg(object: UptimeTrackerAminoMsg): UptimeTracker {
     return UptimeTracker.fromAmino(object.value);
   },
-  toAminoMsg(message: UptimeTracker): UptimeTrackerAminoMsg {
+  toAminoMsg(message: UptimeTracker, useInterfaces: boolean = false): UptimeTrackerAminoMsg {
     return {
       type: "osmosis/concentratedliquidity/uptime-tracker",
-      value: UptimeTracker.toAmino(message)
+      value: UptimeTracker.toAmino(message, useInterfaces)
     };
   },
-  fromProtoMsg(message: UptimeTrackerProtoMsg): UptimeTracker {
-    return UptimeTracker.decode(message.value);
+  fromProtoMsg(message: UptimeTrackerProtoMsg, useInterfaces: boolean = false): UptimeTracker {
+    return UptimeTracker.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: UptimeTracker): Uint8Array {
     return UptimeTracker.encode(message).finish();

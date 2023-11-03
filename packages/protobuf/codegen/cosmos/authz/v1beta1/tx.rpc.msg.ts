@@ -30,19 +30,19 @@ export class MsgClientImpl implements Msg {
     this.exec = this.exec.bind(this);
     this.revoke = this.revoke.bind(this);
   }
-  grant(request: MsgGrant): Promise<MsgGrantResponse> {
+  grant(request: MsgGrant, useInterfaces: boolean = true): Promise<MsgGrantResponse> {
     const data = MsgGrant.encode(request).finish();
     const promise = this.rpc.request("cosmos.authz.v1beta1.Msg", "Grant", data);
-    return promise.then(data => MsgGrantResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgGrantResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  exec(request: MsgExec): Promise<MsgExecResponse> {
+  exec(request: MsgExec, useInterfaces: boolean = true): Promise<MsgExecResponse> {
     const data = MsgExec.encode(request).finish();
     const promise = this.rpc.request("cosmos.authz.v1beta1.Msg", "Exec", data);
-    return promise.then(data => MsgExecResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgExecResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  revoke(request: MsgRevoke): Promise<MsgRevokeResponse> {
+  revoke(request: MsgRevoke, useInterfaces: boolean = true): Promise<MsgRevokeResponse> {
     const data = MsgRevoke.encode(request).finish();
     const promise = this.rpc.request("cosmos.authz.v1beta1.Msg", "Revoke", data);
-    return promise.then(data => MsgRevokeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgRevokeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

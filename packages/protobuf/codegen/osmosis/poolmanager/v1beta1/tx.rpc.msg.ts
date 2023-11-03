@@ -18,29 +18,29 @@ export class MsgClientImpl implements Msg {
     this.splitRouteSwapExactAmountOut = this.splitRouteSwapExactAmountOut.bind(this);
     this.setDenomPairTakerFee = this.setDenomPairTakerFee.bind(this);
   }
-  swapExactAmountIn(request: MsgSwapExactAmountIn): Promise<MsgSwapExactAmountInResponse> {
+  swapExactAmountIn(request: MsgSwapExactAmountIn, useInterfaces: boolean = true): Promise<MsgSwapExactAmountInResponse> {
     const data = MsgSwapExactAmountIn.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Msg", "SwapExactAmountIn", data);
-    return promise.then(data => MsgSwapExactAmountInResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSwapExactAmountInResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  swapExactAmountOut(request: MsgSwapExactAmountOut): Promise<MsgSwapExactAmountOutResponse> {
+  swapExactAmountOut(request: MsgSwapExactAmountOut, useInterfaces: boolean = true): Promise<MsgSwapExactAmountOutResponse> {
     const data = MsgSwapExactAmountOut.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Msg", "SwapExactAmountOut", data);
-    return promise.then(data => MsgSwapExactAmountOutResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSwapExactAmountOutResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  splitRouteSwapExactAmountIn(request: MsgSplitRouteSwapExactAmountIn): Promise<MsgSplitRouteSwapExactAmountInResponse> {
+  splitRouteSwapExactAmountIn(request: MsgSplitRouteSwapExactAmountIn, useInterfaces: boolean = true): Promise<MsgSplitRouteSwapExactAmountInResponse> {
     const data = MsgSplitRouteSwapExactAmountIn.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Msg", "SplitRouteSwapExactAmountIn", data);
-    return promise.then(data => MsgSplitRouteSwapExactAmountInResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSplitRouteSwapExactAmountInResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  splitRouteSwapExactAmountOut(request: MsgSplitRouteSwapExactAmountOut): Promise<MsgSplitRouteSwapExactAmountOutResponse> {
+  splitRouteSwapExactAmountOut(request: MsgSplitRouteSwapExactAmountOut, useInterfaces: boolean = true): Promise<MsgSplitRouteSwapExactAmountOutResponse> {
     const data = MsgSplitRouteSwapExactAmountOut.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Msg", "SplitRouteSwapExactAmountOut", data);
-    return promise.then(data => MsgSplitRouteSwapExactAmountOutResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSplitRouteSwapExactAmountOutResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
-  setDenomPairTakerFee(request: MsgSetDenomPairTakerFee): Promise<MsgSetDenomPairTakerFeeResponse> {
+  setDenomPairTakerFee(request: MsgSetDenomPairTakerFee, useInterfaces: boolean = true): Promise<MsgSetDenomPairTakerFeeResponse> {
     const data = MsgSetDenomPairTakerFee.encode(request).finish();
     const promise = this.rpc.request("osmosis.poolmanager.v1beta1.Msg", "SetDenomPairTakerFee", data);
-    return promise.then(data => MsgSetDenomPairTakerFeeResponse.decode(new BinaryReader(data)));
+    return promise.then(data => MsgSetDenomPairTakerFeeResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }

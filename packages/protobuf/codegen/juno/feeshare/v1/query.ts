@@ -6,7 +6,7 @@ import { BinaryReader, BinaryWriter } from "../../../binary";
 /** QueryFeeSharesRequest is the request type for the Query/FeeShares RPC method. */
 export interface QueryFeeSharesRequest {
   /** pagination defines an optional pagination for the request. */
-  pagination: PageRequest | undefined;
+  pagination?: PageRequest | undefined;
 }
 export interface QueryFeeSharesRequestProtoMsg {
   typeUrl: "/juno.feeshare.v1.QueryFeeSharesRequest";
@@ -23,7 +23,7 @@ export interface QueryFeeSharesRequestAminoMsg {
 }
 /** QueryFeeSharesRequest is the request type for the Query/FeeShares RPC method. */
 export interface QueryFeeSharesRequestSDKType {
-  pagination: PageRequestSDKType | undefined;
+  pagination?: PageRequestSDKType | undefined;
 }
 /**
  * QueryFeeSharesResponse is the response type for the Query/FeeShares RPC
@@ -33,7 +33,7 @@ export interface QueryFeeSharesResponse {
   /** FeeShare is a slice of all stored Reveneue */
   feeshare: FeeShare[];
   /** pagination defines the pagination in the response. */
-  pagination: PageResponse | undefined;
+  pagination?: PageResponse | undefined;
 }
 export interface QueryFeeSharesResponseProtoMsg {
   typeUrl: "/juno.feeshare.v1.QueryFeeSharesResponse";
@@ -59,7 +59,7 @@ export interface QueryFeeSharesResponseAminoMsg {
  */
 export interface QueryFeeSharesResponseSDKType {
   feeshare: FeeShareSDKType[];
-  pagination: PageResponseSDKType | undefined;
+  pagination?: PageResponseSDKType | undefined;
 }
 /** QueryFeeShareRequest is the request type for the Query/FeeShare RPC method. */
 export interface QueryFeeShareRequest {
@@ -149,7 +149,7 @@ export interface QueryDeployerFeeSharesRequest {
   /** deployer_address in bech32 format */
   deployerAddress: string;
   /** pagination defines an optional pagination for the request. */
-  pagination: PageRequest | undefined;
+  pagination?: PageRequest | undefined;
 }
 export interface QueryDeployerFeeSharesRequestProtoMsg {
   typeUrl: "/juno.feeshare.v1.QueryDeployerFeeSharesRequest";
@@ -175,7 +175,7 @@ export interface QueryDeployerFeeSharesRequestAminoMsg {
  */
 export interface QueryDeployerFeeSharesRequestSDKType {
   deployer_address: string;
-  pagination: PageRequestSDKType | undefined;
+  pagination?: PageRequestSDKType | undefined;
 }
 /**
  * QueryDeployerFeeSharesResponse is the response type for the
@@ -188,7 +188,7 @@ export interface QueryDeployerFeeSharesResponse {
    */
   contractAddresses: string[];
   /** pagination defines the pagination in the response. */
-  pagination: PageResponse | undefined;
+  pagination?: PageResponse | undefined;
 }
 export interface QueryDeployerFeeSharesResponseProtoMsg {
   typeUrl: "/juno.feeshare.v1.QueryDeployerFeeSharesResponse";
@@ -217,7 +217,7 @@ export interface QueryDeployerFeeSharesResponseAminoMsg {
  */
 export interface QueryDeployerFeeSharesResponseSDKType {
   contract_addresses: string[];
-  pagination: PageResponseSDKType | undefined;
+  pagination?: PageResponseSDKType | undefined;
 }
 /**
  * QueryWithdrawerFeeSharesRequest is the request type for the
@@ -227,7 +227,7 @@ export interface QueryWithdrawerFeeSharesRequest {
   /** withdrawer_address in bech32 format */
   withdrawerAddress: string;
   /** pagination defines an optional pagination for the request. */
-  pagination: PageRequest | undefined;
+  pagination?: PageRequest | undefined;
 }
 export interface QueryWithdrawerFeeSharesRequestProtoMsg {
   typeUrl: "/juno.feeshare.v1.QueryWithdrawerFeeSharesRequest";
@@ -253,7 +253,7 @@ export interface QueryWithdrawerFeeSharesRequestAminoMsg {
  */
 export interface QueryWithdrawerFeeSharesRequestSDKType {
   withdrawer_address: string;
-  pagination: PageRequestSDKType | undefined;
+  pagination?: PageRequestSDKType | undefined;
 }
 /**
  * QueryWithdrawerFeeSharesResponse is the response type for the
@@ -266,7 +266,7 @@ export interface QueryWithdrawerFeeSharesResponse {
    */
   contractAddresses: string[];
   /** pagination defines the pagination in the response. */
-  pagination: PageResponse | undefined;
+  pagination?: PageResponse | undefined;
 }
 export interface QueryWithdrawerFeeSharesResponseProtoMsg {
   typeUrl: "/juno.feeshare.v1.QueryWithdrawerFeeSharesResponse";
@@ -295,11 +295,11 @@ export interface QueryWithdrawerFeeSharesResponseAminoMsg {
  */
 export interface QueryWithdrawerFeeSharesResponseSDKType {
   contract_addresses: string[];
-  pagination: PageResponseSDKType | undefined;
+  pagination?: PageResponseSDKType | undefined;
 }
 function createBaseQueryFeeSharesRequest(): QueryFeeSharesRequest {
   return {
-    pagination: PageRequest.fromPartial({})
+    pagination: undefined
   };
 }
 export const QueryFeeSharesRequest = {
@@ -310,7 +310,7 @@ export const QueryFeeSharesRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryFeeSharesRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryFeeSharesRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryFeeSharesRequest();
@@ -318,7 +318,7 @@ export const QueryFeeSharesRequest = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.pagination = PageRequest.decode(reader, reader.uint32());
+          message.pagination = PageRequest.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -337,16 +337,16 @@ export const QueryFeeSharesRequest = {
       pagination: object?.pagination ? PageRequest.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: QueryFeeSharesRequest): QueryFeeSharesRequestAmino {
+  toAmino(message: QueryFeeSharesRequest, useInterfaces: boolean = false): QueryFeeSharesRequestAmino {
     const obj: any = {};
-    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryFeeSharesRequestAminoMsg): QueryFeeSharesRequest {
     return QueryFeeSharesRequest.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryFeeSharesRequestProtoMsg): QueryFeeSharesRequest {
-    return QueryFeeSharesRequest.decode(message.value);
+  fromProtoMsg(message: QueryFeeSharesRequestProtoMsg, useInterfaces: boolean = false): QueryFeeSharesRequest {
+    return QueryFeeSharesRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryFeeSharesRequest): Uint8Array {
     return QueryFeeSharesRequest.encode(message).finish();
@@ -361,7 +361,7 @@ export const QueryFeeSharesRequest = {
 function createBaseQueryFeeSharesResponse(): QueryFeeSharesResponse {
   return {
     feeshare: [],
-    pagination: PageResponse.fromPartial({})
+    pagination: undefined
   };
 }
 export const QueryFeeSharesResponse = {
@@ -375,7 +375,7 @@ export const QueryFeeSharesResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryFeeSharesResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryFeeSharesResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryFeeSharesResponse();
@@ -383,10 +383,10 @@ export const QueryFeeSharesResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.feeshare.push(FeeShare.decode(reader, reader.uint32()));
+          message.feeshare.push(FeeShare.decode(reader, reader.uint32(), useInterfaces));
           break;
         case 2:
-          message.pagination = PageResponse.decode(reader, reader.uint32());
+          message.pagination = PageResponse.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -407,21 +407,21 @@ export const QueryFeeSharesResponse = {
       pagination: object?.pagination ? PageResponse.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: QueryFeeSharesResponse): QueryFeeSharesResponseAmino {
+  toAmino(message: QueryFeeSharesResponse, useInterfaces: boolean = false): QueryFeeSharesResponseAmino {
     const obj: any = {};
     if (message.feeshare) {
-      obj.feeshare = message.feeshare.map(e => e ? FeeShare.toAmino(e) : undefined);
+      obj.feeshare = message.feeshare.map(e => e ? FeeShare.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.feeshare = [];
     }
-    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryFeeSharesResponseAminoMsg): QueryFeeSharesResponse {
     return QueryFeeSharesResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryFeeSharesResponseProtoMsg): QueryFeeSharesResponse {
-    return QueryFeeSharesResponse.decode(message.value);
+  fromProtoMsg(message: QueryFeeSharesResponseProtoMsg, useInterfaces: boolean = false): QueryFeeSharesResponse {
+    return QueryFeeSharesResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryFeeSharesResponse): Uint8Array {
     return QueryFeeSharesResponse.encode(message).finish();
@@ -446,7 +446,7 @@ export const QueryFeeShareRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryFeeShareRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryFeeShareRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryFeeShareRequest();
@@ -473,7 +473,7 @@ export const QueryFeeShareRequest = {
       contractAddress: object.contract_address
     };
   },
-  toAmino(message: QueryFeeShareRequest): QueryFeeShareRequestAmino {
+  toAmino(message: QueryFeeShareRequest, useInterfaces: boolean = false): QueryFeeShareRequestAmino {
     const obj: any = {};
     obj.contract_address = message.contractAddress;
     return obj;
@@ -481,8 +481,8 @@ export const QueryFeeShareRequest = {
   fromAminoMsg(object: QueryFeeShareRequestAminoMsg): QueryFeeShareRequest {
     return QueryFeeShareRequest.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryFeeShareRequestProtoMsg): QueryFeeShareRequest {
-    return QueryFeeShareRequest.decode(message.value);
+  fromProtoMsg(message: QueryFeeShareRequestProtoMsg, useInterfaces: boolean = false): QueryFeeShareRequest {
+    return QueryFeeShareRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryFeeShareRequest): Uint8Array {
     return QueryFeeShareRequest.encode(message).finish();
@@ -507,7 +507,7 @@ export const QueryFeeShareResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryFeeShareResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryFeeShareResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryFeeShareResponse();
@@ -515,7 +515,7 @@ export const QueryFeeShareResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.feeshare = FeeShare.decode(reader, reader.uint32());
+          message.feeshare = FeeShare.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -534,16 +534,16 @@ export const QueryFeeShareResponse = {
       feeshare: object?.feeshare ? FeeShare.fromAmino(object.feeshare) : undefined
     };
   },
-  toAmino(message: QueryFeeShareResponse): QueryFeeShareResponseAmino {
+  toAmino(message: QueryFeeShareResponse, useInterfaces: boolean = false): QueryFeeShareResponseAmino {
     const obj: any = {};
-    obj.feeshare = message.feeshare ? FeeShare.toAmino(message.feeshare) : undefined;
+    obj.feeshare = message.feeshare ? FeeShare.toAmino(message.feeshare, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryFeeShareResponseAminoMsg): QueryFeeShareResponse {
     return QueryFeeShareResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryFeeShareResponseProtoMsg): QueryFeeShareResponse {
-    return QueryFeeShareResponse.decode(message.value);
+  fromProtoMsg(message: QueryFeeShareResponseProtoMsg, useInterfaces: boolean = false): QueryFeeShareResponse {
+    return QueryFeeShareResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryFeeShareResponse): Uint8Array {
     return QueryFeeShareResponse.encode(message).finish();
@@ -563,7 +563,7 @@ export const QueryParamsRequest = {
   encode(_: QueryParamsRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryParamsRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryParamsRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
@@ -584,15 +584,15 @@ export const QueryParamsRequest = {
   fromAmino(_: QueryParamsRequestAmino): QueryParamsRequest {
     return {};
   },
-  toAmino(_: QueryParamsRequest): QueryParamsRequestAmino {
+  toAmino(_: QueryParamsRequest, useInterfaces: boolean = false): QueryParamsRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryParamsRequestAminoMsg): QueryParamsRequest {
     return QueryParamsRequest.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryParamsRequestProtoMsg): QueryParamsRequest {
-    return QueryParamsRequest.decode(message.value);
+  fromProtoMsg(message: QueryParamsRequestProtoMsg, useInterfaces: boolean = false): QueryParamsRequest {
+    return QueryParamsRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryParamsRequest): Uint8Array {
     return QueryParamsRequest.encode(message).finish();
@@ -617,7 +617,7 @@ export const QueryParamsResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryParamsResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryParamsResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
@@ -625,7 +625,7 @@ export const QueryParamsResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.params = Params.decode(reader, reader.uint32());
+          message.params = Params.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -644,16 +644,16 @@ export const QueryParamsResponse = {
       params: object?.params ? Params.fromAmino(object.params) : undefined
     };
   },
-  toAmino(message: QueryParamsResponse): QueryParamsResponseAmino {
+  toAmino(message: QueryParamsResponse, useInterfaces: boolean = false): QueryParamsResponseAmino {
     const obj: any = {};
-    obj.params = message.params ? Params.toAmino(message.params) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryParamsResponseAminoMsg): QueryParamsResponse {
     return QueryParamsResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryParamsResponseProtoMsg): QueryParamsResponse {
-    return QueryParamsResponse.decode(message.value);
+  fromProtoMsg(message: QueryParamsResponseProtoMsg, useInterfaces: boolean = false): QueryParamsResponse {
+    return QueryParamsResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryParamsResponse): Uint8Array {
     return QueryParamsResponse.encode(message).finish();
@@ -668,7 +668,7 @@ export const QueryParamsResponse = {
 function createBaseQueryDeployerFeeSharesRequest(): QueryDeployerFeeSharesRequest {
   return {
     deployerAddress: "",
-    pagination: PageRequest.fromPartial({})
+    pagination: undefined
   };
 }
 export const QueryDeployerFeeSharesRequest = {
@@ -682,7 +682,7 @@ export const QueryDeployerFeeSharesRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryDeployerFeeSharesRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryDeployerFeeSharesRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryDeployerFeeSharesRequest();
@@ -693,7 +693,7 @@ export const QueryDeployerFeeSharesRequest = {
           message.deployerAddress = reader.string();
           break;
         case 2:
-          message.pagination = PageRequest.decode(reader, reader.uint32());
+          message.pagination = PageRequest.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -714,17 +714,17 @@ export const QueryDeployerFeeSharesRequest = {
       pagination: object?.pagination ? PageRequest.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: QueryDeployerFeeSharesRequest): QueryDeployerFeeSharesRequestAmino {
+  toAmino(message: QueryDeployerFeeSharesRequest, useInterfaces: boolean = false): QueryDeployerFeeSharesRequestAmino {
     const obj: any = {};
     obj.deployer_address = message.deployerAddress;
-    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryDeployerFeeSharesRequestAminoMsg): QueryDeployerFeeSharesRequest {
     return QueryDeployerFeeSharesRequest.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryDeployerFeeSharesRequestProtoMsg): QueryDeployerFeeSharesRequest {
-    return QueryDeployerFeeSharesRequest.decode(message.value);
+  fromProtoMsg(message: QueryDeployerFeeSharesRequestProtoMsg, useInterfaces: boolean = false): QueryDeployerFeeSharesRequest {
+    return QueryDeployerFeeSharesRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryDeployerFeeSharesRequest): Uint8Array {
     return QueryDeployerFeeSharesRequest.encode(message).finish();
@@ -739,7 +739,7 @@ export const QueryDeployerFeeSharesRequest = {
 function createBaseQueryDeployerFeeSharesResponse(): QueryDeployerFeeSharesResponse {
   return {
     contractAddresses: [],
-    pagination: PageResponse.fromPartial({})
+    pagination: undefined
   };
 }
 export const QueryDeployerFeeSharesResponse = {
@@ -753,7 +753,7 @@ export const QueryDeployerFeeSharesResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryDeployerFeeSharesResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryDeployerFeeSharesResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryDeployerFeeSharesResponse();
@@ -764,7 +764,7 @@ export const QueryDeployerFeeSharesResponse = {
           message.contractAddresses.push(reader.string());
           break;
         case 2:
-          message.pagination = PageResponse.decode(reader, reader.uint32());
+          message.pagination = PageResponse.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -785,21 +785,21 @@ export const QueryDeployerFeeSharesResponse = {
       pagination: object?.pagination ? PageResponse.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: QueryDeployerFeeSharesResponse): QueryDeployerFeeSharesResponseAmino {
+  toAmino(message: QueryDeployerFeeSharesResponse, useInterfaces: boolean = false): QueryDeployerFeeSharesResponseAmino {
     const obj: any = {};
     if (message.contractAddresses) {
       obj.contract_addresses = message.contractAddresses.map(e => e);
     } else {
       obj.contract_addresses = [];
     }
-    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryDeployerFeeSharesResponseAminoMsg): QueryDeployerFeeSharesResponse {
     return QueryDeployerFeeSharesResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryDeployerFeeSharesResponseProtoMsg): QueryDeployerFeeSharesResponse {
-    return QueryDeployerFeeSharesResponse.decode(message.value);
+  fromProtoMsg(message: QueryDeployerFeeSharesResponseProtoMsg, useInterfaces: boolean = false): QueryDeployerFeeSharesResponse {
+    return QueryDeployerFeeSharesResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryDeployerFeeSharesResponse): Uint8Array {
     return QueryDeployerFeeSharesResponse.encode(message).finish();
@@ -814,7 +814,7 @@ export const QueryDeployerFeeSharesResponse = {
 function createBaseQueryWithdrawerFeeSharesRequest(): QueryWithdrawerFeeSharesRequest {
   return {
     withdrawerAddress: "",
-    pagination: PageRequest.fromPartial({})
+    pagination: undefined
   };
 }
 export const QueryWithdrawerFeeSharesRequest = {
@@ -828,7 +828,7 @@ export const QueryWithdrawerFeeSharesRequest = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryWithdrawerFeeSharesRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryWithdrawerFeeSharesRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryWithdrawerFeeSharesRequest();
@@ -839,7 +839,7 @@ export const QueryWithdrawerFeeSharesRequest = {
           message.withdrawerAddress = reader.string();
           break;
         case 2:
-          message.pagination = PageRequest.decode(reader, reader.uint32());
+          message.pagination = PageRequest.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -860,17 +860,17 @@ export const QueryWithdrawerFeeSharesRequest = {
       pagination: object?.pagination ? PageRequest.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: QueryWithdrawerFeeSharesRequest): QueryWithdrawerFeeSharesRequestAmino {
+  toAmino(message: QueryWithdrawerFeeSharesRequest, useInterfaces: boolean = false): QueryWithdrawerFeeSharesRequestAmino {
     const obj: any = {};
     obj.withdrawer_address = message.withdrawerAddress;
-    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageRequest.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryWithdrawerFeeSharesRequestAminoMsg): QueryWithdrawerFeeSharesRequest {
     return QueryWithdrawerFeeSharesRequest.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryWithdrawerFeeSharesRequestProtoMsg): QueryWithdrawerFeeSharesRequest {
-    return QueryWithdrawerFeeSharesRequest.decode(message.value);
+  fromProtoMsg(message: QueryWithdrawerFeeSharesRequestProtoMsg, useInterfaces: boolean = false): QueryWithdrawerFeeSharesRequest {
+    return QueryWithdrawerFeeSharesRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryWithdrawerFeeSharesRequest): Uint8Array {
     return QueryWithdrawerFeeSharesRequest.encode(message).finish();
@@ -885,7 +885,7 @@ export const QueryWithdrawerFeeSharesRequest = {
 function createBaseQueryWithdrawerFeeSharesResponse(): QueryWithdrawerFeeSharesResponse {
   return {
     contractAddresses: [],
-    pagination: PageResponse.fromPartial({})
+    pagination: undefined
   };
 }
 export const QueryWithdrawerFeeSharesResponse = {
@@ -899,7 +899,7 @@ export const QueryWithdrawerFeeSharesResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryWithdrawerFeeSharesResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryWithdrawerFeeSharesResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryWithdrawerFeeSharesResponse();
@@ -910,7 +910,7 @@ export const QueryWithdrawerFeeSharesResponse = {
           message.contractAddresses.push(reader.string());
           break;
         case 2:
-          message.pagination = PageResponse.decode(reader, reader.uint32());
+          message.pagination = PageResponse.decode(reader, reader.uint32(), useInterfaces);
           break;
         default:
           reader.skipType(tag & 7);
@@ -931,21 +931,21 @@ export const QueryWithdrawerFeeSharesResponse = {
       pagination: object?.pagination ? PageResponse.fromAmino(object.pagination) : undefined
     };
   },
-  toAmino(message: QueryWithdrawerFeeSharesResponse): QueryWithdrawerFeeSharesResponseAmino {
+  toAmino(message: QueryWithdrawerFeeSharesResponse, useInterfaces: boolean = false): QueryWithdrawerFeeSharesResponseAmino {
     const obj: any = {};
     if (message.contractAddresses) {
       obj.contract_addresses = message.contractAddresses.map(e => e);
     } else {
       obj.contract_addresses = [];
     }
-    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination) : undefined;
+    obj.pagination = message.pagination ? PageResponse.toAmino(message.pagination, useInterfaces) : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryWithdrawerFeeSharesResponseAminoMsg): QueryWithdrawerFeeSharesResponse {
     return QueryWithdrawerFeeSharesResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryWithdrawerFeeSharesResponseProtoMsg): QueryWithdrawerFeeSharesResponse {
-    return QueryWithdrawerFeeSharesResponse.decode(message.value);
+  fromProtoMsg(message: QueryWithdrawerFeeSharesResponseProtoMsg, useInterfaces: boolean = false): QueryWithdrawerFeeSharesResponse {
+    return QueryWithdrawerFeeSharesResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryWithdrawerFeeSharesResponse): Uint8Array {
     return QueryWithdrawerFeeSharesResponse.encode(message).finish();
