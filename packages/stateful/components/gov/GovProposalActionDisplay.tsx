@@ -14,7 +14,7 @@ import {
   GovProposalActionDisplayProps,
   GovProposalVersion,
 } from '@dao-dao/types'
-import { decodeMessages, decodeRawMessagesForDisplay } from '@dao-dao/utils'
+import { decodeMessages, decodeRawDataForDisplay } from '@dao-dao/utils'
 
 import { useActionsForMatching } from '../../actions'
 import { PayEntityDisplay } from '../PayEntityDisplay'
@@ -103,7 +103,7 @@ const InnerGovProposalActionDisplay = ({
 
             <CosmosMessageDisplay
               value={JSON.stringify(
-                decodeRawMessagesForDisplay({
+                decodeRawDataForDisplay({
                   ...decodedContent,
                   title: undefined,
                   description: undefined,

@@ -1,6 +1,5 @@
 import { fromBase64 } from '@cosmjs/encoding'
 import { EncodeObject } from '@cosmjs/proto-signing'
-import { SigningStargateClient } from '@cosmjs/stargate'
 import {
   BookOutlined,
   Close,
@@ -77,7 +76,6 @@ import {
   formatTime,
   getGovProposalPath,
   getImageUrlForChainId,
-  getSignerOptions,
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
   processError,
@@ -102,7 +100,7 @@ export const NewGovProposal = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const chainContext = useSupportedChainContext()
-  const { isWalletConnected, getOfflineSignerDirect, chain, chainWallet } =
+  const { isWalletConnected, getSigningStargateClient, chain, chainWallet } =
     useWallet()
 
   const [loading, setLoading] = useState(false)
@@ -285,16 +283,9 @@ export const NewGovProposal = () => {
 
           setLoading(true)
           try {
-            // TODO(authz-fix): Fix amino support.
-            const offlineSignerDirect = await getOfflineSignerDirect()
-            const stargateClient =
-              await SigningStargateClient.connectWithSigner(
-                await chainWallet.getRpcEndpoint(),
-                offlineSignerDirect,
-                getSignerOptions(chain)
-              )
-
-            const { events } = await stargateClient.signAndBroadcast(
+            const { events } = await (
+              await getSigningStargateClient()
+            ).signAndBroadcast(
               walletAddress,
               [encodeObject],
               CHAIN_GAS_MULTIPLIER
@@ -393,7 +384,7 @@ export const NewGovProposal = () => {
         t,
         transformGovernanceProposalActionDataToCosmos,
         walletAddress,
-        getOfflineSignerDirect,
+        getSigningStargateClient,
         chainContext.chainId,
         chainContext.chain.pretty_name,
         chainContext.config.name,

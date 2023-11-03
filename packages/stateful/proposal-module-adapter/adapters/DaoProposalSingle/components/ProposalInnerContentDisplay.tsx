@@ -17,7 +17,7 @@ import {
 } from '@dao-dao/types'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-import { decodeMessages, decodeRawMessagesForDisplay } from '@dao-dao/utils'
+import { decodeMessages, decodeRawDataForDisplay } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import { useLoadingProposal } from '../hooks'
@@ -60,7 +60,7 @@ const InnerProposalInnerContentDisplay = ({
   )
   const rawDecodedMessages = useMemo(
     () =>
-      JSON.stringify(decodedMessages.map(decodeRawMessagesForDisplay), null, 2),
+      JSON.stringify(decodedMessages.map(decodeRawDataForDisplay), null, 2),
     [decodedMessages]
   )
 

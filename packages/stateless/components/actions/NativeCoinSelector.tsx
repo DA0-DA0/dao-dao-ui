@@ -27,6 +27,7 @@ export type NativeCoinSelectorProps = ComponentProps<
   chainId: string
   onRemove?: () => void
   className?: string
+  dontValidate?: boolean
 }
 
 export const NativeCoinSelector = ({
@@ -37,6 +38,7 @@ export const NativeCoinSelector = ({
   options: { nativeBalances },
   className,
   chainId,
+  dontValidate = false,
 }: NativeCoinSelectorProps) => {
   const { t } = useTranslation()
   const nativeToken = getNativeTokenForChainId(chainId)
@@ -108,6 +110,10 @@ export const NativeCoinSelector = ({
   // would lead to the error not updating if amount set an error and then
   // denom was changed.
   useEffect(() => {
+    if (dontValidate) {
+      return
+    }
+
     if (!watchAmount || !watchDenom) {
       if (errors?._error) {
         clearErrors(fieldNamePrefix + '_error')
@@ -137,6 +143,7 @@ export const NativeCoinSelector = ({
     fieldNamePrefix,
     watchAmount,
     watchDenom,
+    dontValidate,
   ])
 
   const minAmount = convertMicroDenomToDenomWithDecimals(
@@ -151,11 +158,13 @@ export const NativeCoinSelector = ({
           amountError={errors?.amount || errors?._error}
           amountFieldName={fieldNamePrefix + 'amount'}
           amountMax={
-            selectedTokenBalance &&
-            convertMicroDenomToDenomWithDecimals(
-              selectedTokenBalance.balance,
-              selectedTokenBalance.token.decimals
-            )
+            dontValidate
+              ? undefined
+              : selectedTokenBalance &&
+                convertMicroDenomToDenomWithDecimals(
+                  selectedTokenBalance.balance,
+                  selectedTokenBalance.token.decimals
+                )
           }
           amountMin={minAmount}
           amountStep={minAmount}

@@ -1,7 +1,13 @@
 import { Add, Remove } from '@mui/icons-material'
 import clsx from 'clsx'
 import cloneDeep from 'lodash.clonedeep'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
+import {
+  ComponentType,
+  Fragment,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
 import { FieldErrors, useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { v4 as uuidv4 } from 'uuid'
@@ -344,25 +350,29 @@ export const ActionEditor = ({
     clearErrors(`${actionDataFieldName}.${index}.data`)
   }
 
+  const lastIndex = Math.min(all.length, ACTIONS_PER_PAGE) - 1
+  const allowAdding = !action.notReusable && !action.programmaticOnly
+
   return (
     <ActionCard
       action={action}
       actionCount={all.length}
       category={category}
+      childrenContainerClassName="!px-0"
       onCategoryClick={goBackToCategoryPicker}
       onRemove={onRemove}
     >
       {all
         // Paginate.
         .slice((page - 1) * ACTIONS_PER_PAGE, page * ACTIONS_PER_PAGE)
-        .map(({ _id, index, data }) => {
+        .map(({ _id, index, data }, rowIndex) => {
           const removeAction = () => {
             clearErrors(`${actionDataFieldName}.${index}`)
             remove(index)
           }
 
           return (
-            <div
+            <Fragment
               key={
                 // If _id empty, likely due to an old saved form state, use
                 // index and action as re-render key. Using a unique `key`
@@ -370,57 +380,63 @@ export const ActionEditor = ({
                 // of the form change.
                 _id || `${index}-${action.key}`
               }
-              className="flex animate-fade-in flex-row items-start gap-4"
             >
-              <div className="flex min-w-0 grow flex-col gap-4">
-                <SuspenseLoader fallback={<Loader size={36} />}>
-                  <action.Component
-                    addAction={addAction}
-                    allActionsWithData={actionData}
-                    data={data}
-                    errors={actionDataErrors?.[index]?.data || {}}
-                    fieldNamePrefix={`${actionDataFieldName}.${index}.data.`}
-                    index={index}
-                    isCreating
-                    remove={removeAction}
-                  />
-                </SuspenseLoader>
+              <div className="flex animate-fade-in flex-row items-start gap-4 px-6">
+                <div className="flex min-w-0 grow flex-col gap-4">
+                  <SuspenseLoader fallback={<Loader size={36} />}>
+                    <action.Component
+                      addAction={addAction}
+                      allActionsWithData={actionData}
+                      data={data}
+                      errors={actionDataErrors?.[index]?.data || {}}
+                      fieldNamePrefix={`${actionDataFieldName}.${index}.data.`}
+                      index={index}
+                      isCreating
+                      remove={removeAction}
+                    />
+                  </SuspenseLoader>
+                </div>
+
+                {
+                  // Never show remove button for programmatic actions. Show
+                  // remove button if action is resuable OR if there are more
+                  // than one action. If there are more than one action,
+                  // individual ones should be removable. But if there is only
+                  // one, which is the intended state for an action configured
+                  // as not reusable, don't show the remove button.
+                  !action.programmaticOnly &&
+                    (!action.notReusable || all.length > 1) && (
+                      <Tooltip title={t('button.remove')}>
+                        <IconButton
+                          Icon={Remove}
+                          circular
+                          onClick={() => {
+                            // If only one action left, go back to category
+                            // picker.
+                            if (all.length === 1) {
+                              goBackToCategoryPicker()
+                            } else {
+                              // Otherwise just remove this action.
+                              removeAction()
+                            }
+                          }}
+                          size="sm"
+                          variant="secondary"
+                        />
+                      </Tooltip>
+                    )
+                }
               </div>
 
-              {
-                // Never show remove button for programmatic actions. Show
-                // remove button if action is resuable OR if there are more than
-                // one action. If there are more than one action, individual
-                // ones should be removable. But if there is only one, which is
-                // the intended state for an action configured as not reusable,
-                // don't show the remove button.
-                !action.programmaticOnly &&
-                  (!action.notReusable || all.length > 1) && (
-                    <Tooltip title={t('button.remove')}>
-                      <IconButton
-                        Icon={Remove}
-                        circular
-                        onClick={() => {
-                          // If only one action left, go back to category picker.
-                          if (all.length === 1) {
-                            goBackToCategoryPicker()
-                          } else {
-                            // Otherwise just remove this action.
-                            removeAction()
-                          }
-                        }}
-                        size="sm"
-                        variant="secondary"
-                      />
-                    </Tooltip>
-                  )
-              }
-            </div>
+              {(rowIndex < lastIndex || allowAdding) && (
+                <div className="my-3 h-[1px] bg-border-secondary"></div>
+              )}
+            </Fragment>
           )
         })}
 
       {/* Don't show add button if action is not reusable or if programmatic. */}
-      {!action.notReusable && !action.programmaticOnly && (
+      {allowAdding && (
         <Tooltip
           title={t('button.addAnotherAction', {
             action: action.label,
@@ -429,7 +445,7 @@ export const ActionEditor = ({
           <IconButton
             Icon={Add}
             circular
-            className="self-end"
+            className="mr-6 self-end"
             onClick={() => {
               // Insert another entry for the same action with the default
               // values after the last one in this group.
@@ -453,7 +469,7 @@ export const ActionEditor = ({
       )}
 
       {lastPage > PAGINATION_MIN_PAGE && (
-        <div className="-mx-6 flex flex-col gap-4 border-t border-border-secondary px-6 pt-5">
+        <div className="flex flex-col gap-4 border-t border-border-secondary px-6 pt-5">
           <Pagination
             className="w-full self-center"
             page={page}

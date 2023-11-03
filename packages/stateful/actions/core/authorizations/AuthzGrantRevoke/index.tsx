@@ -349,8 +349,6 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
 
         let authorization: Any | undefined
         if (mode === 'grant') {
-          // TODO(authz-fix): Fix simulation issue for GenericAuthorization and SendAuthorization
-
           authorization = AUTHORIZATION_TYPES.find(
             ({ type: { typeUrl } }) => typeUrl === authorizationTypeUrl
           )?.type.toProtoMsg({

@@ -5,7 +5,7 @@ import {
   MsgMigrateContractEncodeObject,
   MsgUpdateAdminEncodeObject,
 } from '@cosmjs/cosmwasm-stargate'
-import { fromBase64, fromUtf8, toBase64 } from '@cosmjs/encoding'
+import { fromBase64, toBase64 } from '@cosmjs/encoding'
 import { EncodeObject, GeneratedType, Registry } from '@cosmjs/proto-signing'
 import {
   AminoTypes,
@@ -73,6 +73,7 @@ import {
   govVoteOptionToCwVoteOption,
 } from '../gov'
 import { objectMatchesStructure } from '../objectMatchesStructure'
+import { isCosmWasmStargateMsg } from './cw'
 
 // Convert CosmWasm message to its encoded protobuf equivalent.
 export const cwMsgToProtobuf = (
@@ -190,7 +191,7 @@ export const cwMsgToEncodeObject = (
   }
 
   if ('stargate' in msg) {
-    return decodeStargateMessage(msg).stargate
+    return decodeStargateMessage(msg, false).stargate
   }
 
   if ('wasm' in msg) {
@@ -498,7 +499,10 @@ export const encodeProtobufValue = (
 // string into its JSON representation.
 export const decodeProtobufValue = (
   typeUrl: string,
-  encodedValue: string | Uint8Array
+  encodedValue: string | Uint8Array,
+  // Recursively decode nested protobufs. This is useful for automatically
+  // decoding `Any` types where protobuf interfaces exist.
+  recursive = true
 ): any => {
   const type = typesRegistry.lookupType(typeUrl)
   if (!type) {
@@ -506,18 +510,24 @@ export const decodeProtobufValue = (
   }
 
   const decodedValue = type.decode(
-    typeof encodedValue === 'string' ? fromBase64(encodedValue) : encodedValue
+    typeof encodedValue === 'string' ? fromBase64(encodedValue) : encodedValue,
+    undefined,
+    // The types in the registry take an extra parameter for recursive
+    // decoding even though the registry itself is unaware of this type. Thus,
+    // tell TypeScript to ignore it.
+    // @ts-ignore
+    recursive
   )
   return decodedValue
 }
 
 // Decodes a protobuf message from `Any` into its JSON representation.
-export const decodeRawProtobufMsg = ({
+export const decodeRawProtobufMsg = (
+  { typeUrl, value }: Any,
+  recursive = true
+): DecodedStargateMsg['stargate'] => ({
   typeUrl,
-  value,
-}: Any): DecodedStargateMsg['stargate'] => ({
-  typeUrl,
-  value: decodeProtobufValue(typeUrl, value),
+  value: decodeProtobufValue(typeUrl, value, recursive),
 })
 
 // Encodes a protobuf message from its JSON representation into a `StargateMsg`
@@ -533,16 +543,15 @@ export const makeStargateMessage = ({
 
 // Decodes an encoded protobuf message from CosmWasm's `StargateMsg` into its
 // JSON representation.
-export const decodeStargateMessage = ({
-  stargate: { type_url, value },
-}: StargateMsg): DecodedStargateMsg => {
-  return {
-    stargate: {
-      typeUrl: type_url,
-      value: decodeProtobufValue(type_url, value),
-    },
-  }
-}
+export const decodeStargateMessage = (
+  { stargate: { type_url, value } }: StargateMsg,
+  recursive = true
+): DecodedStargateMsg => ({
+  stargate: {
+    typeUrl: type_url,
+    value: decodeProtobufValue(type_url, value, recursive),
+  },
+})
 
 // Decode governance proposal v1 messages using a protobuf.
 export const decodeGovProposalV1Messages = (
@@ -621,18 +630,19 @@ export const isDecodedStargateMsg = (msg: any): msg is DecodedStargateMsg =>
 
 // Decode any nested protobufs into JSON. Also decodes longs since those show up
 // often.
-export const decodeRawMessagesForDisplay = (msg: any): any =>
+export const decodeRawDataForDisplay = (msg: any): any =>
   typeof msg !== 'object' || msg === null
     ? msg
+    : msg instanceof Uint8Array
+    ? toBase64(msg)
     : Array.isArray(msg)
-    ? msg.map(decodeRawMessagesForDisplay)
+    ? msg.map(decodeRawDataForDisplay)
     : Long.isLong(msg)
     ? msg.toString()
     : msg instanceof Date
     ? msg.toISOString()
-    : msg instanceof Uint8Array
-    ? toBase64(msg)
-    : objectMatchesStructure(msg, {
+    : // `Any` protobuf
+    objectMatchesStructure(msg, {
         typeUrl: {},
         value: {},
       }) &&
@@ -645,17 +655,16 @@ export const decodeRawMessagesForDisplay = (msg: any): any =>
           return msg
         }
       })()
-    : Object.entries(msg).reduce((acc, [key, value]) => {
-        let decodedValue = value
-        if (key === 'msg' && value instanceof Uint8Array) {
-          decodedValue = fromUtf8(value)
-        }
-
-        return {
+    : // Stargate message
+    isCosmWasmStargateMsg(msg)
+    ? decodeRawDataForDisplay(decodeStargateMessage(msg))
+    : Object.entries(msg).reduce(
+        (acc, [key, value]) => ({
           ...acc,
-          [key]: decodeRawMessagesForDisplay(decodedValue),
-        }
-      }, {} as Record<string, any>)
+          [key]: decodeRawDataForDisplay(value),
+        }),
+        {} as Record<string, any>
+      )
 
 // Prepare JSON for protobuf encoding. Some fields, like Dates, need special
 // handling so that any protobuf type can be encoded.
