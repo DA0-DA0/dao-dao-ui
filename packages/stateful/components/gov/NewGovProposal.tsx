@@ -30,11 +30,6 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { BinaryReader } from '@dao-dao/protobuf'
-import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/protobuf/codegen/cosmos/gov/v1/tx'
-import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/tx'
-import { Any } from '@dao-dao/protobuf/codegen/google/protobuf/any'
 import {
   genericTokenBalanceSelector,
   genericTokenSelector,
@@ -82,6 +77,11 @@ import {
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
+import { BinaryReader } from '@dao-dao/utils/protobuf'
+import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/tx'
+import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import { Any } from '@dao-dao/utils/protobuf/codegen/google/protobuf/any'
 
 import { GovActionsProvider } from '../../actions'
 import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'

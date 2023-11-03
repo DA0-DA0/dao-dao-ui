@@ -1,5 +1,3 @@
-import { VoteOption as GovVoteOption } from '@dao-dao/protobuf/codegen/cosmos/gov/v1/gov'
-import { Cosmos_govv1beta1Content_ToAmino } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import {
   VoteOption as CwVoteOption,
   GOVERNANCE_PROPOSAL_TYPES,
@@ -8,6 +6,9 @@ import {
   GovProposalWithDecodedContent,
   GovernanceProposalActionData,
 } from '@dao-dao/types'
+
+import { VoteOption as GovVoteOption } from './protobuf/codegen/cosmos/gov/v1/gov'
+import { Cosmos_govv1beta1Content_ToAmino } from './protobuf/codegen/cosmos/gov/v1beta1/tx'
 
 export const govProposalToDecodedContent = (
   proposal: GovProposalWithDecodedContent

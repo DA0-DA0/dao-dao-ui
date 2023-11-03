@@ -59,8 +59,7 @@ const InnerProposalInnerContentDisplay = ({
     [proposal.msgs]
   )
   const rawDecodedMessages = useMemo(
-    () =>
-      JSON.stringify(decodedMessages.map(decodeRawDataForDisplay), null, 2),
+    () => JSON.stringify(decodedMessages.map(decodeRawDataForDisplay), null, 2),
     [decodedMessages]
   )
 

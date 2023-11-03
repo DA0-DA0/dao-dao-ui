@@ -18,11 +18,6 @@ import { useTranslation } from 'react-i18next'
 import { useSetRecoilState } from 'recoil'
 
 import {
-  ProposalStatus,
-  Vote,
-  VoteOption,
-} from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import {
   genericTokenSelector,
   refreshGovProposalsAtom,
 } from '@dao-dao/state/recoil'
@@ -52,6 +47,11 @@ import {
   getGovPath,
   processError,
 } from '@dao-dao/utils'
+import {
+  ProposalStatus,
+  Vote,
+  VoteOption,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useLoadingGovProposal, useWallet } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'

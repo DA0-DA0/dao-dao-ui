@@ -2,7 +2,7 @@
 import { Grant, GrantAmino, GrantSDKType } from "./authz";
 import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { BinaryReader, BinaryWriter } from "../../../binary";
-import { aminoToRawProtobufMsg, rawProtobufMsgToAmino } from '@dao-dao/utils'
+import { aminoToRawProtobufMsg, rawProtobufMsgToAmino } from '../../../../../messages/protobuf'
 /**
  * MsgGrant is a request type for Grant method. It declares authorization to the grantee
  * on behalf of the granter with the provided expiration time.

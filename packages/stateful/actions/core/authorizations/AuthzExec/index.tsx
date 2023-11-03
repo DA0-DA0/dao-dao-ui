@@ -2,7 +2,6 @@ import { useCallback, useMemo } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { MsgExec } from '@dao-dao/protobuf/codegen/cosmos/authz/v1beta1/tx'
 import {
   ChainPickerInput,
   ChainProvider,
@@ -30,6 +29,7 @@ import {
   objectMatchesStructure,
   protobufToCwMsg,
 } from '@dao-dao/utils'
+import { MsgExec } from '@dao-dao/utils/protobuf/codegen/cosmos/authz/v1beta1/tx'
 
 import {
   AddressInput,

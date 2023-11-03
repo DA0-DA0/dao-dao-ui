@@ -1,20 +1,20 @@
 import { ReactNode } from 'react'
 
-import { CommunityPoolSpendProposal } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
+import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
 import {
   Params as GovParamsV1,
   Proposal as ProposalV1,
   WeightedVoteOption,
-} from '@dao-dao/protobuf/codegen/cosmos/gov/v1/gov'
+} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
 import {
   Proposal as ProposalV1Beta1,
   TextProposal,
-} from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { ParameterChangeProposal } from '@dao-dao/protobuf/codegen/cosmos/params/v1beta1/params'
+} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { ParameterChangeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/params/v1beta1/params'
 import {
   CancelSoftwareUpgradeProposal,
   SoftwareUpgradeProposal,
-} from '@dao-dao/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
+} from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 
 import { NestedActionsEditorFormData } from './actions'
 import { Coin, CosmosMsgFor_Empty } from './contracts'

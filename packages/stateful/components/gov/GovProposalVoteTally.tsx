@@ -1,10 +1,10 @@
 import { Block, Check, Close } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { ProgressBar, Tooltip, TooltipInfoIcon } from '@dao-dao/stateless'
 import { GovProposalWithMetadata, ProcessedTQType } from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
+import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useLoadingGovProposal } from '../../hooks/useLoadingGovProposal'
 import { SuspenseLoader } from '../SuspenseLoader'

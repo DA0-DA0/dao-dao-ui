@@ -1,7 +1,7 @@
 import {
   PageRequest,
   PageResponse,
-} from '@dao-dao/protobuf/codegen/cosmos/base/query/v1beta1/pagination'
+} from './protobuf/codegen/cosmos/base/query/v1beta1/pagination'
 
 export const getAllRpcResponse = async <
   P extends { pagination?: PageRequest; [key: string]: any },

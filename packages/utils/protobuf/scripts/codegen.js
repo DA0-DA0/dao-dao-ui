@@ -1,9 +1,8 @@
 const { join } = require('path')
 const telescope = require('@cosmology/telescope').default
 // const rimraf = require('rimraf').rimrafSync
-const { AMINO_MAP } = require('./aminos')
 
-const protoDirs = [join(__dirname, '/../proto')]
+const protoDirs = [join(__dirname, '../proto')]
 const outPath = join(__dirname, '../codegen')
 // rimraf(outPath)
 
@@ -142,7 +141,7 @@ telescope({
     },
     aminoEncoding: {
       enabled: true,
-      exceptions: AMINO_MAP,
+      // exceptions: AMINO_MAP,
       useRecursiveV2encoding: true,
     },
     lcdClients: {

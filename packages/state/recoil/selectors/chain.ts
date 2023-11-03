@@ -3,19 +3,6 @@ import { fromBase64, toHex } from '@cosmjs/encoding'
 import { Coin, IndexedTx, StargateClient } from '@cosmjs/stargate'
 import { selector, selectorFamily, waitForAll, waitForAny } from 'recoil'
 
-import { cosmos, ibc, juno, osmosis } from '@dao-dao/protobuf'
-import { ModuleAccount } from '@dao-dao/protobuf/codegen/cosmos/auth/v1beta1/auth'
-import { Metadata } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/bank'
-import {
-  ProposalStatus,
-  TallyResult,
-  Vote,
-  WeightedVoteOption,
-} from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import {
-  Pool,
-  Validator as RpcValidator,
-} from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/staking'
 import {
   AllGovParams,
   AmountWithTimestamp,
@@ -46,6 +33,19 @@ import {
   isNativeIbcUsdc,
   stargateClientRouter,
 } from '@dao-dao/utils'
+import { cosmos, ibc, juno, osmosis } from '@dao-dao/utils/protobuf'
+import { ModuleAccount } from '@dao-dao/utils/protobuf/codegen/cosmos/auth/v1beta1/auth'
+import { Metadata } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/bank'
+import {
+  ProposalStatus,
+  TallyResult,
+  Vote,
+  WeightedVoteOption,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import {
+  Pool,
+  Validator as RpcValidator,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/staking/v1beta1/staking'
 
 import {
   refreshBlockHeightAtom,

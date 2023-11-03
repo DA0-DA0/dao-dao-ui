@@ -10,7 +10,6 @@ import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
-import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import {
   Coin,
   GovProposalActionDisplayProps,
@@ -19,6 +18,7 @@ import {
   StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
 import { formatDateTimeTz, govProposalToDecodedContent } from '@dao-dao/utils'
+import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useChainContext, useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { IconButtonLink } from '../icon_buttons'

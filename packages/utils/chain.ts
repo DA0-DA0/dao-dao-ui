@@ -7,11 +7,6 @@ import { GasPrice } from '@cosmjs/stargate'
 import { assets, chains, ibc } from 'chain-registry'
 import RIPEMD160 from 'ripemd160'
 
-import { cosmos } from '@dao-dao/protobuf'
-import {
-  Validator as RpcValidator,
-  bondStatusToJSON,
-} from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/staking'
 import {
   ChainId,
   GenericToken,
@@ -20,11 +15,16 @@ import {
   TokenType,
   Validator,
 } from '@dao-dao/types'
+import { cosmos } from '@dao-dao/utils/protobuf'
 
 import { getChainAssets } from './assets'
 import { CHAIN_ENDPOINTS, MAINNET, SUPPORTED_CHAINS } from './constants'
 import { getFallbackImage } from './getFallbackImage'
 import { aminoTypes, typesRegistry } from './messages/protobuf'
+import {
+  Validator as RpcValidator,
+  bondStatusToJSON,
+} from './protobuf/codegen/cosmos/staking/v1beta1/staking'
 
 export const getRpcForChainId = (chainId: string): string => {
   let rpc = (

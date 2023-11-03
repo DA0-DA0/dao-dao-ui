@@ -57,8 +57,7 @@ export const MultipleChoiceOptionViewer = ({
   const toggleExpanded = () => setExpanded((e) => !e)
 
   const rawDecodedMessages = useMemo(
-    () =>
-      JSON.stringify(decodedMessages.map(decodeRawDataForDisplay), null, 2),
+    () => JSON.stringify(decodedMessages.map(decodeRawDataForDisplay), null, 2),
     [decodedMessages]
   )
 

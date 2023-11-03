@@ -1,9 +1,5 @@
 import { useCallback, useMemo } from 'react'
 
-import {
-  MsgRegisterFeeShare,
-  MsgUpdateFeeShare,
-} from '@dao-dao/protobuf/codegen/juno/feeshare/v1/tx'
 import { GasEmoji } from '@dao-dao/stateless'
 import { ChainId } from '@dao-dao/types'
 import {
@@ -15,6 +11,10 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import { isDecodedStargateMsg, makeStargateMessage } from '@dao-dao/utils'
+import {
+  MsgRegisterFeeShare,
+  MsgUpdateFeeShare,
+} from '@dao-dao/utils/protobuf/codegen/juno/feeshare/v1/tx'
 
 import { AddressInput } from '../../../../components/AddressInput'
 import { FeeShareComponent, FeeShareData } from './Component'

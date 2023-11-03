@@ -7,11 +7,6 @@ import { useTranslation } from 'react-i18next'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import { v4 as uuidv4 } from 'uuid'
 
-import { CommunityPoolSpendProposal } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
-import { MsgCommunityPoolSpend } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/tx'
-import { Cosmos_govv1beta1Content_FromAmino } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { ParameterChangeProposal } from '@dao-dao/protobuf/codegen/cosmos/params/v1beta1/params'
-import { SoftwareUpgradeProposal } from '@dao-dao/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 import {
   Button,
   CodeMirrorInput,
@@ -55,6 +50,11 @@ import {
   validateJSON,
   validateRequired,
 } from '@dao-dao/utils'
+import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
+import { MsgCommunityPoolSpend } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { Cosmos_govv1beta1Content_FromAmino } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { ParameterChangeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/params/v1beta1/params'
+import { SoftwareUpgradeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 
 import { CommunityPoolTransferData } from '../../treasury/CommunityPoolTransfer/Component'
 

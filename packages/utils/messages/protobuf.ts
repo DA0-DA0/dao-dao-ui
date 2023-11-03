@@ -20,44 +20,6 @@ import {
 import Long from 'long'
 
 import {
-  cosmosAminoConverters,
-  cosmosProtoRegistry,
-  cosmwasmAminoConverters,
-  cosmwasmProtoRegistry,
-  gaiaAminoConverters,
-  gaiaProtoRegistry,
-  google,
-  ibcAminoConverters,
-  ibcProtoRegistry,
-  junoAminoConverters,
-  junoProtoRegistry,
-  osmosisAminoConverters,
-  osmosisProtoRegistry,
-  publicawesomeAminoConverters as stargazeAminoConverters,
-  publicawesomeProtoRegistry as stargazeProtoRegistry,
-} from '@dao-dao/protobuf'
-import { MsgSend } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/tx'
-import {
-  MsgSetWithdrawAddress,
-  MsgWithdrawDelegatorReward,
-} from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/tx'
-import { MsgExecLegacyContent } from '@dao-dao/protobuf/codegen/cosmos/gov/v1/tx'
-import { TextProposal } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { MsgVote } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/tx'
-import {
-  MsgBeginRedelegate,
-  MsgDelegate,
-  MsgUndelegate,
-} from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/tx'
-import {
-  MsgClearAdmin,
-  MsgExecuteContract,
-  MsgInstantiateContract,
-  MsgMigrateContract,
-  MsgUpdateAdmin,
-} from '@dao-dao/protobuf/codegen/cosmwasm/wasm/v1/tx'
-import { Any } from '@dao-dao/protobuf/codegen/google/protobuf/any'
-import {
   CosmosMsgFor_Empty,
   DecodedStargateMsg,
   GovProposal,
@@ -74,6 +36,42 @@ import {
   govVoteOptionToCwVoteOption,
 } from '../gov'
 import { objectMatchesStructure } from '../objectMatchesStructure'
+import {
+  cosmosAminoConverters,
+  cosmosProtoRegistry,
+  cosmwasmAminoConverters,
+  cosmwasmProtoRegistry,
+  google,
+  ibcAminoConverters,
+  ibcProtoRegistry,
+  junoAminoConverters,
+  junoProtoRegistry,
+  osmosisAminoConverters,
+  osmosisProtoRegistry,
+  publicawesomeAminoConverters as stargazeAminoConverters,
+  publicawesomeProtoRegistry as stargazeProtoRegistry,
+} from '../protobuf'
+import { MsgSend } from '../protobuf/codegen/cosmos/bank/v1beta1/tx'
+import {
+  MsgSetWithdrawAddress,
+  MsgWithdrawDelegatorReward,
+} from '../protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { MsgExecLegacyContent } from '../protobuf/codegen/cosmos/gov/v1/tx'
+import { TextProposal } from '../protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgVote } from '../protobuf/codegen/cosmos/gov/v1beta1/tx'
+import {
+  MsgBeginRedelegate,
+  MsgDelegate,
+  MsgUndelegate,
+} from '../protobuf/codegen/cosmos/staking/v1beta1/tx'
+import {
+  MsgClearAdmin,
+  MsgExecuteContract,
+  MsgInstantiateContract,
+  MsgMigrateContract,
+  MsgUpdateAdmin,
+} from '../protobuf/codegen/cosmwasm/wasm/v1/tx'
+import { Any } from '../protobuf/codegen/google/protobuf/any'
 import { isCosmWasmStargateMsg } from './cw'
 
 // Convert CosmWasm message to its encoded protobuf equivalent.

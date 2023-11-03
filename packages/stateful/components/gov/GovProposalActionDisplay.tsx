@@ -2,8 +2,6 @@ import { useMemo } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { CommunityPoolSpendProposal } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
-import { TextProposal } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import {
   ActionsRenderer,
   CosmosMessageDisplay,
@@ -15,6 +13,8 @@ import {
   GovProposalVersion,
 } from '@dao-dao/types'
 import { decodeMessages, decodeRawDataForDisplay } from '@dao-dao/utils'
+import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
+import { TextProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useActionsForMatching } from '../../actions'
 import { PayEntityDisplay } from '../PayEntityDisplay'
