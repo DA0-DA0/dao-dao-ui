@@ -403,7 +403,10 @@ export const SelfRelayExecuteModal = ({
                 {
                   bank: {
                     send: {
-                      amount: coins(fundsNeeded, relayer.feeToken.denom),
+                      amount: coins(
+                        BigInt(fundsNeeded).toString(),
+                        relayer.feeToken.denom
+                      ),
                       to_address: relayer.relayerAddress,
                     },
                   },
@@ -472,7 +475,10 @@ export const SelfRelayExecuteModal = ({
               grant: {
                 authorization: SendAuthorization.toProtoMsg(
                   SendAuthorization.fromPartial({
-                    spendLimit: coins(newBalance, relayer.feeToken.denom),
+                    spendLimit: coins(
+                      BigInt(newBalance).toString(),
+                      relayer.feeToken.denom
+                    ),
                   })
                 ),
                 expiration: {
@@ -837,7 +843,7 @@ export const SelfRelayExecuteModal = ({
         await client.sign.sendTokens(
           relayerAddress,
           wallet.address,
-          coins(remainingTokensAfterFee, feeDenom),
+          coins(BigInt(remainingTokensAfterFee).toString(), feeDenom),
           fee
         )
 

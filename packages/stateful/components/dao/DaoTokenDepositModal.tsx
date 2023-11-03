@@ -17,7 +17,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   CHAIN_GAS_MULTIPLIER,
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   processError,
 } from '@dao-dao/utils'
@@ -101,10 +101,10 @@ export const DaoTokenDepositModal = ({
 
       setLoading(true)
       try {
-        const microAmount = convertDenomToMicroDenomWithDecimals(
+        const microAmount = convertDenomToMicroDenomStringWithDecimals(
           amount,
           token.decimals
-        ).toString()
+        )
 
         if (token.type === 'native') {
           await signingCosmWasmClient.sendTokens(

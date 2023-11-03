@@ -17,6 +17,7 @@ import {
 import { BaseStakingModalProps } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
+  convertDenomToMicroDenomStringWithDecimals,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   processError,
@@ -117,7 +118,7 @@ const InnerStakingModal = ({
             CHAIN_GAS_MULTIPLIER,
             undefined,
             coins(
-              convertDenomToMicroDenomWithDecimals(
+              convertDenomToMicroDenomStringWithDecimals(
                 amount,
                 governanceToken.decimals
               ),

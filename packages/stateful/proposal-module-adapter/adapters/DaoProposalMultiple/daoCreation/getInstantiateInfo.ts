@@ -87,7 +87,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
         info: {
           admin: { core_module: {} },
           code_id: codeIds.DaoPreProposeMultiple,
-          label: `DAO_${name}_pre-propose-${DaoProposalMultipleAdapterId}`,
+          label: `DAO_${name.trim()}_pre-propose-${DaoProposalMultipleAdapterId}`,
           msg: Buffer.from(
             JSON.stringify(preProposeMultipleInstantiateMsg),
             'utf8'
@@ -112,7 +112,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
   return {
     admin: { core_module: {} },
     code_id: codeIds.DaoProposalMultiple,
-    label: `DAO_${name}_${DaoProposalMultipleAdapterId}`,
+    label: `DAO_${name.trim()}_${DaoProposalMultipleAdapterId}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
     // TODO(neutron-2.3.0): add back in here and in instantiate schema.
     ...(chainId !== ChainId.NeutronMainnet && {

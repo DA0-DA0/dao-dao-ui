@@ -283,7 +283,9 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
                   info: {
                     admin: { core_module: {} },
                     code_id: codeIds.DaoPreProposeSingle,
-                    label: `DAO_${name}_pre-propose-${DaoProposalSingleAdapter.id}`,
+                    label: `DAO_${name.trim()}_pre-propose-${
+                      DaoProposalSingleAdapter.id
+                    }`,
                     msg: Buffer.from(
                       JSON.stringify({
                         deposit_info: depositInfo

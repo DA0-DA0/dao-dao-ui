@@ -1,4 +1,4 @@
-import { coins } from '@cosmjs/amino'
+import { coins } from '@cosmjs/stargate'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
@@ -15,7 +15,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   isDecodedStargateMsg,
@@ -105,11 +105,6 @@ export const makeCommunityPoolDepositAction: ActionMaker<
           throw new Error(`Unknown token: ${denom}`)
         }
 
-        const microAmount = convertDenomToMicroDenomWithDecimals(
-          amount,
-          token.decimals
-        )
-
         return maybeMakePolytoneExecuteMessage(
           currentChainId,
           chainId,
@@ -118,7 +113,13 @@ export const makeCommunityPoolDepositAction: ActionMaker<
               typeUrl: MsgFundCommunityPool.typeUrl,
               value: MsgFundCommunityPool.fromPartial({
                 depositor: address,
-                amount: coins(microAmount, denom),
+                amount: coins(
+                  convertDenomToMicroDenomStringWithDecimals(
+                    amount,
+                    token.decimals
+                  ),
+                  denom
+                ),
               }),
             },
           })
