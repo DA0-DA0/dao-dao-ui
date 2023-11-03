@@ -1,3 +1,4 @@
+import { AminoMsg } from '@cosmjs/amino'
 import {
   MsgClearAdminEncodeObject,
   MsgExecuteContractEncodeObject,
@@ -529,6 +530,20 @@ export const decodeRawProtobufMsg = (
   typeUrl,
   value: decodeProtobufValue(typeUrl, value, recursive),
 })
+
+// Convert protobuf Any into its Amino msg.
+export const rawProtobufMsgToAmino = (
+  ...params: Parameters<typeof decodeRawProtobufMsg>
+): AminoMsg => aminoTypes.toAmino(decodeRawProtobufMsg(...params))
+
+// Convert Amino msg into raw protobuf Any.
+export const aminoToRawProtobufMsg = (msg: AminoMsg): Any => {
+  const { typeUrl, value } = aminoTypes.fromAmino(msg)
+  return {
+    typeUrl,
+    value: encodeProtobufValue(typeUrl, value),
+  }
+}
 
 // Encodes a protobuf message from its JSON representation into a `StargateMsg`
 // that `CosmWasm` understands.

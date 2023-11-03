@@ -2,6 +2,7 @@
 import { Grant, GrantAmino, GrantSDKType } from "./authz";
 import { Any, AnyProtoMsg, AnyAmino, AnySDKType } from "../../../google/protobuf/any";
 import { BinaryReader, BinaryWriter } from "../../../binary";
+import { aminoToRawProtobufMsg, rawProtobufMsgToAmino } from '@dao-dao/utils'
 /**
  * MsgGrant is a request type for Grant method. It declares authorization to the grantee
  * on behalf of the granter with the provided expiration time.
@@ -361,14 +362,14 @@ export const MsgExec = {
   fromAmino(object: MsgExecAmino): MsgExec {
     return {
       grantee: object.grantee,
-      msgs: Array.isArray(object?.msgs) ? object.msgs.map((e: any) => Cosmos_basev1beta1Msg_FromAmino(e)) : []
+      msgs: Array.isArray(object?.msgs) ? object.msgs.map((e: any) => aminoToRawProtobufMsg(e)) : []
     };
   },
   toAmino(message: MsgExec, useInterfaces: boolean = false): MsgExecAmino {
     const obj: any = {};
     obj.grantee = message.grantee;
     if (message.msgs) {
-      obj.msgs = message.msgs.map(e => e ? Cosmos_basev1beta1Msg_ToAmino((e as Any), useInterfaces) : undefined);
+      obj.msgs = message.msgs.map(e => e ? rawProtobufMsgToAmino(e) : undefined);
     } else {
       obj.msgs = [];
     }

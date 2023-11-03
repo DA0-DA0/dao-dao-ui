@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@chain-registry/assets": "^1.20.0",
+    "@cosmjs/amino": "^0.31.0",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
     "@cosmjs/encoding": "^0.31.0",
     "@cosmjs/stargate": "^0.31.0",
