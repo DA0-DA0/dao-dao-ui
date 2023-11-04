@@ -611,7 +611,7 @@ export const NewGovProposal = () => {
           {t('title.configuration')}
         </p>
 
-        <div className="flex max-w-2xl flex-col gap-4">
+        <div className="flex flex-col gap-4">
           <SuspenseLoader fallback={<Loader size={36} />}>
             <GovActionsProvider>
               <governanceProposalAction.Component
