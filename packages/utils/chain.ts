@@ -139,10 +139,12 @@ export const maybeGetAssetListForChainId = (
 }
 
 const cachedChainsByName: Record<string, Chain | undefined> = {}
+export const maybeGetChainForChainName = (
+  chainName: string
+): Chain | undefined =>
+  chains.find(({ chain_name }) => chain_name === chainName)
 export const getChainForChainName = (chainName: string): Chain => {
-  cachedChainsByName[chainName] ||= chains.find(
-    ({ chain_name }) => chain_name === chainName
-  )
+  cachedChainsByName[chainName] ||= maybeGetChainForChainName(chainName)
   if (!cachedChainsByName[chainName]) {
     throw new Error(`Chain with name ${chainName} not found`)
   }

@@ -38,6 +38,7 @@ import {
   getChainForChainName,
   getImageUrlForChainId,
   makeValidateAddress,
+  maybeGetChainForChainName,
   toAccessibleImageUrl,
   transformBech32Address,
   validateRequired,
@@ -142,6 +143,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             // Either chain is the source spend chain.
             (chain_1.chain_name === spendChain.chain_name ||
               chain_2.chain_name === spendChain.chain_name) &&
+            // Both chains exist in the registry
+            maybeGetChainForChainName(chain_1.chain_name) &&
+            maybeGetChainForChainName(chain_2.chain_name) &&
             // An ics20 transfer channel exists.
             channels.some(
               ({ chain_1, chain_2, version }) =>
