@@ -96,6 +96,96 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         },
       },
     },
+    [ChainId.TerpTestnet]: {
+      name: 'terp',
+      mainnet: true,
+      accentColor: '#f74a49',
+      factoryContractAddress:
+        'terp13ar5ahmk46m38c35fqr5wwhz6jwv44z7d3mp8pm8xzvchp89c5kqpxthrj',
+      supportsV1GovProposals: true,
+      indexes: {
+        search: 'terp_daos',
+        featured: 'terp_featured_daos',
+      },
+      explorerUrlTemplates: {
+        tx: 'https://testnet.itrocket.net/terp/tx/REPLACE',
+        gov: 'https://testnet.itrocket.net/terp/gov',
+        govProp: 'https://testnet.itrocket.net/terp/gov/REPLACE',
+        wallet: 'https://testnet.itrocket.net/terp/account/REPLACE',
+      },
+      codeIds: {
+        // https://github.com/CosmWasm/cw-plus
+        Cw4Group: 44, // v0.16
+        // https://github.com/CosmWasm/cw-nfts
+        Cw721Base: 43, // v0.16
+
+        // ContractVersion.V230
+        CwPayrollFactory: 31,
+        CwTokenSwap: 32,
+        CwTokenfactoryIssuer: 45,
+        CwVesting: 42,
+        DaoCore: 33,
+        DaoMigrator: 41,
+        DaoPreProposeMultiple: 34,
+        DaoPreProposeSingle: 35,
+        DaoProposalMultiple: 36,
+        DaoProposalSingle: 37,
+        DaoVotingCw4: 38,
+        DaoVotingCw721Staked: 39,
+        DaoVotingTokenStaked: 40,
+
+        // v2.1.0 and below, for migrating v1 to v2 DAOs
+        // ContractVersion.V210
+        Cw20Stake: 30,
+        DaoVotingCw20Staked: 46,
+      },
+      polytone: {
+        [ChainId.OsmosisMainnet]: {
+          // juno
+          note: 'juno1ads7gcpje0y5jxhtn3ntsqs8kg3ahch9u953jk6v0njq4l39m3us5sxw68',
+          // juno
+          listener:
+            'juno1f2676a53wxnnp05ezch69hwp5lpxug5qm07lyeywlf57y9ghw46qylrshd',
+          // osmosis
+          voice:
+            'osmo1af93h8xcszszes2a0kjms5zpm5ns3fys4aez2f40fgz428hc8aws28klzs',
+          // juno
+          localConnection: 'connection-0',
+          // osmosis
+          remoteConnection: 'connection-1142',
+          // juno
+          localChannel: 'channel-288',
+          // osmosis
+          remoteChannel: 'channel-1664',
+          // juno
+          // localClient: '07-tendermint-0',
+          // osmosis
+          // remoteClient: '07-tendermint-1457',
+        },
+        [ChainId.StargazeMainnet]: {
+          // juno
+          note: 'juno1vupyxq9q2mmg5jjcd4cl0ujav8a3xn0a9ahyhtmj0zjaje2gfejsyvyf3z',
+          // juno
+          listener:
+            'juno1w9q8dgfl0n59gpuagn2r8j89w6y5ad4z8yvct096zawksaevx2nqzw3x9q',
+          // stargaze
+          voice:
+            'stars1g9u4zmjj3xmu2me3vq07fqedqp7t0d9xjp3tqff9r2awwc2k8wvq7d39he',
+          // juno
+          localConnection: 'connection-30',
+          // stargaze
+          remoteConnection: 'connection-11',
+          // juno
+          localChannel: 'channel-305',
+          // stargaze
+          remoteChannel: 'channel-201',
+          // juno
+          // localClient: '07-tendermint-44',
+          // stargaze
+          // remoteClient: '07-tendermint-13',
+        },
+      },
+    },
     [ChainId.OsmosisMainnet]: {
       name: 'osmosis',
       mainnet: true,
@@ -454,6 +544,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.JunoTestnet]: {
     rpc: 'https://uni-rpc.reece.sh',
     rest: 'https://uni-api.reece.sh',
+  },
+  [ChainId.TerpTestnet]: {
+    rpc: 'https://terp-testnet-rpc.itrocket.net',
+    rest: 'https://terp-testnet-api.itrocket.net',
   },
   [ChainId.OsmosisMainnet]: {
     rpc: 'https://osmosis-rpc.polkachu.com',
