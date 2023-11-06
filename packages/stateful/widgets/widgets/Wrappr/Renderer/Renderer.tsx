@@ -19,7 +19,7 @@ import {
   LoadingData,
 } from '@dao-dao/types'
 
-import { WrapprMarkdown } from '../components/WrapprMarkdown'
+import { WrapprMarkdown } from '../components/WrapprPDF'
 import { WRAPPR_WIDGET_ID } from '../constants'
 import { Wrappr } from '../types'
 import { WrapprList } from './WrapprList'

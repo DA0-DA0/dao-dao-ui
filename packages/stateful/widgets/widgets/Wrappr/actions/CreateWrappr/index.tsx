@@ -1,6 +1,5 @@
 // TODO: 
-// - Call the contract that interacts with Axelar GMP
-// - handle fees & responses of GMP
+
 
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
@@ -26,13 +25,11 @@ import { ChainId, TokenType } from '@dao-dao/types'
 const useDefaults: UseDefaults<CreateWrapprData> = () => ({
   // key of the type of Wrappr 
   key: '',
-  // chain name of message destination: https://docs.axelar.dev/dev/reference/mainnet-chain-names
-  destination_chain: '',
-  // address of message destination
-  destination_address: '',
   uploaded: false,
   // wrappr data 
   data: {
+    entity: '',
+    jurisdiction: '',
     name: '',
     symbol: '',
     description: '',
@@ -51,8 +48,8 @@ const Component: ActionComponent = (props) => {
   const { watch } = useFormContext<CreateWrapprData>()
   const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
   const tokenUri = watch((props.fieldNamePrefix + 'tokenUri') as 'tokenUri')
-  const destinationChain = watch ((props.fieldNamePrefix + 'destinationChain') as 'destinationChain')
-  const destinationAddress = watch ((props.fieldNamePrefix + 'destinationAddress') as 'destinationAddress')
+  const entity = watch ((props.fieldNamePrefix + 'entity') as 'entity')
+  const jurisdiction = watch ((props.fieldNamePrefix + 'jurisdiction') as 'jurisdiction')
   const uploaded = watch((props.fieldNamePrefix + 'uploaded') as 'uploaded')
 
   const wrapprLoading = useCachedLoading(
@@ -121,23 +118,22 @@ export const makeCreateWrapprActionMaker =
             contract_addr: {},
             funds: {},
             msg: {
-              send_msg_evm: {
-                destination_chain: {},
-                destination_address: {},
-                message: {},
+              mint_wrappr: {
+                entity: {},
+                jurisdiction: {},
               },
             },
           },
         },
       }) &&
       msg.wasm.execute.contract_addr === contract &&
-      msg.wasm.execute.msg.send_msg_evm.destinationChain && 
-      msg.wasm.execute.msg.send_msg_evm.destinationAddress
+      msg.wasm.execute.msg.mint_wrappr.entity && 
+      msg.wasm.execute.msg.mint_wrappr.jurisdiction
         ? {
             match: true,
             data: {
-              destinationChain: msg.wasm.execute.msg.send_msg_evm.destinationChain,
-              destinationAddress: msg.wasm.execute.msg.send_msg_evm.destinationAddress,
+              destinationChain: msg.wasm.execute.msg.mint_wrappr.entity,
+              destinationAddress: msg.wasm.execute.msg.mint_wrappr.jurisdiction,
               uploaded: true,
             },
           }
@@ -147,17 +143,16 @@ export const makeCreateWrapprActionMaker =
 
     const useTransformToCosmos: UseTransformToCosmos<CreateWrapprData> = () =>
       useCallback(
-        ({ destinationChain, destinationAddress, solidityMessage }) =>
+        ({ entity, jurisdiction }) =>
           makeWasmMessage({
             wasm: {
               execute: {
                 contract_addr: contract,
                 funds: [],
                 msg: {
-                  send_msg_evm: {
-                    destination_chain: destinationChain,
-                    destination_address: destinationAddress,
-                    message: solidityMessage,
+                  mint_wrappr: {
+                    entity: entity,
+                    jurisdiction: jurisdiction,
                   },
                 },
               },

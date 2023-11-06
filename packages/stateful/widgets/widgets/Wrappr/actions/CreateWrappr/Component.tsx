@@ -19,16 +19,19 @@ import {
   AddressInput,
   TokenInput,
   TokenAmountDisplay,
+  PDFViewer,
 } from '@dao-dao/stateless'
 import { ActionComponent, ActionContextType, GenericTokenBalance, LoadingData } from '@dao-dao/types'
 import { convertMicroDenomToDenomWithDecimals, processError, uploadNft, validateRequired } from '@dao-dao/utils'
 
-// import { WrapprMarkdown } from '../../components/WrapprMarkdown'
+// import { WrapprPDF } from '../../components/WrapprPDF'
 import { LLCJurisdictionOptions, Wrappr } from '../../types'
 import { wrapprMainnetChains } from '../../constants'
 import { useActionOptions } from '../../../../../actions'
 
 export type CreateWrapprData = {
+  entity: string
+  jurisdiction: string
   tokenId: string
   tokenUri: string
   // Used while creating, uploaded to IPFS.
@@ -183,7 +186,7 @@ const balance = convertMicroDenomToDenomWithDecimals(
             },
             {
               label: t('button.createNonProfitWrappr'),
-              value: 'nonProfit',
+              value: 'una',
             },
           ]}
         />
@@ -218,7 +221,7 @@ const balance = convertMicroDenomToDenomWithDecimals(
 )}
 
 
-{mode === 'nonProfit' && (
+{mode === 'una' && (
    <div className="flex grow flex-col gap-4">
    <div className="flex flex-col gap-1">
      <InputLabel name={t('title.name')} />
@@ -333,7 +336,6 @@ const balance = convertMicroDenomToDenomWithDecimals(
 {/* TODO: Handle Fees.
 
 A static mint fee of X will be set to the DAO-DAO DAO treasury. 
-A gas fee for Axelar's GMP protocol must be included.
 
 Users will be able to select between
   - DAO Treasury
@@ -360,7 +362,7 @@ To handle fees.
         </Button>
       )}
 
-      {/* <WrapprMarkdown wrappr={wrapprLoading.data} /> */}
+    {/* <PDFViewer src={}/> */}
     </>
   )
 }

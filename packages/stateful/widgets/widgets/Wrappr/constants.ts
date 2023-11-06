@@ -1,7 +1,5 @@
 import {Contracts, Templates} from './types'
-import { loadEnv } from './utils/loadEnv';
 
-loadEnv();
 
 export const WRAPPR_WIDGET_ID = 'wrappr'
 
@@ -11,10 +9,7 @@ export enum Environment {
   MAINNET = "mainnet",
 }
 
-export const ENVIRONMENT = "testnet" as Environment;
 
-export const COSMOS_PROXY_RPC_TESTNET = "https://testnet.rpc.axelar.dev";
-export const COSMOS_PROXY_RPC_MAINNET = "https://mainnet.rpc.axelar.dev";
 
 
 export const wrapprMainnetChains = [

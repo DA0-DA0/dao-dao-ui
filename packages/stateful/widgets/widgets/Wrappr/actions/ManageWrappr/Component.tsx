@@ -23,7 +23,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { WrapprMarkdown } from '../../components/WrapprMarkdown'
+import { WrapprMarkdown } from '../../components/WrapprPDF'
 import { Wrappr } from '../../types'
 
 export type ManageWrapprData = {

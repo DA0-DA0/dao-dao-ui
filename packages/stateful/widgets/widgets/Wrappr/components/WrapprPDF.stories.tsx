@@ -1,22 +1,24 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { WrapprMarkdown } from './WrapprMarkdown'
+import { WrapprPDF } from './WrapprPDF'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / widgets / widgets / Wrappr / components / WrapprMarkdown',
-  component: WrapprMarkdown,
-} as ComponentMeta<typeof WrapprMarkdown>
+    'DAO DAO / packages / stateful / widgets / widgets / Wrappr / components / WrapprPDF',
+  component: WrapprPDF,
+} as ComponentMeta<typeof WrapprPDF>
 
-const Template: ComponentStory<typeof WrapprMarkdown> = (args) => (
-  <WrapprMarkdown {...args} />
+const Template: ComponentStory<typeof WrapprPDF> = (args) => (
+  <WrapprPDF {...args} />
 )
 
 const now = new Date()
 
 export const Default = Template.bind({})
 Default.args = {
-  post: {
+  wrappr: {
+    entity: '',
+    jurisdiction: '',
     id: '1',
     title: 'This is a post',
     content: '## Hello!\n\nI am a post.',

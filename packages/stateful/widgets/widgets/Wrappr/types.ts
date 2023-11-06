@@ -1,8 +1,3 @@
-import {
-  AssetConfig,
-  AssetInfoForChain,
-} from "@axelar-network/axelarjs-sdk";
-
 
 export type WrapprData = {
   // Wrappr  contract address.
@@ -47,7 +42,8 @@ export type WrapprLong = {
 // create wrappr template keys
 
 export type Create = {
-  image: FileList
+  entity: string
+  jurisdiction: string
   name: string
   symbol: string
   description: string
@@ -63,38 +59,4 @@ export type Create = {
 
 export interface Templates {
   [key: string]: string[]
-}
-
-// Axelar GMP types: [source - https://github.com/axelarnetwork/axelar-satellite/blob/main/src/types/index.ts#L34 ] 
-
-export type AssetAlias = Pick<
-  AssetInfoForChain,
-  | "assetSymbol"
-  | "assetName"
-  | "minDepositAmt"
-  | "tokenAddress"
-  | "ibcDenom"
-  | "fullDenomPath"
-  | "common_key"
-> & {
-  mintLimit: number;
-  iconSrc?: string;
-  decimals?: number;
-  addedViaSquid?: boolean;
-};
-
-export interface AssetConfigExtended extends AssetConfig {
-  id: string;
-  native_chain: string;
-  gas_token_id?: string;
-  wrapped_erc20: string;
-  is_gas_token: boolean;
-  isSquidAsset: boolean;
-  isSquidOnlyAsset?: boolean;
-  chain_aliases: Record<
-    // this overwrites the AssetInfo in the sdk because the sdk does not have all the values eg: mintLimit
-    string,
-    AssetAlias
-  >;
-  iconSrc?: string;
 }
