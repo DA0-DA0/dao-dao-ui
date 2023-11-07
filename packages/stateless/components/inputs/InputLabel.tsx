@@ -12,6 +12,7 @@ export interface InputLabelProps
   containerProps?: Omit<ComponentProps<'label'>, 'children'>
   children?: ReactNode | ReactNode[]
   optional?: boolean
+  primary?: boolean
 }
 
 export const InputLabel = ({
@@ -22,6 +23,7 @@ export const InputLabel = ({
   containerProps: { className: labelClassName, ...containerProps } = {},
   children,
   optional,
+  primary,
   ...rest
 }: InputLabelProps) => {
   const { t } = useTranslation()
@@ -32,7 +34,11 @@ export const InputLabel = ({
       {...containerProps}
     >
       <span
-        className={clsx('secondary-text', { 'font-mono': mono }, className)}
+        className={clsx(
+          primary ? 'primary-text' : 'secondary-text',
+          mono && 'font-mono',
+          className
+        )}
         {...rest}
       >
         {name}

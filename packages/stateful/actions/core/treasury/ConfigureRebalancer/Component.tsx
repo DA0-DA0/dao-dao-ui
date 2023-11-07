@@ -1,5 +1,5 @@
 import { Close } from '@mui/icons-material'
-import { useEffect, useState } from 'react'
+import { ComponentType, useEffect, useState } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -12,11 +12,13 @@ import {
   NumberInput,
   RebalancerProjector,
   RebalancerProjectorAsset,
+  SelectInput,
   SwitchCard,
   TokenInput,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
+  AddressInputProps,
   AmountWithTimestamp,
   GenericTokenBalance,
   LoadingData,
@@ -28,6 +30,8 @@ import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
   getNativeTokenForChainId,
+  makeValidateAddress,
+  validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -48,9 +52,7 @@ export type ConfigureRebalancerData = {
     ki: number
     kd: number
   }
-  // TODO(rebalancer): Support setting this
   maxLimit?: number
-  // TODO(rebalancer): Support setting this
   targetOverrideStrategy: TargetOverrideStrategy
 }
 
@@ -62,6 +64,7 @@ export type ConfigureRebalancerOptions = {
       prices: AmountWithTimestamp[]
     }[]
   >
+  AddressInput: ComponentType<AddressInputProps<ConfigureRebalancerData>>
 }
 
 export const ConfigureRebalancerComponent: ActionComponent<
@@ -70,11 +73,12 @@ export const ConfigureRebalancerComponent: ActionComponent<
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { nativeBalances, historicalPrices },
+  options: { nativeBalances, historicalPrices, AddressInput },
 }) => {
   const { t } = useTranslation()
   const {
     chainId,
+    chain: { bech32_prefix: bech32Prefix },
     config: { valence },
   } = useSupportedChainContext()
 
@@ -107,6 +111,9 @@ export const ConfigureRebalancerComponent: ActionComponent<
     (acc, { percent }) => acc + percent,
     0
   )
+
+  const maxLimit = watch((fieldNamePrefix + 'maxLimit') as 'maxLimit')
+  const maxLimitEnabled = maxLimit !== undefined
 
   // Validate all add up to 100%.
   useEffect(() => {
@@ -156,7 +163,11 @@ export const ConfigureRebalancerComponent: ActionComponent<
   return (
     <>
       <div className="flex flex-col gap-2 self-start">
-        <InputLabel name={t('form.baseToken')} />
+        <InputLabel name={t('form.baseToken')} primary />
+        <p className="body-text -mt-1 max-w-prose text-sm text-text-secondary">
+          {t('form.rebalancerBaseTokenDescription')}
+        </p>
+
         <TokenInput
           onSelectToken={({ denomOrAddress }) =>
             setValue(
@@ -181,8 +192,23 @@ export const ConfigureRebalancerComponent: ActionComponent<
         />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <InputLabel name={t('form.tokens')} />
+      <div className="flex flex-col gap-2 self-start">
+        <InputLabel name={t('form.trustee')} optional primary />
+        <p className="body-text -mt-1 max-w-prose text-sm text-text-secondary">
+          {t('form.rebalancerTrusteeDescription')}
+        </p>
+
+        <AddressInput
+          disabled={!isCreating}
+          error={errors?.trustee}
+          fieldName={(fieldNamePrefix + 'trustee') as 'trustee'}
+          register={register}
+          validation={[makeValidateAddress(bech32Prefix, false)]}
+        />
+      </div>
+
+      <div className="flex flex-col gap-2 self-start">
+        <InputLabel name={t('form.tokenTargets')} primary />
 
         {/* TODO: support minBalance */}
         {tokensFields.map(({ id }, index) => {
@@ -190,45 +216,98 @@ export const ConfigureRebalancerComponent: ActionComponent<
             (fieldNamePrefix +
               `tokens.${index}.denom`) as `tokens.${number}.denom`
           )
+          const watchMinBalance = watch(
+            (fieldNamePrefix +
+              `tokens.${index}.minBalance`) as `tokens.${number}.minBalance`
+          )
+          const minBalanceEnabled = watchMinBalance !== undefined
+
+          const selectedToken = allowedTokenBalances.find(
+            ({ token }) => token.denomOrAddress === watchDenom
+          )?.token
 
           return (
-            <div key={id}>
-              <div className="flex flex-row items-stretch gap-2">
-                <TokenInput
-                  amount={{
-                    watch,
-                    setValue,
-                    register,
-                    fieldName: (fieldNamePrefix +
-                      `tokens.${index}.percent`) as `tokens.${number}.percent`,
-                    error: errors?.tokens?.[index]?.percent,
-                    min: 0.01,
-                    max: 100,
-                    step: 0.01,
-                    unit: '%',
-                  }}
-                  onSelectToken={({ denomOrAddress }) =>
-                    setValue(
-                      (fieldNamePrefix +
-                        `tokens.${index}.denom`) as `tokens.${number}.denom`,
-                      denomOrAddress
-                    )
-                  }
-                  readOnly={!isCreating}
-                  selectedToken={
-                    allowedTokenBalances.find(
-                      ({ token }) => token.denomOrAddress === watchDenom
-                    )?.token
-                  }
-                  tokens={
-                    nativeBalances.loading
-                      ? { loading: true }
-                      : {
-                          loading: false,
-                          data: allowedTokenBalances.map(({ token }) => token),
+            <div key={id} className="rounded-md bg-background-tertiary p-4">
+              <div className="flex flex-row items-stretch justify-between gap-6">
+                <div className="flex flex-col gap-2">
+                  <TokenInput
+                    amount={{
+                      watch,
+                      setValue,
+                      register,
+                      fieldName: (fieldNamePrefix +
+                        `tokens.${index}.percent`) as `tokens.${number}.percent`,
+                      error: errors?.tokens?.[index]?.percent,
+                      min: 0.01,
+                      max: 100,
+                      step: 0.01,
+                      unit: '%',
+                    }}
+                    onSelectToken={({ denomOrAddress }) =>
+                      setValue(
+                        (fieldNamePrefix +
+                          `tokens.${index}.denom`) as `tokens.${number}.denom`,
+                        denomOrAddress
+                      )
+                    }
+                    readOnly={!isCreating}
+                    selectedToken={selectedToken}
+                    tokens={
+                      nativeBalances.loading
+                        ? { loading: true }
+                        : {
+                            loading: false,
+                            data: allowedTokenBalances.map(
+                              ({ token }) => token
+                            ),
+                          }
+                    }
+                  />
+
+                  <div className="flex flex-row items-stretch gap-2">
+                    <SwitchCard
+                      enabled={minBalanceEnabled}
+                      label={t('form.minBalance')}
+                      onClick={() =>
+                        setValue(
+                          (fieldNamePrefix +
+                            `tokens.${index}.minBalance`) as `tokens.${number}.minBalance`,
+                          minBalanceEnabled ? undefined : 1
+                        )
+                      }
+                      readOnly={!isCreating}
+                      sizing="sm"
+                      tooltip={t('form.rebalancerMinBalanceDescription')}
+                      tooltipIconSize="sm"
+                    />
+
+                    {minBalanceEnabled && (
+                      <NumberInput
+                        disabled={!isCreating}
+                        error={errors?.tokens?.[index]?.minBalance}
+                        fieldName={
+                          (fieldNamePrefix +
+                            `tokens.${index}.minBalance`) as `tokens.${number}.minBalance`
                         }
-                  }
-                />
+                        hidePlusMinus
+                        min={convertMicroDenomToDenomWithDecimals(
+                          1,
+                          selectedToken?.decimals ?? 0
+                        )}
+                        register={register}
+                        setValue={setValue}
+                        sizing="md"
+                        step={convertMicroDenomToDenomWithDecimals(
+                          1,
+                          selectedToken?.decimals ?? 0
+                        )}
+                        unit={'$' + selectedToken?.symbol}
+                        validation={[validatePositive]}
+                        watch={watch}
+                      />
+                    )}
+                  </div>
+                </div>
 
                 {isCreating && (
                   <IconButton
@@ -244,7 +323,8 @@ export const ConfigureRebalancerComponent: ActionComponent<
               <InputErrorMessage
                 error={
                   errors?.tokens?.[index]?.percent ||
-                  errors?.tokens?.[index]?.denom
+                  errors?.tokens?.[index]?.denom ||
+                  errors?.tokens?.[index]?.minBalance
                 }
               />
             </div>
@@ -273,6 +353,64 @@ export const ConfigureRebalancerComponent: ActionComponent<
             </p>
           )
         )}
+      </div>
+
+      <div className="flex flex-col gap-2 self-start">
+        <InputLabel name={t('form.targetOverrideStrategy')} primary />
+        <p className="body-text -mt-1 max-w-prose text-sm text-text-secondary">
+          {t('form.targetOverrideStrategyDescription')}
+        </p>
+
+        <SelectInput
+          disabled={!isCreating}
+          fieldName={
+            (fieldNamePrefix +
+              'targetOverrideStrategy') as 'targetOverrideStrategy'
+          }
+          register={register}
+        >
+          <option value="proportional">{t('form.proportional')}</option>
+          <option value="priority">{t('form.priority')}</option>
+        </SelectInput>
+      </div>
+
+      <div className="flex flex-col gap-2 self-start">
+        <InputLabel name={t('form.maximumSellablePerCycle')} primary />
+        <p className="body-text -mt-1 max-w-prose text-sm text-text-secondary">
+          {t('form.maximumSellablePerCycleDescription')}
+        </p>
+
+        <div className="flex flex-row gap-2 self-start">
+          {maxLimitEnabled && (
+            <NumberInput
+              containerClassName="grow min-w-[min(8rem,50%)]"
+              error={errors?.maxLimit}
+              fieldName={(fieldNamePrefix + 'maxLimit') as 'maxLimit'}
+              max={100}
+              min={0.01}
+              register={register}
+              setValue={setValue}
+              sizing="auto"
+              step={0.01}
+              validation={[validatePositive, validateRequired]}
+              watch={watch}
+            />
+          )}
+
+          <SelectInput
+            onChange={(value) =>
+              setValue(
+                (fieldNamePrefix + 'maxLimit') as 'maxLimit',
+                value === '%' ? 5 : undefined
+              )
+            }
+            validation={[validateRequired]}
+            value={maxLimitEnabled ? '%' : 'none'}
+          >
+            <option value="none">{t('form.noLimit')}</option>
+            <option value="%">%</option>
+          </SelectInput>
+        </div>
       </div>
 
       {/* PID terms */}

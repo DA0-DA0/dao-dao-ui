@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { AddressInput } from '@dao-dao/stateless'
 import {
   makeDaoInfo,
   makeDaoProvidersDecorator,
@@ -168,6 +169,7 @@ Default.args = {
         },
       ],
     },
+    AddressInput,
   },
   isCreating: true,
   errors: {},

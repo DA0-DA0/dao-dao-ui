@@ -22,8 +22,8 @@ export const validateRequired = (v: any) => {
   return (v !== null && v !== undefined) || 'Field is required'
 }
 
-export const validatePositive = (v: string | number) =>
-  (!isNaN(Number(v)) && Number(v) > 0) || 'Must be positive'
+export const validatePositive = (v: string | number | undefined) =>
+  (v && !isNaN(Number(v)) && Number(v) > 0) || 'Must be positive'
 
 export const validateNonNegative = (v: string | number) =>
   (!isNaN(Number(v)) && Number(v) >= 0) || 'Must be non-negative'

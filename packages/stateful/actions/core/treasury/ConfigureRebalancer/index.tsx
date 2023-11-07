@@ -39,6 +39,7 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { AddressInput } from '../../../../components/AddressInput'
 import { useTokenBalances } from '../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../react'
 import {
@@ -149,6 +150,7 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
           options={{
             nativeBalances,
             historicalPrices,
+            AddressInput,
           }}
         />
       </ChainProvider>
@@ -321,7 +323,7 @@ export const makeConfigureRebalancerAction: ActionMaker<
       tokens: rebalancerConfig?.targets.map(
         ({ denom, percentage, min_balance }) => ({
           denom,
-          percent: Number(percentage),
+          percent: Number(percentage) * 100,
           minBalance:
             min_balance && !isNaN(Number(min_balance))
               ? Number(min_balance)
