@@ -193,9 +193,14 @@ export const TokenInput = <
     ]
   )
 
-  // Disable if there is only one token to choose from.
+  // Disable if there is only one token to choose from and the currently
+  // selected token is equal to it.
   const selectDisabled =
-    disabled || (!tokens.loading && tokens.data.length === 1)
+    disabled ||
+    (!tokens.loading &&
+      tokens.data.length === 1 &&
+      selectedToken &&
+      tokensEqual(tokens.data[0], selectedToken))
 
   return (
     <div
