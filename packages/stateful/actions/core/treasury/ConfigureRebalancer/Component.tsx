@@ -12,7 +12,7 @@ import {
   NumberInput,
   RebalancerProjector,
   RebalancerProjectorAsset,
-  SelectInput,
+  SegmentedControls,
   SwitchCard,
   TokenInput,
   useSupportedChainContext,
@@ -20,8 +20,10 @@ import {
 import {
   AddressInputProps,
   AmountWithTimestamp,
+  GenericToken,
   GenericTokenBalance,
   LoadingData,
+  TokenType,
   ValenceAccount,
 } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
@@ -45,7 +47,6 @@ export type ConfigureRebalancerData = {
   tokens: {
     denom: string
     percent: number
-    minBalance?: number
   }[]
   pid: {
     kp: number
@@ -53,6 +54,10 @@ export type ConfigureRebalancerData = {
     kd: number
   }
   maxLimit?: number
+  minBalance?: {
+    denom: string
+    amount: number
+  }
   targetOverrideStrategy: TargetOverrideStrategy
 }
 
@@ -64,6 +69,7 @@ export type ConfigureRebalancerOptions = {
       prices: AmountWithTimestamp[]
     }[]
   >
+  minBalanceToken: GenericToken | undefined
   AddressInput: ComponentType<AddressInputProps<ConfigureRebalancerData>>
 }
 
@@ -73,7 +79,7 @@ export const ConfigureRebalancerComponent: ActionComponent<
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { nativeBalances, historicalPrices, AddressInput },
+  options: { nativeBalances, historicalPrices, minBalanceToken, AddressInput },
 }) => {
   const { t } = useTranslation()
   const {
@@ -105,6 +111,9 @@ export const ConfigureRebalancerComponent: ActionComponent<
   })
 
   const baseDenom = watch((fieldNamePrefix + 'baseDenom') as 'baseDenom')
+  const targetOverrideStrategy = watch(
+    (fieldNamePrefix + 'targetOverrideStrategy') as 'targetOverrideStrategy'
+  )
   const pid = watch((fieldNamePrefix + 'pid') as 'pid')
   const tokens = watch((fieldNamePrefix + 'tokens') as 'tokens')
   const totalPercent = watch((fieldNamePrefix + `tokens`) as 'tokens').reduce(
@@ -114,6 +123,9 @@ export const ConfigureRebalancerComponent: ActionComponent<
 
   const maxLimit = watch((fieldNamePrefix + 'maxLimit') as 'maxLimit')
   const maxLimitEnabled = maxLimit !== undefined
+
+  const minBalance = watch((fieldNamePrefix + 'minBalance') as 'minBalance')
+  const minBalanceEnabled = minBalance !== undefined
 
   // Validate all add up to 100%.
   useEffect(() => {
@@ -162,74 +174,98 @@ export const ConfigureRebalancerComponent: ActionComponent<
 
   return (
     <>
-      <div className="flex flex-col gap-2 self-start">
-        <InputLabel name={t('form.baseToken')} primary />
-        <p className="body-text -mt-1 max-w-prose text-sm text-text-secondary">
-          {t('form.rebalancerBaseTokenDescription')}
-        </p>
+      <div className="flex max-w-prose flex-col gap-5">
+        <div className="flex flex-col gap-2">
+          <InputLabel name={t('form.baseToken')} primary />
+          <p className="body-text -mt-1 text-sm text-text-secondary">
+            {t('form.rebalancerBaseTokenDescription')}
+          </p>
 
-        <TokenInput
-          onSelectToken={({ denomOrAddress }) =>
-            setValue(
-              (fieldNamePrefix + 'baseDenom') as 'baseDenom',
-              denomOrAddress
+          <TokenInput
+            containerClassName="self-start"
+            onSelectToken={({ denomOrAddress }) =>
+              setValue(
+                (fieldNamePrefix + 'baseDenom') as 'baseDenom',
+                denomOrAddress
+              )
+            }
+            readOnly={!isCreating}
+            selectedToken={
+              allowedBaseTokenBalances.find(
+                ({ token }) => token.denomOrAddress === baseDenom
+              )?.token
+            }
+            tokens={
+              nativeBalances.loading
+                ? { loading: true }
+                : {
+                    loading: false,
+                    data: allowedBaseTokenBalances.map(({ token }) => token),
+                  }
+            }
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <InputLabel name={t('form.trustee')} optional primary />
+          <p className="body-text -mt-1 text-sm text-text-secondary">
+            {t('form.rebalancerTrusteeDescription')}
+          </p>
+
+          <AddressInput
+            disabled={!isCreating}
+            error={errors?.trustee}
+            fieldName={(fieldNamePrefix + 'trustee') as 'trustee'}
+            register={register}
+            validation={[makeValidateAddress(bech32Prefix, false)]}
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <InputLabel name={t('form.targetOverrideStrategy')} primary />
+          <p className="body-text -mt-1 text-sm text-text-secondary">
+            {t('form.targetOverrideStrategyDescription')}
+          </p>
+
+          <SegmentedControls<'proportional' | 'priority'>
+            disabled={!isCreating}
+            onSelect={(value) =>
+              setValue(
+                (fieldNamePrefix +
+                  'targetOverrideStrategy') as 'targetOverrideStrategy',
+                value
+              )
+            }
+            selected={targetOverrideStrategy}
+            tabs={[
+              {
+                label: t('form.proportional'),
+                value: 'proportional',
+              },
+              {
+                label: t('form.priority'),
+                value: 'priority',
+              },
+            ]}
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <InputLabel name={t('form.tokenTargets')} primary />
+
+          {tokensFields.map(({ id }, index) => {
+            const watchDenom = watch(
+              (fieldNamePrefix +
+                `tokens.${index}.denom`) as `tokens.${number}.denom`
             )
-          }
-          readOnly={!isCreating}
-          selectedToken={
-            allowedBaseTokenBalances.find(
-              ({ token }) => token.denomOrAddress === baseDenom
+
+            const selectedToken = allowedTokenBalances.find(
+              ({ token }) => token.denomOrAddress === watchDenom
             )?.token
-          }
-          tokens={
-            nativeBalances.loading
-              ? { loading: true }
-              : {
-                  loading: false,
-                  data: allowedBaseTokenBalances.map(({ token }) => token),
-                }
-          }
-        />
-      </div>
 
-      <div className="flex flex-col gap-2 self-start">
-        <InputLabel name={t('form.trustee')} optional primary />
-        <p className="body-text -mt-1 max-w-prose text-sm text-text-secondary">
-          {t('form.rebalancerTrusteeDescription')}
-        </p>
-
-        <AddressInput
-          disabled={!isCreating}
-          error={errors?.trustee}
-          fieldName={(fieldNamePrefix + 'trustee') as 'trustee'}
-          register={register}
-          validation={[makeValidateAddress(bech32Prefix, false)]}
-        />
-      </div>
-
-      <div className="flex flex-col gap-2 self-start">
-        <InputLabel name={t('form.tokenTargets')} primary />
-
-        {/* TODO: support minBalance */}
-        {tokensFields.map(({ id }, index) => {
-          const watchDenom = watch(
-            (fieldNamePrefix +
-              `tokens.${index}.denom`) as `tokens.${number}.denom`
-          )
-          const watchMinBalance = watch(
-            (fieldNamePrefix +
-              `tokens.${index}.minBalance`) as `tokens.${number}.minBalance`
-          )
-          const minBalanceEnabled = watchMinBalance !== undefined
-
-          const selectedToken = allowedTokenBalances.find(
-            ({ token }) => token.denomOrAddress === watchDenom
-          )?.token
-
-          return (
-            <div key={id} className="rounded-md bg-background-tertiary p-4">
-              <div className="flex flex-row items-stretch justify-between gap-6">
-                <div className="flex flex-col gap-2">
+            return (
+              <div key={id}>
+                <div className="flex flex-row items-stretch gap-2">
                   <TokenInput
                     amount={{
                       watch,
@@ -264,206 +300,219 @@ export const ConfigureRebalancerComponent: ActionComponent<
                     }
                   />
 
-                  <div className="flex flex-row items-stretch gap-2">
-                    <SwitchCard
-                      enabled={minBalanceEnabled}
-                      label={t('form.minBalance')}
-                      onClick={() =>
-                        setValue(
-                          (fieldNamePrefix +
-                            `tokens.${index}.minBalance`) as `tokens.${number}.minBalance`,
-                          minBalanceEnabled ? undefined : 1
-                        )
-                      }
-                      readOnly={!isCreating}
-                      sizing="sm"
-                      tooltip={t('form.rebalancerMinBalanceDescription')}
-                      tooltipIconSize="sm"
+                  {isCreating && (
+                    <IconButton
+                      Icon={Close}
+                      className="self-center"
+                      onClick={() => removeToken(index)}
+                      size="sm"
+                      variant="ghost"
                     />
-
-                    {minBalanceEnabled && (
-                      <NumberInput
-                        disabled={!isCreating}
-                        error={errors?.tokens?.[index]?.minBalance}
-                        fieldName={
-                          (fieldNamePrefix +
-                            `tokens.${index}.minBalance`) as `tokens.${number}.minBalance`
-                        }
-                        hidePlusMinus
-                        min={convertMicroDenomToDenomWithDecimals(
-                          1,
-                          selectedToken?.decimals ?? 0
-                        )}
-                        register={register}
-                        setValue={setValue}
-                        sizing="md"
-                        step={convertMicroDenomToDenomWithDecimals(
-                          1,
-                          selectedToken?.decimals ?? 0
-                        )}
-                        unit={'$' + selectedToken?.symbol}
-                        validation={[validatePositive]}
-                        watch={watch}
-                      />
-                    )}
-                  </div>
+                  )}
                 </div>
 
-                {isCreating && (
-                  <IconButton
-                    Icon={Close}
-                    className="self-center"
-                    onClick={() => removeToken(index)}
-                    size="sm"
-                    variant="ghost"
-                  />
-                )}
+                <InputErrorMessage
+                  error={
+                    errors?.tokens?.[index]?.percent ||
+                    errors?.tokens?.[index]?.denom
+                  }
+                />
               </div>
+            )
+          })}
 
-              <InputErrorMessage
-                error={
-                  errors?.tokens?.[index]?.percent ||
-                  errors?.tokens?.[index]?.denom ||
-                  errors?.tokens?.[index]?.minBalance
-                }
-              />
-            </div>
-          )
-        })}
+          {isCreating ? (
+            <Button
+              className="mt-1 self-start"
+              onClick={() =>
+                appendToken({
+                  percent: 25,
+                  denom:
+                    allowedTokenBalances[0]?.token.denomOrAddress ||
+                    getNativeTokenForChainId(chainId).denomOrAddress,
+                })
+              }
+              variant="secondary"
+            >
+              {t('button.addToken')}
+            </Button>
+          ) : (
+            tokensFields.length === 0 && (
+              <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
+                {t('info.none')}
+              </p>
+            )
+          )}
+        </div>
 
-        {isCreating ? (
-          <Button
-            className="self-start"
-            onClick={() =>
-              appendToken({
-                percent: 25,
-                denom:
-                  allowedTokenBalances[0]?.token.denomOrAddress ||
-                  getNativeTokenForChainId(chainId).denomOrAddress,
-              })
-            }
-            variant="secondary"
-          >
-            {t('button.addToken')}
-          </Button>
-        ) : (
-          tokensFields.length === 0 && (
-            <p className="mt-1 mb-2 text-xs italic text-text-tertiary">
-              {t('info.none')}
-            </p>
-          )
-        )}
-      </div>
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row flex-wrap justify-between gap-x-4 gap-y-2">
+            <InputLabel name={t('form.minBalance')} primary />
 
-      <div className="flex flex-col gap-2 self-start">
-        <InputLabel name={t('form.targetOverrideStrategy')} primary />
-        <p className="body-text -mt-1 max-w-prose text-sm text-text-secondary">
-          {t('form.targetOverrideStrategyDescription')}
-        </p>
+            <SwitchCard
+              enabled={minBalanceEnabled}
+              onClick={() =>
+                setValue(
+                  (fieldNamePrefix + 'minBalance') as 'minBalance',
+                  minBalanceEnabled
+                    ? undefined
+                    : {
+                        denom: tokens[0]?.denom ?? '',
+                        amount: 1,
+                      }
+                )
+              }
+              readOnly={!isCreating}
+              sizing="sm"
+            />
+          </div>
 
-        <SelectInput
-          disabled={!isCreating}
-          fieldName={
-            (fieldNamePrefix +
-              'targetOverrideStrategy') as 'targetOverrideStrategy'
-          }
-          register={register}
-        >
-          <option value="proportional">{t('form.proportional')}</option>
-          <option value="priority">{t('form.priority')}</option>
-        </SelectInput>
-      </div>
+          <p className="body-text -mt-1 text-sm text-text-secondary">
+            {t('form.rebalancerMinBalanceDescription')}
+          </p>
 
-      <div className="flex flex-col gap-2 self-start">
-        <InputLabel name={t('form.maximumSellablePerCycle')} primary />
-        <p className="body-text -mt-1 max-w-prose text-sm text-text-secondary">
-          {t('form.maximumSellablePerCycleDescription')}
-        </p>
-
-        <div className="flex flex-row gap-2 self-start">
-          {maxLimitEnabled && (
-            <NumberInput
-              containerClassName="grow min-w-[min(8rem,50%)]"
-              error={errors?.maxLimit}
-              fieldName={(fieldNamePrefix + 'maxLimit') as 'maxLimit'}
-              max={100}
-              min={0.01}
-              register={register}
-              setValue={setValue}
-              sizing="auto"
-              step={0.01}
-              validation={[validatePositive, validateRequired]}
-              watch={watch}
+          {minBalanceEnabled && (
+            <TokenInput
+              amount={{
+                watch,
+                setValue,
+                register,
+                fieldName: (fieldNamePrefix +
+                  'minBalance.amount') as 'minBalance.amount',
+                error: errors?.minBalance?.amount,
+                min: convertMicroDenomToDenomWithDecimals(
+                  1,
+                  minBalanceToken?.decimals ?? 0
+                ),
+                step: convertMicroDenomToDenomWithDecimals(
+                  1,
+                  minBalanceToken?.decimals ?? 0
+                ),
+              }}
+              onSelectToken={({ denomOrAddress }) =>
+                setValue(
+                  (fieldNamePrefix + 'minBalance.denom') as 'minBalance.denom',
+                  denomOrAddress
+                )
+              }
+              readOnly={!isCreating}
+              selectedToken={{
+                chainId,
+                type: TokenType.Native,
+                denomOrAddress: minBalance?.denom,
+              }}
+              tokens={
+                nativeBalances.loading
+                  ? { loading: true }
+                  : {
+                      loading: false,
+                      data: allowedTokenBalances
+                        .map(({ token }) => token)
+                        // Can only set min balance of a rebalanced token.
+                        .filter((token) =>
+                          tokens.some(
+                            ({ denom }) => token.denomOrAddress === denom
+                          )
+                        ),
+                    }
+              }
             />
           )}
-
-          <SelectInput
-            onChange={(value) =>
-              setValue(
-                (fieldNamePrefix + 'maxLimit') as 'maxLimit',
-                value === '%' ? 5 : undefined
-              )
-            }
-            validation={[validateRequired]}
-            value={maxLimitEnabled ? '%' : 'none'}
-          >
-            <option value="none">{t('form.noLimit')}</option>
-            <option value="%">%</option>
-          </SelectInput>
-        </div>
-      </div>
-
-      {/* PID terms */}
-      <div className="flex flex-row flex-wrap gap-2">
-        <div className="space-y-2">
-          {/* eslint-disable-next-line i18next/no-literal-string */}
-          <InputLabel name="kp" />
-          <NumberInput
-            error={errors?.pid?.kp}
-            fieldName={(fieldNamePrefix + 'pid.kp') as 'pid.kp'}
-            hidePlusMinus
-            max={1}
-            min={0}
-            register={register}
-            sizing="sm"
-            step={0.01}
-            validation={[validateRequired]}
-          />
-          <InputErrorMessage error={errors?.pid?.kp} />
         </div>
 
-        <div className="space-y-2">
-          {/* eslint-disable-next-line i18next/no-literal-string */}
-          <InputLabel name="ki" />
-          <NumberInput
-            error={errors?.pid?.ki}
-            fieldName={(fieldNamePrefix + 'pid.ki') as 'pid.ki'}
-            hidePlusMinus
-            max={1}
-            min={0}
-            register={register}
-            sizing="sm"
-            step={0.01}
-            validation={[validateRequired]}
-          />
-          <InputErrorMessage error={errors?.pid?.ki} />
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row flex-wrap justify-between gap-x-4 gap-y-2">
+            <InputLabel name={t('form.maximumSellablePerCycle')} primary />
+
+            <SwitchCard
+              enabled={maxLimitEnabled}
+              onClick={() =>
+                setValue(
+                  (fieldNamePrefix + 'maxLimit') as 'maxLimit',
+                  maxLimitEnabled ? undefined : 5
+                )
+              }
+              readOnly={!isCreating}
+              sizing="sm"
+            />
+          </div>
+
+          <p className="body-text -mt-1 text-sm text-text-secondary">
+            {t('form.maximumSellablePerCycleDescription')}
+          </p>
+
+          {maxLimitEnabled && (
+            <div className="flex flex-row gap-2 self-start">
+              <NumberInput
+                containerClassName="grow min-w-[min(8rem,50%)]"
+                error={errors?.maxLimit}
+                fieldName={(fieldNamePrefix + 'maxLimit') as 'maxLimit'}
+                max={100}
+                min={0.01}
+                register={register}
+                setValue={setValue}
+                sizing="auto"
+                step={0.01}
+                unit="%"
+                validation={[validatePositive, validateRequired]}
+                watch={watch}
+              />
+            </div>
+          )}
         </div>
 
-        <div className="space-y-2">
-          {/* eslint-disable-next-line i18next/no-literal-string */}
-          <InputLabel name="kd" />
-          <NumberInput
-            error={errors?.pid?.kd}
-            fieldName={(fieldNamePrefix + 'pid.kd') as 'pid.kd'}
-            hidePlusMinus
-            max={1}
-            min={0}
-            register={register}
-            sizing="sm"
-            step={0.01}
-            validation={[validateRequired]}
-          />
-          <InputErrorMessage error={errors?.pid?.kd} />
+        {/* PID terms */}
+        <div className="flex flex-row flex-wrap gap-2">
+          <div className="space-y-2">
+            {/* eslint-disable-next-line i18next/no-literal-string */}
+            <InputLabel name="kp" />
+            <NumberInput
+              error={errors?.pid?.kp}
+              fieldName={(fieldNamePrefix + 'pid.kp') as 'pid.kp'}
+              hidePlusMinus
+              max={1}
+              min={0}
+              register={register}
+              sizing="sm"
+              step={0.01}
+              validation={[validateRequired]}
+            />
+            <InputErrorMessage error={errors?.pid?.kp} />
+          </div>
+
+          <div className="space-y-2">
+            {/* eslint-disable-next-line i18next/no-literal-string */}
+            <InputLabel name="ki" />
+            <NumberInput
+              error={errors?.pid?.ki}
+              fieldName={(fieldNamePrefix + 'pid.ki') as 'pid.ki'}
+              hidePlusMinus
+              max={1}
+              min={0}
+              register={register}
+              sizing="sm"
+              step={0.01}
+              validation={[validateRequired]}
+            />
+            <InputErrorMessage error={errors?.pid?.ki} />
+          </div>
+
+          <div className="space-y-2">
+            {/* eslint-disable-next-line i18next/no-literal-string */}
+            <InputLabel name="kd" />
+            <NumberInput
+              error={errors?.pid?.kd}
+              fieldName={(fieldNamePrefix + 'pid.kd') as 'pid.kd'}
+              hidePlusMinus
+              max={1}
+              min={0}
+              register={register}
+              sizing="sm"
+              step={0.01}
+              validation={[validateRequired]}
+            />
+            <InputErrorMessage error={errors?.pid?.kd} />
+          </div>
         </div>
       </div>
 

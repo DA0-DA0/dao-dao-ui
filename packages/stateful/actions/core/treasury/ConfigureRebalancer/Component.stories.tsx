@@ -169,6 +169,7 @@ Default.args = {
         },
       ],
     },
+    minBalanceToken: undefined,
     AddressInput,
   },
   isCreating: true,
