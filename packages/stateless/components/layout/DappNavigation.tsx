@@ -153,7 +153,7 @@ export const DappNavigation = ({
           // rows fill the whole width.
           compact ? 'pl-safe' : 'pr-6 pl-safe-or-[1.5rem]',
           // Responsive
-          'absolute top-0 bottom-0 z-20 w-[90vw] shadow-dp8 transition-all pt-safe',
+          'absolute top-0 bottom-0 z-20 w-[90dvw] shadow-dp8 transition-all pt-safe',
           responsiveEnabled ? 'left-0' : '-left-full',
           // Large
           'sm:relative sm:left-0 sm:pt-0 sm:shadow-none sm:transition-[padding-left]',
@@ -256,7 +256,7 @@ export const DappNavigation = ({
                       // elements in the sidebar, so the remaining space is
                       // used for the following DAOs. This number will need
                       // tweaking if the sidebar changes.
-                      'relative sm:max-h-[calc(100vh-42rem)]',
+                      'relative sm:max-h-[calc(100dvh-42rem)]',
                       !followingDaos.loading && 'no-scrollbar overflow-y-auto',
                       compact && 'mt-1 w-min'
                     )}

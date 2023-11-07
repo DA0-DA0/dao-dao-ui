@@ -18,7 +18,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   encodeMessageAsBase64,
   makeWasmMessage,
   objectMatchesStructure,
@@ -141,10 +141,10 @@ const useTransformToCosmos: UseTransformToCosmos<PerformTokenSwapData> = () => {
       }
 
       // Convert amount to micro amount.
-      const amount = convertDenomToMicroDenomWithDecimals(
+      const amount = convertDenomToMicroDenomStringWithDecimals(
         selfParty.amount,
         selfParty.decimals
-      ).toString()
+      )
 
       return selfParty.type === 'cw20'
         ? makeWasmMessage({

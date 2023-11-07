@@ -54,6 +54,28 @@ export interface MsgIBCSendSDKType {
   timeout_timestamp: bigint;
   data: Uint8Array;
 }
+/** MsgIBCSendResponse */
+export interface MsgIBCSendResponse {
+  /** Sequence number of the IBC packet sent */
+  sequence: bigint;
+}
+export interface MsgIBCSendResponseProtoMsg {
+  typeUrl: "/cosmwasm.wasm.v1.MsgIBCSendResponse";
+  value: Uint8Array;
+}
+/** MsgIBCSendResponse */
+export interface MsgIBCSendResponseAmino {
+  /** Sequence number of the IBC packet sent */
+  sequence: string;
+}
+export interface MsgIBCSendResponseAminoMsg {
+  type: "wasm/MsgIBCSendResponse";
+  value: MsgIBCSendResponseAmino;
+}
+/** MsgIBCSendResponse */
+export interface MsgIBCSendResponseSDKType {
+  sequence: bigint;
+}
 /** MsgIBCCloseChannel port and channel need to be owned by the contract */
 export interface MsgIBCCloseChannel {
   channel: string;
@@ -168,6 +190,73 @@ export const MsgIBCSend = {
     return {
       typeUrl: "/cosmwasm.wasm.v1.MsgIBCSend",
       value: MsgIBCSend.encode(message).finish()
+    };
+  }
+};
+function createBaseMsgIBCSendResponse(): MsgIBCSendResponse {
+  return {
+    sequence: BigInt(0)
+  };
+}
+export const MsgIBCSendResponse = {
+  typeUrl: "/cosmwasm.wasm.v1.MsgIBCSendResponse",
+  encode(message: MsgIBCSendResponse, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
+    if (message.sequence !== BigInt(0)) {
+      writer.uint32(8).uint64(message.sequence);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): MsgIBCSendResponse {
+    const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgIBCSendResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.sequence = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<MsgIBCSendResponse>): MsgIBCSendResponse {
+    const message = createBaseMsgIBCSendResponse();
+    message.sequence = object.sequence !== undefined && object.sequence !== null ? BigInt(object.sequence.toString()) : BigInt(0);
+    return message;
+  },
+  fromAmino(object: MsgIBCSendResponseAmino): MsgIBCSendResponse {
+    return {
+      sequence: BigInt(object.sequence)
+    };
+  },
+  toAmino(message: MsgIBCSendResponse): MsgIBCSendResponseAmino {
+    const obj: any = {};
+    obj.sequence = message.sequence ? message.sequence.toString() : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: MsgIBCSendResponseAminoMsg): MsgIBCSendResponse {
+    return MsgIBCSendResponse.fromAmino(object.value);
+  },
+  toAminoMsg(message: MsgIBCSendResponse): MsgIBCSendResponseAminoMsg {
+    return {
+      type: "wasm/MsgIBCSendResponse",
+      value: MsgIBCSendResponse.toAmino(message)
+    };
+  },
+  fromProtoMsg(message: MsgIBCSendResponseProtoMsg): MsgIBCSendResponse {
+    return MsgIBCSendResponse.decode(message.value);
+  },
+  toProto(message: MsgIBCSendResponse): Uint8Array {
+    return MsgIBCSendResponse.encode(message).finish();
+  },
+  toProtoMsg(message: MsgIBCSendResponse): MsgIBCSendResponseProtoMsg {
+    return {
+      typeUrl: "/cosmwasm.wasm.v1.MsgIBCSendResponse",
+      value: MsgIBCSendResponse.encode(message).finish()
     };
   }
 };

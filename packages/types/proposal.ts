@@ -27,8 +27,13 @@ export type DecodedPolytoneMsgMatch = {
   match: true
   chainId: string
   polytoneConnection: PolytoneConnection
+  // The first message, or empty object if none.
   msg: Record<string, any>
+  // The first message, or undefined if none.
   cosmosMsg: CosmosMsgFor_Empty | undefined
+  // All messages.
+  msgs: Record<string, any>[]
+  cosmosMsgs: CosmosMsgFor_Empty[]
   initiatorMsg: string
 }
 

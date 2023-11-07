@@ -18,6 +18,8 @@ export * from "./juno/bundle";
 export * from "./juno/client";
 export * from "./osmosis/bundle";
 export * from "./osmosis/client";
+export * from "./publicawesome/bundle";
+export * from "./publicawesome/client";
 export * from "./tendermint/bundle";
 export * from "./varint";
 export * from "./utf8";

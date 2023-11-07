@@ -5,7 +5,8 @@ import { ChainId, CreateDaoContext } from '@dao-dao/types'
 import {
   MAX_DAO_NAME_LENGTH,
   MIN_DAO_NAME_LENGTH,
-  MembershipBasedCreatorId,
+  NftBasedCreatorId,
+  TokenBasedCreatorId,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -22,8 +23,8 @@ export const CreateDaoStart = ({
   },
   availableCreators,
 }: CreateDaoContext) => {
-  const { chain_id: chainId } = useChain()
   const { t } = useTranslation()
+  const { chain_id: chainId } = useChain()
 
   return (
     <>
@@ -104,10 +105,11 @@ export const CreateDaoStart = ({
               selected={watch('creator.id') === id}
               supplies={t(suppliesI18nKey)}
               underDevelopment={
-                id !== MembershipBasedCreatorId &&
-                // Only Juno supports non-multisigs right now.
-                chainId !== ChainId.JunoMainnet &&
-                chainId !== ChainId.JunoTestnet
+                // TODO(neutron-2.3.0): upgrade to v2.3.0 once CW 1.1 is supported
+                // Neutron cannot upgrade to v2.3.0 until it updates to CosmWasm
+                // 1.1+, so it only supports Membership-based DAOs until then.
+                chainId === ChainId.NeutronMainnet &&
+                (id === TokenBasedCreatorId || id === NftBasedCreatorId)
               }
             />
           )

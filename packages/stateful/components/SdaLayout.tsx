@@ -20,7 +20,6 @@ import {
 import { useDaoTabs, useWallet, useWalletInfo } from '../hooks'
 import { daoCreatedCardPropsAtom } from '../recoil/atoms/newDao'
 import { ConnectWallet } from './ConnectWallet'
-import { SdaDaoHome } from './dao'
 import { IconButtonLink } from './IconButtonLink'
 import { LinkWrapper } from './LinkWrapper'
 import { SidebarWallet } from './SidebarWallet'
@@ -55,7 +54,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
     daoCreatedCardPropsAtom
   )
 
-  const tabs = useDaoTabs({ includeHome: SdaDaoHome })
+  const loadingTabs = useDaoTabs()
 
   return (
     <StatelessSdaLayout
@@ -63,7 +62,7 @@ export const SdaLayout = ({ children }: { children: ReactNode }) => {
       connectWalletButton={<ConnectWallet variant="secondary" />}
       connected={isWalletConnected}
       navigationProps={{
-        tabs,
+        tabs: loadingTabs.loading ? [] : loadingTabs.data,
         LinkWrapper,
         version: '2.0',
         compact,

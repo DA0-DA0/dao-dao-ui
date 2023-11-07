@@ -68,9 +68,9 @@ export const useWidgets = ({
 
   const widgetItemsLoadable = useCachedLoadable(widgetItemsSelector)
 
-  const loadedWidgets = useMemo((): LoadedWidget[] | undefined => {
+  const loadingWidgets = useMemo((): LoadingData<LoadedWidget[]> => {
     if (widgetItemsLoadable.state !== 'hasValue') {
-      return
+      return { loading: true }
     }
 
     const parsedWidgets = widgetItemsLoadable.contents
@@ -89,8 +89,9 @@ export const useWidgets = ({
       // Validate widget structure.
       .filter((widget): widget is DaoWidget => !!widget)
 
-    return (
-      parsedWidgets
+    return {
+      loading: false,
+      data: parsedWidgets
         .map((daoWidget): LoadedWidget | undefined => {
           const widget = getWidgetById(chainId, daoWidget.id)
           // Enforce location filter.
@@ -125,16 +126,9 @@ export const useWidgets = ({
           }
         })
         // Filter out any undefined widgets.
-        .filter((widget): widget is LoadedWidget => !!widget)
-    )
+        .filter((widget): widget is LoadedWidget => !!widget),
+    }
   }, [widgetItemsLoadable, isMember, t, location, chainId])
 
-  return loadedWidgets
-    ? {
-        loading: false,
-        data: loadedWidgets,
-      }
-    : {
-        loading: true,
-      }
+  return loadingWidgets
 }

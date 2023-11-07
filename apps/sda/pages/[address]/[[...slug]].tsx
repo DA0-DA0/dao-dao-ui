@@ -7,7 +7,6 @@ import React, { useEffect } from 'react'
 
 import {
   ProfileDaoHomeCard,
-  SdaDaoHome,
   SuspenseLoader,
   useDaoTabs,
 } from '@dao-dao/stateful'
@@ -17,7 +16,7 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { DaoPageMode } from '@dao-dao/types'
+import { DaoPageMode, DaoTabId } from '@dao-dao/types'
 import { SITE_URL, getDaoPath } from '@dao-dao/utils'
 
 const DaoHomePage: NextPage = () => {
@@ -25,12 +24,16 @@ const DaoHomePage: NextPage = () => {
   const { coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()
 
-  const tabs = useDaoTabs({ includeHome: SdaDaoHome })
-  const firstTabId = tabs[0].id
+  const loadingTabs = useDaoTabs()
+  // Just a type-check because some tabs are loaded at the beginning.
+  const tabs = loadingTabs.loading ? undefined : loadingTabs.data
+  // Default to proposals tab for type-check, but should never happen as some
+  // tabs are loaded at the beginning.
+  const firstTabId = tabs?.[0].id || DaoTabId.Proposals
 
   // Pre-fetch tabs.
   useEffect(() => {
-    tabs.forEach((tab) => {
+    tabs?.forEach((tab) => {
       router.prefetch(getDaoPath(coreAddress, tab.id))
     })
   }, [coreAddress, getDaoPath, router, tabs])
@@ -46,7 +49,7 @@ const DaoHomePage: NextPage = () => {
   }, [coreAddress, getDaoPath, router, slug.length, firstTabId])
 
   const selectedTabId =
-    slug.length > 0 && tabs.some(({ id }) => id === slug[0])
+    slug.length > 0 && tabs?.some(({ id }) => id === slug[0])
       ? slug[0]
       : // If tab is invalid, default to first tab.
         firstTabId
@@ -54,7 +57,7 @@ const DaoHomePage: NextPage = () => {
   return (
     <DaoSdaWrappedTab
       SuspenseLoader={SuspenseLoader}
-      allTabs={tabs}
+      allTabs={tabs || []}
       rightSidebarContent={<ProfileDaoHomeCard />}
       tabId={selectedTabId}
     />

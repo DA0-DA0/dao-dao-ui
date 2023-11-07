@@ -23,7 +23,11 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   }
 
   const votingModuleAdapterInstantiateMsg: InstantiateMsg = {
-    nft_address: existingGovernanceTokenDenomOrAddress,
+    nft_contract: {
+      existing: {
+        address: existingGovernanceTokenDenomOrAddress,
+      },
+    },
     unstaking_duration: convertDurationWithUnitsToDuration(unstakingDuration),
   }
 
@@ -36,11 +40,12 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   msg.voting_module_instantiate_info = {
     admin: { core_module: {} },
     code_id: codeIds.DaoVotingCw721Staked,
-    label: `DAO_${daoName}_${NftBasedCreatorId}`,
+    label: `DAO_${daoName.trim()}_${NftBasedCreatorId}`,
     msg: Buffer.from(
       JSON.stringify(votingModuleAdapterInstantiateMsg),
       'utf8'
     ).toString('base64'),
+    funds: [],
   }
 
   return msg

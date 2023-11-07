@@ -71,6 +71,14 @@ export const ImageEmoji = () => (
   <EmojiWrapper emoji="🖼" labelI18nKey="emoji.image" />
 )
 
+export const CameraEmoji = () => (
+  <EmojiWrapper emoji="📸" labelI18nKey="emoji.camera" />
+)
+
+export const ArtistPaletteEmoji = () => (
+  <EmojiWrapper emoji="🎨" labelI18nKey="emoji.artistPalette" />
+)
+
 export const RobotEmoji = () => (
   <EmojiWrapper emoji="🤖" labelI18nKey="emoji.robot" />
 )
@@ -81,6 +89,10 @@ export const SwordsEmoji = () => (
 
 export const BabyEmoji = () => (
   <EmojiWrapper emoji="👶" labelI18nKey="emoji.baby" />
+)
+
+export const BabyAngelEmoji = () => (
+  <EmojiWrapper emoji="👼" labelI18nKey="emoji.babyAngel" />
 )
 
 export const WhaleEmoji = () => (
@@ -207,6 +219,10 @@ export const TrashEmoji = () => (
 
 export const ChainEmoji = () => (
   <EmojiWrapper emoji="⛓️" labelI18nKey="emoji.chains" />
+)
+
+export const TelescopeEmoji = () => (
+  <EmojiWrapper emoji="🔭" labelI18nKey="emoji.telescope" />
 )
 
 export const CurvedDownArrowEmoji = () => (

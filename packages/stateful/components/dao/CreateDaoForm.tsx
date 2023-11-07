@@ -3,11 +3,11 @@ import { Buffer } from 'buffer'
 import { ArrowBack } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
 import { averageColorSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
@@ -19,6 +19,7 @@ import {
   ImageSelector,
   PageHeaderContent,
   RightSidebarContent,
+  TooltipInfoIcon,
   useAppContext,
   useCachedLoadable,
   useDaoNavHelpers,
@@ -37,12 +38,14 @@ import {
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
 import instantiateSchema from '@dao-dao/types/contracts/DaoCore.v2.instantiate_schema.json'
 import {
+  CHAIN_GAS_MULTIPLIER,
   DaoProposalMultipleAdapterId,
-  NEW_DAO_CW20_DECIMALS,
+  NEW_DAO_TOKEN_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
   findWasmAttributeValue,
   getFallbackImage,
+  getFundsFromDaoInstantiateMsg,
   getNativeTokenForChainId,
   getSupportedChainConfig,
   makeValidateMsg,
@@ -70,6 +73,7 @@ import {
 import { ChainSwitcher } from '../ChainSwitcher'
 import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
+import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Trans } from '../Trans'
 import { loadCommonVotingConfigItems } from './commonVotingConfig'
 
@@ -90,7 +94,11 @@ export interface CreateDaoFormProps {
 }
 
 export const CreateDaoForm = (props: CreateDaoFormProps) => {
-  const chainId = useRecoilValue(walletChainIdAtom)
+  const chainId = useRecoilValue(
+    // If parent DAO exists, we're making a SubDAO, so use the parent DAO's
+    // chain ID.
+    props.parentDao ? constSelector(props.parentDao.chainId) : walletChainIdAtom
+  )
   const config = getSupportedChainConfig(chainId)
   if (!config) {
     throw new Error('Unsupported chain.')
@@ -158,9 +166,8 @@ export const InnerCreateDaoForm = ({
 
     // Merge defaults in case there are any new fields.
     const creator = getCreatorById(cached.creator.id)
-    merge(
-      // Merges into this object.
-      cached.creator.data,
+    cached.creator.data = merge(
+      {},
       // Start with defaults.
       creator?.defaultConfig,
       // Overwrite with existing values.
@@ -169,9 +176,8 @@ export const InnerCreateDaoForm = ({
 
     cached.proposalModuleAdapters?.forEach((adapter) => {
       const proposalModuleAdapter = getProposalModuleAdapterById(adapter.id)
-      merge(
-        // Merges into this object.
-        adapter.data,
+      adapter.data = merge(
+        {},
         // Start with defaults.
         proposalModuleAdapter?.daoCreation?.extraVotingConfig?.default,
         // Overwrite with existing values.
@@ -183,9 +189,8 @@ export const InnerCreateDaoForm = ({
     if (!cached.votingConfig) {
       cached.votingConfig = defaultNewDao.votingConfig
     }
-    merge(
-      // Merge into this object.
-      cached.votingConfig,
+    cached.votingConfig = merge(
+      {},
       // Start with defaults.
       defaultNewDao.votingConfig,
       // Overwrite with existing values.
@@ -307,8 +312,9 @@ export const InnerCreateDaoForm = ({
     [t]
   )
 
-  // Generate instantiation message.
-  const generateInstantiateMsg = useCallback(() => {
+  let instantiateMsg: DaoCoreV2InstantiateMsg | undefined
+  let instantiateMsgError: string | undefined
+  try {
     // Generate proposal module adapters' instantiation messages.
     const proposalModuleInstantiateInfos =
       proposalModuleDaoCreationAdapters.map(({ getInstantiateInfo }, index) =>
@@ -320,18 +326,19 @@ export const InnerCreateDaoForm = ({
         )
       )
 
-    let instantiateMsg: DaoCoreV2InstantiateMsg = {
+    instantiateMsg = {
       // If parentDao exists, let's make a subDAO :D
       admin: parentDao?.coreAddress ?? null,
       automatically_add_cw20s: true,
       automatically_add_cw721s: true,
       description,
       image_url: imageUrl ?? null,
-      name,
+      name: name.trim(),
       proposal_modules_instantiate_info: proposalModuleInstantiateInfos,
       // Placeholder. Should be replaced by creator's mutate function.
       voting_module_instantiate_info: {
         code_id: -1,
+        funds: [],
         label: '',
         msg: '',
       },
@@ -349,22 +356,12 @@ export const InnerCreateDaoForm = ({
 
     // Validate and throw error if invalid according to JSON schema.
     validateInstantiateMsg(instantiateMsg)
+  } catch (err) {
+    instantiateMsgError = err instanceof Error ? err.message : `${err}`
+  }
 
-    return instantiateMsg
-  }, [
-    proposalModuleDaoCreationAdapters,
-    parentDao?.coreAddress,
-    description,
-    imageUrl,
-    name,
-    creator,
-    newDao,
-    creatorData,
-    t,
-    codeIds,
-    validateInstantiateMsg,
-    proposalModuleAdapters,
-  ])
+  const instantiateMsgFunds =
+    instantiateMsg && getFundsFromDaoInstantiateMsg(instantiateMsg)
 
   //! Submit handlers
 
@@ -378,30 +375,34 @@ export const InnerCreateDaoForm = ({
       sender: walletAddress ?? '',
     })
 
-  const createDaoWithFactory = useCallback(async () => {
-    const cwCoreInstantiateMsg = generateInstantiateMsg()
+  const createDaoWithFactory = async () => {
+    if (instantiateMsgError) {
+      throw new Error(instantiateMsgError)
+    } else if (!instantiateMsg) {
+      throw new Error(t('error.loadingData'))
+    }
 
-    const { logs } = await instantiateWithFactory({
-      codeId: codeIds.DaoCore,
-      instantiateMsg: Buffer.from(
-        JSON.stringify(cwCoreInstantiateMsg),
-        'utf8'
-      ).toString('base64'),
-      label: cwCoreInstantiateMsg.name,
-    })
+    const { logs } = await instantiateWithFactory(
+      {
+        codeId: codeIds.DaoCore,
+        instantiateMsg: Buffer.from(
+          JSON.stringify(instantiateMsg),
+          'utf8'
+        ).toString('base64'),
+        label: instantiateMsg.name,
+      },
+      CHAIN_GAS_MULTIPLIER,
+      undefined,
+      getFundsFromDaoInstantiateMsg(instantiateMsg)
+    )
     return findWasmAttributeValue(
       logs,
       factoryContractAddress,
       'set contract admin as itself'
     )!
-  }, [
-    codeIds.DaoCore,
-    factoryContractAddress,
-    generateInstantiateMsg,
-    instantiateWithFactory,
-  ])
+  }
 
-  const parseSubmitterValueDelta = useCallback((value: string): number => {
+  const parseSubmitterValueDelta = (value: string): number => {
     switch (value) {
       case CreateDaoSubmitValue.Back:
         return -1
@@ -415,7 +416,7 @@ export const InnerCreateDaoForm = ({
 
         return 0
     }
-  }, [])
+  }
 
   const [customValidator, setCustomValidator] =
     useState<CreateDaoCustomValidator>()
@@ -426,231 +427,188 @@ export const InnerCreateDaoForm = ({
       : undefined
 
   const awaitNextBlock = useAwaitNextBlock()
-  const onSubmit: SubmitHandler<NewDao> = useCallback(
-    async (values, event) => {
-      // If navigating, no need to display errors.
-      form.clearErrors()
+  const onSubmit: SubmitHandler<NewDao> = async (values, event) => {
+    // If navigating, no need to display errors.
+    form.clearErrors()
 
-      const nativeEvent = event?.nativeEvent as SubmitEvent
-      const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
+    const nativeEvent = event?.nativeEvent as SubmitEvent
+    const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
-      // Create the DAO.
-      if (submitterValue === CreateDaoSubmitValue.Create) {
-        if (isWalletConnected) {
-          setCreating(true)
-          try {
-            const coreAddress = await toast.promise(createDaoWithFactory(), {
-              loading: t('info.creatingDao'),
-              success: t('success.daoCreatedPleaseWait'),
-              error: (err) => processError(err),
-            })
+    // Create the DAO.
+    if (submitterValue === CreateDaoSubmitValue.Create) {
+      if (isWalletConnected) {
+        setCreating(true)
+        try {
+          const coreAddress = await toast.promise(createDaoWithFactory(), {
+            loading: t('info.creatingDao'),
+            success: t('success.daoCreatedPleaseWait'),
+            error: (err) => processError(err),
+          })
 
-            // Don't set following on SDA. Only dApp.
-            if (mode !== DaoPageMode.Sda) {
-              setFollowing(coreAddress)
-            }
-
-            // New wallet balances will not appear until the next block.
-            awaitNextBlock().then(refreshBalances)
-
-            //! Show DAO created modal.
-
-            const nativeToken = getNativeTokenForChainId(chainId)
-
-            // Get tokenSymbol and tokenBalance for DAO card.
-            const { tokenSymbol, tokenBalance, tokenDecimals } =
-              creatorId === TokenBasedCreatorId &&
-              daoVotingTokenBasedCreatorData
-                ? //! Display governance token supply if using governance tokens.
-                  {
-                    tokenBalance:
-                      daoVotingTokenBasedCreatorData.tokenType ===
-                      GovernanceTokenType.NewCw20
-                        ? daoVotingTokenBasedCreatorData.newInfo.initialSupply
-                        : // If using existing token but no token info loaded (should
-                        // be impossible), just display 0.
-                        !daoVotingTokenBasedCreatorData.existingToken ||
-                          daoVotingTokenBasedCreatorData.existingTokenSupply ===
-                            undefined
-                        ? 0
-                        : // If using existing token, convert supply from query using decimals.
-                          convertMicroDenomToDenomWithDecimals(
-                            daoVotingTokenBasedCreatorData.existingTokenSupply,
-                            daoVotingTokenBasedCreatorData.existingToken
-                              .decimals
-                          ),
-                    tokenSymbol:
-                      daoVotingTokenBasedCreatorData.tokenType ===
-                      GovernanceTokenType.NewCw20
-                        ? daoVotingTokenBasedCreatorData.newInfo.symbol
-                        : // If using existing token but no token info loaded (should
-                        // be impossible), the tokenBalance above will be set to
-                        // 0, so use the native token here so this value is
-                        // accurate.
-                        !daoVotingTokenBasedCreatorData.existingToken
-                        ? nativeToken.symbol
-                        : daoVotingTokenBasedCreatorData.existingToken.symbol ||
-                          t('info.token').toLocaleUpperCase(),
-                    tokenDecimals:
-                      daoVotingTokenBasedCreatorData.tokenType ===
-                        GovernanceTokenType.Existing &&
-                      daoVotingTokenBasedCreatorData.existingToken
-                        ? daoVotingTokenBasedCreatorData.existingToken.decimals
-                        : // If using existing token but no token info loaded
-                          // (should be impossible), the tokenBalance above will
-                          // be set to 0, so it doesn't matter that this is
-                          // wrong.
-                          NEW_DAO_CW20_DECIMALS,
-                  }
-                : //! Otherwise display native token, which has a balance of 0 initially.
-                  {
-                    tokenBalance: 0,
-                    tokenSymbol: nativeToken.symbol,
-                    tokenDecimals: nativeToken.decimals,
-                  }
-
-            // Set card props to show modal.
-            setDaoCreatedCardProps({
-              chainId,
-              coreAddress,
-              name,
-              description,
-              imageUrl: imageUrl || getFallbackImage(coreAddress),
-              established: new Date(),
-              showIsMember: false,
-              parentDao,
-              tokenDecimals,
-              tokenSymbol,
-              showingEstimatedUsdValue: false,
-              lazyData: {
-                loading: false,
-                data: {
-                  tokenBalance,
-                  // Does not matter, will not show.
-                  isMember: false,
-                  proposalCount: 0,
-                },
-              },
-            })
-
-            // Clear saved form data.
-            setNewDaoAtom(makeDefaultNewDao(chainId))
-
-            // Navigate to DAO page (underneath the creation modal).
-            goToDao(coreAddress)
-          } catch (err) {
-            // toast.promise above will handle displaying the error
-            console.error(err)
-            setCreating(false)
+          // Don't set following on SDA. Only dApp.
+          if (mode !== DaoPageMode.Sda) {
+            setFollowing(coreAddress)
           }
-          // Don't stop creating on success, since we are navigating to a new
-          // page and want to prevent creating duplicate DAOs.
-        } else {
-          toast.error(t('error.logInToCreate'))
+
+          // New wallet balances will not appear until the next block.
+          awaitNextBlock().then(refreshBalances)
+
+          //! Show DAO created modal.
+
+          const nativeToken = getNativeTokenForChainId(chainId)
+
+          // Get tokenSymbol and tokenBalance for DAO card.
+          const { tokenSymbol, tokenBalance, tokenDecimals } =
+            creatorId === TokenBasedCreatorId && daoVotingTokenBasedCreatorData
+              ? //! Display governance token supply if using governance tokens.
+                {
+                  tokenBalance:
+                    daoVotingTokenBasedCreatorData.tokenType ===
+                    GovernanceTokenType.New
+                      ? daoVotingTokenBasedCreatorData.newInfo.initialSupply
+                      : // If using existing token but no token info loaded (should
+                      // be impossible), just display 0.
+                      !daoVotingTokenBasedCreatorData.existingToken ||
+                        daoVotingTokenBasedCreatorData.existingTokenSupply ===
+                          undefined
+                      ? 0
+                      : // If using existing token, convert supply from query using decimals.
+                        convertMicroDenomToDenomWithDecimals(
+                          daoVotingTokenBasedCreatorData.existingTokenSupply,
+                          daoVotingTokenBasedCreatorData.existingToken.decimals
+                        ),
+                  tokenSymbol:
+                    daoVotingTokenBasedCreatorData.tokenType ===
+                    GovernanceTokenType.New
+                      ? daoVotingTokenBasedCreatorData.newInfo.symbol
+                      : // If using existing token but no token info loaded (should
+                      // be impossible), the tokenBalance above will be set to
+                      // 0, so use the native token here so this value is
+                      // accurate.
+                      !daoVotingTokenBasedCreatorData.existingToken
+                      ? nativeToken.symbol
+                      : daoVotingTokenBasedCreatorData.existingToken.symbol ||
+                        t('info.token').toLocaleUpperCase(),
+                  tokenDecimals:
+                    daoVotingTokenBasedCreatorData.tokenType ===
+                      GovernanceTokenType.Existing &&
+                    daoVotingTokenBasedCreatorData.existingToken
+                      ? daoVotingTokenBasedCreatorData.existingToken.decimals
+                      : // If using existing token but no token info loaded
+                        // (should be impossible), the tokenBalance above will
+                        // be set to 0, so it doesn't matter that this is
+                        // wrong.
+                        NEW_DAO_TOKEN_DECIMALS,
+                }
+              : //! Otherwise display native token, which has a balance of 0 initially.
+                {
+                  tokenBalance: 0,
+                  tokenSymbol: nativeToken.symbol,
+                  tokenDecimals: nativeToken.decimals,
+                }
+
+          // Set card props to show modal.
+          setDaoCreatedCardProps({
+            chainId,
+            coreAddress,
+            name,
+            description,
+            imageUrl: imageUrl || getFallbackImage(coreAddress),
+            polytoneProxies: {},
+            established: new Date(),
+            showIsMember: false,
+            parentDao,
+            tokenDecimals,
+            tokenSymbol,
+            showingEstimatedUsdValue: false,
+            lazyData: {
+              loading: false,
+              data: {
+                tokenBalance,
+                // Does not matter, will not show.
+                isMember: false,
+                proposalCount: 0,
+              },
+            },
+          })
+
+          // Clear saved form data.
+          setNewDaoAtom(makeDefaultNewDao(chainId))
+
+          // Navigate to DAO page (underneath the creation modal).
+          goToDao(coreAddress)
+        } catch (err) {
+          // toast.promise above will handle displaying the error
+          console.error(err)
+          setCreating(false)
         }
-
-        return
-      }
-
-      // Save values to state.
-      setNewDaoAtom((prevNewDao) => ({
-        ...prevNewDao,
-        // Deep clone to prevent values from becoming readOnly.
-        ...cloneDeep(values),
-      }))
-
-      // Clear custom validation function in case next page does not override
-      // the previous page's.
-      setCustomValidator(undefined)
-
-      // Navigate pages.
-      const pageDelta = parseSubmitterValueDelta(submitterValue)
-      setPageIndex(
-        Math.min(Math.max(0, pageIndex + pageDelta), CreateDaoPages.length - 1)
-      )
-    },
-    [
-      form,
-      setNewDaoAtom,
-      parseSubmitterValueDelta,
-      pageIndex,
-      isWalletConnected,
-      createDaoWithFactory,
-      t,
-      mode,
-      awaitNextBlock,
-      refreshBalances,
-      chainId,
-      creatorId,
-      daoVotingTokenBasedCreatorData,
-      setDaoCreatedCardProps,
-      name,
-      description,
-      imageUrl,
-      parentDao,
-      goToDao,
-      setFollowing,
-    ]
-  )
-
-  const onError: SubmitErrorHandler<NewDao> = useCallback(
-    (errors, event) => {
-      const nativeEvent = event?.nativeEvent as SubmitEvent
-      const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
-
-      // Allow backwards navigation without valid fields.
-      const pageDelta = parseSubmitterValueDelta(submitterValue)
-      if (pageDelta < 0) {
-        return onSubmit(form.getValues(), event)
+        // Don't stop creating on success, since we are navigating to a new
+        // page and want to prevent creating duplicate DAOs.
       } else {
-        console.error('Form errors', errors)
+        toast.error(t('error.logInToCreate'))
       }
-    },
-    [form, onSubmit, parseSubmitterValueDelta]
-  )
 
-  const _handleSubmit = useMemo(
-    () => form.handleSubmit(onSubmit, onError),
-    [form, onSubmit, onError]
-  )
+      return
+    }
 
-  const formOnSubmit = useCallback(
-    (...args: Parameters<typeof _handleSubmit>) => {
-      const nativeEvent = args[0]?.nativeEvent as SubmitEvent
-      const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
-      const pageDelta = parseSubmitterValueDelta(submitterValue)
+    // Save values to state.
+    setNewDaoAtom((prevNewDao) => ({
+      ...prevNewDao,
+      // Deep clone to prevent values from becoming readOnly.
+      ...cloneDeep(values),
+    }))
 
-      // Validate here instead of in onSubmit since custom errors prevent form
-      // submission, and we still want to be able to move backwards.
-      customValidator?.(
-        // Only set new errors when progressing. If going back, don't.
-        pageDelta > 0
-      )
+    // Clear custom validation function in case next page does not override
+    // the previous page's.
+    setCustomValidator(undefined)
 
-      return _handleSubmit(...args)
-    },
-    [parseSubmitterValueDelta, customValidator, _handleSubmit]
-  )
+    // Navigate pages.
+    const pageDelta = parseSubmitterValueDelta(submitterValue)
+    setPageIndex(
+      Math.min(Math.max(0, pageIndex + pageDelta), CreateDaoPages.length - 1)
+    )
+  }
 
-  const createDaoContext: CreateDaoContext = useMemo(
-    () => ({
-      form,
-      generateInstantiateMsg,
-      setCustomValidator: (fn) => setCustomValidator(() => fn),
-      commonVotingConfig: loadCommonVotingConfigItems(),
-      availableCreators,
-      creator,
-      proposalModuleDaoCreationAdapters,
-      SuspenseLoader,
-    }),
-    [
-      form,
-      generateInstantiateMsg,
-      availableCreators,
-      creator,
-      proposalModuleDaoCreationAdapters,
-    ]
-  )
+  const onError: SubmitErrorHandler<NewDao> = (errors, event) => {
+    const nativeEvent = event?.nativeEvent as SubmitEvent
+    const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
+
+    // Allow backwards navigation without valid fields.
+    const pageDelta = parseSubmitterValueDelta(submitterValue)
+    if (pageDelta < 0) {
+      return onSubmit(form.getValues(), event)
+    } else {
+      console.error('Form errors', errors)
+    }
+  }
+
+  const _handleSubmit = form.handleSubmit(onSubmit, onError)
+  const formOnSubmit = (...args: Parameters<typeof _handleSubmit>) => {
+    const nativeEvent = args[0]?.nativeEvent as SubmitEvent
+    const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
+    const pageDelta = parseSubmitterValueDelta(submitterValue)
+
+    // Validate here instead of in onSubmit since custom errors prevent form
+    // submission, and we still want to be able to move backwards.
+    customValidator?.(
+      // Only set new errors when progressing. If going back, don't.
+      pageDelta > 0
+    )
+
+    return _handleSubmit(...args)
+  }
+
+  const createDaoContext: CreateDaoContext = {
+    form,
+    instantiateMsg,
+    instantiateMsgError,
+    setCustomValidator: (fn) => setCustomValidator(() => fn),
+    commonVotingConfig: loadCommonVotingConfigItems(),
+    availableCreators,
+    creator,
+    proposalModuleDaoCreationAdapters,
+    SuspenseLoader,
+  }
 
   const Page = CreateDaoPages[pageIndex]
 
@@ -677,7 +635,7 @@ export const InnerCreateDaoForm = ({
         }}
         className="mx-auto max-w-4xl"
         gradient
-        rightNode={<ChainSwitcher />}
+        rightNode={!makingSubDao && <ChainSwitcher />}
       />
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
@@ -719,6 +677,33 @@ export const InnerCreateDaoForm = ({
 
         <div className="mb-14">
           <Page {...createDaoContext} />
+
+          {/* If funds are required, display. */}
+          {!!instantiateMsgFunds?.length &&
+            instantiateMsgFunds.some(({ amount }) => amount !== '0') && (
+              <div className="mt-6 -mb-8 flex flex-row justify-end">
+                <div className="flex flex-col items-end gap-2">
+                  <div className="flex flex-row items-center gap-1 self-start">
+                    <p className="primary-text text-text-body">
+                      {t('title.fees')}
+                    </p>
+                    <TooltipInfoIcon
+                      size="sm"
+                      title={t('info.createDaoFeesExplanation')}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-1">
+                    {instantiateMsgFunds.map((coin, index) => (
+                      <TokenAmountDisplay
+                        key={coin.denom + index}
+                        coin={coin}
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
         </div>
 
         <div
@@ -739,6 +724,7 @@ export const InnerCreateDaoForm = ({
               <p>{t(CreateDaoSubmitValue.Back)}</p>
             </Button>
           )}
+
           <Button loading={creating} type="submit" value={submitValue}>
             {submitLabel}
           </Button>

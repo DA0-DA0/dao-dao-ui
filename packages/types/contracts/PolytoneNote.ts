@@ -62,7 +62,6 @@ export type StakingQuery =
   | {
       all_delegations: {
         delegator: string
-        [k: string]: unknown
       }
     }
   | {

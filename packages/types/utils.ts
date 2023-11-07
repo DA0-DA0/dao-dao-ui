@@ -18,20 +18,16 @@ export type ProcessedQuorum = {
   quorum: ProcessedTQ
 }
 
-export interface CodeIdConfig {
+export type CodeIdConfig = {
   // https://github.com/CosmWasm/cw-plus
-  Cw20Base: number
   Cw4Group: number
   // https://github.com/CosmWasm/cw-nfts
   Cw721Base?: number
-  // https://github.com/public-awesome/launchpad/tree/main/contracts/collections/sg721-base
-  Sg721Base?: number
 
   // https://github.com/DA0-DA0/dao-contracts
-  Cw20Stake: number
-  CwAdminFactory: number
   CwPayrollFactory: number
   CwTokenSwap: number
+  CwTokenfactoryIssuer: number
   CwVesting: number
   DaoCore: number
   DaoMigrator: number
@@ -39,10 +35,12 @@ export interface CodeIdConfig {
   DaoPreProposeSingle: number
   DaoProposalMultiple: number
   DaoProposalSingle: number
-  DaoVotingCw20Staked: number
   DaoVotingCw4: number
   DaoVotingCw721Staked: number
-  DaoVotingNativeStaked: number
+  DaoVotingTokenStaked: number
+  // v2.1.0 and below, for migrating v1 to v2 DAOs
+  Cw20Stake?: number
+  DaoVotingCw20Staked?: number
 }
 
 export type PolytoneConnection = {

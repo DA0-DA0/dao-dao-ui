@@ -309,7 +309,7 @@ export const WyndDepositRenderer = ({
             msg,
             CHAIN_GAS_MULTIPLIER,
             undefined,
-            coins(requiredInput, token.denomOrAddress)
+            coins(BigInt(requiredInput).toString(), token.denomOrAddress)
           )
         } else {
           // Cw20

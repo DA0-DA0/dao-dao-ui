@@ -308,7 +308,7 @@ export const InboxSettingsModal = ({
         </>
       ) : (
         updating && (
-          <Loader className="h-60 w-[100vw] max-w-full" fill size={40} />
+          <Loader className="h-60 w-[100dvw] max-w-full" fill size={40} />
         )
       )}
     </Modal>

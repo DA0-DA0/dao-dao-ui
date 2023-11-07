@@ -30,7 +30,7 @@ import {
   TokenType,
 } from '@dao-dao/types'
 import {
-  NEW_DAO_CW20_DECIMALS,
+  NEW_DAO_TOKEN_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
   getChainAssets,
@@ -61,19 +61,19 @@ const ProposalDepositInput = ({
 
   const governanceTokenLoadable = useRecoilValueLoadable(
     isTokenBasedCreator
-      ? tokenBasedCreatorData.tokenType === GovernanceTokenType.NewCw20
+      ? tokenBasedCreatorData.tokenType === GovernanceTokenType.New
         ? constSelector({
             chainId,
             type: TokenType.Cw20,
             denomOrAddress: '',
             symbol: tokenBasedCreatorData.newInfo.symbol,
-            decimals: NEW_DAO_CW20_DECIMALS,
+            decimals: NEW_DAO_TOKEN_DECIMALS,
             imageUrl: tokenBasedCreatorData.newInfo.imageUrl,
           })
         : genericTokenSelector({
             chainId,
-            type: tokenBasedCreatorData.existingTokenType,
-            denomOrAddress: tokenBasedCreatorData.existingTokenDenomOrAddress,
+            type: TokenType.Native,
+            denomOrAddress: tokenBasedCreatorData.existingTokenDenom,
           })
       : constSelector(undefined)
   )

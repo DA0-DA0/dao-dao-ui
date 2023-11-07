@@ -23,6 +23,8 @@ export const actionKeyToMatchOrder = (key: ActionKey) =>
       // The upgrade action (and likely future upgrade actions) are a specific
       // migrate action, so this needs to be after all those.
       ActionKey.Migrate,
+      // This is a more specific execute action, so it must be before execute.
+      ActionKey.CrossChainExecute,
       // Most messages are some form of execute. Migrate and execute are
       // different, so the order between these two is irrelevant.
       ActionKey.Execute,

@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { CHAIN_ID } from '@dao-dao/storybook'
 import { ContractVersion } from '@dao-dao/types'
 
 import { IconButtonLink } from '../icon_buttons'
@@ -19,12 +20,13 @@ const Template: ComponentStory<typeof DaoCard> = (args) => (
 )
 
 export const makeProps = (id = 1): DaoCardProps => ({
-  chainId: 'uni-6',
+  chainId: CHAIN_ID,
   coreAddress: 'daoCoreAddress',
   name: 'Modern DAO',
   description:
     'This approach allows us to implement a completely custom component design without writing a single line of custom CSS.',
   imageUrl: `/placeholders/${id % 5}.svg`,
+  polytoneProxies: {},
   // Random date in the past 12 months.
   established: new Date(
     Date.now() - Math.floor(Math.random() * 12 * 30 * 24 * 60 * 60 * 1000)
@@ -40,6 +42,7 @@ export const makeProps = (id = 1): DaoCardProps => ({
   },
 
   parentDao: {
+    chainId: CHAIN_ID,
     coreAddress: 'parentDaoCoreAddress',
     coreVersion: ContractVersion.V2Alpha,
     name: 'parent',

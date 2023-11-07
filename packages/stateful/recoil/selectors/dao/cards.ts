@@ -3,6 +3,7 @@ import { RecoilValueReadOnly, selectorFamily, waitForAll } from 'recoil'
 import {
   DaoCoreV2Selectors,
   addressIsModuleSelector,
+  contractInfoSelector,
   contractInstantiateTimeSelector,
   contractVersionSelector,
   daoTvlSelector,
@@ -13,6 +14,7 @@ import {
   DaoCardInfo,
   DaoCardInfoLazyData,
   DaoDropdownInfo,
+  DaoInfo,
   IndexerDumpState,
   WithChainId,
 } from '@dao-dao/types'
@@ -38,6 +40,7 @@ import { proposalModuleAdapterProposalCountSelector } from '../../../proposal-mo
 import {
   daoCoreProposalModulesSelector,
   daoCw20GovernanceTokenAddressSelector,
+  daoInfoSelector,
 } from './misc'
 
 export const daoCardInfoSelector = selectorFamily<
@@ -76,6 +79,13 @@ export const daoCardInfoSelector = selectorFamily<
               contractInstantiateTimeSelector({ address: coreAddress, chainId })
             )
 
+      const polytoneProxies = get(
+        DaoCoreV2Selectors.polytoneProxiesSelector({
+          chainId,
+          contractAddress: coreAddress,
+        })
+      )
+
       // Get parent DAO if exists.
       let parentDao: DaoCardInfo['parentDao']
       if (
@@ -106,6 +116,7 @@ export const daoCardInfoSelector = selectorFamily<
 
               if (coreVersion) {
                 parentDao = {
+                  chainId,
                   coreAddress: admin,
                   coreVersion,
                   name,
@@ -137,13 +148,14 @@ export const daoCardInfoSelector = selectorFamily<
                 params: [],
               })
             )
-            const { version } = get(
-              DaoCoreV2Selectors.infoSelector({
+            const {
+              info: { version },
+            } = get(
+              contractInfoSelector({
                 contractAddress: admin,
                 chainId,
-                params: [],
               })
-            ).info
+            )
             const adminVersion = parseContractVersion(version)
 
             if (adminVersion) {
@@ -172,6 +184,7 @@ export const daoCardInfoSelector = selectorFamily<
                     false
 
               parentDao = {
+                chainId,
                 coreAddress: admin,
                 coreVersion: adminVersion,
                 name,
@@ -192,6 +205,7 @@ export const daoCardInfoSelector = selectorFamily<
           // Chain module account.
           const chainConfig = getSupportedChainConfig(chainId)
           parentDao = chainConfig && {
+            chainId,
             coreAddress: chainConfig.name,
             coreVersion: ContractVersion.Gov,
             name: getDisplayNameForChainId(chainId),
@@ -208,6 +222,7 @@ export const daoCardInfoSelector = selectorFamily<
         name: config.name,
         description: config.description,
         imageUrl: config.image_url || getFallbackImage(coreAddress),
+        polytoneProxies,
         established,
         parentDao,
         tokenDecimals: 6,
@@ -306,6 +321,31 @@ export const subDaoCardInfosSelector = selectorFamily<
           )
         )
       ).filter(Boolean) as DaoCardInfo[]
+    },
+})
+
+export const subDaoInfosSelector = selectorFamily<
+  DaoInfo[],
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'subDaoInfos',
+  get:
+    ({ coreAddress: contractAddress, chainId }) =>
+    ({ get }) => {
+      const subdaos = get(
+        DaoCoreV2Selectors.listAllSubDaosSelector({
+          contractAddress,
+          chainId,
+        })
+      )
+
+      return get(
+        waitForAll(
+          subdaos.map(({ addr }) =>
+            daoInfoSelector({ coreAddress: addr, chainId })
+          )
+        )
+      )
     },
 })
 

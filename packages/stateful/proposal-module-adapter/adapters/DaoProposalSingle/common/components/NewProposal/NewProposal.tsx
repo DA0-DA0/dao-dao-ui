@@ -20,6 +20,7 @@ import { v4 as uuidv4 } from 'uuid'
 import {
   ActionCategorySelector,
   ActionsEditor,
+  ActionsRenderer,
   Button,
   FilterableItem,
   FilterableItemPopup,
@@ -33,13 +34,14 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionCategoryWithLabel,
+  ActiveThreshold,
   BaseNewProposalProps,
+  LoadedAction,
   LoadedActions,
   LoadingData,
   StatefulEntityDisplayProps,
   SuspenseLoaderProps,
 } from '@dao-dao/types'
-import { ActiveThreshold } from '@dao-dao/types/contracts/DaoVotingCw20Staked'
 import {
   convertActionsToMessages,
   formatDateTime,
@@ -68,6 +70,7 @@ export interface NewProposalProps
     | 'draftSaving'
     | 'deleteDraft'
     | 'proposalModuleSelector'
+    | 'actionsReadOnlyMode'
   > {
   createProposal: (newProposalData: NewProposalData) => Promise<void>
   loading: boolean
@@ -108,6 +111,7 @@ export const NewProposal = ({
   proposalModuleSelector,
   SuspenseLoader,
   EntityDisplay,
+  actionsReadOnlyMode,
 }: NewProposalProps) => {
   const { t } = useTranslation()
 
@@ -225,31 +229,53 @@ export const NewProposal = ({
         </div>
       </div>
 
-      {proposalModuleSelector}
+      {!actionsReadOnlyMode && proposalModuleSelector}
 
-      <ActionsEditor
-        SuspenseLoader={SuspenseLoader}
-        actionDataErrors={errors?.actionData}
-        actionDataFieldName="actionData"
-        categories={categories}
-        className="-mb-2"
-        loadedActions={loadedActions}
-      />
+      {actionsReadOnlyMode ? (
+        <ActionsRenderer
+          SuspenseLoader={SuspenseLoader}
+          actionData={actionData.flatMap(({ actionKey, data }, index) => {
+            const { category, action } = (
+              actionKey ? loadedActions[actionKey] || {} : {}
+            ) as Partial<LoadedAction>
 
-      <div className="self-start">
-        <ActionCategorySelector
-          categories={categories}
-          onSelectCategory={({ key }) => {
-            append({
-              // See `CategorizedActionKeyAndData` comment in
-              // `packages/types/actions.ts` for an explanation of why we need
-              // to append with a unique ID.
-              _id: uuidv4(),
-              categoryKey: key,
-            })
-          }}
+            return category && action
+              ? {
+                  id: index.toString(),
+                  category,
+                  action,
+                  data,
+                }
+              : []
+          })}
         />
-      </div>
+      ) : (
+        <ActionsEditor
+          SuspenseLoader={SuspenseLoader}
+          actionDataErrors={errors?.actionData}
+          actionDataFieldName="actionData"
+          categories={categories}
+          className="-mb-2"
+          loadedActions={loadedActions}
+        />
+      )}
+
+      {!actionsReadOnlyMode && (
+        <div className="self-start">
+          <ActionCategorySelector
+            categories={categories}
+            onSelectCategory={({ key }) => {
+              append({
+                // See `CategorizedActionKeyAndData` comment in
+                // `packages/types/actions.ts` for an explanation of why we need
+                // to append with a unique ID.
+                _id: uuidv4(),
+                categoryKey: key,
+              })
+            }}
+          />
+        </div>
+      )}
 
       <div className="flex flex-col gap-2 border-y border-border-secondary py-6">
         <div className="flex flex-row items-center justify-between gap-6">

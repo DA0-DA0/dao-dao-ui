@@ -70,46 +70,38 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
   return false
 }
 
-export function decodeMessages(
+export const decodeMessages = (
   msgs: CosmosMsgFor_Empty[]
-): Record<string, any>[] {
-  const decodedMessages: any[] = []
-
-  for (const msgObj of msgs) {
-    if (isWasmMsg(msgObj)) {
-      let decodedWasmMsg = msgObj
-
-      const msgType = getWasmMsgType(msgObj.wasm)
+): Record<string, any>[] =>
+  msgs.map((msg) => {
+    // Decode base64 wasm binary into object.
+    if (isWasmMsg(msg)) {
+      const msgType = getWasmMsgType(msg.wasm)
       if (msgType && isBinaryType(msgType)) {
-        const base64Msg = (msgObj.wasm as any)[msgType]
-        if (base64Msg) {
-          const msg = parseEncodedMessage(base64Msg.msg)
-          if (msg) {
-            decodedWasmMsg = {
-              ...msgObj,
+        const base64MsgContainer = (msg.wasm as any)[msgType]
+        if (base64MsgContainer && 'msg' in base64MsgContainer) {
+          const parsedMsg = parseEncodedMessage(base64MsgContainer.msg)
+          if (parsedMsg) {
+            return {
+              ...msg,
               wasm: {
-                ...msgObj.wasm,
+                ...msg.wasm,
                 [msgType]: {
-                  ...base64Msg,
-                  msg,
+                  ...base64MsgContainer,
+                  msg: parsedMsg,
                 },
               },
             }
           }
         }
       }
-
-      decodedMessages.push(decodedWasmMsg)
-    } else if (isCosmWasmStargateMsg(msgObj)) {
+    } else if (isCosmWasmStargateMsg(msg)) {
       // Decode Stargate protobuf message.
-      decodedMessages.push(decodeStargateMessage(msgObj))
-    } else {
-      decodedMessages.push(msgObj)
+      return decodeStargateMessage(msg)
     }
-  }
 
-  return decodedMessages
-}
+    return msg
+  })
 
 export function decodedMessagesString(msgs: CosmosMsgFor_Empty[]): string {
   const decodedMessageArray = decodeMessages(msgs)
@@ -273,11 +265,16 @@ export const makeStakingActionMessage = (
 export const maybeMakePolytoneExecuteMessage = (
   srcChainId: string,
   destChainId: string,
-  // Allow passing no message, which just creates an account.
-  msg?: CosmosMsgFor_Empty
+  // Allow passing no message, which just creates an account. `msg` cannot be an
+  // array if the chains are the same.
+  msg?: CosmosMsgFor_Empty | CosmosMsgFor_Empty[]
 ): CosmosMsgFor_Empty => {
   // If on same chain, just return the message.
   if (srcChainId === destChainId && msg) {
+    if (Array.isArray(msg)) {
+      throw new Error('Cannot use an array for same-chain messages.')
+    }
+
     return msg
   }
 
@@ -291,7 +288,7 @@ export const maybeMakePolytoneExecuteMessage = (
         funds: [],
         msg: {
           execute: {
-            msgs: msg ? [msg] : [],
+            msgs: msg ? [msg].flat() : [],
             timeout_seconds: POLYTONE_TIMEOUT_SECONDS.toString(),
             callback: {
               msg: toBase64(toUtf8(uuidv4())),
@@ -304,13 +301,13 @@ export const maybeMakePolytoneExecuteMessage = (
   })
 }
 
-// Checks if the message is a Polytone execute message and extract sthe chain
-// ID and msg.
+// Checks if the message is a Polytone execute message and extracts the chain ID
+// and msg(s).
 export const decodePolytoneExecuteMsg = (
   srcChainId: string,
   decodedMsg: Record<string, any>,
   // How many messages are expected.
-  type: 'one' | 'zero' | 'oneOrZero' = 'one'
+  type: 'one' | 'zero' | 'oneOrZero' | 'any' = 'one'
 ): DecodedPolytoneMsg => {
   if (
     !objectMatchesStructure(decodedMsg, {
@@ -352,18 +349,17 @@ export const decodePolytoneExecuteMsg = (
     }
   }
 
+  const cosmosMsgs = decodedMsg.wasm.execute.msg.execute.msgs
+  const msgs = decodeMessages(cosmosMsgs)
+
   return {
     match: true,
     chainId: polytoneConnection[0],
     polytoneConnection: polytoneConnection[1],
-    msg:
-      decodedMsg.wasm.execute.msg.execute.msgs.length === 0
-        ? {}
-        : decodeMessages(decodedMsg.wasm.execute.msg.execute.msgs)[0],
-    cosmosMsg:
-      decodedMsg.wasm.execute.msg.execute.msgs.length === 0
-        ? undefined
-        : decodedMsg.wasm.execute.msg.execute.msgs[0],
+    msg: msgs[0] || {},
+    cosmosMsg: cosmosMsgs[0],
+    msgs,
+    cosmosMsgs,
     initiatorMsg: decodedMsg.wasm.execute.msg.execute.callback.msg,
   }
 }

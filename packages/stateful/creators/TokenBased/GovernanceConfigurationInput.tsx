@@ -7,13 +7,12 @@ import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
-  Cw20BaseSelectors,
   genericTokenSelector,
   nativeSupplySelector,
+  tokenFactoryDenomCreationFeeSelector,
 } from '@dao-dao/state'
 import {
   Button,
-  ImageSelector,
   InputErrorMessage,
   InputLabel,
   Loader,
@@ -23,6 +22,7 @@ import {
   VOTING_POWER_DISTRIBUTION_COLORS,
   VotingPowerDistribution,
   VotingPowerDistributionEntry,
+  useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
 import {
@@ -32,11 +32,10 @@ import {
 } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
-  NEW_DAO_CW20_DECIMALS,
+  NEW_DAO_TOKEN_DECIMALS,
+  convertDenomToMicroDenomWithDecimals,
   formatPercentOf100,
-  isValidContractAddress,
   isValidTokenFactoryDenom,
-  makeValidateContractAddress,
   makeValidateNativeOrFactoryTokenDenom,
   nativeTokenExists,
   validatePercent,
@@ -47,7 +46,6 @@ import {
 
 import { TokenBasedCreator } from '.'
 import { EntityDisplay } from '../../components/EntityDisplay'
-import { Trans } from '../../components/Trans'
 import { useWallet } from '../../hooks/useWallet'
 import { TierCard } from './TierCard'
 import { CreatorData, GovernanceTokenType } from './types'
@@ -89,6 +87,20 @@ export const GovernanceConfigurationInput = ({
       block: 'end',
     })
   }, [appendTier])
+
+  // Load token factory denom creation fee.
+  const tokenFactoryDenomCreationFeeLoading = useCachedLoading(
+    tokenFactoryDenomCreationFeeSelector(chainId),
+    undefined
+  )
+  useEffect(() => {
+    if (!tokenFactoryDenomCreationFeeLoading.loading) {
+      setValue(
+        'creator.data.tokenFactoryDenomCreationFee',
+        tokenFactoryDenomCreationFeeLoading.data
+      )
+    }
+  }, [setValue, tokenFactoryDenomCreationFeeLoading])
 
   // Fill in default first tier info if tiers not yet edited.
   const [loadedPage, setLoadedPage] = useState(false)
@@ -176,39 +188,28 @@ export const GovernanceConfigurationInput = ({
     initialTreasuryPercent + totalMemberPercent === 100
 
   //! Validate existing governance token.
-  const existingGovernanceTokenIsCw20 =
-    data.existingTokenType === TokenType.Cw20
-  const existingGovernanceTokenIsValid =
-    (data.tokenType === GovernanceTokenType.Existing &&
-      existingGovernanceTokenIsCw20 &&
-      isValidContractAddress(data.existingTokenDenomOrAddress, bech32Prefix)) ||
+  const governanceTokenIsValid =
     // Native token.
-    nativeTokenExists(chainId, data.existingTokenDenomOrAddress) ||
-    // Native factory token.
-    isValidTokenFactoryDenom(data.existingTokenDenomOrAddress, bech32Prefix)
+    nativeTokenExists(chainId, data.existingTokenDenom) ||
+    // Factory token.
+    isValidTokenFactoryDenom(data.existingTokenDenom, bech32Prefix)
   const existingGovernanceTokenLoadable = useRecoilValueLoadable(
-    existingGovernanceTokenIsValid
+    governanceTokenIsValid
       ? genericTokenSelector({
           chainId,
-          type: data.existingTokenType,
-          denomOrAddress: data.existingTokenDenomOrAddress,
+          type: TokenType.Native,
+          denomOrAddress: data.existingTokenDenom,
         })
       : constSelector(undefined)
   )
   const existingGovernanceTokenSupply = useRecoilValueLoadable<
     TokenInfoResponse | number | undefined
   >(
-    existingGovernanceTokenIsValid
-      ? existingGovernanceTokenIsCw20
-        ? Cw20BaseSelectors.tokenInfoSelector({
-            chainId,
-            contractAddress: data.existingTokenDenomOrAddress,
-            params: [],
-          })
-        : nativeSupplySelector({
-            chainId,
-            denom: data.existingTokenDenomOrAddress,
-          })
+    governanceTokenIsValid
+      ? nativeSupplySelector({
+          chainId,
+          denom: data.existingTokenDenom,
+        })
       : constSelector(undefined)
   )
   useEffect(() => {
@@ -240,14 +241,11 @@ export const GovernanceConfigurationInput = ({
     if (!errors?.creator?.data?.existingToken?._error) {
       setError('creator.data.existingToken._error', {
         type: 'manual',
-        message: existingGovernanceTokenIsCw20
-          ? t('error.failedToGetTokenInfo', { tokenType: 'CW20' })
-          : t('error.failedToGetFactoryTokenInfo'),
+        message: t('error.failedToGetFactoryTokenInfo'),
       })
     }
   }, [
     clearErrors,
-    existingGovernanceTokenIsCw20,
     errors?.creator?.data?.existingToken?._error,
     existingGovernanceTokenLoadable,
     setError,
@@ -301,7 +299,7 @@ export const GovernanceConfigurationInput = ({
         tabs={[
           {
             label: t('button.createAToken'),
-            value: GovernanceTokenType.NewCw20,
+            value: GovernanceTokenType.New,
           },
           {
             label: t('button.useExistingToken'),
@@ -310,7 +308,7 @@ export const GovernanceConfigurationInput = ({
         ]}
       />
 
-      {data.tokenType === GovernanceTokenType.NewCw20 ? (
+      {data.tokenType === GovernanceTokenType.New ? (
         <>
           <div className="mb-10 rounded-lg bg-background-tertiary">
             <div className="flex h-14 flex-row border-b border-border-base p-4">
@@ -321,7 +319,8 @@ export const GovernanceConfigurationInput = ({
 
             <div className="flex flex-col items-stretch sm:flex-row">
               <div className="flex flex-col items-stretch sm:flex-row">
-                <div className="flex flex-col items-center gap-5 py-6 px-10">
+                {/* TODO(tokenfactory-image): add back in once token factory supports URI metadata */}
+                {/* <div className="flex flex-col items-center gap-5 py-6 px-10 sm:border-border-secondary sm:border-r">
                   <InputLabel name={t('form.image')} />
                   <ImageSelector
                     Trans={Trans}
@@ -332,8 +331,8 @@ export const GovernanceConfigurationInput = ({
                     size={40}
                     watch={watch}
                   />
-                </div>
-                <div className="flex flex-col gap-5 border-y border-border-secondary py-6 px-8 sm:border-y-0 sm:border-x">
+                </div> */}
+                <div className="flex flex-col gap-5 border-y border-border-secondary py-6 px-8 sm:border-y-0 sm:border-r">
                   <InputLabel name={t('form.symbol')} />
                   <div className="flex flex-col">
                     <div className="flex flex-row items-center gap-2">
@@ -386,7 +385,10 @@ export const GovernanceConfigurationInput = ({
                     fieldName="creator.data.newInfo.initialSupply"
                     ghost
                     register={register}
-                    step={1 / 10 ** NEW_DAO_CW20_DECIMALS}
+                    step={convertDenomToMicroDenomWithDecimals(
+                      1,
+                      NEW_DAO_TOKEN_DECIMALS
+                    )}
                     validation={[validatePositive, validateRequired]}
                   />
                   <p className="symbol-small-body-text font-mono leading-5 text-text-tertiary">
@@ -511,60 +513,29 @@ export const GovernanceConfigurationInput = ({
         </>
       ) : data.tokenType === GovernanceTokenType.Existing ? (
         <div className="rounded-lg bg-background-tertiary">
-          {/* TODO(token factory): Remove h-14 when native/TF DAOs are allowed. */}
-          <div className="flex h-14 flex-row border-b border-border-base p-4">
-            {/* TODO(token factory): Replace title with selection input below. */}
+          <div className="flex h-14 flex-row items-center border-b border-border-base p-4">
             <p className="primary-text text-text-body">
-              {t('form.tokenContractAddressTitle')}
+              {t('form.tokenIdentifier')}
             </p>
-
-            {/* TODO(token factory): Uncomment when native/TF DAOs are allowed. */}
-            {/* <SegmentedControls<TokenType.Cw20 | TokenType.Native>
-              onSelect={(value) => {
-                setValue('creator.data.existingTokenType', value)
-                setValue(
-                  'creator.data.existingTokenDenomOrAddress',
-                  ''
-                )
-              }}
-              selected={data.existingTokenType}
-              tabs={[
-                {
-                  label: t('form.cw20Token'),
-                  value: TokenType.Cw20,
-                },
-                {
-                  label: t('form.nativeOrFactoryToken'),
-                  value: TokenType.Native,
-                },
-              ]}
-            /> */}
           </div>
 
           <div className="space-y-2 p-4">
             <div>
               <TextInput
                 className="symbol-small-body-text font-mono text-text-secondary"
-                error={errors.creator?.data?.existingTokenDenomOrAddress}
-                fieldName="creator.data.existingTokenDenomOrAddress"
+                error={errors.creator?.data?.existingTokenDenom}
+                fieldName="creator.data.existingTokenDenom"
                 ghost
-                placeholder={
-                  existingGovernanceTokenIsCw20
-                    ? bech32Prefix + '...'
-                    : `"denom" OR "factory/${bech32Prefix}.../denom"`
-                }
+                placeholder={`"denom" OR "factory/${bech32Prefix}.../denom"`}
                 register={register}
                 validation={[
                   validateRequired,
-                  makeValidateContractAddress(bech32Prefix),
-                  ...(existingGovernanceTokenIsCw20
-                    ? [makeValidateContractAddress(bech32Prefix)]
-                    : [makeValidateNativeOrFactoryTokenDenom(chainId)]),
+                  makeValidateNativeOrFactoryTokenDenom(chainId),
                 ]}
               />
               <InputErrorMessage
                 error={
-                  errors.creator?.data?.existingTokenDenomOrAddress ||
+                  errors.creator?.data?.existingTokenDenom ||
                   errors.creator?.data?.existingToken?._error
                 }
               />

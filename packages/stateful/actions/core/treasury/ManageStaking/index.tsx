@@ -204,11 +204,13 @@ const InnerComponent: ActionComponent = (props) => {
     : {
         loading: false,
         data: coin(
-          balances.data.find(
-            ({ token: { chainId, denomOrAddress } }) =>
-              chainId === nativeToken.chainId &&
-              denomOrAddress === nativeToken.denomOrAddress
-          )?.balance ?? 0,
+          BigInt(
+            balances.data.find(
+              ({ token: { chainId, denomOrAddress } }) =>
+                chainId === nativeToken.chainId &&
+                denomOrAddress === nativeToken.denomOrAddress
+            )?.balance ?? 0
+          ).toString(),
           nativeToken.denomOrAddress
         ),
       }
@@ -364,10 +366,9 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
 
   return (
     <>
-      {context.type === ActionContextType.Dao && (
+      {context.type === ActionContextType.Dao && props.isCreating && (
         <ChainPickerInput
           className="mb-4"
-          disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
           labelMode="token"
           onChange={() => {

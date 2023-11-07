@@ -1,24 +1,28 @@
-import { Check } from '@mui/icons-material'
-import { useEffect, useState } from 'react'
+import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
+import { fromHex, toUtf8 } from '@cosmjs/encoding'
+import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
+import { codeDetailsSelector } from '@dao-dao/state/recoil'
 import {
-  Button,
+  Loader,
+  useCachedLoading,
   useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
-import { WidgetEditorProps } from '@dao-dao/types'
+import { ActionKey, WidgetEditorProps } from '@dao-dao/types'
 import { InstantiateMsg as Cw721InstantiateMsg } from '@dao-dao/types/contracts/Cw721Base'
-import { InstantiateMsg as Sg721InstantiateMsg } from '@dao-dao/types/contracts/Sg721Base'
-import { instantiateSmartContract, processError } from '@dao-dao/utils'
 
-import { useWallet } from '../../../hooks/useWallet'
+import { useActionOptions } from '../../../actions'
 import { PressData } from './types'
 
 export const PressEditor = ({
   fieldNamePrefix,
+  allActionsWithData,
+  index,
+  addAction,
+  isCreating,
 }: WidgetEditorProps<PressData>) => {
   const { t } = useTranslation()
 
@@ -26,71 +30,107 @@ export const PressEditor = ({
     config: { codeIds },
   } = useSupportedChainContext()
   const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { address: walletAddress = '', getSigningCosmWasmClient } = useWallet()
+  const {
+    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+  } = useActionOptions()
 
   const { setValue, setError, clearErrors, watch } = useFormContext<PressData>()
+
   const contract = watch((fieldNamePrefix + 'contract') as 'contract')
 
-  const [instantiating, setInstantiating] = useState(false)
-  const instantiate = async () => {
-    if (!walletAddress) {
-      toast.error(t('error.logInToContinue'))
+  // Ensure instantiate2 action exists with the right fields when editing.
+  const codeId = codeIds.Cw721Base || -1
+  const codeDetailsLoading = useCachedLoading(
+    codeId > -1
+      ? codeDetailsSelector({
+          chainId,
+          codeId,
+        })
+      : undefined,
+    undefined
+  )
+  const salt = 'DAO DAO Press'
+  const instantiate2ActionExists =
+    isCreating &&
+    allActionsWithData.some(
+      ({ actionKey, data }) =>
+        actionKey === ActionKey.Instantiate2 &&
+        data.chainId === chainId &&
+        data.codeId === codeId &&
+        data.salt === salt
+    )
+  // Matches the address of the instantiate2 action.
+  const generatedContractAddress =
+    codeDetailsLoading.loading || !codeDetailsLoading.data
+      ? undefined
+      : instantiate2Address(
+          fromHex(codeDetailsLoading.data.checksum),
+          coreAddress,
+          toUtf8(salt),
+          bech32Prefix
+        )
+
+  useEffect(() => {
+    // If not creating, data not loaded yet, or action exists and contract
+    // already set, do nothing.
+    if (
+      !isCreating ||
+      !addAction ||
+      codeDetailsLoading.loading ||
+      !codeDetailsLoading.data ||
+      !generatedContractAddress ||
+      (instantiate2ActionExists && contract === generatedContractAddress)
+    ) {
       return
     }
 
-    const signingCosmWasmClient = await getSigningCosmWasmClient()
-
-    setInstantiating(true)
-    try {
-      const name = `${daoName}'s Press`
-
-      const contractAddress = codeIds.Cw721Base
-        ? await instantiateSmartContract(
-            signingCosmWasmClient,
-            walletAddress,
-            codeIds.Cw721Base,
-            name,
+    const name = `${daoName}'s Press`
+    // Otherwise add the instantiate2 action.
+    setValue(
+      (fieldNamePrefix + 'contract') as 'contract',
+      generatedContractAddress
+    )
+    addAction(
+      {
+        actionKey: ActionKey.Instantiate2,
+        data: {
+          chainId,
+          admin: coreAddress,
+          codeId,
+          label: name,
+          message: JSON.stringify(
             {
               minter: coreAddress,
-              name: name,
+              name,
               symbol: 'PRESS',
-            } as Cw721InstantiateMsg
-          )
-        : codeIds.Sg721Base
-        ? // TODO(stargaze): test this
-          await instantiateSmartContract(
-            signingCosmWasmClient,
-            walletAddress,
-            codeIds.Sg721Base,
-            name,
-            {
-              collection_info: {
-                creator: coreAddress,
-                description: `${name} on DAO DAO`,
-                image: '',
-              },
-              minter: coreAddress,
-              name: name,
-              symbol: 'PRESS',
-            } as Sg721InstantiateMsg
-          )
-        : undefined
-
-      // Should never happen.
-      if (!contractAddress) {
-        throw new Error(t('error.loadingData'))
-      }
-
-      setValue((fieldNamePrefix + 'contract') as 'contract', contractAddress)
-
-      toast.success(t('success.created'))
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-    } finally {
-      setInstantiating(false)
-    }
-  }
+            } as Cw721InstantiateMsg,
+            null,
+            2
+          ),
+          salt,
+          funds: [],
+        },
+      },
+      index
+    )
+  }, [
+    addAction,
+    bech32Prefix,
+    chainId,
+    codeDetailsLoading,
+    codeId,
+    codeIds.Cw721Base,
+    contract,
+    coreAddress,
+    daoName,
+    isCreating,
+    fieldNamePrefix,
+    index,
+    instantiate2ActionExists,
+    salt,
+    setValue,
+    generatedContractAddress,
+  ])
 
   // Prevent action from being submitted if the contract has not yet been
   // created.
@@ -104,21 +144,5 @@ export const PressEditor = ({
     }
   }, [setError, clearErrors, t, contract, fieldNamePrefix])
 
-  return (
-    <div className="mt-2 flex flex-row flex-wrap items-center gap-2">
-      <p className="body-text break-words">
-        {contract
-          ? t('info.createdPressContract')
-          : t('info.createPressContract')}
-      </p>
-
-      {contract ? (
-        <Check className="!h-6 !w-6" />
-      ) : (
-        <Button loading={instantiating} onClick={instantiate} variant="primary">
-          {t('button.create')}
-        </Button>
-      )}
-    </div>
-  )
+  return <>{!contract && <Loader fill={false} size={24} />}</>
 }

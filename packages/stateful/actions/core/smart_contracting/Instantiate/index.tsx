@@ -37,7 +37,7 @@ import { useTokenBalances } from '../../../hooks'
 import { useActionOptions } from '../../../react'
 import { InstantiateComponent as StatelessInstantiateComponent } from './Component'
 
-interface InstantiateData {
+type InstantiateData = {
   chainId: string
   admin: string
   codeId: number
@@ -51,98 +51,6 @@ interface InstantiateData {
     note: PolytoneConnection
     initiatorMsg: string
   }
-}
-
-const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () => {
-  const currentChainId = useActionOptions().chain.chain_id
-
-  return useCallback(
-    ({ chainId, admin, codeId, label, message, funds }: InstantiateData) => {
-      let msg
-      try {
-        msg = JSON5.parse(message)
-      } catch (err) {
-        console.error(`internal error. unparsable message: (${message})`, err)
-        return
-      }
-
-      return maybeMakePolytoneExecuteMessage(
-        currentChainId,
-        chainId,
-        makeWasmMessage({
-          wasm: {
-            instantiate: {
-              admin: admin || null,
-              code_id: codeId,
-              funds: funds.map(({ denom, amount }) => ({
-                denom,
-                amount: convertDenomToMicroDenomWithDecimals(
-                  amount,
-                  getNativeTokenForChainId(chainId).decimals
-                ).toString(),
-              })),
-              label,
-              msg,
-            },
-          },
-        })
-      )
-    },
-    [currentChainId]
-  )
-}
-
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
-  msg: Record<string, any>
-) => {
-  let chainId = useActionOptions().chain.chain_id
-  const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
-  if (decodedPolytone.match) {
-    chainId = decodedPolytone.chainId
-    msg = decodedPolytone.msg
-  }
-
-  return objectMatchesStructure(msg, {
-    wasm: {
-      instantiate: {
-        code_id: {},
-        label: {},
-        msg: {},
-        funds: {},
-      },
-    },
-  })
-    ? {
-        match: true,
-        data: {
-          chainId,
-          admin: msg.wasm.instantiate.admin ?? '',
-          codeId: msg.wasm.instantiate.code_id,
-          label: msg.wasm.instantiate.label,
-          message: JSON.stringify(msg.wasm.instantiate.msg, undefined, 2),
-          funds: (msg.wasm.instantiate.funds as Coin[]).map(
-            ({ denom, amount }) => ({
-              denom,
-              amount: Number(
-                convertMicroDenomToDenomWithDecimals(
-                  amount,
-                  getNativeTokenForChainId(chainId).decimals
-                )
-              ),
-            })
-          ),
-          _polytone: decodedPolytone.match
-            ? {
-                chainId: decodedPolytone.chainId,
-                note: decodedPolytone.polytoneConnection,
-                initiatorMsg: decodedPolytone.initiatorMsg,
-              }
-            : undefined,
-        },
-      }
-    : {
-        match: false,
-      }
 }
 
 const Component: ActionComponent = (props) => {
@@ -313,16 +221,105 @@ const Component: ActionComponent = (props) => {
 export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
   t,
   address,
-  chain: { chain_id: chainId },
+  chain: { chain_id: currentChainId },
 }) => {
   const useDefaults: UseDefaults<InstantiateData> = () => ({
-    chainId,
+    chainId: currentChainId,
     admin: address,
     codeId: 0,
     label: '',
     message: '{}',
     funds: [],
   })
+
+  const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () =>
+    useCallback(
+      ({ chainId, admin, codeId, label, message, funds }: InstantiateData) => {
+        let msg
+        try {
+          msg = JSON5.parse(message)
+        } catch (err) {
+          console.error(`internal error. unparsable message: (${message})`, err)
+          return
+        }
+
+        return maybeMakePolytoneExecuteMessage(
+          currentChainId,
+          chainId,
+          makeWasmMessage({
+            wasm: {
+              instantiate: {
+                admin: admin || null,
+                code_id: codeId,
+                funds: funds.map(({ denom, amount }) => ({
+                  denom,
+                  amount: convertDenomToMicroDenomWithDecimals(
+                    amount,
+                    getNativeTokenForChainId(chainId).decimals
+                  ).toString(),
+                })),
+                label,
+                msg,
+              },
+            },
+          })
+        )
+      },
+      []
+    )
+
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<InstantiateData> = (
+    msg: Record<string, any>
+  ) => {
+    let chainId = currentChainId
+    const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+    if (decodedPolytone.match) {
+      chainId = decodedPolytone.chainId
+      msg = decodedPolytone.msg
+    }
+
+    return objectMatchesStructure(msg, {
+      wasm: {
+        instantiate: {
+          code_id: {},
+          label: {},
+          msg: {},
+          funds: {},
+        },
+      },
+    })
+      ? {
+          match: true,
+          data: {
+            chainId,
+            admin: msg.wasm.instantiate.admin ?? '',
+            codeId: msg.wasm.instantiate.code_id,
+            label: msg.wasm.instantiate.label,
+            message: JSON.stringify(msg.wasm.instantiate.msg, undefined, 2),
+            funds: (msg.wasm.instantiate.funds as Coin[]).map(
+              ({ denom, amount }) => ({
+                denom,
+                amount: Number(
+                  convertMicroDenomToDenomWithDecimals(
+                    amount,
+                    getNativeTokenForChainId(chainId).decimals
+                  )
+                ),
+              })
+            ),
+            _polytone: decodedPolytone.match
+              ? {
+                  chainId: decodedPolytone.chainId,
+                  note: decodedPolytone.polytoneConnection,
+                  initiatorMsg: decodedPolytone.initiatorMsg,
+                }
+              : undefined,
+          },
+        }
+      : {
+          match: false,
+        }
+  }
 
   return {
     key: ActionKey.Instantiate,

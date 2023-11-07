@@ -5,6 +5,7 @@ import {
   DaoWebSocketChannelInfo,
   PolytoneProxies,
 } from '@dao-dao/types'
+import { InstantiateMsg as DaoCoreV2InstantiateMsg } from '@dao-dao/types/contracts/DaoCore.v2'
 
 import { getSupportedChainConfig } from './chain'
 import { getGovPath } from './url'
@@ -52,3 +53,13 @@ export const polytoneNoteProxyMapToChainIdMap = (
     }
   }, {} as PolytoneProxies)
 }
+
+export const getFundsFromDaoInstantiateMsg = ({
+  voting_module_instantiate_info,
+  proposal_modules_instantiate_info,
+}: DaoCoreV2InstantiateMsg) => [
+  // TODO(neutron-2.3.0): remove once non-optional
+  ...(voting_module_instantiate_info.funds || []),
+  // TODO(neutron-2.3.0): remove once non-optional
+  ...proposal_modules_instantiate_info.flatMap(({ funds }) => funds || []),
+]

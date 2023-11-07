@@ -13,9 +13,12 @@ import {
 } from 'react-hook-form'
 
 import { ContractVersion } from './chain'
-import { DepositRefundPolicy, ModuleInstantiateInfo } from './contracts/common'
+import {
+  ActiveThreshold,
+  DepositRefundPolicy,
+  ModuleInstantiateInfo,
+} from './contracts/common'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
-import { ActiveThreshold } from './contracts/DaoVotingCw20Staked'
 import { DaoCreator } from './creators'
 import {
   PercentOrMajorityValue,
@@ -49,6 +52,7 @@ export type DaoInfo = {
 }
 
 export type DaoParentInfo = {
+  chainId: string
   coreAddress: string
   coreVersion: ContractVersion
   name: string
@@ -97,11 +101,12 @@ export type CreateDaoCustomValidator = (setNewErrors: boolean) => void
 
 export interface CreateDaoContext<CreatorData extends FieldValues = any> {
   form: UseFormReturn<NewDao<CreatorData>>
+  instantiateMsg: DaoCoreV2InstantiateMsg | undefined
+  instantiateMsgError: string | undefined
   commonVotingConfig: DaoCreationCommonVotingConfigItems
   availableCreators: readonly DaoCreator[]
   creator: DaoCreator
   proposalModuleDaoCreationAdapters: Required<ProposalModuleAdapter>['daoCreation'][]
-  generateInstantiateMsg: () => DaoCoreV2InstantiateMsg
   setCustomValidator: (fn: CreateDaoCustomValidator) => void
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
@@ -282,14 +287,14 @@ export enum DaoTabId {
   Members = 'members',
   Staked = 'staked',
   Collection = 'collection',
-  Browser = 'browser',
+  Apps = 'apps',
 }
 
 export type DaoTab = {
   // ID used in URL hash.
   id: DaoTabId | string
   label: string
-  Icon?: ComponentType<{ className: string }>
+  Icon: ComponentType<{ className: string }>
 }
 
 export type DaoTabWithComponent = DaoTab & {
@@ -311,4 +316,10 @@ export type DaoChainTreasury<T extends TokenCardInfo, N extends object> = {
   address: string | undefined
   tokens: LoadingData<T[]>
   nfts: LoadingData<(N & { key: string })[]>
+}
+
+export type DaoApp = {
+  name: string
+  imageUrl: string
+  url: string
 }

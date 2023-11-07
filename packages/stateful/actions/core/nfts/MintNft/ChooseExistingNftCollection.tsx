@@ -102,11 +102,11 @@ export const ChooseExistingNftCollection: ActionComponent = (props) => {
 
           // Indicate contract is ready and store name/symbol for display.
           setValue(
-            (props.fieldNamePrefix + 'instantiateMsg') as 'instantiateMsg',
+            (props.fieldNamePrefix + 'instantiateData') as 'instantiateData',
             {
-              // Clone to avoid mutating original.
-              ...info,
-              minter: '',
+              chainId,
+              name: info.name,
+              symbol: info.symbol,
             }
           )
           setValue(

@@ -139,7 +139,7 @@ export const GovernanceProposal = ({
 
       {!!description && (
         <MarkdownRenderer
-          className="styled-scrollbar -mr-4 max-h-[40vh] overflow-y-auto pr-4"
+          className="styled-scrollbar -mr-4 max-h-[40dvh] overflow-y-auto pr-4"
           markdown={description.replace(/\\n/g, '\n')}
         />
       )}

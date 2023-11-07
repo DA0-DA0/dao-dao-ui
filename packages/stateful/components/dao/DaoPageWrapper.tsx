@@ -8,6 +8,7 @@ import {
   DaoNotFound,
   ErrorPage500,
   PageLoader,
+  useCachedLoadingWithError,
   useThemeContext,
 } from '@dao-dao/stateless'
 import {
@@ -17,6 +18,7 @@ import {
 } from '@dao-dao/types'
 import { transformIpfsUrlToHttpsIfNecessary } from '@dao-dao/utils'
 
+import { daoInfoSelector } from '../../recoil'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { DaoProviders } from './DaoProviders'
 
@@ -85,6 +87,16 @@ export const DaoPageWrapper = ({
       : undefined,
   }
 
+  // Load DAO info once static props are loaded so it's more up to date.
+  const loadingDaoInfo = useCachedLoadingWithError(
+    serializedInfo
+      ? daoInfoSelector({
+          chainId: serializedInfo.chainId,
+          coreAddress: serializedInfo.coreAddress,
+        })
+      : undefined
+  )
+
   // Set icon for the page from info if setIcon is present.
   useEffect(() => {
     if (setIcon) {
@@ -117,7 +129,15 @@ export const DaoPageWrapper = ({
       {/* On fallback page (waiting for static props), `info` is not yet present. Let's just display a loader until `info` is loaded. We can't access translations until static props are loaded anyways. */}
       <SuspenseLoader fallback={<PageLoader />}>
         {info ? (
-          <DaoProviders info={info}>
+          <DaoProviders
+            info={
+              // Use the loading info once it's loaded, otherwise fallback to
+              // info from static props.
+              !loadingDaoInfo.loading && !loadingDaoInfo.errored
+                ? loadingDaoInfo.data
+                : info
+            }
+          >
             {/* Suspend children to prevent unmounting and remounting InnerDaoPageWrapper and the context providers inside it every time something needs to suspend (which causes a lot of flickering loading states). */}
             <SuspenseLoader fallback={<PageLoader />}>
               {children}

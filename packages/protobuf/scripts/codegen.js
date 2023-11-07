@@ -73,6 +73,10 @@ telescope({
           'osmosis.tokenfactory.v1beta1',
           'osmosis.txfees.v1beta1',
           'osmosis.valsetpref.v1beta1',
+          'publicawesome.stargaze.alloc.v1beta1',
+          'publicawesome.stargaze.cron.v1',
+          'publicawesome.stargaze.globalfee.v1',
+          'publicawesome.stargaze.mint.v1beta1',
         ],
       },
       // excluded: {

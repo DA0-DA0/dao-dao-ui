@@ -12,7 +12,6 @@ import {
   DaoInfoBar,
   DaoPageWrapper,
   DaoPageWrapperProps,
-  DaoWidgets,
   LinkWrapper,
   ProfileDaoHomeCard,
   SuspenseLoader,
@@ -22,14 +21,13 @@ import {
 } from '@dao-dao/stateful'
 import { useActionForKey } from '@dao-dao/stateful/actions'
 import { makeGetDaoStaticProps } from '@dao-dao/stateful/server'
-import { useWidgets } from '@dao-dao/stateful/widgets'
 import {
   DaoDappTabbedHome,
   useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, DaoPageMode, WidgetLocation } from '@dao-dao/types'
+import { ActionKey, DaoPageMode, DaoTabId } from '@dao-dao/types'
 import {
   SITE_URL,
   getDaoPath,
@@ -152,25 +150,16 @@ const InnerDaoHome = () => {
     useFollowingDaos(daoInfo.chainId)
   const following = isFollowing(daoInfo.coreAddress)
 
-  // Add home tab with widgets if any widgets exist.
-  const loadingDaoWidgets = useWidgets({
-    // Load widgets before rendering so that home is selected if there are
-    // widgets.
-    suspendWhileLoading: true,
-    // Only load home widgets.
-    location: WidgetLocation.Home,
-  })
-  const hasHomeWidgets =
-    !loadingDaoWidgets.loading && loadingDaoWidgets.data.length > 0
-
-  const tabs = useDaoTabs({
-    includeHome: hasHomeWidgets ? DaoWidgets : undefined,
-  })
-  const firstTabId = tabs[0].id
+  const loadingTabs = useDaoTabs()
+  // Just a type-check because some tabs are loaded at the beginning.
+  const tabs = loadingTabs.loading ? undefined : loadingTabs.data
+  // Default to proposals tab for type-check, but should never happen as some
+  // tabs are loaded at the beginning.
+  const firstTabId = tabs?.[0].id || DaoTabId.Proposals
 
   // Pre-fetch tabs.
   useEffect(() => {
-    tabs.forEach((tab) => {
+    tabs?.forEach((tab) => {
       router.prefetch(getDaoPath(daoInfo.coreAddress, tab.id))
     })
   }, [daoInfo.coreAddress, getDaoPath, router, tabs])
@@ -186,7 +175,7 @@ const InnerDaoHome = () => {
   }, [daoInfo.coreAddress, getDaoPath, router, slug.length, firstTabId])
 
   const tabId =
-    slug.length > 0 && tabs.some(({ id }) => id === slug[0])
+    slug.length > 0 && tabs?.some(({ id }) => id === slug[0])
       ? slug[0]
       : // If tab is invalid, default to first tab.
         firstTabId
@@ -212,7 +201,7 @@ const InnerDaoHome = () => {
       onSelectTabId={onSelectTabId}
       rightSidebarContent={<ProfileDaoHomeCard />}
       selectedTabId={tabId}
-      tabs={tabs}
+      tabs={tabs || []}
     />
   )
 }

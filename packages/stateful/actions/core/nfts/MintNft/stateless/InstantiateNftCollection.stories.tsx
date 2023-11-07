@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { AddressInput } from '@dao-dao/stateless'
 import {
   CHAIN_ID,
   makeDaoInfo,
@@ -49,6 +48,5 @@ Default.args = {
   options: {
     onInstantiate: async () => alert('instantiate'),
     instantiating: false,
-    AddressInput,
   },
 }

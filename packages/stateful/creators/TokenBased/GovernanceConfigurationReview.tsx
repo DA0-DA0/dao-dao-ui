@@ -12,7 +12,10 @@ import {
   useChain,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
-import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
+import {
+  DaoCreationGovernanceConfigReviewProps,
+  TokenType,
+} from '@dao-dao/types'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../../components/EntityDisplay'
@@ -23,8 +26,7 @@ export const GovernanceConfigurationReview = ({
     tiers,
     tokenType,
     newInfo: { symbol: newSymbol, initialTreasuryPercent },
-    existingTokenType,
-    existingTokenDenomOrAddress,
+    existingTokenDenom,
   },
 }: DaoCreationGovernanceConfigReviewProps<CreatorData>) => {
   const { t } = useTranslation()
@@ -32,11 +34,11 @@ export const GovernanceConfigurationReview = ({
   const treasuryColor = `rgba(${useNamedThemeColor('light')}, 0.45)`
 
   const tokenLoadable = useRecoilValueLoadable(
-    tokenType === GovernanceTokenType.Existing && existingTokenDenomOrAddress
+    tokenType === GovernanceTokenType.Existing && existingTokenDenom
       ? genericTokenSelector({
           chainId,
-          type: existingTokenType,
-          denomOrAddress: existingTokenDenomOrAddress,
+          type: TokenType.Native,
+          denomOrAddress: existingTokenDenom,
         })
       : constSelector(undefined)
   )
@@ -53,7 +55,7 @@ export const GovernanceConfigurationReview = ({
         </div>
 
         <div className="space-y-2 p-4">
-          <CopyToClipboard takeAll value={existingTokenDenomOrAddress} />
+          <CopyToClipboard takeAll value={existingTokenDenom} />
 
           {tokenLoadable.state === 'loading' ? (
             <Loader />
@@ -127,7 +129,7 @@ export const GovernanceConfigurationReview = ({
   })
 
   const symbol =
-    (tokenType === GovernanceTokenType.NewCw20
+    (tokenType === GovernanceTokenType.New
       ? newSymbol
       : tokenLoadable.state === 'hasValue' && tokenLoadable.contents?.symbol) ||
     t('info.tokens').toLocaleUpperCase()

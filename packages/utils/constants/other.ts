@@ -12,7 +12,7 @@ export const MAX_META_CHARS_PROPOSAL_DESCRIPTION = 200
 
 export const DAO_STATIC_PROPS_CACHE_SECONDS = 60
 
-export const NEW_DAO_CW20_DECIMALS = 6
+export const NEW_DAO_TOKEN_DECIMALS = 6
 
 // This will not change with environment.
 export const MAX_NUM_PROPOSAL_CHOICES = 20

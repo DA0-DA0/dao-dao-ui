@@ -291,7 +291,10 @@ export const makeUsePublishProposal =
         // Native token deposit if exists.
         const proposeFunds =
           requiredProposalDeposit && depositInfoNativeTokenDenom
-            ? coins(requiredProposalDeposit, depositInfoNativeTokenDenom)
+            ? coins(
+                BigInt(requiredProposalDeposit).toString(),
+                depositInfoNativeTokenDenom
+              )
             : undefined
 
         // Recreate form data with just the expected fields to remove any fields
