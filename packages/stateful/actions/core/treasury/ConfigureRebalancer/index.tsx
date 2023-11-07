@@ -3,12 +3,13 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useRecoilValueLoadable, waitForAll } from 'recoil'
 
-import { valenceAccountsSelector } from '@dao-dao/state'
+import { genericTokenSelector, valenceAccountsSelector } from '@dao-dao/state'
 import { historicalUsdPriceSelector } from '@dao-dao/state/recoil/selectors/osmosis'
 import {
   BalanceEmoji,
   ChainPickerInput,
   ChainProvider,
+  useCachedLoading,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
@@ -29,6 +30,7 @@ import {
 import {
   VALENCE_SUPPORTED_CHAINS,
   actionContextSupportsValence,
+  convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
   encodeMessageAsBase64,
   getValenceControllerAccount,
@@ -58,7 +60,27 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
   const loadingTokens = useTokenBalances({
     allChains: true,
     filter: TokenType.Native,
+    // Ensure chosen tokens are loaded.
+    additionalTokens: selectedTokens.map(({ denom }) => ({
+      chainId,
+      type: TokenType.Native,
+      denomOrAddress: denom,
+    })),
   })
+
+  const minBalanceDenom = watch(
+    (props.fieldNamePrefix + 'minBalance.denom') as 'minBalance.denom'
+  )
+  const minBalanceToken = useCachedLoading(
+    minBalanceDenom
+      ? genericTokenSelector({
+          chainId,
+          type: TokenType.Native,
+          denomOrAddress: minBalanceDenom,
+        })
+      : undefined,
+    undefined
+  )
 
   const nativeBalances = loadingTokens.loading
     ? loadingTokens
@@ -150,6 +172,9 @@ const Component: ActionComponent<undefined, ConfigureRebalancerData> = (
           options={{
             nativeBalances,
             historicalPrices,
+            minBalanceToken: minBalanceToken.loading
+              ? undefined
+              : minBalanceToken.data,
             AddressInput,
           }}
         />
@@ -195,27 +220,32 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
     ) {
       serviceName = serviceData.service_name as string
       data = JSON.parse(fromUtf8(fromBase64(serviceData.data as string)))
-    } else {
-      return {
-        match: false,
-      }
     }
+  }
 
-    if (
-      serviceName !== 'rebalancer' ||
-      !data ||
-      !objectMatchesStructure(data, {
-        base_denom: {},
-        targets: {},
-        pid: {},
-        target_override_strategy: {},
-      })
-    ) {
-      return {
-        match: false,
-      }
-    }
-  } else {
+  // Get target with min balance set.
+  const minBalanceTarget = data?.targets.find(({ min_balance }) => min_balance)
+  const minBalanceToken = useCachedLoading(
+    minBalanceTarget?.denom
+      ? genericTokenSelector({
+          chainId,
+          type: TokenType.Native,
+          denomOrAddress: minBalanceTarget.denom,
+        })
+      : undefined,
+    undefined
+  )
+
+  if (
+    serviceName !== 'rebalancer' ||
+    !data ||
+    !objectMatchesStructure(data, {
+      base_denom: {},
+      targets: {},
+      pid: {},
+      target_override_strategy: {},
+    })
+  ) {
     return {
       match: false,
     }
@@ -265,6 +295,16 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ConfigureRebalancerData> = (
         kd: Number(data.pid?.d || -1),
       },
       maxLimit: typeof maxLimitBps === 'number' ? maxLimitBps / 100 : undefined,
+      minBalance:
+        minBalanceTarget?.min_balance && !minBalanceToken.loading
+          ? {
+              denom: minBalanceTarget.denom,
+              amount: convertMicroDenomToDenomWithDecimals(
+                minBalanceTarget.min_balance,
+                minBalanceToken.data?.decimals ?? 0
+              ),
+            }
+          : undefined,
       targetOverrideStrategy: data.target_override_strategy || 'proportional',
     },
   }
@@ -365,6 +405,7 @@ export const makeConfigureRebalancerAction: ActionMaker<
         tokens,
         pid,
         maxLimit,
+        minBalance,
         targetOverrideStrategy,
       }: ConfigureRebalancerData) => {
         if (!valenceAccount) {
@@ -398,15 +439,15 @@ export const makeConfigureRebalancerAction: ActionMaker<
                           d: pid.kd.toString(),
                         },
                         target_override_strategy: targetOverrideStrategy,
-                        targets: tokens.map(
-                          ({ denom, percent, minBalance }) => ({
-                            denom,
-                            min_balance:
-                              minBalance && BigInt(minBalance).toString(),
-                            // BPS
-                            bps: percent * 100,
-                          })
-                        ),
+                        targets: tokens.map(({ denom, percent }) => ({
+                          denom,
+                          min_balance:
+                            minBalance && minBalance.denom === denom
+                              ? BigInt(minBalance.amount).toString()
+                              : undefined,
+                          // BPS
+                          bps: percent * 100,
+                        })),
                         trustee,
                       } as Pick<
                         RebalancerData,
