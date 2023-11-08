@@ -483,44 +483,6 @@ export const VestingPaymentCard = ({
             </div>
           )}
 
-          <div className="flex flex-row items-start justify-between gap-8">
-            <p className="link-text">{t('title.claimedBalance')}</p>
-
-            {/* leading-5 to match link-text's line-height. */}
-            <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
-              {/* leading-5 to match link-text's line-height. */}
-              <TokenAmountDisplay
-                amount={claimedAmount}
-                className="leading-5 text-text-body"
-                decimals={token.decimals}
-                symbol={token.symbol}
-              />
-
-              {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
-                  <div className="flex flex-row items-center gap-1">
-                    <TokenAmountDisplay
-                      amount={
-                        lazyInfo.loading
-                          ? { loading: true }
-                          : claimedAmount * lazyInfo.data.usdUnitPrice!.amount
-                      }
-                      dateFetched={
-                        lazyInfo.loading
-                          ? undefined
-                          : lazyInfo.data.usdUnitPrice!.timestamp
-                      }
-                      estimatedUsdValue
-                    />
-
-                    <TooltipInfoIcon
-                      size="xs"
-                      title={t('info.estimatedUsdValueTooltip')}
-                    />
-                  </div>
-                )}
-            </div>
-          </div>
         </div>
 
         {!lazyInfo.loading &&
