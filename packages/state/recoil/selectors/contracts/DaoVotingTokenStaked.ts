@@ -108,7 +108,7 @@ export const denomSelector = selectorFamily<
         })
       )
       if (denom) {
-        return denom
+        return { denom }
       }
 
       // If indexer query fails, fallback to contract query.
