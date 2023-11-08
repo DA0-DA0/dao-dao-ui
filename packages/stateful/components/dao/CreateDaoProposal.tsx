@@ -81,6 +81,12 @@ export const CreateDaoProposal = () => {
     ),
   })
 
+  // Reset form to defaults and clear latest proposal save.
+  const clear = useCallback(() => {
+    formMethods.reset(makeDefaultNewProposalForm())
+    setLatestProposalSave({})
+  }, [formMethods, makeDefaultNewProposalForm, setLatestProposalSave])
+
   const [proposalCreatedCardProps, setProposalCreatedCardProps] =
     useRecoilState(proposalCreatedCardPropsAtom)
 
@@ -311,6 +317,7 @@ export const CreateDaoProposal = () => {
   return (
     <FormProvider {...formMethods}>
       <CreateProposal
+        clear={clear}
         newProposal={
           <SuspenseLoader
             fallback={<PageLoader />}
