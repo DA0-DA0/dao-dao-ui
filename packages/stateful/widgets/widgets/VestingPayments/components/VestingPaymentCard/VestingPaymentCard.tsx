@@ -483,6 +483,21 @@ export const VestingPaymentCard = ({
             </div>
           )}
 
+          <div className="flex flex-row items-start justify-between gap-8">
+            <p className="link-text">{t('title.claimedBalance')}</p>
+
+            {/* leading-5 to match link-text's line-height. */}
+            <div className="caption-text flex flex-col items-end gap-1 text-right font-mono">
+              {/* leading-5 to match link-text's line-height. */}
+              <TokenAmountDisplay
+                amount={claimedAmount}
+                className="leading-5 text-text-body"
+                decimals={token.decimals}
+                symbol={token.symbol}
+              />
+            </div>
+            
+          </div>
         </div>
 
         {!lazyInfo.loading &&
