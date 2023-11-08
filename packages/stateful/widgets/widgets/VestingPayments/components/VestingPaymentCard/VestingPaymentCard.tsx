@@ -496,7 +496,6 @@ export const VestingPaymentCard = ({
                 symbol={token.symbol}
               />
             </div>
-            
           </div>
         </div>
 
