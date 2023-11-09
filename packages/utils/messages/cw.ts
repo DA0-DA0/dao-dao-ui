@@ -15,7 +15,7 @@ import {
 import { getSupportedChainConfig } from '../chain'
 import { POLYTONE_TIMEOUT_SECONDS } from '../constants'
 import { objectMatchesStructure } from '../objectMatchesStructure'
-import { parseEncodedMessage } from './encoding'
+import { encodeMessageAsBase64, parseEncodedMessage } from './encoding'
 import { decodeStargateMessage } from './protobuf'
 
 type WasmMsgType =
@@ -147,7 +147,7 @@ export const makeExecutableMintMessage = (
   wasm: {
     execute: {
       contract_addr: contractAddress,
-      msg: toBase64(toUtf8(JSON.stringify(msg))),
+      msg: encodeMessageAsBase64(msg),
       funds: [],
     },
   },
