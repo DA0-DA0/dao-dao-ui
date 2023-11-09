@@ -16,8 +16,8 @@ import {
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
+  LazyNftCardInfo,
   MeTransactionSave,
-  NftCardInfo,
   TokenCardInfo,
   TokenType,
   WithChainId,
@@ -32,7 +32,10 @@ import {
   transformBech32Address,
 } from '@dao-dao/utils'
 
-import { walletNftCardInfos, walletStakedNftCardInfosSelector } from './nft'
+import {
+  walletLazyNftCardInfosSelector,
+  walletStakedLazyNftCardInfosSelector,
+} from './nft'
 
 // This doesn't update right away due to Cloudflare KV Store latency, so this
 // serves to keep track of all successful updates for the current session. This
@@ -273,7 +276,7 @@ export const walletTokenCardInfosSelector = selectorFamily<
 
 // Get NFTs across all DAO DAO-supported chains.
 export const allWalletNftsSelector = selectorFamily<
-  NftCardInfo[],
+  LazyNftCardInfo[],
   // Can be any wallet address.
   { walletAddress: string }
 >({
@@ -286,7 +289,7 @@ export const allWalletNftsSelector = selectorFamily<
       const nativeNfts = get(
         waitForAll(
           chains.map(({ chain }) =>
-            walletNftCardInfos({
+            walletLazyNftCardInfosSelector({
               chainId: chain.chain_id,
               walletAddress: transformBech32Address(
                 walletAddress,
@@ -302,13 +305,13 @@ export const allWalletNftsSelector = selectorFamily<
             !data || data.loading || data.errored ? [] : data.data
           ),
         ],
-        [] as NftCardInfo[]
+        [] as LazyNftCardInfo[]
       )
 
       const nativeStakedNfts = get(
         waitForAll(
           chains.map(({ chain }) =>
-            walletStakedNftCardInfosSelector({
+            walletStakedLazyNftCardInfosSelector({
               chainId: chain.chain_id,
               walletAddress: transformBech32Address(
                 walletAddress,

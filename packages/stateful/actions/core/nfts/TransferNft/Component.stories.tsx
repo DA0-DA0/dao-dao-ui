@@ -1,13 +1,17 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { AddressInput } from '@dao-dao/stateless'
-import { makeProps as makeNftCardProps } from '@dao-dao/stateless/components/NftCard.stories'
+import {
+  makeLazyInfo as makeLazyNftInfo,
+  makeProps as makeNftCardProps,
+} from '@dao-dao/stateless/components/NftCard.stories'
 import {
   ReactHookFormDecorator,
   makeDaoInfo,
   makeDaoProvidersDecorator,
 } from '@dao-dao/storybook'
 
+import { NftSelectionModal } from '../../../../components'
 import { TransferNftComponent } from './Component'
 
 export default {
@@ -42,12 +46,13 @@ Default.args = {
       errored: false,
       data: [
         selected,
-        makeNftCardProps(),
-        makeNftCardProps(),
-        makeNftCardProps(),
-        makeNftCardProps(),
+        makeLazyNftInfo(),
+        makeLazyNftInfo(),
+        makeLazyNftInfo(),
+        makeLazyNftInfo(),
       ],
     },
     AddressInput,
+    NftSelectionModal,
   },
 }

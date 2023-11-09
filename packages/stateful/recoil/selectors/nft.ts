@@ -1,9 +1,4 @@
-import {
-  selectorFamily,
-  waitForAll,
-  waitForAllSettled,
-  waitForNone,
-} from 'recoil'
+import { selectorFamily, waitForAll, waitForNone } from 'recoil'
 
 import {
   CommonNftSelectors,
@@ -15,11 +10,12 @@ import {
 } from '@dao-dao/state'
 import { stakerForNftSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoVotingCw721Staked'
 import { ChainId, NftCardInfo, WithChainId } from '@dao-dao/types'
-import { LazyNftCardProps, LoadingNfts, StargazeNft } from '@dao-dao/types/nft'
+import { LazyNftCardInfo, LoadingNfts, StargazeNft } from '@dao-dao/types/nft'
 import {
   MAINNET,
   STARGAZE_PROFILE_API_TEMPLATE,
   STARGAZE_URL_BASE,
+  getNftKey,
   transformBech32Address,
 } from '@dao-dao/utils'
 
@@ -100,11 +96,9 @@ export const nftCardInfoWithUriSelector = selectorFamily<
       const { name = '', description, imageUrl, externalLink } = metadata || {}
 
       const info: NftCardInfo = {
-        key: chainId + collection + tokenId,
-        collection: {
-          address: collection,
-          name: collectionInfo.name,
-        },
+        key: getNftKey(chainId, collection, tokenId),
+        collectionAddress: collection,
+        collectionName: collectionInfo.name,
         tokenId,
         externalLink:
           externalLink ||
@@ -154,9 +148,9 @@ export const nftCardInfoSelector = selectorFamily<
     },
 })
 
-export const lazyNftCardPropsForDaoSelector = selectorFamily<
+export const lazyNftCardInfosForDaoSelector = selectorFamily<
   // Map chain ID to DAO-owned NFTs on that chain.
-  LoadingNfts<LazyNftCardProps>,
+  LoadingNfts<LazyNftCardInfo>,
   WithChainId<{
     coreAddress: string
     // If DAO is using the cw721-staking voting module adapter, it will have an
@@ -166,7 +160,7 @@ export const lazyNftCardPropsForDaoSelector = selectorFamily<
     governanceCollectionAddress?: string
   }>
 >({
-  key: 'lazyNftCardPropsForDao',
+  key: 'lazyNftCardInfosForDao',
   get:
     ({ chainId, coreAddress, governanceCollectionAddress }) =>
     async ({ get }) => {
@@ -195,13 +189,13 @@ export const lazyNftCardPropsForDaoSelector = selectorFamily<
             )
           )
 
-          // Get all lazy props for each collection.
+          // Get all lazy info for each collection.
           const lazyNftCardProps = collectionAddresses.flatMap(
             (collectionAddress, index) =>
               nftCollectionTokenIds[index].state === 'hasValue'
                 ? (nftCollectionTokenIds[index].contents as string[]).map(
-                    (tokenId): LazyNftCardProps => ({
-                      key: chainId + collectionAddress + tokenId,
+                    (tokenId): LazyNftCardInfo => ({
+                      key: getNftKey(chainId, collectionAddress, tokenId),
                       chainId,
                       tokenId,
                       collectionAddress,
@@ -232,92 +226,7 @@ export const lazyNftCardPropsForDaoSelector = selectorFamily<
                   },
           }
         },
-        {} as LoadingNfts<LazyNftCardProps>
-      )
-    },
-})
-
-export const nftCardInfosForDaoSelector = selectorFamily<
-  // Map chain ID to DAO-owned NFTs on that chain.
-  LoadingNfts<NftCardInfo>,
-  WithChainId<{
-    coreAddress: string
-    // If DAO is using the cw721-staking voting module adapter, it will have an
-    // NFT governance collection. If this is the case, passing it here makes
-    // sure we include the collection if it is not in the DAO's cw721 token
-    // list.
-    governanceCollectionAddress?: string
-  }>
->({
-  key: 'nftCardInfosForDao',
-  get:
-    ({ chainId, coreAddress, governanceCollectionAddress }) =>
-    async ({ get }) => {
-      const allNfts = get(
-        DaoCoreV2Selectors.allCw721CollectionsSelector({
-          contractAddress: coreAddress,
-          chainId,
-          governanceCollectionAddress,
-        })
-      )
-
-      return Object.entries(allNfts).reduce(
-        (acc, [chainId, { owner, collectionAddresses }]) => {
-          collectionAddresses = Array.from(new Set(collectionAddresses))
-
-          // Get all token IDs owned by the DAO for each collection.
-          const nftCollectionTokenIds = get(
-            waitForNone(
-              collectionAddresses.map((collectionAddress) =>
-                CommonNftSelectors.allTokensForOwnerSelector({
-                  contractAddress: collectionAddress,
-                  chainId,
-                  owner,
-                })
-              )
-            )
-          )
-
-          // Get all cards for each collection.
-          const nftCardInfos = get(
-            waitForNone(
-              collectionAddresses.flatMap((collectionAddress, index) =>
-                nftCollectionTokenIds[index].state === 'hasValue'
-                  ? (nftCollectionTokenIds[index].contents as string[]).map(
-                      (tokenId) =>
-                        nftCardInfoSelector({
-                          tokenId,
-                          collection: collectionAddress,
-                          chainId,
-                        })
-                    )
-                  : []
-              )
-            )
-          )
-
-          return {
-            ...acc,
-            [chainId]:
-              nftCardInfos.length > 0 &&
-              nftCardInfos.every((loadable) => loadable.state === 'loading')
-                ? {
-                    loading: true,
-                    errored: false,
-                  }
-                : {
-                    loading: false,
-                    errored: false,
-                    updating: nftCardInfos.some(
-                      (loadable) => loadable.state === 'loading'
-                    ),
-                    data: nftCardInfos.flatMap((loadable) =>
-                      loadable.state === 'hasValue' ? [loadable.contents] : []
-                    ),
-                  },
-          }
-        },
-        {} as LoadingNfts<NftCardInfo>
+        {} as LoadingNfts<LazyNftCardInfo>
       )
     },
 })
@@ -327,14 +236,15 @@ type CollectionWithTokens = {
   tokens: string[]
 }
 
-// Retrieve all NFTs for a given wallet address using the indexer.
-export const walletNftCardInfos = selectorFamily<
-  LoadingNfts<NftCardInfo>,
+// Retrieve all NFTs for a given wallet address using the indexer, but don't
+// load the NFT info.
+export const walletLazyNftCardInfosSelector = selectorFamily<
+  LoadingNfts<LazyNftCardInfo>,
   WithChainId<{
     walletAddress: string
   }>
 >({
-  key: 'walletNftCardInfos',
+  key: 'walletLazyNftCardInfos',
   get:
     ({ walletAddress, chainId }) =>
     async ({ get }) => {
@@ -372,29 +282,25 @@ export const walletNftCardInfos = selectorFamily<
         }
       }
 
-      const nftCardInfos = get(
-        waitForAllSettled(
-          collections.flatMap(({ collectionAddress, tokens }) =>
-            tokens.map((tokenId) =>
-              nftCardInfoSelector({
-                collection: collectionAddress,
-                tokenId,
-                chainId,
-              })
-            )
+      // Get all lazy info for each collection.
+      const lazyNftCardInfos = collections.flatMap(
+        ({ collectionAddress, tokens }) =>
+          tokens.map(
+            (tokenId): LazyNftCardInfo => ({
+              key: getNftKey(chainId, collectionAddress, tokenId),
+              chainId,
+              tokenId,
+              collectionAddress,
+              type: 'collection',
+            })
           )
-        )
       )
 
       return {
         [chainId]: {
           loading: false,
           errored: false,
-          data: nftCardInfos
-            .map((loadable) =>
-              loadable.state === 'hasValue' ? loadable.contents : undefined
-            )
-            .filter((info): info is NftCardInfo => info !== undefined),
+          data: lazyNftCardInfos,
         },
       }
     },
@@ -402,13 +308,13 @@ export const walletNftCardInfos = selectorFamily<
 
 // Retrieve all NFTs a given wallet address has staked with a DAO (via
 // dao-voting-cw721-staked) using the indexer.
-export const walletStakedNftCardInfosSelector = selectorFamily<
-  NftCardInfo[],
+export const walletStakedLazyNftCardInfosSelector = selectorFamily<
+  LazyNftCardInfo[],
   WithChainId<{
     walletAddress: string
   }>
 >({
-  key: 'walletStakedNftCardInfos',
+  key: 'walletStakedLazyNftCardInfos',
   get:
     ({ walletAddress, chainId }) =>
     async ({ get }) => {
@@ -426,29 +332,24 @@ export const walletStakedNftCardInfosSelector = selectorFamily<
         return []
       }
 
-      const nftCardInfos = get(
-        waitForAllSettled(
-          collections.flatMap(({ collectionAddress, tokens }) =>
-            tokens.map((tokenId) =>
-              nftCardInfoSelector({
-                collection: collectionAddress,
-                tokenId,
-                chainId,
-              })
-            )
+      // Get all lazy info for each collection.
+      const lazyNftCardInfos = collections.flatMap(
+        ({ collectionAddress, tokens }) =>
+          tokens.map(
+            (tokenId): LazyNftCardInfo => ({
+              key: getNftKey(chainId, collectionAddress, tokenId),
+              chainId,
+              tokenId,
+              collectionAddress,
+              type: 'collection',
+            })
           )
-        )
       )
 
-      return nftCardInfos
-        .map((loadable) =>
-          loadable.state === 'hasValue' ? loadable.contents : undefined
-        )
-        .filter((info): info is NftCardInfo => info !== undefined)
-        .map((info) => ({
-          ...info,
-          staked: true,
-        }))
+      return lazyNftCardInfos.map((info) => ({
+        ...info,
+        staked: true,
+      }))
     },
 })
 

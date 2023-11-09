@@ -52,3 +52,9 @@ export const uploadNft = async (
     throw new Error(error)
   }
 }
+
+export const getNftKey = (
+  chainId: string,
+  collectionAddress: string,
+  tokenId: string
+): string => `${chainId}:${collectionAddress}:${tokenId}`

@@ -42,7 +42,7 @@ export type DaoChainTreasuryAndNftsProps<
   ButtonLink: ComponentType<ButtonLinkProps>
 }
 
-const NFTS_PER_PAGE = 15
+const NFTS_PER_PAGE = 18
 
 export const DaoChainTreasuryAndNfts = <
   T extends TokenCardInfo,

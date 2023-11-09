@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useEffect, useState } from 'react'
+import { ComponentType, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -8,13 +8,15 @@ import {
   HorizontalNftCard,
   InputErrorMessage,
   Loader,
-  NftSelectionModal,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  LazyNftCardInfo,
   LoadingDataWithError,
   NftCardInfo,
+  NftSelectionModalProps,
 } from '@dao-dao/types'
+import { getNftKey } from '@dao-dao/utils'
 
 export type BurnNftData = {
   chainId: string
@@ -24,16 +26,17 @@ export type BurnNftData = {
 
 export interface BurnNftOptions {
   // The set of NFTs that may be burned as part of this action.
-  options: LoadingDataWithError<NftCardInfo[]>
+  options: LoadingDataWithError<LazyNftCardInfo[]>
   // Information about the NFT currently selected. If errored, it may be burnt.
   nftInfo: LoadingDataWithError<NftCardInfo | undefined>
+  NftSelectionModal: ComponentType<NftSelectionModalProps>
 }
 
 export const BurnNft: ActionComponent<BurnNftOptions> = ({
   fieldNamePrefix,
   isCreating,
   errors,
-  options: { options, nftInfo },
+  options: { options, nftInfo, NftSelectionModal },
 }) => {
   const { t } = useTranslation()
   const { watch, setValue, setError, clearErrors } =
@@ -43,17 +46,15 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
   const tokenId = watch((fieldNamePrefix + 'tokenId') as 'tokenId')
   const collection = watch((fieldNamePrefix + 'collection') as 'collection')
 
-  const selected = `${chainId}:${collection}:${tokenId}`
-  const getIdForNft = (nft: NftCardInfo) =>
-    `${nft.chainId}:${nft.collection.address}:${nft.tokenId}`
+  const selectedKey = getNftKey(chainId, collection, tokenId)
 
   useEffect(() => {
     if (
-      !selected ||
+      !selectedKey ||
       // If selected, make sure it exists in options.
       (!options.loading &&
         !options.errored &&
-        !options.data.some((nft) => getIdForNft(nft) === selected))
+        !options.data.some((nft) => nft.key === selectedKey))
     ) {
       if (!errors?.collection) {
         setError((fieldNamePrefix + 'collection') as 'collection', {
@@ -67,7 +68,7 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
       }
     }
   }, [
-    selected,
+    selectedKey,
     setError,
     clearErrors,
     t,
@@ -77,7 +78,9 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
   ])
 
   // Show modal initially if creating and no NFT already selected.
-  const [showModal, setShowModal] = useState<boolean>(isCreating && !selected)
+  const [showModal, setShowModal] = useState<boolean>(
+    isCreating && !selectedKey
+  )
 
   return (
     <>
@@ -119,14 +122,13 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
             label: t('button.save'),
             onClick: () => setShowModal(false),
           }}
-          getIdForNft={getIdForNft}
           header={{
             title: t('title.selectNftToBurn'),
           }}
           nfts={options}
           onClose={() => setShowModal(false)}
           onNftClick={(nft) => {
-            if (getIdForNft(nft) === selected) {
+            if (nft.key === selectedKey) {
               // No need to clear chain when deselecting.
               setValue((fieldNamePrefix + 'tokenId') as 'tokenId', '')
               setValue((fieldNamePrefix + 'collection') as 'collection', '')
@@ -135,11 +137,11 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
               setValue((fieldNamePrefix + 'tokenId') as 'tokenId', nft.tokenId)
               setValue(
                 (fieldNamePrefix + 'collection') as 'collection',
-                nft.collection.address
+                nft.collectionAddress
               )
             }
           }}
-          selectedIds={selected ? [selected] : []}
+          selectedKeys={selectedKey ? [selectedKey] : []}
           visible={showModal}
         />
       )}

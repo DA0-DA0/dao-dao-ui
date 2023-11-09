@@ -56,7 +56,8 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
     {
       hideCollection,
       ownerLabel,
-      collection,
+      collectionAddress,
+      collectionName,
       owner,
       externalLink,
       checkbox,
@@ -229,7 +230,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
 
                   <CopyToClipboardUnderline
                     takeStartEnd={{ start: 7, end: 5 }}
-                    value={collection.address}
+                    value={collectionAddress}
                   />
                 </div>
 
@@ -292,7 +293,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
           }
         >
           <p className="primary-text">
-            {getNftName(collection.name, tokenId, name)}
+            {getNftName(collectionName, tokenId, name)}
           </p>
 
           {!!description && (

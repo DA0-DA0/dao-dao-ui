@@ -81,10 +81,8 @@ export const MintNft: ActionComponent = (props) => {
       ? undefined
       : {
           key: chainId + collectionAddress + mintMsg.token_id,
-          collection: {
-            address: collectionAddress,
-            name: creatingCollectionInfoLoading.data?.name ?? '',
-          },
+          collectionAddress,
+          collectionName: creatingCollectionInfoLoading.data?.name ?? '',
           tokenId: mintMsg.token_id,
           imageUrl: creatingNftTokenUriDataLoading.data.imageUrl,
           name: creatingNftTokenUriDataLoading.data.name ?? '',

@@ -3,26 +3,29 @@ import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 
-import { updateProfileNftVisibleAtom } from '@dao-dao/state/recoil'
+import {
+  nftCardInfosForKeyAtom,
+  updateProfileNftVisibleAtom,
+} from '@dao-dao/state/recoil'
 import {
   ImageSelectorModal,
   ModalLoader,
   ModalProps,
-  NftSelectionModal,
   NoContent,
   ProfileImage,
   Tooltip,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { ChainId, NftCardInfo } from '@dao-dao/types'
+import { ChainId } from '@dao-dao/types'
 import {
   InstantiateMsg,
   MintMsgForNullable_Empty,
 } from '@dao-dao/types/contracts/Cw721Base'
 import {
   MAINNET,
+  getNftKey,
   getSupportedChainConfig,
   processError,
   uploadNft,
@@ -30,6 +33,7 @@ import {
 
 import { useInstantiateAndExecute, useWallet, useWalletInfo } from '../hooks'
 import { allWalletNftsSelector } from '../recoil'
+import { NftSelectionModal } from './nft'
 import { SuspenseLoader } from './SuspenseLoader'
 import { Trans } from './Trans'
 
@@ -55,9 +59,6 @@ export const InnerPfpkNftSelectionModal = ({
     chainId: MAINNET ? ChainId.JunoMainnet : ChainId.JunoTestnet,
   })
 
-  const getIdForNft = (nft: NftCardInfo) =>
-    `${nft.collection.address}:${nft.tokenId}`
-
   const nfts = useCachedLoadingWithError(
     // Don't load NFTs until visible.
     walletAddress && visible
@@ -75,14 +76,18 @@ export const InnerPfpkNftSelectionModal = ({
     refreshBalances,
   } = useWalletInfo()
   // Initialize to selected NFT.
-  const [selected, setSelected] = useState<string | undefined>(
+  const [selectedKey, setSelectedKey] = useState<string | undefined>(
     !walletProfileData.loading && walletProfileData.profile.nft
-      ? `${walletProfileData.profile.nft.collectionAddress}:${walletProfileData.profile.nft.tokenId}`
+      ? getNftKey(
+          walletProfileData.profile.nft.chainId,
+          walletProfileData.profile.nft.collectionAddress,
+          walletProfileData.profile.nft.tokenId
+        )
       : undefined
   )
   const selectedNft =
-    !nfts.loading && !nfts.errored && selected
-      ? nfts.data.find((nft) => selected === getIdForNft(nft))
+    !nfts.loading && !nfts.errored && selectedKey
+      ? nfts.data.find((nft) => selectedKey === nft.key)
       : undefined
   // If nonce changes, set selected NFT.
   const [lastNonce, setLastNonce] = useState(
@@ -94,8 +99,12 @@ export const InnerPfpkNftSelectionModal = ({
       walletProfileData.profile.nft &&
       walletProfileData.profile.nonce > lastNonce
     ) {
-      setSelected(
-        `${walletProfileData.profile.nft.collectionAddress}:${walletProfileData.profile.nft.tokenId}`
+      setSelectedKey(
+        getNftKey(
+          walletProfileData.profile.nft.chainId,
+          walletProfileData.profile.nft.collectionAddress,
+          walletProfileData.profile.nft.tokenId
+        )
       )
       setLastNonce(walletProfileData.profile.nonce)
     }
@@ -109,7 +118,7 @@ export const InnerPfpkNftSelectionModal = ({
 
     // Only give error about no NFTs if something should be selected. This
     // should never happen...
-    if (selected && !selectedNft) {
+    if (selectedKey && !selectedNft) {
       toast.error(t('error.noNftsSelected'))
       return
     }
@@ -120,7 +129,7 @@ export const InnerPfpkNftSelectionModal = ({
         selectedNft
           ? {
               chainId: selectedNft.chainId,
-              collectionAddress: selectedNft.collection.address,
+              collectionAddress: selectedNft.collectionAddress,
               tokenId: selectedNft.tokenId,
             }
           : // Clear NFT if nothing selected.
@@ -136,7 +145,7 @@ export const InnerPfpkNftSelectionModal = ({
         })
       )
     }
-  }, [nfts, selected, selectedNft, t, updateProfileNft, onClose])
+  }, [nfts, selectedKey, selectedNft, t, updateProfileNft, onClose])
 
   const [showImageSelector, setShowImageSelector] = useState(false)
   const { register, setValue, watch } = useForm<{ image: string }>()
@@ -194,7 +203,7 @@ export const InnerPfpkNftSelectionModal = ({
       // On success, hide image selector, select new collection and token ID,
       // and refresh NFT list.
       setShowImageSelector(false)
-      setSelected(`${contractAddress}:${cid}`)
+      setSelectedKey(getNftKey(chain.chain_id, contractAddress, cid))
       refreshBalances()
     } catch (err) {
       console.error(err)
@@ -206,7 +215,16 @@ export const InnerPfpkNftSelectionModal = ({
     } finally {
       setUploadingImage(false)
     }
-  }, [image, instantiateAndExecute, refreshBalances, t, walletAddress])
+  }, [
+    chain.chain_id,
+    image,
+    instantiateAndExecute,
+    refreshBalances,
+    t,
+    walletAddress,
+  ])
+
+  const nftCardInfosForKey = useRecoilValue(nftCardInfosForKeyAtom)
 
   return (
     <>
@@ -217,7 +235,6 @@ export const InnerPfpkNftSelectionModal = ({
           onClick: onAction,
         }}
         allowSelectingNone
-        getIdForNft={getIdForNft}
         header={{
           title: t('title.chooseProfilePicture'),
           subtitle: t('info.chooseProfilePictureSubtitle'),
@@ -240,9 +257,7 @@ export const InnerPfpkNftSelectionModal = ({
         }
         onClose={onClose}
         onNftClick={(nft) =>
-          setSelected(
-            selected === getIdForNft(nft) ? undefined : getIdForNft(nft)
-          )
+          setSelectedKey(selectedKey === nft.key ? undefined : nft.key)
         }
         secondaryAction={
           // Only mainnet NFTs are supported in PFPK. No testnets.
@@ -261,17 +276,22 @@ export const InnerPfpkNftSelectionModal = ({
                 imageUrl={
                   !nfts.loading
                     ? selectedNft
-                      ? selectedNft.imageUrl
+                      ? nftCardInfosForKey[selectedNft.key]?.imageUrl
                       : backupImageUrl
                     : undefined
                 }
-                loading={nfts.loading}
+                loading={
+                  nfts.loading ||
+                  // If selected NFT but info not yet loaded, we're loading.
+                  (selectedNft &&
+                    !nftCardInfosForKey[selectedNft.key]?.imageUrl)
+                }
                 size="sm"
               />
             </div>
           </Tooltip>
         }
-        selectedIds={selected ? [selected] : []}
+        selectedKeys={selectedKey ? [selectedKey] : []}
         visible={visible}
       />
 

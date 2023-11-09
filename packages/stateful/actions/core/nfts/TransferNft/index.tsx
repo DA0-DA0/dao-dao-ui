@@ -8,8 +8,8 @@ import {
   ActionContextType,
   ActionKey,
   ActionMaker,
+  LazyNftCardInfo,
   LoadingDataWithError,
-  NftCardInfo,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -24,12 +24,12 @@ import {
   parseEncodedMessage,
 } from '@dao-dao/utils'
 
-import { AddressInput } from '../../../../components'
+import { AddressInput, NftSelectionModal } from '../../../../components'
 import { useWallet } from '../../../../hooks'
 import {
+  lazyNftCardInfosForDaoSelector,
   nftCardInfoSelector,
-  nftCardInfosForDaoSelector,
-  walletNftCardInfos,
+  walletLazyNftCardInfosSelector,
 } from '../../../../recoil/selectors/nft'
 import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../../voting-module-adapter'
 import { useActionOptions } from '../../../react'
@@ -185,11 +185,11 @@ const Component: ActionComponent = (props) => {
   const options = useCachedLoadingWithError(
     props.isCreating
       ? context.type === ActionContextType.Wallet
-        ? walletNftCardInfos({
+        ? walletLazyNftCardInfosSelector({
             walletAddress: address,
             chainId: currentChainId,
           })
-        : nftCardInfosForDaoSelector({
+        : lazyNftCardInfosForDaoSelector({
             chainId: currentChainId,
             coreAddress: address,
             governanceCollectionAddress,
@@ -207,7 +207,7 @@ const Component: ActionComponent = (props) => {
       ? options
       : combineLoadingDataWithErrors(
           ...Object.values(options.data).filter(
-            (data): data is LoadingDataWithError<NftCardInfo[]> => !!data
+            (data): data is LoadingDataWithError<LazyNftCardInfo[]> => !!data
           )
         )
 
@@ -218,6 +218,7 @@ const Component: ActionComponent = (props) => {
         options: allChainOptions,
         nftInfo,
         AddressInput,
+        NftSelectionModal,
       }}
     />
   )

@@ -12,16 +12,18 @@ import {
   HorizontalNftCard,
   InputErrorMessage,
   InputLabel,
-  NftSelectionModal,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
   AddressInputProps,
+  LazyNftCardInfo,
   LoadingDataWithError,
   NftCardInfo,
+  NftSelectionModalProps,
 } from '@dao-dao/types'
 import {
   getChainForChainId,
+  getNftKey,
   makeValidateAddress,
   makeValidateContractAddress,
   validateJSON,
@@ -41,18 +43,19 @@ export type TransferNftData = {
 
 export interface TransferNftOptions {
   // The set of NFTs that may be transfered as part of this action.
-  options: LoadingDataWithError<NftCardInfo[]>
+  options: LoadingDataWithError<LazyNftCardInfo[]>
   // Information about the NFT currently selected.
   nftInfo: NftCardInfo | undefined
 
   AddressInput: ComponentType<AddressInputProps<TransferNftData>>
+  NftSelectionModal: ComponentType<NftSelectionModalProps>
 }
 
 export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
   fieldNamePrefix,
   isCreating,
   errors,
-  options: { options, nftInfo, AddressInput },
+  options: { options, nftInfo, AddressInput, NftSelectionModal },
 }) => {
   const { t } = useTranslation()
   const { control, watch, setValue, setError, register, clearErrors } =
@@ -67,12 +70,10 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
     (fieldNamePrefix + 'executeSmartContract') as 'executeSmartContract'
   )
 
-  const selected = `${chainId}:${collection}:${tokenId}`
-  const getIdForNft = (nft: NftCardInfo) =>
-    `${nft.chainId}:${nft.collection.address}:${nft.tokenId}`
+  const selectedKey = getNftKey(chainId, collection, tokenId)
 
   useEffect(() => {
-    if (!selected) {
+    if (!selectedKey) {
       setError((fieldNamePrefix + 'collection') as 'collection', {
         type: 'required',
         message: t('error.noNftSelected'),
@@ -80,10 +81,12 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
     } else {
       clearErrors((fieldNamePrefix + 'collection') as 'collection')
     }
-  }, [selected, setError, clearErrors, t, fieldNamePrefix])
+  }, [selectedKey, setError, clearErrors, t, fieldNamePrefix])
 
   // Show modal initially if creating and no NFT already selected.
-  const [showModal, setShowModal] = useState<boolean>(isCreating && !selected)
+  const [showModal, setShowModal] = useState<boolean>(
+    isCreating && !selectedKey
+  )
 
   return (
     <>
@@ -206,14 +209,13 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
             label: t('button.save'),
             onClick: () => setShowModal(false),
           }}
-          getIdForNft={getIdForNft}
           header={{
             title: t('title.selectNftToTransfer'),
           }}
           nfts={options}
           onClose={() => setShowModal(false)}
           onNftClick={(nft) => {
-            if (getIdForNft(nft) === selected) {
+            if (nft.key === selectedKey) {
               // No need to clear chain when deselecting.
               setValue((fieldNamePrefix + 'tokenId') as 'tokenId', '')
               setValue((fieldNamePrefix + 'collection') as 'collection', '')
@@ -222,11 +224,11 @@ export const TransferNftComponent: ActionComponent<TransferNftOptions> = ({
               setValue((fieldNamePrefix + 'tokenId') as 'tokenId', nft.tokenId)
               setValue(
                 (fieldNamePrefix + 'collection') as 'collection',
-                nft.collection.address
+                nft.collectionAddress
               )
             }
           }}
-          selectedIds={selected ? [selected] : []}
+          selectedKeys={selectedKey ? [selectedKey] : []}
           visible={showModal}
         />
       )}
