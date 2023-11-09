@@ -22,7 +22,6 @@ import {
 } from '../../../voting-module-adapter'
 import { ButtonLink } from '../../ButtonLink'
 import { LazyNftCard } from '../../NftCard'
-import { StargazeNftImportModal } from '../../StargazeNftImportModal'
 import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
 import { DaoTokenCard } from '../DaoTokenCard'
 
@@ -91,7 +90,6 @@ export const TreasuryAndNftsTab = () => {
       ButtonLink={ButtonLink}
       FiatDepositModal={DaoFiatDepositModal}
       NftCard={LazyNftCard}
-      StargazeNftImportModal={StargazeNftImportModal}
       TokenCard={DaoTokenCard}
       addCollectionHref={
         // Prefill URL only valid if action exists.
