@@ -1,148 +1,211 @@
-import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
-import { fromHex, toUtf8 } from '@cosmjs/encoding'
-import { useEffect } from 'react'
+import { Check } from '@mui/icons-material'
+import { useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { codeDetailsSelector } from '@dao-dao/state/recoil'
 import {
-  Loader,
-  useCachedLoading,
+  Button,
+  ChainPickerInput,
+  CopyableAddress,
   useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
-import { ActionKey, WidgetEditorProps } from '@dao-dao/types'
+import { ActionKey, ChainId, WidgetEditorProps } from '@dao-dao/types'
 import { InstantiateMsg as Cw721InstantiateMsg } from '@dao-dao/types/contracts/Cw721Base'
+import {
+  getChainAddressForActionOptions,
+  getSupportedChainConfig,
+  instantiateSmartContract,
+  processError,
+} from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../actions'
+import { ConnectWallet } from '../../../components/ConnectWallet'
+import { useWallet } from '../../../hooks/useWallet'
 import { PressData } from './types'
 
 export const PressEditor = ({
-  fieldNamePrefix,
-  allActionsWithData,
-  index,
+  remove,
   addAction,
+  fieldNamePrefix,
   isCreating,
 }: WidgetEditorProps<PressData>) => {
   const { t } = useTranslation()
 
+  const actionOptions = useActionOptions()
+
   const {
-    config: { codeIds },
+    config: { polytone },
   } = useSupportedChainContext()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
   const {
-    chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
-  } = useActionOptions()
+    name: daoName,
+    chainId: daoChainId,
+    polytoneProxies,
+  } = useDaoInfoContext()
 
   const { setValue, setError, clearErrors, watch } = useFormContext<PressData>()
-
+  const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
   const contract = watch((fieldNamePrefix + 'contract') as 'contract')
 
-  // Ensure instantiate2 action exists with the right fields when editing.
-  const codeId = codeIds.Cw721Base || -1
-  const codeDetailsLoading = useCachedLoading(
-    codeId > -1
-      ? codeDetailsSelector({
-          chainId,
-          codeId,
-        })
-      : undefined,
-    undefined
-  )
-  const salt = 'DAO DAO Press'
-  const instantiate2ActionExists =
-    isCreating &&
-    allActionsWithData.some(
-      ({ actionKey, data }) =>
-        actionKey === ActionKey.Instantiate2 &&
-        data.chainId === chainId &&
-        data.codeId === codeId &&
-        data.salt === salt
-    )
-  // Matches the address of the instantiate2 action.
-  const generatedContractAddress =
-    codeDetailsLoading.loading || !codeDetailsLoading.data
-      ? undefined
-      : instantiate2Address(
-          fromHex(codeDetailsLoading.data.checksum),
-          coreAddress,
-          toUtf8(salt),
-          bech32Prefix
-        )
-
+  // Auto-select valid chain ID if undefined.
   useEffect(() => {
-    // If not creating, data not loaded yet, or action exists and contract
-    // already set, do nothing.
-    if (
-      !isCreating ||
-      !addAction ||
-      codeDetailsLoading.loading ||
-      !codeDetailsLoading.data ||
-      !generatedContractAddress ||
-      (instantiate2ActionExists && contract === generatedContractAddress)
-    ) {
+    const defaultChainId =
+      daoChainId === ChainId.StargazeMainnet
+        ? Object.keys(polytoneProxies)[0]
+        : daoChainId
+    if (!chainId && defaultChainId) {
+      setValue((fieldNamePrefix + 'chainId') as 'chainId', defaultChainId)
+    }
+  }, [chainId, daoChainId, setValue, fieldNamePrefix, polytoneProxies])
+
+  const {
+    address: walletAddress = '',
+    getSigningCosmWasmClient,
+    chain,
+  } = useWallet({
+    chainId,
+  })
+
+  const [instantiating, setInstantiating] = useState(false)
+  const instantiate = async () => {
+    if (!walletAddress) {
+      toast.error(t('error.logInToContinue'))
+      return
+    }
+    if (!chainId) {
+      toast.error(t('error.selectAChainToContinue'))
+      return
+    }
+    const minter = getChainAddressForActionOptions(actionOptions, chainId)
+    if (!minter) {
+      toast.error(t('error.addressNotFoundOnChain'))
       return
     }
 
-    const name = `${daoName}'s Press`
-    // Otherwise add the instantiate2 action.
-    setValue(
-      (fieldNamePrefix + 'contract') as 'contract',
-      generatedContractAddress
-    )
-    addAction(
-      {
-        actionKey: ActionKey.Instantiate2,
-        data: {
-          chainId,
-          admin: coreAddress,
-          codeId,
-          label: name,
-          message: JSON.stringify(
-            {
-              minter: coreAddress,
-              name,
-              symbol: 'PRESS',
-            } as Cw721InstantiateMsg,
-            null,
-            2
-          ),
-          salt,
-          funds: [],
-        },
-      },
-      index
-    )
-  }, [
-    addAction,
-    bech32Prefix,
-    chainId,
-    codeDetailsLoading,
-    codeId,
-    codeIds.Cw721Base,
-    contract,
-    coreAddress,
-    daoName,
-    isCreating,
-    fieldNamePrefix,
-    index,
-    instantiate2ActionExists,
-    salt,
-    setValue,
-    generatedContractAddress,
-  ])
+    setInstantiating(true)
+    try {
+      const codeId = getSupportedChainConfig(chainId)?.codeIds?.Cw721Base
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
 
-  // Prevent action from being submitted if the contract has not yet been
-  // created.
+      const name = `${daoName}'s Press`
+      const contractAddress = codeId
+        ? await instantiateSmartContract(
+            signingCosmWasmClient,
+            walletAddress,
+            codeId,
+            name,
+            {
+              minter,
+              name: name,
+              symbol: 'PRESS',
+            } as Cw721InstantiateMsg
+          )
+        : undefined
+
+      // Should never happen.
+      if (!contractAddress) {
+        throw new Error(t('error.loadingData'))
+      }
+
+      setValue((fieldNamePrefix + 'chainId') as 'chainId', chain.chain_id)
+      setValue((fieldNamePrefix + 'contract') as 'contract', contractAddress)
+
+      toast.success(t('success.created'))
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setInstantiating(false)
+    }
+  }
+
+  // Prevent action from being submitted if the chain ID has not yet been set or
+  // the contract has not yet been created.
   useEffect(() => {
-    if (!contract) {
+    if (!chainId || !contract) {
       setError((fieldNamePrefix + 'contract') as 'contract', {
         type: 'manual',
       })
     } else {
       clearErrors((fieldNamePrefix + 'contract') as 'contract')
     }
-  }, [setError, clearErrors, t, contract, fieldNamePrefix])
+  }, [setError, clearErrors, t, contract, fieldNamePrefix, chainId])
 
-  return <>{!contract && <Loader fill={false} size={24} />}</>
+  const stargazeDaoNoCrossChainAccounts =
+    (daoChainId === ChainId.StargazeMainnet ||
+      daoChainId === ChainId.StargazeTestnet) &&
+    !Object.keys(polytoneProxies).length
+
+  return (
+    <div className="mt-2 flex flex-col items-start gap-4">
+      {/* If DAO on Stargaze and has no cross-chain accounts, show error. */}
+      {isCreating && stargazeDaoNoCrossChainAccounts ? (
+        <>
+          <p className="secondary-text max-w-prose text-text-interactive-error">
+            {t('error.stargazeDaoNoCrossChainAccountsForPress')}
+          </p>
+
+          {remove && addAction && (
+            <Button
+              onClick={() => {
+                remove?.()
+                addAction?.({
+                  actionKey: ActionKey.CreateCrossChainAccount,
+                  data: {
+                    chainId: Object.keys(polytone || {})[0],
+                  },
+                })
+              }}
+            >
+              {t('button.createCrossChainAccount')}
+            </Button>
+          )}
+        </>
+      ) : (
+        <>
+          <p className="primary-text">{t('title.chain')}</p>
+          <p className="secondary-text -mt-3 max-w-prose break-words">
+            {t('info.selectPressChain')}
+          </p>
+
+          <ChainPickerInput
+            disabled={!isCreating || !!contract}
+            excludeChainIds={
+              // NFTs on Stargaze work differently, so we can't create Presses
+              // directly on it. To use Press with a Stargaze DAO, the DAO needs
+              // a cross-chain account on another chain.
+              [ChainId.StargazeMainnet, ChainId.StargazeTestnet]
+            }
+            fieldName={fieldNamePrefix + 'chainId'}
+            onlyDaoChainIds
+          />
+
+          <div className="flex flex-row flex-wrap items-center gap-2">
+            <p className="body-text max-w-prose break-words">
+              {contract
+                ? t('info.createdPressContract')
+                : t('info.createPressContract')}
+            </p>
+
+            {contract && <Check className="!h-6 !w-6" />}
+          </div>
+
+          {contract ? (
+            <CopyableAddress address={contract} className="!w-auto" />
+          ) : walletAddress ? (
+            <Button
+              loading={instantiating}
+              onClick={instantiate}
+              variant="primary"
+            >
+              {t('button.create')}
+            </Button>
+          ) : (
+            <ConnectWallet size="md" />
+          )}
+        </>
+      )}
+    </div>
+  )
 }

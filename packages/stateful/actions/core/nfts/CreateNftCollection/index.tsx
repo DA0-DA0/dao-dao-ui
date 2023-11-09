@@ -71,6 +71,9 @@ export const makeCreateNftCollectionAction: ActionMaker<
       }
 
       const creator = getChainAddressForActionOptions(options, chainId)
+      if (!creator) {
+        throw new Error(t('error.loadingData'))
+      }
 
       return maybeMakePolytoneExecuteMessage(
         currentChainId,

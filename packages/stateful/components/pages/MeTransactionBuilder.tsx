@@ -96,13 +96,12 @@ export const MeTransactionBuilder = () => {
         return
       }
 
-      const signingCosmWasmClient = await getSigningCosmWasmClient()
-
       setLoading(true)
       setError('')
       setTxHash('')
 
       try {
+        const signingCosmWasmClient = await getSigningCosmWasmClient()
         const encodeObjects = data.map((msg) =>
           cwMsgToEncodeObject(msg, walletAddress)
         )

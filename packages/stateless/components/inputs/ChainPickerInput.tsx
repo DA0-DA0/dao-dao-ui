@@ -5,7 +5,10 @@ import {
   getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
-import { useSupportedChainContext } from '../../hooks'
+import {
+  useDaoInfoContextIfAvailable,
+  useSupportedChainContext,
+} from '../../hooks'
 import { RadioInput } from './RadioInput'
 
 export type ChainPickerInputProps = {
@@ -16,6 +19,10 @@ export type ChainPickerInputProps = {
   disabled?: boolean
   onChange?: (chainId: string) => void
   excludeChainIds?: string[]
+  // Whether to include only the chains the DAO has an account on (its native
+  // chain or one of its polytone chains).
+  // Defaults to false.
+  onlyDaoChainIds?: boolean
   className?: string
 }
 
@@ -25,6 +32,7 @@ export const ChainPickerInput = ({
   disabled,
   onChange,
   excludeChainIds,
+  onlyDaoChainIds = false,
   className,
 }: ChainPickerInputProps) => {
   const {
@@ -32,6 +40,12 @@ export const ChainPickerInput = ({
     config: { polytone },
   } = useSupportedChainContext()
   const { watch, setValue } = useFormContext()
+  const daoInfo = useDaoInfoContextIfAvailable()
+
+  const includeChainIds =
+    onlyDaoChainIds && daoInfo
+      ? [daoInfo.chainId, ...Object.keys(daoInfo.polytoneProxies)]
+      : undefined
 
   const polytoneChains = Object.keys(polytone || {})
 
@@ -50,7 +64,11 @@ export const ChainPickerInput = ({
           // Other chains with Polytone.
           ...polytoneChains,
         ]
-          .filter((chainId) => !excludeChainIds?.includes(chainId))
+          .filter(
+            (chainId) =>
+              (!includeChainIds || includeChainIds.includes(chainId)) &&
+              !excludeChainIds?.includes(chainId)
+          )
           .map((chainId) => ({
             label:
               labelMode === 'chain'

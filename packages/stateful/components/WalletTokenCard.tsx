@@ -171,10 +171,9 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
       return
     }
 
-    const signingCosmWasmClient = await getSigningCosmWasmClient()
-
     setClaimLoading(true)
     try {
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
       await signingCosmWasmClient.signAndBroadcast(
         walletAddress,
         (lazyInfo.loading ? [] : lazyInfo.data.stakingInfo!.stakes).map(

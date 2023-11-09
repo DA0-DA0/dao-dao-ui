@@ -5,14 +5,18 @@ import { constSelector } from 'recoil'
 import { TrashEmoji, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  decodePolytoneExecuteMsg,
+  makeWasmMessage,
+  maybeMakePolytoneExecuteMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../../../actions'
 import { postSelector, postsSelector } from '../../state'
@@ -24,14 +28,18 @@ const useDefaults: UseDefaults<DeletePostData> = () => ({
 })
 
 export const makeDeletePostActionMaker = ({
+  chainId: configuredChainId,
   contract,
 }: PressData): ActionMaker<DeletePostData> => {
   // Make outside of the maker function returned below so it doesn't get
   // redefined and thus remounted on every render.
   const Component: ActionComponent = (props) => {
     const {
-      chain: { chain_id: chainId },
+      chain: { chain_id: daoChainId },
     } = useActionOptions()
+    // The chain that Press is set up on. If chain ID is undefined, default to
+    // native DAO chain for backwards compatibility.
+    const pressChainId = configuredChainId || daoChainId
 
     const { watch } = useFormContext()
     const id = watch((props.fieldNamePrefix + 'id') as 'id')
@@ -39,7 +47,7 @@ export const makeDeletePostActionMaker = ({
     const postsLoading = useCachedLoading(
       postsSelector({
         contractAddress: contract,
-        chainId,
+        chainId: pressChainId,
       }),
       []
     )
@@ -68,16 +76,22 @@ export const makeDeletePostActionMaker = ({
     )
   }
 
-  return ({ t, context }) => {
-    // Only available in DAO context.
-    if (context.type !== ActionContextType.Dao) {
-      return null
-    }
+  return ({ t, chain: { chain_id: daoChainId } }) => {
+    // The chain that Press is set up on. If chain ID is undefined, default to
+    // native DAO chain for backwards compatibility.
+    const pressChainId = configuredChainId || daoChainId
 
     const useDecodedCosmosMsg: UseDecodedCosmosMsg<DeletePostData> = (
       msg: Record<string, any>
-    ) =>
-      objectMatchesStructure(msg, {
+    ) => {
+      let chainId = daoChainId
+      const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+      if (decodedPolytone.match) {
+        chainId = decodedPolytone.chainId
+        msg = decodedPolytone.msg
+      }
+
+      return objectMatchesStructure(msg, {
         wasm: {
           execute: {
             contract_addr: {},
@@ -89,7 +103,9 @@ export const makeDeletePostActionMaker = ({
             },
           },
         },
-      }) && msg.wasm.execute.contract_addr === contract
+      }) &&
+        chainId === pressChainId &&
+        msg.wasm.execute.contract_addr === contract
         ? {
             match: true,
             data: {
@@ -99,23 +115,28 @@ export const makeDeletePostActionMaker = ({
         : {
             match: false,
           }
+    }
 
     const useTransformToCosmos: UseTransformToCosmos<DeletePostData> = () =>
       useCallback(
         ({ id }) =>
-          makeWasmMessage({
-            wasm: {
-              execute: {
-                contract_addr: contract,
-                funds: [],
-                msg: {
-                  burn: {
-                    token_id: id,
+          maybeMakePolytoneExecuteMessage(
+            daoChainId,
+            pressChainId,
+            makeWasmMessage({
+              wasm: {
+                execute: {
+                  contract_addr: contract,
+                  funds: [],
+                  msg: {
+                    burn: {
+                      token_id: id,
+                    },
                   },
                 },
               },
-            },
-          }),
+            })
+          ),
         []
       )
 

@@ -66,10 +66,9 @@ export const MintNftRenderer = ({
       return
     }
 
-    const signingCosmWasmClient = await getSigningCosmWasmClient()
-
     setMinting(true)
     try {
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
       await signingCosmWasmClient.execute(
         walletAddress,
         contract,

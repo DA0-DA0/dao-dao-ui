@@ -1,4 +1,8 @@
 export type PressData = {
+  // Which chain the contract exists on. If undefined, the chain is the same as
+  // the DAO's native chain. This fallback ensures backwards compatibility with
+  // presses that were setup before polytone accounts existed.
+  chainId?: string
   // NFT collection contract address.
   contract: string
 }
