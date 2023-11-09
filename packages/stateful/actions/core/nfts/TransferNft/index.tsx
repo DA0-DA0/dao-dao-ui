@@ -1,4 +1,3 @@
-import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
@@ -18,6 +17,7 @@ import {
 import {
   combineLoadingDataWithErrors,
   decodePolytoneExecuteMsg,
+  encodeMessageAsBase64,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
@@ -78,7 +78,7 @@ const useTransformToCosmos: UseTransformToCosmos<TransferNftData> = () => {
                 ? {
                     send_nft: {
                       contract: recipient,
-                      msg: toBase64(toUtf8(JSON.stringify(smartContractMsg))),
+                      msg: encodeMessageAsBase64(smartContractMsg),
                       token_id: tokenId,
                     },
                   }
@@ -156,8 +156,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<TransferNftData> = (
           recipient: msg.wasm.execute.msg.send_nft.contract,
 
           executeSmartContract: true,
-          smartContractMsg: parseEncodedMessage(
-            msg.wasm.execute.msg.send_nft.msg
+          smartContractMsg: JSON.stringify(
+            parseEncodedMessage(msg.wasm.execute.msg.send_nft.msg),
+            null,
+            2
           ),
         },
       }
