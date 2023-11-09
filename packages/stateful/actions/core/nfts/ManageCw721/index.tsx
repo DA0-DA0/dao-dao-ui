@@ -191,7 +191,8 @@ export const makeManageCw721Action: ActionMaker<ManageCw721Data> = ({
   // V1 DAOs and V2-alpha DAOs use a value key of `addr`, V2-beta uses `value`.
   const storageItemValueKey =
     context.info.coreVersion === ContractVersion.V1 ||
-    context.info.coreVersion === ContractVersion.V2Alpha
+    context.info.coreVersion === ContractVersion.V2Alpha ||
+    context.info.coreVersion === ContractVersion.NeutronV021
       ? 'addr'
       : 'value'
 
