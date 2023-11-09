@@ -94,12 +94,13 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
       : constSelector(undefined)
   )
 
+  const address = getChainAddressForActionOptions(options, chainId)
   const existingVotesLoading = loadableToLoadingData(
     useRecoilValueLoadable(
-      proposalId
+      proposalId && address
         ? govProposalVoteSelector({
             proposalId: Number(proposalId),
-            voter: getChainAddressForActionOptions(options, chainId),
+            voter: address,
             chainId,
           })
         : constSelector(undefined)

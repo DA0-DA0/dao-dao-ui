@@ -65,4 +65,4 @@ export const getChainAddressForActionOptions = (
     : // If on different chain, return wallet's transformed bech32 address.
     context.type === ActionContextType.Wallet
     ? transformBech32Address(address, chainId)
-    : ''
+    : undefined

@@ -44,7 +44,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = (
 
   const getValidatorAddress = (chainId: string) =>
     toValidatorAddress(
-      getChainAddressForActionOptions(options, chainId),
+      getChainAddressForActionOptions(options, chainId) || '',
       getChainForChainId(chainId).bech32_prefix
     )
 
@@ -181,8 +181,11 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = (
 
     const data = useDefaults()
 
-    // Check this is a stargate message.
-    if (!isDecodedStargateMsg(msg)) {
+    if (
+      !thisAddress ||
+      // Check this is a stargate message.
+      !isDecodedStargateMsg(msg)
+    ) {
       return { match: false }
     }
 

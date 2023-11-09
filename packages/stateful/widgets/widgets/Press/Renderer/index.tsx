@@ -1,6 +1,5 @@
 import {
   useCachedLoading,
-  useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
@@ -15,19 +14,22 @@ import { PressData } from '../types'
 import { Renderer as StatelessRenderer } from './Renderer'
 
 export const Renderer = ({
-  variables: { contract },
+  variables: { chainId: configuredChainId, contract },
 }: WidgetRendererProps<PressData>) => {
-  const { chain_id: chainId } = useChain()
-  const { coreAddress } = useDaoInfoContext()
+  const { chainId: daoChainId, coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const { isMember = false } = useMembership({
     coreAddress,
   })
 
+  // The chain that Press is set up on. If chain ID is undefined, default to
+  // native DAO chain for backwards compatibility.
+  const pressChainId = configuredChainId || daoChainId
+
   const postsLoading = useCachedLoading(
     postsSelector({
       contractAddress: contract,
-      chainId,
+      chainId: pressChainId,
     }),
     []
   )

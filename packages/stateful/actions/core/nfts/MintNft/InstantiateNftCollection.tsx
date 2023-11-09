@@ -40,22 +40,19 @@ export const InstantiateNftCollection: ActionComponent = (props) => {
       toast.error(t('error.loadingData'))
       return
     }
-
     if (!walletAddress) {
       toast.error(t('error.logInToContinue'))
       return
     }
-
-    if (!codeIds.Cw721Base) {
+    const minter = getChainAddressForActionOptions(options, chainId)
+    if (!codeIds.Cw721Base || !minter) {
       toast.error(t('error.invalidChain'))
       return
     }
 
-    const signingCosmWasmClient = await getSigningCosmWasmClient()
-
     setInstantiating(true)
     try {
-      const minter = getChainAddressForActionOptions(options, chainId)
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
       const contractAddress = await instantiateSmartContract(
         signingCosmWasmClient,
         walletAddress,

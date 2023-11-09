@@ -5,7 +5,7 @@ import { ButtonifierProps } from '@dao-dao/types'
 import { Loader } from '../logo'
 
 const defaultVariant = 'primary'
-const defaultSize = 'default'
+const defaultSize = 'md'
 
 // Pulse for these variants instead of displaying loader.
 const PULSE_LOADING_VARIANTS = 'underline' || 'none'
@@ -66,7 +66,7 @@ export const getButtonifiedClassNames = ({
       // Sizes.
       'button-text py-[10px] px-[14px]': size === 'lg',
       'button-text-sm py-1 px-2': size === 'sm',
-      'link-text py-[6px] px-[10px]': size === 'default',
+      'link-text py-[6px] px-[10px]': size === 'md',
     },
 
     // Primary variant

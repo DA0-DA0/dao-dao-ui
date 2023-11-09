@@ -2,6 +2,7 @@ import { coin, parseCoins } from '@cosmjs/amino'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
+import { constSelector } from 'recoil'
 
 import {
   nativeDelegationInfoSelector,
@@ -189,8 +190,6 @@ const InnerComponent: ActionComponent = (props) => {
     throw new Error(t('error.missingNativeToken'))
   }
 
-  const address = getChainAddressForActionOptions(options, chainId)
-
   // These need to be loaded via cached loadables to avoid displaying a loader
   // when this data updates on a schedule. Manually trigger a suspense loader
   // the first time when the initial data is still loading.
@@ -215,15 +214,15 @@ const InnerComponent: ActionComponent = (props) => {
         ),
       }
 
+  const address = getChainAddressForActionOptions(options, chainId)
   const loadingNativeDelegationInfo = useCachedLoading(
-    nativeDelegationInfoSelector({
-      chainId,
-      address,
-    }),
-    {
-      delegations: [],
-      unbondingDelegations: [],
-    }
+    address
+      ? nativeDelegationInfoSelector({
+          chainId,
+          address,
+        })
+      : constSelector(undefined),
+    undefined
   )
 
   const loadingValidators = useCachedLoading(

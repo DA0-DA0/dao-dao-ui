@@ -106,10 +106,10 @@ export const WalletStakingModal = (props: WalletStakingModalProps) => {
       return
     }
 
-    const signingCosmWasmClient = await getSigningCosmWasmClient()
-
     setLoading(true)
     try {
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
+
       const microAmount = convertDenomToMicroDenomStringWithDecimals(
         amount,
         nativeToken.decimals

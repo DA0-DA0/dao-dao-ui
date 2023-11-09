@@ -15,6 +15,8 @@ export const WyndDepositWidget: Widget<WyndDepositData> = {
   id: 'wynd_deposit',
   location: WidgetLocation.Home,
   visibilityContext: WidgetVisibilityContext.Always,
+  // WYND only available on Juno mainnet.
+  supportedChainIds: [ChainId.JunoMainnet],
   defaultValues: {
     outputToken: {
       type: TokenType.Native,
