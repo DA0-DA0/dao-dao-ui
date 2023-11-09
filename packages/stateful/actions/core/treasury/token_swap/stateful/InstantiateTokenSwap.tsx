@@ -56,10 +56,7 @@ export const InstantiateTokenSwap: ActionComponent<
       return
     }
 
-    const signingCosmWasmClient = await getSigningCosmWasmClient()
-
     setInstantiating(true)
-
     try {
       const instantiateMsg: InstantiateMsg = {
         counterparty_one: {
@@ -110,6 +107,7 @@ export const InstantiateTokenSwap: ActionComponent<
         },
       }
 
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
       const contractAddress = await instantiateSmartContract(
         signingCosmWasmClient,
         walletAddress,

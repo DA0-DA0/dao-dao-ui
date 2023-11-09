@@ -4,14 +4,19 @@ import { useFormContext } from 'react-hook-form'
 import { PencilEmoji, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
+  makeWasmMessage,
+  maybeMakePolytoneExecuteMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../../../actions'
 import { postSelector, postsSelector } from '../../state'
@@ -30,14 +35,18 @@ const useDefaults: UseDefaults<UpdatePostData> = () => ({
 })
 
 export const makeUpdatePostActionMaker = ({
+  chainId: configuredChainId,
   contract,
 }: PressData): ActionMaker<UpdatePostData> => {
   // Make outside of the maker function returned below so it doesn't get
   // redefined and thus remounted on every render.
   const Component: ActionComponent = (props) => {
     const {
-      chain: { chain_id: chainId },
+      chain: { chain_id: daoChainId },
     } = useActionOptions()
+    // The chain that Press is set up on. If chain ID is undefined, default to
+    // native DAO chain for backwards compatibility.
+    const pressChainId = configuredChainId || daoChainId
 
     const { watch } = useFormContext<UpdatePostData>()
     const tokenId = watch((props.fieldNamePrefix + 'tokenId') as 'tokenId')
@@ -57,7 +66,7 @@ export const makeUpdatePostActionMaker = ({
     const postsLoading = useCachedLoading(
       postsSelector({
         contractAddress: contract,
-        chainId,
+        chainId: pressChainId,
       }),
       []
     )
@@ -73,16 +82,27 @@ export const makeUpdatePostActionMaker = ({
     )
   }
 
-  return ({ t, context, address }) => {
-    // Only available in DAO context.
-    if (context.type !== ActionContextType.Dao) {
-      return null
-    }
+  return (options) => {
+    const {
+      t,
+      chain: { chain_id: daoChainId },
+    } = options
+
+    // The chain that Press is set up on. If chain ID is undefined, default to
+    // native DAO chain for backwards compatibility.
+    const pressChainId = configuredChainId || daoChainId
 
     const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdatePostData> = (
       msg: Record<string, any>
-    ) =>
-      objectMatchesStructure(msg, {
+    ) => {
+      let chainId = daoChainId
+      const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+      if (decodedPolytone.match) {
+        chainId = decodedPolytone.chainId
+        msg = decodedPolytone.msg
+      }
+
+      return objectMatchesStructure(msg, {
         wasm: {
           execute: {
             contract_addr: {},
@@ -97,11 +117,13 @@ export const makeUpdatePostActionMaker = ({
           },
         },
       }) &&
-      msg.wasm.execute.contract_addr === contract &&
-      msg.wasm.execute.msg.mint.token_uri
+        chainId === pressChainId &&
+        msg.wasm.execute.contract_addr === contract &&
+        msg.wasm.execute.msg.mint.token_uri
         ? {
             match: true,
             data: {
+              chainId,
               tokenId: msg.wasm.execute.msg.mint.token_id,
               tokenUri: msg.wasm.execute.msg.mint.token_uri,
               uploaded: true,
@@ -110,25 +132,33 @@ export const makeUpdatePostActionMaker = ({
         : {
             match: false,
           }
+    }
 
     const useTransformToCosmos: UseTransformToCosmos<UpdatePostData> = () =>
       useCallback(
         ({ tokenId, tokenUri }) =>
-          makeWasmMessage({
-            wasm: {
-              execute: {
-                contract_addr: contract,
-                funds: [],
-                msg: {
-                  mint: {
-                    owner: address,
-                    token_id: tokenId,
-                    token_uri: tokenUri,
+          maybeMakePolytoneExecuteMessage(
+            daoChainId,
+            pressChainId,
+            makeWasmMessage({
+              wasm: {
+                execute: {
+                  contract_addr: contract,
+                  funds: [],
+                  msg: {
+                    mint: {
+                      owner: getChainAddressForActionOptions(
+                        options,
+                        pressChainId
+                      ),
+                      token_id: tokenId,
+                      token_uri: tokenUri,
+                    },
                   },
                 },
               },
-            },
-          }),
+            })
+          ),
         []
       )
 

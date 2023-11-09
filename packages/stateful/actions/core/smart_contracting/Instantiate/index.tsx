@@ -199,7 +199,7 @@ const Component: ActionComponent = (props) => {
             setValue((props.fieldNamePrefix + 'funds') as 'funds', [])
             setValue(
               (props.fieldNamePrefix + 'admin') as 'admin',
-              getChainAddressForActionOptions(options, chainId)
+              getChainAddressForActionOptions(options, chainId) || ''
             )
           }}
         />

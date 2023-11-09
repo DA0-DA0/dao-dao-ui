@@ -4,14 +4,19 @@ import { useFormContext } from 'react-hook-form'
 import { MemoEmoji, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionComponent,
-  ActionContextType,
   ActionKey,
   ActionMaker,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
+  makeWasmMessage,
+  maybeMakePolytoneExecuteMessage,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
 import { postSelector } from '../../state'
 import { PressData } from '../../types'
@@ -55,17 +60,31 @@ const Component: ActionComponent = (props) => {
 }
 
 export const makeCreatePostActionMaker =
-  ({ contract }: PressData): ActionMaker<CreatePostData> =>
-  ({ t, context, address }) => {
-    // Only available in DAO context.
-    if (context.type !== ActionContextType.Dao) {
-      return null
-    }
+  ({
+    contract,
+    chainId: configuredChainId,
+  }: PressData): ActionMaker<CreatePostData> =>
+  (options) => {
+    const {
+      t,
+      chain: { chain_id: daoChainId },
+    } = options
+
+    // The chain that Press is set up on. If chain ID is undefined, default to
+    // native DAO chain for backwards compatibility.
+    const pressChainId = configuredChainId || daoChainId
 
     const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreatePostData> = (
       msg: Record<string, any>
-    ) =>
-      objectMatchesStructure(msg, {
+    ) => {
+      let chainId = daoChainId
+      const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
+      if (decodedPolytone.match) {
+        chainId = decodedPolytone.chainId
+        msg = decodedPolytone.msg
+      }
+
+      return objectMatchesStructure(msg, {
         wasm: {
           execute: {
             contract_addr: {},
@@ -80,8 +99,8 @@ export const makeCreatePostActionMaker =
           },
         },
       }) &&
-      msg.wasm.execute.contract_addr === contract &&
-      msg.wasm.execute.msg.mint.token_uri
+        msg.wasm.execute.contract_addr === contract &&
+        msg.wasm.execute.msg.mint.token_uri
         ? {
             match: true,
             data: {
@@ -93,25 +112,33 @@ export const makeCreatePostActionMaker =
         : {
             match: false,
           }
+    }
 
     const useTransformToCosmos: UseTransformToCosmos<CreatePostData> = () =>
       useCallback(
         ({ tokenId, tokenUri }) =>
-          makeWasmMessage({
-            wasm: {
-              execute: {
-                contract_addr: contract,
-                funds: [],
-                msg: {
-                  mint: {
-                    owner: address,
-                    token_id: tokenId,
-                    token_uri: tokenUri,
+          maybeMakePolytoneExecuteMessage(
+            daoChainId,
+            pressChainId,
+            makeWasmMessage({
+              wasm: {
+                execute: {
+                  contract_addr: contract,
+                  funds: [],
+                  msg: {
+                    mint: {
+                      owner: getChainAddressForActionOptions(
+                        options,
+                        pressChainId
+                      ),
+                      token_id: tokenId,
+                      token_uri: tokenUri,
+                    },
                   },
                 },
               },
-            },
-          }),
+            })
+          ),
         []
       )
 

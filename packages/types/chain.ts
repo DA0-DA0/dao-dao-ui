@@ -65,6 +65,10 @@ export enum ContractVersion {
   V210 = '2.1.0',
   // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.3.0
   V230 = '2.3.0',
+
+  // Neutron-specific versions.
+  // https://github.com/neutron-org/neutron-dao/releases/tag/v0.5.0
+  NeutronV021 = '0.2.1',
 }
 
 export enum ChainId {

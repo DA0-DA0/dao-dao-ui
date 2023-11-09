@@ -97,8 +97,6 @@ export const DaoTokenDepositModal = ({
         return
       }
 
-      const signingCosmWasmClient = await getSigningCosmWasmClient()
-
       setLoading(true)
       try {
         const microAmount = convertDenomToMicroDenomStringWithDecimals(
@@ -107,6 +105,7 @@ export const DaoTokenDepositModal = ({
         )
 
         if (token.type === 'native') {
+          const signingCosmWasmClient = await getSigningCosmWasmClient()
           await signingCosmWasmClient.sendTokens(
             address,
             depositAddress,

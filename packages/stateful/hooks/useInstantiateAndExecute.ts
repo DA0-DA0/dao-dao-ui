@@ -80,8 +80,6 @@ export const useInstantiateAndExecute = (
         throw new Error(t('error.logInToContinue'))
       }
 
-      const signingCosmWasmClient = await getSigningCosmWasmClient()
-
       // Get the checksum of the contract code.
       const checksum = fromHex(codeDetailsLoadable.contents.checksum)
       // Random salt.
@@ -118,6 +116,7 @@ export const useInstantiateAndExecute = (
         ),
       ]
 
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
       const response = (await signingCosmWasmClient.signAndBroadcast(
         address,
         messages.map((msg) => cwMsgToEncodeObject(msg, address)),

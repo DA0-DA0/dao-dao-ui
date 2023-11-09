@@ -50,10 +50,10 @@ export const InnerStargazeNftImportModal = ({
       return
     }
 
-    const signingCosmWasmClient = await getSigningCosmWasmClient()
-
     setLoading(true)
     try {
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
+
       const selectedNfts = nfts.data.filter((nft) =>
         selected.includes(getIdForNft(nft))
       )

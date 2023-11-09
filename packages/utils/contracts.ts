@@ -1,12 +1,11 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
-import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { Coin, SigningStargateClient } from '@cosmjs/stargate'
 import { findAttribute, parseRawLog } from '@cosmjs/stargate/build/logs'
 
 import { ContractVersion } from '@dao-dao/types'
 
 import { CHAIN_GAS_MULTIPLIER } from './constants'
-import { cwMsgToEncodeObject } from './messages'
+import { cwMsgToEncodeObject, encodeMessageAsBase64 } from './messages'
 
 const CONTRACT_VERSIONS = Object.values(ContractVersion)
 
@@ -55,7 +54,7 @@ export const instantiateSmartContract = async (
           wasm: {
             instantiate: {
               code_id: codeId,
-              msg: toBase64(toUtf8(JSON.stringify(msg))),
+              msg: encodeMessageAsBase64(msg),
               funds: funds || [],
               label,
               // Replace empty string with undefined.

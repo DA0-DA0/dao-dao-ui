@@ -71,7 +71,8 @@ export const makeManageWidgetsAction: ActionMaker<ManageWidgetsData> = ({
   // V1 DAOs and V2-alpha DAOs use a value key of `addr`, the rest use `value`.
   const valueKey =
     context.info.coreVersion === ContractVersion.V1 ||
-    context.info.coreVersion === ContractVersion.V2Alpha
+    context.info.coreVersion === ContractVersion.V2Alpha ||
+    context.info.coreVersion === ContractVersion.NeutronV021
       ? 'addr'
       : 'value'
 

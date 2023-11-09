@@ -257,8 +257,6 @@ export const WyndDepositRenderer = ({
       return
     }
 
-    const signingCosmWasmClient = await getSigningCosmWasmClient()
-
     setDepositing(true)
     setError('')
     setTxHash('')
@@ -266,6 +264,7 @@ export const WyndDepositRenderer = ({
     try {
       let tx
 
+      const signingCosmWasmClient = await getSigningCosmWasmClient()
       if (inTokenIsOutToken) {
         if (token.type === TokenType.Native) {
           tx = await signingCosmWasmClient.sendTokens(
