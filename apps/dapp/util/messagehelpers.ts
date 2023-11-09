@@ -408,39 +408,31 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
 export function decodeMessages(
   msgs: ProposalResponse['msgs']
 ): { [key: string]: any }[] {
-  const decodedMessageArray: any[] = []
-  const proposalMsgs = Object.values(msgs)
-  for (const msgObj of proposalMsgs) {
-    if (isWasmMsg(msgObj)) {
-      const msgType = getWasmMsgType(msgObj.wasm)
+  return msgs.map((msg) => {
+    if (isWasmMsg(msg)) {
+      const msgType = getWasmMsgType(msg.wasm)
       if (msgType && isBinaryType(msgType)) {
-        const base64Msg = (msgObj.wasm as any)[msgType]
-        if (base64Msg) {
-          const msg = parseEncodedMessage(base64Msg.msg)
-          if (msg) {
-            decodedMessageArray.push({
-              ...msgObj,
+        const base64MsgContainer = (msg.wasm as any)[msgType]
+        if (base64MsgContainer && 'msg' in base64MsgContainer) {
+          const parsedMsg = parseEncodedMessage(base64MsgContainer.msg)
+          if (parsedMsg) {
+            return {
+              ...msg,
               wasm: {
-                ...msgObj.wasm,
+                ...msg.wasm,
                 [msgType]: {
-                  ...base64Msg,
-                  msg,
+                  ...base64MsgContainer,
+                  msg: parsedMsg,
                 },
               },
-            })
+            }
           }
         }
       }
-    } else {
-      decodedMessageArray.push(msgObj)
     }
-  }
 
-  const decodedMessages = decodedMessageArray.length
-    ? decodedMessageArray
-    : proposalMsgs
-
-  return decodedMessages
+    return msg
+  })
 }
 
 export function decodedMessagesString(msgs: ProposalResponse['msgs']): string {
