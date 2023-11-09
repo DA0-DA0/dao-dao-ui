@@ -86,9 +86,9 @@ export const contractInstantiateTime = selectorFamily<Date | undefined, string>(
           return undefined
         }
 
-        const events = await client.searchTx({
-          tags: [{ key: 'instantiate._contract_address', value: address }],
-        })
+        const events = await client.searchTx([
+          { key: 'instantiate._contract_address', value: address },
+        ])
         if (events.length == 0) {
           // Failed to locate the instantiate transaction. This happens if the
           // RPC node doesn't have historical data this far back.

@@ -97,9 +97,9 @@ export const transactions = selectorFamily({
     (address: string) =>
     async ({ get }) => {
       const client = get(cosmWasmClientSelector)
-      const response = (await client.searchTx({
-        sentFromOrTo: address,
-      })) as IndexedTx[]
+      const response = (await client.searchTx(
+        `message.module='bank' AND (transfer.sender='${address}' OR transfer.recipient='${address}')`
+      )) as IndexedTx[]
       return response
     },
 })

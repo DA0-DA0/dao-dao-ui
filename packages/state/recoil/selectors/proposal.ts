@@ -20,13 +20,11 @@ export const proposalExecutionTXHashSelector = selectorFamily<
       // No TX Hash if proposal not yet executed.
       if (!client || proposal?.proposal.status !== Status.Executed) return
 
-      const events = await client.searchTx({
-        tags: [
-          { key: 'wasm._contract_address', value: contractAddress },
-          { key: 'wasm.proposal_id', value: proposalId.toString() },
-          { key: 'wasm.action', value: 'execute' },
-        ],
-      })
+      const events = await client.searchTx([
+        { key: 'wasm._contract_address', value: contractAddress },
+        { key: 'wasm.proposal_id', value: proposalId.toString() },
+        { key: 'wasm.action', value: 'execute' },
+      ])
 
       if (events.length > 1) {
         console.error('More than one execution', events)
