@@ -49,9 +49,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
       )}
 
       <p className="caption-text italic">
-        {t('info.tokensWillBeSentToTreasury', {
-          type: context.type,
-        })}
+        {t('info.tokensWillBeSentToTreasury')}
       </p>
     </>
   )

@@ -42,6 +42,7 @@ const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
   const { governanceTokenAddress, governanceTokenInfo } =
     useGovernanceTokenInfo()
 
+  // TODO: use cw-tokenfactory-issuer to set_minter and then mint
   return useCallback(
     (data: MintData) => {
       return makeStargateMessage({
