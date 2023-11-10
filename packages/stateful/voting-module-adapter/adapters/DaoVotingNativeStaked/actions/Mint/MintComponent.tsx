@@ -9,8 +9,6 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../actions'
-
 export interface MintOptions {
   govToken: GenericToken
 }
@@ -22,7 +20,6 @@ export const MintComponent: ActionComponent<MintOptions> = ({
   options: { govToken },
 }) => {
   const { t } = useTranslation()
-  const { context } = useActionOptions()
   const { register, watch, setValue } = useFormContext()
 
   return (
@@ -49,9 +46,7 @@ export const MintComponent: ActionComponent<MintOptions> = ({
       )}
 
       <p className="caption-text italic">
-        {t('info.tokensWillBeSentToTreasury', {
-          type: context.type,
-        })}
+        {t('info.tokensWillBeSentToTreasury')}
       </p>
     </>
   )

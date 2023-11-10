@@ -61,6 +61,7 @@ export enum ActionKey {
   FeeShare = 'feeShare',
   ManageMembers = 'manageMembers',
   Mint = 'mint',
+  UpdateMinterAllowance = 'updateMinterAllowance',
   ManageVesting = 'manageVesting',
   CreateCrossChainAccount = 'createCrossChainAccount',
   CrossChainExecute = 'crossChainExecute',
