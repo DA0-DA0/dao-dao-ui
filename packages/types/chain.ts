@@ -10,12 +10,20 @@ export type IChainContext = {
   chain: Chain
   // Chain may not have a native token.
   nativeToken?: GenericToken
-  // If defined, this is a supported chain.
+  // If defined, this is a configured chain, which means it is supported (DAO
+  // DAO is deployed on it) or it has a governance interface.
+  base?: BaseChainConfig
+  // If defined, this is a supported chain, which means DAO DAO is deployed.
   config?: SupportedChainConfig
 }
 
+// Require base chain config.
+export type ConfiguredChainContext = Omit<IChainContext, 'base' | 'config'> & {
+  config: BaseChainConfig
+}
+
 // Require supported chain config.
-export type SupportedChainContext = Omit<IChainContext, 'config'> & {
+export type SupportedChainContext = Omit<ConfiguredChainContext, 'config'> & {
   config: SupportedChainConfig
 }
 
@@ -48,6 +56,7 @@ export interface NativeDelegationInfo {
 }
 
 export enum ChainId {
+  CosmosHubMainnet = 'cosmoshub-4',
   JunoMainnet = 'juno-1',
   JunoTestnet = 'uni-6',
   OsmosisMainnet = 'osmosis-1',
@@ -57,17 +66,36 @@ export enum ChainId {
   NeutronMainnet = 'neutron-1',
 }
 
-export type SupportedChainConfig = {
+export type BaseChainConfig = {
+  chainId: string
   // Unique name among chain configs with the same `mainnet` flag. This is used
   // to identify the chain in the native governance UI.
   name: string
   mainnet: boolean
   accentColor: string
+  // Set to true if the chain does not support CosmWasm. If undefined, assumed
+  // to be false.
+  noCosmWasm?: boolean
+  gov: {
+    // Supports new v1 gov proposals introduced in cosmos-sdk v47. Some chains
+    // that fork the SDK, like Osmosis, don't support v1 gov proposals even
+    // though they use cosmos-sdk v47 or higher, so we need a hardcoded flag.
+    supportsV1GovProposals: boolean
+  }
+  explorerUrlTemplates: {
+    tx: string
+    gov: string
+    govProp: string
+    wallet: string
+  }
+}
+
+export type ConfiguredChain = BaseChainConfig & {
+  chain: Chain
+}
+
+export type SupportedChainConfig = BaseChainConfig & {
   factoryContractAddress: string
-  // Supports new v1 gov proposals introduced in cosmos-sdk v47. Some chains
-  // that fork the SDK, like Osmosis, don't support v1 gov proposals even though
-  // they use cosmos-sdk v47 or higher, so we need a hardcoded flag.
-  supportsV1GovProposals: boolean
   // If defined, it means Kado supports fiat deposit on this chain.
   kado?: {
     network: string
@@ -75,12 +103,6 @@ export type SupportedChainConfig = {
   indexes: {
     search: string
     featured: string
-  }
-  explorerUrlTemplates: {
-    tx: string
-    gov: string
-    govProp: string
-    wallet: string
   }
   codeIds: CodeIdConfig
   // Store code IDs for past versions of contracts, in case DAOs need a

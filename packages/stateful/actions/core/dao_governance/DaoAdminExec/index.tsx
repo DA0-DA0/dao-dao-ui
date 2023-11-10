@@ -218,10 +218,13 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<DaoAdminExecData> = (
 export const makeDaoAdminExecAction: ActionMaker<DaoAdminExecData> = ({
   t,
   context,
+  chainContext: {
+    config: { noCosmWasm },
+  },
 }) =>
-  // Only allow using this action in DAOs or gov props.
+  // Only allow using this action in DAOs or gov props on chains with CW.
   context.type === ActionContextType.Dao ||
-  context.type === ActionContextType.Gov
+  (context.type === ActionContextType.Gov && !noCosmWasm)
     ? {
         key: ActionKey.DaoAdminExec,
         Icon: JoystickEmoji,

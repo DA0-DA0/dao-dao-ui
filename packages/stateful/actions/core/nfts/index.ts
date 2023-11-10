@@ -9,17 +9,24 @@ import { makeTransferNftAction } from './TransferNft'
 export const makeManageNftsActionCategory: ActionCategoryMaker = ({
   t,
   context,
-}) => ({
-  key: ActionCategoryKey.Nfts,
-  label: t('actionCategory.nftsLabel'),
-  description: t('actionCategory.nftsDescription', {
-    context: context.type,
-  }),
-  actionMakers: [
-    makeCreateNftCollectionAction,
-    makeMintNftAction,
-    makeTransferNftAction,
-    makeBurnNftAction,
-    makeManageCw721Action,
-  ],
-})
+  chainContext: {
+    config: { noCosmWasm },
+  },
+}) =>
+  // Chains without CosmWasm cannot use NFTs.
+  !noCosmWasm
+    ? {
+        key: ActionCategoryKey.Nfts,
+        label: t('actionCategory.nftsLabel'),
+        description: t('actionCategory.nftsDescription', {
+          context: context.type,
+        }),
+        actionMakers: [
+          makeCreateNftCollectionAction,
+          makeMintNftAction,
+          makeTransferNftAction,
+          makeBurnNftAction,
+          makeManageCw721Action,
+        ],
+      }
+    : null

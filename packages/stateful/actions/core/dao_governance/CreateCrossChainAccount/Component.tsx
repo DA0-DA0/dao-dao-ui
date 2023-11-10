@@ -2,7 +2,11 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import { CopyToClipboard, RadioInput } from '@dao-dao/stateless'
-import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
+import {
+  ActionChainContextType,
+  ActionComponent,
+  ActionContextType,
+} from '@dao-dao/types/actions'
 import { getDisplayNameForChainId, getImageUrlForChainId } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../react'
@@ -26,6 +30,7 @@ export const CreateCrossChainAccountComponent: ActionComponent = ({
   if (
     context.type !== ActionContextType.Dao ||
     // Type check.
+    chainContext.type !== ActionChainContextType.Supported ||
     !chainContext.config.polytone
   ) {
     throw new Error('Invalid context for this action.')

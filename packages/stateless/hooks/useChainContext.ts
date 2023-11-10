@@ -1,6 +1,10 @@
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useMemo } from 'react'
 
-import { IChainContext, SupportedChainContext } from '@dao-dao/types'
+import {
+  ConfiguredChainContext,
+  IChainContext,
+  SupportedChainContext,
+} from '@dao-dao/types'
 
 export const ChainContext = createContext<IChainContext | null>(null)
 
@@ -16,6 +20,23 @@ export const useChainContext = (): IChainContext => {
   }
 
   return context
+}
+
+export const useConfiguredChainContext = (): ConfiguredChainContext => {
+  const context = useChainContext()
+
+  // Make sure this is a configured chain.
+  if (!context.base) {
+    throw new Error('Unconfigured chain context.')
+  }
+
+  return useMemo(
+    (): ConfiguredChainContext => ({
+      ...context,
+      config: context.base!,
+    }),
+    [context]
+  )
 }
 
 export const useSupportedChainContext = (): SupportedChainContext => {

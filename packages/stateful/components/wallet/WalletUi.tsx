@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 
 import { Modal, WarningCard } from '@dao-dao/stateless'
 import {
-  getSupportedChains,
+  getConfiguredChains,
   maybeGetAssetListForChainId,
   processError,
 } from '@dao-dao/utils'
@@ -108,7 +108,7 @@ export const WalletUi = (props: WalletModalProps) => {
             // Connect to wallet.
             try {
               // Ensure supported chains are added before connecting.
-              const supportedChains = getSupportedChains().map(({ chain }) =>
+              const configuredChains = getConfiguredChains().map(({ chain }) =>
                 convertChain(
                   chain,
                   [maybeGetAssetListForChainId(chain.chain_id)].filter(
@@ -118,7 +118,7 @@ export const WalletUi = (props: WalletModalProps) => {
               )
 
               await Promise.all(
-                supportedChains.map((chainRecord) =>
+                configuredChains.map((chainRecord) =>
                   walletRepo
                     .getWallet(wallet.walletName)
                     ?.mainWallet.client.addChain?.(chainRecord)

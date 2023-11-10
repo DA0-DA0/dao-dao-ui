@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { ButtonPopupProps, ButtonPopupSectionButton } from '@dao-dao/types'
 import {
   getChainForChainId,
+  getConfiguredChains,
   getDisplayNameForChainId,
   getSupportedChains,
 } from '@dao-dao/utils'
@@ -19,6 +20,9 @@ export type ChainSwitcherProps = Omit<
   ButtonPopupProps,
   'ButtonLink' | 'position' | 'sections' | 'trigger'
 > & {
+  // Configured refers to all configured chains, even those without DAO DAO
+  // deployments. This includes all chains that show up in the governance UI.
+  type?: 'configured' | 'supported'
   position?: ButtonPopupProps['position']
   loading?: boolean
   excludeChainIds?: string[]
@@ -53,6 +57,7 @@ type ChainSwitcherButton = Omit<ButtonPopupSectionButton, 'onClick'> & {
 }
 
 export const ChainSwitcher = ({
+  type = 'supported',
   onSelect,
   selected,
   loading,
@@ -99,7 +104,10 @@ export const ChainSwitcher = ({
                 },
               ] as ChainSwitcherButton[])
             : []),
-          ...getSupportedChains()
+          ...(type === 'supported'
+            ? getSupportedChains()
+            : getConfiguredChains()
+          )
             .filter(
               ({ chain: { chain_id: chainId } }) =>
                 !excludeChainIdsRef.current?.includes(chainId)
@@ -112,10 +120,17 @@ export const ChainSwitcher = ({
                 Icon: makeChainIcon(chain.chain_id),
               })
             )
-            .sort((a, b) =>
+            .sort((a, b) => {
+              // Sort selected to the top.
+              if (a.pressed && !b.pressed) {
+                return -1
+              } else if (!a.pressed && b.pressed) {
+                return 1
+              }
+
               // Sort alphabetically by label.
-              a.label.localeCompare(b.label)
-            ),
+              return a.label.localeCompare(b.label)
+            }),
         ],
       },
     ]
@@ -125,7 +140,7 @@ export const ChainSwitcher = ({
       chainSwitcherTriggerContent,
       chainSwitcherSections,
     }
-  }, [chain, noneIcon, noneLabel, selected, showNone])
+  }, [chain, noneIcon, noneLabel, selected, showNone, type])
 
   return (
     <ButtonPopup

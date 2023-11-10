@@ -7,6 +7,7 @@ import { genericTokenSelector } from '@dao-dao/state/recoil'
 import { DownArrowEmoji } from '@dao-dao/stateless'
 import { ChainId, TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
+  ActionChainContextType,
   ActionComponent,
   ActionKey,
   ActionMaker,
@@ -66,21 +67,19 @@ const Component: ActionComponent<undefined, CommunityPoolDepositData> = (
 
 export const makeCommunityPoolDepositAction: ActionMaker<
   CommunityPoolDepositData
-> = ({
-  t,
-  address,
-  chain: { chain_id: currentChainId },
-  chainContext: { nativeToken },
-}) => {
+> = ({ t, address, chain: { chain_id: currentChainId }, chainContext }) => {
   // Neutron does not use the x/distribution community pool.
-  if (currentChainId === ChainId.NeutronMainnet) {
+  if (
+    currentChainId === ChainId.NeutronMainnet ||
+    chainContext.type !== ActionChainContextType.Supported
+  ) {
     return null
   }
 
   const useDefaults: UseDefaults<CommunityPoolDepositData> = () => ({
     chainId: currentChainId,
     amount: 100,
-    denom: nativeToken?.denomOrAddress || '',
+    denom: chainContext.nativeToken?.denomOrAddress || '',
   })
 
   const useTransformToCosmos: UseTransformToCosmos<

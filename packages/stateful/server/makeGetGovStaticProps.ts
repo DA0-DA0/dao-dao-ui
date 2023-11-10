@@ -18,10 +18,10 @@ import {
   SITE_URL,
   cosmosSdkVersionIs47OrHigher,
   decodeGovProposal,
+  getConfiguredChains,
   getGovProposalPath,
   getImageUrlForChainId,
   getRpcForChainId,
-  getSupportedChains,
   processError,
 } from '@dao-dao/utils'
 import { cosmos } from '@dao-dao/utils/protobuf'
@@ -68,11 +68,11 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
       ['translation']
     )
 
-    const supportedChain = context.params?.chain
-      ? getSupportedChains().find(({ name }) => name === context.params?.chain)
+    const chainConfig = context.params?.chain
+      ? getConfiguredChains().find(({ name }) => name === context.params?.chain)
       : undefined
 
-    if (!supportedChain) {
+    if (!chainConfig) {
       // Excluding `info` will render not found.
       return {
         props: {
@@ -86,7 +86,7 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
       }
     }
 
-    const { chain, accentColor } = supportedChain
+    const { chain, accentColor } = chainConfig
 
     // Must be called after server side translations has been awaited, because
     // props may use the `t` function, and it won't be available until after.
@@ -117,7 +117,7 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
       accentColor,
       serializedInfo: {
         chainId: chain.chain_id,
-        coreAddress: supportedChain.name,
+        coreAddress: chainConfig.name,
         coreVersion: ContractVersion.Gov,
         supportedFeatures: Object.values(Feature).reduce(
           (acc, feature) => ({
