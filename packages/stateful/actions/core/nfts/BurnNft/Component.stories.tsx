@@ -1,12 +1,16 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { makeProps as makeNftCardProps } from '@dao-dao/stateless/components/NftCard.stories'
+import {
+  makeLazyInfo,
+  makeProps as makeNftCardProps,
+} from '@dao-dao/stateless/components/NftCard.stories'
 import {
   ReactHookFormDecorator,
   makeDaoInfo,
   makeDaoProvidersDecorator,
 } from '@dao-dao/storybook'
 
+import { NftSelectionModal } from '../../../../components'
 import { BurnNft } from './Component'
 
 export default {
@@ -45,11 +49,12 @@ Default.args = {
       errored: false,
       data: [
         selected,
-        makeNftCardProps(),
-        makeNftCardProps(),
-        makeNftCardProps(),
-        makeNftCardProps(),
+        makeLazyInfo(),
+        makeLazyInfo(),
+        makeLazyInfo(),
+        makeLazyInfo(),
       ],
     },
+    NftSelectionModal,
   },
 }

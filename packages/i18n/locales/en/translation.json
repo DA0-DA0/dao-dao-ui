@@ -916,6 +916,7 @@
     "numContributors_other": "{{count}} contributors",
     "numNftsSelected_one": "{{count}} NFT selected",
     "numNftsSelected_other": "{{count}} NFTs selected",
+    "numNftsSelected_zero": "No NFT selected",
     "numPayments_one": "{{count}} payment",
     "numPayments_other": "{{count}} payments",
     "numProposals_one": "{{count}} proposal",

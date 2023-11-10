@@ -6,8 +6,8 @@ import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
   FilterFn,
+  LazyNftCardInfo,
   MeBalancesProps,
-  NftCardInfo,
   SortFn,
   TokenCardInfo,
   TypedOption,
@@ -21,11 +21,15 @@ import {
   GridCardContainer,
   Loader,
   NoContent,
+  PAGINATION_MIN_PAGE,
+  Pagination,
   TooltipInfoIcon,
 } from '../components'
 import { useButtonPopupFilter, useButtonPopupSorter } from '../hooks'
 
-export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
+const NFTS_PER_PAGE = 18
+
+export const MeBalances = <T extends TokenCardInfo, N extends LazyNftCardInfo>({
   tokens,
   hiddenTokens,
   TokenLine,
@@ -48,7 +52,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
       ...nftChains.map(
         (
           chain
-        ): TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>> & {
+        ): TypedOption<FilterFn<{ chainId: string }>> & {
           id: string
         } => ({
           id: chain.chain_id,
@@ -78,14 +82,6 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
     options: nftFilterOptions,
   })
 
-  const {
-    sortedData: filteredSortedNfts,
-    buttonPopupProps: sortNftButtonPopupProps,
-  } = useButtonPopupSorter({
-    data: filteredNfts,
-    options: nftSortOptions,
-  })
-
   const visibleBalances = hiddenTokens.loading
     ? []
     : sortedTokens.filter(
@@ -98,6 +94,12 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
       )
 
   const [showingHidden, setShowingHidden] = useState(false)
+
+  const [_nftPage, setNftPage] = useState(PAGINATION_MIN_PAGE)
+  const nftPage = Math.min(
+    _nftPage,
+    Math.ceil(filteredNfts.length / NFTS_PER_PAGE)
+  )
 
   return (
     <div className="flex flex-col gap-8 pt-4 sm:pt-0">
@@ -179,7 +181,7 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
                   {nfts.loading
                     ? t('title.nfts')
                     : t('title.numNfts', {
-                        count: filteredSortedNfts.length,
+                        count: filteredNfts.length,
                       })}
                 </p>
 
@@ -195,21 +197,35 @@ export const MeBalances = <T extends TokenCardInfo, N extends NftCardInfo>({
               </div>
 
               {!nfts.loading && nfts.data.length > 0 && (
-                <div className="flex flex-row items-center justify-end gap-4">
+                <div className="flex flex-row items-center justify-end">
                   <ButtonPopup position="left" {...filterNftButtonPopupProps} />
-                  <ButtonPopup position="left" {...sortNftButtonPopupProps} />
                 </div>
               )}
             </div>
 
             {nfts.loading ? (
               <Loader fill={false} />
-            ) : filteredSortedNfts.length > 0 ? (
-              <GridCardContainer className="pb-6">
-                {filteredSortedNfts.map((props, index) => (
-                  <NftCard {...(props as N)} key={index} />
-                ))}
-              </GridCardContainer>
+            ) : filteredNfts.length > 0 ? (
+              <>
+                <GridCardContainer className="pb-6">
+                  {filteredNfts
+                    .slice(
+                      (nftPage - 1) * NFTS_PER_PAGE,
+                      nftPage * NFTS_PER_PAGE
+                    )
+                    .map((props, index) => (
+                      <NftCard {...(props as N)} key={index} />
+                    ))}
+                </GridCardContainer>
+
+                <Pagination
+                  className="mx-auto"
+                  page={nftPage}
+                  pageSize={NFTS_PER_PAGE}
+                  setPage={setNftPage}
+                  total={filteredNfts.length}
+                />
+              </>
             ) : (
               <NoContent Icon={Image} body={t('info.noNftsFound')} />
             )}
@@ -290,37 +306,4 @@ const tokenSortOptions: TypedOption<
         .toLocaleLowerCase()
         .localeCompare(a.token.symbol.toLocaleLowerCase()),
   },
-]
-
-const nftSortOptions: TypedOption<
-  SortFn<Pick<NftCardInfo, 'name' | 'floorPrice'>>
->[] = [
-  {
-    label: 'A → Z',
-    value: (a, b) =>
-      a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()),
-  },
-  {
-    label: 'Z → A',
-    value: (a, b) =>
-      b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleLowerCase()),
-  },
-  // {
-  //   label: 'Lowest floor',
-  //   value: (a, b) =>
-  //     !a.floorPrice
-  //       ? 1
-  //       : !b.floorPrice
-  //       ? -1
-  //       : a.floorPrice.amount - b.floorPrice.amount,
-  // },
-  // {
-  //   label: 'Highest floor',
-  //   value: (a, b) =>
-  //     !a.floorPrice
-  //       ? 1
-  //       : !b.floorPrice
-  //       ? -1
-  //       : b.floorPrice.amount - a.floorPrice.amount,
-  // },
 ]

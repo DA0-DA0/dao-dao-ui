@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next'
 
 import { CommonNftSelectors } from '@dao-dao/state/recoil'
 import { NftsTab, useCachedLoading, useChain } from '@dao-dao/stateless'
-import { LazyNftCardProps } from '@dao-dao/types'
+import { LazyNftCardInfo } from '@dao-dao/types'
 
 import { LazyNftCard } from '../../../../components'
 import { useGovernanceCollectionInfo } from '../hooks'
@@ -31,7 +31,7 @@ export const NftCollectionTab = () => {
           : {
               loading: false,
               data: allTokens.data.map(
-                (tokenId): LazyNftCardProps & { key: string } => ({
+                (tokenId): LazyNftCardInfo => ({
                   chainId,
                   collectionAddress,
                   tokenId,

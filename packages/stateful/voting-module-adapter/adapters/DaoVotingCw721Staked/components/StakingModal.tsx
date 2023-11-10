@@ -11,19 +11,18 @@ import {
 } from '@dao-dao/state'
 import {
   ModalLoader,
-  NftSelectionModal,
   SegmentedControls,
   StakingMode,
   useCachedLoadable,
 } from '@dao-dao/stateless'
 import {
   BaseStakingModalProps,
+  LazyNftCardInfo,
   LoadingDataWithError,
-  NftCardInfo,
 } from '@dao-dao/types'
-import { processError } from '@dao-dao/utils'
+import { getNftKey, processError } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../components'
+import { NftSelectionModal, SuspenseLoader } from '../../../../components'
 import {
   Cw721BaseHooks,
   DaoVotingCw721StakedHooks,
@@ -215,16 +214,13 @@ const InnerStakingModal = ({
   const setCurrentTokenIds =
     mode === StakingMode.Stake ? setStakeTokenIds : setUnstakeTokenIds
 
-  const getIdForNft = (nft: NftCardInfo) => nft.tokenId
-
   // Toggle on/off a token ID selection.
-  const onNftClick = (nft: NftCardInfo) =>
-    setCurrentTokenIds((tokenIds) => {
-      const tokenId = getIdForNft(nft)
-      return tokenIds.includes(tokenId)
+  const onNftClick = ({ tokenId }: LazyNftCardInfo) =>
+    setCurrentTokenIds((tokenIds) =>
+      tokenIds.includes(tokenId)
         ? tokenIds.filter((id) => id !== tokenId)
         : [...tokenIds, tokenId]
-    })
+    )
 
   const onDeselectAll = () => setCurrentTokenIds([])
 
@@ -234,13 +230,13 @@ const InnerStakingModal = ({
       : mode === StakingMode.Unstake
       ? loadingWalletStakedNfts
       : undefined) ??
-    ({ loading: false, errored: true } as LoadingDataWithError<NftCardInfo[]>)
+    ({ loading: false, errored: true } as LoadingDataWithError<
+      LazyNftCardInfo[]
+    >)
 
   const onSelectAll = () =>
     setCurrentTokenIds(
-      !nfts.loading && !nfts.errored
-        ? nfts.data.map((nft) => getIdForNft(nft))
-        : []
+      !nfts.loading && !nfts.errored ? nfts.data.map((nft) => nft.tokenId) : []
     )
 
   return (
@@ -255,7 +251,6 @@ const InnerStakingModal = ({
             : '',
         onClick: onAction,
       }}
-      getIdForNft={getIdForNft}
       header={{
         title: hasStake
           ? t('title.manageStaking')
@@ -295,7 +290,9 @@ const InnerStakingModal = ({
       onDeselectAll={onDeselectAll}
       onNftClick={onNftClick}
       onSelectAll={onSelectAll}
-      selectedIds={currentTokenIds}
+      selectedKeys={currentTokenIds.map((tokenId) =>
+        getNftKey(chainId, collectionAddress, tokenId)
+      )}
       visible={true}
     />
   )
