@@ -14,6 +14,7 @@ import {
 
 import { getSupportedChainConfig } from '../chain'
 import { POLYTONE_TIMEOUT_SECONDS } from '../constants'
+import { processError } from '../error'
 import { objectMatchesStructure } from '../objectMatchesStructure'
 import { encodeMessageAsBase64, parseEncodedMessage } from './encoding'
 import { decodeStargateMessage } from './protobuf'
@@ -96,8 +97,12 @@ export const decodeMessages = (
         }
       }
     } else if (isCosmWasmStargateMsg(msg)) {
-      // Decode Stargate protobuf message.
-      return decodeStargateMessage(msg)
+      // Decode Stargate protobuf message. If fail to decode, ignore.
+      try {
+        return decodeStargateMessage(msg)
+      } catch (err) {
+        console.error(processError(err, { forceCapture: true }))
+      }
     }
 
     return msg
