@@ -1,6 +1,6 @@
-# Mint
+# UpdateMinterAllowance
 
-Mint new governance tokens.
+Set a minter's allowance.
 
 ## Bulk import format
 
@@ -9,13 +9,13 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ### Key
 
-`mint`
+`updateMinterAllowance`
 
 ### Data format
 
 ```json
 {
-  "recipient": "<RECIPIENT ADDRESS>",
-  "amount": "<AMOUNT>"
+  "minter": "<RECIPIENT ADDRESS>",
+  "allowance": "<AMOUNT>"
 }
 ```

@@ -49,6 +49,10 @@ export interface UseGovernanceTokenInfoOptions {
 export interface UseGovernanceTokenInfoResponse {
   stakingContractAddress: string
   governanceTokenAddress: string
+  isFactory: boolean
+  // Will be defined if the governance token is a token factory denom and a
+  // token factory issuer contract exists.
+  tokenFactoryIssuerAddress: string | undefined
   governanceTokenInfo: TokenInfoResponse
   token: GenericToken
   /// Optional
