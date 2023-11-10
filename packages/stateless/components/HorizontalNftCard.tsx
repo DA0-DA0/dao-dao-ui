@@ -27,7 +27,8 @@ export const HorizontalNftCard = forwardRef<
   HorizontalNftCardProps
 >(function HorizontalNftCard(
   {
-    collection,
+    collectionAddress,
+    collectionName,
     externalLink,
     imageUrl,
     metadata,
@@ -174,11 +175,11 @@ export const HorizontalNftCard = forwardRef<
               label={t('title.collection')}
               textClassName="secondary-text"
               tooltip={t('button.copyAddressToClipboard')}
-              value={collection.address}
+              value={collectionAddress}
             />
 
             <p className="primary-text truncate font-normal">
-              {collection.name}
+              {collectionName}
             </p>
           </div>
 

@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-import { HerbEmoji } from '@dao-dao/stateless'
+import { PrinterEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -20,28 +20,30 @@ import {
 import { AddressInput } from '../../../../../components/AddressInput'
 import { useGovernanceTokenInfo } from '../../hooks'
 import {
-  MintData,
-  MintComponent as StatelessMintComponent,
-} from './MintComponent'
+  UpdateMinterAllowanceComponent,
+  UpdateMinterAllowanceData,
+} from './UpdateMinterAllowanceComponent'
 
-const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
+const useTransformToCosmos: UseTransformToCosmos<
+  UpdateMinterAllowanceData
+> = () => {
   const {
     tokenFactoryIssuerAddress,
     governanceTokenInfo: { decimals },
   } = useGovernanceTokenInfo()
 
   return useCallback(
-    ({ recipient, amount }: MintData) =>
+    ({ minter, allowance }: UpdateMinterAllowanceData) =>
       makeWasmMessage({
         wasm: {
           execute: {
             contract_addr: tokenFactoryIssuerAddress,
             funds: [],
             msg: {
-              mint: {
-                to_address: recipient,
-                amount: convertDenomToMicroDenomStringWithDecimals(
-                  amount,
+              set_minter_allowance: {
+                address: minter,
+                allowance: convertDenomToMicroDenomStringWithDecimals(
+                  allowance,
                   decimals
                 ),
               },
@@ -53,7 +55,7 @@ const useTransformToCosmos: UseTransformToCosmos<MintData> = () => {
   )
 }
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateMinterAllowanceData> = (
   msg: Record<string, any>
 ) => {
   const {
@@ -66,9 +68,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
       execute: {
         contract_addr: {},
         msg: {
-          mint: {
-            amount: {},
-            to_address: {},
+          set_minter_allowance: {
+            address: {},
+            allowance: {},
           },
         },
       },
@@ -77,9 +79,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<MintData> = (
     ? {
         match: true,
         data: {
-          recipient: msg.wasm.execute.msg.mint.to_address,
-          amount: convertMicroDenomToDenomWithDecimals(
-            msg.wasm.execute.msg.mint.amount,
+          minter: msg.wasm.execute.msg.set_minter_allowance.address,
+          allowance: convertMicroDenomToDenomWithDecimals(
+            msg.wasm.execute.msg.set_minter_allowance.allowance,
             decimals
           ),
         },
@@ -93,7 +95,7 @@ const Component: ActionComponent = (props) => {
   const { token } = useGovernanceTokenInfo()
 
   return (
-    <StatelessMintComponent
+    <UpdateMinterAllowanceComponent
       {...props}
       options={{
         govToken: token,
@@ -109,21 +111,26 @@ const useHideFromPicker: UseHideFromPicker = () => {
   return !tokenFactoryIssuerAddress
 }
 
-export const makeMintAction: ActionMaker<MintData> = ({ t, address }) => {
-  const useDefaults: UseDefaults<MintData> = () => ({
-    recipient: address,
-    amount: 1,
+export const makeUpdateMinterAllowanceAction: ActionMaker<
+  UpdateMinterAllowanceData
+> = ({ t, address }) => {
+  const useDefaults: UseDefaults<UpdateMinterAllowanceData> = () => ({
+    minter: address,
+    allowance: 1,
   })
 
   return {
-    key: ActionKey.Mint,
-    Icon: HerbEmoji,
-    label: t('title.mint'),
-    description: t('info.mintActionDescription'),
+    key: ActionKey.UpdateMinterAllowance,
+    Icon: PrinterEmoji,
+    label: t('title.updateMinterAllowance'),
+    description: t('info.updateMinterAllowanceDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
     useHideFromPicker,
+    // Programmatically add when minting, but don't reveal by itself. This is
+    // dangerous and probably won't be used.
+    programmaticOnly: true,
   }
 }

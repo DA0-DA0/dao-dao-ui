@@ -28,7 +28,7 @@ export const Pagination = ({
   const maxPage = Math.ceil(total / pageSize)
   const page = Math.min(Math.max(PAGINATION_MIN_PAGE, _page), maxPage)
 
-  if (maxPage === PAGINATION_MIN_PAGE) {
+  if (maxPage <= PAGINATION_MIN_PAGE) {
     return null
   }
 

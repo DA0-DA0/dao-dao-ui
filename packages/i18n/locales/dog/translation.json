@@ -344,6 +344,7 @@
     "notificationsInInbox_other": "dere iz {{count}} open puppozalz in ur inbox",
     "numNftsSelected_one": "{{count}} nft seleckted",
     "numNftsSelected_other": "{{count}} nftz seleckted",
+    "numNftsSelected_zero": "nar nft seleckted",
     "numProposals_one": "{{count}} puppozal",
     "numProposals_other": "{{count}} puppozalz",
     "numSelected_one": "{{count}} seleckted",

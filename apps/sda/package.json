@@ -30,7 +30,7 @@
     "@keplr-wallet/stores": "^0.11.49",
     "@keplr-wallet/types": "^0.11.49",
     "@mui/icons-material": "^5.10.3",
-    "@sentry/nextjs": "^7.7.0",
+    "@sentry/nextjs": "^7.80.0",
     "@types/formidable": "^2.0.5",
     "cors": "^2.8.5",
     "formidable": "^2.0.1",
@@ -49,7 +49,7 @@
   "devDependencies": {
     "@dao-dao/config": "2.2.0",
     "@next/bundle-analyzer": "^12.1.0",
-    "@sentry/cli": "^2.5.0",
+    "@sentry/cli": "^2.21.3",
     "@solana/web3.js": "^1.75.0",
     "@types/cors": "^2.8.13",
     "@types/lodash.clonedeep": "^4.5.0",

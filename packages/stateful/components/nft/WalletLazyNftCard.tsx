@@ -12,13 +12,15 @@ import { useTranslation } from 'react-i18next'
 import { ActionKey, ButtonPopupSection } from '@dao-dao/types'
 import { getMeTxPrefillPath, processError } from '@dao-dao/utils'
 
-import { useActionForKey } from '../actions'
-import { TransferNftData } from '../actions/core/nfts/TransferNft/Component'
-import { useWalletInfo } from '../hooks'
-import { ButtonLink } from './ButtonLink'
-import { NftCard } from './NftCard'
+import { useActionForKey } from '../../actions'
+import { TransferNftData } from '../../actions/core/nfts/TransferNft/Component'
+import { useWalletInfo } from '../../hooks'
+import { ButtonLink } from '../ButtonLink'
+import { LazyNftCard } from './LazyNftCard'
 
-export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
+export const WalletLazyNftCard = (
+  props: ComponentProps<typeof LazyNftCard>
+) => {
   const { t } = useTranslation()
   const { walletProfileData, updatingProfile, updateProfileNft } =
     useWalletInfo()
@@ -27,7 +29,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
     try {
       await updateProfileNft({
         chainId: props.chainId,
-        collectionAddress: props.collection.address,
+        collectionAddress: props.collectionAddress,
         tokenId: props.tokenId,
       })
     } catch (err) {
@@ -55,7 +57,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
   const currentProfilePhoto =
     walletProfileData.profile.nft?.chainId === props.chainId &&
     walletProfileData.profile.nft?.collectionAddress ===
-      props.collection.address &&
+      props.collectionAddress &&
     walletProfileData.profile.nft?.tokenId === props.tokenId
 
   const transferActionDefaults = useActionForKey(
@@ -106,7 +108,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
                     actionKey: ActionKey.TransferNft,
                     data: {
                       ...transferActionDefaults,
-                      collection: props.collection.address,
+                      collection: props.collectionAddress,
                       tokenId: props.tokenId,
                       recipient: '',
                     },
@@ -121,7 +123,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
                   {
                     actionKey: ActionKey.BurnNft,
                     data: {
-                      collection: props.collection.address,
+                      collection: props.collectionAddress,
                       tokenId: props.tokenId,
                     },
                   },
@@ -134,7 +136,7 @@ export const WalletNftCard = (props: ComponentProps<typeof NftCard>) => {
   ]
 
   return (
-    <NftCard
+    <LazyNftCard
       {...props}
       buttonPopup={{
         sections: buttonPopupSections,

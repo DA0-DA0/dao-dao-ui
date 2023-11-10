@@ -3,6 +3,7 @@ import { constSelector, useRecoilValue } from 'recoil'
 import {
   DaoVotingTokenStakedSelectors,
   genericTokenSelector,
+  isContractSelector,
   nativeDenomBalanceSelector,
   nativeSupplySelector,
   usdPriceSelector,
@@ -57,6 +58,27 @@ export const useGovernanceTokenInfo = ({
     total_supply: supply.toString(),
   }
 
+  // Token factory issuer
+  const isFactory = denom.startsWith('factory/')
+  const tfIssuer = useRecoilValue(
+    isFactory
+      ? DaoVotingTokenStakedSelectors.tokenContractSelector({
+          contractAddress: votingModuleAddress,
+          chainId,
+          params: [],
+        })
+      : constSelector(undefined)
+  )
+  const isTfIssuer = useRecoilValue(
+    tfIssuer
+      ? isContractSelector({
+          contractAddress: tfIssuer,
+          chainId,
+          name: 'cw-tokenfactory-issuer',
+        })
+      : constSelector(false)
+  )
+
   /// Optional
 
   // Wallet balance
@@ -99,6 +121,8 @@ export const useGovernanceTokenInfo = ({
     stakingContractAddress: '',
     governanceTokenAddress: denom,
     governanceTokenInfo,
+    isFactory,
+    tokenFactoryIssuerAddress: tfIssuer && isTfIssuer ? tfIssuer : undefined,
     token,
     /// Optional
     // Wallet balance

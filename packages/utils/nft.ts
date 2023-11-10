@@ -52,3 +52,13 @@ export const uploadNft = async (
     throw new Error(error)
   }
 }
+
+export const getNftKey = (
+  chainId: string,
+  collectionAddress: string,
+  tokenId: string
+): string =>
+  [chainId, collectionAddress, tokenId]
+    // Ensure this produces an empty string if the variables are empty.
+    .filter(Boolean)
+    .join(':')

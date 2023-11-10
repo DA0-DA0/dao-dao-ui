@@ -1,12 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
-import { makeProps as makeNftCardProps } from '../NftCard.stories'
+import { makeLazyInfo as makeNftCardProps } from '@dao-dao/stateless/components/NftCard.stories'
+
 import { NftSelectionModal } from './NftSelectionModal'
 
 export default {
-  title:
-    'DAO DAO / packages / stateless / components / modals / NftSelectionModal',
+  title: 'DAO DAO / packages / stateful / components / nft / NftSelectionModal',
   component: NftSelectionModal,
 } as ComponentMeta<typeof NftSelectionModal>
 
@@ -17,20 +17,19 @@ const Template: ComponentStory<typeof NftSelectionModal> = (args) => {
     <NftSelectionModal
       {...args}
       onDeselectAll={() => setSelected([])}
-      onNftClick={(nft) => {
-        const key = args.getIdForNft(nft)
+      onNftClick={({ key }) =>
         setSelected((current) =>
           current.includes(key)
             ? current.filter((a) => a !== key)
             : [...current, key]
         )
-      }}
+      }
       onSelectAll={() =>
         !args.nfts?.loading &&
         !args.nfts?.errored &&
-        setSelected(args.nfts.data.map((nft) => args.getIdForNft(nft)) ?? [])
+        setSelected(args.nfts.data.map((nft) => nft.key) ?? [])
       }
-      selectedIds={selected}
+      selectedKeys={selected}
     />
   )
 }
@@ -53,7 +52,6 @@ Default.args = {
     label: 'Stake',
     onClick: () => alert('action'),
   },
-  getIdForNft: (nft) => `${nft.collection.address}:${nft.tokenId}`,
   header: {
     title: 'Stake NFTs',
     subtitle: 'Select the NFTs you want to stake from the NFT collection.',

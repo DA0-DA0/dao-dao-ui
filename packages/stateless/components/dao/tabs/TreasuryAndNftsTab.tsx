@@ -13,7 +13,6 @@ import { getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { useDaoInfoContext, useSupportedChainContext } from '../../../hooks'
 import { Loader } from '../../logo/Loader'
-import { ModalProps } from '../../modals/Modal'
 import {
   DaoChainTreasuryAndNfts,
   DaoChainTreasuryAndNftsProps,
@@ -30,7 +29,6 @@ export type TreasuryAndNftsTabProps<
     loading: Record<string, boolean>
   }>
   nfts: LoadingNfts<N & { key: string }>
-  StargazeNftImportModal: ComponentType<Pick<ModalProps, 'onClose'>>
   FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
 } & Omit<
   DaoChainTreasuryAndNftsProps<T, N>,

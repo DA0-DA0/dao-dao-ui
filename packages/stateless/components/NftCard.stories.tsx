@@ -2,13 +2,15 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { useState } from 'react'
 
 import { EntityDisplay } from '@dao-dao/stateful'
+import { LazyNftCardInfo } from '@dao-dao/types'
+import { getNftKey } from '@dao-dao/utils'
 
 import { NftCard, NftCardProps } from './NftCard'
 
 export default {
   title: 'DAO DAO / packages / stateless / components / NftCard',
   component: NftCard,
-  excludeStories: ['makeProps'],
+  excludeStories: ['makeProps', 'makeLazyInfo'],
 } as ComponentMeta<typeof NftCard>
 
 const Template: ComponentStory<typeof NftCard> = (args) => {
@@ -38,11 +40,9 @@ export const makeProps = (): NftCardProps => {
   id++
 
   return {
-    key: `${id}`,
-    collection: {
-      address: 'starsCollectionAddress',
-      name: 'French Bulldog',
-    },
+    key: getNftKey('stargaze-1', 'starsCollectionAddress', `${id}`),
+    collectionAddress: 'starsCollectionAddress',
+    collectionName: 'French Bulldog',
     tokenId: `${id}`,
     imageUrl: '/dog_nft.png',
     owner: 'junoOwnerAddress',
@@ -59,6 +59,17 @@ export const makeProps = (): NftCardProps => {
     },
     chainId: 'stargaze-1',
     EntityDisplay,
+  }
+}
+
+export const makeLazyInfo = (): LazyNftCardInfo => {
+  id++
+
+  return {
+    key: getNftKey('stargaze-1', 'starsCollectionAddress', `${id}`),
+    chainId: 'stargaze-1',
+    collectionAddress: 'starsCollectionAddress',
+    tokenId: `${id}`,
   }
 }
 

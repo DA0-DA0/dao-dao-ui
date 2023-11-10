@@ -2,64 +2,43 @@
 import { Image, WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValue } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
+import { nftCardInfosForKeyAtom } from '@dao-dao/state/recoil'
+import {
+  Button,
+  ButtonPopup,
+  Loader,
+  Modal,
+  NoContent,
+  PAGINATION_MIN_PAGE,
+  Pagination,
+  SearchBar,
+} from '@dao-dao/stateless'
+import { useButtonPopupFilter, useSearchFilter } from '@dao-dao/stateless/hooks'
 import {
   FilterFn,
-  LoadingDataWithError,
-  ModalProps,
+  LazyNftCardInfo,
   NftCardInfo,
-  SortFn,
+  NftSelectionModalProps,
   TypedOption,
 } from '@dao-dao/types'
 import { getChainForChainId, getDisplayNameForChainId } from '@dao-dao/utils'
 
-import {
-  useButtonPopupFilter,
-  useButtonPopupSorter,
-  useSearchFilter,
-} from '../../hooks'
-import { Button } from '../buttons/Button'
-import { SearchBar } from '../inputs'
-import { Loader } from '../logo/Loader'
-import { NftCard } from '../NftCard'
-import { NoContent } from '../NoContent'
-import { ButtonPopup } from '../popup'
-import { Modal } from './Modal'
+import { LazyNftCard } from './LazyNftCard'
 
-export interface NftSelectionModalProps<N extends NftCardInfo>
-  extends Omit<ModalProps, 'children' | 'header'>,
-    Required<Pick<ModalProps, 'header'>> {
-  nfts: LoadingDataWithError<N[]>
-  selectedIds: string[]
-  getIdForNft: (nft: N) => string
-  onNftClick: (nft: N) => void
-  onSelectAll?: () => void
-  onDeselectAll?: () => void
-  action: {
-    loading?: boolean
-    label: string
-    onClick: () => void
-  }
-  secondaryAction?: {
-    loading?: boolean
-    label: string
-    onClick: () => void
-  }
-  fallbackError?: string
-  allowSelectingNone?: boolean
-  selectedDisplay?: ReactNode
-  headerDisplay?: ReactNode
-  // What displays when there are no NFTs.
-  noneDisplay?: ReactNode
+type LazyNftCardWithLoadedInfo = LazyNftCardInfo & {
+  loadedInfo?: NftCardInfo
 }
 
-export const NftSelectionModal = <N extends NftCardInfo>({
+const NFTS_PER_PAGE = 30
+
+export const NftSelectionModal = ({
   nfts,
-  selectedIds,
-  getIdForNft,
+  selectedKeys,
   onNftClick,
   onSelectAll,
   onDeselectAll,
@@ -72,7 +51,7 @@ export const NftSelectionModal = <N extends NftCardInfo>({
   headerDisplay,
   noneDisplay,
   ...modalProps
-}: NftSelectionModalProps<N>) => {
+}: NftSelectionModalProps) => {
   const { t } = useTranslation()
   const showSelectAll =
     (onSelectAll || onDeselectAll) &&
@@ -123,7 +102,7 @@ export const NftSelectionModal = <N extends NftCardInfo>({
       ...nftChains.map(
         (
           chain
-        ): TypedOption<FilterFn<Pick<NftCardInfo, 'chainId'>>> & {
+        ): TypedOption<FilterFn<{ chainId: string }>> & {
           id: string
         } => ({
           id: chain.chain_name,
@@ -136,24 +115,36 @@ export const NftSelectionModal = <N extends NftCardInfo>({
     useDeepCompareMemoize([nftChains])
   )
 
+  const nftCardInfosForKey = useRecoilValue(nftCardInfosForKeyAtom)
+  const nftsWithLoadedInfo: LazyNftCardWithLoadedInfo[] = useMemo(
+    () =>
+      nfts.loading || nfts.errored
+        ? []
+        : nfts.data.map(
+            (info): LazyNftCardWithLoadedInfo => ({
+              ...info,
+              loadedInfo: nftCardInfosForKey[info.key],
+            })
+          ),
+    [nfts, nftCardInfosForKey]
+  )
+
   const {
     filteredData: filteredNfts,
     buttonPopupProps: filterNftButtonPopupProps,
   } = useButtonPopupFilter({
-    data: nfts.loading || nfts.errored ? [] : nfts.data,
+    data: nftsWithLoadedInfo,
     options: filterOptions,
   })
 
-  const {
-    sortedData: filteredSortedNfts,
-    buttonPopupProps: sortButtonPopupProps,
-  } = useButtonPopupSorter({
-    data: filteredNfts,
-    options: sortOptions,
-  })
+  const { searchBarProps, filteredData: filteredSearchedNfts } =
+    useSearchFilter(filteredNfts, FILTERABLE_KEYS)
 
-  const { searchBarProps, filteredData: filteredSortedSearchedNfts } =
-    useSearchFilter(filteredSortedNfts, FILTERABLE_KEYS)
+  const [_nftPage, setNftPage] = useState(PAGINATION_MIN_PAGE)
+  const nftPage = Math.min(
+    _nftPage,
+    Math.ceil(filteredSearchedNfts.length / NFTS_PER_PAGE)
+  )
 
   return (
     <Modal
@@ -178,7 +169,7 @@ export const NftSelectionModal = <N extends NftCardInfo>({
           {selectedDisplay !== undefined ? (
             selectedDisplay
           ) : (
-            <p>{t('info.numNftsSelected', { count: selectedIds.length })}</p>
+            <p>{t('info.numNftsSelected', { count: selectedKeys.length })}</p>
           )}
 
           <div className="flex flex-row items-stretch gap-2">
@@ -193,7 +184,7 @@ export const NftSelectionModal = <N extends NftCardInfo>({
             )}
 
             <Button
-              disabled={!allowSelectingNone && selectedIds.length === 0}
+              disabled={!allowSelectingNone && selectedKeys.length === 0}
               loading={action.loading}
               onClick={action.onClick}
               variant="primary"
@@ -231,24 +222,31 @@ export const NftSelectionModal = <N extends NftCardInfo>({
                   onClick={
                     nfts.loading
                       ? undefined
-                      : nfts.data.length === selectedIds.length
+                      : nfts.data.length === selectedKeys.length
                       ? onDeselectAll
                       : onSelectAll
                   }
                   variant="underline"
                 >
                   {!nfts.loading &&
-                    (nfts.data.length === selectedIds.length
+                    (nfts.data.length === selectedKeys.length
                       ? t('button.deselectAllNfts', { count: nfts.data.length })
                       : t('button.selectAllNfts', { count: nfts.data.length }))}
                 </Button>
               )}
 
-              <div className="flex grow flex-row items-center justify-end gap-4">
+              <div className="flex grow flex-row items-center justify-end">
                 <ButtonPopup position="left" {...filterNftButtonPopupProps} />
-                <ButtonPopup position="left" {...sortButtonPopupProps} />
               </div>
             </div>
+
+            <Pagination
+              className="mx-auto -mt-4"
+              page={nftPage}
+              pageSize={NFTS_PER_PAGE}
+              setPage={setNftPage}
+              total={filteredSearchedNfts.length}
+            />
           </div>
         ) : undefined
       }
@@ -266,22 +264,20 @@ export const NftSelectionModal = <N extends NftCardInfo>({
           </pre>
         </>
       ) : nfts.data.length > 0 ? (
-        filteredSortedSearchedNfts.map(({ item }) => (
-          <NftCard
-            ref={
-              selectedIds[0] === getIdForNft(item as N)
-                ? firstSelectedRef
-                : undefined
-            }
-            {...(item as N)}
-            key={(item as N).key}
-            checkbox={{
-              checked: selectedIds.includes(getIdForNft(item as N)),
-              // Disable toggling if currently staking.
-              onClick: () => !action.loading && onNftClick(item as N),
-            }}
-          />
-        ))
+        filteredSearchedNfts
+          .slice((nftPage - 1) * NFTS_PER_PAGE, nftPage * NFTS_PER_PAGE)
+          .map(({ item }) => (
+            <LazyNftCard
+              ref={selectedKeys[0] === item.key ? firstSelectedRef : undefined}
+              {...item}
+              key={item.key}
+              checkbox={{
+                checked: selectedKeys.includes(item.key),
+                // Disable toggling if currently staking.
+                onClick: () => !action.loading && onNftClick(item),
+              }}
+            />
+          ))
       ) : (
         noneDisplay || (
           <NoContent
@@ -295,21 +291,11 @@ export const NftSelectionModal = <N extends NftCardInfo>({
   )
 }
 
-const sortOptions: TypedOption<SortFn<Pick<NftCardInfo, 'name'>>>[] = [
-  {
-    label: 'A → Z',
-    value: (a, b) =>
-      a.name.toLocaleLowerCase().localeCompare(b.name.toLocaleLowerCase()),
-  },
-  {
-    label: 'Z → A',
-    value: (a, b) =>
-      b.name.toLocaleLowerCase().localeCompare(a.name.toLocaleLowerCase()),
-  },
-]
-
-const FILTERABLE_KEYS: Fuse.FuseOptionKey<NftCardInfo>[] = [
-  'name',
-  'description',
-  'collection.address',
+const FILTERABLE_KEYS: Fuse.FuseOptionKey<LazyNftCardWithLoadedInfo>[] = [
+  'collectionAddress',
+  'tokenId',
+  'loadedInfo.name',
+  'loadedInfo.description',
+  'loadedInfo.collectionName',
+  'loadedInfo.collectionAddress',
 ]

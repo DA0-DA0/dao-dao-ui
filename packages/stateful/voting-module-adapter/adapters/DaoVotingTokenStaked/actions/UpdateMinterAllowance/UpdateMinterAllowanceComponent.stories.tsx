@@ -4,23 +4,26 @@ import { AddressInput } from '@dao-dao/stateless'
 import { CHAIN_ID, makeReactHookFormDecorator } from '@dao-dao/storybook'
 import { TokenType } from '@dao-dao/types'
 
-import { MintComponent, MintData } from './MintComponent'
+import {
+  UpdateMinterAllowanceComponent,
+  UpdateMinterAllowanceData,
+} from './UpdateMinterAllowanceComponent'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / voting-module-adapter / adapters / DaoVotingTokenStaked / actions / Mint',
-  component: MintComponent,
+    'DAO DAO / packages / stateful / voting-module-adapter / adapters / DaoVotingTokenStaked / actions / UpdateMinterAllowance',
+  component: UpdateMinterAllowanceComponent,
   decorators: [
-    makeReactHookFormDecorator<MintData>({
-      recipient: 'address',
-      amount: 100000,
+    makeReactHookFormDecorator<UpdateMinterAllowanceData>({
+      minter: 'address',
+      allowance: 100000,
     }),
   ],
-} as ComponentMeta<typeof MintComponent>
+} as ComponentMeta<typeof UpdateMinterAllowanceComponent>
 
-const Template: ComponentStory<typeof MintComponent> = (args) => (
-  <MintComponent {...args} />
-)
+const Template: ComponentStory<typeof UpdateMinterAllowanceComponent> = (
+  args
+) => <UpdateMinterAllowanceComponent {...args} />
 
 export const Default = Template.bind({})
 Default.args = {
