@@ -14,7 +14,6 @@ import { NftCard, NftCardNoCollection, StakedNftCard } from './NftCard'
 export const LazyNftCard = forwardRef<HTMLDivElement, LazyNftCardProps>(
   function LazyNftCard(
     {
-      key,
       type = 'owner',
       collectionAddress,
       tokenId,
@@ -38,9 +37,12 @@ export const LazyNftCard = forwardRef<HTMLDivElement, LazyNftCardProps>(
     const setNftCardInfoForKey = useSetRecoilState(nftCardInfosForKeyAtom)
     useEffect(() => {
       if (!info.loading && !info.errored) {
-        setNftCardInfoForKey((prev) => ({ ...prev, [key]: info.data }))
+        setNftCardInfoForKey((prev) => ({
+          ...prev,
+          [info.data.key]: info.data,
+        }))
       }
-    }, [info, key, setNftCardInfoForKey])
+    }, [info, setNftCardInfoForKey])
 
     const stakerOrOwner = useCachedLoadingWithError(
       // If showing owner instead of showing collection, load staker or owner if
@@ -69,7 +71,6 @@ export const LazyNftCard = forwardRef<HTMLDivElement, LazyNftCardProps>(
 
     return info.loading || info.errored ? (
       <NftCardToUse
-        key={key}
         chainId={chainId}
         className="animate-pulse"
         collectionAddress={collectionAddress}

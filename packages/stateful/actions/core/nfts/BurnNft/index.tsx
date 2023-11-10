@@ -32,6 +32,12 @@ import { useCw721CommonGovernanceTokenInfoIfExists } from '../../../../voting-mo
 import { useActionOptions } from '../../../react'
 import { BurnNft, BurnNftData } from './Component'
 
+const useDefaults: UseDefaults<BurnNftData> = () => ({
+  chainId: '',
+  collection: '',
+  tokenId: '',
+})
+
 const useTransformToCosmos: UseTransformToCosmos<BurnNftData> = () => {
   const {
     chain: { chain_id: currentChainId },
@@ -153,16 +159,7 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeBurnNftAction: ActionMaker<BurnNftData> = ({
-  t,
-  chain: { chain_id: chainId },
-}) => {
-  const useDefaults: UseDefaults<BurnNftData> = () => ({
-    chainId,
-    collection: '',
-    tokenId: '',
-  })
-
+export const makeBurnNftAction: ActionMaker<BurnNftData> = ({ t }) => {
   return {
     key: ActionKey.BurnNft,
     Icon: FireEmoji,

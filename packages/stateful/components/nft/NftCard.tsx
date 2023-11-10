@@ -15,14 +15,14 @@ export const NftCard = forwardRef<
 export const NftCardNoCollection = forwardRef<
   HTMLDivElement,
   ComponentProps<typeof NftCard>
->(function NftCard(props, ref) {
+>(function NftCardNoCollection(props, ref) {
   return <NftCard {...props} hideCollection ref={ref} />
 })
 
 export const StakedNftCard = forwardRef<
   HTMLDivElement,
   ComponentProps<typeof NftCard>
->(function NftCard(props, ref) {
+>(function StakedNftCard(props, ref) {
   const { t } = useTranslation()
 
   return (

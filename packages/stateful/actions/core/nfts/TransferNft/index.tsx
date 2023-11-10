@@ -36,13 +36,10 @@ import { useActionOptions } from '../../../react'
 import { TransferNftComponent, TransferNftData } from './Component'
 
 const useDefaults: UseDefaults<TransferNftData> = () => {
-  const {
-    chain: { chain_id: chainId },
-  } = useActionOptions()
   const { address: walletAddress = '' } = useWallet()
 
   return {
-    chainId,
+    chainId: '',
     collection: '',
     tokenId: '',
     recipient: walletAddress,

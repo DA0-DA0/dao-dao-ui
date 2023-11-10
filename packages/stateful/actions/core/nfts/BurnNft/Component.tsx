@@ -129,7 +129,7 @@ export const BurnNft: ActionComponent<BurnNftOptions> = ({
           onClose={() => setShowModal(false)}
           onNftClick={(nft) => {
             if (nft.key === selectedKey) {
-              // No need to clear chain when deselecting.
+              setValue((fieldNamePrefix + 'chainId') as 'chainId', '')
               setValue((fieldNamePrefix + 'tokenId') as 'tokenId', '')
               setValue((fieldNamePrefix + 'collection') as 'collection', '')
             } else {
