@@ -23,6 +23,8 @@ import {
   cosmosProtoRegistry,
   cosmwasmAminoConverters,
   cosmwasmProtoRegistry,
+  gaiaAminoConverters,
+  gaiaProtoRegistry,
   google,
   ibcAminoConverters,
   ibcProtoRegistry,
@@ -65,6 +67,7 @@ import {
   StargateMsg,
 } from '@dao-dao/types'
 
+import { processError } from '../error'
 import {
   cwVoteOptionToGovVoteOption,
   govVoteOptionToCwVoteOption,
@@ -463,6 +466,7 @@ export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   ...osmosisProtoRegistry,
   ...ibcProtoRegistry,
   ...stargazeProtoRegistry,
+  ...gaiaProtoRegistry,
 ]
 export const typesRegistry = new Registry(PROTOBUF_TYPES)
 
@@ -473,6 +477,7 @@ export const aminoTypes = new AminoTypes({
   ...osmosisAminoConverters,
   ...ibcAminoConverters,
   ...stargazeAminoConverters,
+  ...gaiaAminoConverters,
 })
 
 // Encodes a protobuf message value from its JSON representation into a byte
@@ -530,18 +535,33 @@ export const makeStargateMessage = ({
 // JSON representation.
 export const decodeStargateMessage = ({
   stargate: { type_url, value },
-}: StargateMsg): DecodedStargateMsg => ({
-  stargate: {
-    typeUrl: type_url,
-    value: decodeProtobufValue(type_url, value),
-  },
-})
+}: StargateMsg): DecodedStargateMsg => {
+  return {
+    stargate: {
+      typeUrl: type_url,
+      value: decodeProtobufValue(type_url, value),
+    },
+  }
+}
 
 // Decode governance proposal v1 messages using a protobuf.
 export const decodeGovProposalV1Messages = (
   messages: GovProposalV1['proposal']['messages']
 ): GovProposalV1DecodedMessages =>
-  messages.map((msg) => protobufToCwMsg(msg).msg)
+  messages.map((msg) => {
+    try {
+      return protobufToCwMsg(msg).msg
+    } catch (err) {
+      // If protobuf not found, capture error and return placeholder.
+      console.error(processError(err, { forceCapture: true }))
+      return {
+        stargate: {
+          type_url: msg.typeUrl,
+          value: toBase64(msg.value),
+        },
+      }
+    }
+  })
 
 // Decode governance proposal content using a protobuf.
 export const decodeGovProposal = (
