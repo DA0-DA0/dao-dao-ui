@@ -61,7 +61,7 @@ export const QueryMinimumGasPricesRequest = {
   encode(_: QueryMinimumGasPricesRequest, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryMinimumGasPricesRequest {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryMinimumGasPricesRequest {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryMinimumGasPricesRequest();
@@ -82,15 +82,15 @@ export const QueryMinimumGasPricesRequest = {
   fromAmino(_: QueryMinimumGasPricesRequestAmino): QueryMinimumGasPricesRequest {
     return {};
   },
-  toAmino(_: QueryMinimumGasPricesRequest): QueryMinimumGasPricesRequestAmino {
+  toAmino(_: QueryMinimumGasPricesRequest, useInterfaces: boolean = false): QueryMinimumGasPricesRequestAmino {
     const obj: any = {};
     return obj;
   },
   fromAminoMsg(object: QueryMinimumGasPricesRequestAminoMsg): QueryMinimumGasPricesRequest {
     return QueryMinimumGasPricesRequest.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryMinimumGasPricesRequestProtoMsg): QueryMinimumGasPricesRequest {
-    return QueryMinimumGasPricesRequest.decode(message.value);
+  fromProtoMsg(message: QueryMinimumGasPricesRequestProtoMsg, useInterfaces: boolean = false): QueryMinimumGasPricesRequest {
+    return QueryMinimumGasPricesRequest.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryMinimumGasPricesRequest): Uint8Array {
     return QueryMinimumGasPricesRequest.encode(message).finish();
@@ -115,7 +115,7 @@ export const QueryMinimumGasPricesResponse = {
     }
     return writer;
   },
-  decode(input: BinaryReader | Uint8Array, length?: number): QueryMinimumGasPricesResponse {
+  decode(input: BinaryReader | Uint8Array, length?: number, useInterfaces: boolean = false): QueryMinimumGasPricesResponse {
     const reader = input instanceof BinaryReader ? input : new BinaryReader(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryMinimumGasPricesResponse();
@@ -123,7 +123,7 @@ export const QueryMinimumGasPricesResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.minimumGasPrices.push(DecCoin.decode(reader, reader.uint32()));
+          message.minimumGasPrices.push(DecCoin.decode(reader, reader.uint32(), useInterfaces));
           break;
         default:
           reader.skipType(tag & 7);
@@ -142,10 +142,10 @@ export const QueryMinimumGasPricesResponse = {
       minimumGasPrices: Array.isArray(object?.minimum_gas_prices) ? object.minimum_gas_prices.map((e: any) => DecCoin.fromAmino(e)) : []
     };
   },
-  toAmino(message: QueryMinimumGasPricesResponse): QueryMinimumGasPricesResponseAmino {
+  toAmino(message: QueryMinimumGasPricesResponse, useInterfaces: boolean = false): QueryMinimumGasPricesResponseAmino {
     const obj: any = {};
     if (message.minimumGasPrices) {
-      obj.minimum_gas_prices = message.minimumGasPrices.map(e => e ? DecCoin.toAmino(e) : undefined);
+      obj.minimum_gas_prices = message.minimumGasPrices.map(e => e ? DecCoin.toAmino(e, useInterfaces) : undefined);
     } else {
       obj.minimum_gas_prices = [];
     }
@@ -154,8 +154,8 @@ export const QueryMinimumGasPricesResponse = {
   fromAminoMsg(object: QueryMinimumGasPricesResponseAminoMsg): QueryMinimumGasPricesResponse {
     return QueryMinimumGasPricesResponse.fromAmino(object.value);
   },
-  fromProtoMsg(message: QueryMinimumGasPricesResponseProtoMsg): QueryMinimumGasPricesResponse {
-    return QueryMinimumGasPricesResponse.decode(message.value);
+  fromProtoMsg(message: QueryMinimumGasPricesResponseProtoMsg, useInterfaces: boolean = false): QueryMinimumGasPricesResponse {
+    return QueryMinimumGasPricesResponse.decode(message.value, undefined, useInterfaces);
   },
   toProto(message: QueryMinimumGasPricesResponse): Uint8Array {
     return QueryMinimumGasPricesResponse.encode(message).finish();

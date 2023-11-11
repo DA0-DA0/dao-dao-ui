@@ -12,18 +12,18 @@ export class QueryClientImpl implements Query {
     this.rpc = rpc;
     this.minimumGasPrices = this.minimumGasPrices.bind(this);
   }
-  minimumGasPrices(request: QueryMinimumGasPricesRequest = {}): Promise<QueryMinimumGasPricesResponse> {
+  minimumGasPrices(request: QueryMinimumGasPricesRequest = {}, useInterfaces: boolean = true): Promise<QueryMinimumGasPricesResponse> {
     const data = QueryMinimumGasPricesRequest.encode(request).finish();
     const promise = this.rpc.request("gaia.globalfee.v1beta1.Query", "MinimumGasPrices", data);
-    return promise.then(data => QueryMinimumGasPricesResponse.decode(new BinaryReader(data)));
+    return promise.then(data => QueryMinimumGasPricesResponse.decode(new BinaryReader(data), undefined, useInterfaces));
   }
 }
 export const createRpcQueryExtension = (base: QueryClient) => {
   const rpc = createProtobufRpcClient(base);
   const queryService = new QueryClientImpl(rpc);
   return {
-    minimumGasPrices(request?: QueryMinimumGasPricesRequest): Promise<QueryMinimumGasPricesResponse> {
-      return queryService.minimumGasPrices(request);
+    minimumGasPrices(request?: QueryMinimumGasPricesRequest, useInterfaces: boolean = true): Promise<QueryMinimumGasPricesResponse> {
+      return queryService.minimumGasPrices(request, useInterfaces);
     }
   };
 };

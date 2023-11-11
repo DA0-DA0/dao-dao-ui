@@ -41,6 +41,8 @@ import {
   cosmosProtoRegistry,
   cosmwasmAminoConverters,
   cosmwasmProtoRegistry,
+  gaiaAminoConverters,
+  gaiaProtoRegistry,
   google,
   ibcAminoConverters,
   ibcProtoRegistry,
