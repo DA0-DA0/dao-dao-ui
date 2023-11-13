@@ -18,7 +18,7 @@ export const useLoadingDepositInfo = (): LoadingData<
   CheckedDepositInfo | undefined
 > => {
   const {
-    proposalModule: { address, version, preProposeAddress },
+    proposalModule: { address, version, prePropose },
     proposalNumber,
     chain: { chain_id: chainId },
   } = useProposalModuleAdapterOptions()
@@ -38,10 +38,10 @@ export const useLoadingDepositInfo = (): LoadingData<
           ],
         })
       : // Every other version supports pre-propose.
-      preProposeAddress
+      prePropose
       ? depositInfoV2Selector({
           chainId,
-          contractAddress: preProposeAddress,
+          contractAddress: prePropose.address,
           params: [
             {
               proposalId: proposalNumber,
@@ -77,7 +77,7 @@ export const useLoadingDepositInfo = (): LoadingData<
             : DepositRefundPolicy.OnlyPassed,
         }
       : // If has pre-propose, check deposit info response.
-      preProposeAddress
+      prePropose
       ? depositInfoResponse?.deposit_info ?? undefined
       : undefined
 

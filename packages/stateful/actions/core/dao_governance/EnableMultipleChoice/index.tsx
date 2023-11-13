@@ -119,7 +119,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
         chainId,
         proposalModuleAddress: singleChoiceProposal.address,
         version: singleChoiceProposal.version,
-        preProposeAddress: singleChoiceProposal.preProposeAddress,
+        preProposeAddress: singleChoiceProposal.prePropose?.address ?? null,
       })
     )
     const depositInfoToken = useCachedLoadingWithError(
@@ -142,7 +142,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     const anyoneCanPropose = useCachedLoadingWithError(
       anyoneCanProposeSelector({
         chainId,
-        preProposeAddress: singleChoiceProposal.preProposeAddress,
+        preProposeAddress: singleChoiceProposal.prePropose?.address ?? null,
       })
     )
 

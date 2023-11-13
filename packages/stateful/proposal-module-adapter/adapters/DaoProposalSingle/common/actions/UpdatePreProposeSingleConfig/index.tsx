@@ -35,9 +35,9 @@ import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
 import { PRE_PROPOSE_CONTRACT_NAMES } from '../../../constants'
 import { configSelector } from '../../../contracts/DaoPreProposeSingle.recoil'
 import {
-  UpdatePreProposeConfigComponent,
-  UpdatePreProposeConfigData,
-} from './UpdatePreProposeConfigComponent'
+  UpdatePreProposeSingleConfigComponent,
+  UpdatePreProposeSingleConfigData,
+} from './UpdatePreProposeSingleConfigComponent'
 
 export const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
@@ -54,7 +54,7 @@ export const Component: ActionComponent = (props) => {
 
   const { setValue, watch } = useFormContext()
 
-  const depositInfo: UpdatePreProposeConfigData['depositInfo'] = watch(
+  const depositInfo: UpdatePreProposeSingleConfigData['depositInfo'] = watch(
     fieldNamePrefix + 'depositInfo'
   )
 
@@ -106,7 +106,7 @@ export const Component: ActionComponent = (props) => {
   ])
 
   return (
-    <UpdatePreProposeConfigComponent
+    <UpdatePreProposeSingleConfigComponent
       {...props}
       options={{
         governanceToken,
@@ -116,22 +116,22 @@ export const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeUpdatePreProposeConfigActionMaker =
+export const makeUpdatePreProposeSingleConfigActionMaker =
   ({
-    preProposeAddress,
-  }: ProposalModule): ActionMaker<UpdatePreProposeConfigData> =>
+    prePropose,
+  }: ProposalModule): ActionMaker<UpdatePreProposeSingleConfigData> =>
   ({ t, context, chain: { chain_id: chainId } }) => {
-    // Only when pre propose address present.
-    if (!preProposeAddress) {
+    // Only when pre propose is right.
+    if (
+      !prePropose ||
+      prePropose.contractName !== 'crates.io:dao-pre-propose-single'
+    ) {
       return null
     }
 
-    const useDefaults: UseDefaults<UpdatePreProposeConfigData> = () => {
-      const { t } = useTranslation()
-      if (!preProposeAddress) {
-        throw new Error(t('error.loadingData'))
-      }
+    const preProposeAddress = prePropose.address
 
+    const useDefaults: UseDefaults<UpdatePreProposeSingleConfigData> = () => {
       const {
         hooks: { useCommonGovernanceTokenInfo },
       } = useVotingModuleAdapter()
@@ -186,7 +186,7 @@ export const makeUpdatePreProposeConfigActionMaker =
         token.denomOrAddress === governanceTokenDenomOrAddress
 
       const depositRequired = !!config.deposit_info
-      const depositInfo: UpdatePreProposeConfigData['depositInfo'] =
+      const depositInfo: UpdatePreProposeSingleConfigData['depositInfo'] =
         config.deposit_info
           ? {
               amount: convertMicroDenomToDenomWithDecimals(
@@ -222,19 +222,14 @@ export const makeUpdatePreProposeConfigActionMaker =
     }
 
     const useTransformToCosmos: UseTransformToCosmos<
-      UpdatePreProposeConfigData
-    > = () => {
-      const { t } = useTranslation()
-      if (!preProposeAddress) {
-        throw new Error(t('error.loadingData'))
-      }
-
-      return useCallback(
+      UpdatePreProposeSingleConfigData
+    > = () =>
+      useCallback(
         ({
           depositRequired,
           depositInfo,
           anyoneCanPropose,
-        }: UpdatePreProposeConfigData) => {
+        }: UpdatePreProposeSingleConfigData) => {
           const updateConfigMessage: ExecuteMsg = {
             update_config: {
               deposit_info: depositRequired
@@ -280,10 +275,9 @@ export const makeUpdatePreProposeConfigActionMaker =
         },
         []
       )
-    }
 
     const useDecodedCosmosMsg: UseDecodedCosmosMsg<
-      UpdatePreProposeConfigData
+      UpdatePreProposeSingleConfigData
     > = (msg: Record<string, any>) => {
       const isUpdatePreProposeConfig = objectMatchesStructure(msg, {
         wasm: {
@@ -368,14 +362,14 @@ export const makeUpdatePreProposeConfigActionMaker =
         }
       }
 
-      const type: UpdatePreProposeConfigData['depositInfo']['type'] =
+      const type: UpdatePreProposeSingleConfigData['depositInfo']['type'] =
         'voting_module_token' in configDepositInfo.denom
           ? 'voting_module_token'
           : 'native' in configDepositInfo.denom.token.denom
           ? 'native'
           : 'cw20'
 
-      const depositInfo: UpdatePreProposeConfigData['depositInfo'] = {
+      const depositInfo: UpdatePreProposeSingleConfigData['depositInfo'] = {
         amount: convertMicroDenomToDenomWithDecimals(
           configDepositInfo.amount,
           token.data.decimals

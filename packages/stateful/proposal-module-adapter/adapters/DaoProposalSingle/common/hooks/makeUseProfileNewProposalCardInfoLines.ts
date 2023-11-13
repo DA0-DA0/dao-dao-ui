@@ -48,7 +48,7 @@ export const makeUseProfileNewProposalCardInfoLines =
     const anyoneCanPropose = useRecoilValue(
       anyoneCanProposeSelector({
         chainId: options.chain.chain_id,
-        preProposeAddress: options.proposalModule.preProposeAddress,
+        preProposeAddress: options.proposalModule?.address ?? null,
       })
     )
 

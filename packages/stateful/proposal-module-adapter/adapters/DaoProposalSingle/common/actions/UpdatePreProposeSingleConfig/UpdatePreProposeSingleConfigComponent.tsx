@@ -33,7 +33,7 @@ import { Trans } from '../../../../../../components/Trans'
 
 const DepositRefundPolicyValues = Object.values(DepositRefundPolicy)
 
-export interface UpdatePreProposeConfigData {
+export interface UpdatePreProposeSingleConfigData {
   depositRequired: boolean
   depositInfo: {
     amount: number
@@ -52,7 +52,7 @@ export interface UpdatePreProposeConfigOptions {
   cw20AddressError?: string
 }
 
-export const UpdatePreProposeConfigComponent: ActionComponent<
+export const UpdatePreProposeSingleConfigComponent: ActionComponent<
   UpdatePreProposeConfigOptions
 > = ({
   fieldNamePrefix,
@@ -66,7 +66,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
   } = useActionOptions()
 
   const { register, setValue, watch } =
-    useFormContext<UpdatePreProposeConfigData>()
+    useFormContext<UpdatePreProposeSingleConfigData>()
 
   const depositRequired = watch(
     (fieldNamePrefix + 'depositRequired') as 'depositRequired'

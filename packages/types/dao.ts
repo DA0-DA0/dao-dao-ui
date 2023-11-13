@@ -79,13 +79,19 @@ export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
   created: string | null
 }
 
-export interface ProposalModule {
+export type PreProposeModule = {
+  contractName: string
+  version: ContractVersion
+  address: string
+}
+
+export type ProposalModule = {
   contractName: string
   version: ContractVersion | null
   address: string
   prefix: string
   // If set, this uses a pre-propose module.
-  preProposeAddress: string | null
+  prePropose: PreProposeModule | null
 }
 
 export interface ProposalPrefill<FormData> {

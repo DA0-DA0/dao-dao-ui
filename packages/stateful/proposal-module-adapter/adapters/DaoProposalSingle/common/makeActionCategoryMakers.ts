@@ -5,7 +5,7 @@ import {
 } from '@dao-dao/types'
 
 import {
-  makeUpdatePreProposeConfigActionMaker,
+  makeUpdatePreProposeSingleConfigActionMaker,
   makeUpdateProposalConfigV1ActionMaker,
   makeUpdateProposalConfigV2ActionMaker,
 } from './actions'
@@ -19,7 +19,7 @@ export const makeActionCategoryMakers = ({
     actionMakers: [
       makeUpdateProposalConfigV1ActionMaker(proposalModule),
       makeUpdateProposalConfigV2ActionMaker(proposalModule),
-      makeUpdatePreProposeConfigActionMaker(proposalModule),
+      makeUpdatePreProposeSingleConfigActionMaker(proposalModule),
     ],
   }),
 ]

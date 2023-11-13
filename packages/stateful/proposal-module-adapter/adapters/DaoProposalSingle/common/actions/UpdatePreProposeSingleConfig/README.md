@@ -1,4 +1,4 @@
-# UpdatePreProposeConfig
+# UpdatePreProposeSingleConfig
 
 Update the proposal submission config for single choice proposals.
 

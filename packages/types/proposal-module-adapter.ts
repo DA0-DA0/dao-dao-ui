@@ -14,6 +14,7 @@ import { CheckedDepositInfo } from './contracts/common'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,
+  PreProposeModule,
   ProposalDraft,
   ProposalModule,
 } from './dao'
@@ -103,7 +104,7 @@ export type ProposalModuleAdapter<
   }
 
   functions: {
-    fetchPreProposeAddress?: FetchPreProposeAddressFunction
+    fetchPrePropose?: FetchPreProposeFunction
   }
 
   daoCreation: {
@@ -145,11 +146,11 @@ export interface IProposalModuleContext {
 
 // Internal Adapter Types
 
-export type FetchPreProposeAddressFunction = (
+export type FetchPreProposeFunction = (
   chainId: string,
   proposalModuleAddress: string,
   version: ContractVersion | null
-) => Promise<string | null>
+) => Promise<PreProposeModule | null>
 
 export type ReverseProposalInfosSelector = (data: {
   startBefore: number | undefined

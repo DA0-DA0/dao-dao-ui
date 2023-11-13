@@ -7,16 +7,16 @@ import {
 import { DepositRefundPolicy } from '@dao-dao/types'
 
 import {
-  UpdatePreProposeConfigComponent,
-  UpdatePreProposeConfigData,
-} from './UpdatePreProposeConfigComponent'
+  UpdatePreProposeSingleConfigComponent,
+  UpdatePreProposeSingleConfigData,
+} from './UpdatePreProposeSingleConfigComponent'
 
 export default {
   title:
-    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalSingle / common / actions / UpdatePreProposeConfig',
-  component: UpdatePreProposeConfigComponent,
+    'DAO DAO / packages / stateful / proposal-module-adapter / adapters / DaoProposalSingle / common / actions / UpdatePreProposeSingleConfig',
+  component: UpdatePreProposeSingleConfigComponent,
   decorators: [
-    makeReactHookFormDecorator<UpdatePreProposeConfigData>({
+    makeReactHookFormDecorator<UpdatePreProposeSingleConfigData>({
       depositRequired: true,
       depositInfo: {
         amount: Math.pow(10, 6),
@@ -29,11 +29,11 @@ export default {
     }),
     DaoPageWrapperDecorator,
   ],
-} as ComponentMeta<typeof UpdatePreProposeConfigComponent>
+} as ComponentMeta<typeof UpdatePreProposeSingleConfigComponent>
 
-const Template: ComponentStory<typeof UpdatePreProposeConfigComponent> = (
+const Template: ComponentStory<typeof UpdatePreProposeSingleConfigComponent> = (
   args
-) => <UpdatePreProposeConfigComponent {...args} />
+) => <UpdatePreProposeSingleConfigComponent {...args} />
 
 export const Default = Template.bind({})
 Default.args = {

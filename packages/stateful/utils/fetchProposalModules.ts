@@ -6,7 +6,7 @@ import { queryIndexer } from '@dao-dao/state/indexer'
 import {
   ContractVersion,
   Feature,
-  FetchPreProposeAddressFunction,
+  FetchPreProposeFunction,
   ProposalModule,
 } from '@dao-dao/types'
 import { InfoResponse } from '@dao-dao/types/contracts/common'
@@ -56,9 +56,9 @@ export const fetchProposalModules = async (
       const version = parseContractVersion(info.version) ?? null
 
       // Get pre-propose address if exists.
-      const fetchPreProposeAddress = getFetchPreProposeAddress(info.contract)
-      const preProposeAddress =
-        (await fetchPreProposeAddress?.(chainId, address, version)) ?? null
+      const fetchPrePropose = getFetchPrePropose(info.contract)
+      const prePropose =
+        (await fetchPrePropose?.(chainId, address, version)) ?? null
 
       return {
         address,
@@ -70,7 +70,7 @@ export const fetchProposalModules = async (
           : indexToProposalModulePrefix(index),
         contractName: info.contract,
         version,
-        preProposeAddress,
+        prePropose,
       }
     })
   )
@@ -79,15 +79,15 @@ export const fetchProposalModules = async (
 }
 
 // Find adapter for contract name and get pre-propose fetch function.
-const getFetchPreProposeAddress = (
+const getFetchPrePropose = (
   proposalModuleContractName: string
-): FetchPreProposeAddressFunction | undefined => {
+): FetchPreProposeFunction | undefined => {
   const adapter = matchAdapter(proposalModuleContractName)
   if (!adapter) {
     return
   }
 
-  return adapter.functions.fetchPreProposeAddress
+  return adapter.functions.fetchPrePropose
 }
 
 const LIMIT = 10

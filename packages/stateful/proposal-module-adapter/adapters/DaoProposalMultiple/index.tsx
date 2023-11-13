@@ -20,7 +20,7 @@ import {
 } from './components'
 import { CONTRACT_NAMES } from './constants'
 import { getInstantiateInfo } from './daoCreation'
-import { fetchPreProposeAddress, makeGetProposalInfo } from './functions'
+import { fetchPrePropose, makeGetProposalInfo } from './functions'
 import {
   useCastVote,
   useLoadingProposalExecutionTxHash,
@@ -44,7 +44,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       chainId: options.chain.chain_id,
       proposalModuleAddress: options.proposalModule.address,
       version: options.proposalModule.version,
-      preProposeAddress: options.proposalModule.preProposeAddress,
+      preProposeAddress: options.proposalModule.prePropose?.address ?? null,
     })
 
     const usePublishProposal = makeUsePublishProposal({
@@ -134,7 +134,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
   },
 
   functions: {
-    fetchPreProposeAddress,
+    fetchPrePropose,
   },
 
   daoCreation: {
