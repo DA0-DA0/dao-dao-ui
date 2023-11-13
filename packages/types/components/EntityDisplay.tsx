@@ -1,5 +1,5 @@
 import { DaoInfo } from '../dao'
-import { LoadingData } from './common'
+import { LoadingData } from '../misc'
 
 export enum EntityType {
   Dao = 'dao',
