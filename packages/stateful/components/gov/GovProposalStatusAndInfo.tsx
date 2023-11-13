@@ -1,8 +1,5 @@
-import {
-  MsgDepositEncodeObject,
-  MsgVoteEncodeObject,
-  coins,
-} from '@cosmjs/stargate'
+import { EncodeObject } from '@cosmjs/proto-signing'
+import { coins } from '@cosmjs/stargate'
 import {
   AccountCircleOutlined,
   AttachMoney,
@@ -11,7 +8,6 @@ import {
   RotateRightOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import Long from 'long'
 import { ComponentType, useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -52,6 +48,10 @@ import {
   Vote,
   VoteOption,
 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import {
+  MsgDeposit,
+  MsgVote,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
 
 import { useLoadingGovProposal, useWallet } from '../../hooks'
 import { ButtonLink } from '../ButtonLink'
@@ -243,10 +243,10 @@ const InnerProposalStatusAndInfo = ({
       try {
         const client = await getSigningStargateClient()
 
-        const encodeObject: MsgVoteEncodeObject = {
-          typeUrl: '/cosmos.gov.v1beta1.MsgVote',
+        const encodeObject: EncodeObject = {
+          typeUrl: MsgVote.typeUrl,
           value: {
-            proposalId: Long.fromString(proposalId.toString()),
+            proposalId,
             voter: walletAddress,
             option,
           },
@@ -291,10 +291,10 @@ const InnerProposalStatusAndInfo = ({
     try {
       const client = await getSigningStargateClient()
 
-      const encodeObject: MsgDepositEncodeObject = {
-        typeUrl: '/cosmos.gov.v1beta1.MsgDeposit',
+      const encodeObject: EncodeObject = {
+        typeUrl: MsgDeposit.typeUrl,
         value: {
-          proposalId: Long.fromString(proposalId.toString()),
+          proposalId,
           depositor: walletAddress,
           amount: coins(
             convertDenomToMicroDenomStringWithDecimals(

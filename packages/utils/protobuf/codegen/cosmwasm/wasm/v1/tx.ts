@@ -3,6 +3,7 @@ import { AccessConfig, AccessConfigAmino, AccessConfigSDKType, Params, ParamsAmi
 import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import { fromBase64, toBase64, toUtf8, fromUtf8 } from "@cosmjs/encoding";
+import { base64FromBytes, bytesFromBase64 } from "../../../helpers";
 /** MsgStoreCode submit Wasm code to the system */
 export interface MsgStoreCode {
   /** Sender is the actor that signed the messages */
@@ -1714,7 +1715,7 @@ export const MsgInstantiateContract2 = {
       label: object.label,
       msg: toUtf8(JSON.stringify(object.msg)),
       funds: Array.isArray(object?.funds) ? object.funds.map((e: any) => Coin.fromAmino(e)) : [],
-      salt: object.salt,
+      salt: bytesFromBase64(object.salt),
       fixMsg: object.fix_msg
     };
   },
@@ -1730,7 +1731,7 @@ export const MsgInstantiateContract2 = {
     } else {
       obj.funds = [];
     }
-    obj.salt = message.salt;
+    obj.salt = base64FromBytes(message.salt);
     obj.fix_msg = message.fixMsg;
     return obj;
   },

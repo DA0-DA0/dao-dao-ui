@@ -1,22 +1,7 @@
 import { AminoMsg } from '@cosmjs/amino'
-import {
-  MsgClearAdminEncodeObject,
-  MsgExecuteContractEncodeObject,
-  MsgInstantiateContractEncodeObject,
-  MsgMigrateContractEncodeObject,
-  MsgUpdateAdminEncodeObject,
-} from '@cosmjs/cosmwasm-stargate'
 import { fromBase64, toBase64 } from '@cosmjs/encoding'
 import { EncodeObject, GeneratedType, Registry } from '@cosmjs/proto-signing'
-import {
-  AminoTypes,
-  MsgBeginRedelegateEncodeObject,
-  MsgDelegateEncodeObject,
-  MsgSendEncodeObject,
-  MsgUndelegateEncodeObject,
-  MsgVoteEncodeObject,
-  MsgWithdrawDelegatorRewardEncodeObject,
-} from '@cosmjs/stargate'
+import { AminoTypes } from '@cosmjs/stargate'
 import Long from 'long'
 
 import {
@@ -70,6 +55,7 @@ import {
   MsgClearAdmin,
   MsgExecuteContract,
   MsgInstantiateContract,
+  MsgInstantiateContract2,
   MsgMigrateContract,
   MsgUpdateAdmin,
 } from '../protobuf/codegen/cosmwasm/wasm/v1/tx'
@@ -103,8 +89,8 @@ export const cwMsgToEncodeObject = (
     const bankMsg = msg.bank
 
     if ('send' in bankMsg) {
-      const encodeObject: MsgSendEncodeObject = {
-        typeUrl: '/cosmos.bank.v1beta1.MsgSend',
+      const encodeObject: EncodeObject = {
+        typeUrl: MsgSend.typeUrl,
         value: {
           fromAddress: sender,
           toAddress: bankMsg.send.to_address,
@@ -124,8 +110,8 @@ export const cwMsgToEncodeObject = (
     const stakingMsg = msg.staking
 
     if ('delegate' in stakingMsg) {
-      const encodeObject: MsgDelegateEncodeObject = {
-        typeUrl: '/cosmos.staking.v1beta1.MsgDelegate',
+      const encodeObject: EncodeObject = {
+        typeUrl: MsgDelegate.typeUrl,
         value: {
           delegatorAddress: sender,
           validatorAddress: stakingMsg.delegate.validator,
@@ -136,8 +122,8 @@ export const cwMsgToEncodeObject = (
     }
 
     if ('undelegate' in stakingMsg) {
-      const encodeObject: MsgUndelegateEncodeObject = {
-        typeUrl: '/cosmos.staking.v1beta1.MsgUndelegate',
+      const encodeObject: EncodeObject = {
+        typeUrl: MsgUndelegate.typeUrl,
         value: {
           delegatorAddress: sender,
           validatorAddress: stakingMsg.undelegate.validator,
@@ -148,8 +134,8 @@ export const cwMsgToEncodeObject = (
     }
 
     if ('redelegate' in stakingMsg) {
-      const encodeObject: MsgBeginRedelegateEncodeObject = {
-        typeUrl: '/cosmos.staking.v1beta1.MsgBeginRedelegate',
+      const encodeObject: EncodeObject = {
+        typeUrl: MsgBeginRedelegate.typeUrl,
         value: {
           delegatorAddress: sender,
           validatorSrcAddress: stakingMsg.redelegate.src_validator,
@@ -167,8 +153,8 @@ export const cwMsgToEncodeObject = (
     const distributionMsg = msg.distribution
 
     if ('withdraw_delegator_reward' in distributionMsg) {
-      const encodeObject: MsgWithdrawDelegatorRewardEncodeObject = {
-        typeUrl: '/cosmos.distribution.v1beta1.MsgWithdrawDelegatorReward',
+      const encodeObject: EncodeObject = {
+        typeUrl: MsgWithdrawDelegatorReward.typeUrl,
         value: {
           delegatorAddress: sender,
           validatorAddress: distributionMsg.withdraw_delegator_reward.validator,
@@ -178,12 +164,12 @@ export const cwMsgToEncodeObject = (
     }
 
     if ('set_withdraw_address' in distributionMsg) {
-      const encodeObject = {
+      const encodeObject: EncodeObject = {
         typeUrl: MsgSetWithdrawAddress.typeUrl,
-        value: MsgSetWithdrawAddress.fromPartial({
+        value: {
           delegatorAddress: sender,
           withdrawAddress: distributionMsg.set_withdraw_address.address,
-        }),
+        },
       }
       return encodeObject
     }
@@ -201,8 +187,8 @@ export const cwMsgToEncodeObject = (
     // MsgStoreCodeEncodeObject missing from CosmosMsgFor_Empty.
 
     if ('execute' in wasmMsg) {
-      const encodeObject: MsgExecuteContractEncodeObject = {
-        typeUrl: '/cosmwasm.wasm.v1.MsgExecuteContract',
+      const encodeObject: EncodeObject = {
+        typeUrl: MsgExecuteContract.typeUrl,
         value: {
           sender,
           contract: wasmMsg.execute.contract_addr,
@@ -214,12 +200,12 @@ export const cwMsgToEncodeObject = (
     }
 
     if ('instantiate' in wasmMsg) {
-      const encodeObject: MsgInstantiateContractEncodeObject = {
-        typeUrl: '/cosmwasm.wasm.v1.MsgInstantiateContract',
+      const encodeObject: EncodeObject = {
+        typeUrl: MsgInstantiateContract.typeUrl,
         value: {
           sender,
           admin: wasmMsg.instantiate.admin ?? undefined,
-          codeId: Long.fromInt(wasmMsg.instantiate.code_id),
+          codeId: BigInt(wasmMsg.instantiate.code_id),
           label: wasmMsg.instantiate.label,
           msg: fromBase64(wasmMsg.instantiate.msg),
           funds: wasmMsg.instantiate.funds,
@@ -230,11 +216,11 @@ export const cwMsgToEncodeObject = (
 
     if ('instantiate2' in wasmMsg) {
       const encodeObject: EncodeObject = {
-        typeUrl: '/cosmwasm.wasm.v1.MsgInstantiateContract2',
+        typeUrl: MsgInstantiateContract2.typeUrl,
         value: {
           sender,
           admin: wasmMsg.instantiate2.admin ?? undefined,
-          codeId: Long.fromInt(wasmMsg.instantiate2.code_id),
+          codeId: BigInt(wasmMsg.instantiate2.code_id),
           label: wasmMsg.instantiate2.label,
           msg: fromBase64(wasmMsg.instantiate2.msg),
           funds: wasmMsg.instantiate2.funds,
@@ -246,12 +232,12 @@ export const cwMsgToEncodeObject = (
     }
 
     if ('migrate' in wasmMsg) {
-      const encodeObject: MsgMigrateContractEncodeObject = {
-        typeUrl: '/cosmwasm.wasm.v1.MsgMigrateContract',
+      const encodeObject: EncodeObject = {
+        typeUrl: MsgMigrateContract.typeUrl,
         value: {
           sender,
           contract: wasmMsg.migrate.contract_addr,
-          codeId: Long.fromInt(wasmMsg.migrate.new_code_id),
+          codeId: BigInt(wasmMsg.migrate.new_code_id),
           msg: fromBase64(wasmMsg.migrate.msg),
         },
       }
@@ -259,8 +245,8 @@ export const cwMsgToEncodeObject = (
     }
 
     if ('update_admin' in wasmMsg) {
-      const encodeObject: MsgUpdateAdminEncodeObject = {
-        typeUrl: '/cosmwasm.wasm.v1.MsgUpdateAdmin',
+      const encodeObject: EncodeObject = {
+        typeUrl: MsgUpdateAdmin.typeUrl,
         value: {
           sender,
           newAdmin: wasmMsg.update_admin.admin,
@@ -271,8 +257,8 @@ export const cwMsgToEncodeObject = (
     }
 
     if ('clear_admin' in wasmMsg) {
-      const encodeObject: MsgClearAdminEncodeObject = {
-        typeUrl: '/cosmwasm.wasm.v1.MsgClearAdmin',
+      const encodeObject: EncodeObject = {
+        typeUrl: MsgClearAdmin.typeUrl,
         value: {
           sender,
           contract: wasmMsg.clear_admin.contract_addr,
@@ -291,10 +277,10 @@ export const cwMsgToEncodeObject = (
     // CosmosMsgFor_Empty.
 
     if ('vote' in govMsg) {
-      const encodeObject: MsgVoteEncodeObject = {
-        typeUrl: '/cosmos.gov.v1beta1.MsgVote',
+      const encodeObject: EncodeObject = {
+        typeUrl: MsgVote.typeUrl,
         value: {
-          proposalId: Long.fromInt(govMsg.vote.proposal_id),
+          proposalId: BigInt(govMsg.vote.proposal_id),
           voter: sender,
           option: cwVoteOptionToGovVoteOption(govMsg.vote.vote),
         },
@@ -395,6 +381,22 @@ export const decodedStargateMsgToCw = ({
             label: value.label,
             msg: toBase64(value.msg),
             funds: value.funds,
+          },
+        },
+      }
+      sender = value.sender
+      break
+    case MsgInstantiateContract2.typeUrl:
+      msg = {
+        wasm: {
+          instantiate2: {
+            admin: value.admin,
+            code_id: Number(value.codeId),
+            label: value.label,
+            msg: toBase64(value.msg),
+            funds: value.funds,
+            fix_msg: value.fixMsg,
+            salt: toBase64(value.salt),
           },
         },
       }
