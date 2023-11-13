@@ -14,11 +14,7 @@ import {
 
 import { Account } from './account'
 import { SupportedChainConfig } from './chain'
-import {
-  DaoCardProps,
-  LoadingDataWithError,
-  SuspenseLoaderProps,
-} from './components'
+import { DaoCardProps, SuspenseLoaderProps } from './components'
 import {
   ActiveThreshold,
   DepositRefundPolicy,
@@ -27,6 +23,7 @@ import {
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
+import { LoadingDataWithError } from './misc'
 import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,

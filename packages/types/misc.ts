@@ -1,3 +1,25 @@
+export type ParametersExceptFirst<F> = F extends (
+  arg0: any,
+  ...rest: infer R
+) => any
+  ? R
+  : never
+
+export type CachedLoadable<T> =
+  | {
+      state: 'loading'
+      contents: undefined
+    }
+  | {
+      state: 'hasValue'
+      contents: T
+      updating: boolean
+    }
+  | {
+      state: 'hasError'
+      contents: Error
+    }
+
 // These are convenience types that are more useful in UI components. They force
 // you to check if data is loading before TypeScript allows you to access the
 // data, and they also allow you to check if the data is updating. It is hard to
