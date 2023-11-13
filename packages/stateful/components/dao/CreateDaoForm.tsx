@@ -1,5 +1,3 @@
-import { Buffer } from 'buffer'
-
 import { ArrowBack } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
@@ -49,6 +47,7 @@ import {
   NEW_DAO_TOKEN_DECIMALS,
   TokenBasedCreatorId,
   convertMicroDenomToDenomWithDecimals,
+  encodeMessageAsBase64,
   findWasmAttributeValue,
   getFallbackImage,
   getFundsFromDaoInstantiateMsg,
@@ -402,10 +401,7 @@ export const InnerCreateDaoForm = ({
     const { logs } = await instantiateWithFactory(
       {
         codeId: codeIds.DaoCore,
-        instantiateMsg: Buffer.from(
-          JSON.stringify(instantiateMsg),
-          'utf8'
-        ).toString('base64'),
+        instantiateMsg: encodeMessageAsBase64(instantiateMsg),
         label: instantiateMsg.name,
       },
       CHAIN_GAS_MULTIPLIER,

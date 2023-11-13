@@ -271,12 +271,20 @@ export type DaoCreationVotingConfigWithActiveThreshold = {
   }
 }
 
+export type DaoCreationVotingConfigWithApprover = {
+  approver: {
+    enabled: boolean
+    address: string
+  }
+}
+
 export type DaoCreationVotingConfig = DaoCreationVotingConfigWithAllowRevoting &
   DaoCreationVotingConfigWithProposalDeposit &
   DaoCreationVotingConfigWithProposalSubmissionPolicy &
   DaoCreationVotingConfigWithQuorum &
   DaoCreationVotingConfigWithVotingDuration &
-  DaoCreationVotingConfigWithEnableMultipleChoice
+  DaoCreationVotingConfigWithEnableMultipleChoice &
+  DaoCreationVotingConfigWithApprover
 
 //! Other
 

@@ -124,6 +124,7 @@ export type CodeIdConfig = {
   CwVesting: number
   DaoCore: number
   DaoMigrator: number
+  DaoPreProposeApprovalSingle: number
   DaoPreProposeMultiple: number
   DaoPreProposeSingle: number
   DaoProposalMultiple: number

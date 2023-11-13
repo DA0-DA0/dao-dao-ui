@@ -1,22 +1,23 @@
-import { Buffer } from 'buffer'
-
 import {
   ChainId,
   DaoCreationGetInstantiateInfo,
   PercentOrMajorityValue,
 } from '@dao-dao/types'
-import { InstantiateMsg as CwPreProposeSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeSingle'
+import { InstantiateMsg as DaoPreProposeApprovalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
+import { InstantiateMsg as DaoPreProposeSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeSingle'
 import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { InstantiateMsg as CwProposalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
+import { InstantiateMsg as DaoProposalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   DaoProposalSingleAdapterId,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
+  encodeMessageAsBase64,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
 import { DaoCreationExtraVotingConfig } from '../types'
 import instantiateSchema from './instantiate_schema.json'
+import preProposeApprovalInstantiateSchema from './pre_propose_approval_instantiate_schema.json'
 import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
@@ -32,6 +33,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       proposalDeposit,
       anyoneCanPropose,
       allowRevoting,
+      approver,
     },
   },
   { threshold },
@@ -39,7 +41,9 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 ) => {
   const decimals = proposalDeposit.token?.decimals ?? 0
 
-  const preProposeSingleInstantiateMsg: CwPreProposeSingleInstantiateMsg = {
+  const preProposeInstantiateMsgCommon:
+    | DaoPreProposeSingleInstantiateMsg
+    | DaoPreProposeApprovalSingleInstantiateMsg = {
     deposit_info: proposalDeposit.enabled
       ? {
           amount: convertDenomToMicroDenomWithDecimals(
@@ -71,13 +75,24 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     open_proposal_submission: anyoneCanPropose,
   }
 
-  // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<CwPreProposeSingleInstantiateMsg>(
-    preProposeInstantiateSchema,
-    t
-  )(preProposeSingleInstantiateMsg)
+  const preProposeInstantiateMsg = approver.enabled
+    ? ({
+        ...preProposeInstantiateMsgCommon,
+        extension: {
+          approver: approver.address,
+        },
+      } as DaoPreProposeApprovalSingleInstantiateMsg)
+    : (preProposeInstantiateMsgCommon as DaoPreProposeSingleInstantiateMsg)
 
-  const msg: CwProposalSingleInstantiateMsg = {
+  // Validate and throw error if invalid according to JSON schema.
+  makeValidateMsg<any>(
+    approver
+      ? preProposeApprovalInstantiateSchema
+      : preProposeInstantiateSchema,
+    t
+  )(preProposeInstantiateMsg)
+
+  const msg: DaoProposalSingleInstantiateMsg = {
     allow_revoting: allowRevoting,
     close_proposal_on_execution_failure: true,
     max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
@@ -87,12 +102,13 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       module_may_propose: {
         info: {
           admin: { core_module: {} },
-          code_id: codeIds.DaoPreProposeSingle,
-          label: `DAO_${name.trim()}_pre-propose-${DaoProposalSingleAdapterId}`,
-          msg: Buffer.from(
-            JSON.stringify(preProposeSingleInstantiateMsg),
-            'utf8'
-          ).toString('base64'),
+          code_id: approver.enabled
+            ? codeIds.DaoPreProposeApprovalSingle
+            : codeIds.DaoPreProposeSingle,
+          label: `DAO_${name.trim()}_pre-propose${
+            approver.enabled ? '-approval' : ''
+          }_${DaoProposalSingleAdapterId}`,
+          msg: encodeMessageAsBase64(preProposeInstantiateMsg),
           // TODO(neutron-2.3.0): add back in here and in instantiate schema.
           ...(chainId !== ChainId.NeutronMainnet && {
             funds: [],
@@ -110,13 +126,13 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   }
 
   // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<CwProposalSingleInstantiateMsg>(instantiateSchema, t)(msg)
+  makeValidateMsg<DaoProposalSingleInstantiateMsg>(instantiateSchema, t)(msg)
 
   return {
     admin: { core_module: {} },
     code_id: codeIds.DaoProposalSingle,
     label: `DAO_${name.trim()}_${DaoProposalSingleAdapterId}`,
-    msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
+    msg: encodeMessageAsBase64(msg),
     // TODO(neutron-2.3.0): add back in here and in instantiate schema.
     ...(chainId !== ChainId.NeutronMainnet && {
       funds: [],

@@ -1,8 +1,6 @@
-import { Buffer } from 'buffer'
-
 import { ChainId, DaoCreatorMutate } from '@dao-dao/types'
 import { InstantiateMsg, Member } from '@dao-dao/types/contracts/DaoVotingCw4'
-import { MembershipBasedCreatorId } from '@dao-dao/utils'
+import { MembershipBasedCreatorId, encodeMessageAsBase64 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
 import instantiateSchema from './instantiate_schema.json'
@@ -51,10 +49,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     admin: { core_module: {} },
     code_id: codeIds.DaoVotingCw4,
     label: `DAO_${name.trim()}_${MembershipBasedCreatorId}`,
-    msg: Buffer.from(
-      JSON.stringify(votingModuleAdapterInstantiateMsg),
-      'utf8'
-    ).toString('base64'),
+    msg: encodeMessageAsBase64(votingModuleAdapterInstantiateMsg),
     // TODO(neutron-2.3.0): add back in here and in dao-core instantiate schema.
     ...(chainId !== ChainId.NeutronMainnet && {
       funds: [],
