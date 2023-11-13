@@ -1,14 +1,16 @@
+import { fetchContractInfo } from '@dao-dao/state'
 import { queryIndexer } from '@dao-dao/state/indexer'
-import { Feature, FetchPreProposeAddressFunction } from '@dao-dao/types'
+import { Feature, FetchPreProposeFunction } from '@dao-dao/types'
 import {
   cosmWasmClientRouter,
   getRpcForChainId,
   isFeatureSupportedByVersion,
+  parseContractVersion,
 } from '@dao-dao/utils'
 
 import { DaoProposalSingleV2QueryClient } from '../contracts/DaoProposalSingle.v2.client'
 
-export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
+export const fetchPrePropose: FetchPreProposeFunction = async (
   chainId,
   proposalModuleAddress,
   version
@@ -42,11 +44,25 @@ export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
     creationPolicy = await client.proposalCreationPolicy()
   }
 
-  return creationPolicy &&
-    'Module' in creationPolicy &&
-    creationPolicy.Module.addr
-    ? creationPolicy.Module.addr
-    : creationPolicy && 'module' in creationPolicy && creationPolicy.module.addr
-    ? creationPolicy.module.addr
-    : null
+  const preProposeAddress =
+    creationPolicy && 'Module' in creationPolicy && creationPolicy.Module.addr
+      ? creationPolicy.Module.addr
+      : creationPolicy &&
+        'module' in creationPolicy &&
+        creationPolicy.module.addr
+      ? creationPolicy.module.addr
+      : null
+  const contractInfo = await fetchContractInfo(chainId, preProposeAddress)
+  const contractVersion =
+    contractInfo && parseContractVersion(contractInfo.version)
+
+  if (!preProposeAddress || !contractInfo || !contractVersion) {
+    return null
+  }
+
+  return {
+    contractName: contractInfo.contract,
+    version: contractVersion,
+    address: preProposeAddress,
+  }
 }

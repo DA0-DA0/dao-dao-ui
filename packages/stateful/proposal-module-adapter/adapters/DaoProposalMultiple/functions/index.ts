@@ -1,2 +1,2 @@
-export * from './fetchPreProposeAddress'
+export * from './fetchPrePropose'
 export * from './makeGetProposalInfo'

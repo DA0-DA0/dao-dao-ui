@@ -24,7 +24,11 @@ export const makeDaoInfo = (): DaoInfo => ({
       version: ContractVersion.V2Alpha,
       address: 'proposalModuleAddress',
       prefix: 'A',
-      preProposeAddress: 'preProposeModuleAddress',
+      prePropose: {
+        contractName: 'dao-pre-propose-single',
+        version: ContractVersion.V2Alpha,
+        address: 'preProposeModuleAddress',
+      },
     },
   ],
   name: 'A Very Real DAO',

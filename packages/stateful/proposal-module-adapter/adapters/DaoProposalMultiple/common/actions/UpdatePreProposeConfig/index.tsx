@@ -117,21 +117,16 @@ export const Component: ActionComponent = (props) => {
 }
 
 export const makeUpdatePreProposeConfigActionMaker =
-  ({
-    preProposeAddress,
-  }: ProposalModule): ActionMaker<UpdatePreProposeConfigData> =>
+  ({ prePropose }: ProposalModule): ActionMaker<UpdatePreProposeConfigData> =>
   ({ t, context, chain: { chain_id: chainId } }) => {
     // Only when pre propose address present.
-    if (!preProposeAddress) {
+    if (!prePropose) {
       return null
     }
 
-    const useDefaults: UseDefaults<UpdatePreProposeConfigData> = () => {
-      const { t } = useTranslation()
-      if (!preProposeAddress) {
-        throw new Error(t('error.loadingData'))
-      }
+    const preProposeAddress = prePropose.address
 
+    const useDefaults: UseDefaults<UpdatePreProposeConfigData> = () => {
       const {
         hooks: { useCommonGovernanceTokenInfo },
       } = useVotingModuleAdapter()
@@ -223,13 +218,8 @@ export const makeUpdatePreProposeConfigActionMaker =
 
     const useTransformToCosmos: UseTransformToCosmos<
       UpdatePreProposeConfigData
-    > = () => {
-      const { t } = useTranslation()
-      if (!preProposeAddress) {
-        throw new Error(t('error.loadingData'))
-      }
-
-      return useCallback(
+    > = () =>
+      useCallback(
         ({
           depositRequired,
           depositInfo,
@@ -280,7 +270,6 @@ export const makeUpdatePreProposeConfigActionMaker =
         },
         []
       )
-    }
 
     const useDecodedCosmosMsg: UseDecodedCosmosMsg<
       UpdatePreProposeConfigData
