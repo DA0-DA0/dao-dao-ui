@@ -42,6 +42,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       CwVesting: 3825,
       DaoCore: 3826,
       DaoMigrator: 3827,
+      // TODO(approver)
+      DaoPreProposeApprovalSingle: -1,
       DaoPreProposeMultiple: 3828,
       DaoPreProposeSingle: 3829,
       DaoProposalMultiple: 3830,
@@ -189,6 +191,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       CwVesting: 244,
       DaoCore: 245,
       DaoMigrator: -1, // not needed since only v2 DAOs exist but it's 246
+      // TODO(approver)
+      DaoPreProposeApprovalSingle: -1,
       DaoPreProposeMultiple: 247,
       DaoPreProposeSingle: 248,
       DaoProposalMultiple: 249,
@@ -328,6 +332,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       CwVesting: 222,
       DaoCore: 223,
       DaoMigrator: -1,
+      // TODO(approver)
+      DaoPreProposeApprovalSingle: -1,
       DaoPreProposeMultiple: 224,
       DaoPreProposeSingle: 225,
       DaoProposalMultiple: 226,
@@ -443,6 +449,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       CwVesting: 126,
       DaoCore: 127,
       DaoMigrator: -1, // not needed since only v2 DAOs exist but it's 128
+      // TODO(approver)
+      DaoPreProposeApprovalSingle: -1,
       DaoPreProposeMultiple: 129,
       DaoPreProposeSingle: 130,
       DaoProposalMultiple: 131,
@@ -580,6 +588,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       CwVesting: 3800,
       DaoCore: 3801,
       DaoMigrator: 3802,
+      // TODO(approver)
+      DaoPreProposeApprovalSingle: -1,
       DaoPreProposeMultiple: 3803,
       DaoPreProposeSingle: 3804,
       DaoProposalMultiple: 3805,
@@ -635,6 +645,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       CwVesting: 4896,
       DaoCore: 4897,
       DaoMigrator: -1, // not needed since only v2 DAOs exist but it's 4898
+      // TODO(approver)
+      DaoPreProposeApprovalSingle: -1,
       DaoPreProposeMultiple: 4899,
       DaoPreProposeSingle: 4900,
       DaoProposalMultiple: 4901,
@@ -682,6 +694,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       CwVesting: 3228,
       DaoCore: 3229,
       DaoMigrator: -1, // not needed since only v2 DAOs exist but it's 3230
+      // TODO(approver)
+      DaoPreProposeApprovalSingle: -1,
       DaoPreProposeMultiple: 3231,
       DaoPreProposeSingle: 3232,
       DaoProposalMultiple: 3233,

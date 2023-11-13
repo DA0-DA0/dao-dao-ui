@@ -216,6 +216,10 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
           },
           anyoneCanPropose: anyoneCanPropose.data,
           allowRevoting: config.data.allow_revoting,
+          approver: {
+            enabled: false,
+            address: '',
+          },
         },
         t
       )

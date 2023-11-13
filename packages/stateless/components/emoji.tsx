@@ -252,3 +252,7 @@ export const RocketShipEmoji = () => (
 export const AtomEmoji = () => (
   <EmojiWrapper emoji="⚛️" labelI18nKey="emoji.atom" />
 )
+
+export const PersonRaisingHandEmoji = () => (
+  <EmojiWrapper emoji="🙋" labelI18nKey="emoji.personRaisingHand" />
+)
