@@ -29,6 +29,7 @@ export const EntityDisplay = ({
   noUnderline,
   showFullAddress,
   noLink,
+  openInNewTab = false,
 }: EntityDisplayProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
@@ -92,7 +93,7 @@ export const EntityDisplay = ({
           containerClassName="min-w-0"
           href={noLink ? undefined : href}
           onClick={(e) => !noLink && e.stopPropagation()}
-          openInNewTab
+          openInNewTab={openInNewTab}
           variant={noUnderline || noLink || !href ? 'none' : 'underline'}
         >
           {!hideImage && (
