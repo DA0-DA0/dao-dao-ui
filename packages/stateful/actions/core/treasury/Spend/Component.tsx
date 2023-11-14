@@ -29,8 +29,6 @@ import {
   getAccountAddress,
   getChainForChainId,
   makeValidateAddress,
-  maybeGetChainForChainName,
-  toAccessibleImageUrl,
   transformBech32Address,
   validateRequired,
 } from '@dao-dao/utils'
