@@ -15,7 +15,6 @@ import {
   ButtonPopup,
   ChartEmoji,
   DepositEmoji,
-  EntityDisplay,
   Loader,
   MarkdownRenderer,
   MoneyEmoji,
@@ -33,6 +32,7 @@ import {
   EntityType,
   GenericToken,
   LoadingData,
+  StatefulEntityDisplayProps,
   TokenCardLazyInfo,
   UnstakingTaskStatus,
 } from '@dao-dao/types'
@@ -49,6 +49,7 @@ export interface VestingPaymentCardProps {
   // If current wallet connected is the recipient.
   recipientIsWallet: boolean
 
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   ButtonLink: ComponentType<ButtonLinkProps>
   lazyInfo: LoadingData<TokenCardLazyInfo>
   token: GenericToken
@@ -81,6 +82,7 @@ export const VestingPaymentCard = ({
   recipient,
   recipientEntity,
   recipientIsWallet,
+  EntityDisplay,
   ButtonLink,
   lazyInfo,
   token,

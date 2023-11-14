@@ -50,4 +50,5 @@ export type EntityDisplayProps = {
 export type StatefulEntityDisplayProps = Omit<
   EntityDisplayProps,
   'loadingEntity'
->
+> &
+  Partial<Pick<EntityDisplayProps, 'loadingEntity'>>

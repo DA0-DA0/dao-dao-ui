@@ -6,6 +6,7 @@ import { CHAIN_ID } from '@dao-dao/storybook'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators/DaoPageWrapperDecorator'
 import { EntityType, TokenType } from '@dao-dao/types'
 
+import { EntityDisplay } from '../../../../../components/EntityDisplay'
 import { VestingPaymentCard } from './VestingPaymentCard'
 
 export default {
@@ -37,6 +38,7 @@ Default.args = {
   },
   recipientIsWallet: true,
   ButtonLink,
+  EntityDisplay,
   lazyInfo: makeTokenCardProps().lazyInfo,
   token: {
     chainId: CHAIN_ID,

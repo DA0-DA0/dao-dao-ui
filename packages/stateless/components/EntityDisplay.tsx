@@ -29,7 +29,7 @@ export const EntityDisplay = ({
   noUnderline,
   showFullAddress,
   noLink,
-  openInNewTab = false,
+  openInNewTab,
 }: EntityDisplayProps) => {
   const { t } = useTranslation()
   const { getDaoPath } = useDaoNavHelpers()
