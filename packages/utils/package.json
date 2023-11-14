@@ -5,15 +5,16 @@
   "scripts": {
     "format": "eslint . --fix",
     "lint": "eslint .",
-    "test": "jest"
+    "test": "jest",
+    "protobuf": "node protobuf/scripts/codegen.js"
   },
   "dependencies": {
     "@chain-registry/assets": "^1.20.0",
+    "@cosmjs/amino": "^0.31.0",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
     "@cosmjs/encoding": "^0.31.0",
     "@cosmjs/stargate": "^0.31.0",
     "@cosmjs/tendermint-rpc": "^0.31.0",
-    "@dao-dao/protobuf": "2.2.0",
     "@sentry/nextjs": "^7.7.0",
     "ajv": "^8.11.0",
     "chain-registry": "^1.19.0",
@@ -28,7 +29,11 @@
   },
   "devDependencies": {
     "@chain-registry/types": "^0.16.0",
+    "@cosmjs/amino": "^0.31.0",
     "@cosmjs/proto-signing": "^0.31.0",
+    "@cosmjs/stargate": "^0.31.0",
+    "@cosmjs/tendermint-rpc": "^0.31.0",
+    "@cosmology/telescope": "^1.0.16",
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",
     "@types/ripemd160": "^2.0.0",

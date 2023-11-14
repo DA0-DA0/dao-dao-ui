@@ -3,7 +3,6 @@ import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { MsgTransfer } from '@dao-dao/protobuf/codegen/ibc/applications/transfer/v1/tx'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import { MoneyEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
@@ -39,6 +38,7 @@ import {
   objectMatchesStructure,
   transformBech32Address,
 } from '@dao-dao/utils'
+import { MsgTransfer } from '@dao-dao/utils/protobuf/codegen/ibc/applications/transfer/v1/tx'
 
 import { AddressInput } from '../../../../components'
 import { useWallet } from '../../../../hooks/useWallet'

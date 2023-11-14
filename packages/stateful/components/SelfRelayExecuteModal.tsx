@@ -27,9 +27,6 @@ import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, waitForAll } from 'recoil'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
-import { MsgGrant } from '@dao-dao/protobuf/codegen/cosmos/authz/v1beta1/tx'
-import { SendAuthorization } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/authz'
-import { toTimestamp } from '@dao-dao/protobuf/codegen/helpers'
 import {
   nativeDenomBalanceSelector,
   refreshPolytoneListenerResultsAtom,
@@ -65,6 +62,9 @@ import {
   makeBankMessage,
   processError,
 } from '@dao-dao/utils'
+import { MsgGrant } from '@dao-dao/utils/protobuf/codegen/cosmos/authz/v1beta1/tx'
+import { SendAuthorization } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/authz'
+import { toTimestamp } from '@dao-dao/utils/protobuf/codegen/helpers'
 
 enum RelayStatus {
   Uninitialized,

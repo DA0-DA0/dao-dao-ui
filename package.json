@@ -16,7 +16,6 @@
     "dapp": "yarn workspace @dao-dao/dapp",
     "sda": "yarn workspace @dao-dao/sda",
     "i18n": "yarn workspace @dao-dao/i18n",
-    "protobuf": "yarn workspace @dao-dao/protobuf",
     "state": "yarn workspace @dao-dao/state",
     "stateless": "yarn workspace @dao-dao/stateless",
     "stateful": "yarn workspace @dao-dao/stateful",

@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
-import { VoteOption } from '@dao-dao/protobuf/codegen/cosmos/gov/v1/gov'
 import {
   chainStakingPoolSelector,
   govProposalVotesSelector,
@@ -14,6 +13,7 @@ import {
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
+import { VoteOption } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
 
 import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'

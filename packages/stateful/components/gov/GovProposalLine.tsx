@@ -1,4 +1,3 @@
-import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import {
   ErrorBoundary,
   GovProposalStatus,
@@ -9,6 +8,7 @@ import {
 } from '@dao-dao/stateless'
 import { GovProposalWithDecodedContent } from '@dao-dao/types'
 import { getGovProposalPath } from '@dao-dao/utils'
+import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useLoadingGovProposal } from '../../hooks'
 import { LinkWrapper } from '../LinkWrapper'

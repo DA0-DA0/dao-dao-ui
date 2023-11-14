@@ -2,7 +2,6 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { TxBody } from '@dao-dao/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import { web3AuthPromptAtom } from '@dao-dao/state/recoil'
 import {
   ActionsRenderer,
@@ -13,6 +12,7 @@ import {
 } from '@dao-dao/stateless'
 import { CategorizedActionAndData } from '@dao-dao/types'
 import { decodeMessages, protobufToCwMsg } from '@dao-dao/utils'
+import { TxBody } from '@dao-dao/utils/protobuf/codegen/cosmos/tx/v1beta1/tx'
 
 import { useActionsForMatching } from '../../actions'
 import { WalletActionsProvider } from '../../actions/react/provider'

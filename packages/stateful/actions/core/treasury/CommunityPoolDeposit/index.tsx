@@ -3,7 +3,6 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { MsgFundCommunityPool } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import { DownArrowEmoji } from '@dao-dao/stateless'
 import { ChainId, TokenType, UseDecodedCosmosMsg } from '@dao-dao/types'
@@ -23,6 +22,7 @@ import {
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
+import { MsgFundCommunityPool } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 
 import { useTokenBalances } from '../../../hooks'
 import {

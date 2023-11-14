@@ -3,8 +3,6 @@ import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
-import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { MsgDeposit } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import {
   genericTokenSelector,
   govParamsSelector,
@@ -35,6 +33,8 @@ import {
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
+import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgDeposit } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
 
 import { GovProposalActionDisplay } from '../../../../components'
 import { SuspenseLoader } from '../../../../components/SuspenseLoader'

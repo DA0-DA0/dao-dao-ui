@@ -10,10 +10,6 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  VoteOption,
-  WeightedVoteOption,
-} from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import {
   GovernanceProposalFromProposal,
   NoContent,
   ProposalVoteButton,
@@ -33,6 +29,10 @@ import {
   ActionContextType,
 } from '@dao-dao/types/actions'
 import { formatPercentOf100, validateRequired } from '@dao-dao/utils'
+import {
+  VoteOption,
+  WeightedVoteOption,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useActionOptions } from '../../../react'
 

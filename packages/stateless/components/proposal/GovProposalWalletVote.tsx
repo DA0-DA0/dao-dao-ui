@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
-import { VoteOption } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { VoteOption } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { ProposalWalletVote } from './ProposalWalletVote'
 

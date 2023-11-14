@@ -3,7 +3,6 @@ import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { govProposalsSelector } from '@dao-dao/state/recoil'
 import {
   Pagination,
@@ -11,6 +10,7 @@ import {
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
+import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { GovProposalLine, GovProposalLineProps } from './GovProposalLine'
 

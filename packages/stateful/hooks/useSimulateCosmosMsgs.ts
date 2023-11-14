@@ -1,16 +1,6 @@
 import { useCallback } from 'react'
 import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
-import { cosmos } from '@dao-dao/protobuf'
-import { SignMode } from '@dao-dao/protobuf/codegen/cosmos/tx/signing/v1beta1/signing'
-import { SimulateRequest } from '@dao-dao/protobuf/codegen/cosmos/tx/v1beta1/service'
-import {
-  AuthInfo,
-  Fee,
-  Tx,
-  TxBody,
-} from '@dao-dao/protobuf/codegen/cosmos/tx/v1beta1/tx'
-import { Any } from '@dao-dao/protobuf/codegen/google/protobuf/any'
 import {
   DaoCoreV2Selectors,
   cosmosRpcClientForChainSelector,
@@ -24,6 +14,16 @@ import {
   isValidContractAddress,
   typesRegistry,
 } from '@dao-dao/utils'
+import { cosmos } from '@dao-dao/utils/protobuf'
+import { SignMode } from '@dao-dao/utils/protobuf/codegen/cosmos/tx/signing/v1beta1/signing'
+import { SimulateRequest } from '@dao-dao/utils/protobuf/codegen/cosmos/tx/v1beta1/service'
+import {
+  AuthInfo,
+  Fee,
+  Tx,
+  TxBody,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/tx/v1beta1/tx'
+import { Any } from '@dao-dao/utils/protobuf/codegen/google/protobuf/any'
 
 // Simulate executing Cosmos messages on-chain. We can't just use the simulate
 // function on SigningCosmWasmClient or SigningStargateClient because they

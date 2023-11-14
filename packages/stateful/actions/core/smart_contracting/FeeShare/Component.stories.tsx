@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { MsgRegisterFeeShare } from '@dao-dao/protobuf/codegen/juno/feeshare/v1/tx'
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
+import { MsgRegisterFeeShare } from '@dao-dao/utils/protobuf/codegen/juno/feeshare/v1/tx'
 
 import { AddressInput } from '../../../../components/AddressInput'
 import { FeeShareComponent, FeeShareData } from './Component'

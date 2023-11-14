@@ -6,6 +6,7 @@
     "format": "eslint . --fix",
     "lint": "eslint ."
   },
+  "dependencies": {},
   "devDependencies": {
     "@chain-registry/types": "^0.16.0",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
@@ -23,8 +24,5 @@
     "next": "^12 || ^13",
     "react": "^17 || ^18"
   },
-  "prettier": "@dao-dao/config/prettier",
-  "dependencies": {
-    "@dao-dao/protobuf": "2.2.0"
-  }
+  "prettier": "@dao-dao/config/prettier"
 }
