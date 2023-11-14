@@ -580,7 +580,7 @@ export const MsgSubmitProposal = {
       metadata: object.metadata,
       title: object.title,
       summary: object.summary,
-      expedited: object.expedited
+      expedited: object.expedited ?? false
     };
   },
   toAmino(message: MsgSubmitProposal, useInterfaces: boolean = false): MsgSubmitProposalAmino {
@@ -599,7 +599,9 @@ export const MsgSubmitProposal = {
     obj.metadata = message.metadata;
     obj.title = message.title;
     obj.summary = message.summary;
-    obj.expedited = message.expedited;
+    if (message.expedited) {
+      obj.expedited = message.expedited;
+    }
     return obj;
   },
   fromAminoMsg(object: MsgSubmitProposalAminoMsg): MsgSubmitProposal {
