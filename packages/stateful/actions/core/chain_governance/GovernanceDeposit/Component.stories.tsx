@@ -1,12 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { SoftwareUpgradeProposal } from '@dao-dao/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 import { CHAIN_ID, ReactHookFormDecorator } from '@dao-dao/storybook'
 import {
   GovProposalVersion,
   GovProposalWithDecodedContent,
 } from '@dao-dao/types'
+import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { SoftwareUpgradeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 
 import { GovProposalActionDisplay } from '../../../../components'
 import { TokenAmountDisplay } from '../../../../components/TokenAmountDisplay'

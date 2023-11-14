@@ -2,7 +2,6 @@ import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/proto-signing'
 import { v4 as uuidv4 } from 'uuid'
 
-import { MsgTransfer } from '@dao-dao/protobuf/codegen/ibc/applications/transfer/v1/tx'
 import { DecodedPolytoneMsg } from '@dao-dao/types'
 import {
   BankMsg,
@@ -16,6 +15,7 @@ import { getSupportedChainConfig } from '../chain'
 import { POLYTONE_TIMEOUT_SECONDS } from '../constants'
 import { processError } from '../error'
 import { objectMatchesStructure } from '../objectMatchesStructure'
+import { MsgTransfer } from '../protobuf/codegen/ibc/applications/transfer/v1/tx'
 import { encodeMessageAsBase64, parseEncodedMessage } from './encoding'
 import { decodeStargateMessage } from './protobuf'
 

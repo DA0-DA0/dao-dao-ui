@@ -1,6 +1,5 @@
 import { fromBase64 } from '@cosmjs/encoding'
 import { EncodeObject } from '@cosmjs/proto-signing'
-import { SigningStargateClient } from '@cosmjs/stargate'
 import {
   BookOutlined,
   Close,
@@ -31,11 +30,6 @@ import {
   waitForAll,
 } from 'recoil'
 
-import { BinaryReader } from '@dao-dao/protobuf'
-import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/protobuf/codegen/cosmos/gov/v1/tx'
-import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/tx'
-import { Any } from '@dao-dao/protobuf/codegen/google/protobuf/any'
 import {
   genericTokenBalanceSelector,
   genericTokenSelector,
@@ -77,13 +71,17 @@ import {
   formatTime,
   getGovProposalPath,
   getImageUrlForChainId,
-  getSignerOptions,
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
   processError,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
+import { BinaryReader } from '@dao-dao/utils/protobuf'
+import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/tx'
+import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import { Any } from '@dao-dao/utils/protobuf/codegen/google/protobuf/any'
 
 import { GovActionsProvider } from '../../actions'
 import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'
@@ -102,7 +100,7 @@ export const NewGovProposal = () => {
   const { t } = useTranslation()
   const router = useRouter()
   const chainContext = useSupportedChainContext()
-  const { isWalletConnected, getOfflineSignerDirect, chain, chainWallet } =
+  const { isWalletConnected, getSigningStargateClient, chain, chainWallet } =
     useWallet()
 
   const [loading, setLoading] = useState(false)
@@ -285,16 +283,9 @@ export const NewGovProposal = () => {
 
           setLoading(true)
           try {
-            // TODO: Fix amino support.
-            const offlineSignerDirect = await getOfflineSignerDirect()
-            const stargateClient =
-              await SigningStargateClient.connectWithSigner(
-                await chainWallet.getRpcEndpoint(),
-                offlineSignerDirect,
-                getSignerOptions(chain)
-              )
-
-            const { events } = await stargateClient.signAndBroadcast(
+            const { events } = await (
+              await getSigningStargateClient()
+            ).signAndBroadcast(
               walletAddress,
               [encodeObject],
               CHAIN_GAS_MULTIPLIER
@@ -393,7 +384,7 @@ export const NewGovProposal = () => {
         t,
         transformGovernanceProposalActionDataToCosmos,
         walletAddress,
-        getOfflineSignerDirect,
+        getSigningStargateClient,
         chainContext.chainId,
         chainContext.chain.pretty_name,
         chainContext.config.name,
@@ -620,7 +611,7 @@ export const NewGovProposal = () => {
           {t('title.configuration')}
         </p>
 
-        <div className="flex max-w-2xl flex-col gap-4">
+        <div className="flex flex-col gap-4">
           <SuspenseLoader fallback={<Loader size={36} />}>
             <GovActionsProvider>
               <governanceProposalAction.Component

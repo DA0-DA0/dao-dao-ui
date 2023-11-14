@@ -4,7 +4,6 @@ import { TFunction } from 'next-i18next'
 import removeMarkdown from 'remove-markdown'
 
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
-import { cosmos } from '@dao-dao/protobuf'
 import {
   DaoCoreV2QueryClient,
   DaoVotingCw20StakedQueryClient,
@@ -50,6 +49,7 @@ import {
   polytoneNoteProxyMapToChainIdMap,
   processError,
 } from '@dao-dao/utils'
+import { cosmos } from '@dao-dao/utils/protobuf'
 
 import { DaoPageWrapperProps } from '../components'
 import {

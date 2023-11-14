@@ -4,17 +4,6 @@ import { ComponentType } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { GenericAuthorization } from '@dao-dao/protobuf/codegen/cosmos/authz/v1beta1/authz'
-import { SendAuthorization } from '@dao-dao/protobuf/codegen/cosmos/bank/v1beta1/authz'
-import {
-  AcceptedMessageKeysFilter,
-  AcceptedMessagesFilter,
-  CombinedLimit,
-  ContractExecutionAuthorization,
-  ContractMigrationAuthorization,
-  MaxCallsLimit,
-  MaxFundsLimit,
-} from '@dao-dao/protobuf/codegen/cosmwasm/wasm/v1/authz'
 import {
   Button,
   CodeMirrorInput,
@@ -46,6 +35,17 @@ import {
   validateNonNegative,
   validateRequired,
 } from '@dao-dao/utils'
+import { GenericAuthorization } from '@dao-dao/utils/protobuf/codegen/cosmos/authz/v1beta1/authz'
+import { SendAuthorization } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/authz'
+import {
+  AcceptedMessageKeysFilter,
+  AcceptedMessagesFilter,
+  CombinedLimit,
+  ContractExecutionAuthorization,
+  ContractMigrationAuthorization,
+  MaxCallsLimit,
+  MaxFundsLimit,
+} from '@dao-dao/utils/protobuf/codegen/cosmwasm/wasm/v1/authz'
 
 import {
   ACTION_TYPES,
@@ -241,6 +241,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                     onRemove: isCreating ? () => removeCoin(index) : undefined,
                   } as NativeCoinSelectorProps)}
                   chainId={chainId}
+                  dontValidate
                   errors={errors?.funds?.[index]}
                   fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
                 />
@@ -453,6 +454,7 @@ export const AuthzGrantRevokeComponent: ActionComponent<
                             : undefined,
                         } as NativeCoinSelectorProps)}
                         chainId={chainId}
+                        dontValidate
                         errors={errors?.funds?.[index]}
                         fieldNamePrefix={fieldNamePrefix + `funds.${index}.`}
                       />

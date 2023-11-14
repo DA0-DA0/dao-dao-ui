@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
 
-import { MsgCommunityPoolSpend } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import { CurvedDownArrowEmoji } from '@dao-dao/stateless'
 import { UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
@@ -16,6 +15,7 @@ import {
   makeStargateMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
+import { MsgCommunityPoolSpend } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 
 import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
 import { useEntity } from '../../../../hooks'

@@ -249,7 +249,12 @@ export const ActionRenderer = ({
 
   return (
     <FormProvider {...form}>
-      <ActionCard action={action} actionCount={all.length} category={category}>
+      <ActionCard
+        action={action}
+        actionCount={all.length}
+        category={category}
+        childrenContainerClassName="!px-0"
+      >
         {all.map(
           ({ index, data }, dataIndex) =>
             // Paginate manually instead of slicing the array so that the
@@ -257,18 +262,20 @@ export const ActionRenderer = ({
             dataIndex >= minIndex &&
             dataIndex < maxIndex && (
               <Fragment key={index}>
-                <SuspenseLoader fallback={<Loader size={36} />}>
-                  <action.Component
-                    allActionsWithData={allActionsWithData}
-                    data={data}
-                    fieldNamePrefix={`data.${dataIndex}.`}
-                    index={index}
-                    isCreating={false}
-                  />
-                </SuspenseLoader>
+                <div className="flex flex-col gap-4 px-6">
+                  <SuspenseLoader fallback={<Loader size={36} />}>
+                    <action.Component
+                      allActionsWithData={allActionsWithData}
+                      data={data}
+                      fieldNamePrefix={`data.${dataIndex}.`}
+                      index={index}
+                      isCreating={false}
+                    />
+                  </SuspenseLoader>
+                </div>
 
                 {dataIndex < all.length - 1 && (
-                  <div className="h-[1px] w-[calc(100%+1rem)] self-center bg-border-secondary"></div>
+                  <div className="my-3 h-[1px] bg-border-secondary"></div>
                 )}
               </Fragment>
             )

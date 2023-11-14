@@ -8,7 +8,7 @@ import {
 import {
   convertActionsToMessages,
   decodeMessages,
-  decodeRawMessagesForDisplay,
+  decodeRawDataForDisplay,
 } from '@dao-dao/utils'
 
 import { CosmosMessageDisplay } from '../CosmosMessageDisplay'
@@ -34,7 +34,7 @@ export const RawActionsRenderer = ({
           convertActionsToMessages(loadedActions, actionData, {
             throwErrors: false,
           })
-        ).map(decodeRawMessagesForDisplay),
+        ).map(decodeRawDataForDisplay),
         null,
         2
       ),

@@ -3,10 +3,6 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  MsgRegisterFeeShare,
-  MsgUpdateFeeShare,
-} from '@dao-dao/protobuf/codegen/juno/feeshare/v1/tx'
-import {
   FormSwitchCard,
   InputErrorMessage,
   InputLabel,
@@ -18,6 +14,10 @@ import {
   makeValidateAddress,
   makeValidateContractAddress,
 } from '@dao-dao/utils'
+import {
+  MsgRegisterFeeShare,
+  MsgUpdateFeeShare,
+} from '@dao-dao/utils/protobuf/codegen/juno/feeshare/v1/tx'
 
 import { useActionOptions } from '../../../react'
 

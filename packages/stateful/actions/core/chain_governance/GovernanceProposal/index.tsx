@@ -3,13 +3,6 @@ import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useRecoilValue, waitForAll } from 'recoil'
 
-import { CommunityPoolSpendProposal } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
-import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/protobuf/codegen/cosmos/gov/v1/tx'
-import { TextProposal } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/tx'
-import { ParameterChangeProposal } from '@dao-dao/protobuf/codegen/cosmos/params/v1beta1/params'
-import { SoftwareUpgradeProposal } from '@dao-dao/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
-import { Any } from '@dao-dao/protobuf/codegen/google/protobuf/any'
 import {
   genericTokenSelector,
   govParamsSelector,
@@ -46,6 +39,13 @@ import {
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
+import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
+import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/tx'
+import { TextProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
+import { ParameterChangeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/params/v1beta1/params'
+import { SoftwareUpgradeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
+import { Any } from '@dao-dao/utils/protobuf/codegen/google/protobuf/any'
 
 import { GovProposalActionDisplay } from '../../../../components'
 import { AddressInput } from '../../../../components/AddressInput'

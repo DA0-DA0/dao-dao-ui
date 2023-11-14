@@ -2,13 +2,6 @@ import { fromBase64, toBase64 } from '@cosmjs/encoding'
 import cloneDeep from 'lodash.clonedeep'
 import { useCallback } from 'react'
 
-import { PubKey } from '@dao-dao/protobuf/codegen/cosmos/crypto/ed25519/keys'
-import { MsgWithdrawValidatorCommission } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/tx'
-import { MsgUnjail } from '@dao-dao/protobuf/codegen/cosmos/slashing/v1beta1/tx'
-import {
-  MsgCreateValidator,
-  MsgEditValidator,
-} from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/tx'
 import { PickEmoji } from '@dao-dao/stateless'
 import {
   ActionKey,
@@ -27,6 +20,13 @@ import {
   maybeMakePolytoneExecuteMessage,
   toValidatorAddress,
 } from '@dao-dao/utils'
+import { PubKey } from '@dao-dao/utils/protobuf/codegen/cosmos/crypto/ed25519/keys'
+import { MsgWithdrawValidatorCommission } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { MsgUnjail } from '@dao-dao/utils/protobuf/codegen/cosmos/slashing/v1beta1/tx'
+import {
+  MsgCreateValidator,
+  MsgEditValidator,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/staking/v1beta1/tx'
 
 import {
   ValidatorActionsComponent as Component,

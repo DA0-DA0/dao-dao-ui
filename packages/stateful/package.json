@@ -37,7 +37,6 @@
     "@cosmos-kit/web3auth": "^2.4.2",
     "@cosmos-kit/xdefi": "^2.4.4",
     "@dao-dao/i18n": "2.2.0",
-    "@dao-dao/protobuf": "2.2.0",
     "@dao-dao/state": "2.2.0",
     "@dao-dao/stateless": "2.2.0",
     "@dao-dao/utils": "2.2.0",

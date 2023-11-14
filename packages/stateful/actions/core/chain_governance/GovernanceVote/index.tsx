@@ -3,11 +3,6 @@ import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValue, useRecoilValueLoadable } from 'recoil'
 
 import {
-  ProposalStatus,
-  VoteOption,
-} from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
-import { MsgVote } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/tx'
-import {
   govProposalSelector,
   govProposalVoteSelector,
   govProposalsSelector,
@@ -37,6 +32,11 @@ import {
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
+import {
+  ProposalStatus,
+  VoteOption,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
+import { MsgVote } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
 
 import {
   GovProposalActionDisplay,

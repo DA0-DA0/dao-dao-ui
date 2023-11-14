@@ -10,7 +10,6 @@ import { useRecoilState, useSetRecoilState } from 'recoil'
 import useDeepCompareEffect from 'use-deep-compare-effect'
 import { v4 as uuidv4 } from 'uuid'
 
-import { TxBody } from '@dao-dao/protobuf/codegen/cosmos/tx/v1beta1/tx'
 import {
   proposalCreatedCardPropsAtom,
   proposalDraftsAtom,
@@ -41,6 +40,7 @@ import {
   maybeMakePolytoneExecuteMessage,
   protobufToCwMsg,
 } from '@dao-dao/utils'
+import { TxBody } from '@dao-dao/utils/protobuf/codegen/cosmos/tx/v1beta1/tx'
 
 import { useActionsForMatching } from '../../../actions'
 import { useWallet } from '../../../hooks/useWallet'

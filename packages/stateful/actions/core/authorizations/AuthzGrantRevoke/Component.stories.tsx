@@ -1,11 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { GenericAuthorization } from '@dao-dao/protobuf/codegen/cosmos/authz/v1beta1/authz'
-import { MsgDelegate } from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/tx'
-import {
-  AllowAllMessagesFilter,
-  MaxCallsLimit,
-} from '@dao-dao/protobuf/codegen/cosmwasm/wasm/v1/authz'
 import { AddressInput } from '@dao-dao/stateless'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import {
@@ -15,6 +9,12 @@ import {
 } from '@dao-dao/storybook/decorators'
 import { TokenType } from '@dao-dao/types'
 import { getNativeTokenForChainId } from '@dao-dao/utils'
+import { GenericAuthorization } from '@dao-dao/utils/protobuf/codegen/cosmos/authz/v1beta1/authz'
+import { MsgDelegate } from '@dao-dao/utils/protobuf/codegen/cosmos/staking/v1beta1/tx'
+import {
+  AllowAllMessagesFilter,
+  MaxCallsLimit,
+} from '@dao-dao/utils/protobuf/codegen/cosmwasm/wasm/v1/authz'
 
 import { AuthzGrantRevokeComponent } from './Component'
 import { AuthzGrantRevokeData } from './types'

@@ -1,8 +1,8 @@
 import { Block, Check, Close, Texture } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
-import { VoteOption } from '@dao-dao/protobuf/codegen/cosmos/gov/v1/gov'
 import { ProposalVoteOption } from '@dao-dao/types'
+import { VoteOption } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
 
 export const useGovProposalVoteOptions =
   (): ProposalVoteOption<VoteOption>[] => {

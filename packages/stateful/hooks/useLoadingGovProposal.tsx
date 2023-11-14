@@ -1,7 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
-import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import {
   chainStakingPoolSelector,
   govParamsSelector,
@@ -27,6 +26,7 @@ import {
   formatDateTimeTz,
   formatPercentOf100,
 } from '@dao-dao/utils'
+import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
 import { useWallet } from './useWallet'
 

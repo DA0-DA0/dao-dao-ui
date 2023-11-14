@@ -2,12 +2,6 @@ import { Check, Close } from '@mui/icons-material'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { MsgWithdrawValidatorCommission } from '@dao-dao/protobuf/codegen/cosmos/distribution/v1beta1/tx'
-import { MsgUnjail } from '@dao-dao/protobuf/codegen/cosmos/slashing/v1beta1/tx'
-import {
-  MsgCreateValidator,
-  MsgEditValidator,
-} from '@dao-dao/protobuf/codegen/cosmos/staking/v1beta1/tx'
 import {
   ChainPickerInput,
   CodeMirrorInput,
@@ -22,6 +16,12 @@ import {
   toValidatorAddress,
   validateJSON,
 } from '@dao-dao/utils'
+import { MsgWithdrawValidatorCommission } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import { MsgUnjail } from '@dao-dao/utils/protobuf/codegen/cosmos/slashing/v1beta1/tx'
+import {
+  MsgCreateValidator,
+  MsgEditValidator,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/staking/v1beta1/tx'
 
 import { useActionOptions } from '../../../react'
 

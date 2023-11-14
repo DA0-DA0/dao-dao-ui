@@ -1,7 +1,6 @@
 import { useCallback } from 'react'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
-import { ProposalStatus } from '@dao-dao/protobuf/codegen/cosmos/gov/v1/gov'
 import {
   govProposalSelector,
   refreshGovProposalsAtom,
@@ -18,6 +17,7 @@ import {
   GovProposalWithDecodedContent,
 } from '@dao-dao/types'
 import { govProposalToDecodedContent } from '@dao-dao/utils'
+import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
 
 import { useLoadingGovProposal, useWallet } from '../../hooks'
 import { walletProfileDataSelector } from '../../recoil'

@@ -1,7 +1,6 @@
 import { Coin, coin } from '@cosmjs/stargate'
 import { useCallback, useMemo } from 'react'
 
-import { MsgMint } from '@dao-dao/protobuf/codegen/osmosis/tokenfactory/v1beta1/tx'
 import { HerbEmoji } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -17,6 +16,7 @@ import {
   isDecodedStargateMsg,
   makeStargateMessage,
 } from '@dao-dao/utils'
+import { MsgMint } from '@dao-dao/utils/protobuf/codegen/osmosis/tokenfactory/v1beta1/tx'
 
 import { useActionOptions } from '../../../../../actions'
 import { useGovernanceTokenInfo } from '../../hooks'

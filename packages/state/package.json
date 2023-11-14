@@ -13,7 +13,6 @@
     "@cosmjs/encoding": "^0.31.0",
     "@cosmjs/proto-signing": "^0.31.0",
     "@cosmjs/stargate": "^0.31.0",
-    "@dao-dao/protobuf": "2.2.0",
     "@dao-dao/utils": "2.2.0",
     "json5": "^2.2.0",
     "meilisearch": "^0.30.0",
