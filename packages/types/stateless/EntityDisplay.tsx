@@ -44,6 +44,7 @@ export type EntityDisplayProps = {
   noUnderline?: boolean
   showFullAddress?: boolean
   noLink?: boolean
+  openInNewTab?: boolean
 }
 
 export type StatefulEntityDisplayProps = Omit<
