@@ -2,12 +2,6 @@ import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { MsgSendTx } from '@dao-dao/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
-import {
-  CosmosTx,
-  InterchainAccountPacketData,
-  Type,
-} from '@dao-dao/protobuf/codegen/ibc/applications/interchain_accounts/v1/packet'
 import { icaRemoteAddressSelector } from '@dao-dao/state/recoil'
 import {
   ChainProvider,
@@ -37,6 +31,12 @@ import {
   makeStargateMessage,
   protobufToCwMsg,
 } from '@dao-dao/utils'
+import { MsgSendTx } from '@dao-dao/utils/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
+import {
+  CosmosTx,
+  InterchainAccountPacketData,
+  Type,
+} from '@dao-dao/utils/protobuf/codegen/ibc/applications/interchain_accounts/v1/packet'
 
 import { SuspenseLoader } from '../../../../components'
 import {

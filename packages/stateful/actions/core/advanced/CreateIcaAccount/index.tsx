@@ -2,8 +2,6 @@ import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { MsgRegisterInterchainAccount } from '@dao-dao/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
-import { Metadata } from '@dao-dao/protobuf/codegen/ibc/applications/interchain_accounts/v1/metadata'
 import { icaRemoteAddressSelector } from '@dao-dao/state/recoil'
 import { ChainEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
@@ -22,6 +20,8 @@ import {
   isDecodedStargateMsg,
   makeStargateMessage,
 } from '@dao-dao/utils'
+import { MsgRegisterInterchainAccount } from '@dao-dao/utils/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
+import { Metadata } from '@dao-dao/utils/protobuf/codegen/ibc/applications/interchain_accounts/v1/metadata'
 
 import { useActionOptions } from '../../../react'
 import { CreateIcaAccountComponent, CreateIcaAccountData } from './Component'
