@@ -1716,7 +1716,7 @@ export const MsgInstantiateContract2 = {
       msg: toUtf8(JSON.stringify(object.msg)),
       funds: Array.isArray(object?.funds) ? object.funds.map((e: any) => Coin.fromAmino(e)) : [],
       salt: bytesFromBase64(object.salt),
-      fixMsg: object.fix_msg
+      fixMsg: object.fix_msg ?? false
     };
   },
   toAmino(message: MsgInstantiateContract2, useInterfaces: boolean = false): MsgInstantiateContract2Amino {
@@ -1732,7 +1732,9 @@ export const MsgInstantiateContract2 = {
       obj.funds = [];
     }
     obj.salt = base64FromBytes(message.salt);
-    obj.fix_msg = message.fixMsg;
+    if (message.fixMsg) {
+      obj.fix_msg = message.fixMsg;
+    }
     return obj;
   },
   fromAminoMsg(object: MsgInstantiateContract2AminoMsg): MsgInstantiateContract2 {
