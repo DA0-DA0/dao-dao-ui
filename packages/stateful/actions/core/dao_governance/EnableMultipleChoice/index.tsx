@@ -20,6 +20,7 @@ import {
 } from '@dao-dao/types/actions'
 import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
+  ContractName,
   DaoProposalMultipleAdapterId,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
@@ -83,10 +84,15 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<EnableMultipleChoiceData> = (
 export const makeEnableMultipleChoiceAction: ActionMaker<
   EnableMultipleChoiceData
 > = ({ t, address, context, chain: { chain_id: chainId }, chainContext }) => {
-  // Disallows creation if multiple choice proposal module already exists, down
-  // at the bottom of this function, instead of returning null here. This
-  // ensures this action can be rendered correctly in past proposals after
-  // multiple choice is enabled.
+  // Disallow usage if:
+  // - not a DAO
+  // - DAO doesn't support multiple choice proposals
+  // - chain is not supported (type-check, implied by DAO check)
+  //
+  // Disallows creation at the bottom of this function if:
+  // - multiple choice proposal module already exists
+  // - single-choice approval flow is enabled, since multiple choice doesn't
+  //   support approval flow right now and that would be confusing.
   if (
     context.type !== ActionContextType.Dao ||
     !context.info.supportedFeatures[Feature.MultipleChoiceProposals] ||
@@ -241,6 +247,17 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     }, [anyoneCanPropose, config, depositInfo, depositInfoToken])
   }
 
+  // Disallow creation if:
+  // - multiple choice proposal module already exists
+  // - single-choice approval flow is enabled, since multiple choice doesn't
+  //   support approval flow right now and that would be confusing.
+  const hideFromPicker = context.info.proposalModules.some(
+    ({ contractName, prePropose }) =>
+      DaoProposalMultipleAdapter.contractNames.some((name) =>
+        contractName.includes(name)
+      ) || prePropose?.contractName === ContractName.PreProposeApprovalSingle
+  )
+
   return {
     key: ActionKey.EnableMultipleChoice,
     Icon: NumbersEmoji,
@@ -251,12 +268,6 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
-    // Do not allow using this action if the DAO already has a multiple choice
-    // proposal module setup.
-    hideFromPicker: context.info.proposalModules.some(({ contractName }) =>
-      DaoProposalMultipleAdapter.contractNames.some((name) =>
-        contractName.includes(name)
-      )
-    ),
+    hideFromPicker,
   }
 }

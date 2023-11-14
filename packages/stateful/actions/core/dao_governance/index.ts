@@ -5,6 +5,7 @@ import { makeDaoAdminExecAction } from './DaoAdminExec'
 import { makeEnableMultipleChoiceAction } from './EnableMultipleChoice'
 import { makeManageStorageItemsAction } from './ManageStorageItems'
 import { makeManageSubDaosAction } from './ManageSubDaos'
+import { makeSetUpApproverAction } from './SetUpApprover'
 import { makeUpgradeV1ToV2Action } from './UpgradeV1ToV2'
 
 export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
@@ -23,5 +24,6 @@ export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
     makeDaoAdminExecAction,
     makeUpgradeV1ToV2Action,
     makeCreateCrossChainAccountAction,
+    makeSetUpApproverAction,
   ],
 })

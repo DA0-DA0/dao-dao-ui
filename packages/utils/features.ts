@@ -26,6 +26,7 @@ export const isFeatureSupportedByVersion = (
     case Feature.ModuleInstantiateFunds:
     case Feature.Instantiate2:
       return versionGte(version, ContractVersion.V230)
+    case Feature.Approval:
     case Feature.VotingModuleTokenTypeFix:
       return versionGte(version, ContractVersion.V240)
     default:

@@ -1,5 +1,6 @@
 export * from './adapters'
 export * from './apps'
 export * from './chains'
+export * from './contracts'
 export * from './env'
 export * from './other'

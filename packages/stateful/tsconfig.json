@@ -1,6 +1,11 @@
 {
   "extends": "@dao-dao/config/ts/react-library.json",
-  "include": ["**/*.ts", "**/*.tsx"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "../state/contracts/DaoPreProposeApprovalSingle.ts",
+    "../state/recoil/selectors/contracts/DaoPreProposeApprovalSingle.ts"
+  ],
   "exclude": ["node_modules"],
   "compilerOptions": {
     "forceConsistentCasingInFileNames": false
