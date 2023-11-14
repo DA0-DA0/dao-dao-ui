@@ -1,29 +1,29 @@
 import { selectorFamily } from 'recoil'
 
-import { cosmWasmClientForChainSelector } from '@dao-dao/state'
 import { Addr, Binary, WithChainId } from '@dao-dao/types'
 import {
   Config,
   DepositInfoResponse,
   HooksResponse,
-} from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
+} from '@dao-dao/types/contracts/DaoPreProposeApprover'
 
-import { DaoPreProposeApprovalSingleQueryClient } from './DaoPreProposeApprovalSingle.client'
+import { DaoPreProposeApproverQueryClient } from '../../../contracts/DaoPreProposeApprover'
+import { cosmWasmClientForChainSelector } from '../chain'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
 }>
 
 export const queryClient = selectorFamily<
-  DaoPreProposeApprovalSingleQueryClient,
+  DaoPreProposeApproverQueryClient,
   QueryClientParams
 >({
-  key: 'daoPreProposeApprovalSingleQueryClient',
+  key: 'daoPreProposeApproverSingleQueryClient',
   get:
     ({ contractAddress, chainId }) =>
     ({ get }) => {
       const client = get(cosmWasmClientForChainSelector(chainId))
-      return new DaoPreProposeApprovalSingleQueryClient(client, contractAddress)
+      return new DaoPreProposeApproverQueryClient(client, contractAddress)
     },
   dangerouslyAllowMutability: true,
 })
@@ -31,10 +31,10 @@ export const queryClient = selectorFamily<
 export const proposalModuleSelector = selectorFamily<
   Addr,
   QueryClientParams & {
-    params: Parameters<DaoPreProposeApprovalSingleQueryClient['proposalModule']>
+    params: Parameters<DaoPreProposeApproverQueryClient['proposalModule']>
   }
 >({
-  key: 'daoPreProposeApprovalSingleProposalModule',
+  key: 'daoPreProposeApproverProposalModule',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -45,10 +45,10 @@ export const proposalModuleSelector = selectorFamily<
 export const daoSelector = selectorFamily<
   Addr,
   QueryClientParams & {
-    params: Parameters<DaoPreProposeApprovalSingleQueryClient['dao']>
+    params: Parameters<DaoPreProposeApproverQueryClient['dao']>
   }
 >({
-  key: 'daoPreProposeApprovalSingleDao',
+  key: 'daoPreProposeApproverDao',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -59,10 +59,10 @@ export const daoSelector = selectorFamily<
 export const configSelector = selectorFamily<
   Config,
   QueryClientParams & {
-    params: Parameters<DaoPreProposeApprovalSingleQueryClient['config']>
+    params: Parameters<DaoPreProposeApproverQueryClient['config']>
   }
 >({
-  key: 'daoPreProposeApprovalSingleConfig',
+  key: 'daoPreProposeApproverConfig',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -73,10 +73,10 @@ export const configSelector = selectorFamily<
 export const depositInfoSelector = selectorFamily<
   DepositInfoResponse,
   QueryClientParams & {
-    params: Parameters<DaoPreProposeApprovalSingleQueryClient['depositInfo']>
+    params: Parameters<DaoPreProposeApproverQueryClient['depositInfo']>
   }
 >({
-  key: 'daoPreProposeApprovalSingleDepositInfo',
+  key: 'daoPreProposeApproverDepositInfo',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -88,11 +88,11 @@ export const proposalSubmittedHooksSelector = selectorFamily<
   HooksResponse,
   QueryClientParams & {
     params: Parameters<
-      DaoPreProposeApprovalSingleQueryClient['proposalSubmittedHooks']
+      DaoPreProposeApproverQueryClient['proposalSubmittedHooks']
     >
   }
 >({
-  key: 'daoPreProposeApprovalSingleProposalSubmittedHooks',
+  key: 'daoPreProposeApproverProposalSubmittedHooks',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -103,10 +103,10 @@ export const proposalSubmittedHooksSelector = selectorFamily<
 export const queryExtensionSelector = selectorFamily<
   Binary,
   QueryClientParams & {
-    params: Parameters<DaoPreProposeApprovalSingleQueryClient['queryExtension']>
+    params: Parameters<DaoPreProposeApproverQueryClient['queryExtension']>
   }
 >({
-  key: 'daoPreProposeApprovalSingleQueryExtension',
+  key: 'daoPreProposeApproverQueryExtension',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {

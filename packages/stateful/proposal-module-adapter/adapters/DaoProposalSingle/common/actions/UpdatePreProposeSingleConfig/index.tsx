@@ -22,6 +22,7 @@ import {
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/DaoPreProposeSingle'
 import {
+  ContractName,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
@@ -121,10 +122,10 @@ export const makeUpdatePreProposeSingleConfigActionMaker =
     prePropose,
   }: ProposalModule): ActionMaker<UpdatePreProposeSingleConfigData> =>
   ({ t, context, chain: { chain_id: chainId } }) => {
-    // Only when pre propose is right.
+    // Only when pre propose is used.
     if (
       !prePropose ||
-      prePropose.contractName !== 'crates.io:dao-pre-propose-single'
+      prePropose.contractName !== ContractName.PreProposeSingle
     ) {
       return null
     }

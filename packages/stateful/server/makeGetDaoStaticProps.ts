@@ -34,6 +34,7 @@ import {
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   CI,
+  ContractName,
   DAO_CORE_ACCENT_ITEM_KEY,
   DAO_STATIC_PROPS_CACHE_SECONDS,
   LEGACY_URL_PREFIX,
@@ -156,7 +157,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         formula: 'info',
         required: true,
       })
-      if (addressInfo && addressInfo.contract === 'crates.io:polytone-proxy') {
+      if (addressInfo && addressInfo.contract === ContractName.PolytoneProxy) {
         // Get voice for this proxy on destination chain.
         const voice = await queryIndexer({
           type: 'contract',

@@ -25,7 +25,7 @@ export const makeDaoInfo = (): DaoInfo => ({
       address: 'proposalModuleAddress',
       prefix: 'A',
       prePropose: {
-        contractName: 'dao-pre-propose-single',
+        contractName: 'crates.io:dao-pre-propose-single',
         version: ContractVersion.V2Alpha,
         address: 'preProposeModuleAddress',
       },

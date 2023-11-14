@@ -86,7 +86,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 
   // Validate and throw error if invalid according to JSON schema.
   makeValidateMsg<any>(
-    approver
+    approver.enabled
       ? preProposeApprovalInstantiateSchema
       : preProposeInstantiateSchema,
     t

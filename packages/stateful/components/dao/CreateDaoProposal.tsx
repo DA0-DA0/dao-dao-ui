@@ -24,7 +24,7 @@ import {
   ProposalDraft,
   ProposalPrefill,
 } from '@dao-dao/types'
-import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
+import { ContractName, DaoProposalSingleAdapterId } from '@dao-dao/utils'
 
 import { useWallet } from '../../hooks/useWallet'
 import {
@@ -41,14 +41,24 @@ export const CreateDaoProposal = () => {
   const daoInfo = useDaoInfoContext()
   const { isWalletConnected } = useWallet()
 
-  const [selectedProposalModule, setSelectedProposalModule] = useState(
+  const [selectedProposalModule, setSelectedProposalModule] = useState(() => {
+    // Ignore proposals with an approver pre-propose since those are
+    // automatically managed by a pre-propose-approval contract in another DAO.
+    const validProposalModules = daoInfo.proposalModules.filter(
+      ({ prePropose }) =>
+        prePropose?.contractName !== ContractName.PreProposeApprover
+    )
+
     // Default to single choice proposal module or first otherwise.
-    daoInfo.proposalModules.find(
-      ({ contractName }) =>
-        matchProposalModuleAdapter(contractName)?.id ===
-        DaoProposalSingleAdapterId
-    ) ?? daoInfo.proposalModules[0]
-  )
+    return (
+      validProposalModules.find(
+        ({ contractName }) =>
+          // Default to single choice proposal module.
+          matchProposalModuleAdapter(contractName)?.id ===
+          DaoProposalSingleAdapterId
+      ) ?? validProposalModules[0]
+    )
+  })
   // Set once prefill has been assessed, indicating NewProposal can load now.
   const [prefillChecked, setPrefillChecked] = useState(false)
 
