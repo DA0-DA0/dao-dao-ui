@@ -4,19 +4,31 @@ import {
   LineElement,
   LinearScale,
   PointElement,
+  TimeScale,
   Title,
 } from 'chart.js'
+import { enUS } from 'date-fns/locale'
 import { Line } from 'react-chartjs-2'
+
+import 'chartjs-adapter-date-fns'
 
 import { useNamedThemeColor, useThemeContext } from '../theme'
 
-ChartJS.register(LinearScale, LineElement, CategoryScale, PointElement, Title)
+ChartJS.register(
+  LinearScale,
+  TimeScale,
+  LineElement,
+  CategoryScale,
+  PointElement,
+  Title
+)
 
 export interface LineGraphProps {
   title: string
   yTitle: string
   yValues: number[]
-  labels?: string[]
+  labels?: (string | number)[]
+  time?: boolean
   className?: string
 }
 
@@ -25,6 +37,7 @@ export const LineGraph = ({
   yTitle,
   yValues,
   labels,
+  time,
   className,
 }: LineGraphProps) => {
   const { accentColor } = useThemeContext()
@@ -66,6 +79,18 @@ export const LineGraph = ({
         },
         scales: {
           x: {
+            type: time ? 'time' : undefined,
+            adapters: {
+              date: {
+                locale: enUS,
+              },
+            },
+            time: {
+              minUnit: 'hour',
+              displayFormats: {
+                hour: 'dd MMM HH:mm',
+              },
+            },
             display: !!labels,
             ticks: {
               color: textColor,

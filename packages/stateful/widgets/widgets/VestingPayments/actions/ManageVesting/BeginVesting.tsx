@@ -1,14 +1,17 @@
 import {
   ArrowRightAltRounded,
+  Close,
   SubdirectoryArrowRightRounded,
   WarningRounded,
 } from '@mui/icons-material'
 import { ComponentType } from 'react'
-import { useFormContext } from 'react-hook-form'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  Button,
   CopyToClipboard,
+  IconButton,
   InputErrorMessage,
   InputLabel,
   InputThemedText,
@@ -23,6 +26,7 @@ import {
   ActionComponent,
   ActionContextType,
   AddressInputProps,
+  DurationUnits,
   DurationUnitsValues,
   DurationWithUnits,
   GenericTokenBalance,
@@ -34,6 +38,7 @@ import {
   formatDateTimeTz,
   makeValidateAddress,
   makeValidateDate,
+  validateNonNegative,
   validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
@@ -46,15 +51,18 @@ export type BeginVestingData = {
   recipient: string
   title: string
   description?: string
-  startDate?: string
-  duration: DurationWithUnits
+  startDate: string
+  steps: {
+    percent: number
+    delay: DurationWithUnits
+  }[]
 }
 
 export type BeginVestingOptions = {
   tokens: GenericTokenBalance[]
   // The vesting contract factory owner. If undefined, no owner is set.
   vestingFactoryOwner: LoadingData<string | undefined>
-  AddressInput: ComponentType<AddressInputProps>
+  AddressInput: ComponentType<AddressInputProps<BeginVestingData>>
 }
 
 export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
@@ -70,24 +78,55 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     chain: { bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
-  const { register, watch, setValue } = useFormContext()
+  const { control, register, watch, setValue } =
+    useFormContext<BeginVestingData>()
+  const {
+    fields: stepFields,
+    append: appendStep,
+    remove: removeStep,
+  } = useFieldArray({
+    control,
+    name: (fieldNamePrefix + 'steps') as 'steps',
+  })
 
-  const watchAmount = watch(fieldNamePrefix + 'amount')
-  const watchDenomOrAddress = watch(fieldNamePrefix + 'denomOrAddress')
-  const parsedStartDate = Date.parse(watch(fieldNamePrefix + 'startDate'))
-  const duration = watch(fieldNamePrefix + 'duration')
-
-  const durationSeconds = !isNaN(duration.value)
-    ? convertDurationWithUnitsToSeconds(duration)
-    : 0
+  const watchAmount = watch((fieldNamePrefix + 'amount') as 'amount')
+  const watchDenomOrAddress = watch(
+    (fieldNamePrefix + 'denomOrAddress') as 'denomOrAddress'
+  )
+  const parsedStartDate = Date.parse(
+    watch((fieldNamePrefix + 'startDate') as 'startDate')
+  )
+  const description = watch((fieldNamePrefix + 'description') as 'description')
 
   const startDate = !isNaN(parsedStartDate)
     ? new Date(parsedStartDate)
     : undefined
+
+  const steps = watch((fieldNamePrefix + 'steps') as 'steps')
+  const stepPoints =
+    startDate &&
+    steps.reduce((acc, { percent, delay }, index) => {
+      const delayMs =
+        delay.value && convertDurationWithUnitsToSeconds(delay) * 1000
+      const lastMs = index === 0 ? startDate.getTime() : acc[acc.length - 1][0]
+
+      return [
+        ...acc,
+        [
+          lastMs + delayMs,
+          // For the last step, use total to avoid
+          // rounding issues.
+          index === steps.length - 1
+            ? watchAmount
+            : (percent / 100) * watchAmount,
+        ] as [number, number],
+      ]
+    }, [] as [number, number][])
+
   const formattedStartDate = startDate && formatDateTimeTz(startDate)
-  const finishDate =
-    startDate && new Date(startDate.getTime() + durationSeconds * 1000)
-  const formattedFinishDate = finishDate && formatDateTimeTz(finishDate)
+  const formattedFinishDate = !!stepPoints?.length
+    ? formatDateTimeTz(new Date(stepPoints[stepPoints.length - 1][0]))
+    : undefined
 
   const selectedToken = tokens.find(
     ({ token: { denomOrAddress } }) => denomOrAddress === watchDenomOrAddress
@@ -112,23 +151,25 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
         <TextInput
           disabled={!isCreating}
           error={errors?.title}
-          fieldName={fieldNamePrefix + 'title'}
+          fieldName={(fieldNamePrefix + 'title') as 'title'}
           register={register}
           required
         />
         <InputErrorMessage error={errors?.title} />
       </div>
 
-      <div className="space-y-2">
-        <InputLabel name={t('form.descriptionOptional')} />
-        <TextAreaInput
-          disabled={!isCreating}
-          error={errors?.description}
-          fieldName={fieldNamePrefix + 'description'}
-          register={register}
-        />
-        <InputErrorMessage error={errors?.description} />
-      </div>
+      {(isCreating || !!description) && (
+        <div className="space-y-2">
+          <InputLabel name={t('form.descriptionOptional')} />
+          <TextAreaInput
+            disabled={!isCreating}
+            error={errors?.description}
+            fieldName={(fieldNamePrefix + 'description') as 'description'}
+            register={register}
+          />
+          <InputErrorMessage error={errors?.description} />
+        </div>
+      )}
 
       <div className="space-y-2">
         <InputLabel name={t('form.payment')} />
@@ -136,7 +177,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
         <div className="flex min-w-0 flex-col flex-wrap gap-x-3 gap-y-2 sm:flex-row sm:items-stretch">
           <TokenInput
             amountError={errors?.amount}
-            amountFieldName={fieldNamePrefix + 'amount'}
+            amountFieldName={(fieldNamePrefix + 'amount') as 'amount'}
             amountMax={selectedBalance}
             amountMin={convertMicroDenomToDenomWithDecimals(
               1,
@@ -159,7 +200,10 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                 }),
             ]}
             onSelectToken={({ denomOrAddress }) =>
-              setValue(fieldNamePrefix + 'denomOrAddress', denomOrAddress)
+              setValue(
+                (fieldNamePrefix + 'denomOrAddress') as 'denomOrAddress',
+                denomOrAddress
+              )
             }
             readOnly={!isCreating}
             register={register}
@@ -182,7 +226,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
               containerClassName="grow"
               disabled={!isCreating}
               error={errors?.recipient}
-              fieldName={fieldNamePrefix + 'recipient'}
+              fieldName={(fieldNamePrefix + 'recipient') as 'recipient'}
               register={register}
               validation={[validateRequired, makeValidateAddress(bech32Prefix)]}
             />
@@ -198,10 +242,9 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
         )}
       </div>
 
-      {/* Vesting Dates */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-stretch">
+      <div className="flex flex-row flex-wrap gap-2">
         {/* Start Date */}
-        <div className="flex grow basis-0 flex-col gap-2">
+        <div className="flex max-w-xs flex-col gap-2">
           <div className="flex flex-row items-end gap-2">
             <InputLabel name={t('form.startDate')} />
 
@@ -212,11 +255,10 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
           </div>
 
           {isCreating ? (
-            <div className="flex grow flex-col gap-1">
+            <div className="flex flex-col gap-1">
               <TextInput
-                className="grow"
                 error={errors?.startDate}
-                fieldName={fieldNamePrefix + 'startDate'}
+                fieldName={(fieldNamePrefix + 'startDate') as 'startDate'}
                 // eslint-disable-next-line i18next/no-literal-string
                 placeholder="YYYY-MM-DD HH:mm"
                 register={register}
@@ -225,64 +267,169 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
               <InputErrorMessage error={errors?.startDate} />
             </div>
           ) : (
-            <InputThemedText className="grow">
-              {formattedStartDate}
-            </InputThemedText>
+            <InputThemedText>{formattedStartDate}</InputThemedText>
           )}
         </div>
 
-        {/* Duration */}
-        <div className="flex grow basis-0 flex-col gap-2">
-          <InputLabel name={t('form.vestingDuration')} />
-
-          <div className="grow">
-            <div className="flex flex-row gap-2">
-              <NumberInput
-                containerClassName="grow"
-                disabled={!isCreating}
-                error={errors?.duration?.value}
-                fieldName={fieldNamePrefix + 'duration.value'}
-                min={1}
-                register={register}
-                setValue={setValue}
-                sizing="sm"
-                step={1}
-                validation={[validatePositive, validateRequired]}
-                watch={watch}
-              />
-
-              <SelectInput
-                disabled={!isCreating}
-                error={errors?.duration?.units}
-                fieldName={fieldNamePrefix + 'duration.units'}
-                register={register}
-                validation={[validateRequired]}
-              >
-                {DurationUnitsValues.map((type, idx) => (
-                  <option key={idx} value={type}>
-                    {t(`unit.${type}`, {
-                      count: duration.value,
-                    }).toLocaleLowerCase()}
-                  </option>
-                ))}
-              </SelectInput>
-            </div>
-
-            <InputErrorMessage error={errors?.durationSeconds} />
+        {/* Finish Date, once created */}
+        {!isCreating && formattedFinishDate && (
+          <div className="flex max-w-xs flex-col gap-2">
+            <InputLabel name={t('form.finishDate')} />
+            <InputThemedText className="max-w-xs">
+              {formattedFinishDate}
+            </InputThemedText>
           </div>
-        </div>
+        )}
+      </div>
+
+      {/* Steps */}
+      <div className="flex flex-col gap-3">
+        <InputLabel name={t('form.steps')} primary />
+
+        {stepFields.map(({ id }, index) => {
+          const stepTimestamp = stepPoints && new Date(stepPoints[index][0])
+
+          return (
+            <div
+              key={id}
+              className="flex flex-row flex-wrap items-center gap-2"
+            >
+              <div className="flex shrink-0 flex-col gap-1">
+                <InputLabel name={t('form.percentUnlocked')} />
+
+                <NumberInput
+                  disabled={!isCreating}
+                  error={errors?.steps?.[index]?.percent}
+                  fieldName={
+                    (fieldNamePrefix +
+                      `steps.${index}.percent`) as `steps.${number}.percent`
+                  }
+                  max={100}
+                  min={0}
+                  register={register}
+                  setValue={setValue}
+                  sizing="md"
+                  step={0.01}
+                  unit="%"
+                  validation={[validateNonNegative, validateRequired]}
+                  watch={watch}
+                />
+
+                <InputErrorMessage error={errors?.steps?.[index]?.percent} />
+              </div>
+
+              <div className="flex shrink-0 flex-col gap-1">
+                <div className="flex flex-row items-end justify-between gap-2">
+                  <InputLabel name={t('form.afterDelay')} />
+
+                  {/* Date Preview */}
+                  {stepTimestamp && (
+                    <p className="caption-text">
+                      ({formatDateTimeTz(stepTimestamp)})
+                    </p>
+                  )}
+                </div>
+
+                <div className="flex flex-row gap-1">
+                  <NumberInput
+                    disabled={!isCreating}
+                    error={errors?.steps?.[index]?.delay?.value}
+                    fieldName={
+                      (fieldNamePrefix +
+                        `steps.${index}.delay.value`) as `steps.${number}.delay.value`
+                    }
+                    min={1}
+                    register={register}
+                    setValue={setValue}
+                    sizing="md"
+                    step={1}
+                    unit={
+                      isCreating
+                        ? undefined
+                        : t(`unit.${steps[index].delay.units}`, {
+                            count: steps[index].delay.value,
+                          }).toLocaleLowerCase()
+                    }
+                    validation={[validatePositive, validateRequired]}
+                    watch={watch}
+                  />
+
+                  {isCreating && (
+                    <SelectInput
+                      disabled={!isCreating}
+                      error={errors?.steps?.[index]?.delay?.units}
+                      fieldName={
+                        (fieldNamePrefix +
+                          `steps.${index}.delay.units`) as `steps.${number}.delay.units`
+                      }
+                      register={register}
+                      validation={[validateRequired]}
+                    >
+                      {DurationUnitsValues.map((type, idx) => (
+                        <option key={idx} value={type}>
+                          {t(`unit.${type}`, {
+                            count: steps[index].delay.value,
+                          }).toLocaleLowerCase()}
+                        </option>
+                      ))}
+                    </SelectInput>
+                  )}
+                </div>
+
+                <InputErrorMessage
+                  error={
+                    errors?.steps?.[index]?.delay?.value ||
+                    errors?.steps?.[index]?.delay?.units
+                  }
+                />
+              </div>
+
+              {isCreating && (
+                <IconButton
+                  Icon={Close}
+                  className="mt-6"
+                  onClick={() => removeStep(index)}
+                  size="sm"
+                  variant="ghost"
+                />
+              )}
+            </div>
+          )
+        })}
+
+        {isCreating && (
+          <Button
+            className="self-start"
+            onClick={() =>
+              appendStep({
+                percent: Math.min(
+                  (steps[steps.length - 1]?.percent ?? 0) + 25,
+                  100
+                ),
+                delay: {
+                  value: 1,
+                  units: DurationUnits.Months,
+                },
+              })
+            }
+            variant="secondary"
+          >
+            {t('button.addStep')}
+          </Button>
+        )}
       </div>
 
       <div className="rounded-md bg-background-tertiary p-2">
         <LineGraph
-          className="!h-40"
+          className="!h-60"
           labels={[
-            formattedStartDate || t('form.startDate'),
-            formattedFinishDate || t('form.finishDate'),
+            parsedStartDate || t('form.startDate'),
+            ...(stepPoints?.map(([time]) => time) ?? [t('form.finishDate')]),
           ]}
+          time
           title={t('title.vestingCurve')}
           yTitle={'$' + selectedSymbol}
-          yValues={[0, watchAmount]}
+          yValues={[0, ...(stepPoints?.map(([, value]) => value) ?? [])]}
         />
       </div>
 
