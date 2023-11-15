@@ -66,4 +66,16 @@ Default.args = {
   startDate: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
   // Ends in 7 days.
   endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+  steps: [
+    {
+      // Started 2 days ago.
+      timestamp: Date.now() - 1000 * 60 * 60 * 24 * 2,
+      amount: 0,
+    },
+    {
+      // Ends in 7 days.
+      timestamp: Date.now() + 1000 * 60 * 60 * 24 * 7,
+      amount: 403221.5447,
+    },
+  ],
 }

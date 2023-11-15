@@ -53,6 +53,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     distributable,
     startDate,
     endDate,
+    steps,
   } = vestingInfo
 
   const recipientEntity = useEntity(vest.recipient)
@@ -245,6 +246,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
           token.decimals
         )}
         startDate={startDate}
+        steps={steps}
         title={vest.title}
         token={token}
         withdrawing={withdrawing}

@@ -10,8 +10,9 @@ import {
   validatorSlashesSelector,
 } from '@dao-dao/state/recoil'
 import { TokenType, WithChainId } from '@dao-dao/types'
+import { convertMicroDenomToDenomWithDecimals } from '@dao-dao/utils'
 
-import { VestingInfo } from '../types'
+import { VestingInfo, VestingStep } from '../types'
 import { getVestingValidatorSlashes } from './utils'
 
 export const vestingFactoryOwnerSelector = selectorFamily<
@@ -78,7 +79,6 @@ export const vestingInfoSelector = selectorFamily<
         vested,
         total,
         distributable,
-        durationSeconds,
         { owner },
         stakeHistory,
         unbondingDurationSeconds,
@@ -104,11 +104,6 @@ export const vestingInfoSelector = selectorFamily<
             contractAddress: vestingContractAddress,
             chainId,
             params: [{}],
-          }),
-          CwVestingSelectors.vestDurationSelector({
-            contractAddress: vestingContractAddress,
-            chainId,
-            params: [],
           }),
           CwVestingSelectors.ownershipSelector({
             contractAddress: vestingContractAddress,
@@ -207,10 +202,69 @@ export const vestingInfoSelector = selectorFamily<
 
       const completed = vest.status === 'funded' && vest.claimed === total
 
-      const startTimeNanos = Number(vest.start_time)
-      const startDate = new Date(startTimeNanos / 1e6)
-      const endTimeNanos = startTimeNanos + Number(durationSeconds) * 1e9
-      const endDate = new Date(endTimeNanos / 1e6)
+      const startTimeMs = Number(vest.start_time) / 1e6
+      const startDate = new Date(startTimeMs)
+
+      const steps: VestingStep[] =
+        // Constant is used when a vest is canceled.
+        'constant' in vest.vested
+          ? [
+              {
+                timestamp: startTimeMs,
+                amount: convertMicroDenomToDenomWithDecimals(
+                  vest.vested.constant.y,
+                  token.decimals
+                ),
+              },
+              {
+                timestamp: startTimeMs,
+                amount: convertMicroDenomToDenomWithDecimals(
+                  vest.vested.constant.y,
+                  token.decimals
+                ),
+              },
+            ]
+          : 'saturating_linear' in vest.vested
+          ? [
+              {
+                timestamp:
+                  startTimeMs + vest.vested.saturating_linear.min_x * 1000,
+                amount: convertMicroDenomToDenomWithDecimals(
+                  vest.vested.saturating_linear.min_y,
+                  token.decimals
+                ),
+              },
+              {
+                timestamp:
+                  startTimeMs + vest.vested.saturating_linear.max_x * 1000,
+                amount: convertMicroDenomToDenomWithDecimals(
+                  vest.vested.saturating_linear.max_y,
+                  token.decimals
+                ),
+              },
+            ]
+          : vest.vested.piecewise_linear.steps.reduce(
+              (acc, [seconds, amount], index): VestingStep[] => {
+                // Ignore first step if hardcoded 0 amount at 1 second.
+                if (index === 0 && seconds === 1 && amount === '0') {
+                  return acc
+                }
+
+                return [
+                  ...acc,
+                  {
+                    timestamp: startTimeMs + seconds * 1000,
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      amount,
+                      token.decimals
+                    ),
+                  },
+                ]
+              },
+              [] as VestingStep[]
+            )
+
+      const endDate = new Date(steps[steps.length - 1].timestamp)
 
       return {
         vestingContractAddress,
@@ -226,6 +280,7 @@ export const vestingInfoSelector = selectorFamily<
         completed,
         startDate,
         endDate,
+        steps,
       }
     },
 })

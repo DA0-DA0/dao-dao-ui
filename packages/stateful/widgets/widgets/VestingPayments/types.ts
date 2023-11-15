@@ -52,4 +52,11 @@ export type VestingInfo = {
   // Dates.
   startDate: Date
   endDate: Date
+  // Steps.
+  steps: VestingStep[]
+}
+
+export type VestingStep = {
+  timestamp: number
+  amount: number
 }
