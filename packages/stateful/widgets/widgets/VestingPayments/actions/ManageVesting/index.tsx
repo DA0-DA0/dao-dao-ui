@@ -17,6 +17,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   DurationUnits,
+  DurationWithUnits,
   SegmentedControlsProps,
   TokenType,
 } from '@dao-dao/types'
@@ -35,7 +36,7 @@ import {
 } from '@dao-dao/types/contracts/CwPayrollFactory'
 import { InstantiateMsg as VestingInstantiateMsg } from '@dao-dao/types/contracts/CwVesting'
 import {
-  convertDenomToMicroDenomStringWithDecimals,
+  convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   convertSecondsToDurationWithUnits,
@@ -78,18 +79,25 @@ const useDefaults: UseDefaults<ManageVestingData> = () => {
     chain: { chain_id: chainId },
   } = useActionOptions()
 
+  const start = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+
   return {
     mode: 'begin',
     begin: {
       amount: 1,
       denomOrAddress: getNativeTokenForChainId(chainId).denomOrAddress,
       recipient: '',
-      startDate: '',
+      startDate: `${start.toISOString().split('T')[0]} 12:00 AM`,
       title: '',
-      duration: {
-        value: 1,
-        units: DurationUnits.Years,
-      },
+      steps: [
+        {
+          percent: 100,
+          delay: {
+            value: 1,
+            units: DurationUnits.Years,
+          },
+        },
+      ],
     },
     cancel: {
       address: '',
@@ -225,11 +233,6 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
         .instantiate_payroll_contract.instantiate_msg as VestingInstantiateMsg
     }
 
-    // Can only render saturating linear vesting schedules.
-    if (instantiateMsg.schedule !== 'saturating_linear') {
-      return { match: false }
-    }
-
     return {
       match: true,
       data: {
@@ -239,21 +242,65 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
           denomOrAddress: token.denomOrAddress,
           description: instantiateMsg.description || undefined,
           recipient: instantiateMsg.recipient,
-          schedule: instantiateMsg.schedule,
           startDate: instantiateMsg.start_time
             ? new Date(
                 // nanoseconds => milliseconds
                 Number(instantiateMsg.start_time) / 1e6
               ).toLocaleString()
-            : undefined,
+            : '',
           title: instantiateMsg.title,
           amount: convertMicroDenomToDenomWithDecimals(
             instantiateMsg.total,
             token.decimals
           ),
-          duration: convertSecondsToDurationWithUnits(
-            instantiateMsg.vesting_duration_seconds
-          ),
+          steps:
+            instantiateMsg.schedule === 'saturating_linear'
+              ? [
+                  {
+                    percent: 100,
+                    delay: convertSecondsToDurationWithUnits(
+                      instantiateMsg.vesting_duration_seconds
+                    ),
+                  },
+                ]
+              : instantiateMsg.schedule.piecewise_linear.reduce(
+                  (acc, [seconds, amount], index) => {
+                    // Ignore first step if hardcoded 0 amount at 1 second.
+                    if (index === 0 && seconds === 1 && amount === '0') {
+                      return acc
+                    }
+
+                    const pastTimestamp =
+                      index === 1 ||
+                      // Typecheck. Always false.
+                      instantiateMsg.schedule === 'saturating_linear'
+                        ? // For first user-defined step, account for 1 second
+                          // delay since we ignore the first hardcoded step at 1
+                          // second. When we created the msg, we subtracted 1
+                          // second from the first user-defined step's delay.
+                          0
+                        : instantiateMsg.schedule.piecewise_linear[index - 1][0]
+
+                    return [
+                      ...acc,
+                      {
+                        percent: Number(
+                          (
+                            (Number(amount) / Number(instantiateMsg.total)) *
+                            100
+                          ).toFixed(2)
+                        ),
+                        delay: convertSecondsToDurationWithUnits(
+                          seconds - pastTimestamp
+                        ),
+                      },
+                    ]
+                  },
+                  [] as {
+                    percent: number
+                    delay: DurationWithUnits
+                  }[]
+                ),
         },
       },
     }
@@ -524,9 +571,15 @@ export const makeManageVestingActionMaker = ({
               throw new Error(`Unknown token: ${begin.denomOrAddress}`)
             }
 
-            const amount = convertDenomToMicroDenomStringWithDecimals(
+            const total = convertDenomToMicroDenomWithDecimals(
               begin.amount,
               token.decimals
+            )
+
+            const vestingDurationSeconds = begin.steps.reduce(
+              (acc, { delay }) =>
+                acc + convertDurationWithUnitsToSeconds(delay),
+              0
             )
 
             const instantiateMsg: VestingInstantiateMsg = {
@@ -541,7 +594,52 @@ export const makeManageVestingActionMaker = ({
               description: begin.description || undefined,
               owner: vestingFactoryOwner.data,
               recipient: begin.recipient,
-              schedule: 'saturating_linear',
+              schedule:
+                begin.steps.length === 1
+                  ? 'saturating_linear'
+                  : {
+                      piecewise_linear: [
+                        // First point must be 0 amount at 1 second.
+                        [1, '0'],
+                        ...(begin.steps.reduce(
+                          (acc, { percent, delay }, index) => {
+                            const delaySeconds = Math.max(
+                              // Ensure this is at least 1 second since it can't
+                              // have overlapping points.
+                              1,
+                              convertDurationWithUnitsToSeconds(delay) -
+                                // For the first step, subtract 1 second since
+                                // the first point must start at 1 second and is
+                                // hardcoded above.
+                                (index === 0 ? 1 : 0)
+                            )
+
+                            // For the first step, start at 1 second since the
+                            // first point must start at 1 second and is
+                            // hardcoded above.
+                            const lastSeconds =
+                              index === 0 ? 1 : acc[acc.length - 1][0]
+
+                            return [
+                              ...acc,
+                              [
+                                lastSeconds + delaySeconds,
+                                BigInt(
+                                  // For the last step, use total to avoid
+                                  // rounding issues.
+                                  index === begin.steps.length - 1
+                                    ? total
+                                    : Math.round(
+                                        (percent / 100) * Number(total)
+                                      )
+                                ).toString(),
+                              ],
+                            ]
+                          },
+                          [] as [number, string][]
+                        ) as [number, string][]),
+                      ],
+                    },
               start_time:
                 begin.startDate && !isNaN(Date.parse(begin.startDate))
                   ? // milliseconds => nanoseconds
@@ -550,16 +648,14 @@ export const makeManageVestingActionMaker = ({
                     ).toString()
                   : '',
               title: begin.title,
-              total: amount,
+              total: BigInt(total).toString(),
               unbonding_duration_seconds:
                 token.type === TokenType.Native &&
                 token.denomOrAddress ===
                   getNativeTokenForChainId(chainId).denomOrAddress
                   ? nativeUnstakingDurationSecondsLoadable.contents
                   : 0,
-              vesting_duration_seconds: convertDurationWithUnitsToSeconds(
-                begin.duration
-              ),
+              vesting_duration_seconds: vestingDurationSeconds,
             }
 
             const msg: InstantiateNativePayrollContractMsg = {
@@ -572,7 +668,7 @@ export const makeManageVestingActionMaker = ({
                 wasm: {
                   execute: {
                     contract_addr: factory,
-                    funds: coins(amount, token.denomOrAddress),
+                    funds: coins(total, token.denomOrAddress),
                     msg: {
                       instantiate_native_payroll_contract: msg,
                     } as ExecuteMsg,
@@ -588,7 +684,7 @@ export const makeManageVestingActionMaker = ({
                     funds: [],
                     msg: {
                       send: {
-                        amount,
+                        amount: total,
                         contract: factory,
                         msg: encodeMessageAsBase64({
                           instantiate_payroll_contract: msg,
