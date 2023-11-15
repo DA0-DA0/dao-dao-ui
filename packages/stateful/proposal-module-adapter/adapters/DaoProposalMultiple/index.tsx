@@ -117,6 +117,8 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
     components: {
       ProposalStatusAndInfo,
       ProposalInnerContentDisplay,
+      // No multiple choice approval flow yet.
+      PreProposeApprovalInnerContentDisplay: () => null,
       ProposalWalletVote,
       ProposalVotes,
       ProposalVoteTally,

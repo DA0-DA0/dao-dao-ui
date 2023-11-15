@@ -105,7 +105,7 @@ export type QueryExt =
       pre_propose_approval_contract: {}
     }
   | {
-      pending_proposal_id_for_approval_proposal_id: {
+      pre_propose_approval_id_for_approver_proposal_id: {
         id: number
       }
     }

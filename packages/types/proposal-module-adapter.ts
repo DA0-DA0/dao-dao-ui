@@ -72,6 +72,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
   components: {
     ProposalStatusAndInfo: ComponentType<BaseProposalStatusAndInfoProps>
     ProposalInnerContentDisplay: ComponentType<BaseProposalInnerContentDisplayProps>
+    PreProposeApprovalInnerContentDisplay: ComponentType<BasePreProposeApprovalInnerContentDisplayProps>
     ProposalWalletVote: ComponentType<BaseProposalWalletVoteProps<Vote>>
     ProposalVotes: ComponentType
     ProposalVoteTally: ComponentType
@@ -117,22 +118,29 @@ export type ProposalModuleAdapter<
   }
 }
 
-export interface IProposalModuleAdapterInitialOptions {
+export type IProposalModuleAdapterCommonOptions = {
   chain: Chain
   coreAddress: string
-}
-
-export interface IProposalModuleAdapterCommonOptions
-  extends IProposalModuleAdapterInitialOptions {
   proposalModule: ProposalModule
 }
 
-export interface IProposalModuleAdapterOptions
-  extends IProposalModuleAdapterInitialOptions {
+export type IProposalModuleAdapterCommonInitialOptions = Omit<
+  IProposalModuleAdapterCommonOptions,
+  'proposalModule'
+>
+
+export type IProposalModuleAdapterOptions = {
+  chain: Chain
+  coreAddress: string
   proposalModule: ProposalModule
   proposalId: string
   proposalNumber: number
 }
+
+export type IProposalModuleAdapterInitialOptions = Omit<
+  IProposalModuleAdapterOptions,
+  'proposalModule' | 'proposalId' | 'proposalNumber'
+>
 
 export interface IProposalModuleContext {
   id: string
@@ -198,6 +206,10 @@ export interface BaseProposalInnerContentDisplayProps<
   actionsForMatching: CategorizedAction[]
   // Called when the user has viewed all action pages.
   setSeenAllActionPages?: () => void
+}
+
+export type BasePreProposeApprovalInnerContentDisplayProps = {
+  actionsForMatching: CategorizedAction[]
 }
 
 export interface BaseProposalWalletVoteProps<T> {

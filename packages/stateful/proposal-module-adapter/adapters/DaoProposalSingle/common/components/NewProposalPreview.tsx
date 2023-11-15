@@ -4,14 +4,15 @@ import { ProposalContentDisplay, RawActionsRenderer } from '@dao-dao/stateless'
 
 import { useLoadedActionsAndCategories } from '../../../../../actions'
 import { EntityDisplay } from '../../../../../components'
-import { useWalletInfo } from '../../../../../hooks'
+import { useEntity, useWalletInfo } from '../../../../../hooks'
 import { NewProposalForm } from '../../types'
 
 export const NewProposalPreview = () => {
   const { loadedActions } = useLoadedActionsAndCategories()
   const { watch } = useFormContext<NewProposalForm>()
 
-  const { walletAddress = '', walletProfileData } = useWalletInfo()
+  const { walletAddress = '' } = useWalletInfo()
+  const entity = useEntity(walletAddress)
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -21,12 +22,11 @@ export const NewProposalPreview = () => {
   return (
     <ProposalContentDisplay
       EntityDisplay={EntityDisplay}
+      approval={false}
       createdAt={new Date()}
       creator={{
         address: walletAddress,
-        name: walletProfileData.loading
-          ? { loading: true }
-          : { loading: false, data: walletProfileData.profile.name },
+        entity,
       }}
       description={proposalDescription}
       innerContentDisplay={

@@ -4,9 +4,10 @@ Author: [@NoahSaso](https://github.com/NoahSaso)
 
 ## Adapters
 
-| Adapter                                           | Summary                 |
-| ------------------------------------------------- | ----------------------- |
-| [DaoProposalSingle](./adapters/DaoProposalSingle) | Single choice proposals |
+| Adapter                                               | Summary                   |
+| ----------------------------------------------------- | ------------------------- |
+| [DaoProposalSingle](./adapters/DaoProposalSingle)     | Single choice proposals   |
+| [DaoProposalMultiple](./adapters/DaoProposalMultiple) | Multiple choice proposals |
 
 ## Layout
 

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import {
   DaoTabId,
+  Entity,
   IconButtonLinkProps,
   LoadingData,
   StatefulEntityDisplayProps,
@@ -25,7 +26,7 @@ export interface ProposalProps {
   proposalInnerContentDisplay: ReactNode
   creator?: {
     address: string
-    name: LoadingData<string | null>
+    entity: LoadingData<Entity>
   }
   rightSidebarContent: ReactNode
   onRefresh: () => void
@@ -33,6 +34,8 @@ export interface ProposalProps {
   duplicateUrl: string | undefined
   IconButtonLink: ComponentType<IconButtonLinkProps>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
+  // Whether or not this proposal is an approval proposal.
+  approval: boolean
 }
 
 export const Proposal = ({
@@ -51,6 +54,7 @@ export const Proposal = ({
   duplicateUrl,
   IconButtonLink,
   EntityDisplay,
+  approval,
 }: ProposalProps) => {
   const { t } = useTranslation()
 
@@ -99,6 +103,7 @@ export const Proposal = ({
             <ProposalContentDisplay
               EntityDisplay={EntityDisplay}
               IconButtonLink={IconButtonLink}
+              approval={approval}
               createdAt={createdAt}
               creator={creator}
               description={description}

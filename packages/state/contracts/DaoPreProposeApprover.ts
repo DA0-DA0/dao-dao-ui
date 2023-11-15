@@ -5,7 +5,7 @@ import {
   SigningCosmWasmClient,
 } from '@cosmjs/cosmwasm-stargate'
 
-import { Addr, Binary, Coin, Empty } from '@dao-dao/types'
+import { Addr, Coin, Empty } from '@dao-dao/types'
 import {
   ApproverProposeMessage,
   Config,
@@ -28,7 +28,7 @@ export interface DaoPreProposeApproverReadOnlyInterface {
     proposalId: number
   }) => Promise<DepositInfoResponse>
   proposalSubmittedHooks: () => Promise<HooksResponse>
-  queryExtension: ({ msg }: { msg: QueryExt }) => Promise<Binary>
+  queryExtension: ({ msg }: { msg: QueryExt }) => Promise<string | number>
 }
 export class DaoPreProposeApproverQueryClient
   implements DaoPreProposeApproverReadOnlyInterface
@@ -78,7 +78,11 @@ export class DaoPreProposeApproverQueryClient
       proposal_submitted_hooks: {},
     })
   }
-  queryExtension = async ({ msg }: { msg: QueryExt }): Promise<Binary> => {
+  queryExtension = async ({
+    msg,
+  }: {
+    msg: QueryExt
+  }): Promise<string | number> => {
     return this.client.queryContractSmart(this.contractAddress, {
       query_extension: {
         msg,

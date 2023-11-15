@@ -32,6 +32,7 @@ import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
+  PreProposeModuleType,
   ProposalStatus,
 } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
@@ -138,6 +139,11 @@ const InnerProposalStatusAndInfo = ({
     })
   )
 
+  const creatorAddress =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approver
+      ? proposalModule.prePropose.config.approvalDao
+      : proposal.proposer
+
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
   const loadingExecutionTxHash = useLoadingProposalExecutionTxHash()
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
@@ -161,9 +167,7 @@ const InnerProposalStatusAndInfo = ({
     {
       Icon: AccountCircleOutlined,
       label: t('title.creator'),
-      Value: (props) => (
-        <EntityDisplay {...props} address={proposal.proposer} />
-      ),
+      Value: (props) => <EntityDisplay {...props} address={creatorAddress} />,
     },
     {
       Icon: RotateRightOutlined,

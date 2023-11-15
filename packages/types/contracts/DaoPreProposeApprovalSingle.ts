@@ -126,6 +126,16 @@ export type QueryExt =
       approver: {}
     }
   | {
+      is_pending: {
+        id: number
+      }
+    }
+  | {
+      proposal: {
+        id: number
+      }
+    }
+  | {
       pending_proposal: {
         id: number
       }
@@ -140,6 +150,28 @@ export type QueryExt =
       reverse_pending_proposals: {
         limit?: number | null
         start_before?: number | null
+      }
+    }
+  | {
+      completed_proposal: {
+        id: number
+      }
+    }
+  | {
+      completed_proposals: {
+        limit?: number | null
+        start_after?: number | null
+      }
+    }
+  | {
+      reverse_completed_proposals: {
+        limit?: number | null
+        start_before?: number | null
+      }
+    }
+  | {
+      completed_proposal_id_for_created_proposal_id: {
+        id: number
       }
     }
 export type CheckedDenom =
@@ -164,4 +196,29 @@ export interface DepositInfoResponse {
 }
 export interface HooksResponse {
   hooks: string[]
+}
+export type ProposalStatus =
+  | {
+      pending: {}
+    }
+  | {
+      approved: {
+        created_proposal_id: number
+      }
+    }
+  | {
+      rejected: {}
+    }
+export type ProposeMsg = {
+  title: string
+  description: string
+  msgs: CosmosMsgForEmpty[]
+  proposer: string | null
+}
+export type Proposal = {
+  status: ProposalStatus
+  approval_id: number
+  proposer: string
+  msg: ProposeMsg
+  deposit: CheckedDepositInfo
 }

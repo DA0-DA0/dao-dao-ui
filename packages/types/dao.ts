@@ -76,11 +76,31 @@ export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
   created: string | null
 }
 
+export enum PreProposeModuleType {
+  Approver = 'approver',
+  Other = 'other',
+}
+
+export type PreProposeModuleApproverConfig = {
+  approvalDao: string
+  preProposeApprovalContract: string
+}
+
+export type PreProposeModuleTypedConfig =
+  | {
+      type: PreProposeModuleType.Other
+      config?: undefined
+    }
+  | {
+      type: PreProposeModuleType.Approver
+      config: PreProposeModuleApproverConfig
+    }
+
 export type PreProposeModule = {
   contractName: string
   version: ContractVersion
   address: string
-}
+} & PreProposeModuleTypedConfig
 
 export type ProposalModule = {
   contractName: string

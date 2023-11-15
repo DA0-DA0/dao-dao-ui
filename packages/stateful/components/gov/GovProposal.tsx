@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
 import {
   govProposalSelector,
@@ -19,8 +19,7 @@ import {
 import { govProposalToDecodedContent } from '@dao-dao/utils'
 import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/gov'
 
-import { useLoadingGovProposal, useWallet } from '../../hooks'
-import { walletProfileDataSelector } from '../../recoil'
+import { useEntity, useLoadingGovProposal, useWallet } from '../../hooks'
 import { EntityDisplay } from '../EntityDisplay'
 import { IconButtonLink } from '../IconButtonLink'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
@@ -42,14 +41,11 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
   const { isWalletConnected } = useWallet()
   const { chain_id: chainId } = useChain()
 
-  const loadingCreatorProfile = useRecoilValue(
-    proposal.version === GovProposalVersion.V1 && proposal.proposal.proposer
-      ? walletProfileDataSelector({
-          address: proposal.proposal.proposer,
-          chainId,
-        })
-      : constSelector(undefined)
-  )
+  const proposerAddress =
+    (proposal.version === GovProposalVersion.V1 &&
+      proposal.proposal.proposer) ||
+    ''
+  const entity = useEntity(proposerAddress)
 
   const proposalId = proposal.id.toString()
   const ProposalStatusAndInfo = useCallback(
@@ -67,17 +63,15 @@ const InnerGovProposal = ({ proposal }: InnerGovProposalProps) => {
       EntityDisplay={EntityDisplay}
       IconButtonLink={IconButtonLink}
       ProposalStatusAndInfo={ProposalStatusAndInfo}
+      approval={false}
       createdAt={proposal.proposal.submitTime}
       creator={
-        loadingCreatorProfile && {
-          name: loadingCreatorProfile.loading
-            ? { loading: true }
-            : {
-                loading: false,
-                data: loadingCreatorProfile.profile.name,
-              },
-          address: loadingCreatorProfile.address,
-        }
+        proposerAddress
+          ? {
+              address: proposerAddress,
+              entity,
+            }
+          : undefined
       }
       description={proposal.description.replace(/\\n/g, '\n')}
       duplicateUrl={undefined}
