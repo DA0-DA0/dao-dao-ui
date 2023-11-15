@@ -5,7 +5,6 @@ import { useSetRecoilState, waitForAll } from 'recoil'
 
 import { genericTokenWithUsdPriceSelector } from '@dao-dao/state/recoil'
 import {
-  EntityDisplay,
   Loader,
   useCachedLoadable,
   useChain,
@@ -13,7 +12,11 @@ import {
 } from '@dao-dao/stateless'
 import { TokenType } from '@dao-dao/types'
 
-import { ConnectWallet, SuspenseLoader } from '../../../../../../components'
+import {
+  ConnectWallet,
+  EntityDisplay,
+  SuspenseLoader,
+} from '../../../../../../components'
 import { useEntity, useWallet } from '../../../../../../hooks'
 import { refreshStatusAtom } from '../../atoms'
 import { usePostRequest } from '../../hooks/usePostRequest'
