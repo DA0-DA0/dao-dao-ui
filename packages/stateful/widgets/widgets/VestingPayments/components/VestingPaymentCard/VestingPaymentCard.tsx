@@ -43,7 +43,10 @@ import {
   secondsToWdhms,
 } from '@dao-dao/utils'
 
-export interface VestingPaymentCardProps {
+import { VestingStep } from '../../types'
+import { VestingStepsLineGraph } from '../VestingStepsLineGraph'
+
+export type VestingPaymentCardProps = {
   recipient: string
   recipientEntity: LoadingData<Entity>
   // If current wallet connected is the recipient.
@@ -61,6 +64,7 @@ export interface VestingPaymentCardProps {
   claimedAmount: number
   startDate: Date
   endDate: Date
+  steps: VestingStep[]
 
   // Defined if using a Cw20 token.
   cw20Address?: string
@@ -93,6 +97,7 @@ export const VestingPaymentCard = ({
   claimedAmount,
   startDate,
   endDate,
+  steps,
   cw20Address,
   onWithdraw,
   withdrawing,
@@ -504,7 +509,7 @@ export const VestingPaymentCard = ({
         {!lazyInfo.loading &&
           (!!lazyInfo.data.stakingInfo?.stakes?.length ||
             !!lazyInfo.data.stakingInfo?.unstakingTasks?.length) && (
-            <div className="flex flex-col gap-2 border-t border-border-secondary px-6 pt-4 pb-6">
+            <div className="flex flex-col gap-2 border-t border-border-secondary px-6 py-4">
               <p className="link-text mb-1">{t('info.stakes')}</p>
 
               <div className="flex flex-row items-center justify-between gap-8">
@@ -598,6 +603,14 @@ export const VestingPaymentCard = ({
               </div>
             </div>
           )}
+
+        <div className="border-t border-border-secondary px-6 pt-4 pb-6">
+          <VestingStepsLineGraph
+            startTimestamp={startDate.getTime()}
+            steps={steps}
+            tokenSymbol={token.symbol}
+          />
+        </div>
       </div>
 
       {!lazyInfo.loading && lazyInfo.data.stakingInfo && (

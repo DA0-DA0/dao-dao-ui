@@ -86,7 +86,6 @@ export const LineGraph = ({
               },
             },
             time: {
-              minUnit: 'hour',
               displayFormats: {
                 hour: 'dd MMM HH:mm',
               },

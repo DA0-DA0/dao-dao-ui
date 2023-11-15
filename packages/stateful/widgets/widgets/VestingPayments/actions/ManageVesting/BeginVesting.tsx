@@ -15,7 +15,6 @@ import {
   InputErrorMessage,
   InputLabel,
   InputThemedText,
-  LineGraph,
   NumberInput,
   SelectInput,
   TextAreaInput,
@@ -44,6 +43,8 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../../../actions/react/context'
+import { VestingStepsLineGraph } from '../../components/VestingStepsLineGraph'
+import { VestingStep } from '../../types'
 
 export type BeginVestingData = {
   amount: number
@@ -105,27 +106,29 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   const steps = watch((fieldNamePrefix + 'steps') as 'steps')
   const stepPoints =
     startDate &&
-    steps.reduce((acc, { percent, delay }, index) => {
+    steps.reduce((acc, { percent, delay }, index): VestingStep[] => {
       const delayMs =
         delay.value && convertDurationWithUnitsToSeconds(delay) * 1000
-      const lastMs = index === 0 ? startDate.getTime() : acc[acc.length - 1][0]
+      const lastMs =
+        index === 0 ? startDate.getTime() : acc[acc.length - 1].timestamp
 
       return [
         ...acc,
-        [
-          lastMs + delayMs,
-          // For the last step, use total to avoid
-          // rounding issues.
-          index === steps.length - 1
-            ? watchAmount
-            : (percent / 100) * watchAmount,
-        ] as [number, number],
+        {
+          timestamp: lastMs + delayMs,
+          amount:
+            // For the last step, use total to avoid
+            // rounding issues.
+            index === steps.length - 1
+              ? watchAmount
+              : (percent / 100) * watchAmount,
+        },
       ]
-    }, [] as [number, number][])
+    }, [] as VestingStep[])
 
   const formattedStartDate = startDate && formatDateTimeTz(startDate)
-  const formattedFinishDate = !!stepPoints?.length
-    ? formatDateTimeTz(new Date(stepPoints[stepPoints.length - 1][0]))
+  const formattedFinishDate = stepPoints?.length
+    ? formatDateTimeTz(new Date(stepPoints[stepPoints.length - 1].timestamp))
     : undefined
 
   const selectedToken = tokens.find(
@@ -287,7 +290,8 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
         <InputLabel name={t('form.steps')} primary />
 
         {stepFields.map(({ id }, index) => {
-          const stepTimestamp = stepPoints && new Date(stepPoints[index][0])
+          const stepTimestamp =
+            stepPoints && new Date(stepPoints[index].timestamp)
 
           return (
             <div
@@ -420,16 +424,10 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
       </div>
 
       <div className="rounded-md bg-background-tertiary p-2">
-        <LineGraph
-          className="!h-60"
-          labels={[
-            parsedStartDate || t('form.startDate'),
-            ...(stepPoints?.map(([time]) => time) ?? [t('form.finishDate')]),
-          ]}
-          time
-          title={t('title.vestingCurve')}
-          yTitle={'$' + selectedSymbol}
-          yValues={[0, ...(stepPoints?.map(([, value]) => value) ?? [])]}
+        <VestingStepsLineGraph
+          startTimestamp={parsedStartDate || 0}
+          steps={stepPoints ?? []}
+          tokenSymbol={selectedSymbol || t('info.token')}
         />
       </div>
 
