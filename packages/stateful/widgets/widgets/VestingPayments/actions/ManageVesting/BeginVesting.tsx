@@ -324,7 +324,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
 
               <div className="flex shrink-0 flex-col gap-1">
                 <div className="flex flex-row items-end justify-between gap-2">
-                  <InputLabel name={t('form.afterDelay')} />
+                  <InputLabel name={'...' + t('form.afterDelay')} />
 
                   {/* Date Preview */}
                   {stepTimestamp && (

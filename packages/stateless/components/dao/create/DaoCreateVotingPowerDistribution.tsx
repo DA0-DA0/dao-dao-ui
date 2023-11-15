@@ -3,8 +3,10 @@ import {
   BarElement,
   CategoryScale,
   Chart as ChartJS,
+  ChartType,
   LinearScale,
   Tooltip,
+  TooltipPositionerFunction,
 } from 'chart.js'
 import clsx from 'clsx'
 import { ComponentType } from 'react'

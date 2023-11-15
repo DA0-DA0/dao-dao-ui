@@ -7,20 +7,22 @@ import {
   TimeScale,
   Title,
 } from 'chart.js'
+import annotationPlugin from 'chartjs-plugin-annotation'
 import { enUS } from 'date-fns/locale'
 import { Line } from 'react-chartjs-2'
-
-import 'chartjs-adapter-date-fns'
+import { useTranslation } from 'react-i18next'
 
 import { useNamedThemeColor, useThemeContext } from '../theme'
 
+import 'chartjs-adapter-date-fns'
 ChartJS.register(
   LinearScale,
   TimeScale,
   LineElement,
   CategoryScale,
   PointElement,
-  Title
+  Title,
+  annotationPlugin
 )
 
 export interface LineGraphProps {
@@ -29,6 +31,7 @@ export interface LineGraphProps {
   yValues: number[]
   labels?: (string | number)[]
   time?: boolean
+  verticalLineAtX?: number
   className?: string
 }
 
@@ -38,11 +41,14 @@ export const LineGraph = ({
   yValues,
   labels,
   time,
+  verticalLineAtX,
   className,
 }: LineGraphProps) => {
+  const { t } = useTranslation()
   const { accentColor } = useThemeContext()
   const textColor = useNamedThemeColor('text-tertiary')
   const borderColor = useNamedThemeColor('border-primary')
+  const verticalLineColor = useNamedThemeColor('component-badge-valid')
 
   return (
     <Line
@@ -76,6 +82,24 @@ export const LineGraph = ({
               weight: 'normal',
             },
           },
+          annotation: verticalLineAtX
+            ? {
+                annotations: {
+                  verticalLine: {
+                    type: 'line',
+                    borderColor: verticalLineColor,
+                    borderWidth: 2,
+                    scaleID: 'x',
+                    value: verticalLineAtX,
+                    label: {
+                      display: true,
+                      content: t('title.now'),
+                      position: 'start',
+                    },
+                  },
+                },
+              }
+            : undefined,
         },
         scales: {
           x: {
