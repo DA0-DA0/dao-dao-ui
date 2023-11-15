@@ -8,7 +8,7 @@ import { convertActionsToMessages } from '@dao-dao/utils'
 
 import { useLoadedActionsAndCategories } from '../../../../../actions'
 import { EntityDisplay, SuspenseLoader } from '../../../../../components'
-import { useWalletInfo } from '../../../../../hooks'
+import { useEntity, useWalletInfo } from '../../../../../hooks'
 import { MULTIPLE_CHOICE_OPTION_COLORS } from '../../components/MultipleChoiceOptionEditor'
 import { MultipleChoiceOptionViewer } from '../../components/MultipleChoiceOptionViewer'
 import { NewProposalForm } from '../../types'
@@ -18,7 +18,8 @@ export const NewProposalPreview = () => {
   const { watch } = useFormContext<NewProposalForm>()
 
   const { loadedActions } = useLoadedActionsAndCategories()
-  const { walletAddress = '', walletProfileData } = useWalletInfo()
+  const { walletAddress = '' } = useWalletInfo()
+  const entity = useEntity(walletAddress)
 
   const proposalDescription = watch('description')
   const proposalTitle = watch('title')
@@ -27,12 +28,11 @@ export const NewProposalPreview = () => {
   return (
     <ProposalContentDisplay
       EntityDisplay={EntityDisplay}
+      approval={false}
       createdAt={new Date()}
       creator={{
         address: walletAddress,
-        name: walletProfileData.loading
-          ? { loading: true }
-          : { loading: false, data: walletProfileData.profile.name },
+        entity,
       }}
       description={proposalDescription}
       innerContentDisplay={

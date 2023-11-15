@@ -1,3 +1,4 @@
+export * from './PreProposeApprovalInnerContentDisplay'
 export * from './ProposalInnerContentDisplay'
 export * from './ProposalLine'
 export * from './ProposalStatusAndInfo'

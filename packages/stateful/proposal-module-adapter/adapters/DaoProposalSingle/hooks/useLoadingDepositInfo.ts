@@ -6,6 +6,7 @@ import {
   ContractVersion,
   DepositRefundPolicy,
   LoadingData,
+  PreProposeModuleType,
 } from '@dao-dao/types'
 import { ProposalResponse as ProposalV1Response } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { DepositInfoResponse as DepositInfoPreProposeResponse } from '@dao-dao/types/contracts/DaoPreProposeSingle'
@@ -38,7 +39,9 @@ export const useLoadingDepositInfo = (): LoadingData<
           ],
         })
       : // Every other version supports pre-propose.
-      prePropose
+      prePropose &&
+        // Approver does not have deposit info.
+        prePropose.type !== PreProposeModuleType.Approver
       ? depositInfoV2Selector({
           chainId,
           contractAddress: prePropose.address,

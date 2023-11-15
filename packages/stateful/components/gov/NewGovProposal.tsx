@@ -89,6 +89,7 @@ import { Any } from '@dao-dao/utils/protobuf/codegen/google/protobuf/any'
 
 import { GovActionsProvider } from '../../actions'
 import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'
+import { useEntity } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { EntityDisplay } from '../EntityDisplay'
@@ -157,7 +158,8 @@ const InnerNewGovProposal = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const { walletAddress = '', walletProfileData } = useWalletInfo()
+  const { walletAddress = '' } = useWalletInfo()
+  const entity = useEntity(walletAddress)
 
   const [govProposalCreatedCardProps, setGovProposalCreatedCardProps] =
     useRecoilState(govProposalCreatedCardPropsAtom)
@@ -731,12 +733,11 @@ const InnerNewGovProposal = ({
             <div className="mt-4 rounded-md border border-border-secondary p-6">
               <ProposalContentDisplay
                 EntityDisplay={EntityDisplay}
+                approval={false}
                 createdAt={new Date()}
                 creator={{
                   address: walletAddress,
-                  name: walletProfileData.loading
-                    ? { loading: true }
-                    : { loading: false, data: walletProfileData.profile.name },
+                  entity,
                 }}
                 description={proposalData.description}
                 innerContentDisplay={

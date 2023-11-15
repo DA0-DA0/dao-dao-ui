@@ -1,11 +1,9 @@
-import { fetchContractInfo } from '@dao-dao/state'
-import { queryIndexer } from '@dao-dao/state/indexer'
+import { fetchPreProposeModule, queryIndexer } from '@dao-dao/state'
 import { Feature, FetchPreProposeFunction } from '@dao-dao/types'
 import {
   cosmWasmClientRouter,
   getRpcForChainId,
   isFeatureSupportedByVersion,
-  parseContractVersion,
 } from '@dao-dao/utils'
 
 import { DaoProposalSingleV2QueryClient } from '../contracts/DaoProposalSingle.v2.client'
@@ -52,17 +50,10 @@ export const fetchPrePropose: FetchPreProposeFunction = async (
         creationPolicy.module.addr
       ? creationPolicy.module.addr
       : null
-  const contractInfo = await fetchContractInfo(chainId, preProposeAddress)
-  const contractVersion =
-    contractInfo && parseContractVersion(contractInfo.version)
 
-  if (!preProposeAddress || !contractInfo || !contractVersion) {
+  if (!preProposeAddress) {
     return null
   }
 
-  return {
-    contractName: contractInfo.contract,
-    version: contractVersion,
-    address: preProposeAddress,
-  }
+  return await fetchPreProposeModule(chainId, preProposeAddress)
 }

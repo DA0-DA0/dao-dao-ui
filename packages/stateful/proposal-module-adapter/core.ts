@@ -1,5 +1,6 @@
 import {
   IProposalModuleAdapterCommon,
+  IProposalModuleAdapterCommonInitialOptions,
   IProposalModuleAdapterInitialOptions,
   IProposalModuleAdapterOptions,
   IProposalModuleContext,
@@ -38,7 +39,7 @@ export const matchAdapter = (contractNameToMatch: string) =>
 
 export const matchAndLoadCommon = (
   proposalModule: ProposalModule,
-  initialOptions: IProposalModuleAdapterInitialOptions
+  initialOptions: IProposalModuleAdapterCommonInitialOptions
 ): IProposalModuleAdapterCommon & { id: string } => {
   const adapter = matchAdapter(proposalModule.contractName)
 

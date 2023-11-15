@@ -1,7 +1,6 @@
 import { ComponentProps, useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue } from 'recoil'
 
 import { useActionsForMatching } from '@dao-dao/stateful/actions'
 import {
@@ -18,18 +17,19 @@ import {
 } from '@dao-dao/stateless'
 import {
   CommonProposalInfo,
+  PreProposeModuleType,
   ProposalPrefill,
   ProposalStatus,
   SelfRelayExecuteModalProps,
 } from '@dao-dao/types'
 
-import { useOnDaoWebSocketMessage, useWallet } from '../../hooks'
-import { walletProfileDataSelector } from '../../recoil'
+import { useEntity, useOnDaoWebSocketMessage, useWallet } from '../../hooks'
 import { EntityDisplay } from '../EntityDisplay'
 import { IconButtonLink } from '../IconButtonLink'
 import { ProfileDisconnectedCard, ProfileProposalCard } from '../profile'
 import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'
 import { SuspenseLoader } from '../SuspenseLoader'
+import { DaoApprovalProposalContentDisplay } from './DaoApprovalProposalContentDisplay'
 import { DaoProposalPageWrapperProps } from './DaoPageWrapper'
 
 interface InnerDaoProposalProps {
@@ -44,6 +44,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { isWalletConnected, address } = useWallet()
   const {
     id,
+    options: { proposalModule },
     adapter: {
       components: {
         ProposalStatusAndInfo,
@@ -55,13 +56,11 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     },
   } = useProposalModuleAdapterContext()
 
-  const { profile: creatorProfile, loading: creatorProfileLoading } =
-    useRecoilValue(
-      walletProfileDataSelector({
-        address: proposalInfo.createdByAddress,
-        chainId: daoInfo.chainId,
-      })
-    )
+  const creatorAddress =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approver
+      ? proposalModule.prePropose.config.approvalDao
+      : proposalInfo.createdByAddress
+  const loadingEntity = useEntity(creatorAddress)
 
   const { refreshProposal, refreshProposalAndAll, refreshing } =
     useProposalRefreshers()
@@ -213,19 +212,17 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         EntityDisplay={EntityDisplay}
         IconButtonLink={IconButtonLink}
         ProposalStatusAndInfo={CachedProposalStatusAndInfo}
+        approval={
+          proposalModule.prePropose?.type === PreProposeModuleType.Approver
+        }
         createdAt={
           proposalInfo.createdAtEpoch !== null
             ? new Date(proposalInfo.createdAtEpoch)
             : undefined
         }
         creator={{
-          name: creatorProfileLoading
-            ? { loading: true }
-            : {
-                loading: false,
-                data: creatorProfile.name,
-              },
-          address: proposalInfo.createdByAddress,
+          address: creatorAddress,
+          entity: loadingEntity,
         }}
         description={proposalInfo.description}
         duplicateUrl={duplicateUrl}
@@ -233,19 +230,24 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         onRefresh={refreshProposal}
         proposalInnerContentDisplay={
           <SuspenseLoader fallback={<Loader />}>
-            <ProposalInnerContentDisplay
-              actionsForMatching={actionsForMatching}
-              setDuplicateFormData={setDuplicateFormData}
-              setSeenAllActionPages={
-                // Only set seen all action pages if the user can vote. This
-                // prevents the warning from appearing if the user can't vote.
-                loadingWalletVoteInfo &&
-                !loadingWalletVoteInfo.loading &&
-                loadingWalletVoteInfo.data.canVote
-                  ? () => setSeenAllActionPages(true)
-                  : undefined
-              }
-            />
+            {proposalModule.prePropose?.type ===
+            PreProposeModuleType.Approver ? (
+              <DaoApprovalProposalContentDisplay />
+            ) : (
+              <ProposalInnerContentDisplay
+                actionsForMatching={actionsForMatching}
+                setDuplicateFormData={setDuplicateFormData}
+                setSeenAllActionPages={
+                  // Only set seen all action pages if the user can vote. This
+                  // prevents the warning from appearing if the user can't vote.
+                  loadingWalletVoteInfo &&
+                  !loadingWalletVoteInfo.loading &&
+                  loadingWalletVoteInfo.data.canVote
+                    ? () => setSeenAllActionPages(true)
+                    : undefined
+                }
+              />
+            )}
           </SuspenseLoader>
         }
         refreshing={refreshing}

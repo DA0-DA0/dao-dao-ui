@@ -5,11 +5,13 @@ import {
   ProposalVoteTallyProps,
 } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ProposalVoteTally/ProposalVoteTally'
 import { Default as ProposalVoteTallyStory } from '@dao-dao/stateful/proposal-module-adapter/adapters/DaoProposalSingle/components/ProposalVoteTally/ProposalVoteTally.ProposalVoteTally.stories'
+import { CHAIN_ID } from '@dao-dao/storybook'
 import {
   DaoPageWrapperDecorator,
   makeDappLayoutDecorator,
   makeProposalModuleAdapterDecorator,
 } from '@dao-dao/storybook/decorators'
+import { EntityType } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 
 import {
@@ -63,7 +65,16 @@ Default.args = {
   ),
   votesCast: <ProposalVotes {...makeProposalVotesProps()} />,
   creator: {
-    name: { loading: false, data: 'Ben2x4' },
+    entity: {
+      loading: false,
+      data: {
+        type: EntityType.Wallet,
+        chainId: CHAIN_ID,
+        address: 'juno789def000ghi',
+        name: 'wallet Person!',
+        imageUrl: '/placeholders/1.svg',
+      },
+    },
     address: 'juno789def000ghi',
   },
   proposalInnerContentDisplay: (

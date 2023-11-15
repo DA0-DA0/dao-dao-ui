@@ -4,6 +4,7 @@ import { ComponentType, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  Entity,
   IconButtonLinkProps,
   LoadingData,
   StatefulEntityDisplayProps,
@@ -13,6 +14,7 @@ import { formatDate } from '@dao-dao/utils'
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { IconButton } from '../icon_buttons'
 import { MarkdownRenderer } from '../MarkdownRenderer'
+import { TooltipInfoIcon } from '../tooltip'
 
 export interface ProposalContentDisplayProps {
   title: string
@@ -20,7 +22,7 @@ export interface ProposalContentDisplayProps {
   innerContentDisplay: ReactNode
   creator?: {
     address: string
-    name: LoadingData<string | null>
+    entity: LoadingData<Entity>
   }
   createdAt?: Date
   onRefresh?: () => void
@@ -28,6 +30,8 @@ export interface ProposalContentDisplayProps {
   duplicateUrl?: string
   IconButtonLink?: ComponentType<IconButtonLinkProps>
   EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
+  // Whether or not this proposal is an approval proposal.
+  approval: boolean
 }
 
 export const ProposalContentDisplay = ({
@@ -41,6 +45,7 @@ export const ProposalContentDisplay = ({
   duplicateUrl,
   IconButtonLink,
   EntityDisplay,
+  approval,
 }: ProposalContentDisplayProps) => {
   const { t } = useTranslation()
 
@@ -53,11 +58,24 @@ export const ProposalContentDisplay = ({
 
   return (
     <>
-      <div className="mb-8 flex flex-row items-start justify-between gap-6">
-        <p className="hero-text mb-8">{title}</p>
+      <div className="mb-8 flex flex-row flex-wrap items-start justify-between gap-x-6 gap-y-2">
+        <div className="mb-8 flex shrink-0 flex-row items-center gap-2">
+          {approval && (
+            <div className="flex shrink-0 flex-row items-center gap-1 rounded-full bg-component-badge-primary p-1 pr-2">
+              <TooltipInfoIcon
+                circular
+                size="sm"
+                title={t('info.approvalProposalTooltip')}
+              />
+              <p className="title-text shrink-0">{t('title.approval')}</p>
+            </div>
+          )}
+
+          <p className="hero-text shrink-0">{title}</p>
+        </div>
 
         <div className="flex flex-row items-center gap-1">
-          {IconButtonLink && duplicateUrl && (
+          {IconButtonLink && duplicateUrl && !approval && (
             <IconButtonLink
               Icon={CopyAllOutlined}
               href={duplicateUrl}
@@ -78,8 +96,9 @@ export const ProposalContentDisplay = ({
                   : undefined
               }
               onClick={() => {
-                // Perform one spin even if refresh completes immediately. It will
-                // stop after 1 iteration if `refreshing` does not become true.
+                // Perform one spin even if refresh completes immediately. It
+                // will stop after 1 iteration if `refreshing` does not become
+                // true.
                 setRefreshSpinning(true)
                 onRefresh()
               }}
@@ -89,44 +108,57 @@ export const ProposalContentDisplay = ({
         </div>
       </div>
 
-      <div className="caption-text mb-4 flex flex-row items-center gap-1 font-mono">
-        {!!creator?.address && (
-          <CopyToClipboardUnderline
-            className={clsx(
-              '!caption-text',
-              creator.name.loading && 'animate-pulse'
-            )}
-            // If name exists, use that. Otherwise, will fall back to
-            // truncated address display.
-            label={(!creator.name.loading && creator.name.data) || undefined}
-            success={t('info.copiedAddressToClipboard')}
-            tooltip={
-              // If displaying name, show tooltip to copy address.
-              !creator.name.loading && creator.name.data
-                ? t('button.clickToCopyAddress')
-                : undefined
-            }
-            value={creator.address}
-          />
-        )}
+      {/* TODO(approver): add more approver related stuff here, like a link */}
 
-        {!!createdAt && (
-          <>
-            {/* eslint-disable-next-line i18next/no-literal-string */}
-            {!!creator?.address && <p> – </p>}
-            <p>{formatDate(createdAt)}</p>
-          </>
+      <div
+        className={clsx(
+          approval && 'rounded-md border-dashed border-border-primary p-4'
+        )}
+      >
+        <div className="caption-text mb-4 flex flex-row items-center gap-1 font-mono">
+          {!!creator?.address && (
+            <CopyToClipboardUnderline
+              className={clsx(
+                '!caption-text',
+                creator.entity.loading && 'animate-pulse'
+              )}
+              // If name exists, use that. Otherwise, will fall back to truncated
+              // address display.
+              label={
+                (!creator.entity.loading && creator.entity.data.name) ||
+                undefined
+              }
+              success={t('info.copiedAddressToClipboard')}
+              tooltip={
+                // If displaying name, show tooltip to copy address.
+                !creator.entity.loading && creator.entity.data.name
+                  ? t('button.clickToCopyAddress')
+                  : undefined
+              }
+              value={creator.address}
+            />
+          )}
+
+          {!!createdAt && (
+            <>
+              {/* eslint-disable-next-line i18next/no-literal-string */}
+              {!!creator?.address && <p> – </p>}
+              <p>{formatDate(createdAt)}</p>
+            </>
+          )}
+        </div>
+
+        <MarkdownRenderer
+          EntityDisplay={EntityDisplay}
+          addAnchors
+          className="max-w-full"
+          markdown={description}
+        />
+
+        {innerContentDisplay && (
+          <div className="mt-9">{innerContentDisplay}</div>
         )}
       </div>
-
-      <MarkdownRenderer
-        EntityDisplay={EntityDisplay}
-        addAnchors
-        className="max-w-full"
-        markdown={description}
-      />
-
-      {innerContentDisplay && <div className="mt-9">{innerContentDisplay}</div>}
     </>
   )
 }

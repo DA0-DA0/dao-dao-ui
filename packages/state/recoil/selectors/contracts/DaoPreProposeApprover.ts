@@ -1,6 +1,6 @@
 import { selectorFamily } from 'recoil'
 
-import { Addr, Binary, WithChainId } from '@dao-dao/types'
+import { Addr, WithChainId } from '@dao-dao/types'
 import {
   Config,
   DepositInfoResponse,
@@ -101,7 +101,7 @@ export const proposalSubmittedHooksSelector = selectorFamily<
     },
 })
 export const queryExtensionSelector = selectorFamily<
-  Binary,
+  string | number,
   QueryClientParams & {
     params: Parameters<DaoPreProposeApproverQueryClient['queryExtension']>
   }
