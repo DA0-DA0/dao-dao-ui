@@ -9,13 +9,18 @@ import {
   UseFormWatch,
 } from 'react-hook-form'
 
+export type RadioInputOption<
+  FV extends FieldValues,
+  FieldName extends Path<FV>
+> = {
+  value: UnpackNestedValue<PathValue<FV, FieldName>>
+} & ({ label: string } | { display: ReactNode })
+
 export interface RadioInputProps<
   FV extends FieldValues,
   FieldName extends Path<FV>
 > {
-  options: ({
-    value: UnpackNestedValue<PathValue<FV, FieldName>>
-  } & ({ label: string } | { display: ReactNode }))[]
+  options: RadioInputOption<FV, FieldName>[]
   fieldName: FieldName
   watch: UseFormWatch<FV>
   setValue: UseFormSetValue<FV>

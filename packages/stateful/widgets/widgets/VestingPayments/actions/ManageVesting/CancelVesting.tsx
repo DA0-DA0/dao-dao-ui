@@ -50,7 +50,10 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
     ? undefined
     : vestingInfos.data.filter(
         ({ owner, vested, vest: { status } }) =>
-          owner === address &&
+          owner &&
+          (owner.address === address ||
+            (owner.isCw1Whitelist &&
+              owner.cw1WhitelistAdmins.includes(address))) &&
           vested !== '0' &&
           !(typeof status === 'object' && 'canceled' in status)
       )

@@ -1,9 +1,11 @@
 import {
+  Add,
   ArrowRightAltRounded,
   Close,
   SubdirectoryArrowRightRounded,
   WarningRounded,
 } from '@mui/icons-material'
+import clsx from 'clsx'
 import { ComponentType, useEffect } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
@@ -16,6 +18,8 @@ import {
   InputLabel,
   InputThemedText,
   NumberInput,
+  RadioInput,
+  RadioInputOption,
   SelectInput,
   TextAreaInput,
   TextInput,
@@ -43,8 +47,13 @@ import {
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../../../actions/react/context'
+import { EntityDisplay } from '../../../../../components'
 import { VestingStepsLineGraph } from '../../components/VestingStepsLineGraph'
-import { VestingStep } from '../../types'
+import {
+  VestingPaymentsData,
+  VestingPaymentsWidgetVersion,
+  VestingStep,
+} from '../../types'
 
 export type BeginVestingData = {
   amount: number
@@ -53,6 +62,16 @@ export type BeginVestingData = {
   title: string
   description?: string
   startDate: string
+  ownerMode: 'none' | 'me' | 'other' | 'many'
+  // If ownerMode === 'other', the address of the owner.
+  otherOwner: string
+  // If ownerMode === 'many', the list of addresses of the owners.
+  manyOwners: {
+    address: string
+  }[]
+  // This will be the cw1-whitelist contract once the many owners list is
+  // finalized.
+  manyOwnersCw1WhitelistContract: string
   steps: {
     // Additional percent unlocked after the delay.
     percent: number
@@ -61,17 +80,27 @@ export type BeginVestingData = {
 }
 
 export type BeginVestingOptions = {
+  widgetData: VestingPaymentsData
   tokens: GenericTokenBalance[]
   // The vesting contract factory owner. If undefined, no owner is set.
   vestingFactoryOwner: LoadingData<string | undefined>
   AddressInput: ComponentType<AddressInputProps<BeginVestingData>>
+  createCw1WhitelistOwners: () => void | Promise<void>
+  creatingCw1WhitelistOwners: boolean
 }
 
 export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { tokens, vestingFactoryOwner, AddressInput },
+  options: {
+    widgetData,
+    tokens,
+    vestingFactoryOwner,
+    AddressInput,
+    createCw1WhitelistOwners,
+    creatingCw1WhitelistOwners,
+  },
 }) => {
   const { t } = useTranslation()
   const {
@@ -99,6 +128,20 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     watch((fieldNamePrefix + 'startDate') as 'startDate')
   )
   const description = watch((fieldNamePrefix + 'description') as 'description')
+
+  const ownerMode = watch((fieldNamePrefix + 'ownerMode') as 'ownerMode')
+  const manyOwnersCw1WhitelistContract = watch(
+    (fieldNamePrefix +
+      'manyOwnersCw1WhitelistContract') as 'manyOwnersCw1WhitelistContract'
+  )
+  const {
+    fields: manyOwnerFields,
+    append: appendManyOwner,
+    remove: removeManyOwner,
+  } = useFieldArray({
+    control,
+    name: (fieldNamePrefix + 'manyOwners') as 'manyOwners',
+  })
 
   const startDate = !isNaN(parsedStartDate)
     ? new Date(parsedStartDate)
@@ -258,6 +301,125 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
           </div>
         )}
       </div>
+
+      {
+        // V1 and later can set the owner.
+        !!widgetData.version &&
+          widgetData.version >= VestingPaymentsWidgetVersion.V1 && (
+            <div className="flex flex-col gap-4 rounded-md bg-background-tertiary p-4">
+              <InputLabel name={t('form.whoCanCancelPayment')} />
+
+              <RadioInput
+                disabled={!isCreating}
+                fieldName={(fieldNamePrefix + 'ownerMode') as 'ownerMode'}
+                options={(
+                  [
+                    {
+                      label: t('form.noOne'),
+                      value: 'none',
+                    },
+                    {
+                      display: <EntityDisplay address={address} />,
+                      value: 'me',
+                    },
+                    {
+                      label: t('form.anotherAccount'),
+                      value: 'other',
+                    },
+                    {
+                      label: t('form.moreThanOneAccount'),
+                      value: 'many',
+                    },
+                  ] as RadioInputOption<BeginVestingData, 'ownerMode'>[]
+                )
+                  // Only show the selected option once created.
+                  .filter(({ value }) => isCreating || value === ownerMode)}
+                setValue={setValue}
+                watch={watch}
+              />
+
+              {ownerMode === 'other' && (
+                <AddressInput
+                  disabled={!isCreating}
+                  error={errors?.otherOwner}
+                  fieldName={(fieldNamePrefix + 'otherOwner') as 'otherOwner'}
+                  register={register}
+                  validation={[
+                    validateRequired,
+                    makeValidateAddress(bech32Prefix),
+                  ]}
+                />
+              )}
+
+              {ownerMode === 'many' && (
+                <div className={clsx('flex flex-col', isCreating && 'gap-2')}>
+                  {manyOwnerFields.map(({ id }, index) => (
+                    <div key={id} className="flex flex-row items-center gap-2">
+                      <AddressInput
+                        containerClassName="grow"
+                        disabled={
+                          !isCreating || !!manyOwnersCw1WhitelistContract
+                        }
+                        error={errors?.manyOwners?.[index]?.address}
+                        fieldName={
+                          (fieldNamePrefix +
+                            `manyOwners.${index}.address`) as `manyOwners.${number}.address`
+                        }
+                        register={register}
+                        validation={[
+                          validateRequired,
+                          makeValidateAddress(bech32Prefix),
+                        ]}
+                      />
+
+                      {isCreating && !manyOwnersCw1WhitelistContract && (
+                        <IconButton
+                          Icon={Close}
+                          disabled={creatingCw1WhitelistOwners}
+                          onClick={() => removeManyOwner(index)}
+                          size="sm"
+                          variant="ghost"
+                        />
+                      )}
+                    </div>
+                  ))}
+
+                  <InputErrorMessage
+                    className="self-end pr-8"
+                    error={errors?.manyOwnersCw1WhitelistContract}
+                  />
+
+                  {isCreating && !manyOwnersCw1WhitelistContract && (
+                    <div className="flex flex-row justify-end gap-1 pr-8">
+                      <Button
+                        className="self-start"
+                        loading={creatingCw1WhitelistOwners}
+                        onClick={createCw1WhitelistOwners}
+                        variant="primary"
+                      >
+                        {t('button.save')}
+                      </Button>
+
+                      <Button
+                        className="self-start"
+                        disabled={creatingCw1WhitelistOwners}
+                        onClick={() =>
+                          appendManyOwner({
+                            address: '',
+                          })
+                        }
+                        variant="secondary"
+                      >
+                        <Add className="!h-4 !w-4" />
+                        {t('button.add')}
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )
+      }
 
       <div className="flex flex-row flex-wrap gap-2">
         {/* Start Date */}
@@ -444,32 +606,35 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
         />
       </div>
 
-      {!vestingFactoryOwner.loading && (
-        <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
-          <WarningRounded className="!h-8 !w-8" />
+      {
+        // Widgets prior to V1 use the factory owner.
+        !widgetData.version && !vestingFactoryOwner.loading && (
+          <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">
+            <WarningRounded className="!h-8 !w-8" />
 
-          <div className="min-w-0 space-y-2">
-            {vestingFactoryOwner.data === address ? (
-              <p>
-                {t('info.vestingIsCancellableByOwner', {
-                  context: context.type,
-                })}
-              </p>
-            ) : vestingFactoryOwner.data ? (
-              <>
-                <p>{t('info.vestingIsCancellableByOther')}</p>
+            <div className="min-w-0 space-y-2">
+              {vestingFactoryOwner.data === address ? (
+                <p>
+                  {t('info.vestingIsCancellableByOwner', {
+                    context: context.type,
+                  })}
+                </p>
+              ) : vestingFactoryOwner.data ? (
+                <>
+                  <p>{t('info.vestingIsCancellableByOther')}</p>
 
-                <CopyToClipboard
-                  takeStartEnd={{ start: 16, end: 16 }}
-                  value={vestingFactoryOwner.data}
-                />
-              </>
-            ) : (
-              <p>{t('info.vestingNotCancellable')}</p>
-            )}
+                  <CopyToClipboard
+                    takeStartEnd={{ start: 16, end: 16 }}
+                    value={vestingFactoryOwner.data}
+                  />
+                </>
+              ) : (
+                <p>{t('info.vestingNotCancellable')}</p>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
     </div>
   )
 }

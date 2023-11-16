@@ -56,7 +56,11 @@ export const RegisterSlash: ActionComponent<RegisterSlashOptions> = ({
     ? undefined
     : vestingInfos.data.filter(
         ({ owner, hasUnregisteredSlashes }) =>
-          address === owner && hasUnregisteredSlashes
+          owner &&
+          (owner.address === address ||
+            (owner.isCw1Whitelist &&
+              owner.cw1WhitelistAdmins.includes(address))) &&
+          hasUnregisteredSlashes
       )
 
   const onSelectSlash = (

@@ -1,10 +1,12 @@
 import { coins } from '@cosmjs/amino'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
+  Cw1WhitelistSelectors,
   genericTokenSelector,
   nativeUnstakingDurationSecondsSelector,
 } from '@dao-dao/state/recoil'
@@ -30,6 +32,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { InstantiateMsg as Cw1WhietlistInstantiateMsg } from '@dao-dao/types/contracts/Cw1Whitelist'
 import {
   ExecuteMsg,
   InstantiateNativePayrollContractMsg,
@@ -40,13 +43,17 @@ import {
   convertDurationWithUnitsToSeconds,
   convertMicroDenomToDenomWithDecimals,
   convertSecondsToDurationWithUnits,
+  decodeCw1WhitelistExecuteMsg,
   encodeMessageAsBase64,
   getNativeTokenForChainId,
+  instantiateSmartContract,
+  isValidBech32Address,
   isValidContractAddress,
   loadableToLoadingData,
   makeWasmMessage,
   objectMatchesStructure,
   parseEncodedMessage,
+  processError,
 } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../../../actions'
@@ -57,12 +64,13 @@ import {
   SuspenseLoader,
   Trans,
 } from '../../../../../components'
+import { useWallet } from '../../../../../hooks'
 import {
   vestingFactoryOwnerSelector,
   vestingInfoSelector,
   vestingInfosSelector,
 } from '../../Renderer/state'
-import { VestingPaymentsData } from '../../types'
+import { VestingPaymentsData, VestingPaymentsWidgetVersion } from '../../types'
 import { BeginVesting, BeginVestingData } from './BeginVesting'
 import { CancelVesting, CancelVestingData } from './CancelVesting'
 import { RegisterSlash, RegisterSlashData } from './RegisterSlash'
@@ -76,6 +84,7 @@ export type ManageVestingData = {
 
 const useDefaults: UseDefaults<ManageVestingData> = () => {
   const {
+    address,
     chain: { chain_id: chainId },
   } = useActionOptions()
 
@@ -89,6 +98,17 @@ const useDefaults: UseDefaults<ManageVestingData> = () => {
       recipient: '',
       startDate: `${start.toISOString().split('T')[0]} 12:00 AM`,
       title: '',
+      ownerMode: 'me',
+      otherOwner: '',
+      manyOwners: [
+        {
+          address,
+        },
+        {
+          address: '',
+        },
+      ],
+      manyOwnersCw1WhitelistContract: '',
       steps: [
         {
           percent: 100,
@@ -128,8 +148,15 @@ const instantiateStructure = {
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
   msg: Record<string, any>
 ) => {
+  // If this is a cw1-whitelist execute msg, check msg inside of it.
+  const decodedCw1Whitelist = decodeCw1WhitelistExecuteMsg(msg, 'one')
+  if (decodedCw1Whitelist) {
+    msg = decodedCw1Whitelist.msgs[0]
+  }
+
   const defaults = useDefaults()
   const {
+    address,
     chain: { chain_id: chainId },
   } = useActionOptions()
 
@@ -215,13 +242,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
       : constSelector(undefined)
   )
 
-  if (tokenLoadable.state !== 'hasValue') {
-    return { match: false }
-  }
-
-  const token = tokenLoadable.contents
-  if (isBegin && token) {
-    let instantiateMsg: VestingInstantiateMsg
+  let instantiateMsg: VestingInstantiateMsg | undefined
+  if (isBegin) {
     if (isNativeBegin) {
       instantiateMsg =
         msg.wasm.execute.msg.instantiate_native_payroll_contract.instantiate_msg
@@ -232,6 +254,35 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
       instantiateMsg = parseEncodedMessage(msg.wasm.execute.msg.send.msg)
         .instantiate_payroll_contract.instantiate_msg as VestingInstantiateMsg
     }
+  }
+
+  // Attempt to load cw1-whitelist admins if the owner is set. Will only succeed
+  // if the owner is a cw1-whitelist contract. Otherwise it returns undefined.
+  const cw1WhitelistAdminsLoadable = useCachedLoadable(
+    isBegin && instantiateMsg?.owner
+      ? Cw1WhitelistSelectors.adminsIfCw1Whitelist({
+          chainId,
+          contractAddress: instantiateMsg.owner,
+        })
+      : constSelector(undefined)
+  )
+
+  if (
+    tokenLoadable.state !== 'hasValue' ||
+    cw1WhitelistAdminsLoadable.state !== 'hasValue'
+  ) {
+    return { match: false }
+  }
+
+  const token = tokenLoadable.contents
+  if (isBegin && token && instantiateMsg) {
+    const ownerMode = !instantiateMsg.owner
+      ? 'none'
+      : instantiateMsg.owner === address
+      ? 'me'
+      : cw1WhitelistAdminsLoadable.contents
+      ? 'many'
+      : 'other'
 
     return {
       match: true,
@@ -253,6 +304,16 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
             instantiateMsg.total,
             token.decimals
           ),
+          ownerMode,
+          otherOwner: (ownerMode === 'other' && instantiateMsg.owner) || '',
+          manyOwners:
+            ownerMode === 'many' && cw1WhitelistAdminsLoadable.contents
+              ? cw1WhitelistAdminsLoadable.contents.map((address) => ({
+                  address,
+                }))
+              : [],
+          manyOwnersCw1WhitelistContract:
+            (ownerMode === 'many' && instantiateMsg.owner) || '',
           steps:
             instantiateMsg.schedule === 'saturating_linear'
               ? [
@@ -273,19 +334,23 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
                     const pastTimestamp =
                       index === 1 ||
                       // Typecheck. Always false.
-                      instantiateMsg.schedule === 'saturating_linear'
+                      instantiateMsg!.schedule === 'saturating_linear'
                         ? // For first user-defined step, account for 1 second
                           // delay since we ignore the first hardcoded step at 1
                           // second. When we created the msg, we subtracted 1
                           // second from the first user-defined step's delay.
                           0
-                        : instantiateMsg.schedule.piecewise_linear[index - 1][0]
+                        : instantiateMsg!.schedule.piecewise_linear[
+                            index - 1
+                          ][0]
                     const pastAmount =
                       index === 0 ||
                       // Typecheck. Always false.
-                      instantiateMsg.schedule === 'saturating_linear'
+                      instantiateMsg!.schedule === 'saturating_linear'
                         ? '0'
-                        : instantiateMsg.schedule.piecewise_linear[index - 1][1]
+                        : instantiateMsg!.schedule.piecewise_linear[
+                            index - 1
+                          ][1]
 
                     return [
                       ...acc,
@@ -293,7 +358,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
                         percent: Number(
                           (
                             ((Number(amount) - Number(pastAmount)) /
-                              Number(instantiateMsg.total)) *
+                              Number(instantiateMsg!.total)) *
                             100
                           ).toFixed(2)
                         ),
@@ -342,16 +407,20 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
   return { match: false }
 }
 
-export const makeManageVestingActionMaker = ({
-  factory,
-}: VestingPaymentsData): ActionMaker<ManageVestingData> => {
+export const makeManageVestingActionMaker = (
+  widgetData: VestingPaymentsData
+): ActionMaker<ManageVestingData> => {
   const Component: ActionComponent<undefined, ManageVestingData> = (props) => {
     const { t } = useTranslation()
     const {
       chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
+      chainContext: {
+        config: { codeIds },
+      },
     } = useActionOptions()
+    const { address: walletAddress, getSigningCosmWasmClient } = useWallet()
 
-    const { setValue, watch, setError, clearErrors } =
+    const { setValue, watch, setError, clearErrors, getValues } =
       useFormContext<ManageVestingData>()
     const mode = watch((props.fieldNamePrefix + 'mode') as 'mode')
     const selectedAddress =
@@ -363,13 +432,20 @@ export const makeManageVestingActionMaker = ({
         : mode === 'cancel'
         ? watch((props.fieldNamePrefix + 'cancel.address') as 'cancel.address')
         : undefined
+    const beginOwnerMode = watch(
+      (props.fieldNamePrefix + 'begin.ownerMode') as 'begin.ownerMode'
+    )
+    const beginManyOwnersCw1WhitelistContract = watch(
+      (props.fieldNamePrefix +
+        'begin.manyOwnersCw1WhitelistContract') as 'begin.manyOwnersCw1WhitelistContract'
+    )
 
     const tokenBalances = useTokenBalances()
 
     const vestingFactoryOwner = loadableToLoadingData(
       useCachedLoadable(
         vestingFactoryOwnerSelector({
-          factory,
+          factory: widgetData.factory,
           chainId,
         })
       ),
@@ -379,7 +455,7 @@ export const makeManageVestingActionMaker = ({
     const vestingInfos = loadableToLoadingData(
       useCachedLoadable(
         vestingInfosSelector({
-          factory,
+          factory: widgetData.factory,
           chainId,
         })
       ),
@@ -467,6 +543,88 @@ export const makeManageVestingActionMaker = ({
     ]
     const selectedTab = tabs.find((tab) => tab.value === mode)
 
+    const [creatingCw1WhitelistOwners, setCreatingCw1WhitelistOwners] =
+      useState(false)
+    const createCw1WhitelistOwners = async () => {
+      if (!walletAddress) {
+        toast.error(t('error.logInToContinue'))
+        return
+      }
+
+      setCreatingCw1WhitelistOwners(true)
+      try {
+        const beginData = getValues(
+          (props.fieldNamePrefix + 'begin') as 'begin'
+        )
+        if (beginData.ownerMode !== 'many') {
+          throw new Error(t('error.unexpectedError'))
+        }
+        if (beginData.manyOwnersCw1WhitelistContract) {
+          throw new Error(t('error.accountListAlreadySaved'))
+        }
+        if (beginData.manyOwners.length < 2) {
+          throw new Error(t('error.enterAtLeastTwoAccounts'))
+        }
+        const admins = beginData.manyOwners.map(({ address }) => address)
+        if (
+          admins.some((admin) => !isValidBech32Address(admin, bech32Prefix))
+        ) {
+          throw new Error(t('error.invalidAccount'))
+        }
+
+        const contractAddress = await instantiateSmartContract(
+          await getSigningCosmWasmClient(),
+          walletAddress,
+          codeIds.Cw1Whitelist,
+          'Cw1Whitelist',
+          {
+            admins,
+            mutable: false,
+          } as Cw1WhietlistInstantiateMsg
+        )
+
+        setValue(
+          (props.fieldNamePrefix +
+            'begin.manyOwnersCw1WhitelistContract') as 'begin.manyOwnersCw1WhitelistContract',
+          contractAddress
+        )
+
+        toast.success(t('success.saved'))
+      } catch (err) {
+        console.error(err)
+        toast.error(processError(err))
+      } finally {
+        setCreatingCw1WhitelistOwners(false)
+      }
+    }
+
+    // Prevent action from being submitted if the cw1-whitelist contract has
+    // not yet been created and it needs to be.
+    useEffect(() => {
+      if (beginOwnerMode === 'many' && !beginManyOwnersCw1WhitelistContract) {
+        setError(
+          (props.fieldNamePrefix +
+            'begin.manyOwnersCw1WhitelistContract') as 'begin.manyOwnersCw1WhitelistContract',
+          {
+            type: 'manual',
+            message: t('error.accountListNeedsSaving'),
+          }
+        )
+      } else {
+        clearErrors(
+          (props.fieldNamePrefix +
+            'begin.manyOwnersCw1WhitelistContract') as 'begin.manyOwnersCw1WhitelistContract'
+        )
+      }
+    }, [
+      setError,
+      clearErrors,
+      t,
+      beginOwnerMode,
+      beginManyOwnersCw1WhitelistContract,
+      props.fieldNamePrefix,
+    ])
+
     return (
       <SuspenseLoader
         fallback={<Loader />}
@@ -494,9 +652,12 @@ export const makeManageVestingActionMaker = ({
             errors={props.errors?.begin}
             fieldNamePrefix={props.fieldNamePrefix + 'begin.'}
             options={{
+              widgetData,
               tokens: tokenBalances.loading ? [] : tokenBalances.data,
               vestingFactoryOwner,
               AddressInput,
+              createCw1WhitelistOwners,
+              creatingCw1WhitelistOwners,
             }}
           />
         ) : mode === 'registerSlash' ? (
@@ -527,7 +688,7 @@ export const makeManageVestingActionMaker = ({
     )
   }
 
-  return ({ t, context, chain: { chain_id: chainId } }) => {
+  return ({ t, address, context, chain: { chain_id: chainId } }) => {
     // Only available in DAO context.
     if (context.type !== ActionContextType.Dao) {
       return null
@@ -541,7 +702,7 @@ export const makeManageVestingActionMaker = ({
       const vestingFactoryOwner = loadableToLoadingData(
         useCachedLoadable(
           vestingFactoryOwnerSelector({
-            factory,
+            factory: widgetData.factory,
             chainId,
           })
         ),
@@ -552,6 +713,16 @@ export const makeManageVestingActionMaker = ({
         nativeUnstakingDurationSecondsSelector({
           chainId,
         })
+      )
+
+      const loadingVestingInfos = loadableToLoadingData(
+        useCachedLoadable(
+          vestingInfosSelector({
+            factory: widgetData.factory,
+            chainId,
+          })
+        ),
+        []
       )
 
       return useCallback(
@@ -593,7 +764,21 @@ export const makeManageVestingActionMaker = ({
                       cw20: token.denomOrAddress,
                     },
               description: begin.description || undefined,
-              owner: vestingFactoryOwner.data,
+              // Widgets prior to V1 use the factory owner.
+              owner: !widgetData.version
+                ? vestingFactoryOwner.data
+                : // V1 and later can set the owner.
+                widgetData.version >= VestingPaymentsWidgetVersion.V1
+                ? begin.ownerMode === 'none'
+                  ? undefined
+                  : begin.ownerMode === 'me'
+                  ? address
+                  : begin.ownerMode === 'other'
+                  ? begin.otherOwner
+                  : begin.ownerMode === 'many'
+                  ? begin.manyOwnersCw1WhitelistContract
+                  : address
+                : address,
               recipient: begin.recipient,
               schedule:
                 begin.steps.length === 1
@@ -671,7 +856,7 @@ export const makeManageVestingActionMaker = ({
               return makeWasmMessage({
                 wasm: {
                   execute: {
-                    contract_addr: factory,
+                    contract_addr: widgetData.factory,
                     funds: coins(total, token.denomOrAddress),
                     msg: {
                       instantiate_native_payroll_contract: msg,
@@ -689,7 +874,7 @@ export const makeManageVestingActionMaker = ({
                     msg: {
                       send: {
                         amount: total,
-                        contract: factory,
+                        contract: widgetData.factory,
                         msg: encodeMessageAsBase64({
                           instantiate_payroll_contract: msg,
                         }),
@@ -699,41 +884,67 @@ export const makeManageVestingActionMaker = ({
                 },
               })
             }
-          } else if (mode === 'registerSlash') {
-            return makeWasmMessage({
+          } else if (mode === 'cancel' || mode === 'registerSlash') {
+            if (loadingVestingInfos.loading) {
+              return
+            }
+
+            const contractAddress =
+              mode === 'cancel' ? cancel.address : registerSlash.address
+            const vestingInfo = loadingVestingInfos.data.find(
+              ({ vestingContractAddress }) =>
+                vestingContractAddress === contractAddress
+            )
+            if (!vestingInfo) {
+              throw new Error(t('error.loadingData'))
+            }
+
+            const msg = makeWasmMessage({
               wasm: {
                 execute: {
-                  contract_addr: registerSlash.address,
+                  contract_addr: contractAddress,
                   funds: [],
-                  msg: {
-                    register_slash: {
-                      validator: registerSlash.validator,
-                      time: registerSlash.time,
-                      amount: registerSlash.amount,
-                      during_unbonding: registerSlash.duringUnbonding,
+                  msg:
+                    mode === 'cancel'
+                      ? {
+                          cancel: {},
+                        }
+                      : {
+                          register_slash: {
+                            validator: registerSlash.validator,
+                            time: registerSlash.time,
+                            amount: registerSlash.amount,
+                            during_unbonding: registerSlash.duringUnbonding,
+                          },
+                        },
+                },
+              },
+            })
+
+            return vestingInfo.owner?.isCw1Whitelist &&
+              vestingInfo.owner.cw1WhitelistAdmins.includes(address)
+              ? // Wrap in cw1-whitelist execute.
+                makeWasmMessage({
+                  wasm: {
+                    execute: {
+                      contract_addr: vestingInfo.owner.address,
+                      funds: [],
+                      msg: {
+                        execute: {
+                          msgs: [msg],
+                        },
+                      },
                     },
                   },
-                },
-              },
-            })
-          } else if (mode === 'cancel') {
-            return makeWasmMessage({
-              wasm: {
-                execute: {
-                  contract_addr: cancel.address,
-                  funds: [],
-                  msg: {
-                    cancel: {},
-                  },
-                },
-              },
-            })
+                })
+              : msg
           }
         },
         [
           loadingTokenBalances,
           nativeUnstakingDurationSecondsLoadable,
           vestingFactoryOwner,
+          loadingVestingInfos,
         ]
       )
     }

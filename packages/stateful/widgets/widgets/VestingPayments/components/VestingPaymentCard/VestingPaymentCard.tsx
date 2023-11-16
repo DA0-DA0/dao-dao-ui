@@ -65,6 +65,7 @@ export type VestingPaymentCardProps = {
   startDate: Date
   endDate: Date
   steps: VestingStep[]
+  canceled: boolean
 
   // Defined if using a Cw20 token.
   cw20Address?: string
@@ -98,6 +99,7 @@ export const VestingPaymentCard = ({
   startDate,
   endDate,
   steps,
+  canceled,
   cw20Address,
   onWithdraw,
   withdrawing,
@@ -384,24 +386,32 @@ export const VestingPaymentCard = ({
             )}
           </div>
 
-          <div className="flex flex-row items-start justify-between gap-8">
-            <p className="link-text">
-              {endDate > now ? t('title.timeRemaining') : t('info.finishedAt')}
+          {canceled ? (
+            <p className="caption-text self-end text-right text-text-body">
+              {t('title.canceled')}
             </p>
-
-            {/* leading-5 to match link-text's line-height. */}
-            {endDate > now ? (
-              <Tooltip title={formatDateTimeTz(endDate)}>
-                <p className="caption-text leading-5 text-text-body">
-                  <TimeAgo date={endDate} formatter={endTimeAgoFormatter} />
-                </p>
-              </Tooltip>
-            ) : (
-              <p className="caption-text leading-5 text-text-body">
-                {formatDateTimeTz(endDate)}
+          ) : (
+            <div className="flex flex-row items-start justify-between gap-8">
+              <p className="link-text">
+                {endDate > now
+                  ? t('title.timeRemaining')
+                  : t('info.finishedAt')}
               </p>
-            )}
-          </div>
+
+              {/* leading-5 to match link-text's line-height. */}
+              {endDate > now ? (
+                <Tooltip title={formatDateTimeTz(endDate)}>
+                  <p className="caption-text leading-5 text-text-body">
+                    <TimeAgo date={endDate} formatter={endTimeAgoFormatter} />
+                  </p>
+                </Tooltip>
+              ) : (
+                <p className="caption-text leading-5 text-text-body">
+                  {formatDateTimeTz(endDate)}
+                </p>
+              )}
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col gap-3 border-t border-border-secondary py-4 px-6">
@@ -604,13 +614,15 @@ export const VestingPaymentCard = ({
             </div>
           )}
 
-        <div className="border-t border-border-secondary px-6 pt-4 pb-6">
-          <VestingStepsLineGraph
-            startTimestamp={startDate.getTime()}
-            steps={steps}
-            tokenSymbol={token.symbol}
-          />
-        </div>
+        {!canceled && (
+          <div className="border-t border-border-secondary px-6 pt-4 pb-6">
+            <VestingStepsLineGraph
+              startTimestamp={startDate.getTime()}
+              steps={steps}
+              tokenSymbol={token.symbol}
+            />
+          </div>
+        )}
       </div>
 
       {!lazyInfo.loading && lazyInfo.data.stakingInfo && (

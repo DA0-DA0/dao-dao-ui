@@ -23,7 +23,7 @@ import { vestingInfosSelector } from '../state'
 import { TabRenderer as StatelessTabRenderer } from './TabRenderer'
 
 export const TabRenderer = ({
-  variables: { factory },
+  variables: { factory, oldFactories },
 }: WidgetRendererProps<VestingPaymentsData>) => {
   const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
@@ -43,6 +43,7 @@ export const TabRenderer = ({
     useCachedLoadable(
       vestingInfosSelector({
         factory,
+        oldFactories,
         chainId,
       })
     )

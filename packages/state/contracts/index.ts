@@ -1,3 +1,4 @@
+export { Cw1WhitelistClient, Cw1WhitelistQueryClient } from './Cw1Whitelist'
 export { Cw4GroupClient, Cw4GroupQueryClient } from './Cw4Group'
 export { Cw20BaseClient, Cw20BaseQueryClient } from './Cw20Base'
 export { Cw20StakeClient, Cw20StakeQueryClient } from './Cw20Stake'

@@ -369,6 +369,52 @@ export const decodePolytoneExecuteMsg = (
   }
 }
 
+// Checks if the message is a cw1-whitelist execute message and extracts the
+// address and msg(s).
+export const decodeCw1WhitelistExecuteMsg = (
+  decodedMsg: Record<string, any>,
+  // How many messages are expected.
+  type: 'one' | 'zero' | 'oneOrZero' | 'any'
+):
+  | {
+      address: string
+      msgs: Record<string, any>[]
+      cosmosMsgs: CosmosMsgFor_Empty[]
+    }
+  | undefined => {
+  if (
+    !objectMatchesStructure(decodedMsg, {
+      wasm: {
+        execute: {
+          contract_addr: {},
+          funds: {},
+          msg: {
+            execute: {
+              msgs: {},
+            },
+          },
+        },
+      },
+    }) ||
+    (type === 'zero' &&
+      decodedMsg.wasm.execute.msg.execute.msgs.length !== 0) ||
+    (type === 'one' && decodedMsg.wasm.execute.msg.execute.msgs.length !== 1) ||
+    (type === 'oneOrZero' &&
+      decodedMsg.wasm.execute.msg.execute.msgs.length > 1)
+  ) {
+    return
+  }
+
+  const cosmosMsgs = decodedMsg.wasm.execute.msg.execute.msgs
+  const msgs = decodeMessages(cosmosMsgs)
+
+  return {
+    address: decodedMsg.wasm.execute.contract_addr,
+    msgs,
+    cosmosMsgs,
+  }
+}
+
 export const getFundsUsedInCwMessage = (msg: CosmosMsgFor_Empty): Coin[] =>
   'bank' in msg
     ? 'send' in msg.bank

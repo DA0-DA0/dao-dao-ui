@@ -219,6 +219,10 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
           !lazyInfoLoading.loading &&
           !!lazyInfoLoading.data.stakingInfo?.totalPendingRewards
         }
+        canceled={
+          // Canceled vests have their curves set to constant.
+          'constant' in vest.vested
+        }
         claimedAmount={convertMicroDenomToDenomWithDecimals(
           vest.claimed,
           token.decimals

@@ -10,7 +10,7 @@ import {
 import { makeManageVestingActionMaker } from './actions/ManageVesting'
 import { VESTING_PAYMENTS_WIDGET_ID } from './constants'
 import { Renderer } from './Renderer'
-import { VestingPaymentsData } from './types'
+import { VestingPaymentsData, VestingPaymentsWidgetVersion } from './types'
 import { VestingPaymentsEditor as Editor } from './VestingPaymentsEditor'
 
 export const VestingPaymentsWidget: Widget<VestingPaymentsData> = {
@@ -18,6 +18,10 @@ export const VestingPaymentsWidget: Widget<VestingPaymentsData> = {
   Icon: PaidOutlined,
   location: WidgetLocation.Tab,
   visibilityContext: WidgetVisibilityContext.Always,
+  defaultValues: {
+    factory: '',
+    version: VestingPaymentsWidgetVersion.V1,
+  },
   Renderer,
   Editor,
   getActionCategoryMakers: (data) => {
