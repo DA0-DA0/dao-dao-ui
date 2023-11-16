@@ -139,11 +139,14 @@ export const NewProposal = ({
             }
           )
 
+          // TODO(approval): show something else and get pre-propose ID from TX
+
           // Get proposal info to display card.
           const proposalInfo = await makeGetProposalInfo({
             ...options,
             proposalNumber,
             proposalId,
+            isPreProposeProposal: false,
           })()
           const expirationDate =
             proposalInfo &&

@@ -26,26 +26,26 @@ import { IconButtonLink } from '../IconButtonLink'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { DaoProviders } from './DaoProviders'
 
-export type DaoApprovalProposalContentDisplayProps = {
+export type DaoApproverProposalContentDisplayProps = {
   proposalInfo: CommonProposalInfo
   setSeenAllActionPages: (() => void) | undefined
 }
 
-type InnerDaoApprovalProposalContentDisplayProps = Omit<
+type InnerDaoApproverProposalContentDisplayProps = Omit<
   ProposalContentDisplayProps,
   'EntityDisplay' | 'IconButtonLink' | 'approval'
 >
 
-type InnerDaoApprovalProposalContentDisplayWithInnerContentProps = Omit<
-  InnerDaoApprovalProposalContentDisplayProps,
+type InnerDaoApproverProposalContentDisplayWithInnerContentProps = Omit<
+  InnerDaoApproverProposalContentDisplayProps,
   'innerContentDisplay'
 > &
   Omit<BasePreProposeApprovalInnerContentDisplayProps, 'actionsForMatching'>
 
-export const DaoApprovalProposalContentDisplay = ({
+export const DaoApproverProposalContentDisplay = ({
   proposalInfo,
   ...props
-}: DaoApprovalProposalContentDisplayProps) => {
+}: DaoApproverProposalContentDisplayProps) => {
   const {
     options: {
       proposalModule: { prePropose },
@@ -97,7 +97,7 @@ export const DaoApprovalProposalContentDisplay = ({
   const creatorAddress = proposalInfo.createdByAddress
   const entity = useEntity(creatorAddress)
 
-  const innerProps: InnerDaoApprovalProposalContentDisplayProps = {
+  const innerProps: InnerDaoApproverProposalContentDisplayProps = {
     creator: {
       address: creatorAddress,
       entity,
@@ -127,9 +127,9 @@ export const DaoApprovalProposalContentDisplay = ({
         proposalModules={[proposalModuleWithPreProposeApproval]}
       >
         <SuspenseLoader
-          fallback={<InnerDaoApprovalProposalContentDisplay {...innerProps} />}
+          fallback={<InnerDaoApproverProposalContentDisplay {...innerProps} />}
         >
-          <InnerDaoApprovalProposalContentDisplayWithInnerContent
+          <InnerDaoApproverProposalContentDisplayWithInnerContent
             {...innerProps}
             {...props}
           />
@@ -139,21 +139,21 @@ export const DaoApprovalProposalContentDisplay = ({
   )
 }
 
-const InnerDaoApprovalProposalContentDisplay = (
-  props: InnerDaoApprovalProposalContentDisplayProps
+const InnerDaoApproverProposalContentDisplay = (
+  props: InnerDaoApproverProposalContentDisplayProps
 ) => (
   <ProposalContentDisplay
     EntityDisplay={EntityDisplay}
     IconButtonLink={IconButtonLink}
-    approval
+    approver
     {...props}
   />
 )
 
-const InnerDaoApprovalProposalContentDisplayWithInnerContent = ({
+const InnerDaoApproverProposalContentDisplayWithInnerContent = ({
   setSeenAllActionPages,
   ...props
-}: InnerDaoApprovalProposalContentDisplayWithInnerContentProps) => {
+}: InnerDaoApproverProposalContentDisplayWithInnerContentProps) => {
   const {
     hooks: { useLoadingPreProposeApprovalProposer },
     components: { PreProposeApprovalInnerContentDisplay },
@@ -169,7 +169,7 @@ const InnerDaoApprovalProposalContentDisplayWithInnerContent = ({
   const entity = useEntity(creatorAddress)
 
   return (
-    <InnerDaoApprovalProposalContentDisplay
+    <InnerDaoApproverProposalContentDisplay
       {...props}
       creator={{
         address: creatorAddress,

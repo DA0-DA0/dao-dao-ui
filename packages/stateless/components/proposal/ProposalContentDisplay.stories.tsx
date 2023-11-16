@@ -47,5 +47,5 @@ Default.args = {
   onRefresh: () => alert('refresh'),
   refreshing: false,
   duplicateUrl: '#',
-  approval: false,
+  approver: false,
 }

@@ -67,16 +67,20 @@ export const matchAndLoadAdapter = (
   proposalId: string,
   initialOptions: IProposalModuleAdapterInitialOptions
 ): IProposalModuleContext => {
-  // Last character of prefix is non-numeric, followed by numeric prop number.
-  const proposalIdParts = proposalId.match(/^(.*\D)?(\d+)$/)
-  if (proposalIdParts?.length !== 3) {
+  // Prefix is alphabetical, followed by numeric prop number. If there is an
+  // asterisk between the prefix and the prop number, this is a pre-propose
+  // proposal. Allow the prefix to be empty for backwards compatibility. Default
+  // to first proposal module if no alphabetical prefix.
+  const proposalIdParts = proposalId.match(/^([A-Z]*)(\*)?(\d+)$/)
+  if (proposalIdParts?.length !== 4) {
     throw new ProposalModuleAdapterError('Failed to parse proposal ID.')
   }
 
   // Undefined if matching group doesn't exist, i.e. no prefix exists.
   const proposalPrefix = proposalIdParts[1] ?? ''
+  const isPreProposeProposal = proposalIdParts[2] === '*'
+  const proposalNumber = Number(proposalIdParts[3])
 
-  const proposalNumber = Number(proposalIdParts[2])
   if (isNaN(proposalNumber)) {
     throw new ProposalModuleAdapterError(
       `Invalid proposal number "${proposalNumber}".`
@@ -115,6 +119,7 @@ export const matchAndLoadAdapter = (
     proposalModule,
     proposalId,
     proposalNumber,
+    isPreProposeProposal,
   }
 
   return {

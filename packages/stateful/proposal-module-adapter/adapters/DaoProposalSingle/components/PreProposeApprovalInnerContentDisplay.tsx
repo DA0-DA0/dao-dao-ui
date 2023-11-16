@@ -27,10 +27,10 @@ export const PreProposeApprovalInnerContentDisplay = (
   return (
     <SuspenseLoader
       fallback={<Loader />}
-      forceFallback={loadingProposal.loading || loadingProposal.errored}
+      forceFallback={loadingProposal.loading}
     >
-      {!loadingProposal.loading && !loadingProposal.errored && (
-        <InnerProposalInnerContentDisplay
+      {!loadingProposal.loading && (
+        <InnerPreProposeApprovalInnerContentDisplay
           {...props}
           proposal={loadingProposal.data}
         />
@@ -39,7 +39,7 @@ export const PreProposeApprovalInnerContentDisplay = (
   )
 }
 
-const InnerProposalInnerContentDisplay = ({
+const InnerPreProposeApprovalInnerContentDisplay = ({
   actionsForMatching,
   proposal,
   setSeenAllActionPages,

@@ -18,8 +18,8 @@ export interface ProposalLineProps {
   href: string
   className?: string
   LinkWrapper: ComponentType<LinkWrapperProps>
-  // Whether or not this proposal is an approval proposal.
-  approval?: boolean
+  // Whether or not this proposal is an approver proposal.
+  approver?: boolean
 }
 
 export const ProposalLine = ({
@@ -33,7 +33,7 @@ export const ProposalLine = ({
   href,
   className,
   LinkWrapper,
-  approval,
+  approver,
 }: ProposalLineProps) => (
   <LinkWrapper
     className={clsx(
@@ -56,7 +56,7 @@ export const ProposalLine = ({
       </div>
 
       <div className="flex grow flex-row items-center gap-2">
-        {approval && <ApprovalBadge size="sm" tooltip />}
+        {approver && <ApprovalBadge size="sm" tooltip />}
         <p className="body-text grow truncate">{title}</p>
       </div>
 
@@ -82,7 +82,7 @@ export const ProposalLine = ({
             />
           </p>
 
-          {approval && <ApprovalBadge size="sm" tooltip />}
+          {approver && <ApprovalBadge size="sm" tooltip />}
         </div>
 
         <p className="body-text break-words line-clamp-2">{title}</p>

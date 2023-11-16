@@ -23,7 +23,7 @@ import { useOnDaoWebSocketMessage, useWallet } from '../../hooks'
 import { ProfileDisconnectedCard, ProfileProposalCard } from '../profile'
 import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { DaoApprovalProposalContentDisplay } from './DaoApprovalProposalContentDisplay'
+import { DaoApproverProposalContentDisplay } from './DaoApproverProposalContentDisplay'
 import { DaoProposalPageWrapperProps } from './DaoPageWrapper'
 import { DaoProposalContentDiplay } from './DaoProposalContentDisplay'
 
@@ -179,13 +179,16 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     ]
   )
 
+  // TODO(approval): InnerPreProposeProposalStatusAndInfo
+  // TODO(approval): DaoPreProposeProposalContentDisplay
+
   return (
     <>
       <Proposal
         ProposalStatusAndInfo={CachedProposalStatusAndInfo}
         contentDisplay={
           proposalModule.prePropose?.type === PreProposeModuleType.Approver ? (
-            <DaoApprovalProposalContentDisplay
+            <DaoApproverProposalContentDisplay
               proposalInfo={proposalInfo}
               setSeenAllActionPages={setSeenAllActionPages}
             />

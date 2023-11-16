@@ -31,8 +31,8 @@ export interface ProposalContentDisplayProps {
   duplicateUrl?: string
   IconButtonLink?: ComponentType<IconButtonLinkProps>
   EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
-  // Whether or not this proposal is an approval proposal.
-  approval?: boolean
+  // Whether or not this proposal is an approver proposal.
+  approver?: boolean
 }
 
 export const ProposalContentDisplay = ({
@@ -46,7 +46,7 @@ export const ProposalContentDisplay = ({
   duplicateUrl,
   IconButtonLink,
   EntityDisplay,
-  approval,
+  approver,
 }: ProposalContentDisplayProps) => {
   const { t } = useTranslation()
 
@@ -62,14 +62,14 @@ export const ProposalContentDisplay = ({
       <div className="mb-16 flex flex-row items-start justify-between gap-x-10 gap-y-2">
         <div className="flex grow flex-col gap-4">
           <div className="flex flex-row flex-wrap items-start gap-x-2 gap-y-1">
-            {approval && <ApprovalBadge className="h-8" size="lg" />}
+            {approver && <ApprovalBadge className="h-8" size="lg" />}
 
             <TextWithTooltipWhenTruncated className="hero-text">
               {title}
             </TextWithTooltipWhenTruncated>
           </div>
 
-          {approval && (
+          {approver && (
             <div className="flex min-w-0 flex-row items-start gap-1">
               <InfoOutlined className="!h-4 !w-4 text-icon-secondary" />
               <p className="secondary-text min-w-0">
@@ -80,7 +80,7 @@ export const ProposalContentDisplay = ({
         </div>
 
         <div className="flex shrink-0 flex-row items-center gap-1">
-          {IconButtonLink && duplicateUrl && !approval && (
+          {IconButtonLink && duplicateUrl && !approver && (
             <IconButtonLink
               Icon={CopyAllOutlined}
               href={duplicateUrl}
@@ -117,7 +117,7 @@ export const ProposalContentDisplay = ({
 
       <div
         className={clsx(
-          approval &&
+          approver &&
             'rounded-md border-2 border-dashed border-border-primary p-4'
         )}
       >

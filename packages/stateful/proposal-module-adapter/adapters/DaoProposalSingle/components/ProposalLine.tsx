@@ -49,7 +49,7 @@ const InnerProposalLine = ({
       Status={({ dimmed }) => (
         <ProposalStatus dimmed={dimmed} status={proposal.status} />
       )}
-      approval={prePropose?.type === PreProposeModuleType.Approver}
+      approver={prePropose?.type === PreProposeModuleType.Approver}
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
       timestampDisplay={proposal.timestampInfo?.display}

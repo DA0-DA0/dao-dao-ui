@@ -8,10 +8,13 @@ import {
   makeDepositInfoSelector,
   makeUseProfileNewProposalCardInfoLines,
   makeUsePublishProposal,
+  reversePreProposeCompletedProposalInfosSelector,
+  reversePreProposePendingProposalInfosSelector,
   reverseProposalInfosSelector,
 } from './common'
 import {
   PreProposeApprovalInnerContentDisplay,
+  PreProposeProposalLine,
   ProposalInnerContentDisplay,
   ProposalLine,
   ProposalStatusAndInfo,
@@ -76,6 +79,26 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
             ...props,
           }),
         depositInfo: depositInfoSelector,
+        ...(options.proposalModule.prePropose
+          ? {
+              reversePreProposePendingProposalInfos: (props) =>
+                reversePreProposePendingProposalInfosSelector({
+                  chainId: options.chain.chain_id,
+                  proposalModuleAddress:
+                    options.proposalModule.prePropose!.address,
+                  proposalModulePrefix: options.proposalModule.prefix,
+                  ...props,
+                }),
+              reversePreProposeCompletedProposalInfos: (props) =>
+                reversePreProposeCompletedProposalInfosSelector({
+                  chainId: options.chain.chain_id,
+                  proposalModuleAddress:
+                    options.proposalModule.prePropose!.address,
+                  proposalModulePrefix: options.proposalModule.prefix,
+                  ...props,
+                }),
+            }
+          : {}),
       },
 
       // Hooks
@@ -125,6 +148,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       ProposalVotes,
       ProposalVoteTally,
       ProposalLine,
+      PreProposeProposalLine,
     },
   }),
 
