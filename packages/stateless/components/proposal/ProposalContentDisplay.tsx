@@ -1,4 +1,4 @@
-import { CopyAllOutlined, Refresh } from '@mui/icons-material'
+import { CopyAllOutlined, InfoOutlined, Refresh } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -11,10 +11,11 @@ import {
 } from '@dao-dao/types'
 import { formatDate } from '@dao-dao/utils'
 
+import { ApprovalBadge } from '../ApprovalBadge'
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { IconButton } from '../icon_buttons'
 import { MarkdownRenderer } from '../MarkdownRenderer'
-import { TooltipInfoIcon } from '../tooltip'
+import { TextWithTooltipWhenTruncated } from '../tooltip'
 
 export interface ProposalContentDisplayProps {
   title: string
@@ -31,7 +32,7 @@ export interface ProposalContentDisplayProps {
   IconButtonLink?: ComponentType<IconButtonLinkProps>
   EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
   // Whether or not this proposal is an approval proposal.
-  approval: boolean
+  approval?: boolean
 }
 
 export const ProposalContentDisplay = ({
@@ -58,23 +59,27 @@ export const ProposalContentDisplay = ({
 
   return (
     <>
-      <div className="mb-8 flex flex-row flex-wrap items-start justify-between gap-x-6 gap-y-2">
-        <div className="mb-8 flex shrink-0 flex-row items-center gap-2">
+      <div className="mb-16 flex flex-row items-start justify-between gap-x-10 gap-y-2">
+        <div className="flex grow flex-col gap-4">
+          <div className="flex flex-row flex-wrap items-start gap-x-2 gap-y-1">
+            {approval && <ApprovalBadge className="h-8" size="lg" />}
+
+            <TextWithTooltipWhenTruncated className="hero-text">
+              {title}
+            </TextWithTooltipWhenTruncated>
+          </div>
+
           {approval && (
-            <div className="flex shrink-0 flex-row items-center gap-1 rounded-full bg-component-badge-primary p-1 pr-2">
-              <TooltipInfoIcon
-                circular
-                size="sm"
-                title={t('info.approvalProposalTooltip')}
-              />
-              <p className="title-text shrink-0">{t('title.approval')}</p>
+            <div className="flex min-w-0 flex-row items-start gap-1">
+              <InfoOutlined className="!h-4 !w-4 text-icon-secondary" />
+              <p className="secondary-text min-w-0">
+                {t('info.approvalProposalLongerExplanation')}
+              </p>
             </div>
           )}
-
-          <p className="hero-text shrink-0">{title}</p>
         </div>
 
-        <div className="flex flex-row items-center gap-1">
+        <div className="flex shrink-0 flex-row items-center gap-1">
           {IconButtonLink && duplicateUrl && !approval && (
             <IconButtonLink
               Icon={CopyAllOutlined}
@@ -112,7 +117,8 @@ export const ProposalContentDisplay = ({
 
       <div
         className={clsx(
-          approval && 'rounded-md border-dashed border-border-primary p-4'
+          approval &&
+            'rounded-md border-2 border-dashed border-border-primary p-4'
         )}
       >
         <div className="caption-text mb-4 flex flex-row items-center gap-1 font-mono">

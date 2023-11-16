@@ -19,6 +19,7 @@ export * from './tooltip'
 export * from './vesting'
 export * from './wallet'
 
+export * from './ApprovalBadge'
 export * from './AudioPlayer'
 export * from './ChainLogo'
 export * from './ChainProvider'

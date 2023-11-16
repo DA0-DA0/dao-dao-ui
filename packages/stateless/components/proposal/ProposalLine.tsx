@@ -3,6 +3,7 @@ import { ComponentType, ReactNode } from 'react'
 
 import { LinkWrapperProps, ProposalTimestampInfo } from '@dao-dao/types'
 
+import { ApprovalBadge } from '../ApprovalBadge'
 import { Tooltip } from '../tooltip'
 import { ProposalIdDisplay } from './ProposalIdDisplay'
 
@@ -17,6 +18,8 @@ export interface ProposalLineProps {
   href: string
   className?: string
   LinkWrapper: ComponentType<LinkWrapperProps>
+  // Whether or not this proposal is an approval proposal.
+  approval?: boolean
 }
 
 export const ProposalLine = ({
@@ -30,6 +33,7 @@ export const ProposalLine = ({
   href,
   className,
   LinkWrapper,
+  approval,
 }: ProposalLineProps) => (
   <LinkWrapper
     className={clsx(
@@ -46,10 +50,15 @@ export const ProposalLine = ({
           proposalPrefix={proposalPrefix}
         />
       </p>
+
       <div className="w-20 shrink-0">
         <Status />
       </div>
-      <p className="body-text grow truncate">{title}</p>
+
+      <div className="flex grow flex-row items-center gap-2">
+        {approval && <ApprovalBadge size="sm" tooltip />}
+        <p className="body-text grow truncate">{title}</p>
+      </div>
 
       {timestampDisplay && (
         <Tooltip title={timestampDisplay.tooltip}>
@@ -65,14 +74,18 @@ export const ProposalLine = ({
     {/* Mobile */}
     <div className="flex min-h-[9.5rem] flex-col justify-between gap-2 rounded-md p-4 text-sm md:hidden">
       <div className="flex flex-col gap-2">
-        <p className="caption-text font-mono">
-          <ProposalIdDisplay
-            proposalNumber={proposalNumber}
-            proposalPrefix={proposalPrefix}
-          />
-        </p>
+        <div className="flex flex-row flex-wrap items-start justify-between gap-2">
+          <p className="caption-text font-mono">
+            <ProposalIdDisplay
+              proposalNumber={proposalNumber}
+              proposalPrefix={proposalPrefix}
+            />
+          </p>
 
-        <p className="body-text col-span-3 break-words line-clamp-2">{title}</p>
+          {approval && <ApprovalBadge size="sm" tooltip />}
+        </div>
+
+        <p className="body-text break-words line-clamp-2">{title}</p>
       </div>
 
       <div className="flex flex-row items-center justify-between gap-6">

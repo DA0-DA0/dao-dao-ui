@@ -2,7 +2,7 @@ import { ComponentType } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { Loader, RadioInput } from '@dao-dao/stateless'
+import { Loader, RadioInput, useDaoInfoContext } from '@dao-dao/stateless'
 import { LoadingData, StatefulEntityDisplayProps } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 
@@ -28,13 +28,18 @@ export const SetUpApproverComponent: ActionComponent<SetUpApproverOptions> = ({
   options: { options, EntityDisplay },
 }) => {
   const { t } = useTranslation()
-
+  const { name: daoName } = useDaoInfoContext()
   const { watch, setValue } = useFormContext<SetUpApproverData>()
+
   const dao = watch((fieldNamePrefix + 'dao') as 'dao')
 
   return (
     <>
-      <p className="body-text max-w-prose">{t('info.approverExplanation')}</p>
+      <p className="body-text max-w-prose">
+        {t('info.approverExplanation', {
+          daoName,
+        })}
+      </p>
 
       {isCreating && !options.loading ? (
         <RadioInput
