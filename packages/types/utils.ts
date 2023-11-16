@@ -20,6 +20,7 @@ export type ProcessedQuorum = {
 
 export type CodeIdConfig = {
   // https://github.com/CosmWasm/cw-plus
+  Cw1Whitelist: number
   Cw4Group: number
   // https://github.com/CosmWasm/cw-nfts
   Cw721Base?: number
