@@ -9,6 +9,7 @@ import {
 } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
+import { Proposal as DaoPreProposeApprovalSingleProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 
 export interface NewProposalForm {
@@ -88,6 +89,11 @@ export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
   votingOpen: boolean
   executedAt?: Date
 }
+
+export type PreProposeProposalWithMeteadata =
+  DaoPreProposeApprovalSingleProposal & {
+    timestampDisplay: ProposalTimestampInfo['display']
+  }
 
 export type MessagesWithActionData = {
   decodedMessages: any[]

@@ -209,6 +209,7 @@ export type ProposalStatus =
   | {
       rejected: {}
     }
+export type ProposalStatusKey = 'pending' | 'approved' | 'rejected'
 export type ProposeMsg = {
   title: string
   description: string
@@ -221,4 +222,7 @@ export type Proposal = {
   proposer: string
   msg: ProposeMsg
   deposit: CheckedDepositInfo
+  // Extra from indexer.
+  createdAt?: string
+  completedAt?: string
 }

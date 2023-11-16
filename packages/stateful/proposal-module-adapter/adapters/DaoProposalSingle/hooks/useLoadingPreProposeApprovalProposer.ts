@@ -12,11 +12,6 @@ export const useLoadingPreProposeApprovalProposer = () => {
         ? {
             loading: true,
           }
-        : loadingPreProposeProposal.errored
-        ? {
-            loading: false,
-            data: undefined,
-          }
         : {
             loading: false,
             data: loadingPreProposeProposal.data.proposer,

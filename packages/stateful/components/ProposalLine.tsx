@@ -1,4 +1,10 @@
-import { ChainProvider, ProposalLineLoader } from '@dao-dao/stateless'
+import { useTranslation } from 'react-i18next'
+
+import {
+  ChainProvider,
+  ProposalLineLoader,
+  WarningCard,
+} from '@dao-dao/stateless'
 import { ProposalModule } from '@dao-dao/types'
 
 import {
@@ -15,6 +21,7 @@ export interface ProposalLineProps {
   proposalModules: ProposalModule[]
   proposalId: string
   proposalViewUrl: string
+  isPreProposeProposal: boolean
 }
 
 export const ProposalLine = ({
@@ -37,16 +44,30 @@ export const ProposalLine = ({
   </ChainProvider>
 )
 
-type InnerProposalLineProps = Pick<ProposalLineProps, 'proposalViewUrl'>
+type InnerProposalLineProps = Pick<
+  ProposalLineProps,
+  'proposalViewUrl' | 'isPreProposeProposal'
+>
 
-const InnerProposalLine = ({ proposalViewUrl }: InnerProposalLineProps) => {
+const InnerProposalLine = ({
+  proposalViewUrl,
+  isPreProposeProposal,
+}: InnerProposalLineProps) => {
+  const { t } = useTranslation()
   const {
-    components: { ProposalLine },
+    components: { ProposalLine, PreProposeProposalLine },
   } = useProposalModuleAdapter()
+
+  const Component = isPreProposeProposal ? PreProposeProposalLine : ProposalLine
+  if (!Component) {
+    return (
+      <WarningCard content={t('error.unsupportedPreProposeFailedRender')} />
+    )
+  }
 
   return (
     <SuspenseLoader fallback={<ProposalLineLoader />}>
-      <ProposalLine LinkWrapper={LinkWrapper} href={proposalViewUrl} />
+      <Component LinkWrapper={LinkWrapper} href={proposalViewUrl} />
     </SuspenseLoader>
   )
 }

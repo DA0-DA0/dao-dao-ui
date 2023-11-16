@@ -436,7 +436,8 @@
     "txNotFound": "Transaction not found.",
     "unexpectedError": "An unexpected error occurred.",
     "unknownDenom": "Unknown denomination {{denom}}.",
-    "unknownInboxType": "Unknown inbox item type."
+    "unknownInboxType": "Unknown inbox item type.",
+    "unsupportedPreProposeFailedRender": "Failed to render pre-propose proposal. Unsupported module."
   },
   "form": {
     "addAnImage": "Add an image",
@@ -1224,6 +1225,7 @@
   "title": {
     "404": "404: Not Found",
     "500": "500: Error",
+    "accepted": "Accepted",
     "acceptingSubmissions": "Accepting submissions",
     "account": "Account",
     "actions": "Actions",
@@ -1310,6 +1312,7 @@
     "date": "Date",
     "delegated": "Delegated",
     "deletePost": "Delete Post",
+    "denied": "Denied",
     "deposit": "Deposit",
     "depositFiat": "Deposit fiat",
     "depositNfts": "Import NFTs",
@@ -1431,6 +1434,7 @@
     "passingThreshold": "Passing threshold",
     "payout": "Payout",
     "payroll": "Payroll",
+    "pending": "Pending",
     "percentTurnout": "{{value}} turnout",
     "posts": "Posts",
     "preferences": "Preferences",
@@ -1448,6 +1452,7 @@
     "proposals_one": "Proposal",
     "proposals_other": "Proposals",
     "propose": "Propose",
+    "proposed": "Proposed",
     "proposer": "Proposer",
     "publicSubmissions": "Public Submissions",
     "push": "Push",
