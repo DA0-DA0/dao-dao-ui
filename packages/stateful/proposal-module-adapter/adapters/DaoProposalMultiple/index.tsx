@@ -111,6 +111,11 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       useLoadingProposalExecutionTxHash,
       useLoadingVoteOptions,
       useLoadingWalletVoteInfo,
+      // No multiple choice approval flow yet.
+      useLoadingPreProposeApprovalProposer: () => ({
+        loading: false,
+        data: undefined,
+      }),
     },
 
     // Components

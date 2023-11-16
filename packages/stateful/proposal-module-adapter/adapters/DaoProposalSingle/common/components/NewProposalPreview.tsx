@@ -22,7 +22,6 @@ export const NewProposalPreview = () => {
   return (
     <ProposalContentDisplay
       EntityDisplay={EntityDisplay}
-      approval={false}
       createdAt={new Date()}
       creator={{
         address: walletAddress,

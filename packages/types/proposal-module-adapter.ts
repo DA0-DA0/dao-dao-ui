@@ -66,6 +66,7 @@ export interface IProposalModuleAdapter<Vote extends unknown = any> {
       castVote: (vote: Vote) => Promise<void>
       castingVote: boolean
     }
+    useLoadingPreProposeApprovalProposer: () => LoadingData<string | undefined>
   }
 
   // Components
@@ -208,9 +209,10 @@ export interface BaseProposalInnerContentDisplayProps<
   setSeenAllActionPages?: () => void
 }
 
-export type BasePreProposeApprovalInnerContentDisplayProps = {
-  actionsForMatching: CategorizedAction[]
-}
+export type BasePreProposeApprovalInnerContentDisplayProps = Omit<
+  BaseProposalInnerContentDisplayProps,
+  'setDuplicateFormData'
+>
 
 export interface BaseProposalWalletVoteProps<T> {
   vote: T | undefined

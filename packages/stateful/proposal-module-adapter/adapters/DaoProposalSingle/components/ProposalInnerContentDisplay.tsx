@@ -140,5 +140,7 @@ const InnerProposalInnerContentDisplay = ({
 
       {showRaw && <CosmosMessageDisplay value={rawDecodedMessages} />}
     </div>
-  ) : null
+  ) : (
+    <p className="caption-text italic">{t('info.noProposalActions')}</p>
+  )
 }

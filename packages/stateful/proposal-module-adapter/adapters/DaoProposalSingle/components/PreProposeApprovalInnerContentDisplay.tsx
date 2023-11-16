@@ -1,59 +1,35 @@
 import { AnalyticsOutlined } from '@mui/icons-material'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { DaoPreProposeApprovalSingleSelectors } from '@dao-dao/state/recoil'
 import {
   ActionsRenderer,
   Button,
   CosmosMessageDisplay,
   Loader,
-  useCachedLoading,
 } from '@dao-dao/stateless'
 import {
   BasePreProposeApprovalInnerContentDisplayProps,
   CategorizedActionAndData,
-  LoadingData,
 } from '@dao-dao/types'
 import { Proposal as DaoPreProposeApprovalSingleProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { decodeMessages, decodeRawDataForDisplay } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
-import { useProposalModuleAdapterOptions } from '../../../react'
+import { useLoadingPreProposeProposal } from '../hooks/useLoadingPreProposeProposal'
 
 export const PreProposeApprovalInnerContentDisplay = (
   props: BasePreProposeApprovalInnerContentDisplayProps
 ) => {
-  const {
-    chain: { chain_id: chainId },
-    proposalModule,
-    proposalNumber,
-  } = useProposalModuleAdapterOptions()
-
-  const loadingProposal = useCachedLoading(
-    DaoPreProposeApprovalSingleSelectors.queryExtensionSelector({
-      chainId,
-      contractAddress: proposalModule.prePropose!.address,
-      params: [
-        {
-          msg: {
-            proposal: {
-              id: proposalNumber,
-            },
-          },
-        },
-      ],
-    }),
-    undefined
-  ) as LoadingData<DaoPreProposeApprovalSingleProposal | undefined>
+  const loadingProposal = useLoadingPreProposeProposal()
 
   return (
     <SuspenseLoader
       fallback={<Loader />}
-      forceFallback={loadingProposal.loading || !loadingProposal.data}
+      forceFallback={loadingProposal.loading || loadingProposal.errored}
     >
-      {!loadingProposal.loading && loadingProposal.data && (
+      {!loadingProposal.loading && !loadingProposal.errored && (
         <InnerProposalInnerContentDisplay
           {...props}
           proposal={loadingProposal.data}
@@ -66,6 +42,7 @@ export const PreProposeApprovalInnerContentDisplay = (
 const InnerProposalInnerContentDisplay = ({
   actionsForMatching,
   proposal,
+  setSeenAllActionPages,
 }: BasePreProposeApprovalInnerContentDisplayProps & {
   proposal: DaoPreProposeApprovalSingleProposal
 }) => {
@@ -80,6 +57,19 @@ const InnerProposalInnerContentDisplay = ({
     () => JSON.stringify(decodedMessages.map(decodeRawDataForDisplay), null, 2),
     [decodedMessages]
   )
+
+  // If no msgs, set seen all action pages to true so that the user can vote.
+  const [markedSeen, setMarkedSeen] = useState(false)
+  useEffect(() => {
+    if (markedSeen) {
+      return
+    }
+
+    if (setSeenAllActionPages && !decodedMessages.length) {
+      setSeenAllActionPages()
+      setMarkedSeen(true)
+    }
+  }, [decodedMessages.length, markedSeen, setSeenAllActionPages])
 
   // Call relevant action hooks in the same order every time.
   const actionData: CategorizedActionAndData[] = decodedMessages.map(
@@ -112,6 +102,7 @@ const InnerProposalInnerContentDisplay = ({
         SuspenseLoader={SuspenseLoader}
         actionData={actionData}
         onCopyLink={() => toast.success(t('info.copiedLinkToClipboard'))}
+        setSeenAllActionPages={setSeenAllActionPages}
       />
 
       <Button onClick={() => setShowRaw((s) => !s)} variant="ghost">
@@ -123,5 +114,7 @@ const InnerProposalInnerContentDisplay = ({
 
       {showRaw && <CosmosMessageDisplay value={rawDecodedMessages} />}
     </div>
-  ) : null
+  ) : (
+    <p className="caption-text italic">{t('info.noProposalActions')}</p>
+  )
 }
