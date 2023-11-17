@@ -9,7 +9,7 @@ export type ProposalProps = {
   id: string
   voteTally: ReactNode
   votesCast: ReactNode
-  ProposalStatusAndInfo: ComponentType<{ inline: boolean }>
+  ProposalStatusAndInfo: ComponentType<{ inline?: boolean }>
   contentDisplay: ReactNode
   rightSidebarContent: ReactNode
 }

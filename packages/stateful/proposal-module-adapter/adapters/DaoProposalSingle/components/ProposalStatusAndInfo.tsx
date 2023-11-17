@@ -10,7 +10,7 @@ import {
   Tag,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
@@ -68,6 +68,7 @@ import {
   useProposalRefreshers,
 } from '../hooks'
 import { ProposalWithMetadata, VotesInfo } from '../types'
+import { ProposalStatusAndInfoLoader } from './ProposalStatusAndInfoLoader'
 
 export const ProposalStatusAndInfo = (
   props: BaseProposalStatusAndInfoProps
@@ -78,7 +79,7 @@ export const ProposalStatusAndInfo = (
 
   return (
     <SuspenseLoader
-      fallback={<InnerProposalStatusAndInfoLoader {...props} />}
+      fallback={<ProposalStatusAndInfoLoader {...props} />}
       forceFallback={
         loadingProposal.loading ||
         loadingVotesInfo.loading ||
@@ -426,58 +427,6 @@ const InnerProposalStatusAndInfo = ({
             }
           : undefined
       }
-    />
-  )
-}
-
-const InnerProposalStatusAndInfoLoader = (
-  props: BaseProposalStatusAndInfoProps
-) => {
-  const { t } = useTranslation()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { getDaoPath } = useDaoNavHelpers()
-
-  const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
-    <p className={clsx('animate-pulse', className)}>...</p>
-  )
-  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
-    {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
-      label: t('title.dao'),
-      Value: (props) => (
-        <ButtonLink
-          href={getDaoPath(coreAddress)}
-          variant="underline"
-          {...props}
-        >
-          {daoName}
-        </ButtonLink>
-      ),
-    },
-    {
-      Icon: AccountCircleOutlined,
-      label: t('title.creator'),
-      Value: LoaderP,
-    },
-    {
-      Icon: RotateRightOutlined,
-      label: t('title.status'),
-      Value: LoaderP,
-    },
-    {
-      Icon: HourglassTopRounded,
-      label: t('title.date'),
-      Value: LoaderP,
-    },
-  ]
-
-  return (
-    <StatelessProposalStatusAndInfo
-      {...props}
-      info={info}
-      status={t('info.loading')}
     />
   )
 }

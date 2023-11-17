@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
 import { DaoPreProposeApproverSelectors } from '@dao-dao/state/recoil'
@@ -5,9 +6,11 @@ import {
   Loader,
   ProposalContentDisplay,
   ProposalContentDisplayProps,
+  WarningCard,
   useChain,
 } from '@dao-dao/stateless'
 import {
+  ApprovalProposalContextType,
   BasePreProposeApprovalInnerContentDisplayProps,
   CommonProposalInfo,
   PreProposeModuleType,
@@ -145,7 +148,9 @@ const InnerDaoApproverProposalContentDisplay = (
   <ProposalContentDisplay
     EntityDisplay={EntityDisplay}
     IconButtonLink={IconButtonLink}
-    approver
+    approvalContext={{
+      type: ApprovalProposalContextType.Approver,
+    }}
     {...props}
   />
 )
@@ -154,6 +159,7 @@ const InnerDaoApproverProposalContentDisplayWithInnerContent = ({
   setSeenAllActionPages,
   ...props
 }: InnerDaoApproverProposalContentDisplayWithInnerContentProps) => {
+  const { t } = useTranslation()
   const {
     hooks: { useLoadingPreProposeApprovalProposer },
     components: { PreProposeApprovalInnerContentDisplay },
@@ -167,6 +173,10 @@ const InnerDaoApproverProposalContentDisplayWithInnerContent = ({
     props.creator?.address ||
     ''
   const entity = useEntity(creatorAddress)
+
+  if (!PreProposeApprovalInnerContentDisplay) {
+    return <WarningCard content={t('error.unsupportedApprovalFailedRender')} />
+  }
 
   return (
     <InnerDaoApproverProposalContentDisplay

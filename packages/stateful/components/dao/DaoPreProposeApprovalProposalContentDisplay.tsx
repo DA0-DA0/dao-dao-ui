@@ -1,16 +1,19 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   Loader,
   ProposalContentDisplay,
+  WarningCard,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
+  ApprovalProposalContextType,
   CommonProposalInfo,
-  PreProposeModuleType,
   ProposalPrefill,
 } from '@dao-dao/types'
+import { keyFromPreProposeStatus } from '@dao-dao/utils'
 
 import { useActionsForMatching } from '../../actions'
 import { useEntity } from '../../hooks'
@@ -19,31 +22,28 @@ import { EntityDisplay } from '../EntityDisplay'
 import { IconButtonLink } from '../IconButtonLink'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-export type DaoProposalContentDisplayProps = {
+export type DaoPreProposeApprovalProposalContentDisplayProps = {
   proposalInfo: CommonProposalInfo
-  setSeenAllActionPages: (() => void) | undefined
 }
 
-export const DaoProposalContentDisplay = ({
+export const DaoPreProposeApprovalProposalContentDisplay = ({
   proposalInfo,
-  setSeenAllActionPages,
-}: DaoProposalContentDisplayProps) => {
+}: DaoPreProposeApprovalProposalContentDisplayProps) => {
+  const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
   const actionsForMatching = useActionsForMatching()
   const {
     id,
-    options: { proposalModule },
     adapter: {
-      components: { ProposalInnerContentDisplay },
-      hooks: { useProposalRefreshers },
+      components: { PreProposeApprovalInnerContentDisplay },
+      hooks: { useProposalRefreshers, useLoadingPreProposeApprovalStatus },
     },
   } = useProposalModuleAdapterContext()
 
-  const creatorAddress =
-    proposalModule.prePropose?.type === PreProposeModuleType.Approver
-      ? proposalModule.prePropose.config.approvalDao
-      : proposalInfo.createdByAddress
+  const loadingStatus = useLoadingPreProposeApprovalStatus()
+
+  const creatorAddress = proposalInfo.createdByAddress
   const loadingEntity = useEntity(creatorAddress)
 
   const { refreshProposal, refreshing } = useProposalRefreshers()
@@ -65,10 +65,22 @@ export const DaoProposalContentDisplay = ({
       })
     : undefined
 
+  if (!PreProposeApprovalInnerContentDisplay) {
+    return <WarningCard content={t('error.unsupportedApprovalFailedRender')} />
+  }
+
+  if (loadingStatus.loading || !loadingStatus.data) {
+    return <Loader />
+  }
+
   return (
     <ProposalContentDisplay
       EntityDisplay={EntityDisplay}
       IconButtonLink={IconButtonLink}
+      approvalContext={{
+        type: ApprovalProposalContextType.Approval,
+        status: keyFromPreProposeStatus(loadingStatus.data),
+      }}
       createdAt={
         proposalInfo.createdAtEpoch !== null
           ? new Date(proposalInfo.createdAtEpoch)
@@ -82,10 +94,9 @@ export const DaoProposalContentDisplay = ({
       duplicateUrl={duplicateUrl}
       innerContentDisplay={
         <SuspenseLoader fallback={<Loader />}>
-          <ProposalInnerContentDisplay
+          <PreProposeApprovalInnerContentDisplay
             actionsForMatching={actionsForMatching}
             setDuplicateFormData={setDuplicateFormData}
-            setSeenAllActionPages={setSeenAllActionPages}
           />
         </SuspenseLoader>
       }

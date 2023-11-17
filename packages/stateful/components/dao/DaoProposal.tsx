@@ -25,7 +25,8 @@ import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { DaoApproverProposalContentDisplay } from './DaoApproverProposalContentDisplay'
 import { DaoProposalPageWrapperProps } from './DaoPageWrapper'
-import { DaoProposalContentDiplay } from './DaoProposalContentDisplay'
+import { DaoPreProposeApprovalProposalContentDisplay } from './DaoPreProposeApprovalProposalContentDisplay'
+import { DaoProposalContentDisplay } from './DaoProposalContentDisplay'
 
 interface InnerDaoProposalProps {
   proposalInfo: CommonProposalInfo
@@ -36,9 +37,14 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const { coreAddress } = useDaoInfoContext()
   const { isWalletConnected, address } = useWallet()
   const {
-    options: { proposalModule },
+    options: { proposalModule, isPreProposeApprovalProposal },
     adapter: {
-      components: { ProposalStatusAndInfo, ProposalVoteTally, ProposalVotes },
+      components: {
+        ProposalStatusAndInfo,
+        PreProposeApprovalProposalStatusAndInfo,
+        ProposalVoteTally,
+        ProposalVotes,
+      },
       hooks: { useProposalRefreshers, useLoadingWalletVoteInfo },
     },
   } = useProposalModuleAdapterContext()
@@ -179,21 +185,27 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     ]
   )
 
-  // TODO(approval): InnerPreProposeProposalStatusAndInfo
-  // TODO(approval): DaoPreProposeProposalContentDisplay
-
   return (
     <>
       <Proposal
-        ProposalStatusAndInfo={CachedProposalStatusAndInfo}
+        ProposalStatusAndInfo={
+          isPreProposeApprovalProposal &&
+          PreProposeApprovalProposalStatusAndInfo
+            ? PreProposeApprovalProposalStatusAndInfo
+            : CachedProposalStatusAndInfo
+        }
         contentDisplay={
           proposalModule.prePropose?.type === PreProposeModuleType.Approver ? (
             <DaoApproverProposalContentDisplay
               proposalInfo={proposalInfo}
               setSeenAllActionPages={setSeenAllActionPages}
             />
+          ) : isPreProposeApprovalProposal ? (
+            <DaoPreProposeApprovalProposalContentDisplay
+              proposalInfo={proposalInfo}
+            />
           ) : (
-            <DaoProposalContentDiplay
+            <DaoProposalContentDisplay
               proposalInfo={proposalInfo}
               setSeenAllActionPages={setSeenAllActionPages}
             />
@@ -211,8 +223,10 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
             <ProfileDisconnectedCard />
           )
         }
-        voteTally={<ProposalVoteTally />}
-        votesCast={<ProposalVotes />}
+        voteTally={
+          isPreProposeApprovalProposal ? undefined : <ProposalVoteTally />
+        }
+        votesCast={isPreProposeApprovalProposal ? undefined : <ProposalVotes />}
       />
 
       <SelfRelayExecuteModal

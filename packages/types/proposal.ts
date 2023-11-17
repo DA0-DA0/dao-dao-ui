@@ -1,6 +1,7 @@
 import { PolytoneConnection } from './chain'
 import { ProposalCardProps } from './components/ProposalCard'
 import { CosmosMsgFor_Empty } from './contracts'
+import { ProposalStatusKey as PreProposeApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
 
 export type ProposalCreatedCardProps = Omit<
   ProposalCardProps,
@@ -98,3 +99,17 @@ export type ProcessedThresholdQuorum = {
 export type ProcessedQuorum = {
   quorum: ProcessedTQ
 }
+
+export enum ApprovalProposalContextType {
+  Approval = 'approval',
+  Approver = 'approver',
+}
+
+export type ApprovalProposalContext =
+  | {
+      type: ApprovalProposalContextType.Approval
+      status: PreProposeApprovalProposalStatus
+    }
+  | {
+      type: ApprovalProposalContextType.Approver
+    }

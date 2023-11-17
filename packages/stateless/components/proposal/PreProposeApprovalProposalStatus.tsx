@@ -1,6 +1,6 @@
-import { Pending, ThumbDown, ThumbUp } from '@mui/icons-material'
+import { PendingOutlined, ThumbDown, ThumbUp } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ReactElement } from 'react'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { StatusDisplay } from '@dao-dao/stateless'
@@ -8,20 +8,21 @@ import {
   ProposalStatus,
   ProposalStatusKey,
 } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
+import { keyFromPreProposeStatus } from '@dao-dao/utils'
 
-export type PreProposeProposalStatusProps = {
+export type PreProposeApprovalProposalStatusProps = {
   status: ProposalStatus
   // Dim
   dimmed?: boolean
 }
 
-export const PreProposeProposalStatus = ({
+export const PreProposeApprovalProposalStatus = ({
   status,
   dimmed = false,
-}: PreProposeProposalStatusProps) => {
+}: PreProposeApprovalProposalStatusProps) => {
   const { t } = useTranslation()
   const { labelI18nKey, Icon, iconClassName, textClassName } =
-    ProposalStatusMap[Object.keys(status)[0] as ProposalStatusKey]
+    PreProposeApprovalProposalStatusMap[keyFromPreProposeStatus(status)]
 
   return (
     <StatusDisplay
@@ -47,18 +48,18 @@ export const PreProposeProposalStatus = ({
   )
 }
 
-const ProposalStatusMap: Record<
+export const PreProposeApprovalProposalStatusMap: Record<
   ProposalStatusKey,
   {
     labelI18nKey: string
-    Icon: (props: { className: string }) => ReactElement
+    Icon: ComponentType<{ className: string }>
     iconClassName: string
     textClassName: string
   }
 > = {
   pending: {
     labelI18nKey: 'title.pending',
-    Icon: Pending,
+    Icon: PendingOutlined,
     iconClassName: 'text-icon-primary',
     textClassName: 'text-text-body',
   },

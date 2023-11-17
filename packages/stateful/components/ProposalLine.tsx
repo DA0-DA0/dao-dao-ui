@@ -55,14 +55,14 @@ const InnerProposalLine = ({
 }: InnerProposalLineProps) => {
   const { t } = useTranslation()
   const {
-    components: { ProposalLine, PreProposeProposalLine },
+    components: { ProposalLine, PreProposeApprovalProposalLine },
   } = useProposalModuleAdapter()
 
-  const Component = isPreProposeProposal ? PreProposeProposalLine : ProposalLine
+  const Component = isPreProposeProposal
+    ? PreProposeApprovalProposalLine
+    : ProposalLine
   if (!Component) {
-    return (
-      <WarningCard content={t('error.unsupportedPreProposeFailedRender')} />
-    )
+    return <WarningCard content={t('error.unsupportedApprovalFailedRender')} />
   }
 
   return (

@@ -45,10 +45,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
       ],
     }),
     undefined,
-    // If proposal undefined (due to a selector error), an error will be thrown.
-    () => {
-      throw new Error(t('error.loadingData'))
-    }
+    (err) => console.error(err)
   )
 
   const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
@@ -64,8 +61,6 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     })
   )
 
-  // Since an error will be thrown on a selector error, this .data check is just
-  // a typecheck. It will not return loading forever if the selector fails.
   if (
     loadingProposalResponse.loading ||
     !loadingProposalResponse.data ||

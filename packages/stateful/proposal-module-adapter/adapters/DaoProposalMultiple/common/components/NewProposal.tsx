@@ -145,10 +145,10 @@ export const NewProposal = ({
             ...options,
             proposalNumber,
             proposalId,
-            isPreProposeProposal: false,
+            isPreProposeApprovalProposal: false,
           })()
           const expirationDate =
-            proposalInfo &&
+            proposalInfo?.expiration &&
             convertExpirationToDate(
               blocksPerYear,
               proposalInfo.expiration,

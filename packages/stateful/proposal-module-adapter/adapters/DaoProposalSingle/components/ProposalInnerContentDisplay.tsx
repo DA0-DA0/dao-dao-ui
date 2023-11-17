@@ -110,7 +110,7 @@ const InnerProposalInnerContentDisplay = ({
     })
   )
   useDeepCompareEffect(() => {
-    setDuplicateFormData({
+    setDuplicateFormData?.({
       title: proposal.title,
       description: proposal.description,
       actionData: actionKeyAndData,

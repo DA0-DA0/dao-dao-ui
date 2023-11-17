@@ -1,7 +1,11 @@
 import clsx from 'clsx'
 import { ComponentType, ReactNode } from 'react'
 
-import { LinkWrapperProps, ProposalTimestampInfo } from '@dao-dao/types'
+import {
+  ApprovalProposalContext,
+  LinkWrapperProps,
+  ProposalTimestampInfo,
+} from '@dao-dao/types'
 
 import { ApprovalBadge } from '../ApprovalBadge'
 import { Tooltip } from '../tooltip'
@@ -18,8 +22,7 @@ export interface ProposalLineProps {
   href: string
   className?: string
   LinkWrapper: ComponentType<LinkWrapperProps>
-  // Whether or not this proposal is an approver proposal.
-  approver?: boolean
+  approvalContext?: ApprovalProposalContext
 }
 
 export const ProposalLine = ({
@@ -33,7 +36,7 @@ export const ProposalLine = ({
   href,
   className,
   LinkWrapper,
-  approver,
+  approvalContext,
 }: ProposalLineProps) => (
   <LinkWrapper
     className={clsx(
@@ -56,7 +59,9 @@ export const ProposalLine = ({
       </div>
 
       <div className="flex grow flex-row items-center gap-2">
-        {approver && <ApprovalBadge size="sm" tooltip />}
+        {approvalContext && (
+          <ApprovalBadge context={approvalContext} size="sm" tooltip />
+        )}
         <p className="body-text grow truncate">{title}</p>
       </div>
 
@@ -82,7 +87,9 @@ export const ProposalLine = ({
             />
           </p>
 
-          {approver && <ApprovalBadge size="sm" tooltip />}
+          {approvalContext && (
+            <ApprovalBadge context={approvalContext} size="sm" tooltip />
+          )}
         </div>
 
         <p className="body-text break-words line-clamp-2">{title}</p>

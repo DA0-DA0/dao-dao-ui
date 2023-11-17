@@ -4,6 +4,8 @@ import { ComponentType, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ApprovalProposalContext,
+  ApprovalProposalContextType,
   Entity,
   IconButtonLinkProps,
   LoadingData,
@@ -31,8 +33,7 @@ export interface ProposalContentDisplayProps {
   duplicateUrl?: string
   IconButtonLink?: ComponentType<IconButtonLinkProps>
   EntityDisplay?: ComponentType<StatefulEntityDisplayProps>
-  // Whether or not this proposal is an approver proposal.
-  approver?: boolean
+  approvalContext?: ApprovalProposalContext
 }
 
 export const ProposalContentDisplay = ({
@@ -46,7 +47,7 @@ export const ProposalContentDisplay = ({
   duplicateUrl,
   IconButtonLink,
   EntityDisplay,
-  approver,
+  approvalContext,
 }: ProposalContentDisplayProps) => {
   const { t } = useTranslation()
 
@@ -62,31 +63,42 @@ export const ProposalContentDisplay = ({
       <div className="mb-16 flex flex-row items-start justify-between gap-x-10 gap-y-2">
         <div className="flex grow flex-col gap-4">
           <div className="flex flex-row flex-wrap items-start gap-x-2 gap-y-1">
-            {approver && <ApprovalBadge className="h-8" size="lg" />}
+            {approvalContext && (
+              <ApprovalBadge
+                className="h-8"
+                context={approvalContext}
+                size="lg"
+              />
+            )}
 
             <TextWithTooltipWhenTruncated className="hero-text">
               {title}
             </TextWithTooltipWhenTruncated>
           </div>
 
-          {approver && (
-            <div className="flex min-w-0 flex-row items-start gap-1">
-              <InfoOutlined className="!h-4 !w-4 text-icon-secondary" />
-              <p className="secondary-text min-w-0">
-                {t('info.approvalProposalLongerExplanation')}
-              </p>
-            </div>
-          )}
+          {approvalContext &&
+            approvalContext.type === ApprovalProposalContextType.Approver && (
+              <div className="flex min-w-0 flex-row items-start gap-1">
+                <InfoOutlined className="!h-4 !w-4 text-icon-secondary" />
+                <p className="secondary-text min-w-0">
+                  {t('info.approverProposalExplanation')}
+                </p>
+              </div>
+            )}
         </div>
 
         <div className="flex shrink-0 flex-row items-center gap-1">
-          {IconButtonLink && duplicateUrl && !approver && (
-            <IconButtonLink
-              Icon={CopyAllOutlined}
-              href={duplicateUrl}
-              variant="ghost"
-            />
-          )}
+          {IconButtonLink &&
+            duplicateUrl &&
+            (!approvalContext ||
+              approvalContext.type ===
+                ApprovalProposalContextType.Approval) && (
+              <IconButtonLink
+                Icon={CopyAllOutlined}
+                href={duplicateUrl}
+                variant="ghost"
+              />
+            )}
 
           {/* Refresh button that shows up after votes load or while votes are loading. */}
           {onRefresh && (
@@ -117,7 +129,8 @@ export const ProposalContentDisplay = ({
 
       <div
         className={clsx(
-          approver &&
+          approvalContext &&
+            approvalContext.type === ApprovalProposalContextType.Approver &&
             'rounded-md border-2 border-dashed border-border-primary p-4'
         )}
       >

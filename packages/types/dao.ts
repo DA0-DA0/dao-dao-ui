@@ -77,8 +77,18 @@ export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
 }
 
 export enum PreProposeModuleType {
+  Approval = 'approval',
   Approver = 'approver',
   Other = 'other',
+}
+
+export type PreProposeModuleApprovalConfig = {
+  // If the approver is an approver contract, this is set to the DAO that the
+  // approver contract is attached to. Otherwise, it is the approver directly.
+  approver: string
+  // If the approver is an approver contract, this is set, and the approver
+  // above is set to the DAO address.
+  preProposeApproverContract?: string
 }
 
 export type PreProposeModuleApproverConfig = {
@@ -88,12 +98,16 @@ export type PreProposeModuleApproverConfig = {
 
 export type PreProposeModuleTypedConfig =
   | {
-      type: PreProposeModuleType.Other
-      config?: undefined
+      type: PreProposeModuleType.Approval
+      config: PreProposeModuleApprovalConfig
     }
   | {
       type: PreProposeModuleType.Approver
       config: PreProposeModuleApproverConfig
+    }
+  | {
+      type: PreProposeModuleType.Other
+      config?: undefined
     }
 
 export type PreProposeModule = {
