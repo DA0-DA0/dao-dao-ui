@@ -40,7 +40,9 @@ export const ApprovalBadge = ({
             ? t('info.approvalProposalExplanation', {
                 context: context.status,
               })
-            : t('info.approverProposalExplanation')
+            : t('info.approverProposalExplanation', {
+                context: context.status,
+              })
           : undefined
       }
     >

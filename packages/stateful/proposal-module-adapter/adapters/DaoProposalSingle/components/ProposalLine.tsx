@@ -57,6 +57,7 @@ const InnerProposalLine = ({
         prePropose?.type === PreProposeModuleType.Approver
           ? {
               type: ApprovalProposalContextType.Approver,
+              status: proposal.status,
             }
           : undefined
       }

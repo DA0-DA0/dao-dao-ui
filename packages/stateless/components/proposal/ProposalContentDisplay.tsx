@@ -81,7 +81,9 @@ export const ProposalContentDisplay = ({
               <div className="flex min-w-0 flex-row items-start gap-1">
                 <InfoOutlined className="!h-4 !w-4 text-icon-secondary" />
                 <p className="secondary-text min-w-0">
-                  {t('info.approverProposalExplanation')}
+                  {t('info.approverProposalExplanation', {
+                    context: approvalContext.status,
+                  })}
                 </p>
               </div>
             )}

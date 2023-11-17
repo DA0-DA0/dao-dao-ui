@@ -1,6 +1,6 @@
 import { PolytoneConnection } from './chain'
 import { ProposalCardProps } from './components/ProposalCard'
-import { CosmosMsgFor_Empty } from './contracts'
+import { CosmosMsgFor_Empty, ProposalStatus } from './contracts'
 import { ProposalStatusKey as PreProposeApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
 
 export type ProposalCreatedCardProps = Omit<
@@ -112,4 +112,5 @@ export type ApprovalProposalContext =
     }
   | {
       type: ApprovalProposalContextType.Approver
+      status: ProposalStatus
     }

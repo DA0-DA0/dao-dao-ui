@@ -31,6 +31,7 @@ import {
   useLoadingPreProposeApprovalProposer,
   useLoadingPreProposeApprovalStatus,
   useLoadingProposalExecutionTxHash,
+  useLoadingProposalStatus,
   useLoadingVoteOptions,
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
@@ -136,6 +137,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       useCastVote,
       useProposalRefreshers,
       useLoadingProposalExecutionTxHash,
+      useLoadingProposalStatus,
       useLoadingVoteOptions,
       useLoadingWalletVoteInfo,
 
