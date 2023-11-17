@@ -1,16 +1,23 @@
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
+import {
+  ApprovalProposalContext,
+  ApprovalProposalContextType,
+} from '@dao-dao/types'
+
 import { Tooltip } from './tooltip'
 
 export type ApprovalBadgeProps = {
   size: 'sm' | 'lg'
+  context: ApprovalProposalContext
   tooltip?: boolean
   className?: string
 }
 
 export const ApprovalBadge = ({
   size,
+  context,
   tooltip,
   className,
 }: ApprovalBadgeProps) => {
@@ -18,7 +25,15 @@ export const ApprovalBadge = ({
 
   return (
     <Tooltip
-      title={tooltip ? t('info.approvalProposalExplanation') : undefined}
+      title={
+        tooltip
+          ? context.type === ApprovalProposalContextType.Approval
+            ? t('info.approvalProposalExplanation', {
+                context: context.status,
+              })
+            : t('info.approverProposalExplanation')
+          : undefined
+      }
     >
       <p
         className={clsx(
@@ -30,7 +45,13 @@ export const ApprovalBadge = ({
           className
         )}
       >
-        {t('title.approval')}
+        {context.type === 'approval'
+          ? context.status === 'pending'
+            ? t('title.needsApproval')
+            : context.status === 'approved'
+            ? t('title.accepted')
+            : t('title.denied')
+          : t('title.approval')}
       </p>
     </Tooltip>
   )

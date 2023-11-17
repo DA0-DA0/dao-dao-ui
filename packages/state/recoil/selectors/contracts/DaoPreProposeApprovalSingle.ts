@@ -8,6 +8,7 @@ import {
 } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 
 import { DaoPreProposeApprovalSingleQueryClient } from '../../../contracts/DaoPreProposeApprovalSingle'
+import { refreshProposalIdAtom, refreshProposalsIdAtom } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
 import { queryContractIndexerSelector } from '../indexer'
 
@@ -111,6 +112,8 @@ export const queryExtensionSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      let id = get(refreshProposalsIdAtom)
+
       const query = params[0].msg
       if ('approver' in query) {
         const approver = get(
@@ -123,6 +126,13 @@ export const queryExtensionSelector = selectorFamily<
           return approver
         }
       } else if ('proposal' in query) {
+        id += get(
+          refreshProposalIdAtom({
+            address: queryClientParams.contractAddress,
+            proposalId: query.proposal.id,
+          })
+        )
+
         const proposal = get(
           queryContractIndexerSelector({
             ...queryClientParams,
@@ -130,6 +140,7 @@ export const queryExtensionSelector = selectorFamily<
             args: {
               id: query.proposal.id,
             },
+            id,
           })
         )
         if (proposal) {
@@ -144,6 +155,7 @@ export const queryExtensionSelector = selectorFamily<
               limit: query.pending_proposals.limit,
               startAfter: query.pending_proposals.start_after,
             },
+            id,
           })
         )
         if (pendingProposals) {
@@ -158,6 +170,7 @@ export const queryExtensionSelector = selectorFamily<
               limit: query.reverse_pending_proposals.limit,
               startBefore: query.reverse_pending_proposals.start_before,
             },
+            id,
           })
         )
         if (reversePendingProposals) {
@@ -172,6 +185,7 @@ export const queryExtensionSelector = selectorFamily<
               limit: query.completed_proposals.limit,
               startAfter: query.completed_proposals.start_after,
             },
+            id,
           })
         )
         if (completedProposals) {
@@ -186,6 +200,7 @@ export const queryExtensionSelector = selectorFamily<
               limit: query.reverse_completed_proposals.limit,
               startBefore: query.reverse_completed_proposals.start_before,
             },
+            id,
           })
         )
         if (reverseCompletedProposals) {

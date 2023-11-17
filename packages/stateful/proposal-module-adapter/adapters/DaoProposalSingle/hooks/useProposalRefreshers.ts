@@ -1,22 +1,32 @@
 import { useCallback } from 'react'
-import { useSetRecoilState } from 'recoil'
+import { constSelector, useSetRecoilState } from 'recoil'
 
-import { refreshProposalIdAtom, refreshProposalsIdAtom } from '@dao-dao/state'
+import {
+  DaoPreProposeApprovalSingleSelectors,
+  refreshProposalIdAtom,
+  refreshProposalsIdAtom,
+} from '@dao-dao/state'
+import { useCachedLoading } from '@dao-dao/stateless'
 import { ProposalRefreshers } from '@dao-dao/types'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
-import { useLoadingProposal } from './useLoadingProposal'
+import { proposalSelector } from '../contracts/DaoProposalSingle.common.recoil'
 
 export const useProposalRefreshers = (): ProposalRefreshers => {
   const {
-    proposalModule: { address: proposalModuleAddress },
+    proposalModule: { address: proposalModuleAddress, prePropose },
     proposalNumber,
+    chain: { chain_id: chainId },
+    isPreProposeApprovalProposal,
   } = useProposalModuleAdapterOptions()
 
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
   const setRefreshProposalId = useSetRecoilState(
     refreshProposalIdAtom({
-      address: proposalModuleAddress,
+      address:
+        isPreProposeApprovalProposal && prePropose
+          ? prePropose.address
+          : proposalModuleAddress,
       proposalId: proposalNumber,
     })
   )
@@ -31,11 +41,44 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
     setRefreshProposalsId((id) => id + 1)
   }, [setRefreshProposalsId])
 
-  const loadingProposal = useLoadingProposal()
+  const loadingProposal = useCachedLoading(
+    proposalSelector({
+      contractAddress: proposalModuleAddress,
+      chainId,
+      params: [
+        {
+          proposalId: proposalNumber,
+        },
+      ],
+    }),
+    undefined
+  )
+
+  const loadingPreProposeApprovalProposal = useCachedLoading(
+    isPreProposeApprovalProposal && prePropose
+      ? DaoPreProposeApprovalSingleSelectors.queryExtensionSelector({
+          chainId,
+          contractAddress: prePropose.address,
+          params: [
+            {
+              msg: {
+                proposal: {
+                  id: proposalNumber,
+                },
+              },
+            },
+          ],
+        })
+      : constSelector(undefined),
+    undefined
+  )
 
   return {
     refreshProposal,
     refreshProposalAndAll,
-    refreshing: loadingProposal.loading || !!loadingProposal.updating,
+    refreshing: isPreProposeApprovalProposal
+      ? loadingPreProposeApprovalProposal.loading ||
+        !!loadingPreProposeApprovalProposal.updating
+      : loadingProposal.loading || !!loadingProposal.updating,
   }
 }

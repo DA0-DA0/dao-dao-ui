@@ -14,7 +14,8 @@ import {
 } from './common'
 import {
   PreProposeApprovalInnerContentDisplay,
-  PreProposeProposalLine,
+  PreProposeApprovalProposalLine,
+  PreProposeApprovalProposalStatusAndInfo,
   ProposalInnerContentDisplay,
   ProposalLine,
   ProposalStatusAndInfo,
@@ -28,6 +29,7 @@ import { fetchPrePropose, makeGetProposalInfo } from './functions'
 import {
   useCastVote,
   useLoadingPreProposeApprovalProposer,
+  useLoadingPreProposeApprovalStatus,
   useLoadingProposalExecutionTxHash,
   useLoadingVoteOptions,
   useLoadingWalletVoteInfo,
@@ -136,19 +138,23 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       useLoadingProposalExecutionTxHash,
       useLoadingVoteOptions,
       useLoadingWalletVoteInfo,
+
       useLoadingPreProposeApprovalProposer,
+      useLoadingPreProposeApprovalStatus,
     },
 
     // Components
     components: {
       ProposalStatusAndInfo,
       ProposalInnerContentDisplay,
-      PreProposeApprovalInnerContentDisplay,
       ProposalWalletVote,
       ProposalVotes,
       ProposalVoteTally,
       ProposalLine,
-      PreProposeProposalLine,
+
+      PreProposeApprovalProposalStatusAndInfo,
+      PreProposeApprovalInnerContentDisplay,
+      PreProposeApprovalProposalLine,
     },
   }),
 

@@ -16,6 +16,7 @@ export const useLoadingWalletVoteInfo = ():
     proposalModule,
     proposalNumber,
     chain: { chain_id: chainId },
+    isPreProposeApprovalProposal,
   } = useProposalModuleAdapterOptions()
   const { address: walletAddress } = useWallet()
 
@@ -60,8 +61,9 @@ export const useLoadingWalletVoteInfo = ():
       : undefined
   )
 
-  // Return undefined when not connected.
-  if (!walletAddress) {
+  // Return undefined when not connected or when pre-propose proposal (which
+  // doesn't have voting).
+  if (!walletAddress || isPreProposeApprovalProposal) {
     return undefined
   }
 

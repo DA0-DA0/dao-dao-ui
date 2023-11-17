@@ -9,7 +9,9 @@ import {
 import {
   ContractName,
   cosmWasmClientRouter,
+  getChainForChainId,
   getRpcForChainId,
+  isValidContractAddress,
   parseContractVersion,
 } from '@dao-dao/utils'
 
@@ -71,6 +73,86 @@ export const fetchPreProposeModule = async (
   }
 
   switch (contractInfo.contract) {
+    case ContractName.PreProposeApprovalSingle: {
+      let approver: string | undefined
+      let preProposeApproverContract: string | undefined
+
+      // Try indexer first.
+      try {
+        approver = await queryIndexer({
+          type: 'contract',
+          address: preProposeAddress,
+          formula: 'daoPreProposeApprovalSingle/approver',
+          chainId,
+          required: true,
+        })
+      } catch (err) {
+        // Ignore error.
+        console.error(err)
+      }
+      // If indexer fails, fallback to querying chain.
+      if (!approver) {
+        const client = new DaoPreProposeApprovalSingleQueryClient(
+          await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
+          preProposeAddress
+        )
+
+        approver = (await client.queryExtension({
+          msg: {
+            approver: {},
+          },
+        })) as string
+      }
+
+      // Check if approver is an approver contract.
+      if (
+        isValidContractAddress(
+          approver,
+          getChainForChainId(chainId).bech32_prefix
+        )
+      ) {
+        const approverContractInfo = await fetchContractInfo(chainId, approver)
+        if (
+          approverContractInfo?.contract === ContractName.PreProposeApprover
+        ) {
+          preProposeApproverContract = approver
+          approver = undefined
+
+          // Get DAO address from approver contract.
+          // Try indexer first.
+          try {
+            approver = await queryIndexer({
+              type: 'contract',
+              address: preProposeApproverContract,
+              formula: 'daoPreProposeApprover/dao',
+              chainId,
+              required: true,
+            })
+          } catch (err) {
+            // Ignore error.
+            console.error(err)
+          }
+          // If indexer fails, fallback to querying chain.
+          if (!approver) {
+            const client = new DaoPreProposeApproverQueryClient(
+              await cosmWasmClientRouter.connect(getRpcForChainId(chainId)),
+              preProposeApproverContract
+            )
+
+            approver = await client.dao()
+          }
+        }
+      }
+
+      typedConfig = {
+        type: PreProposeModuleType.Approval,
+        config: {
+          approver,
+          preProposeApproverContract,
+        },
+      }
+      break
+    }
     case ContractName.PreProposeApprover: {
       let preProposeApprovalContract: string | undefined
       // Try indexer first.

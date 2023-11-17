@@ -78,7 +78,7 @@ export const matchAndLoadAdapter = (
 
   // Undefined if matching group doesn't exist, i.e. no prefix exists.
   const proposalPrefix = proposalIdParts[1] ?? ''
-  const isPreProposeProposal = proposalIdParts[2] === '*'
+  const isPreProposeApprovalProposal = proposalIdParts[2] === '*'
   const proposalNumber = Number(proposalIdParts[3])
 
   if (isNaN(proposalNumber)) {
@@ -119,7 +119,7 @@ export const matchAndLoadAdapter = (
     proposalModule,
     proposalId,
     proposalNumber,
-    isPreProposeProposal,
+    isPreProposeApprovalProposal,
   }
 
   return {

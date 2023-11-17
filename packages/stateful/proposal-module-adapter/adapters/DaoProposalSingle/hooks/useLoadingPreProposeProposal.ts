@@ -33,15 +33,9 @@ export const useLoadingPreProposeProposal =
         ],
       }),
       undefined,
-      // If proposal undefined (due to a selector error), an error will be thrown.
-      () => {
-        throw new Error(t('error.loadingData'))
-      }
+      (err) => console.error(err)
     ) as LoadingData<DaoPreProposeApprovalSingleProposal>
 
-    // Since an error will be thrown on a selector error, this .data check is
-    // just a typecheck. It will not return loading forever if the selector
-    // fails.
     if (loadingProposal.loading || !loadingProposal.data) {
       return { loading: true }
     }

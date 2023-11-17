@@ -17,8 +17,14 @@ export const makeGetProposalInfo =
     chain: { chain_id: chainId },
     proposalModule,
     proposalNumber,
+    isPreProposeApprovalProposal,
   }: IProposalModuleAdapterOptions) =>
   async (): Promise<CommonProposalInfo | undefined> => {
+    // Multiple choice does not support pre-propose-approval right now.
+    if (isPreProposeApprovalProposal) {
+      return
+    }
+
     // Lazily connect if necessary.
     let _cosmWasmClient: CosmWasmClient
     const getCosmWasmClient = async () => {

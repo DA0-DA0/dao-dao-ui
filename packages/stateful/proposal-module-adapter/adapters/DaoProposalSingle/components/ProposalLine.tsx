@@ -3,7 +3,11 @@ import {
   ProposalStatus,
   ProposalLine as StatelessProposalLine,
 } from '@dao-dao/stateless'
-import { BaseProposalLineProps, PreProposeModuleType } from '@dao-dao/types'
+import {
+  ApprovalProposalContextType,
+  BaseProposalLineProps,
+  PreProposeModuleType,
+} from '@dao-dao/types'
 
 import { SuspenseLoader } from '../../../../components'
 import { useMembership } from '../../../../hooks'
@@ -49,7 +53,13 @@ const InnerProposalLine = ({
       Status={({ dimmed }) => (
         <ProposalStatus dimmed={dimmed} status={proposal.status} />
       )}
-      approver={prePropose?.type === PreProposeModuleType.Approver}
+      approvalContext={
+        prePropose?.type === PreProposeModuleType.Approver
+          ? {
+              type: ApprovalProposalContextType.Approver,
+            }
+          : undefined
+      }
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
       timestampDisplay={proposal.timestampInfo?.display}

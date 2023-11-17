@@ -7,6 +7,7 @@ import { ActionCategoryMaker, CategorizedAction } from './actions'
 import { LinkWrapperProps, SelfRelayExecuteModalProps } from './components'
 import { Expiration } from './contracts'
 import { CheckedDepositInfo } from './contracts/common'
+import { ProposalStatus as DaoPreProposeApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,
@@ -66,19 +67,25 @@ export type IProposalModuleAdapter<Vote extends unknown = any> = {
       castVote: (vote: Vote) => Promise<void>
       castingVote: boolean
     }
+
     useLoadingPreProposeApprovalProposer: () => LoadingData<string | undefined>
+    useLoadingPreProposeApprovalStatus: () => LoadingData<
+      DaoPreProposeApprovalProposalStatus | undefined
+    >
   }
 
   // Components
   components: {
     ProposalStatusAndInfo: ComponentType<BaseProposalStatusAndInfoProps>
     ProposalInnerContentDisplay: ComponentType<BaseProposalInnerContentDisplayProps>
-    PreProposeApprovalInnerContentDisplay: ComponentType<BasePreProposeApprovalInnerContentDisplayProps>
     ProposalWalletVote: ComponentType<BaseProposalWalletVoteProps<Vote>>
     ProposalVotes: ComponentType
     ProposalVoteTally: ComponentType
-    PreProposeProposalLine?: ComponentType<BaseProposalLineProps>
     ProposalLine: ComponentType<BaseProposalLineProps>
+
+    PreProposeApprovalProposalStatusAndInfo?: ComponentType<BasePreProposeProposalStatusAndInfoProps>
+    PreProposeApprovalInnerContentDisplay?: ComponentType<BasePreProposeApprovalInnerContentDisplayProps>
+    PreProposeApprovalProposalLine?: ComponentType<BaseProposalLineProps>
   }
 }
 
@@ -137,15 +144,18 @@ export type IProposalModuleAdapterOptions = {
   proposalModule: ProposalModule
   proposalId: string
   proposalNumber: number
-  // Whether or not this refers to a pre-propose proposal. If this is true, the
-  // proposal ID should contain an asterisk (*) between the proposal module
-  // prefix and proposal number.
-  isPreProposeProposal: boolean
+  // Whether or not this refers to a pre-propose-approval proposal. If this is
+  // true, the proposal ID should contain an asterisk (*) between the proposal
+  // module prefix and proposal number.
+  isPreProposeApprovalProposal: boolean
 }
 
 export type IProposalModuleAdapterInitialOptions = Omit<
   IProposalModuleAdapterOptions,
-  'proposalModule' | 'proposalId' | 'proposalNumber' | 'isPreProposeProposal'
+  | 'proposalModule'
+  | 'proposalId'
+  | 'proposalNumber'
+  | 'isPreProposeApprovalProposal'
 >
 
 export type IProposalModuleContext = {
@@ -197,7 +207,7 @@ export type CommonProposalInfo = {
   id: string
   title: string
   description: string
-  expiration: Expiration
+  expiration: Expiration | null
   createdAtEpoch: number | null
   createdByAddress: string
 }
@@ -219,19 +229,24 @@ export type BaseProposalStatusAndInfoProps = {
   seenAllActionPages: boolean
 }
 
+export type BasePreProposeProposalStatusAndInfoProps = Pick<
+  BaseProposalStatusAndInfoProps,
+  'inline'
+>
+
 export type BaseProposalInnerContentDisplayProps<
   FormData extends FieldValues = any
 > = {
-  setDuplicateFormData: (data: FormData) => void
+  // Once proposal messages are loaded, the inner component is responsible for
+  // setting the duplicate form data for the duplicate button in the header.
+  setDuplicateFormData?: (data: FormData) => void
   actionsForMatching: CategorizedAction[]
   // Called when the user has viewed all action pages.
   setSeenAllActionPages?: () => void
 }
 
-export type BasePreProposeApprovalInnerContentDisplayProps = Omit<
-  BaseProposalInnerContentDisplayProps,
-  'setDuplicateFormData'
->
+export type BasePreProposeApprovalInnerContentDisplayProps =
+  BaseProposalInnerContentDisplayProps
 
 export type BaseProposalWalletVoteProps<T> = {
   vote: T | undefined
