@@ -24,6 +24,7 @@ import { fetchPrePropose, makeGetProposalInfo } from './functions'
 import {
   useCastVote,
   useLoadingProposalExecutionTxHash,
+  useLoadingProposalStatus,
   useLoadingVoteOptions,
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
@@ -109,6 +110,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       useCastVote,
       useProposalRefreshers,
       useLoadingProposalExecutionTxHash,
+      useLoadingProposalStatus,
       useLoadingVoteOptions,
       useLoadingWalletVoteInfo,
 

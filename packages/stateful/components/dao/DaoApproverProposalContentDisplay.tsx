@@ -36,7 +36,7 @@ export type DaoApproverProposalContentDisplayProps = {
 
 type InnerDaoApproverProposalContentDisplayProps = Omit<
   ProposalContentDisplayProps,
-  'EntityDisplay' | 'IconButtonLink' | 'approval'
+  'EntityDisplay' | 'IconButtonLink'
 >
 
 type InnerDaoApproverProposalContentDisplayWithInnerContentProps = Omit<
@@ -55,9 +55,11 @@ export const DaoApproverProposalContentDisplay = ({
       proposalNumber,
     },
     adapter: {
-      hooks: { useProposalRefreshers },
+      hooks: { useProposalRefreshers, useLoadingProposalStatus },
     },
   } = useProposalModuleAdapterContext()
+
+  const loadingProposalStatus = useLoadingProposalStatus()
   const { refreshProposal, refreshing } = useProposalRefreshers()
 
   if (prePropose?.type !== PreProposeModuleType.Approver) {
@@ -115,6 +117,13 @@ export const DaoApproverProposalContentDisplay = ({
     refreshing,
     title: proposalInfo.title,
     innerContentDisplay: <Loader />,
+    approvalContext:
+      !loadingProposalStatus.loading && loadingProposalStatus.data
+        ? {
+            type: ApprovalProposalContextType.Approver,
+            status: loadingProposalStatus.data,
+          }
+        : undefined,
   }
 
   return (
@@ -148,9 +157,6 @@ const InnerDaoApproverProposalContentDisplay = (
   <ProposalContentDisplay
     EntityDisplay={EntityDisplay}
     IconButtonLink={IconButtonLink}
-    approvalContext={{
-      type: ApprovalProposalContextType.Approver,
-    }}
     {...props}
   />
 )
