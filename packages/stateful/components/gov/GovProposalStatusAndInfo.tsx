@@ -59,7 +59,7 @@ import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export type GovProposalStatusAndInfoProps = {
-  inline: boolean
+  inline?: boolean
   proposalId: string
 }
 
