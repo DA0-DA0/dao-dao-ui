@@ -17,6 +17,7 @@ import { useCachedLoadable } from '@dao-dao/stateless'
 import { ContractVersion } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
+  ContractName,
   expirationExpired,
   findWasmAttributeValue,
   processError,
@@ -321,6 +322,7 @@ export const makeUsePublishProposal =
         }
 
         let response
+        let isPreProposeApprovalProposal = false
         // V1 does not support pre-propose
         if (proposalModule.version === ContractVersion.V1) {
           response = await doProposeV1(
@@ -331,6 +333,9 @@ export const makeUsePublishProposal =
           )
           // Every other version supports pre-propose.
         } else {
+          isPreProposeApprovalProposal =
+            proposalModule.prePropose?.contractName ===
+            ContractName.PreProposeApprovalSingle
           response = proposalModule.prePropose
             ? await doProposePrePropose(
                 {
@@ -355,20 +360,29 @@ export const makeUsePublishProposal =
         }
 
         const proposalNumber = Number(
-          findWasmAttributeValue(
-            response.logs,
-            proposalModule.address,
-            'proposal_id'
-          ) ?? -1
+          (isPreProposeApprovalProposal && proposalModule.prePropose
+            ? findWasmAttributeValue(
+                response.logs,
+                proposalModule.prePropose.address,
+                'id'
+              )
+            : findWasmAttributeValue(
+                response.logs,
+                proposalModule.address,
+                'proposal_id'
+              )) ?? -1
         )
         if (proposalNumber === -1) {
           throw new Error(t('error.proposalIdNotFound'))
         }
-        const proposalId = `${proposalModule.prefix}${proposalNumber}`
+        const proposalId = `${proposalModule.prefix}${
+          isPreProposeApprovalProposal ? '*' : ''
+        }${proposalNumber}`
 
         return {
           proposalNumber,
           proposalId,
+          isPreProposeApprovalProposal,
         }
       },
       [
