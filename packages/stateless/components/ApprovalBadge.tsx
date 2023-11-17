@@ -23,6 +23,15 @@ export const ApprovalBadge = ({
 }: ApprovalBadgeProps) => {
   const { t } = useTranslation()
 
+  // No need to show badge when rejected since the status is clear enough and
+  // this badge makes it stand out.
+  if (
+    context.type === ApprovalProposalContextType.Approval &&
+    context.status === 'rejected'
+  ) {
+    return null
+  }
+
   return (
     <Tooltip
       title={
