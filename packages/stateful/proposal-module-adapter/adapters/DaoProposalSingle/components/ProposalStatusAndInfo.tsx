@@ -25,7 +25,6 @@ import {
   Tooltip,
   useConfiguredChainContext,
   useDaoInfoContext,
-  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
@@ -39,7 +38,6 @@ import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { formatPercentOf100, processError } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
-import { ButtonLink } from '../../../../components/ButtonLink'
 import { EntityDisplay } from '../../../../components/EntityDisplay'
 import {
   useAwaitNextBlock,
@@ -125,8 +123,7 @@ const InnerProposalStatusAndInfo = ({
     chain: { chain_id: chainId },
     config: { explorerUrlTemplates },
   } = useConfiguredChainContext()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { getDaoPath } = useDaoNavHelpers()
+  const { coreAddress } = useDaoInfoContext()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { isWalletConnected, address: walletAddress = '' } = useWallet()
   const { isMember = false } = useMembership({
@@ -155,15 +152,7 @@ const InnerProposalStatusAndInfo = ({
         <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
       ),
       label: t('title.dao'),
-      Value: (props) => (
-        <ButtonLink
-          href={getDaoPath(coreAddress)}
-          variant="underline"
-          {...props}
-        >
-          {daoName}
-        </ButtonLink>
-      ),
+      Value: (props) => <EntityDisplay {...props} address={coreAddress} />,
     },
     {
       Icon: AccountCircleOutlined,

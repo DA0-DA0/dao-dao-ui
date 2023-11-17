@@ -2,6 +2,7 @@ import {
   AccountCircleOutlined,
   HourglassTopRounded,
   RotateRightOutlined,
+  ThumbUpOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
@@ -73,18 +74,16 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
       Value: (props) => <EntityDisplay {...props} address={coreAddress} />,
     },
     {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
+      Icon: AccountCircleOutlined,
+      label: t('title.creator'),
+      Value: (props) => <EntityDisplay {...props} address={proposer} />,
+    },
+    {
+      Icon: ThumbUpOutlined,
       label: t('title.approver'),
       Value: (props) => (
         <EntityDisplay {...props} address={prePropose.config.approver} />
       ),
-    },
-    {
-      Icon: AccountCircleOutlined,
-      label: t('title.creator'),
-      Value: (props) => <EntityDisplay {...props} address={proposer} />,
     },
     {
       Icon: RotateRightOutlined,
