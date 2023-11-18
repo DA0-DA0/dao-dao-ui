@@ -844,6 +844,7 @@
     "customActionDescription_gov": "Perform any custom action.",
     "customActionDescription_wallet": "Perform any custom action.",
     "daoAdminExecDescription": "Execute actions on behalf of a DAO with you as the admin. A parent DAO could use this to execute actions on behalf of a SubDAO.",
+    "daoApproverExplanation": "An approver must approve proposals before they open for voting.",
     "daoCreationProcessExplanation": "Creating your DAO has never been this easy:",
     "daoInfoWillRefresh": "DAO information may take up to {{seconds}} seconds to update on all pages once proposal is executed.",
     "daodaoLogo": "DAO DAO Logo",
