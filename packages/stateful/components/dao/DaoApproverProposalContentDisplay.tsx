@@ -167,14 +167,16 @@ const InnerDaoApproverProposalContentDisplayWithInnerContent = ({
 }: InnerDaoApproverProposalContentDisplayWithInnerContentProps) => {
   const { t } = useTranslation()
   const {
-    hooks: { useLoadingPreProposeApprovalProposer },
+    hooks: { useLoadingPreProposeApprovalProposal },
     components: { PreProposeApprovalInnerContentDisplay },
   } = useProposalModuleAdapter()
   const actionsForMatching = useActionsForMatching()
 
-  const loadingProposer = useLoadingPreProposeApprovalProposer()
+  const loadingPreProposeApprovalProposal =
+    useLoadingPreProposeApprovalProposal()
   const creatorAddress =
-    (!loadingProposer.loading && loadingProposer.data) ||
+    (!loadingPreProposeApprovalProposal.loading &&
+      loadingPreProposeApprovalProposal.data?.proposer) ||
     // Fallback to approval proposal creator passed in from main component.
     props.creator?.address ||
     ''

@@ -115,11 +115,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
       useLoadingWalletVoteInfo,
 
       // No multiple choice approval flow yet.
-      useLoadingPreProposeApprovalProposer: () => ({
-        loading: false,
-        data: undefined,
-      }),
-      useLoadingPreProposeApprovalStatus: () => ({
+      useLoadingPreProposeApprovalProposal: () => ({
         loading: false,
         data: undefined,
       }),

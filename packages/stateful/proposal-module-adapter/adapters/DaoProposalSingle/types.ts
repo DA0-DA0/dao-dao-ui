@@ -9,7 +9,6 @@ import {
 } from '@dao-dao/types'
 import { CosmosMsgFor_Empty } from '@dao-dao/types/contracts/common'
 import { Proposal } from '@dao-dao/types/contracts/CwProposalSingle.v1'
-import { Proposal as DaoPreProposeApprovalSingleProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { SingleChoiceProposal } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 
 export interface NewProposalForm {
@@ -92,12 +91,14 @@ export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
   timestampInfo: ProposalTimestampInfo | undefined
   votingOpen: boolean
   executedAt?: Date
+  // If this proposal was approved by a pre-propose-approver in another DAO,
+  // this is the approver proposal ID.
+  approverProposalId?: string
+  // If this proposal is a pre-propose-approver proposal that approved a
+  // pre-propose-approval proposal in another DAO, this is the created proposal
+  // ID.
+  approvedProposalId?: string
 }
-
-export type PreProposeProposalWithMeteadata =
-  DaoPreProposeApprovalSingleProposal & {
-    timestampDisplay: ProposalTimestampInfo['display']
-  }
 
 export type MessagesWithActionData = {
   decodedMessages: any[]

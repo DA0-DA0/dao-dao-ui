@@ -6,18 +6,18 @@ import {
 import {
   ApprovalProposalContextType,
   BaseProposalLineProps,
+  PreProposeApprovalProposalWithMeteadata,
 } from '@dao-dao/types'
 import { keyFromPreProposeStatus } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { useLoadingPreProposeProposal } from '../hooks'
-import { PreProposeProposalWithMeteadata } from '../types'
+import { useLoadingPreProposeApprovalProposal } from '../hooks'
 
 export const PreProposeApprovalProposalLine = (
   props: BaseProposalLineProps
 ) => {
-  const loadingProposal = useLoadingPreProposeProposal()
+  const loadingProposal = useLoadingPreProposeApprovalProposal()
 
   return (
     <SuspenseLoader
@@ -38,7 +38,7 @@ const InnerPreProposeApprovalProposalLine = ({
   proposal,
   ...props
 }: BaseProposalLineProps & {
-  proposal: PreProposeProposalWithMeteadata
+  proposal: PreProposeApprovalProposalWithMeteadata
 }) => {
   const {
     proposalModule: { prefix: proposalPrefix },

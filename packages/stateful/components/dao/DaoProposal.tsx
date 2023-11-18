@@ -264,6 +264,12 @@ export const DaoProposal = ({
 }: Pick<DaoProposalPageWrapperProps, 'proposalInfo' | 'serializedInfo'>) =>
   proposalInfo && serializedInfo ? (
     <ProposalModuleAdapterProvider
+      key={
+        // Make sure to refresh when the DAO or proposal ID changes. In case we
+        // redirect to a proposal in the same DAO, this is necessary to refresh
+        // for some reason.
+        serializedInfo.coreAddress + proposalInfo.id
+      }
       initialOptions={{
         coreAddress: serializedInfo.coreAddress,
       }}

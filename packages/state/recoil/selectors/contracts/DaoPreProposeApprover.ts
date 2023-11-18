@@ -8,7 +8,9 @@ import {
 } from '@dao-dao/types/contracts/DaoPreProposeApprover'
 
 import { DaoPreProposeApproverQueryClient } from '../../../contracts/DaoPreProposeApprover'
+import { refreshProposalIdAtom, refreshProposalsIdAtom } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
@@ -110,6 +112,68 @@ export const queryExtensionSelector = selectorFamily<
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
+      let id = get(refreshProposalsIdAtom)
+
+      const query = params[0].msg
+      if ('pre_propose_approval_contract' in query) {
+        const preProposeApprovalContract = get(
+          queryContractIndexerSelector({
+            ...queryClientParams,
+            formula: 'daoPreProposeApprover/preProposeApprovalContract',
+          })
+        )
+        if (preProposeApprovalContract) {
+          return preProposeApprovalContract
+        }
+      } else if ('pre_propose_approval_id_for_approver_proposal_id' in query) {
+        id += get(
+          refreshProposalIdAtom({
+            address: queryClientParams.contractAddress,
+            proposalId:
+              query.pre_propose_approval_id_for_approver_proposal_id.id,
+          })
+        )
+
+        const proposalId = get(
+          queryContractIndexerSelector({
+            ...queryClientParams,
+            formula:
+              'daoPreProposeApprover/preProposeApprovalIdForApproverProposalId',
+            args: {
+              id: query.pre_propose_approval_id_for_approver_proposal_id.id,
+            },
+            id,
+          })
+        )
+        if (proposalId) {
+          return proposalId
+        }
+      } else if ('approver_proposal_id_for_pre_propose_approval_id' in query) {
+        id += get(
+          refreshProposalIdAtom({
+            address: queryClientParams.contractAddress,
+            proposalId:
+              query.approver_proposal_id_for_pre_propose_approval_id.id,
+          })
+        )
+
+        const proposalId = get(
+          queryContractIndexerSelector({
+            ...queryClientParams,
+            formula:
+              'daoPreProposeApprover/approverProposalIdForPreProposeApprovalId',
+            args: {
+              id: query.approver_proposal_id_for_pre_propose_approval_id.id,
+            },
+            id,
+          })
+        )
+        if (proposalId) {
+          return proposalId
+        }
+      }
+
+      // If indexer query fails or doesn't exist, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.queryExtension(...params)
     },

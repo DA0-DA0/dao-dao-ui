@@ -37,11 +37,12 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
     id,
     adapter: {
       components: { PreProposeApprovalInnerContentDisplay },
-      hooks: { useProposalRefreshers, useLoadingPreProposeApprovalStatus },
+      hooks: { useProposalRefreshers, useLoadingPreProposeApprovalProposal },
     },
   } = useProposalModuleAdapterContext()
 
-  const loadingStatus = useLoadingPreProposeApprovalStatus()
+  const loadingPreProposeApprovalProposal =
+    useLoadingPreProposeApprovalProposal()
 
   const creatorAddress = proposalInfo.createdByAddress
   const loadingEntity = useEntity(creatorAddress)
@@ -69,7 +70,10 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
     return <WarningCard content={t('error.unsupportedApprovalFailedRender')} />
   }
 
-  if (loadingStatus.loading || !loadingStatus.data) {
+  if (
+    loadingPreProposeApprovalProposal.loading ||
+    !loadingPreProposeApprovalProposal.data
+  ) {
     return <Loader />
   }
 
@@ -79,7 +83,9 @@ export const DaoPreProposeApprovalProposalContentDisplay = ({
       IconButtonLink={IconButtonLink}
       approvalContext={{
         type: ApprovalProposalContextType.Approval,
-        status: keyFromPreProposeStatus(loadingStatus.data),
+        status: keyFromPreProposeStatus(
+          loadingPreProposeApprovalProposal.data.status
+        ),
       }}
       createdAt={
         proposalInfo.createdAtEpoch !== null

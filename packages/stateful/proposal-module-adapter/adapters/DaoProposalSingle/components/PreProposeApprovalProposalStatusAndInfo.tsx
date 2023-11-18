@@ -3,6 +3,7 @@ import {
   HourglassTopRounded,
   RotateRightOutlined,
   ThumbUpOutlined,
+  WhereToVoteOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
@@ -14,23 +15,28 @@ import {
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
   useDaoInfoContext,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   BasePreProposeProposalStatusAndInfoProps,
+  PreProposeApprovalProposalWithMeteadata,
   PreProposeModuleType,
 } from '@dao-dao/types'
 import { keyFromPreProposeStatus } from '@dao-dao/utils'
 
-import { EntityDisplay, SuspenseLoader } from '../../../../components'
+import {
+  ButtonLink,
+  EntityDisplay,
+  SuspenseLoader,
+} from '../../../../components'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { useLoadingPreProposeProposal } from '../hooks'
-import { PreProposeProposalWithMeteadata } from '../types'
+import { useLoadingPreProposeApprovalProposal } from '../hooks'
 import { ProposalStatusAndInfoLoader } from './ProposalStatusAndInfoLoader'
 
 export const PreProposeApprovalProposalStatusAndInfo = (
   props: BasePreProposeProposalStatusAndInfoProps
 ) => {
-  const loadingProposal = useLoadingPreProposeProposal()
+  const loadingProposal = useLoadingPreProposeApprovalProposal()
 
   return (
     <SuspenseLoader
@@ -51,12 +57,13 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
   proposal: { proposer, timestampDisplay, ...proposal },
   ...props
 }: BasePreProposeProposalStatusAndInfoProps & {
-  proposal: PreProposeProposalWithMeteadata
+  proposal: PreProposeApprovalProposalWithMeteadata
 }) => {
   const { t } = useTranslation()
   const { coreAddress } = useDaoInfoContext()
+  const { getDaoProposalPath } = useDaoNavHelpers()
   const {
-    proposalModule: { prePropose },
+    proposalModule: { prefix, prePropose },
   } = useProposalModuleAdapterOptions()
 
   if (!prePropose || prePropose.type !== PreProposeModuleType.Approval) {
@@ -64,6 +71,18 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
   }
 
   const statusKey = keyFromPreProposeStatus(proposal.status)
+
+  const approverProposalPath =
+    prePropose.config.preProposeApproverContract && proposal.approverProposalId
+      ? getDaoProposalPath(
+          prePropose.config.approver,
+          proposal.approverProposalId
+        )
+      : undefined
+  const createdProposalId =
+    'approved' in proposal.status
+      ? `${prefix}${proposal.status.approved.created_proposal_id}`
+      : undefined
 
   const info: ProposalStatusAndInfoProps['info'] = [
     {
@@ -78,13 +97,38 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
       label: t('title.creator'),
       Value: (props) => <EntityDisplay {...props} address={proposer} />,
     },
-    {
-      Icon: ThumbUpOutlined,
-      label: t('title.approver'),
-      Value: (props) => (
-        <EntityDisplay {...props} address={prePropose.config.approver} />
-      ),
-    },
+    ...(approverProposalPath
+      ? ([
+          {
+            Icon: ThumbUpOutlined,
+            label: t('title.approval'),
+            Value: (props) => (
+              <Tooltip
+                morePadding
+                title={<EntityDisplay address={prePropose.config.approver} />}
+              >
+                <ButtonLink
+                  href={approverProposalPath}
+                  variant="underline"
+                  {...props}
+                >
+                  {t('title.proposalId', {
+                    id: proposal.approverProposalId,
+                  })}
+                </ButtonLink>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : ([
+          {
+            Icon: ThumbUpOutlined,
+            label: t('title.approver'),
+            Value: (props) => (
+              <EntityDisplay {...props} address={prePropose.config.approver} />
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])),
     {
       Icon: RotateRightOutlined,
       label: t('title.status'),
@@ -103,6 +147,25 @@ const InnerPreProposeApprovalProposalStatusAndInfo = ({
               <Tooltip title={timestampDisplay!.tooltip}>
                 <p {...props}>{timestampDisplay!.content}</p>
               </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : []),
+    ...(createdProposalId
+      ? ([
+          {
+            Icon: WhereToVoteOutlined,
+            label: t('title.proposal'),
+            Value: (props) => (
+              <ButtonLink
+                href={getDaoProposalPath(coreAddress, createdProposalId)}
+                variant="underline"
+                {...props}
+              >
+                {t('title.proposalId', {
+                  id: createdProposalId,
+                })}
+              </ButtonLink>
             ),
           },
         ] as ProposalStatusAndInfoProps['info'])

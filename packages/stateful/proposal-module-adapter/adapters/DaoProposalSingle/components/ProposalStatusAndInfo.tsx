@@ -8,6 +8,7 @@ import {
   RotateRightOutlined,
   Send,
   Tag,
+  ThumbUpOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useCallback, useEffect, useState } from 'react'
@@ -25,6 +26,7 @@ import {
   Tooltip,
   useConfiguredChainContext,
   useDaoInfoContext,
+  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
@@ -37,7 +39,7 @@ import {
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { formatPercentOf100, processError } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../components'
+import { ButtonLink, SuspenseLoader } from '../../../../components'
 import { EntityDisplay } from '../../../../components/EntityDisplay'
 import {
   useAwaitNextBlock,
@@ -124,6 +126,7 @@ const InnerProposalStatusAndInfo = ({
     config: { explorerUrlTemplates },
   } = useConfiguredChainContext()
   const { coreAddress } = useDaoInfoContext()
+  const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { isWalletConnected, address: walletAddress = '' } = useWallet()
   const { isMember = false } = useMembership({
@@ -146,6 +149,29 @@ const InnerProposalStatusAndInfo = ({
   const loadingExecutionTxHash = useLoadingProposalExecutionTxHash()
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
 
+  const approver =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approval
+      ? proposalModule.prePropose.config.approver
+      : undefined
+  const approverProposalPath =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approval &&
+    !!proposalModule.prePropose.config.preProposeApproverContract &&
+    proposal.approverProposalId
+      ? getDaoProposalPath(
+          proposalModule.prePropose.config.approver,
+          proposal.approverProposalId
+        )
+      : undefined
+
+  const approvalDao =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approver
+      ? proposalModule.prePropose.config.approvalDao
+      : undefined
+  const approvedProposalPath =
+    approvalDao && proposal.approvedProposalId
+      ? getDaoProposalPath(approvalDao, proposal.approvedProposalId)
+      : undefined
+
   const info: ProposalStatusAndInfoProps<Vote>['info'] = [
     {
       Icon: ({ className }) => (
@@ -159,6 +185,38 @@ const InnerProposalStatusAndInfo = ({
       label: t('title.creator'),
       Value: (props) => <EntityDisplay {...props} address={creatorAddress} />,
     },
+    ...(approverProposalPath
+      ? ([
+          {
+            Icon: ThumbUpOutlined,
+            label: t('title.approval'),
+            Value: (props) => (
+              <Tooltip
+                morePadding
+                title={approver && <EntityDisplay address={approver} />}
+              >
+                <ButtonLink
+                  href={approverProposalPath}
+                  variant="underline"
+                  {...props}
+                >
+                  {t('title.proposalId', {
+                    id: proposal.approverProposalId,
+                  })}
+                </ButtonLink>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : approver
+      ? ([
+          {
+            Icon: ThumbUpOutlined,
+            label: t('title.approver'),
+            Value: (props) => <EntityDisplay {...props} address={approver} />,
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : []),
     {
       Icon: RotateRightOutlined,
       label: t('title.status'),
@@ -217,6 +275,30 @@ const InnerProposalStatusAndInfo = ({
               ) : null,
           },
         ] as ProposalStatusAndInfoProps<Vote>['info'])
+      : []),
+    ...(approvedProposalPath
+      ? ([
+          {
+            Icon: ThumbUpOutlined,
+            label: t('title.approved'),
+            Value: (props) => (
+              <Tooltip
+                morePadding
+                title={approvalDao && <EntityDisplay address={approvalDao} />}
+              >
+                <ButtonLink
+                  href={approvedProposalPath}
+                  variant="underline"
+                  {...props}
+                >
+                  {t('title.proposalId', {
+                    id: proposal.approvedProposalId,
+                  })}
+                </ButtonLink>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
       : []),
   ]
 
