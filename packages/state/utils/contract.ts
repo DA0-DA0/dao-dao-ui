@@ -75,7 +75,7 @@ export const fetchPreProposeModule = async (
   switch (contractInfo.contract) {
     case ContractName.PreProposeApprovalSingle: {
       let approver: string | undefined
-      let preProposeApproverContract: string | undefined
+      let preProposeApproverContract: string | null = null
 
       // Try indexer first.
       try {

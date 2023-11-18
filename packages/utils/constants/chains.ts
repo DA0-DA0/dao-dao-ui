@@ -43,7 +43,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoCore: 3826,
       DaoMigrator: 3827,
       DaoPreProposeApprovalSingle: 3921,
-      DaoPreProposeApprover: 3917,
+      DaoPreProposeApprover: 3927,
       DaoPreProposeMultiple: 3828,
       DaoPreProposeSingle: 3829,
       DaoProposalMultiple: 3830,

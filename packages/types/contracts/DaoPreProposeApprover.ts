@@ -109,6 +109,11 @@ export type QueryExt =
         id: number
       }
     }
+  | {
+      approver_proposal_id_for_pre_propose_approval_id: {
+        id: number
+      }
+    }
 export type CheckedDenom =
   | {
       native: string

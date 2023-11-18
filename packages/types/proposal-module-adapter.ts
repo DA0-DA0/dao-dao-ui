@@ -7,7 +7,7 @@ import { ActionCategoryMaker, CategorizedAction } from './actions'
 import { LinkWrapperProps, SelfRelayExecuteModalProps } from './components'
 import { Expiration } from './contracts'
 import { CheckedDepositInfo, ProposalStatus } from './contracts/common'
-import { ProposalStatus as DaoPreProposeApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
+import { Proposal as DaoPreProposeApprovalProposal } from './contracts/DaoPreProposeApprovalSingle'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,
@@ -16,6 +16,7 @@ import {
   ProposalModule,
 } from './dao'
 import { ContractVersion } from './features'
+import { ProposalTimestampInfo } from './gov'
 import { LoadingData } from './misc'
 import { ProposalCreatedCardProps } from './proposal'
 
@@ -69,9 +70,8 @@ export type IProposalModuleAdapter<Vote extends unknown = any> = {
       castingVote: boolean
     }
 
-    useLoadingPreProposeApprovalProposer: () => LoadingData<string | undefined>
-    useLoadingPreProposeApprovalStatus: () => LoadingData<
-      DaoPreProposeApprovalProposalStatus | undefined
+    useLoadingPreProposeApprovalProposal: () => LoadingData<
+      PreProposeApprovalProposalWithMeteadata | undefined
     >
   }
 
@@ -307,3 +307,12 @@ export type PercentOrMajorityValue = {
   // Will be used when `majority` is false.
   value: number
 }
+
+export type PreProposeApprovalProposalWithMeteadata =
+  DaoPreProposeApprovalProposal & {
+    timestampDisplay: ProposalTimestampInfo['display']
+    // If this pre-propose-approval proposal is being approved by a
+    // pre-propose-approver proposal in another DAO, this is the approval
+    // proposal ID.
+    approverProposalId?: string
+  }

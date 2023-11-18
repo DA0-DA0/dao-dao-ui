@@ -127,8 +127,6 @@ export const ProposalContentDisplay = ({
         </div>
       </div>
 
-      {/* TODO(approver): add more approver related stuff here, like a link */}
-
       <div
         className={clsx(
           approvalContext &&

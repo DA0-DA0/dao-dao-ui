@@ -12,17 +12,17 @@ import {
 import {
   BasePreProposeApprovalInnerContentDisplayProps,
   CategorizedActionAndData,
+  PreProposeApprovalProposalWithMeteadata,
 } from '@dao-dao/types'
-import { Proposal as DaoPreProposeApprovalSingleProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { decodeMessages, decodeRawDataForDisplay } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
-import { useLoadingPreProposeProposal } from '../hooks/useLoadingPreProposeProposal'
+import { useLoadingPreProposeApprovalProposal } from '../hooks/useLoadingPreProposeApprovalProposal'
 
 export const PreProposeApprovalInnerContentDisplay = (
   props: BasePreProposeApprovalInnerContentDisplayProps
 ) => {
-  const loadingProposal = useLoadingPreProposeProposal()
+  const loadingProposal = useLoadingPreProposeApprovalProposal()
 
   return (
     <SuspenseLoader
@@ -44,7 +44,7 @@ const InnerPreProposeApprovalInnerContentDisplay = ({
   proposal,
   setSeenAllActionPages,
 }: BasePreProposeApprovalInnerContentDisplayProps & {
-  proposal: DaoPreProposeApprovalSingleProposal
+  proposal: PreProposeApprovalProposalWithMeteadata
 }) => {
   const { t } = useTranslation()
   const [showRaw, setShowRaw] = useState(false)

@@ -88,7 +88,7 @@ export type PreProposeModuleApprovalConfig = {
   approver: string
   // If the approver is an approver contract, this is set, and the approver
   // above is set to the DAO address.
-  preProposeApproverContract?: string
+  preProposeApproverContract: string | null
 }
 
 export type PreProposeModuleApproverConfig = {

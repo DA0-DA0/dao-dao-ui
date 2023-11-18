@@ -28,8 +28,7 @@ import { ThresholdVotingConfigItem, getInstantiateInfo } from './daoCreation'
 import { fetchPrePropose, makeGetProposalInfo } from './functions'
 import {
   useCastVote,
-  useLoadingPreProposeApprovalProposer,
-  useLoadingPreProposeApprovalStatus,
+  useLoadingPreProposeApprovalProposal,
   useLoadingProposalExecutionTxHash,
   useLoadingProposalStatus,
   useLoadingVoteOptions,
@@ -141,8 +140,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
       useLoadingVoteOptions,
       useLoadingWalletVoteInfo,
 
-      useLoadingPreProposeApprovalProposer,
-      useLoadingPreProposeApprovalStatus,
+      useLoadingPreProposeApprovalProposal,
     },
 
     // Components
