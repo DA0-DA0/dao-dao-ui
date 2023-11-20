@@ -4,6 +4,7 @@ export * from './inbox'
 export * from './nft'
 export * from './pages'
 export * from './profile'
+export * from './vesting'
 export * from './wallet'
 
 export * from './AddressInput'

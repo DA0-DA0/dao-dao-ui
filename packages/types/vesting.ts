@@ -5,10 +5,11 @@ export enum VestingPaymentsWidgetVersion {
   // Version 1. Supports vesting payment owner different from factory owner.
   V1 = 1,
 }
+
 export const LATEST_VESTING_PAYMENTS_WIDGET_VERSION =
   VestingPaymentsWidgetVersion.V1
 
-export type VestingPaymentsData = {
+export type VestingPaymentsWidgetData = {
   factory: string
   // Versioning was created after the widget was created, so it may be
   // undefined. If undefined, assume it supports none of the versioned features.

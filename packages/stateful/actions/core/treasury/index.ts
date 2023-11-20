@@ -6,6 +6,7 @@ import { makeEnableRetroactiveCompensationAction } from './EnableRetroactiveComp
 import { makeEnableVestingPaymentsAction } from './EnableVestingPayments'
 import { makeManageCw20Action } from './ManageCw20'
 import { makeManageStakingAction } from './ManageStaking'
+import { makeManageVestingAction } from './ManageVesting'
 import { makeSpendAction } from './Spend'
 import {
   makePerformTokenSwapAction,
@@ -27,6 +28,7 @@ export const makeTreasuryActionCategory: ActionCategoryMaker = ({
   actionMakers: [
     makeSpendAction,
     makeManageStakingAction,
+    makeManageVestingAction,
     makeWyndSwapAction,
     makeManageCw20Action,
     makePerformTokenSwapAction,

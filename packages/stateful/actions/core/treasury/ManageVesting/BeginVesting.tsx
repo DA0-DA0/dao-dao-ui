@@ -24,6 +24,7 @@ import {
   TextAreaInput,
   TextInput,
   TokenInput,
+  VestingStepsLineGraph,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -34,6 +35,10 @@ import {
   DurationWithUnits,
   GenericTokenBalance,
   LoadingData,
+  StatefulEntityDisplayProps,
+  VestingPaymentsWidgetData,
+  VestingPaymentsWidgetVersion,
+  VestingStep,
 } from '@dao-dao/types'
 import {
   convertDurationWithUnitsToSeconds,
@@ -46,14 +51,7 @@ import {
   validateRequired,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../actions/react/context'
-import { EntityDisplay } from '../../../../../components'
-import { VestingStepsLineGraph } from '../../components/VestingStepsLineGraph'
-import {
-  VestingPaymentsData,
-  VestingPaymentsWidgetVersion,
-  VestingStep,
-} from '../../types'
+import { useActionOptions } from '../../../react/context'
 
 export type BeginVestingData = {
   amount: number
@@ -80,11 +78,12 @@ export type BeginVestingData = {
 }
 
 export type BeginVestingOptions = {
-  widgetData: VestingPaymentsData
+  widgetData: VestingPaymentsWidgetData
   tokens: GenericTokenBalance[]
   // The vesting contract factory owner. If undefined, no owner is set.
   vestingFactoryOwner: LoadingData<string | undefined>
   AddressInput: ComponentType<AddressInputProps<BeginVestingData>>
+  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
   createCw1WhitelistOwners: () => void | Promise<void>
   creatingCw1WhitelistOwners: boolean
 }
@@ -98,6 +97,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     tokens,
     vestingFactoryOwner,
     AddressInput,
+    EntityDisplay,
     createCw1WhitelistOwners,
     creatingCw1WhitelistOwners,
   },

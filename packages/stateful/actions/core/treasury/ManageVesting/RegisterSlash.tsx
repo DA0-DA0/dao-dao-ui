@@ -16,14 +16,15 @@ import {
   LoadingData,
   StatefulEntityDisplayProps,
   TransProps,
+  VestingInfo,
+  VestingValidatorSlash,
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../actions/react/context'
-import { VestingInfo, VestingValidatorSlash } from '../../types'
+import { useActionOptions } from '../../../react/context'
 
 export type RegisterSlashData = {
   address: string

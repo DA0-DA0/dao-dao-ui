@@ -3,8 +3,10 @@ import {
   CwVestingStakeEvent,
   CwVestingStakeHistory,
 } from '@dao-dao/state/recoil/selectors/contracts/CwVesting'
-
-import { VestingValidatorSlash, VestingValidatorWithSlashes } from '../types'
+import {
+  VestingValidatorSlash,
+  VestingValidatorWithSlashes,
+} from '@dao-dao/types'
 
 // Get the slashed staked and unstaking amounts for a validator based on
 // a slash event.

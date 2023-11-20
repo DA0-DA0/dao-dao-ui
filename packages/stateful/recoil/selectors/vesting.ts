@@ -11,15 +11,19 @@ import {
   refreshVestingAtom,
   validatorSlashesSelector,
 } from '@dao-dao/state/recoil'
-import { TokenType, WithChainId } from '@dao-dao/types'
+import {
+  OldVestingPaymentFactory,
+  TokenType,
+  VestingInfo,
+  VestingStep,
+  WithChainId,
+} from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   getChainForChainId,
+  getVestingValidatorSlashes,
   isValidContractAddress,
 } from '@dao-dao/utils'
-
-import { OldVestingPaymentFactory, VestingInfo, VestingStep } from '../types'
-import { getVestingValidatorSlashes } from './utils'
 
 export const vestingFactoryOwnerSelector = selectorFamily<
   string | undefined,

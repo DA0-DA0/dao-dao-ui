@@ -12,15 +12,14 @@ import {
   ActionComponent,
   LoadingData,
   StatefulEntityDisplayProps,
+  VestingInfo,
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../actions/react/context'
-import { VestingPaymentCard } from '../../components/VestingPaymentCard'
-import { VestingInfo } from '../../types'
+import { useActionOptions } from '../../../react/context'
 
 export type CancelVestingData = {
   address: string
@@ -30,13 +29,19 @@ export type CancelVestingOptions = {
   vestingInfos: LoadingData<VestingInfo[]>
   cancelledVestingContract: LoadingData<VestingInfo | undefined>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
+  VestingPaymentCard: ComponentType<VestingInfo>
 }
 
 export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { vestingInfos, cancelledVestingContract, EntityDisplay },
+  options: {
+    vestingInfos,
+    cancelledVestingContract,
+    EntityDisplay,
+    VestingPaymentCard,
+  },
 }) => {
   const { t } = useTranslation()
   const { address } = useActionOptions()

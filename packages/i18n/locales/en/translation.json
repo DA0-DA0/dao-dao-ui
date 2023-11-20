@@ -329,6 +329,7 @@
     "failedToGetTokenInfo": "Failed to get token info. Please enter a valid {{tokenType}} contract address.",
     "failedToLoadMembersDescription": "Members failed to load. Check your internet connection or try again later.",
     "failedToLoadMembersTitle": "Failed to load members.",
+    "failedToLoadWidget": "Failed to load widget.",
     "failedToRelayAcks": "Failed to relay acknowledgements from {{chain}}.",
     "failedToRelayAndGetAcks": "Failed to relay packets and get acknowledgements.",
     "failedToRelayPackets": "Failed to relay packets to {{chain}}.",

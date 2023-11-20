@@ -2,6 +2,14 @@ import { ComponentType } from 'react'
 
 import { ActionCategoryMaker, ActionComponentProps } from './actions'
 
+export enum WidgetId {
+  MintNft = 'mint_nft',
+  Press = 'press',
+  RetroactiveCompensation = 'retroactive',
+  VestingPayments = 'vesting',
+  WyndDeposit = 'wynd_deposit',
+}
+
 export enum WidgetLocation {
   // Widget is displayed on the homepage (the first tab).
   Home = 'home',
@@ -28,7 +36,7 @@ export type WidgetEditorProps<Variables extends Record<string, unknown> = any> =
 
 export type Widget<Variables extends Record<string, unknown> = any> = {
   // A unique identifier for the widget.
-  id: string
+  id: WidgetId
   // An icon for the widget. Used when `location` is `WidgetLocation.Tab`.
   Icon?: ComponentType<{ className: string }>
   // The location where the widget is displayed.
@@ -50,7 +58,14 @@ export type Widget<Variables extends Record<string, unknown> = any> = {
 // DaoWidget is the structure of a widget as stored in the DAO's core item map
 // as a JSON-encoded object. It stores the unique identifier of the widget and
 // the values for the widget's variables so that it can be rendered.
-export type DaoWidget = {
+export type DaoWidget<Data extends Record<string, unknown> = any> = {
   id: string
-  values?: Record<string, unknown>
+  values?: Data
+}
+
+export type LoadedWidget<Data extends Record<string, unknown> = any> = {
+  title: string
+  widget: Widget
+  daoWidget: DaoWidget<Data>
+  WidgetComponent: ComponentType
 }
