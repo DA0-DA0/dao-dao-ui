@@ -1212,9 +1212,11 @@
   },
   "proposalVoteTitle": {
     "abstain": "Abstain",
+    "approve": "Approve",
     "no": "No",
     "none": "None",
     "pending": "Pending",
+    "reject": "Reject",
     "yes": "Yes"
   },
   "success": {
