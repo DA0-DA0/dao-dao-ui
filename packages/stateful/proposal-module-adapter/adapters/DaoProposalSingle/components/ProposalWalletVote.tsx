@@ -1,18 +1,42 @@
 import { useTranslation } from 'react-i18next'
 
 import { ProposalWalletVote as StatelessProposalWalletVote } from '@dao-dao/stateless'
-import { BaseProposalWalletVoteProps } from '@dao-dao/types'
+import {
+  BaseProposalWalletVoteProps,
+  PreProposeModuleType,
+} from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
+
+import { useProposalModuleAdapterOptions } from '../../../react'
+
+type VoteOrKey = Vote | 'pending' | 'hasNoVote'
 
 export const ProposalWalletVote = ({
   vote,
   fallback,
 }: BaseProposalWalletVoteProps<Vote>) => {
-  const key = vote ?? fallback
+  const { t } = useTranslation()
+
+  const key: VoteOrKey = vote ?? fallback
   const className = ProposalWalletVoteClassNameMap[key]
 
-  const { t } = useTranslation()
-  const label = t(`proposalVoteTitle.${key === 'hasNoVote' ? 'none' : key}`)
+  // Change labels for pre-propose-approver proposals that are responsible for
+  // approving another proposal, to make it more clear what the actions do.
+  const {
+    proposalModule: { prePropose },
+  } = useProposalModuleAdapterOptions()
+  const isPreProposeApproverProposal =
+    prePropose?.type === PreProposeModuleType.Approver
+
+  const label = t(
+    `proposalVoteTitle.${
+      key === 'hasNoVote'
+        ? 'none'
+        : isPreProposeApproverProposal
+        ? APPROVER_VOTE_MAP[key] ?? key
+        : key
+    }`
+  )
 
   return (
     <StatelessProposalWalletVote
@@ -23,14 +47,16 @@ export const ProposalWalletVote = ({
   )
 }
 
-export const ProposalWalletVoteClassNameMap: Record<
-  Vote | 'pending' | 'hasNoVote',
-  string
-> = {
+export const ProposalWalletVoteClassNameMap: Record<VoteOrKey, string> = {
   [Vote.Yes]: 'text-text-body ring-2 ring-inset ring-component-badge-valid',
   [Vote.No]: 'text-text-body ring-2 ring-inset ring-component-badge-error',
   [Vote.Abstain]:
     'text-text-body ring-2 ring-inset ring-component-badge-primary',
   pending: 'text-text-body ring-2 ring-inset ring-component-badge-brand',
   hasNoVote: 'text-text-tertiary ring-2 ring-inset ring-border-secondary',
+}
+
+const APPROVER_VOTE_MAP: Partial<Record<VoteOrKey, string>> = {
+  [Vote.Yes]: 'approve',
+  [Vote.No]: 'reject',
 }

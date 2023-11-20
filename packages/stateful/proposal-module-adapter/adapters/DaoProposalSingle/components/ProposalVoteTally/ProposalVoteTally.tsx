@@ -7,9 +7,12 @@ import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { VotesInfo } from '../../types'
 
-export interface ProposalVoteTallyProps {
+export type ProposalVoteTallyProps = {
   votesInfo: VotesInfo
   open: boolean
+  // Change labels for pre-propose-approver proposals that are responsible for
+  // approving another proposal to match vote labels.
+  isPreProposeApproverProposal: boolean
 }
 
 export const ProposalVoteTally = ({
@@ -36,6 +39,7 @@ export const ProposalVoteTally = ({
     quorumReached,
   },
   open,
+  isPreProposeApproverProposal,
 }: ProposalVoteTallyProps) => {
   const { t } = useTranslation()
 
@@ -81,10 +85,16 @@ export const ProposalVoteTally = ({
         <div className="caption-text flex flex-row items-center gap-4">
           {[
             <p key="yes" className="text-text-interactive-valid">
-              {formatPercentOf100(effectiveYesPercent)} {t('info.yesVote')}
+              {formatPercentOf100(effectiveYesPercent)}{' '}
+              {isPreProposeApproverProposal
+                ? t('proposalVoteTitle.approve')
+                : t('info.yesVote')}
             </p>,
             <p key="no" className="text-text-interactive-error">
-              {formatPercentOf100(effectiveNoPercent)} {t('info.noVote')}
+              {formatPercentOf100(effectiveNoPercent)}{' '}
+              {isPreProposeApproverProposal
+                ? t('proposalVoteTitle.reject')
+                : t('info.noVote')}
             </p>,
           ]
             .sort(() => yesVotes - noVotes)
@@ -254,7 +264,9 @@ export const ProposalVoteTally = ({
   )
 }
 
-export const ProposalVoteTallyLoader = () => {
+export const ProposalVoteTallyLoader = ({
+  isPreProposeApproverProposal,
+}: Pick<ProposalVoteTallyProps, 'isPreProposeApproverProposal'>) => {
   const { t } = useTranslation()
 
   return (
@@ -266,10 +278,16 @@ export const ProposalVoteTallyLoader = () => {
         {/* Vote percentage stats */}
         <div className="caption-text flex flex-row items-center gap-4">
           <p key="yes" className="text-text-interactive-valid">
-            ... {t('info.yesVote')}
+            ...{' '}
+            {isPreProposeApproverProposal
+              ? t('proposalVoteTitle.approve')
+              : t('info.yesVote')}
           </p>
           <p key="no" className="text-text-interactive-error">
-            ... {t('info.noVote')}
+            ...{' '}
+            {isPreProposeApproverProposal
+              ? t('proposalVoteTitle.reject')
+              : t('info.noVote')}
           </p>
           <p className="text-text-tertiary">... {t('info.abstainVote')}</p>
         </div>
