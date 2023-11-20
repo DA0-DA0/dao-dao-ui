@@ -78,7 +78,8 @@ export type BeginVestingData = {
 }
 
 export type BeginVestingOptions = {
-  widgetData: VestingPaymentsWidgetData
+  // If undefined, no widget is setup, and begin vesting should be disabled.
+  widgetData: VestingPaymentsWidgetData | undefined
   tokens: GenericTokenBalance[]
   // The vesting contract factory owner. If undefined, no owner is set.
   vestingFactoryOwner: LoadingData<string | undefined>
@@ -203,6 +204,12 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     context.type === ActionContextType.Wallet
       ? 'error.insufficientWalletBalance'
       : 'error.cantSpendMoreThanTreasury'
+
+  // If widget not set up, don't render anything because begin vesting cannot be
+  // used.
+  if (!widgetData) {
+    return null
+  }
 
   return (
     <div className="flex flex-col gap-4">
