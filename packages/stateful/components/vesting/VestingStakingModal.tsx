@@ -18,7 +18,7 @@ import {
   useChain,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, TokenStake } from '@dao-dao/types'
+import { ActionKey, TokenStake, VestingInfo } from '@dao-dao/types'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
@@ -27,15 +27,14 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { useAwaitNextBlock, useWallet } from '../../../../hooks'
+import { useAwaitNextBlock, useWallet } from '../../hooks'
 import {
   useDelegate,
   useRedelegate,
   useUndelegate,
-} from '../../../../hooks/contracts/CwVesting'
-import { VestingInfo } from '../types'
+} from '../../hooks/contracts/CwVesting'
 
-export type NativeStakingModalProps = Pick<
+export type VestingStakingModalProps = Pick<
   StakingModalProps,
   'visible' | 'onClose'
 > & {
@@ -44,7 +43,7 @@ export type NativeStakingModalProps = Pick<
   recipientIsDao: boolean
 }
 
-export const NativeStakingModal = ({
+export const VestingStakingModal = ({
   vestingInfo: {
     vestingContractAddress,
     stakable,
@@ -53,7 +52,7 @@ export const NativeStakingModal = ({
   stakes,
   recipientIsDao,
   ...props
-}: NativeStakingModalProps) => {
+}: VestingStakingModalProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const { goToDaoProposal } = useDaoNavHelpers()

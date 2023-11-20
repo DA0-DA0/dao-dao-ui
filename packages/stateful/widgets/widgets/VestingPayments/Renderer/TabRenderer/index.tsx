@@ -8,23 +8,30 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, WidgetRendererProps } from '@dao-dao/types'
+import {
+  ActionKey,
+  VestingPaymentsWidgetData,
+  WidgetRendererProps,
+} from '@dao-dao/types'
 import {
   getDaoProposalSinglePrefill,
   loadableToLoadingDataWithError,
 } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../../../actions'
-import { ButtonLink, EntityDisplay, Trans } from '../../../../../components'
+import {
+  ButtonLink,
+  EntityDisplay,
+  Trans,
+  VestingPaymentCard,
+} from '../../../../../components'
 import { useMembership } from '../../../../../hooks/useMembership'
-import { VestingPaymentCard } from '../../components/VestingPaymentCard'
-import { VestingPaymentsData } from '../../types'
-import { vestingInfosSelector } from '../state'
+import { vestingInfosSelector } from '../../../../../recoil'
 import { TabRenderer as StatelessTabRenderer } from './TabRenderer'
 
 export const TabRenderer = ({
   variables: { factory, oldFactories },
-}: WidgetRendererProps<VestingPaymentsData>) => {
+}: WidgetRendererProps<VestingPaymentsWidgetData>) => {
   const { chain_id: chainId } = useChain()
   const { coreAddress } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()

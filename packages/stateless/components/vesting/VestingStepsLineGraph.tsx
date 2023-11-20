@@ -2,9 +2,9 @@ import clsx from 'clsx'
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { LineGraph } from '@dao-dao/stateless'
+import { VestingStep } from '@dao-dao/types'
 
-import { VestingStep } from '../types'
+import { LineGraph } from '../LineGraph'
 
 export type VestingStepsLineGraphProps = {
   startTimestamp: number

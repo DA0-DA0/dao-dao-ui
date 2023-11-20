@@ -9,19 +9,19 @@ import {
   useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
-import { WidgetEditorProps } from '@dao-dao/types'
+import {
+  LATEST_VESTING_PAYMENTS_WIDGET_VERSION,
+  VestingPaymentsWidgetData,
+  WidgetEditorProps,
+} from '@dao-dao/types'
 import { InstantiateMsg as VestingFactoryInstantiateMsg } from '@dao-dao/types/contracts/CwPayrollFactory'
 import { instantiateSmartContract, processError } from '@dao-dao/utils'
 
 import { useWallet } from '../../../hooks/useWallet'
-import {
-  LATEST_VESTING_PAYMENTS_WIDGET_VERSION,
-  VestingPaymentsData,
-} from './types'
 
 export const VestingPaymentsEditor = ({
   fieldNamePrefix,
-}: WidgetEditorProps<VestingPaymentsData>) => {
+}: WidgetEditorProps<VestingPaymentsWidgetData>) => {
   const { t } = useTranslation()
 
   const { name, coreAddress } = useDaoInfoContext()
@@ -31,7 +31,7 @@ export const VestingPaymentsEditor = ({
   const { address: walletAddress = '', getSigningCosmWasmClient } = useWallet()
 
   const { setValue, setError, clearErrors, watch } =
-    useFormContext<VestingPaymentsData>()
+    useFormContext<VestingPaymentsWidgetData>()
   const oldFactories = watch(
     (fieldNamePrefix + 'oldFactories') as 'oldFactories'
   )

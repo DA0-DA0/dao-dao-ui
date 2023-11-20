@@ -11,21 +11,6 @@ import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
 import {
-  Button,
-  ButtonPopup,
-  ChartEmoji,
-  DepositEmoji,
-  Loader,
-  MarkdownRenderer,
-  MoneyEmoji,
-  ProfileImage,
-  TokenAmountDisplay,
-  Tooltip,
-  TooltipInfoIcon,
-  UnstakingModal,
-  useTranslatedTimeDeltaFormatter,
-} from '@dao-dao/stateless'
-import {
   ButtonLinkProps,
   ButtonPopupSection,
   Entity,
@@ -35,6 +20,7 @@ import {
   StatefulEntityDisplayProps,
   TokenCardLazyInfo,
   UnstakingTaskStatus,
+  VestingStep,
 } from '@dao-dao/types'
 import {
   concatAddressStartEnd,
@@ -43,8 +29,16 @@ import {
   secondsToWdhms,
 } from '@dao-dao/utils'
 
-import { VestingStep } from '../../types'
-import { VestingStepsLineGraph } from '../VestingStepsLineGraph'
+import { useTranslatedTimeDeltaFormatter } from '../../hooks'
+import { Button } from '../buttons'
+import { ChartEmoji, DepositEmoji, MoneyEmoji } from '../emoji'
+import { Loader } from '../logo'
+import { MarkdownRenderer } from '../MarkdownRenderer'
+import { ButtonPopup } from '../popup'
+import { ProfileImage } from '../profile'
+import { TokenAmountDisplay, UnstakingModal } from '../token'
+import { Tooltip, TooltipInfoIcon } from '../tooltip'
+import { VestingStepsLineGraph } from './VestingStepsLineGraph'
 
 export type VestingPaymentCardProps = {
   recipient: string
