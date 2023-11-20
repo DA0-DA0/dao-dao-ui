@@ -26,7 +26,7 @@ import {
   VestingPaymentCard,
 } from '../../../../../components'
 import { useMembership } from '../../../../../hooks/useMembership'
-import { vestingInfosSelector } from '../../../../../recoil'
+import { vestingInfosForFactorySelector } from '../../../../../recoil'
 import { TabRenderer as StatelessTabRenderer } from './TabRenderer'
 
 export const TabRenderer = ({
@@ -48,7 +48,7 @@ export const TabRenderer = ({
 
   const vestingPaymentsLoading = loadableToLoadingDataWithError(
     useCachedLoadable(
-      vestingInfosSelector({
+      vestingInfosForFactorySelector({
         factory,
         oldFactories,
         chainId,

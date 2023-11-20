@@ -8,6 +8,7 @@ import {
   genericTokenSelector,
   isContractSelector,
   nativeDelegationInfoSelector,
+  queryWalletIndexerSelector,
   refreshVestingAtom,
   validatorSlashesSelector,
 } from '@dao-dao/state/recoil'
@@ -24,6 +25,57 @@ import {
   getVestingValidatorSlashes,
   isValidContractAddress,
 } from '@dao-dao/utils'
+
+export const vestingPaymentsOwnedBySelector = selectorFamily<
+  string[],
+  WithChainId<{ address: string }>
+>({
+  key: 'vestingPaymentsOwnedBy',
+  get:
+    ({ chainId, address }) =>
+    ({ get }) => {
+      const vestingPayments: string[] = get(
+        queryWalletIndexerSelector({
+          chainId,
+          walletAddress: address,
+          formula: 'vesting/ownerOf',
+          required: true,
+        })
+      )
+
+      return vestingPayments && Array.isArray(vestingPayments)
+        ? vestingPayments
+        : []
+    },
+})
+
+export const vestingInfosOwnedBySelector = selectorFamily<
+  VestingInfo[],
+  WithChainId<{ address: string }>
+>({
+  key: 'vestingInfosOwnedBy',
+  get:
+    ({ chainId, address }) =>
+    ({ get }) => {
+      const vestingPaymentContracts = get(
+        vestingPaymentsOwnedBySelector({
+          chainId,
+          address,
+        })
+      )
+
+      return get(
+        waitForAll(
+          vestingPaymentContracts.map((vestingContractAddress) =>
+            vestingInfoSelector({
+              vestingContractAddress,
+              chainId,
+            })
+          )
+        )
+      )
+    },
+})
 
 export const vestingFactoryOwnerSelector = selectorFamily<
   string | undefined,
@@ -45,11 +97,11 @@ export const vestingFactoryOwnerSelector = selectorFamily<
     },
 })
 
-export const vestingInfosSelector = selectorFamily<
+export const vestingInfosForFactorySelector = selectorFamily<
   VestingInfo[],
   WithChainId<{ factory: string; oldFactories?: OldVestingPaymentFactory[] }>
 >({
-  key: 'vestingInfo',
+  key: 'vestingInfosForFactory',
   get:
     ({ chainId, factory, oldFactories }) =>
     ({ get }) => {
