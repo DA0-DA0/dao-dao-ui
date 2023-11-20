@@ -8,9 +8,11 @@ export default {
   component: ProposalVoteTallyLoader,
 } as ComponentMeta<typeof ProposalVoteTallyLoader>
 
-const Template: ComponentStory<typeof ProposalVoteTallyLoader> = (_args) => (
-  <ProposalVoteTallyLoader />
+const Template: ComponentStory<typeof ProposalVoteTallyLoader> = (args) => (
+  <ProposalVoteTallyLoader {...args} />
 )
 
 export const Default = Template.bind({})
-Default.args = {}
+Default.args = {
+  isPreProposeApproverProposal: false,
+}
