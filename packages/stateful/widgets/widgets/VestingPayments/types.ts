@@ -58,5 +58,6 @@ export type VestingInfo = {
 
 export type VestingStep = {
   timestamp: number
+  // Total amount vested at this timestamp.
   amount: number
 }
