@@ -280,13 +280,20 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
                           // second from the first user-defined step's delay.
                           0
                         : instantiateMsg.schedule.piecewise_linear[index - 1][0]
+                    const pastAmount =
+                      index === 0 ||
+                      // Typecheck. Always false.
+                      instantiateMsg.schedule === 'saturating_linear'
+                        ? '0'
+                        : instantiateMsg.schedule.piecewise_linear[index - 1][1]
 
                     return [
                       ...acc,
                       {
                         percent: Number(
                           (
-                            (Number(amount) / Number(instantiateMsg.total)) *
+                            ((Number(amount) - Number(pastAmount)) /
+                              Number(instantiateMsg.total)) *
                             100
                           ).toFixed(2)
                         ),
@@ -613,6 +620,8 @@ export const makeManageVestingActionMaker = ({
                             // hardcoded above.
                             const lastSeconds =
                               index === 0 ? 1 : acc[acc.length - 1][0]
+                            const lastAmount =
+                              index === 0 ? '0' : acc[acc.length - 1][1]
 
                             return [
                               ...acc,
@@ -624,7 +633,8 @@ export const makeManageVestingActionMaker = ({
                                   index === begin.steps.length - 1
                                     ? total
                                     : Math.round(
-                                        (percent / 100) * Number(total)
+                                        Number(lastAmount) +
+                                          (percent / 100) * Number(total)
                                       )
                                 ).toString(),
                               ],

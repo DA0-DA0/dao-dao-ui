@@ -4,7 +4,7 @@ import {
   SubdirectoryArrowRightRounded,
   WarningRounded,
 } from '@mui/icons-material'
-import { ComponentType } from 'react'
+import { ComponentType, useEffect } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -54,6 +54,7 @@ export type BeginVestingData = {
   description?: string
   startDate: string
   steps: {
+    // Additional percent unlocked after the delay.
     percent: number
     delay: DurationWithUnits
   }[]
@@ -79,7 +80,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     chain: { bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
-  const { control, register, watch, setValue } =
+  const { control, register, watch, setValue, setError, clearErrors } =
     useFormContext<BeginVestingData>()
   const {
     fields: stepFields,
@@ -109,22 +110,35 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     steps.reduce((acc, { percent, delay }, index): VestingStep[] => {
       const delayMs =
         delay.value && convertDurationWithUnitsToSeconds(delay) * 1000
+
       const lastMs =
         index === 0 ? startDate.getTime() : acc[acc.length - 1].timestamp
+      const lastAmount = index === 0 ? 0 : acc[acc.length - 1].amount
 
       return [
         ...acc,
         {
           timestamp: lastMs + delayMs,
-          amount:
-            // For the last step, use total to avoid
-            // rounding issues.
-            index === steps.length - 1
-              ? watchAmount
-              : (percent / 100) * watchAmount,
+          amount: lastAmount + (percent / 100) * watchAmount,
         },
       ]
     }, [] as VestingStep[])
+
+  const totalStepPercent = steps.reduce((acc, { percent }) => acc + percent, 0)
+  useEffect(() => {
+    if (!isCreating) {
+      return
+    }
+
+    if (totalStepPercent === 100) {
+      clearErrors((fieldNamePrefix + 'steps') as 'steps')
+    } else {
+      setError((fieldNamePrefix + 'steps') as 'steps', {
+        type: 'manual',
+        message: t('error.stepPercentsMustSumTo100'),
+      })
+    }
+  }, [clearErrors, fieldNamePrefix, isCreating, setError, t, totalStepPercent])
 
   const formattedStartDate = startDate && formatDateTimeTz(startDate)
   const formattedFinishDate = stepPoints?.length
@@ -299,7 +313,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
               className="flex flex-row flex-wrap items-center gap-2"
             >
               <div className="flex shrink-0 flex-col gap-1">
-                <InputLabel name={t('form.percentUnlocked')} />
+                <InputLabel name={t('form.unlockPercent')} />
 
                 <NumberInput
                   disabled={!isCreating}
@@ -406,10 +420,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
             className="self-start"
             onClick={() =>
               appendStep({
-                percent: Math.min(
-                  (steps[steps.length - 1]?.percent ?? 0) + 25,
-                  100
-                ),
+                percent: 25,
                 delay: {
                   value: 1,
                   units: DurationUnits.Months,
@@ -421,6 +432,8 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
             {t('button.addStep')}
           </Button>
         )}
+
+        <InputErrorMessage error={errors?.steps} />
       </div>
 
       <div className="rounded-md bg-background-tertiary p-2">
