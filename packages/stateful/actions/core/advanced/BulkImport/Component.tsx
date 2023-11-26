@@ -203,8 +203,7 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
     <>
       <p>
         <Trans i18nKey="info.bulkImportActionExplanation">
-          Choose a JSON, CSV, or Excel file below that matches the format
-          described in{' '}
+          Choose a JSON or CSV file below that matches the format described in{' '}
           <ButtonLink
             containerClassName="inline-block"
             href="https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions"
