@@ -1,6 +1,7 @@
 import JSON5 from 'json5'
 import merge from 'lodash.merge'
 import uniq from 'lodash.uniq'
+import { parse as csvToJson } from 'papaparse'
 import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -13,6 +14,7 @@ import {
 import { SuspenseLoaderProps, TransProps } from '@dao-dao/types'
 import {
   ActionComponent,
+  ActionKey,
   CategorizedActionAndData,
   LoadedAction,
   LoadedActions,
@@ -43,8 +45,8 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
   const onSelect = (file: File) => {
     setError('')
 
-    if (file.type !== 'application/json') {
-      setError(t('error.invalidJsonFile'))
+    if (file.type !== 'application/json' && file.type !== 'text/csv') {
+      setError(t('error.invalidFileTypeBulkImport'))
       return
     }
 
@@ -58,7 +60,35 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
 
       let data
       try {
-        data = JSON5.parse(reader.result)
+        switch (file.type) {
+          case 'application/json':
+            data = JSON5.parse(reader.result)
+            break
+          case 'text/csv':
+            const parsedCsv = csvToJson(reader.result, {
+              header: true,
+            }).data.filter(
+              (obj: any) =>
+                objectMatchesStructure(obj, { ACTION: {} }) &&
+                obj.ACTION &&
+                Object.values(ActionKey).includes(obj.ACTION)
+            )
+
+            data = {
+              actions: parsedCsv.map(({ ACTION, ...data }: any) => ({
+                key: ACTION,
+                data,
+              })),
+            }
+
+            if (!data.actions.length) {
+              throw new Error(t('error.invalidImportFormatCsv'))
+            }
+
+            break
+          default:
+            throw new Error(t('error.invalidFileTypeBulkImport'))
+        }
       } catch (err) {
         setError(err instanceof Error ? err.message : `${err}`)
         return
@@ -79,7 +109,7 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
             })
         )
       ) {
-        setError(t('error.invalidImportFormat'))
+        setError(t('error.invalidImportFormatJson'))
         return
       }
 
@@ -173,7 +203,7 @@ export const BulkImportComponent: ActionComponent<BulkImportOptions> = ({
     <>
       <p>
         <Trans i18nKey="info.bulkImportActionExplanation">
-          Choose a JSON file below that matches the format described in{' '}
+          Choose a JSON or CSV file below that matches the format described in{' '}
           <ButtonLink
             containerClassName="inline-block"
             href="https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions"
