@@ -17,10 +17,13 @@ import {
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
+import { DaoCreationExtraVotingConfig } from '../types'
 import instantiateSchema from './instantiate_schema.json'
 import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 
-export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
+export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
+  DaoCreationExtraVotingConfig
+> = (
   codeIds,
   {
     chainId,
@@ -33,7 +36,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
       allowRevoting,
     },
   },
-  _data,
+  { omitFunds },
   t
 ) => {
   const decimals = proposalDeposit.token?.decimals ?? 0
@@ -92,10 +95,11 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
             JSON.stringify(preProposeMultipleInstantiateMsg),
             'utf8'
           ).toString('base64'),
-          // TODO(neutron-2.3.0): add back in here and in instantiate schema.
-          ...(chainId !== ChainId.NeutronMainnet && {
-            funds: [],
-          }),
+          // TODO(neutron-2.3.0): add back in here
+          ...(chainId !== ChainId.NeutronMainnet &&
+            !omitFunds && {
+              funds: [],
+            }),
         },
       },
     },
@@ -114,10 +118,11 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo = (
     code_id: codeIds.DaoProposalMultiple,
     label: `DAO_${name.trim()}_${DaoProposalMultipleAdapterId}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
-    // TODO(neutron-2.3.0): add back in here and in instantiate schema.
-    ...(chainId !== ChainId.NeutronMainnet && {
-      funds: [],
-    }),
+    // TODO(neutron-2.3.0): add back in here
+    ...(chainId !== ChainId.NeutronMainnet &&
+      !omitFunds && {
+        funds: [],
+      }),
   }
 }
 
