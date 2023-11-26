@@ -28,10 +28,10 @@ import {
   useLoadingWalletVoteInfo,
   useProposalRefreshers,
 } from './hooks'
-import { NewProposalForm } from './types'
+import { DaoCreationExtraVotingConfig, NewProposalForm } from './types'
 
 export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
-  {},
+  DaoCreationExtraVotingConfig,
   MultipleChoiceVote,
   NewProposalForm
 > = {

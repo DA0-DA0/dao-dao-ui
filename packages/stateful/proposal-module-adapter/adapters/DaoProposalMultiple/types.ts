@@ -116,3 +116,10 @@ export type MultipleChoiceOptionData = {
   }[]
   voteOption: ProposalVoteOption<MultipleChoiceVote>
 }
+
+export type DaoCreationExtraVotingConfig = {
+  // If true, omit the funds field from the creation info objects. This is used
+  // when enabling multiple choice via the action for a DAO that is on a version
+  // below v2.3.0.
+  omitFunds?: boolean
+}

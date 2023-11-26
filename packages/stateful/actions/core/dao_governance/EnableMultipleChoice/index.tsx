@@ -24,6 +24,7 @@ import {
   getNativeTokenForChainId,
   makeWasmMessage,
   objectMatchesStructure,
+  versionBelowVersion,
 } from '@dao-dao/utils'
 
 import {
@@ -163,6 +164,12 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
         name: context.info.name,
       },
       {
+        enableMultipleChoice: true,
+        // V2.3.0 introduced a funds field that is not supported by DAOs below.
+        omitFunds: versionBelowVersion(
+          context.info.coreVersion,
+          ContractVersion.V230
+        ),
         quorum: {
           majority: 'majority' in quorum,
           value: 'majority' in quorum ? 50 : Number(quorum.percent) * 100,

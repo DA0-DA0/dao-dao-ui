@@ -211,7 +211,7 @@ export type DaoCreationGetInstantiateInfo<
   // Used within voting and proposal module adapters, so the data generic passed
   // in may not necessarily be the voting module adapter data. Must use `any`.
   newDao: NewDao<any>,
-  data: ModuleData,
+  data: DaoCreationVotingConfig & ModuleData,
   t: TFunction
 ) => ModuleInstantiateInfo
 
