@@ -49,17 +49,19 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
   const { watch, setValue } = useFormContext()
   const watchAddress = watch(fieldNamePrefix + 'address')
 
-  // Only vesting contracts with a non-zero balance remaining and whose owner is
-  // the current address are cancellable.
+  // The only vesting contracts that can be cancelled:
+  //   - have not finished vesting
+  //   - have not been cancelled
+  //   - are cancellable by the current address
   const cancellableVestingContracts = vestingInfos.loading
     ? undefined
     : vestingInfos.data.filter(
-        ({ owner, vested, vest: { status } }) =>
+        ({ owner, vested, total, vest: { status } }) =>
           owner &&
           (owner.address === address ||
             (owner.isCw1Whitelist &&
               owner.cw1WhitelistAdmins.includes(address))) &&
-          vested !== '0' &&
+          vested !== total &&
           !(typeof status === 'object' && 'canceled' in status)
       )
 
