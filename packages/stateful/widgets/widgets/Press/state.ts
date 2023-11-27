@@ -14,7 +14,7 @@ export const postsSelector = selectorFamily<
     ({ contractAddress, chainId }) =>
     ({ get }) => {
       const tokenIds = get(
-        CommonNftSelectors.allTokensSelector({
+        CommonNftSelectors.unpaginatedAllTokensSelector({
           contractAddress,
           chainId,
         })

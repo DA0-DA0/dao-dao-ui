@@ -3,17 +3,20 @@
   "version": "2.2.0",
   "license": "BSD-3-Clause-Clear",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && npm run build:gql",
     "format": "eslint . --fix",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "build:gql": "graphql-codegen --config ./gql-codegen.ts && eslint ./graphql/__generated__ --fix"
   },
   "dependencies": {
+    "@apollo/client": "^3.8.7",
     "@cosmjs/amino": "^0.31.0",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
     "@cosmjs/encoding": "^0.31.0",
     "@cosmjs/proto-signing": "^0.31.0",
     "@cosmjs/stargate": "^0.31.0",
     "@dao-dao/utils": "2.2.0",
+    "graphql": "^16.8.1",
     "json5": "^2.2.0",
     "meilisearch": "^0.30.0",
     "pusher-js": "^7.6.0",
@@ -22,6 +25,9 @@
   "devDependencies": {
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",
+    "@graphql-codegen/cli": "^5.0.0",
+    "@graphql-codegen/client-preset": "^4.1.0",
+    "@graphql-typed-document-node/core": "^3.2.0",
     "typescript": "^4.8.3"
   },
   "prettier": "@dao-dao/config/prettier"

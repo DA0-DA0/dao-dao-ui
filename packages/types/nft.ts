@@ -11,33 +11,19 @@ import {
   StatefulEntityDisplayProps,
 } from './stateless'
 
-export interface StargazeNft {
-  name: string
-  image: string
-  description: string
-  external_url: string
-  tokenId: string
-  creator: string
-  owner: string
-  tokenUri: string
+// Shape of type returned from Stargaze GraphQL indexer queries in
+// @dao-dao/state
+export type StargazeNft = {
+  tokenId?: string | null
+  name?: string | null
+  description?: string | null
   collection: {
-    creator: string
-    description: string
-    image: string
-    external_link: string
-    royalty_info: {
-      payment_address: string
-      // Decimal
-      share: string
-    }
-    name: string
-    symbol: string
-    contractAddress: string
+    contractAddress?: string | null
+    name?: string | null
   }
-  // price: null
-  // reserveFor: null
-  // expiresAt: null
-  // expiresAtDateTime: null
+  media?: {
+    url?: string | null
+  } | null
 }
 
 export interface NativeStargazeCollectionInfo {

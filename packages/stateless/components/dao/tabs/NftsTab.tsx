@@ -1,5 +1,6 @@
 import { Image } from '@mui/icons-material'
-import { ComponentType, useState } from 'react'
+import clsx from 'clsx'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LoadingData } from '@dao-dao/types'
@@ -8,36 +9,40 @@ import { GridCardContainer } from '../../GridCardContainer'
 import { Dropdown, DropdownProps } from '../../inputs/Dropdown'
 import { Loader } from '../../logo/Loader'
 import { NoContent } from '../../NoContent'
-import { PAGINATION_MIN_PAGE, Pagination } from '../../Pagination'
+import { Pagination } from '../../Pagination'
 
 export interface NftsTabProps<N = any> {
+  page: number
+  setPage: (page: number) => void
+  pageSize: number
   nfts: LoadingData<(N & { key: string })[]>
+  numNfts: LoadingData<number>
   NftCard: ComponentType<N>
   description?: string
   // If present, will show a dropdown to filter the NFTs.
   filterDropdownProps?: DropdownProps<any>
 }
 
-const NFTS_PER_PAGE = 30
-
 export const NftsTab = <N extends object>({
+  page,
+  setPage,
+  pageSize,
   nfts,
+  numNfts,
   NftCard,
   description,
   filterDropdownProps,
 }: NftsTabProps<N>) => {
   const { t } = useTranslation()
 
-  const [page, setPage] = useState(PAGINATION_MIN_PAGE)
-
-  return nfts.loading || nfts.data.length > 0 ? (
+  return nfts.loading || numNfts.loading || numNfts.data > 0 ? (
     <>
       <div className="flex min-h-[3.5rem] flex-col gap-y-4 gap-x-16 pb-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-row flex-wrap items-end gap-x-4 gap-y-2">
           <p className="title-text">
-            {nfts.loading
+            {nfts.loading || numNfts.loading
               ? t('title.nfts')
-              : t('title.numNfts', { count: nfts.data.length })}
+              : t('title.numNfts', { count: numNfts.data })}
           </p>
 
           {description && (
@@ -54,24 +59,24 @@ export const NftsTab = <N extends object>({
         )}
       </div>
 
-      {nfts.loading ? (
+      {nfts.loading || numNfts.loading ? (
         <Loader fill={false} />
       ) : (
         <>
-          <GridCardContainer className="pb-6">
-            {nfts.data
-              .slice((page - 1) * NFTS_PER_PAGE, page * NFTS_PER_PAGE)
-              .map((props) => (
-                <NftCard {...(props as N)} key={props.key} />
-              ))}
+          <GridCardContainer
+            className={clsx('pb-6', nfts.updating && 'animate-pulse')}
+          >
+            {nfts.data.map((props) => (
+              <NftCard {...(props as N)} key={props.key} />
+            ))}
           </GridCardContainer>
 
           <Pagination
-            className="mx-auto mt-12"
+            className="mx-auto mt-6"
             page={page}
-            pageSize={NFTS_PER_PAGE}
+            pageSize={pageSize}
             setPage={setPage}
-            total={nfts.data.length}
+            total={numNfts.data}
           />
         </>
       )}

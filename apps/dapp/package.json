@@ -5,7 +5,7 @@
   "scripts": {
     "analyze": "ANALYZE=true next build",
     "prepare": "npm run build:worker",
-    "prebuild": "npm run build:worker",
+    "prebuild": "npm run build:worker && cd ../../packages/state && npm run build:gql",
     "build": "next build --debug",
     "build:worker": "tsc sw/index.ts --lib webworker --outfile public/sw.js && eslint public/sw.js --fix",
     "dev": "next dev",

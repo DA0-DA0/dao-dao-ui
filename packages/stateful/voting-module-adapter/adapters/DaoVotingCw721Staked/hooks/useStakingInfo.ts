@@ -157,7 +157,7 @@ export const useStakingInfo = ({
 
   const loadingWalletUnstakedNftsLoadable = useCachedLoadingWithError(
     fetchWalletUnstakedValue && walletAddress && governanceTokenAddress
-      ? CommonNftSelectors.allTokensForOwnerSelector({
+      ? CommonNftSelectors.unpaginatedAllTokensForOwnerSelector({
           chainId,
           contractAddress: governanceTokenAddress,
           owner: walletAddress,

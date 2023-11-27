@@ -11,6 +11,7 @@ import {
   TypedOption,
 } from '@dao-dao/types'
 
+import { useQuerySyncedState } from '../../../hooks'
 import { Button } from '../../buttons'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Dropdown } from '../../inputs/Dropdown'
@@ -59,7 +60,10 @@ export const MembersTab = ({
 
   const csvLinkRef = useRef<HTMLAnchorElement>()
 
-  const [membersPage, setMembersPage] = useState(PAGINATION_MIN_PAGE)
+  const [membersPage, setMembersPage] = useQuerySyncedState({
+    param: 'mp',
+    defaultValue: PAGINATION_MIN_PAGE,
+  })
 
   const [topStakerState, setTopStakerState] = useState(
     TopStakerState.TenAbsolute

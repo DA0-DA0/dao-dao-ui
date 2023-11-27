@@ -18,6 +18,9 @@ const Template: ComponentStory<typeof NftsTab<NftCardProps>> = (args) => (
 
 export const Default = Template.bind({})
 Default.args = {
+  page: 1,
+  setPage: () => {},
+  pageSize: 30,
   nfts: {
     loading: false,
     data: [
@@ -28,6 +31,7 @@ Default.args = {
       makeNftCardProps(),
     ].map((props) => ({ ...props, key: props.tokenId })),
   },
+  numNfts: { loading: false, data: 5 },
   NftCard,
   description: 'This is the NFTs tab.',
 }

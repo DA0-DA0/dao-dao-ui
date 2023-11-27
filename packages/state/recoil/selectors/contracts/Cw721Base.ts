@@ -200,14 +200,13 @@ export const allNftInfoSelector = selectorFamily<
     },
 })
 
-// Use allTokensForOwnerSelector as it implements pagination for chain queries.
-export const _tokensSelector = selectorFamily<
+export const tokensSelector = selectorFamily<
   TokensResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['tokens']>
   }
 >({
-  key: 'cw721Base_Tokens',
+  key: 'cw721BaseTokens',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -216,13 +215,13 @@ export const _tokensSelector = selectorFamily<
       return await client.tokens(...params)
     },
 })
-export const _allTokensSelector = selectorFamily<
+export const allTokensSelector = selectorFamily<
   AllTokensResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['allTokens']>
   }
 >({
-  key: 'cw721Base_AllTokens',
+  key: 'cw721BaseAllTokens',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -248,92 +247,5 @@ export const minterSelector = selectorFamily<
       // about every different way.
       const client = get(queryClient(queryClientParams))
       return await client.minter(...params)
-    },
-})
-
-const ALL_TOKENS_FOR_OWNER_LIMIT = 30
-export const allTokensForOwnerSelector = selectorFamily<
-  TokensResponse['tokens'],
-  QueryClientParams & {
-    owner: string
-  }
->({
-  key: 'cw721BaseAllTokensForOwner',
-  get:
-    ({ owner, ...queryClientParams }) =>
-    async ({ get }) => {
-      get(refreshWalletBalancesIdAtom(owner))
-
-      // Don't use the indexer for this since various NFT contracts have
-      // different methods of storing NFT info, and the indexer does not know
-      // about every different way.
-
-      const tokens: TokensResponse['tokens'] = []
-      while (true) {
-        const response = await get(
-          _tokensSelector({
-            ...queryClientParams,
-            params: [
-              {
-                owner,
-                startAfter: tokens[tokens.length - 1],
-                limit: ALL_TOKENS_FOR_OWNER_LIMIT,
-              },
-            ],
-          })
-        )?.tokens
-
-        if (!response?.length) {
-          break
-        }
-
-        tokens.push(...response)
-
-        // If we have less than the limit of items, we've exhausted them.
-        if (response.length < ALL_TOKENS_FOR_OWNER_LIMIT) {
-          break
-        }
-      }
-
-      return tokens
-    },
-})
-
-const ALL_TOKENS_LIMIT = 30
-export const allTokensSelector = selectorFamily<
-  AllTokensResponse['tokens'],
-  QueryClientParams
->({
-  key: 'cw721BaseAllTokens',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const tokens: AllTokensResponse['tokens'] = []
-      while (true) {
-        const response = await get(
-          _allTokensSelector({
-            ...queryClientParams,
-            params: [
-              {
-                startAfter: tokens[tokens.length - 1],
-                limit: ALL_TOKENS_LIMIT,
-              },
-            ],
-          })
-        )?.tokens
-
-        if (!response?.length) {
-          break
-        }
-
-        tokens.push(...response)
-
-        // If we have less than the limit of items, we've exhausted them.
-        if (response.length < ALL_TOKENS_LIMIT) {
-          break
-        }
-      }
-
-      return tokens
     },
 })

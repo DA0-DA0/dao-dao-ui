@@ -1,6 +1,5 @@
 import { CloseFullscreen, OpenInFull } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useRouter } from 'next/router'
 import {
   Dispatch,
   RefCallback,
@@ -13,6 +12,7 @@ import { useTranslation } from 'react-i18next'
 
 import { DAO_APPS, toAccessibleImageUrl } from '@dao-dao/utils'
 
+import { useQuerySyncedState } from '../../../hooks'
 import { Button } from '../../buttons'
 import { IconButton } from '../../icon_buttons'
 import { TextInput } from '../../inputs'
@@ -25,11 +25,10 @@ export type AppsTabProps = {
 }
 
 export const AppsTab = (props: AppsTabProps) => {
-  const router = useRouter()
-  // Load URL from query parameter.
-  const [url, setUrl] = useState(
-    (typeof router.query.url === 'string' && router.query.url) || ''
-  )
+  const [url, setUrl] = useQuerySyncedState({
+    param: 'url',
+    defaultValue: '',
+  })
 
   return props.fullScreen ? (
     createPortal(
@@ -62,17 +61,11 @@ const InnerAppsTab = ({
   setUrl,
   className,
 }: InnerAppsTabProps) => {
-  const router = useRouter()
   const { t } = useTranslation()
   const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null)
 
   const go = (destUrl = url) => {
     setUrl(destUrl)
-
-    // Store URL in query parameter.
-    router.query.url = destUrl
-    router.push(router, undefined, { shallow: true })
-
     if (iframe) {
       iframe.src = destUrl
     }

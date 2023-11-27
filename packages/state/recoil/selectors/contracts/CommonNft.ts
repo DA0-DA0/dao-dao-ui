@@ -1,4 +1,4 @@
-import { selectorFamily } from 'recoil'
+import { RecoilValueReadOnly, selectorFamily } from 'recoil'
 
 import { ChainId, WithChainId } from '@dao-dao/types'
 import {
@@ -17,6 +17,11 @@ import {
 
 import { Sg721BaseQueryClient } from '../../../contracts'
 import { Cw721BaseQueryClient } from '../../../contracts/Cw721Base'
+import {
+  stargazeCollectionTokensForOwnerQuery,
+  stargazeCollectionTokensQuery,
+  stargazeIndexerClient,
+} from '../../../graphql'
 import { refreshWalletBalancesIdAtom } from '../../atoms'
 import { queryClient as commonNftQueryClient } from './Cw721Base'
 import { queryClient as sg721BaseQueryClient } from './Sg721Base'
@@ -177,14 +182,13 @@ export const allNftInfoSelector = selectorFamily<
     },
 })
 
-// Use allTokensForOwnerSelector as it implements pagination for chain queries.
-export const _tokensSelector = selectorFamily<
+export const tokensSelector = selectorFamily<
   TokensResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['tokens']>
   }
 >({
-  key: 'commonNft_Tokens',
+  key: 'commonNftTokens',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -193,13 +197,13 @@ export const _tokensSelector = selectorFamily<
       return await client.tokens(...params)
     },
 })
-export const _allTokensSelector = selectorFamily<
+export const allTokensSelector = selectorFamily<
   AllTokensResponse,
   QueryClientParams & {
     params: Parameters<Cw721BaseQueryClient['allTokens']>
   }
 >({
-  key: 'commonNft_AllTokens',
+  key: 'commonNftAllTokens',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
@@ -228,89 +232,253 @@ export const minterSelector = selectorFamily<
     },
 })
 
-const ALL_TOKENS_FOR_OWNER_LIMIT = 30
-export const allTokensForOwnerSelector = selectorFamily<
+export const paginatedStargazeAllTokensSelector = selectorFamily<
+  AllTokensResponse['tokens'],
+  QueryClientParams & { limit: number; offset: number }
+>({
+  key: 'commonNftPaginatedStargazeAllTokens',
+  get:
+    ({ chainId, contractAddress, limit, offset }) =>
+    async () => {
+      if (
+        chainId !== ChainId.StargazeMainnet &&
+        chainId !== ChainId.StargazeTestnet
+      ) {
+        throw new Error('Expected Stargaze mainnet chain')
+      }
+
+      const { error, data } = await stargazeIndexerClient.query({
+        query: stargazeCollectionTokensQuery,
+        variables: {
+          collectionAddr: contractAddress,
+          limit,
+          offset,
+        },
+      })
+
+      if (error) {
+        throw error
+      }
+
+      if (!data.tokens?.pageInfo) {
+        throw new Error('Unexpected response from Stargaze indexer')
+      }
+
+      return data.tokens.tokens.map(({ tokenId }) => tokenId)
+    },
+})
+
+export const paginatedAllTokensSelector: (
+  param: QueryClientParams & { page: number; pageSize: number }
+) => RecoilValueReadOnly<AllTokensResponse['tokens']> = selectorFamily({
+  key: 'commonNftPaginatedAllTokens',
+  get:
+    ({ chainId, contractAddress, page, pageSize }) =>
+    async ({ get }) => {
+      // Use Stargaze indexer if collection is on Stargaze.
+      if (
+        chainId === ChainId.StargazeMainnet ||
+        chainId === ChainId.StargazeTestnet
+      ) {
+        return get(
+          paginatedStargazeAllTokensSelector({
+            chainId,
+            contractAddress,
+            limit: pageSize,
+            offset: (page - 1) * pageSize,
+          })
+        )
+      } else {
+        let startAfter: string | undefined
+        // Get last page so we can retrieve the last token ID from it.
+        if (page > 1) {
+          const lastPage = get(
+            paginatedAllTokensSelector({
+              chainId,
+              contractAddress,
+              page: page - 1,
+              pageSize,
+            })
+          )
+          if (lastPage.length > 0) {
+            startAfter = lastPage[lastPage.length - 1]
+          }
+        }
+
+        const tokens = get(
+          allTokensSelector({
+            chainId,
+            contractAddress,
+            params: [
+              {
+                startAfter,
+                limit: pageSize,
+              },
+            ],
+          })
+        )?.tokens
+
+        if (!tokens?.length) {
+          return []
+        }
+
+        return tokens
+      }
+    },
+})
+
+const ALL_TOKENS_LIMIT = 30
+const ALL_TOKENS_STARGAZE_INDEXER_LIMIT = 100
+export const unpaginatedAllTokensSelector = selectorFamily<
+  AllTokensResponse['tokens'],
+  QueryClientParams
+>({
+  key: 'commonNftUnpaginatedAllTokens',
+  get:
+    (queryClientParams) =>
+    async ({ get }) => {
+      const allTokens: AllTokensResponse['tokens'] = []
+
+      // Use Stargaze indexer if collection is on Stargaze.
+      if (
+        queryClientParams.chainId === ChainId.StargazeMainnet ||
+        queryClientParams.chainId === ChainId.StargazeTestnet
+      ) {
+        while (true) {
+          const { error, data } = await stargazeIndexerClient.query({
+            query: stargazeCollectionTokensQuery,
+            variables: {
+              collectionAddr: queryClientParams.contractAddress,
+              limit: ALL_TOKENS_STARGAZE_INDEXER_LIMIT,
+              offset: allTokens.length,
+            },
+          })
+
+          if (error) {
+            throw error
+          }
+
+          if (!data.tokens?.pageInfo) {
+            break
+          }
+
+          allTokens.push(...data.tokens.tokens.map(({ tokenId }) => tokenId))
+
+          if (allTokens.length === data.tokens.pageInfo.total) {
+            break
+          }
+        }
+      } else {
+        while (true) {
+          const tokens = await get(
+            allTokensSelector({
+              ...queryClientParams,
+              params: [
+                {
+                  startAfter: allTokens[allTokens.length - 1],
+                  limit: ALL_TOKENS_LIMIT,
+                },
+              ],
+            })
+          )?.tokens
+
+          if (!tokens?.length) {
+            break
+          }
+
+          allTokens.push(...tokens)
+
+          // If we have less than the limit of items, we've exhausted them.
+          if (tokens.length < ALL_TOKENS_LIMIT) {
+            break
+          }
+        }
+      }
+
+      return allTokens
+    },
+})
+
+export const unpaginatedAllTokensForOwnerSelector = selectorFamily<
   TokensResponse['tokens'],
   QueryClientParams & {
     owner: string
   }
 >({
-  key: 'commonNftAllTokensForOwner',
+  key: 'commonNftUnpaginatedAllTokensForOwner',
   get:
     ({ owner, ...queryClientParams }) =>
     async ({ get }) => {
       get(refreshWalletBalancesIdAtom(owner))
 
-      // Don't use the indexer for this since various NFT contracts have
-      // different methods of storing NFT info, and the indexer does not know
-      // about every different way.
+      const allTokens: TokensResponse['tokens'] = []
 
-      const tokens: TokensResponse['tokens'] = []
-      while (true) {
-        const response = await get(
-          _tokensSelector({
-            ...queryClientParams,
-            params: [
-              {
-                owner,
-                startAfter: tokens[tokens.length - 1],
-                limit: ALL_TOKENS_FOR_OWNER_LIMIT,
-              },
-            ],
+      // Use Stargaze indexer if collection is on Stargaze.
+      if (
+        queryClientParams.chainId === ChainId.StargazeMainnet ||
+        queryClientParams.chainId === ChainId.StargazeTestnet
+      ) {
+        while (true) {
+          const { error, data } = await stargazeIndexerClient.query({
+            query: stargazeCollectionTokensForOwnerQuery,
+            variables: {
+              collectionAddr: queryClientParams.contractAddress,
+              ownerAddrOrName: owner,
+              limit: ALL_TOKENS_STARGAZE_INDEXER_LIMIT,
+              offset: allTokens.length,
+            },
+            // Don't cache since this recoil selector handles caching. If this
+            // selector is re-evaluated, it should be re-fetched since an NFT
+            // may have changed ownership.
+            fetchPolicy: 'no-cache',
           })
-        )?.tokens
 
-        if (!response?.length) {
-          break
+          if (error) {
+            throw error
+          }
+
+          if (!data.tokens?.pageInfo) {
+            break
+          }
+
+          allTokens.push(...data.tokens.tokens.map(({ tokenId }) => tokenId))
+
+          if (allTokens.length === data.tokens.pageInfo.total) {
+            break
+          }
         }
+      } else {
+        // Don't use the DAO DAO indexer for this since various NFT contracts
+        // have different methods of storing NFT info, and the indexer does not
+        // know about every different way.
 
-        tokens.push(...response)
+        while (true) {
+          const tokens = await get(
+            tokensSelector({
+              ...queryClientParams,
+              params: [
+                {
+                  owner,
+                  startAfter: allTokens[allTokens.length - 1],
+                  limit: ALL_TOKENS_LIMIT,
+                },
+              ],
+            })
+          )?.tokens
 
-        // If we have less than the limit of items, we've exhausted them.
-        if (response.length < ALL_TOKENS_FOR_OWNER_LIMIT) {
-          break
+          if (!tokens?.length) {
+            break
+          }
+
+          allTokens.push(...tokens)
+
+          // If we have less than the limit of items, we've exhausted them.
+          if (tokens.length < ALL_TOKENS_LIMIT) {
+            break
+          }
         }
       }
 
-      return tokens
-    },
-})
-
-const ALL_TOKENS_LIMIT = 30
-export const allTokensSelector = selectorFamily<
-  AllTokensResponse['tokens'],
-  QueryClientParams
->({
-  key: 'commonNftAllTokens',
-  get:
-    (queryClientParams) =>
-    async ({ get }) => {
-      const tokens: AllTokensResponse['tokens'] = []
-      while (true) {
-        const response = await get(
-          _allTokensSelector({
-            ...queryClientParams,
-            params: [
-              {
-                startAfter: tokens[tokens.length - 1],
-                limit: ALL_TOKENS_LIMIT,
-              },
-            ],
-          })
-        )?.tokens
-
-        if (!response?.length) {
-          break
-        }
-
-        tokens.push(...response)
-
-        // If we have less than the limit of items, we've exhausted them.
-        if (response.length < ALL_TOKENS_LIMIT) {
-          break
-        }
-      }
-
-      return tokens
+      return allTokens
     },
 })
