@@ -292,7 +292,10 @@ export const vestingInfoSelector = selectorFamily<
               actualSlashed
             ).toString()
 
-      const completed = vest.status === 'funded' && vest.claimed === total
+      const completed =
+        (vest.status === 'funded' ||
+          (typeof vest.status === 'object' && 'canceled' in vest.status)) &&
+        vest.claimed === total
 
       const startTimeMs = Number(vest.start_time) / 1e6
       const startDate = new Date(startTimeMs)

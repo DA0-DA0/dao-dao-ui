@@ -77,7 +77,7 @@ export const TabRenderer = ({
     vestingPaymentsLoading.loading || vestingPaymentsLoading.errored
       ? []
       : vestingPaymentsLoading.data.filter(({ completed }) => !completed)
-  // Vesting payments that have been funded and fully claimed.
+  // Vesting payments that have been funded or canceled and fully claimed.
   const completedVestingPayments =
     vestingPaymentsLoading.loading || vestingPaymentsLoading.errored
       ? []
