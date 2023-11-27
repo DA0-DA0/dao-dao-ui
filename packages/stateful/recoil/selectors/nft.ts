@@ -52,6 +52,10 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
             limit: STARGAZE_INDEXER_TOKENS_LIMIT,
             offset: nftCardInfos.length,
           },
+          // Don't cache since this recoil selector handles caching. If this
+          // selector is re-evaluated, it should be re-fetched since an NFT may
+          // have changed ownership.
+          fetchPolicy: 'no-cache',
         })
 
         if (error) {

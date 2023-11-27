@@ -424,6 +424,10 @@ export const unpaginatedAllTokensForOwnerSelector = selectorFamily<
               limit: ALL_TOKENS_STARGAZE_INDEXER_LIMIT,
               offset: tokens.length,
             },
+            // Don't cache since this recoil selector handles caching. If this
+            // selector is re-evaluated, it should be re-fetched since an NFT
+            // may have changed ownership.
+            fetchPolicy: 'no-cache',
           })
 
           if (error) {

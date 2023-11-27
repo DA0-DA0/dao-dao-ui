@@ -176,15 +176,21 @@ export const topStakersSelector = selectorFamily<
   key: 'daoVotingCw721StakedTopStakers',
   get:
     ({ limit, ...queryClientParams }) =>
-    ({ get }) =>
-      get(
-        queryContractIndexerSelector({
-          ...queryClientParams,
-          formula: 'daoVotingCw721Staked/topStakers',
-          args: {
-            limit,
-          },
-          required: true,
-        })
-      ) ?? undefined,
+    ({ get }) => {
+      const id = get(refreshWalletBalancesIdAtom(undefined))
+
+      return (
+        get(
+          queryContractIndexerSelector({
+            ...queryClientParams,
+            formula: 'daoVotingCw721Staked/topStakers',
+            args: {
+              limit,
+            },
+            required: true,
+            id,
+          })
+        ) ?? undefined
+      )
+    },
 })
