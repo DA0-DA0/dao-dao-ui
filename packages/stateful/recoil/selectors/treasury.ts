@@ -1,3 +1,4 @@
+import uniq from 'lodash.uniq'
 import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
 
 import {
@@ -57,9 +58,7 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
         })
       )
 
-      const uniqueChainIds = [
-        ...new Set(allAccounts.map((account) => account.chainId)),
-      ]
+      const uniqueChainIds = uniq(allAccounts.map((account) => account.chainId))
 
       return uniqueChainIds.reduce((acc, chainId) => {
         const accounts = allAccounts.filter(
@@ -339,8 +338,8 @@ export const treasuryValueHistorySelector = selectorFamily<
         .filter(({ token }) => token.type === TokenType.Native)
 
       const tokens = [
-        ...historicalBalancesByToken.map(({ token }) => token),
         ...currentBalances.map(({ token }) => token),
+        ...historicalBalancesByToken.map(({ token }) => token),
       ].filter(
         (token) =>
           // Can only compute price if token decimals loaded correctly.
@@ -354,9 +353,9 @@ export const treasuryValueHistorySelector = selectorFamily<
       )
 
       // Unique token sources.
-      const uniqueTokenSources = [
-        ...new Set(tokens.map(({ source }) => serializeTokenSource(source))),
-      ]
+      const uniqueTokenSources = uniq(
+        tokens.map(({ source }) => serializeTokenSource(source))
+      )
       const tokenSources = uniqueTokenSources.map(deserializeTokenSource)
 
       // Get historical token prices for unique tokens.

@@ -167,6 +167,8 @@ export const RebalancerProjector = ({
       ].map((p, index) => ({
         ...p,
         borderColor: DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
+        backgroundColor:
+          DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
       }))
     )
   }

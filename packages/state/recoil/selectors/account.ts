@@ -1,14 +1,10 @@
-import {
-  constSelector,
-  selectorFamily,
-  waitForAll,
-  waitForAllSettled,
-} from 'recoil'
+import uniq from 'lodash.uniq'
+import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
   Account,
   AccountType,
-  GenericTokenBalance,
+  GenericTokenBalanceWithOwner,
   WithChainId,
 } from '@dao-dao/types'
 
@@ -86,7 +82,7 @@ export const accountsSelector = selectorFamily<
 
 export const allBalancesSelector = selectorFamily<
   // Map chain ID to token balances on that chain.
-  Record<string, GenericTokenBalance[]>,
+  Record<string, GenericTokenBalanceWithOwner[]>,
   WithChainId<{
     address: string
     // If account is a DAO, set this to the address of its governance token.
@@ -97,13 +93,6 @@ export const allBalancesSelector = selectorFamily<
   get:
     ({ address, cw20GovernanceTokenAddress, chainId }) =>
     ({ get }) => {
-      const isDao = get(
-        isDaoSelector({
-          chainId,
-          address,
-        })
-      )
-
       const allAccounts = get(
         accountsSelector({
           chainId,
@@ -111,31 +100,15 @@ export const allBalancesSelector = selectorFamily<
         })
       )
 
-      // Neutron's modified DAOs do not support cw20s, so this may error. Ignore
-      // if so.
-      const cw20BalancesLoadable = get(
-        waitForAllSettled(
-          isDao
-            ? [
-                DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
-                  contractAddress: address,
-                  chainId,
-                  governanceTokenAddress: cw20GovernanceTokenAddress,
-                }),
-              ]
-            : [constSelector([])]
-        )
-      )[0]
-
-      const allBalances = [
-        // Native balances.
-        ...get(
-          waitForAll(
-            allAccounts.flatMap(({ address, chainId }) => [
+      const accountBalances = get(
+        waitForAll(
+          allAccounts.map(({ address, chainId }) =>
+            waitForAllSettled([
               // All unstaked
               genericTokenBalancesSelector({
                 chainId,
                 address,
+                cw20GovernanceTokenAddress,
               }),
               // Native staked
               genericTokenDelegatedBalanceSelector({
@@ -144,25 +117,48 @@ export const allBalancesSelector = selectorFamily<
               }),
             ])
           )
-        ).flat(),
-        // Cw20s on native chain.
-        ...(cw20BalancesLoadable.state === 'hasValue'
-          ? cw20BalancesLoadable.contents
-          : []),
-      ]
-
-      const uniqueChainIds = [
-        ...new Set(allAccounts.map(({ chainId }) => chainId)),
-      ]
-
-      return uniqueChainIds.reduce(
-        (acc, chainId) => ({
-          ...acc,
-          [chainId]: allBalances.filter(
-            ({ token }) => token.chainId === chainId
-          ),
-        }),
-        {} as Record<string, GenericTokenBalance[]>
+        )
       )
+
+      const uniqueChainIds = uniq(allAccounts.map(({ chainId }) => chainId))
+
+      return uniqueChainIds.reduce((acc, chainId) => {
+        // Get accounts and balances per account on this chain.
+        const chainAccountBalances = allAccounts.flatMap((account, index) => {
+          // All unstaked
+          const unstakedBalances = accountBalances[index][0].valueMaybe() || []
+          // Native staked
+          const stakedBalance = accountBalances[index][1].valueMaybe()
+
+          return account.chainId === chainId
+            ? {
+                account,
+                balances: [
+                  ...unstakedBalances,
+                  ...(stakedBalance
+                    ? [
+                        {
+                          ...stakedBalance,
+                          staked: true,
+                        },
+                      ]
+                    : []),
+                ],
+              }
+            : []
+        })
+
+        return {
+          ...acc,
+          [chainId]: chainAccountBalances.flatMap(({ account, balances }) =>
+            balances.map(
+              (balance): GenericTokenBalanceWithOwner => ({
+                ...balance,
+                owner: account,
+              })
+            )
+          ),
+        }
+      }, {} as Record<string, GenericTokenBalanceWithOwner[]>)
     },
 })
