@@ -62,7 +62,7 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
           throw error
         }
 
-        if (!data.tokens || !data.tokens.pageInfo) {
+        if (!data.tokens?.pageInfo) {
           break
         }
 

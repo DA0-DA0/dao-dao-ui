@@ -244,7 +244,7 @@ export const paginatedStargazeAllTokensSelector = selectorFamily<
         chainId !== ChainId.StargazeMainnet &&
         chainId !== ChainId.StargazeTestnet
       ) {
-        throw new Error('Expected Stargaze Mainnet chain')
+        throw new Error('Expected Stargaze mainnet chain')
       }
 
       const { error, data } = await stargazeIndexerClient.query({
@@ -260,7 +260,7 @@ export const paginatedStargazeAllTokensSelector = selectorFamily<
         throw error
       }
 
-      if (!data.tokens || !data.tokens.pageInfo) {
+      if (!data.tokens?.pageInfo) {
         throw new Error('Unexpected response from Stargaze indexer')
       }
 
@@ -276,7 +276,10 @@ export const paginatedAllTokensSelector: (
     ({ chainId, contractAddress, page, pageSize }) =>
     async ({ get }) => {
       // Use Stargaze indexer if collection is on Stargaze.
-      if (chainId === ChainId.StargazeMainnet) {
+      if (
+        chainId === ChainId.StargazeMainnet ||
+        chainId === ChainId.StargazeTestnet
+      ) {
         return get(
           paginatedStargazeAllTokensSelector({
             chainId,
@@ -334,7 +337,7 @@ export const unpaginatedAllTokensSelector = selectorFamily<
   get:
     (queryClientParams) =>
     async ({ get }) => {
-      const tokens: AllTokensResponse['tokens'] = []
+      const allTokens: AllTokensResponse['tokens'] = []
 
       // Use Stargaze indexer if collection is on Stargaze.
       if (
@@ -347,7 +350,7 @@ export const unpaginatedAllTokensSelector = selectorFamily<
             variables: {
               collectionAddr: queryClientParams.contractAddress,
               limit: ALL_TOKENS_STARGAZE_INDEXER_LIMIT,
-              offset: tokens.length,
+              offset: allTokens.length,
             },
           })
 
@@ -355,44 +358,44 @@ export const unpaginatedAllTokensSelector = selectorFamily<
             throw error
           }
 
-          if (!data.tokens || !data.tokens.pageInfo) {
+          if (!data.tokens?.pageInfo) {
             break
           }
 
-          tokens.push(...data.tokens.tokens.map(({ tokenId }) => tokenId))
+          allTokens.push(...data.tokens.tokens.map(({ tokenId }) => tokenId))
 
-          if (tokens.length === data.tokens.pageInfo.total) {
+          if (allTokens.length === data.tokens.pageInfo.total) {
             break
           }
         }
       } else {
         while (true) {
-          const response = await get(
+          const tokens = await get(
             allTokensSelector({
               ...queryClientParams,
               params: [
                 {
-                  startAfter: tokens[tokens.length - 1],
+                  startAfter: allTokens[allTokens.length - 1],
                   limit: ALL_TOKENS_LIMIT,
                 },
               ],
             })
           )?.tokens
 
-          if (!response?.length) {
+          if (!tokens?.length) {
             break
           }
 
-          tokens.push(...response)
+          allTokens.push(...tokens)
 
           // If we have less than the limit of items, we've exhausted them.
-          if (response.length < ALL_TOKENS_LIMIT) {
+          if (tokens.length < ALL_TOKENS_LIMIT) {
             break
           }
         }
       }
 
-      return tokens
+      return allTokens
     },
 })
 
@@ -408,7 +411,7 @@ export const unpaginatedAllTokensForOwnerSelector = selectorFamily<
     async ({ get }) => {
       get(refreshWalletBalancesIdAtom(owner))
 
-      const tokens: TokensResponse['tokens'] = []
+      const allTokens: TokensResponse['tokens'] = []
 
       // Use Stargaze indexer if collection is on Stargaze.
       if (
@@ -422,7 +425,7 @@ export const unpaginatedAllTokensForOwnerSelector = selectorFamily<
               collectionAddr: queryClientParams.contractAddress,
               ownerAddrOrName: owner,
               limit: ALL_TOKENS_STARGAZE_INDEXER_LIMIT,
-              offset: tokens.length,
+              offset: allTokens.length,
             },
             // Don't cache since this recoil selector handles caching. If this
             // selector is re-evaluated, it should be re-fetched since an NFT
@@ -434,13 +437,13 @@ export const unpaginatedAllTokensForOwnerSelector = selectorFamily<
             throw error
           }
 
-          if (!data.tokens || !data.tokens.pageInfo) {
+          if (!data.tokens?.pageInfo) {
             break
           }
 
-          tokens.push(...data.tokens.tokens.map(({ tokenId }) => tokenId))
+          allTokens.push(...data.tokens.tokens.map(({ tokenId }) => tokenId))
 
-          if (tokens.length === data.tokens.pageInfo.total) {
+          if (allTokens.length === data.tokens.pageInfo.total) {
             break
           }
         }
@@ -450,32 +453,32 @@ export const unpaginatedAllTokensForOwnerSelector = selectorFamily<
         // know about every different way.
 
         while (true) {
-          const response = await get(
+          const tokens = await get(
             tokensSelector({
               ...queryClientParams,
               params: [
                 {
                   owner,
-                  startAfter: tokens[tokens.length - 1],
+                  startAfter: allTokens[allTokens.length - 1],
                   limit: ALL_TOKENS_LIMIT,
                 },
               ],
             })
           )?.tokens
 
-          if (!response?.length) {
+          if (!tokens?.length) {
             break
           }
 
-          tokens.push(...response)
+          allTokens.push(...tokens)
 
           // If we have less than the limit of items, we've exhausted them.
-          if (response.length < ALL_TOKENS_LIMIT) {
+          if (tokens.length < ALL_TOKENS_LIMIT) {
             break
           }
         }
       }
 
-      return tokens
+      return allTokens
     },
 })
