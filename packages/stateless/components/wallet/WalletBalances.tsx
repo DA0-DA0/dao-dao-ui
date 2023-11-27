@@ -20,19 +20,16 @@ import {
   getDisplayNameForChainId,
 } from '@dao-dao/utils'
 
-import {
-  Button,
-  ButtonPopup,
-  DropdownIconButton,
-  GridCardContainer,
-  Loader,
-  NoContent,
-  PAGINATION_MIN_PAGE,
-  Pagination,
-  TooltipInfoIcon,
-  ValenceAccountTreasury,
-} from '..'
 import { useButtonPopupFilter, useButtonPopupSorter } from '../../hooks'
+import { Button } from '../buttons'
+import { GridCardContainer } from '../GridCardContainer'
+import { DropdownIconButton } from '../icon_buttons'
+import { Loader } from '../logo/Loader'
+import { NoContent } from '../NoContent'
+import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
+import { ButtonPopup } from '../popup'
+import { TooltipInfoIcon } from '../tooltip'
+import { ValenceAccountTreasury } from '../ValenceAccountTreasury'
 
 const NFTS_PER_PAGE = 18
 
@@ -44,10 +41,10 @@ export const WalletBalances = <
   tokens,
   hiddenTokens,
   TokenLine,
-  TokenCard,
   nfts,
   NftCard,
   TreasuryHistoryGraph,
+  ...valenceAccountTreasuryProps
 }: WalletBalancesProps<T, N>) => {
   const { t } = useTranslation()
 
@@ -162,7 +159,7 @@ export const WalletBalances = <
             {valenceAccounts.map((account) => (
               <ValenceAccountTreasury<T>
                 key={account.address}
-                TokenCard={TokenCard}
+                TokenLine={TokenLine}
                 TreasuryHistoryGraph={TreasuryHistoryGraph}
                 account={account}
                 className="mt-6"
@@ -177,6 +174,7 @@ export const WalletBalances = <
                         ),
                       }
                 }
+                {...valenceAccountTreasuryProps}
               />
             ))}
           </div>

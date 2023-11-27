@@ -46,7 +46,14 @@ export type GenericTokenWithUsdPrice = {
 export type GenericTokenBalance = {
   token: GenericToken
   balance: string
+  // Whether or not this is the governance token in the related context.
   isGovernanceToken?: boolean
+  // Whether or not this is staked.
+  staked?: boolean
+}
+
+export type GenericTokenBalanceWithOwner = GenericTokenBalance & {
+  owner: Account
 }
 
 export type LooseGenericToken = Pick<
@@ -111,6 +118,8 @@ export type TokenCardInfo = {
   // Only native tokens load staking info for now, so let's show a nice loader.
   hasStakingInfo: boolean
   lazyInfo: LoadingData<TokenCardLazyInfo>
+  // If defined, adds a color indicator.
+  color?: string
 }
 
 export type TokenCardProps = TokenCardInfo & {

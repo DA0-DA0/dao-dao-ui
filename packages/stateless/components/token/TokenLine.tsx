@@ -20,7 +20,7 @@ import {
 export const TokenLine = <T extends TokenCardInfo>(
   props: TokenLineProps<T>
 ) => {
-  const { TokenCard, token, transparentBackground, lazyInfo } = props
+  const { TokenCard, token, transparentBackground, lazyInfo, color } = props
   const { t } = useTranslation()
 
   const { tokenSymbol } = transformIbcSymbol(token.symbol)
@@ -42,6 +42,15 @@ export const TokenLine = <T extends TokenCardInfo>(
         onClick={() => setCardVisible(true)}
       >
         <div className="flex flex-row items-center gap-2">
+          {color && (
+            <div
+              className="h-2 w-2 shrink-0 rounded-full"
+              style={{
+                backgroundColor: color,
+              }}
+            ></div>
+          )}
+
           <Tooltip
             title={t('info.tokenOnChain', {
               token: tokenSymbol,

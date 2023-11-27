@@ -10,6 +10,7 @@ import {
   TokenCardInfo,
   TreasuryHistoryGraphProps,
   ValenceAccount,
+  ValenceAccountTreasuryProps,
 } from '@dao-dao/types'
 import {
   areAccountsEqual,
@@ -43,10 +44,11 @@ export type DaoChainTreasuryAndNftsProps<
   addCollectionHref?: string
   setDepositFiatChainId: (chainId: string | undefined) => void
   TokenCard: ComponentType<T>
+  TokenLine: ComponentType<T>
   NftCard: ComponentType<N>
   ButtonLink: ComponentType<ButtonLinkProps>
   TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
-}
+} & Pick<ValenceAccountTreasuryProps<T>, 'configureRebalancerHref'>
 
 const NFTS_PER_PAGE = 18
 
@@ -61,9 +63,11 @@ export const DaoChainTreasuryAndNfts = <
   addCollectionHref,
   setDepositFiatChainId,
   TokenCard,
+  TokenLine,
   NftCard,
   ButtonLink,
   TreasuryHistoryGraph,
+  configureRebalancerHref,
 }: DaoChainTreasuryAndNftsProps<T, N>) => {
   const { t } = useTranslation()
   const { chainId: daoChainId } = useDaoInfoContext()
@@ -177,10 +181,12 @@ export const DaoChainTreasuryAndNfts = <
           {valenceAccounts.map((account) => (
             <ValenceAccountTreasury<T>
               key={account.address}
-              TokenCard={TokenCard}
+              ButtonLink={ButtonLink}
+              TokenLine={TokenLine}
               TreasuryHistoryGraph={TreasuryHistoryGraph}
               account={account}
               className="mt-6"
+              configureRebalancerHref={configureRebalancerHref}
               tokens={
                 tokens.loading
                   ? tokens

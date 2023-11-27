@@ -260,7 +260,6 @@ export const nativeBalancesSelector = selectorFamily<
 
       return tokenLoadables
         .map((token, index) => ({
-          chainId,
           token: token.state === 'hasValue' ? token.contents : undefined,
           balance: balances[index].amount,
         }))

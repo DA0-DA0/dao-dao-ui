@@ -6,22 +6,28 @@ import {
   WalletBalances as StatelessWalletBalances,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import { LazyNftCardInfo, LoadingData, TokenCardInfo } from '@dao-dao/types'
+import {
+  ActionKey,
+  LazyNftCardInfo,
+  LoadingData,
+  TokenCardInfo,
+} from '@dao-dao/types'
 import {
   getConfiguredChains,
+  getMeTxPrefillPath,
   loadableToLoadingData,
   transformBech32Address,
 } from '@dao-dao/utils'
 
+import { useActionForKey } from '../../actions'
 import {
   allWalletNftsSelector,
   hiddenBalancesSelector,
   tokenCardLazyInfoSelector,
   walletTokenCardInfosSelector,
 } from '../../recoil'
+import { ButtonLink } from '../ButtonLink'
 import { TreasuryHistoryGraph } from '../TreasuryHistoryGraph'
-import { WalletTokenCard } from './WalletTokenCard'
-import { WalletTokenCardReadonly } from './WalletTokenCardReadonly'
 import { WalletTokenLine } from './WalletTokenLine'
 import { WalletTokenLineReadonly } from './WalletTokenLineReadonly'
 
@@ -136,13 +142,27 @@ export const WalletBalances = ({
     []
   )
 
+  const configureRebalancerActionDefaults = useActionForKey(
+    ActionKey.ConfigureRebalancer
+  )?.action.useDefaults()
+
   return (
     <StatelessWalletBalances
+      ButtonLink={ButtonLink}
       NftCard={NftCard}
-      TokenCard={editable ? WalletTokenCard : WalletTokenCardReadonly}
       TokenLine={editable ? WalletTokenLine : WalletTokenLineReadonly}
       TreasuryHistoryGraph={TreasuryHistoryGraph}
       accounts={accounts}
+      configureRebalancerHref={
+        editable && configureRebalancerActionDefaults
+          ? getMeTxPrefillPath([
+              {
+                actionKey: ActionKey.ConfigureRebalancer,
+                data: configureRebalancerActionDefaults,
+              },
+            ])
+          : undefined
+      }
       hiddenTokens={hiddenTokens}
       nfts={nfts}
       tokens={tokens}

@@ -1,35 +1,23 @@
 import clsx from 'clsx'
-import { ComponentType, useState } from 'react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  LoadingData,
-  TokenCardInfo,
-  TreasuryHistoryGraphProps,
-  ValenceAccount,
-} from '@dao-dao/types'
+import { TokenCardInfo, ValenceAccountTreasuryProps } from '@dao-dao/types'
 import { serializeTokenSource } from '@dao-dao/utils'
 
 import { useChain } from '../hooks'
 import { CopyToClipboard } from './CopyToClipboard'
-import { GridCardContainer } from './GridCardContainer'
 import { SwitchCard } from './inputs/Switch'
 import { Loader } from './logo'
 import { TooltipInfoIcon } from './tooltip'
 
-export type ValenceAccountTreasuryProps<T extends TokenCardInfo> = {
-  account: ValenceAccount
-  tokens: LoadingData<T[]>
-  TokenCard: ComponentType<T>
-  TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
-  className?: string
-}
-
 export const ValenceAccountTreasury = <T extends TokenCardInfo>({
   account,
   tokens,
-  TokenCard,
+  TokenLine,
   TreasuryHistoryGraph,
+  ButtonLink,
+  configureRebalancerHref,
   className,
 }: ValenceAccountTreasuryProps<T>) => {
   const { t } = useTranslation()
@@ -43,6 +31,10 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
     account.config?.rebalancer?.targets.map(({ source }) =>
       serializeTokenSource(source)
     ) || []
+
+  const [tokenSourceColorMap, setTokenSourceColorMap] = useState<
+    Record<string, string>
+  >({})
 
   return (
     <div className={clsx('space-y-3', className)}>
@@ -76,18 +68,33 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
         ) : (
           tokens.data.length > 0 && (
             <>
-              {account.config.rebalancer && (
-                <SwitchCard
-                  containerClassName="-mb-2 self-start"
-                  enabled={valenceAccountMode === 'rebalancer'}
-                  label="Only Rebalancer"
-                  onClick={() =>
-                    setValenceAccountMode((value) =>
-                      value === 'rebalancer' ? 'all' : 'rebalancer'
-                    )
-                  }
-                  sizing="sm"
-                />
+              {(account.config.rebalancer || configureRebalancerHref) && (
+                <div className="flex flex-row flex-wrap justify-between gap-x-6 gap-y-2">
+                  {account.config.rebalancer ? (
+                    <SwitchCard
+                      containerClassName="-mb-2 self-start"
+                      enabled={valenceAccountMode === 'rebalancer'}
+                      label="Only Rebalancer"
+                      onClick={() =>
+                        setValenceAccountMode((value) =>
+                          value === 'rebalancer' ? 'all' : 'rebalancer'
+                        )
+                      }
+                      sizing="sm"
+                    />
+                  ) : (
+                    <div></div>
+                  )}
+
+                  {!!configureRebalancerHref && (
+                    <ButtonLink
+                      href={configureRebalancerHref}
+                      variant="secondary"
+                    >
+                      {t('title.configureRebalancer')}
+                    </ButtonLink>
+                  )}
+                </div>
               )}
 
               <TreasuryHistoryGraph
@@ -95,10 +102,25 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
                 address={account.address}
                 chainId={account.chainId}
                 className="px-8"
+                registerTokenColors={setTokenSourceColorMap}
                 showRebalancer={valenceAccountMode === 'rebalancer'}
               />
 
-              <GridCardContainer cardType="wide">
+              <div className="space-y-1">
+                <div className="secondary-text mb-2 grid grid-cols-2 items-center gap-4 pl-8 pr-4 sm:grid-cols-[2fr_1fr_1fr]">
+                  <p>{t('title.token')}</p>
+
+                  <p className="text-right">{t('title.total')}</p>
+
+                  <div className="hidden flex-row items-center justify-end gap-1 sm:flex">
+                    <p className="text-right">{t('title.estUsdValue')}</p>
+                    <TooltipInfoIcon
+                      size="xs"
+                      title={t('info.estimatedUsdValueTooltip')}
+                    />
+                  </div>
+                </div>
+
                 {tokens.data
                   .filter(
                     ({ token }) =>
@@ -108,9 +130,16 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
                       )
                   )
                   .map((props, index) => (
-                    <TokenCard {...props} key={index} noExtraActions />
+                    <TokenLine
+                      {...props}
+                      key={index}
+                      color={
+                        tokenSourceColorMap[serializeTokenSource(props.token)]
+                      }
+                      noExtraActions
+                    />
                   ))}
-              </GridCardContainer>
+              </div>
             </>
           )
         )}

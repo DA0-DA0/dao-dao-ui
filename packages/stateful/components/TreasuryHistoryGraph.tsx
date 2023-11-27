@@ -13,6 +13,7 @@ import clsx from 'clsx'
 import { useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
+import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { OsmosisHistoricalPriceChartPrecision } from '@dao-dao/state/recoil'
 import {
@@ -49,6 +50,7 @@ export const TreasuryHistoryGraph = ({
   account,
   showRebalancer = false,
   className,
+  registerTokenColors,
 }: TreasuryHistoryGraphProps) => {
   const { t } = useTranslation()
 
@@ -84,11 +86,29 @@ export const TreasuryHistoryGraph = ({
     })
   )
 
+  // Map serialized token source to color.
+  const tokenColors =
+    treasuryValueHistory.loading || treasuryValueHistory.errored
+      ? {}
+      : treasuryValueHistory.data.tokens.reduce(
+          (acc, { token }, index) => ({
+            ...acc,
+            [serializeTokenSource(token)]:
+              DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
+          }),
+          {} as Record<string, string>
+        )
+
+  // Register token colors.
+  useDeepCompareEffect(() => {
+    registerTokenColors?.(tokenColors)
+  }, [tokenColors])
+
   const tokenValues =
     treasuryValueHistory.loading || treasuryValueHistory.errored
       ? []
       : treasuryValueHistory.data.tokens.flatMap(
-          ({ token, values, currentValue }, index) => {
+          ({ token, values, currentValue }) => {
             // If all values are null/0, do not include this token.
             if (!values.every((d) => !d) && !currentValue) {
               return []
@@ -100,8 +120,8 @@ export const TreasuryHistoryGraph = ({
               label:
                 '$' + transformIbcSymbol(token.symbol).tokenSymbol + ' Value',
               data: [...values, currentValue],
-              borderColor:
-                DISTRIBUTION_COLORS[index % DISTRIBUTION_COLORS.length],
+              borderColor: tokenColors[serializeTokenSource(token)],
+              backgroundColor: tokenColors[serializeTokenSource(token)],
               borderWidth: 2.5,
             }
           }
@@ -182,8 +202,8 @@ export const TreasuryHistoryGraph = ({
               '$' + transformIbcSymbol(token.symbol).tokenSymbol + ' Target',
             data,
             borderDash: [2.5, 2.5],
-            borderColor:
-              DISTRIBUTION_COLORS[tokenIndex % DISTRIBUTION_COLORS.length],
+            borderColor: tokenColors[serializeTokenSource(token)],
+            backgroundColor: tokenColors[serializeTokenSource(token)],
             pointRadius: 0,
             pointHitRadius: 0,
             borderWidth: 2.5,
@@ -204,6 +224,7 @@ export const TreasuryHistoryGraph = ({
               treasuryValueHistory.data.total.currentValue,
             ],
             borderColor: brandColor,
+            backgroundColor: brandColor,
             borderWidth: 5,
           },
         ]
@@ -261,7 +282,7 @@ export const TreasuryHistoryGraph = ({
               display: false,
             },
             legend: {
-              position: 'right',
+              position: 'top',
               labels: {
                 filter: (item) => item.text.endsWith(' Value'),
               },
@@ -347,7 +368,10 @@ export const TreasuryHistoryGraph = ({
                 Number(a.data[tooltipTimestampIndex])
             ),
           ].flatMap(
-            ({ token, data, label, borderWidth, borderColor }, index) => {
+            (
+              { token, data, label, borderWidth, borderColor, backgroundColor },
+              index
+            ) => {
               const value = data[tooltipTimestampIndex]
               if (value === null) {
                 return
@@ -369,10 +393,11 @@ export const TreasuryHistoryGraph = ({
                 >
                   <div className="flex flex-row items-center gap-2">
                     <div
-                      className="h-4 w-6"
+                      className="h-4 w-10"
                       style={{
                         borderWidth,
                         borderColor,
+                        backgroundColor,
                       }}
                     />
                     <p className="secondary-text">{label}:</p>

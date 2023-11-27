@@ -4,7 +4,8 @@ import { Account } from '../account'
 import { LazyNftCardInfo } from '../nft'
 import { TokenCardInfo } from '../token'
 import { LoadingData } from './common'
-import { TreasuryHistoryGraphProps } from './TreasuryHistoryGraphProps'
+import { TreasuryHistoryGraphProps } from './TreasuryHistoryGraph'
+import { ValenceAccountTreasuryProps } from './ValenceAccountTreasury'
 
 export type WalletBalancesProps<
   T extends TokenCardInfo,
@@ -15,8 +16,10 @@ export type WalletBalancesProps<
   // List of token denomOrAddress fields that should be hidden.
   hiddenTokens: LoadingData<string[]>
   TokenLine: ComponentType<T>
-  TokenCard: ComponentType<T>
   nfts: LoadingData<N[]>
   NftCard: ComponentType<N>
   TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
-}
+} & Pick<
+  ValenceAccountTreasuryProps<T>,
+  'ButtonLink' | 'configureRebalancerHref'
+>

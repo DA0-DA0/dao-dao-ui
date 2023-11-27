@@ -1,5 +1,6 @@
 import { parseCoins } from '@cosmjs/proto-signing'
 import { IndexedTx } from '@cosmjs/stargate'
+import uniq from 'lodash.uniq'
 import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
@@ -314,9 +315,9 @@ export const historicalNativeBalancesSelector = selectorFamily<
       }[]
 
       // Get all unique denoms.
-      const uniqueDenoms = [
-        ...new Set(balanceSnapshots.flatMap(({ value }) => Object.keys(value))),
-      ]
+      const uniqueDenoms = uniq(
+        balanceSnapshots.flatMap(({ value }) => Object.keys(value))
+      )
 
       // Map of denom to token.
       const tokens = get(
@@ -386,16 +387,12 @@ export const historicalNativeBalancesByDenomSelector = selectorFamily<
       )
 
       // Get all unique denoms.
-      const uniqueDenoms = [
-        ...new Set([
-          ...new Set(
-            historicalNativeBalances.flatMap(({ balances }) =>
-              balances.map(({ token }) => token.denomOrAddress)
-            )
-          ),
-          ...nativeBalances.map(({ token }) => token.denomOrAddress),
-        ]),
-      ]
+      const uniqueDenoms = uniq([
+        ...historicalNativeBalances.flatMap(({ balances }) =>
+          balances.map(({ token }) => token.denomOrAddress)
+        ),
+        ...nativeBalances.map(({ token }) => token.denomOrAddress),
+      ])
 
       // Map of denom to token.
       const tokens = get(
