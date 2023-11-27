@@ -22,7 +22,7 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { ButtonLink } from '../../../../../components/ButtonLink'
+import { ButtonLink, EntityDisplay } from '../../../../../components'
 import {
   useAwaitNextBlock,
   useEntity,
@@ -213,6 +213,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     <>
       <StatelessVestingPaymentCard
         ButtonLink={ButtonLink}
+        EntityDisplay={EntityDisplay}
         canClaimStakingRewards={
           !lazyInfoLoading.loading &&
           !!lazyInfoLoading.data.stakingInfo?.totalPendingRewards

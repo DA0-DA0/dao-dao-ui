@@ -53,7 +53,7 @@ export const useGovernanceCollectionInfo = ({
   // Wallet balance
   const loadingWalletBalance = useCachedLoading(
     fetchWalletBalance && walletAddress
-      ? CommonNftSelectors.allTokensForOwnerSelector({
+      ? CommonNftSelectors.unpaginatedAllTokensForOwnerSelector({
           chainId,
           contractAddress: collectionAddress,
           owner: walletAddress,
@@ -65,7 +65,7 @@ export const useGovernanceCollectionInfo = ({
   // Treasury balance
   const loadingTreasuryBalance = useCachedLoading(
     fetchTreasuryBalance
-      ? CommonNftSelectors.allTokensForOwnerSelector({
+      ? CommonNftSelectors.unpaginatedAllTokensForOwnerSelector({
           chainId,
           contractAddress: collectionAddress,
           owner: coreAddress,

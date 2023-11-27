@@ -1,4 +1,9 @@
 // If name is only a number, prefix with collection name. Fallback to token ID
+
+import { NftCardInfo, StargazeNft } from '@dao-dao/types'
+
+import { STARGAZE_URL_BASE } from './constants'
+
 // if name does not exist.
 export const getNftName = (
   collectionName: string,
@@ -62,3 +67,25 @@ export const getNftKey = (
     // Ensure this produces an empty string if the variables are empty.
     .filter(Boolean)
     .join(':')
+
+export const nftCardInfoFromStargazeIndexerNft = (
+  chainId: string,
+  token: StargazeNft
+): NftCardInfo => ({
+  key: getNftKey(
+    chainId,
+    token.collection.contractAddress || '',
+    token.tokenId || ''
+  ),
+  chainId,
+  collectionAddress: token.collection.contractAddress || '',
+  collectionName: token.collection.name || 'Unknown Collection',
+  tokenId: token.tokenId || '',
+  externalLink: {
+    href: `${STARGAZE_URL_BASE}/media/${token.collection.contractAddress}/${token.tokenId}`,
+    name: 'Stargaze',
+  },
+  imageUrl: token.media?.url || undefined,
+  name: token.name || token.tokenId || 'Unknown NFT',
+  description: token.description || undefined,
+})

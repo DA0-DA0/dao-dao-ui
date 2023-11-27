@@ -16,15 +16,18 @@ export const nftUriDataSelector = selectorFamily<
       // Transform IPFS url if necessary.
       let response = await fetch(transformIpfsUrlToHttpsIfNecessary(tokenUri))
 
-      // Sometimes the tokenUri is missing a .json extension, so try again.
-      if (response.status === 502 && !tokenUri.endsWith('.json')) {
-        response = await fetch(
-          transformIpfsUrlToHttpsIfNecessary(tokenUri + '.json')
-        )
-      }
-
       if (!response.ok) {
-        return undefined
+        // Sometimes `tokenUri` is missing a `.json` extension, so try again on
+        // failure in that case.
+        if (!tokenUri.endsWith('.json')) {
+          response = await fetch(
+            transformIpfsUrlToHttpsIfNecessary(tokenUri + '.json')
+          )
+        }
+
+        if (!response.ok) {
+          return
+        }
       }
 
       const data = await response.json()

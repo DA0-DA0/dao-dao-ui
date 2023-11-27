@@ -39,7 +39,7 @@ export const MintNftRenderer = ({
   const [minting, setMinting] = useState(false)
 
   const allTokensLoadable = useCachedLoadable(
-    CommonNftSelectors.allTokensSelector({
+    CommonNftSelectors.unpaginatedAllTokensSelector({
       contractAddress: nftCollection,
       chainId,
     })
