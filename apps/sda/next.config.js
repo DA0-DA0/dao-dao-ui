@@ -80,6 +80,7 @@ const config = {
   images: {
     domains: [
       'ipfs.stargaze.zone',
+      'ipfs-gw.stargaze-apis.com',
       'nftstorage.link',
       'img-proxy.ekez.workers.dev',
       'raw.githubusercontent.com',

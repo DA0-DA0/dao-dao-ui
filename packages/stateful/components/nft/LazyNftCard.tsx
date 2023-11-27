@@ -4,6 +4,7 @@ import { useSetRecoilState } from 'recoil'
 import { nftCardInfosForKeyAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadingWithError } from '@dao-dao/stateless'
 import { LazyNftCardProps } from '@dao-dao/types'
+import { processError } from '@dao-dao/utils'
 
 import {
   nftCardInfoSelector,
@@ -69,7 +70,7 @@ export const LazyNftCard = forwardRef<HTMLDivElement, LazyNftCardProps>(
       ? NftCardNoCollection
       : NftCard
 
-    return info.loading || info.errored ? (
+    return info.loading ? (
       <NftCardToUse
         chainId={chainId}
         className="animate-pulse"
@@ -77,6 +78,20 @@ export const LazyNftCard = forwardRef<HTMLDivElement, LazyNftCardProps>(
         collectionName="Loading..."
         description={undefined}
         name="Loading..."
+        tokenId={tokenId}
+        {...props}
+        ref={ref}
+      />
+    ) : info.errored ? (
+      <NftCardToUse
+        chainId={chainId}
+        className="animate-pulse"
+        collectionAddress={collectionAddress}
+        collectionName="Errored"
+        description={undefined}
+        name={processError(info.error, {
+          forceCapture: false,
+        })}
         tokenId={tokenId}
         {...props}
         ref={ref}

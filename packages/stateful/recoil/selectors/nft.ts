@@ -1,4 +1,4 @@
-import { selectorFamily, waitForAll, waitForNone } from 'recoil'
+import { selectorFamily, waitForNone } from 'recoil'
 
 import {
   CommonNftSelectors,
@@ -7,18 +7,22 @@ import {
   queryWalletIndexerSelector,
   refreshWalletBalancesIdAtom,
   refreshWalletStargazeNftsAtom,
+  stargazeIndexerClient,
+  stargazeTokenQuery,
+  stargazeTokensForOwnerQuery,
 } from '@dao-dao/state'
 import { stakerForNftSelector } from '@dao-dao/state/recoil/selectors/contracts/DaoVotingCw721Staked'
 import { ChainId, NftCardInfo, WithChainId } from '@dao-dao/types'
-import { LazyNftCardInfo, LoadingNfts, StargazeNft } from '@dao-dao/types/nft'
+import { LazyNftCardInfo, LoadingNfts } from '@dao-dao/types/nft'
 import {
   MAINNET,
-  STARGAZE_PROFILE_API_TEMPLATE,
   STARGAZE_URL_BASE,
   getNftKey,
+  nftCardInfoFromStargazeIndexerNft,
   transformBech32Address,
 } from '@dao-dao/utils'
 
+const STARGAZE_INDEXER_TOKENS_LIMIT = 100
 export const walletStargazeNftCardInfosSelector = selectorFamily<
   NftCardInfo[],
   string
@@ -27,45 +31,47 @@ export const walletStargazeNftCardInfosSelector = selectorFamily<
   get:
     (walletAddress: string) =>
     async ({ get }) => {
+      const chainId = MAINNET
+        ? ChainId.StargazeMainnet
+        : ChainId.StargazeTestnet
+
       const stargazeWalletAddress = transformBech32Address(
         walletAddress,
-        MAINNET ? ChainId.StargazeMainnet : ChainId.StargazeTestnet
+        chainId
       )
 
       get(refreshWalletStargazeNftsAtom(stargazeWalletAddress))
 
-      let stargazeNfts: StargazeNft[] = []
-      try {
-        stargazeNfts = await (
-          await fetch(
-            STARGAZE_PROFILE_API_TEMPLATE.replace(
-              'ADDRESS',
-              stargazeWalletAddress
-            )
-          )
-        ).json()
-      } catch (err) {
-        console.error(err)
-      }
+      const nftCardInfos: NftCardInfo[] = []
 
-      if (!Array.isArray(stargazeNfts)) {
-        return []
-      }
+      while (true) {
+        const { error, data } = await stargazeIndexerClient.query({
+          query: stargazeTokensForOwnerQuery,
+          variables: {
+            ownerAddrOrName: stargazeWalletAddress,
+            limit: STARGAZE_INDEXER_TOKENS_LIMIT,
+            offset: nftCardInfos.length,
+          },
+        })
 
-      const nftCardInfos = get(
-        waitForAll(
-          stargazeNfts.map(({ collection, tokenId, tokenUri }) =>
-            nftCardInfoWithUriSelector({
-              collection: collection.contractAddress,
-              tokenId,
-              tokenUri,
-              chainId: MAINNET
-                ? ChainId.StargazeMainnet
-                : ChainId.StargazeTestnet,
-            })
+        if (error) {
+          throw error
+        }
+
+        if (!data.tokens || !data.tokens.pageInfo) {
+          break
+        }
+
+        nftCardInfos.push(
+          ...data.tokens.tokens.map((token) =>
+            nftCardInfoFromStargazeIndexerNft(chainId, token)
           )
         )
-      )
+
+        if (nftCardInfos.length === data.tokens.pageInfo.total) {
+          break
+        }
+      }
 
       return nftCardInfos
     },
@@ -102,7 +108,8 @@ export const nftCardInfoWithUriSelector = selectorFamily<
         tokenId,
         externalLink:
           externalLink ||
-          (chainId === ChainId.StargazeMainnet
+          (chainId === ChainId.StargazeMainnet ||
+          chainId === ChainId.StargazeTestnet
             ? {
                 href: `${STARGAZE_URL_BASE}/media/${collection}/${tokenId}`,
                 name: 'Stargaze',
@@ -129,6 +136,30 @@ export const nftCardInfoSelector = selectorFamily<
   get:
     ({ tokenId, collection, chainId }) =>
     async ({ get }) => {
+      // Use Stargaze indexer when possible.
+      if (
+        chainId === ChainId.StargazeMainnet ||
+        chainId === ChainId.StargazeTestnet
+      ) {
+        const { error, data } = await stargazeIndexerClient.query({
+          query: stargazeTokenQuery,
+          variables: {
+            collectionAddr: collection,
+            tokenId,
+          },
+        })
+
+        if (error) {
+          throw error
+        }
+
+        if (!data.token) {
+          throw new Error('Failed to load NFT from Stargaze')
+        }
+
+        return nftCardInfoFromStargazeIndexerNft(chainId, data.token)
+      }
+
       const tokenInfo = get(
         CommonNftSelectors.nftInfoSelector({
           contractAddress: collection,
@@ -180,7 +211,7 @@ export const lazyNftCardInfosForDaoSelector = selectorFamily<
           const nftCollectionTokenIds = get(
             waitForNone(
               collectionAddresses.map((collectionAddress) =>
-                CommonNftSelectors.allTokensForOwnerSelector({
+                CommonNftSelectors.unpaginatedAllTokensForOwnerSelector({
                   contractAddress: collectionAddress,
                   chainId,
                   owner,

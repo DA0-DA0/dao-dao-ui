@@ -30,8 +30,8 @@ export const WEB3AUTH_CLIENT_ID = process.env
 export const CI = process.env.CI === 'true'
 
 // Stargaze
-export const STARGAZE_PROFILE_API_TEMPLATE = process.env
-  .NEXT_PUBLIC_STARGAZE_PROFILE_API_TEMPLATE as string
+export const STARGAZE_GQL_INDEXER_URI = process.env
+  .NEXT_PUBLIC_STARGAZE_GQL_INDEXER_URI as string
 export const STARGAZE_URL_BASE = process.env
   .NEXT_PUBLIC_STARGAZE_URL_BASE as string
 export const STARGAZE_NAMES_CONTRACT = process.env
