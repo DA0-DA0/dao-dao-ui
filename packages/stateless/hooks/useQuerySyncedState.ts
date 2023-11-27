@@ -11,6 +11,20 @@ export type UseQuerySyncedStateReturn<T extends unknown> = [
   Dispatch<SetStateAction<T>>
 ]
 
+/**
+ * Creates a piece of state that automatically syncs with a query parameter in
+ * the URL. This may be used to store a page in the URL, for example. It is
+ * important to ensure that the parameter is unique if this is used multiple
+ * times on the same page. Otherwise an infinite loop will occur as the hooks
+ * will bounce back and forth.
+ *
+ * @param {UseQuerySyncedStateOptions<T>} options - The options for the
+ * function.
+ * @param {T} options.param - The query parameter.
+ * @param {T} options.defaultValue - The state's default value.
+ * @return {UseQuerySyncedStateReturn<T>} - The value and its setter function,
+ * in the same format as `useState`: `[value, setValue]`.
+ */
 export const useQuerySyncedState = <T = string | number>({
   param,
   defaultValue,
