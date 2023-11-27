@@ -4,6 +4,7 @@ import {
   Remove,
 } from '@mui/icons-material'
 import clsx from 'clsx'
+import { useEffect } from 'react'
 
 import { Button } from './buttons'
 import { IconButton } from './icon_buttons'
@@ -27,6 +28,13 @@ export const Pagination = ({
 }: PaginationProps) => {
   const maxPage = Math.ceil(total / pageSize)
   const page = Math.min(Math.max(PAGINATION_MIN_PAGE, _page), maxPage)
+
+  // If page is out of bounds, correct it.
+  useEffect(() => {
+    if (_page !== page) {
+      setPage(maxPage)
+    }
+  }, [_page, maxPage, page, setPage])
 
   if (maxPage <= PAGINATION_MIN_PAGE) {
     return null

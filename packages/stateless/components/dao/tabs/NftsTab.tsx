@@ -35,7 +35,7 @@ export const NftsTab = <N extends object>({
 }: NftsTabProps<N>) => {
   const { t } = useTranslation()
 
-  return nfts.loading || nfts.data.length > 0 ? (
+  return nfts.loading || numNfts.loading || numNfts.data > 0 ? (
     <>
       <div className="flex min-h-[3.5rem] flex-col gap-y-4 gap-x-16 pb-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-row flex-wrap items-end gap-x-4 gap-y-2">
