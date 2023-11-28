@@ -99,7 +99,7 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
             <>
               {account.config.rebalancer && (
                 <div className="mb-4 flex flex-col gap-2 px-8">
-                  <div className="flex flex-row items-center justify-center gap-1">
+                  <div className="relative flex flex-row items-center justify-center gap-1">
                     <TooltipInfoIcon
                       size="sm"
                       title={
@@ -114,7 +114,7 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
                       <Tooltip title={t('title.configureRebalancer')}>
                         <IconButtonLink
                           Icon={Build}
-                          containerClassName="shrink-0 ml-1"
+                          containerClassName="absolute right-0"
                           href={configureRebalancerHref}
                           size="sm"
                           variant="ghost"
