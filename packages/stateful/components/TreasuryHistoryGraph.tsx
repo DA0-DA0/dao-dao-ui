@@ -5,11 +5,14 @@ import {
   LineElement,
   LinearScale,
   PointElement,
+  TimeScale,
   Title,
   Tooltip,
   TooltipModel,
 } from 'chart.js'
+import annotationPlugin from 'chartjs-plugin-annotation'
 import clsx from 'clsx'
+import { enUS } from 'date-fns/locale'
 import { useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
@@ -24,8 +27,7 @@ import {
 import { AccountType, TreasuryHistoryGraphProps } from '@dao-dao/types'
 import {
   DISTRIBUTION_COLORS,
-  formatDate,
-  formatDateTime,
+  formatDateTimeTz,
   formatPercentOf100,
   serializeTokenSource,
   transformIbcSymbol,
@@ -33,14 +35,18 @@ import {
 
 import { treasuryValueHistorySelector } from '../recoil'
 
+import 'chartjs-adapter-date-fns'
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
+  TimeScale,
   PointElement,
   LineElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  annotationPlugin
 )
 
 // TODO: add way to set base price denom to use instead of USD
@@ -245,7 +251,10 @@ export const TreasuryHistoryGraph = ({
   )
 
   const [tooltipData, setTooltipData] = useState<TooltipModel<'line'>>()
-  const tooltipTimestampIndex = tooltipData?.dataPoints[0].dataIndex
+  // Contains information on the data point that is currently hovered. Can be
+  // used to retrieve the timestamp value (`.parsed.x`) and index in the dataset
+  // (`.dataIndex`).
+  const tooltipFirstDataPoint = tooltipData?.dataPoints[0]
   const tooltipTotalValue =
     tooltipData &&
     (tooltipData.dataPoints.find(
@@ -265,11 +274,9 @@ export const TreasuryHistoryGraph = ({
               ? []
               : [
                   ...treasuryValueHistory.data.timestamps.map((timestamp) =>
-                    (precision === 'day' ? formatDate : formatDateTime)(
-                      timestamp
-                    )
+                    timestamp.getTime()
                   ),
-                  t('title.now'),
+                  Date.now(),
                 ],
           datasets,
         }}
@@ -293,7 +300,7 @@ export const TreasuryHistoryGraph = ({
               enabled: false,
               external: ({ tooltip }) =>
                 setTooltipData(
-                  tooltip.opacity === 0 ? undefined : { ...tooltip }
+                  tooltip.opacity === 0 ? undefined : ({ ...tooltip } as any)
                 ),
               callbacks: {
                 label: (item) =>
@@ -316,6 +323,15 @@ export const TreasuryHistoryGraph = ({
               grid: {
                 color: borderColor,
                 tickColor: 'transparent',
+              },
+              type: 'time',
+              adapters: {
+                date: {
+                  locale: enUS,
+                },
+              },
+              time: {
+                minUnit: 'day',
               },
             },
             y: {
@@ -350,7 +366,7 @@ export const TreasuryHistoryGraph = ({
         </div>
       )}
 
-      {tooltipData && tooltipTimestampIndex !== undefined && (
+      {tooltipData && tooltipFirstDataPoint !== undefined && (
         <div
           className="pointer-events-none absolute flex animate-fade-in flex-col gap-2 rounded-md border border-border-component-primary bg-component-tooltip py-2 px-3 text-text-component-primary"
           style={{
@@ -358,21 +374,29 @@ export const TreasuryHistoryGraph = ({
             top: tooltipData.y,
           }}
         >
-          <p className="!primary-text mb-1">{tooltipData.title}</p>
+          <p className="!primary-text mb-1">
+            {
+              // This should always be defined if the tooltip is shown, but
+              // fallback to title just in case.
+              tooltipFirstDataPoint
+                ? formatDateTimeTz(new Date(tooltipFirstDataPoint.parsed.x))
+                : tooltipData.title
+            }
+          </p>
 
           {[
             totalValues[0],
             ...tokenValues.sort(
               (a, b) =>
-                Number(b.data[tooltipTimestampIndex]) -
-                Number(a.data[tooltipTimestampIndex])
+                Number(b.data[tooltipFirstDataPoint.dataIndex]) -
+                Number(a.data[tooltipFirstDataPoint.dataIndex])
             ),
           ].flatMap(
             (
               { token, data, label, borderWidth, borderColor, backgroundColor },
               index
             ) => {
-              const value = data[tooltipTimestampIndex]
+              const value = data[tooltipFirstDataPoint.dataIndex]
               if (value === null) {
                 return
               }
@@ -380,7 +404,7 @@ export const TreasuryHistoryGraph = ({
               const targetValue =
                 token &&
                 targetValues.find(({ token: t }) => t === token)?.data[
-                  tooltipTimestampIndex
+                  tooltipFirstDataPoint.dataIndex
                 ]
 
               return (
