@@ -282,7 +282,7 @@ export const NftSelectionModal = ({
         noneDisplay || (
           <NoContent
             Icon={Image}
-            body={t('info.noNftsYet')}
+            body={t('info.noNftsFound')}
             className="grow justify-center"
           />
         )

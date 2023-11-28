@@ -19,6 +19,7 @@ import {
   useNativeCommonGovernanceTokenInfoIfExists,
 } from '../../../voting-module-adapter'
 import { ButtonLink } from '../../ButtonLink'
+import { IconButtonLink } from '../../IconButtonLink'
 import { LazyNftCard } from '../../nft'
 import { TreasuryHistoryGraph } from '../../TreasuryHistoryGraph'
 import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
@@ -101,6 +102,7 @@ export const TreasuryAndNftsTab = () => {
     <StatelessTreasuryAndNftsTab<TokenCardInfo, LazyNftCardInfo>
       ButtonLink={ButtonLink}
       FiatDepositModal={DaoFiatDepositModal}
+      IconButtonLink={IconButtonLink}
       NftCard={LazyNftCard}
       TokenCard={DaoTokenCard}
       TokenLine={DaoTokenLine}

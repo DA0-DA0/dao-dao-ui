@@ -82,6 +82,6 @@ export const NftsTab = <N extends object>({
       )}
     </>
   ) : (
-    <NoContent Icon={Image} body={t('info.noNftsYet')} />
+    <NoContent Icon={Image} body={t('info.noNftsFound')} />
   )
 }

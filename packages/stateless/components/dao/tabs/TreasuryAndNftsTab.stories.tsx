@@ -1,11 +1,15 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { DaoFiatDepositModal, TreasuryHistoryGraph } from '@dao-dao/stateful'
+import {
+  ButtonLink,
+  DaoFiatDepositModal,
+  IconButtonLink,
+  TreasuryHistoryGraph,
+} from '@dao-dao/stateful'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import { DaoPageWrapperDecorator } from '@dao-dao/storybook/decorators'
 import { TokenCardProps } from '@dao-dao/types'
 
-import { ButtonLink } from '../../buttons'
 import { NftCard, NftCardProps } from '../../NftCard'
 import { makeProps as makeNftCardProps } from '../../NftCard.stories'
 import { TokenCard } from '../../token/TokenCard'
@@ -54,6 +58,7 @@ Default.args = {
   FiatDepositModal: DaoFiatDepositModal,
   TreasuryHistoryGraph,
   ButtonLink,
+  IconButtonLink,
   configureRebalancerHref: '#',
 }
 
