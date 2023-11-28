@@ -168,6 +168,7 @@ export const WalletBalances = <
                     ? tokens
                     : {
                         loading: false,
+                        errored: false,
                         updating: tokens.updating,
                         data: tokens.data.filter(({ owner }) =>
                           areAccountsEqual(owner, account)

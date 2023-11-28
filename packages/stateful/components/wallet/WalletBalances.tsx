@@ -27,6 +27,7 @@ import {
   walletTokenCardInfosSelector,
 } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
+import { IconButtonLink } from '../IconButtonLink'
 import { TreasuryHistoryGraph } from '../TreasuryHistoryGraph'
 import { WalletTokenLine } from './WalletTokenLine'
 import { WalletTokenLineReadonly } from './WalletTokenLineReadonly'
@@ -149,6 +150,7 @@ export const WalletBalances = ({
   return (
     <StatelessWalletBalances
       ButtonLink={ButtonLink}
+      IconButtonLink={IconButtonLink}
       NftCard={NftCard}
       TokenLine={editable ? WalletTokenLine : WalletTokenLineReadonly}
       TreasuryHistoryGraph={TreasuryHistoryGraph}

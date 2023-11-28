@@ -21,5 +21,5 @@ export type WalletBalancesProps<
   TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
 } & Pick<
   ValenceAccountTreasuryProps<T>,
-  'ButtonLink' | 'configureRebalancerHref'
+  'ButtonLink' | 'IconButtonLink' | 'configureRebalancerHref'
 >

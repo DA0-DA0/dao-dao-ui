@@ -2,7 +2,7 @@ import { ComponentType, useState } from 'react'
 
 import {
   AccountType,
-  DaoChainTreasury,
+  DaoAccountTreasury,
   DaoFiatDepositModalProps,
   LoadingNfts,
   LoadingTokens,
@@ -10,14 +10,15 @@ import {
   TokenType,
   TreasuryHistoryGraphProps,
 } from '@dao-dao/types'
-import { getNativeTokenForChainId } from '@dao-dao/utils'
+import { areAccountsEqual, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { useDaoInfoContext, useSupportedChainContext } from '../../../hooks'
 import { Loader } from '../../logo/Loader'
+import { TooltipInfoIcon } from '../../tooltip'
 import {
-  DaoChainTreasuryAndNfts,
-  DaoChainTreasuryAndNftsProps,
-} from '../DaoChainTreasuryAndNfts'
+  DaoAccountTreasuryAndNfts,
+  DaoAccountTreasuryAndNftsProps,
+} from '../DaoAccountTreasuryAndNfts'
 
 export type TreasuryAndNftsTabProps<
   T extends TokenCardInfo,
@@ -26,10 +27,11 @@ export type TreasuryAndNftsTabProps<
   connected: boolean
   tokens: LoadingTokens<T>
   nfts: LoadingNfts<N & { key: string }>
+  createCrossChainAccountPrefillHref: string
   FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
   TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
 } & Omit<
-  DaoChainTreasuryAndNftsProps<T, N>,
+  DaoAccountTreasuryAndNftsProps<T, N>,
   'treasury' | 'setDepositFiatChainId'
 >
 
@@ -38,75 +40,72 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
   tokens,
   nfts,
   FiatDepositModal,
-  createCrossChainAccountPrefillHref,
   TreasuryHistoryGraph,
   ...props
 }: TreasuryAndNftsTabProps<T, N>) => {
   const {
     chain: { chain_id: currentChainId },
-    config: { polytone = {} },
   } = useSupportedChainContext()
-  const {
-    chainId: daoChainId,
-    coreAddress,
-    accounts: allAccounts,
-  } = useDaoInfoContext()
+  const { chainId: daoChainId, coreAddress, accounts } = useDaoInfoContext()
 
   // Tokens and NFTs on the various Polytone-supported chains.
-  const treasuries = [currentChainId, ...Object.keys(polytone)].map(
-    (chainId): DaoChainTreasury<T, N> => {
-      const chainTokens = tokens[chainId]
-      const chainNfts = nfts[chainId]
+  const treasuries = accounts.map((account): DaoAccountTreasury<T, N> => {
+    const chainTokens = tokens[account.chainId]
+    // NFTs are only loaded for main account on a chain.
+    const chainNfts =
+      account.type === AccountType.Native ||
+      account.type === AccountType.Polytone
+        ? nfts[account.chainId]
+        : undefined
 
-      return {
-        chainId,
-        accounts: allAccounts.filter((a) => a.chainId === chainId),
-        tokens: !chainTokens
-          ? { loading: false, data: [] }
-          : chainTokens.loading || chainTokens.errored
-          ? { loading: true }
-          : {
-              loading: false,
-              updating: chainTokens.updating,
-              data: chainTokens.data
-                .filter(({ token }) => token.chainId === chainId)
-                // Sort governance token first, then native currency, then by
-                // balance.
-                .sort((a, b) => {
-                  const aValue = a.isGovernanceToken
-                    ? -2
-                    : a.token.type === TokenType.Native &&
-                      a.token.denomOrAddress ===
-                        getNativeTokenForChainId(chainId).denomOrAddress
-                    ? -1
-                    : a.lazyInfo.loading
-                    ? a.unstakedBalance
-                    : a.lazyInfo.data.totalBalance
-                  const bValue = b.isGovernanceToken
-                    ? -2
-                    : b.token.type === TokenType.Native &&
-                      b.token.denomOrAddress ===
-                        getNativeTokenForChainId(chainId).denomOrAddress
-                    ? -1
-                    : b.lazyInfo.loading
-                    ? b.unstakedBalance
-                    : b.lazyInfo.data.totalBalance
+    return {
+      account,
+      tokens: !chainTokens
+        ? { loading: false, errored: false, data: [] }
+        : chainTokens.loading || chainTokens.errored
+        ? chainTokens
+        : {
+            loading: false,
+            errored: false,
+            updating: chainTokens.updating,
+            data: chainTokens.data
+              .filter(({ owner }) => areAccountsEqual(owner, account))
+              // Sort governance token first, then native currency, then by
+              // balance.
+              .sort((a, b) => {
+                const aValue = a.isGovernanceToken
+                  ? -2
+                  : a.token.type === TokenType.Native &&
+                    a.token.denomOrAddress ===
+                      getNativeTokenForChainId(account.chainId).denomOrAddress
+                  ? -1
+                  : a.lazyInfo.loading
+                  ? a.unstakedBalance
+                  : a.lazyInfo.data.totalBalance
+                const bValue = b.isGovernanceToken
+                  ? -2
+                  : b.token.type === TokenType.Native &&
+                    b.token.denomOrAddress ===
+                      getNativeTokenForChainId(account.chainId).denomOrAddress
+                  ? -1
+                  : b.lazyInfo.loading
+                  ? b.unstakedBalance
+                  : b.lazyInfo.data.totalBalance
 
-                  // Put smaller value first if either is negative (prioritized
-                  // token), otherwise sort balances descending.
-                  return aValue < 0 || bValue < 0
-                    ? aValue - bValue
-                    : bValue - aValue
-                }),
-            },
-        nfts: !chainNfts
-          ? { loading: false, data: [] }
-          : chainNfts.loading || chainNfts.errored
-          ? { loading: true }
-          : chainNfts,
-      }
+                // Put smaller value first if either is negative (prioritized
+                // token), otherwise sort balances descending.
+                return aValue < 0 || bValue < 0
+                  ? aValue - bValue
+                  : bValue - aValue
+              }),
+          },
+      nfts: !chainNfts
+        ? { loading: false, errored: false, data: [] }
+        : chainNfts.loading || chainNfts.errored
+        ? chainNfts
+        : chainNfts,
     }
-  )
+  })
 
   const [depositFiatChainId, setDepositFiatChainId] = useState<
     string | undefined
@@ -114,11 +113,25 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
 
   return (
     <>
-      <TreasuryHistoryGraph
-        address={coreAddress}
-        chainId={daoChainId}
-        className="mb-8 mt-4 max-h-[20rem] px-8"
-      />
+      <div className="mb-8 mt-4 flex flex-col gap-4 rounded-md bg-background-tertiary p-6">
+        <div className="flex flex-row items-center justify-center gap-1">
+          <p className="title-text">Treasury History</p>
+
+          <TooltipInfoIcon
+            size="sm"
+            title={
+              // TODO(rebalancer): Add description.
+              'This graph shows the historical value of the treasury across all chains.'
+            }
+          />
+        </div>
+
+        <TreasuryHistoryGraph
+          address={coreAddress}
+          chainId={daoChainId}
+          className="max-h-[20rem]"
+        />
+      </div>
 
       <div className="mb-9 mt-6">
         {
@@ -130,17 +143,13 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
           ) : (
             <div className="flex flex-col gap-8">
               {treasuries.map((treasury) => (
-                <DaoChainTreasuryAndNfts
-                  key={treasury.chainId}
+                <DaoAccountTreasuryAndNfts
+                  key={treasury.account.address}
                   TreasuryHistoryGraph={TreasuryHistoryGraph}
                   connected={connected}
                   setDepositFiatChainId={setDepositFiatChainId}
                   treasury={treasury}
                   {...props}
-                  createCrossChainAccountPrefillHref={createCrossChainAccountPrefillHref.replace(
-                    'CHAIN_ID',
-                    treasury.chainId
-                  )}
                 />
               ))}
             </div>

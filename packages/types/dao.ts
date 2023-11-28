@@ -14,7 +14,11 @@ import {
 
 import { Account } from './account'
 import { SupportedChainConfig } from './chain'
-import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './components'
+import {
+  DaoCardProps,
+  LoadingDataWithError,
+  SuspenseLoaderProps,
+} from './components'
 import {
   ActiveThreshold,
   DepositRefundPolicy,
@@ -314,11 +318,10 @@ export type DaoWebSocketChannelInfo = {
   coreAddress: string
 }
 
-export type DaoChainTreasury<T extends TokenCardInfo, N extends object> = {
-  chainId: string
-  accounts: Account[]
-  tokens: LoadingData<T[]>
-  nfts: LoadingData<(N & { key: string })[]>
+export type DaoAccountTreasury<T extends TokenCardInfo, N extends object> = {
+  account: Account
+  tokens: LoadingDataWithError<T[]>
+  nfts: LoadingDataWithError<(N & { key: string })[]>
 }
 
 export type DaoApp = {

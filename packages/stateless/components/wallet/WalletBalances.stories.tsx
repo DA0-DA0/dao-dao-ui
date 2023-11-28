@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { WalletTokenLine } from '@dao-dao/stateful'
+import { ButtonLink, IconButtonLink, WalletTokenLine } from '@dao-dao/stateful'
 import { TokenCardProps } from '@dao-dao/types'
 
 import { NftCard, NftCardProps } from '../NftCard'
@@ -40,6 +40,8 @@ Default.args = {
     ],
   },
   NftCard,
+  ButtonLink,
+  IconButtonLink,
 }
 
 export const Loading = Template.bind({})
@@ -50,4 +52,6 @@ Loading.args = {
   TokenLine: WalletTokenLine,
   nfts: { loading: true },
   NftCard,
+  ButtonLink,
+  IconButtonLink,
 }
