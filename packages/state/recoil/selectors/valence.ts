@@ -5,7 +5,6 @@ import {
   GenericToken,
   TokenType,
   ValenceAccount,
-  ValenceAccountConfig,
   WithChainId,
 } from '@dao-dao/types'
 import { getSupportedChainConfig } from '@dao-dao/utils'
@@ -23,9 +22,6 @@ export const valenceAccountsSelector = selectorFamily<
   get:
     ({ address, chainId }) =>
     async ({ get }) => {
-      const rebalancerAddress =
-        getSupportedChainConfig(chainId)?.valence?.rebalancer.address
-
       // Get valence accounts from indexer.
       const valenceAccountAddresses = get(
         queryWalletIndexerSelector({
@@ -39,34 +35,52 @@ export const valenceAccountsSelector = selectorFamily<
         return []
       }
 
-      const rebalancerConfigs = rebalancerAddress
+      return get(
+        waitForAll(
+          valenceAccountAddresses.map((address) =>
+            valenceAccountSelector({
+              chainId,
+              address,
+            })
+          )
+        )
+      )
+    },
+})
+
+// Retrieve the valence account config for this valence account.
+export const valenceAccountSelector = selectorFamily<
+  ValenceAccount,
+  WithChainId<{ address: string }>
+>({
+  key: 'valenceAccount',
+  get:
+    ({ address, chainId }) =>
+    async ({ get }) => {
+      const rebalancerAddress =
+        getSupportedChainConfig(chainId)?.valence?.rebalancer.address
+
+      const rebalancerConfig = rebalancerAddress
         ? get(
-            waitForAllSettled(
-              valenceAccountAddresses.map((addr) =>
-                // This will error when no rebalancer is configured.
-                ValenceServiceRebalancerSelectors.getConfigSelector({
-                  contractAddress: rebalancerAddress,
-                  chainId,
-                  params: [
-                    {
-                      addr,
-                    },
-                  ],
-                })
-              )
-            )
+            waitForAllSettled([
+              // This will error when no rebalancer is configured.
+              ValenceServiceRebalancerSelectors.getConfigSelector({
+                contractAddress: rebalancerAddress,
+                chainId,
+                params: [
+                  {
+                    addr: address,
+                  },
+                ],
+              }),
+            ])
           ).map((loadable) =>
             loadable.state === 'hasValue' ? loadable.contents : undefined
-          )
-        : []
+          )[0]
+        : undefined
 
-      const uniqueDenoms = [
-        ...new Set(
-          rebalancerConfigs.flatMap(
-            (config) => config?.targets.map(({ denom }) => denom) || []
-          )
-        ),
-      ]
+      const uniqueDenoms =
+        rebalancerConfig?.targets.map(({ denom }) => denom) || []
       // Map token denom to token.
       const tokenMap = get(
         waitForAll(
@@ -86,35 +100,27 @@ export const valenceAccountsSelector = selectorFamily<
         {} as Record<string, GenericToken>
       )
 
-      const accounts = valenceAccountAddresses.map(
-        (address, index): ValenceAccount => {
-          const rebalancerConfig = rebalancerConfigs?.[index]
+      const account: ValenceAccount = {
+        type: AccountType.Valence,
+        chainId,
+        address,
+        config: {
+          rebalancer: rebalancerConfig && {
+            config: rebalancerConfig,
+            targets: rebalancerConfig.targets.map((target) => ({
+              source: tokenMap[target.denom].source,
+              // TODO(rebalancer): Get targets over time.
+              targets: [
+                {
+                  timestamp: 0,
+                  ...target,
+                },
+              ],
+            })),
+          },
+        },
+      }
 
-          const config: ValenceAccountConfig = {
-            rebalancer: rebalancerConfig && {
-              config: rebalancerConfig,
-              targets: rebalancerConfig.targets.map((target) => ({
-                source: tokenMap[target.denom].source,
-                // TODO(rebalancer): Get targets over time.
-                targets: [
-                  {
-                    timestamp: 0,
-                    ...target,
-                  },
-                ],
-              })),
-            },
-          }
-
-          return {
-            type: AccountType.Valence,
-            chainId,
-            address,
-            config,
-          }
-        }
-      )
-
-      return accounts
+      return account
     },
 })

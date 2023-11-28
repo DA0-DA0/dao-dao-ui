@@ -308,7 +308,7 @@ export const treasuryValueHistorySelector = selectorFamily<
         ),
       ]
         .map((timestamp) => new Date(timestamp))
-        .sort()
+        .sort((a, b) => a.getTime() - b.getTime())
         // Remove last timestamp since we replace it with current balance.
         .slice(0, -1)
 
@@ -427,6 +427,10 @@ export const treasuryValueHistorySelector = selectorFamily<
               null as bigint | null
             )
 
+            if (totalBalance === null) {
+              return null
+            }
+
             // Find the first price after this timestamp.
             let firstPriceAfterIndex = historicalUsdPrices.findIndex(
               (historical) => historical.timestamp > timestamp
@@ -471,13 +475,13 @@ export const treasuryValueHistorySelector = selectorFamily<
                 : priceAfter
             ).amount
 
-            return totalBalance === null
-              ? null
-              : usdPrice *
-                  convertMicroDenomToDenomWithDecimals(
-                    totalBalance.toString(),
-                    token.decimals
-                  )
+            return (
+              usdPrice *
+              convertMicroDenomToDenomWithDecimals(
+                totalBalance.toString(),
+                token.decimals
+              )
+            )
           })
 
           // Sum up current balances.
