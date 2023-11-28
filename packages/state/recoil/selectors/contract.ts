@@ -227,3 +227,45 @@ export const isDaoSelector = selectorFamily<
         })
       ),
 })
+
+export const isPolytoneProxySelector = selectorFamily<
+  boolean,
+  WithChainId<{ address: string }>
+>({
+  key: 'isPolytoneProxy',
+  get:
+    ({ address, chainId }) =>
+    ({ get }) =>
+      isValidContractAddress(
+        address,
+        getChainForChainId(chainId).bech32_prefix
+      ) &&
+      get(
+        isContractSelector({
+          contractAddress: address,
+          chainId,
+          name: 'polytone-proxy',
+        })
+      ),
+})
+
+export const isValenceAccountSelector = selectorFamily<
+  boolean,
+  WithChainId<{ address: string }>
+>({
+  key: 'isValenceAccount',
+  get:
+    ({ address, chainId }) =>
+    ({ get }) =>
+      isValidContractAddress(
+        address,
+        getChainForChainId(chainId).bech32_prefix
+      ) &&
+      get(
+        isContractSelector({
+          contractAddress: address,
+          chainId,
+          name: 'valence-account',
+        })
+      ),
+})

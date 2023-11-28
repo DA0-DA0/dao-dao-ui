@@ -8,13 +8,17 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 
-import { isDaoSelector } from './contract'
+import {
+  isDaoSelector,
+  isPolytoneProxySelector,
+  isValenceAccountSelector,
+} from './contract'
 import { DaoCoreV2Selectors } from './contracts'
 import {
   genericTokenBalancesSelector,
   genericTokenDelegatedBalanceSelector,
 } from './token'
-import { valenceAccountsSelector } from './valence'
+import { valenceAccountSelector, valenceAccountsSelector } from './valence'
 
 // Get accounts controlled by this address, including its native chain, all
 // polytone proxies, and all valence accounts.
@@ -26,13 +30,24 @@ export const accountsSelector = selectorFamily<
   get:
     ({ chainId, address }) =>
     ({ get }) => {
-      const isDao = get(
-        isDaoSelector({
-          chainId,
-          address,
-        })
+      const [isDao, isPolytoneProxy, isValenceAccount] = get(
+        waitForAll([
+          isDaoSelector({
+            chainId,
+            address,
+          }),
+          isPolytoneProxySelector({
+            chainId,
+            address,
+          }),
+          isValenceAccountSelector({
+            chainId,
+            address,
+          }),
+        ])
       )
 
+      // If this is a DAO, get its polytone proxies.
       const polytoneProxies = isDao
         ? Object.entries(
             get(
@@ -44,13 +59,23 @@ export const accountsSelector = selectorFamily<
           )
         : []
 
+      const mainAccount: Account = isValenceAccount
+        ? // If this is a valence account, get its config.
+          get(
+            valenceAccountSelector({
+              chainId,
+              address,
+            })
+          )
+        : {
+            chainId,
+            address,
+            type: isPolytoneProxy ? AccountType.Polytone : AccountType.Native,
+          }
+
       const allAccounts: Account[] = [
-        // Current chain.
-        {
-          chainId,
-          address,
-          type: AccountType.Native,
-        },
+        // Main account.
+        mainAccount,
         // Polytone.
         ...polytoneProxies.map(
           ([chainId, address]): Account => ({
@@ -61,15 +86,17 @@ export const accountsSelector = selectorFamily<
         ),
       ]
 
-      // Get valence accounts on each potential chain.
+      // Get valence accounts controlled by all non-valence accounts.
       const valenceAccounts = get(
         waitForAll(
-          allAccounts.map(({ chainId, address }) =>
-            valenceAccountsSelector({
-              address,
-              chainId,
-            })
-          )
+          allAccounts
+            .filter(({ type }) => type !== AccountType.Valence)
+            .map(({ chainId, address }) =>
+              valenceAccountsSelector({
+                address,
+                chainId,
+              })
+            )
         )
       ).flat()
 
