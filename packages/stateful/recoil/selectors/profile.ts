@@ -17,6 +17,7 @@ import {
   STARGAZE_NAMES_CONTRACT,
   getChainForChainId,
   getFallbackImage,
+  objectMatchesStructure,
   transformBech32Address,
 } from '@dao-dao/utils'
 
@@ -92,6 +93,56 @@ export const stargazeNameSelector = selectorFamily<string | undefined, string>({
     },
 })
 
+// Get image for address from Stargaze Names.
+export const stargazeNameImageForAddressSelector = selectorFamily<
+  string | undefined,
+  string
+>({
+  key: 'stargazeNameImageForAddress',
+  get:
+    (walletAddress) =>
+    async ({ get }) => {
+      // Get name associated with address.
+      const name = get(stargazeNameSelector(walletAddress))
+      if (!name) {
+        return
+      }
+
+      const chainId = MAINNET
+        ? ChainId.StargazeMainnet
+        : ChainId.StargazeTestnet
+      const client = get(cosmWasmClientForChainSelector(chainId))
+
+      // Get NFT associated with name.
+      let response
+      try {
+        response = await client.queryContractSmart(STARGAZE_NAMES_CONTRACT, {
+          image_n_f_t: { name },
+        })
+      } catch {
+        return
+      }
+
+      // If NFT exists, get image associated with NFT.
+      if (
+        objectMatchesStructure(response, {
+          collection: {},
+          token_id: {},
+        })
+      ) {
+        const { imageUrl } = get(
+          nftCardInfoSelector({
+            chainId,
+            collection: response.collection,
+            tokenId: response.token_id,
+          })
+        )
+
+        return imageUrl
+      }
+    },
+})
+
 export const makeDefaultWalletProfileData = (
   address: string,
   loading = false
@@ -134,12 +185,27 @@ export const walletProfileDataSelector = selectorFamily<
         profile.nft = pfpkProfile.nft
       }
 
+      // Load Stargaze name as backup if no PFPK set.
+      if (!profile.name) {
+        const stargazeNameLoadable = get(noWait(stargazeNameSelector(address)))
+        if (
+          stargazeNameLoadable.state === 'hasValue' &&
+          stargazeNameLoadable.contents
+        ) {
+          profile.name =
+            stargazeNameLoadable.contents +
+            '.' +
+            getChainForChainId(chainId).bech32_prefix
+          profile.nameSource = 'stargaze'
+        }
+      }
+
       const backupImageUrl = getFallbackImage(address)
 
       // Set `imageUrl` to PFPK image, defaulting to fallback image.
       profile.imageUrl = pfpkProfile?.nft?.imageUrl || backupImageUrl
 
-      // If NFT present from PFPK, get image from token.
+      // If NFT present from PFPK, get image from token once loaded.
       if (pfpkProfile?.nft) {
         // Don't wait for NFT info to load. When it loads, it will update.
         const nftInfoLoadable = get(
@@ -159,20 +225,17 @@ export const walletProfileDataSelector = selectorFamily<
         ) {
           profile.imageUrl = nftInfoLoadable.contents.imageUrl
         }
-      }
 
-      // Load Stargaze name as backup if no PFPK set.
-      if (!profile.name) {
-        const stargazeNameLoadable = get(noWait(stargazeNameSelector(address)))
+        // Load Stargaze name image if no PFPK.
+      } else if (profile.nameSource === 'stargaze') {
+        const stargazeNameImageLoadable = get(
+          noWait(stargazeNameImageForAddressSelector(address))
+        )
         if (
-          stargazeNameLoadable.state === 'hasValue' &&
-          stargazeNameLoadable.contents
+          stargazeNameImageLoadable.state === 'hasValue' &&
+          stargazeNameImageLoadable.contents
         ) {
-          profile.name =
-            stargazeNameLoadable.contents +
-            '.' +
-            getChainForChainId(chainId).bech32_prefix
-          profile.nameSource = 'stargaze'
+          profile.imageUrl = stargazeNameImageLoadable.contents
         }
       }
 
