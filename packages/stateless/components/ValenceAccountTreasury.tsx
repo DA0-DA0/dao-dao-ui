@@ -31,6 +31,7 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
       serializeTokenSource(source)
     ) || []
 
+  // Maps serialized token source to color.
   const [tokenSourceColorMap, setTokenSourceColorMap] = useState<
     Record<string, string>
   >({})

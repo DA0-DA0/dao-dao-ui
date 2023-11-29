@@ -14,6 +14,7 @@ import {
   getChainForChainId,
   getDisplayNameForChainId,
   getSupportedChainConfig,
+  serializeTokenSource,
 } from '@dao-dao/utils'
 
 import { Button } from '../buttons'
@@ -35,6 +36,8 @@ export type DaoAccountTreasuryAndNftsProps<
   treasury: DaoAccountTreasury<T, N>
   connected: boolean
   isMember: boolean
+  // Maps serialized token source to color.
+  tokenSourceColorMap: Record<string, string>
   addCollectionHref?: string
   setDepositFiatChainId: (chainId: string | undefined) => void
   TokenCard: ComponentType<T>
@@ -55,6 +58,7 @@ export const DaoAccountTreasuryAndNfts = <
   treasury: { account, tokens, nfts },
   connected,
   isMember,
+  tokenSourceColorMap,
   addCollectionHref,
   setDepositFiatChainId,
   TokenCard,
@@ -161,7 +165,11 @@ export const DaoAccountTreasuryAndNfts = <
           tokens.data.length > 0 && (
             <GridCardContainer cardType="wide">
               {tokens.data.map((props, index) => (
-                <TokenCard {...props} key={index} />
+                <TokenCard
+                  {...props}
+                  key={index}
+                  color={tokenSourceColorMap[serializeTokenSource(props.token)]}
+                />
               ))}
             </GridCardContainer>
           )
