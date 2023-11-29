@@ -85,7 +85,7 @@ export const nftCardInfoFromStargazeIndexerNft = (
     href: `${STARGAZE_URL_BASE}/media/${token.collection.contractAddress}/${token.tokenId}`,
     name: 'Stargaze',
   },
-  imageUrl: token.media?.url || undefined,
+  imageUrl: token.media?.visualAssets?.lg?.url || token.media?.url || undefined,
   name: token.name || token.tokenId || 'Unknown NFT',
   description: token.description || undefined,
 })

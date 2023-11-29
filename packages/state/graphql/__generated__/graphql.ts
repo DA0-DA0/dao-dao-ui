@@ -20,20 +20,38 @@ export type Scalars = {
   UnixNanoseconds: { input: any; output: any; }
 };
 
+export type Activity = {
+  activityPrice?: Maybe<CoinAmount>;
+  date?: Maybe<Scalars['String']['output']>;
+  expires?: Maybe<Scalars['String']['output']>;
+  from?: Maybe<WalletAccount>;
+  id: Scalars['ID']['output'];
+  isValid?: Maybe<Scalars['Boolean']['output']>;
+  to?: Maybe<WalletAccount>;
+  txId?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<ActivityType>;
+};
+
 /** Enumerates different types of token-related activities. */
 export enum ActivityType {
+  AcceptCollectionOffer = 'ACCEPT_COLLECTION_OFFER',
   Airdrop = 'AIRDROP',
-  Bid = 'BID',
+  AuctionBid = 'AUCTION_BID',
+  AuctionSale = 'AUCTION_SALE',
   CancelAuction = 'CANCEL_AUCTION',
+  CollectionOffer = 'COLLECTION_OFFER',
   CreateAuction = 'CREATE_AUCTION',
-  List = 'LIST',
-  Mint = 'MINT',
-  Offer = 'OFFER',
+  NameMint = 'NAME_MINT',
+  NameOffer = 'NAME_OFFER',
   PriceChange = 'PRICE_CHANGE',
-  RejectOffer = 'REJECT_OFFER',
-  RemoveOffer = 'REMOVE_OFFER',
+  RejectTokenOffer = 'REJECT_TOKEN_OFFER',
+  RemoveCollectionOffer = 'REMOVE_COLLECTION_OFFER',
+  RemoveTokenOffer = 'REMOVE_TOKEN_OFFER',
   Sale = 'SALE',
-  Transfer = 'TRANSFER',
+  TokenList = 'TOKEN_LIST',
+  TokenMint = 'TOKEN_MINT',
+  TokenOffer = 'TOKEN_OFFER',
+  TokenTransfer = 'TOKEN_TRANSFER',
   Unlist = 'UNLIST'
 }
 
@@ -227,6 +245,7 @@ export type CoinAmount = {
 
 export type Collection = {
   __typename?: 'Collection';
+  activity?: Maybe<Array<CollectionActivity>>;
   categories?: Maybe<CollectionCategories>;
   contractAddress: Scalars['ID']['output'];
   contractUri?: Maybe<Scalars['String']['output']>;
@@ -254,6 +273,11 @@ export type Collection = {
 };
 
 
+export type CollectionActivityArgs = {
+  filterByActivity?: InputMaybe<Array<ActivityType>>;
+};
+
+
 export type CollectionHighestOfferArgs = {
   filterByAddr?: InputMaybe<Scalars['String']['input']>;
 };
@@ -266,6 +290,27 @@ export type CollectionMinterArgs = {
 
 export type CollectionOffersArgs = {
   filterByAddr?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type CollectionActivity = Activity & {
+  __typename?: 'CollectionActivity';
+  activityPrice?: Maybe<CoinAmount>;
+  collection?: Maybe<Collection>;
+  date?: Maybe<Scalars['String']['output']>;
+  expires?: Maybe<Scalars['String']['output']>;
+  from?: Maybe<WalletAccount>;
+  id: Scalars['ID']['output'];
+  isValid?: Maybe<Scalars['Boolean']['output']>;
+  to?: Maybe<WalletAccount>;
+  token?: Maybe<Token>;
+  txId?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<ActivityType>;
+};
+
+export type CollectionActivityResult = CursorPaginatedQuery & {
+  __typename?: 'CollectionActivityResult';
+  collectionActivity: Array<CollectionActivity>;
+  pageInfo?: Maybe<CursorPageInfo>;
 };
 
 export type CollectionCategories = {
@@ -861,6 +906,7 @@ export type Query = {
   /** Retrieve a list of badges owned by a specific wallet. */
   badges?: Maybe<TokensResult>;
   collection?: Maybe<Collection>;
+  collectionActivity?: Maybe<CollectionActivityResult>;
   collectionCategories?: Maybe<Array<CollectionCategoryInfo>>;
   collectionCounts?: Maybe<CollectionCountsResult>;
   collectionOffers?: Maybe<CollectionOffersResult>;
@@ -895,6 +941,13 @@ export type QueryBadgesArgs = {
 
 export type QueryCollectionArgs = {
   address: Scalars['String']['input'];
+};
+
+
+export type QueryCollectionActivityArgs = {
+  address: Scalars['String']['input'];
+  filterByActivity?: InputMaybe<Array<ActivityType>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -1547,7 +1600,7 @@ export type TokenQueryQueryVariables = Exact<{
 }>;
 
 
-export type TokenQueryQuery = { __typename?: 'Query', token?: { __typename?: 'Token', tokenId: string, name?: string | null, description?: string | null, collection: { __typename?: 'Collection', contractAddress: string, name?: string | null }, media?: { __typename?: 'Media', url?: string | null } | null } | null };
+export type TokenQueryQuery = { __typename?: 'Query', token?: { __typename?: 'Token', tokenId: string, name?: string | null, description?: string | null, collection: { __typename?: 'Collection', contractAddress: string, name?: string | null }, media?: { __typename?: 'Media', url?: string | null, visualAssets?: { __typename?: 'SizedVisualAssets', lg?: { __typename?: 'VisualAsset', url?: string | null } | null } | null } | null } | null };
 
 export type TokensForOwnerQueryQueryVariables = Exact<{
   ownerAddrOrName: Scalars['String']['input'];
@@ -1556,10 +1609,10 @@ export type TokensForOwnerQueryQueryVariables = Exact<{
 }>;
 
 
-export type TokensForOwnerQueryQuery = { __typename?: 'Query', tokens?: { __typename?: 'TokensResult', pageInfo?: { __typename?: 'PageInfo', limit?: number | null, offset?: number | null, total?: number | null } | null, tokens: Array<{ __typename?: 'Token', tokenId: string, name?: string | null, description?: string | null, collection: { __typename?: 'Collection', contractAddress: string, name?: string | null }, media?: { __typename?: 'Media', url?: string | null } | null }> } | null };
+export type TokensForOwnerQueryQuery = { __typename?: 'Query', tokens?: { __typename?: 'TokensResult', pageInfo?: { __typename?: 'PageInfo', limit?: number | null, offset?: number | null, total?: number | null } | null, tokens: Array<{ __typename?: 'Token', tokenId: string, name?: string | null, description?: string | null, collection: { __typename?: 'Collection', contractAddress: string, name?: string | null }, media?: { __typename?: 'Media', url?: string | null, visualAssets?: { __typename?: 'SizedVisualAssets', lg?: { __typename?: 'VisualAsset', url?: string | null } | null } | null } | null }> } | null };
 
 
 export const CollectionTokensQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"collectionTokensQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"collectionAddr"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tokens"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"collectionAddr"},"value":{"kind":"Variable","name":{"kind":"Name","value":"collectionAddr"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"offset"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tokenId"}}]}}]}}]}}]} as unknown as DocumentNode<CollectionTokensQueryQuery, CollectionTokensQueryQueryVariables>;
 export const CollectionTokensForOwnerQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"collectionTokensForOwnerQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"collectionAddr"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ownerAddrOrName"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tokens"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"collectionAddr"},"value":{"kind":"Variable","name":{"kind":"Name","value":"collectionAddr"}}},{"kind":"Argument","name":{"kind":"Name","value":"ownerAddrOrName"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ownerAddrOrName"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"offset"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tokenId"}}]}}]}}]}}]} as unknown as DocumentNode<CollectionTokensForOwnerQueryQuery, CollectionTokensForOwnerQueryQueryVariables>;
-export const TokenQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tokenQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"collectionAddr"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tokenId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"collectionAddr"},"value":{"kind":"Variable","name":{"kind":"Name","value":"collectionAddr"}}},{"kind":"Argument","name":{"kind":"Name","value":"tokenId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tokenId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tokenId"}},{"kind":"Field","name":{"kind":"Name","value":"collection"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"contractAddress"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"media"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<TokenQueryQuery, TokenQueryQueryVariables>;
-export const TokensForOwnerQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tokensForOwnerQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ownerAddrOrName"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tokens"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ownerAddrOrName"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ownerAddrOrName"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"offset"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tokenId"}},{"kind":"Field","name":{"kind":"Name","value":"collection"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"contractAddress"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"media"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]} as unknown as DocumentNode<TokensForOwnerQueryQuery, TokensForOwnerQueryQueryVariables>;
+export const TokenQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tokenQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"collectionAddr"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"tokenId"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"token"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"collectionAddr"},"value":{"kind":"Variable","name":{"kind":"Name","value":"collectionAddr"}}},{"kind":"Argument","name":{"kind":"Name","value":"tokenId"},"value":{"kind":"Variable","name":{"kind":"Name","value":"tokenId"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tokenId"}},{"kind":"Field","name":{"kind":"Name","value":"collection"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"contractAddress"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"media"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"visualAssets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lg"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]} as unknown as DocumentNode<TokenQueryQuery, TokenQueryQueryVariables>;
+export const TokensForOwnerQueryDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"tokensForOwnerQuery"},"variableDefinitions":[{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"ownerAddrOrName"}},"type":{"kind":"NonNullType","type":{"kind":"NamedType","name":{"kind":"Name","value":"String"}}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"limit"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}},{"kind":"VariableDefinition","variable":{"kind":"Variable","name":{"kind":"Name","value":"offset"}},"type":{"kind":"NamedType","name":{"kind":"Name","value":"Int"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tokens"},"arguments":[{"kind":"Argument","name":{"kind":"Name","value":"ownerAddrOrName"},"value":{"kind":"Variable","name":{"kind":"Name","value":"ownerAddrOrName"}}},{"kind":"Argument","name":{"kind":"Name","value":"limit"},"value":{"kind":"Variable","name":{"kind":"Name","value":"limit"}}},{"kind":"Argument","name":{"kind":"Name","value":"offset"},"value":{"kind":"Variable","name":{"kind":"Name","value":"offset"}}}],"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"pageInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"limit"}},{"kind":"Field","name":{"kind":"Name","value":"offset"}},{"kind":"Field","name":{"kind":"Name","value":"total"}}]}},{"kind":"Field","name":{"kind":"Name","value":"tokens"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"tokenId"}},{"kind":"Field","name":{"kind":"Name","value":"collection"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"contractAddress"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"media"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}},{"kind":"Field","name":{"kind":"Name","value":"visualAssets"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"lg"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"url"}}]}}]}}]}},{"kind":"Field","name":{"kind":"Name","value":"name"}},{"kind":"Field","name":{"kind":"Name","value":"description"}}]}}]}}]}}]} as unknown as DocumentNode<TokensForOwnerQueryQuery, TokensForOwnerQueryQueryVariables>;

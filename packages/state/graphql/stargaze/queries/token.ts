@@ -10,6 +10,11 @@ export const stargazeTokenQuery = gql(`
       }
       media {
         url
+        visualAssets {
+          lg {
+            url
+          }
+        }
       }
       name
       description
@@ -41,6 +46,11 @@ export const stargazeTokensForOwnerQuery = gql(`
         }
         media {
           url
+          visualAssets {
+            lg {
+              url
+            }
+          }
         }
         name
         description

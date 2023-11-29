@@ -54,13 +54,33 @@ export const useQuerySyncedState = <T = string | number>({
 
   // On value change, store in query parameter. If default, remove.
   useEffect(() => {
+    if (!pageInitialized.current) {
+      return
+    }
+
     if (value === defaultValue) {
+      if (!(param in router.query)) {
+        return
+      }
+
       delete router.query[param]
     } else {
-      router.query[param] =
+      const newValue =
         typeof value === 'number' ? BigInt(value).toString() : `${value}`
+      if (router.query[param] === newValue) {
+        return
+      }
+
+      router.query[param] = newValue
     }
-    router.push(router, undefined, { shallow: true })
+
+    router.push(
+      {
+        query: router.query,
+      },
+      undefined,
+      { shallow: true }
+    )
   }, [value, router, param, defaultValue])
 
   return [value, setValue]
