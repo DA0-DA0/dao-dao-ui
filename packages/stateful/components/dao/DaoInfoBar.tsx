@@ -1,6 +1,7 @@
 import {
   AccountBalanceOutlined,
   LockOpenOutlined,
+  ThumbDownOutlined,
   ThumbsUpDownOutlined,
 } from '@mui/icons-material'
 import uniq from 'lodash.uniq'
@@ -73,6 +74,13 @@ const InnerDaoInfoBar = () => {
     )
   )
 
+  // Get unique vetoers from all proposal modules.
+  const allVetoers = uniq(
+    proposalModules.flatMap(({ config }) =>
+      config?.veto ? [config.veto.vetoer] : []
+    )
+  )
+
   return (
     <StatelessDaoInfoBar
       items={[
@@ -130,6 +138,12 @@ const InnerDaoInfoBar = () => {
           label: t('title.approver'),
           tooltip: t('info.daoApproverExplanation'),
           value: <EntityDisplay address={approver} hideImage noCopy />,
+        })),
+        ...allVetoers.map((vetoer) => ({
+          Icon: ThumbDownOutlined,
+          label: t('title.vetoer'),
+          tooltip: t('info.daoVetoerExplanation'),
+          value: <EntityDisplay address={vetoer} hideImage noCopy />,
         })),
         // Voting module-specific items.
         ...votingModuleItems,

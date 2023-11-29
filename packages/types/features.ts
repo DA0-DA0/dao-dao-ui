@@ -72,9 +72,13 @@ export enum Feature {
    */
   Instantiate2,
   /**
-   * Approval flow was added.
+   * Approval was added.
    */
   Approval,
+  /**
+   * Veto was added.
+   */
+  Veto,
 }
 
 /**

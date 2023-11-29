@@ -47,6 +47,7 @@ export interface InstantiateMsg {
   only_members_execute: boolean
   pre_propose_info: PreProposeInfo
   voting_strategy: VotingStrategy
+  veto?: Veto | null
 }
 export type ExecuteMsg =
   | {
@@ -190,6 +191,7 @@ export interface Config {
   min_voting_period?: Duration | null
   only_members_execute: boolean
   voting_strategy: VotingStrategy
+  veto?: Veto | null
 }
 export interface VoteResponse {
   vote?: VoteInfo | null
@@ -230,6 +232,7 @@ export interface MultipleChoiceProposal {
   total_power: Uint128
   votes: MultipleChoiceVotes
   voting_strategy: VotingStrategy
+  veto?: Veto | null
 }
 export interface CheckedMultipleChoiceOption {
   description: string
@@ -256,4 +259,10 @@ export type ProposalCreationPolicyResponse =
     }
 export interface HooksResponse {
   hooks: string[]
+}
+export type Veto = {
+  delay: Duration
+  vetoer: string
+  early_execute: boolean
+  veto_before_passed: boolean
 }

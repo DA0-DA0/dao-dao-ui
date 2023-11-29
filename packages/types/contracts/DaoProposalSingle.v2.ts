@@ -20,6 +20,7 @@ export interface ConfigResponse {
   min_voting_period?: Duration | null
   only_members_execute: boolean
   threshold: Threshold
+  veto?: Veto | null
 }
 export type DaoResponse = string
 export type ExecuteMsg =
@@ -105,6 +106,7 @@ export interface InstantiateMsg {
   only_members_execute: boolean
   pre_propose_info: PreProposeInfo
   threshold: Threshold
+  veto?: Veto | null
 }
 export interface ListProposalsResponse {
   proposals: ProposalResponse[]
@@ -133,6 +135,7 @@ export interface SingleChoiceProposal {
   title: string
   total_power: Uint128
   votes: Votes
+  veto?: Veto | null
 }
 export type MigrateMsg =
   | {
@@ -223,4 +226,10 @@ export interface ReverseProposalsResponse {
 }
 export interface VoteHooksResponse {
   hooks: string[]
+}
+export type Veto = {
+  delay: Duration
+  vetoer: string
+  early_execute: boolean
+  veto_before_passed: boolean
 }

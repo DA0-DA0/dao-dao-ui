@@ -20,7 +20,11 @@ import {
 } from './components'
 import { CONTRACT_NAMES } from './constants'
 import { getInstantiateInfo } from './daoCreation'
-import { fetchPrePropose, makeGetProposalInfo } from './functions'
+import {
+  fetchPrePropose,
+  fetchVetoConfig,
+  makeGetProposalInfo,
+} from './functions'
 import {
   useCastVote,
   useLoadingProposalExecutionTxHash,
@@ -143,6 +147,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
 
   functions: {
     fetchPrePropose,
+    fetchVetoConfig,
   },
 
   daoCreation: {

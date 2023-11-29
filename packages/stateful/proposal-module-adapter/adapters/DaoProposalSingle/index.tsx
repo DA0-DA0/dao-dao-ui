@@ -25,7 +25,11 @@ import {
 } from './components'
 import { CONTRACT_NAMES } from './constants'
 import { ThresholdVotingConfigItem, getInstantiateInfo } from './daoCreation'
-import { fetchPrePropose, makeGetProposalInfo } from './functions'
+import {
+  fetchPrePropose,
+  fetchVetoConfig,
+  makeGetProposalInfo,
+} from './functions'
 import {
   useCastVote,
   useLoadingPreProposeApprovalProposal,
@@ -169,6 +173,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
 
   functions: {
     fetchPrePropose,
+    fetchVetoConfig,
   },
 
   daoCreation: {

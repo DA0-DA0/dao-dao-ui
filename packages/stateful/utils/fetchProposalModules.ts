@@ -6,12 +6,14 @@ import { queryIndexer } from '@dao-dao/state/indexer'
 import {
   ContractVersion,
   Feature,
-  FetchPreProposeFunction,
   ProposalModule,
+  ProposalModuleType,
 } from '@dao-dao/types'
 import { InfoResponse } from '@dao-dao/types/contracts/common'
 import { ProposalModuleWithInfo } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
+  DaoProposalMultipleAdapterId,
+  DaoProposalSingleAdapterId,
   cosmWasmClientRouter,
   getRpcForChainId,
   indexToProposalModulePrefix,
@@ -55,10 +57,23 @@ export const fetchProposalModules = async (
     activeProposalModules.map(async ({ info, address, prefix }, index) => {
       const version = parseContractVersion(info.version) ?? null
 
-      // Get pre-propose address if exists.
-      const fetchPrePropose = getFetchPrePropose(info.contract)
-      const prePropose =
-        (await fetchPrePropose?.(chainId, address, version)) ?? null
+      // Get adapter for this contract.
+      const adapter = matchAdapter(info.contract)
+
+      // Get proposal module type from adapter.
+      const type: ProposalModuleType =
+        adapter?.id === DaoProposalSingleAdapterId
+          ? ProposalModuleType.Single
+          : adapter?.id === DaoProposalMultipleAdapterId
+          ? ProposalModuleType.Multiple
+          : ProposalModuleType.Other
+
+      const [prePropose, veto] = await Promise.allSettled([
+        // Get pre-propose address if exists.
+        adapter?.functions.fetchPrePropose?.(chainId, address, version),
+        // Get veto config if exists.
+        adapter?.functions.fetchVetoConfig?.(chainId, address, version),
+      ])
 
       return {
         address,
@@ -70,24 +85,23 @@ export const fetchProposalModules = async (
           : indexToProposalModulePrefix(index),
         contractName: info.contract,
         version,
-        prePropose,
+        prePropose:
+          (prePropose.status === 'fulfilled' && prePropose.value) || null,
+        ...(type !== ProposalModuleType.Other
+          ? {
+              type,
+              config: {
+                veto: (veto.status === 'fulfilled' && veto.value) || null,
+              },
+            }
+          : {
+              type,
+            }),
       }
     })
   )
 
   return proposalModules
-}
-
-// Find adapter for contract name and get pre-propose fetch function.
-const getFetchPrePropose = (
-  proposalModuleContractName: string
-): FetchPreProposeFunction | undefined => {
-  const adapter = matchAdapter(proposalModuleContractName)
-  if (!adapter) {
-    return
-  }
-
-  return adapter.functions.fetchPrePropose
 }
 
 const LIMIT = 10

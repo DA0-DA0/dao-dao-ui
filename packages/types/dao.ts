@@ -21,6 +21,7 @@ import {
   ModuleInstantiateInfo,
 } from './contracts/common'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
+import { Veto } from './contracts/DaoProposalSingle.v2'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
 import { LoadingDataWithError } from './misc'
@@ -116,6 +117,31 @@ export type PreProposeModule = {
   address: string
 } & PreProposeModuleTypedConfig
 
+export enum ProposalModuleType {
+  Single = 'single',
+  Multiple = 'multiple',
+  Other = 'other',
+}
+
+export type ProposalModuleSingleConfig = {
+  veto: Veto | null
+}
+export type ProposalModuleMultipleConfig = ProposalModuleSingleConfig
+
+export type ProposalModuleTypedConfig =
+  | {
+      type: ProposalModuleType.Single
+      config: ProposalModuleSingleConfig
+    }
+  | {
+      type: ProposalModuleType.Multiple
+      config: ProposalModuleMultipleConfig
+    }
+  | {
+      type: ProposalModuleType.Other
+      config?: undefined
+    }
+
 export type ProposalModule = {
   contractName: string
   version: ContractVersion | null
@@ -123,7 +149,7 @@ export type ProposalModule = {
   prefix: string
   // If set, this uses a pre-propose module.
   prePropose: PreProposeModule | null
-}
+} & ProposalModuleTypedConfig
 
 export interface ProposalPrefill<FormData> {
   // Proposal module adapter ID

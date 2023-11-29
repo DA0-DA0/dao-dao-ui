@@ -8,6 +8,7 @@ import { LinkWrapperProps, SelfRelayExecuteModalProps } from './components'
 import { Expiration } from './contracts'
 import { CheckedDepositInfo, ProposalStatus } from './contracts/common'
 import { Proposal as DaoPreProposeApprovalProposal } from './contracts/DaoPreProposeApprovalSingle'
+import { Veto } from './contracts/DaoProposalSingle.v2'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,
@@ -113,6 +114,7 @@ export type ProposalModuleAdapter<
 
   functions: {
     fetchPrePropose?: FetchPreProposeFunction
+    fetchVetoConfig?: FetchVetoConfig
   }
 
   daoCreation: {
@@ -173,6 +175,12 @@ export type FetchPreProposeFunction = (
   proposalModuleAddress: string,
   version: ContractVersion | null
 ) => Promise<PreProposeModule | null>
+
+export type FetchVetoConfig = (
+  chainId: string,
+  proposalModuleAddress: string,
+  version: ContractVersion | null
+) => Promise<Veto | null>
 
 export type ReverseProposalInfosSelector = (data: {
   startBefore: number | undefined
