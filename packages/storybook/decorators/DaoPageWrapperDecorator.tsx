@@ -8,11 +8,13 @@ import {
   DaoInfo,
   DaoInfoSerializable,
 } from '@dao-dao/types'
+import { getSupportedFeatures } from '@dao-dao/utils'
 
 export const makeDaoInfo = (): DaoInfo => ({
   chainId: ChainId.JunoMainnet,
   coreAddress: 'junoDaoCoreAddress',
   coreVersion: ContractVersion.V2Alpha,
+  supportedFeatures: getSupportedFeatures(ContractVersion.V2Alpha),
   votingModuleAddress: 'votingModuleAddress',
   votingModuleContractName: 'crates.io:dao-voting-cw20-staked',
   proposalModules: [

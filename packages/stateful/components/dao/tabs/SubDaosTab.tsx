@@ -5,7 +5,7 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, ContractVersion } from '@dao-dao/types'
+import { ActionKey, Feature } from '@dao-dao/types'
 import { getDaoProposalSinglePrefill } from '@dao-dao/utils'
 
 import { useActionForKey } from '../../../actions'
@@ -22,10 +22,11 @@ export const SubDaosTab = () => {
   const { isMember = false } = useMembership(daoInfo)
 
   const subDaos = useCachedLoading(
-    daoInfo.coreVersion === ContractVersion.V1
-      ? // Only v2 DAOs have SubDAOs. Passing undefined here returns an infinite loading state, which is fine because it's never used.
-        undefined
-      : subDaoCardInfosSelector({ chainId, coreAddress: daoInfo.coreAddress }),
+    daoInfo.supportedFeatures[Feature.SubDaos]
+      ? subDaoCardInfosSelector({ chainId, coreAddress: daoInfo.coreAddress })
+      : // Passing undefined here returns an infinite loading state, which is
+        // fine because it's never used.
+        undefined,
     []
   )
 
@@ -37,7 +38,6 @@ export const SubDaosTab = () => {
       ButtonLink={ButtonLink}
       DaoCard={DaoCard}
       createSubDaoHref={getDaoPath(daoInfo.coreAddress, 'create')}
-      daoInfo={daoInfo}
       isMember={isMember}
       subDaos={subDaos}
       upgradeToV2Href={getDaoProposalPath(daoInfo.coreAddress, 'create', {

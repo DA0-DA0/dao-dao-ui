@@ -15,7 +15,11 @@ import {
 } from '@dao-dao/types'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { ExecuteMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
-import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  makeWasmMessage,
+  objectMatchesStructure,
+  versionGte,
+} from '@dao-dao/utils'
 
 import { CONTRACT_NAMES } from '../../../constants'
 import { configSelector } from '../../../contracts/DaoProposalSingle.v2.recoil'
@@ -126,8 +130,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
     address: proposalModuleAddress,
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
   ({ t, context, chain: { chain_id: chainId } }) => {
-    // Only v2.
-    if (version === ContractVersion.V1) {
+    if (!version || versionGte(version, ContractVersion.V2Alpha)) {
       return null
     }
 

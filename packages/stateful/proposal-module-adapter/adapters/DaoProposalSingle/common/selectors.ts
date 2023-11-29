@@ -10,6 +10,7 @@ import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
+  Feature,
   ProposalStatus,
   WithChainId,
 } from '@dao-dao/types'
@@ -17,6 +18,7 @@ import {
   CommonProposalListInfo,
   DepositInfoSelector,
 } from '@dao-dao/types/proposal-module-adapter'
+import { isFeatureSupportedByVersion } from '@dao-dao/utils'
 
 import { configSelector as configV1Selector } from '../contracts/CwProposalSingle.v1.recoil'
 import { configSelector as configPreProposeSelector } from '../contracts/DaoPreProposeSingle.recoil'
@@ -93,8 +95,10 @@ export const makeDepositInfoSelector: (
     ({ chainId, proposalModuleAddress, version, preProposeAddress }) =>
     ({ get }) => {
       let depositInfo: CheckedDepositInfo | undefined
-      //! V1
-      if (version === ContractVersion.V1) {
+      if (
+        !version ||
+        !isFeatureSupportedByVersion(Feature.PrePropose, version)
+      ) {
         const config = get(
           configV1Selector({
             contractAddress: proposalModuleAddress,
@@ -113,7 +117,6 @@ export const makeDepositInfoSelector: (
               : DepositRefundPolicy.OnlyPassed,
           }
         }
-        //! V2
       } else if (preProposeAddress) {
         const config = get(
           configPreProposeSelector({

@@ -8,7 +8,7 @@ import {
   ActionContextType,
   ActionKey,
   ActionMaker,
-  ContractVersion,
+  Feature,
   UseDecodedCosmosMsg,
   UseDefaults,
   UseTransformToCosmos,
@@ -63,10 +63,9 @@ export const makeManageSubDaosAction: ActionMaker<ManageSubDaosData> = ({
   address,
   context,
 }) => {
-  // v1 DAOS don't support SubDAOs.
   if (
     context.type !== ActionContextType.Dao ||
-    context.info.coreVersion === ContractVersion.V1
+    !context.info.supportedFeatures[Feature.SubDaos]
   ) {
     return null
   }

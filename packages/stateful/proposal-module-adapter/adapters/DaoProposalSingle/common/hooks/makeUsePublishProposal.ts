@@ -288,7 +288,7 @@ export const makeUsePublishProposal =
         }
 
         let response
-        //! V1
+        // V1 does not support pre-propose
         if (proposalModule.version === ContractVersion.V1) {
           response = await doProposeV1(
             proposalData,
@@ -296,7 +296,7 @@ export const makeUsePublishProposal =
             undefined,
             proposeFunds
           )
-          //! V2 supports pre-propose
+          // Every other version supports pre-propose.
         } else {
           response = proposalModule.preProposeAddress
             ? await doProposePrePropose(
