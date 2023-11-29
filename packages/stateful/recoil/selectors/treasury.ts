@@ -515,15 +515,11 @@ export const treasuryValueHistorySelector = selectorFamily<
         }[]
       )
 
-      // Sum up the values at each timestamp where no prices are null, in which
-      // case return null to indicate there is no data at this timestamp.
+      // Sum up the values at each timestamp, ignoring null values.
       let totalValues = timestamps.map((_, index) =>
         tokensWithValues.reduce(
-          (acc, { values }) =>
-            acc === null || values[index] === null
-              ? null
-              : acc + values[index]!,
-          0 as number | null
+          (acc, { values }) => acc + (values[index] || 0),
+          0
         )
       )
 
@@ -533,10 +529,13 @@ export const treasuryValueHistorySelector = selectorFamily<
         0
       )
 
-      // Remove timestamps at the front that have no data for any token.
-      let firstNonNullTimestamp = totalValues.findIndex(
-        (value) => value !== null
+      // Remove timestamps at the front that have no data for all tokens.
+
+      // Get first timestamp with a value.
+      let firstNonNullTimestamp = timestamps.findIndex((_, index) =>
+        tokensWithValues.some(({ values }) => values[index] !== null)
       )
+      if (!filter) console.log({ firstNonNullTimestamp })
       // If no non-null timestamps, remove all.
       if (firstNonNullTimestamp === -1) {
         firstNonNullTimestamp = totalValues.length
