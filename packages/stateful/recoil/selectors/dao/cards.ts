@@ -184,8 +184,7 @@ export const daoCardInfoSelector = selectorFamily<
                       chainId,
                     })
                   ).some(({ addr }) => addr === coreAddress)
-                : // V1 cannot have SubDAOs.
-                  false
+                : false
 
               parentDao = {
                 chainId,

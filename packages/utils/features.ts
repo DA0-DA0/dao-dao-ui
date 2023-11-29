@@ -59,4 +59,12 @@ export const getSupportedFeatures = (
 export const versionGte = (
   version: ContractVersion,
   gteThis: ContractVersion
-): boolean => semverGte(version, gteThis)
+): boolean => {
+  try {
+    return semverGte(version, gteThis)
+  } catch {
+    // If throws an error, one of the versions was invalid (likely not a
+    // version, like ContractVersion.Gov), so just return false.
+    return false
+  }
+}

@@ -65,7 +65,9 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
             chainId,
             coreAddress,
           })
-        : undefined,
+        : // Passing undefined here returns an infinite loading state, which is
+          // fine because it's never used.
+          undefined,
       []
     )
 
