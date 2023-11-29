@@ -1,10 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ProposalStatusEnum, ProposalStatus as Status } from '@dao-dao/types'
 import { formatDate, secondsToWdhms } from '@dao-dao/utils'
 
 import { LinkWrapper } from '../LinkWrapper'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
-import { ProposalStatus, ProposalStatusMap } from './ProposalStatus'
+import { ProposalStatus } from './ProposalStatus'
 import {
   ProposalWalletVote,
   ProposalWalletVoteProps,
@@ -26,7 +27,7 @@ const Template: ComponentStory<typeof ProposalLine> = (args) => (
 export const makeProps = (
   // 3 days.
   secondsFromNow = 3 * 24 * 60 * 60,
-  status: `${keyof typeof ProposalStatusMap}` = 'open',
+  status: Status = ProposalStatusEnum.Open,
   vote: Omit<keyof typeof ProposalWalletVoteStories, 'default'> = 'Pending'
 ): ProposalLineProps => ({
   href: '#',
@@ -42,12 +43,7 @@ export const makeProps = (
         ? secondsToWdhms(secondsFromNow, 1) + ' left'
         : formatDate(new Date(Date.now() - secondsFromNow * 1000)),
   },
-  Status: ({ dimmed }) => (
-    <ProposalStatus
-      dimmed={dimmed}
-      status={status as keyof typeof ProposalStatusMap}
-    />
-  ),
+  Status: ({ dimmed }) => <ProposalStatus dimmed={dimmed} status={status} />,
   vote: (
     <ProposalWalletVote
       {...(ProposalWalletVoteStories[

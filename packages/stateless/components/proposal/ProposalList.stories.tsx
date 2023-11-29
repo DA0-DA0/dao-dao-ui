@@ -1,5 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
+import { ProposalStatusEnum } from '@dao-dao/types'
+
 import {
   DiscordNotifierConfigureModal,
   DiscordNotifierConfigureModalProps,
@@ -31,7 +33,9 @@ Default.args = {
       ...makeProposalProps(
         undefined,
         // Pick one at random.
-        (['passed', 'rejected'] as const)[Math.floor(Math.random() * 2)],
+        [ProposalStatusEnum.Passed, ProposalStatusEnum.Rejected][
+          Math.floor(Math.random() * 2)
+        ],
         // Pick one at random.
         ['Yes', 'No', 'Abstain'][Math.floor(Math.random() * 3)]
       ),
