@@ -8,7 +8,7 @@ import {
   useCachedLoading,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
-import { LoadingData, ProposalStatus } from '@dao-dao/types'
+import { LoadingData, ProposalStatusEnum } from '@dao-dao/types'
 import { convertExpirationToDate, formatDate } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
@@ -82,7 +82,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     // the contract does not allow, so this is just a typecheck.
     expirationDate
       ? expirationDate.getTime() > Date.now()
-      : proposal.status === ProposalStatus.Open
+      : proposal.status === ProposalStatusEnum.Open
 
   const completionDate =
     typeof completedAt === 'string' && new Date(completedAt)

@@ -14,7 +14,7 @@ import {
   ContractVersion,
   DepositRefundPolicy,
   Feature,
-  ProposalStatus,
+  ProposalStatusEnum,
   WithChainId,
 } from '@dao-dao/types'
 import { Proposal as PreProposeApprovalSingleProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
@@ -79,7 +79,7 @@ export const reverseProposalInfosSelector: (
           id: `${proposalModulePrefix}${id}`,
           proposalNumber: id,
           timestamp: timestamps[index],
-          isOpen: status === ProposalStatus.Open,
+          isOpen: status === ProposalStatusEnum.Open,
         })
       )
 

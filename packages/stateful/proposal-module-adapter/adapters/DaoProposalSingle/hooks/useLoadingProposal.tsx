@@ -16,7 +16,7 @@ import {
   Feature,
   LoadingData,
   PreProposeModuleType,
-  ProposalStatus,
+  ProposalStatusEnum,
   ProposalTimestampInfo,
 } from '@dao-dao/types'
 import { Proposal as DaoPreProposeApprovalSingleProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
@@ -150,7 +150,8 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const approvedAnotherProposal =
     prePropose?.type === PreProposeModuleType.Approver &&
     !loadingProposalResponse.loading &&
-    loadingProposalResponse.data?.proposal.status === ProposalStatus.Executed
+    loadingProposalResponse.data?.proposal.status ===
+      ProposalStatusEnum.Executed
   const approvalDaoProposalModules = useCachedLoading(
     approvedAnotherProposal
       ? daoCoreProposalModulesSelector({
@@ -243,7 +244,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   )
 
   const votingOpen =
-    proposal.status === ProposalStatus.Open ||
+    proposal.status === ProposalStatusEnum.Open ||
     (!!version &&
       // Voting up until expiration on finished proposals may be supported.
       isFeatureSupportedByVersion(Feature.VoteUntilExpiration, version) &&

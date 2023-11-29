@@ -10,7 +10,7 @@ import {
   Binary,
   Coin,
   Empty,
-  ProposalStatus,
+  ProposalStatusEnum,
 } from '@dao-dao/types/contracts/common'
 import {
   Config,
@@ -145,7 +145,7 @@ export interface DaoPreProposeMultipleInterface
       newStatus,
       proposalId,
     }: {
-      newStatus: ProposalStatus
+      newStatus: ProposalStatusEnum
       proposalId: number
     },
     fee?: number | StdFee | 'auto',
@@ -304,7 +304,7 @@ export class DaoPreProposeMultipleClient
       newStatus,
       proposalId,
     }: {
-      newStatus: ProposalStatus
+      newStatus: ProposalStatusEnum
       proposalId: number
     },
     fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,

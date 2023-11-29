@@ -15,7 +15,7 @@ import {
 import {
   CommonProposalInfo,
   PreProposeModuleType,
-  ProposalStatus,
+  ProposalStatusEnum,
   SelfRelayExecuteModalProps,
 } from '@dao-dao/types'
 
@@ -98,7 +98,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         refreshProposalAndAll()
 
         // On execute, revalidate and refresh page.
-        if (status === ProposalStatus.Executed) {
+        if (status === ProposalStatusEnum.Executed) {
           // Manually revalidate DAO static props.
           await fetch(`/api/revalidate?d=${coreAddress}&p=${proposalInfo.id}`)
 
@@ -109,7 +109,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
           window.location.reload()
         }
         // On close, show success toast.
-        else if (status === ProposalStatus.Closed) {
+        else if (status === ProposalStatusEnum.Closed) {
           toast.success(t('success.proposalClosed'))
         }
       }
@@ -120,7 +120,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const onExecuteSuccess = useCallback(
     () =>
       onProposalUpdateFallback({
-        status: ProposalStatus.Executed,
+        status: ProposalStatusEnum.Executed,
         proposalId: proposalInfo.id,
       }),
     [onProposalUpdateFallback, proposalInfo.id]
@@ -130,7 +130,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const onCloseSuccess = useCallback(
     () =>
       onProposalUpdateFallback({
-        status: ProposalStatus.Closed,
+        status: ProposalStatusEnum.Closed,
         proposalId: proposalInfo.id,
       }),
     [onProposalUpdateFallback, proposalInfo.id]
@@ -242,7 +242,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         onSuccess={() =>
           onProposalUpdateFallback(
             {
-              status: ProposalStatus.Executed,
+              status: ProposalStatusEnum.Executed,
               proposalId: proposalInfo.id,
             },
             // Force call the fallback, and don't wait for a block to pass.

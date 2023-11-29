@@ -32,10 +32,14 @@ import {
   BaseProposalStatusAndInfoProps,
   CheckedDepositInfo,
   DepositRefundPolicy,
-  ProposalStatus,
+  ProposalStatusEnum,
 } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { formatPercentOf100, processError } from '@dao-dao/utils'
+import {
+  formatPercentOf100,
+  getProposalStatusKey,
+  processError,
+} from '@dao-dao/utils'
 
 import { EntityDisplay, SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
@@ -128,6 +132,8 @@ const InnerProposalStatusAndInfo = ({
   const loadingExecutionTxHash = useLoadingProposalExecutionTxHash()
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
 
+  const statusKey = getProposalStatusKey(proposal.status)
+
   const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
     {
       Icon: ({ className }) => (
@@ -155,7 +161,7 @@ const InnerProposalStatusAndInfo = ({
       Icon: RotateRightOutlined,
       label: t('title.status'),
       Value: (props) => (
-        <p {...props}>{t(`proposalStatusTitle.${proposal.status}`)}</p>
+        <p {...props}>{t(`proposalStatusTitle.${statusKey}`)}</p>
       ),
     },
     ...(proposal.allow_revoting
@@ -209,9 +215,10 @@ const InnerProposalStatusAndInfo = ({
         ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
       : []),
     ...(winningChoice &&
-    (proposal.status === ProposalStatus.Passed ||
-      proposal.status === ProposalStatus.Executed ||
-      proposal.status === ProposalStatus.ExecutionFailed)
+    (statusKey === ProposalStatusEnum.Passed ||
+      statusKey === ProposalStatusEnum.Executed ||
+      statusKey === ProposalStatusEnum.ExecutionFailed ||
+      statusKey === 'veto_timelock')
       ? ([
           {
             Icon: PollOutlined,
@@ -224,8 +231,9 @@ const InnerProposalStatusAndInfo = ({
       : []),
   ]
 
+  // TODO(veto): update status with veto info
   let status: string
-  if (proposal.status === ProposalStatus.Open) {
+  if (statusKey === ProposalStatusEnum.Open) {
     if (quorumReached) {
       if (isTie) {
         status = t('info.proposalStatus.willFailTiedVote')
@@ -247,7 +255,7 @@ const InnerProposalStatusAndInfo = ({
         extra:
           // Add sentence about closing to receive deposit back if it needs to
           // be closed and will refund.
-          proposal.status === ProposalStatus.Rejected &&
+          statusKey === ProposalStatusEnum.Rejected &&
           depositInfo?.refund_policy === DepositRefundPolicy.Always
             ? ` ${t('info.proposalDepositWillBeRefunded')}`
             : '',
@@ -333,7 +341,7 @@ const InnerProposalStatusAndInfo = ({
   // Refresh proposal and list of proposals (for list status) once voting ends.
   useEffect(() => {
     if (
-      proposal.status !== ProposalStatus.Open ||
+      statusKey !== ProposalStatusEnum.Open ||
       !timestampInfo?.expirationDate
     ) {
       return
@@ -356,7 +364,7 @@ const InnerProposalStatusAndInfo = ({
     return () => clearTimeout(timeout)
   }, [
     timestampInfo?.expirationDate,
-    proposal.status,
+    statusKey,
     refreshProposal,
     refreshProposalAndAll,
     awaitNextBlock,
@@ -366,7 +374,7 @@ const InnerProposalStatusAndInfo = ({
     <StatelessProposalStatusAndInfo
       {...props}
       action={
-        proposal.status === ProposalStatus.Passed &&
+        statusKey === ProposalStatusEnum.Passed &&
         // Show if anyone can execute OR if the wallet is a member, once
         // polytone messages that need relaying are done loading.
         (!config.only_members_execute || isMember) &&
@@ -379,7 +387,7 @@ const InnerProposalStatusAndInfo = ({
                 ? polytoneState.data.openPolytoneRelay
                 : onExecute,
             }
-          : proposal.status === ProposalStatus.Rejected
+          : statusKey === ProposalStatusEnum.Rejected
           ? {
               label: t('button.close'),
               Icon: CancelOutlined,
@@ -387,7 +395,7 @@ const InnerProposalStatusAndInfo = ({
               doAction: onClose,
             }
           : // If executed and has polytone messages that need relaying...
-          proposal.status === ProposalStatus.Executed &&
+          statusKey === ProposalStatusEnum.Executed &&
             !polytoneState.loading &&
             polytoneState.data.needsSelfRelay &&
             !loadingExecutionTxHash.loading &&
@@ -403,7 +411,7 @@ const InnerProposalStatusAndInfo = ({
       }
       footer={
         !polytoneState.loading &&
-        proposal.status === ProposalStatus.Executed &&
+        statusKey === ProposalStatusEnum.Executed &&
         polytoneState.data.hasPolytoneMessages && (
           <ProposalCrossChainRelayStatus state={polytoneState.data} />
         )
@@ -420,7 +428,7 @@ const InnerProposalStatusAndInfo = ({
               currentVote: loadingWalletVoteInfo.data.vote,
               onCastVote: castVote,
               options: voteOptions.data,
-              proposalOpen: proposal.status === ProposalStatus.Open,
+              proposalOpen: statusKey === ProposalStatusEnum.Open,
             }
           : undefined
       }

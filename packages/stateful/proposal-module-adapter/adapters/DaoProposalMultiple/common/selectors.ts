@@ -9,7 +9,7 @@ import { blockHeightTimestampSafeSelector } from '@dao-dao/state'
 import {
   CheckedDepositInfo,
   ContractVersion,
-  ProposalStatus,
+  ProposalStatusEnum,
   WithChainId,
 } from '@dao-dao/types'
 import {
@@ -71,7 +71,7 @@ export const reverseProposalInfosSelector: (
           id: `${proposalModulePrefix}${id}`,
           proposalNumber: id,
           timestamp: timestamps[index],
-          isOpen: status === ProposalStatus.Open,
+          isOpen: status === ProposalStatusEnum.Open,
         })
       )
 

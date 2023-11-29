@@ -1,4 +1,4 @@
-import { PreProposeModuleType, ProposalStatus } from '@dao-dao/types'
+import { PreProposeModuleType, ProposalStatusEnum } from '@dao-dao/types'
 
 import { SuspenseLoader } from '../../../../../components'
 import { useProposalModuleAdapterOptions } from '../../../../react'
@@ -30,7 +30,7 @@ export const ProposalVoteTally = () => {
       {!loadingProposal.loading && !loadingVotesInfo.loading && (
         <StatelessProposalVoteTally
           isPreProposeApproverProposal={isPreProposeApproverProposal}
-          open={loadingProposal.data.status === ProposalStatus.Open}
+          open={loadingProposal.data.status === ProposalStatusEnum.Open}
           votesInfo={loadingVotesInfo.data}
         />
       )}
