@@ -98,17 +98,14 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
           tokens.data.length > 0 && (
             <>
               {account.config.rebalancer && (
-                <div className="mb-4 flex flex-col gap-2 px-8">
+                <div className="mb-6 flex flex-col gap-2 px-8">
                   <div className="relative flex flex-row items-center justify-center gap-1">
+                    <p className="title-text">{t('title.rebalancer')}</p>
+
                     <TooltipInfoIcon
                       size="sm"
-                      title={
-                        // TODO(rebalancer): Add description.
-                        'The graph below shows the historical balances of only the rebalanced tokens, which are displayed directly underneath the graph.'
-                      }
+                      title={t('info.rebalancerGraphTooltip')}
                     />
-
-                    <p className="title-text">Rebalancer</p>
 
                     {!!configureRebalancerHref && (
                       <Tooltip title={t('title.configureRebalancer')}>
@@ -154,7 +151,7 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
                     )}
 
                     <p className="title-text mt-8 mb-4">
-                      Non-rebalanced tokens
+                      {t('title.nonRebalancedTokens')}
                     </p>
                   </>
                 )}

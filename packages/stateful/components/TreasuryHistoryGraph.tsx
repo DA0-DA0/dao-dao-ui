@@ -124,7 +124,10 @@ export const TreasuryHistoryGraph = ({
               token,
               order: 2,
               label:
-                '$' + transformIbcSymbol(token.symbol).tokenSymbol + ' Value',
+                '$' +
+                transformIbcSymbol(token.symbol).tokenSymbol +
+                ' ' +
+                t('title.value'),
               data: [...values, currentValue],
               borderColor: tokenColors[serializeTokenSource(token)],
               backgroundColor: tokenColors[serializeTokenSource(token)],
@@ -205,7 +208,10 @@ export const TreasuryHistoryGraph = ({
             token,
             order: 3,
             label:
-              '$' + transformIbcSymbol(token.symbol).tokenSymbol + ' Target',
+              '$' +
+              transformIbcSymbol(token.symbol).tokenSymbol +
+              ' ' +
+              t('title.target'),
             data,
             borderDash: [2.5, 2.5],
             borderColor: tokenColors[serializeTokenSource(token)],
@@ -242,7 +248,10 @@ export const TreasuryHistoryGraph = ({
       pointRadius:
         ('pointRadius' in data
           ? Number((data as any).pointRadius)
-          : undefined) ?? 1,
+          : undefined) ??
+        // If there is only one data point (current value), show a point since
+        // there is no line. Otherwise, if there is a line, hide the points.
+        (data.data.length === 1 ? 1 : 0),
       pointHitRadius:
         ('pointHitRadius' in data
           ? Number((data as any).pointHitRadius)
@@ -319,6 +328,12 @@ export const TreasuryHistoryGraph = ({
               display: true,
               ticks: {
                 color: textColor,
+                source:
+                  treasuryValueHistory.loading ||
+                  treasuryValueHistory.errored ||
+                  treasuryValueHistory.data.timestamps.length === 0
+                    ? 'labels'
+                    : 'auto',
               },
               grid: {
                 color: borderColor,
@@ -337,7 +352,7 @@ export const TreasuryHistoryGraph = ({
             y: {
               display: true,
               title: {
-                text: 'Est. USD Value',
+                text: t('title.estUsdValue'),
                 display: true,
                 color: textColor,
               },
@@ -445,10 +460,10 @@ export const TreasuryHistoryGraph = ({
 
                           {` (${
                             typeof targetValue === 'number'
-                              ? `target: ${formatPercentOf100(
+                              ? `${t('info.target')}: ${formatPercentOf100(
                                   (targetValue / tooltipTotalValue) * 100
                                 )}`
-                              : 'no target'
+                              : t('info.noTarget')
                           })`}
                         </p>
                       </>

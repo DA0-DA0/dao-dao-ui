@@ -1,4 +1,5 @@
 import { ComponentType, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import {
   AccountType,
@@ -43,6 +44,7 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
   TreasuryHistoryGraph,
   ...props
 }: TreasuryAndNftsTabProps<T, N>) => {
+  const { t } = useTranslation()
   const {
     chain: { chain_id: currentChainId },
   } = useSupportedChainContext()
@@ -115,15 +117,9 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
     <>
       <div className="mb-8 mt-4 flex flex-col gap-4 rounded-md bg-background-tertiary p-6">
         <div className="flex flex-row items-center justify-center gap-1">
-          <p className="title-text">Treasury History</p>
+          <p className="title-text">{t('title.treasuryHistory')}</p>
 
-          <TooltipInfoIcon
-            size="sm"
-            title={
-              // TODO(rebalancer): Add description.
-              'This graph shows the historical value of the treasury across all chains.'
-            }
-          />
+          <TooltipInfoIcon size="sm" title={t('info.treasuryHistoryTooltip')} />
         </div>
 
         <TreasuryHistoryGraph
