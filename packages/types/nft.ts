@@ -23,6 +23,11 @@ export type StargazeNft = {
   }
   media?: {
     url?: string | null
+    visualAssets?: {
+      lg?: {
+        url?: string | null
+      } | null
+    } | null
   } | null
 }
 
