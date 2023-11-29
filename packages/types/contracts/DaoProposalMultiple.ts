@@ -70,6 +70,11 @@ export type ExecuteMsg =
       }
     }
   | {
+      veto: {
+        proposal_id: number
+      }
+    }
+  | {
       close: {
         proposal_id: number
       }

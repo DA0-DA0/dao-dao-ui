@@ -247,6 +247,16 @@ export interface DaoProposalSingleV2Interface
     memo?: string,
     funds?: Coin[]
   ) => Promise<ExecuteResult>
+  veto: (
+    {
+      proposalId,
+    }: {
+      proposalId: number
+    },
+    fee?: number | StdFee | 'auto',
+    memo?: string,
+    funds?: Coin[]
+  ) => Promise<ExecuteResult>
   close: (
     {
       proposalId,
@@ -350,6 +360,7 @@ export class DaoProposalSingleV2Client
     this.propose = this.propose.bind(this)
     this.vote = this.vote.bind(this)
     this.execute = this.execute.bind(this)
+    this.veto = this.veto.bind(this)
     this.close = this.close.bind(this)
     this.updateConfig = this.updateConfig.bind(this)
     this.updatePreProposeInfo = this.updatePreProposeInfo.bind(this)
@@ -432,6 +443,29 @@ export class DaoProposalSingleV2Client
       this.contractAddress,
       {
         execute: {
+          proposal_id: proposalId,
+        },
+      },
+      fee,
+      memo,
+      funds
+    )
+  }
+  veto = async (
+    {
+      proposalId,
+    }: {
+      proposalId: number
+    },
+    fee: number | StdFee | 'auto' = CHAIN_GAS_MULTIPLIER,
+    memo?: string,
+    funds?: Coin[]
+  ): Promise<ExecuteResult> => {
+    return await this.client.execute(
+      this.sender,
+      this.contractAddress,
+      {
+        veto: {
           proposal_id: proposalId,
         },
       },

@@ -50,6 +50,7 @@ const wrapExecuteHook =
 export const usePropose = wrapExecuteHook('propose')
 export const useVote = wrapExecuteHook('vote')
 export const useExecute = wrapExecuteHook('execute')
+export const useVeto = wrapExecuteHook('veto')
 export const useClose = wrapExecuteHook('close')
 export const useUpdateConfig = wrapExecuteHook('updateConfig')
 export const useAddProposalHook = wrapExecuteHook('addProposalHook')
