@@ -33,7 +33,7 @@ export type TreasuryAndNftsTabProps<
   TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
 } & Omit<
   DaoAccountTreasuryAndNftsProps<T, N>,
-  'treasury' | 'setDepositFiatChainId'
+  'treasury' | 'setDepositFiatChainId' | 'tokenSourceColorMap'
 >
 
 export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
@@ -113,6 +113,11 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
     string | undefined
   >()
 
+  // Maps serialized token source to color.
+  const [tokenSourceColorMap, setTokenSourceColorMap] = useState<
+    Record<string, string>
+  >({})
+
   return (
     <>
       <div className="mb-8 mt-4 flex flex-col gap-4 rounded-md bg-background-tertiary p-6">
@@ -126,6 +131,7 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
           address={coreAddress}
           chainId={daoChainId}
           className="max-h-[20rem]"
+          registerTokenColors={setTokenSourceColorMap}
         />
       </div>
 
@@ -144,6 +150,7 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
                   TreasuryHistoryGraph={TreasuryHistoryGraph}
                   connected={connected}
                   setDepositFiatChainId={setDepositFiatChainId}
+                  tokenSourceColorMap={tokenSourceColorMap}
                   treasury={treasury}
                   {...props}
                 />
