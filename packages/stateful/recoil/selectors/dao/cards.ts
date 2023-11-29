@@ -15,6 +15,7 @@ import {
   DaoCardInfoLazyData,
   DaoDropdownInfo,
   DaoInfo,
+  Feature,
   IndexerDumpState,
   WithChainId,
 } from '@dao-dao/types'
@@ -32,6 +33,7 @@ import {
   getFallbackImage,
   getImageUrlForChainId,
   getSupportedChainConfig,
+  isFeatureSupportedByVersion,
   isValidContractAddress,
   parseContractVersion,
 } from '@dao-dao/utils'
@@ -172,16 +174,17 @@ export const daoCardInfoSelector = selectorFamily<
               )
 
               // Check if admin has registered the current DAO as a SubDAO.
-              const registeredSubDao =
-                adminVersion !== ContractVersion.V1
-                  ? get(
-                      DaoCoreV2Selectors.listAllSubDaosSelector({
-                        contractAddress: admin,
-                        chainId,
-                      })
-                    ).some(({ addr }) => addr === coreAddress)
-                  : // V1 cannot have SubDAOs.
-                    false
+              const registeredSubDao = isFeatureSupportedByVersion(
+                Feature.SubDaos,
+                adminVersion
+              )
+                ? get(
+                    DaoCoreV2Selectors.listAllSubDaosSelector({
+                      contractAddress: admin,
+                      chainId,
+                    })
+                  ).some(({ addr }) => addr === coreAddress)
+                : false
 
               parentDao = {
                 chainId,
@@ -375,15 +378,17 @@ export const daoDropdownInfoSelector: (
         })
       )
 
-      const subDaoAddresses: string[] =
-        version === ContractVersion.V1
-          ? []
-          : get(
-              DaoCoreV2Selectors.listAllSubDaosSelector({
-                contractAddress: coreAddress,
-                chainId,
-              })
-            ).map(({ addr }) => addr)
+      const subDaoAddresses: string[] = isFeatureSupportedByVersion(
+        Feature.SubDaos,
+        version
+      )
+        ? get(
+            DaoCoreV2Selectors.listAllSubDaosSelector({
+              contractAddress: coreAddress,
+              chainId,
+            })
+          ).map(({ addr }) => addr)
+        : []
 
       return {
         chainId,

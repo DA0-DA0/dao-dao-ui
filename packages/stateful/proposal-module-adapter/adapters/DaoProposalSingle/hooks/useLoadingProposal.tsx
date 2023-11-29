@@ -8,7 +8,7 @@ import {
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
-  ContractVersion,
+  Feature,
   LoadingData,
   ProposalStatus,
   ProposalTimestampInfo,
@@ -17,6 +17,7 @@ import {
   convertExpirationToDate,
   formatDate,
   formatDateTimeTz,
+  isFeatureSupportedByVersion,
 } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
@@ -84,14 +85,15 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     blockHeightLoadable.contents
   )
 
-  // V2 allows voting up to the expiration date, even if the decision has
-  // finalized due to sufficient votes cast.
   const votingOpen =
-    // `expirationDate` will be undefined if expiration is set to never, which
-    // the contract does not allow, so this is just a typecheck.
-    expirationDate && version !== ContractVersion.V1
-      ? expirationDate.getTime() > Date.now()
-      : proposal.status === ProposalStatus.Open
+    proposal.status === ProposalStatus.Open ||
+    (!!version &&
+      // Voting up until expiration on finished proposals may be supported.
+      isFeatureSupportedByVersion(Feature.VoteUntilExpiration, version) &&
+      // `expirationDate` will be undefined if expiration is set to never, which
+      // the contract does not allow, so this is just a type-check.
+      !!expirationDate &&
+      expirationDate.getTime() > Date.now())
 
   const completionDate =
     typeof completedAt === 'string' && new Date(completedAt)

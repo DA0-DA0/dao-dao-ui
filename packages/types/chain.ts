@@ -46,31 +46,6 @@ export interface NativeDelegationInfo {
   unbondingDelegations: UnbondingDelegation[]
 }
 
-export enum ContractVersion {
-  // Used when referring to gov module.
-  Gov = 'gov',
-  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v1.0.0
-  V1 = '0.1.0',
-  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.0-alpha
-  V2Alpha = '0.2.0',
-  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.0-beta
-  V2Beta = '2.0.0-beta',
-  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.1
-  V201 = '2.0.1',
-  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.2
-  V202 = '2.0.2',
-  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.0.3
-  V203 = '2.0.3',
-  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
-  V210 = '2.1.0',
-  // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.3.0
-  V230 = '2.3.0',
-
-  // Neutron-specific versions.
-  // https://github.com/neutron-org/neutron-dao/releases/tag/v0.5.0
-  NeutronV021 = '0.2.1',
-}
-
 export enum ChainId {
   JunoMainnet = 'juno-1',
   JunoTestnet = 'uni-6',

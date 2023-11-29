@@ -1,6 +1,10 @@
 import { queryIndexer } from '@dao-dao/state/indexer'
-import { ContractVersion, FetchPreProposeAddressFunction } from '@dao-dao/types'
-import { cosmWasmClientRouter, getRpcForChainId } from '@dao-dao/utils'
+import { Feature, FetchPreProposeAddressFunction } from '@dao-dao/types'
+import {
+  cosmWasmClientRouter,
+  getRpcForChainId,
+  isFeatureSupportedByVersion,
+} from '@dao-dao/utils'
 
 import { DaoProposalSingleV2QueryClient } from '../contracts/DaoProposalSingle.v2.client'
 
@@ -9,8 +13,7 @@ export const fetchPreProposeAddress: FetchPreProposeAddressFunction = async (
   proposalModuleAddress,
   version
 ) => {
-  // v1 does not support pre-propose.
-  if (version === ContractVersion.V1) {
+  if (!version || !isFeatureSupportedByVersion(Feature.PrePropose, version)) {
     return null
   }
 

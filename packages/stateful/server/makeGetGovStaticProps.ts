@@ -6,8 +6,10 @@ import removeMarkdown from 'remove-markdown'
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
 import {
   ContractVersion,
+  Feature,
   GovProposalVersion,
   GovProposalWithDecodedContent,
+  SupportedFeatureMap,
 } from '@dao-dao/types'
 import {
   CI,
@@ -117,6 +119,13 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
         chainId: chain.chain_id,
         coreAddress: supportedChain.name,
         coreVersion: ContractVersion.Gov,
+        supportedFeatures: Object.values(Feature).reduce(
+          (acc, feature) => ({
+            ...acc,
+            [feature]: false,
+          }),
+          {} as SupportedFeatureMap
+        ),
         votingModuleAddress: '',
         votingModuleContractName: '',
         proposalModules: [],

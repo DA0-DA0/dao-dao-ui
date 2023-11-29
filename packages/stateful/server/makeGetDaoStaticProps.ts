@@ -17,6 +17,7 @@ import {
   ContractVersionInfo,
   DaoPageMode,
   DaoParentInfo,
+  Feature,
   IndexerDumpState,
   InfoResponse,
   PolytoneProxies,
@@ -44,6 +45,8 @@ import {
   getImageUrlForChainId,
   getRpcForChainId,
   getSupportedChainConfig,
+  getSupportedFeatures,
+  isFeatureSupportedByVersion,
   isValidContractAddress,
   parseContractVersion,
   polytoneNoteProxyMapToChainIdMap,
@@ -262,6 +265,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           chainId,
           coreAddress,
           coreVersion,
+          supportedFeatures: getSupportedFeatures(coreVersion),
           votingModuleAddress,
           votingModuleContractName,
           proposalModules,
@@ -736,12 +740,10 @@ const daoCoreDumpState = async (
     [...(previousParentAddresses ?? []), coreAddress]
   )
   let registeredSubDao = false
-  // If parent DAO exists, check if this DAO is a SubDAO of the parent. Only V2
-  // DAOs have SubDAOs.
+  // If parent DAO exists, check if this DAO is a SubDAO of the parent.
   if (
     parentDao &&
-    parentDao.coreVersion !== ContractVersion.V1 &&
-    parentDao.coreVersion !== ContractVersion.Gov
+    isFeatureSupportedByVersion(Feature.SubDaos, parentDao.coreVersion)
   ) {
     const parentDaoCoreClient = new DaoCoreV2QueryClient(cwClient, admin)
 

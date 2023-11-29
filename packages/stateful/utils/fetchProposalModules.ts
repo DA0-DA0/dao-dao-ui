@@ -5,6 +5,7 @@ import {
 import { queryIndexer } from '@dao-dao/state/indexer'
 import {
   ContractVersion,
+  Feature,
   FetchPreProposeAddressFunction,
   ProposalModule,
 } from '@dao-dao/types'
@@ -14,6 +15,7 @@ import {
   cosmWasmClientRouter,
   getRpcForChainId,
   indexToProposalModulePrefix,
+  isFeatureSupportedByVersion,
   parseContractVersion,
 } from '@dao-dao/utils'
 
@@ -60,12 +62,12 @@ export const fetchProposalModules = async (
 
       return {
         address,
-        prefix:
-          // V1 DAOs don't have a prefix, so we need to compute it
-          // deterministically using its index.
-          coreVersion === ContractVersion.V1
-            ? indexToProposalModulePrefix(index)
-            : prefix,
+        prefix: isFeatureSupportedByVersion(
+          Feature.StaticProposalModulePrefixes,
+          coreVersion
+        )
+          ? prefix
+          : indexToProposalModulePrefix(index),
         contractName: info.contract,
         version,
         preProposeAddress,

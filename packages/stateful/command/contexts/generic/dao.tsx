@@ -16,7 +16,7 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ContractVersion } from '@dao-dao/types'
+import { Feature } from '@dao-dao/types'
 import {
   CommandModalContextMaker,
   CommandModalContextSection,
@@ -38,7 +38,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
   const useSections = () => {
     const { t } = useTranslation()
     const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
-    const { coreVersion } = useDaoInfoContext()
+    const { supportedFeatures } = useDaoInfoContext()
     const loadingTabs = useDaoTabs({
       suspendWhileLoadingOverride: false,
     })
@@ -60,13 +60,14 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     const createProposalHref = getDaoProposalPath(coreAddress, 'create')
 
     const subDaosLoading = useCachedLoading(
-      coreVersion === ContractVersion.V1
-        ? // Only v2 DAOs have SubDAOs. Passing undefined here returns an infinite loading state, which is fine because it's never used.
-          undefined
-        : subDaoInfosSelector({
+      supportedFeatures[Feature.SubDaos]
+        ? subDaoInfosSelector({
             chainId,
             coreAddress,
-          }),
+          })
+        : // Passing undefined here returns an infinite loading state, which is
+          // fine because it's never used.
+          undefined,
       []
     )
 

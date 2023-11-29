@@ -4,7 +4,6 @@ import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
 import { ActionCategoryMaker, CategorizedAction } from './actions'
-import { ContractVersion } from './chain'
 import { Expiration } from './contracts'
 import { CheckedDepositInfo } from './contracts/common'
 import {
@@ -13,6 +12,7 @@ import {
   ProposalDraft,
   ProposalModule,
 } from './dao'
+import { ContractVersion } from './features'
 import { ProposalCreatedCardProps } from './proposal'
 import {
   LinkWrapperProps,

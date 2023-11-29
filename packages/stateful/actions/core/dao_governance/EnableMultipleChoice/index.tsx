@@ -4,9 +4,9 @@ import { constSelector, useRecoilValue } from 'recoil'
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import { NumbersEmoji } from '@dao-dao/stateless'
 import {
-  ContractVersion,
   DepositRefundPolicy,
   DurationUnits,
+  Feature,
   TokenType,
 } from '@dao-dao/types'
 import {
@@ -24,7 +24,6 @@ import {
   getNativeTokenForChainId,
   makeWasmMessage,
   objectMatchesStructure,
-  versionBelowVersion,
 } from '@dao-dao/utils'
 
 import {
@@ -91,11 +90,9 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     config: { codeIds },
   },
 }) => {
-  // Only show for v2 DAOs. Disallows creation if multiple choice proposal
-  // module already exists, down at the bottom of this function.
   if (
     context.type !== ActionContextType.Dao ||
-    context.info.coreVersion === ContractVersion.V1
+    !context.info.supportedFeatures[Feature.MultipleChoiceProposals]
   ) {
     return null
   }
@@ -165,11 +162,8 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
       },
       {
         enableMultipleChoice: true,
-        // V2.3.0 introduced a funds field that is not supported by DAOs below.
-        omitFunds: versionBelowVersion(
-          context.info.coreVersion,
-          ContractVersion.V230
-        ),
+        omitFunds:
+          !context.info.supportedFeatures[Feature.ModuleInstantiateFunds],
         quorum: {
           majority: 'majority' in quorum,
           value: 'majority' in quorum ? 50 : Number(quorum.percent) * 100,
