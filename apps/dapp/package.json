@@ -4,6 +4,7 @@
   "license": "AGPL-3.0-only",
   "scripts": {
     "analyze": "ANALYZE=true next build",
+    "postinstall": "cd ../.. && npm run postinstall",
     "prepare": "npm run build:worker",
     "prebuild": "npm run build:worker && cd ../../packages/state && npm run build:gql",
     "build": "next build --debug",

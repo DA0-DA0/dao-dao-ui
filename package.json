@@ -6,6 +6,7 @@
     "packages/*"
   ],
   "scripts": {
+    "postinstall": "patch-package",
     "build": "turbo run build --continue --filter=\"!@dao-dao/storybook\"",
     "build:no-apps": "turbo run build --continue --filter=\"!@dao-dao/storybook\" --filter=\"!@dao-dao/dapp\" --filter=\"!@dao-dao/sda\"",
     "dev": "yarn dapp dev",
@@ -29,6 +30,7 @@
     "@types/jest": "^29.5.0",
     "jest": "^29.5.0",
     "lerna": "^6.4.1",
+    "patch-package": "^8.0.0",
     "ts-jest": "^29.0.5",
     "turbo": "latest",
     "turbo-ignore": "latest"
