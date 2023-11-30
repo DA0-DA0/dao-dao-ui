@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import { WrenchEmoji } from '@dao-dao/stateless'
-import { ContractVersion } from '@dao-dao/types'
+import { Feature } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -60,13 +60,9 @@ export const makeManageStorageItemsAction: ActionMaker<
     return null
   }
 
-  // V1 DAOs and V2-alpha DAOs use a value key of `addr`, V2-beta uses `value`.
-  const valueKey =
-    context.info.coreVersion === ContractVersion.V1 ||
-    context.info.coreVersion === ContractVersion.V2Alpha ||
-    context.info.coreVersion === ContractVersion.NeutronV021
-      ? 'addr'
-      : 'value'
+  const valueKey = context.info.supportedFeatures[Feature.StorageItemValueKey]
+    ? 'value'
+    : 'addr'
 
   const useTransformToCosmos: UseTransformToCosmos<
     ManageStorageItemsData

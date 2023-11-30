@@ -153,7 +153,7 @@ export const makeUpdateProposalConfigV1ActionMaker =
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
   ({ t, context, chain: { chain_id: chainId } }) => {
     // Only v1.
-    if (version !== ContractVersion.V1) {
+    if (!version || version !== ContractVersion.V1) {
       return null
     }
 

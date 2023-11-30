@@ -10,7 +10,7 @@ import {
 
 import { CommonNftSelectors, DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { ImageEmoji } from '@dao-dao/stateless'
-import { ContractVersion } from '@dao-dao/types'
+import { Feature } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -188,13 +188,11 @@ export const makeManageCw721Action: ActionMaker<ManageCw721Data> = ({
     return null
   }
 
-  // V1 DAOs and V2-alpha DAOs use a value key of `addr`, V2-beta uses `value`.
-  const storageItemValueKey =
-    context.info.coreVersion === ContractVersion.V1 ||
-    context.info.coreVersion === ContractVersion.V2Alpha ||
-    context.info.coreVersion === ContractVersion.NeutronV021
-      ? 'addr'
-      : 'value'
+  const storageItemValueKey = context.info.supportedFeatures[
+    Feature.StorageItemValueKey
+  ]
+    ? 'value'
+    : 'addr'
 
   const useTransformToCosmos: UseTransformToCosmos<ManageCw721Data> = () =>
     useCallback(

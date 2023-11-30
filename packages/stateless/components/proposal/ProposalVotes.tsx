@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
 import { LoadingData, StatefulEntityDisplayProps } from '@dao-dao/types'
-import { formatPercentOf100 } from '@dao-dao/utils'
+import { formatDateTimeTz, formatPercentOf100 } from '@dao-dao/utils'
 
 import { useTranslatedTimeDeltaFormatter } from '../../hooks'
 import { Button } from '../buttons'
@@ -112,7 +112,7 @@ export const ProposalVotes = <Vote extends unknown = any>({
 
           {votingOpen && (
             <p className="caption-text italic">
-              {t('info.voteTallyRefreshesSeconds', { seconds: 30 })}
+              {t('info.votesRefreshAutomatically')}
             </p>
           )}
         </div>
@@ -147,18 +147,30 @@ export const ProposalVotes = <Vote extends unknown = any>({
             ) => (
               <Fragment key={index}>
                 {!hideVotedAt && (
-                  <p
-                    className={clsx(
-                      'caption-text hidden sm:block',
-                      votedAt ? 'text-text-body' : 'text-text-tertiary'
-                    )}
+                  <Tooltip
+                    title={votedAt ? formatDateTimeTz(votedAt) : undefined}
                   >
-                    {votedAt ? (
-                      <TimeAgo date={votedAt} formatter={timeAgoFormatter} />
-                    ) : (
-                      '?'
-                    )}
-                  </p>
+                    <p
+                      className={clsx(
+                        'caption-text hidden sm:block',
+                        votedAt ? 'text-text-body' : 'text-text-tertiary'
+                      )}
+                    >
+                      {votedAt ? (
+                        <TimeAgo
+                          date={votedAt}
+                          formatter={timeAgoFormatter}
+                          // @ts-ignore
+                          title={
+                            // Disable tooltip since we have our own.
+                            null
+                          }
+                        />
+                      ) : (
+                        '?'
+                      )}
+                    </p>
+                  </Tooltip>
                 )}
                 <EntityDisplay
                   address={voterAddress}

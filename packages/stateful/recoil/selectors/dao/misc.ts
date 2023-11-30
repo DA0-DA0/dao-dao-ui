@@ -20,6 +20,7 @@ import {
   ContractVersion,
   ContractVersionInfo,
   DaoInfo,
+  Feature,
   ProposalModule,
   WithChainId,
 } from '@dao-dao/types'
@@ -30,6 +31,7 @@ import {
   getDisplayNameForChainId,
   getImageUrlForChainId,
   getSupportedChainConfig,
+  getSupportedFeatures,
   isValidContractAddress,
 } from '@dao-dao/utils'
 
@@ -284,8 +286,7 @@ export const daoInfoSelector: (param: {
             })
           )
 
-          // Only v2 DAOs can have SubDAOs.
-          if (parentDaoInfo.coreVersion !== ContractVersion.V1) {
+          if (parentDaoInfo.supportedFeatures[Feature.SubDaos]) {
             parentSubDaos = get(
               DaoCoreV2Selectors.listAllSubDaosSelector({
                 contractAddress: admin,
@@ -315,10 +316,11 @@ export const daoInfoSelector: (param: {
         }
       }
 
-      return {
+      const daoInfo: DaoInfo = {
         chainId,
         coreAddress,
         coreVersion,
+        supportedFeatures: getSupportedFeatures(coreVersion),
         votingModuleAddress: dumpState.voting_module,
         votingModuleContractName,
         proposalModules,
@@ -344,6 +346,8 @@ export const daoInfoSelector: (param: {
           : null,
         admin,
       }
+
+      return daoInfo
     },
 })
 

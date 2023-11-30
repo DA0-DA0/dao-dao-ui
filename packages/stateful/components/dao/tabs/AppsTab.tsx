@@ -519,7 +519,7 @@ const ActionMatcherAndProposer = ({
   return (
     <Modal
       backdropClassName="!z-[39]"
-      containerClassName="sm:!max-w-[90dvw] !w-full"
+      containerClassName="sm:!max-w-[min(90dvw,64rem)] !w-full"
       footerContainerClassName="flex flex-row justify-between gap-8"
       footerContent={
         isWalletConnected ? (

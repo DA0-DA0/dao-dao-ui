@@ -17,6 +17,11 @@ export const DAO_APPS: DaoApp[] = [
   //     : 'https://testnet.publicawesome.dev',
   // },
   {
+    name: 'Calculated Finance',
+    imageUrl: '/apps/calcfi.jpg',
+    url: 'https://app.calculated.fi/?chain=osmosis-1',
+  },
+  {
     name: 'Stargaze Studio',
     imageUrl: 'https://studio.stargaze.zone/assets/android-chrome-256x256.png',
     url: MAINNET

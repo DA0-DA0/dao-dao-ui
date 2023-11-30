@@ -26,7 +26,7 @@ export const useLoadingDepositInfo = (): LoadingData<
   const selectorValue = useCachedLoadable<
     ProposalV1Response | DepositInfoPreProposeResponse | undefined
   >(
-    //! V1
+    // V1 does not support pre-propose.
     version === ContractVersion.V1
       ? proposalV1Selector({
           chainId,
@@ -37,7 +37,7 @@ export const useLoadingDepositInfo = (): LoadingData<
             },
           ],
         })
-      : //! V2
+      : // Every other version supports pre-propose.
       preProposeAddress
       ? depositInfoV2Selector({
           chainId,
@@ -76,8 +76,10 @@ export const useLoadingDepositInfo = (): LoadingData<
             ? DepositRefundPolicy.Always
             : DepositRefundPolicy.OnlyPassed,
         }
-      : //! V2
-        depositInfoResponse?.deposit_info ?? undefined
+      : // If has pre-propose, check deposit info response.
+      preProposeAddress
+      ? depositInfoResponse?.deposit_info ?? undefined
+      : undefined
 
   return {
     loading: false,

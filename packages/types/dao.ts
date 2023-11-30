@@ -12,7 +12,6 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 
-import { ContractVersion } from './chain'
 import {
   ActiveThreshold,
   DepositRefundPolicy,
@@ -20,6 +19,7 @@ import {
 } from './contracts/common'
 import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
 import { DaoCreator } from './creators'
+import { ContractVersion, SupportedFeatureMap } from './features'
 import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
@@ -34,6 +34,7 @@ export type DaoInfo = {
   chainId: string
   coreAddress: string
   coreVersion: ContractVersion
+  supportedFeatures: SupportedFeatureMap
   votingModuleAddress: string
   votingModuleContractName: string
   proposalModules: ProposalModule[]

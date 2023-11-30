@@ -21,6 +21,7 @@ import { ConnectWallet } from '../ConnectWallet'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { MeBalances } from './MeBalances'
+import { MeDaos } from './MeDaos'
 import { MeTransactionBuilder } from './MeTransactionBuilder'
 
 export const Me: NextPage = () => {
@@ -64,6 +65,7 @@ export const Me: NextPage = () => {
               <StatelessMe
                 ChainSwitcher={ChainSwitcher}
                 MeBalances={MeBalances}
+                MeDaos={MeDaos}
                 MeTransactionBuilder={MeTransactionBuilder}
                 profileData={profileData}
                 rightSidebarContent={<ProfileHomeCard />}

@@ -402,7 +402,13 @@ export const nativeDenomMetadataInfoSelector = selectorFamily<
 
       const { base, denomUnits, symbol, display } = metadata
 
+      // If display is equal to the base, use the symbol denom unit if
+      // available. This fixes the case where display was not updated even
+      // though a nonzero exponent was created.
+      const searchDenom = display === base ? symbol : display
+
       const displayDenom =
+        denomUnits.find(({ denom }) => denom === searchDenom) ??
         denomUnits.find(({ denom }) => denom === display) ??
         denomUnits.find(({ exponent }) => exponent > 0) ??
         denomUnits[0]
@@ -412,7 +418,7 @@ export const nativeDenomMetadataInfoSelector = selectorFamily<
       }
 
       return {
-        symbol: symbol || display || base,
+        symbol: displayDenom.denom,
         decimals: displayDenom.exponent,
       }
     },

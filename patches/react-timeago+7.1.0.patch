@@ -1,0 +1,61 @@
+diff --git a/node_modules/react-timeago/es6/index.js b/node_modules/react-timeago/es6/index.js
+index 086df64..b6609fe 100644
+--- a/node_modules/react-timeago/es6/index.js
++++ b/node_modules/react-timeago/es6/index.js
+@@ -23,6 +23,10 @@ export default function TimeAgo({
+   ...passDownProps
+ }) {
+   const [timeNow, setTimeNow] = useState(now());
++  // When date changes, update timeNow.
++  useEffect(() => {
++    setTimeNow(now())
++  }, [date, now]);
+   useEffect(() => {
+     if (!live) {
+       return;
+diff --git a/node_modules/react-timeago/es6/index.js.flow b/node_modules/react-timeago/es6/index.js.flow
+index a376240..c916207 100644
+--- a/node_modules/react-timeago/es6/index.js.flow
++++ b/node_modules/react-timeago/es6/index.js.flow
+@@ -69,6 +69,10 @@ export default function TimeAgo({
+   ...passDownProps
+ }: Props): null | React.MixedElement {
+   const [timeNow, setTimeNow] = useState(now())
++  // When date changes, update timeNow.
++  useEffect(() => {
++    setTimeNow(now())
++  }, [date, now])
+   useEffect(() => {
+     if (!live) {
+       return
+diff --git a/node_modules/react-timeago/lib/index.js b/node_modules/react-timeago/lib/index.js
+index 7f1109b..30a2366 100644
+--- a/node_modules/react-timeago/lib/index.js
++++ b/node_modules/react-timeago/lib/index.js
+@@ -77,6 +77,11 @@ function TimeAgo(_ref) {
+       timeNow = _useState2[0],
+       setTimeNow = _useState2[1];
+ 
++  // When date changes, update timeNow.
++  (0, React.useEffect)(function () {
++    setTimeNow(now());
++  }, [date, now]);
++
+   (0, React.useEffect)(function () {
+     if (!live) {
+       return;
+diff --git a/node_modules/react-timeago/lib/index.js.flow b/node_modules/react-timeago/lib/index.js.flow
+index a376240..c916207 100644
+--- a/node_modules/react-timeago/lib/index.js.flow
++++ b/node_modules/react-timeago/lib/index.js.flow
+@@ -69,6 +69,10 @@ export default function TimeAgo({
+   ...passDownProps
+ }: Props): null | React.MixedElement {
+   const [timeNow, setTimeNow] = useState(now())
++  // When date changes, update timeNow.
++  useEffect(() => {
++    setTimeNow(now())
++  }, [date, now])
+   useEffect(() => {
+     if (!live) {
+       return

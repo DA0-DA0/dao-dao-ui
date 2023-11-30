@@ -47,8 +47,8 @@ export const useFollowingAndFilteredDaosSections = ({
               chainId: chain.chain_id,
               query: options.filter,
               limit,
-              // Exclude following DAOs from search since they show in a separate
-              // section.
+              // Exclude following DAOs from search since they show in a
+              // separate section.
               exclude: followingDaosLoading.loading
                 ? undefined
                 : followingDaosLoading.data
@@ -85,7 +85,8 @@ export const useFollowingAndFilteredDaosSections = ({
             // tooltip to indicate that it may not be active.
             ...(proposalCount === 0 && {
               className: 'opacity-50',
-              tooltip: t('info.noProposalsTooltip'),
+              tooltip: t('info.inactiveDaoTooltip'),
+              sortLast: true,
             }),
           })
         )

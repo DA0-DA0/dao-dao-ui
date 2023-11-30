@@ -1,7 +1,6 @@
 import { SigningCosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { Coin, SigningStargateClient } from '@cosmjs/stargate'
 import { findAttribute, parseRawLog } from '@cosmjs/stargate/build/logs'
-import semverLt from 'semver/functions/lt'
 
 import { ContractVersion } from '@dao-dao/types'
 
@@ -77,8 +76,3 @@ export const instantiateSmartContract = async (
 
   return contractAddress
 }
-
-export const versionBelowVersion = (
-  version: ContractVersion,
-  below: ContractVersion
-): boolean => semverLt(version, below)

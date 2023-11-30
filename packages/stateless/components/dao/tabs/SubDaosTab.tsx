@@ -4,13 +4,12 @@ import { useTranslation } from 'react-i18next'
 
 import {
   ButtonLinkProps,
-  ContractVersion,
   DaoCardInfo,
-  DaoInfo,
+  Feature,
   LoadingData,
 } from '@dao-dao/types'
 
-import { useDaoNavHelpers } from '../../../hooks'
+import { useDaoInfoContext, useDaoNavHelpers } from '../../../hooks'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Loader } from '../../logo/Loader'
 import { NoContent } from '../../NoContent'
@@ -19,7 +18,6 @@ export interface SubDaosTabProps {
   DaoCard: ComponentType<DaoCardInfo>
   subDaos: LoadingData<DaoCardInfo[]>
   isMember: boolean
-  daoInfo: DaoInfo
   createSubDaoHref?: string
   upgradeToV2Href?: string
   ButtonLink: ComponentType<ButtonLinkProps>
@@ -29,13 +27,15 @@ export const SubDaosTab = ({
   DaoCard,
   subDaos,
   isMember,
-  daoInfo,
   createSubDaoHref,
   upgradeToV2Href,
   ButtonLink,
 }: SubDaosTabProps) => {
   const { t } = useTranslation()
+  const { coreAddress, name, supportedFeatures } = useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()
+
+  const subDaosSupported = supportedFeatures[Feature.SubDaos]
 
   return (
     <>
@@ -50,21 +50,20 @@ export const SubDaosTab = ({
 
         <ButtonLink
           className="shrink-0"
-          // Disabled for v1 DAOs, not supported.
-          disabled={!isMember || daoInfo.coreVersion === ContractVersion.V1}
-          href={getDaoPath(daoInfo.coreAddress, 'create')}
+          disabled={!isMember || !subDaosSupported}
+          href={getDaoPath(coreAddress, 'create')}
         >
           <Add className="!h-4 !w-4" />
           {t('button.newSubDao')}
         </ButtonLink>
       </div>
 
-      {daoInfo.coreVersion === ContractVersion.V1 ? (
+      {!subDaosSupported ? (
         <NoContent
           Icon={Upgrade}
           actionNudge={t('info.submitUpgradeProposal')}
           body={t('error.daoFeatureUnsupported', {
-            name: daoInfo.name,
+            name,
             feature: t('title.subDaos'),
           })}
           buttonLabel={t('button.proposeUpgrade')}

@@ -2,6 +2,7 @@ import MeiliSearch from 'meilisearch'
 
 import { IndexerDumpState, WithChainId } from '@dao-dao/types'
 import {
+  INACTIVE_DAO_NAMES,
   SEARCH_API_KEY,
   SEARCH_HOST,
   getSupportedChainConfig,
@@ -52,11 +53,8 @@ export const searchDaos = async ({
   const results = await index.search<Omit<DaoSearchResult, 'chainId'>>(query, {
     limit,
     filter: [
-      // Only show DAOs with proposals to reduce clutter/spam.
-      //
-      // UPDATE: Commenting this out for now, since many DAOs have trouble
-      // finding themselves before they've made a proposal.
-      // `(NOT value.proposalCount EXISTS) OR (value.proposalCount > 0)`,
+      // Exclude inactive DAOs.
+      `NOT value.config.name IN ["${INACTIVE_DAO_NAMES.join('", "')}"]`,
       ...(exclude?.length
         ? // Exclude DAOs that are in the exclude list.
           [`NOT contractAddress IN ["${exclude.join('", "')}"]`]
