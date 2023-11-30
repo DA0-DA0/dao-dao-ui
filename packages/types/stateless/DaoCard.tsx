@@ -43,3 +43,8 @@ export interface DaoCardProps extends DaoCardInfo {
   IconButtonLink: ComponentType<IconButtonLinkProps>
   follow: { hide: true } | ({ hide?: false } & FollowState)
 }
+
+export type LazyDaoCardProps = Pick<
+  DaoCardProps,
+  'chainId' | 'coreAddress' | 'name' | 'description' | 'imageUrl' | 'className'
+>

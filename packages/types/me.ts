@@ -24,6 +24,7 @@ export type MeTransactionSave = MeTransactionForm & {
 // Value goes in URL hash.
 export enum MeTabId {
   Balances = 'balances',
+  Daos = 'daos',
   TransactionBuilder = 'tx',
 }
 
@@ -37,6 +38,7 @@ export type MeProps = {
   rightSidebarContent: ReactNode
   MeBalances: ComponentType
   MeTransactionBuilder: ComponentType
+  MeDaos: ComponentType
   profileData: WalletProfileData
   updateProfileName: (name: string | null) => Promise<void>
   ChainSwitcher: ComponentType<any>

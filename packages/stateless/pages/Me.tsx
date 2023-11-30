@@ -24,6 +24,7 @@ export const Me = ({
   rightSidebarContent,
   MeBalances,
   MeTransactionBuilder,
+  MeDaos,
   profileData,
   updateProfileName,
   ChainSwitcher,
@@ -36,6 +37,11 @@ export const Me = ({
       id: MeTabId.Balances,
       label: t('title.balances'),
       Component: MeBalances,
+    },
+    {
+      id: MeTabId.Daos,
+      label: t('title.daos'),
+      Component: MeDaos,
     },
     {
       id: MeTabId.TransactionBuilder,

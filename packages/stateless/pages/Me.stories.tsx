@@ -53,6 +53,7 @@ Default.args = {
       {...(MeTransactionBuilderStory.args as MeTransactionBuilderProps)}
     />
   ),
+  MeDaos: () => <div />,
   profileData: WALLET_PROFILE_DATA,
   ChainSwitcher,
 }

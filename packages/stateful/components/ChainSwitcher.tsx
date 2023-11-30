@@ -22,8 +22,9 @@ export const ChainSwitcher = ({
     <StatelessChainSwitcher
       excludeChainIds={excludeChainIds}
       loading={loading}
-      onSelect={({ chain_id }) =>
-        onSelect ? onSelect(chain_id) : setChainId(chain_id)
+      onSelect={(chain) =>
+        chain &&
+        (onSelect ? onSelect(chain.chain_id) : setChainId(chain.chain_id))
       }
       selected={overrideChainId || chainId}
     />
