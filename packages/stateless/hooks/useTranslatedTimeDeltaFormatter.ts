@@ -16,8 +16,14 @@ export const useTranslatedTimeDeltaFormatter = ({
 }: UseTranslatedTimeDeltaFormatterOptions): Formatter => {
   const { t } = useTranslation()
 
-  const timeDeltaFormatter: Formatter = (value, unit, suffix) =>
-    t(
+  const timeDeltaFormatter: Formatter = (value, unit, suffix) => {
+    const lessThanOneMinute = unit === 'second' && value < 60
+    if (lessThanOneMinute) {
+      value = 1
+      unit = 'minute'
+    }
+
+    return t(
       words
         ? suffix === 'ago'
           ? 'format.timeAgo'
@@ -26,10 +32,11 @@ export const useTranslatedTimeDeltaFormatter = ({
           : 'format.inTime'
         : 'format.time',
       {
-        value,
+        value: lessThanOneMinute ? '< 1' : value,
         unit: t(`unit.${unit}s`, { count: value }).toLocaleLowerCase(),
       }
     )
+  }
 
   return timeDeltaFormatter
 }
