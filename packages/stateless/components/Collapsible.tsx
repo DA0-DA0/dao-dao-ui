@@ -5,12 +5,14 @@ import { CollapsibleProps } from '@dao-dao/types/stateless/Collapsible'
 import { toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { DropdownIconButton } from './icon_buttons/DropdownIconButton'
+import { TooltipInfoIcon } from './tooltip'
 
 const titleClassName =
   'flex grow flex-row items-center gap-2 overflow-hidden py-2 transition-opacity hover:opacity-70 active:opacity-60 cursor-pointer'
 
 export const Collapsible = ({
   label,
+  tooltip,
   imageUrl,
   link,
   defaultCollapsed = false,
@@ -41,6 +43,8 @@ export const Collapsible = ({
       )}
 
       <p className="link-text truncate text-text-body">{label}</p>
+
+      {tooltip && <TooltipInfoIcon size="sm" title={tooltip} />}
     </>
   )
 

@@ -9,6 +9,7 @@ import {
 } from 'react'
 
 import { SearchBarProps } from '../components'
+import { useQuerySyncedState } from './useQuerySyncedState'
 
 interface UseSearchFilterReturn<T> {
   searchBarProps: SearchBarProps
@@ -39,7 +40,9 @@ interface UseSearchFilterReturn<T> {
 export const useSearchFilter = <T extends unknown>(
   data: T[],
   filterableKeys: Fuse.FuseOptionKey<T>[],
-  options?: Fuse.IFuseOptions<T>
+  options?: Fuse.IFuseOptions<T>,
+  // If defined, store the search param in a query param.
+  querySyncedParam?: string
 ): UseSearchFilterReturn<T> => {
   // Store latest data in a ref so we can compare it to the current data.
   const dataRef = useRef(data)
@@ -54,7 +57,11 @@ export const useSearchFilter = <T extends unknown>(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filterableKeys, options])
 
-  const [filter, setFilter] = useState('')
+  const [filter, setFilter] = useQuerySyncedState({
+    // When param is undefined, this is just like a normal `useState` hook.
+    param: querySyncedParam,
+    defaultValue: '',
+  })
 
   // When collection or filter is updated, re-filter.
   const filteredData: UseSearchFilterReturn<T>['filteredData'] = useMemo(() => {

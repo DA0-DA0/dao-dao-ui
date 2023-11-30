@@ -92,7 +92,10 @@ export const InnerCommandModalContextView = ({
         ...section,
         items: itemsWithSection
           .filter((optionWithSection) => optionWithSection.section === section)
-          .map(({ item: option }) => option),
+          .map(({ item: option }) => option)
+          .sort((a, b) =>
+            a.sortLast && !b.sortLast ? 1 : !a.sortLast && b.sortLast ? -1 : 0
+          ),
       }))
 
     return {

@@ -4,6 +4,7 @@ import { LinkWrapperProps } from './LinkWrapper'
 
 export interface CollapsibleProps {
   label: string
+  tooltip?: string
   imageUrl?: string
   link?: {
     href: string

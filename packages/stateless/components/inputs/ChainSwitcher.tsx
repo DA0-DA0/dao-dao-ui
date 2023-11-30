@@ -1,7 +1,8 @@
 import { Chain } from '@chain-registry/types'
 import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useMemo, useRef } from 'react'
+import { ComponentType, useMemo, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 
 import { ButtonPopupProps, ButtonPopupSectionButton } from '@dao-dao/types'
 import {
@@ -22,8 +23,33 @@ export type ChainSwitcherProps = Omit<
   loading?: boolean
   excludeChainIds?: string[]
 
-  onSelect: (chain: Chain) => void
-  selected: string
+  /**
+   * Called when a chain is selected. If the none button is selected, it will be
+   * called with undefined.
+   */
+  onSelect: (chain?: Chain) => void
+  /**
+   * When defined, this will be the selected chain. When undefined, selects the
+   * none button.
+   */
+  selected: string | undefined
+
+  /**
+   * If true, a button will be shown at the top that represents none.
+   */
+  showNone?: boolean
+  /**
+   * If defined, this will be the label of the none button.
+   */
+  noneLabel?: string
+  /**
+   * If defined, this will be the icon of the none button.
+   */
+  noneIcon?: ComponentType<{ className?: string }>
+}
+
+type ChainSwitcherButton = Omit<ButtonPopupSectionButton, 'onClick'> & {
+  chain?: Chain
 }
 
 export const ChainSwitcher = ({
@@ -32,9 +58,15 @@ export const ChainSwitcher = ({
   loading,
   wrapperClassName,
   excludeChainIds,
+  showNone,
+  noneLabel,
+  noneIcon,
   ...props
 }: ChainSwitcherProps) => {
-  const chain = getChainForChainId(selected)
+  const { t } = useTranslation()
+
+  noneLabel ||= t('info.none')
+  const chain = selected ? getChainForChainId(selected) : undefined
 
   const excludeChainIdsRef = useRef(excludeChainIds)
   excludeChainIdsRef.current = excludeChainIds
@@ -45,53 +77,55 @@ export const ChainSwitcher = ({
         return <ChainLogo chainId={chainId} className={className} />
       }
 
-    const ChainIcon = makeChainIcon(chain.chain_id)
+    const Icon = chain ? makeChainIcon(chain.chain_id) : noneIcon
     const chainSwitcherTriggerContent = (
       <>
-        <ChainIcon className="!h-6 !w-6" />
-        <p>{getDisplayNameForChainId(chain.chain_id)}</p>
+        {Icon && <Icon className="!h-6 !w-6" />}
+
+        <p>{chain ? getDisplayNameForChainId(chain.chain_id) : noneLabel}</p>
+
         <ArrowDropDown className="ml-2 !h-5 !w-5" />
       </>
     )
     const chainSwitcherSections = [
       {
-        buttons: getSupportedChains()
-          .filter(
-            ({ chain: { chain_id: chainId } }) =>
-              !excludeChainIdsRef.current?.includes(chainId)
-          )
-          .map(
-            ({
-              chain,
-            }): Omit<ButtonPopupSectionButton, 'onClick'> & {
-              chain: Chain
-            } => ({
-              chain,
-              label: getDisplayNameForChainId(chain.chain_id),
-              pressed: selected === chain.chain_id,
-              Icon: makeChainIcon(chain.chain_id),
-            })
-          )
-          .sort((a, b) => {
-            // Sort selected to the top.
-            if (a.pressed && !b.pressed) {
-              return -1
-            } else if (!a.pressed && b.pressed) {
-              return 1
-            }
-
-            // Sort alphabetically by label.
-            return a.label.localeCompare(b.label)
-          }),
+        buttons: [
+          ...(showNone
+            ? ([
+                {
+                  label: noneLabel,
+                  pressed: !chain,
+                  Icon: noneIcon,
+                },
+              ] as ChainSwitcherButton[])
+            : []),
+          ...getSupportedChains()
+            .filter(
+              ({ chain: { chain_id: chainId } }) =>
+                !excludeChainIdsRef.current?.includes(chainId)
+            )
+            .map(
+              ({ chain }): ChainSwitcherButton => ({
+                chain,
+                label: getDisplayNameForChainId(chain.chain_id),
+                pressed: selected === chain.chain_id,
+                Icon: makeChainIcon(chain.chain_id),
+              })
+            )
+            .sort((a, b) =>
+              // Sort alphabetically by label.
+              a.label.localeCompare(b.label)
+            ),
+        ],
       },
     ]
 
     return {
-      ChainIcon,
+      ChainIcon: Icon,
       chainSwitcherTriggerContent,
       chainSwitcherSections,
     }
-  }, [chain.chain_id, selected])
+  }, [chain, noneIcon, noneLabel, selected, showNone])
 
   return (
     <ButtonPopup

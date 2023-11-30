@@ -16,17 +16,21 @@ import {
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
+  LazyDaoCardProps,
   LazyNftCardInfo,
   MeTransactionSave,
   TokenCardInfo,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
+import { Config } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   HIDDEN_BALANCE_PREFIX,
+  INACTIVE_DAO_NAMES,
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
   convertMicroDenomToDenomWithDecimals,
+  getFallbackImage,
   getNativeTokenForChainId,
   getSupportedChains,
   transformBech32Address,
@@ -323,5 +327,80 @@ export const allWalletNftsSelector = selectorFamily<
       ).flat()
 
       return [...nativeNfts, ...nativeStakedNfts]
+    },
+})
+
+// Get DAOs this wallet is a member of.
+export const walletDaosSelector = selectorFamily<
+  LazyDaoCardProps[],
+  // Can be any wallet address.
+  WithChainId<{ walletAddress: string }>
+>({
+  key: 'walletDaos',
+  get:
+    ({ chainId, walletAddress }) =>
+    ({ get }) => {
+      const daos: {
+        dao: string
+        config: Config
+        proposalCount: number
+      }[] = get(
+        queryWalletIndexerSelector({
+          chainId,
+          walletAddress,
+          formula: 'daos/memberOf',
+        })
+      )
+      if (!daos || !Array.isArray(daos)) {
+        return []
+      }
+
+      const lazyDaoCards = daos
+        .map(
+          ({ dao, config, proposalCount }): LazyDaoCardProps => ({
+            chainId,
+            coreAddress: dao,
+            name: config.name,
+            description: config.description,
+            imageUrl: config.image_url || getFallbackImage(dao),
+            isInactive:
+              INACTIVE_DAO_NAMES.includes(config.name) || proposalCount === 0,
+          })
+        )
+        .sort((a, b) => a.name.localeCompare(b.name))
+
+      return lazyDaoCards
+    },
+})
+
+// Get DAOs across all DAO DAO-supported chains.
+export const allWalletDaosSelector = selectorFamily<
+  LazyDaoCardProps[],
+  // Can be any wallet address.
+  { walletAddress: string }
+>({
+  key: 'allWalletDaos',
+  get:
+    ({ walletAddress }) =>
+    ({ get }) => {
+      const chains = getSupportedChains()
+
+      const allLazyDaoCards = get(
+        waitForAll(
+          chains.map(({ chain }) =>
+            walletDaosSelector({
+              chainId: chain.chain_id,
+              walletAddress: transformBech32Address(
+                walletAddress,
+                chain.chain_id
+              ),
+            })
+          )
+        )
+      )
+        .flat()
+        .sort((a, b) => a.name.localeCompare(b.name))
+
+      return allLazyDaoCards
     },
 })
