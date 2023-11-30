@@ -47,4 +47,6 @@ export interface DaoCardProps extends DaoCardInfo {
 export type LazyDaoCardProps = Pick<
   DaoCardProps,
   'chainId' | 'coreAddress' | 'name' | 'description' | 'imageUrl' | 'className'
->
+> & {
+  isInactive?: boolean
+}

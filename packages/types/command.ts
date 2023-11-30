@@ -18,6 +18,8 @@ export type CommandModalContextSectionItem<
   className?: string
   disabled?: boolean
   loading?: boolean
+  // If true, sorts last even if it matches search.
+  sortLast?: boolean
 } & (
     | {
         imageUrl: string

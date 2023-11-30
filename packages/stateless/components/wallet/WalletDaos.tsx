@@ -1,11 +1,12 @@
 import { BlurOn, WarningRounded } from '@mui/icons-material'
 import Fuse from 'fuse.js'
-import { ComponentType } from 'react'
+import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { LazyDaoCardProps, LoadingDataWithError } from '@dao-dao/types'
 
 import { useQuerySyncedState, useSearchFilter } from '../../hooks'
+import { Collapsible } from '../Collapsible'
 import { ErrorPage } from '../error'
 import { GridCardContainer } from '../GridCardContainer'
 import { ChainSwitcher, SearchBar } from '../inputs'
@@ -33,9 +34,14 @@ export const WalletDaos = ({ daos, LazyDaoCard }: WalletDaosProps) => {
     defaultValue: undefined,
   })
 
+  const [showingInactive, setShowingInactive] = useState(false)
+
   const filteredDaos = chainId
     ? filteredData.filter(({ item }) => item.chainId === chainId)
     : filteredData
+
+  const activeDaos = filteredDaos.filter(({ item }) => !item.isInactive)
+  const inactiveDaos = filteredDaos.filter(({ item }) => item.isInactive)
 
   return daos.loading ? (
     <Loader />
@@ -64,12 +70,32 @@ export const WalletDaos = ({ daos, LazyDaoCard }: WalletDaosProps) => {
         />
       </div>
 
-      {filteredDaos.length > 0 ? (
-        <GridCardContainer>
-          {filteredDaos.map(({ item: dao }) => (
-            <LazyDaoCard key={dao.chainId + dao.coreAddress} {...dao} />
-          ))}
-        </GridCardContainer>
+      {activeDaos.length > 0 || inactiveDaos.length > 0 ? (
+        <>
+          {activeDaos.length > 0 && (
+            <GridCardContainer>
+              {activeDaos.map(({ item: dao }) => (
+                <LazyDaoCard key={dao.chainId + dao.coreAddress} {...dao} />
+              ))}
+            </GridCardContainer>
+          )}
+
+          {inactiveDaos.length > 0 && (
+            <Collapsible
+              defaultCollapsed={!showingInactive}
+              label={t('title.inactiveDaos')}
+              noContentIndent
+              onExpand={(expanded) => setShowingInactive(expanded)}
+              tooltip={t('info.inactiveDaosTooltip')}
+            >
+              <GridCardContainer>
+                {inactiveDaos.map(({ item: dao }) => (
+                  <LazyDaoCard key={dao.chainId + dao.coreAddress} {...dao} />
+                ))}
+              </GridCardContainer>
+            </Collapsible>
+          )}
+        </>
       ) : (
         <NoContent Icon={WarningRounded} body={t('info.nothingFound')} />
       )}

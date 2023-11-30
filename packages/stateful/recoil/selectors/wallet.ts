@@ -26,6 +26,7 @@ import {
 import { Config } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   HIDDEN_BALANCE_PREFIX,
+  INACTIVE_DAO_NAMES,
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
   convertMicroDenomToDenomWithDecimals,
@@ -342,6 +343,7 @@ export const walletDaosSelector = selectorFamily<
       const daos: {
         dao: string
         config: Config
+        proposalCount: number
       }[] = get(
         queryWalletIndexerSelector({
           chainId,
@@ -355,12 +357,14 @@ export const walletDaosSelector = selectorFamily<
 
       const lazyDaoCards = daos
         .map(
-          ({ dao, config }): LazyDaoCardProps => ({
+          ({ dao, config, proposalCount }): LazyDaoCardProps => ({
             chainId,
             coreAddress: dao,
             name: config.name,
             description: config.description,
             imageUrl: config.image_url || getFallbackImage(dao),
+            isInactive:
+              INACTIVE_DAO_NAMES.includes(config.name) || proposalCount === 0,
           })
         )
         .sort((a, b) => a.name.localeCompare(b.name))

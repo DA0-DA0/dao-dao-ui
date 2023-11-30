@@ -62,3 +62,6 @@ export const NUM_FEATURED_DAOS = 10
 // Neutron governance DAO.
 export const NEUTRON_GOVERNANCE_DAO =
   'neutron1suhgf5svhu4usrurvxzlgn54ksxmn8gljarjtxqnapv8kjnp4nrstdxvff'
+
+// DAOs with these names will be excluded from search.
+export const INACTIVE_DAO_NAMES = ['[archived]', '[deleted]']
