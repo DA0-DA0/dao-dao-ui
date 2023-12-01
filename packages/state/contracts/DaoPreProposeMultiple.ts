@@ -20,6 +20,7 @@ import {
   UncheckedDepositInfo,
 } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
 import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
+
 export interface DaoPreProposeMultipleReadOnlyInterface {
   contractAddress: string
   proposalModule: () => Promise<Addr>

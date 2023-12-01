@@ -4,6 +4,7 @@ import TimeAgo from 'react-timeago'
 import {
   DaoPreProposeApprovalSingleSelectors,
   DaoPreProposeApproverSelectors,
+  DaoProposalSingleCommonSelectors,
   blockHeightSelector,
   blocksPerYearSelector,
 } from '@dao-dao/state'
@@ -29,7 +30,6 @@ import {
 
 import { daoCoreProposalModulesSelector } from '../../../../recoil'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { proposalSelector } from '../contracts/DaoProposalSingle.common.recoil'
 import { ProposalWithMetadata } from '../types'
 
 // Returns a proposal wrapped in a LoadingData object to allow the UI to respond
@@ -43,7 +43,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   } = useProposalModuleAdapterOptions()
 
   const loadingProposalResponse = useCachedLoading(
-    proposalSelector({
+    DaoProposalSingleCommonSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       chainId,
       params: [

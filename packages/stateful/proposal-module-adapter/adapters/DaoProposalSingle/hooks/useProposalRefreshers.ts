@@ -3,6 +3,7 @@ import { constSelector, useSetRecoilState } from 'recoil'
 
 import {
   DaoPreProposeApprovalSingleSelectors,
+  DaoProposalSingleCommonSelectors,
   refreshProposalIdAtom,
   refreshProposalsIdAtom,
 } from '@dao-dao/state'
@@ -10,7 +11,6 @@ import { useCachedLoading } from '@dao-dao/stateless'
 import { ProposalRefreshers } from '@dao-dao/types'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
-import { proposalSelector } from '../contracts/DaoProposalSingle.common.recoil'
 
 export const useProposalRefreshers = (): ProposalRefreshers => {
   const {
@@ -42,7 +42,7 @@ export const useProposalRefreshers = (): ProposalRefreshers => {
   }, [setRefreshProposalsId])
 
   const loadingProposal = useCachedLoading(
-    proposalSelector({
+    DaoProposalSingleCommonSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       chainId,
       params: [

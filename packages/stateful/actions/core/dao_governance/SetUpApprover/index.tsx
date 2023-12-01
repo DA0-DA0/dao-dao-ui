@@ -5,6 +5,7 @@ import { useRecoilValue } from 'recoil'
 import {
   DaoCoreV2Selectors,
   DaoPreProposeApprovalSingleSelectors,
+  DaoProposalSingleCommonSelectors,
 } from '@dao-dao/state/recoil'
 import { PersonRaisingHandEmoji, useCachedLoading } from '@dao-dao/stateless'
 import { ChainId, Feature, ModuleInstantiateInfo } from '@dao-dao/types'
@@ -29,7 +30,6 @@ import {
 
 import { EntityDisplay } from '../../../../components/EntityDisplay'
 import { DaoProposalSingleAdapter } from '../../../../proposal-module-adapter/adapters/DaoProposalSingle'
-import { configSelector } from '../../../../proposal-module-adapter/adapters/DaoProposalSingle/contracts/DaoProposalSingle.common.recoil'
 import { useActionOptions } from '../../../react'
 import {
   SetUpApproverData,
@@ -194,7 +194,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
     }
 
     const config = useRecoilValue(
-      configSelector({
+      DaoProposalSingleCommonSelectors.configSelector({
         contractAddress: singleChoiceProposal.address,
         chainId,
       })

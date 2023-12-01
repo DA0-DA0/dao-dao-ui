@@ -16,6 +16,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { DaoProposalSingleCommonSelectors } from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
   IconButtonLink,
@@ -46,21 +47,14 @@ import {
 import { ButtonLink, SuspenseLoader } from '../../../../components'
 import { EntityDisplay } from '../../../../components/EntityDisplay'
 import {
+  CwProposalSingleV1Hooks,
+  DaoProposalSingleV2Hooks,
   useAwaitNextBlock,
   useMembership,
   useProposalPolytoneState,
   useWallet,
 } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import {
-  useClose as useCloseV1,
-  useExecute as useExecuteV1,
-} from '../contracts/CwProposalSingle.v1.hooks'
-import { configSelector } from '../contracts/DaoProposalSingle.common.recoil'
-import {
-  useClose as useCloseV2,
-  useExecute as useExecuteV2,
-} from '../contracts/DaoProposalSingle.v2.hooks'
 import {
   useCastVote,
   useLoadingDepositInfo,
@@ -138,7 +132,7 @@ const InnerProposalStatusAndInfo = ({
   })
 
   const config = useRecoilValue(
-    configSelector({
+    DaoProposalSingleCommonSelectors.configSelector({
       chainId,
       contractAddress: proposalModule.address,
     })
@@ -336,13 +330,17 @@ const InnerProposalStatusAndInfo = ({
   const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
   const executeProposal = (
-    proposalModule.version === ContractVersion.V1 ? useExecuteV1 : useExecuteV2
+    proposalModule.version === ContractVersion.V1
+      ? CwProposalSingleV1Hooks.useExecute
+      : DaoProposalSingleV2Hooks.useExecute
   )({
     contractAddress: proposalModule.address,
     sender: walletAddress,
   })
   const closeProposal = (
-    proposalModule.version === ContractVersion.V1 ? useCloseV1 : useCloseV2
+    proposalModule.version === ContractVersion.V1
+      ? CwProposalSingleV1Hooks.useClose
+      : DaoProposalSingleV2Hooks.useClose
   )({
     contractAddress: proposalModule.address,
     sender: walletAddress,

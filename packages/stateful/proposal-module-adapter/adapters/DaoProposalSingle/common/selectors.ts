@@ -6,7 +6,10 @@ import {
 } from 'recoil'
 
 import {
+  CwProposalSingleV1Selectors,
   DaoPreProposeApprovalSingleSelectors,
+  DaoPreProposeSingleSelectors,
+  DaoProposalSingleCommonSelectors,
   blockHeightTimestampSafeSelector,
 } from '@dao-dao/state'
 import {
@@ -23,10 +26,6 @@ import {
   DepositInfoSelector,
 } from '@dao-dao/types/proposal-module-adapter'
 import { isFeatureSupportedByVersion } from '@dao-dao/utils'
-
-import { configSelector as configV1Selector } from '../contracts/CwProposalSingle.v1.recoil'
-import { configSelector as configPreProposeSelector } from '../contracts/DaoPreProposeSingle.recoil'
-import { reverseProposalsSelector } from '../contracts/DaoProposalSingle.common.recoil'
 
 export const reverseProposalInfosSelector: (
   info: WithChainId<{
@@ -47,7 +46,7 @@ export const reverseProposalInfosSelector: (
     }) =>
     async ({ get }) => {
       const proposalResponses = get(
-        reverseProposalsSelector({
+        DaoProposalSingleCommonSelectors.reverseProposalsSelector({
           contractAddress: proposalModuleAddress,
           chainId,
           params: [
@@ -204,7 +203,7 @@ export const makeDepositInfoSelector: (
         !isFeatureSupportedByVersion(Feature.PrePropose, version)
       ) {
         const config = get(
-          configV1Selector({
+          CwProposalSingleV1Selectors.configSelector({
             contractAddress: proposalModuleAddress,
             chainId,
           })
@@ -223,7 +222,7 @@ export const makeDepositInfoSelector: (
         }
       } else if (preProposeAddress) {
         const config = get(
-          configPreProposeSelector({
+          DaoPreProposeSingleSelectors.configSelector({
             contractAddress: preProposeAddress,
             chainId,
             params: [],
@@ -251,7 +250,7 @@ export const anyoneCanProposeSelector = selectorFamily<
     ({ get }) => {
       if (preProposeAddress) {
         const config = get(
-          configPreProposeSelector({
+          DaoPreProposeSingleSelectors.configSelector({
             contractAddress: preProposeAddress,
             chainId,
             params: [],

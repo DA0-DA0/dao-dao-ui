@@ -1,4 +1,4 @@
-import { queryIndexer } from '@dao-dao/state'
+import { DaoProposalMultipleQueryClient, queryIndexer } from '@dao-dao/state'
 import { Feature, FetchVetoConfig } from '@dao-dao/types'
 import { Config } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
@@ -6,8 +6,6 @@ import {
   getRpcForChainId,
   isFeatureSupportedByVersion,
 } from '@dao-dao/utils'
-
-import { DaoProposalMultipleQueryClient } from '../contracts/DaoProposalMultiple.client'
 
 export const fetchVetoConfig: FetchVetoConfig = async (
   chainId,

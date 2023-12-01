@@ -4,9 +4,9 @@ import {
   DaoCreationGetInstantiateInfo,
   PercentOrMajorityValue,
 } from '@dao-dao/types'
-import { InstantiateMsg as CwPreProposeMultipleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
+import { InstantiateMsg as DaoPreProposeMultipleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
 import {
-  InstantiateMsg as CwProposalMultipleInstantiateMsg,
+  InstantiateMsg as DaoProposalMultipleInstantiateMsg,
   PercentageThreshold,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
@@ -41,40 +41,41 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 ) => {
   const decimals = proposalDeposit.token?.decimals ?? 0
 
-  const preProposeMultipleInstantiateMsg: CwPreProposeMultipleInstantiateMsg = {
-    deposit_info: proposalDeposit.enabled
-      ? {
-          amount: convertDenomToMicroDenomWithDecimals(
-            proposalDeposit.amount,
-            decimals
-          ).toString(),
-          denom:
-            proposalDeposit.type === 'voting_module_token'
-              ? {
-                  voting_module_token: {},
-                }
-              : {
-                  token: {
-                    denom:
-                      proposalDeposit.type === 'native'
-                        ? {
-                            native: proposalDeposit.denomOrAddress,
-                          }
-                        : // proposalDeposit.type === 'cw20'
-                          {
-                            cw20: proposalDeposit.denomOrAddress,
-                          },
+  const preProposeMultipleInstantiateMsg: DaoPreProposeMultipleInstantiateMsg =
+    {
+      deposit_info: proposalDeposit.enabled
+        ? {
+            amount: convertDenomToMicroDenomWithDecimals(
+              proposalDeposit.amount,
+              decimals
+            ).toString(),
+            denom:
+              proposalDeposit.type === 'voting_module_token'
+                ? {
+                    voting_module_token: {},
+                  }
+                : {
+                    token: {
+                      denom:
+                        proposalDeposit.type === 'native'
+                          ? {
+                              native: proposalDeposit.denomOrAddress,
+                            }
+                          : // proposalDeposit.type === 'cw20'
+                            {
+                              cw20: proposalDeposit.denomOrAddress,
+                            },
+                    },
                   },
-                },
-          refund_policy: proposalDeposit.refundPolicy,
-        }
-      : null,
-    extension: {},
-    open_proposal_submission: anyoneCanPropose,
-  }
+            refund_policy: proposalDeposit.refundPolicy,
+          }
+        : null,
+      extension: {},
+      open_proposal_submission: anyoneCanPropose,
+    }
 
   // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<CwPreProposeMultipleInstantiateMsg>(
+  makeValidateMsg<DaoPreProposeMultipleInstantiateMsg>(
     preProposeInstantiateSchema,
     t
   )(preProposeMultipleInstantiateMsg)
@@ -87,7 +88,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       historicalCodeIds?.[ContractVersion.V210]),
   }
 
-  const msg: CwProposalMultipleInstantiateMsg = {
+  const msg: DaoProposalMultipleInstantiateMsg = {
     allow_revoting: allowRevoting,
     close_proposal_on_execution_failure: true,
     max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
@@ -116,7 +117,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   }
 
   // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<CwProposalMultipleInstantiateMsg>(instantiateSchema, t)(msg)
+  makeValidateMsg<DaoProposalMultipleInstantiateMsg>(instantiateSchema, t)(msg)
 
   return {
     admin: { core_module: {} },

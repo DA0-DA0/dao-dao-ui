@@ -1,12 +1,14 @@
-import { fetchPreProposeModule, queryIndexer } from '@dao-dao/state'
+import {
+  DaoProposalMultipleQueryClient,
+  fetchPreProposeModule,
+  queryIndexer,
+} from '@dao-dao/state'
 import { Feature, FetchPreProposeFunction } from '@dao-dao/types'
 import {
   cosmWasmClientRouter,
   getRpcForChainId,
   isFeatureSupportedByVersion,
 } from '@dao-dao/utils'
-
-import { DaoProposalMultipleQueryClient } from '../contracts/DaoProposalMultiple.client'
 
 export const fetchPrePropose: FetchPreProposeFunction = async (
   chainId,

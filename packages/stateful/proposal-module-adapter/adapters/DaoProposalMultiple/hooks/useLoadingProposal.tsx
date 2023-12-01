@@ -2,7 +2,11 @@ import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
-import { blockHeightSelector, blocksPerYearSelector } from '@dao-dao/state'
+import {
+  DaoProposalMultipleSelectors,
+  blockHeightSelector,
+  blocksPerYearSelector,
+} from '@dao-dao/state'
 import {
   useCachedLoadable,
   useCachedLoading,
@@ -12,7 +16,6 @@ import { LoadingData, ProposalStatusEnum } from '@dao-dao/types'
 import { convertExpirationToDate, formatDate } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { proposalSelector } from '../contracts/DaoProposalMultiple.recoil'
 import { ProposalWithMetadata } from '../types'
 
 // Returns a proposal wrapped in a LoadingData object to allow the UI to respond
@@ -26,7 +29,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   } = useProposalModuleAdapterOptions()
 
   const loadingProposalResponse = useCachedLoading(
-    proposalSelector({
+    DaoProposalMultipleSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       chainId,
       params: [

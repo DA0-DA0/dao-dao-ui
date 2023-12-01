@@ -30,6 +30,7 @@ import {
   VoteHooksResponse,
 } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
+
 export interface DaoProposalSingleV2ReadOnlyInterface {
   contractAddress: string
   config: () => Promise<ConfigResponse>

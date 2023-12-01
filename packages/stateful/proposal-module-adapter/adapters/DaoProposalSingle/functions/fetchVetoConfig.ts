@@ -1,4 +1,4 @@
-import { queryIndexer } from '@dao-dao/state'
+import { DaoProposalSingleV2QueryClient, queryIndexer } from '@dao-dao/state'
 import { Feature, FetchVetoConfig } from '@dao-dao/types'
 import { ConfigResponse } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
@@ -6,8 +6,6 @@ import {
   getRpcForChainId,
   isFeatureSupportedByVersion,
 } from '@dao-dao/utils'
-
-import { DaoProposalSingleV2QueryClient } from '../contracts/DaoProposalSingle.v2.client'
 
 export const fetchVetoConfig: FetchVetoConfig = async (
   chainId,

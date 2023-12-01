@@ -4,15 +4,15 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { useChain } from '@dao-dao/stateless'
-import { FunctionKeyOf } from '@dao-dao/types'
-
-import { useSyncWalletSigner } from '../../../../hooks'
-import { DaoPreProposeMultipleClient as ExecuteClient } from './DaoPreProposeMultiple.client'
+import { DaoPreProposeSingleClient as ExecuteClient } from '@dao-dao/state/contracts/DaoPreProposeSingle'
 import {
   ExecuteClientParams,
   executeClient,
-} from './DaoPreProposeMultiple.recoil'
+} from '@dao-dao/state/recoil/selectors/contracts/DaoPreProposeSingle'
+import { useChain } from '@dao-dao/stateless'
+import { FunctionKeyOf } from '@dao-dao/types'
+
+import { useSyncWalletSigner } from '../useSyncWalletSigner'
 
 // This hook wrapper lets us easily make hooks out of all execution functions on
 // the contract clients, without having to fetch the `executeClient` selector as

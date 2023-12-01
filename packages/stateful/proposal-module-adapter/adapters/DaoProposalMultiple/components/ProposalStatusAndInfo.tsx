@@ -16,6 +16,7 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
+import { DaoProposalMultipleSelectors } from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
   IconButtonLink,
@@ -44,14 +45,13 @@ import {
 import { EntityDisplay, SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
 import {
+  DaoProposalMultipleHooks,
   useAwaitNextBlock,
   useMembership,
   useProposalPolytoneState,
   useWallet,
 } from '../../../../hooks'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { useClose, useExecute } from '../contracts/DaoProposalMultiple.hooks'
-import { configSelector } from '../contracts/DaoProposalMultiple.recoil'
 import {
   useCastVote,
   useLoadingDepositInfo,
@@ -122,7 +122,7 @@ const InnerProposalStatusAndInfo = ({
   })
 
   const config = useRecoilValue(
-    configSelector({
+    DaoProposalMultipleSelectors.configSelector({
       chainId,
       contractAddress: proposalModule.address,
     })
@@ -266,11 +266,11 @@ const InnerProposalStatusAndInfo = ({
   const voteOptions = useLoadingVoteOptions()
   const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
-  const executeProposal = useExecute({
+  const executeProposal = DaoProposalMultipleHooks.useExecute({
     contractAddress: proposalModule.address,
     sender: walletAddress,
   })
-  const closeProposal = useClose({
+  const closeProposal = DaoProposalMultipleHooks.useClose({
     contractAddress: proposalModule.address,
     sender: walletAddress,
   })

@@ -1,37 +1,35 @@
 import { selectorFamily } from 'recoil'
 
-import {
-  cosmWasmClientForChainSelector,
-  queryContractIndexerSelector,
-  signingCosmWasmClientAtom,
-} from '@dao-dao/state'
 import { WithChainId } from '@dao-dao/types'
 import {
-  Config,
+  ConfigResponse,
   DaoResponse,
   DepositInfoResponse,
   ProposalModuleResponse,
-} from '@dao-dao/types/contracts/DaoPreProposeMultiple'
+} from '@dao-dao/types/contracts/DaoPreProposeSingle'
 
 import {
-  DaoPreProposeMultipleClient,
-  DaoPreProposeMultipleQueryClient,
-} from './DaoPreProposeMultiple.client'
+  DaoPreProposeSingleClient,
+  DaoPreProposeSingleQueryClient,
+} from '../../../contracts/DaoPreProposeSingle'
+import { signingCosmWasmClientAtom } from '../../atoms'
+import { cosmWasmClientForChainSelector } from '../chain'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
 }>
 
 export const queryClient = selectorFamily<
-  DaoPreProposeMultipleQueryClient,
+  DaoPreProposeSingleQueryClient,
   QueryClientParams
 >({
-  key: 'DaoPreProposeMultipleQueryClient',
+  key: 'daoPreProposeSingleQueryClient',
   get:
     ({ contractAddress, chainId }) =>
     ({ get }) => {
       const client = get(cosmWasmClientForChainSelector(chainId))
-      return new DaoPreProposeMultipleQueryClient(client, contractAddress)
+      return new DaoPreProposeSingleQueryClient(client, contractAddress)
     },
   dangerouslyAllowMutability: true,
 })
@@ -42,17 +40,17 @@ export type ExecuteClientParams = WithChainId<{
 }>
 
 export const executeClient = selectorFamily<
-  DaoPreProposeMultipleClient | undefined,
+  DaoPreProposeSingleClient | undefined,
   ExecuteClientParams
 >({
-  key: 'cwPreProposeMultipleExecuteClient',
+  key: 'daoPreProposeSingleExecuteClient',
   get:
     ({ chainId, contractAddress, sender }) =>
     ({ get }) => {
       const client = get(signingCosmWasmClientAtom({ chainId }))
       if (!client) return
 
-      return new DaoPreProposeMultipleClient(client, sender, contractAddress)
+      return new DaoPreProposeSingleClient(client, sender, contractAddress)
     },
   dangerouslyAllowMutability: true,
 })
@@ -60,22 +58,23 @@ export const executeClient = selectorFamily<
 export const proposalModuleSelector = selectorFamily<
   ProposalModuleResponse,
   QueryClientParams & {
-    params: Parameters<DaoPreProposeMultipleQueryClient['proposalModule']>
+    params: Parameters<DaoPreProposeSingleQueryClient['proposalModule']>
   }
 >({
-  key: 'cwPreProposeMultipleProposalModule',
+  key: 'daoPreProposeSingleProposalModule',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const proposalModule = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoPreProposeMultiple/proposalModule',
+          formula: 'daoPreProposeSingle/proposalModule',
         })
       )
       if (proposalModule) {
         return proposalModule
       }
+
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.proposalModule(...params)
@@ -84,46 +83,48 @@ export const proposalModuleSelector = selectorFamily<
 export const daoSelector = selectorFamily<
   DaoResponse,
   QueryClientParams & {
-    params: Parameters<DaoPreProposeMultipleQueryClient['dao']>
+    params: Parameters<DaoPreProposeSingleQueryClient['dao']>
   }
 >({
-  key: 'cwPreProposeMultipleDao',
+  key: 'daoPreProposeSingleDao',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const dao = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoPreProposeMultiple/dao',
+          formula: 'daoPreProposeSingle/dao',
         })
       )
       if (dao) {
         return dao
       }
+
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.dao(...params)
     },
 })
 export const configSelector = selectorFamily<
-  Config,
+  ConfigResponse,
   QueryClientParams & {
-    params: Parameters<DaoPreProposeMultipleQueryClient['config']>
+    params: Parameters<DaoPreProposeSingleQueryClient['config']>
   }
 >({
-  key: 'cwdPreProposeMultipleConfig',
+  key: 'daoPreProposeSingleConfig',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const config = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoPreProposeMultiple/config',
+          formula: 'daoPreProposeSingle/config',
         })
       )
       if (config) {
         return config
       }
+
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.config(...params)
@@ -132,36 +133,36 @@ export const configSelector = selectorFamily<
 export const depositInfoSelector = selectorFamily<
   DepositInfoResponse,
   QueryClientParams & {
-    params: Parameters<DaoPreProposeMultipleQueryClient['depositInfo']>
+    params: Parameters<DaoPreProposeSingleQueryClient['depositInfo']>
   }
 >({
-  key: 'cwPreProposeMultipleDepositInfo',
+  key: 'daoPreProposeSingleDepositInfo',
   get:
     ({ params, ...queryClientParams }) =>
     async ({ get }) => {
       const depositInfo = get(
         queryContractIndexerSelector({
           ...queryClientParams,
-          formula: 'daoPreProposeMultiple/depositInfo',
+          formula: 'daoPreProposeSingle/depositInfo',
           args: params[0],
         })
       )
       if (depositInfo) {
         return depositInfo
       }
+
       // If indexer query fails, fallback to contract query.
       const client = get(queryClient(queryClientParams))
       return await client.depositInfo(...params)
     },
 })
-
 // export const extensionSelector = selectorFamily<
 //   ExtensionResponse,
 //   QueryClientParams & {
-//     params: Parameters<DaoPreProposeMultipleQueryClient['queryExtension']>
+//     params: Parameters<DaoPreProposeSingleQueryClient['queryExtension']>
 //   }
 // >({
-//   key: 'cwPreProposeMultipleExtension',
+//   key: 'daoPreProposeSingleExtension',
 //   get:
 //     ({ params, ...queryClientParams }) =>
 //     async ({ get }) => {

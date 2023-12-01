@@ -3,7 +3,11 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
-import { genericTokenSelector, isContractSelector } from '@dao-dao/state'
+import {
+  DaoPreProposeSingleSelectors,
+  genericTokenSelector,
+  isContractSelector,
+} from '@dao-dao/state'
 import { GearEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -34,7 +38,6 @@ import {
 import { useActionOptions } from '../../../../../../actions'
 import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
 import { PRE_PROPOSE_CONTRACT_NAMES } from '../../../constants'
-import { configSelector } from '../../../contracts/DaoPreProposeSingle.recoil'
 import {
   UpdatePreProposeSingleConfigComponent,
   UpdatePreProposeSingleConfigData,
@@ -140,7 +143,7 @@ export const makeUpdatePreProposeSingleConfigActionMaker =
         useCommonGovernanceTokenInfo?.() ?? {}
 
       const configLoading = useCachedLoadingWithError(
-        configSelector({
+        DaoPreProposeSingleSelectors.configSelector({
           chainId,
           contractAddress: preProposeAddress,
           params: [],

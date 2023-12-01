@@ -25,14 +25,14 @@ import {
 
 import {
   Cw20BaseHooks,
+  CwProposalSingleV1Hooks,
+  DaoPreProposeSingleHooks,
+  DaoProposalSingleV2Hooks,
   useAwaitNextBlock,
   useMembership,
   useSimulateCosmosMsgs,
   useWallet,
 } from '../../../../../hooks'
-import { usePropose as useProposeV1 } from '../../contracts/CwProposalSingle.v1.hooks'
-import { usePropose as useProposePrePropose } from '../../contracts/DaoPreProposeSingle.hooks'
-import { usePropose as useProposeV2 } from '../../contracts/DaoProposalSingle.v2.hooks'
 import {
   MakeUsePublishProposalOptions,
   NewProposalData,
@@ -163,15 +163,15 @@ export const makeUsePublishProposal =
       contractAddress: depositInfoCw20TokenAddress ?? '',
       sender: walletAddress ?? '',
     })
-    const doProposeV1 = useProposeV1({
+    const doProposeV1 = CwProposalSingleV1Hooks.usePropose({
       contractAddress: proposalModule.address,
       sender: walletAddress ?? '',
     })
-    const doProposeV2 = useProposeV2({
+    const doProposeV2 = DaoProposalSingleV2Hooks.usePropose({
       contractAddress: proposalModule.address,
       sender: walletAddress ?? '',
     })
-    const doProposePrePropose = useProposePrePropose({
+    const doProposePrePropose = DaoPreProposeSingleHooks.usePropose({
       contractAddress: proposalModule.prePropose?.address ?? '',
       sender: walletAddress ?? '',
     })

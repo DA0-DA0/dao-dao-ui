@@ -1,7 +1,11 @@
 import { useCallback } from 'react'
 import { constSelector } from 'recoil'
 
-import { Cw20BaseSelectors, isContractSelector } from '@dao-dao/state'
+import {
+  Cw20BaseSelectors,
+  CwProposalSingleV1Selectors,
+  isContractSelector,
+} from '@dao-dao/state'
 import {
   BallotDepositEmoji,
   useCachedLoadingWithError,
@@ -25,10 +29,8 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../../actions'
 import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
 import { CONTRACT_NAMES } from '../../../constants'
-import { configSelector } from '../../../contracts/CwProposalSingle.v1.recoil'
 import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
 
 export interface UpdateProposalConfigData {
@@ -155,7 +157,7 @@ export const makeUpdateProposalConfigV1ActionMaker =
     version,
     address: proposalModuleAddress,
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
-  ({ t, context, chain: { chain_id: chainId } }) => {
+  ({ t, address, context, chain: { chain_id: chainId } }) => {
     // Only v1.
     if (!version || version !== ContractVersion.V1) {
       return null
@@ -163,7 +165,7 @@ export const makeUpdateProposalConfigV1ActionMaker =
 
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useCachedLoadingWithError(
-        configSelector({
+        CwProposalSingleV1Selectors.configSelector({
           chainId,
           contractAddress: proposalModuleAddress,
         })
@@ -229,7 +231,6 @@ export const makeUpdateProposalConfigV1ActionMaker =
     const useTransformToCosmos: UseTransformToCosmos<
       UpdateProposalConfigData
     > = () => {
-      const { address } = useActionOptions()
       const {
         hooks: { useCommonGovernanceTokenInfo },
       } = useVotingModuleAdapter()
@@ -290,7 +291,7 @@ export const makeUpdateProposalConfigV1ActionMaker =
               },
             },
           }),
-        [address, voteConversionDecimals]
+        [voteConversionDecimals]
       )
     }
 

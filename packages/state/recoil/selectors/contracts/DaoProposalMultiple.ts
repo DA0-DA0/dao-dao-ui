@@ -1,13 +1,5 @@
 import { selectorFamily } from 'recoil'
 
-import {
-  contractInfoSelector,
-  cosmWasmClientForChainSelector,
-  queryContractIndexerSelector,
-  refreshProposalIdAtom,
-  refreshProposalsIdAtom,
-  signingCosmWasmClientAtom,
-} from '@dao-dao/state'
 import { Addr, WithChainId } from '@dao-dao/types'
 import {
   Config,
@@ -23,7 +15,15 @@ import {
 import {
   DaoProposalMultipleClient,
   DaoProposalMultipleQueryClient,
-} from './DaoProposalMultiple.client'
+} from '../../../contracts/DaoProposalMultiple'
+import {
+  refreshProposalIdAtom,
+  refreshProposalsIdAtom,
+  signingCosmWasmClientAtom,
+} from '../../atoms'
+import { cosmWasmClientForChainSelector } from '../chain'
+import { contractInfoSelector } from '../contract'
+import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string
