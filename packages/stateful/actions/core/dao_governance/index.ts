@@ -7,6 +7,7 @@ import { makeManageStorageItemsAction } from './ManageStorageItems'
 import { makeManageSubDaosAction } from './ManageSubDaos'
 import { makeSetUpApproverAction } from './SetUpApprover'
 import { makeUpgradeV1ToV2Action } from './UpgradeV1ToV2'
+import { makeVetoOrEarlyExecuteDaoProposalAction } from './VetoOrEarlyExecuteDaoProposal'
 
 export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
   t,
@@ -25,5 +26,6 @@ export const makeDaoGovernanceActionCategory: ActionCategoryMaker = ({
     makeUpgradeV1ToV2Action,
     makeCreateCrossChainAccountAction,
     makeSetUpApproverAction,
+    makeVetoOrEarlyExecuteDaoProposalAction,
   ],
 })
