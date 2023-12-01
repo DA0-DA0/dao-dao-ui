@@ -1,3 +1,4 @@
+import uniq from 'lodash.uniq'
 import {
   RecoilValueReadOnly,
   selectorFamily,
@@ -25,6 +26,9 @@ import {
   ProposalModule,
   WithChainId,
 } from '@dao-dao/types'
+import { ProposalModuleWithInfo } from '@dao-dao/types/contracts/DaoCore.v2'
+import { ProposalResponse as MultipleChoiceProposalResponse } from '@dao-dao/types/contracts/DaoProposalMultiple'
+import { ProposalResponse as SingleChoiceProposalResponse } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
@@ -407,5 +411,82 @@ export const daoInfoFromPolytoneProxySelector = selectorFamily<
         coreAddress,
         info,
       }
+    },
+})
+
+/**
+ * Proposals this which this DAO can currently veto.
+ */
+export const daoVetoableProposalsSelector = selectorFamily<
+  {
+    dao: string
+    proposalModules: ProposalModule[]
+    proposalsWithModule: {
+      proposalModule: ProposalModuleWithInfo
+      proposals: (
+        | SingleChoiceProposalResponse
+        | MultipleChoiceProposalResponse
+      )[]
+    }[]
+  }[],
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'daoVetoableProposals',
+  get:
+    ({ chainId, coreAddress }) =>
+    ({ get }) => {
+      const accounts = [
+        [chainId, coreAddress],
+        ...Object.entries(
+          get(
+            DaoCoreV2Selectors.polytoneProxiesSelector({
+              chainId,
+              contractAddress: coreAddress,
+            })
+          )
+        ),
+      ]
+
+      const daoVetoableProposals: {
+        dao: string
+        proposalModules: {
+          proposalModule: ProposalModuleWithInfo
+          proposals: (
+            | SingleChoiceProposalResponse
+            | MultipleChoiceProposalResponse
+          )[]
+        }[]
+      }[] = get(
+        waitForAll(
+          accounts.map(([chainId, contractAddress]) =>
+            queryContractIndexerSelector({
+              chainId,
+              contractAddress,
+              formula: 'daoCore/vetoableProposals',
+              required: true,
+            })
+          )
+        )
+      )
+
+      const uniqueDaos = uniq(daoVetoableProposals.map(({ dao }) => dao))
+      const daoProposalModules = get(
+        waitForAll(
+          uniqueDaos.map((coreAddress) =>
+            daoCoreProposalModulesSelector({
+              coreAddress,
+              chainId,
+            })
+          )
+        )
+      )
+
+      return uniqueDaos.map((dao, index) => ({
+        dao,
+        proposalModules: daoProposalModules[index],
+        proposalsWithModule: daoVetoableProposals.find(
+          (vetoable) => vetoable.dao === dao
+        )!.proposalModules,
+      }))
     },
 })

@@ -348,7 +348,9 @@ export type DaoCreationVotingConfig = DaoCreationVotingConfigWithAllowRevoting &
 
 //! Other
 
-// Map chain ID to proxy address on that chain for this DAO.
+/**
+ * Map chain ID to proxy address on that chain for this DAO.
+ */
 export type PolytoneProxies = Record<string, string>
 
 export type DaoPayrollConfig = {

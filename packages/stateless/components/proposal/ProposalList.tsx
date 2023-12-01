@@ -11,6 +11,8 @@ import { NoContent } from '../NoContent'
 export interface ProposalListProps<T extends { proposalId: string }> {
   ProposalLine: ComponentType<T>
   openProposals: T[]
+  // Proposals that can be vetoed.
+  vetoableProposals: T[]
   historyProposals: T[]
   // Override array length as count.
   historyCount?: number
@@ -25,6 +27,7 @@ export interface ProposalListProps<T extends { proposalId: string }> {
 export const ProposalList = <T extends { proposalId: string }>({
   ProposalLine,
   openProposals,
+  vetoableProposals,
   historyProposals,
   historyCount,
   createNewProposalHref,
@@ -36,6 +39,7 @@ export const ProposalList = <T extends { proposalId: string }>({
 }: ProposalListProps<T>) => {
   const { t } = useTranslation()
 
+  const [vetoableExpanded, setVetoableExpanded] = useState(true)
   const [historyExpanded, setHistoryExpanded] = useState(true)
 
   return openProposals.length > 0 || historyProposals.length > 0 ? (
@@ -46,11 +50,29 @@ export const ProposalList = <T extends { proposalId: string }>({
         {DiscordNotifierConfigureModal && <DiscordNotifierConfigureModal />}
       </div>
 
-      {!!openProposals.length && (
+      {openProposals.length > 0 && (
         <div className="mb-9 space-y-1">
           {openProposals.map((props) => (
             <ProposalLine {...props} key={props.proposalId} />
           ))}
+        </div>
+      )}
+
+      {vetoableProposals.length > 0 && (
+        <div className="link-text mt-3 ml-2 flex flex-row items-center gap-3 text-text-secondary">
+          <DropdownIconButton
+            className="text-icon-primary"
+            open={vetoableExpanded}
+            toggle={() => setVetoableExpanded((e) => !e)}
+          />
+
+          <p>
+            {/* eslint-disable-next-line i18next/no-literal-string */}
+            {t('title.vetoableProposals')} •{' '}
+            {t('title.numProposals', {
+              count: vetoableProposals.length,
+            })}
+          </p>
         </div>
       )}
 

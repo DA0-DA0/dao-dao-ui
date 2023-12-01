@@ -74,6 +74,7 @@ export enum ActionKey {
   IcaExecute = 'icaExecute',
   ManageIcas = 'manageIcas',
   VetoOrEarlyExecuteDaoProposal = 'vetoOrEarlyExecuteDaoProposal',
+  ManageVetoableDaos = 'manageVetoableDaos',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',

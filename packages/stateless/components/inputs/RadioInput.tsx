@@ -9,54 +9,79 @@ import {
   UseFormWatch,
 } from 'react-hook-form'
 
-export interface RadioInputProps<
-  FV extends FieldValues,
-  FieldName extends Path<FV>
-> {
+export type RadioInputNoFormProps<Value extends unknown = any> = {
   options: ({
-    value: UnpackNestedValue<PathValue<FV, FieldName>>
+    value: Value
   } & ({ label: string } | { display: ReactNode }))[]
-  fieldName: FieldName
-  watch: UseFormWatch<FV>
-  setValue: UseFormSetValue<FV>
+  selected?: Value
+  onChange: (value: Value) => void
   className?: string
   disabled?: boolean
-  onChange?: (value: UnpackNestedValue<PathValue<FV, FieldName>>) => void
 }
 
-export const RadioInput = <FV extends FieldValues, FieldName extends Path<FV>>({
+export const RadioInputNoForm = <Value extends unknown = any>({
   options,
-  fieldName,
-  watch,
-  setValue,
+  selected,
+  onChange,
   className,
   disabled,
-  onChange,
-}: RadioInputProps<FV, FieldName>) => (
+}: RadioInputNoFormProps<Value>) => (
   <div
     className={clsx('flex flex-row flex-wrap items-stretch gap-2', className)}
   >
-    {options.map(({ value, ...labelOrDisplay }, index) => {
-      const selected = value === watch(fieldName)
-
-      return (
-        <RadioButton
-          key={index}
-          background
-          disabled={disabled}
-          onClick={() => {
-            setValue(fieldName, value)
-            onChange?.(value)
-          }}
-          selected={selected}
-          {...labelOrDisplay}
-        />
-      )
-    })}
+    {options.map(({ value, ...labelOrDisplay }, index) => (
+      <RadioButton
+        key={index}
+        background
+        disabled={disabled}
+        onClick={() => onChange(value)}
+        selected={selected === value}
+        {...labelOrDisplay}
+      />
+    ))}
   </div>
 )
 
-export interface RadioButtonProps {
+export type RadioInputProps<
+  FV extends FieldValues,
+  FieldName extends Path<FV>
+> = Omit<
+  RadioInputNoFormProps<UnpackNestedValue<PathValue<FV, FieldName>>>,
+  'selected' | 'onChange'
+> &
+  Partial<
+    Pick<
+      RadioInputNoFormProps<UnpackNestedValue<PathValue<FV, FieldName>>>,
+      'onChange'
+    >
+  > & {
+    fieldName: FieldName
+    watch: UseFormWatch<FV>
+    setValue: UseFormSetValue<FV>
+  }
+
+export const RadioInput = <FV extends FieldValues, FieldName extends Path<FV>>({
+  fieldName,
+  watch,
+  setValue,
+  onChange,
+  ...props
+}: RadioInputProps<FV, FieldName>) => {
+  const selected = watch(fieldName)
+
+  return (
+    <RadioInputNoForm
+      onChange={(value) => {
+        setValue(fieldName, value)
+        onChange?.(value)
+      }}
+      selected={selected}
+      {...props}
+    />
+  )
+}
+
+export type RadioButtonProps = {
   selected: boolean
   onClick?: () => void
   label?: string

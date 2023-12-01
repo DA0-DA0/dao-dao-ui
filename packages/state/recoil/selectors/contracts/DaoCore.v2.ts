@@ -1374,27 +1374,3 @@ export const approvalDaosSelector = selectorFamily<
         })
       ),
 })
-
-/**
- * DAOs which this DAO has veto power over.
- */
-export const vetoDaosSelector = selectorFamily<
-  {
-    dao: string
-    proposalModule: string
-  }[],
-  QueryClientParams
->({
-  key: 'daoCoreV2VetoDaos',
-  get:
-    ({ chainId, contractAddress }) =>
-    ({ get }) =>
-      get(
-        queryContractIndexerSelector({
-          chainId,
-          contractAddress,
-          formula: 'daoCore/vetoerOf',
-          required: true,
-        })
-      ),
-})

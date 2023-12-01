@@ -27,6 +27,7 @@ Default.args = {
   openProposals: [...Array(Math.floor(Math.random() * 3) + 1)].map(
     (_, index) => ({ ...makeProposalProps(), proposalId: index.toString() })
   ),
+  vetoableProposals: [],
   // Generate between 5 and 15 proposals.
   historyProposals: [...Array(Math.floor(Math.random() * 11) + 5)].map(
     (_, index) => ({

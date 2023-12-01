@@ -1,10 +1,6 @@
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useRecoilValueLoadable } from 'recoil'
 
-import {
-  govProposalsSelector,
-} from '@dao-dao/state'
 import {
   ControlKnobsEmoji,
   Loader,
@@ -25,9 +21,7 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import {
-  SuspenseLoader,
-} from '../../../../components'
+import { SuspenseLoader } from '../../../../components'
 import { useActionOptions } from '../../../react'
 import {
   VetoOrEarlyExecuteDaoProposalComponent as StatelessVetoOrEarlyExecuteDaoProposalComponent,

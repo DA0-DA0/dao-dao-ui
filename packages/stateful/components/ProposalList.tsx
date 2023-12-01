@@ -4,6 +4,7 @@ import { useRecoilCallback, useSetRecoilState } from 'recoil'
 import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
   ProposalList as StatelessProposalList,
+  useCachedLoadingWithError,
   useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
@@ -12,6 +13,7 @@ import { CommonProposalListInfo } from '@dao-dao/types'
 
 import { useMembership, useOnDaoWebSocketMessage } from '../hooks'
 import { matchAndLoadCommon } from '../proposal-module-adapter'
+import { daoVetoableProposalsSelector } from '../recoil'
 import { DiscordNotifierConfigureModal } from './dao/DiscordNotifierConfigureModal'
 import { ProposalLine, ProposalLineProps } from './ProposalLine'
 
@@ -61,6 +63,34 @@ export const ProposalList = () => {
   const [startBefores, setStartBefores] = useState<
     Record<string, Record<ProposalType, number | undefined> | undefined>
   >({})
+
+  // TODO(veto): add veto actions to these proposals pages if the member is in
+  // the vetoer DAO
+  const vetoableProposalsLoading = useCachedLoadingWithError(
+    daoVetoableProposalsSelector({
+      coreAddress,
+      chainId: chain.chain_id,
+    })
+  )
+  const vetoableProposals =
+    vetoableProposalsLoading.loading || vetoableProposalsLoading.errored
+      ? []
+      : vetoableProposalsLoading.data.flatMap(
+          ({ dao, proposalModules, proposalsWithModule }) =>
+            proposalsWithModule.flatMap(
+              ({ proposalModule: { prefix }, proposals }) =>
+                proposals.map(
+                  ({ id }): ProposalLineProps => ({
+                    chainId: chain.chain_id,
+                    coreAddress: dao,
+                    proposalModules,
+                    proposalId: `${prefix}${id}`,
+                    proposalViewUrl: getDaoProposalPath(dao, `${prefix}${id}`),
+                    isPreProposeProposal: false,
+                  })
+                )
+            )
+        )
 
   const [loading, setLoading] = useState(true)
   const [canLoadMore, setCanLoadMore] = useState(true)
@@ -303,6 +333,7 @@ export const ProposalList = () => {
       }
       loadingMore={loading}
       openProposals={openProposals}
+      vetoableProposals={vetoableProposals}
     />
   )
 }

@@ -55,10 +55,10 @@ export const fetchProposalModules = async (
 
   const proposalModules: ProposalModule[] = await Promise.all(
     activeProposalModules.map(async ({ info, address, prefix }, index) => {
-      const version = parseContractVersion(info.version) ?? null
+      const version = (info && parseContractVersion(info.version)) ?? null
 
       // Get adapter for this contract.
-      const adapter = matchAdapter(info.contract)
+      const adapter = info && matchAdapter(info.contract)
 
       // Get proposal module type from adapter.
       const type: ProposalModuleType =
@@ -83,7 +83,7 @@ export const fetchProposalModules = async (
         )
           ? prefix
           : indexToProposalModulePrefix(index),
-        contractName: info.contract,
+        contractName: info?.contract || '',
         version,
         prePropose:
           (prePropose.status === 'fulfilled' && prePropose.value) || null,
