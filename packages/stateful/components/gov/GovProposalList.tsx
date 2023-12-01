@@ -136,6 +136,7 @@ export const GovProposalList = () => {
           loadMore={() => {}}
           loadingMore={initialLoad}
           openProposals={openProposals}
+          vetoableProposals={[]}
         />
       </div>
 

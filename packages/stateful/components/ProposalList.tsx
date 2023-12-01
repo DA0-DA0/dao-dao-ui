@@ -9,13 +9,16 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { CommonProposalListInfo } from '@dao-dao/types'
+import {
+  CommonProposalListInfo,
+  StatefulProposalLineProps,
+} from '@dao-dao/types'
 
 import { useMembership, useOnDaoWebSocketMessage } from '../hooks'
 import { matchAndLoadCommon } from '../proposal-module-adapter'
 import { daoVetoableProposalsSelector } from '../recoil'
 import { DiscordNotifierConfigureModal } from './dao/DiscordNotifierConfigureModal'
-import { ProposalLine, ProposalLineProps } from './ProposalLine'
+import { ProposalLine } from './ProposalLine'
 
 // Contracts enforce a max of 30, though this is on the edge, so use 20.
 const PROP_PAGINATE_LIMIT = 20
@@ -41,10 +44,12 @@ export const ProposalList = () => {
     coreAddress,
   })
 
-  const [openProposals, setOpenProposals] = useState<ProposalLineProps[]>([])
-  const [historyProposals, setHistoryProposals] = useState<ProposalLineProps[]>(
-    []
-  )
+  const [openProposals, setOpenProposals] = useState<
+    StatefulProposalLineProps[]
+  >([])
+  const [historyProposals, setHistoryProposals] = useState<
+    StatefulProposalLineProps[]
+  >([])
 
   // Get selectors for all proposal modules so we can list proposals.
   const commonSelectors = useMemo(
@@ -80,7 +85,7 @@ export const ProposalList = () => {
             proposalsWithModule.flatMap(
               ({ proposalModule: { prefix }, proposals }) =>
                 proposals.map(
-                  ({ id }): ProposalLineProps => ({
+                  ({ id }): StatefulProposalLineProps => ({
                     chainId: chain.chain_id,
                     coreAddress: dao,
                     proposalModules,
@@ -247,7 +252,7 @@ export const ProposalList = () => {
             const transformIntoProps = ({
               id,
               type,
-            }: typeof newProposalInfos[number]): ProposalLineProps => ({
+            }: typeof newProposalInfos[number]): StatefulProposalLineProps => ({
               chainId: chain.chain_id,
               coreAddress,
               proposalModules,

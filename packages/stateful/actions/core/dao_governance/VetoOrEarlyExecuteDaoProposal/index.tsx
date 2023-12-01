@@ -1,9 +1,9 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
+import { DaoProposalCommonSelectors } from '@dao-dao/state'
 import {
   ControlKnobsEmoji,
-  Loader,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
@@ -21,121 +21,116 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../components'
+import {
+  AddressInput,
+  EntityDisplay,
+  ProposalLine,
+} from '../../../../components'
+import {
+  daoInfoSelector,
+  daoVetoableProposalsSelector,
+} from '../../../../recoil'
 import { useActionOptions } from '../../../react'
 import {
   VetoOrEarlyExecuteDaoProposalComponent as StatelessVetoOrEarlyExecuteDaoProposalComponent,
   VetoOrEarlyExecuteDaoProposalData,
 } from './Component'
 
-const useDefaults: UseDefaults<VetoOrEarlyExecuteDaoProposalData> = () => ({
-  chainId: '',
-  coreAddress: '',
-  proposalModuleAddress: '',
-  proposalNumber: -1,
-  action: 'veto',
-})
-
 const Component: ActionComponent<
   undefined,
   VetoOrEarlyExecuteDaoProposalData
 > = (props) => {
   const { isCreating, fieldNamePrefix } = props
-  const options = useActionOptions()
-  const { watch, setValue, setError, clearErrors } =
+  const {
+    chain: { chain_id: daoChainId },
+    address,
+  } = useActionOptions()
+  const { watch, setValue } =
     useFormContext<VetoOrEarlyExecuteDaoProposalData>()
 
-  // const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
-  // const proposalId = watch(
-  //   (props.fieldNamePrefix + 'proposalId') as 'proposalId'
-  // )
+  const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
+  const coreAddress = watch(
+    (props.fieldNamePrefix + 'coreAddress') as 'coreAddress'
+  )
+  const proposalId = watch(
+    (props.fieldNamePrefix + 'proposalId') as 'proposalId'
+  )
 
-  // const openProposalsLoadable = useRecoilValueLoadable(
-  //   isCreating
-  //     ? govProposalsSelector({
-  //         status: ProposalStatus.PROPOSAL_STATUS_VOTING_PERIOD,
-  //         chainId,
-  //       })
-  //     : constSelector(undefined)
-  // )
+  const daoVetoableProposals = useCachedLoadingWithError(
+    daoVetoableProposalsSelector({
+      chainId: daoChainId,
+      coreAddress: address,
+    })
+  )
 
-  // // Prevent action from being submitted if there are no open proposals.
-  // useEffect(() => {
-  //   if (
-  //     openProposalsLoadable.state === 'hasValue' &&
-  //     openProposalsLoadable.contents?.proposals.length === 0
-  //   ) {
-  //     setError((fieldNamePrefix + 'proposalId') as 'proposalId', {
-  //       type: 'manual',
-  //     })
-  //   } else {
-  //     clearErrors((fieldNamePrefix + 'proposalId') as 'proposalId')
-  //   }
-  // }, [openProposalsLoadable, setError, clearErrors, fieldNamePrefix])
+  const selectedDaoInfo = useCachedLoadingWithError(
+    chainId && coreAddress
+      ? daoInfoSelector({
+          chainId,
+          coreAddress,
+        })
+      : undefined
+  )
 
-  // // If viewing an action where we already selected and voted on a proposal,
-  // // load just the one we voted on and add it to the list so we can display it.
-  // const selectedProposal = useRecoilValue(
-  //   !isCreating && proposalId
-  //     ? govProposalSelector({
-  //         proposalId: Number(proposalId),
-  //         chainId,
-  //       })
-  //     : constSelector(undefined)
-  // )
-
-  // const address = getChainAddressForActionOptions(options, chainId)
-  // const existingVotesLoading = loadableToLoadingData(
-  //   useRecoilValueLoadable(
-  //     proposalId && address
-  //       ? govProposalVoteSelector({
-  //           proposalId: Number(proposalId),
-  //           voter: address,
-  //           chainId,
-  //         })
-  //       : constSelector(undefined)
-  //   ),
-  //   undefined
-  // )
-
-  // // Select first proposal once loaded if nothing selected.
-  // useEffect(() => {
-  //   if (
-  //     isCreating &&
-  //     openProposalsLoadable.state === 'hasValue' &&
-  //     openProposalsLoadable.contents?.proposals.length &&
-  //     !proposalId
-  //   ) {
-  //     setValue(
-  //       (fieldNamePrefix + 'proposalId') as 'proposalId',
-  //       openProposalsLoadable.contents.proposals[0].id.toString()
-  //     )
-  //   }
-  // }, [isCreating, openProposalsLoadable, proposalId, setValue, fieldNamePrefix])
+  // Select first proposal once loaded if nothing selected.
+  useEffect(() => {
+    if (
+      isCreating &&
+      !daoVetoableProposals.loading &&
+      !daoVetoableProposals.errored &&
+      !proposalId &&
+      daoVetoableProposals.data.length > 0
+    ) {
+      setValue(
+        (fieldNamePrefix + 'chainId') as 'chainId',
+        daoVetoableProposals.data[0].chainId
+      )
+      setValue(
+        (fieldNamePrefix + 'coreAddress') as 'coreAddress',
+        daoVetoableProposals.data[0].dao
+      )
+      setValue(
+        (fieldNamePrefix + 'proposalModuleAddress') as 'proposalModuleAddress',
+        daoVetoableProposals.data[0].proposalsWithModule[0].proposalModule
+          .address
+      )
+      setValue(
+        (fieldNamePrefix + 'proposalId') as 'proposalId',
+        daoVetoableProposals.data[0].proposalsWithModule[0].proposals[0].id
+      )
+    }
+  }, [isCreating, proposalId, setValue, fieldNamePrefix, daoVetoableProposals])
 
   return (
-    <>
-      <SuspenseLoader
-        fallback={<Loader />}
-        forceFallback={openProposalsLoadable.state !== 'hasValue'}
-      >
-        <StatelessVetoOrEarlyExecuteDaoProposalComponent
-          {...props}
-          options={{}}
-        />
-      </SuspenseLoader>
-    </>
+    <StatelessVetoOrEarlyExecuteDaoProposalComponent
+      {...props}
+      options={{
+        selectedDaoInfo,
+        daoVetoableProposals,
+        AddressInput,
+        EntityDisplay,
+        ProposalLine,
+      }}
+    />
   )
 }
 
 export const makeVetoOrEarlyExecuteDaoProposalAction: ActionMaker<
   VetoOrEarlyExecuteDaoProposalData
-> = ({ t, chain: { chain_id: currentChainId } }) => {
+> = ({ t, chain: { chain_id: currentChainId }, address }) => {
+  const useDefaults: UseDefaults<VetoOrEarlyExecuteDaoProposalData> = () => ({
+    chainId: currentChainId,
+    coreAddress: '',
+    proposalModuleAddress: '',
+    proposalId: -1,
+    action: 'veto',
+  })
+
   const useTransformToCosmos: UseTransformToCosmos<
     VetoOrEarlyExecuteDaoProposalData
   > = () =>
     useCallback(
-      ({ chainId, proposalModuleAddress, proposalNumber, action }) =>
+      ({ chainId, proposalModuleAddress, proposalId, action }) =>
         maybeMakePolytoneExecuteMessage(
           currentChainId,
           chainId,
@@ -146,7 +141,7 @@ export const makeVetoOrEarlyExecuteDaoProposalAction: ActionMaker<
                 funds: [],
                 msg: {
                   [action === 'veto' ? 'veto' : 'execute']: {
-                    proposal_id: proposalNumber,
+                    proposal_id: proposalId,
                   },
                 },
               },
@@ -175,6 +170,7 @@ export const makeVetoOrEarlyExecuteDaoProposalAction: ActionMaker<
         },
       },
     })
+
     const isVeto =
       isWasmExecuteMessage &&
       objectMatchesStructure(msg.wasm.execute.msg, {
@@ -182,7 +178,7 @@ export const makeVetoOrEarlyExecuteDaoProposalAction: ActionMaker<
           proposal_id: {},
         },
       })
-    const isEarlyExecute =
+    const isExecute =
       isWasmExecuteMessage &&
       objectMatchesStructure(msg.wasm.execute.msg, {
         execute: {
@@ -190,8 +186,57 @@ export const makeVetoOrEarlyExecuteDaoProposalAction: ActionMaker<
         },
       })
 
+    const proposalId = isVeto
+      ? msg.wasm.execute.msg.veto.proposal_id
+      : isExecute
+      ? msg.wasm.execute.msg.execute.proposal_id
+      : -1
+
     // Get DAO that this proposal module is attached to.
-    const daoLoading = useCachedLoadingWithError(daoSelector)
+    const daoLoading = useCachedLoadingWithError(
+      DaoProposalCommonSelectors.daoSelector({
+        chainId,
+        contractAddress: msg.wasm.execute.contract_addr,
+      })
+    )
+
+    const proposalLoading = useCachedLoadingWithError(
+      DaoProposalCommonSelectors.proposalSelector({
+        chainId,
+        contractAddress: msg.wasm.execute.contract_addr,
+        params: [
+          {
+            proposalId,
+          },
+        ],
+      })
+    )
+
+    if (
+      daoLoading.loading ||
+      daoLoading.errored ||
+      proposalLoading.loading ||
+      proposalLoading.errored ||
+      (!isVeto &&
+        (!isExecute ||
+          // If executing, it's not an early-execute if we are not the vetoer.
+          proposalLoading.data.proposal.veto?.vetoer !== address))
+    ) {
+      return {
+        match: false,
+      }
+    }
+
+    return {
+      match: true,
+      data: {
+        chainId,
+        coreAddress: daoLoading.data,
+        proposalModuleAddress: msg.wasm.execute.contract_addr,
+        proposalId,
+        action: isVeto ? 'veto' : 'earlyExecute',
+      },
+    }
   }
 
   return {

@@ -22,13 +22,12 @@ import {
   ContractVersion,
   ContractVersionInfo,
   DaoInfo,
+  DaoWithVetoableProposals,
   Feature,
+  IndexerDaoWithVetoableProposals,
   ProposalModule,
   WithChainId,
 } from '@dao-dao/types'
-import { ProposalModuleWithInfo } from '@dao-dao/types/contracts/DaoCore.v2'
-import { ProposalResponse as MultipleChoiceProposalResponse } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { ProposalResponse as SingleChoiceProposalResponse } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
@@ -415,20 +414,10 @@ export const daoInfoFromPolytoneProxySelector = selectorFamily<
 })
 
 /**
- * Proposals this which this DAO can currently veto.
+ * Proposals which this DAO can currently veto.
  */
 export const daoVetoableProposalsSelector = selectorFamily<
-  {
-    dao: string
-    proposalModules: ProposalModule[]
-    proposalsWithModule: {
-      proposalModule: ProposalModuleWithInfo
-      proposals: (
-        | SingleChoiceProposalResponse
-        | MultipleChoiceProposalResponse
-      )[]
-    }[]
-  }[],
+  DaoWithVetoableProposals[],
   WithChainId<{ coreAddress: string }>
 >({
   key: 'daoVetoableProposals',
@@ -447,29 +436,29 @@ export const daoVetoableProposalsSelector = selectorFamily<
         ),
       ]
 
-      const daoVetoableProposals: {
-        dao: string
-        proposalModules: {
-          proposalModule: ProposalModuleWithInfo
-          proposals: (
-            | SingleChoiceProposalResponse
-            | MultipleChoiceProposalResponse
-          )[]
-        }[]
-      }[] = get(
-        waitForAll(
-          accounts.map(([chainId, contractAddress]) =>
-            queryContractIndexerSelector({
-              chainId,
-              contractAddress,
-              formula: 'daoCore/vetoableProposals',
-              required: true,
-            })
+      const daoVetoableProposalsPerChain = (
+        get(
+          waitForAll(
+            accounts.map(([chainId, contractAddress]) =>
+              queryContractIndexerSelector({
+                chainId,
+                contractAddress,
+                formula: 'daoCore/vetoableProposals',
+                required: true,
+              })
+            )
           )
-        )
+        ) as IndexerDaoWithVetoableProposals[][]
+      ).flatMap((data, index) =>
+        data.map((d) => ({
+          chainId: accounts[index][0],
+          ...d,
+        }))
       )
 
-      const uniqueDaos = uniq(daoVetoableProposals.map(({ dao }) => dao))
+      const uniqueDaos = uniq(
+        daoVetoableProposalsPerChain.map(({ dao }) => dao)
+      )
       const daoProposalModules = get(
         waitForAll(
           uniqueDaos.map((coreAddress) =>
@@ -482,11 +471,14 @@ export const daoVetoableProposalsSelector = selectorFamily<
       )
 
       return uniqueDaos.map((dao, index) => ({
+        chainId: daoVetoableProposalsPerChain.find(
+          (vetoable) => vetoable.dao === dao
+        )!.chainId,
         dao,
         proposalModules: daoProposalModules[index],
-        proposalsWithModule: daoVetoableProposals.find(
+        proposalsWithModule: daoVetoableProposalsPerChain.find(
           (vetoable) => vetoable.dao === dao
-        )!.proposalModules,
+        )!.proposalsWithModule,
       }))
     },
 })
