@@ -1,11 +1,7 @@
 import { useCallback } from 'react'
 import { constSelector } from 'recoil'
 
-import {
-  Cw20BaseSelectors,
-  CwProposalSingleV1Selectors,
-  isContractSelector,
-} from '@dao-dao/state'
+import { Cw20BaseSelectors, CwProposalSingleV1Selectors } from '@dao-dao/state'
 import {
   BallotDepositEmoji,
   useCachedLoadingWithError,
@@ -23,14 +19,14 @@ import {
 } from '@dao-dao/types'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
+  DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
-  objectMatchesStructure,
 } from '@dao-dao/utils'
 
+import { useMsgExecutesContract } from '../../../../../../actions'
 import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
-import { CONTRACT_NAMES } from '../../../constants'
 import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
 
 export interface UpdateProposalConfigData {
@@ -304,42 +300,23 @@ export const makeUpdateProposalConfigV1ActionMaker =
       const voteConversionDecimals =
         useCommonGovernanceTokenInfo?.().decimals ?? 0
 
-      const isUpdateConfig = objectMatchesStructure(msg, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              update_config: {
-                threshold: {},
-                max_voting_period: {
-                  time: {},
-                },
-                only_members_execute: {},
-                allow_revoting: {},
-                dao: {},
-              },
+      const isUpdateConfig = useMsgExecutesContract(
+        msg,
+        DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
+        {
+          update_config: {
+            threshold: {},
+            max_voting_period: {
+              time: {},
             },
+            only_members_execute: {},
+            allow_revoting: {},
+            dao: {},
           },
-        },
-      })
-
-      const isContract = useCachedLoadingWithError(
-        isUpdateConfig
-          ? isContractSelector({
-              contractAddress: msg.wasm.execute.contract_addr,
-              names: CONTRACT_NAMES,
-              chainId,
-            })
-          : constSelector(false)
+        }
       )
 
-      if (
-        !isUpdateConfig ||
-        isContract.loading ||
-        isContract.errored ||
-        !isContract.data
-      ) {
+      if (!isUpdateConfig) {
         return { match: false }
       }
 

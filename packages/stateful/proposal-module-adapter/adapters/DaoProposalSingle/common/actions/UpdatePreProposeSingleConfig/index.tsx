@@ -6,7 +6,6 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 import {
   DaoPreProposeSingleSelectors,
   genericTokenSelector,
-  isContractSelector,
 } from '@dao-dao/state'
 import { GearEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
@@ -27,17 +26,19 @@ import {
 } from '@dao-dao/types/contracts/DaoPreProposeSingle'
 import {
   ContractName,
+  DAO_PRE_PROPOSE_SINGLE_CONTRACT_NAMES,
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   isValidContractAddress,
   makeWasmMessage,
-  objectMatchesStructure,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../../actions'
+import {
+  useActionOptions,
+  useMsgExecutesContract,
+} from '../../../../../../actions'
 import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
-import { PRE_PROPOSE_CONTRACT_NAMES } from '../../../constants'
 import {
   UpdatePreProposeSingleConfigComponent,
   UpdatePreProposeSingleConfigData,
@@ -283,29 +284,15 @@ export const makeUpdatePreProposeSingleConfigActionMaker =
     const useDecodedCosmosMsg: UseDecodedCosmosMsg<
       UpdatePreProposeSingleConfigData
     > = (msg: Record<string, any>) => {
-      const isUpdatePreProposeConfig = objectMatchesStructure(msg, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              update_config: {
-                deposit_info: {},
-                open_proposal_submission: {},
-              },
-            },
+      const isUpdatePreProposeConfig = useMsgExecutesContract(
+        msg,
+        DAO_PRE_PROPOSE_SINGLE_CONTRACT_NAMES,
+        {
+          update_config: {
+            deposit_info: {},
+            open_proposal_submission: {},
           },
-        },
-      })
-
-      const isContract = useCachedLoadingWithError(
-        isUpdatePreProposeConfig
-          ? isContractSelector({
-              contractAddress: msg.wasm.execute.contract_addr,
-              names: PRE_PROPOSE_CONTRACT_NAMES,
-              chainId,
-            })
-          : constSelector(false)
+        }
       )
 
       const configDepositInfo = msg.wasm?.execute?.msg?.update_config
@@ -317,9 +304,9 @@ export const makeUpdatePreProposeSingleConfigActionMaker =
       const governanceToken = useCommonGovernanceTokenInfo?.()
 
       const token = useCachedLoadingWithError(
-        isContract.loading || isContract.errored
-          ? undefined
-          : isContract.data && configDepositInfo && isUpdatePreProposeConfig
+        isUpdatePreProposeConfig &&
+          configDepositInfo &&
+          isUpdatePreProposeConfig
           ? 'voting_module_token' in configDepositInfo.denom
             ? constSelector(governanceToken)
             : genericTokenSelector({
@@ -336,14 +323,7 @@ export const makeUpdatePreProposeSingleConfigActionMaker =
           : constSelector(undefined)
       )
 
-      if (
-        !isUpdatePreProposeConfig ||
-        isContract.loading ||
-        isContract.errored ||
-        !isContract.data ||
-        token.loading ||
-        token.errored
-      ) {
+      if (!isUpdatePreProposeConfig || token.loading || token.errored) {
         return { match: false }
       }
 

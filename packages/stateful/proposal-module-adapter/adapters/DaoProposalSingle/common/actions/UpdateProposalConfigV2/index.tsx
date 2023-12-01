@@ -1,10 +1,6 @@
 import { useCallback } from 'react'
-import { constSelector } from 'recoil'
 
-import {
-  DaoProposalSingleV2Selectors,
-  isContractSelector,
-} from '@dao-dao/state/recoil'
+import { DaoProposalSingleV2Selectors } from '@dao-dao/state/recoil'
 import {
   BallotDepositEmoji,
   useCachedLoadingWithError,
@@ -22,12 +18,12 @@ import {
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { ExecuteMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
+  DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
   makeWasmMessage,
-  objectMatchesStructure,
   versionGte,
 } from '@dao-dao/utils'
 
-import { CONTRACT_NAMES } from '../../../constants'
+import { useMsgExecutesContract } from '../../../../../../actions'
 import { UpdateProposalConfigComponent as Component } from './UpdateProposalConfigComponent'
 
 export interface UpdateProposalConfigData {
@@ -243,42 +239,23 @@ export const makeUpdateProposalConfigV2ActionMaker =
     const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
       msg: Record<string, any>
     ) => {
-      const isUpdateConfig = objectMatchesStructure(msg, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              update_config: {
-                threshold: {},
-                max_voting_period: {
-                  time: {},
-                },
-                only_members_execute: {},
-                allow_revoting: {},
-                dao: {},
-              },
+      const isUpdateConfig = useMsgExecutesContract(
+        msg,
+        DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
+        {
+          update_config: {
+            threshold: {},
+            max_voting_period: {
+              time: {},
             },
+            only_members_execute: {},
+            allow_revoting: {},
+            dao: {},
           },
-        },
-      })
-
-      const isContract = useCachedLoadingWithError(
-        isUpdateConfig
-          ? isContractSelector({
-              contractAddress: msg.wasm.execute.contract_addr,
-              names: CONTRACT_NAMES,
-              chainId,
-            })
-          : constSelector(false)
+        }
       )
 
-      if (
-        !isUpdateConfig ||
-        isContract.loading ||
-        isContract.errored ||
-        !isContract.data
-      ) {
+      if (!isUpdateConfig) {
         return { match: false }
       }
 

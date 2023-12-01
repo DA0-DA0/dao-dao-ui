@@ -14,6 +14,7 @@ export * as DaoPreProposeApprovalSingleSelectors from './DaoPreProposeApprovalSi
 export * as DaoPreProposeApproverSelectors from './DaoPreProposeApprover'
 export * as DaoPreProposeMultipleSelectors from './DaoPreProposeMultiple'
 export * as DaoPreProposeSingleSelectors from './DaoPreProposeSingle'
+export * as DaoProposalCommonSelectors from './DaoProposal.common'
 export * as DaoProposalMultipleSelectors from './DaoProposalMultiple'
 export * as DaoProposalSingleCommonSelectors from './DaoProposalSingle.common'
 export * as DaoProposalSingleV2Selectors from './DaoProposalSingle.v2'
