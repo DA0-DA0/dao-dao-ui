@@ -6,6 +6,7 @@ import { makeMultipleChoiceVotingConfigItem } from './MultipleChoiceVotingConfig
 import { makeProposalDepositVotingConfigItem } from './ProposalDepositVotingConfigItem'
 import { makeProposalSubmissionPolicyVotingConfigItem } from './ProposalSubmissionPolicyVotingConfigItem'
 import { makeQuorumVotingConfigItem } from './QuorumVotingConfigItem'
+import { makeVetoVotingConfigItem } from './VetoVotingConfigItem'
 import { makeVotingDurationVotingConfigItem } from './VotingDurationVotingConfigItem'
 
 export const loadCommonVotingConfigItems =
@@ -20,5 +21,6 @@ export const loadCommonVotingConfigItems =
       makeAllowRevotingVotingConfigItem(),
       makeProposalSubmissionPolicyVotingConfigItem(),
       makeApproverVotingConfigItem(),
+      makeVetoVotingConfigItem(),
     ],
   })

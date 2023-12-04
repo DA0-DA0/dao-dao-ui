@@ -34,6 +34,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       proposalDeposit,
       anyoneCanPropose,
       allowRevoting,
+      veto,
     },
   },
   { moduleInstantiateFundsUnsupported },
@@ -114,6 +115,16 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         quorum: convertPercentOrMajorityValueToPercentageThreshold(quorum),
       },
     },
+    veto: veto.enabled
+      ? {
+          vetoer: veto.address,
+          timelock_duration: convertDurationWithUnitsToDuration(
+            veto.timelockDuration
+          ),
+          early_execute: veto.earlyExecute,
+          veto_before_passed: veto.vetoBeforePassed,
+        }
+      : null,
   }
 
   // Validate and throw error if invalid according to JSON schema.

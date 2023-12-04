@@ -183,6 +183,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
           name: context.info.name,
         },
         {
+          ...makeDefaultNewDao(chainId).votingConfig,
           enableMultipleChoice: true,
           moduleInstantiateFundsUnsupported:
             !context.info.supportedFeatures[Feature.ModuleInstantiateFunds],

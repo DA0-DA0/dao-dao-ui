@@ -188,7 +188,10 @@ export interface CreateDaoContext<CreatorData extends FieldValues = any> {
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
-export interface NewDao<CreatorData extends FieldValues = any> {
+export interface NewDao<
+  CreatorData extends FieldValues = any,
+  VotingConfig = any
+> {
   chainId: string
   name: string
   description: string
@@ -201,7 +204,7 @@ export interface NewDao<CreatorData extends FieldValues = any> {
     id: string
     data: any
   }[]
-  votingConfig: DaoCreationVotingConfig
+  votingConfig: DaoCreationVotingConfig & VotingConfig
   advancedVotingConfigEnabled: boolean
 }
 
@@ -231,7 +234,7 @@ export interface DaoCreationGovernanceConfigReviewProps<
 > {
   // Used within a voting module adapter, so it's safe to apply the data
   // generic.
-  newDao: NewDao<VotingModuleAdapterData>
+  newDao: NewDao<VotingModuleAdapterData, VotingModuleAdapterData>
   data: VotingModuleAdapterData
 }
 
@@ -240,7 +243,7 @@ export interface DaoCreationVotingConfigItemInputProps<
 > {
   // Used within voting and proposal module adapters, so the data generic passed
   // in may not necessarily be the voting module adapter data. Must use `any`.
-  newDao: NewDao<any>
+  newDao: NewDao<any, ModuleData>
   data: ModuleData
   register: UseFormRegister<ModuleData>
   setValue: UseFormSetValue<ModuleData>
@@ -256,7 +259,7 @@ export interface DaoCreationVotingConfigItemReviewProps<
 > {
   // Used within voting and proposal module adapters, so the data generic passed
   // in may not necessarily be the voting module adapter data. Must use `any`.
-  newDao: NewDao<any>
+  newDao: NewDao<any, ModuleData>
   data: ModuleData
 }
 
@@ -265,7 +268,7 @@ export interface DaoCreationVotingConfigItem<
 > {
   // Used within voting and proposal module adapters, so the data generic passed
   // in may not necessarily be the voting module adapter data. Must use `any`.
-  onlyDisplayCondition?: (newDao: NewDao<any>) => boolean
+  onlyDisplayCondition?: (newDao: NewDao<any, ModuleData>) => boolean
   Icon: ComponentType
   nameI18nKey: string
   descriptionI18nKey: string
@@ -287,7 +290,7 @@ export type DaoCreationGetInstantiateInfo<
   chainConfig: SupportedChainConfig,
   // Used within voting and proposal module adapters, so the data generic passed
   // in may not necessarily be the voting module adapter data. Must use `any`.
-  newDao: NewDao<any>,
+  newDao: NewDao<any, ModuleData>,
   data: DaoCreationVotingConfig & ModuleData,
   t: TFunction
 ) => ModuleInstantiateInfo
@@ -345,13 +348,24 @@ export type DaoCreationVotingConfigWithApprover = {
   }
 }
 
+export type DaoCreationVotingConfigWithVeto = {
+  veto: {
+    enabled: boolean
+    address: string
+    timelockDuration: DurationWithUnits
+    earlyExecute: boolean
+    vetoBeforePassed: boolean
+  }
+}
+
 export type DaoCreationVotingConfig = DaoCreationVotingConfigWithAllowRevoting &
   DaoCreationVotingConfigWithProposalDeposit &
   DaoCreationVotingConfigWithProposalSubmissionPolicy &
   DaoCreationVotingConfigWithQuorum &
   DaoCreationVotingConfigWithVotingDuration &
   DaoCreationVotingConfigWithEnableMultipleChoice &
-  DaoCreationVotingConfigWithApprover
+  DaoCreationVotingConfigWithApprover &
+  DaoCreationVotingConfigWithVeto
 
 //! Other
 

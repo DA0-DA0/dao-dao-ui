@@ -34,6 +34,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       anyoneCanPropose,
       allowRevoting,
       approver,
+      veto,
     },
   },
   { threshold },
@@ -123,6 +124,16 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
           convertPercentOrMajorityValueToPercentageThreshold(threshold),
       },
     },
+    veto: veto.enabled
+      ? {
+          vetoer: veto.address,
+          timelock_duration: convertDurationWithUnitsToDuration(
+            veto.timelockDuration
+          ),
+          early_execute: veto.earlyExecute,
+          veto_before_passed: veto.vetoBeforePassed,
+        }
+      : null,
   }
 
   // Validate and throw error if invalid according to JSON schema.

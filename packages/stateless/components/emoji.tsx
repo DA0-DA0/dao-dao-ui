@@ -260,3 +260,7 @@ export const PersonRaisingHandEmoji = () => (
 export const ControlKnobsEmoji = () => (
   <EmojiWrapper emoji="🎛️" labelI18nKey="emoji.controlKnobs" />
 )
+
+export const ThumbDownEmoji = () => (
+  <EmojiWrapper emoji="👎" labelI18nKey="emoji.thumbDown" />
+)
