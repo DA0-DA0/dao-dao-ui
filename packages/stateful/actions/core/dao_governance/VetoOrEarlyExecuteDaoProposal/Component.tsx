@@ -157,7 +157,7 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
             <InputErrorMessage error={errors?.coreAddress} />
           </div>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2">
             <InputLabel name={t('title.proposal')} />
 
             {isCreating ? (
