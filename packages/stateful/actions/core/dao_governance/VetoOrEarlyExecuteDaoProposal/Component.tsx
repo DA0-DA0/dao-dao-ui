@@ -81,19 +81,14 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
     proposalId
   )
   const selectedProposalModule =
-    daoVetoableProposals.loading ||
-    daoVetoableProposals.errored ||
-    !chainId ||
-    !coreAddress ||
-    !proposalModuleAddress ||
-    !proposalId
+    selectedDaoInfo.loading ||
+    selectedDaoInfo.errored ||
+    selectedDaoInfo.updating ||
+    !proposalModuleAddress
       ? undefined
-      : daoVetoableProposals.data
-          .find((d) => d.chainId === chainId && d.dao === coreAddress)
-          ?.proposalsWithModule.find(
-            ({ proposalModule }) =>
-              proposalModule.address === proposalModuleAddress
-          )?.proposalModule
+      : selectedDaoInfo.data.proposalModules.find(
+          (m) => m.address === proposalModuleAddress
+        )
   const selectedProposal =
     daoVetoableProposals.loading ||
     daoVetoableProposals.errored ||
@@ -178,7 +173,6 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
             ) : chainId &&
               coreAddress &&
               selectedProposalModule &&
-              selectedProposal &&
               !selectedDaoInfo.loading &&
               !selectedDaoInfo.errored &&
               !selectedDaoInfo.updating ? (
@@ -186,11 +180,11 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
                 chainId={chainId}
                 coreAddress={coreAddress}
                 isPreProposeProposal={false}
-                proposalId={`${selectedProposalModule.prefix}${selectedProposal.id}`}
+                proposalId={`${selectedProposalModule.prefix}${proposalId}`}
                 proposalModules={selectedDaoInfo.data.proposalModules}
                 proposalViewUrl={getDaoProposalPath(
                   coreAddress,
-                  `${selectedProposalModule.prefix}${selectedProposal.id}`
+                  `${selectedProposalModule.prefix}${proposalId}`
                 )}
               />
             ) : (
