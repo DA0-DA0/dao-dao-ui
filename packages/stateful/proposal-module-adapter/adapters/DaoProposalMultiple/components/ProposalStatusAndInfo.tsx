@@ -406,6 +406,8 @@ const InnerProposalStatusAndInfo = ({
       walletDaoVetoerMembership.data.power !== '0') ||
       (vetoerEntity.data.type === EntityType.Wallet &&
         walletAddress === vetoerEntity.data.address))
+  const canEarlyExecute =
+    canVeto && statusKey === 'veto_timelock' && vetoConfig.early_execute
   const onWalletVeto = useVeto({
     contractAddress: proposalModule.address,
     sender: walletAddress,
@@ -465,7 +467,7 @@ const InnerProposalStatusAndInfo = ({
     proposalModule.address,
   ])
   const onVetoEarlyExecute = useCallback(async () => {
-    if (!canVeto || !vetoConfig.early_execute) {
+    if (!canEarlyExecute) {
       return
     }
 
@@ -507,8 +509,7 @@ const InnerProposalStatusAndInfo = ({
 
     // Loading will stop on success when status refreshes.
   }, [
-    canVeto,
-    vetoConfig,
+    canEarlyExecute,
     vetoerEntity,
     executeProposal,
     proposalNumber,
@@ -573,9 +574,7 @@ const InnerProposalStatusAndInfo = ({
           ? {
               loading: vetoLoading,
               onVeto,
-              onEarlyExecute: vetoConfig.early_execute
-                ? onVetoEarlyExecute
-                : undefined,
+              onEarlyExecute: canEarlyExecute ? onVetoEarlyExecute : undefined,
               isVetoerDaoMember: vetoerEntity.data.type === EntityType.Dao,
             }
           : undefined
