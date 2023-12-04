@@ -233,6 +233,7 @@ export type BaseProposalStatusAndInfoProps = {
   onVoteSuccess: () => void | Promise<void>
   onExecuteSuccess: () => void | Promise<void>
   onCloseSuccess: () => void | Promise<void>
+  onVetoSuccess: () => void | Promise<void>
   // Whether or not the user has viewed all action pages. If they haven't, they
   // can't vote.
   seenAllActionPages: boolean

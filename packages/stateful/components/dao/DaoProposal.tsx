@@ -112,6 +112,10 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         else if (status === ProposalStatusEnum.Closed) {
           toast.success(t('success.proposalClosed'))
         }
+        // On veto, show success toast.
+        else if (status === ProposalStatusEnum.Vetoed) {
+          toast.success(t('success.proposalVetoed'))
+        }
       }
     }
   )
@@ -121,6 +125,16 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
     () =>
       onProposalUpdateFallback({
         status: ProposalStatusEnum.Executed,
+        proposalId: proposalInfo.id,
+      }),
+    [onProposalUpdateFallback, proposalInfo.id]
+  )
+
+  // Fallback if the listener above is not listening.
+  const onVetoSuccess = useCallback(
+    () =>
+      onProposalUpdateFallback({
+        status: ProposalStatusEnum.Vetoed,
         proposalId: proposalInfo.id,
       }),
     [onProposalUpdateFallback, proposalInfo.id]
@@ -171,6 +185,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         {...props}
         onCloseSuccess={onCloseSuccess}
         onExecuteSuccess={onExecuteSuccess}
+        onVetoSuccess={onVetoSuccess}
         onVoteSuccess={onVoteSuccess}
         openSelfRelayExecute={setSelfRelayExecuteProps}
         seenAllActionPages={seenAllActionPages}
@@ -180,6 +195,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
       ProposalStatusAndInfo,
       onCloseSuccess,
       onExecuteSuccess,
+      onVetoSuccess,
       onVoteSuccess,
       seenAllActionPages,
     ]

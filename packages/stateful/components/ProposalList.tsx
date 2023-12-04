@@ -69,8 +69,6 @@ export const ProposalList = () => {
     Record<string, Record<ProposalType, number | undefined> | undefined>
   >({})
 
-  // TODO(veto): add veto actions to these proposals pages if the member is in
-  // the vetoer DAO
   const vetoableProposalsLoading = useCachedLoadingWithError(
     daoVetoableProposalsSelector({
       coreAddress,

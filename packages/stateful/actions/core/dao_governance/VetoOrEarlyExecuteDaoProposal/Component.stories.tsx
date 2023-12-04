@@ -2,6 +2,11 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ReactHookFormDecorator } from '@dao-dao/storybook'
 
+import {
+  AddressInput,
+  EntityDisplay,
+  ProposalLine,
+} from '../../../../components'
 import { VetoOrEarlyExecuteDaoProposalComponent } from './Component'
 
 export default {
@@ -23,5 +28,11 @@ Default.args = {
   data: {},
   isCreating: true,
   errors: {},
-  options: {},
+  options: {
+    selectedDaoInfo: { loading: true, errored: false },
+    daoVetoableProposals: { loading: true, errored: false },
+    AddressInput,
+    EntityDisplay,
+    ProposalLine,
+  },
 }

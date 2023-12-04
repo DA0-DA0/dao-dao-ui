@@ -1,4 +1,4 @@
-import { AnalyticsOutlined } from '@mui/icons-material'
+import { AnalyticsOutlined, Key, ThumbDown } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType, Fragment, ReactNode, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -36,6 +36,16 @@ export interface ProposalStatusAndInfoProps<Vote extends unknown = unknown> {
     // allowed, explain that the user can vote up until expiration.
     proposalOpen: boolean
   }
+  // Present if can veto.
+  vetoOrEarlyExecute?: {
+    loading: 'veto' | 'earlyExecute' | false
+    onVeto: () => void | Promise<void>
+    // If defined, the vetoer is allowed to execute instead of veto.
+    onEarlyExecute?: () => void | Promise<void>
+    // Whether or not the vetoer is a DAO and the current user is a member of
+    // that vetoer DAO.
+    isVetoerDaoMember: boolean
+  }
   footer?: ReactNode
   // Whether or not the user has viewed all action pages. If they haven't, they
   // can't vote.
@@ -49,6 +59,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
   inline = false,
   action,
   vote,
+  vetoOrEarlyExecute,
   footer,
   // If undefined, assume the user has seen all action pages.
   seenAllActionPages = true,
@@ -213,6 +224,53 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
               ? t('button.changeYourVote')
               : t('button.castYourVote')}
           </Button>
+        </div>
+      )}
+
+      {vetoOrEarlyExecute && (
+        <div
+          className={clsx(
+            'flex flex-col gap-4 border-t border-border-secondary',
+            inline ? 'p-6' : footer ? 'pt-8 pb-6' : 'py-8'
+          )}
+        >
+          {vetoOrEarlyExecute.isVetoerDaoMember && (
+            <InfoCard
+              content={t('info.vetoActionDaoMemberExplanation', {
+                context: vetoOrEarlyExecute.onEarlyExecute
+                  ? 'withEarlyExecute'
+                  : 'withoutEarlyExecute',
+              })}
+            />
+          )}
+
+          <div className="flex flex-col gap-1">
+            <ProposalVoteButton
+              disabled={vetoOrEarlyExecute.loading === 'veto'}
+              onClick={vetoOrEarlyExecute.onVeto}
+              option={{
+                Icon: ThumbDown,
+                value: 'veto',
+                label: t('button.veto'),
+              }}
+            />
+
+            {vetoOrEarlyExecute.onEarlyExecute && (
+              <ProposalVoteButton
+                disabled={vetoOrEarlyExecute.loading === 'earlyExecute'}
+                onClick={vetoOrEarlyExecute.onEarlyExecute}
+                option={{
+                  Icon: Key,
+                  value: 'execute',
+                  label: t('button.execute'),
+                }}
+              />
+            )}
+          </div>
+
+          {vetoOrEarlyExecute.onEarlyExecute && (
+            <InfoCard content={t('info.vetoEarlyExecuteExplanation')} />
+          )}
         </div>
       )}
 

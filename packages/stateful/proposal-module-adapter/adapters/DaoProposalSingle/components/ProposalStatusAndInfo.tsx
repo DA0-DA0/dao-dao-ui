@@ -11,12 +11,16 @@ import {
   ThumbUpOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
+import { useRouter } from 'next/router'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import { DaoProposalSingleCommonSelectors } from '@dao-dao/state'
+import {
+  DaoCoreV2Selectors,
+  DaoProposalSingleCommonSelectors,
+} from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
   IconButtonLink,
@@ -25,21 +29,25 @@ import {
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
+  useCachedLoading,
   useConfiguredChainContext,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
+  ActionKey,
   BaseProposalStatusAndInfoProps,
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
+  EntityType,
   PreProposeModuleType,
   ProposalStatusEnum,
 } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   formatPercentOf100,
+  getDaoProposalSinglePrefill,
   getProposalStatusKey,
   processError,
 } from '@dao-dao/utils'
@@ -50,10 +58,12 @@ import {
   CwProposalSingleV1Hooks,
   DaoProposalSingleV2Hooks,
   useAwaitNextBlock,
+  useEntity,
   useMembership,
   useProposalPolytoneState,
   useWallet,
 } from '../../../../hooks'
+import { useVeto } from '../../../../hooks/contracts/DaoProposalSingle.v2'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
   useCastVote,
@@ -110,6 +120,7 @@ const InnerProposalStatusAndInfo = ({
   depositInfo,
   onVoteSuccess,
   onExecuteSuccess,
+  onVetoSuccess,
   onCloseSuccess,
   openSelfRelayExecute,
   ...props
@@ -119,6 +130,7 @@ const InnerProposalStatusAndInfo = ({
   depositInfo: CheckedDepositInfo | undefined
 }) => {
   const { t } = useTranslation()
+  const router = useRouter()
   const {
     chain: { chain_id: chainId },
     config: { explorerUrlTemplates },
@@ -370,7 +382,9 @@ const InnerProposalStatusAndInfo = ({
 
     setActionLoading(true)
     try {
-      await executeProposal({ proposalId: proposalNumber })
+      await executeProposal({
+        proposalId: proposalNumber,
+      })
 
       await onExecuteSuccess()
     } catch (err) {
@@ -441,6 +455,153 @@ const InnerProposalStatusAndInfo = ({
     awaitNextBlock,
   ])
 
+  const vetoConfig = 'veto' in config ? config.veto : undefined
+  const [vetoLoading, setVetoLoading] = useState<
+    'veto' | 'earlyExecute' | false
+  >(false)
+  const vetoerEntity = useEntity(vetoConfig?.vetoer || '')
+  // This is the voting power the current wallet has in the vetoer if the vetoer
+  // is a DAO.
+  const walletDaoVetoerMembership = useCachedLoading(
+    !vetoerEntity.loading &&
+      vetoerEntity.data.type === EntityType.Dao &&
+      walletAddress
+      ? DaoCoreV2Selectors.votingPowerAtHeightSelector({
+          contractAddress: coreAddress,
+          chainId,
+          params: [{ address: walletAddress }],
+        })
+      : undefined,
+    undefined
+  )
+  const canVeto =
+    !!vetoConfig &&
+    (statusKey === 'veto_timelock' ||
+      (statusKey === ProposalStatusEnum.Open &&
+        vetoConfig.veto_before_passed)) &&
+    // Wallet can veto if they are a member of the vetoer DAO or if they are the
+    // vetoer themselves.
+    !vetoerEntity.loading &&
+    ((vetoerEntity.data.type === EntityType.Dao &&
+      !walletDaoVetoerMembership.loading &&
+      !!walletDaoVetoerMembership.data &&
+      walletDaoVetoerMembership.data.power !== '0') ||
+      (vetoerEntity.data.type === EntityType.Wallet &&
+        walletAddress === vetoerEntity.data.address))
+  const onWalletVeto = useVeto({
+    contractAddress: proposalModule.address,
+    sender: walletAddress,
+  })
+  const onVeto = useCallback(async () => {
+    if (!canVeto) {
+      return
+    }
+
+    setVetoLoading('veto')
+    try {
+      if (vetoerEntity.data.type === EntityType.Wallet) {
+        await onWalletVeto({
+          proposalId: proposalNumber,
+        })
+
+        await onVetoSuccess()
+      } else if (vetoerEntity.data.type === EntityType.Dao) {
+        router.push(
+          getDaoProposalPath(vetoerEntity.data.address, 'create', {
+            prefill: getDaoProposalSinglePrefill({
+              actions: [
+                {
+                  actionKey: ActionKey.VetoOrEarlyExecuteDaoProposal,
+                  data: {
+                    chainId,
+                    coreAddress,
+                    proposalModuleAddress: proposalModule.address,
+                    proposalId: proposalNumber,
+                    action: 'veto',
+                  },
+                },
+              ],
+            }),
+          })
+        )
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+
+      // Stop loading if errored.
+      setVetoLoading(false)
+    }
+
+    // Loading will stop on success when status refreshes.
+  }, [
+    canVeto,
+    vetoerEntity,
+    onWalletVeto,
+    proposalNumber,
+    onVetoSuccess,
+    router,
+    getDaoProposalPath,
+    chainId,
+    coreAddress,
+    proposalModule.address,
+  ])
+  const onVetoEarlyExecute = useCallback(async () => {
+    if (!canVeto || !vetoConfig.early_execute) {
+      return
+    }
+
+    setVetoLoading('earlyExecute')
+    try {
+      if (vetoerEntity.data.type === EntityType.Wallet) {
+        await executeProposal({
+          proposalId: proposalNumber,
+        })
+
+        await onExecuteSuccess()
+      } else if (vetoerEntity.data.type === EntityType.Dao) {
+        router.push(
+          getDaoProposalPath(vetoerEntity.data.address, 'create', {
+            prefill: getDaoProposalSinglePrefill({
+              actions: [
+                {
+                  actionKey: ActionKey.VetoOrEarlyExecuteDaoProposal,
+                  data: {
+                    chainId,
+                    coreAddress,
+                    proposalModuleAddress: proposalModule.address,
+                    proposalId: proposalNumber,
+                    action: 'earlyExecute',
+                  },
+                },
+              ],
+            }),
+          })
+        )
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+
+      // Stop loading if errored.
+      setVetoLoading(false)
+    }
+
+    // Loading will stop on success when status refreshes.
+  }, [
+    canVeto,
+    vetoConfig,
+    vetoerEntity,
+    executeProposal,
+    proposalNumber,
+    onExecuteSuccess,
+    router,
+    getDaoProposalPath,
+    chainId,
+    coreAddress,
+    proposalModule.address,
+  ])
+
   return (
     <StatelessProposalStatusAndInfo
       {...props}
@@ -489,6 +650,18 @@ const InnerProposalStatusAndInfo = ({
       }
       info={info}
       status={status}
+      vetoOrEarlyExecute={
+        vetoConfig && canVeto
+          ? {
+              loading: vetoLoading,
+              onVeto,
+              onEarlyExecute: vetoConfig.early_execute
+                ? onVetoEarlyExecute
+                : undefined,
+              isVetoerDaoMember: vetoerEntity.data.type === EntityType.Dao,
+            }
+          : undefined
+      }
       vote={
         loadingWalletVoteInfo &&
         !loadingWalletVoteInfo.loading &&
