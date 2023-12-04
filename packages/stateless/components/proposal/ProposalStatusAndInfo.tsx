@@ -234,19 +234,21 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
             inline ? 'p-6' : footer ? 'pt-8 pb-6' : 'py-8'
           )}
         >
-          {vetoOrEarlyExecute.isVetoerDaoMember && (
-            <InfoCard
-              content={t('info.vetoActionDaoMemberExplanation', {
-                context: vetoOrEarlyExecute.onEarlyExecute
-                  ? 'withEarlyExecute'
-                  : 'withoutEarlyExecute',
-              })}
-            />
-          )}
+          <div className="flex flex-col gap-1">
+            {vetoOrEarlyExecute.isVetoerDaoMember && (
+              <InfoCard
+                content={t('info.vetoActionDaoMemberExplanation', {
+                  context: vetoOrEarlyExecute.onEarlyExecute
+                    ? 'withEarlyExecute'
+                    : 'withoutEarlyExecute',
+                })}
+              />
+            )}
 
-          {vetoOrEarlyExecute.onEarlyExecute && (
-            <InfoCard content={t('info.vetoEarlyExecuteExplanation')} />
-          )}
+            {vetoOrEarlyExecute.onEarlyExecute && (
+              <InfoCard content={t('info.vetoEarlyExecuteExplanation')} />
+            )}
+          </div>
 
           <div className="flex flex-col gap-1">
             <ProposalVoteButton

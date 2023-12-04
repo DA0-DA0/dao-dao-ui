@@ -115,6 +115,7 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
   return (
     <>
       <SegmentedControls<VetoOrEarlyExecuteDaoProposalData['action']>
+        className="max-w-lg"
         disabled={!isCreating}
         onSelect={(value) =>
           setValue((fieldNamePrefix + 'action') as 'action', value)
@@ -145,6 +146,7 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
 
             <ChainProvider chainId={chainId}>
               <AddressInput
+                disabled={!isCreating}
                 error={errors?.coreAddress}
                 fieldName={(fieldNamePrefix + 'coreAddress') as 'coreAddress'}
                 register={register}
@@ -200,7 +202,7 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
         <Loader />
       ) : daoVetoableProposals.data.length > 0 ? (
         <>
-          <InputLabel name={t('form.vetoableProposals')} />
+          <InputLabel className="-mb-2" name={t('title.proposal')} />
 
           <FilterableItemPopup
             filterableItemKeys={FILTERABLE_KEYS}
@@ -264,14 +266,40 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
             trigger={{
               type: 'button',
               props: {
+                className: !selectedProposal ? 'self-start' : undefined,
+                variant: 'ghost_outline',
+                size: 'lg',
+                loading:
+                  !!chainId &&
+                  !!coreAddress &&
+                  (selectedDaoInfo.loading ||
+                    selectedDaoInfo.errored ||
+                    !!selectedDaoInfo.updating),
                 children:
+                  chainId &&
+                  coreAddress &&
                   !selectedDaoInfo.loading &&
                   !selectedDaoInfo.errored &&
                   !selectedDaoInfo.updating &&
                   selectedProposalModule &&
-                  selectedProposal
-                    ? `(${selectedDaoInfo.data.name}) ${selectedProposalModule.prefix}${proposalId}: ${selectedProposal.proposal.title}`
-                    : '',
+                  selectedProposal ? (
+                    <div className="flex w-full flex-col gap-3">
+                      <ChainProvider chainId={chainId}>
+                        <EntityDisplay address={coreAddress} />
+                      </ChainProvider>
+
+                      <ProposalLine
+                        chainId={chainId}
+                        coreAddress={coreAddress}
+                        isPreProposeProposal={false}
+                        proposalId={`${selectedProposalModule.prefix}${selectedProposal.id}`}
+                        proposalModules={selectedDaoInfo.data.proposalModules}
+                        proposalViewUrl=""
+                      />
+                    </div>
+                  ) : (
+                    t('button.chooseProposal')
+                  ),
               },
             }}
           />
