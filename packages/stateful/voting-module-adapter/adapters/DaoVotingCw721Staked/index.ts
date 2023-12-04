@@ -1,7 +1,12 @@
 import { ImageRounded, PeopleAltOutlined } from '@mui/icons-material'
 
-import { DaoTabId, VotingModuleAdapter } from '@dao-dao/types'
+import {
+  ActionCategoryKey,
+  DaoTabId,
+  VotingModuleAdapter,
+} from '@dao-dao/types'
 
+import { makeUpdateStakingConfigAction } from './actions'
 import {
   MembersTab,
   NftCollectionTab,
@@ -52,7 +57,13 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
 
     // Functions
     fields: {
-      actionCategoryMakers: [],
+      actionCategoryMakers: [
+        () => ({
+          // Add to DAO Governance category.
+          key: ActionCategoryKey.DaoGovernance,
+          actionMakers: [makeUpdateStakingConfigAction],
+        }),
+      ],
     },
   }),
 }
