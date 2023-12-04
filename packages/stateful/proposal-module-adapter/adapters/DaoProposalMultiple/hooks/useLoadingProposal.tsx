@@ -78,6 +78,15 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     blockHeightLoadable.contents
   )
 
+  const vetoTimelockExpiration =
+    typeof proposal.status === 'object' && 'veto_timelock' in proposal.status
+      ? convertExpirationToDate(
+          blocksPerYearLoadable.contents,
+          proposal.status.veto_timelock.expiration,
+          blockHeightLoadable.contents
+        )
+      : undefined
+
   // Votes can be cast up to the expiration date, even if the decision has
   // finalized due to sufficient votes cast.
   const votingOpen =
@@ -96,7 +105,9 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     votingOpen
       ? expirationDate && expirationDate.getTime() > Date.now()
         ? {
-            label: t('title.timeLeft'),
+            label: vetoTimelockExpiration
+              ? t('title.votingTimeLeft')
+              : t('title.timeLeft'),
             content: (
               <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
             ),
@@ -143,6 +154,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
       votingOpen,
       executedAt:
         typeof executedAt === 'string' ? new Date(executedAt) : undefined,
+      vetoTimelockExpiration,
     },
   }
 }

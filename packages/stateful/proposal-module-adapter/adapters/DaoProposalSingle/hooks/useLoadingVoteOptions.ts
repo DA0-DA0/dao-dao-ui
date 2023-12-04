@@ -40,7 +40,11 @@ export const useLoadingVoteOptions = (): LoadingData<
           : t('info.noVote'),
         value: Vote.No,
       },
-      { Icon: Texture, label: t('info.abstainVote'), value: Vote.Abstain },
+      {
+        Icon: Texture,
+        label: t('info.abstainVote'),
+        value: Vote.Abstain,
+      },
     ],
   }
 }

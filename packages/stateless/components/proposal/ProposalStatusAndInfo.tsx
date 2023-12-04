@@ -246,7 +246,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
 
           <div className="flex flex-col gap-1">
             <ProposalVoteButton
-              disabled={vetoOrEarlyExecute.loading === 'veto'}
+              loading={vetoOrEarlyExecute.loading === 'veto'}
               onClick={vetoOrEarlyExecute.onVeto}
               option={{
                 Icon: ThumbDown,
@@ -257,7 +257,7 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
 
             {vetoOrEarlyExecute.onEarlyExecute && (
               <ProposalVoteButton
-                disabled={vetoOrEarlyExecute.loading === 'earlyExecute'}
+                loading={vetoOrEarlyExecute.loading === 'earlyExecute'}
                 onClick={vetoOrEarlyExecute.onEarlyExecute}
                 option={{
                   Icon: Key,

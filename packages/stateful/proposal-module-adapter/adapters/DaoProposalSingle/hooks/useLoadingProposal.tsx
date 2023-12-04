@@ -243,6 +243,15 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     blockHeightLoadable.contents
   )
 
+  const vetoTimelockExpiration =
+    typeof proposal.status === 'object' && 'veto_timelock' in proposal.status
+      ? convertExpirationToDate(
+          blocksPerYearLoadable.contents,
+          proposal.status.veto_timelock.expiration,
+          blockHeightLoadable.contents
+        )
+      : undefined
+
   const votingOpen =
     proposal.status === ProposalStatusEnum.Open ||
     (!!version &&
@@ -261,7 +270,9 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const dateDisplay: ProposalTimestampInfo['display'] | undefined = votingOpen
     ? expirationDate && expirationDate.getTime() > Date.now()
       ? {
-          label: t('title.timeLeft'),
+          label: vetoTimelockExpiration
+            ? t('title.votingTimeLeft')
+            : t('title.timeLeft'),
           tooltip: formatDateTimeTz(expirationDate),
           content: (
             <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
@@ -316,6 +327,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
         typeof executedAt === 'string' ? new Date(executedAt) : undefined,
       approverProposalId,
       approvedProposalId,
+      vetoTimelockExpiration,
     },
   }
 }

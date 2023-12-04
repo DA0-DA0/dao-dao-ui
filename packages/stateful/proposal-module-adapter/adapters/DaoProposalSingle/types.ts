@@ -98,6 +98,9 @@ export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
   // pre-propose-approval proposal in another DAO, this is the created proposal
   // ID.
   approvedProposalId?: string
+  // If this proposal is in its veto timelock period, this is the date that the
+  // timelock period expires.
+  vetoTimelockExpiration?: Date
 }
 
 export type MessagesWithActionData = {

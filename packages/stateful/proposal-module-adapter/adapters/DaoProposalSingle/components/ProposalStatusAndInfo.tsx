@@ -15,6 +15,7 @@ import { useRouter } from 'next/router'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
 
 import {
@@ -33,6 +34,7 @@ import {
   useConfiguredChainContext,
   useDaoInfoContext,
   useDaoNavHelpers,
+  useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
   ActionKey,
@@ -46,6 +48,7 @@ import {
 } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
+  formatDateTimeTz,
   formatPercentOf100,
   getDaoProposalSinglePrefill,
   getProposalStatusKey,
@@ -109,7 +112,7 @@ export const ProposalStatusAndInfo = (
 }
 
 const InnerProposalStatusAndInfo = ({
-  proposal: { timestampInfo, votingOpen, ...proposal },
+  proposal: { timestampInfo, votingOpen, vetoTimelockExpiration, ...proposal },
   votesInfo: {
     quorum,
     thresholdReached,
@@ -184,6 +187,8 @@ const InnerProposalStatusAndInfo = ({
 
   const statusKey = getProposalStatusKey(proposal.status)
 
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
+
   const info: ProposalStatusAndInfoProps<Vote>['info'] = [
     {
       Icon: ({ className }) => (
@@ -253,6 +258,24 @@ const InnerProposalStatusAndInfo = ({
             Value: (props) => (
               <Tooltip title={timestampInfo.display!.tooltip}>
                 <p {...props}>{timestampInfo.display!.content}</p>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps<Vote>['info'])
+      : []),
+    ...(vetoTimelockExpiration
+      ? ([
+          {
+            Icon: HourglassTopRounded,
+            label: t('title.vetoTimeLeft'),
+            Value: (props) => (
+              <Tooltip title={formatDateTimeTz(vetoTimelockExpiration)}>
+                <p {...props}>
+                  <TimeAgo
+                    date={vetoTimelockExpiration}
+                    formatter={timeAgoFormatter}
+                  />
+                </p>
               </Tooltip>
             ),
           },
