@@ -244,6 +244,10 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
             />
           )}
 
+          {vetoOrEarlyExecute.onEarlyExecute && (
+            <InfoCard content={t('info.vetoEarlyExecuteExplanation')} />
+          )}
+
           <div className="flex flex-col gap-1">
             <ProposalVoteButton
               loading={vetoOrEarlyExecute.loading === 'veto'}
@@ -267,10 +271,6 @@ export const ProposalStatusAndInfo = <Vote extends unknown = unknown>({
               />
             )}
           </div>
-
-          {vetoOrEarlyExecute.onEarlyExecute && (
-            <InfoCard content={t('info.vetoEarlyExecuteExplanation')} />
-          )}
         </div>
       )}
 
