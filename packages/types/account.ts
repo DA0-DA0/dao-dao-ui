@@ -13,6 +13,7 @@ export enum AccountType {
   Native = 'native',
   Polytone = 'polytone',
   Valence = 'valence',
+  Ica = 'ica',
 }
 
 export type NativeAccountTypeConfig = {
@@ -28,6 +29,11 @@ export type PolytoneAccountTypeConfig = {
 export type ValenceAccountTypeConfig = {
   type: AccountType.Valence
   config: ValenceAccountConfig
+}
+
+export type IcaAccountTypeConfig = {
+  type: AccountType.Ica
+  config?: undefined
 }
 
 export type ValenceAccountConfig = {
@@ -56,5 +62,10 @@ export type BaseAccount = {
 export type NativeAccount = BaseAccount & NativeAccountTypeConfig
 export type PolytoneAccount = BaseAccount & PolytoneAccountTypeConfig
 export type ValenceAccount = BaseAccount & ValenceAccountTypeConfig
+export type IcaAccount = BaseAccount & IcaAccountTypeConfig
 
-export type Account = NativeAccount | PolytoneAccount | ValenceAccount
+export type Account =
+  | NativeAccount
+  | PolytoneAccount
+  | ValenceAccount
+  | IcaAccount

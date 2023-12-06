@@ -1,12 +1,15 @@
 import { constSelector, selectorFamily, waitForAllSettled } from 'recoil'
 
-import { moduleNameForAddressSelector } from '@dao-dao/state/recoil'
+import {
+  isDaoSelector,
+  isPolytoneProxySelector,
+  moduleNameForAddressSelector,
+} from '@dao-dao/state/recoil'
 import { Entity, EntityType, WithChainId } from '@dao-dao/types'
 import {
   getChainForChainId,
   getFallbackImage,
   getImageUrlForChainId,
-  isValidContractAddress,
   isValidWalletAddress,
 } from '@dao-dao/utils'
 
@@ -43,6 +46,21 @@ export const entitySelector = selectorFamily<
         return entity
       }
 
+      const [isDao, isPolytoneProxy] = address
+        ? get(
+            waitForAllSettled([
+              isDaoSelector({
+                chainId,
+                address,
+              }),
+              isPolytoneProxySelector({
+                chainId,
+                address,
+              }),
+            ])
+          )
+        : []
+
       const [
         daoInfoLoadable,
         daoInfoFromPolytoneProxyLoadable,
@@ -50,21 +68,19 @@ export const entitySelector = selectorFamily<
       ] = get(
         waitForAllSettled([
           // Try to load config assuming the address is a DAO.
-          address && isValidContractAddress(address, bech32Prefix)
+          isDao?.state === 'hasValue' && isDao.contents
             ? daoInfoSelector({
                 coreAddress: address,
                 chainId,
               })
             : constSelector(undefined),
-          // Try to load config assuming the address is a polytone proxy of a
-          // DAO.
-          address && isValidContractAddress(address, bech32Prefix)
+          isPolytoneProxy?.state === 'hasValue' && isPolytoneProxy.contents
             ? daoInfoFromPolytoneProxySelector({
                 proxy: address,
                 chainId,
               })
             : constSelector(undefined),
-          // try to load profile assuming the address is a wallet address.
+          // Try to load profile assuming the address is a wallet.
           address && isValidWalletAddress(address, bech32Prefix)
             ? walletProfileDataSelector({
                 address,

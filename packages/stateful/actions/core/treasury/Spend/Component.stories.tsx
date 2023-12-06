@@ -77,6 +77,8 @@ Default.args = {
       ],
     },
     currentEntity: undefined,
+    ibcPath: { loading: true, errored: false },
+    missingAccountChainIds: [],
     AddressInput,
   },
   isCreating: true,

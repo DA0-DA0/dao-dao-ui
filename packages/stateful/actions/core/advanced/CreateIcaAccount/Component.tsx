@@ -70,7 +70,7 @@ export const CreateIcaAccountComponent: ActionComponent<
           </div>
 
           {createdAddressLoading.loading ? (
-            <Loader />
+            <Loader fill={false} size={28} />
           ) : createdAddressLoading.errored ? (
             <WarningCard
               content={

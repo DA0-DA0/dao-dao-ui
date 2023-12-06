@@ -5,6 +5,7 @@ import {
   Account,
   AccountType,
   GenericTokenBalanceWithOwner,
+  IcaAccount,
   WithChainId,
 } from '@dao-dao/types'
 
@@ -14,6 +15,7 @@ import {
   isValenceAccountSelector,
 } from './contract'
 import { DaoCoreV2Selectors } from './contracts'
+import { icaRemoteAddressSelector } from './ica'
 import {
   genericTokenBalancesSelector,
   genericTokenDelegatedBalanceSelector,
@@ -24,11 +26,16 @@ import { valenceAccountSelector, valenceAccountsSelector } from './valence'
 // polytone proxies, and all valence accounts.
 export const accountsSelector = selectorFamily<
   Account[],
-  WithChainId<{ address: string }>
+  WithChainId<{
+    address: string
+    // Chain IDs to include accounts from. This will find any ICA accounts, and
+    // for wallets, this adds other native accounts.
+    includeIcaChains?: string[]
+  }>
 >({
   key: 'accounts',
   get:
-    ({ chainId, address }) =>
+    ({ chainId, address, includeIcaChains }) =>
     ({ get }) => {
       const [isDao, isPolytoneProxy, isValenceAccount] = get(
         waitForAll([
@@ -102,6 +109,33 @@ export const accountsSelector = selectorFamily<
 
       // Add valence accounts.
       allAccounts.push(...valenceAccounts)
+
+      // Get ICA account addresses controlled by native account.
+      const icaAccounts =
+        mainAccount.type === AccountType.Native && includeIcaChains?.length
+          ? get(
+              waitForAll(
+                includeIcaChains.map((chainId) =>
+                  icaRemoteAddressSelector({
+                    srcChainId: mainAccount.chainId,
+                    address: mainAccount.address,
+                    destChainId: chainId,
+                  })
+                )
+              )
+            ).flatMap((address, index): IcaAccount | [] =>
+              address
+                ? {
+                    type: AccountType.Ica,
+                    chainId: includeIcaChains[index],
+                    address,
+                  }
+                : []
+            )
+          : []
+
+      // Add ICA accounts.
+      allAccounts.push(...icaAccounts)
 
       return allAccounts
     },
