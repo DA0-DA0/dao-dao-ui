@@ -1,6 +1,7 @@
 import { Chain } from '@chain-registry/types'
 
 import { Coin } from './contracts'
+import { ContractVersion } from './features'
 import { GenericToken } from './token'
 import { CodeIdConfig, PolytoneConfig } from './utils'
 
@@ -82,6 +83,9 @@ export type SupportedChainConfig = {
     wallet: string
   }
   codeIds: CodeIdConfig
+  // Store code IDs for past versions of contracts, in case DAOs need a
+  // particular version of a contract.
+  historicalCodeIds?: Partial<Record<ContractVersion, Partial<CodeIdConfig>>>
   polytone?: PolytoneConfig
 }
 

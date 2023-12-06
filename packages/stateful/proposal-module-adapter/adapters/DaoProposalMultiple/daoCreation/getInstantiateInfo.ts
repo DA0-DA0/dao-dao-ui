@@ -2,6 +2,7 @@ import { Buffer } from 'buffer'
 
 import {
   ChainId,
+  ContractVersion,
   DaoCreationGetInstantiateInfo,
   PercentOrMajorityValue,
 } from '@dao-dao/types'
@@ -24,7 +25,7 @@ import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   DaoCreationExtraVotingConfig
 > = (
-  codeIds,
+  { codeIds, historicalCodeIds },
   {
     chainId,
     name,
@@ -36,7 +37,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       allowRevoting,
     },
   },
-  { omitFunds },
+  { moduleInstantiateFundsUnsupported },
   t
 ) => {
   const decimals = proposalDeposit.token?.decimals ?? 0
@@ -79,6 +80,14 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     t
   )(preProposeMultipleInstantiateMsg)
 
+  const codeIdsToUse = {
+    ...codeIds,
+    // If module instantiation funds are unsupported, use the v2.1.0 contracts
+    // which are the last ones that did not support funds.
+    ...(moduleInstantiateFundsUnsupported &&
+      historicalCodeIds?.[ContractVersion.V210]),
+  }
+
   const msg: CwProposalMultipleInstantiateMsg = {
     allow_revoting: allowRevoting,
     close_proposal_on_execution_failure: true,
@@ -89,7 +98,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       module_may_propose: {
         info: {
           admin: { core_module: {} },
-          code_id: codeIds.DaoPreProposeMultiple,
+          code_id: codeIdsToUse.DaoPreProposeMultiple,
           label: `DAO_${name.trim()}_pre-propose-${DaoProposalMultipleAdapterId}`,
           msg: Buffer.from(
             JSON.stringify(preProposeMultipleInstantiateMsg),
@@ -97,7 +106,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
           ).toString('base64'),
           // TODO(neutron-2.3.0): add back in here
           ...(chainId !== ChainId.NeutronMainnet &&
-            !omitFunds && {
+            !moduleInstantiateFundsUnsupported && {
               funds: [],
             }),
         },
@@ -115,12 +124,12 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 
   return {
     admin: { core_module: {} },
-    code_id: codeIds.DaoProposalMultiple,
+    code_id: codeIdsToUse.DaoProposalMultiple,
     label: `DAO_${name.trim()}_${DaoProposalMultipleAdapterId}`,
     msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
     // TODO(neutron-2.3.0): add back in here
     ...(chainId !== ChainId.NeutronMainnet &&
-      !omitFunds && {
+      !moduleInstantiateFundsUnsupported && {
         funds: [],
       }),
   }

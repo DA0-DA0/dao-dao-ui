@@ -118,10 +118,11 @@ export const InnerCreateDaoForm = ({
 }: CreateDaoFormProps) => {
   const { t } = useTranslation()
 
+  const chainContext = useSupportedChainContext()
   const {
     chainId,
     config: { factoryContractAddress, codeIds },
-  } = useSupportedChainContext()
+  } = chainContext
 
   const { goToDao } = useDaoNavHelpers()
   const { setFollowing } = useFollowingDaos(chainId)
@@ -319,7 +320,7 @@ export const InnerCreateDaoForm = ({
     const proposalModuleInstantiateInfos =
       proposalModuleDaoCreationAdapters.map(({ getInstantiateInfo }, index) =>
         getInstantiateInfo(
-          codeIds,
+          chainContext.config,
           newDao,
           proposalModuleAdapters[index].data,
           t
