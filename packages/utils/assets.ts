@@ -61,7 +61,9 @@ export const nativeTokenExists = (chainId: string, denom: string) =>
   getChainAssets(chainId).some(({ denomOrAddress }) => denomOrAddress === denom)
 
 export const getNativeIbcUsdc = (chainId: string) =>
-  getChainAssets(chainId).find(({ id }) => id === 'usdc')
+  getChainAssets(chainId).find(
+    ({ id, symbol }) => id === 'usdc' && symbol === 'USDC'
+  ) || getChainAssets(chainId).find(({ id }) => id === 'usdc')
 
 // Returns true if this denom is the IBC denom for USDC on the current chain.
 export const isNativeIbcUsdc = (chainId: string, ibcDenom: string): boolean =>

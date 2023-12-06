@@ -20,17 +20,14 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
-  MAINNET,
   addressIsModule,
   cosmWasmClientRouter,
   cosmosSdkVersionIs47OrHigher,
   cosmosValidatorToValidator,
   decodeGovProposal,
   getAllRpcResponse,
-  getNativeIbcUsdc,
   getNativeTokenForChainId,
   getRpcForChainId,
-  isNativeIbcUsdc,
   stargateClientRouter,
 } from '@dao-dao/utils'
 import { cosmos, ibc, juno, osmosis } from '@dao-dao/utils/protobuf'
@@ -225,18 +222,6 @@ export const nativeBalancesSelector = selectorFamily<
         balances.push({
           amount: '0',
           denom: nativeToken.denomOrAddress,
-        })
-      }
-      // Add USDC if not present and on mainnet.
-      const nativeIbcUsdcDenom = getNativeIbcUsdc(chainId)?.denomOrAddress
-      if (
-        MAINNET &&
-        nativeIbcUsdcDenom &&
-        !balances.some(({ denom }) => isNativeIbcUsdc(chainId, denom))
-      ) {
-        balances.push({
-          amount: '0',
-          denom: nativeIbcUsdcDenom,
         })
       }
 
