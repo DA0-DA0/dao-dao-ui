@@ -311,6 +311,17 @@ export const toAccessibleImageUrl = (
     }
   }
 
+  // Convert `https://CID.ipfs.cf-ipfs.com` to `https://cf-ipfs.com/ipfs/CID`
+  // because we have to explicitly whitelist domains, and the CID is the part
+  // that changes.
+  if (url.includes('.ipfs.cf-ipfs.com')) {
+    const matches = url.match(/([a-zA-Z0-9]+)\.ipfs\.cf-ipfs\.com(.*)$/)
+    if (matches?.length === 3) {
+      url = `https://cf-ipfs.com/ipfs/${matches[1]}${matches[2]}`
+      return url
+    }
+  }
+
   // If this is not an IPFS image, we can't enforce that it is coming from one
   // of our NextJS allowed image sources. Thus proxy it through a whitelisted
   // domain. This only needs to be used for images that are displayed in the
