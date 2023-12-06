@@ -66,40 +66,35 @@ export const getFundsFromDaoInstantiateMsg = ({
   ...proposal_modules_instantiate_info.flatMap(({ funds }) => funds || []),
 ]
 
-// Gets the account on the specified chain or undefined if nonexistent. Returns
-// either a native or polytone account.
+// Gets the account on the specified chain or undefined if nonexistent.
 export const getAccount = ({
   accounts,
   chainId,
+  types = [AccountType.Native, AccountType.Polytone],
 }: {
   accounts: Account[]
   chainId: string
+  types?: AccountType[]
 }): Account | undefined =>
   accounts.find(
-    (account) =>
-      (account.type === AccountType.Native ||
-        account.type === AccountType.Polytone) &&
-      account.chainId === chainId
+    (account) => types.includes(account.type) && account.chainId === chainId
   )
 
 // Gets the account address on the specified chain or undefined if nonexistent.
-// Returns either a native or polytone account.
 export const getAccountAddress = (
   ...params: Parameters<typeof getAccount>
 ): string | undefined => getAccount(...params)?.address
 
-// Gets the chain ID for an address or undefined if nonexistent. Returns either
-// a native or polytone account.
+// Gets the chain ID for an address or undefined if nonexistent.
 export const getAccountChainId = ({
   accounts,
   address,
+  types = [AccountType.Native, AccountType.Polytone],
 }: {
   accounts: Account[]
   address: string
+  types?: AccountType[]
 }): string | undefined =>
   accounts.find(
-    (account) =>
-      (account.type === AccountType.Native ||
-        account.type === AccountType.Polytone) &&
-      account.address === address
+    (account) => types.includes(account.type) && account.address === address
   )?.chainId

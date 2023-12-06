@@ -16,6 +16,7 @@
     "@cosmjs/proto-signing": "^0.31.0",
     "@cosmjs/stargate": "^0.31.0",
     "@dao-dao/utils": "2.2.0",
+    "@skip-router/core": "^1.0.5",
     "graphql": "^16.8.1",
     "json5": "^2.2.0",
     "lodash.uniq": "^4.5.0",

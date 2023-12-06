@@ -56,7 +56,7 @@ export const convertActionsToMessages = (
 export const getChainAddressForActionOptions = (
   { context, chain, address }: ActionOptions,
   chainId: string
-) =>
+): string | undefined =>
   // If on same chain, return address.
   chain.chain_id === chainId
     ? address
@@ -65,7 +65,7 @@ export const getChainAddressForActionOptions = (
     ? getAccountAddress({
         accounts: context.info.accounts,
         chainId,
-      }) || ''
+      })
     : // If on different chain, return wallet's transformed bech32 address.
     context.type === ActionContextType.Wallet
     ? transformBech32Address(address, chainId)

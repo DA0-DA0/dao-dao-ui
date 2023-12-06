@@ -151,3 +151,20 @@ export type DaoTokenCardProps = TokenCardInfo & {
   // Hide extra actions, like stake, unstake, and claim.
   noExtraActions?: boolean
 }
+
+/**
+ * Packet-forward-middleware memo field for transfer messages.
+ * (https://github.com/cosmos/ibc-apps/tree/main/middleware/packet-forward-middleware#intermediate-receivers)
+ */
+export type PfmMemo = {
+  forward: {
+    receiver: string
+    port: string
+    channel: string
+    timeout?: string
+    retries?: number
+    // Parsed from JSON-stringified PfmMemo if needed (field can be a JSON
+    // string or an object).
+    next?: PfmMemo
+  }
+}

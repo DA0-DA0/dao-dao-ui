@@ -2,15 +2,19 @@ import {
   ArrowRightAltRounded,
   SubdirectoryArrowRightRounded,
 } from '@mui/icons-material'
+import { MultiChainMsg } from '@skip-router/core'
 import clsx from 'clsx'
 import { ComponentType, RefAttributes, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  ChainLogo,
   ChainProvider,
   IbcDestinationChainPicker,
   InputErrorMessage,
+  InputLabel,
+  Loader,
   TokenAmountDisplay,
   TokenInput,
   useDetectWrap,
@@ -21,6 +25,7 @@ import {
   EntityType,
   GenericTokenBalance,
   LoadingData,
+  LoadingDataWithError,
 } from '@dao-dao/types'
 import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
@@ -28,7 +33,9 @@ import {
   convertMicroDenomToDenomWithDecimals,
   getAccountAddress,
   getChainForChainId,
+  getDisplayNameForChainId,
   makeValidateAddress,
+  processError,
   transformBech32Address,
   validateRequired,
 } from '@dao-dao/utils'
@@ -45,11 +52,26 @@ export interface SpendData {
   denom: string
 
   _error?: string
+
+  // Defined once loaded for IBC transfers. Needed for transforming.
+  _skipIbcTransferMsg?: LoadingDataWithError<MultiChainMsg>
+
+  // Loaded from IBC transfer message on decode.
+  _ibcData?: {
+    sourceChannel: string
+    // Loaded for packet-forwarding-middleware detection after creation (likely
+    // created using Skip's router API).
+    pfmMemo?: string
+  }
 }
 
 export interface SpendOptions {
   tokens: LoadingData<GenericTokenBalance[]>
   currentEntity: Entity | undefined
+  // If this is an IBC transfer, this is the path of chains.
+  ibcPath: LoadingDataWithError<string[]>
+  // If this is an IBC transfer, these are the chains with missing accounts.
+  missingAccountChainIds?: string[]
   // Used to render pfpk or DAO profiles when selecting addresses.
   AddressInput: ComponentType<
     AddressInputProps<SpendData> & RefAttributes<HTMLDivElement>
@@ -60,7 +82,13 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { tokens, currentEntity, AddressInput },
+  options: {
+    tokens,
+    currentEntity,
+    ibcPath,
+    missingAccountChainIds,
+    AddressInput,
+  },
 }) => {
   const { t } = useTranslation()
   const { context } = useActionOptions()
@@ -75,6 +103,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
   const toChainId = watch((fieldNamePrefix + 'toChainId') as 'toChainId')
   const toChain = getChainForChainId(toChainId)
+
+  // IBC transfer if destination chain ID is different from source chain ID.
+  const isIbc = spendChainId !== toChainId
 
   // On destination chain ID change, update address intelligently.
   useEffect(() => {
@@ -290,7 +321,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           ref={childRef}
         >
           <div
-            className={clsx('flex flex-row items-center', wrapped && 'pl-1')}
+            className={clsx(
+              'flex flex-row items-center',
+              wrapped ? 'pl-1' : '-mr-2'
+            )}
           >
             <Icon className="!h-6 !w-6 text-text-secondary" />
           </div>
@@ -299,10 +333,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             className="flex grow flex-row flex-wrap items-stretch gap-1"
             ref={toContainerRef}
           >
-            {(isCreating || spendChainId !== toChainId) && (
+            {isCreating && (
               <IbcDestinationChainPicker
                 buttonClassName={toWrapped ? 'grow' : undefined}
-                disabled={!isCreating}
                 includeSourceChain
                 onChainSelected={(chainId) =>
                   setValue(
@@ -358,6 +391,65 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             showFullAmount
             symbol={selectedToken.token.symbol}
           />
+        </div>
+      )}
+
+      {isIbc && (
+        <div className="flex flex-col gap-4 rounded-md border-2 border-dashed border-border-primary p-4">
+          <InputLabel
+            name={t('title.ibcTransferPath')}
+            tooltip={t('info.ibcTransferPathTooltip', {
+              context:
+                ibcPath.loading ||
+                ibcPath.errored ||
+                ibcPath.updating ||
+                ibcPath.data.length === 2
+                  ? undefined
+                  : // If more than one hop in the path, this uses packet-forward-middleware.
+                    'pfm',
+            })}
+          />
+
+          {ibcPath.loading || ibcPath.updating ? (
+            <Loader className="!justify-start" fill={false} size={26} />
+          ) : ibcPath.errored ? (
+            <p className="body-text text-text-interactive-error">
+              {processError(ibcPath.error, {
+                forceCapture: false,
+              })}
+            </p>
+          ) : (
+            <div>
+              <div className="flex flex-row items-center gap-3">
+                {ibcPath.data.map((chainId, index) => (
+                  <>
+                    <div className="flex flex-row items-center gap-2">
+                      <ChainLogo chainId={chainId} />
+
+                      <p className="primary-text">
+                        {getDisplayNameForChainId(chainId)}
+                      </p>
+                    </div>
+
+                    {index !== ibcPath.data.length - 1 && (
+                      <ArrowRightAltRounded className="!h-5 !w-5 text-text-secondary" />
+                    )}
+                  </>
+                ))}
+              </div>
+
+              {isCreating && !!missingAccountChainIds?.length && (
+                <p className="secondary-text mt-4 text-text-interactive-error">
+                  {t('error.missingIbcChainAccounts', {
+                    chains: missingAccountChainIds
+                      .map((chainId) => getDisplayNameForChainId(chainId))
+                      .join(', '),
+                    count: missingAccountChainIds.length,
+                  })}
+                </p>
+              )}
+            </div>
+          )}
         </div>
       )}
     </>
