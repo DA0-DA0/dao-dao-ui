@@ -14,6 +14,10 @@ export type Scalars = {
   Boolean: { input: boolean; output: boolean; }
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
+  /** A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar. */
+  DateTime: { input: any; output: any; }
+  /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
+  JSONObject: { input: any; output: any; }
   /** MicroAmount custom scalar type */
   MicroAmount: { input: any; output: any; }
   /** UnixNanoseconds custom scalar type */
@@ -21,14 +25,14 @@ export type Scalars = {
 };
 
 export type Activity = {
-  activityPrice?: Maybe<CoinAmount>;
-  date?: Maybe<Scalars['String']['output']>;
-  expires?: Maybe<Scalars['String']['output']>;
+  date?: Maybe<Scalars['DateTime']['output']>;
+  expires?: Maybe<Scalars['DateTime']['output']>;
   from?: Maybe<WalletAccount>;
   id: Scalars['ID']['output'];
   isValid?: Maybe<Scalars['Boolean']['output']>;
+  price?: Maybe<CoinAmount>;
   to?: Maybe<WalletAccount>;
-  txId?: Maybe<Scalars['String']['output']>;
+  txHash?: Maybe<Scalars['String']['output']>;
   type?: Maybe<ActivityType>;
 };
 
@@ -47,6 +51,7 @@ export enum ActivityType {
   RejectTokenOffer = 'REJECT_TOKEN_OFFER',
   RemoveCollectionOffer = 'REMOVE_COLLECTION_OFFER',
   RemoveTokenOffer = 'REMOVE_TOKEN_OFFER',
+  RoyaltyPayout = 'ROYALTY_PAYOUT',
   Sale = 'SALE',
   TokenList = 'TOKEN_LIST',
   TokenMint = 'TOKEN_MINT',
@@ -294,16 +299,16 @@ export type CollectionOffersArgs = {
 
 export type CollectionActivity = Activity & {
   __typename?: 'CollectionActivity';
-  activityPrice?: Maybe<CoinAmount>;
   collection?: Maybe<Collection>;
-  date?: Maybe<Scalars['String']['output']>;
-  expires?: Maybe<Scalars['String']['output']>;
+  date?: Maybe<Scalars['DateTime']['output']>;
+  expires?: Maybe<Scalars['DateTime']['output']>;
   from?: Maybe<WalletAccount>;
   id: Scalars['ID']['output'];
   isValid?: Maybe<Scalars['Boolean']['output']>;
+  price?: Maybe<CoinAmount>;
   to?: Maybe<WalletAccount>;
   token?: Maybe<Token>;
-  txId?: Maybe<Scalars['String']['output']>;
+  txHash?: Maybe<Scalars['String']['output']>;
   type?: Maybe<ActivityType>;
 };
 
@@ -629,6 +634,11 @@ export type CursorPaginatedQuery = {
   pageInfo?: Maybe<CursorPageInfo>;
 };
 
+export type CursorPaginationInput = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
 export enum DateGranularity {
   Day = 'DAY',
   Hour = 'HOUR',
@@ -702,16 +712,16 @@ export type LiveAuction = {
 
 export type Media = {
   __typename?: 'Media';
-  /** @deprecated No longer supported */
+  /** @deprecated Field no longer supported */
   fileExtension?: Maybe<Scalars['String']['output']>;
-  /** @deprecated No longer supported */
+  /** @deprecated Field no longer supported */
   format?: Maybe<Scalars['String']['output']>;
   height?: Maybe<Scalars['Int']['output']>;
-  /** @deprecated No longer supported */
+  /** @deprecated Field no longer supported */
   image?: Maybe<Image>;
-  /** @deprecated No longer supported */
+  /** @deprecated Field no longer supported */
   isPixel?: Maybe<Scalars['Boolean']['output']>;
-  /** @deprecated No longer supported */
+  /** @deprecated Field no longer supported */
   originalUrl?: Maybe<Scalars['String']['output']>;
   type?: Maybe<MediaType>;
   url?: Maybe<Scalars['String']['output']>;
@@ -914,7 +924,7 @@ export type Query = {
   collections?: Maybe<CollectionsResult>;
   /** @deprecated Use collectionsCounts query instead. */
   collectionsWithCounts?: Maybe<CollectionsResult>;
-  /** @deprecated No longer supported */
+  /** @deprecated Field no longer supported */
   media?: Maybe<Media>;
   name?: Maybe<Name>;
   names?: Maybe<NamesResult>;
@@ -928,6 +938,7 @@ export type Query = {
   /** Retrieve a list of tokens based on various filters and sorting criteria. */
   tokens?: Maybe<TokensResult>;
   wallet?: Maybe<WalletAccount>;
+  walletActivity?: Maybe<WalletActivityResult>;
   wallets?: Maybe<WalletsResult>;
 };
 
@@ -947,7 +958,7 @@ export type QueryCollectionArgs = {
 export type QueryCollectionActivityArgs = {
   address: Scalars['String']['input'];
   filterByActivity?: InputMaybe<Array<ActivityType>>;
-  limit?: InputMaybe<Scalars['Int']['input']>;
+  pagination?: InputMaybe<CursorPaginationInput>;
 };
 
 
@@ -1062,6 +1073,7 @@ export type QueryTokensArgs = {
   filterForSale?: InputMaybe<SaleType>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   offset?: InputMaybe<Scalars['Int']['input']>;
+  owner?: InputMaybe<Scalars['String']['input']>;
   ownerAddrOrName?: InputMaybe<Scalars['String']['input']>;
   sellerAddrOrName?: InputMaybe<Scalars['String']['input']>;
   sortBy?: InputMaybe<TokenSort>;
@@ -1071,6 +1083,12 @@ export type QueryTokensArgs = {
 export type QueryWalletArgs = {
   address: Scalars['String']['input'];
   filterByTime?: InputMaybe<WalletStatsTimeSeries>;
+};
+
+
+export type QueryWalletActivityArgs = {
+  address: Scalars['String']['input'];
+  pagination?: InputMaybe<CursorPaginationInput>;
 };
 
 
@@ -1148,6 +1166,8 @@ export type Token = {
   listedAt?: Maybe<Scalars['String']['output']>;
   /** Media associated with the token. */
   media?: Maybe<Media>;
+  /** Metadata associated with the token. */
+  metadata?: Maybe<Scalars['JSONObject']['output']>;
   /** Price at which the token was minted. */
   mintPrice?: Maybe<Scalars['MicroAmount']['output']>;
   /** Date when the token was minted. */
@@ -1221,8 +1241,8 @@ export type TokenActivity = {
   price?: Maybe<Scalars['MicroAmount']['output']>;
   /** Wallet account of the receiver. */
   to?: Maybe<WalletAccount>;
-  /** Transaction ID. */
-  txId?: Maybe<Scalars['String']['output']>;
+  /** Transaction Hash. */
+  txHash?: Maybe<Scalars['String']['output']>;
   /** Type of activity. */
   type?: Maybe<ActivityType>;
 };
@@ -1392,9 +1412,37 @@ export type VisualAsset = {
 
 export type WalletAccount = {
   __typename?: 'WalletAccount';
+  activity?: Maybe<WalletActivityResult>;
   address: Scalars['ID']['output'];
   name?: Maybe<Name>;
   stats?: Maybe<WalletStats>;
+};
+
+
+export type WalletAccountActivityArgs = {
+  pagination?: InputMaybe<CursorPaginationInput>;
+};
+
+export type WalletActivity = Activity & {
+  __typename?: 'WalletActivity';
+  date?: Maybe<Scalars['DateTime']['output']>;
+  expires?: Maybe<Scalars['DateTime']['output']>;
+  from?: Maybe<WalletAccount>;
+  id: Scalars['ID']['output'];
+  isValid?: Maybe<Scalars['Boolean']['output']>;
+  item?: Maybe<WalletActivityItem>;
+  price?: Maybe<CoinAmount>;
+  to?: Maybe<WalletAccount>;
+  txHash?: Maybe<Scalars['String']['output']>;
+  type?: Maybe<ActivityType>;
+};
+
+export type WalletActivityItem = Collection | Name | Token;
+
+export type WalletActivityResult = CursorPaginatedQuery & {
+  __typename?: 'WalletActivityResult';
+  pageInfo?: Maybe<CursorPageInfo>;
+  walletActivity?: Maybe<Array<WalletActivity>>;
 };
 
 export enum WalletSort {
