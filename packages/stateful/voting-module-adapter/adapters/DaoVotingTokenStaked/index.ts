@@ -7,7 +7,11 @@ import {
 } from '@dao-dao/types'
 import { DaoVotingTokenStakedAdapterId } from '@dao-dao/utils'
 
-import { makeMintAction, makeUpdateMinterAllowanceAction } from './actions'
+import {
+  makeMintAction,
+  makeUpdateMinterAllowanceAction,
+  makeUpdateStakingConfigAction,
+} from './actions'
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
 import { useCommonGovernanceTokenInfo, useDaoInfoBarItems } from './hooks'
 
@@ -47,7 +51,11 @@ export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
         () => ({
           // Add to DAO Governance category.
           key: ActionCategoryKey.DaoGovernance,
-          actionMakers: [makeMintAction, makeUpdateMinterAllowanceAction],
+          actionMakers: [
+            makeMintAction,
+            makeUpdateMinterAllowanceAction,
+            makeUpdateStakingConfigAction,
+          ],
         }),
       ],
     },

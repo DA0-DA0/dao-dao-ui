@@ -9,7 +9,7 @@ import {
 } from '@dao-dao/types'
 import {
   convertDurationWithUnitsToHumanReadableString,
-  validateNonNegative,
+  validatePositive,
   validateRequired,
 } from '@dao-dao/utils'
 
@@ -30,12 +30,12 @@ export const UnstakingDurationInput = ({
         containerClassName="grow"
         error={errors?.unstakingDuration?.value}
         fieldName="unstakingDuration.value"
-        min={0}
+        min={1}
         register={register}
         setValue={setValue}
         sizing="sm"
         step={1}
-        validation={[validateNonNegative, validateRequired]}
+        validation={[validatePositive, validateRequired]}
         watch={watch}
       />
 
