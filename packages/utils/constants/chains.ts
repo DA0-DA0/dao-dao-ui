@@ -1,4 +1,9 @@
-import { ChainId, PolytoneConfig, SupportedChainConfig } from '@dao-dao/types'
+import {
+  ChainId,
+  ContractVersion,
+  PolytoneConfig,
+  SupportedChainConfig,
+} from '@dao-dao/types'
 
 // Chains which DAO DAO DAOs exist on.
 export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
@@ -48,6 +53,12 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         // ContractVersion.V210
         Cw20Stake: 2444,
         DaoVotingCw20Staked: 2463,
+      },
+      historicalCodeIds: {
+        [ContractVersion.V210]: {
+          DaoPreProposeMultiple: 2458,
+          DaoProposalMultiple: 2461,
+        },
       },
       polytone: {
         [ChainId.OsmosisMainnet]: {
@@ -138,6 +149,12 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoVotingCw721Staked: 253,
         DaoVotingTokenStaked: 252,
       },
+      historicalCodeIds: {
+        [ContractVersion.V210]: {
+          DaoPreProposeMultiple: 118,
+          DaoProposalMultiple: 120,
+        },
+      },
       polytone: {
         [ChainId.JunoMainnet]: {
           // osmosis
@@ -223,6 +240,12 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoVotingCw721Staked: -1,
         DaoVotingTokenStaked: -1,
       },
+      historicalCodeIds: {
+        [ContractVersion.V210]: {
+          DaoPreProposeMultiple: 224,
+          DaoProposalMultiple: 226,
+        },
+      },
     },
     [ChainId.StargazeMainnet]: {
       name: 'stargaze',
@@ -259,6 +282,12 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoVotingCw721Staked: 120,
         DaoVotingTokenStaked: 121,
         CwTokenfactoryIssuer: 122,
+      },
+      historicalCodeIds: {
+        [ContractVersion.V210]: {
+          DaoPreProposeMultiple: 89,
+          DaoProposalMultiple: 91,
+        },
       },
       polytone: {
         [ChainId.OsmosisMainnet]: {
@@ -350,6 +379,12 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         Cw20Stake: 1247,
         DaoVotingCw20Staked: 1263,
       },
+      historicalCodeIds: {
+        [ContractVersion.V210]: {
+          DaoPreProposeMultiple: 1258,
+          DaoProposalMultiple: 1261,
+        },
+      },
     },
     [ChainId.OsmosisTestnet]: {
       name: 'osmosis',
@@ -391,6 +426,12 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoVotingCw721Staked: 4904,
         DaoVotingTokenStaked: 4905,
       },
+      historicalCodeIds: {
+        [ContractVersion.V210]: {
+          DaoPreProposeMultiple: 1319,
+          DaoProposalMultiple: 1322,
+        },
+      },
     },
     [ChainId.StargazeTestnet]: {
       name: 'stargaze',
@@ -428,6 +469,12 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoVotingCw4: 3235,
         DaoVotingCw721Staked: 3236,
         DaoVotingTokenStaked: 3237,
+      },
+      historicalCodeIds: {
+        [ContractVersion.V210]: {
+          DaoPreProposeMultiple: 224,
+          DaoProposalMultiple: 226,
+        },
       },
     },
   }

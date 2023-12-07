@@ -1,0 +1,1492 @@
+directive @defer(if: Boolean, label: String) on FRAGMENT_SPREAD | INLINE_FRAGMENT
+
+directive @cacheControl(maxAge: Int, scope: CacheControlScope, inheritMaxAge: Boolean) on FIELD_DEFINITION | OBJECT | INTERFACE | UNION
+
+"""
+Indicates exactly one field must be supplied and this field must not be `null`.
+"""
+directive @oneOf on INPUT_OBJECT
+
+enum PresaleType {
+  """REGULAR - Presale mints DO count towards total mintable"""
+  REGULAR
+
+  """FLEX - Presale mints don't count towards total mintable"""
+  FLEX
+}
+
+type MinterTokenCounts {
+  minted: Int
+  mintable: Int
+  limit: Int
+}
+
+interface MinterSale {
+  perAddressLimit: Int @deprecated(reason: "Use tokenCounts instead with/without walletAddress")
+  startTime: UnixNanoseconds
+  endTime: UnixNanoseconds
+  numMembers: Int
+  mintPrice: CoinAmount
+  tokenCounts: MinterTokenCounts
+}
+
+type MinterPreSale implements MinterSale {
+  contractAddress: String
+  startTime: UnixNanoseconds
+  endTime: UnixNanoseconds
+  numMembers: Int
+  mintPrice: CoinAmount
+  isMember: Boolean
+  hasMember(walletAddress: String): Boolean @deprecated(reason: "use isMember instead and pass walletAddress to minter.")
+  perAddressLimit: Int @deprecated(reason: "Use tokenCounts instead with/without walletAddress")
+  tokenCounts: MinterTokenCounts
+  type: PresaleType
+}
+
+type MinterPublicSale implements MinterSale {
+  contractAddress: String
+  startTime: UnixNanoseconds
+  endTime: UnixNanoseconds
+  numMembers: Int
+  mintPrice: CoinAmount
+  discountPrice: CoinAmount
+  perAddressLimit: Int @deprecated(reason: "Use tokenCounts instead with/without walletAddress")
+  tokenCounts: MinterTokenCounts
+}
+
+type Minter {
+  """Minter contract address"""
+  contractAddress: String
+  preSale: MinterPreSale
+  publicSale: MinterPublicSale
+  type: String
+}
+
+enum WhitelistType {
+  NONE
+  REGULAR
+  FLEX
+}
+
+type MintCount {
+  publicLimit: Int!
+  publicMintCount: Int!
+  whitelistLimit: Int!
+  whitelistMintCount: Int!
+  whitelistType: WhitelistType!
+}
+
+"""Represents the traits of an NFT token."""
+type TokenTrait {
+  """The name of the trait."""
+  name: String!
+
+  """The value of the trait."""
+  value: String!
+
+  """The rarity percentage associated with the trait."""
+  rarityPercent: Float
+
+  """The rarity score associated with the trait."""
+  rarityScore: Float
+
+  """A metric to represent the overall rarity."""
+  rarity: Float
+}
+
+"""Enumerates different types of token-related activities."""
+enum ActivityType {
+  TOKEN_MINT
+  TOKEN_TRANSFER
+  TOKEN_LIST
+  TOKEN_OFFER
+  REMOVE_TOKEN_OFFER
+  COLLECTION_OFFER
+  REMOVE_COLLECTION_OFFER
+  ACCEPT_COLLECTION_OFFER
+  REJECT_TOKEN_OFFER
+  PRICE_CHANGE
+  SALE
+  AUCTION_SALE
+  UNLIST
+  AIRDROP
+  CREATE_AUCTION
+  CANCEL_AUCTION
+  AUCTION_BID
+  NAME_MINT
+  NAME_OFFER
+  ROYALTY_PAYOUT
+}
+
+"""Represents a paginated result of token events."""
+type TokenEvents implements CursorPaginatedQuery {
+  """List of token events."""
+  events: [TokenEvent]
+
+  """Pagination info."""
+  pageInfo: CursorPageInfo
+}
+
+"""Represents an individual token event."""
+type TokenEvent implements Event {
+  """Unique cursor for pagination."""
+  cursor: ID
+
+  """Type of token activity."""
+  type: ActivityType
+
+  """Price associated with the event."""
+  price: MicroAmount
+
+  """Price in USD."""
+  priceUsd: String
+
+  """Date of the event."""
+  date: String
+
+  """The associated token."""
+  token: Token
+}
+
+"""Represents detailed token activity."""
+type TokenActivity {
+  """Unique identifier."""
+  id: ID!
+
+  """Type of activity."""
+  type: ActivityType
+
+  """Transaction Hash."""
+  txHash: String
+
+  """Date of the activity."""
+  date: String
+
+  """Deprecated: Price associated with the activity."""
+  price: MicroAmount @deprecated(reason: "Use activityPrice for denom support.")
+
+  """Price associated with the activity."""
+  activityPrice: CoinAmount
+
+  """Expiry date/time."""
+  expires: String
+
+  """Wallet account of the sender."""
+  from: WalletAccount
+
+  """Wallet account of the receiver."""
+  to: WalletAccount
+}
+
+"""Represents the main structure of an NFT token."""
+type Token {
+  """Unique identifier in format: "<collection addr>/<token id>"."""
+  id: ID!
+
+  """Metadata associated with the token."""
+  metadata: JSONObject
+
+  """Per-collection unique token ID."""
+  tokenId: String!
+
+  """Collection to which the token belongs."""
+  collection: Collection!
+
+  """Token's name."""
+  name: String
+
+  """Media associated with the token."""
+  media: Media
+
+  """Edition number of the token."""
+  edition: Int
+
+  """Description of the token."""
+  description: String
+
+  """URI for token data."""
+  tokenUri: String
+
+  """List of token traits."""
+  traits: [TokenTrait!]
+
+  """Date when the token was minted."""
+  mintedAt: String
+
+  """Price at which the token was minted."""
+  mintPrice: MicroAmount
+
+  """Date when the token was listed for sale."""
+  listedAt: String
+
+  """Order based on rarity."""
+  rarityOrder: Int
+
+  """Score based on rarity."""
+  rarityScore: Float
+
+  """Current live auction details, if applicable."""
+  auction: LiveAuction
+
+  """The wallet address of the Current owner of the token."""
+  owner: WalletAccount
+
+  """Current listed price of the token. (deprecated)"""
+  price: MicroAmount @deprecated(reason: "Use listPrice for denom support.")
+
+  """Current listed price of the token."""
+  listPrice: CoinAmount
+
+  """
+  List of offers made on this token, filterable by offer type and wallet address.
+  """
+  offers(filterByOffer: OfferType, filterByAddr: String): [Offer!]
+
+  """
+  Activity history associated with the token, filterable by activity type and sorting criteria.
+  """
+  activity(filterByActivity: ActivityType, sortBy: EventSort): [TokenActivity!]
+
+  """Retrieves the highest offer made on this token, filterable by address."""
+  highestOffer(filterByAddr: String): Offer
+
+  """The expiry date and time of the token listing or offer."""
+  expiresAtDateTime: String
+
+  """The address for which this token is reserved, if applicable."""
+  reserveFor: WalletAccount
+
+  """
+  Type of sale (e.g., fixed price, auction) the token is currently listed under.
+  """
+  saleType: SaleType
+
+  """(Deprecated) The price at which the token last sold for."""
+  lastSale: MicroAmount @deprecated(reason: "Use lastSalePrice instead for denom support")
+
+  """The price at which the token last sold for."""
+  lastSalePrice: CoinAmount
+
+  """Indicates if the token contains explicit content."""
+  isExplicit: Boolean
+
+  """Indicates if actions on the token are restricted to its owner only."""
+  onlyOwner: Boolean
+}
+
+type LiveAuction {
+  """Start time of the live auction."""
+  startTime: String
+
+  """End time of the live auction."""
+  endTime: String
+
+  """The current highest bid details in the auction."""
+  highestBid: Offer
+
+  """Seller wallet details including address and name."""
+  seller: WalletAccount
+
+  """Auction duration in seconds."""
+  duration: Int
+}
+
+input TraitFilter {
+  """Name of the trait to filter by."""
+  name: String!
+
+  """Value of the trait to filter by."""
+  value: String!
+}
+
+enum SaleType {
+  """Tokens with a fixed price."""
+  FIXED_PRICE
+
+  """Tokens available in a live auction."""
+  LIVE_AUCTION
+
+  """Tokens available in a non-live auction."""
+  AUCTION
+
+  """Any type of sale."""
+  ANY
+
+  """Tokens that are not currently listed."""
+  UNLISTED
+
+  """Tokens that are currently listed."""
+  LISTED
+
+  """Listings that have expired."""
+  EXPIRED
+}
+
+enum TokenSort {
+  """Sort tokens by their ID in descending order."""
+  TOKEN_ID_DESC
+
+  """Sort tokens by rarity in ascending order."""
+  RARITY_ASC
+
+  """Sort tokens by rarity in descending order."""
+  RARITY_DESC
+
+  """Sort tokens by price in ascending order."""
+  PRICE_ASC
+
+  """Sort tokens by price in descending order."""
+  PRICE_DESC
+
+  """Sort tokens by their name in ascending order."""
+  NAME_ASC
+
+  """Sort tokens by their name in descending order."""
+  NAME_DESC
+
+  """Sort tokens by collection address and token ID in ascending order."""
+  COLLECTION_ADDR_TOKEN_ID_ASC
+
+  """Sort tokens by their minting date/time in ascending order."""
+  MINTED_ASC
+
+  """Sort tokens by their minting date/time in descending order."""
+  MINTED_DESC
+
+  """Sort tokens by their listing date/time in ascending order."""
+  LISTED_ASC
+
+  """Sort tokens by their listing date/time in descending order."""
+  LISTED_DESC
+
+  """Sort tokens by the end time of live auctions in ascending order."""
+  LIVE_AUCTION_END_TIME_ASC
+
+  """Sort tokens by the highest bid in live auctions in descending order."""
+  LIVE_AUCTION_HIGHEST_BID_DESC
+
+  """Sort tokens by the highest bid in live auctions in ascending order."""
+  LIVE_AUCTION_HIGHEST_BID_ASC
+}
+
+enum AuctionEndPreset {
+  """Auctions ending in the next 1 hour."""
+  NEXT_1_HOUR
+
+  """Auctions ending in the next 6 hours."""
+  NEXT_6_HOURS
+
+  """Auctions ending in the next 24 hours."""
+  NEXT_24_HOURS
+
+  """Auctions ending in the next 48 hours."""
+  NEXT_48_HOURS
+
+  """Auctions ending in the next 7 days."""
+  NEXT_7_DAYS
+}
+
+enum TokenSaleType {
+  """Tokens sold at a fixed price."""
+  FIXED_PRICE
+
+  """Tokens sold in an auction."""
+  AUCTION
+
+  """Tokens sold via an offer."""
+  OFFER
+
+  """Offers made for any token in a collection."""
+  COLLECTION_OFFER
+}
+
+enum TokenSaleSort {
+  SALE_TIME_DESC
+  SALE_TIME_ASC
+  STARS_PRICE_DESC
+  STARS_PRICE_ASC
+  USD_PRICE_DESC
+  USD_PRICE_ASC
+  RARITY_DESC
+  RARITY_ASC
+  TOKEN_ID_ASC
+  TOKEN_ID_DESC
+}
+
+type TokensResult implements PaginatedQuery {
+  """List of tokens as per query."""
+  tokens: [Token!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo
+}
+
+type TokenSale {
+  """Unique identifier for the token sale."""
+  id: ID!
+
+  """Type of the token sale."""
+  saleType: TokenSaleType
+
+  """Date of the sale."""
+  date: String
+
+  """Address of the token's collection."""
+  collectionAddr: String
+
+  """ID of the sold token."""
+  tokenId: String
+
+  """Details of the sold token."""
+  token: Token
+
+  """Details of the token's collection."""
+  collection: Collection
+
+  """Price at which the token was sold."""
+  price: MicroAmount
+
+  """Price in USD at which the token was sold."""
+  priceUsd: Float
+
+  """Wallet address of the seller."""
+  sellerAddr: String
+
+  """Wallet address of the buyer."""
+  buyerAddr: String
+
+  """Wallet info of the seller including wallet address and name."""
+  seller: WalletAccount
+
+  """Wallet info of the buyer including wallet address and name."""
+  buyer: WalletAccount
+}
+
+type TokenSalesResults implements PaginatedQuery {
+  """List of token sales as per query."""
+  tokenSales: [TokenSale!]!
+
+  """Pagination information."""
+  pageInfo: PageInfo
+}
+
+input PriceFilter {
+  """Minimum listed token price for filtering."""
+  min: Float
+
+  """Maximum listed token price for filtering."""
+  max: Float
+}
+
+type Query {
+  """Retrieve a single token by its collection address and token ID."""
+  token(collectionAddr: String!, tokenId: String!): Token
+
+  """
+  Retrieve a list of tokens based on various filters and sorting criteria.
+  """
+  tokens(
+    """Filter tokens by owner address or name"""
+    owner: String @deprecated(reason: "Use ownerAddrOrName instead")
+
+    """Filter tokens by owner address or name"""
+    ownerAddrOrName: String
+
+    """Filter tokens that are on auction from a specific seller address."""
+    sellerAddrOrName: String
+
+    """Filter tokens from a specific collection."""
+    collectionAddr: String
+
+    """Filter tokens by specific traits."""
+    filterByTraits: [TraitFilter!]
+
+    """Filter tokens within a specific price range."""
+    filterByPrice: PriceFilter
+
+    """Filter tokens by sale type."""
+    filterForSale: SaleType
+
+    """Offset for pagination."""
+    offset: Int
+
+    """Limit the number of results or for pagination."""
+    limit: Int
+
+    """Define how the tokens should be sorted."""
+    sortBy: TokenSort
+
+    """Filter tokens from multiple collections addresses."""
+    filterByCollectionAddrs: [String!]
+
+    """Filter tokens by auction end time presets."""
+    filterAuctionEndByPreset: AuctionEndPreset
+
+    """Filter tokens by a specific range of auction end dates."""
+    filterAuctionEndByDate: DateRange
+  ): TokensResult
+
+  """
+  Retrieve a list of token sales based on various filters and sorting criteria.
+  """
+  tokenSales(
+    """Offset for pagination."""
+    offset: Int
+
+    """Limit the number of results or for pagination."""
+    limit: Int
+
+    """Filter token sales from multiple collections addresses."""
+    filterByCollectionAddrs: [String!]
+
+    """Filter token sales by date presets."""
+    filterByDatePreset: DatePreset
+
+    """Filter token sales by a specific date range."""
+    filterByDateRange: DateRange
+
+    """Filter token sales by sale type."""
+    filterBySale: [TokenSaleType!]
+
+    """Define how the token sales should be sorted."""
+    sortBy: TokenSaleSort
+  ): TokenSalesResults
+
+  """
+  Retrieve a list of token events which aren't included in the standard tokens query based on various filters.
+  """
+  tokenEvents(
+    """Limit the number of results."""
+    limit: Int
+
+    """Filter token events by specific activity types."""
+    filterByTokenEventTypes: [ActivityType!]
+
+    """Filter token events from a specific collection address."""
+    collectionAddr: String
+
+    """Filter token events after a specific cursor for pagination."""
+    after: String
+
+    """Filter token events before a specific cursor for pagination."""
+    before: String
+  ): TokenEvents
+
+  """Retrieve a list of badges owned by a specific wallet."""
+  badges(ownerAddrOrName: String, offset: Int, limit: Int): TokensResult
+  collectionOffers(after: String, before: String, collectionAddr: String!): CollectionOffersResult
+  offers(filterByTypes: [OfferType], fromAddr: String, toAddr: String): OffersResult
+  media(url: String!): Media @deprecated
+  name(name: String!): Name
+  names(offset: Int, limit: Int, sortBy: NameSortBy, ownerAddr: String, associatedAddr: String): NamesResult
+  collections(offset: Int, limit: Int, sortBy: CollectionSort, searchQuery: String, filterByAddrs: [String!], filterByCreators: [String!], filterByFeatured: [CollectionFeaturedType!], filterByCategories: [String!], filterByMintStatus: [CollectionMintStatus!], minMaxFilters: CollectionMinMaxFilters): CollectionsResult
+  collection(address: String!): Collection
+  collectionActivity(address: String!, filterByActivity: [ActivityType!], pagination: CursorPaginationInput): CollectionActivityResult
+  collectionCategories: [CollectionCategoryInfo!]
+  collectionSales(address: String!, granularity: DateGranularity!, filterByDatePreset: DatePreset, filterByDateRange: DateRange, limit: Int, offset: Int): CollectionSalesResult
+  collectionCounts(owner: String, seller: String, filterForSale: SaleType, limit: Int, offset: Int): CollectionCountsResult
+  collectionsWithCounts(owner: String, seller: String, filterForSale: SaleType, limit: Int, offset: Int): CollectionsResult @deprecated(reason: "Use collectionsCounts query instead.")
+  wallet(address: String!, filterByTime: WalletStatsTimeSeries): WalletAccount
+  wallets(offset: Int, limit: Int, sortBy: WalletSort, filterByTime: WalletStatsTimeSeries, searchQuery: String): WalletsResult
+  walletActivity(address: String!, pagination: CursorPaginationInput): WalletActivityResult
+  analytics: Analytics
+}
+
+interface Event {
+  cursor: ID
+}
+
+enum EventSort {
+  BLOCK_HEIGHT_ASC
+  BLOCK_HEIGHT_DESC
+}
+
+interface Activity {
+  id: ID!
+  type: ActivityType
+  txHash: String
+  date: DateTime
+  price: CoinAmount
+  expires: DateTime
+  from: WalletAccount
+  to: WalletAccount
+  isValid: Boolean
+}
+
+enum OfferType {
+  NAME_OFFER
+  TOKEN_OFFER
+  COLLECTION_OFFER
+  LIVE_AUCTION_OFFER
+}
+
+type Offer {
+  id: ID!
+  type: OfferType
+  price: MicroAmount!
+  floorPriceDifferencePercent: Float
+  fromAddr: String
+  from: WalletAccount
+  date: String
+  expires: String
+  saleType: SaleType
+  collectionAddr: String
+  tokenId: String
+  collection: Collection
+  token: Token
+  name: Name
+}
+
+type OffersResult implements PaginatedQuery {
+  offers: [Offer!]
+  pageInfo: PageInfo
+}
+
+type CollectionOffersResult implements CursorPaginatedQuery {
+  offers: [Offer!]!
+  pageInfo: CursorPageInfo!
+}
+
+enum MediaType {
+  unknown
+  video
+  audio
+  image
+  animated_image
+  html
+  pdf
+  vector_graphic
+}
+
+enum ImageSize {
+  XS
+  SM
+  MD
+  LG
+  XL
+}
+
+type Image {
+  baseUrl: String
+  width: Int
+  height: Int
+  format: String
+  isAnimated: Boolean
+  mp4Link: String
+  webmLink: String
+  jpgLink: String
+}
+
+"""Can be an image or video asset."""
+type VisualAsset {
+  """The type of media of the main url."""
+  type: MediaType
+  width: Int
+  height: Int
+  url: String
+
+  """
+  Static version of this visual asset. Still image if video, or identical to url for images.
+  """
+  staticUrl: String
+}
+
+type SizedVisualAssets {
+  xs: VisualAsset
+  sm: VisualAsset
+  md: VisualAsset
+  lg: VisualAsset
+  xl: VisualAsset
+}
+
+type Media {
+  type: MediaType
+  url: String
+  visualAssets: SizedVisualAssets
+  height: Int
+  width: Int
+  format: String @deprecated
+  fileExtension: String @deprecated
+  originalUrl: String @deprecated
+  image(size: ImageSize): Image @deprecated
+  isPixel: Boolean @deprecated
+}
+
+type Name {
+  name: ID!
+  ownerAddr: String
+  associatedAddr: String
+  records: [NameRecord!]
+  image: String
+  media: Media
+  mintedAt: String
+  highestOffer: Offer
+}
+
+type NameRecord {
+  name: String!
+  value: String!
+  verified: Boolean!
+}
+
+type NamesResult {
+  names: [Name!]!
+  pageInfo: PageInfo
+}
+
+enum NameSortBy {
+  MINTED_AT_DESC
+  MINTED_AT_ASC
+  NAME_DESC
+  NAME_ASC
+  OFFERS_DESC
+  OFFERS_ASC
+}
+
+type Collection {
+  contractAddress: ID!
+  contractUri: String
+  minterAddress: String
+  name: String
+  description: String
+  creator: WalletAccount
+  symbol: String
+  media: Media
+  website: String
+  royaltyInfo: RoyaltyInfo
+  creationTime: UnixNanoseconds
+  startTradingTime: UnixNanoseconds
+  traits: [CollectionTrait!]
+  minter(walletAddress: String): Minter
+  mintStatus: CollectionMintStatus
+  categories: CollectionCategories
+  featured: CollectionFeaturedType
+  tags: [String!]
+  isExplicit: Boolean
+  floorPrice: MicroAmount
+  offers(filterByAddr: String): [Offer!]
+  highestOffer(filterByAddr: String): Offer
+  tokenCounts: CollectionTokenCounts
+  stats: CollectionStats
+  activity(filterByActivity: [ActivityType!]): [CollectionActivity!]
+}
+
+type CollectionActivityResult implements CursorPaginatedQuery {
+  collectionActivity: [CollectionActivity!]!
+  pageInfo: CursorPageInfo
+}
+
+type CollectionActivity implements Activity {
+  id: ID!
+  type: ActivityType
+  txHash: String
+  date: DateTime
+  price: CoinAmount
+  expires: DateTime
+  from: WalletAccount
+  to: WalletAccount
+  token: Token
+  collection: Collection
+  isValid: Boolean
+}
+
+type RoyaltyInfo {
+  paymentAddress: String
+  sharePercent: Float
+}
+
+type CollectionTraitValue {
+  value: String!
+  rarityPercent: Float
+  numTokens: Int!
+  numTokensForSale: Int!
+}
+
+type CollectionTrait {
+  name: String!
+  values: [CollectionTraitValue!]!
+}
+
+"""Stats are refreshed every 15 mins with the worker process."""
+type CollectionStats {
+  collectionAddr: ID!
+  change6HourPercent: Float
+  change24HourPercent: Float
+  change7DayPercent: Float
+  change30dayPercent: Float
+  volume6Hour: MicroAmount
+  volume24Hour: MicroAmount
+  volume7Day: MicroAmount
+  volume30Day: MicroAmount
+  volumeTotal: MicroAmount
+  salesCountTotal: Int
+  bestOffer: MicroAmount
+  marketCap: MicroAmount
+  numOwners: Int
+  uniqueOwnerPercent: Float
+  changeUsd6hourPercent: Float
+  changeUsd24hourPercent: Float
+  changeUsd7dayPercent: Float
+  changeUsd30dayPercent: Float
+  volumeUsd6hour: Float
+  volumeUsd24hour: Float
+  volumeUsd7day: Float
+  volumeUsd30day: Float
+  volumeUsdTotal: Float
+  tokensMintedPercent: Float
+  uniquePaidMintersPercent: Float
+  mintVolume24hour: MicroAmount
+  mintVolume14day: MicroAmount
+  mintCount24hour: Int
+  mintCount14day: Int
+  mintChange24HourPercent: Float
+  mintChange14DayPercent: Float
+  category: CollectionCategories
+}
+
+enum CollectionFeaturedType {
+  TEAM_PICK
+  COMMUNITY_VOTE
+}
+
+type CollectionCategories {
+  public: [String!]
+  private: [String!]
+}
+
+type CollectionCategoryInfo {
+  name: String
+  count: Int
+}
+
+type CollectionTokenCounts {
+  """Number of tokens remaining to mint."""
+  mintable: Int
+
+  """Number of tokens minted."""
+  minted: Int
+
+  """Number of tokens airdropped."""
+  airdropped: Int
+
+  """Total number of tokens possible (from the minter)."""
+  total: Int
+
+  """Number of tokens for sale."""
+  listed: Int
+
+  """Number of tokens that are minted and not burned."""
+  active: Int
+
+  """Number of tokens burned."""
+  burned: Int
+
+  """Number of tokens that are returned from collectionsWithCounts query."""
+  current: Int @deprecated(reason: "Use collectionCounts query instead.")
+}
+
+enum CollectionSort {
+  NAME_ASC
+  NAME_DESC
+  LISTED_TOKENS_ASC
+  LISTED_TOKENS_DESC
+  FLOOR_PRICE_ASC
+  FLOOR_PRICE_DESC
+  VOLUME_6_HOUR_DESC
+  VOLUME_6_HOUR_ASC
+  VOLUME_24_HOUR_DESC
+  VOLUME_24_HOUR_ASC
+  VOLUME_7_DAY_DESC
+  VOLUME_7_DAY_ASC
+  VOLUME_ALL_TIME_DESC
+  VOLUME_ALL_TIME_ASC
+  VOLUME_30_DAY_DESC
+  VOLUME_30_DAY_ASC
+  VOLUME_USD_6_HOUR_DESC
+  VOLUME_USD_6_HOUR_ASC
+  VOLUME_USD_24_HOUR_DESC
+  VOLUME_USD_24_HOUR_ASC
+  VOLUME_USD_7_DAY_DESC
+  VOLUME_USD_7_DAY_ASC
+  VOLUME_USD_30_DAY_DESC
+  VOLUME_USD_30_DAY_ASC
+  VOLUME_USD_ALL_TIME_DESC
+  VOLUME_USD_ALL_TIME_ASC
+  SALES_COUNT_DESC
+  SALES_COUNT_ASC
+  MARKET_CAP_ASC
+  MARKET_CAP_DESC
+  CHANGE_6_HOUR_ASC
+  CHANGE_6_HOUR_DESC
+  CHANGE_24_HOUR_ASC
+  CHANGE_24_HOUR_DESC
+  CHANGE_7_DAY_DESC
+  CHANGE_7_DAY_ASC
+  CHANGE_30_DAY_DESC
+  CHANGE_30_DAY_ASC
+  CHANGE_USD_6_HOUR_ASC
+  CHANGE_USD_6_HOUR_DESC
+  CHANGE_USD_24_HOUR_ASC
+  CHANGE_USD_24_HOUR_DESC
+  CHANGE_USD_7_DAY_DESC
+  CHANGE_USD_7_DAY_ASC
+  CHANGE_USD_30_DAY_DESC
+  CHANGE_USD_30_DAY_ASC
+  BEST_OFFER_ASC
+  BEST_OFFER_DESC
+  NUM_OWNERS_ASC
+  NUM_OWNERS_DESC
+  PERCENT_MINTED_ASC
+  PERCENT_MINTED_DESC
+  ROYALTY_PERCENT_ASC
+  ROYALTY_PERCENT_DESC
+  NUM_TOKENS_MINTED_ASC
+  NUM_TOKENS_MINTED_DESC
+  NUM_TOKENS_AIRDROPPED_ASC
+  NUM_TOKENS_AIRDROPPED_DESC
+  NUM_TOKENS_TOTAL_ASC
+  NUM_TOKENS_TOTAL_DESC
+  UNIQUE_PAID_MINTERS_PERCENT_ASC
+  UNIQUE_PAID_MINTERS_PERCENT_DESC
+  MINT_VOLUME_24_HOUR_ASC
+  MINT_VOLUME_24_HOUR_DESC
+  MINT_VOLUME_14_DAY_ASC
+  MINT_VOLUME_14_DAY_DESC
+  MINT_COUNT_24_HOUR_ASC
+  MINT_COUNT_24_HOUR_DESC
+  MINT_COUNT_14_DAY_ASC
+  MINT_COUNT_14_DAY_DESC
+  MINT_PRICE_ASC
+  MINT_PRICE_DESC
+  MINT_START_TIME_ASC
+  MINT_START_TIME_DESC
+  CREATION_TIME_ASC
+  CREATION_TIME_DESC
+
+  """
+  Custom display order for Launchpad:
+  1. >100 mints in last 24 hours
+  2. 14d mint volume
+  3. Sold out to bottom
+  """
+  LAUNCHPAD_DISPLAY_ORDER
+}
+
+type CollectionsResult implements PaginatedQuery {
+  collections: [Collection!]!
+  pageInfo: PageInfo
+}
+
+type OwnedCollection {
+  collection: Collection!
+  items: Int!
+}
+
+enum CollectionMintStatus {
+  UPCOMING
+  MINTING
+  FULLY_MINTED
+}
+
+input CollectionMinMaxFilters {
+  floorPriceMin: MicroAmount
+  floorPriceMax: MicroAmount
+  numTokensMintedMin: Int
+  numTokensMintedMax: Int
+  numTokensAirdroppedMin: Int
+  numTokensAirdroppedMax: Int
+  numTokensTotalMin: Int
+  numTokensTotalMax: Int
+  numTokensForSaleMin: Int
+  numTokensForSaleMax: Int
+  numTokensLeftToMintMin: Int
+  numTokensLeftToMintMax: Int
+  bestOfferMin: MicroAmount
+  bestOfferMax: MicroAmount
+  numOwnersMin: Int
+  numOwnersMax: Int
+  uniqueOwnerPercentMin: Float
+  uniqueOwnerPercentMax: Float
+  change6hourPercentMin: Float
+  change6hourPercentMax: Float
+  change24hourPercentMin: Float
+  change24hourPercentMax: Float
+  change7dayPercentMin: Float
+  change7dayPercentMax: Float
+  volume6hourMin: MicroAmount
+  volume6hourMax: MicroAmount
+  volume24hourMin: MicroAmount
+  volume24hourMax: MicroAmount
+  volume7dayMin: MicroAmount
+  volume7dayMax: MicroAmount
+  royaltyPercentMin: Float
+  royaltyPercentMax: Float
+  tokensMintedPercentMin: Float
+  tokensMintedPercentMax: Float
+  mintChange14dayPercentMin: Float
+  mintChange14dayPercentMax: Float
+  mintChange24hourPercentMin: Float
+  mintChange24hourPercentMax: Float
+  mintCount14dayMin: Float
+  mintCount14dayMax: Float
+  mintCount24hourMin: Float
+  mintCount24hourMax: Float
+  mintVolume14dayMin: MicroAmount
+  mintVolume14dayMax: MicroAmount
+  mintVolume24hourMin: MicroAmount
+  mintVolume24hourMax: MicroAmount
+  uniquePaidMintersPercentMin: Float
+  uniquePaidMintersPercentMax: Float
+  mintPriceMin: MicroAmount
+  mintPriceMax: MicroAmount
+  mintStartTimeMin: UnixNanoseconds
+  mintStartTimeMax: UnixNanoseconds
+  creationTimeMin: UnixNanoseconds
+  creationTimeMax: UnixNanoseconds
+}
+
+enum DateGranularity {
+  HOUR
+  DAY
+  WEEK
+  MONTH
+  QUARTER
+  YEAR
+}
+
+enum DatePreset {
+  LAST_24_HOURS
+  LAST_7_DAYS
+  LAST_30_DAYS
+  LAST_90_DAYS
+  LAST_YEAR
+  ALL_TIME
+}
+
+input DateRange {
+  startDate: String
+  endDate: String
+}
+
+type CollectionSalesResult implements PaginatedQuery {
+  collectionSales: CollectionSales!
+  pageInfo: PageInfo
+}
+
+interface CollectionSalesStat {
+  volumeStars: MicroAmount
+  volumeUsd: Float
+  averagePriceStars: MicroAmount
+  averagePriceUsd: Float
+  salesCount: Int
+}
+
+type CollectionTimePeriodSalesStat implements CollectionSalesStat {
+  volumeStars: MicroAmount
+  volumeUsd: Float
+  salesCount: Int
+  averagePriceStars: MicroAmount
+  averagePriceUsd: Float
+  timePeriod: String
+}
+
+type CollectionSalesStatsTotal implements CollectionSalesStat {
+  volumeStars: MicroAmount
+  volumeUsd: Float
+  salesCount: Int
+  averagePriceStars: MicroAmount
+  averagePriceUsd: Float
+}
+
+type CollectionSales {
+  total: CollectionSalesStatsTotal
+  stats: [CollectionTimePeriodSalesStat!]
+}
+
+type CollectionCount {
+  collection: Collection
+  count: Int!
+}
+
+type CollectionCountsResult implements PaginatedQuery {
+  collectionCounts: [CollectionCount!]!
+  pageInfo: PageInfo
+}
+
+enum WalletStatsTimeSeries {
+  ONE_DAY
+  SEVEN_DAY
+  THIRTY_DAY
+  ALL_TIME
+}
+
+type WalletAccount {
+  address: ID!
+  name: Name
+  stats: WalletStats
+  activity(pagination: CursorPaginationInput): WalletActivityResult
+}
+
+union WalletActivityItem = Token | Collection | Name
+
+type WalletActivity implements Activity {
+  id: ID!
+  type: ActivityType
+  txHash: String
+  date: DateTime
+  expires: DateTime
+  price: CoinAmount
+  from: WalletAccount
+  to: WalletAccount
+  item: WalletActivityItem
+  isValid: Boolean
+}
+
+"""Stats are refreshed every 15 mins with the worker process."""
+type WalletStats {
+  address: ID!
+  numTrades: Int
+  numMints: Int
+  numBuys: Int
+  numSells: Int
+  sellVolume: MicroAmount
+  buyVolume: MicroAmount
+  mintVolume: MicroAmount
+  totalVolume: MicroAmount
+  sellVolumeUsd: Float
+  buyVolumeUsd: Float
+  mintVolumeUsd: Float
+  totalVolumeUsd: Float
+  totalUnrealizedProfit: MicroAmount
+  totalUnrealizedUsdProfit: Float
+  totalValue: MicroAmount
+  totalValueUsd: Float
+  totalRealizedProfit: MicroAmount
+  totalRealizedUsdProfit: Float
+}
+
+type WalletActivityResult implements CursorPaginatedQuery {
+  walletActivity: [WalletActivity!]
+  pageInfo: CursorPageInfo
+}
+
+type WalletsResult implements PaginatedQuery {
+  wallets: [WalletAccount!]!
+  pageInfo: PageInfo
+}
+
+enum WalletSort {
+  NUM_TRADES_ALL_TIME_ASC
+  NUM_TRADES_ALL_TIME_DESC
+  NUM_MINTS_ALL_TIME_ASC
+  NUM_MINTS_ALL_TIME_DESC
+  NUM_BUYS_ALL_TIME_ASC
+  NUM_BUYS_ALL_TIME_DESC
+  NUM_SELLS_ALL_TIME_ASC
+  NUM_SELLS_ALL_TIME_DESC
+  SELL_VOLUME_ALL_TIME_ASC
+  SELL_VOLUME_ALL_TIME_DESC
+  BUY_VOLUME_ALL_TIME_ASC
+  BUY_VOLUME_ALL_TIME_DESC
+  MINT_VOLUME_ALL_TIME_ASC
+  MINT_VOLUME_ALL_TIME_DESC
+  TOTAL_VOLUME_ALL_TIME_ASC
+  TOTAL_VOLUME_ALL_TIME_DESC
+  SELL_VOLUME_USD_ALL_TIME_ASC
+  SELL_VOLUME_USD_ALL_TIME_DESC
+  BUY_VOLUME_USD_ALL_TIME_ASC
+  BUY_VOLUME_USD_ALL_TIME_DESC
+  MINT_VOLUME_USD_ALL_TIME_ASC
+  MINT_VOLUME_USD_ALL_TIME_DESC
+  TOTAL_VOLUME_USD_ALL_TIME_ASC
+  TOTAL_VOLUME_USD_ALL_TIME_DESC
+  NUM_TRADES_30_DAY_ASC
+  NUM_TRADES_30_DAY_DESC
+  NUM_MINTS_30_DAY_ASC
+  NUM_MINTS_30_DAY_DESC
+  NUM_BUYS_30_DAY_ASC
+  NUM_BUYS_30_DAY_DESC
+  NUM_SELLS_30_DAY_ASC
+  NUM_SELLS_30_DAY_DESC
+  SELL_VOLUME_30_DAY_ASC
+  SELL_VOLUME_30_DAY_DESC
+  BUY_VOLUME_30_DAY_ASC
+  BUY_VOLUME_30_DAY_DESC
+  MINT_VOLUME_30_DAY_ASC
+  MINT_VOLUME_30_DAY_DESC
+  TOTAL_VOLUME_30_DAY_ASC
+  TOTAL_VOLUME_30_DAY_DESC
+  SELL_VOLUME_USD_30_DAY_ASC
+  SELL_VOLUME_USD_30_DAY_DESC
+  BUY_VOLUME_USD_30_DAY_ASC
+  BUY_VOLUME_USD_30_DAY_DESC
+  MINT_VOLUME_USD_30_DAY_ASC
+  MINT_VOLUME_USD_30_DAY_DESC
+  TOTAL_VOLUME_USD_30_DAY_ASC
+  TOTAL_VOLUME_USD_30_DAY_DESC
+  NUM_TRADES_7_DAY_ASC
+  NUM_TRADES_7_DAY_DESC
+  NUM_MINTS_7_DAY_ASC
+  NUM_MINTS_7_DAY_DESC
+  NUM_BUYS_7_DAY_ASC
+  NUM_BUYS_7_DAY_DESC
+  NUM_SELLS_7_DAY_ASC
+  NUM_SELLS_7_DAY_DESC
+  SELL_VOLUME_7_DAY_ASC
+  SELL_VOLUME_7_DAY_DESC
+  BUY_VOLUME_7_DAY_ASC
+  BUY_VOLUME_7_DAY_DESC
+  MINT_VOLUME_7_DAY_ASC
+  MINT_VOLUME_7_DAY_DESC
+  TOTAL_VOLUME_7_DAY_ASC
+  TOTAL_VOLUME_7_DAY_DESC
+  SELL_VOLUME_USD_7_DAY_ASC
+  SELL_VOLUME_USD_7_DAY_DESC
+  BUY_VOLUME_USD_7_DAY_ASC
+  BUY_VOLUME_USD_7_DAY_DESC
+  MINT_VOLUME_USD_7_DAY_ASC
+  MINT_VOLUME_USD_7_DAY_DESC
+  TOTAL_VOLUME_USD_7_DAY_ASC
+  TOTAL_VOLUME_USD_7_DAY_DESC
+  NUM_TRADES_24_HOUR_ASC
+  NUM_TRADES_24_HOUR_DESC
+  NUM_MINTS_24_HOUR_ASC
+  NUM_MINTS_24_HOUR_DESC
+  NUM_BUYS_24_HOUR_ASC
+  NUM_BUYS_24_HOUR_DESC
+  NUM_SELLS_24_HOUR_ASC
+  NUM_SELLS_24_HOUR_DESC
+  SELL_VOLUME_24_HOUR_ASC
+  SELL_VOLUME_24_HOUR_DESC
+  BUY_VOLUME_24_HOUR_ASC
+  BUY_VOLUME_24_HOUR_DESC
+  MINT_VOLUME_24_HOUR_ASC
+  MINT_VOLUME_24_HOUR_DESC
+  TOTAL_VOLUME_24_HOUR_ASC
+  TOTAL_VOLUME_24_HOUR_DESC
+  SELL_VOLUME_USD_24_HOUR_ASC
+  SELL_VOLUME_USD_24_HOUR_DESC
+  BUY_VOLUME_USD_24_HOUR_ASC
+  BUY_VOLUME_USD_24_HOUR_DESC
+  MINT_VOLUME_USD_24_HOUR_ASC
+  MINT_VOLUME_USD_24_HOUR_DESC
+  TOTAL_VOLUME_USD_24_HOUR_ASC
+  TOTAL_VOLUME_USD_24_HOUR_DESC
+  TOTAL_UNREALIZED_PROFIT_24_HOUR_ASC
+  TOTAL_UNREALIZED_PROFIT_24_HOUR_DESC
+  TOTAL_UNREALIZED_USD_PROFIT_24_HOUR_ASC
+  TOTAL_UNREALIZED_USD_PROFIT_24_HOUR_DESC
+  TOTAL_REALIZED_PROFIT_24_HOUR_ASC
+  TOTAL_REALIZED_PROFIT_24_HOUR_DESC
+  TOTAL_REALIZED_USD_PROFIT_24_HOUR_ASC
+  TOTAL_REALIZED_USD_PROFIT_24_HOUR_DESC
+  TOTAL_UNREALIZED_PROFIT_7_DAY_ASC
+  TOTAL_UNREALIZED_PROFIT_7_DAY_DESC
+  TOTAL_UNREALIZED_USD_PROFIT_7_DAY_ASC
+  TOTAL_UNREALIZED_USD_PROFIT_7_DAY_DESC
+  TOTAL_REALIZED_PROFIT_7_DAY_ASC
+  TOTAL_REALIZED_PROFIT_7_DAY_DESC
+  TOTAL_REALIZED_USD_PROFIT_7_DAY_ASC
+  TOTAL_REALIZED_USD_PROFIT_7_DAY_DESC
+  TOTAL_UNREALIZED_PROFIT_30_DAY_ASC
+  TOTAL_UNREALIZED_PROFIT_30_DAY_DESC
+  TOTAL_UNREALIZED_USD_PROFIT_30_DAY_ASC
+  TOTAL_UNREALIZED_USD_PROFIT_30_DAY_DESC
+  TOTAL_REALIZED_PROFIT_30_DAY_ASC
+  TOTAL_REALIZED_PROFIT_30_DAY_DESC
+  TOTAL_REALIZED_USD_PROFIT_30_DAY_ASC
+  TOTAL_REALIZED_USD_PROFIT_30_DAY_DESC
+  TOTAL_UNREALIZED_PROFIT_ALL_TIME_DAY_ASC
+  TOTAL_UNREALIZED_PROFIT_ALL_TIME_DAY_DESC
+  TOTAL_UNREALIZED_USD_PROFIT_ALL_TIME_DAY_ASC
+  TOTAL_UNREALIZED_USD_PROFIT_ALL_TIME_DAY_DESC
+  TOTAL_REALIZED_PROFIT_ALL_TIME_DAY_ASC
+  TOTAL_REALIZED_PROFIT_ALL_TIME_DAY_DESC
+  TOTAL_REALIZED_USD_PROFIT_ALL_TIME_DAY_ASC
+  TOTAL_REALIZED_USD_PROFIT_ALL_TIME_DAY_DESC
+  TOTAL_VALUE_ASC
+  TOTAL_VALUE_DESC
+  TOTAL_VALUE_USD_ASC
+  TOTAL_VALUE_USD_DESC
+}
+
+enum AnalyticsAscDesc {
+  asc
+  desc
+}
+
+enum AnalyticsTimeScale {
+  day
+  week
+  month
+}
+
+"""Various Metrics for a particular day"""
+type AnalyticsDailyMetrics {
+  """Unique ID"""
+  id: Int!
+  collectionCreationFeesStarsAmount: MicroAmount!
+  collectionCreationFeesUsdAmount: Float!
+  dailyBurnedStarsAmount: MicroAmount!
+  dailyBurnedUsdAmount: Float!
+  dailyCommunityPoolStarsAmount: MicroAmount!
+  dailyCommunityPoolUsdAmount: Float!
+  dailyDistributedStarsAmount: MicroAmount!
+  dailyDistributedUsdAmount: Float!
+  date: String!
+  listingFeesStarsAmount: MicroAmount!
+  listingFeesUsdAmount: Float!
+  marketplaceFeesStarsAmount: MicroAmount!
+  marketplaceFeesUsdAmount: Float!
+  marketplaceVolumeStarsAmount: MicroAmount!
+  marketplaceVolumeUsdAmount: Float!
+  mintFeesStarsAmount: MicroAmount!
+  mintFeesUsdAmount: Float!
+  mintsCount: Int!
+  mintVolumeStarsAmount: MicroAmount!
+  mintVolumeUsdAmount: Float!
+  namesMintFeesStarsAmount: MicroAmount!
+  namesMintFeesUsdAmount: Float!
+  numberOfBuyersCount: Int!
+  numberOfMintersCount: Int!
+  salesCount: Int!
+}
+
+input AnalyticsDateOrderByInput {
+  date: AnalyticsAscDesc!
+}
+
+input DateRangeInput {
+  lte: String
+  gte: String
+}
+
+input AnalyticsDateRangeInput {
+  date: DateRangeInput!
+}
+
+type AnalyticsDailyMetricsResult implements PaginatedQuery {
+  dailyMetrics: [AnalyticsDailyMetrics!]!
+  pageInfo: PageInfo!
+}
+
+"""Sum of AnalyticsDailyMetrics for a given date range """
+type AnalyticsMetricsSummary {
+  averageDailyRevenue: MicroAmount!
+  burned: MicroAmount!
+  communityPool: MicroAmount!
+  distributedToStakers: MicroAmount!
+  marketplaceVolume: MicroAmount!
+  medianDailyRevenue: MicroAmount!
+  mints: Int!
+  mintVolume: MicroAmount!
+  sales: Int!
+  totalRevenue: MicroAmount!
+}
+
+type AnalyticsMetricsSummaryByCurrency {
+  usd: AnalyticsMetricsSummary!
+  stars: AnalyticsMetricsSummary!
+}
+
+type AnalyticsPlatformTotals {
+  id: String!
+  numNftHolders: Int!
+  usdValueLockedInBids: Float!
+  numCollections: Int!
+  numNames: Int!
+  numNfts: Int!
+  totalCreatorEarningsUsd: Float!
+}
+
+type AnalyticsTokenSale {
+  id: Int!
+  token: Token!
+  stars: MicroAmount!
+  usd: Float!
+  saleDate: String!
+  rarity: Int
+}
+
+type AnalyticsTopTokenSalesResult implements PaginatedQuery {
+  topTokenSales: [AnalyticsTokenSale!]!
+  pageInfo: PageInfo!
+}
+
+type AnalyticsTopCollectionHolder {
+  ownerAddr: String!
+  owner: WalletAccount
+  tokensOwnedCount: Int!
+  tokensOwnedPercent: Float!
+  tokensListedCount: Int
+  change30Day: Int
+  volume30Day: MicroAmount
+}
+
+type AnalyticsCollectionOwnerDistributon {
+  ownedTokensRange: String!
+  ownerCount: Int
+  ownerPercent: Float
+}
+
+type Analytics {
+  topTokenSales(offset: Int, limit: Int): AnalyticsTopTokenSalesResult
+  platformTotals: AnalyticsPlatformTotals!
+  metricsSummary(where: AnalyticsDateRangeInput): AnalyticsMetricsSummaryByCurrency!
+  topCollectionHolders(collectionAddr: String!): [AnalyticsTopCollectionHolder!]!
+  collectionOwnerDistributon(collectionAddr: String!): [AnalyticsCollectionOwnerDistributon!]!
+  dailyMetrics(offset: Int, limit: Int, orderBy: AnalyticsDateOrderByInput, where: AnalyticsDateRangeInput, aggregation: AnalyticsTimeScale): AnalyticsDailyMetricsResult!
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""MicroAmount custom scalar type"""
+scalar MicroAmount
+
+"""UnixNanoseconds custom scalar type"""
+scalar UnixNanoseconds
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
+enum CacheControlScope {
+  PUBLIC
+  PRIVATE
+}
+
+type CursorPageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+
+input CursorPaginationInput {
+  cursor: String
+  limit: Int
+}
+
+interface CursorPaginatedQuery {
+  pageInfo: CursorPageInfo
+}
+
+type PageInfo {
+  total: Int
+  offset: Int
+  limit: Int
+}
+
+interface PaginatedQuery {
+  pageInfo: PageInfo
+}
+
+type CoinAmount {
+  denom: String
+  symbol: String
+  amount: MicroAmount
+}

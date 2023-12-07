@@ -58,6 +58,10 @@ export interface PublishProposalOptions {
   failedSimulationBypassSeconds?: number
 }
 
+export type SimulateProposal = (
+  newProposalData: NewProposalData
+) => Promise<void>
+
 export type PublishProposal = (
   newProposalData: NewProposalData,
   options?: PublishProposalOptions
@@ -72,6 +76,7 @@ export interface MakeUsePublishProposalOptions {
 }
 
 export type UsePublishProposal = () => {
+  simulateProposal: SimulateProposal
   publishProposal: PublishProposal
   anyoneCanPropose: boolean
   depositUnsatisfied: boolean

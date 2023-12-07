@@ -12,6 +12,7 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 
+import { SupportedChainConfig } from './chain'
 import {
   ActiveThreshold,
   DepositRefundPolicy,
@@ -27,7 +28,6 @@ import {
 import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './stateless'
 import { GenericToken, TokenCardInfo } from './token'
 import { DurationWithUnits } from './units'
-import { CodeIdConfig } from './utils'
 
 // Used in DaoInfoContext in @dao-dao/stateful/components/DaoPageWrapper
 export type DaoInfo = {
@@ -208,7 +208,7 @@ export type DaoCreationCommonVotingConfigItems = {
 export type DaoCreationGetInstantiateInfo<
   ModuleData extends FieldValues = any
 > = (
-  codeIds: CodeIdConfig,
+  chainConfig: SupportedChainConfig,
   // Used within voting and proposal module adapters, so the data generic passed
   // in may not necessarily be the voting module adapter data. Must use `any`.
   newDao: NewDao<any>,

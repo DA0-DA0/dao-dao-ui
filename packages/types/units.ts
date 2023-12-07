@@ -9,7 +9,7 @@ export enum DurationUnits {
 }
 export const DurationUnitsValues = Object.values(DurationUnits)
 
-export interface DurationWithUnits {
+export type DurationWithUnits = {
   value: number
   units: DurationUnits
 }

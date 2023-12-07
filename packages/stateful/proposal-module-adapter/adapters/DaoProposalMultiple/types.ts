@@ -73,6 +73,10 @@ export interface PublishProposalOptions {
   failedSimulationBypassSeconds?: number
 }
 
+export type SimulateProposal = (
+  newProposalData: NewProposalData
+) => Promise<void>
+
 export type PublishProposal = (
   newProposalData: NewProposalData,
   options?: PublishProposalOptions
@@ -87,6 +91,7 @@ export interface MakeUsePublishProposalOptions {
 }
 
 export type UsePublishProposal = () => {
+  simulateProposal: SimulateProposal
   publishProposal: PublishProposal
   anyoneCanPropose: boolean
   depositUnsatisfied: boolean
@@ -118,8 +123,9 @@ export type MultipleChoiceOptionData = {
 }
 
 export type DaoCreationExtraVotingConfig = {
-  // If true, omit the funds field from the creation info objects. This is used
-  // when enabling multiple choice via the action for a DAO that is on a version
-  // below v2.3.0.
-  omitFunds?: boolean
+  // If true, omits the funds field from the creation info objects and uses
+  // v2.1.0 contracts. This is used when enabling multiple choice via the action
+  // for a DAO that is on a version below v2.3.0, since there was a breaking
+  // change on the `funds` field.
+  moduleInstantiateFundsUnsupported?: boolean
 }

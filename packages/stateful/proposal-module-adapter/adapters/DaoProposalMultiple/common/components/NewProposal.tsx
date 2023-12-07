@@ -1,11 +1,15 @@
 import { FlagOutlined, Timelapse } from '@mui/icons-material'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilCallback, useRecoilValue } from 'recoil'
+import { useRecoilCallback, useRecoilValueLoadable } from 'recoil'
 
 import { DaoCoreV2Selectors, blocksPerYearSelector } from '@dao-dao/state'
 import {
+  NewProposalTitleDescriptionHeader,
+  NewProposal as StatelessNewProposal,
+  NewProposalProps as StatelessNewProposalProps,
   useCachedLoadable,
   useChain,
   useDaoInfoContext,
@@ -15,24 +19,26 @@ import {
   IProposalModuleAdapterCommonOptions,
 } from '@dao-dao/types'
 import {
+  MAX_NUM_PROPOSAL_CHOICES,
+  convertActionsToMessages,
   convertExpirationToDate,
   dateToWdhms,
   processError,
 } from '@dao-dao/utils'
 
-import { useLoadedActionsAndCategories } from '../../../../../../actions'
-import { EntityDisplay } from '../../../../../../components/EntityDisplay'
-import { SuspenseLoader } from '../../../../../../components/SuspenseLoader'
-import { useMembership, useWallet } from '../../../../../../hooks'
-import { proposalSelector } from '../../../contracts/DaoProposalMultiple.recoil'
-import { makeGetProposalInfo } from '../../../functions'
+import { useLoadedActionsAndCategories } from '../../../../../actions'
+import { useMembership, useWallet } from '../../../../../hooks'
+import { proposalSelector } from '../../contracts/DaoProposalMultiple.recoil'
+import { makeGetProposalInfo } from '../../functions'
 import {
   NewProposalData,
   NewProposalForm,
+  SimulateProposal,
   UsePublishProposal,
-} from '../../../types'
-import { useProcessQ } from '../../hooks'
-import { NewProposal as StatelessNewProposal } from './NewProposal'
+} from '../../types'
+import { useProcessQ } from '../hooks'
+import { NewProposalMain } from './NewProposalMain'
+import { NewProposalPreview } from './NewProposalPreview'
 
 export type NewProposalProps = BaseNewProposalProps<NewProposalForm> & {
   options: IProposalModuleAdapterCommonOptions
@@ -54,9 +60,12 @@ export const NewProposal = ({
     isActive,
     activeThreshold,
   } = useDaoInfoContext()
-  const { isWalletConnected, getStargateClient } = useWallet()
+  const { isWalletConnecting, isWalletConnected, getStargateClient } =
+    useWallet()
 
-  const { loadedActions, categories } = useLoadedActionsAndCategories()
+  const { watch } = useFormContext<NewProposalForm>()
+  const proposalTitle = watch('title')
+  const choices = watch('choices') ?? []
 
   const { isMember = false, loading: membershipLoading } = useMembership({
     coreAddress,
@@ -80,18 +89,32 @@ export const NewProposal = ({
 
   const processQ = useProcessQ()
 
-  const blocksPerYear = useRecoilValue(
+  const blocksPerYearLoadable = useRecoilValueLoadable(
     blocksPerYearSelector({
       chainId,
     })
   )
 
   const {
+    simulateProposal: _simulateProposal,
     publishProposal,
     anyoneCanPropose,
     depositUnsatisfied,
     simulationBypassExpiration,
   } = usePublishProposal()
+
+  const [simulating, setSimulating] = useState(false)
+  const simulateProposal: SimulateProposal = useCallback(
+    async (...params) => {
+      setSimulating(true)
+      try {
+        await _simulateProposal(...params)
+      } finally {
+        setSimulating(false)
+      }
+    },
+    [_simulateProposal]
+  )
 
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
@@ -100,6 +123,12 @@ export const NewProposal = ({
           toast.error(t('error.logInToContinue'))
           return
         }
+
+        if (blocksPerYearLoadable.state !== 'hasValue') {
+          toast.error(t('error.loadingData'))
+          return
+        }
+        const blocksPerYear = blocksPerYearLoadable.contents
 
         setLoading(true)
         try {
@@ -193,7 +222,7 @@ export const NewProposal = ({
       t,
       publishProposal,
       options,
-      blocksPerYear,
+      blocksPerYearLoadable,
       getStargateClient,
       chainId,
       processQ,
@@ -204,16 +233,45 @@ export const NewProposal = ({
     ]
   )
 
+  const { loadedActions } = useLoadedActionsAndCategories()
+
+  const getProposalDataFromFormData: StatelessNewProposalProps<
+    NewProposalForm,
+    NewProposalData
+  >['getProposalDataFromFormData'] = ({ title, description, choices }) => ({
+    title,
+    description,
+    choices: {
+      options: choices.map((option) => ({
+        title: option.title,
+        description: option.description,
+        msgs: convertActionsToMessages(loadedActions, option.actionData),
+      })),
+    },
+  })
+
   return (
-    <StatelessNewProposal
-      EntityDisplay={EntityDisplay}
-      SuspenseLoader={SuspenseLoader}
+    <StatelessNewProposal<NewProposalForm, NewProposalData>
       activeThreshold={activeThreshold}
+      additionalSubmitError={
+        choices.length < 2
+          ? t('error.tooFewChoices')
+          : choices.length > MAX_NUM_PROPOSAL_CHOICES
+          ? t('error.tooManyChoices', {
+              count: MAX_NUM_PROPOSAL_CHOICES,
+            })
+          : undefined
+      }
       anyoneCanPropose={anyoneCanPropose}
-      categories={categories}
       connected={isWalletConnected}
+      content={{
+        Header: NewProposalTitleDescriptionHeader,
+        Main: NewProposalMain,
+        Preview: NewProposalPreview,
+      }}
       createProposal={createProposal}
       depositUnsatisfied={depositUnsatisfied}
+      getProposalDataFromFormData={getProposalDataFromFormData}
       isActive={isActive}
       isMember={
         membershipLoading
@@ -221,8 +279,10 @@ export const NewProposal = ({
           : { loading: false, data: isMember }
       }
       isPaused={isPaused}
-      loadedActions={loadedActions}
-      loading={loading}
+      isWalletConnecting={isWalletConnecting}
+      loading={loading || simulating}
+      proposalTitle={proposalTitle}
+      simulateProposal={simulateProposal}
       simulationBypassExpiration={simulationBypassExpiration}
       {...props}
     />

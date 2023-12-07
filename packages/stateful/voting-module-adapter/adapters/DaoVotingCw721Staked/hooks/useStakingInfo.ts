@@ -41,12 +41,11 @@ export const useStakingInfo = ({
   const { collectionAddress: governanceTokenAddress } =
     useGovernanceCollectionInfo()
 
-  const stakingContractAddress = votingModuleAddress
   const unstakingDuration =
     useRecoilValue(
       DaoVotingCw721StakedSelectors.configSelector({
         chainId,
-        contractAddress: stakingContractAddress,
+        contractAddress: votingModuleAddress,
         params: [],
       })
     ).unstaking_duration ?? undefined
@@ -56,7 +55,7 @@ export const useStakingInfo = ({
   )
   // Refresh NFTs owned by staking contract.
   const setRefreshStakedNftsId = useSetRecoilState(
-    refreshWalletBalancesIdAtom(stakingContractAddress)
+    refreshWalletBalancesIdAtom(votingModuleAddress)
   )
   // Refresh totals, mostly for total staked power.
   const refreshTotals = useCallback(() => {
@@ -87,7 +86,7 @@ export const useStakingInfo = ({
     fetchClaims && walletAddress
       ? DaoVotingCw721StakedSelectors.nftClaimsSelector({
           chainId,
-          contractAddress: stakingContractAddress,
+          contractAddress: votingModuleAddress,
           params: [{ address: walletAddress }],
         })
       : constSelector(undefined),
@@ -121,7 +120,7 @@ export const useStakingInfo = ({
     fetchTotalStakedValue
       ? DaoVotingCw721StakedSelectors.totalPowerAtHeightSelector({
           chainId,
-          contractAddress: stakingContractAddress,
+          contractAddress: votingModuleAddress,
           params: [{}],
         })
       : constSelector(undefined),
@@ -133,7 +132,7 @@ export const useStakingInfo = ({
     fetchWalletStakedValue && walletAddress
       ? DaoVotingCw721StakedSelectors.stakedNftsSelector({
           chainId,
-          contractAddress: stakingContractAddress,
+          contractAddress: votingModuleAddress,
           params: [{ address: walletAddress }],
         })
       : undefined,
@@ -182,7 +181,7 @@ export const useStakingInfo = ({
   )
 
   return {
-    stakingContractAddress,
+    stakingContractAddress: votingModuleAddress,
     unstakingDuration,
     refreshTotals,
     /// Optional

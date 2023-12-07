@@ -137,7 +137,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                   controls
                   height="100%"
                   onReady={() => setImageLoading(false)}
-                  url={video}
+                  url={toAccessibleImageUrl(video)}
                   width="100%"
                 />
               ) : imageUrl ? (
@@ -169,7 +169,7 @@ export const NftCard = forwardRef<HTMLDivElement, NftCardProps>(
                 className="absolute bottom-0 left-0 right-0 bg-transparent"
                 iconClassName="text-icon-primary"
                 progressClassName="text-text-primary"
-                src={audio}
+                src={toAccessibleImageUrl(audio)}
                 style={{
                   background:
                     'linear-gradient(to bottom, rgba(var(--color-background-base), 0), rgba(var(--color-background-base), 0.8) 50%, rgba(var(--color-background-base), 1) 100%)',
