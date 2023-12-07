@@ -1,11 +1,15 @@
-import { BookOutlined, FlagOutlined, Timelapse } from '@mui/icons-material'
+import { FlagOutlined, Timelapse } from '@mui/icons-material'
 import { useCallback, useState } from 'react'
+import { useFormContext } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { useRecoilCallback, useRecoilValue } from 'recoil'
+import { useRecoilCallback, useRecoilValueLoadable } from 'recoil'
 
 import { DaoCoreV2Selectors, blocksPerYearSelector } from '@dao-dao/state'
 import {
+  NewProposalTitleDescriptionHeader,
+  NewProposal as StatelessNewProposal,
+  NewProposalProps as StatelessNewProposalProps,
   useCachedLoadable,
   useChain,
   useDaoInfoContext,
@@ -15,25 +19,26 @@ import {
   IProposalModuleAdapterCommonOptions,
 } from '@dao-dao/types'
 import {
+  MAX_NUM_PROPOSAL_CHOICES,
+  convertActionsToMessages,
   convertExpirationToDate,
   dateToWdhms,
   processError,
 } from '@dao-dao/utils'
 
-import { useLoadedActionsAndCategories } from '../../../../../../actions'
-import { EntityDisplay } from '../../../../../../components/EntityDisplay'
-import { SuspenseLoader } from '../../../../../../components/SuspenseLoader'
-import { useMembership, useWallet } from '../../../../../../hooks'
-import { proposalSelector } from '../../../contracts/DaoProposalSingle.common.recoil'
-import { makeGetProposalInfo } from '../../../functions'
+import { useLoadedActionsAndCategories } from '../../../../../actions'
+import { useMembership, useWallet } from '../../../../../hooks'
+import { proposalSelector } from '../../contracts/DaoProposalMultiple.recoil'
+import { makeGetProposalInfo } from '../../functions'
 import {
   NewProposalData,
   NewProposalForm,
   SimulateProposal,
   UsePublishProposal,
-} from '../../../types'
-import { useProcessTQ } from '../../hooks'
-import { NewProposal as StatelessNewProposal } from './NewProposal'
+} from '../../types'
+import { useProcessQ } from '../hooks'
+import { NewProposalMain } from './NewProposalMain'
+import { NewProposalPreview } from './NewProposalPreview'
 
 export type NewProposalProps = BaseNewProposalProps<NewProposalForm> & {
   options: IProposalModuleAdapterCommonOptions
@@ -55,9 +60,12 @@ export const NewProposal = ({
     isActive,
     activeThreshold,
   } = useDaoInfoContext()
-  const { isWalletConnected, getStargateClient } = useWallet()
+  const { isWalletConnecting, isWalletConnected, getStargateClient } =
+    useWallet()
 
-  const { loadedActions, categories } = useLoadedActionsAndCategories()
+  const { watch } = useFormContext<NewProposalForm>()
+  const proposalTitle = watch('title')
+  const choices = watch('choices') ?? []
 
   const { isMember = false, loading: membershipLoading } = useMembership({
     coreAddress,
@@ -79,9 +87,9 @@ export const NewProposal = ({
     pauseInfo.state === 'hasValue' &&
     ('paused' in pauseInfo.contents || 'Paused' in pauseInfo.contents)
 
-  const processTQ = useProcessTQ()
+  const processQ = useProcessQ()
 
-  const blocksPerYear = useRecoilValue(
+  const blocksPerYearLoadable = useRecoilValueLoadable(
     blocksPerYearSelector({
       chainId,
     })
@@ -116,6 +124,12 @@ export const NewProposal = ({
           return
         }
 
+        if (blocksPerYearLoadable.state !== 'hasValue') {
+          toast.error(t('error.loadingData'))
+          return
+        }
+        const blocksPerYear = blocksPerYearLoadable.contents
+
         setLoading(true)
         try {
           const { proposalNumber, proposalId } = await publishProposal(
@@ -127,7 +141,6 @@ export const NewProposal = ({
             }
           )
 
-          // Get proposal info to display card.
           const proposalInfo = await makeGetProposalInfo({
             ...options,
             proposalNumber,
@@ -155,7 +168,7 @@ export const NewProposal = ({
             )
           ).proposal
 
-          const { threshold, quorum } = processTQ(proposal.threshold)
+          const { quorum } = processQ(proposal.voting_strategy)
 
           onCreateSuccess(
             proposalInfo
@@ -165,17 +178,9 @@ export const NewProposal = ({
                   description: newProposalData.description,
                   info: [
                     {
-                      Icon: BookOutlined,
-                      label: `${t('title.threshold')}: ${threshold.display}`,
+                      Icon: FlagOutlined,
+                      label: `${t('title.quorum')}: ${quorum.display}`,
                     },
-                    ...(quorum
-                      ? [
-                          {
-                            Icon: FlagOutlined,
-                            label: `${t('title.quorum')}: ${quorum.display}`,
-                          },
-                        ]
-                      : []),
                     ...(expirationDate
                       ? [
                           {
@@ -214,30 +219,59 @@ export const NewProposal = ({
       },
     [
       isWalletConnected,
+      t,
       publishProposal,
       options,
-      blocksPerYear,
+      blocksPerYearLoadable,
       getStargateClient,
       chainId,
-      processTQ,
+      processQ,
       onCreateSuccess,
-      t,
       daoName,
       coreAddress,
       daoImageUrl,
     ]
   )
 
+  const { loadedActions } = useLoadedActionsAndCategories()
+
+  const getProposalDataFromFormData: StatelessNewProposalProps<
+    NewProposalForm,
+    NewProposalData
+  >['getProposalDataFromFormData'] = ({ title, description, choices }) => ({
+    title,
+    description,
+    choices: {
+      options: choices.map((option) => ({
+        title: option.title,
+        description: option.description,
+        msgs: convertActionsToMessages(loadedActions, option.actionData),
+      })),
+    },
+  })
+
   return (
-    <StatelessNewProposal
-      EntityDisplay={EntityDisplay}
-      SuspenseLoader={SuspenseLoader}
+    <StatelessNewProposal<NewProposalForm, NewProposalData>
       activeThreshold={activeThreshold}
+      additionalSubmitError={
+        choices.length < 2
+          ? t('error.tooFewChoices')
+          : choices.length > MAX_NUM_PROPOSAL_CHOICES
+          ? t('error.tooManyChoices', {
+              count: MAX_NUM_PROPOSAL_CHOICES,
+            })
+          : undefined
+      }
       anyoneCanPropose={anyoneCanPropose}
-      categories={categories}
       connected={isWalletConnected}
+      content={{
+        Header: NewProposalTitleDescriptionHeader,
+        Main: NewProposalMain,
+        Preview: NewProposalPreview,
+      }}
       createProposal={createProposal}
       depositUnsatisfied={depositUnsatisfied}
+      getProposalDataFromFormData={getProposalDataFromFormData}
       isActive={isActive}
       isMember={
         membershipLoading
@@ -245,8 +279,9 @@ export const NewProposal = ({
           : { loading: false, data: isMember }
       }
       isPaused={isPaused}
-      loadedActions={loadedActions}
+      isWalletConnecting={isWalletConnecting}
       loading={loading || simulating}
+      proposalTitle={proposalTitle}
       simulateProposal={simulateProposal}
       simulationBypassExpiration={simulationBypassExpiration}
       {...props}

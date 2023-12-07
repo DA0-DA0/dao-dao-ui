@@ -7,74 +7,61 @@ import {
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
+import { ComponentType, useEffect, useState } from 'react'
 import {
+  FieldValues,
   SubmitErrorHandler,
   SubmitHandler,
-  useFieldArray,
+  UnpackNestedValue,
   useFormContext,
 } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
-import { v4 as uuidv4 } from 'uuid'
 
 import {
-  ActionCategorySelector,
-  ActionsEditor,
-  ActionsRenderer,
-  Button,
-  FilterableItem,
-  FilterableItemPopup,
-  IconButton,
-  InputErrorMessage,
-  ProposalContentDisplay,
-  RawActionsRenderer,
-  TextAreaInput,
-  TextInput,
-  Tooltip,
-} from '@dao-dao/stateless'
-import {
-  ActionCategoryWithLabel,
   ActiveThreshold,
   BaseNewProposalProps,
-  LoadedAction,
-  LoadedActions,
   LoadingData,
-  StatefulEntityDisplayProps,
-  SuspenseLoaderProps,
 } from '@dao-dao/types'
 import {
-  convertActionsToMessages,
   formatDateTime,
   formatPercentOf100,
   formatTime,
   processError,
-  validateRequired,
 } from '@dao-dao/utils'
 
-import { useWallet, useWalletInfo } from '../../../../../../hooks'
-import { NewProposalData, NewProposalForm } from '../../../types'
+import { Button } from '../buttons'
+import { IconButton } from '../icon_buttons'
+import { FilterableItem, FilterableItemPopup } from '../popup'
+import { Tooltip } from '../tooltip'
 
 enum ProposeSubmitValue {
   Preview = 'Preview',
   Submit = 'Submit',
 }
 
-export interface NewProposalProps
-  extends Pick<
-    BaseNewProposalProps<NewProposalForm>,
-    | 'draft'
-    | 'saveDraft'
-    | 'drafts'
-    | 'loadDraft'
-    | 'unloadDraft'
-    | 'draftSaving'
-    | 'deleteDraft'
-    | 'proposalModuleSelector'
-    | 'actionsReadOnlyMode'
-  > {
-  createProposal: (newProposalData: NewProposalData) => Promise<void>
-  simulateProposal: (newProposalData: NewProposalData) => Promise<void>
+type BaseProps<FormData extends FieldValues = any> = Omit<
+  BaseNewProposalProps<FormData>,
+  'onCreateSuccess'
+>
+
+export type NewProposalProps<
+  FormData extends FieldValues = any,
+  ProposalData extends unknown = any
+> = BaseProps<FormData> & {
+  content: {
+    Header: ComponentType
+    Main: ComponentType<Pick<BaseProps<FormData>, 'actionsReadOnlyMode'>>
+    Preview: ComponentType
+  }
+  getProposalDataFromFormData: (
+    formData: UnpackNestedValue<FormData>
+  ) => ProposalData
+  createProposal: (newProposalData: ProposalData) => Promise<void>
+  simulateProposal: (newProposalData: ProposalData) => Promise<void>
+  proposalTitle: string
+  isWalletConnecting: boolean
+  additionalSubmitError?: string
   loading: boolean
   isPaused: boolean
   isActive: boolean
@@ -83,16 +70,20 @@ export interface NewProposalProps
   anyoneCanPropose: boolean
   depositUnsatisfied: boolean
   connected: boolean
-  categories: ActionCategoryWithLabel[]
-  loadedActions: LoadedActions
   simulationBypassExpiration?: Date
-  SuspenseLoader: ComponentType<SuspenseLoaderProps>
-  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
-export const NewProposal = ({
+export const NewProposal = <
+  FormData extends FieldValues = any,
+  ProposalData extends unknown = any
+>({
+  content: { Header, Main, Preview },
+  getProposalDataFromFormData,
   createProposal,
   simulateProposal,
+  proposalTitle,
+  isWalletConnecting,
+  additionalSubmitError,
   loading,
   isPaused,
   isActive,
@@ -101,8 +92,6 @@ export const NewProposal = ({
   anyoneCanPropose,
   depositUnsatisfied,
   connected,
-  categories,
-  loadedActions,
   draft,
   saveDraft,
   drafts,
@@ -112,39 +101,15 @@ export const NewProposal = ({
   deleteDraft,
   simulationBypassExpiration,
   proposalModuleSelector,
-  SuspenseLoader,
-  EntityDisplay,
   actionsReadOnlyMode,
-}: NewProposalProps) => {
+}: NewProposalProps<FormData, ProposalData>) => {
   const { t } = useTranslation()
 
-  // Unpack here because we use these at the top level as well as inside of
-  // nested components.
-  const {
-    register,
-    control,
-    handleSubmit,
-    watch,
-    formState: { errors },
-  } = useFormContext<NewProposalForm>()
+  const { handleSubmit } = useFormContext<FormData>()
 
   const [showPreview, setShowPreview] = useState(false)
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
-
-  const { isWalletConnecting } = useWallet()
-  const { walletAddress = '', walletProfileData } = useWalletInfo()
-
-  const proposalDescription = watch('description')
-  const proposalTitle = watch('title')
-
-  const { append } = useFieldArray({
-    name: 'actionData',
-    control,
-    shouldUnregister: true,
-  })
-
-  const actionData = watch('actionData') || []
 
   const [holdingAltForSimulation, setHoldingAlt] = useState(false)
   useEffect(() => {
@@ -167,145 +132,53 @@ export const NewProposal = ({
     }
   }, [])
 
-  const onSubmitForm: SubmitHandler<NewProposalForm> = useCallback(
-    ({ title, description, actionData }, event) => {
-      setShowSubmitErrorNote(false)
-      setSubmitError('')
+  const onSubmitForm: SubmitHandler<FormData> = (formData, event) => {
+    setShowSubmitErrorNote(false)
+    setSubmitError('')
 
-      const nativeEvent = event?.nativeEvent as SubmitEvent
-      const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
+    const nativeEvent = event?.nativeEvent as SubmitEvent
+    const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
-      // Preview toggled in onClick handler.
-      if (submitterValue === ProposeSubmitValue.Preview) {
-        return
-      }
+    // Preview toggled in onClick handler.
+    if (submitterValue === ProposeSubmitValue.Preview) {
+      return
+    }
 
-      let msgs
-      try {
-        msgs = convertActionsToMessages(loadedActions, actionData)
-      } catch (err) {
-        console.error(err)
-        setSubmitError(
-          processError(err, {
-            forceCapture: false,
-          })
-        )
-        return
-      }
+    let data: ProposalData
+    try {
+      data = getProposalDataFromFormData(formData)
+    } catch (err) {
+      console.error(err)
+      setSubmitError(
+        processError(err, {
+          forceCapture: false,
+        })
+      )
+      return
+    }
 
-      const data: NewProposalData = {
-        title,
-        description,
-        msgs,
-      }
+    if (holdingAltForSimulation) {
+      simulateProposal(data)
+    } else {
+      createProposal(data)
+    }
+  }
 
-      if (holdingAltForSimulation) {
-        simulateProposal(data)
-      } else {
-        createProposal(data)
-      }
-    },
-    [createProposal, holdingAltForSimulation, loadedActions, simulateProposal]
-  )
-
-  const onSubmitError: SubmitErrorHandler<NewProposalForm> = useCallback(() => {
+  const onSubmitError: SubmitErrorHandler<FormData> = () => {
     setShowSubmitErrorNote(true)
     setSubmitError('')
-  }, [setShowSubmitErrorNote])
+  }
 
   return (
     <form
       className="flex flex-col gap-6"
       onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
     >
-      <div className="rounded-lg bg-background-tertiary">
-        <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-4 px-6">
-          <p className="primary-text text-text-body">
-            {t('form.proposalsName')}
-          </p>
-
-          <div className="flex grow flex-col">
-            <TextInput
-              error={errors.title}
-              fieldName="title"
-              placeholder={t('form.proposalsNamePlaceholder')}
-              register={register}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage error={errors.title} />
-          </div>
-        </div>
-        <div className="flex flex-col gap-4 p-6 pt-5">
-          <p className="primary-text text-text-body">
-            {t('form.description')}
-            <span className="text-text-tertiary">
-              {/* eslint-disable-next-line i18next/no-literal-string */}
-              {' – '}
-              {t('info.supportsMarkdownFormat')}
-            </span>
-          </p>
-
-          <div className="flex flex-col">
-            <TextAreaInput
-              error={errors.description}
-              fieldName="description"
-              placeholder={t('form.proposalsDescriptionPlaceholder')}
-              register={register}
-              rows={5}
-              validation={[validateRequired]}
-            />
-            <InputErrorMessage error={errors.description} />
-          </div>
-        </div>
-      </div>
+      <Header />
 
       {!actionsReadOnlyMode && proposalModuleSelector}
 
-      {actionsReadOnlyMode ? (
-        <ActionsRenderer
-          SuspenseLoader={SuspenseLoader}
-          actionData={actionData.flatMap(({ actionKey, data }, index) => {
-            const { category, action } = (
-              actionKey ? loadedActions[actionKey] || {} : {}
-            ) as Partial<LoadedAction>
-
-            return category && action
-              ? {
-                  id: index.toString(),
-                  category,
-                  action,
-                  data,
-                }
-              : []
-          })}
-        />
-      ) : (
-        <ActionsEditor
-          SuspenseLoader={SuspenseLoader}
-          actionDataErrors={errors?.actionData}
-          actionDataFieldName="actionData"
-          categories={categories}
-          className="-mb-2"
-          loadedActions={loadedActions}
-        />
-      )}
-
-      {!actionsReadOnlyMode && (
-        <div className="self-start">
-          <ActionCategorySelector
-            categories={categories}
-            onSelectCategory={({ key }) => {
-              append({
-                // See `CategorizedActionKeyAndData` comment in
-                // `packages/types/actions.ts` for an explanation of why we need
-                // to append with a unique ID.
-                _id: uuidv4(),
-                categoryKey: key,
-              })
-            }}
-          />
-        </div>
-      )}
+      <Main actionsReadOnlyMode={actionsReadOnlyMode} />
 
       <div className="flex flex-col gap-2 border-y border-border-secondary py-6">
         <div className="flex flex-row items-center justify-between gap-6">
@@ -361,21 +234,23 @@ export const NewProposal = ({
                           ? undefined
                           : Number(activeThreshold.absolute_count.count),
                     })
-                  : undefined
+                  : additionalSubmitError
               }
             >
               <Button
                 disabled={
                   // Only worry about these wallet-specific conditions if not
                   // simulating.
-                  !holdingAltForSimulation &&
-                  (!connected ||
-                    (!anyoneCanPropose &&
-                      !isMember.loading &&
-                      !isMember.data) ||
-                    depositUnsatisfied ||
-                    isPaused ||
-                    !isActive)
+                  (!holdingAltForSimulation &&
+                    (!connected ||
+                      (!anyoneCanPropose &&
+                        !isMember.loading &&
+                        !isMember.data) ||
+                      depositUnsatisfied ||
+                      isPaused ||
+                      !isActive)) ||
+                  // If additional error exists, disable button.
+                  !!additionalSubmitError
                 }
                 loading={loading}
                 type="submit"
@@ -445,26 +320,7 @@ export const NewProposal = ({
 
         {showPreview && (
           <div className="mt-4 rounded-md border border-border-secondary p-6">
-            <ProposalContentDisplay
-              EntityDisplay={EntityDisplay}
-              createdAt={new Date()}
-              creator={{
-                address: walletAddress,
-                name: walletProfileData.loading
-                  ? { loading: true }
-                  : { loading: false, data: walletProfileData.profile.name },
-              }}
-              description={proposalDescription}
-              innerContentDisplay={
-                actionData.length ? (
-                  <RawActionsRenderer
-                    actionData={actionData}
-                    loadedActions={loadedActions}
-                  />
-                ) : undefined
-              }
-              title={proposalTitle}
-            />
+            <Preview />
           </div>
         )}
       </div>
