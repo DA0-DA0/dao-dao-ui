@@ -240,6 +240,12 @@ export const SUPPORTED_CHAINS: Partial<Record<ChainId, SupportedChainConfig>> =
         DaoVotingCw721Staked: -1,
         DaoVotingTokenStaked: -1,
       },
+      historicalCodeIds: {
+        [ContractVersion.V210]: {
+          DaoPreProposeMultiple: 224,
+          DaoProposalMultiple: 226,
+        },
+      },
     },
     [ChainId.StargazeMainnet]: {
       name: 'stargaze',
