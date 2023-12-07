@@ -1,12 +1,13 @@
 import {
   Close,
   GavelRounded,
+  Speed,
   Visibility,
   VisibilityOff,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import Fuse from 'fuse.js'
-import { ComponentType, useCallback, useState } from 'react'
+import { ComponentType, useCallback, useEffect, useState } from 'react'
 import {
   SubmitErrorHandler,
   SubmitHandler,
@@ -73,6 +74,7 @@ export interface NewProposalProps
     | 'actionsReadOnlyMode'
   > {
   createProposal: (newProposalData: NewProposalData) => Promise<void>
+  simulateProposal: (newProposalData: NewProposalData) => Promise<void>
   loading: boolean
   isPaused: boolean
   isActive: boolean
@@ -90,6 +92,7 @@ export interface NewProposalProps
 
 export const NewProposal = ({
   createProposal,
+  simulateProposal,
   loading,
   isPaused,
   isActive,
@@ -143,6 +146,27 @@ export const NewProposal = ({
 
   const actionData = watch('actionData') || []
 
+  const [holdingAltForSimulation, setHoldingAlt] = useState(false)
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Alt') {
+        setHoldingAlt(true)
+      }
+    }
+    const handleKeyUp = (event: KeyboardEvent) => {
+      if (event.key === 'Alt') {
+        setHoldingAlt(false)
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDown)
+    document.addEventListener('keyup', handleKeyUp)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+      document.removeEventListener('keyup', handleKeyUp)
+    }
+  }, [])
+
   const onSubmitForm: SubmitHandler<NewProposalForm> = useCallback(
     ({ title, description, actionData }, event) => {
       setShowSubmitErrorNote(false)
@@ -169,13 +193,19 @@ export const NewProposal = ({
         return
       }
 
-      createProposal({
+      const data: NewProposalData = {
         title,
         description,
         msgs,
-      })
+      }
+
+      if (holdingAltForSimulation) {
+        simulateProposal(data)
+      } else {
+        createProposal(data)
+      }
     },
-    [createProposal, loadedActions]
+    [createProposal, holdingAltForSimulation, loadedActions, simulateProposal]
   )
 
   const onSubmitError: SubmitErrorHandler<NewProposalForm> = useCallback(() => {
@@ -306,7 +336,9 @@ export const NewProposal = ({
 
             <Tooltip
               title={
-                !connected
+                holdingAltForSimulation
+                  ? undefined
+                  : !connected
                   ? t('error.logInToContinue')
                   : depositUnsatisfied
                   ? t('error.notEnoughForDeposit')
@@ -334,37 +366,51 @@ export const NewProposal = ({
             >
               <Button
                 disabled={
-                  !connected ||
-                  (!anyoneCanPropose && !isMember.loading && !isMember.data) ||
-                  depositUnsatisfied ||
-                  isPaused ||
-                  !isActive
+                  // Only worry about these wallet-specific conditions if not
+                  // simulating.
+                  !holdingAltForSimulation &&
+                  (!connected ||
+                    (!anyoneCanPropose &&
+                      !isMember.loading &&
+                      !isMember.data) ||
+                    depositUnsatisfied ||
+                    isPaused ||
+                    !isActive)
                 }
                 loading={loading}
                 type="submit"
                 value={ProposeSubmitValue.Submit}
               >
-                <p>
-                  {simulationBypassExpiration ? (
-                    // If bypassing simulation, change button label and show a
-                    // countdown until simulation bypass expires.
-                    <TimeAgo
-                      date={simulationBypassExpiration}
-                      formatter={(value, _, suffix) =>
-                        suffix === 'from now'
-                          ? t('button.publishAnywayWithCountdown', {
-                              secondsRemaining: value,
-                            })
-                          : // In case the countdown expires before the re-render,
-                            // just show the original button label.
-                            t('button.publish')
-                      }
-                    />
-                  ) : (
-                    t('button.publish')
-                  )}
-                </p>
-                <GavelRounded className="!h-4 !w-4" />
+                {holdingAltForSimulation ? (
+                  <>
+                    <p>{t('button.simulate')}</p>
+                    <Speed className="!h-5 !w-5" />
+                  </>
+                ) : (
+                  <>
+                    <p>
+                      {simulationBypassExpiration ? (
+                        // If bypassing simulation, change button label and show
+                        // a countdown until simulation bypass expires.
+                        <TimeAgo
+                          date={simulationBypassExpiration}
+                          formatter={(value, _, suffix) =>
+                            suffix === 'from now'
+                              ? t('button.publishAnywayWithCountdown', {
+                                  secondsRemaining: value,
+                                })
+                              : // In case the countdown expires before the re-render,
+                                // just show the original button label.
+                                t('button.publish')
+                          }
+                        />
+                      ) : (
+                        t('button.publish')
+                      )}
+                    </p>
+                    <GavelRounded className="!h-4 !w-4" />
+                  </>
+                )}
               </Button>
             </Tooltip>
           </div>

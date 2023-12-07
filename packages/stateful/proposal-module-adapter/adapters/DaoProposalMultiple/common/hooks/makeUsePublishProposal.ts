@@ -1,6 +1,7 @@
 import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { coins } from '@cosmjs/stargate'
 import { useCallback, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -31,6 +32,7 @@ import {
   MakeUsePublishProposalOptions,
   NewProposalData,
   PublishProposal,
+  SimulateProposal,
   UsePublishProposal,
 } from '../../types'
 import { anyoneCanProposeSelector } from '../selectors'
@@ -181,6 +183,33 @@ export const makeUsePublishProposal =
         return () => clearTimeout(timeout)
       }
     }, [simulationBypassExpiration])
+
+    const simulateProposal: SimulateProposal = useCallback(
+      async ({ choices }) => {
+        try {
+          if (!choices.options.filter((c) => c.msgs.length > 0)) {
+            throw new Error(t('error.noActionsToSimulate'))
+          }
+
+          // Simulate each option's message set separately. If the DAO only has
+          // 1 $JUNO, and two options both contain spending all 1 $JUNO, the
+          // simulation will fail because the DAO does not have sufficient
+          // funds. Combining all the messages into one simulation will function
+          // like all messages are executed together, but in reality, only one
+          // choice will be executed. Thus, just make sure each individual set
+          // of messages is valid together.
+          await Promise.all(
+            choices.options.map(({ msgs }) => simulateMsgs(msgs))
+          )
+
+          toast.success(t('success.proposalSimulation'))
+        } catch (err) {
+          console.error(err)
+          toast.error(processError(err, { forceCapture: false }))
+        }
+      },
+      [simulateMsgs, t]
+    )
 
     const publishProposal: PublishProposal = useCallback(
       async (
@@ -366,6 +395,7 @@ export const makeUsePublishProposal =
     )
 
     return {
+      simulateProposal,
       publishProposal,
       anyoneCanPropose,
       depositUnsatisfied,

@@ -1,5 +1,5 @@
 import { FlagOutlined, Timelapse } from '@mui/icons-material'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValue } from 'recoil'
@@ -29,6 +29,7 @@ import { makeGetProposalInfo } from '../../../functions'
 import {
   NewProposalData,
   NewProposalForm,
+  SimulateProposal,
   UsePublishProposal,
 } from '../../../types'
 import { useProcessQ } from '../../hooks'
@@ -87,11 +88,25 @@ export const NewProposal = ({
   )
 
   const {
+    simulateProposal: _simulateProposal,
     publishProposal,
     anyoneCanPropose,
     depositUnsatisfied,
     simulationBypassExpiration,
   } = usePublishProposal()
+
+  const [simulating, setSimulating] = useState(false)
+  const simulateProposal: SimulateProposal = useCallback(
+    async (...params) => {
+      setSimulating(true)
+      try {
+        await _simulateProposal(...params)
+      } finally {
+        setSimulating(false)
+      }
+    },
+    [_simulateProposal]
+  )
 
   const createProposal = useRecoilCallback(
     ({ snapshot }) =>
@@ -222,7 +237,8 @@ export const NewProposal = ({
       }
       isPaused={isPaused}
       loadedActions={loadedActions}
-      loading={loading}
+      loading={loading || simulating}
+      simulateProposal={simulateProposal}
       simulationBypassExpiration={simulationBypassExpiration}
       {...props}
     />
