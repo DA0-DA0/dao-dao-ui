@@ -86,9 +86,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
   address,
   context,
   chain: { chain_id: chainId },
-  chainContext: {
-    config: { codeIds },
-  },
+  chainContext: { config: chainConfig },
 }) => {
   if (
     context.type !== ActionContextType.Dao ||
@@ -154,7 +152,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
           }
 
     const info = DaoProposalMultipleAdapter.daoCreation.getInstantiateInfo(
-      codeIds,
+      chainConfig,
       {
         ...makeDefaultNewDao(chainId),
         // Only the name is used in this function to pick the contract label.
@@ -162,7 +160,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
       },
       {
         enableMultipleChoice: true,
-        omitFunds:
+        moduleInstantiateFundsUnsupported:
           !context.info.supportedFeatures[Feature.ModuleInstantiateFunds],
         quorum: {
           majority: 'majority' in quorum,

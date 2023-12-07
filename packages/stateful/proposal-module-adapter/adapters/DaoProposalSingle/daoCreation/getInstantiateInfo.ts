@@ -22,7 +22,7 @@ import preProposeInstantiateSchema from './pre_propose_instantiate_schema.json'
 export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
   DaoCreationExtraVotingConfig
 > = (
-  codeIds,
+  { codeIds },
   {
     chainId,
     name,
