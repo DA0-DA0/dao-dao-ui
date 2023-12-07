@@ -15,8 +15,11 @@ export const processError = (
     extra?: Record<string, unknown>
     transform?: Partial<Record<CommonError, string>>
     overrideCapture?: Partial<Record<CommonError, boolean>>
-    // If set to true, will capture error. If set to false, will not capture
-    // error. If undefined, will use capture map.
+    /**
+     * If set to true, will sent error to Sentry. If set to false, will not send
+     * error to Sentry. If undefined, will use default behavior (reference the
+     * capture map).
+     */
     forceCapture?: boolean
   } = {}
 ): string => {

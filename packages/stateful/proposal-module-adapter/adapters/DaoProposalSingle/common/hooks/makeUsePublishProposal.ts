@@ -1,5 +1,6 @@
 import { coins } from '@cosmjs/stargate'
 import { useCallback, useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -31,6 +32,7 @@ import {
   MakeUsePublishProposalOptions,
   NewProposalData,
   PublishProposal,
+  SimulateProposal,
   UsePublishProposal,
 } from '../../types'
 import { anyoneCanProposeSelector } from '../selectors'
@@ -182,6 +184,24 @@ export const makeUsePublishProposal =
         return () => clearTimeout(timeout)
       }
     }, [simulationBypassExpiration])
+
+    const simulateProposal: SimulateProposal = useCallback(
+      async ({ msgs }) => {
+        try {
+          if (!msgs.length) {
+            throw new Error(t('error.noActionsToSimulate'))
+          }
+
+          await simulateMsgs(msgs)
+
+          toast.success(t('success.proposalSimulation'))
+        } catch (err) {
+          console.error(err)
+          toast.error(processError(err, { forceCapture: false }))
+        }
+      },
+      [simulateMsgs, t]
+    )
 
     const publishProposal: PublishProposal = useCallback(
       async (
@@ -361,6 +381,7 @@ export const makeUsePublishProposal =
     )
 
     return {
+      simulateProposal,
       publishProposal,
       anyoneCanPropose,
       depositUnsatisfied,
