@@ -147,7 +147,6 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
               {treasuries.map((treasury) => (
                 <DaoAccountTreasuryAndNfts
                   key={treasury.account.address}
-                  TreasuryHistoryGraph={TreasuryHistoryGraph}
                   connected={connected}
                   setDepositFiatChainId={setDepositFiatChainId}
                   tokenSourceColorMap={tokenSourceColorMap}

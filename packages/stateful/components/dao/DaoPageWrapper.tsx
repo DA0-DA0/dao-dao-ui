@@ -1,12 +1,9 @@
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { PropsWithChildren, useEffect } from 'react'
-import { useRecoilState, waitForAll } from 'recoil'
+import { useRecoilState } from 'recoil'
 
-import {
-  valenceAccountsSelector,
-  walletChainIdAtom,
-} from '@dao-dao/state/recoil'
+import { walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
   DaoNotFound,
   ErrorPage500,
@@ -84,29 +81,8 @@ export const DaoPageWrapper = ({
     setAccentColor(accentColor ?? undefined)
   }, [accentColor, setAccentColor, isReady, isFallback, theme])
 
-  // Load valence accounts.
-  const valenceAccounts = useCachedLoadingWithError(
-    serializedInfo
-      ? waitForAll(
-          serializedInfo.accounts.map(({ chainId, address }) =>
-            valenceAccountsSelector({
-              chainId,
-              address,
-            })
-          )
-        )
-      : undefined
-  )
-
   const info: DaoInfo | undefined = serializedInfo && {
     ...serializedInfo,
-    accounts: [
-      ...serializedInfo.accounts,
-      // Add valence accounts.
-      ...(!valenceAccounts.loading && !valenceAccounts.errored
-        ? valenceAccounts.data.flat()
-        : []),
-    ],
     created: serializedInfo.created
       ? new Date(serializedInfo.created)
       : undefined,

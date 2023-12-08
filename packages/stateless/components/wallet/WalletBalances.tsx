@@ -5,20 +5,14 @@ import { useTranslation } from 'react-i18next'
 import { useDeepCompareMemoize } from 'use-deep-compare-effect'
 
 import {
-  AccountType,
   FilterFn,
   LazyNftCardInfo,
   SortFn,
   TokenCardInfo,
   TypedOption,
-  ValenceAccount,
   WalletBalancesProps,
 } from '@dao-dao/types'
-import {
-  areAccountsEqual,
-  getChainForChainId,
-  getDisplayNameForChainId,
-} from '@dao-dao/utils'
+import { getChainForChainId, getDisplayNameForChainId } from '@dao-dao/utils'
 
 import { useButtonPopupFilter, useButtonPopupSorter } from '../../hooks'
 import { Button } from '../buttons'
@@ -29,7 +23,6 @@ import { NoContent } from '../NoContent'
 import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
 import { ButtonPopup } from '../popup'
 import { TooltipInfoIcon } from '../tooltip'
-import { ValenceAccountTreasury } from '../ValenceAccountTreasury'
 
 const NFTS_PER_PAGE = 18
 
@@ -37,14 +30,11 @@ export const WalletBalances = <
   T extends TokenCardInfo,
   N extends LazyNftCardInfo
 >({
-  accounts,
   tokens,
   hiddenTokens,
   TokenLine,
   nfts,
   NftCard,
-  TreasuryHistoryGraph,
-  ...valenceAccountTreasuryProps
 }: WalletBalancesProps<T, N>) => {
   const { t } = useTranslation()
 
@@ -75,20 +65,11 @@ export const WalletBalances = <
     useDeepCompareMemoize([nftChains])
   )
 
-  const valenceAccounts = accounts.filter(
-    (account): account is ValenceAccount => account.type === AccountType.Valence
-  )
-  // Separate valence from non-valence account tokens and display valence
-  // separately.
-  const nonValenceTokens = tokens.loading
-    ? []
-    : tokens.data.filter(({ owner }) => owner.type !== AccountType.Valence)
-
   const {
     sortedData: sortedTokens,
     buttonPopupProps: sortTokenButtonPopupProps,
   } = useButtonPopupSorter({
-    data: nonValenceTokens,
+    data: tokens.loading ? [] : tokens.data,
     options: tokenSortOptions,
   })
 
@@ -154,30 +135,6 @@ export const WalletBalances = <
                 />
               ))}
             </div>
-
-            {/* Valence Accounts */}
-            {valenceAccounts.map((account) => (
-              <ValenceAccountTreasury<T>
-                key={account.address}
-                TokenLine={TokenLine}
-                TreasuryHistoryGraph={TreasuryHistoryGraph}
-                account={account}
-                className="mt-6"
-                tokens={
-                  tokens.loading
-                    ? tokens
-                    : {
-                        loading: false,
-                        errored: false,
-                        updating: tokens.updating,
-                        data: tokens.data.filter(({ owner }) =>
-                          areAccountsEqual(owner, account)
-                        ),
-                      }
-                }
-                {...valenceAccountTreasuryProps}
-              />
-            ))}
           </div>
         ) : (
           <p className="secondary-text">{t('info.nothingFound')}</p>

@@ -9,21 +9,16 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 
-import {
-  isDaoSelector,
-  isPolytoneProxySelector,
-  isValenceAccountSelector,
-} from './contract'
+import { isDaoSelector, isPolytoneProxySelector } from './contract'
 import { DaoCoreV2Selectors } from './contracts'
 import { icaRemoteAddressSelector } from './ica'
 import {
   genericTokenBalancesSelector,
   genericTokenDelegatedBalanceSelector,
 } from './token'
-import { valenceAccountSelector, valenceAccountsSelector } from './valence'
 
 // Get accounts controlled by this address, including its native chain, all
-// polytone proxies, and all valence accounts.
+// polytone proxies, and all ICA accounts.
 export const accountsSelector = selectorFamily<
   Account[],
   WithChainId<{
@@ -37,17 +32,13 @@ export const accountsSelector = selectorFamily<
   get:
     ({ chainId, address, includeIcaChains }) =>
     ({ get }) => {
-      const [isDao, isPolytoneProxy, isValenceAccount] = get(
+      const [isDao, isPolytoneProxy] = get(
         waitForAll([
           isDaoSelector({
             chainId,
             address,
           }),
           isPolytoneProxySelector({
-            chainId,
-            address,
-          }),
-          isValenceAccountSelector({
             chainId,
             address,
           }),
@@ -66,19 +57,11 @@ export const accountsSelector = selectorFamily<
           )
         : []
 
-      const mainAccount: Account = isValenceAccount
-        ? // If this is a valence account, get its config.
-          get(
-            valenceAccountSelector({
-              chainId,
-              address,
-            })
-          )
-        : {
-            chainId,
-            address,
-            type: isPolytoneProxy ? AccountType.Polytone : AccountType.Native,
-          }
+      const mainAccount: Account = {
+        chainId,
+        address,
+        type: isPolytoneProxy ? AccountType.Polytone : AccountType.Native,
+      }
 
       const allAccounts: Account[] = [
         // Main account.
@@ -92,23 +75,6 @@ export const accountsSelector = selectorFamily<
           })
         ),
       ]
-
-      // Get valence accounts controlled by all non-valence accounts.
-      const valenceAccounts = get(
-        waitForAll(
-          allAccounts
-            .filter(({ type }) => type !== AccountType.Valence)
-            .map(({ chainId, address }) =>
-              valenceAccountsSelector({
-                address,
-                chainId,
-              })
-            )
-        )
-      ).flat()
-
-      // Add valence accounts.
-      allAccounts.push(...valenceAccounts)
 
       // Get ICA account addresses controlled by native account.
       const icaAccounts =

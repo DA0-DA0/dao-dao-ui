@@ -41,9 +41,6 @@ export type CodeIdConfig = {
   // v2.1.0 and below, for migrating v1 to v2 DAOs
   Cw20Stake?: number
   DaoVotingCw20Staked?: number
-
-  // Valence
-  ValenceAccount?: number
 }
 
 export type PolytoneConnection = {

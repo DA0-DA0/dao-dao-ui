@@ -3,13 +3,7 @@ import clsx from 'clsx'
 import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  AccountType,
-  DaoAccountTreasury,
-  TokenCardInfo,
-  TreasuryHistoryGraphProps,
-  ValenceAccountTreasuryProps,
-} from '@dao-dao/types'
+import { AccountType, DaoAccountTreasury, TokenCardInfo } from '@dao-dao/types'
 import {
   getChainForChainId,
   getDisplayNameForChainId,
@@ -26,8 +20,6 @@ import { DropdownIconButton } from '../icon_buttons'
 import { Loader } from '../logo'
 import { NoContent } from '../NoContent'
 import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
-import { TooltipInfoIcon } from '../tooltip'
-import { ValenceAccountTreasury } from '../ValenceAccountTreasury'
 
 export type DaoAccountTreasuryAndNftsProps<
   T extends TokenCardInfo,
@@ -41,13 +33,8 @@ export type DaoAccountTreasuryAndNftsProps<
   addCollectionHref?: string
   setDepositFiatChainId: (chainId: string | undefined) => void
   TokenCard: ComponentType<T>
-  TokenLine: ComponentType<T>
   NftCard: ComponentType<N>
-  TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
-} & Pick<
-  ValenceAccountTreasuryProps<T>,
-  'ButtonLink' | 'IconButtonLink' | 'configureRebalancerHref'
->
+}
 
 const NFTS_PER_PAGE = 18
 
@@ -62,17 +49,11 @@ export const DaoAccountTreasuryAndNfts = <
   addCollectionHref,
   setDepositFiatChainId,
   TokenCard,
-  TokenLine,
   NftCard,
-  ButtonLink,
-  IconButtonLink,
-  TreasuryHistoryGraph,
-  configureRebalancerHref,
 }: DaoAccountTreasuryAndNftsProps<T, N>) => {
   const { t } = useTranslation()
 
   const bech32Prefix = getChainForChainId(account.chainId).bech32_prefix
-  const isValence = account.type === AccountType.Valence
 
   const [collapsed, setCollapsed] = useState(false)
   const [nftPage, setNftPage] = useState(PAGINATION_MIN_PAGE)
@@ -88,23 +69,11 @@ export const DaoAccountTreasuryAndNfts = <
             toggle={() => setCollapsed((c) => !c)}
           />
 
-          {/* TODO(rebalancer): overlay small valence logo over chain logo for valence account */}
           <ChainLogo chainId={account.chainId} size={28} />
 
           <p className="title-text shrink-0">
             {getDisplayNameForChainId(account.chainId)}
-            {isValence && ' (' + t('title.valenceAccount') + ')'}
           </p>
-
-          {isValence && (
-            <TooltipInfoIcon
-              size="sm"
-              title={
-                // TODO(rebalancer): Add description.
-                'What is a Valence Account'
-              }
-            />
-          )}
         </div>
 
         <div className="flex grow flex-row items-stretch justify-between gap-6">
@@ -119,16 +88,14 @@ export const DaoAccountTreasuryAndNfts = <
             value={account.address}
           />
 
-          {connected &&
-            !isValence &&
-            !!getSupportedChainConfig(account.chainId)?.kado && (
-              <Button
-                onClick={() => setDepositFiatChainId(account.chainId)}
-                variant="ghost_outline"
-              >
-                {t('button.depositFiat')}
-              </Button>
-            )}
+          {connected && !!getSupportedChainConfig(account.chainId)?.kado && (
+            <Button
+              onClick={() => setDepositFiatChainId(account.chainId)}
+              variant="ghost_outline"
+            >
+              {t('button.depositFiat')}
+            </Button>
+          )}
         </div>
       </div>
 
@@ -138,20 +105,8 @@ export const DaoAccountTreasuryAndNfts = <
           collapsed ? 'h-0' : 'h-auto'
         )}
       >
-        {isValence ? (
-          <ValenceAccountTreasury<T>
-            key={account.address}
-            ButtonLink={ButtonLink}
-            IconButtonLink={IconButtonLink}
-            TokenLine={TokenLine}
-            TreasuryHistoryGraph={TreasuryHistoryGraph}
-            account={account}
-            configureRebalancerHref={configureRebalancerHref}
-            inline
-            tokens={tokens}
-          />
-        ) : tokens.loading ||
-          (!tokens.errored && tokens.updating && tokens.data.length === 0) ? (
+        {tokens.loading ||
+        (!tokens.errored && tokens.updating && tokens.data.length === 0) ? (
           <Loader className="my-14" size={48} />
         ) : tokens.errored ? (
           <ErrorPage title={t('error.unexpectedError')}>

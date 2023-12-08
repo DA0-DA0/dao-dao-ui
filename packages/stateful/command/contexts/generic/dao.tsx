@@ -16,7 +16,7 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { AccountType, Feature } from '@dao-dao/types'
+import { Feature } from '@dao-dao/types'
 import {
   CommandModalContextMaker,
   CommandModalContextSection,
@@ -124,18 +124,14 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
             following ? setUnfollowing(coreAddress) : setFollowing(coreAddress),
           loading: updatingFollowing,
         },
-        ...accounts.map(({ chainId, address, type }) => ({
+        ...accounts.map(({ chainId, address }) => ({
           name:
             copied === chainId
               ? t('info.copiedDaoChainAddress', {
-                  chain:
-                    getChainForChainId(chainId).pretty_name +
-                    (type === AccountType.Valence ? ' (Valence)' : ''),
+                  chain: getChainForChainId(chainId).pretty_name,
                 })
               : t('button.copyDaoChainAddress', {
-                  chain:
-                    getChainForChainId(chainId).pretty_name +
-                    (type === AccountType.Valence ? ' (Valence)' : ''),
+                  chain: getChainForChainId(chainId).pretty_name,
                 }),
           Icon: copied === chainId ? Check : CopyAll,
           onChoose: () => {

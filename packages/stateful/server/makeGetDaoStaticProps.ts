@@ -247,7 +247,6 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             type: AccountType.Polytone,
           })
         ),
-        // Load valence accounts on frontend in DaoPageWrapper.
       ]
 
       // Must be called after server side translations has been awaited, because
