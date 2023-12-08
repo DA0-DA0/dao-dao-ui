@@ -30,7 +30,7 @@ import {
   ProposalStatus,
 } from '@dao-dao/types'
 import {
-  decodeMessages,
+  decodeMessage,
   decodePolytoneExecuteMsg,
   makeWasmMessage,
 } from '@dao-dao/utils'
@@ -86,11 +86,7 @@ export const useProposalPolytoneState = ({
     () =>
       msgs
         .map((msg) =>
-          decodePolytoneExecuteMsg(
-            srcChainId,
-            decodeMessages([msg])[0],
-            'oneOrZero'
-          )
+          decodePolytoneExecuteMsg(srcChainId, decodeMessage(msg), 'oneOrZero')
         )
         .flatMap((decoded) => (decoded.match ? [decoded] : [])),
     [srcChainId, msgs]

@@ -196,7 +196,6 @@ const InnerComponent: ActionComponent = (props) => {
 
   const balances = useTokenBalances({
     filter: TokenType.Native,
-    allChains: true,
   })
   const loadingNativeBalance: LoadingData<Coin> = balances.loading
     ? { loading: true }

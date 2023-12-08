@@ -30,6 +30,7 @@ import {
 import {
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  decodeIcaExecuteMsg,
   decodePolytoneExecuteMsg,
   getAccountAddress,
   getChainAddressForActionOptions,
@@ -46,6 +47,7 @@ import {
   makeStargateMessage,
   makeWasmMessage,
   maybeGetNativeTokenForChainId,
+  maybeMakeIcaExecuteMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
   parseValidPfmMemo,
@@ -66,12 +68,14 @@ import {
 const useDefaults: UseDefaults<SpendData> = () => {
   const {
     chain: { chain_id: chainId },
+    address,
   } = useActionOptions()
   const { address: walletAddress = '' } = useWallet()
 
   return {
     fromChainId: chainId,
     toChainId: chainId,
+    from: address,
     to: walletAddress,
     amount: 1,
     denom: maybeGetNativeTokenForChainId(chainId)?.denomOrAddress || '',
@@ -90,6 +94,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
     (props.fieldNamePrefix + 'fromChainId') as 'fromChainId'
   )
   const denom = watch((props.fieldNamePrefix + 'denom') as 'denom')
+  const from = watch((props.fieldNamePrefix + 'from') as 'from')
   const recipient = watch((props.fieldNamePrefix + 'to') as 'to')
   const toChainId = watch((props.fieldNamePrefix + 'toChainId') as 'toChainId')
   const amount = watch((props.fieldNamePrefix + 'amount') as 'amount')
@@ -126,7 +131,6 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
             denomOrAddress: denom,
           },
         ],
-    allChains: true,
   })
 
   const selectedToken = loadingTokens.loading
@@ -174,9 +178,13 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
     accounts.loading ||
     accounts.errored
       ? undefined
-      : skipRoute.data.chainIDs.slice(0, -1).map((chainId) =>
-          // Transform bech32 wallet address to chain.
-          context.type === ActionContextType.Wallet
+      : skipRoute.data.chainIDs.slice(0, -1).map((chainId, index) =>
+          // For source, use from address. This should always match the first
+          // chain ID.
+          index === 0
+            ? from
+            : // Transform bech32 wallet address to chain.
+            context.type === ActionContextType.Wallet
             ? transformBech32Address(address, chainId)
             : // Otherwise try to find an account (DAOs and gov).
               getAccountAddress({
@@ -323,14 +331,13 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
 const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
   const options = useActionOptions()
 
-  const loadingTokenBalances = useTokenBalances({
-    allChains: true,
-  })
+  const loadingTokenBalances = useTokenBalances()
 
   return useCallback(
     ({
       fromChainId,
       toChainId,
+      from,
       to,
       amount: _amount,
       denom,
@@ -340,11 +347,14 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
         return
       }
 
-      const token = loadingTokenBalances.data.find(
-        ({ token }) =>
-          token.chainId === fromChainId && token.denomOrAddress === denom
-      )?.token
-      if (!token) {
+      const { token, owner } =
+        loadingTokenBalances.data.find(
+          ({ owner, token }) =>
+            owner.address === from &&
+            token.chainId === fromChainId &&
+            token.denomOrAddress === denom
+        ) || {}
+      if (!token || !owner) {
         throw new Error(`Unknown token: ${denom}`)
       }
 
@@ -369,7 +379,6 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
             fromChainId,
             toChainId
           )
-          const sender = getChainAddressForActionOptions(options, fromChainId)
           msg = makeStargateMessage({
             stargate: {
               typeUrl: MsgTransfer.typeUrl,
@@ -377,7 +386,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
                 sourcePort: 'transfer',
                 sourceChannel,
                 token: coin(amount, denom),
-                sender,
+                sender: from,
                 receiver: to,
                 timeoutTimestamp,
                 memo: '',
@@ -432,11 +441,19 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
         throw new Error(`Unknown token type: ${token.type}`)
       }
 
-      return maybeMakePolytoneExecuteMessage(
-        options.chain.chain_id,
-        fromChainId,
-        msg
-      )
+      return owner.type === AccountType.Ica
+        ? maybeMakeIcaExecuteMessage(
+            options.chain.chain_id,
+            fromChainId,
+            options.address,
+            owner.address,
+            msg
+          )
+        : maybeMakePolytoneExecuteMessage(
+            options.chain.chain_id,
+            fromChainId,
+            msg
+          )
     },
     [loadingTokenBalances, options]
   )
@@ -445,11 +462,23 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   msg: Record<string, any>
 ) => {
-  let chainId = useActionOptions().chain.chain_id
+  const options = useActionOptions()
+
+  let chainId = options.chain.chain_id
+  let from = options.address
+
   const decodedPolytone = decodePolytoneExecuteMsg(chainId, msg)
   if (decodedPolytone.match) {
-    chainId = decodedPolytone.chainId
     msg = decodedPolytone.msg
+    chainId = decodedPolytone.chainId
+    from = getChainAddressForActionOptions(options, chainId) || ''
+  } else {
+    const decodedIca = decodeIcaExecuteMsg(chainId, msg)
+    if (decodedIca.match) {
+      chainId = decodedIca.chainId
+      msg = decodedIca.msgWithSender?.msg || {}
+      from = decodedIca.msgWithSender?.sender || ''
+    }
   }
 
   const isNative =
@@ -524,6 +553,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   )
 
   if (
+    // If somehow failed to load from address, don't match.
+    !from ||
     !token ||
     // If this is a valid PFM message, ensure all chains have PFM enabled or
     // else this is invalid and may be unsafe to display. If we can't properly
@@ -558,6 +589,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
       data: {
         fromChainId: chainId,
         toChainId,
+        from,
         to,
         amount: convertMicroDenomToDenomWithDecimals(
           msg.stargate.value.token.amount,
@@ -577,6 +609,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
       data: {
         fromChainId: chainId,
         toChainId: chainId,
+        from,
         to: msg.bank.send.to_address,
         amount: convertMicroDenomToDenomWithDecimals(
           msg.bank.send.amount[0].amount,
@@ -591,6 +624,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
       data: {
         fromChainId: chainId,
         toChainId: chainId,
+        from,
         to: msg.wasm.execute.msg.transfer.recipient,
         amount: convertMicroDenomToDenomWithDecimals(
           msg.wasm.execute.msg.transfer.amount,

@@ -40,7 +40,6 @@ const Component: ActionComponent<undefined, CommunityPoolDepositData> = (
 
   const tokens = useTokenBalances({
     filter: TokenType.Native,
-    allChains: true,
     // Load selected token when not creating, in case it is no longer returned
     // in the list of all tokens for the given account.
     additionalTokens: props.isCreating
@@ -83,7 +82,6 @@ export const makeCommunityPoolDepositAction: ActionMaker<
   > = () => {
     const tokens = useTokenBalances({
       filter: TokenType.Native,
-      allChains: true,
     })
 
     return useCallback(

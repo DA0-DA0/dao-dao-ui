@@ -83,7 +83,6 @@ const Component: ActionComponent = (props) => {
           type: TokenType.Native,
           denomOrAddress: denom,
         })),
-    allChains: true,
   })
 
   const instantiatedAddress =

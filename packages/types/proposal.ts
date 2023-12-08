@@ -44,3 +44,37 @@ export type DecodedPolytoneMsgNoMatch = {
 export type DecodedPolytoneMsg =
   | DecodedPolytoneMsgNoMatch
   | DecodedPolytoneMsgMatch
+
+export type DecodedIcaMsgMatch = {
+  match: true
+  chainId: string
+  // The first message, or undefined if none.
+  msgWithSender:
+    | {
+        sender: string
+        msg: Record<string, any>
+      }
+    | undefined
+  // The first message, or undefined if none.
+  cosmosMsgWithSender:
+    | {
+        sender: string
+        msg: CosmosMsgFor_Empty
+      }
+    | undefined
+  // All messages.
+  msgsWithSenders: {
+    sender: string
+    msg: Record<string, any>
+  }[]
+  cosmosMsgsWithSenders: {
+    sender: string
+    msg: CosmosMsgFor_Empty
+  }[]
+}
+
+export type DecodedIcaMsgNoMatch = {
+  match: false
+}
+
+export type DecodedIcaMsg = DecodedIcaMsgNoMatch | DecodedIcaMsgMatch

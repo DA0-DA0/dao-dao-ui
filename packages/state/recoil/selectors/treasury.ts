@@ -183,15 +183,13 @@ export const daoTvlSelector = selectorFamily<
     ({ get }) => {
       const timestamp = new Date()
 
-      const allBalances = Object.values(
-        get(
-          allBalancesSelector({
-            chainId,
-            address: coreAddress,
-            cw20GovernanceTokenAddress,
-          })
-        )
-      ).flat()
+      const allBalances = get(
+        allBalancesSelector({
+          chainId,
+          address: coreAddress,
+          cw20GovernanceTokenAddress,
+        })
+      )
 
       const usdPrices = get(
         waitForAllSettled(

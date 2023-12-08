@@ -195,6 +195,14 @@ export const isContractSelector = selectorFamily<
           return false
         }
 
+        // If CosmWasm unsupported, not the desired contract.
+        if (
+          err instanceof Error &&
+          err.message.includes('unknown query path')
+        ) {
+          return false
+        }
+
         // Rethrow other errors because it should not have failed.
         throw err
       }

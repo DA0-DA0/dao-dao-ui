@@ -2,7 +2,7 @@ import { toBase64, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/proto-signing'
 import { v4 as uuidv4 } from 'uuid'
 
-import { DecodedPolytoneMsg } from '@dao-dao/types'
+import { DecodedIcaMsg, DecodedPolytoneMsg } from '@dao-dao/types'
 import {
   BankMsg,
   CosmosMsgFor_Empty,
@@ -11,13 +11,30 @@ import {
   WasmMsg,
 } from '@dao-dao/types/contracts/common'
 
-import { getSupportedChainConfig } from '../chain'
+import {
+  getChainForChainName,
+  getIbcTransferInfoBetweenChains,
+  getIbcTransferInfoFromConnection,
+  getSupportedChainConfig,
+} from '../chain'
 import { IBC_TIMEOUT_SECONDS } from '../constants'
 import { processError } from '../error'
 import { objectMatchesStructure } from '../objectMatchesStructure'
+import { MsgSendTx } from '../protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
+import {
+  CosmosTx,
+  InterchainAccountPacketData,
+  Type,
+} from '../protobuf/codegen/ibc/applications/interchain_accounts/v1/packet'
 import { MsgTransfer } from '../protobuf/codegen/ibc/applications/transfer/v1/tx'
 import { encodeMessageAsBase64, parseEncodedMessage } from './encoding'
-import { decodeStargateMessage } from './protobuf'
+import {
+  cwMsgToProtobuf,
+  decodeStargateMessage,
+  isDecodedStargateMsg,
+  makeStargateMessage,
+  protobufToCwMsg,
+} from './protobuf'
 
 type WasmMsgType =
   | 'execute'
@@ -71,42 +88,43 @@ function isBinaryType(msgType?: WasmMsgType): boolean {
   return false
 }
 
-export const decodeMessages = (
-  msgs: CosmosMsgFor_Empty[]
-): Record<string, any>[] =>
-  msgs.map((msg) => {
-    // Decode base64 wasm binary into object.
-    if (isWasmMsg(msg)) {
-      const msgType = getWasmMsgType(msg.wasm)
-      if (msgType && isBinaryType(msgType)) {
-        const base64MsgContainer = (msg.wasm as any)[msgType]
-        if (base64MsgContainer && 'msg' in base64MsgContainer) {
-          const parsedMsg = parseEncodedMessage(base64MsgContainer.msg)
-          if (parsedMsg) {
-            return {
-              ...msg,
-              wasm: {
-                ...msg.wasm,
-                [msgType]: {
-                  ...base64MsgContainer,
-                  msg: parsedMsg,
-                },
+export const decodeMessage = (msg: CosmosMsgFor_Empty): Record<string, any> => {
+  // Decode base64 wasm binary into object.
+  if (isWasmMsg(msg)) {
+    const msgType = getWasmMsgType(msg.wasm)
+    if (msgType && isBinaryType(msgType)) {
+      const base64MsgContainer = (msg.wasm as any)[msgType]
+      if (base64MsgContainer && 'msg' in base64MsgContainer) {
+        const parsedMsg = parseEncodedMessage(base64MsgContainer.msg)
+        if (parsedMsg) {
+          return {
+            ...msg,
+            wasm: {
+              ...msg.wasm,
+              [msgType]: {
+                ...base64MsgContainer,
+                msg: parsedMsg,
               },
-            }
+            },
           }
         }
       }
-    } else if (isCosmWasmStargateMsg(msg)) {
-      // Decode Stargate protobuf message. If fail to decode, ignore.
-      try {
-        return decodeStargateMessage(msg)
-      } catch (err) {
-        console.error(processError(err, { forceCapture: true }))
-      }
     }
+  } else if (isCosmWasmStargateMsg(msg)) {
+    // Decode Stargate protobuf message. If fail to decode, ignore.
+    try {
+      return decodeStargateMessage(msg)
+    } catch (err) {
+      console.error(processError(err, { forceCapture: true }))
+    }
+  }
 
-    return msg
-  })
+  return msg
+}
+
+export const decodeMessages = (
+  msgs: CosmosMsgFor_Empty[]
+): Record<string, any>[] => msgs.map(decodeMessage)
 
 export function decodedMessagesString(msgs: CosmosMsgFor_Empty[]): string {
   const decodedMessageArray = decodeMessages(msgs)
@@ -366,6 +384,112 @@ export const decodePolytoneExecuteMsg = (
     msgs,
     cosmosMsgs,
     initiatorMsg: decodedMsg.wasm.execute.msg.execute.callback.msg,
+  }
+}
+
+// If the source and destination chains are different, this wraps the message in
+// an ICA execution message. Otherwise, it just returns the message.
+export const maybeMakeIcaExecuteMessage = (
+  srcChainId: string,
+  destChainId: string,
+  // The ICA host address (owner) on the source chain (i.e. the src sender).
+  icaHostAddress: string,
+  // The ICA remote address on the destination chain (i.e. the dest sender).
+  icaRemoteAddress: string,
+  msg: CosmosMsgFor_Empty | CosmosMsgFor_Empty[]
+): CosmosMsgFor_Empty => {
+  // If on same chain, just return the message.
+  if (srcChainId === destChainId && msg) {
+    if (Array.isArray(msg)) {
+      throw new Error('Cannot use an array for same-chain messages.')
+    }
+
+    return msg
+  }
+
+  const {
+    sourceChain: { connection_id: connectionId },
+  } = getIbcTransferInfoBetweenChains(srcChainId, destChainId)
+
+  return makeStargateMessage({
+    stargate: {
+      typeUrl: MsgSendTx.typeUrl,
+      value: MsgSendTx.fromPartial({
+        owner: icaHostAddress,
+        connectionId,
+        packetData: InterchainAccountPacketData.fromPartial({
+          type: Type.TYPE_EXECUTE_TX,
+          data: CosmosTx.toProto({
+            messages: [msg]
+              .flat()
+              .map((msg) => cwMsgToProtobuf(msg, icaRemoteAddress)),
+          }),
+          memo: '',
+        }),
+        // Nanoseconds timeout from TX execution.
+        relativeTimeout: BigInt(IBC_TIMEOUT_SECONDS * 1e9),
+      }),
+    },
+  })
+}
+
+// Checks if the message is an ICA execute message and extracts the chain ID and
+// msg(s).
+export const decodeIcaExecuteMsg = (
+  srcChainId: string,
+  decodedMsg: Record<string, any>,
+  // How many messages are expected.
+  type: 'one' | 'zero' | 'oneOrZero' | 'any' = 'one'
+): DecodedIcaMsg => {
+  if (
+    !isDecodedStargateMsg(decodedMsg) ||
+    decodedMsg.stargate.typeUrl !== MsgSendTx.typeUrl
+  ) {
+    return {
+      match: false,
+    }
+  }
+
+  try {
+    const { connectionId } = decodedMsg.stargate.value as MsgSendTx
+    const { destinationChain } = getIbcTransferInfoFromConnection(
+      srcChainId,
+      connectionId
+    )
+    const chainId = getChainForChainName(destinationChain.chain_name).chain_id
+
+    const { packetData: { data } = {} } = decodedMsg.stargate.value as MsgSendTx
+    const protobufMessages = data && CosmosTx.decode(data).messages
+    const cosmosMsgsWithSenders =
+      protobufMessages?.map((protobuf) => protobufToCwMsg(protobuf)) || []
+
+    if (
+      (type === 'zero' && cosmosMsgsWithSenders.length !== 0) ||
+      (type === 'one' && cosmosMsgsWithSenders.length !== 1) ||
+      (type === 'oneOrZero' && cosmosMsgsWithSenders.length > 1)
+    ) {
+      return {
+        match: false,
+      }
+    }
+
+    const msgsWithSenders = cosmosMsgsWithSenders.map(({ sender, msg }) => ({
+      sender,
+      msg: decodeMessage(msg),
+    }))
+
+    return {
+      match: true,
+      chainId,
+      msgWithSender: msgsWithSenders[0],
+      cosmosMsgWithSender: cosmosMsgsWithSenders[0],
+      msgsWithSenders,
+      cosmosMsgsWithSenders,
+    }
+  } catch {
+    return {
+      match: false,
+    }
   }
 }
 

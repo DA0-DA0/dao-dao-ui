@@ -326,16 +326,12 @@ export const treasuryValueHistorySelector = selectorFamily<
       ).flat()
 
       // Current native balances.
-      const currentBalances = Object.values(
-        get(
-          allBalancesSelector({
-            chainId: nativeChainId,
-            address: address,
-          })
-        )
-      )
-        .flat()
-        .filter(({ token }) => token.type === TokenType.Native)
+      const currentBalances = get(
+        allBalancesSelector({
+          chainId: nativeChainId,
+          address: address,
+        })
+      ).filter(({ token }) => token.type === TokenType.Native)
 
       const tokens = [
         ...currentBalances.map(({ token }) => token),

@@ -26,6 +26,10 @@ import { Metadata } from '@dao-dao/utils/protobuf/codegen/ibc/applications/inter
 import { useActionOptions } from '../../../react'
 import { CreateIcaComponent, CreateIcaData } from './Component'
 
+const useDefaults: UseDefaults<CreateIcaData> = () => ({
+  chainId: '',
+})
+
 const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
   const {
@@ -87,10 +91,6 @@ export const makeCreateIcaAction: ActionMaker<CreateIcaData> = ({
   chain: { chain_id: sourceChainId },
   address,
 }) => {
-  const useDefaults: UseDefaults<CreateIcaData> = () => ({
-    chainId: '',
-  })
-
   const useTransformToCosmos: UseTransformToCosmos<CreateIcaData> = () =>
     useCallback(({ chainId }) => {
       if (!chainId) {

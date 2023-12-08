@@ -21,22 +21,10 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types'
 import {
-  IBC_TIMEOUT_SECONDS,
-  cwMsgToProtobuf,
-  getChainForChainName,
+  decodeIcaExecuteMsg,
   getDisplayNameForChainId,
-  getIbcTransferInfoBetweenChains,
-  getIbcTransferInfoFromConnection,
-  isDecodedStargateMsg,
-  makeStargateMessage,
-  protobufToCwMsg,
+  maybeMakeIcaExecuteMessage,
 } from '@dao-dao/utils'
-import { MsgSendTx } from '@dao-dao/utils/protobuf/codegen/ibc/applications/interchain_accounts/controller/v1/tx'
-import {
-  CosmosTx,
-  InterchainAccountPacketData,
-  Type,
-} from '@dao-dao/utils/protobuf/codegen/ibc/applications/interchain_accounts/v1/packet'
 
 import { SuspenseLoader } from '../../../../components'
 import {
@@ -219,69 +207,33 @@ export const makeIcaExecuteAction: ActionMaker<IcaExecuteData> = ({
         return
       }
 
-      const {
-        sourceChain: { connection_id: connectionId },
-      } = getIbcTransferInfoBetweenChains(sourceChainId, chainId)
-
-      return makeStargateMessage({
-        stargate: {
-          typeUrl: MsgSendTx.typeUrl,
-          value: MsgSendTx.fromPartial({
-            owner: address,
-            connectionId,
-            packetData: InterchainAccountPacketData.fromPartial({
-              type: Type.TYPE_EXECUTE_TX,
-              data: CosmosTx.toProto({
-                messages: msgs.map((msg) =>
-                  cwMsgToProtobuf(msg, icaRemoteAddress)
-                ),
-              }),
-              memo: '',
-            }),
-            // Nanoseconds timeout from TX execution.
-            relativeTimeout: BigInt(IBC_TIMEOUT_SECONDS * 1e9),
-          }),
-        },
-      })
+      return maybeMakeIcaExecuteMessage(
+        sourceChainId,
+        chainId,
+        address,
+        icaRemoteAddress,
+        msgs
+      )
     }, [])
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<IcaExecuteData> = (
     msg: Record<string, any>
   ) => {
-    if (
-      !isDecodedStargateMsg(msg) ||
-      msg.stargate.typeUrl !== MsgSendTx.typeUrl
-    ) {
+    const decodedIca = decodeIcaExecuteMsg(sourceChainId, msg, 'any')
+    if (!decodedIca.match) {
       return {
         match: false,
       }
     }
 
-    try {
-      const { connectionId } = msg.stargate.value
-      const { destinationChain } = getIbcTransferInfoFromConnection(
-        sourceChainId,
-        connectionId
-      )
-
-      const { packetData: { data } = {} } = msg.stargate.value as MsgSendTx
-      const protobufMessages = data && CosmosTx.decode(data).messages
-      const msgs =
-        protobufMessages?.map((protobuf) => protobufToCwMsg(protobuf).msg) || []
-
-      return {
-        match: true,
-        data: {
-          chainId: getChainForChainName(destinationChain.chain_name).chain_id,
-          // Not needed for decoding.
-          icaRemoteAddress: '',
-          msgs,
-        },
-      }
-    } catch (err) {
-      return {
-        match: false,
-      }
+    return {
+      match: true,
+      data: {
+        chainId: decodedIca.chainId,
+        // Not needed for decoding.
+        icaRemoteAddress: '',
+        msgs: decodedIca.cosmosMsgsWithSenders.map(({ msg }) => msg),
+      },
     }
   }
 

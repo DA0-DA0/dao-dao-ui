@@ -144,7 +144,7 @@ export const NewGovProposal = () => {
     walletAddress
       ? genericTokenBalanceSelector({
           chainId: chainContext.chainId,
-          walletAddress,
+          address: walletAddress,
           type: TokenType.Native,
           denomOrAddress: depositToken.denom,
         })

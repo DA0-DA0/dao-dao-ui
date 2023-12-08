@@ -99,7 +99,6 @@ const Component: ActionComponent = (props) => {
           type: TokenType.Native,
           denomOrAddress: denom,
         })),
-    allChains: true,
   })
 
   // If in DAO context, use executed proposal TX events to find instantiated
@@ -237,7 +236,6 @@ export const makeInstantiateAction: ActionMaker<InstantiateData> = ({
   const useTransformToCosmos: UseTransformToCosmos<InstantiateData> = () => {
     const nativeBalances = useTokenBalances({
       filter: TokenType.Native,
-      allChains: true,
     })
 
     return useCallback(

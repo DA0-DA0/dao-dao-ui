@@ -34,7 +34,11 @@ export const InstantiateTokenSwap: ActionComponent<
   PerformTokenSwapData
 > = (props) => {
   const { t } = useTranslation()
-  const { address: selfAddress, chainContext } = useActionOptions()
+  const {
+    chain: { chain_id: chainId },
+    address: selfAddress,
+    chainContext,
+  } = useActionOptions()
 
   const cwTokenSwapCodeId =
     chainContext.type === ActionChainContextType.Supported
@@ -160,7 +164,9 @@ export const InstantiateTokenSwap: ActionComponent<
     <InnerInstantiateTokenSwap
       {...props}
       options={{
-        selfPartyTokenBalances: selfPartyTokenBalances.data,
+        selfPartyTokenBalances: selfPartyTokenBalances.data.filter(
+          ({ token }) => token.chainId === chainId
+        ),
         instantiating,
         onInstantiate,
         AddressInput,

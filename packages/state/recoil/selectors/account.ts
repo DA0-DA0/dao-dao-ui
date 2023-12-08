@@ -1,19 +1,26 @@
-import uniq from 'lodash.uniq'
-import { selectorFamily, waitForAll, waitForAllSettled } from 'recoil'
+import {
+  constSelector,
+  selectorFamily,
+  waitForAll,
+  waitForAllSettled,
+} from 'recoil'
 
 import {
   Account,
   AccountType,
+  GenericToken,
   GenericTokenBalanceWithOwner,
   IcaAccount,
+  TokenType,
   WithChainId,
 } from '@dao-dao/types'
-import { ICA_CHAINS_TX_PREFIX } from '@dao-dao/utils'
+import { ICA_CHAINS_TX_PREFIX, tokensEqual } from '@dao-dao/utils'
 
 import { isDaoSelector, isPolytoneProxySelector } from './contract'
 import { DaoCoreV2Selectors } from './contracts'
 import { icaRemoteAddressSelector } from './ica'
 import {
+  genericTokenBalanceSelector,
   genericTokenBalancesSelector,
   genericTokenDelegatedBalanceSelector,
 } from './token'
@@ -24,8 +31,7 @@ export const accountsSelector = selectorFamily<
   Account[],
   WithChainId<{
     address: string
-    // Chain IDs to include accounts from. This will find any ICA accounts, and
-    // for wallets, this adds other native accounts.
+    // Chain IDs to include ICAs from.
     includeIcaChains?: string[]
   }>
 >({
@@ -124,22 +130,41 @@ export const accountsSelector = selectorFamily<
 })
 
 export const allBalancesSelector = selectorFamily<
-  // Map chain ID to token balances on that chain.
-  Record<string, GenericTokenBalanceWithOwner[]>,
+  GenericTokenBalanceWithOwner[],
   WithChainId<{
     address: string
     // If account is a DAO, set this to the address of its governance token.
     cw20GovernanceTokenAddress?: string
+    // Chain IDs to include ICAs from.
+    includeIcaChains?: string[]
+    // Only get balances for this token type.
+    filter?: TokenType
+    // Additional tokens to fetch balances for.
+    additionalTokens?: Pick<
+      GenericToken,
+      'chainId' | 'type' | 'denomOrAddress'
+    >[]
+    // Ignore staked tokens.
+    ignoreStaked?: boolean
   }>
 >({
   key: 'allBalances',
   get:
-    ({ address, cw20GovernanceTokenAddress, chainId }) =>
+    ({
+      address,
+      cw20GovernanceTokenAddress,
+      includeIcaChains,
+      filter,
+      additionalTokens,
+      ignoreStaked,
+      chainId: mainChainId,
+    }) =>
     ({ get }) => {
       const allAccounts = get(
         accountsSelector({
-          chainId,
+          chainId: mainChainId,
           address,
+          includeIcaChains,
         })
       )
 
@@ -151,57 +176,71 @@ export const allBalancesSelector = selectorFamily<
               genericTokenBalancesSelector({
                 chainId,
                 address,
-                cw20GovernanceTokenAddress,
+                cw20GovernanceTokenAddress:
+                  chainId === mainChainId
+                    ? cw20GovernanceTokenAddress
+                    : undefined,
+                filter,
               }),
+              // Additional unstaked tokens on this account's chain.
+              waitForAllSettled(
+                (additionalTokens || [])
+                  .filter((token) => token.chainId === chainId)
+                  .map((token) =>
+                    genericTokenBalanceSelector({
+                      ...token,
+                      address: address,
+                    })
+                  )
+              ),
               // Native staked
-              genericTokenDelegatedBalanceSelector({
-                chainId,
-                walletAddress: address,
-              }),
+              (!filter || filter === TokenType.Native) && !ignoreStaked
+                ? genericTokenDelegatedBalanceSelector({
+                    chainId,
+                    walletAddress: address,
+                  })
+                : constSelector(undefined),
             ])
           )
         )
       )
 
-      const uniqueChainIds = uniq(allAccounts.map(({ chainId }) => chainId))
+      return allAccounts.flatMap((owner, index) => {
+        // All unstaked
+        const unstakedBalances = accountBalances[index][0].valueMaybe() || []
+        // Additional unstaked
+        const additionalUnstakedBalances =
+          accountBalances[index][1]
+            .valueMaybe()
+            ?.flatMap((loadable) => loadable.valueMaybe() || [])
+            // Remove any tokens that are already in unstakedBalances.
+            .filter(
+              (a) =>
+                !unstakedBalances.some((b) => tokensEqual(a.token, b.token))
+            ) || []
 
-      return uniqueChainIds.reduce((acc, chainId) => {
-        // Get accounts and balances per account on this chain.
-        const chainAccountBalances = allAccounts.flatMap((account, index) => {
-          // All unstaked
-          const unstakedBalances = accountBalances[index][0].valueMaybe() || []
-          // Native staked
-          const stakedBalance = accountBalances[index][1].valueMaybe()
+        // Native staked
+        const stakedBalance = accountBalances[index][2].valueMaybe()
 
-          return account.chainId === chainId
-            ? {
-                account,
-                balances: [
-                  ...unstakedBalances,
-                  ...(stakedBalance
-                    ? [
-                        {
-                          ...stakedBalance,
-                          staked: true,
-                        },
-                      ]
-                    : []),
-                ],
-              }
-            : []
-        })
+        const balances = [
+          ...unstakedBalances,
+          ...additionalUnstakedBalances,
+          ...(stakedBalance
+            ? [
+                {
+                  ...stakedBalance,
+                  staked: true,
+                },
+              ]
+            : []),
+        ]
 
-        return {
-          ...acc,
-          [chainId]: chainAccountBalances.flatMap(({ account, balances }) =>
-            balances.map(
-              (balance): GenericTokenBalanceWithOwner => ({
-                ...balance,
-                owner: account,
-              })
-            )
-          ),
-        }
-      }, {} as Record<string, GenericTokenBalanceWithOwner[]>)
+        return balances.map(
+          (balance): GenericTokenBalanceWithOwner => ({
+            ...balance,
+            owner,
+          })
+        )
+      })
     },
 })

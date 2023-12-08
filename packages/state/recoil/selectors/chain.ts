@@ -4,11 +4,13 @@ import { Coin, IndexedTx, StargateClient } from '@cosmjs/stargate'
 import { selector, selectorFamily, waitForAll, waitForAny } from 'recoil'
 
 import {
+  AccountType,
   AllGovParams,
   AmountWithTimestamp,
   ChainId,
   Delegation,
   GenericTokenBalance,
+  GenericTokenBalanceWithOwner,
   GovProposalVersion,
   GovProposalWithDecodedContent,
   NativeDelegationInfo,
@@ -949,7 +951,7 @@ export const chainStakingPoolSelector = selectorFamily<Pool, WithChainId<{}>>({
 })
 
 export const communityPoolBalancesSelector = selectorFamily<
-  GenericTokenBalance[],
+  GenericTokenBalanceWithOwner[],
   WithChainId<{}>
 >({
   key: 'communityPoolBalances',
@@ -972,7 +974,12 @@ export const communityPoolBalancesSelector = selectorFamily<
       )
 
       const balances = tokens.map(
-        (token, i): GenericTokenBalance => ({
+        (token, i): GenericTokenBalanceWithOwner => ({
+          owner: {
+            type: AccountType.Native,
+            chainId,
+            address: chainId,
+          },
           token,
           // Truncate.
           balance: pool[i].amount.split('.')[0],

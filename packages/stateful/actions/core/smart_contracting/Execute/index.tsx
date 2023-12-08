@@ -57,9 +57,7 @@ const useDefaults: UseDefaults<ExecuteData> = () => {
 const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
   const { t } = useTranslation()
   const currentChainId = useActionOptions().chain.chain_id
-  const tokenBalances = useTokenBalances({
-    allChains: true,
-  })
+  const tokenBalances = useTokenBalances()
 
   return useCallback(
     ({ chainId, address, message, funds, cw20 }: ExecuteData) => {
@@ -241,7 +239,6 @@ const Component: ActionComponent = (props) => {
           type: cw20 ? TokenType.Cw20 : TokenType.Native,
           denomOrAddress: denom,
         })),
-    allChains: true,
   })
 
   return (

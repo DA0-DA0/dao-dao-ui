@@ -42,7 +42,7 @@ export const ManageIcasComponent: ActionComponent<ManageIcasOptions> = ({
     <>
       <div className="flex flex-col gap-1">
         <SegmentedControlsTitle
-          className="mb-4 max-w-lg"
+          className="mb-1 max-w-lg"
           editable={isCreating}
           fieldName={(fieldNamePrefix + 'register') as 'register'}
           tabs={[
@@ -57,16 +57,15 @@ export const ManageIcasComponent: ActionComponent<ManageIcasOptions> = ({
           ]}
         />
 
+        <p className="body-text mb-3 max-w-prose text-text-secondary">
+          {register
+            ? t('info.registerIcaDescription')
+            : t('info.unregisterIcaDescription')}
+        </p>
+
         {!isCreating || register ? (
           <>
-            <InputLabel
-              name={t('title.chain')}
-              tooltip={
-                register
-                  ? t('info.registerIcaTooltip')
-                  : t('info.unregisterIcaTooltip')
-              }
-            />
+            <InputLabel name={t('title.chain')} />
 
             <IbcDestinationChainPicker
               buttonClassName="self-start"

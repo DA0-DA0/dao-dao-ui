@@ -23,7 +23,7 @@ import {
   AddressInputProps,
   Entity,
   EntityType,
-  GenericTokenBalance,
+  GenericTokenBalanceWithOwner,
   LoadingData,
   LoadingDataWithError,
 } from '@dao-dao/types'
@@ -47,6 +47,9 @@ export interface SpendData {
   // If same as chainId, then normal spend or CW20 transfer. Otherwise, IBC
   // transfer.
   toChainId: string
+  // Address with the tokens. This is needed since there may be multiple
+  // accounts controlled by the DAO on the same chain.
+  from: string
   to: string
   amount: number
   denom: string
@@ -66,7 +69,7 @@ export interface SpendData {
 }
 
 export interface SpendOptions {
-  tokens: LoadingData<GenericTokenBalance[]>
+  tokens: LoadingData<GenericTokenBalanceWithOwner[]>
   currentEntity: Entity | undefined
   // If this is an IBC transfer, this is the path of chains.
   ibcPath: LoadingDataWithError<string[]>
@@ -99,6 +102,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   const spendChainId = watch((fieldNamePrefix + 'fromChainId') as 'fromChainId')
   const spendAmount = watch((fieldNamePrefix + 'amount') as 'amount')
   const spendDenom = watch((fieldNamePrefix + 'denom') as 'denom')
+  const from = watch((fieldNamePrefix + 'from') as 'from')
   const recipient = watch((fieldNamePrefix + 'to') as 'to')
 
   const toChainId = watch((fieldNamePrefix + 'toChainId') as 'toChainId')
@@ -153,7 +157,12 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   }, [context, currentEntity, fieldNamePrefix, recipient, setValue, toChain])
 
   const validatePossibleSpend = useCallback(
-    (chainId: string, denom: string, amount: number): string | boolean => {
+    (
+      from: string,
+      chainId: string,
+      denom: string,
+      amount: number
+    ): string | boolean => {
       if (tokens.loading) {
         return true
       }
@@ -164,8 +173,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
           : 'error.cantSpendMoreThanTreasury'
 
       const tokenBalance = tokens.data.find(
-        ({ token }) =>
-          token.chainId === chainId && token.denomOrAddress === denom
+        ({ owner, token }) =>
+          owner.address === from &&
+          token.chainId === chainId &&
+          token.denomOrAddress === denom
       )
       if (tokenBalance) {
         const microAmount = convertDenomToMicroDenomWithDecimals(
@@ -210,6 +221,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     }
 
     const validation = validatePossibleSpend(
+      from,
       spendChainId,
       spendDenom,
       spendAmount
@@ -235,13 +247,16 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     fieldNamePrefix,
     errors?._error,
     spendChainId,
+    from,
   ])
 
   const selectedToken = tokens.loading
     ? undefined
     : tokens.data.find(
-        ({ token }) =>
-          token.chainId === spendChainId && token.denomOrAddress === spendDenom
+        ({ owner, token }) =>
+          owner.address === from &&
+          token.chainId === spendChainId &&
+          token.denomOrAddress === spendDenom
       )
   const balance = convertMicroDenomToDenomWithDecimals(
     selectedToken?.balance ?? 0,
@@ -280,7 +295,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               selectedToken?.token.decimals ?? 0
             ),
           }}
-          onSelectToken={({ chainId, denomOrAddress }) => {
+          onSelectToken={({ owner, chainId, denomOrAddress }) => {
             // If chain changes and the dest chain is the same, switch it.
             if (spendChainId === toChainId && chainId !== spendChainId) {
               setValue((fieldNamePrefix + 'toChainId') as 'toChainId', chainId)
@@ -291,6 +306,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               chainId
             )
             setValue((fieldNamePrefix + 'denom') as 'denom', denomOrAddress)
+            setValue((fieldNamePrefix + 'from') as 'from', owner.address)
           }}
           readOnly={!isCreating}
           selectedToken={selectedToken?.token}
@@ -300,8 +316,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               ? { loading: true }
               : {
                   loading: false,
-                  data: tokens.data.map(({ balance, token }) => ({
+                  data: tokens.data.map(({ owner, balance, token }) => ({
                     ...token,
+                    owner,
                     description:
                       t('title.balance') +
                       ': ' +

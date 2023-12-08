@@ -17,7 +17,6 @@ import {
   getFallbackImage,
   getIbcTransferInfoFromChannel,
   getTokenForChainIdAndDenom,
-  isValidContractAddress,
   isValidTokenFactoryDenom,
   isValidWalletAddress,
 } from '@dao-dao/utils'
@@ -235,17 +234,13 @@ export const genericTokenBalancesSelector = selectorFamily<
               // Neutron's modified DAOs do not support cw20s, so this may
               // error. Ignore if so.
               waitForAllSettled(
-                isValidContractAddress(
-                  address,
-                  getChainForChainId(chainId).bech32_prefix
-                ) &&
-                  // If is a DAO contract.
-                  get(
-                    isDaoSelector({
-                      address,
-                      chainId,
-                    })
-                  )
+                // If is a DAO contract.
+                get(
+                  isDaoSelector({
+                    address,
+                    chainId,
+                  })
+                )
                   ? [
                       DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
                         contractAddress: address,
@@ -281,12 +276,12 @@ export const genericTokenBalancesSelector = selectorFamily<
 export const genericTokenBalanceSelector = selectorFamily<
   GenericTokenBalance,
   Parameters<typeof genericTokenSelector>[0] & {
-    walletAddress: string
+    address: string
   }
 >({
   key: 'genericTokenBalance',
   get:
-    ({ walletAddress, ...params }) =>
+    ({ address, ...params }) =>
     async ({ get }) => {
       const token = get(genericTokenSelector(params))
 
@@ -294,7 +289,7 @@ export const genericTokenBalanceSelector = selectorFamily<
       if (token.type === TokenType.Native) {
         balance = get(
           nativeBalanceSelector({
-            address: walletAddress,
+            address,
             chainId: params.chainId,
           })
         ).amount
@@ -305,7 +300,7 @@ export const genericTokenBalanceSelector = selectorFamily<
             chainId: params.chainId,
             params: [
               {
-                address: walletAddress,
+                address,
               },
             ],
           })

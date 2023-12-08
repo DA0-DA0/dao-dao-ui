@@ -440,7 +440,11 @@ export const makeManageVestingActionMaker = ({
             errors={props.errors?.begin}
             fieldNamePrefix={props.fieldNamePrefix + 'begin.'}
             options={{
-              tokens: tokenBalances.loading ? [] : tokenBalances.data,
+              tokens: tokenBalances.loading
+                ? []
+                : tokenBalances.data.filter(
+                    ({ token }) => token.chainId === chainId
+                  ),
               vestingFactoryOwner,
               AddressInput,
             }}
@@ -512,7 +516,9 @@ export const makeManageVestingActionMaker = ({
             }
 
             const token = loadingTokenBalances.data.find(
-              ({ token }) => token.denomOrAddress === begin.denomOrAddress
+              ({ token }) =>
+                token.chainId === chainId &&
+                token.denomOrAddress === begin.denomOrAddress
             )?.token
             if (!token) {
               throw new Error(`Unknown token: ${begin.denomOrAddress}`)
