@@ -42,7 +42,7 @@
     "ts-morph": "^15.1.0",
     "ts-node": "^10.9.1",
     "tsconfig-paths-webpack-plugin": "^4.0.0",
-    "typescript": "^4.8.3"
+    "typescript": "5.1.6"
   },
   "peerDependencies": {
     "@dao-dao/state": "2.2.0",
