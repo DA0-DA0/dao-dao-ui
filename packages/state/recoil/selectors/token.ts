@@ -36,7 +36,6 @@ import {
   osmosisUsdPriceSelector,
 } from './osmosis'
 import { walletCw20BalancesSelector } from './wallet'
-import { wyndUsdPriceSelector } from './wynd'
 
 export const genericTokenSelector = selectorFamily<
   GenericToken,
@@ -180,9 +179,6 @@ export const usdPriceSelector = selectorFamily<
 
           return price
         }
-        // On Juno, use WYND DEX as backup. Likely for CW20s.
-        case ChainId.JunoMainnet:
-          return get(wyndUsdPriceSelector(denomOrAddress))
       }
     },
 })

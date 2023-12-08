@@ -54,7 +54,6 @@ export enum ActionKey {
   UpgradeV1ToV2 = 'upgradeV1ToV2',
   EnableVestingPayments = 'enableVestingPayments',
   EnableRetroactiveCompensation = 'enableRetroactiveCompensation',
-  WyndSwap = 'wyndSwap',
   DaoAdminExec = 'daoAdminExec',
   EnableMultipleChoice = 'enableMultipleChoice',
   ManageWidgets = 'manageWidgets',

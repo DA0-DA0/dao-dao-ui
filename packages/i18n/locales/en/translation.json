@@ -1048,7 +1048,6 @@
     "submitUpgradeProposal": "Submit a proposal to upgrade the DAO?",
     "submitted": "Submitted",
     "supportsMarkdownFormat": "Supports Markdown format",
-    "swapTokensOnWyndDescription": "Swap tokens on WYND DEX.",
     "testnet": "Testnet",
     "tierMemberGovTokenAllocationTooltip": "This member will receive {{tokens}} ${{tokenSymbol}} when the DAO is created.",
     "to": "to",
@@ -1129,8 +1128,6 @@
     "withdrawStakingRewards": "Withdraw staking rewards",
     "withdrawTokenSwapDescription": "Withdraw funds from a token swap that has not yet completed.",
     "wouldYouLikeToSearchQuestion": "Would you like to search for a DAO?",
-    "wyndSwapSummary_minOut": "This swaps {{in}} for at least {{minOut}}. If the price is too low, the swap will fail.",
-    "wyndSwapSummary_unsafe": "BE CAREFUL! This swaps {{in}} for ${{outSymbol}} at whatever the price is at the time of the swap. We recommend using a minimum output to require a fair price.",
     "yes": "Yes",
     "yesVote": "Yes",
     "yesWillWinTieClarification": "'Yes' will win a tie vote.",
@@ -1482,7 +1479,6 @@
     "suggestions": "Suggestions",
     "summary": "Summary",
     "supplies": "Supplies",
-    "swapTokensOnWynd": "Swap Tokens on WYND",
     "threshold": "Threshold",
     "tied": "Tied",
     "tierNum": "Tier {{tier}}",
@@ -1587,14 +1583,12 @@
     "mint_nft": "Display an NFT collection with a button to mint new NFTs.",
     "press": "Publish posts to your DAO's press page.",
     "retroactive": "Reward contributors for work they've already done. Vote on how to distribute payments in regular cycles.",
-    "vesting": "Vest funds to contributors at a constant rate, similar to a salary.",
-    "wynd_deposit": "Deposit any token on WYND DEX into your DAO."
+    "vesting": "Vest funds to contributors at a constant rate, similar to a salary."
   },
   "widgetTitle": {
     "mint_nft": "Mint NFT",
     "press": "Press",
     "retroactive": "Retroactive Compensation",
-    "vesting": "Vesting Payments",
-    "wynd_deposit": "WYND Deposit"
+    "vesting": "Vesting Payments"
   }
 }
