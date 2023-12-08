@@ -2,6 +2,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  Button,
   CopyToClipboard,
   IbcDestinationChainPicker,
   InputErrorMessage,
@@ -10,31 +11,48 @@ import {
   useChain,
 } from '@dao-dao/stateless'
 import { LoadingDataWithError } from '@dao-dao/types'
-import { ActionComponent } from '@dao-dao/types/actions'
-import { getDisplayNameForChainId, getImageUrlForChainId } from '@dao-dao/utils'
+import { ActionComponent, ActionKey } from '@dao-dao/types/actions'
+import {
+  getDisplayNameForChainId,
+  getImageUrlForChainId,
+  objectMatchesStructure,
+} from '@dao-dao/utils'
 
-export type CreateIcaAccountData = {
+export type CreateIcaData = {
   chainId: string
 }
 
-export type CreateIcaAccountOptions = {
+export type CreateIcaOptions = {
   createdAddressLoading: LoadingDataWithError<string | undefined>
 }
 
-export const CreateIcaAccountComponent: ActionComponent<
-  CreateIcaAccountOptions
-> = ({
+export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
   fieldNamePrefix,
   isCreating,
   errors,
   options: { createdAddressLoading },
+  addAction,
+  allActionsWithData,
 }) => {
   const { t } = useTranslation()
-  const { watch, setValue } = useFormContext<CreateIcaAccountData>()
+  const { watch, setValue } = useFormContext<CreateIcaData>()
   const { chain_id: sourceChainId } = useChain()
 
   const destinationChainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
   const imageUrl = getImageUrlForChainId(destinationChainId)
+
+  const registerActionExists =
+    isCreating &&
+    allActionsWithData.some(
+      ({ actionKey, data }) =>
+        actionKey === ActionKey.ManageIcas &&
+        objectMatchesStructure(data, {
+          chainId: {},
+          register: {},
+        }) &&
+        data.chainId === destinationChainId &&
+        data.register
+    )
 
   return (
     <>
@@ -51,6 +69,31 @@ export const CreateIcaAccountComponent: ActionComponent<
           />
 
           <InputErrorMessage className="-mt-2" error={errors?.chainId} />
+
+          {addAction && (
+            <div className="flex flex-col items-start gap-2">
+              <p className="body-text max-w-prose">
+                {t('info.createIcaRegister')}
+              </p>
+
+              <Button
+                disabled={registerActionExists}
+                onClick={() =>
+                  addAction?.({
+                    actionKey: ActionKey.ManageIcas,
+                    data: {
+                      chainId: destinationChainId,
+                      register: true,
+                    },
+                  })
+                }
+              >
+                {registerActionExists
+                  ? t('button.registered')
+                  : t('button.register')}
+              </Button>
+            </div>
+          )}
         </>
       ) : (
         <div className="flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-md bg-background-secondary px-4 py-3">

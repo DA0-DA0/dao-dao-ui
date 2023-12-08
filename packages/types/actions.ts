@@ -14,11 +14,11 @@ export enum ActionCategoryKey {
   ChainGovernance = 'chainGovernance',
   DaoAppearance = 'daoAppearance',
   DaoGovernance = 'daoGovernance',
-  Custom = 'custom',
   SmartContracting = 'smartContracting',
   Treasury = 'treasury',
   Nfts = 'nfts',
   Press = 'press',
+  Advanced = 'advanced',
 }
 
 // TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
@@ -66,8 +66,9 @@ export enum ActionKey {
   CreateCrossChainAccount = 'createCrossChainAccount',
   CrossChainExecute = 'crossChainExecute',
   UpdateStakingConfig = 'updateStakingConfig',
-  CreateIcaAccount = 'createIcaAccount',
+  CreateIca = 'createIca',
   IcaExecute = 'icaExecute',
+  ManageIcas = 'manageIcas',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',

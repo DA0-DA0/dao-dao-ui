@@ -121,7 +121,7 @@ const Component: ActionComponent = (props) => {
         (props.fieldNamePrefix + 'icaRemoteAddress') as 'icaRemoteAddress',
         {
           type: 'manual',
-          message: t('error.icaAccountDoesNotExist', {
+          message: t('error.icaDoesNotExist', {
             chain: getDisplayNameForChainId(destChainId),
           }),
         }

@@ -1,4 +1,4 @@
-# CreateIcaAccount
+# CreateIca
 
 Create an account via Interchain Accounts IBC module.
 
@@ -9,7 +9,7 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ### Key
 
-`createIcaAccount`
+`createIca`
 
 ### Data format
 

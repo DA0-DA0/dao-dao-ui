@@ -24,7 +24,7 @@ import { MsgRegisterInterchainAccount } from '@dao-dao/utils/protobuf/codegen/ib
 import { Metadata } from '@dao-dao/utils/protobuf/codegen/ibc/applications/interchain_accounts/v1/metadata'
 
 import { useActionOptions } from '../../../react'
-import { CreateIcaAccountComponent, CreateIcaAccountData } from './Component'
+import { CreateIcaComponent, CreateIcaData } from './Component'
 
 const Component: ActionComponent = (props) => {
   const { t } = useTranslation()
@@ -33,8 +33,7 @@ const Component: ActionComponent = (props) => {
     chain: { chain_id: srcChainId },
   } = useActionOptions()
 
-  const { watch, setError, clearErrors } =
-    useFormContext<CreateIcaAccountData>()
+  const { watch, setError, clearErrors } = useFormContext<CreateIcaData>()
   const destChainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
 
   const createdAddressLoading = useCachedLoadingWithError(
@@ -56,7 +55,7 @@ const Component: ActionComponent = (props) => {
     ) {
       setError((props.fieldNamePrefix + 'chainId') as 'chainId', {
         type: 'manual',
-        message: t('error.icaAccountAlreadyExists', {
+        message: t('error.icaAlreadyExists', {
           chain: getDisplayNameForChainId(destChainId),
         }),
       })
@@ -74,7 +73,7 @@ const Component: ActionComponent = (props) => {
   ])
 
   return (
-    <CreateIcaAccountComponent
+    <CreateIcaComponent
       {...props}
       options={{
         createdAddressLoading,
@@ -83,16 +82,16 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeCreateIcaAccountAction: ActionMaker<CreateIcaAccountData> = ({
+export const makeCreateIcaAction: ActionMaker<CreateIcaData> = ({
   t,
   chain: { chain_id: sourceChainId },
   address,
 }) => {
-  const useDefaults: UseDefaults<CreateIcaAccountData> = () => ({
+  const useDefaults: UseDefaults<CreateIcaData> = () => ({
     chainId: '',
   })
 
-  const useTransformToCosmos: UseTransformToCosmos<CreateIcaAccountData> = () =>
+  const useTransformToCosmos: UseTransformToCosmos<CreateIcaData> = () =>
     useCallback(({ chainId }) => {
       if (!chainId) {
         return
@@ -122,7 +121,7 @@ export const makeCreateIcaAccountAction: ActionMaker<CreateIcaAccountData> = ({
       })
     }, [])
 
-  const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateIcaAccountData> = (
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<CreateIcaData> = (
     msg: Record<string, any>
   ) => {
     if (
@@ -155,10 +154,10 @@ export const makeCreateIcaAccountAction: ActionMaker<CreateIcaAccountData> = ({
   }
 
   return {
-    key: ActionKey.CreateIcaAccount,
+    key: ActionKey.CreateIca,
     Icon: ChainEmoji,
-    label: t('title.createICAAccount'),
-    description: t('info.createICAAccountDescription'),
+    label: t('title.createIca'),
+    description: t('info.createIcaDescription'),
     Component,
     useDefaults,
     useTransformToCosmos,

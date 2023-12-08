@@ -1,0 +1,110 @@
+import { useFormContext } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
+
+import {
+  ChainLogo,
+  IbcDestinationChainPicker,
+  InputErrorMessage,
+  InputLabel,
+  RadioInput,
+  SegmentedControlsTitle,
+} from '@dao-dao/stateless'
+import { ActionComponent } from '@dao-dao/types/actions'
+import { getDisplayNameForChainId } from '@dao-dao/utils'
+
+import { useActionOptions } from '../../../react'
+
+export type ManageIcasData = {
+  chainId: string
+  register: boolean
+}
+
+export interface ManageIcasOptions {
+  currentlyEnabled: string[]
+}
+
+export const ManageIcasComponent: ActionComponent<ManageIcasOptions> = ({
+  fieldNamePrefix,
+  errors,
+  isCreating,
+  options: { currentlyEnabled },
+}) => {
+  const { t } = useTranslation()
+  const { setValue, watch } = useFormContext<ManageIcasData>()
+  const {
+    chain: { chain_id: sourceChainId },
+  } = useActionOptions()
+
+  const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
+  const register = watch((fieldNamePrefix + 'register') as 'register')
+
+  return (
+    <>
+      <div className="flex flex-col gap-1">
+        <SegmentedControlsTitle
+          className="mb-4 max-w-lg"
+          editable={isCreating}
+          fieldName={(fieldNamePrefix + 'register') as 'register'}
+          tabs={[
+            {
+              label: t('button.register'),
+              value: true,
+            },
+            {
+              label: t('button.unregister'),
+              value: false,
+            },
+          ]}
+        />
+
+        {!isCreating || register ? (
+          <>
+            <InputLabel
+              name={t('title.chain')}
+              tooltip={
+                register
+                  ? t('info.registerIcaTooltip')
+                  : t('info.unregisterIcaTooltip')
+              }
+            />
+
+            <IbcDestinationChainPicker
+              buttonClassName="self-start"
+              disabled={!isCreating}
+              includeSourceChain={false}
+              onChainSelected={(chainId) =>
+                setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
+              }
+              selectedChainId={chainId}
+              sourceChainId={sourceChainId}
+            />
+          </>
+        ) : (
+          <>
+            <InputLabel name={t('form.chainsCurrentlyRegistered')} />
+
+            <RadioInput
+              fieldName={(fieldNamePrefix + 'chainId') as 'chainId'}
+              options={currentlyEnabled.map((registeredChainId) => ({
+                value: registeredChainId,
+                display: (
+                  <div className="flex flex-row items-center gap-2">
+                    <ChainLogo chainId={registeredChainId} />
+
+                    <p className="primary-text">
+                      {getDisplayNameForChainId(registeredChainId)}
+                    </p>
+                  </div>
+                ),
+              }))}
+              setValue={setValue}
+              watch={watch}
+            />
+          </>
+        )}
+
+        <InputErrorMessage error={errors?.address} />
+      </div>
+    </>
+  )
+}

@@ -8,6 +8,7 @@ import {
   IcaAccount,
   WithChainId,
 } from '@dao-dao/types'
+import { ICA_CHAINS_TX_PREFIX } from '@dao-dao/utils'
 
 import { isDaoSelector, isPolytoneProxySelector } from './contract'
 import { DaoCoreV2Selectors } from './contracts'
@@ -45,15 +46,20 @@ export const accountsSelector = selectorFamily<
         ])
       )
 
-      // If this is a DAO, get its polytone proxies.
-      const polytoneProxies = isDao
-        ? Object.entries(
-            get(
+      // If this is a DAO, get its polytone proxies and registered ICAs.
+      const [polytoneProxies, registeredIcas] = isDao
+        ? get(
+            waitForAll([
               DaoCoreV2Selectors.polytoneProxiesSelector({
                 chainId,
                 contractAddress: address,
-              })
-            )
+              }),
+              DaoCoreV2Selectors.listAllItemsWithPrefixSelector({
+                chainId,
+                contractAddress: address,
+                prefix: ICA_CHAINS_TX_PREFIX,
+              }),
+            ])
           )
         : []
 
@@ -67,7 +73,7 @@ export const accountsSelector = selectorFamily<
         // Main account.
         mainAccount,
         // Polytone.
-        ...polytoneProxies.map(
+        ...Object.entries(polytoneProxies || {}).map(
           ([chainId, address]): Account => ({
             chainId,
             address,
@@ -76,32 +82,42 @@ export const accountsSelector = selectorFamily<
         ),
       ]
 
-      // Get ICA account addresses controlled by native account.
-      const icaAccounts =
-        mainAccount.type === AccountType.Native && includeIcaChains?.length
-          ? get(
-              waitForAll(
-                includeIcaChains.map((chainId) =>
-                  icaRemoteAddressSelector({
-                    srcChainId: mainAccount.chainId,
-                    address: mainAccount.address,
-                    destChainId: chainId,
-                  })
-                )
-              )
-            ).flatMap((address, index): IcaAccount | [] =>
-              address
-                ? {
-                    type: AccountType.Ica,
-                    chainId: includeIcaChains[index],
-                    address,
-                  }
-                : []
-            )
+      // If main account is native, load ICA accounts.
+      const icaChains =
+        mainAccount.type === AccountType.Native
+          ? [
+              ...(registeredIcas || []).map(([key]) =>
+                key.replace(ICA_CHAINS_TX_PREFIX, '')
+              ),
+              ...(includeIcaChains || []),
+            ]
           : []
 
+      // Get ICA addresses controlled by native account.
+      const icas = icaChains.length
+        ? get(
+            waitForAll(
+              icaChains.map((chainId) =>
+                icaRemoteAddressSelector({
+                  srcChainId: mainAccount.chainId,
+                  address: mainAccount.address,
+                  destChainId: chainId,
+                })
+              )
+            )
+          ).flatMap((address, index): IcaAccount | [] =>
+            address
+              ? {
+                  type: AccountType.Ica,
+                  chainId: icaChains[index],
+                  address,
+                }
+              : []
+          )
+        : []
+
       // Add ICA accounts.
-      allAccounts.push(...icaAccounts)
+      allAccounts.push(...icas)
 
       return allAccounts
     },

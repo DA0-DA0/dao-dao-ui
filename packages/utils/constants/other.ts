@@ -55,6 +55,9 @@ export const OSMOSIS_API_BASE = 'https://api-osmosis.imperator.co'
 // KVPK prefix for saved Me page transactions.
 export const ME_SAVED_TX_PREFIX = 'savedTx:'
 
+// KVPK prefix for registered ICA chains.
+export const ICA_CHAINS_TX_PREFIX = 'ica:'
+
 export const CHAIN_GAS_MULTIPLIER = 2
 
 export const NUM_FEATURED_DAOS = 10
