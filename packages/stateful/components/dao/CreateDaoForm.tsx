@@ -679,8 +679,9 @@ export const InnerCreateDaoForm = ({
         <div className="mb-14">
           <Page {...createDaoContext} />
 
-          {/* If funds are required, display. */}
-          {!!instantiateMsgFunds?.length &&
+          {/* If funds are required, display on last page. */}
+          {pageIndex === CreateDaoPages.length - 1 &&
+            !!instantiateMsgFunds?.length &&
             instantiateMsgFunds.some(({ amount }) => amount !== '0') && (
               <div className="mt-6 -mb-8 flex flex-row justify-end">
                 <div className="flex flex-col items-end gap-2">
