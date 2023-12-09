@@ -552,7 +552,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                             })
                           }}
                         >
-                          {t('button.createMissingChainActions')}
+                          {t('button.addAccountCreationActions')}
                         </Button>
                       )}
                     </div>
