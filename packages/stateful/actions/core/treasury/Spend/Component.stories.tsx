@@ -94,6 +94,7 @@ Default.args = {
     },
     currentEntity: undefined,
     ibcPath: { loading: true, errored: false },
+    betterNonPfmIbcPath: { loading: true },
     missingAccountChainIds: [],
     AddressInput,
   },

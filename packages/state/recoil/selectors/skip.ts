@@ -139,10 +139,6 @@ export const skipRouteSelector = selectorFamily<
         throw new Error('Route requires a swap.')
       }
 
-      if (route.txsRequired > 1) {
-        throw new Error('Route requires multiple txs.')
-      }
-
       return route
     },
 })

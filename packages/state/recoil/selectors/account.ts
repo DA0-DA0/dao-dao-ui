@@ -102,7 +102,7 @@ export const accountsSelector = selectorFamily<
       // Get ICA addresses controlled by native account.
       const icas = icaChains.length
         ? get(
-            waitForAll(
+            waitForAllSettled(
               icaChains.map((chainId) =>
                 icaRemoteAddressSelector({
                   srcChainId: mainAccount.chainId,
@@ -111,12 +111,12 @@ export const accountsSelector = selectorFamily<
                 })
               )
             )
-          ).flatMap((address, index): IcaAccount | [] =>
-            address
+          ).flatMap((addressLoadable, index): IcaAccount | [] =>
+            addressLoadable.valueMaybe()
               ? {
                   type: AccountType.Ica,
                   chainId: icaChains[index],
-                  address,
+                  address: addressLoadable.valueMaybe()!,
                 }
               : []
           )

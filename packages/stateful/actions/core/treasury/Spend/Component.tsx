@@ -9,6 +9,7 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  Button,
   ChainLogo,
   ChainProvider,
   IbcDestinationChainPicker,
@@ -17,6 +18,7 @@ import {
   Loader,
   TokenAmountDisplay,
   TokenInput,
+  WarningCard,
   useDetectWrap,
 } from '@dao-dao/stateless'
 import {
@@ -27,13 +29,18 @@ import {
   LoadingData,
   LoadingDataWithError,
 } from '@dao-dao/types'
-import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
+import {
+  ActionComponent,
+  ActionContextType,
+  ActionKey,
+} from '@dao-dao/types/actions'
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getAccountAddress,
   getChainForChainId,
   getDisplayNameForChainId,
+  getSupportedChainConfig,
   makeValidateAddress,
   processError,
   transformBech32Address,
@@ -73,6 +80,9 @@ export interface SpendOptions {
   currentEntity: Entity | undefined
   // If this is an IBC transfer, this is the path of chains.
   ibcPath: LoadingDataWithError<string[]>
+  // If this is an IBC transfer and a multi-TX route exists that unwinds the
+  // tokens correctly but doesn't use PFM, this is the better path.
+  betterNonPfmIbcPath: LoadingData<string[] | undefined>
   // If this is an IBC transfer, these are the chains with missing accounts.
   missingAccountChainIds?: string[]
   // Used to render pfpk or DAO profiles when selecting addresses.
@@ -89,12 +99,18 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     tokens,
     currentEntity,
     ibcPath,
+    betterNonPfmIbcPath,
     missingAccountChainIds,
     AddressInput,
   },
+  addAction,
+  remove,
 }) => {
   const { t } = useTranslation()
-  const { context } = useActionOptions()
+  const {
+    context,
+    chain: { chain_id: mainChainId },
+  } = useActionOptions()
 
   const { register, watch, setValue, setError, clearErrors } =
     useFormContext<SpendData>()
@@ -203,11 +219,10 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     [context.type, t, tokens]
   )
 
-  // Update amount+denom combo error each time either field is updated
-  // instead of setting errors individually on each field. Since we only
-  // show one or the other and can't detect which error is newer, this
-  // would lead to the error not updating if amount set an error and then
-  // denom was changed.
+  // Update amount+denom combo error each time either field is updated instead
+  // of setting errors individually on each field. Since we only show one or the
+  // other and can't detect which error is newer, this would lead to the error
+  // not updating if amount set an error and then denom was changed.
   useEffect(() => {
     // Prevent infinite loops by not setting errors if already set, and only
     // clearing errors unless already set.
@@ -417,17 +432,14 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             name={t('title.ibcTransferPath')}
             tooltip={t('info.ibcTransferPathTooltip', {
               context:
-                ibcPath.loading ||
-                ibcPath.errored ||
-                ibcPath.updating ||
-                ibcPath.data.length === 2
+                ibcPath.loading || ibcPath.errored || ibcPath.data.length === 2
                   ? undefined
                   : // If more than one hop in the path, this uses packet-forward-middleware.
                     'pfm',
             })}
           />
 
-          {ibcPath.loading || ibcPath.updating ? (
+          {ibcPath.loading ? (
             <Loader className="!justify-start" fill={false} size={26} />
           ) : ibcPath.errored ? (
             <p className="body-text text-text-interactive-error">
@@ -455,15 +467,97 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                 ))}
               </div>
 
+              {isCreating &&
+                !betterNonPfmIbcPath.loading &&
+                betterNonPfmIbcPath.data && (
+                  <WarningCard
+                    className="mt-4 max-w-xl"
+                    content={
+                      <div className="flex flex-col gap-3">
+                        <p className="primary-text text-text-interactive-warning-body">
+                          {t('info.betterNonPfmIbcPathAvailable')}
+                        </p>
+
+                        <div className="flex flex-row items-center gap-3">
+                          {betterNonPfmIbcPath.data.map((chainId, index) => (
+                            <>
+                              <div className="flex flex-row items-center gap-2">
+                                <ChainLogo chainId={chainId} />
+
+                                <p className="primary-text">
+                                  {getDisplayNameForChainId(chainId)}
+                                </p>
+                              </div>
+
+                              {index !==
+                                betterNonPfmIbcPath.data!.length - 1 && (
+                                <ArrowRightAltRounded className="!h-5 !w-5 text-text-secondary" />
+                              )}
+                            </>
+                          ))}
+                        </div>
+                      </div>
+                    }
+                  />
+                )}
+
               {isCreating && !!missingAccountChainIds?.length && (
-                <p className="secondary-text mt-4 text-text-interactive-error">
-                  {t('error.missingIbcChainAccounts', {
-                    chains: missingAccountChainIds
-                      .map((chainId) => getDisplayNameForChainId(chainId))
-                      .join(', '),
-                    count: missingAccountChainIds.length,
-                  })}
-                </p>
+                <WarningCard
+                  className="mt-4 max-w-xl"
+                  content={
+                    <div className="flex flex-col items-start gap-3">
+                      <p className="primary-text text-text-interactive-warning-body">
+                        {t('info.betterPfmIbcPathAvailable', {
+                          chains: missingAccountChainIds
+                            .map((chainId) => getDisplayNameForChainId(chainId))
+                            .join(', '),
+                          count: missingAccountChainIds.length,
+                        })}
+                      </p>
+
+                      {addAction && (
+                        <Button
+                          onClick={() => {
+                            // Remove the current action.
+                            remove()
+                            // Add missing chains. Use polytone if possible, or
+                            // ICA otherwise.
+                            missingAccountChainIds.forEach((chainId) => {
+                              const hasPolytoneConnection =
+                                !!getSupportedChainConfig(mainChainId)
+                                  ?.polytone?.[chainId]
+
+                              if (hasPolytoneConnection) {
+                                addAction({
+                                  actionKey: ActionKey.CreateCrossChainAccount,
+                                  data: {
+                                    chainId,
+                                  },
+                                })
+                              } else {
+                                addAction({
+                                  actionKey: ActionKey.CreateIca,
+                                  data: {
+                                    chainId,
+                                  },
+                                })
+                                addAction({
+                                  actionKey: ActionKey.ManageIcas,
+                                  data: {
+                                    chainId,
+                                    register: true,
+                                  },
+                                })
+                              }
+                            })
+                          }}
+                        >
+                          {t('button.createMissingChainActions')}
+                        </Button>
+                      )}
+                    </div>
+                  }
+                />
               )}
             </div>
           )}

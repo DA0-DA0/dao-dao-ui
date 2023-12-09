@@ -17,13 +17,14 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 {
   "fromChainId": "<CHAIN ID>",
   "toChainId": "<CHAIN ID>",
+  "from": "<FROM ADDRESS>",
   "to": "<RECIPIENT ADDRESS>",
   "amount": "<AMOUNT>",
   "denom": "<DENOM>"
 }
 ```
 
-If used in a DAO, `fromChainId` determines which account has the tokens being
-sent, which can be the native chain or any supported Polytone chain. `toChainId`
-is unrelated, and it determines if the tokens are sent to another address on the
-same chain or to an account on another chain via IBC.
+If used in a DAO, `fromChainId` and `from` determine which account has the
+tokens being sent, which can be the native chain or any supported Polytone or
+ICA chain. `toChainId` is unrelated, and it determines if the tokens are sent to
+another address on the same chain or to an account on another chain via IBC.

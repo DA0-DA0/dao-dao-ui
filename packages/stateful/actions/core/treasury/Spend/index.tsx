@@ -162,7 +162,10 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
 
   // Get accounts to extract the receiver addresses for the transfer.
   const accounts = useCachedLoadingWithError(
-    skipRoute.loading || skipRoute.errored || skipRoute.updating
+    skipRoute.loading ||
+      skipRoute.errored ||
+      // Cannot use skip route if more than one TX is required.
+      skipRoute.data.txsRequired > 1
       ? undefined
       : accountsSelector({
           chainId: currentChainId,
@@ -175,6 +178,8 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
   const routeAddresses =
     skipRoute.loading ||
     skipRoute.errored ||
+    // Cannot use skip route if more than one TX is required.
+    skipRoute.data.txsRequired > 1 ||
     accounts.loading ||
     accounts.errored
       ? undefined
@@ -205,17 +210,59 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
           address ? [] : [skipRoute.data.chainIDs[index]]
         )
 
+  console.log({
+    skipRoute,
+    routeAddresses,
+    missingAccountChainIds,
+    accounts,
+  })
+
+  // Load Skip route message if IBC transfer.
+  const skipRouteMessageLoading = useCachedLoadingWithError(
+    isIbc &&
+      props.isCreating &&
+      denom &&
+      amountIn &&
+      !skipRoute.loading &&
+      !skipRoute.errored &&
+      // Can only use skip route if only one TX is required.
+      skipRoute.data.txsRequired === 1 &&
+      routeAddresses &&
+      missingAccountChainIds &&
+      missingAccountChainIds.length === 0 &&
+      validRecipient
+      ? skipRouteMessageSelector({
+          chainAddresses: routeAddresses.reduce(
+            (acc, address, index) => ({
+              ...acc,
+              [skipRoute.data.chainIDs[index]]: address,
+            }),
+            {} as Record<string, string | undefined>
+          ),
+          fromChainId,
+          toChainId,
+          toAddress: recipient,
+          sourceDenom: denom,
+          amountIn,
+        })
+      : undefined
+  )
+
   // Get the IBC path.
   const ibcPath: LoadingDataWithError<string[]> = isIbc
-    ? props.isCreating && (skipRoute.loading || skipRoute.updating)
+    ? props.isCreating && skipRoute.loading
       ? {
           loading: true,
           errored: false,
         }
       : props.isCreating &&
         !skipRoute.loading &&
-        !skipRoute.updating &&
-        !skipRoute.errored
+        !skipRoute.errored &&
+        // Can only use skip route if only one TX is required.
+        skipRoute.data.txsRequired === 1 &&
+        // Only use skip IBC path if loads message successfully.
+        !skipRouteMessageLoading.loading &&
+        !skipRouteMessageLoading.errored
       ? {
           loading: false,
           errored: false,
@@ -241,34 +288,6 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         errored: false,
       }
 
-  // Load Skip route message if IBC transfer.
-  const skipRouteMessageLoading = useCachedLoadingWithError(
-    isIbc &&
-      props.isCreating &&
-      denom &&
-      amountIn &&
-      !skipRoute.loading &&
-      !skipRoute.errored &&
-      routeAddresses &&
-      missingAccountChainIds &&
-      missingAccountChainIds.length === 0 &&
-      validRecipient
-      ? skipRouteMessageSelector({
-          chainAddresses: routeAddresses.reduce(
-            (acc, address, index) => ({
-              ...acc,
-              [skipRoute.data.chainIDs[index]]: address,
-            }),
-            {} as Record<string, string | undefined>
-          ),
-          fromChainId,
-          toChainId,
-          toAddress: recipient,
-          sourceDenom: denom,
-          amountIn,
-        })
-      : undefined
-  )
   // Store skip route message once loaded successfully during creation.
   useEffect(() => {
     if (!props.isCreating) {
@@ -323,6 +342,16 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         ibcPath,
         missingAccountChainIds,
         AddressInput,
+        betterNonPfmIbcPath:
+          skipRoute.loading || skipRoute.errored
+            ? { loading: true }
+            : {
+                loading: false,
+                data:
+                  skipRoute.data.txsRequired === 1
+                    ? undefined
+                    : skipRoute.data.chainIDs,
+              },
       }}
     />
   )
@@ -374,7 +403,11 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
         )
 
         // If no Skip IBC msg or it errored, use single-hop IBC transfer.
-        if (!_skipIbcTransferMsg || _skipIbcTransferMsg.errored) {
+        if (
+          !_skipIbcTransferMsg ||
+          _skipIbcTransferMsg.loading ||
+          _skipIbcTransferMsg.errored
+        ) {
           const { sourceChannel } = getIbcTransferInfoBetweenChains(
             fromChainId,
             toChainId
@@ -394,9 +427,6 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
             },
           })
         } else {
-          if (_skipIbcTransferMsg.loading || _skipIbcTransferMsg.updating) {
-            throw new Error('error.loadingData')
-          }
           if (_skipIbcTransferMsg.data.msgTypeURL !== MsgTransfer.typeUrl) {
             throw new Error(
               `Unexpected Skip transfer message type: ${_skipIbcTransferMsg.data.msgTypeURL}`
@@ -412,6 +442,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
                 // execution delay.
                 timeout_timestamp: timeoutTimestamp,
                 timeout_height: undefined,
+                memo: '',
               }),
             },
           })

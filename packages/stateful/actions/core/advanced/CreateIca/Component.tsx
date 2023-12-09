@@ -89,8 +89,8 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
                 }
               >
                 {registerActionExists
-                  ? t('button.registered')
-                  : t('button.register')}
+                  ? t('button.addedRegisterAction')
+                  : t('button.addRegisterAction')}
               </Button>
             </div>
           )}
