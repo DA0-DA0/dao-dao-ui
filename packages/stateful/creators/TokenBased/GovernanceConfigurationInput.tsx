@@ -94,13 +94,19 @@ export const GovernanceConfigurationInput = ({
     undefined
   )
   useEffect(() => {
-    if (!tokenFactoryDenomCreationFeeLoading.loading) {
+    if (
+      data.tokenType === GovernanceTokenType.New &&
+      !tokenFactoryDenomCreationFeeLoading.loading
+    ) {
       setValue(
         'creator.data.tokenFactoryDenomCreationFee',
         tokenFactoryDenomCreationFeeLoading.data
       )
+    } else {
+      // No fee for using existing token.
+      setValue('creator.data.tokenFactoryDenomCreationFee', undefined)
     }
-  }, [setValue, tokenFactoryDenomCreationFeeLoading])
+  }, [data.tokenType, setValue, tokenFactoryDenomCreationFeeLoading])
 
   // Fill in default first tier info if tiers not yet edited.
   const [loadedPage, setLoadedPage] = useState(false)
