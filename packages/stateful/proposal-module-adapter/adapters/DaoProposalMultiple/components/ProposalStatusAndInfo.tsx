@@ -235,38 +235,6 @@ const InnerProposalStatusAndInfo = ({
       : []),
   ]
 
-  // TODO(veto): update status with veto info
-  let status: string
-  if (statusKey === ProposalStatusEnum.Open) {
-    if (quorumReached) {
-      if (isTie) {
-        status = t('info.proposalStatus.willFailTiedVote')
-      } else {
-        // Will pass
-        status = t('info.proposalStatus.willPass')
-      }
-    } else {
-      // Quorum not reached
-      status = t('info.proposalStatus.willFailBadQuorum')
-    }
-  } else {
-    if (votingOpen) {
-      // Proposal status is determined but voting is still open
-      status = t('info.proposalStatus.completedAndOpen')
-    } else {
-      status = t('info.proposalStatus.notOpenMultipleChoice', {
-        turnoutPercent: formatPercentOf100(turnoutPercent),
-        extra:
-          // Add sentence about closing to receive deposit back if it needs to
-          // be closed and will refund.
-          statusKey === ProposalStatusEnum.Rejected &&
-          depositInfo?.refund_policy === DepositRefundPolicy.Always
-            ? ` ${t('info.proposalDepositWillBeRefunded')}`
-            : '',
-      })
-    }
-  }
-
   const voteOptions = useLoadingVoteOptions()
   const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
@@ -520,6 +488,38 @@ const InnerProposalStatusAndInfo = ({
     coreAddress,
     proposalModule.address,
   ])
+
+  // TODO(veto): update status with veto info
+  let status: string
+  if (statusKey === ProposalStatusEnum.Open) {
+    if (quorumReached) {
+      if (isTie) {
+        status = t('info.proposalStatus.willFailTiedVote')
+      } else {
+        // Will pass
+        status = t('info.proposalStatus.willPass')
+      }
+    } else {
+      // Quorum not reached
+      status = t('info.proposalStatus.willFailBadQuorum')
+    }
+  } else {
+    if (votingOpen) {
+      // Proposal status is determined but voting is still open
+      status = t('info.proposalStatus.completedAndOpen')
+    } else {
+      status = t('info.proposalStatus.notOpenMultipleChoice', {
+        turnoutPercent: formatPercentOf100(turnoutPercent),
+        extra:
+          // Add sentence about closing to receive deposit back if it needs to
+          // be closed and will refund.
+          statusKey === ProposalStatusEnum.Rejected &&
+          depositInfo?.refund_policy === DepositRefundPolicy.Always
+            ? ` ${t('info.proposalDepositWillBeRefunded')}`
+            : '',
+      })
+    }
+  }
 
   return (
     <StatelessProposalStatusAndInfo

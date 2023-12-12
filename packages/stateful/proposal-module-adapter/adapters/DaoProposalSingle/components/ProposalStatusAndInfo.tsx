@@ -337,30 +337,6 @@ const InnerProposalStatusAndInfo = ({
       : []),
   ]
 
-  // TODO(veto): update status with veto info
-  const status =
-    statusKey === ProposalStatusEnum.Open
-      ? thresholdReached && (!quorum || quorumReached)
-        ? t('info.proposalStatus.willPass')
-        : !thresholdReached && (!quorum || quorumReached)
-        ? t('info.proposalStatus.willFailBadThreshold')
-        : thresholdReached && quorum && !quorumReached
-        ? t('info.proposalStatus.willFailBadQuorum')
-        : t('info.proposalStatus.willFail')
-      : votingOpen
-      ? t('info.proposalStatus.completedAndOpen')
-      : t('info.proposalStatus.notOpen', {
-          turnoutPercent: formatPercentOf100(turnoutPercent),
-          turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
-          extra:
-            // Add sentence about closing to receive deposit back if it needs to
-            // be closed and will refund.
-            statusKey === ProposalStatusEnum.Rejected &&
-            depositInfo?.refund_policy === DepositRefundPolicy.Always
-              ? ` ${t('info.proposalDepositWillBeRefunded')}`
-              : '',
-        })
-
   const voteOptions = useLoadingVoteOptions()
   const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
@@ -625,6 +601,30 @@ const InnerProposalStatusAndInfo = ({
     coreAddress,
     proposalModule.address,
   ])
+
+  // TODO(veto): update status with veto info
+  const status =
+    statusKey === ProposalStatusEnum.Open
+      ? thresholdReached && (!quorum || quorumReached)
+        ? t('info.proposalStatus.willPass')
+        : !thresholdReached && (!quorum || quorumReached)
+        ? t('info.proposalStatus.willFailBadThreshold')
+        : thresholdReached && quorum && !quorumReached
+        ? t('info.proposalStatus.willFailBadQuorum')
+        : t('info.proposalStatus.willFail')
+      : votingOpen
+      ? t('info.proposalStatus.completedAndOpen')
+      : t('info.proposalStatus.notOpen', {
+          turnoutPercent: formatPercentOf100(turnoutPercent),
+          turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
+          extra:
+            // Add sentence about closing to receive deposit back if it needs to
+            // be closed and will refund.
+            statusKey === ProposalStatusEnum.Rejected &&
+            depositInfo?.refund_policy === DepositRefundPolicy.Always
+              ? ` ${t('info.proposalDepositWillBeRefunded')}`
+              : '',
+        })
 
   return (
     <StatelessProposalStatusAndInfo
