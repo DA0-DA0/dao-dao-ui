@@ -130,7 +130,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
     address: proposalModuleAddress,
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
   ({ t, context, chain: { chain_id: chainId } }) => {
-    if (!version || versionGte(version, ContractVersion.V2Alpha)) {
+    if (!version || !versionGte(version, ContractVersion.V2Alpha)) {
       return null
     }
 
