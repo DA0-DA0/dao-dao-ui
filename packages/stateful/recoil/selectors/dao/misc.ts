@@ -17,6 +17,7 @@ import {
   contractVersionSelector,
   isDaoSelector,
   queryContractIndexerSelector,
+  refreshProposalsIdAtom,
 } from '@dao-dao/state'
 import {
   ContractVersion,
@@ -415,6 +416,35 @@ export const daoInfoFromPolytoneProxySelector = selectorFamily<
 })
 
 /**
+ * DAOs this DAO has enabled vetoable proposal listing for.
+ */
+export const daoVetoableDaosSelector = selectorFamily<
+  { chainId: string; coreAddress: string }[],
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'daoVetoableDaos',
+  get:
+    ({ chainId, coreAddress }) =>
+    ({ get }) =>
+      get(
+        DaoCoreV2Selectors.listAllItemsWithPrefixSelector({
+          chainId,
+          contractAddress: coreAddress,
+          prefix: VETOABLE_DAOS_ITEM_KEY_PREFIX,
+        })
+      ).map(([key]) => {
+        const [chainId, coreAdress] = key
+          .substring(VETOABLE_DAOS_ITEM_KEY_PREFIX.length)
+          .split(':')
+
+        return {
+          chainId,
+          coreAddress: coreAdress,
+        }
+      }),
+})
+
+/**
  * Proposals which this DAO can currently veto.
  */
 export const daoVetoableProposalsSelector = selectorFamily<
@@ -425,6 +455,9 @@ export const daoVetoableProposalsSelector = selectorFamily<
   get:
     ({ chainId, coreAddress }) =>
     ({ get }) => {
+      // Refresh this when all proposals refresh.
+      const id = get(refreshProposalsIdAtom)
+
       // TODO: use accounts once refactor is complete
       const accounts = [
         [chainId, coreAddress],
@@ -438,14 +471,13 @@ export const daoVetoableProposalsSelector = selectorFamily<
         ),
       ]
 
-      // Load DAOs this DAO has enabled vetoable proposals listings for.
+      // Load DAOs this DAO has enabled vetoable proposal listing for.
       const vetoableDaos = get(
-        DaoCoreV2Selectors.listAllItemsWithPrefixSelector({
+        daoVetoableDaosSelector({
           chainId,
-          contractAddress: coreAddress,
-          prefix: VETOABLE_DAOS_ITEM_KEY_PREFIX,
+          coreAddress,
         })
-      ).map(([key]) => key.substring(VETOABLE_DAOS_ITEM_KEY_PREFIX.length))
+      )
 
       const daoVetoableProposalsPerChain = (
         get(
@@ -456,6 +488,7 @@ export const daoVetoableProposalsSelector = selectorFamily<
                 contractAddress,
                 formula: 'daoCore/vetoableProposals',
                 required: true,
+                id,
               })
             )
           )
@@ -468,7 +501,10 @@ export const daoVetoableProposalsSelector = selectorFamily<
           }))
         )
         .filter(({ chainId, dao }) =>
-          vetoableDaos.includes(`${chainId}:${dao}`)
+          vetoableDaos.some(
+            (vetoable) =>
+              vetoable.chainId === chainId && vetoable.coreAddress === dao
+          )
         )
 
       const uniqueDaos = uniq(

@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { ThumbDownEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import { Feature } from '@dao-dao/types'
 import {
@@ -19,6 +18,7 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput, EntityDisplay } from '../../../../components'
+import { daoVetoableDaosSelector } from '../../../../recoil'
 import { useActionOptions } from '../../../react'
 import {
   ManageVetoableDaosData,
@@ -32,10 +32,9 @@ const Component: ActionComponent = (props) => {
   } = useActionOptions()
 
   const currentlyEnabledLoading = useCachedLoadingWithError(
-    DaoCoreV2Selectors.listAllItemsWithPrefixSelector({
-      contractAddress: address,
+    daoVetoableDaosSelector({
       chainId,
-      prefix: VETOABLE_DAOS_ITEM_KEY_PREFIX,
+      coreAddress: address,
     })
   )
 
@@ -46,16 +45,7 @@ const Component: ActionComponent = (props) => {
         currentlyEnabled:
           currentlyEnabledLoading.loading || currentlyEnabledLoading.errored
             ? []
-            : currentlyEnabledLoading.data.map(([key]) => {
-                const [chainId, dao] = key
-                  .replace(VETOABLE_DAOS_ITEM_KEY_PREFIX, '')
-                  .split(':')
-
-                return {
-                  chainId,
-                  dao,
-                }
-              }),
+            : currentlyEnabledLoading.data,
         AddressInput,
         EntityDisplay,
       }}

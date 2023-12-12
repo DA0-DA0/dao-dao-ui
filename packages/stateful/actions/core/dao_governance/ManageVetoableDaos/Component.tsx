@@ -27,7 +27,7 @@ export type ManageVetoableDaosData = {
 export interface ManageVetoableDaosOptions {
   currentlyEnabled: {
     chainId: string
-    dao: string
+    coreAddress: string
   }[]
   AddressInput: ComponentType<AddressInputProps<ManageVetoableDaosData>>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
@@ -106,20 +106,24 @@ export const ManageVetoableDaosComponent: ActionComponent<
 
             {currentlyEnabled.length > 0 ? (
               <RadioInputNoForm
-                onChange={({ chainId, dao }) => {
+                onChange={({ chainId, coreAddress }) => {
                   setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
-                  setValue((fieldNamePrefix + 'address') as 'address', dao)
+                  setValue(
+                    (fieldNamePrefix + 'address') as 'address',
+                    coreAddress
+                  )
                 }}
                 options={currentlyEnabled.map((value) => ({
                   value,
                   display: (
                     <ChainProvider chainId={value.chainId}>
-                      <EntityDisplay address={value.dao} />
+                      <EntityDisplay address={value.coreAddress} />
                     </ChainProvider>
                   ),
                 }))}
                 selected={currentlyEnabled.find(
-                  (value) => value.chainId === chainId && value.dao === address
+                  (value) =>
+                    value.chainId === chainId && value.coreAddress === address
                 )}
               />
             ) : (

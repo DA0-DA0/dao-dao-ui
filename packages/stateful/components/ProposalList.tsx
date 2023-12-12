@@ -13,10 +13,18 @@ import {
   CommonProposalListInfo,
   StatefulProposalLineProps,
 } from '@dao-dao/types'
+import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
-import { useMembership, useOnDaoWebSocketMessage } from '../hooks'
+import {
+  useMembership,
+  useOnCurrentDaoWebSocketMessage,
+  useOnWebSocketMessage,
+} from '../hooks'
 import { matchAndLoadCommon } from '../proposal-module-adapter'
-import { daoVetoableProposalsSelector } from '../recoil'
+import {
+  daoVetoableDaosSelector,
+  daoVetoableProposalsSelector,
+} from '../recoil'
 import { DiscordNotifierConfigureModal } from './dao/DiscordNotifierConfigureModal'
 import { ProposalLine } from './ProposalLine'
 
@@ -69,10 +77,16 @@ export const ProposalList = () => {
     Record<string, Record<ProposalType, number | undefined> | undefined>
   >({})
 
+  const vetoableDaosLoading = useCachedLoadingWithError(
+    daoVetoableDaosSelector({
+      chainId: chain.chain_id,
+      coreAddress,
+    })
+  )
   const vetoableProposalsLoading = useCachedLoadingWithError(
     daoVetoableProposalsSelector({
-      coreAddress,
       chainId: chain.chain_id,
+      coreAddress,
     })
   )
   const vetoableProposals =
@@ -316,11 +330,22 @@ export const ProposalList = () => {
 
   // Refresh all proposals on proposal WebSocket messages.
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
-  useOnDaoWebSocketMessage('proposal', () => {
+  useOnCurrentDaoWebSocketMessage('proposal', () => {
     setRefreshProposalsId((id) => id + 1)
     // Refresh all proposals.
     loadMore(true)
   })
+
+  // Refresh all proposals on vetoable DAO proposal WebSocket messages.
+  useOnWebSocketMessage(
+    vetoableDaosLoading.loading || vetoableDaosLoading.errored
+      ? []
+      : vetoableDaosLoading.data.map((vetoable) =>
+          webSocketChannelNameForDao(vetoable)
+        ),
+    'proposal',
+    () => setRefreshProposalsId((id) => id + 1)
+  )
 
   return (
     <StatelessProposalList

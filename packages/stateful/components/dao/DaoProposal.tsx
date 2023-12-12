@@ -19,7 +19,7 @@ import {
   SelfRelayExecuteModalProps,
 } from '@dao-dao/types'
 
-import { useOnDaoWebSocketMessage, useWallet } from '../../hooks'
+import { useOnCurrentDaoWebSocketMessage, useWallet } from '../../hooks'
 import { ProfileDisconnectedCard, ProfileProposalCard } from '../profile'
 import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -59,7 +59,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
   // Vote listener. Show alerts and refresh accordingly.
   const { listening: listeningForVote, fallback: onVoteSuccess } =
-    useOnDaoWebSocketMessage(
+    useOnCurrentDaoWebSocketMessage(
       'vote',
       ({ proposalId, voter }) => {
         // If vote made on current proposal...
@@ -83,7 +83,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const {
     listening: listeningForProposal,
     fallback: onProposalUpdateFallback,
-  } = useOnDaoWebSocketMessage(
+  } = useOnCurrentDaoWebSocketMessage(
     'proposal',
     async ({ status, proposalId }, fallback) => {
       // If using self-relay execute, don't show toast or reload page until
