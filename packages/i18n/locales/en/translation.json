@@ -933,7 +933,7 @@
     "manageSubDaosActionDescription": "Recognize or remove SubDAOs from the DAO.",
     "manageTreasuryNftsDescription": "Manage NFT Collections displayed on your DAO's treasury page.",
     "manageTreasuryTokensDescription": "Manage Tokens displayed on your DAO's treasury page.",
-    "vetoableProposalsTooltip": "Proposals in other DAOs that {{daoName}} has the power to veto.",
+    "vetoableProposalsTooltip": "Proposals in other DAOs that this DAO ({{daoName}}) has the power to veto.",
     "manageVestingDescription": "Create a vesting contract that will release tokens to a recipient over time, or cancel an existing one.",
     "manageVetoableDaosDescription": "Enable or disable showing vetoable proposals on this DAO's home page from a DAO that this DAO has the power to veto.",
     "manageWidgetsDescription": "Add, update, and remove widgets.",
