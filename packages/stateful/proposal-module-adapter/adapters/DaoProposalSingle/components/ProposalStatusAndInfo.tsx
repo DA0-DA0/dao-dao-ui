@@ -455,6 +455,7 @@ const InnerProposalStatusAndInfo = ({
   ])
 
   const vetoConfig = 'veto' in config ? config.veto : undefined
+  const vetoEnabled = !!vetoConfig
   const [vetoLoading, setVetoLoading] = useState<
     'veto' | 'earlyExecute' | false
   >(false)
@@ -473,11 +474,12 @@ const InnerProposalStatusAndInfo = ({
       : undefined,
     undefined
   )
-  const canVeto =
-    !!vetoConfig &&
+  const canBeVetoed =
+    vetoEnabled &&
     (statusKey === 'veto_timelock' ||
-      (statusKey === ProposalStatusEnum.Open &&
-        vetoConfig.veto_before_passed)) &&
+      (statusKey === ProposalStatusEnum.Open && vetoConfig.veto_before_passed))
+  const walletCanVeto =
+    canBeVetoed &&
     // Wallet can veto if they are a member of the vetoer DAO or if they are the
     // vetoer themselves.
     !vetoerEntity.loading &&
@@ -487,14 +489,14 @@ const InnerProposalStatusAndInfo = ({
       walletDaoVetoerMembership.data.power !== '0') ||
       (vetoerEntity.data.type === EntityType.Wallet &&
         walletAddress === vetoerEntity.data.address))
-  const canEarlyExecute =
-    canVeto && statusKey === 'veto_timelock' && vetoConfig.early_execute
+  const walletCanEarlyExecute =
+    walletCanVeto && statusKey === 'veto_timelock' && vetoConfig.early_execute
   const onWalletVeto = useVeto({
     contractAddress: proposalModule.address,
     sender: walletAddress,
   })
   const onVeto = useCallback(async () => {
-    if (!canVeto) {
+    if (!walletCanVeto) {
       return
     }
 
@@ -536,7 +538,7 @@ const InnerProposalStatusAndInfo = ({
 
     // Loading will stop on success when status refreshes.
   }, [
-    canVeto,
+    walletCanVeto,
     vetoerEntity,
     onWalletVeto,
     proposalNumber,
@@ -548,7 +550,7 @@ const InnerProposalStatusAndInfo = ({
     proposalModule.address,
   ])
   const onVetoEarlyExecute = useCallback(async () => {
-    if (!canEarlyExecute) {
+    if (!walletCanEarlyExecute) {
       return
     }
 
@@ -590,7 +592,7 @@ const InnerProposalStatusAndInfo = ({
 
     // Loading will stop on success when status refreshes.
   }, [
-    canEarlyExecute,
+    walletCanEarlyExecute,
     vetoerEntity,
     executeProposal,
     proposalNumber,
@@ -602,29 +604,52 @@ const InnerProposalStatusAndInfo = ({
     proposalModule.address,
   ])
 
-  // TODO(veto): update status with veto info
-  const status =
-    statusKey === ProposalStatusEnum.Open
-      ? thresholdReached && (!quorum || quorumReached)
-        ? t('info.proposalStatus.willPass')
-        : !thresholdReached && (!quorum || quorumReached)
-        ? t('info.proposalStatus.willFailBadThreshold')
-        : thresholdReached && quorum && !quorumReached
-        ? t('info.proposalStatus.willFailBadQuorum')
-        : t('info.proposalStatus.willFail')
-      : votingOpen
-      ? t('info.proposalStatus.completedAndOpen')
-      : t('info.proposalStatus.notOpen', {
-          turnoutPercent: formatPercentOf100(turnoutPercent),
-          turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
-          extra:
-            // Add sentence about closing to receive deposit back if it needs to
-            // be closed and will refund.
-            statusKey === ProposalStatusEnum.Rejected &&
-            depositInfo?.refund_policy === DepositRefundPolicy.Always
-              ? ` ${t('info.proposalDepositWillBeRefunded')}`
-              : '',
+  let status: string
+  if (statusKey === ProposalStatusEnum.Open) {
+    if (!quorum || quorumReached) {
+      if (thresholdReached) {
+        status = t('info.proposalStatus.willPass', {
+          context: vetoEnabled ? 'vetoEnabled' : undefined,
         })
+      } else {
+        status = t('info.proposalStatus.willFailBadThreshold')
+      }
+
+      // quorum && !quorumReached
+    } else if (thresholdReached) {
+      status = t('info.proposalStatus.willFailBadQuorum')
+    } else {
+      status = t('info.proposalStatus.willFail')
+    }
+
+    // not open
+  } else {
+    if (votingOpen) {
+      // Proposal status is determined but voting is still open
+      status = t('info.proposalStatus.completedAndOpen', {
+        context: statusKey === ProposalStatusEnum.Vetoed ? 'vetoed' : undefined,
+      })
+    } else {
+      status = t('info.proposalStatus.notOpen', {
+        turnoutPercent: formatPercentOf100(turnoutPercent),
+        turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
+      })
+    }
+
+    // Add sentence about closing to receive deposit back if it needs to be
+    // closed and will refund.
+    if (
+      statusKey === ProposalStatusEnum.Rejected &&
+      depositInfo?.refund_policy === DepositRefundPolicy.Always
+    ) {
+      status += ' ' + t('info.proposalDepositWillBeRefunded')
+    }
+
+    // Add sentence about veto status.
+    if (canBeVetoed) {
+      status += ' ' + t('info.proposalStatus.canStillBeVetoed')
+    }
+  }
 
   return (
     <StatelessProposalStatusAndInfo
@@ -675,11 +700,13 @@ const InnerProposalStatusAndInfo = ({
       info={info}
       status={status}
       vetoOrEarlyExecute={
-        vetoConfig && canVeto
+        vetoConfig && walletCanVeto
           ? {
               loading: vetoLoading,
               onVeto,
-              onEarlyExecute: canEarlyExecute ? onVetoEarlyExecute : undefined,
+              onEarlyExecute: walletCanEarlyExecute
+                ? onVetoEarlyExecute
+                : undefined,
               isVetoerDaoMember: vetoerEntity.data.type === EntityType.Dao,
             }
           : undefined
