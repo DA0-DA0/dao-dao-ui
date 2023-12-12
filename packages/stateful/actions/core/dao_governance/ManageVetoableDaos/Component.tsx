@@ -61,7 +61,7 @@ export const ManageVetoableDaosComponent: ActionComponent<
 
       <div className="flex flex-col gap-1">
         <SegmentedControlsTitle
-          className="mb-4"
+          className="max-w-lg"
           editable={isCreating}
           fieldName={(fieldNamePrefix + 'enable') as 'enable'}
           tabs={[
@@ -76,16 +76,15 @@ export const ManageVetoableDaosComponent: ActionComponent<
           ]}
         />
 
+        <p className="caption-text mt-1 mb-3">
+          {enable
+            ? t('info.enableVetoerDaoDescription')
+            : t('info.disableVetoerDaoDescription')}
+        </p>
+
         {!isCreating || enable ? (
           <>
-            <InputLabel
-              name={t('title.dao')}
-              tooltip={
-                enable
-                  ? t('info.enableVetoerDaoDescription')
-                  : t('info.disableVetoerDaoDescription')
-              }
-            />
+            <InputLabel name={t('title.dao')} />
 
             <ChainProvider chainId={chainId}>
               <AddressInput
@@ -105,23 +104,27 @@ export const ManageVetoableDaosComponent: ActionComponent<
           <>
             <InputLabel name={t('form.daosCurrentlyEnabled')} />
 
-            <RadioInputNoForm
-              onChange={({ chainId, dao }) => {
-                setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
-                setValue((fieldNamePrefix + 'address') as 'address', dao)
-              }}
-              options={currentlyEnabled.map((value) => ({
-                value,
-                display: (
-                  <ChainProvider chainId={value.chainId}>
-                    <EntityDisplay address={value.dao} />
-                  </ChainProvider>
-                ),
-              }))}
-              selected={currentlyEnabled.find(
-                (value) => value.chainId === chainId && value.dao === address
-              )}
-            />
+            {currentlyEnabled.length > 0 ? (
+              <RadioInputNoForm
+                onChange={({ chainId, dao }) => {
+                  setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
+                  setValue((fieldNamePrefix + 'address') as 'address', dao)
+                }}
+                options={currentlyEnabled.map((value) => ({
+                  value,
+                  display: (
+                    <ChainProvider chainId={value.chainId}>
+                      <EntityDisplay address={value.dao} />
+                    </ChainProvider>
+                  ),
+                }))}
+                selected={currentlyEnabled.find(
+                  (value) => value.chainId === chainId && value.dao === address
+                )}
+              />
+            ) : (
+              <p className="caption-text">{t('info.none')}</p>
+            )}
           </>
         )}
 

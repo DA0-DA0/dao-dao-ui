@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
-import { ImageEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
+import { ThumbDownEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import { Feature } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -165,7 +165,7 @@ export const makeManageVetoableDaosAction: ActionMaker<
 
   return {
     key: ActionKey.ManageVetoableDaos,
-    Icon: ImageEmoji,
+    Icon: ThumbDownEmoji,
     label: t('title.manageVetoableDaos'),
     description: t('info.manageVetoableDaosDescription'),
     Component,
