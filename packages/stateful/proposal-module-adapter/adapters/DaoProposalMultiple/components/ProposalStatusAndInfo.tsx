@@ -516,8 +516,30 @@ const InnerProposalStatusAndInfo = ({
         context: statusKey === ProposalStatusEnum.Vetoed ? 'vetoed' : undefined,
       })
     } else {
+      const hasWinner = quorumReached && !isTie && winningChoice
+
       status = t('info.proposalStatus.notOpenMultipleChoice', {
+        context:
+          statusKey === ProposalStatusEnum.Passed
+            ? 'passed'
+            : statusKey === ProposalStatusEnum.Executed
+            ? 'executed'
+            : statusKey === ProposalStatusEnum.ExecutionFailed
+            ? 'executionFailed'
+            : statusKey === ProposalStatusEnum.Rejected
+            ? 'rejected'
+            : statusKey === ProposalStatusEnum.Closed
+            ? 'closed'
+            : statusKey === ProposalStatusEnum.Vetoed
+            ? hasWinner
+              ? 'vetoedWinner'
+              : 'vetoedNoWinner'
+            : undefined,
         turnoutPercent: formatPercentOf100(turnoutPercent),
+        turnoutWinningPercent: hasWinner
+          ? formatPercentOf100(winningChoice.turnoutVotePercentage)
+          : undefined,
+        turnoutWinner: hasWinner ? winningChoice.title : undefined,
       })
     }
 

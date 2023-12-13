@@ -631,6 +631,22 @@ const InnerProposalStatusAndInfo = ({
       })
     } else {
       status = t('info.proposalStatus.notOpen', {
+        context:
+          statusKey === ProposalStatusEnum.Passed
+            ? 'passed'
+            : statusKey === ProposalStatusEnum.Executed
+            ? 'executed'
+            : statusKey === ProposalStatusEnum.ExecutionFailed
+            ? 'executionFailed'
+            : statusKey === ProposalStatusEnum.Rejected
+            ? 'rejected'
+            : statusKey === ProposalStatusEnum.Closed
+            ? 'closed'
+            : statusKey === ProposalStatusEnum.Vetoed
+            ? thresholdReached && (!quorum || quorumReached)
+              ? 'vetoedPassed'
+              : 'vetoedNotPassed'
+            : undefined,
         turnoutPercent: formatPercentOf100(turnoutPercent),
         turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
       })
