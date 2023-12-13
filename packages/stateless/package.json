@@ -19,7 +19,7 @@
     "@types/remove-markdown": "^0.3.1",
     "@walletconnect/browser-utils": "^1.8.0",
     "a11y-react-emoji": "^1.2.0",
-    "chain-registry": "^1.20.0",
+    "chain-registry": "^1.21.0",
     "chart.js": "^4.4.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.0.1",
