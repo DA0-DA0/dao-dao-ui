@@ -27,7 +27,10 @@ export const TooltipInfoIcon = ({
         'cursor-help !bg-transparent !p-1.5 !outline-none hover:!bg-background-interactive-hover',
         className
       )}
-      iconClassName={iconClassName}
+      iconClassName={clsx(
+        warning && 'text-icon-interactive-warning',
+        iconClassName
+      )}
       size={size}
       variant="ghost"
     />

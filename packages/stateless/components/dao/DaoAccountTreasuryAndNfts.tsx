@@ -20,6 +20,7 @@ import { DropdownIconButton } from '../icon_buttons'
 import { Loader } from '../logo'
 import { NoContent } from '../NoContent'
 import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
+import { TooltipInfoIcon } from '../tooltip'
 
 export type DaoAccountTreasuryAndNftsProps<
   T extends TokenCardInfo,
@@ -74,6 +75,10 @@ export const DaoAccountTreasuryAndNfts = <
           <p className="title-text shrink-0">
             {getDisplayNameForChainId(account.chainId)}
           </p>
+
+          {account.type === AccountType.Ica && (
+            <TooltipInfoIcon title={t('info.icaExperimental')} warning />
+          )}
         </div>
 
         <div className="flex grow flex-row items-stretch justify-between gap-6">

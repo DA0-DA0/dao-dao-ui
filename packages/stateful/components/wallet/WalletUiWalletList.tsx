@@ -78,8 +78,6 @@ export const WalletUiWalletList = ({
           >
             <p>{t('info.socialLoginsPoweredByWeb3Auth')}</p>
             <TooltipInfoIcon
-              className="!bg-background-interactive-warning"
-              iconClassName="text-icon-interactive-warning"
               size="sm"
               title={t('info.socialLoginWarning', {
                 context: otherWallets.length === 0 ? 'onlySocial' : undefined,

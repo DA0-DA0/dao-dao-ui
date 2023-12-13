@@ -862,6 +862,7 @@
     "ibcTransferPathTooltip": "There is only one IBC hop in this spend.",
     "ibcTransferPathTooltip_pfm": "The IBC hops in this spend utilize packet-forward-middleware to send tokens through several chains in one transaction.",
     "icaExecuteDescription": "Execute an action from an ICA account on another chain.",
+    "icaExperimental": "ICA is experimental and not properly supported by many chains. For example, some chains are misconfigured and allow you to create an ICA account without allowing you to spend from it. We do not recommend storing funds in ICA accounts. Only use this if you know what you are doing.",
     "inactiveDaoTooltip": "This DAO has no proposals and may be inactive or a duplicate.",
     "inactiveDaosTooltip": "These DAOs have no proposals and may be inactive or duplicates.",
     "inboxConfigPreferencesDescription": "Choose where you want to receive notifications. Website notifications appear here on the Inbox page.",

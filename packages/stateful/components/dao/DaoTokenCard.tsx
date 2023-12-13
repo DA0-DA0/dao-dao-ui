@@ -17,6 +17,7 @@ import {
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
+  AccountType,
   ActionKey,
   ButtonPopupSection,
   DaoTokenCardProps,
@@ -26,6 +27,7 @@ import {
   getDaoProposalSinglePrefill,
   getDisplayNameForChainId,
   getNativeTokenForChainId,
+  tokensEqual,
 } from '@dao-dao/utils'
 
 import { tokenCardLazyInfoSelector } from '../../recoil'
@@ -62,12 +64,11 @@ export const DaoTokenCard = ({
     hooks: { useCommonGovernanceTokenInfo },
     components: { StakingModal },
   } = useVotingModuleAdapter()
-  const governanceInfo = useCommonGovernanceTokenInfo?.()
-  // If this token is the CW20 governance token for the DAO, hide deposit and
-  // show staking modal.
-  const isCw20GovernanceToken =
-    token.type === 'cw20' &&
-    token.denomOrAddress === governanceInfo?.denomOrAddress
+  const governanceTokenInfo = useCommonGovernanceTokenInfo?.()
+  // If this token is the governance token for the DAO, hide deposit and show
+  // staking modal.
+  const isGovernanceToken =
+    !!governanceTokenInfo && tokensEqual(token, governanceTokenInfo)
 
   // Refresh staking info.
   const setRefreshNativeTokenStakingInfo = useSetRecoilState(
@@ -153,10 +154,14 @@ export const DaoTokenCard = ({
   const [depositVisible, setDepositVisible] = useState(false)
   const showDeposit = useCallback(() => setDepositVisible(true), [])
 
-  const [showCw20StakingModal, setShowCw20StakingModal] = useState(false)
+  const [showGovernanceStakingModal, setShowGovernanceStakingModal] =
+    useState(false)
 
   const extraActionSections: ButtonPopupSection[] =
-    !noExtraActions && (proposeStakeUnstakeHref || proposeClaimHref)
+    !noExtraActions &&
+    // Don't show stake actions for ICA accounts.
+    owner.type !== AccountType.Ica &&
+    (proposeStakeUnstakeHref || proposeClaimHref)
       ? [
           {
             label: t('title.newProposalTo'),
@@ -193,30 +198,34 @@ export const DaoTokenCard = ({
         ButtonLink={ButtonLink}
         EntityDisplay={EntityDisplay}
         actions={{
-          token: isCw20GovernanceToken
+          token: isGovernanceToken
             ? [
-                // If this is the governance token and a CW20, show manage
-                // staking button.
+                // If this is the governance token, show manage staking button.
                 {
                   Icon: AccountBalance,
                   label: t('button.manageStake', {
                     tokenSymbol: token.symbol,
                   }),
                   closeOnClick: true,
-                  onClick: () => setShowCw20StakingModal(true),
+                  onClick: () => setShowGovernanceStakingModal(true),
                 },
               ]
-            : // Only show deposit button if not governance cw20 token. People
-              // accidentally deposit governance tokens into the DAO when
-              // they're trying to stake them.
-              [
+            : // Only show deposit button if not governance token. People
+            // accidentally deposit governance tokens into the DAO when they're
+            // trying to stake them.
+            //
+            // Also hide for ICA accounts since they may or may not allow
+            // spending.
+            owner.type !== AccountType.Ica
+            ? [
                 {
                   Icon: AccountBalance,
                   label: t('button.deposit'),
                   closeOnClick: true,
                   onClick: showDeposit,
                 },
-              ],
+              ]
+            : [],
           extraSections: extraActionSections,
         }}
         lazyInfo={lazyInfo}
@@ -225,11 +234,11 @@ export const DaoTokenCard = ({
         subtitle={getDisplayNameForChainId(token.chainId)}
       />
 
-      {isCw20GovernanceToken && showCw20StakingModal && StakingModal && (
-        <StakingModal onClose={() => setShowCw20StakingModal(false)} />
+      {isGovernanceToken && showGovernanceStakingModal && StakingModal && (
+        <StakingModal onClose={() => setShowGovernanceStakingModal(false)} />
       )}
 
-      {!isCw20GovernanceToken && (
+      {!isGovernanceToken && (
         <DaoTokenDepositModal
           onClose={() => setDepositVisible(false)}
           owner={owner}
