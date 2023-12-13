@@ -21,6 +21,7 @@ import {
 import {
   cwMsgToProtobuf,
   decodePolytoneExecuteMsg,
+  getAccountAddress,
   isDecodedStargateMsg,
   isValidContractAddress,
   isValidWalletAddress,
@@ -263,10 +264,12 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
               typeUrl: MsgExec.typeUrl,
               value: {
                 grantee:
-                  chainId === currentChainId ||
                   context.type !== ActionContextType.Dao
                     ? mainAddress
-                    : context.info.polytoneProxies[chainId],
+                    : getAccountAddress({
+                        accounts: context.info.accounts,
+                        chainId,
+                      }),
                 msgs: msgs.map((msg) => cwMsgToProtobuf(msg, address)),
               } as MsgExec,
             },
