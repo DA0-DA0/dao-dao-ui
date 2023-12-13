@@ -149,6 +149,7 @@ const Component: ActionComponent = (props) => {
           className="mb-4"
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
         />
       )}
 
@@ -182,8 +183,9 @@ const Component: ActionComponent = (props) => {
 
 export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
   t,
-  address: grantee,
+  address: mainAddress,
   chain: { chain_id: currentChainId },
+  context,
 }) => {
   const useDefaults: UseDefaults<AuthzExecData> = () => ({
     chainId: currentChainId,
@@ -209,8 +211,6 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
           grantee: {},
           msgs: {},
         }) ||
-        // Make sure this address is the grantee.
-        msg.stargate.value.grantee !== grantee ||
         !Array.isArray(msg.stargate.value.msgs)
       ) {
         return { match: false }
@@ -262,7 +262,11 @@ export const makeAuthzExecAction: ActionMaker<AuthzExecData> = ({
             stargate: {
               typeUrl: MsgExec.typeUrl,
               value: {
-                grantee,
+                grantee:
+                  chainId === currentChainId ||
+                  context.type !== ActionContextType.Dao
+                    ? mainAddress
+                    : context.info.polytoneProxies[chainId],
                 msgs: msgs.map((msg) => cwMsgToProtobuf(msg, address)),
               } as MsgExec,
             },
