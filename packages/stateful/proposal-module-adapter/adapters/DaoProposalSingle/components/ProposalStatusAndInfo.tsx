@@ -630,7 +630,7 @@ const InnerProposalStatusAndInfo = ({
         context: statusKey === ProposalStatusEnum.Vetoed ? 'vetoed' : undefined,
       })
     } else {
-      status = t('info.proposalStatus.notOpen', {
+      status = t('info.proposalStatus.notOpenSingleChoice', {
         context:
           statusKey === ProposalStatusEnum.Passed
             ? 'passed'
