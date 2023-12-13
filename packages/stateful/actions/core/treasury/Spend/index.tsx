@@ -392,7 +392,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
 
       let msg: CosmosMsgForEmpty | undefined
       // IBC transfer.
-      if (toChainId !== fromChainId) {
+      if (token.type === TokenType.Native && toChainId !== fromChainId) {
         // Timeout after 1 year. Needs to survive voting period and execution
         // delay.
         const timeoutTimestamp = BigInt(

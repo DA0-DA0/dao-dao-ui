@@ -29,6 +29,7 @@ import {
   GenericTokenBalanceWithOwner,
   LoadingData,
   LoadingDataWithError,
+  TokenType,
 } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -317,7 +318,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               selectedToken?.token.decimals ?? 0
             ),
           }}
-          onSelectToken={({ owner, chainId, denomOrAddress }) => {
+          onSelectToken={({ type, owner, chainId, denomOrAddress }) => {
             // If chain changes and the dest chain is the same, switch it.
             if (spendChainId === toChainId && chainId !== spendChainId) {
               setValue((fieldNamePrefix + 'toChainId') as 'toChainId', chainId)
@@ -329,6 +330,11 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             )
             setValue((fieldNamePrefix + 'denom') as 'denom', denomOrAddress)
             setValue((fieldNamePrefix + 'from') as 'from', owner.address)
+
+            // If token is cw20, set destination chain to same as source.
+            if (type === TokenType.Cw20) {
+              setValue((fieldNamePrefix + 'toChainId') as 'toChainId', chainId)
+            }
           }}
           readOnly={!isCreating}
           selectedToken={selectedToken?.token}
@@ -375,6 +381,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             {isCreating && (
               <IbcDestinationChainPicker
                 buttonClassName={toWrapped ? 'grow' : undefined}
+                disabled={selectedToken?.token.type === TokenType.Cw20}
                 includeSourceChain
                 onChainSelected={(chainId) =>
                   setValue(
