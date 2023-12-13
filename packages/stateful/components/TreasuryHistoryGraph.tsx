@@ -189,7 +189,7 @@ export const TreasuryHistoryGraph = ({
         options={{
           responsive: true,
           maintainAspectRatio: false,
-          // animation: false,
+          animation: false,
           plugins: {
             title: {
               display: false,
@@ -280,7 +280,7 @@ export const TreasuryHistoryGraph = ({
 
       {tooltipData && tooltipFirstDataPoint !== undefined && (
         <div
-          className="pointer-events-none absolute flex animate-fade-in flex-col gap-2 rounded-md border border-border-component-primary bg-component-tooltip py-2 px-3 text-text-component-primary"
+          className="pointer-events-none absolute z-10 flex animate-fade-in flex-col gap-2 rounded-md border border-border-component-primary bg-component-tooltip py-2 px-3 text-text-component-primary"
           style={{
             left: tooltipData.x,
             top: tooltipData.y,
