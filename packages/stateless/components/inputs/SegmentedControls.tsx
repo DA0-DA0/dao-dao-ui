@@ -15,6 +15,7 @@ import { SegmentedControlsProps } from '@dao-dao/types'
 
 import { useTrackDropdown } from '../../hooks/useTrackDropdown'
 import { Button } from '../buttons'
+import { Tooltip } from '../tooltip'
 
 export const SegmentedControls = <T extends unknown>({
   tabs,
@@ -79,7 +80,7 @@ export const SegmentedControls = <T extends unknown>({
       )}
       onMouseLeave={() => setHoveringIndex(undefined)}
     >
-      {tabs.map(({ label, value }, index) => (
+      {tabs.map(({ label, value, tooltip }, index) => (
         <Tab
           key={index}
           hoveringIndex={hoveringIndex}
@@ -89,6 +90,7 @@ export const SegmentedControls = <T extends unknown>({
           onClick={(e) => onSelect(value, e)}
           onMouseOver={() => setHoveringIndex(index)}
           selectedIndex={selectedIndex}
+          tooltip={tooltip}
         >
           {label}
         </Tab>
@@ -135,19 +137,20 @@ export const SegmentedControls = <T extends unknown>({
               ref={onDropdownRef}
             >
               <div className="no-scrollbar flex h-full max-h-80 flex-col gap-[1px] overflow-y-auto border-t border-t-border-base">
-                {moreTabs.map(({ label, value }, index) => (
-                  <Button
-                    key={index}
-                    className="rounded-none text-left"
-                    onClick={(e) => {
-                      onSelect(value, e)
-                      setMoreOpen(false)
-                    }}
-                    pressed={selectedMoreTabIndex === index}
-                    variant="ghost"
-                  >
-                    {label}
-                  </Button>
+                {moreTabs.map(({ label, value, tooltip }, index) => (
+                  <Tooltip key={index} title={tooltip}>
+                    <Button
+                      className="rounded-none text-left"
+                      onClick={(e) => {
+                        onSelect(value, e)
+                        setMoreOpen(false)
+                      }}
+                      pressed={selectedMoreTabIndex === index}
+                      variant="ghost"
+                    >
+                      {label}
+                    </Button>
+                  </Tooltip>
                 ))}
               </div>
             </div>,
@@ -170,6 +173,7 @@ type TabProps = {
   noWrap?: boolean
   buttonClassName?: string
   buttonContentContainerClassName?: string
+  tooltip?: NonNullable<ReactNode>
 }
 
 const Tab = forwardRef<HTMLDivElement, TabProps>(function Tab(
@@ -184,6 +188,7 @@ const Tab = forwardRef<HTMLDivElement, TabProps>(function Tab(
     noWrap,
     buttonClassName,
     buttonContentContainerClassName,
+    tooltip,
   },
   ref
 ) {
@@ -234,27 +239,29 @@ const Tab = forwardRef<HTMLDivElement, TabProps>(function Tab(
           ></div>
         )}
 
-        <Button
-          className={clsx(
-            // Render transparent background so the sliding indicator can
-            // show through underneath.
-            'relative flex h-full w-full items-center justify-center !bg-transparent !px-4',
-            selectedIndex === index || hoveringIndex === index
-              ? // Brighten text when selected or hovering over this tab.
-                '!text-text-body'
-              : // Dim text when not selected and not hovering over this tab.
-                '!text-text-secondary',
-            noWrap && 'whitespace-nowrap',
-            buttonClassName
-          )}
-          contentContainerClassName={buttonContentContainerClassName}
-          loading={loading}
-          onClick={onClick}
-          onMouseOver={onMouseOver}
-          variant="ghost"
-        >
-          {children}
-        </Button>
+        <Tooltip title={tooltip}>
+          <Button
+            className={clsx(
+              // Render transparent background so the sliding indicator can
+              // show through underneath.
+              'relative flex h-full w-full items-center justify-center !bg-transparent !px-4',
+              selectedIndex === index || hoveringIndex === index
+                ? // Brighten text when selected or hovering over this tab.
+                  '!text-text-body'
+                : // Dim text when not selected and not hovering over this tab.
+                  '!text-text-secondary',
+              noWrap && 'whitespace-nowrap',
+              buttonClassName
+            )}
+            contentContainerClassName={buttonContentContainerClassName}
+            loading={loading}
+            onClick={onClick}
+            onMouseOver={onMouseOver}
+            variant="ghost"
+          >
+            {children}
+          </Button>
+        </Tooltip>
       </div>
     </div>
   )

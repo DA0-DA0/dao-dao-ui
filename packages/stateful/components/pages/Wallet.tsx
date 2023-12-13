@@ -175,7 +175,7 @@ export const Wallet: NextPage = () => {
               <TreasuryHistoryGraph
                 address={walletAddress}
                 chainId={configuredChain.chain.chain_id}
-                className="sm:mb-4"
+                className="mb-4 sm:mb-8"
               />
 
               <WalletBalances

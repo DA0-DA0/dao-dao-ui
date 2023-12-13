@@ -357,12 +357,25 @@ export const TreasuryHistoryGraph = ({
         selected={precision}
         tabs={[
           {
+            label: 'M',
+            value: 'fiveminutes',
+            tooltip: t('info.priceHistoryPrecision', {
+              context: 'fiveminutes',
+            }),
+          },
+          {
             label: 'H',
             value: 'hour',
+            tooltip: t('info.priceHistoryPrecision', {
+              context: 'hour',
+            }),
           },
           {
             label: 'D',
             value: 'day',
+            tooltip: t('info.priceHistoryPrecision', {
+              context: 'day',
+            }),
           },
         ]}
       />
