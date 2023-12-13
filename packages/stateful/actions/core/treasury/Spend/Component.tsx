@@ -12,6 +12,7 @@ import {
   Button,
   ChainLogo,
   ChainProvider,
+  FormSwitchCard,
   IbcDestinationChainPicker,
   InputErrorMessage,
   InputLabel,
@@ -60,6 +61,9 @@ export interface SpendData {
   to: string
   amount: number
   denom: string
+
+  // If true, will not use the PFM optimized path from Skip.
+  useDirectIbcPath?: boolean
 
   _error?: string
 
@@ -120,6 +124,9 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
   const spendDenom = watch((fieldNamePrefix + 'denom') as 'denom')
   const from = watch((fieldNamePrefix + 'from') as 'from')
   const recipient = watch((fieldNamePrefix + 'to') as 'to')
+  const useDirectIbcPath = watch(
+    (fieldNamePrefix + 'useDirectIbcPath') as 'useDirectIbcPath'
+  )
 
   const toChainId = watch((fieldNamePrefix + 'toChainId') as 'toChainId')
   const toChain = getChainForChainId(toChainId)
@@ -428,16 +435,38 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
       {isIbc && (
         <div className="flex flex-col gap-4 rounded-md border-2 border-dashed border-border-primary p-4">
-          <InputLabel
-            name={t('title.ibcTransferPath')}
-            tooltip={t('info.ibcTransferPathTooltip', {
-              context:
-                ibcPath.loading || ibcPath.errored || ibcPath.data.length === 2
-                  ? undefined
-                  : // If more than one hop in the path, this uses packet-forward-middleware.
-                    'pfm',
-            })}
-          />
+          <div className="flex flex-row flex-wrap items-start justify-between gap-x-8 gap-y-2">
+            <InputLabel
+              name={t('title.ibcTransferPath')}
+              tooltip={t('info.ibcTransferPathTooltip', {
+                context:
+                  ibcPath.loading ||
+                  ibcPath.errored ||
+                  ibcPath.data.length === 2
+                    ? undefined
+                    : // If more than one hop in the path, this uses packet-forward-middleware.
+                      'pfm',
+              })}
+            />
+
+            {isCreating &&
+              ((!ibcPath.loading &&
+                !ibcPath.errored &&
+                ibcPath.data.length > 2) ||
+                useDirectIbcPath) && (
+                <FormSwitchCard
+                  fieldName={
+                    (fieldNamePrefix + 'useDirectIbcPath') as 'useDirectIbcPath'
+                  }
+                  label={t('form.useDirectIbcPath')}
+                  setValue={setValue}
+                  sizing="sm"
+                  tooltip={t('form.useDirectIbcPathTooltip')}
+                  tooltipIconSize="sm"
+                  value={useDirectIbcPath}
+                />
+              )}
+          </div>
 
           {ibcPath.loading ? (
             <Loader className="!justify-start" fill={false} size={26} />

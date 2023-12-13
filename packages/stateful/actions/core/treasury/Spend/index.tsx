@@ -98,6 +98,9 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
   const recipient = watch((props.fieldNamePrefix + 'to') as 'to')
   const toChainId = watch((props.fieldNamePrefix + 'toChainId') as 'toChainId')
   const amount = watch((props.fieldNamePrefix + 'amount') as 'amount')
+  const useDirectIbcPath = watch(
+    (props.fieldNamePrefix + 'useDirectIbcPath') as 'useDirectIbcPath'
+  )
   // Loaded on decode after creation.
   const _ibcData = watch((props.fieldNamePrefix + '_ibcData') as '_ibcData')
 
@@ -210,13 +213,6 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
           address ? [] : [skipRoute.data.chainIDs[index]]
         )
 
-  console.log({
-    skipRoute,
-    routeAddresses,
-    missingAccountChainIds,
-    accounts,
-  })
-
   // Load Skip route message if IBC transfer.
   const skipRouteMessageLoading = useCachedLoadingWithError(
     isIbc &&
@@ -256,6 +252,7 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
           errored: false,
         }
       : props.isCreating &&
+        !useDirectIbcPath &&
         !skipRoute.loading &&
         !skipRoute.errored &&
         // Can only use skip route if only one TX is required.
@@ -370,6 +367,7 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
       to,
       amount: _amount,
       denom,
+      useDirectIbcPath,
       _skipIbcTransferMsg,
     }: SpendData) => {
       if (loadingTokenBalances.loading) {
@@ -402,8 +400,10 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
           (Date.now() + 1000 * 60 * 60 * 24 * 365) * 1e6
         )
 
-        // If no Skip IBC msg or it errored, use single-hop IBC transfer.
+        // If no Skip IBC msg or it errored or disabled, use single-hop IBC
+        // transfer.
         if (
+          useDirectIbcPath ||
           !_skipIbcTransferMsg ||
           _skipIbcTransferMsg.loading ||
           _skipIbcTransferMsg.errored
@@ -442,7 +442,6 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
                 // execution delay.
                 timeout_timestamp: timeoutTimestamp,
                 timeout_height: undefined,
-                memo: '',
               }),
             },
           })
