@@ -12,6 +12,7 @@ import {
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
   osmosisPrecisionToMinutes,
+  osmosisPrecisionToStartSecondsAgo,
   usdPriceSelector,
 } from '@dao-dao/state'
 import {
@@ -236,7 +237,6 @@ export const treasuryValueHistorySelector = selectorFamily<
   WithChainId<{
     address: string
     precision: OsmosisHistoricalPriceChartPrecision
-    startSecondsAgo: number
     filter?: {
       // Filter by any of the account properties.
       account?: Partial<Pick<Account, typeof ACCOUNT_FILTER_PROPERTIES[number]>>
@@ -247,7 +247,7 @@ export const treasuryValueHistorySelector = selectorFamily<
 >({
   key: 'treasuryValueHistory',
   get:
-    ({ chainId: nativeChainId, address, precision, startSecondsAgo, filter }) =>
+    ({ chainId: nativeChainId, address, precision, filter }) =>
     ({ get }) => {
       let allAccounts = get(
         accountsSelector({
@@ -268,7 +268,9 @@ export const treasuryValueHistorySelector = selectorFamily<
         )
       }
 
-      const startTime = new Date(Date.now() - startSecondsAgo * 1000)
+      const startTime = new Date(
+        Date.now() - osmosisPrecisionToStartSecondsAgo[precision] * 1000
+      )
       // Snap to beginning.
       switch (precision) {
         case 'day':

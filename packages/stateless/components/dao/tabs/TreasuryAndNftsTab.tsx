@@ -120,20 +120,23 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
 
   return (
     <>
-      <div className="mb-8 mt-4 flex flex-col gap-4 rounded-md bg-background-tertiary p-6">
-        <div className="flex flex-row items-center justify-center gap-1">
-          <p className="title-text">{t('title.treasuryHistory')}</p>
+      <TreasuryHistoryGraph
+        address={coreAddress}
+        chainId={daoChainId}
+        className="mb-8 mt-4 rounded-md bg-background-tertiary p-6"
+        graphClassName="max-h-[20rem]"
+        header={
+          <div className="flex flex-row items-center justify-center gap-1">
+            <p className="title-text">{t('title.treasuryHistory')}</p>
 
-          <TooltipInfoIcon size="sm" title={t('info.treasuryHistoryTooltip')} />
-        </div>
-
-        <TreasuryHistoryGraph
-          address={coreAddress}
-          chainId={daoChainId}
-          className="max-h-[20rem]"
-          registerTokenColors={setTokenSourceColorMap}
-        />
-      </div>
+            <TooltipInfoIcon
+              size="sm"
+              title={t('info.treasuryHistoryTooltip')}
+            />
+          </div>
+        }
+        registerTokenColors={setTokenSourceColorMap}
+      />
 
       <div className="mb-9 mt-6">
         {

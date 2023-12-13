@@ -120,7 +120,7 @@ export const osmosisDenomForTokenSelector = selectorFamily<
     },
 })
 
-// 1440 = 24 hours as far back
+// 1440 = 24 hours as far back as possible?
 // 60 = 1 hour for the past 10 days
 // 5 = 5 minutes for the past 5 days
 export type OsmosisHistoricalPriceChartPrecision =
@@ -134,6 +134,17 @@ export const osmosisPrecisionToMinutes: Record<
   day: 1440,
   hour: 60,
   fiveminutes: 5,
+}
+export const osmosisPrecisionToStartSecondsAgo: Record<
+  OsmosisHistoricalPriceChartPrecision,
+  number
+> = {
+  // `day` seems to go back as far as possible, so let's set it to 3 years.
+  day: 3 * 365 * 24 * 60 * 60,
+  // 10 days ago
+  hour: 10 * 24 * 60 * 60,
+  // 5 days ago
+  fiveminutes: 5 * 24 * 60 * 60,
 }
 
 // Returns price every 24 hours for as far back as Osmosis allows.
