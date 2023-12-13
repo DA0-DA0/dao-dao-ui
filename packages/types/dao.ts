@@ -14,7 +14,11 @@ import {
 
 import { Account } from './account'
 import { SupportedChainConfig, WithChainId } from './chain'
-import { DaoCardProps, SuspenseLoaderProps } from './components'
+import {
+  DaoCardProps,
+  DaoDropdownInfo,
+  SuspenseLoaderProps,
+} from './components'
 import {
   ActiveThreshold,
   DepositRefundPolicy,
@@ -437,3 +441,8 @@ export type DaoWithVetoableProposals = WithChainId<
     proposalModules: ProposalModule[]
   }
 >
+
+export type DaoWithDropdownVetoableProposalList<T> = {
+  dao: DaoDropdownInfo
+  proposals: T[]
+}

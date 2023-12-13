@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { ProposalStatusEnum } from '@dao-dao/types'
 
+import { LinkWrapper } from '../LinkWrapper'
 import {
   DiscordNotifierConfigureModal,
   DiscordNotifierConfigureModalProps,
@@ -27,7 +28,7 @@ Default.args = {
   openProposals: [...Array(Math.floor(Math.random() * 3) + 1)].map(
     (_, index) => ({ ...makeProposalProps(), proposalId: index.toString() })
   ),
-  vetoableProposals: [],
+  daosWithVetoableProposals: [],
   // Generate between 5 and 15 proposals.
   historyProposals: [...Array(Math.floor(Math.random() * 11) + 5)].map(
     (_, index) => ({
@@ -44,6 +45,7 @@ Default.args = {
     })
   ),
   ProposalLine,
+  LinkWrapper,
   createNewProposalHref: '#',
   canLoadMore: true,
   loadMore: () => alert('load more'),

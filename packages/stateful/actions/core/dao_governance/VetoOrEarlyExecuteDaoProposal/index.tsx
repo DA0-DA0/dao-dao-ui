@@ -28,7 +28,7 @@ import {
 } from '../../../../components'
 import {
   daoInfoSelector,
-  daoVetoableProposalsSelector,
+  daosWithVetoableProposalsSelector,
 } from '../../../../recoil'
 import { useActionOptions } from '../../../react'
 import {
@@ -57,7 +57,7 @@ const Component: ActionComponent<
   )
 
   const daoVetoableProposals = useCachedLoadingWithError(
-    daoVetoableProposalsSelector({
+    daosWithVetoableProposalsSelector({
       chainId: daoChainId,
       coreAddress: address,
     })

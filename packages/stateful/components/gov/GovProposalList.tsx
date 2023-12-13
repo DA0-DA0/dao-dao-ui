@@ -12,6 +12,7 @@ import {
 } from '@dao-dao/stateless'
 import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 
+import { LinkWrapper } from '../LinkWrapper'
 import { GovProposalLine, GovProposalLineProps } from './GovProposalLine'
 
 const PROPSALS_PER_PAGE = 10
@@ -127,16 +128,17 @@ export const GovProposalList = () => {
       >
         <StatelessProposalList
           DiscordNotifierConfigureModal={undefined}
+          LinkWrapper={LinkWrapper}
           ProposalLine={GovProposalLine}
           canLoadMore={false}
           createNewProposalHref={asPath + '/create'}
+          daosWithVetoableProposals={[]}
           historyCount={historyCount}
           historyProposals={historyProposals}
           isMember={true}
           loadMore={() => {}}
           loadingMore={initialLoad}
           openProposals={openProposals}
-          vetoableProposals={[]}
         />
       </div>
 

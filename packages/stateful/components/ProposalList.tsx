@@ -4,6 +4,7 @@ import { useRecoilCallback, useSetRecoilState } from 'recoil'
 import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
   ProposalList as StatelessProposalList,
+  useAppContext,
   useCachedLoadingWithError,
   useChain,
   useDaoInfoContext,
@@ -23,9 +24,10 @@ import {
 import { matchAndLoadCommon } from '../proposal-module-adapter'
 import {
   daoVetoableDaosSelector,
-  daoVetoableProposalsSelector,
+  daosWithDropdownVetoableProposalListSelector,
 } from '../recoil'
 import { DiscordNotifierConfigureModal } from './dao/DiscordNotifierConfigureModal'
+import { LinkWrapper } from './LinkWrapper'
 import { ProposalLine } from './ProposalLine'
 
 // Contracts enforce a max of 30, though this is on the edge, so use 20.
@@ -48,6 +50,7 @@ export const ProposalList = () => {
   const chain = useChain()
   const { coreAddress, proposalModules } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
+  const { mode } = useAppContext()
   const { isMember = false } = useMembership({
     coreAddress,
   })
@@ -83,31 +86,13 @@ export const ProposalList = () => {
       coreAddress,
     })
   )
-  const vetoableProposalsLoading = useCachedLoadingWithError(
-    daoVetoableProposalsSelector({
+  const daosWithVetoableProposals = useCachedLoadingWithError(
+    daosWithDropdownVetoableProposalListSelector({
       chainId: chain.chain_id,
       coreAddress,
+      daoPageMode: mode,
     })
   )
-  const vetoableProposals =
-    vetoableProposalsLoading.loading || vetoableProposalsLoading.errored
-      ? []
-      : vetoableProposalsLoading.data.flatMap(
-          ({ dao, proposalModules, proposalsWithModule }) =>
-            proposalsWithModule.flatMap(
-              ({ proposalModule: { prefix }, proposals }) =>
-                proposals.map(
-                  ({ id }): StatefulProposalLineProps => ({
-                    chainId: chain.chain_id,
-                    coreAddress: dao,
-                    proposalModules,
-                    proposalId: `${prefix}${id}`,
-                    proposalViewUrl: getDaoProposalPath(dao, `${prefix}${id}`),
-                    isPreProposeProposal: false,
-                  })
-                )
-            )
-        )
 
   const [loading, setLoading] = useState(true)
   const [canLoadMore, setCanLoadMore] = useState(true)
@@ -350,9 +335,15 @@ export const ProposalList = () => {
   return (
     <StatelessProposalList
       DiscordNotifierConfigureModal={DiscordNotifierConfigureModal}
+      LinkWrapper={LinkWrapper}
       ProposalLine={ProposalLine}
       canLoadMore={canLoadMore}
       createNewProposalHref={getDaoProposalPath(coreAddress, 'create')}
+      daosWithVetoableProposals={
+        daosWithVetoableProposals.loading || daosWithVetoableProposals.errored
+          ? []
+          : daosWithVetoableProposals.data
+      }
       historyProposals={historyProposals}
       isMember={isMember}
       loadMore={
@@ -361,7 +352,6 @@ export const ProposalList = () => {
       }
       loadingMore={loading}
       openProposals={openProposals}
-      vetoableProposals={vetoableProposals}
     />
   )
 }

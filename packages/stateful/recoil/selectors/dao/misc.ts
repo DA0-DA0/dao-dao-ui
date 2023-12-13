@@ -23,10 +23,13 @@ import {
   ContractVersion,
   ContractVersionInfo,
   DaoInfo,
+  DaoPageMode,
+  DaoWithDropdownVetoableProposalList,
   DaoWithVetoableProposals,
   Feature,
   IndexerDaoWithVetoableProposals,
   ProposalModule,
+  StatefulProposalLineProps,
   WithChainId,
 } from '@dao-dao/types'
 import {
@@ -35,6 +38,7 @@ import {
   POLYTONE_CONFIG_PER_CHAIN,
   VETOABLE_DAOS_ITEM_KEY_PREFIX,
   getChainForChainId,
+  getDaoProposalPath,
   getDisplayNameForChainId,
   getImageUrlForChainId,
   getSupportedChainConfig,
@@ -44,6 +48,7 @@ import {
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
+import { daoDropdownInfoSelector } from './cards'
 
 export const daoCoreProposalModulesSelector = selectorFamily<
   ProposalModule[],
@@ -447,11 +452,11 @@ export const daoVetoableDaosSelector = selectorFamily<
 /**
  * Proposals which this DAO can currently veto.
  */
-export const daoVetoableProposalsSelector = selectorFamily<
+export const daosWithVetoableProposalsSelector = selectorFamily<
   DaoWithVetoableProposals[],
   WithChainId<{ coreAddress: string }>
 >({
-  key: 'daoVetoableProposals',
+  key: 'daosWithVetoableProposals',
   get:
     ({ chainId, coreAddress }) =>
     ({ get }) => {
@@ -507,29 +512,111 @@ export const daoVetoableProposalsSelector = selectorFamily<
           )
         )
 
-      const uniqueDaos = uniq(
-        daoVetoableProposalsPerChain.map(({ dao }) => dao)
+      const uniqueChainsAndDaos = uniq(
+        daoVetoableProposalsPerChain.map(
+          ({ chainId, dao }) => `${chainId}:${dao}`
+        )
       )
+
       const daoProposalModules = get(
-        waitForAll(
-          uniqueDaos.map((coreAddress) =>
+        waitForAllSettled(
+          uniqueChainsAndDaos.map((chainAndDao) =>
             daoCoreProposalModulesSelector({
-              coreAddress,
-              chainId,
+              chainId: chainAndDao.split(':')[0],
+              coreAddress: chainAndDao.split(':')[1],
             })
           )
         )
       )
 
-      return uniqueDaos.map((dao, index) => ({
-        chainId: daoVetoableProposalsPerChain.find(
-          (vetoable) => vetoable.dao === dao
-        )!.chainId,
-        dao,
-        proposalModules: daoProposalModules[index],
-        proposalsWithModule: daoVetoableProposalsPerChain.find(
-          (vetoable) => vetoable.dao === dao
-        )!.proposalsWithModule,
-      }))
+      return uniqueChainsAndDaos.flatMap((chainAndDao, index) => {
+        const proposalModules = daoProposalModules[index]
+
+        return proposalModules.state === 'hasValue'
+          ? {
+              chainId: chainAndDao.split(':')[0],
+              dao: chainAndDao.split(':')[1],
+              proposalModules: proposalModules.contents,
+              proposalsWithModule: daoVetoableProposalsPerChain.find(
+                (vetoable) =>
+                  `${vetoable.chainId}:${vetoable.dao}` === chainAndDao
+              )!.proposalsWithModule,
+            }
+          : []
+      })
+    },
+})
+
+/**
+ * Proposals which this DAO can currently veto grouped by DAO with dropdown
+ * info.
+ */
+export const daosWithDropdownVetoableProposalListSelector = selectorFamily<
+  DaoWithDropdownVetoableProposalList<StatefulProposalLineProps>[],
+  WithChainId<{ coreAddress: string; daoPageMode: DaoPageMode }>
+>({
+  key: 'daosWithDropdownVetoableProposalList',
+  get:
+    ({ daoPageMode, ...params }) =>
+    ({ get }) => {
+      const daosWithVetoableProposals = get(
+        daosWithVetoableProposalsSelector(params)
+      )
+
+      const daoDropdownInfos = get(
+        waitForAllSettled(
+          daosWithVetoableProposals.map(({ chainId, dao }) =>
+            daoDropdownInfoSelector({
+              chainId,
+              coreAddress: dao,
+            })
+          )
+        )
+      )
+
+      return daosWithVetoableProposals.flatMap(
+        ({
+          chainId,
+          dao,
+          proposalModules,
+          proposalsWithModule,
+        }):
+          | DaoWithDropdownVetoableProposalList<StatefulProposalLineProps>
+          | [] => {
+          const dropdownInfo = daoDropdownInfos
+            .find(
+              (info) =>
+                info.state === 'hasValue' &&
+                info.contents.chainId === chainId &&
+                info.contents.coreAddress === dao
+            )
+            ?.valueMaybe()
+
+          if (!dropdownInfo) {
+            return []
+          }
+
+          return {
+            dao: dropdownInfo,
+            proposals: proposalsWithModule.flatMap(
+              ({ proposalModule: { prefix }, proposals }) =>
+                proposals.map(
+                  ({ id }): StatefulProposalLineProps => ({
+                    chainId,
+                    coreAddress: dao,
+                    proposalModules,
+                    proposalId: `${prefix}${id}`,
+                    proposalViewUrl: getDaoProposalPath(
+                      daoPageMode,
+                      dao,
+                      `${prefix}${id}`
+                    ),
+                    isPreProposeProposal: false,
+                  })
+                )
+            ),
+          }
+        }
+      )
     },
 })
