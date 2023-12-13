@@ -531,7 +531,7 @@ export const treasuryValueHistorySelector = selectorFamily<
       let firstNonNullTimestamp = timestamps.findIndex((_, index) =>
         tokensWithValues.some(({ values }) => values[index] !== null)
       )
-      if (!filter) console.log({ firstNonNullTimestamp })
+
       // If no non-null timestamps, remove all.
       if (firstNonNullTimestamp === -1) {
         firstNonNullTimestamp = totalValues.length
