@@ -45,9 +45,13 @@ export const DAO_WIDGET_ITEM_NAMESPACE = 'widget:'
 // contract info response.
 export const CW721_WORKAROUND_ITEM_KEY_PREFIX = 'cw721:'
 // The namespace (prefix) of cw721 contracts for polytone accounts stored in a
-// DAO's core items list. Polytone proxies cannot register cw721 like the DAO
+// DAO's core items list. Polytone proxies cannot register cw721s like the DAO
 // core contract can, so we need to store this separately.
 export const POLYTONE_CW721_ITEM_KEY_PREFIX = 'polytone_cw721:'
+// The namespace (prefix) of cw20 contracts for polytone accounts stored in a
+// DAO's core items list. Polytone proxies cannot register cw20s like the DAO
+// core contract can, so we need to store this separately.
+export const POLYTONE_CW20_ITEM_KEY_PREFIX = 'polytone_cw20:'
 
 // Osmosis API
 export const OSMOSIS_API_BASE = 'https://api-osmosis.imperator.co'

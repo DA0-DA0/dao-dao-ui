@@ -1,12 +1,18 @@
-import { selectorFamily, waitForAll, waitForAny } from 'recoil'
+import {
+  selectorFamily,
+  waitForAll,
+  waitForAllSettled,
+  waitForAny,
+} from 'recoil'
 
 import {
+  AccountType,
   GenericTokenBalance,
+  GenericTokenBalanceWithOwner,
   PolytoneProxies,
   TokenType,
   WithChainId,
 } from '@dao-dao/types'
-import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import { ContractInfoResponse } from '@dao-dao/types/contracts/Cw721Base'
 import {
   ActiveProposalModulesResponse,
@@ -29,7 +35,9 @@ import {
 } from '@dao-dao/types/contracts/DaoCore.v2'
 import {
   CW721_WORKAROUND_ITEM_KEY_PREFIX,
+  POLYTONE_CW20_ITEM_KEY_PREFIX,
   POLYTONE_CW721_ITEM_KEY_PREFIX,
+  getAccount,
   getSupportedChainConfig,
   polytoneNoteProxyMapToChainIdMap,
 } from '@dao-dao/utils'
@@ -48,6 +56,7 @@ import {
   refreshWalletBalancesIdAtom,
   signingCosmWasmClientAtom,
 } from '../../atoms'
+import { accountsSelector } from '../account'
 import { cosmWasmClientForChainSelector } from '../chain'
 import { contractInfoSelector } from '../contract'
 import { queryContractIndexerSelector } from '../indexer'
@@ -188,8 +197,8 @@ export const _cw20BalancesSelector = selectorFamily<
       return await client.cw20Balances(...params)
     },
 })
-// Use allCw20TokenListSelector as it uses the indexer and implements pagination
-// for chain queries.
+// Use allNativeCw20TokenListSelector as it uses the indexer and implements
+// pagination for chain queries.
 export const _cw20TokenListSelector = selectorFamily<
   Cw20TokenListResponse,
   QueryClientParams & {
@@ -516,11 +525,11 @@ export const infoSelector = contractInfoSelector
 ///! Custom selectors
 
 const CW20_TOKEN_LIST_LIMIT = 30
-export const allCw20TokenListSelector = selectorFamily<
+export const allNativeCw20TokenListSelector = selectorFamily<
   Cw20TokenListResponse,
   QueryClientParams
 >({
-  key: 'daoCoreV2AllCw20TokenList',
+  key: 'daoCoreV2AllNativeCw20TokenList',
   get:
     (queryClientParams) =>
     async ({ get }) => {
@@ -563,60 +572,123 @@ export const allCw20TokenListSelector = selectorFamily<
     },
 })
 
-export const allCw20InfosSelector = selectorFamily<
-  {
-    address: string
-    info: TokenInfoResponse
-  }[],
-  QueryClientParams & {
-    governanceTokenAddress?: string
-  }
+// Get all cw20 tokens stored in the items list for polytone proxies across all
+// chains.
+export const allPolytoneCw20TokensSelector = selectorFamily<
+  Record<
+    string,
+    {
+      proxy: string
+      tokens: string[]
+    }
+  >,
+  QueryClientParams
 >({
-  key: 'daoCoreV2AllCw20Infos',
+  key: 'daoCoreV2AllPolytoneCw20Tokens',
   get:
-    ({ governanceTokenAddress, ...queryClientParams }) =>
-    async ({ get }) => {
-      //! Get all addresses.
-      const addresses = [...get(allCw20TokenListSelector(queryClientParams))]
-
-      //! Add governance token balance if exists but missing from list.
-      if (
-        governanceTokenAddress &&
-        !addresses.includes(governanceTokenAddress)
-      ) {
-        // Add to beginning of list.
-        addresses.splice(0, 0, governanceTokenAddress)
-      }
-
-      const infos = get(
-        waitForAll(
-          addresses.map((contractAddress) =>
-            Cw20BaseSelectors.tokenInfoSelector({
-              // Copies over chainId and any future additions to client params.
-              ...queryClientParams,
-
-              contractAddress,
-              params: [],
-            })
-          )
-        )
+    (queryClientParams) =>
+    ({ get }) => {
+      const polytoneProxies = get(polytoneProxiesSelector(queryClientParams))
+      const polytoneCw20Keys = get(
+        listAllItemsWithPrefixSelector({
+          ...queryClientParams,
+          prefix: POLYTONE_CW20_ITEM_KEY_PREFIX,
+        })
       )
 
-      return addresses.map((address, index) => ({
-        address,
-        info: infos[index],
-      }))
+      const tokensByChain = polytoneCw20Keys.reduce(
+        (acc, [key]) => {
+          const [, chainId, token] = key.split(':')
+          // If no polytone proxy for this chain, skip it. This should only
+          // happen if a key is manually set for a chain that does not have a
+          // polytone proxy.
+          if (!(chainId in polytoneProxies)) {
+            return acc
+          }
+
+          if (!acc[chainId]) {
+            acc[chainId] = {
+              proxy: polytoneProxies[chainId],
+              tokens: [],
+            }
+          }
+          acc[chainId].tokens.push(token)
+
+          return acc
+        },
+        {} as Record<
+          string,
+          {
+            proxy: string
+            tokens: string[]
+          }
+        >
+      )
+
+      return tokensByChain
+    },
+})
+
+// Combine native and polytone cw20 tokens.
+export const allCw20TokensSelector = selectorFamily<
+  Record<
+    string,
+    {
+      owner: string
+      tokens: string[]
+    }
+  >,
+  QueryClientParams & {
+    governanceCollectionAddress?: string
+  }
+>({
+  key: 'daoCoreV2AllCw20Tokens',
+  get:
+    (queryClientParams) =>
+    ({ get }) => {
+      const nativeCw20Tokens = get(
+        allNativeCw20TokenListSelector(queryClientParams)
+      )
+      const polytoneCw20Tokens = get(
+        allPolytoneCw20TokensSelector(queryClientParams)
+      )
+
+      // Start with native cw20 tokens.
+      let allTokens: Record<
+        string,
+        {
+          owner: string
+          tokens: string[]
+        }
+      > = {
+        [queryClientParams.chainId]: {
+          owner: queryClientParams.contractAddress,
+          tokens: nativeCw20Tokens,
+        },
+      }
+
+      // Add polytone tokens.
+      Object.entries(polytoneCw20Tokens).forEach(
+        ([chainId, { proxy, tokens }]) => {
+          allTokens[chainId] = {
+            owner: proxy,
+            tokens,
+          }
+        }
+      )
+
+      return allTokens
     },
 })
 
 const CW20_BALANCES_LIMIT = 10
-export const allCw20TokensWithBalancesSelector = selectorFamily<
+export const nativeCw20TokensWithBalancesSelector = selectorFamily<
   GenericTokenBalance[],
   QueryClientParams & {
     governanceTokenAddress?: string
   }
 >({
-  key: 'daoCoreV2AllCw20TokensWithBalances',
+  key: 'daoCoreV2NativeCw20TokensWithBalances',
   get:
     ({ governanceTokenAddress, ...queryClientParams }) =>
     async ({ get }) => {
@@ -628,9 +700,7 @@ export const allCw20TokensWithBalancesSelector = selectorFamily<
       const governanceTokenBalance = governanceTokenAddress
         ? get(
             Cw20BaseSelectors.balanceSelector({
-              // Copies over chainId and any future additions to client params.
               ...queryClientParams,
-
               contractAddress: governanceTokenAddress,
               params: [{ address: queryClientParams.contractAddress }],
             })
@@ -706,6 +776,77 @@ export const allCw20TokensWithBalancesSelector = selectorFamily<
           !!governanceTokenAddress &&
           governanceTokenAddress === token.denomOrAddress,
       }))
+    },
+})
+
+// Get cw20 tokens stored in the items list for a specific polytone proxy chain.
+export const polytoneCw20TokensWithBalancesSelector = selectorFamily<
+  GenericTokenBalanceWithOwner[],
+  QueryClientParams & {
+    polytoneChainId: string
+  }
+>({
+  key: 'daoCoreV2PolytoneCw20TokensWithBalances',
+  get:
+    ({ chainId: mainChainId, contractAddress, polytoneChainId }) =>
+    ({ get }) => {
+      const accounts = get(
+        accountsSelector({
+          chainId: mainChainId,
+          address: contractAddress,
+        })
+      )
+
+      const polytoneAccount = getAccount({
+        accounts,
+        chainId: polytoneChainId,
+        types: [AccountType.Polytone],
+      })
+      if (!polytoneAccount) {
+        return []
+      }
+
+      const polytoneCw20Tokens =
+        get(
+          allPolytoneCw20TokensSelector({
+            chainId: mainChainId,
+            contractAddress,
+          })
+        )[polytoneChainId]?.tokens || []
+
+      const [tokens, balances] = get(
+        waitForAll([
+          waitForAll(
+            polytoneCw20Tokens.map((denomOrAddress) =>
+              genericTokenSelector({
+                type: TokenType.Cw20,
+                chainId: polytoneChainId,
+                denomOrAddress,
+              })
+            )
+          ),
+          waitForAllSettled(
+            polytoneCw20Tokens.map((tokenContract) =>
+              Cw20BaseSelectors.balanceSelector({
+                chainId: polytoneChainId,
+                contractAddress: tokenContract,
+                params: [{ address: polytoneAccount.address }],
+              })
+            )
+          ),
+        ])
+      )
+
+      return balances.flatMap(
+        (loadable, index): GenericTokenBalanceWithOwner | [] =>
+          loadable.state === 'hasValue'
+            ? {
+                owner: polytoneAccount,
+                token: tokens[index],
+                balance: loadable.contents.balance,
+              }
+            : []
+      )
     },
 })
 

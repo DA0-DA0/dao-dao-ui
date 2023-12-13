@@ -69,6 +69,7 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
           className="mb-4"
           disabled={!isCreating}
           fieldName={fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
         />
       )}
 

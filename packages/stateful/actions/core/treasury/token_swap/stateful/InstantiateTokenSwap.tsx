@@ -10,6 +10,7 @@ import { Loader, useCachedLoading } from '@dao-dao/stateless'
 import {
   ActionChainContextType,
   ActionComponent,
+  EntityType,
   TokenType,
 } from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
@@ -18,12 +19,12 @@ import {
   getNativeTokenForChainId,
   instantiateSmartContract,
   isValidBech32Address,
-  isValidContractAddress,
   processError,
 } from '@dao-dao/utils'
 
 import { AddressInput, Trans } from '../../../../../components'
 import { useWallet } from '../../../../../hooks/useWallet'
+import { entitySelector } from '../../../../../recoil'
 import { useTokenBalances } from '../../../../hooks/useTokenBalances'
 import { useActionOptions } from '../../../../react'
 import { InstantiateTokenSwap as StatelessInstantiateTokenSwap } from '../stateless/InstantiateTokenSwap'
@@ -233,13 +234,29 @@ const InnerInstantiateTokenSwap: ActionComponent<
     props.fieldNamePrefix + 'counterparty.address'
   )
 
+  // Get counterparty entity, which reverse engineers a DAO from its polytone
+  // proxy.
+  const entityLoading = useCachedLoading(
+    counterpartyAddress &&
+      isValidBech32Address(counterpartyAddress, bech32Prefix)
+      ? entitySelector({
+          chainId,
+          address: counterpartyAddress,
+        })
+      : undefined,
+    undefined
+  )
+
   // Try to retrieve governance token address, failing if not a cw20-based DAO.
   const counterpartyDaoGovernanceTokenAddressLoadable = useRecoilValueLoadable(
-    counterpartyAddress &&
-      isValidContractAddress(counterpartyAddress, bech32Prefix)
+    !entityLoading.loading &&
+      entityLoading.data?.type === EntityType.Dao &&
+      // Only care about loading the governance token if on the chain we're
+      // creating the token swap on.
+      entityLoading.data.chainId === chainId
       ? DaoCoreV2Selectors.tryFetchGovernanceTokenAddressSelector({
-          contractAddress: counterpartyAddress,
           chainId,
+          contractAddress: entityLoading.data.address,
         })
       : constSelector(undefined)
   )
@@ -247,15 +264,22 @@ const InnerInstantiateTokenSwap: ActionComponent<
   // Load balances as loadables since they refresh automatically on a timer.
   const counterpartyTokenBalances = useCachedLoading(
     counterpartyAddress &&
-      isValidBech32Address(counterpartyAddress, bech32Prefix) &&
+      !entityLoading.loading &&
+      entityLoading.data &&
       counterpartyDaoGovernanceTokenAddressLoadable.state !== 'loading'
       ? genericTokenBalancesSelector({
-          address: counterpartyAddress,
+          chainId: entityLoading.data.chainId,
+          address: entityLoading.data.address,
           cw20GovernanceTokenAddress:
             counterpartyDaoGovernanceTokenAddressLoadable.state === 'hasValue'
               ? counterpartyDaoGovernanceTokenAddressLoadable.contents
               : undefined,
-          chainId,
+          filter: {
+            account: {
+              chainId,
+              address: counterpartyAddress,
+            },
+          },
         })
       : undefined,
     []

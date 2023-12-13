@@ -2,14 +2,13 @@ import uniq from 'lodash.uniq'
 import { noWait, selectorFamily, waitForAll, waitForNone } from 'recoil'
 
 import {
-  DaoCoreV2Selectors,
   OsmosisHistoricalPriceChartPrecision,
   accountsSelector,
   allBalancesSelector,
+  genericTokenBalancesSelector,
   historicalNativeBalancesByDenomSelector,
   historicalNativeBalancesSelector,
   historicalUsdPriceSelector,
-  nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
   osmosisPrecisionToMinutes,
   osmosisPrecisionToStartSecondsAgo,
@@ -66,17 +65,31 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
           (account) => account.chainId === chainId
         )
 
-        const nativeBalancesLoadables = get(
+        const accountBalancesLoadables = get(
           waitForNone(
-            accounts.map(({ address }) =>
-              nativeBalancesSelector({
-                chainId,
-                address,
+            accounts.map(({ chainId, address }) =>
+              genericTokenBalancesSelector({
+                chainId: nativeChainId,
+                address: coreAddress,
+                nativeGovernanceTokenDenom:
+                  chainId === nativeChainId
+                    ? nativeGovernanceTokenDenom
+                    : undefined,
+                cw20GovernanceTokenAddress:
+                  chainId === nativeChainId
+                    ? cw20GovernanceTokenAddress
+                    : undefined,
+                filter: {
+                  account: {
+                    chainId,
+                    address,
+                  },
+                },
               })
             )
           )
         )
-        const nativeBalances = nativeBalancesLoadables.flatMap(
+        const accountBalances = accountBalancesLoadables.flatMap(
           (loadable, index) =>
             loadable.state === 'hasValue'
               ? {
@@ -86,45 +99,21 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
               : []
         )
 
-        const cw20sLoadable =
-          // Only load cw20s on native chain.
-          chainId === nativeChainId
-            ? get(
-                waitForNone([
-                  DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
-                    contractAddress: coreAddress,
-                    chainId,
-                    governanceTokenAddress: cw20GovernanceTokenAddress,
-                  }),
-                ])
-              )
-            : []
-        const cw20s = cw20sLoadable.flatMap((loadable) =>
-          loadable.state === 'hasValue'
-            ? {
-                account: {
-                  type: 'native',
-                  chainId,
-                  address: coreAddress,
-                } as Account,
-                balances: loadable.contents,
-              }
-            : []
-        )
-
-        // Collect loadables so we can check loading status below.
-        const loadables = [...nativeBalancesLoadables, ...cw20sLoadable]
         // Updating if any loadables are still loading. If none are loading but
         // a native token is still waiting for staking info, this is updated
         // below.
-        let updating = loadables.some(
+        let updating = accountBalancesLoadables.some(
           (loadable) => loadable.state === 'loading'
         )
 
         // Get token card infos for loaded tokens.
-        const infos: TokenCardInfo[] = [
-          ...nativeBalances.flatMap(({ account, balances }) =>
-            balances.flatMap(({ token, balance }): TokenCardInfo | [] => {
+        const infos = accountBalances.flatMap(({ account, balances }) =>
+          balances.flatMap(
+            ({
+              token,
+              balance,
+              isGovernanceToken = false,
+            }): TokenCardInfo | [] => {
               const unstakedBalance = convertMicroDenomToDenomWithDecimals(
                 balance,
                 token.decimals
@@ -133,8 +122,9 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
               let hasStakingInfo = false
               // Staking info only exists for native token.
               if (
+                token.type === TokenType.Native &&
                 token.denomOrAddress ===
-                getNativeTokenForChainId(chainId).denomOrAddress
+                  getNativeTokenForChainId(chainId).denomOrAddress
               ) {
                 // Check if anything staked.
                 const stakedBalance = get(
@@ -162,44 +152,23 @@ export const treasuryTokenCardInfosForDaoSelector = selectorFamily<
               return {
                 owner: account,
                 token,
-                // True if native token DAO and using this denom.
-                isGovernanceToken:
-                  nativeGovernanceTokenDenom === token.denomOrAddress,
+                isGovernanceToken,
                 unstakedBalance,
                 hasStakingInfo,
 
                 lazyInfo: { loading: true },
               }
-            })
-          ),
-          ...cw20s.flatMap(({ account, balances }) =>
-            balances.map(
-              ({ token, balance, isGovernanceToken }): TokenCardInfo => {
-                const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-                  balance,
-                  token.decimals
-                )
-
-                return {
-                  owner: account,
-                  token,
-                  isGovernanceToken: isGovernanceToken ?? false,
-                  unstakedBalance,
-                  // No staking info for CW20.
-                  hasStakingInfo: false,
-
-                  lazyInfo: { loading: true },
-                }
-              }
-            )
-          ),
-        ]
+            }
+          )
+        )
 
         return {
           ...acc,
           [chainId]:
             accounts.length > 0 &&
-            loadables.every((loadable) => loadable.state === 'loading')
+            accountBalancesLoadables.every(
+              (loadable) => loadable.state === 'loading'
+            )
               ? {
                   loading: true,
                   errored: false,
@@ -332,8 +301,9 @@ export const treasuryValueHistorySelector = selectorFamily<
         allBalancesSelector({
           chainId: nativeChainId,
           address: address,
+          filter: TokenType.Native,
         })
-      ).filter(({ token }) => token.type === TokenType.Native)
+      )
 
       const tokens = [
         ...currentBalances.map(({ token }) => token),

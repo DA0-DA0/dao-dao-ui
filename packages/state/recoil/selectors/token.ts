@@ -1,6 +1,7 @@
 import { selectorFamily, waitForAllSettled } from 'recoil'
 
 import {
+  Account,
   AmountWithTimestampAndDenom,
   ChainId,
   GenericToken,
@@ -204,21 +205,38 @@ export const genericTokenWithUsdPriceSelector = selectorFamily<
     },
 })
 
+// Return all native and cw20 tokens for a given address. If this is a DAO, pass
+// the core address and native chain ID and use the `account` filter to ensure
+// cw20s are loaded.
 export const genericTokenBalancesSelector = selectorFamily<
   GenericTokenBalance[],
   WithChainId<{
     address: string
+    nativeGovernanceTokenDenom?: string
     cw20GovernanceTokenAddress?: string
-    // Only get balances for this token type.
-    filter?: TokenType
+    filter?: {
+      // Only get balances for this token type.
+      tokenType?: TokenType
+      // Choose which account to get balances for.
+      account?: Pick<Account, 'chainId' | 'address'>
+    }
   }>
 >({
   key: 'genericTokenBalances',
   get:
-    ({ address, cw20GovernanceTokenAddress, chainId, filter }) =>
+    ({
+      chainId: mainChainId,
+      address: mainAddress,
+      nativeGovernanceTokenDenom,
+      cw20GovernanceTokenAddress,
+      filter,
+    }) =>
     async ({ get }) => {
+      const chainId = filter?.account?.chainId || mainChainId
+      const address = filter?.account?.address || mainAddress
+
       const nativeTokenBalances =
-        !filter || filter === TokenType.Native
+        !filter?.tokenType || filter.tokenType === TokenType.Native
           ? get(
               nativeBalancesSelector({
                 address,
@@ -227,9 +245,8 @@ export const genericTokenBalancesSelector = selectorFamily<
             )
           : []
 
-      // TODO: Get polytone cw20s from some item prefix in the DAO.
       const cw20TokenBalances = (
-        !filter || filter === TokenType.Cw20
+        !filter?.tokenType || filter.tokenType === TokenType.Cw20
           ? get(
               // Neutron's modified DAOs do not support cw20s, so this may
               // error. Ignore if so.
@@ -237,17 +254,33 @@ export const genericTokenBalancesSelector = selectorFamily<
                 // If is a DAO contract.
                 get(
                   isDaoSelector({
-                    address,
-                    chainId,
+                    address: mainAddress,
+                    chainId: mainChainId,
                   })
                 )
-                  ? [
-                      DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
-                        contractAddress: address,
-                        governanceTokenAddress: cw20GovernanceTokenAddress,
-                        chainId,
-                      }),
-                    ]
+                  ? // Get native cw20s.
+                    chainId === mainChainId && address === mainAddress
+                    ? [
+                        DaoCoreV2Selectors.nativeCw20TokensWithBalancesSelector(
+                          {
+                            chainId: mainChainId,
+                            contractAddress: mainAddress,
+                            governanceTokenAddress: cw20GovernanceTokenAddress,
+                          }
+                        ),
+                      ]
+                    : // Get polytone cw20s if they exist.
+                    chainId !== mainChainId
+                    ? [
+                        DaoCoreV2Selectors.polytoneCw20TokensWithBalancesSelector(
+                          {
+                            chainId: mainChainId,
+                            contractAddress: mainAddress,
+                            polytoneChainId: chainId,
+                          }
+                        ),
+                      ]
+                    : []
                   : isValidWalletAddress(
                       address,
                       getChainForChainId(chainId).bech32_prefix
@@ -265,7 +298,11 @@ export const genericTokenBalancesSelector = selectorFamily<
       )[0]
 
       return [
-        ...nativeTokenBalances,
+        ...nativeTokenBalances.map((native) => ({
+          ...native,
+          isGovernanceToken:
+            nativeGovernanceTokenDenom === native.token.denomOrAddress,
+        })),
         ...(cw20TokenBalances?.state === 'hasValue'
           ? cw20TokenBalances.contents
           : []),

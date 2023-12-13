@@ -133,7 +133,11 @@ export const allBalancesSelector = selectorFamily<
   GenericTokenBalanceWithOwner[],
   WithChainId<{
     address: string
-    // If account is a DAO, set this to the address of its governance token.
+    // If account is a DAO, set this to the denom of its native governance
+    // token.
+    nativeGovernanceTokenDenom?: string
+    // If account is a DAO, set this to the address of its cw20 governance
+    // token.
     cw20GovernanceTokenAddress?: string
     // Chain IDs to include ICAs from.
     includeIcaChains?: string[]
@@ -151,19 +155,20 @@ export const allBalancesSelector = selectorFamily<
   key: 'allBalances',
   get:
     ({
-      address,
+      chainId: mainChainId,
+      address: mainAddress,
+      nativeGovernanceTokenDenom,
       cw20GovernanceTokenAddress,
       includeIcaChains,
       filter,
       additionalTokens,
       ignoreStaked,
-      chainId: mainChainId,
     }) =>
     ({ get }) => {
       const allAccounts = get(
         accountsSelector({
           chainId: mainChainId,
-          address,
+          address: mainAddress,
           includeIcaChains,
         })
       )
@@ -174,13 +179,23 @@ export const allBalancesSelector = selectorFamily<
             waitForAllSettled([
               // All unstaked
               genericTokenBalancesSelector({
-                chainId,
-                address,
+                chainId: mainChainId,
+                address: mainAddress,
+                nativeGovernanceTokenDenom:
+                  chainId === mainChainId
+                    ? nativeGovernanceTokenDenom
+                    : undefined,
                 cw20GovernanceTokenAddress:
                   chainId === mainChainId
                     ? cw20GovernanceTokenAddress
                     : undefined,
-                filter,
+                filter: {
+                  tokenType: filter,
+                  account: {
+                    chainId,
+                    address,
+                  },
+                },
               }),
               // Additional unstaked tokens on this account's chain.
               waitForAllSettled(
@@ -189,7 +204,7 @@ export const allBalancesSelector = selectorFamily<
                   .map((token) =>
                     genericTokenBalanceSelector({
                       ...token,
-                      address: address,
+                      address,
                     })
                   )
               ),

@@ -219,6 +219,9 @@ export const WalletTokenCard = (props: TokenCardInfo) => {
                 {
                   actionKey: ActionKey.Spend,
                   data: {
+                    fromChainId: props.token.chainId,
+                    toChainId: props.token.chainId,
+                    from: props.owner.address,
                     to: '',
                     amount: 0,
                     denom: props.token.denomOrAddress,

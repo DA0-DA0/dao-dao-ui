@@ -15,12 +15,12 @@ guide](https://github.com/DA0-DA0/dao-dao-ui/wiki/Bulk-importing-actions).
 
 ```json
 {
-  "chainId": "<CHAIN ID">,
+  "chainId": "<CHAIN ID>",
   "adding": <true | false>,
   "address": "<NFT COLLECTION ADDRESS>"
 }
 ```
 
 `chainId` corresponds to which chain the NFT exists on. This is only relevant
-when the DAO has created cross chain accounts that have received NFTs. Otherwise
+when the DAO has created cross-chain accounts that have received NFTs. Otherwise
 it should just be the chain the DAO lives on.
