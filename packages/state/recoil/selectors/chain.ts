@@ -66,7 +66,9 @@ export const stargateClientForChainSelector = selectorFamily<
     retry(
       10,
       async (attempt) =>
-        await stargateClientRouter.connect(getRpcForChainId(chainId, attempt))
+        await stargateClientRouter.connect(
+          getRpcForChainId(chainId, attempt - 1)
+        )
     ),
   dangerouslyAllowMutability: true,
 })
@@ -80,7 +82,9 @@ export const cosmWasmClientForChainSelector = selectorFamily<
     retry(
       10,
       async (attempt) =>
-        await cosmWasmClientRouter.connect(getRpcForChainId(chainId, attempt))
+        await cosmWasmClientRouter.connect(
+          getRpcForChainId(chainId, attempt - 1)
+        )
     ),
   dangerouslyAllowMutability: true,
 })
@@ -93,7 +97,7 @@ export const cosmosRpcClientForChainSelector = selectorFamily({
       async (attempt) =>
         (
           await cosmos.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt),
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
           })
         ).cosmos
     ),
@@ -108,7 +112,7 @@ export const ibcRpcClientForChainSelector = selectorFamily({
       async (attempt) =>
         (
           await ibc.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(chainId, attempt),
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
           })
         ).ibc
     ),
@@ -134,7 +138,7 @@ export const junoRpcClientSelector = selector({
       async (attempt) =>
         (
           await juno.ClientFactory.createRPCQueryClient({
-            rpcEndpoint: getRpcForChainId(ChainId.JunoMainnet, attempt),
+            rpcEndpoint: getRpcForChainId(ChainId.JunoMainnet, attempt - 1),
           })
         ).juno
     ),
