@@ -151,13 +151,15 @@ export const ValenceAccountTreasury = <T extends TokenCardInfo>({
                       <div className="-mx-3 mt-4 h-[1px] bg-border-primary sm:-mx-4 lg:-mx-5"></div>
                     )}
 
-                    <p className="title-text mt-8 mb-4">
-                      {t('title.nonRebalancedTokens')}
-                    </p>
+                    {otherTokens.length > 0 && (
+                      <p className="title-text mt-8 mb-4">
+                        {t('title.nonRebalancedTokens')}
+                      </p>
+                    )}
                   </>
                 )}
 
-                <TokenHeader className="pl-4" />
+                {otherTokens.length > 0 && <TokenHeader className="pl-4" />}
 
                 {otherTokens.map((props, index) => (
                   <TokenLine
