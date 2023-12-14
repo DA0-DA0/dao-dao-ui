@@ -302,6 +302,9 @@ export const treasuryValueHistorySelector = selectorFamily<
           chainId: nativeChainId,
           address: address,
           filter: TokenType.Native,
+          // Don't include staked in current value since we don't have staked
+          // history, which makes the graph spike at the end.
+          ignoreStaked: true,
         })
       )
 

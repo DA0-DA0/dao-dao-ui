@@ -127,12 +127,9 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
         graphClassName="max-h-[20rem]"
         header={
           <div className="flex flex-row items-center justify-center gap-1">
-            <p className="title-text">{t('title.treasuryHistory')}</p>
+            <p className="title-text">{t('title.treasuryValue')}</p>
 
-            <TooltipInfoIcon
-              size="sm"
-              title={t('info.treasuryHistoryTooltip')}
-            />
+            <TooltipInfoIcon size="sm" title={t('info.treasuryValueTooltip')} />
           </div>
         }
         registerTokenColors={setTokenSourceColorMap}
