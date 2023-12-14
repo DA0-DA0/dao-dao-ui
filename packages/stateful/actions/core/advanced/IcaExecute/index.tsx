@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 
 import { icaRemoteAddressSelector } from '@dao-dao/state/recoil'
 import {
+  Button,
   ChainProvider,
   CopyToClipboard,
   IbcDestinationChainPicker,
@@ -174,6 +175,37 @@ const Component: ActionComponent = (props) => {
                   : props.errors?.icaRemoteAddress
               }
             />
+
+            {/* If ICA does not exist, prompt to create. */}
+            {props.isCreating &&
+              !icaRemoteAddressLoading.loading &&
+              !icaRemoteAddressLoading.errored &&
+              !icaRemoteAddressLoading.data && (
+                <Button
+                  className="self-start"
+                  onClick={() => {
+                    // Remove the current action.
+                    props.remove()
+
+                    // Add the creation actions.
+                    props.addAction({
+                      actionKey: ActionKey.CreateIca,
+                      data: {
+                        chainId: destChainId,
+                      },
+                    })
+                    props.addAction({
+                      actionKey: ActionKey.ManageIcas,
+                      data: {
+                        chainId: destChainId,
+                        register: true,
+                      },
+                    })
+                  }}
+                >
+                  {t('button.addAccountCreationActions')}
+                </Button>
+              )}
 
             {!icaRemoteAddressLoading.errored &&
               !!icaRemoteAddressLoading.data && (
