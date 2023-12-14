@@ -60,6 +60,7 @@ import { CommunityPoolTransferData } from '../../treasury/CommunityPoolTransfer/
 
 export type GovernanceProposalOptions = {
   govModuleAddress: string
+  supportsV1GovProposals: boolean
   minDeposits: LoadingData<GenericTokenBalance[]>
   TokenAmountDisplay: ComponentType<StatefulTokenAmountDisplayProps>
   AddressInput: ComponentType<AddressInputProps<GovernanceProposalActionData>>
@@ -76,6 +77,7 @@ export const GovernanceProposalComponent: ActionComponent<
     isCreating,
     options: {
       govModuleAddress,
+      supportsV1GovProposals,
       minDeposits,
       GovProposalActionDisplay,
       TokenAmountDisplay,
@@ -91,9 +93,6 @@ export const GovernanceProposalComponent: ActionComponent<
   const {
     chainId,
     chain: { bech32_prefix: bech32Prefix },
-    config: {
-      gov: { supportsV1GovProposals },
-    },
     nativeToken,
   } = useConfiguredChainContext()
 

@@ -4,6 +4,7 @@ import { useFormContext } from 'react-hook-form'
 import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
+  chainSupportsV1GovModuleSelector,
   genericTokenSelector,
   govParamsSelector,
   moduleAddressSelector,
@@ -99,11 +100,16 @@ const InnerComponent: ActionComponent<
   const { chain_id: chainId } = useChain()
   const { setValue } = useFormContext<GovernanceProposalActionData>()
 
-  const govModuleAddress = useRecoilValue(
-    moduleAddressSelector({
-      name: 'gov',
-      chainId,
-    })
+  const [govModuleAddress, supportsV1GovProposals] = useRecoilValue(
+    waitForAll([
+      moduleAddressSelector({
+        name: 'gov',
+        chainId,
+      }),
+      chainSupportsV1GovModuleSelector({
+        chainId,
+      }),
+    ])
   )
   const govParams = useCachedLoading(
     govParamsSelector({
@@ -148,6 +154,7 @@ const InnerComponent: ActionComponent<
       {...props}
       options={{
         govModuleAddress,
+        supportsV1GovProposals,
         minDeposits:
           minDeposits.loading || govParams.loading || !govParams.data
             ? { loading: true }
@@ -207,23 +214,19 @@ const defaultCustom = JSON.stringify(
 
 export const makeGovernanceProposalAction: ActionMaker<
   GovernanceProposalActionData
-> = ({
-  t,
-  address,
-  context,
-  chain: { chain_id: currentChainId },
-  chainContext: {
-    config: {
-      gov: { supportsV1GovProposals },
-    },
-  },
-}) => {
+> = ({ t, address, context, chain: { chain_id: currentChainId } }) => {
   const useDefaults: UseDefaults<GovernanceProposalActionData> = () => {
     const govParams = useCachedLoading(
       govParamsSelector({
         chainId: currentChainId,
       }),
       undefined
+    )
+
+    const supportsV1GovProposals = useRecoilValue(
+      chainSupportsV1GovModuleSelector({
+        chainId: currentChainId,
+      })
     )
 
     const deposit =

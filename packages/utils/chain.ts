@@ -6,6 +6,7 @@ import { fromBech32, fromHex, toBech32 } from '@cosmjs/encoding'
 import { GasPrice } from '@cosmjs/stargate'
 import { assets, chains, ibc } from 'chain-registry'
 import RIPEMD160 from 'ripemd160'
+import semverGte from 'semver/functions/gte'
 
 import {
   BaseChainConfig,
@@ -504,13 +505,19 @@ export const getChainIdForAddress = (address: string): string => {
   return chainForAddress.chain.chain_id
 }
 
-export const cosmosSdkVersionIs47OrHigher = (version: string) => {
-  const [major, minor, patch] = version.replace(/^v/, '').split('.')
-  return (
-    (Number(major) >= 0 && Number(minor) >= 47 && Number(patch) >= 0) ||
-    (Number(major) >= 1 && Number(minor) >= 0 && Number(patch) >= 0)
-  )
-}
+/**
+ * Returns true if the cosmos sdk version is 0.47 or higher, except if the chain
+ * is Osmosis, in which case it returns false. Osmosis's fork does not support
+ * all v0.47 features.
+ *
+ * @param chainId the chain ID
+ * @param version the cosmos SDK version string
+ * @returns true if the cosmos sdk version is 0.47 or higher
+ */
+export const cosmosSdkVersionIs47OrHigher = (
+  chainId: string,
+  version: string
+) => chainId !== ChainId.OsmosisMainnet && semverGte(version, '0.47.0')
 
 export const getSignerOptions = ({ chain_id, fees }: Chain) => {
   let gasPrice

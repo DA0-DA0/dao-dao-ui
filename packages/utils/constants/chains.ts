@@ -28,9 +28,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/juno/gov/REPLACE',
       wallet: 'https://ping.pub/juno/account/REPLACE',
     },
-    gov: {
-      supportsV1GovProposals: true,
-    },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw4Group: 1992, // v0.16
@@ -131,9 +128,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/osmosis/gov/REPLACE',
       wallet: 'https://ping.pub/osmosis/account/REPLACE',
     },
-    gov: {
-      supportsV1GovProposals: false,
-    },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw4Group: 123, // v0.16
@@ -225,9 +219,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/neutron/gov/REPLACE',
       wallet: 'https://ping.pub/neutron/account/REPLACE',
     },
-    gov: {
-      supportsV1GovProposals: false,
-    },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw4Group: 218, // v0.16
@@ -272,9 +263,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       gov: 'https://ping.pub/stargaze/gov',
       govProp: 'https://ping.pub/stargaze/gov/REPLACE',
       wallet: 'https://ping.pub/stargaze/account/REPLACE',
-    },
-    gov: {
-      supportsV1GovProposals: false,
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
@@ -365,9 +353,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://testnet.ping.pub/juno/gov/REPLACE',
       wallet: 'https://testnet.ping.pub/juno/account/REPLACE',
     },
-    gov: {
-      supportsV1GovProposals: true,
-    },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw4Group: 178,
@@ -419,9 +404,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://testnet.ping.pub/osmosis/gov/REPLACE',
       wallet: 'https://testnet.ping.pub/osmosis/account/REPLACE',
     },
-    gov: {
-      supportsV1GovProposals: false,
-    },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       Cw4Group: 1327, // v0.16
@@ -468,9 +450,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       gov: 'https://testnet.ping.pub/stargaze/gov',
       govProp: 'https://testnet.ping.pub/stargaze/gov/REPLACE',
       wallet: 'https://testnet.ping.pub/stargaze/account/REPLACE',
-    },
-    gov: {
-      supportsV1GovProposals: false,
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus

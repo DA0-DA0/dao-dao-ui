@@ -203,16 +203,33 @@ export const cosmosSdkVersionSelector = selectorFamily<string, WithChainId<{}>>(
   }
 )
 
-export const chainAtOrAboveCosmosSdk47Selector = selectorFamily<
+/**
+ * A chain supports the v1 gov module if it uses Cosmos SDK v0.47 or higher.
+ */
+export const chainSupportsV1GovModuleSelector = selectorFamily<
   boolean,
   WithChainId<{}>
 >({
-  key: 'chainAtOrAboveCosmosSdk47',
+  key: 'chainSupportsV1GovModule',
   get:
     (params) =>
     async ({ get }) => {
+      const client = get(cosmosRpcClientForChainSelector(params.chainId))
       const version = get(cosmosSdkVersionSelector(params))
-      return cosmosSdkVersionIs47OrHigher(version)
+
+      if (!cosmosSdkVersionIs47OrHigher(params.chainId, version)) {
+        return false
+      }
+
+      // Double-check by testing a v1 gov route.
+      try {
+        await client.gov.v1.params({
+          paramsType: 'voting',
+        })
+        return true
+      } catch {
+        return false
+      }
     },
 })
 
@@ -504,12 +521,12 @@ export const govProposalsSelector = selectorFamily<
       get(refreshGovProposalsAtom(chainId))
 
       const client = get(cosmosRpcClientForChainSelector(chainId))
-      const supports47 = get(chainAtOrAboveCosmosSdk47Selector({ chainId }))
+      const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
 
       let v1Proposals: ProposalV1[] | undefined
       let v1Beta1Proposals: ProposalV1Beta1[] | undefined
       let total = 0
-      if (supports47) {
+      if (supportsV1Gov) {
         try {
           if (all) {
             v1Proposals = await getAllRpcResponse(
@@ -620,9 +637,9 @@ export const govProposalSelector = selectorFamily<
       get(refreshGovProposalsAtom(chainId))
 
       const client = get(cosmosRpcClientForChainSelector(chainId))
-      const supports47 = get(chainAtOrAboveCosmosSdk47Selector({ chainId }))
+      const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
 
-      if (supports47) {
+      if (supportsV1Gov) {
         try {
           const proposal = (
             await client.gov.v1.proposal({
@@ -783,9 +800,9 @@ export const govParamsSelector = selectorFamily<AllGovParams, WithChainId<{}>>({
     ({ chainId }) =>
     async ({ get }) => {
       const client = get(cosmosRpcClientForChainSelector(chainId))
-      const supports47 = get(chainAtOrAboveCosmosSdk47Selector({ chainId }))
+      const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
 
-      if (supports47) {
+      if (supportsV1Gov) {
         try {
           const { params } = await client.gov.v1.params({
             // Does not matter.

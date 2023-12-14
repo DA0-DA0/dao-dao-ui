@@ -198,7 +198,7 @@ export const makeGetGovProposalStaticProps = ({
             await client.base.tendermint.v1beta1.getNodeInfo()
           ).applicationVersion?.cosmosSdkVersion.slice(1) || '0.0.0'
 
-        if (cosmosSdkVersionIs47OrHigher(cosmosSdkVersion)) {
+        if (cosmosSdkVersionIs47OrHigher(chain.chain_id, cosmosSdkVersion)) {
           try {
             const proposalV1 = (
               await client.gov.v1.proposal({
