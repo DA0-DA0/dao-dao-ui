@@ -572,13 +572,14 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
       ? parseValidPfmMemo(msg.stargate.value.memo)
       : undefined
 
-  // If valid PFM memo, validate that all chains have enabled PFM.
+  // If valid PFM memo, validate that all chains (except the receiver) have
+  // enabled PFM.
   const pfmChainPath =
     pfmMemo &&
     getPfmChainPathFromMemo(chainId, msg.stargate.value.sourceChannel, pfmMemo)
-  const allChainsPfmEnabled = useCachedLoadingWithError(
+  const allChainsExceptReceiverPfmEnabled = useCachedLoadingWithError(
     pfmChainPath?.length
-      ? skipAllChainsPfmEnabledSelector(pfmChainPath)
+      ? skipAllChainsPfmEnabledSelector(pfmChainPath.slice(0, -1))
       : undefined
   )
 
@@ -591,9 +592,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     // determine where it ended up, we shouldn't show the action to avoid
     // misleading information.
     (!!pfmChainPath?.length &&
-      (allChainsPfmEnabled.loading ||
-        allChainsPfmEnabled.errored ||
-        !allChainsPfmEnabled.data))
+      (allChainsExceptReceiverPfmEnabled.loading ||
+        allChainsExceptReceiverPfmEnabled.errored ||
+        !allChainsExceptReceiverPfmEnabled.data))
   ) {
     return { match: false }
   }
