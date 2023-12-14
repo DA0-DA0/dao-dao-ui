@@ -40,12 +40,12 @@ export const Breadcrumbs = ({
   const crumbs =
     mode === DaoPageMode.Dapp
       ? // Special handling for chain governance breadcrumbs.
-        daoInfo?.coreVersion === ContractVersion.Gov && chainContext?.config
+        daoInfo?.coreVersion === ContractVersion.Gov && chainContext?.base
         ? home
           ? []
           : [
               {
-                href: getGovPath(chainContext.config.name, homeTab?.id),
+                href: getGovPath(chainContext.base.name, homeTab?.id),
                 label: chainContext.chain.pretty_name,
               },
             ]

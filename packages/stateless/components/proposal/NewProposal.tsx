@@ -111,16 +111,28 @@ export const NewProposal = <
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const [holdingAltForSimulation, setHoldingAlt] = useState(false)
+  const [holdingAltForSimulation, setHoldingAltForSimulation] = useState(false)
+  // Unset holding alt after 3 seconds, in case it got stuck.
+  useEffect(() => {
+    if (!holdingAltForSimulation) {
+      return
+    }
+
+    const timeout = setTimeout(() => setHoldingAltForSimulation(false), 3000)
+
+    return () => {
+      clearTimeout(timeout)
+    }
+  }, [holdingAltForSimulation])
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Alt') {
-        setHoldingAlt(true)
+        setHoldingAltForSimulation(true)
       }
     }
     const handleKeyUp = (event: KeyboardEvent) => {
       if (event.key === 'Alt') {
-        setHoldingAlt(false)
+        setHoldingAltForSimulation(false)
       }
     }
 

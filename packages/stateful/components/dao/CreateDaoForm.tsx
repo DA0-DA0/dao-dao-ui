@@ -7,7 +7,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
+import {
+  constSelector,
+  useRecoilState,
+  useRecoilValue,
+  useSetRecoilState,
+} from 'recoil'
 
 import { averageColorSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
@@ -17,6 +22,7 @@ import {
   DaoCreateSidebarCard,
   DaoHeader,
   ImageSelector,
+  Loader,
   PageHeaderContent,
   RightSidebarContent,
   TooltipInfoIcon,
@@ -48,6 +54,7 @@ import {
   getFundsFromDaoInstantiateMsg,
   getNativeTokenForChainId,
   getSupportedChainConfig,
+  getSupportedChains,
   makeValidateMsg,
   processError,
 } from '@dao-dao/utils'
@@ -94,14 +101,23 @@ export interface CreateDaoFormProps {
 }
 
 export const CreateDaoForm = (props: CreateDaoFormProps) => {
+  const setWalletChainId = useSetRecoilState(walletChainIdAtom)
   const chainId = useRecoilValue(
     // If parent DAO exists, we're making a SubDAO, so use the parent DAO's
     // chain ID.
     props.parentDao ? constSelector(props.parentDao.chainId) : walletChainIdAtom
   )
+
   const config = getSupportedChainConfig(chainId)
+  // Switch to a valid chain if not a valid supported chain.
+  useEffect(() => {
+    if (!config) {
+      setWalletChainId(getSupportedChains()[0].chainId)
+    }
+  }, [config, setWalletChainId])
+
   if (!config) {
-    throw new Error('Unsupported chain.')
+    return <Loader />
   }
 
   return (

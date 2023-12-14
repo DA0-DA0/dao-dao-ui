@@ -13,6 +13,7 @@ import {
   useCachedLoading,
 } from '@dao-dao/stateless'
 import {
+  ActionChainContextType,
   ActionComponent,
   ActionContextType,
   ActionKey,
@@ -139,17 +140,18 @@ export const makeUpgradeV1ToV2Action: ActionMaker<UpgradeV1ToV2Data> = ({
   t,
   address,
   chain,
-  chainContext: {
-    config: { codeIds },
-  },
+  chainContext,
 }) => {
   if (
     context.type !== ActionContextType.Dao ||
     // If no DAO migrator, don't show upgrade action.
-    codeIds.DaoMigrator <= 0
+    chainContext.type !== ActionChainContextType.Supported ||
+    chainContext.config.codeIds.DaoMigrator <= 0
   ) {
     return null
   }
+
+  const { codeIds } = chainContext.config
 
   const useDefaults: UseDefaults<UpgradeV1ToV2Data> = () => {
     // Load sub DAOs for registering as the current DAO upgrades to v2. If this

@@ -28,8 +28,8 @@ import {
   TokenAmountDisplay,
   useCachedLoadable,
   useCachedLoading,
+  useConfiguredChainContext,
   useDaoInfoContext,
-  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
   GenericToken,
@@ -71,7 +71,7 @@ export const WyndDepositRenderer = ({
   const {
     chain: { chain_id: chainId },
     config: { explorerUrlTemplates },
-  } = useSupportedChainContext()
+  } = useConfiguredChainContext()
   const { coreAddress } = useDaoInfoContext()
 
   // Default to the DAO's treasury if no output specified.

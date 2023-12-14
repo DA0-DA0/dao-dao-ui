@@ -32,21 +32,24 @@ import {
   DaoDappTabbedHome,
   GovernanceHome,
   useChain,
+  useConfiguredChainContext,
   useDaoInfoContext,
-  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import { ChainId, DaoTabId, DaoTabWithComponent } from '@dao-dao/types'
 import {
   NEUTRON_GOVERNANCE_DAO,
   SITE_URL,
+  getConfiguredChainConfig,
+  getConfiguredChains,
   getGovPath,
-  getSupportedChainConfig,
-  getSupportedChains,
 } from '@dao-dao/utils'
 
 const InnerGovHome = () => {
   const { t } = useTranslation()
-  const { chainId, config } = useSupportedChainContext()
+  const {
+    chainId,
+    config: { name },
+  } = useConfiguredChainContext()
   const daoInfo = useDaoInfoContext()
 
   const router = useRouter()
@@ -70,19 +73,19 @@ const InnerGovHome = () => {
   // Pre-fetch tabs.
   useEffect(() => {
     tabs.forEach((tab) => {
-      router.prefetch(getGovPath(config.name, tab.id))
+      router.prefetch(getGovPath(name, tab.id))
     })
-  }, [config.name, router, tabs])
+  }, [name, router, tabs])
 
   const slug = (router.query.slug || []) as string[]
   useEffect(() => {
     // If no slug, redirect to first tab.
     if (slug.length === 0) {
-      router.push(getGovPath(config.name, firstTabId), undefined, {
+      router.push(getGovPath(name, firstTabId), undefined, {
         shallow: true,
       })
     }
-  }, [router, slug.length, firstTabId, config.name])
+  }, [router, slug.length, firstTabId, name])
 
   const tabId =
     slug.length > 0 && tabs.some(({ id }) => id === slug[0])
@@ -90,14 +93,14 @@ const InnerGovHome = () => {
       : // If tab is invalid, default to first tab.
         firstTabId
   const onSelectTabId = (tabId: string) =>
-    router.push(getGovPath(config.name, tabId), undefined, {
+    router.push(getGovPath(name, tabId), undefined, {
       shallow: true,
     })
 
   const [goingToChainId, setGoingToChainId] = useState<string>()
   // Pre-fetch other chains.
   useEffect(() => {
-    getSupportedChains().forEach(({ name }) => {
+    getConfiguredChains().forEach(({ name }) => {
       router.prefetch(getGovPath(name))
       tabs.map((tab) => router.prefetch(getGovPath(name, tab.id)))
     })
@@ -113,13 +116,11 @@ const InnerGovHome = () => {
           loading={!!goingToChainId && goingToChainId !== chainId}
           onSelect={(chainId) => {
             router.push(
-              getGovPath(
-                getSupportedChainConfig(chainId)?.name || config.name,
-                tabId
-              )
+              getGovPath(getConfiguredChainConfig(chainId)?.name || name, tabId)
             )
             setGoingToChainId(chainId)
           }}
+          type="configured"
         />
       }
       daoInfo={daoInfo}
@@ -163,7 +164,7 @@ const NeutronGovHome: NextPage = () => {
   const [goingToChainId, setGoingToChainId] = useState<string>()
   // Pre-fetch other chains.
   useEffect(() => {
-    getSupportedChains().forEach(({ name }) => {
+    getConfiguredChains().forEach(({ name }) => {
       router.prefetch('/' + name)
     })
   }, [router])
@@ -175,12 +176,13 @@ const NeutronGovHome: NextPage = () => {
         <ChainSwitcher
           loading={!!goingToChainId && goingToChainId !== chainId}
           onSelect={(chainId) => {
-            const chainConfig = getSupportedChainConfig(chainId)
+            const chainConfig = getConfiguredChainConfig(chainId)
             if (chainConfig) {
               router.push(getGovPath(chainConfig.name))
               setGoingToChainId(chainId)
             }
           }}
+          type="configured"
         />
       }
       daos={daosLoading}

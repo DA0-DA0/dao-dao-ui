@@ -6,10 +6,13 @@ import { govParamsSelector, moduleAddressSelector } from '@dao-dao/state/recoil'
 import {
   Loader,
   useChain,
+  useChainContext,
   useDaoInfoContext,
   useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
+  ActionChainContext,
+  ActionChainContextType,
   ActionContext,
   ActionContextType,
   ActionOptions,
@@ -48,7 +51,11 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
   const options: ActionOptions = {
     t,
     chain: chainContext.chain,
-    chainContext,
+    chainContext: {
+      type: ActionChainContextType.Supported,
+      ...chainContext,
+      ...chainContext.config,
+    },
     address: info.coreAddress,
     context: {
       type: ActionContextType.Dao,
@@ -136,11 +143,28 @@ export const BaseActionsProvider = ({
 }) => {
   const { t } = useTranslation()
 
-  const chainContext = useSupportedChainContext()
+  const chainContext = useChainContext()
+  const actionChainContext: ActionChainContext | undefined = chainContext.base
+    ? {
+        type: ActionChainContextType.Base,
+        ...chainContext,
+        config: chainContext.base,
+      }
+    : chainContext.config
+    ? {
+        type: ActionChainContextType.Supported,
+        ...chainContext,
+        config: chainContext.config,
+      }
+    : undefined
+  if (!actionChainContext) {
+    throw new Error('Invalid chain context')
+  }
+
   const options: ActionOptions = {
     t,
     chain: chainContext.chain,
-    chainContext,
+    chainContext: actionChainContext,
     address,
     context,
   }

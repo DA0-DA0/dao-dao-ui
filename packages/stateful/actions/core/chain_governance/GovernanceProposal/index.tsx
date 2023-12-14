@@ -213,7 +213,9 @@ export const makeGovernanceProposalAction: ActionMaker<
   context,
   chain: { chain_id: currentChainId },
   chainContext: {
-    config: { supportsV1GovProposals },
+    config: {
+      gov: { supportsV1GovProposals },
+    },
   },
 }) => {
   const useDefaults: UseDefaults<GovernanceProposalActionData> = () => {

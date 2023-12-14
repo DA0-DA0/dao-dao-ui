@@ -7,7 +7,11 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 import { genericTokenBalancesSelector } from '@dao-dao/state'
 import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
 import { Loader, useCachedLoading } from '@dao-dao/stateless'
-import { ActionComponent, TokenType } from '@dao-dao/types'
+import {
+  ActionChainContextType,
+  ActionComponent,
+  TokenType,
+} from '@dao-dao/types'
 import { InstantiateMsg } from '@dao-dao/types/contracts/CwTokenSwap'
 import {
   convertDenomToMicroDenomWithDecimals,
@@ -30,12 +34,15 @@ export const InstantiateTokenSwap: ActionComponent<
   PerformTokenSwapData
 > = (props) => {
   const { t } = useTranslation()
-  const {
-    address: selfAddress,
-    chainContext: {
-      config: { codeIds },
-    },
-  } = useActionOptions()
+  const { address: selfAddress, chainContext } = useActionOptions()
+
+  const cwTokenSwapCodeId =
+    chainContext.type === ActionChainContextType.Supported
+      ? chainContext.config.codeIds?.CwTokenSwap
+      : undefined
+  if (!cwTokenSwapCodeId) {
+    throw new Error('Unsupported chain.')
+  }
 
   const { setValue } = useFormContext()
   const { address: walletAddress, getSigningCosmWasmClient } = useWallet()
@@ -111,7 +118,7 @@ export const InstantiateTokenSwap: ActionComponent<
       const contractAddress = await instantiateSmartContract(
         signingCosmWasmClient,
         walletAddress,
-        codeIds.CwTokenSwap,
+        cwTokenSwapCodeId,
         'Token Swap',
         instantiateMsg
       )
@@ -137,7 +144,7 @@ export const InstantiateTokenSwap: ActionComponent<
       setInstantiating(false)
     }
   }, [
-    codeIds.CwTokenSwap,
+    cwTokenSwapCodeId,
     props.data,
     props.fieldNamePrefix,
     selfAddress,

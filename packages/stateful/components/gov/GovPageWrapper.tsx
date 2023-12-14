@@ -46,7 +46,7 @@ export const GovPageWrapper = ({
   const { setAccentColor, theme } = useThemeContext()
 
   const [walletChainId, setWalletChainId] = useRecoilState(walletChainIdAtom)
-  // Update walletChainId to current.
+  // Update walletChainId so the sidebar shows the correct wallet address.
   useEffect(() => {
     if (serializedInfo && serializedInfo.chainId !== walletChainId) {
       setWalletChainId(serializedInfo.chainId)

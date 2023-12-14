@@ -30,9 +30,9 @@ import {
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
   convertMicroDenomToDenomWithDecimals,
+  getConfiguredChains,
   getFallbackImage,
   getNativeTokenForChainId,
-  getSupportedChains,
   transformBech32Address,
 } from '@dao-dao/utils'
 
@@ -288,7 +288,7 @@ export const allWalletNftsSelector = selectorFamily<
   get:
     ({ walletAddress }) =>
     ({ get }) => {
-      const chains = getSupportedChains()
+      const chains = getConfiguredChains().filter((c) => !c.noCosmWasm)
 
       const nativeNfts = get(
         waitForAll(
@@ -383,7 +383,7 @@ export const allWalletDaosSelector = selectorFamily<
   get:
     ({ walletAddress }) =>
     ({ get }) => {
-      const chains = getSupportedChains()
+      const chains = getConfiguredChains()
 
       const allLazyDaoCards = get(
         waitForAll(

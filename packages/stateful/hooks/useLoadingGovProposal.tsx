@@ -10,7 +10,7 @@ import {
 } from '@dao-dao/state'
 import {
   useCachedLoading,
-  useSupportedChainContext,
+  useConfiguredChainContext,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
@@ -36,7 +36,7 @@ export const useLoadingGovProposal = (
   proposalId: string | number
 ): LoadingData<GovProposalWithMetadata> => {
   const { t } = useTranslation()
-  const { chain } = useSupportedChainContext()
+  const { chain } = useConfiguredChainContext()
   const { address: voter } = useWallet()
 
   const loadingProposal = useCachedLoading(

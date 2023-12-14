@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 
 import { ChainEmoji } from '@dao-dao/stateless'
 import {
+  ActionChainContextType,
   ActionContextType,
   ActionKey,
   ActionMaker,
@@ -21,22 +22,18 @@ import {
 
 export const makeCreateCrossChainAccountAction: ActionMaker<
   CreateCrossChainAccountData
-> = ({
-  t,
-  context,
-  chain,
-  chainContext: {
-    config: { polytone },
-  },
-}) => {
+> = ({ t, context, chain, chainContext }) => {
   // Only allow using this action in DAOs.
-  if (context.type !== ActionContextType.Dao) {
+  if (
+    context.type !== ActionContextType.Dao ||
+    chainContext.type !== ActionChainContextType.Supported
+  ) {
     return null
   }
 
-  const missingChainIds = Object.keys(polytone || {}).filter(
-    (chainId) => !(chainId in context.info.polytoneProxies)
-  )
+  const missingChainIds = Object.keys(
+    chainContext.config.polytone || {}
+  ).filter((chainId) => !(chainId in context.info.polytoneProxies))
 
   const useDefaults: UseDefaults<CreateCrossChainAccountData> = () => ({
     chainId: missingChainIds[0],

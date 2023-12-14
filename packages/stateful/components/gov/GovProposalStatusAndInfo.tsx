@@ -26,8 +26,8 @@ import {
   Tooltip,
   useCachedLoading,
   useChain,
+  useConfiguredChainContext,
   useGovProposalVoteOptions,
-  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
   GenericToken,
@@ -111,7 +111,7 @@ const InnerProposalStatusAndInfo = ({
   const {
     chain: { chain_id: chainId, pretty_name: chainPrettyName },
     config: { name: chainConfigName },
-  } = useSupportedChainContext()
+  } = useConfiguredChainContext()
   const {
     isWalletConnected,
     address: walletAddress = '',
@@ -405,7 +405,10 @@ const InnerProposalStatusAndInfoLoader = (
   props: GovProposalStatusAndInfoProps
 ) => {
   const { t } = useTranslation()
-  const { config, chain } = useSupportedChainContext()
+  const {
+    config: { name },
+    chain,
+  } = useConfiguredChainContext()
 
   const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
     <p className={clsx('animate-pulse', className)}>...</p>
@@ -417,11 +420,7 @@ const InnerProposalStatusAndInfoLoader = (
       ),
       label: t('title.dao'),
       Value: (props) => (
-        <ButtonLink
-          href={getGovPath(config.name)}
-          variant="underline"
-          {...props}
-        >
+        <ButtonLink href={getGovPath(name)} variant="underline" {...props}>
           {chain.pretty_name}
         </ButtonLink>
       ),

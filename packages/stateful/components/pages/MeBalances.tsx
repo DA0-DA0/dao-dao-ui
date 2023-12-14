@@ -6,7 +6,7 @@ import {
 } from '@dao-dao/stateless'
 import { LoadingData, TokenCardInfo } from '@dao-dao/types'
 import {
-  getSupportedChains,
+  getConfiguredChains,
   loadableToLoadingData,
   transformBech32Address,
 } from '@dao-dao/utils'
@@ -29,7 +29,7 @@ export const MeBalances = () => {
   const tokensWithoutLazyInfo = useCachedLoading(
     walletAddress
       ? waitForAllSettled(
-          getSupportedChains().map(({ chain }) =>
+          getConfiguredChains().map(({ chain }) =>
             walletTokenCardInfosSelector({
               chainId: chain.chain_id,
               walletAddress: transformBech32Address(

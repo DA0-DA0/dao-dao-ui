@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next'
 import { DappNavigationProps } from '@dao-dao/types/stateless/DappNavigation'
 import { getGovPath } from '@dao-dao/utils'
 
-import { usePlatform, useSupportedChainContext } from '../../hooks'
+import { useConfiguredChainContext, usePlatform } from '../../hooks'
 import { DaoDropdown } from '../dao'
 import { IconButton, ThemeToggle } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
@@ -74,7 +74,7 @@ export const DappNavigation = ({
     responsiveRightSidebar: { enabled: responsiveRightSidebarEnabled },
   } = useAppContext()
   const { asPath } = useRouter()
-  const { config: chainConfig } = useSupportedChainContext()
+  const { config: chainConfig } = useConfiguredChainContext()
 
   // Use screen resize to determine when compact should be forced on or off.
   const [forceCompact, setForceCompact] = useState<boolean | undefined>(
