@@ -3,8 +3,8 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  ChainPickerInput,
   CodeMirrorInput,
+  DaoSupportedChainPickerInput,
   InputLabel,
   SelectInput,
 } from '@dao-dao/stateless'
@@ -98,7 +98,7 @@ export const ValidatorActionsComponent: ActionComponent = ({
   return (
     <>
       {options.context.type === ActionContextType.Dao && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           disabled={!isCreating}
           fieldName={fieldNamePrefix + 'chainId'}

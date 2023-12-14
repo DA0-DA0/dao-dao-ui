@@ -10,8 +10,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { codeDetailsSelector } from '@dao-dao/state/recoil'
 import {
   BabyAngelEmoji,
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
 } from '@dao-dao/stateless'
 import { Feature, TokenType } from '@dao-dao/types'
 import {
@@ -98,7 +98,7 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}

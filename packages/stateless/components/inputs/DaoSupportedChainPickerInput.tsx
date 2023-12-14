@@ -11,7 +11,7 @@ import {
 } from '../../hooks'
 import { RadioInput } from './RadioInput'
 
-export type ChainPickerInputProps = {
+export type DaoSupportedChainPickerInputProps = {
   fieldName: string
   // Whether to use the chain name or the native token symbol as the label.
   // Defaults to 'chain'.
@@ -29,7 +29,12 @@ export type ChainPickerInputProps = {
   className?: string
 }
 
-export const ChainPickerInput = ({
+/**
+ * A form picker that is intended to be used in DAO actions to choose a
+ * supported chain to execute a message from. This should include the DAO native
+ * chain and current or potential cross-chain (polytone) accounts.
+ */
+export const DaoSupportedChainPickerInput = ({
   fieldName,
   labelMode = 'chain',
   disabled,
@@ -38,7 +43,7 @@ export const ChainPickerInput = ({
   excludeChainIds,
   onlyDaoChainIds = false,
   className,
-}: ChainPickerInputProps) => {
+}: DaoSupportedChainPickerInputProps) => {
   const {
     chain: { chain_id: chainId },
     config: { polytone },

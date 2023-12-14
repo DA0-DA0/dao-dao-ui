@@ -1,6 +1,9 @@
 import { useCallback } from 'react'
 
-import { ArtistPaletteEmoji, ChainPickerInput } from '@dao-dao/stateless'
+import {
+  ArtistPaletteEmoji,
+  DaoSupportedChainPickerInput,
+} from '@dao-dao/stateless'
 import { ChainId } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -32,7 +35,7 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           disabled={!props.isCreating}
           excludeChainIds={[ChainId.StargazeMainnet, ChainId.StargazeTestnet]}
           fieldName={props.fieldNamePrefix + 'chainId'}

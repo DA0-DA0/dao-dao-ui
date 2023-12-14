@@ -11,7 +11,7 @@ import {
 } from '@dao-dao/state'
 import {
   BankEmoji,
-  ChainPickerInput,
+  DaoSupportedChainPickerInput,
   Loader,
   useCachedLoading,
   useChain,
@@ -54,7 +54,7 @@ const Component: ActionComponent<undefined, GovernanceDepositData> = (
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}

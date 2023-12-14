@@ -3,8 +3,8 @@ import { useFormContext } from 'react-hook-form'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   LockWithKeyEmoji,
   useChain,
 } from '@dao-dao/stateless'
@@ -146,7 +146,7 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}

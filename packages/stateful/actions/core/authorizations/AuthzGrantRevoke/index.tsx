@@ -4,8 +4,8 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   KeyEmoji,
   Loader,
 } from '@dao-dao/stateless'
@@ -68,7 +68,7 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}

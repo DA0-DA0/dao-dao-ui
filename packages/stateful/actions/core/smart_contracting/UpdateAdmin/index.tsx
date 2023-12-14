@@ -4,8 +4,8 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 
 import { contractAdminSelector } from '@dao-dao/state'
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   MushroomEmoji,
 } from '@dao-dao/stateless'
 import {
@@ -115,7 +115,7 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}

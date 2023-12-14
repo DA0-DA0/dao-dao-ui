@@ -10,8 +10,8 @@ import {
   validatorsSelector,
 } from '@dao-dao/state'
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   DepositEmoji,
   Loader,
   useCachedLoading,
@@ -365,7 +365,7 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && props.isCreating && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           fieldName={props.fieldNamePrefix + 'chainId'}
           labelMode="token"

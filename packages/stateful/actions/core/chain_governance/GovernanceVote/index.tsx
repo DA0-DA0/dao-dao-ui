@@ -9,8 +9,8 @@ import {
 } from '@dao-dao/state'
 import {
   BallotDepositEmoji,
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   Loader,
 } from '@dao-dao/stateless'
 import {
@@ -126,7 +126,7 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
   return (
     <>
       {options.context.type === ActionContextType.Dao && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           disabled={!isCreating}
           fieldName={fieldNamePrefix + 'chainId'}

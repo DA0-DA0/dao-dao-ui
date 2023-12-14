@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next'
 
 import {
   CameraWithFlashEmoji,
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   InputErrorMessage,
   SegmentedControls,
 } from '@dao-dao/stateless'
@@ -71,7 +71,7 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
   return (
     <>
       {options.context.type === ActionContextType.Dao && props.isCreating && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           fieldName={props.fieldNamePrefix + 'chainId'}
           onChange={(chainId) => {

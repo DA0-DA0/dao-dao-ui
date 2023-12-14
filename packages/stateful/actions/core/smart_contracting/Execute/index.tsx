@@ -7,8 +7,8 @@ import { constSelector, useRecoilValue } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   SwordsEmoji,
 } from '@dao-dao/stateless'
 import { CosmosMsgForEmpty, TokenType } from '@dao-dao/types'
@@ -244,7 +244,7 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}

@@ -10,8 +10,8 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   BabyEmoji,
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   useCachedLoading,
 } from '@dao-dao/stateless'
 import { PolytoneConnection, TokenType } from '@dao-dao/types'
@@ -191,7 +191,7 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}

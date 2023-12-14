@@ -4,8 +4,8 @@ import { useTranslation } from 'react-i18next'
 import {
   AddressInput,
   Button,
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   FormattedJsonDisplay,
   FormattedJsonDisplayProps,
   InputErrorMessage,
@@ -65,7 +65,7 @@ export const ManageCw721Component: ActionComponent<ManageCw721Options> = ({
   return (
     <>
       {isCreating && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           disabled={!isCreating}
           fieldName={fieldNamePrefix + 'chainId'}

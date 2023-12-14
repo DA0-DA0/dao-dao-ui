@@ -10,8 +10,8 @@ import {
   moduleAddressSelector,
 } from '@dao-dao/state'
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   Loader,
   RaisedHandEmoji,
   useCachedLoading,
@@ -69,7 +69,7 @@ const Component: ActionComponent<undefined, GovernanceProposalActionData> = (
   return (
     <>
       {options.context.type === ActionContextType.Dao && (
-        <ChainPickerInput
+        <DaoSupportedChainPickerInput
           className="mb-4"
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
