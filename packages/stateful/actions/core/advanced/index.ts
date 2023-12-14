@@ -13,10 +13,10 @@ export const makeAdvancedActionCategory: ActionCategoryMaker = ({ t }) => ({
   description: t('actionCategory.advancedDescription'),
   actionMakers: [
     makeCustomAction,
+    makeBulkImportAction,
     makeCrossChainExecuteAction,
     makeCreateIcaAction,
     makeManageIcasAction,
     makeIcaExecuteAction,
-    makeBulkImportAction,
   ],
 })
