@@ -71,13 +71,10 @@ export const useSimulateCosmosMsgs = (senderAddress: string) => {
       }
 
       // Also simulate polytone messages on receiving chains.
-      const decodedPolytoneMessages = decodeMessages(msgs)
-        .map((msg) => {
-          const decoded = decodePolytoneExecuteMsg(chainId, msg, 'oneOrZero')
-          return decoded.match && decoded.cosmosMsg ? decoded : undefined
-        })
-        .filter(Boolean)
-        .map((decoded) => decoded!)
+      const decodedPolytoneMessages = decodeMessages(msgs).flatMap((msg) => {
+        const decoded = decodePolytoneExecuteMsg(chainId, msg, 'oneOrZero')
+        return decoded.match && decoded.cosmosMsg ? decoded : []
+      })
 
       if (decodedPolytoneMessages.length === 0) {
         return
