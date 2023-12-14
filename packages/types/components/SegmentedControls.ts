@@ -4,7 +4,7 @@ import { TypedOption } from '../sortFilter'
 
 export type SegmentedControlsProps<T extends unknown> = {
   tabs: TypedOption<T>[]
-  selected: T
+  selected: T | undefined
   onSelect: (
     value: T,
     event: ReactMouseEvent<HTMLButtonElement, MouseEvent>

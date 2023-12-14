@@ -316,7 +316,7 @@ export const CreateDaoProposal = () => {
                   <div className="my-2">
                     <ProposalModuleSelector
                       matchAdapter={matchProposalModuleAdapter}
-                      selected={selectedProposalModule}
+                      selected={selectedProposalModule.address}
                       setSelected={setSelectedProposalModule}
                     />
                   </div>
