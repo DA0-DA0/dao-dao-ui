@@ -1,10 +1,11 @@
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { useRecoilValue, waitForAllSettled } from 'recoil'
 
 import { govParamsSelector, moduleAddressSelector } from '@dao-dao/state/recoil'
 import {
   Loader,
+  WarningCard,
   useChain,
   useChainContext,
   useDaoInfoContext,
@@ -211,9 +212,10 @@ export const WalletActionsProvider = ({
 }
 
 export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
+  const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
   const [govAddress, params] = useRecoilValue(
-    waitForAll([
+    waitForAllSettled([
       moduleAddressSelector({
         name: 'gov',
         chainId,
@@ -224,15 +226,17 @@ export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
     ])
   )
 
-  return (
+  return govAddress.state === 'hasValue' && params.state === 'hasValue' ? (
     <BaseActionsProvider
-      address={govAddress}
+      address={govAddress.contents}
       context={{
         type: ActionContextType.Gov,
-        params,
+        params: params.contents,
       }}
     >
       {children}
     </BaseActionsProvider>
+  ) : (
+    <WarningCard content={t('error.governanceProposalsUnsupported')} />
   )
 }

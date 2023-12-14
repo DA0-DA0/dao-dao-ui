@@ -1,13 +1,12 @@
 import { Coin } from '@cosmjs/stargate'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { useRecoilValue, waitForAll, waitForAllSettled } from 'recoil'
 
 import {
   chainSupportsV1GovModuleSelector,
   genericTokenSelector,
   govParamsSelector,
-  moduleAddressSelector,
 } from '@dao-dao/state'
 import {
   ChainProvider,
@@ -15,7 +14,6 @@ import {
   Loader,
   RaisedHandEmoji,
   useCachedLoading,
-  useChain,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -97,51 +95,56 @@ const InnerComponent: ActionComponent<
   undefined,
   GovernanceProposalActionData
 > = (props) => {
-  const { chain_id: chainId } = useChain()
   const { setValue } = useFormContext<GovernanceProposalActionData>()
 
-  const [govModuleAddress, supportsV1GovProposals] = useRecoilValue(
-    waitForAll([
-      moduleAddressSelector({
-        name: 'gov',
-        chainId,
-      }),
+  // `GovActionsProvier` wraps this, which sets these values.
+  const {
+    address: govModuleAddress,
+    chain: { chain_id: chainId },
+    context,
+  } = useActionOptions()
+
+  // Type-check.
+  if (context.type !== ActionContextType.Gov) {
+    throw new Error('Invalid action context.')
+  }
+
+  const [supportsV1GovProposals] = useRecoilValue(
+    waitForAllSettled([
       chainSupportsV1GovModuleSelector({
         chainId,
       }),
     ])
   )
-  const govParams = useCachedLoading(
-    govParamsSelector({
-      chainId,
-    }),
-    undefined
-  )
+
+  // Update gov module address in data.
+  useEffect(() => {
+    setValue(
+      (props.fieldNamePrefix + 'govModuleAddress') as 'govModuleAddress',
+      govModuleAddress
+    )
+  }, [govModuleAddress, setValue, props.fieldNamePrefix])
 
   // On chain change, reset deposit.
   useEffect(() => {
-    if (!govParams.loading && !govParams.updating && govParams.data) {
-      setValue((props.fieldNamePrefix + 'deposit') as 'deposit', [
-        {
-          denom: govParams.data.minDeposit[0].denom,
-          amount: Number(govParams.data.minDeposit[0].amount),
-        },
-      ])
-    }
-  }, [chainId, setValue, props.fieldNamePrefix, govParams])
+    setValue((props.fieldNamePrefix + 'deposit') as 'deposit', [
+      {
+        denom: context.params.minDeposit[0].denom,
+        amount: Number(context.params.minDeposit[0].amount),
+      },
+    ])
+  }, [chainId, setValue, props.fieldNamePrefix, context.params.minDeposit])
 
   const minDeposits = useCachedLoading(
-    govParams.loading || !govParams.data
-      ? undefined
-      : waitForAll(
-          govParams.data.minDeposit.map(({ denom }) =>
-            genericTokenSelector({
-              type: TokenType.Native,
-              denomOrAddress: denom,
-              chainId,
-            })
-          )
-        ),
+    waitForAll(
+      context.params.minDeposit.map(({ denom }) =>
+        genericTokenSelector({
+          type: TokenType.Native,
+          denomOrAddress: denom,
+          chainId,
+        })
+      )
+    ),
     []
   )
 
@@ -154,17 +157,18 @@ const InnerComponent: ActionComponent<
       {...props}
       options={{
         govModuleAddress,
-        supportsV1GovProposals,
-        minDeposits:
-          minDeposits.loading || govParams.loading || !govParams.data
-            ? { loading: true }
-            : {
-                loading: false,
-                data: minDeposits.data.map((token, index) => ({
-                  token,
-                  balance: govParams.data!.minDeposit[index].amount,
-                })),
-              },
+        supportsV1GovProposals:
+          supportsV1GovProposals.state === 'hasValue' &&
+          supportsV1GovProposals.contents,
+        minDeposits: minDeposits.loading
+          ? { loading: true }
+          : {
+              loading: false,
+              data: minDeposits.data.map((token, index) => ({
+                token,
+                balance: context.params.minDeposit[index].amount,
+              })),
+            },
         categories,
         loadedActions,
         TokenAmountDisplay,
@@ -214,7 +218,7 @@ const defaultCustom = JSON.stringify(
 
 export const makeGovernanceProposalAction: ActionMaker<
   GovernanceProposalActionData
-> = ({ t, address, context, chain: { chain_id: currentChainId } }) => {
+> = ({ t, address, chain: { chain_id: currentChainId } }) => {
   const useDefaults: UseDefaults<GovernanceProposalActionData> = () => {
     const govParams = useCachedLoading(
       govParamsSelector({
@@ -270,33 +274,11 @@ export const makeGovernanceProposalAction: ActionMaker<
 
   const useTransformToCosmos: UseTransformToCosmos<
     GovernanceProposalActionData
-  > = () => {
-    const chainIds = [
-      currentChainId,
-      ...(context.type === ActionContextType.Dao
-        ? Object.keys(context.info.polytoneProxies)
-        : []),
-    ]
-    // Map chain ID to module address.
-    const govModuleAddressPerChain = useRecoilValue(
-      waitForAll(
-        chainIds.map((chainId) =>
-          moduleAddressSelector({
-            name: 'gov',
-            chainId,
-          })
-        )
-      )
-    ).reduce(
-      (acc, moduleAddress, index) => ({
-        ...acc,
-        [chainIds[index]]: moduleAddress,
-      }),
-      {} as Record<string, string>
-    )
-
-    return ({
+  > =
+    () =>
+    ({
       chainId,
+      govModuleAddress,
       version,
       title,
       description,
@@ -305,7 +287,6 @@ export const makeGovernanceProposalAction: ActionMaker<
       msgs,
       metadataCid,
     }) => {
-      const govModuleAddress = govModuleAddressPerChain[chainId]
       if (!govModuleAddress) {
         throw new Error(
           `Could not find gov module address for chain ID ${chainId}.`
@@ -351,7 +332,6 @@ export const makeGovernanceProposalAction: ActionMaker<
 
       return maybeMakePolytoneExecuteMessage(currentChainId, chainId, msg)
     }
-  }
 
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<
     GovernanceProposalActionData

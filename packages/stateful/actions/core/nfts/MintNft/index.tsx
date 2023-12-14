@@ -125,10 +125,14 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
                   label: t('form.useExistingCollection'),
                   value: false,
                 },
-                {
-                  label: t('form.createNewCollection'),
-                  value: true,
-                },
+                ...(supportsCreatingNewCollection
+                  ? [
+                      {
+                        label: t('form.createNewCollection'),
+                        value: true,
+                      },
+                    ]
+                  : []),
               ]}
             />
 

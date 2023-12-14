@@ -155,6 +155,8 @@ export const GOVERNANCE_PROPOSAL_TYPE_CUSTOM = 'CUSTOM'
 
 export type GovernanceProposalActionData = {
   chainId: string
+  // The address of the chain's gov module. Loaded in the background.
+  govModuleAddress?: string
   // If true, will hide title, description, and deposit.
   _onlyShowActions?: boolean
   version: GovProposalVersion
