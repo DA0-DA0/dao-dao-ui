@@ -1,11 +1,13 @@
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue, waitForAllSettled } from 'recoil'
+import { waitForAll } from 'recoil'
 
 import { govParamsSelector, moduleAddressSelector } from '@dao-dao/state/recoil'
 import {
   Loader,
+  PageLoader,
   WarningCard,
+  useCachedLoadingWithError,
   useChain,
   useChainContext,
   useDaoInfoContext,
@@ -55,7 +57,6 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     chainContext: {
       type: ActionChainContextType.Supported,
       ...chainContext,
-      config: chainContext.config,
     },
     address: info.coreAddress,
     context: {
@@ -149,6 +150,7 @@ export const BaseActionsProvider = ({
     ? {
         type: ActionChainContextType.Supported,
         ...chainContext,
+        // Type-check.
         config: chainContext.config,
       }
     : chainContext.base
@@ -214,8 +216,8 @@ export const WalletActionsProvider = ({
 export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const [govAddress, params] = useRecoilValue(
-    waitForAllSettled([
+  const govDataLoading = useCachedLoadingWithError(
+    waitForAll([
       moduleAddressSelector({
         name: 'gov',
         chainId,
@@ -226,17 +228,19 @@ export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
     ])
   )
 
-  return govAddress.state === 'hasValue' && params.state === 'hasValue' ? (
+  return govDataLoading.loading ? (
+    <PageLoader />
+  ) : govDataLoading.errored ? (
+    <WarningCard content={t('error.governanceProposalsUnsupported')} />
+  ) : (
     <BaseActionsProvider
-      address={govAddress.contents}
+      address={govDataLoading.data[0]}
       context={{
         type: ActionContextType.Gov,
-        params: params.contents,
+        params: govDataLoading.data[1],
       }}
     >
       {children}
     </BaseActionsProvider>
-  ) : (
-    <WarningCard content={t('error.governanceProposalsUnsupported')} />
   )
 }

@@ -38,7 +38,18 @@ export const convertActionsToMessages = (
       }
 
       try {
-        return loadedActions[actionKey]?.transform(data)
+        const loadedAction = loadedActions[actionKey]
+        if (!loadedAction) {
+          return
+        }
+        // If action not loaded or errored, throw error.
+        if (!loadedAction.defaults) {
+          throw new Error(`Action not loaded: ${loadedAction.action.label}.`)
+        } else if (loadedAction.defaults instanceof Error) {
+          throw loadedAction.defaults
+        }
+
+        return loadedAction.transform(data)
       } catch (err) {
         if (throwErrors) {
           throw err

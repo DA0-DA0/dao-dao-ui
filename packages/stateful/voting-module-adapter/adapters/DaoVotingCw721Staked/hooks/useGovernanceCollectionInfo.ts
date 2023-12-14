@@ -1,4 +1,4 @@
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import {
   CommonNftSelectors,
@@ -32,20 +32,20 @@ export const useGovernanceCollectionInfo = ({
     })
   )
 
-  const contractInfo = useRecoilValue(
-    CommonNftSelectors.contractInfoSelector({
-      chainId,
-      contractAddress: collectionAddress,
-      params: [],
-    })
-  )
+  const [contractInfo, tokenSupplyInfo] = useRecoilValue(
+    waitForAll([
+      CommonNftSelectors.contractInfoSelector({
+        chainId,
+        contractAddress: collectionAddress,
+        params: [],
+      }),
 
-  const tokenSupplyInfo = useRecoilValue(
-    CommonNftSelectors.numTokensSelector({
-      chainId,
-      contractAddress: collectionAddress,
-      params: [],
-    })
+      CommonNftSelectors.numTokensSelector({
+        chainId,
+        contractAddress: collectionAddress,
+        params: [],
+      }),
+    ])
   )
 
   /// Optional

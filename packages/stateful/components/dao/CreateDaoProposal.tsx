@@ -295,25 +295,6 @@ export const CreateDaoProposal = () => {
     ]
   )
 
-  // Pre-load all proposal card info lines for all proposal module adapters so
-  // the page doesn't suspend when we switch proposal modules.
-  const proposalModuleHooks = useMemo(
-    () =>
-      daoInfo.proposalModules.map(
-        (proposalModule) =>
-          matchAndLoadCommon(proposalModule, {
-            chain,
-            coreAddress: daoInfo.coreAddress,
-          }).hooks.useProfileNewProposalCardInfoLines
-      ),
-    [chain, daoInfo.coreAddress, daoInfo.proposalModules]
-  )
-  // Proposal modules stay constant, so we can safely ignore the warning.
-  proposalModuleHooks.forEach((useProfileNewProposalCardInfoLines) =>
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    useProfileNewProposalCardInfoLines()
-  )
-
   return (
     <FormProvider {...formMethods}>
       <CreateProposal
@@ -356,6 +337,40 @@ export const CreateDaoProposal = () => {
           )
         }
       />
+
+      <SuspenseLoader fallback={null}>
+        <PreloadAllNewProposalCardInfoLines />
+      </SuspenseLoader>
     </FormProvider>
   )
+}
+
+/**
+ * Preload new proposal card info lines for all proposal modules so the card
+ * doesn't suspend when we switch proposal modules.
+ */
+const PreloadAllNewProposalCardInfoLines = () => {
+  const chain = useChain()
+  const { coreAddress, proposalModules } = useDaoInfoContext()
+
+  // Pre-load all proposal card info lines for all proposal module adapters so
+  // the page doesn't suspend when we switch proposal modules.
+  const proposalModuleHooks = useMemo(
+    () =>
+      proposalModules.map(
+        (proposalModule) =>
+          matchAndLoadCommon(proposalModule, {
+            chain,
+            coreAddress,
+          }).hooks.useProfileNewProposalCardInfoLines
+      ),
+    [chain, coreAddress, proposalModules]
+  )
+  // Proposal modules stay constant, so we can safely ignore the warning.
+  proposalModuleHooks.forEach((useProfileNewProposalCardInfoLines) =>
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    useProfileNewProposalCardInfoLines()
+  )
+
+  return null
 }

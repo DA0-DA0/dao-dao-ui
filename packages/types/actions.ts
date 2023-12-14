@@ -149,7 +149,13 @@ export type ActionComponent<O = undefined, D = any> = ComponentType<
   ActionComponentProps<O, D>
 >
 
-export type UseDefaults<D extends {} = any> = () => D
+/**
+ * A hook that returns the default values for an action. If it returns an error,
+ * the action should not be added because some critical data failed to load. If
+ * it returns undefined, the action is loading and should not allowed to be
+ * added until the default values are loaded.
+ */
+export type UseDefaults<D extends {} = any> = () => D | Error | undefined
 
 export type UseTransformToCosmos<D extends {} = any> = () => (
   data: D

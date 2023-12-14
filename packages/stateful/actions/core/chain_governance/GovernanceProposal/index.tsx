@@ -1,7 +1,7 @@
 import { Coin } from '@cosmjs/stargate'
 import { useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useRecoilValue, waitForAll, waitForAllSettled } from 'recoil'
+import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
   chainSupportsV1GovModuleSelector,
@@ -14,6 +14,7 @@ import {
   Loader,
   RaisedHandEmoji,
   useCachedLoading,
+  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -109,12 +110,10 @@ const InnerComponent: ActionComponent<
     throw new Error('Invalid action context.')
   }
 
-  const [supportsV1GovProposals] = useRecoilValue(
-    waitForAllSettled([
-      chainSupportsV1GovModuleSelector({
-        chainId,
-      }),
-    ])
+  const supportsV1GovProposals = useRecoilValue(
+    chainSupportsV1GovModuleSelector({
+      chainId,
+    })
   )
 
   // Update gov module address in data.
@@ -157,9 +156,7 @@ const InnerComponent: ActionComponent<
       {...props}
       options={{
         govModuleAddress,
-        supportsV1GovProposals:
-          supportsV1GovProposals.state === 'hasValue' &&
-          supportsV1GovProposals.contents,
+        supportsV1GovProposals,
         minDeposits: minDeposits.loading
           ? { loading: true }
           : {
@@ -220,27 +217,33 @@ export const makeGovernanceProposalAction: ActionMaker<
   GovernanceProposalActionData
 > = ({ t, address, chain: { chain_id: currentChainId } }) => {
   const useDefaults: UseDefaults<GovernanceProposalActionData> = () => {
-    const govParams = useCachedLoading(
+    const govParams = useCachedLoadingWithError(
       govParamsSelector({
         chainId: currentChainId,
-      }),
-      undefined
+      })
     )
 
-    const supportsV1GovProposals = useRecoilValue(
+    const supportsV1GovProposals = useCachedLoadingWithError(
       chainSupportsV1GovModuleSelector({
         chainId: currentChainId,
       })
     )
 
-    const deposit =
-      govParams.loading || !govParams.data
-        ? undefined
-        : govParams.data.minDeposit[0]
+    if (govParams.loading || supportsV1GovProposals.loading) {
+      return
+    }
+    if (govParams.errored) {
+      return govParams.error
+    }
+    if (supportsV1GovProposals.errored) {
+      return supportsV1GovProposals.error
+    }
+
+    const deposit = govParams.data.minDeposit[0]
 
     return {
       chainId: currentChainId,
-      version: supportsV1GovProposals
+      version: supportsV1GovProposals.data
         ? GovProposalVersion.V1
         : GovProposalVersion.V1_BETA_1,
       title: '',
@@ -344,6 +347,11 @@ export const makeGovernanceProposalAction: ActionMaker<
     }
 
     const defaults = useDefaults()
+    if (!defaults || defaults instanceof Error) {
+      return {
+        match: false,
+      }
+    }
 
     if (
       !isDecodedStargateMsg(msg) ||

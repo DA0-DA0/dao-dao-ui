@@ -1,7 +1,6 @@
 import { coin } from '@cosmjs/amino'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { constSelector, useRecoilValue } from 'recoil'
 
 import {
   accountsSelector,
@@ -552,7 +551,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
     }) &&
     msg.stargate.value.sourcePort === 'transfer'
 
-  const token = useRecoilValue(
+  const token = useCachedLoadingWithError(
     isNative || isCw20 || isIbcTransfer
       ? genericTokenSelector({
           chainId,
@@ -563,7 +562,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
             ? msg.bank.send.amount[0].denom
             : msg.wasm.execute.contract_addr,
         })
-      : constSelector(undefined)
+      : undefined
   )
 
   // Try to parse packet-forward-middleware memo.
@@ -586,7 +585,8 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
   if (
     // If somehow failed to load from address, don't match.
     !from ||
-    !token ||
+    token.loading ||
+    token.errored ||
     // If this is a valid PFM message, ensure all chains have PFM enabled or
     // else this is invalid and may be unsafe to display. If we can't properly
     // determine where it ended up, we shouldn't show the action to avoid
@@ -624,9 +624,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
         to,
         amount: convertMicroDenomToDenomWithDecimals(
           msg.stargate.value.token.amount,
-          token.decimals
+          token.data.decimals
         ),
-        denom: token.denomOrAddress,
+        denom: token.data.denomOrAddress,
 
         _ibcData: {
           sourceChannel: msg.stargate.value.sourceChannel,
@@ -634,7 +634,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
         },
       },
     }
-  } else if (token.type === TokenType.Native) {
+  } else if (token.data.type === TokenType.Native) {
     return {
       match: true,
       data: {
@@ -644,12 +644,12 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
         to: msg.bank.send.to_address,
         amount: convertMicroDenomToDenomWithDecimals(
           msg.bank.send.amount[0].amount,
-          token.decimals
+          token.data.decimals
         ),
-        denom: token.denomOrAddress,
+        denom: token.data.denomOrAddress,
       },
     }
-  } else if (token.type === TokenType.Cw20) {
+  } else if (token.data.type === TokenType.Cw20) {
     return {
       match: true,
       data: {
@@ -659,7 +659,7 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<SpendData> = (
         to: msg.wasm.execute.msg.transfer.recipient,
         amount: convertMicroDenomToDenomWithDecimals(
           msg.wasm.execute.msg.transfer.amount,
-          token.decimals
+          token.data.decimals
         ),
         denom: msg.wasm.execute.contract_addr,
       },

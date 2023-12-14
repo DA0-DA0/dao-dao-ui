@@ -7,6 +7,8 @@ import {
 } from '@dao-dao/types/actions'
 
 import { Button } from '../buttons'
+import { Loader } from '../logo'
+import { TooltipInfoIcon } from '../tooltip'
 import { ActionCard } from './ActionCard'
 
 export type ActionCategoryActionPickerCardProps = {
@@ -14,6 +16,10 @@ export type ActionCategoryActionPickerCardProps = {
   // Action keys already used. If an action is not reusable, and it is already
   // used, it should not be disabled in this category action picker.
   usedActionKeys: ActionKey[]
+  // Action keys still loading.
+  loadingActionKeys: ActionKey[]
+  // Errored action keys.
+  erroredActionKeys: Partial<Record<ActionKey, Error>>
   onSelectAction: (action: Action, event: MouseEvent<HTMLButtonElement>) => void
   onRemove: () => void
   onChangeCategory: () => void
@@ -22,6 +28,8 @@ export type ActionCategoryActionPickerCardProps = {
 export const ActionCategoryActionPickerCard = ({
   category,
   usedActionKeys,
+  loadingActionKeys,
+  erroredActionKeys,
   onSelectAction,
   onRemove,
   onChangeCategory,
@@ -43,6 +51,10 @@ export const ActionCategoryActionPickerCard = ({
         <Button
           key={action.key}
           contentContainerClassName="gap-4 text-left"
+          disabled={
+            loadingActionKeys.includes(action.key) ||
+            !!erroredActionKeys[action.key]
+          }
           onClick={(event) => onSelectAction(action, event)}
           variant="ghost"
         >
@@ -52,10 +64,22 @@ export const ActionCategoryActionPickerCard = ({
             </p>
           )}
 
-          <div className="flex flex-col items-start gap-1">
+          <div className="flex grow flex-col items-start gap-1">
             <p className="primary-text">{action.label}</p>
             <p className="caption-text">{action.description}</p>
           </div>
+
+          {erroredActionKeys[action.key] && (
+            <TooltipInfoIcon
+              size="lg"
+              title={erroredActionKeys[action.key]!.message}
+              warning
+            />
+          )}
+
+          {loadingActionKeys.includes(action.key) && (
+            <Loader fill={false} size={32} />
+          )}
         </Button>
       ))}
   </ActionCard>

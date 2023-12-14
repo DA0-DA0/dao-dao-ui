@@ -179,7 +179,7 @@ export const makeValidatorActionsAction: ActionMaker<ValidatorActionsData> = (
     const thisAddress = getChainAddressForActionOptions(options, chainId)
     const validatorAddress = getValidatorAddress(chainId)
 
-    const data = useDefaults()
+    const data = useDefaults() as ValidatorActionsData
 
     if (
       !thisAddress ||

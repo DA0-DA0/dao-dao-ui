@@ -48,12 +48,10 @@ export const DaoSupportedChainPickerInput = ({
   const { watch, setValue } = useFormContext()
   const daoInfo = useDaoInfoContextIfAvailable()
 
-  const includeChainIds = [
-    ...(onlyDaoChainIds && daoInfo
+  const includeChainIds =
+    onlyDaoChainIds && daoInfo
       ? [daoInfo.chainId, ...Object.keys(daoInfo.polytoneProxies)]
-      : []),
-    ...(_includeChainIds ?? []),
-  ]
+      : _includeChainIds
 
   // Only works on supported chains, so don't render if no supported chain
   // config.
@@ -63,7 +61,7 @@ export const DaoSupportedChainPickerInput = ({
 
   const chainIds = [
     chainId,
-    // Other chains with Polytone.
+    // Other chains with Polytone connections to this one.
     ...Object.keys(config.polytone || {}),
   ]
     .filter(
@@ -78,6 +76,14 @@ export const DaoSupportedChainPickerInput = ({
           : getNativeTokenForChainId(chainId).symbol,
       value: chainId,
     }))
+
+  // Don't show if no chains to show or only showing the current chain.
+  if (
+    chainIds.length === 0 ||
+    (chainIds.length === 1 && chainIds[0].value === chainId)
+  ) {
+    return null
+  }
 
   return (
     <div className={className}>

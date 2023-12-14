@@ -1,4 +1,4 @@
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import {
   DaoVotingNativeStakedSelectors,
@@ -37,18 +37,18 @@ export const useGovernanceTokenInfo = ({
     })
   )
 
-  const token = useRecoilValue(
-    genericTokenSelector({
-      chainId,
-      type: TokenType.Native,
-      denomOrAddress: denom,
-    })
-  )
-  const supply = useRecoilValue(
-    nativeSupplySelector({
-      chainId,
-      denom,
-    })
+  const [token, supply] = useRecoilValue(
+    waitForAll([
+      genericTokenSelector({
+        chainId,
+        type: TokenType.Native,
+        denomOrAddress: denom,
+      }),
+      nativeSupplySelector({
+        chainId,
+        denom,
+      }),
+    ])
   )
   const governanceTokenInfo: TokenInfoResponse = {
     decimals: token.decimals,

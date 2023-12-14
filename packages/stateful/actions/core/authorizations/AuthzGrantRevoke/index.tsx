@@ -128,7 +128,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
       msg = decodedPolytone.msg
     }
 
-    const defaults = useDefaults()
+    const defaults = useDefaults() as AuthzGrantRevokeData
 
     if (
       !isDecodedStargateMsg(msg) ||

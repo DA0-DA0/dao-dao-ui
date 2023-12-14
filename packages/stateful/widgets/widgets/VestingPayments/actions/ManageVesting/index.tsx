@@ -120,7 +120,7 @@ const instantiateStructure = {
 const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageVestingData> = (
   msg: Record<string, any>
 ) => {
-  const defaults = useDefaults()
+  const defaults = useDefaults() as ManageVestingData
   const {
     chain: { chain_id: chainId },
   } = useActionOptions()

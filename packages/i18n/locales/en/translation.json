@@ -302,6 +302,7 @@
   },
   "error": {
     "accountNotFound": "Account not found.",
+    "actionFailedToLoad": "The \"{{action}}\" action failed to load: {{error}}.",
     "addressNotAMember": "This address it not a member of the DAO.",
     "addressNotFoundOnChain": "Address not found on chain.",
     "alreadySentTokenSwap_dao": "The DAO has already sent its share of this token swap.",

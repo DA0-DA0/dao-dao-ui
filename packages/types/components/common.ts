@@ -31,5 +31,5 @@ export type LoadingDataWithError<D> =
       loading: false
       updating?: boolean
       errored: true
-      error: unknown
+      error: Error
     }

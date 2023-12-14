@@ -260,7 +260,7 @@ export const NftSelectionModal = ({
             {fallbackError ?? t('error.checkInternetOrTryAgain')}
           </p>
           <pre className="secondary-text max-w-prose whitespace-pre-wrap text-center text-xs text-text-interactive-error">
-            {nfts.error instanceof Error ? nfts.error.message : `${nfts.error}`}
+            {nfts.error.message}
           </pre>
         </>
       ) : nfts.data.length > 0 ? (
