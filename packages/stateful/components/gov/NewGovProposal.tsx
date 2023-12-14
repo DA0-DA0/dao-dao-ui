@@ -156,7 +156,7 @@ export const NewGovProposal = () => {
     t,
     chain: chainContext.chain,
     chainContext: {
-      type: ActionChainContextType.Base,
+      type: ActionChainContextType.Configured,
       ...chainContext,
       ...chainContext.config,
     },

@@ -536,9 +536,6 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
     name: 'cosmos',
     mainnet: true,
     accentColor: '#5064fb',
-    gov: {
-      supportsV1GovProposals: false,
-    },
     explorerUrlTemplates: {
       tx: 'https://ping.pub/cosmos/tx/REPLACE',
       gov: 'https://ping.pub/cosmos/gov',

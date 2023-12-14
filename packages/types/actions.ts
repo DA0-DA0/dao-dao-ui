@@ -4,7 +4,11 @@ import { ComponentType } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
-import { ConfiguredChainContext, SupportedChainContext } from './chain'
+import {
+  ConfiguredChainContext,
+  IChainContext,
+  SupportedChainContext,
+} from './chain'
 import { CosmosMsgFor_Empty } from './contracts/common'
 import { DaoInfo } from './dao'
 import { AllGovParams } from './gov'
@@ -244,13 +248,26 @@ export type ActionContext =
     }
 
 export enum ActionChainContextType {
-  Base = 'base',
+  /**
+   * Any chain, not configured.
+   */
+  Any = 'any',
+  /**
+   * Configured chain, no DAO DAO deployment.
+   */
+  Configured = 'configured',
+  /**
+   * Supported chain with a DAO DAO deployment.
+   */
   Supported = 'supported',
 }
 
 export type ActionChainContext =
   | ({
-      type: ActionChainContextType.Base
+      type: ActionChainContextType.Any
+    } & IChainContext)
+  | ({
+      type: ActionChainContextType.Configured
     } & ConfiguredChainContext)
   | ({
       type: ActionChainContextType.Supported

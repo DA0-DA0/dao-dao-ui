@@ -142,7 +142,7 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
           {
             type: AccountType.Native,
             chainId: chain.chain_id,
-            address: supportedChain.name,
+            address: chainConfig.name,
           },
         ],
         parentDao: null,

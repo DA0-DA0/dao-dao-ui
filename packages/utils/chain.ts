@@ -10,6 +10,7 @@ import semverGte from 'semver/functions/gte'
 
 import {
   BaseChainConfig,
+  ChainId,
   ConfiguredChain,
   GenericToken,
   SupportedChain,

@@ -54,7 +54,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     chainContext: {
       type: ActionChainContextType.Supported,
       ...chainContext,
-      ...chainContext.config,
+      config: chainContext.config,
     },
     address: info.coreAddress,
     context: {
@@ -144,22 +144,22 @@ export const BaseActionsProvider = ({
   const { t } = useTranslation()
 
   const chainContext = useChainContext()
-  const actionChainContext: ActionChainContext | undefined = chainContext.base
-    ? {
-        type: ActionChainContextType.Base,
-        ...chainContext,
-        config: chainContext.base,
-      }
-    : chainContext.config
+  const actionChainContext: ActionChainContext = chainContext.config
     ? {
         type: ActionChainContextType.Supported,
         ...chainContext,
         config: chainContext.config,
       }
-    : undefined
-  if (!actionChainContext) {
-    throw new Error('Invalid chain context')
-  }
+    : chainContext.base
+    ? {
+        type: ActionChainContextType.Configured,
+        ...chainContext,
+        config: chainContext.base,
+      }
+    : {
+        type: ActionChainContextType.Any,
+        ...chainContext,
+      }
 
   const options: ActionOptions = {
     t,

@@ -5,6 +5,7 @@ import { constSelector, useRecoilValueLoadable } from 'recoil'
 import { DaoCoreV2Selectors, walletAdminOfDaosSelector } from '@dao-dao/state'
 import { JoystickEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
+  ActionChainContextType,
   ActionComponent,
   ActionContextType,
   ActionKey,
@@ -218,13 +219,13 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<DaoAdminExecData> = (
 export const makeDaoAdminExecAction: ActionMaker<DaoAdminExecData> = ({
   t,
   context,
-  chainContext: {
-    config: { noCosmWasm },
-  },
+  chainContext,
 }) =>
   // Only allow using this action in DAOs or gov props on chains with CW.
   context.type === ActionContextType.Dao ||
-  (context.type === ActionContextType.Gov && !noCosmWasm)
+  (context.type === ActionContextType.Gov &&
+    chainContext.type !== ActionChainContextType.Any &&
+    !chainContext.config.noCosmWasm)
     ? {
         key: ActionKey.DaoAdminExec,
         Icon: JoystickEmoji,
