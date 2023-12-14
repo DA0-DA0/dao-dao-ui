@@ -100,8 +100,9 @@ const Component: ActionComponent = (props) => {
 
 export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
   t,
-  address,
+  address: mainAddress,
   chain: { chain_id: currentChainId },
+  context,
 }) => {
   const useDefaults: UseDefaults<AuthzGrantRevokeData> = () => ({
     chainId: currentChainId,
@@ -138,9 +139,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
       !objectMatchesStructure(msg.stargate.value, {
         grantee: {},
         granter: {},
-      }) ||
-      // Make sure this address is the granter.
-      msg.stargate.value.granter !== address
+      })
     ) {
       return { match: false }
     }
@@ -403,7 +402,11 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
                       msgTypeUrl,
                     }),
                 grantee,
-                granter: address,
+                granter:
+                  chainId === currentChainId ||
+                  context.type !== ActionContextType.Dao
+                    ? mainAddress
+                    : context.info.polytoneProxies[chainId],
               },
             },
           })
