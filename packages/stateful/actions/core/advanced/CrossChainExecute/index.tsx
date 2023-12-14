@@ -18,7 +18,7 @@ import {
 } from '@dao-dao/types'
 import {
   decodePolytoneExecuteMsg,
-  getAccountAddress,
+  getChainAddressForActionOptions,
   maybeMakePolytoneExecuteMessage,
 } from '@dao-dao/utils'
 
@@ -67,16 +67,13 @@ const InnerComponent: ActionComponent = (props) => {
 
 const InnerComponentWrapper: ActionComponent = (props) => {
   const { chain_id: chainId } = useChain()
-  const { context } = useActionOptions()
+  const options = useActionOptions()
 
-  if (context.type !== ActionContextType.Dao) {
+  if (options.context.type !== ActionContextType.Dao) {
     return null
   }
 
-  const address = getAccountAddress({
-    accounts: context.info.accounts,
-    chainId,
-  })
+  const address = getChainAddressForActionOptions(options, chainId)
 
   return address ? (
     <WalletActionsProvider address={address}>
