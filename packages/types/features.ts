@@ -62,6 +62,11 @@ export enum Feature {
    * adding proposal modules).
    */
   ModuleInstantiateFunds,
+  /**
+   * The cosmwasm-std package was upgraded to v1.2.0 in the contracts which
+   * added support for Instantiate2 wasm messages.
+   */
+  Instantiate2,
 }
 
 /**

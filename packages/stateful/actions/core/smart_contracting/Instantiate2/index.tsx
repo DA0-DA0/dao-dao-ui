@@ -13,7 +13,7 @@ import {
   ChainPickerInput,
   ChainProvider,
 } from '@dao-dao/stateless'
-import { TokenType } from '@dao-dao/types'
+import { Feature, TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -36,8 +36,6 @@ import {
 import { useTokenBalances } from '../../../hooks'
 import { useActionOptions } from '../../../react'
 import { Instantiate2Component as StatelessInstantiate2Component } from './Component'
-
-// TODO(instantiate2): fix pre-propose msg issue
 
 type Instantiate2Data = {
   chainId: string
@@ -134,7 +132,15 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
   t,
   address,
   chain: { chain_id: currentChainId },
+  context,
 }) => {
+  if (
+    context.type === ActionContextType.Dao &&
+    !context.info.supportedFeatures[Feature.Instantiate2]
+  ) {
+    return null
+  }
+
   const useDefaults: UseDefaults<Instantiate2Data> = () => ({
     chainId: currentChainId,
     admin: address,
