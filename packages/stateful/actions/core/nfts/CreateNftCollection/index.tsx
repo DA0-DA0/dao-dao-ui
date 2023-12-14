@@ -6,6 +6,7 @@ import {
 } from '@dao-dao/stateless'
 import { ChainId } from '@dao-dao/types'
 import {
+  ActionChainContextType,
   ActionComponent,
   ActionContextType,
   ActionKey,
@@ -58,7 +59,7 @@ export const makeCreateNftCollectionAction: ActionMaker<
   } = options
 
   // Need to be on a supported chain to create an NFT collection.
-  if (!chainContext.config) {
+  if (chainContext.type !== ActionChainContextType.Supported) {
     return null
   }
 
