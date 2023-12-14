@@ -16,6 +16,7 @@ import {
   Loader,
   PageHeaderContent,
   RightSidebarContent,
+  TooltipInfoIcon,
   WalletProfileHeader,
   useCachedLoadable,
   useCachedLoadingWithError,
@@ -175,7 +176,17 @@ export const Wallet: NextPage = () => {
               <TreasuryHistoryGraph
                 address={walletAddress}
                 chainId={configuredChain.chain.chain_id}
-                className="mb-4 sm:mb-8"
+                className="mb-4 rounded-md bg-background-tertiary p-6 sm:mb-8"
+                header={
+                  <div className="flex flex-row items-center justify-center gap-1">
+                    <p className="title-text">{t('title.treasuryValue')}</p>
+
+                    <TooltipInfoIcon
+                      size="sm"
+                      title={t('info.treasuryValueTooltip')}
+                    />
+                  </div>
+                }
               />
 
               <WalletBalances
