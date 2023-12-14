@@ -117,12 +117,13 @@ export const WalletUi = (props: WalletModalProps) => {
                 )
               )
 
-              await Promise.all(
-                configuredChains.map((chainRecord) =>
-                  walletRepo
-                    .getWallet(wallet.walletName)
-                    ?.mainWallet.client.addChain?.(chainRecord)
-                    .catch(console.error)
+              await Promise.allSettled(
+                configuredChains.map(
+                  async (chainRecord) =>
+                    await walletRepo
+                      .getWallet(wallet.walletName)
+                      ?.mainWallet.client.addChain?.(chainRecord)
+                      .catch(console.error)
                 )
               )
 
