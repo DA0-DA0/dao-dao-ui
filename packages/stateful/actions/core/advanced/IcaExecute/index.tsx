@@ -219,7 +219,10 @@ const Component: ActionComponent = (props) => {
           </>
         ))}
 
-      <WarningCard className="max-w-xl" content={t('info.icaExperimental')} />
+      <WarningCard
+        className="mt-6 max-w-xl"
+        content={t('info.icaExperimental')}
+      />
     </>
   )
 }

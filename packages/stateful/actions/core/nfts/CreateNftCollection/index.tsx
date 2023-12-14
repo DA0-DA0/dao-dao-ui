@@ -54,7 +54,13 @@ export const makeCreateNftCollectionAction: ActionMaker<
     t,
     chain: { chain_id: currentChainId },
     context,
+    chainContext,
   } = options
+
+  // Need to be on a supported chain to create an NFT collection.
+  if (!chainContext.config) {
+    return null
+  }
 
   const useDefaults: UseDefaults<InstantiateNftCollectionData> = () => ({
     chainId: currentChainId,

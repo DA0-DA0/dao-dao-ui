@@ -5,10 +5,7 @@ import {
   getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
-import {
-  useDaoInfoContextIfAvailable,
-  useSupportedChainContext,
-} from '../../hooks'
+import { useChainContext, useDaoInfoContextIfAvailable } from '../../hooks'
 import { RadioInput } from './RadioInput'
 
 export type DaoSupportedChainPickerInputProps = {
@@ -46,8 +43,8 @@ export const DaoSupportedChainPickerInput = ({
 }: DaoSupportedChainPickerInputProps) => {
   const {
     chain: { chain_id: chainId },
-    config: { polytone },
-  } = useSupportedChainContext()
+    config,
+  } = useChainContext()
   const { watch, setValue } = useFormContext()
   const daoInfo = useDaoInfoContextIfAvailable()
 
@@ -58,16 +55,16 @@ export const DaoSupportedChainPickerInput = ({
     ...(_includeChainIds ?? []),
   ]
 
-  const polytoneChains = Object.keys(polytone || {})
-
-  if (polytoneChains.length === 0) {
+  // Only works on supported chains, so don't render if no supported chain
+  // config.
+  if (!config) {
     return null
   }
 
   const chainIds = [
     chainId,
     // Other chains with Polytone.
-    ...polytoneChains,
+    ...Object.keys(config.polytone || {}),
   ]
     .filter(
       (chainId) =>
