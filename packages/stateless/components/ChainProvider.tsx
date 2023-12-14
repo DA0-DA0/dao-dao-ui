@@ -2,6 +2,7 @@ import { ReactNode } from 'react'
 
 import {
   getChainForChainId,
+  getConfiguredChainConfig,
   getSupportedChainConfig,
   maybeGetNativeTokenForChainId,
 } from '@dao-dao/utils'
@@ -19,6 +20,7 @@ export const ChainProvider = ({ chainId, children }: ChainProviderProps) => (
       chainId,
       chain: getChainForChainId(chainId),
       nativeToken: maybeGetNativeTokenForChainId(chainId),
+      base: getConfiguredChainConfig(chainId),
       config: getSupportedChainConfig(chainId),
     }}
   >

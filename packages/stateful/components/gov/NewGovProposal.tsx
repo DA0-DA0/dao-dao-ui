@@ -53,9 +53,10 @@ import {
   TextInput,
   Tooltip,
   useCachedLoading,
-  useSupportedChainContext,
+  useConfiguredChainContext,
 } from '@dao-dao/stateless'
 import {
+  ActionChainContextType,
   ActionContextType,
   GovProposalVersion,
   GovernanceProposalActionData,
@@ -99,7 +100,7 @@ enum ProposeSubmitValue {
 export const NewGovProposal = () => {
   const { t } = useTranslation()
   const router = useRouter()
-  const chainContext = useSupportedChainContext()
+  const chainContext = useConfiguredChainContext()
   const { isWalletConnected, getSigningStargateClient, chain, chainWallet } =
     useWallet()
 
@@ -154,7 +155,11 @@ export const NewGovProposal = () => {
   const governanceProposalAction = makeGovernanceProposalAction({
     t,
     chain: chainContext.chain,
-    chainContext,
+    chainContext: {
+      type: ActionChainContextType.Base,
+      ...chainContext,
+      ...chainContext.config,
+    },
     address: walletAddress,
     context: {
       type: ActionContextType.Wallet,

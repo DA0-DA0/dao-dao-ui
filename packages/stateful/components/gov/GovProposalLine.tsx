@@ -4,7 +4,7 @@ import {
   GovProposalWalletVote,
   ProposalLineLoader,
   ProposalLine as StatelessProposalLine,
-  useSupportedChainContext,
+  useConfiguredChainContext,
 } from '@dao-dao/stateless'
 import { GovProposalWithDecodedContent } from '@dao-dao/types'
 import { getGovProposalPath } from '@dao-dao/utils'
@@ -29,7 +29,9 @@ const InnerGovProposalLine = ({
   proposalId,
   proposal,
 }: GovProposalLineProps) => {
-  const { config } = useSupportedChainContext()
+  const {
+    config: { name },
+  } = useConfiguredChainContext()
   const loadingGovProp = useLoadingGovProposal(proposalId)
 
   return (
@@ -45,7 +47,7 @@ const InnerGovProposalLine = ({
             status={proposal.proposal.status}
           />
         )}
-        href={getGovProposalPath(config.name, proposalId)}
+        href={getGovProposalPath(name, proposalId)}
         proposalNumber={Number(proposalId)}
         proposalPrefix=""
         timestampDisplay={

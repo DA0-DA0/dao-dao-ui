@@ -8,7 +8,8 @@ import { assets, chains, ibc } from 'chain-registry'
 import RIPEMD160 from 'ripemd160'
 
 import {
-  ChainId,
+  BaseChainConfig,
+  ConfiguredChain,
   GenericToken,
   SupportedChain,
   SupportedChainConfig,
@@ -18,7 +19,12 @@ import {
 import { cosmos } from '@dao-dao/utils/protobuf'
 
 import { getChainAssets } from './assets'
-import { CHAIN_ENDPOINTS, MAINNET, SUPPORTED_CHAINS } from './constants'
+import {
+  CHAIN_ENDPOINTS,
+  CONFIGURED_CHAINS,
+  MAINNET,
+  SUPPORTED_CHAINS,
+} from './constants'
 import { getFallbackImage } from './getFallbackImage'
 import { aminoTypes, typesRegistry } from './messages/protobuf'
 import {
@@ -372,24 +378,39 @@ export const getIbcTransferInfoFromChainSource = (
   }
 }
 
+export const getConfiguredChainConfig = (
+  chainId: string
+): BaseChainConfig | undefined =>
+  CONFIGURED_CHAINS.find((config) => config.chainId === chainId)
+
+export const getConfiguredChains = ({
+  mainnet = MAINNET,
+}: {
+  mainnet?: boolean
+} = {}): ConfiguredChain[] =>
+  CONFIGURED_CHAINS.filter(
+    (config) => mainnet === undefined || config.mainnet === mainnet
+  ).map((config) => ({
+    chain: getChainForChainId(config.chainId),
+    ...config,
+  }))
+
 export const getSupportedChainConfig = (
   chainId: string
 ): SupportedChainConfig | undefined =>
-  Object.values(ChainId).includes(chainId as any)
-    ? SUPPORTED_CHAINS[chainId as ChainId]
-    : undefined
+  SUPPORTED_CHAINS.find((config) => config.chainId === chainId)
 
 export const getSupportedChains = ({
   mainnet = MAINNET,
 }: {
   mainnet?: boolean
 } = {}): SupportedChain[] =>
-  Object.entries(SUPPORTED_CHAINS)
-    .filter(([, config]) => mainnet === undefined || config.mainnet === mainnet)
-    .map(([chainId, config]) => ({
-      chain: getChainForChainId(chainId),
-      ...config,
-    }))
+  SUPPORTED_CHAINS.filter(
+    (config) => mainnet === undefined || config.mainnet === mainnet
+  ).map((config) => ({
+    chain: getChainForChainId(config.chainId),
+    ...config,
+  }))
 
 // Validates whether the address is for the current chain. If so, return
 // undefined. If not, return the correct subdomain.

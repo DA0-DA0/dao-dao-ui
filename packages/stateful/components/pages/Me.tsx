@@ -16,7 +16,7 @@ import { SITE_URL, transformBech32Address } from '@dao-dao/utils'
 import { WalletActionsProvider } from '../../actions/react/provider'
 import { useWallet } from '../../hooks/useWallet'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
-import { ChainSwitcher } from '../ChainSwitcher'
+import { AllConfiguredChainSwitcher } from '../ChainSwitcher'
 import { ConnectWallet } from '../ConnectWallet'
 import { ProfileDisconnectedCard, ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -63,7 +63,7 @@ export const Me: NextPage = () => {
             {/* Suspend to prevent hydration error since we load state on first render from localStorage. */}
             <SuspenseLoader fallback={<Loader />}>
               <StatelessMe
-                ChainSwitcher={ChainSwitcher}
+                ChainSwitcher={AllConfiguredChainSwitcher}
                 MeBalances={MeBalances}
                 MeDaos={MeDaos}
                 MeTransactionBuilder={MeTransactionBuilder}

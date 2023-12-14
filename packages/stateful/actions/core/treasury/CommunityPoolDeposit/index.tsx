@@ -66,12 +66,7 @@ const Component: ActionComponent<undefined, CommunityPoolDepositData> = (
 
 export const makeCommunityPoolDepositAction: ActionMaker<
   CommunityPoolDepositData
-> = ({
-  t,
-  address,
-  chain: { chain_id: currentChainId },
-  chainContext: { nativeToken },
-}) => {
+> = ({ t, address, chain: { chain_id: currentChainId }, chainContext }) => {
   // Neutron does not use the x/distribution community pool.
   if (currentChainId === ChainId.NeutronMainnet) {
     return null
@@ -80,7 +75,7 @@ export const makeCommunityPoolDepositAction: ActionMaker<
   const useDefaults: UseDefaults<CommunityPoolDepositData> = () => ({
     chainId: currentChainId,
     amount: 100,
-    denom: nativeToken?.denomOrAddress || '',
+    denom: chainContext.nativeToken?.denomOrAddress || '',
   })
 
   const useTransformToCosmos: UseTransformToCosmos<

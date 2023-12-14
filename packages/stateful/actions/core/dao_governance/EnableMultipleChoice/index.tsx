@@ -10,6 +10,7 @@ import {
   TokenType,
 } from '@dao-dao/types'
 import {
+  ActionChainContextType,
   ActionContextType,
   ActionKey,
   ActionMaker,
@@ -81,16 +82,15 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<EnableMultipleChoiceData> = (
 
 export const makeEnableMultipleChoiceAction: ActionMaker<
   EnableMultipleChoiceData
-> = ({
-  t,
-  address,
-  context,
-  chain: { chain_id: chainId },
-  chainContext: { config: chainConfig },
-}) => {
+> = ({ t, address, context, chain: { chain_id: chainId }, chainContext }) => {
+  // Disallows creation if multiple choice proposal module already exists, down
+  // at the bottom of this function, instead of returning null here. This
+  // ensures this action can be rendered correctly in past proposals after
+  // multiple choice is enabled.
   if (
     context.type !== ActionContextType.Dao ||
-    !context.info.supportedFeatures[Feature.MultipleChoiceProposals]
+    !context.info.supportedFeatures[Feature.MultipleChoiceProposals] ||
+    chainContext.type !== ActionChainContextType.Supported
   ) {
     return null
   }
@@ -152,7 +152,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
           }
 
     const info = DaoProposalMultipleAdapter.daoCreation.getInstantiateInfo(
-      chainConfig,
+      chainContext.config,
       {
         ...makeDefaultNewDao(chainId),
         // Only the name is used in this function to pick the contract label.

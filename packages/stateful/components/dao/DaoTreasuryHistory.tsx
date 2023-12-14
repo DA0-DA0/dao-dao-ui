@@ -17,8 +17,8 @@ import {
   LineGraph,
   Loader,
   useChainContext,
+  useConfiguredChainContext,
   useDaoInfoContext,
-  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
   convertMicroDenomToDenomWithDecimals,
@@ -260,7 +260,7 @@ const TransactionRenderer = ({
     outgoing,
   },
 }: TransactionRendererProps) => {
-  const { config } = useSupportedChainContext()
+  const { config } = useConfiguredChainContext()
 
   return (
     <div className="flex flex-row items-start justify-between gap-4 xs:gap-12">

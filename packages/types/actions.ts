@@ -4,7 +4,7 @@ import { ComponentType } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
-import { SupportedChainContext } from './chain'
+import { ConfiguredChainContext, SupportedChainContext } from './chain'
 import { CosmosMsgFor_Empty } from './contracts/common'
 import { DaoInfo } from './dao'
 import { AllGovParams } from './gov'
@@ -241,10 +241,23 @@ export type ActionContext =
       params: AllGovParams
     }
 
+export enum ActionChainContextType {
+  Base = 'base',
+  Supported = 'supported',
+}
+
+export type ActionChainContext =
+  | ({
+      type: ActionChainContextType.Base
+    } & ConfiguredChainContext)
+  | ({
+      type: ActionChainContextType.Supported
+    } & SupportedChainContext)
+
 export type ActionOptions<ExtraOptions extends {} = {}> = ExtraOptions & {
   t: TFunction
   chain: Chain
-  chainContext: SupportedChainContext
+  chainContext: ActionChainContext
   // The address of the sender/actor.
   // DAO core address if context.type === Dao
   // Wallet address if context.type === Wallet

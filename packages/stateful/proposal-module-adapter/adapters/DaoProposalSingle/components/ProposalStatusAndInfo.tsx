@@ -23,9 +23,9 @@ import {
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
+  useConfiguredChainContext,
   useDaoInfoContext,
   useDaoNavHelpers,
-  useSupportedChainContext,
 } from '@dao-dao/stateless'
 import {
   BaseProposalStatusAndInfoProps,
@@ -122,7 +122,7 @@ const InnerProposalStatusAndInfo = ({
   const {
     chain: { chain_id: chainId },
     config: { explorerUrlTemplates },
-  } = useSupportedChainContext()
+  } = useConfiguredChainContext()
   const { name: daoName, coreAddress } = useDaoInfoContext()
   const { getDaoPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()

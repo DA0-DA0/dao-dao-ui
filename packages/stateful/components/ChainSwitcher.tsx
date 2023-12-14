@@ -1,9 +1,12 @@
 import { useRecoilState } from 'recoil'
 
 import { walletChainIdAtom } from '@dao-dao/state/recoil'
-import { ChainSwitcher as StatelessChainSwitcher } from '@dao-dao/stateless'
+import {
+  ChainSwitcher as StatelessChainSwitcher,
+  ChainSwitcherProps as StatelessChainSwitcherProps,
+} from '@dao-dao/stateless'
 
-export type ChainSwitcherProps = {
+export type ChainSwitcherProps = Pick<StatelessChainSwitcherProps, 'type'> & {
   chainId?: string
   onSelect?: (chainId: string) => void
   loading?: boolean
@@ -15,11 +18,13 @@ export const ChainSwitcher = ({
   onSelect,
   loading,
   excludeChainIds,
+  ...props
 }: ChainSwitcherProps) => {
   const [chainId, setChainId] = useRecoilState(walletChainIdAtom)
 
   return (
     <StatelessChainSwitcher
+      {...props}
       excludeChainIds={excludeChainIds}
       loading={loading}
       onSelect={(chain) =>
@@ -30,3 +35,7 @@ export const ChainSwitcher = ({
     />
   )
 }
+
+export const AllConfiguredChainSwitcher = (
+  props: Omit<ChainSwitcherProps, 'type'>
+) => <ChainSwitcher {...props} type="configured" />

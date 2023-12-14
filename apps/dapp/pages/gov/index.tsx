@@ -7,14 +7,22 @@ import { useRecoilValue } from 'recoil'
 
 import { walletChainIdAtom } from '@dao-dao/state'
 import { PageLoader } from '@dao-dao/stateless'
-import { getGovPath, getSupportedChainConfig } from '@dao-dao/utils'
+import {
+  getConfiguredChainConfig,
+  getConfiguredChains,
+  getGovPath,
+} from '@dao-dao/utils'
 
 const GovRedirectPage: NextPage = () => {
   const chainId = useRecoilValue(walletChainIdAtom)
 
   const router = useRouter()
   useEffect(() => {
-    router.push(getGovPath(getSupportedChainConfig(chainId)!.name))
+    router.push(
+      getGovPath(
+        getConfiguredChainConfig(chainId)?.name || getConfiguredChains()[0].name
+      )
+    )
   }, [chainId, router])
 
   return <PageLoader />

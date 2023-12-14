@@ -20,7 +20,7 @@ import {
   TextAreaInput,
   TextInput,
   TokenInput,
-  useSupportedChainContext,
+  useConfiguredChainContext,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
@@ -91,9 +91,11 @@ export const GovernanceProposalComponent: ActionComponent<
   const {
     chainId,
     chain: { bech32_prefix: bech32Prefix },
-    config: { supportsV1GovProposals },
+    config: {
+      gov: { supportsV1GovProposals },
+    },
     nativeToken,
-  } = useSupportedChainContext()
+  } = useConfiguredChainContext()
 
   const selectedMinDepositToken = minDeposits.loading
     ? undefined
