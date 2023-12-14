@@ -10,6 +10,7 @@ import {
   SegmentedControls,
 } from '@dao-dao/stateless'
 import {
+  ActionChainContextType,
   ActionComponent,
   ActionKey,
   ActionMaker,
@@ -247,13 +248,21 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<PerformTokenSwapData> = (
 
 export const makePerformTokenSwapAction: ActionMaker<PerformTokenSwapData> = ({
   t,
-}) => ({
-  key: ActionKey.PerformTokenSwap,
-  Icon: HandshakeEmoji,
-  label: t('title.tokenSwap'),
-  description: t('info.tokenSwapDescription'),
-  Component,
-  useDefaults,
-  useTransformToCosmos,
-  useDecodedCosmosMsg,
-})
+  chainContext,
+}) => {
+  // Check we're on a supported chain. Code IDs needed to instantiate a swap.
+  if (chainContext.type !== ActionChainContextType.Supported) {
+    return null
+  }
+
+  return {
+    key: ActionKey.PerformTokenSwap,
+    Icon: HandshakeEmoji,
+    label: t('title.tokenSwap'),
+    description: t('info.tokenSwapDescription'),
+    Component,
+    useDefaults,
+    useTransformToCosmos,
+    useDecodedCosmosMsg,
+  }
+}

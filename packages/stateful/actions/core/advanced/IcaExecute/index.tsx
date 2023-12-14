@@ -145,7 +145,6 @@ const Component: ActionComponent = (props) => {
           onChainSelected={(chainId) =>
             setValue((props.fieldNamePrefix + 'chainId') as 'chainId', chainId)
           }
-          onlySupportedChains
           selectedChainId={destChainId}
           sourceChainId={srcChainId}
         />
