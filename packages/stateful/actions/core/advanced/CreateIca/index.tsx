@@ -2,7 +2,10 @@ import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
-import { icaRemoteAddressSelector } from '@dao-dao/state/recoil'
+import {
+  chainSupportsIcaHostSelector,
+  icaRemoteAddressSelector,
+} from '@dao-dao/state/recoil'
 import { ChainEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -47,12 +50,34 @@ const Component: ActionComponent = (props) => {
       destChainId,
     })
   )
+  const icaHostSupported = useCachedLoadingWithError(
+    chainSupportsIcaHostSelector({
+      chainId: destChainId,
+    })
+  )
 
-  // If ICA account already exists for this chain during creation, add error
-  // preventing submission.
+  // If ICA account already exists or ICA host not enabled for this chain during
+  // creation, add error preventing submission.
   useEffect(() => {
     if (
+      destChainId &&
+      !icaHostSupported.loading &&
+      !icaHostSupported.updating &&
+      (icaHostSupported.errored || !icaHostSupported.data) &&
+      props.isCreating
+    ) {
+      setError((props.fieldNamePrefix + 'chainId') as 'chainId', {
+        type: 'manual',
+        message: icaHostSupported.errored
+          ? icaHostSupported.error.message
+          : t('error.icaHostUnsupported', {
+              chain: getDisplayNameForChainId(destChainId),
+            }),
+      })
+    } else if (
+      destChainId &&
       !createdAddressLoading.loading &&
+      !createdAddressLoading.updating &&
       !createdAddressLoading.errored &&
       createdAddressLoading.data &&
       props.isCreating
@@ -70,6 +95,7 @@ const Component: ActionComponent = (props) => {
     clearErrors,
     createdAddressLoading,
     destChainId,
+    icaHostSupported,
     props.fieldNamePrefix,
     props.isCreating,
     setError,
@@ -81,6 +107,7 @@ const Component: ActionComponent = (props) => {
       {...props}
       options={{
         createdAddressLoading,
+        icaHostSupported,
       }}
     />
   )

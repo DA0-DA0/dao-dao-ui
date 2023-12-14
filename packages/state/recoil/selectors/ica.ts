@@ -1,5 +1,6 @@
 import { selectorFamily } from 'recoil'
 
+import { WithChainId } from '@dao-dao/types'
 import { getIbcTransferInfoBetweenChains } from '@dao-dao/utils'
 
 import { ibcRpcClientForChainSelector } from './chain'
@@ -45,6 +46,34 @@ export const icaRemoteAddressSelector = selectorFamily<
 
         // Rethrow all other errors.
         throw err
+      }
+    },
+})
+
+/**
+ * Whether or not the chain has ICA host setup and allows spends/IBC transfers.
+ */
+export const chainSupportsIcaHostSelector = selectorFamily<
+  boolean,
+  WithChainId<{}>
+>({
+  key: 'chainSupportsIcaHost',
+  get:
+    ({ chainId }) =>
+    async ({ get }) => {
+      const ibc = get(ibcRpcClientForChainSelector(chainId))
+
+      try {
+        const { params: { hostEnabled, allowMessages } = {} } =
+          await ibc.applications.interchain_accounts.host.v1.params()
+
+        return (
+          !!hostEnabled &&
+          !!allowMessages?.includes('/cosmos.bank.v1beta1.MsgSend') &&
+          !!allowMessages?.includes('/ibc.applications.transfer.v1.MsgTransfer')
+        )
+      } catch {
+        return false
       }
     },
 })

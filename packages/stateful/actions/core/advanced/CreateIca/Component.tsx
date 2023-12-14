@@ -1,3 +1,4 @@
+import { Check } from '@mui/icons-material'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
@@ -24,13 +25,14 @@ export type CreateIcaData = {
 
 export type CreateIcaOptions = {
   createdAddressLoading: LoadingDataWithError<string | undefined>
+  icaHostSupported: LoadingDataWithError<boolean>
 }
 
 export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
   fieldNamePrefix,
   isCreating,
   errors,
-  options: { createdAddressLoading },
+  options: { createdAddressLoading, icaHostSupported },
   addAction,
   allActionsWithData,
 }) => {
@@ -68,32 +70,55 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
             sourceChainId={sourceChainId}
           />
 
-          <InputErrorMessage className="-mt-2" error={errors?.chainId} />
+          {isCreating &&
+            !!destinationChainId &&
+            (icaHostSupported.loading ||
+            icaHostSupported.updating ||
+            createdAddressLoading.loading ||
+            createdAddressLoading.updating ? (
+              <Loader className="self-start" fill={false} size={24} />
+            ) : (
+              <>
+                <InputErrorMessage className="-mt-2" error={errors?.chainId} />
 
-          {addAction && (
-            <div className="flex flex-col items-start gap-2">
-              <p className="body-text max-w-prose">
-                {t('info.createIcaRegister')}
-              </p>
+                {!icaHostSupported.errored && icaHostSupported.data && (
+                  <>
+                    <div className="flex flex-row items-center gap-3">
+                      <p className="primary-text">
+                        {t('info.icaHostSupported')}
+                      </p>
 
-              <Button
-                disabled={registerActionExists}
-                onClick={() =>
-                  addAction?.({
-                    actionKey: ActionKey.ManageIcas,
-                    data: {
-                      chainId: destinationChainId,
-                      register: true,
-                    },
-                  })
-                }
-              >
-                {registerActionExists
-                  ? t('button.addedRegisterAction')
-                  : t('button.addRegisterAction')}
-              </Button>
-            </div>
-          )}
+                      <Check className="!h-5 !w-5" />
+                    </div>
+
+                    {addAction && (
+                      <div className="flex flex-col items-start gap-2">
+                        <p className="body-text max-w-prose">
+                          {t('info.createIcaRegister')}
+                        </p>
+
+                        <Button
+                          disabled={registerActionExists}
+                          onClick={() =>
+                            addAction?.({
+                              actionKey: ActionKey.ManageIcas,
+                              data: {
+                                chainId: destinationChainId,
+                                register: true,
+                              },
+                            })
+                          }
+                        >
+                          {registerActionExists
+                            ? t('button.addedRegisterAction')
+                            : t('button.addRegisterAction')}
+                        </Button>
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            ))}
         </>
       ) : (
         <div className="flex flex-row flex-wrap items-center justify-between gap-x-4 gap-y-2 rounded-md bg-background-secondary px-4 py-3">
