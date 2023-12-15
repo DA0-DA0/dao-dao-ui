@@ -23,6 +23,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   getTokenForChainIdAndDenom,
   isDecodedStargateMsg,
   makeStargateMessage,
@@ -96,12 +97,14 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
-  t,
-  address: mainAddress,
-  chain: { chain_id: currentChainId },
-  context,
-}) => {
+export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = (
+  options
+) => {
+  const {
+    t,
+    chain: { chain_id: currentChainId },
+  } = options
+
   const useDefaults: UseDefaults<AuthzGrantRevokeData> = () => ({
     chainId: currentChainId,
     mode: 'grant',
@@ -400,11 +403,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
                       msgTypeUrl,
                     }),
                 grantee,
-                granter:
-                  chainId === currentChainId ||
-                  context.type !== ActionContextType.Dao
-                    ? mainAddress
-                    : context.info.polytoneProxies[chainId],
+                granter: getChainAddressForActionOptions(options, chainId),
               },
             },
           })
