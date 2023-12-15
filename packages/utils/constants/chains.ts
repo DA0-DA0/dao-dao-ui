@@ -127,6 +127,28 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // terra
         // remoteClient: '07-tendermint-3',
       },
+      [ChainId.MigalooMainnet]: {
+        // juno
+        note: 'juno15mtjtjuxfrr6ez4a2yqfpsa6n86xerxuyal70n5vzdppgjtutyzqaahmzk',
+        // juno
+        listener:
+          'juno1md8sgkt7pjlc92lztlvxwft3eh4lqr98lhf07zftaqfzuxne47rq3adtf3',
+        // migaloo
+        voice:
+          'migaloo19dfxncujs33vtw2r5jscm7z7xt2lj7de8ar84z8c6h2l8hkysezq9n2shr',
+        // juno
+        localConnection: 'connection-282',
+        // migaloo
+        remoteConnection: 'connection-1',
+        // juno
+        localChannel: 'channel-457',
+        // migaloo
+        remoteChannel: 'channel-63',
+        // juno
+        // localClient: '07-tendermint-310',
+        // migaloo
+        // remoteClient: '07-tendermint-1',
+      },
     },
   },
   {
@@ -243,6 +265,28 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // localClient: '07-tendermint-1979',
         // terra
         // remoteClient: '07-tendermint-2',
+      },
+      [ChainId.MigalooMainnet]: {
+        // osmosis
+        note: 'osmo1gwg378zlvfcx294wvsxqswm6dt33mr6g5f4sdu752vxpcwqkhunqrhljl2',
+        // osmosis
+        listener:
+          'osmo1v4lwr23hd5yvnr39nnv7x0zy8ja6nx7su5hwpde9pm5j2x40vnsquck9xh',
+        // migaloo
+        voice:
+          'migaloo1x2fzq23trg33s9m37798s342r6p58rvcnya4wn7vcp6az95psl4s0t5563',
+        // osmosis
+        localConnection: 'connection-2171',
+        // migaloo
+        remoteConnection: 'connection-11',
+        // osmosis
+        localChannel: 'channel-12088',
+        // migaloo
+        remoteChannel: 'channel-65',
+        // osmosis
+        // localClient: '07-tendermint-2669',
+        // migaloo
+        // remoteClient: '07-tendermint-3',
       },
     },
   },
@@ -645,6 +689,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.TerraMainnet]: {
     rpc: 'https://terra-rpc.polkachu.com',
     rest: 'https://terra-api.polkachu.com',
+  },
+  [ChainId.MigalooMainnet]: {
+    rpc: 'https://migaloo-rpc.polkachu.com',
+    rest: 'https://migaloo-api.polkachu.com',
   },
 }
 
