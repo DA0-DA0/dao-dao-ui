@@ -105,6 +105,28 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // stargaze
         // remoteClient: '07-tendermint-13',
       },
+      [ChainId.TerraMainnet]: {
+        // juno
+        note: 'juno1hhfzyeytvfnunxast867qm36rnsnuugdl7w6vgdaj96r6cvqh6pq6ucxw7',
+        // juno
+        listener:
+          'juno1jy0nct4jkmhsfua2fmyna5j9kr80xgytqpgdpzc95pul3l8gcw7q4phsv8',
+        // terra
+        voice:
+          'terra1wkdcnhc9h2rm4vjg677t742u6n6pc72cxx2d8pk4qqsyd5ywzc2qvyckyy',
+        // juno
+        localConnection: 'connection-128',
+        // terra
+        remoteConnection: 'connection-6',
+        // juno
+        localChannel: 'channel-456',
+        // terra
+        remoteChannel: 'channel-319',
+        // juno
+        // localClient: '07-tendermint-185',
+        // terra
+        // remoteClient: '07-tendermint-3',
+      },
     },
   },
   {
@@ -200,6 +222,28 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // stargaze
         // remoteClient: '07-tendermint-0',
       },
+      [ChainId.TerraMainnet]: {
+        // osmosis
+        note: 'osmo1sa5yvr9pvxd8eh2wjmfj4c2cqvsxxs49ztn7e2pxtc4zxeet6e7spawtnd',
+        // osmosis
+        listener:
+          'osmo10ql2wj858ejlx6jn46uhxnf5pda7pfxrnqm64drhane78kmtgd4smn544l',
+        // terra
+        voice:
+          'terra1zgjqvzva5yz56yqa3s8dframcp3xkmxnspncsjq5hlg9dup7wk5smkrza7',
+        // osmosis
+        localConnection: 'connection-1536',
+        // terra
+        remoteConnection: 'connection-3',
+        // osmosis
+        localChannel: 'channel-12048',
+        // terra
+        remoteChannel: 'channel-320',
+        // osmosis
+        // localClient: '07-tendermint-1979',
+        // terra
+        // remoteClient: '07-tendermint-2',
+      },
     },
   },
   {
@@ -246,6 +290,76 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         DaoProposalMultiple: 226,
       },
     },
+    // There is no IBC connection with:
+    // - Juno
+    polytone: {
+      [ChainId.OsmosisMainnet]: {
+        // neutron
+        note: 'neutron1767kfqeglqyctuqsmvyzgjecs60lpqju2f590smxevk9duq5fhaqgk5eca',
+        // neutron
+        listener:
+          'neutron1dvh9s7aa93uyv06hsu6qak238gc3kr6nr6cgejfrplhx3m9f630smfmn0l',
+        // osmosis
+        voice:
+          'osmo1vw02frqejfw2v2w7dy6ws35jp9743dwkxy0laalwsuvzzvkszz7s8d93yw',
+        // neutron
+        localConnection: 'connection-18',
+        // osmosis
+        remoteConnection: 'connection-2338',
+        // neutron
+        localChannel: 'channel-54',
+        // osmosis
+        remoteChannel: 'channel-12058',
+        // neutron
+        // localClient: '07-tendermint-19',
+        // osmosis
+        // remoteClient: '07-tendermint-2823',
+      },
+      [ChainId.StargazeMainnet]: {
+        // neutron
+        note: 'neutron10h7a9s60ytvzeqzffa53dzqk4rdwqchmuue7ezp2txcs7a2ky82qzl203t',
+        // neutron
+        listener:
+          'neutron1e06n0haqtmlvpj5u7fwkjdhc73ltxq0c3y5t5acdjscwqdf7uavqt6yxv6',
+        // stargaze
+        voice:
+          'stars1f54x5q35vv39xv4dvjdxthj98xttulml2a86src2tf24mcpvq8wshc3px0',
+        // neutron
+        localConnection: 'connection-23',
+        // stargaze
+        remoteConnection: 'connection-211',
+        // neutron
+        localChannel: 'channel-55',
+        // stargaze
+        remoteChannel: 'channel-253',
+        // neutron
+        // localClient: '07-tendermint-31',
+        // stargaze
+        // remoteClient: '07-tendermint-283',
+      },
+      [ChainId.TerraMainnet]: {
+        // neutron
+        note: 'neutron143aydj5zcgh7fudhsjq7878z7v8dmj0ckn9un2hsrxgnslvgymfsln0tkw',
+        // neutron
+        listener:
+          'neutron14zjfefmmx78sp4t45ftvx9eptd5gsspmdhm6dqztszdkfq4w4mvqtldzyf',
+        // terra
+        voice:
+          'terra1669p39l9gg4ajjwyta5psf5g4aen05d392mzp9efpa06vnaa7j6s3czzd3',
+        // neutron
+        localConnection: 'connection-9',
+        // terra
+        remoteConnection: 'connection-192',
+        // neutron
+        localChannel: 'channel-53',
+        // terra
+        remoteChannel: 'channel-323',
+        // neutron
+        // localClient: '07-tendermint-12',
+        // terra
+        // remoteClient: '07-tendermint-274',
+      },
+    },
   },
   {
     chainId: ChainId.StargazeMainnet,
@@ -289,6 +403,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         DaoProposalMultiple: 91,
       },
     },
+    // There is no IBC connection with:
+    // - Stargaze
     polytone: {
       [ChainId.OsmosisMainnet]: {
         // stargaze
@@ -525,6 +641,10 @@ export const CHAIN_ENDPOINTS: Partial<
   [ChainId.CosmosHubMainnet]: {
     rpc: 'https://cosmos-rpc.polkachu.com',
     rest: 'https://cosmos-api.polkachu.com',
+  },
+  [ChainId.TerraMainnet]: {
+    rpc: 'https://terra-rpc.polkachu.com',
+    rest: 'https://terra-api.polkachu.com',
   },
 }
 

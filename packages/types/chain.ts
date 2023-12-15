@@ -64,6 +64,7 @@ export enum ChainId {
   StargazeMainnet = 'stargaze-1',
   StargazeTestnet = 'elgafar-1',
   NeutronMainnet = 'neutron-1',
+  TerraMainnet = 'phoenix-1',
 }
 
 export type BaseChainConfig = {

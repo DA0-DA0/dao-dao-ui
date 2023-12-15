@@ -67,12 +67,8 @@ const InnerComponent: ActionComponent = (props) => {
 
 const InnerComponentWrapper: ActionComponent = (props) => {
   const { chain_id: chainId } = useChain()
+
   const options = useActionOptions()
-
-  if (options.context.type !== ActionContextType.Dao) {
-    return null
-  }
-
   const address = getChainAddressForActionOptions(options, chainId)
 
   return address ? (
@@ -101,6 +97,7 @@ const Component: ActionComponent = (props) => {
           disabled={!props.isCreating}
           excludeChainIds={[currentChainId]}
           fieldName={props.fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
         />
       )}
 
@@ -165,5 +162,7 @@ export const makeCrossChainExecuteAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
+    // Disallow creation if no accounts created.
+    hideFromPicker: Object.values(context.info.polytoneProxies).length === 0,
   }
 }
