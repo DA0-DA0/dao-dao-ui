@@ -734,6 +734,7 @@
   },
   "info": {
     "abstainVote": "Abstain",
+    "accountPageDescription": "View tokens and NFTs for the account with address {{address}}.",
     "actionPageWarning": "There are {{actions}} actions across {{pages}} pages. Make sure you view all pages before voting.",
     "actionPaysTokenSwap_paid": "This action sent {{amount}} ${{tokenSymbol}} to the token swap contract below.",
     "actionPaysTokenSwap_unpaid": "This action sends {{amount}} ${{tokenSymbol}} to the token swap contract below.",
@@ -1133,7 +1134,6 @@
     "votingModuleNotYetSupported": "This DAO uses a voting module that our UI does not yet support. Functionality may be limited.",
     "votingPowerAtCreationTooltip": "This was your voting power at the time of proposal creation.",
     "waitingForRateAndPropose": "Waiting for DAO members to rate and propose...",
-    "walletPageDescription": "View the tokens and NFTs for wallet {{address}}.",
     "whatAreYouLookingForPrompt": "What are you looking for?",
     "whatDoTheyWantToBeRated": "What do they want to be rated?",
     "whatDoYouWantToBeRated": "What do you want to be rated?",
@@ -1557,7 +1557,6 @@
     "votingPower": "Voting power",
     "votingProgress": "Voting Progress",
     "votingWeight": "Voting weight",
-    "wallet": "Wallet",
     "walletConnect": "WalletConnect",
     "watchOut": "Watch out!",
     "website": "Website",

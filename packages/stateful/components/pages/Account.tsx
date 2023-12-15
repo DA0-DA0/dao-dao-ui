@@ -1,7 +1,8 @@
+import clsx from 'clsx'
 import { NextPage } from 'next'
 import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
@@ -16,43 +17,61 @@ import {
   Loader,
   PageHeaderContent,
   RightSidebarContent,
-  TooltipInfoIcon,
+  SegmentedControls,
   WalletProfileHeader,
   useCachedLoadable,
   useCachedLoadingWithError,
   useThemeContext,
 } from '@dao-dao/stateless'
-import { Theme } from '@dao-dao/types'
+import { MeTab, MeTabId, Theme } from '@dao-dao/types'
 import {
   SITE_URL,
-  getConfiguredChainConfig,
+  getAccountPath,
   getConfiguredChains,
-  getWalletPath,
+  isValidWalletAddress,
   transformBech32Address,
 } from '@dao-dao/utils'
 
 import { walletProfileDataSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
-import { ChainSwitcher } from '../ChainSwitcher'
-import { LazyNftCard } from '../nft'
 import { ProfileHomeCard } from '../profile'
 import { SuspenseLoader } from '../SuspenseLoader'
-import { TreasuryHistoryGraph } from '../TreasuryHistoryGraph'
-import { WalletBalances } from '../wallet'
+import { AccountBalances } from './AccountBalances'
+import { AccountDaos } from './AccountDaos'
 
-export const Wallet: NextPage = () => {
+export const Account: NextPage = () => {
   const { t } = useTranslation()
+
   const router = useRouter()
-  const { chain, address } = router.query || {}
+  const { address } = router.query || {}
 
-  const configuredChain = getConfiguredChains().find(
-    ({ name }) => name === chain
-  )
-  const walletAddress = typeof address === 'string' ? address : undefined
+  const validAddress =
+    typeof address === 'string' && address
+      ? isValidWalletAddress(address)
+      : false
 
-  if (!configuredChain || !walletAddress) {
-    throw new Error('Unsupported chain or address.')
+  if (!validAddress) {
+    throw new Error('Invalid address.')
   }
+
+  const configuredChain = getConfiguredChains()[0]
+  const walletAddress = transformBech32Address(
+    address as string,
+    configuredChain.chainId
+  )
+
+  const tabs: MeTab[] = [
+    {
+      id: MeTabId.Daos,
+      label: t('title.daos'),
+      Component: AccountDaos,
+    },
+    {
+      id: MeTabId.Balances,
+      label: t('title.balances'),
+      Component: AccountBalances,
+    },
+  ]
 
   const hexPublicKey = useCachedLoadingWithError(
     walletHexPublicKeySelector({
@@ -109,22 +128,56 @@ export const Wallet: NextPage = () => {
     averageImgColorLoadable.contents,
   ])
 
-  const [goingToChainId, setGoingToChainId] = useState<string>()
+  // Pre-fetch tabs.
+  useEffect(() => {
+    Object.values(MeTabId).forEach((tab) => {
+      router.prefetch(getAccountPath(walletAddress, tab))
+    })
+  }, [router, walletAddress])
+
+  const _tab = router.query.tab
+  const tabPath = _tab && Array.isArray(_tab) ? _tab[0] : undefined
+  const selectedTabId =
+    // If tabPath is not a valid tab, default to first tab. This ensures that
+    // the default `/me` page will render the first tab, and also that an
+    // invalid tab was not passed, though that should be impossible because Next
+    // will render any invalid tabs (not in the `getStaticPaths` function) with
+    // a 404 page.
+    tabPath && tabs.some(({ id }) => id === tabPath)
+      ? (tabPath as MeTabId)
+      : tabs[0].id
+
+  const tabSelector = (
+    <div className="flex flex-row items-center justify-center">
+      <SegmentedControls
+        onSelect={(tab) =>
+          router.push(getAccountPath(walletAddress, tab), undefined, {
+            shallow: true,
+          })
+        }
+        selected={selectedTabId}
+        tabs={tabs.map(({ id, label }) => ({
+          label,
+          value: id,
+        }))}
+      />
+    </div>
+  )
 
   return (
     <>
       <NextSeo
-        description={t('info.walletPageDescription', {
+        description={t('info.accountPageDescription', {
           address: walletAddress,
         })}
         openGraph={{
           url: SITE_URL + router.asPath,
-          title: t('title.wallet') + ': ' + walletAddress,
-          description: t('info.walletPageDescription', {
+          title: t('title.account') + ': ' + walletAddress,
+          description: t('info.accountPageDescription', {
             address: walletAddress,
           }),
         }}
-        title={t('title.wallet') + ': ' + walletAddress}
+        title={t('title.account') + ': ' + walletAddress}
       />
 
       <RightSidebarContent>
@@ -133,32 +186,11 @@ export const Wallet: NextPage = () => {
       <PageHeaderContent
         className="mx-auto max-w-5xl"
         gradient
-        rightNode={
-          <ChainSwitcher
-            chainId={configuredChain.chain.chain_id}
-            loading={
-              !!goingToChainId &&
-              goingToChainId !== configuredChain.chain.chain_id
-            }
-            onSelect={(chainId) => {
-              const chainConfig = getConfiguredChainConfig(chainId)
-              if (chainConfig) {
-                router.push(
-                  getWalletPath(
-                    chainId,
-                    transformBech32Address(walletAddress, chainId)
-                  )
-                )
-                setGoingToChainId(chainId)
-              }
-            }}
-            type="configured"
-          />
-        }
-        title={t('title.wallet')}
+        rightNode={<div className="hidden sm:block">{tabSelector}</div>}
+        title={t('title.account')}
       />
 
-      <div className="mx-auto flex max-w-5xl flex-col items-stretch gap-6">
+      <div className="mx-auto flex min-h-full max-w-5xl flex-col items-stretch gap-6">
         {!hexPublicKey.loading &&
         (hexPublicKey.errored || !hexPublicKey.data) ? (
           <ErrorPage title={t('error.couldntFindWallet')}>
@@ -169,45 +201,21 @@ export const Wallet: NextPage = () => {
         ) : (
           <ChainProvider chainId={configuredChain.chain.chain_id}>
             <WalletProfileHeader editable={false} profileData={profileData}>
-              <CopyableAddress address={walletAddress} />
+              <CopyableAddress address={address as string} />
             </WalletProfileHeader>
 
-            <SuspenseLoader fallback={<Loader />}>
-              <TreasuryHistoryGraph
-                address={walletAddress}
-                chainId={configuredChain.chain.chain_id}
-                className="mb-4 rounded-md bg-background-tertiary p-6 sm:mb-8"
-                header={
-                  <div className="flex flex-row items-center justify-center gap-1">
-                    <p className="title-text">{t('title.treasuryValue')}</p>
+            <div className="mb-4 -mt-2 sm:hidden">{tabSelector}</div>
 
-                    <TooltipInfoIcon
-                      size="sm"
-                      title={t('info.treasuryValueTooltip')}
-                    />
-                  </div>
-                }
-              />
-
-              <WalletBalances
-                NftCard={LazyNftCard}
-                address={walletAddress}
-                chainId={configuredChain.chain.chain_id}
-                chainMode="current"
-                editable={false}
-                hexPublicKey={
-                  hexPublicKey.loading ||
-                  hexPublicKey.errored ||
-                  !hexPublicKey.data
-                    ? { loading: true }
-                    : {
-                        loading: false,
-                        updating: hexPublicKey.updating,
-                        data: hexPublicKey.data,
-                      }
-                }
-              />
-            </SuspenseLoader>
+            {tabs.map(({ id, Component }) => (
+              <div
+                key={id}
+                className={clsx('grow', selectedTabId !== id && 'hidden')}
+              >
+                <SuspenseLoader fallback={<Loader />}>
+                  <Component />
+                </SuspenseLoader>
+              </div>
+            ))}
           </ChainProvider>
         )}
       </div>

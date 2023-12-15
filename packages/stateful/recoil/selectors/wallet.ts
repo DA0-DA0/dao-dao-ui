@@ -36,6 +36,7 @@ import {
   getConfiguredChains,
   getFallbackImage,
   getNativeTokenForChainId,
+  getSupportedChains,
   transformBech32Address,
 } from '@dao-dao/utils'
 
@@ -405,11 +406,9 @@ export const allWalletDaosSelector = selectorFamily<
   get:
     ({ walletAddress }) =>
     ({ get }) => {
-      const chains = getConfiguredChains()
-
       const allLazyDaoCards = get(
         waitForAll(
-          chains.map(({ chain }) =>
+          getSupportedChains().map(({ chain }) =>
             walletDaosSelector({
               chainId: chain.chain_id,
               walletAddress: transformBech32Address(

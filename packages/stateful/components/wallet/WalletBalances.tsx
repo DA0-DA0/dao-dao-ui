@@ -22,31 +22,36 @@ import { WalletTokenLine } from './WalletTokenLine'
 import { WalletTokenLineReadonly } from './WalletTokenLineReadonly'
 
 export type WalletBalancesProps = {
-  chainId: string
   address: string | undefined
   hexPublicKey: LoadingData<string>
   NftCard: ComponentType<LazyNftCardInfo>
   // If true, use token card that has edit actions.
   editable: boolean
-  // Whether to show only the current chain's tokens or all supported chains'.
-  chainMode: 'current' | 'all'
-}
+} & (
+  | {
+      chainId: string
+      chainMode: 'current'
+    }
+  | {
+      chainId?: never
+      chainMode: 'all'
+    }
+)
 
 export const WalletBalances = ({
-  chainId,
   address,
   hexPublicKey,
   NftCard,
   editable,
-  chainMode,
+  ...chainModeAndId
 }: WalletBalancesProps) => {
   const tokensWithoutLazyInfo = useCachedLoading(
     address
       ? waitForAllSettled(
-          chainMode === 'current'
+          chainModeAndId.chainMode === 'current'
             ? [
                 walletTokenCardInfosSelector({
-                  chainId,
+                  chainId: chainModeAndId.chainId,
                   walletAddress: address,
                 }),
               ]
@@ -109,7 +114,10 @@ export const WalletBalances = ({
     address
       ? allWalletNftsSelector({
           walletAddress: address,
-          chainId: chainMode === 'current' ? chainId : undefined,
+          chainId:
+            chainModeAndId.chainMode === 'current'
+              ? chainModeAndId.chainId
+              : undefined,
         })
       : undefined,
     []

@@ -4,9 +4,9 @@
 import { GetStaticPaths, GetStaticProps } from 'next'
 
 import { serverSideTranslations } from '@dao-dao/i18n/serverSideTranslations'
-import { Wallet } from '@dao-dao/stateful'
+import { Account } from '@dao-dao/stateful'
 
-export default Wallet
+export default Account
 
 export const getStaticProps: GetStaticProps = async ({ locale }) => ({
   props: {
