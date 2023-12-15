@@ -72,6 +72,8 @@ export enum ActionKey {
   CreateIca = 'createIca',
   IcaExecute = 'icaExecute',
   ManageIcas = 'manageIcas',
+  CreateValenceAccount = 'createValenceAccount',
+  ConfigureRebalancer = 'configureRebalancer',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',

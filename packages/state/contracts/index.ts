@@ -35,3 +35,7 @@ export {
 export { PolytoneNoteClient, PolytoneNoteQueryClient } from './PolytoneNote'
 export { PolytoneProxyClient, PolytoneProxyQueryClient } from './PolytoneProxy'
 export { Sg721BaseClient, Sg721BaseQueryClient } from './Sg721Base'
+export {
+  ValenceServiceRebalancerClient,
+  ValenceServiceRebalancerQueryClient,
+} from './ValenceServiceRebalancer'

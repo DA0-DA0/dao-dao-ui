@@ -1,23 +1,34 @@
 import { ComponentType } from 'react'
-import { waitForAllSettled } from 'recoil'
+import { constSelector, useRecoilValue, waitForAllSettled } from 'recoil'
 
+import { accountsSelector } from '@dao-dao/state/recoil'
 import {
   WalletBalances as StatelessWalletBalances,
   useCachedLoading,
 } from '@dao-dao/stateless'
-import { LazyNftCardInfo, LoadingData, TokenCardInfo } from '@dao-dao/types'
+import {
+  ActionKey,
+  LazyNftCardInfo,
+  LoadingData,
+  TokenCardInfo,
+} from '@dao-dao/types'
 import {
   getConfiguredChains,
+  getMeTxPrefillPath,
   loadableToLoadingData,
   transformBech32Address,
 } from '@dao-dao/utils'
 
+import { useActionForKey } from '../../actions'
 import {
   allWalletNftsSelector,
   hiddenBalancesSelector,
   tokenCardLazyInfoSelector,
   walletTokenCardInfosSelector,
 } from '../../recoil'
+import { ButtonLink } from '../ButtonLink'
+import { IconButtonLink } from '../IconButtonLink'
+import { TreasuryHistoryGraph } from '../TreasuryHistoryGraph'
 import { WalletTokenLine } from './WalletTokenLine'
 import { WalletTokenLineReadonly } from './WalletTokenLineReadonly'
 
@@ -45,6 +56,27 @@ export const WalletBalances = ({
   editable,
   ...chainModeAndId
 }: WalletBalancesProps) => {
+  const accounts =
+    useRecoilValue(
+      address
+        ? waitForAllSettled(
+            chainModeAndId.chainMode === 'current'
+              ? [
+                  accountsSelector({
+                    chainId: chainModeAndId.chainId,
+                    address,
+                  }),
+                ]
+              : getConfiguredChains().map(({ chain }) =>
+                  accountsSelector({
+                    chainId: chain.chain_id,
+                    address: transformBech32Address(address, chain.chain_id),
+                  })
+                )
+          )
+        : constSelector(undefined)
+    )?.flatMap((loadable) => loadable.valueMaybe() || []) || []
+
   const tokensWithoutLazyInfo = useCachedLoading(
     address
       ? waitForAllSettled(
@@ -130,10 +162,28 @@ export const WalletBalances = ({
     []
   )
 
+  const configureRebalancerActionDefaults = useActionForKey(
+    ActionKey.ConfigureRebalancer
+  )?.action.useDefaults()
+
   return (
     <StatelessWalletBalances
+      ButtonLink={ButtonLink}
+      IconButtonLink={IconButtonLink}
       NftCard={NftCard}
       TokenLine={editable ? WalletTokenLine : WalletTokenLineReadonly}
+      TreasuryHistoryGraph={TreasuryHistoryGraph}
+      accounts={accounts}
+      configureRebalancerHref={
+        editable && configureRebalancerActionDefaults
+          ? getMeTxPrefillPath([
+              {
+                actionKey: ActionKey.ConfigureRebalancer,
+                data: configureRebalancerActionDefaults,
+              },
+            ])
+          : undefined
+      }
       hiddenTokens={hiddenTokens}
       nfts={nfts}
       tokens={tokens}

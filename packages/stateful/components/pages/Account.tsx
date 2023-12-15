@@ -32,6 +32,7 @@ import {
   transformBech32Address,
 } from '@dao-dao/utils'
 
+import { WalletActionsProvider } from '../../actions'
 import { walletProfileDataSelector } from '../../recoil'
 import { ButtonLink } from '../ButtonLink'
 import { ProfileHomeCard } from '../profile'
@@ -54,12 +55,6 @@ export const Account: NextPage = () => {
     throw new Error('Invalid address.')
   }
 
-  const configuredChain = getConfiguredChains()[0]
-  const walletAddress = transformBech32Address(
-    address as string,
-    configuredChain.chainId
-  )
-
   const tabs: MeTab[] = [
     {
       id: MeTabId.Daos,
@@ -72,6 +67,12 @@ export const Account: NextPage = () => {
       Component: AccountBalances,
     },
   ]
+
+  const configuredChain = getConfiguredChains()[0]
+  const walletAddress = transformBech32Address(
+    address as string,
+    configuredChain.chainId
+  )
 
   const hexPublicKey = useCachedLoadingWithError(
     walletHexPublicKeySelector({
@@ -200,22 +201,24 @@ export const Account: NextPage = () => {
           </ErrorPage>
         ) : (
           <ChainProvider chainId={configuredChain.chain.chain_id}>
-            <WalletProfileHeader editable={false} profileData={profileData}>
-              <CopyableAddress address={address as string} />
-            </WalletProfileHeader>
+            <WalletActionsProvider address={walletAddress}>
+              <WalletProfileHeader editable={false} profileData={profileData}>
+                <CopyableAddress address={address as string} />
+              </WalletProfileHeader>
 
-            <div className="mb-4 -mt-2 sm:hidden">{tabSelector}</div>
+              <div className="mb-4 -mt-2 sm:hidden">{tabSelector}</div>
 
-            {tabs.map(({ id, Component }) => (
-              <div
-                key={id}
-                className={clsx('grow', selectedTabId !== id && 'hidden')}
-              >
-                <SuspenseLoader fallback={<Loader />}>
-                  <Component />
-                </SuspenseLoader>
-              </div>
-            ))}
+              {tabs.map(({ id, Component }) => (
+                <div
+                  key={id}
+                  className={clsx('grow', selectedTabId !== id && 'hidden')}
+                >
+                  <SuspenseLoader fallback={<Loader />}>
+                    <Component />
+                  </SuspenseLoader>
+                </div>
+              ))}
+            </WalletActionsProvider>
           </ChainProvider>
         )}
       </div>

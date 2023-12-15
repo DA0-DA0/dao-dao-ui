@@ -18,10 +18,13 @@ import {
   useCw721CommonGovernanceTokenInfoIfExists,
   useNativeCommonGovernanceTokenInfoIfExists,
 } from '../../../voting-module-adapter'
+import { ButtonLink } from '../../ButtonLink'
+import { IconButtonLink } from '../../IconButtonLink'
 import { LazyNftCard } from '../../nft'
 import { TreasuryHistoryGraph } from '../../TreasuryHistoryGraph'
 import { DaoFiatDepositModal } from '../DaoFiatDepositModal'
 import { DaoTokenCard } from '../DaoTokenCard'
+import { DaoTokenLine } from '../DaoTokenLine'
 
 export const TreasuryAndNftsTab = () => {
   const daoInfo = useDaoInfoContext()
@@ -79,17 +82,44 @@ export const TreasuryAndNftsTab = () => {
     ],
   })
 
+  const configureRebalancerAction = useActionForKey(
+    ActionKey.ConfigureRebalancer
+  )
+  const configureRebalancerActionDefaults =
+    configureRebalancerAction?.action.useDefaults()
+  const configureRebalancerPrefill = getDaoProposalSinglePrefill({
+    actions: configureRebalancerAction
+      ? [
+          {
+            actionKey: ActionKey.ConfigureRebalancer,
+            data: configureRebalancerActionDefaults,
+          },
+        ]
+      : [],
+  })
+
   return (
     <StatelessTreasuryAndNftsTab<TokenCardInfo, LazyNftCardInfo>
+      ButtonLink={ButtonLink}
       FiatDepositModal={DaoFiatDepositModal}
+      IconButtonLink={IconButtonLink}
       NftCard={LazyNftCard}
       TokenCard={DaoTokenCard}
+      TokenLine={DaoTokenLine}
       TreasuryHistoryGraph={TreasuryHistoryGraph}
       addCollectionHref={
         // Prefill URL only valid if action exists.
         addCw721Action
           ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
               prefill: addCw721ActionPrefill,
+            })
+          : undefined
+      }
+      configureRebalancerHref={
+        // Prefill URL only valid if action exists.
+        configureRebalancerAction
+          ? getDaoProposalPath(daoInfo.coreAddress, 'create', {
+              prefill: configureRebalancerPrefill,
             })
           : undefined
       }

@@ -327,6 +327,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw4: 228,
       DaoVotingCw721Staked: -1,
       DaoVotingTokenStaked: -1,
+
+      ValenceAccount: 442,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
@@ -402,6 +404,22 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // localClient: '07-tendermint-12',
         // terra
         // remoteClient: '07-tendermint-274',
+      },
+    },
+    valence: {
+      servicesManager:
+        'neutron1g4ylhl0x2k5gjmd7vhyqv2q7cwhd6gmpwspgktlqcq8s38c7f3gs90rv07',
+      rebalancer: {
+        address:
+          'neutron1jreurhf7g43l0zdxu26fa8aahnjxyng8sjh5vvwjpn4lucwq8tsq7jxl5t',
+        tokenAllowlist: [
+          'untrn',
+          'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9',
+        ],
+        baseTokenAllowlist: [
+          'untrn',
+          'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9',
+        ],
       },
     },
   },
@@ -713,3 +731,7 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
   },
   ...SUPPORTED_CHAINS,
 ]
+
+export const VALENCE_SUPPORTED_CHAINS = Object.entries(SUPPORTED_CHAINS)
+  .filter(([, { valence }]) => valence)
+  .map(([chainId]) => chainId as ChainId)

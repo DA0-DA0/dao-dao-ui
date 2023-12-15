@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { WalletTokenLine } from '@dao-dao/stateful'
+import { ButtonLink, IconButtonLink, WalletTokenLine } from '@dao-dao/stateful'
 import { TokenCardProps } from '@dao-dao/types'
 
 import { NftCard, NftCardProps } from '../NftCard'
@@ -19,6 +19,7 @@ const Template: ComponentStory<
 
 export const Default = Template.bind({})
 Default.args = {
+  accounts: [],
   tokens: {
     loading: false,
     data: [makeTokenCardProps(true), makeTokenCardProps()],
@@ -39,13 +40,18 @@ Default.args = {
     ],
   },
   NftCard,
+  ButtonLink,
+  IconButtonLink,
 }
 
 export const Loading = Template.bind({})
 Loading.args = {
+  accounts: [],
   tokens: { loading: true },
   hiddenTokens: { loading: true },
   TokenLine: WalletTokenLine,
   nfts: { loading: true },
   NftCard,
+  ButtonLink,
+  IconButtonLink,
 }

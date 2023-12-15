@@ -256,3 +256,24 @@ export const isPolytoneProxySelector = selectorFamily<
         })
       ),
 })
+
+export const isValenceAccountSelector = selectorFamily<
+  boolean,
+  WithChainId<{ address: string }>
+>({
+  key: 'isValenceAccount',
+  get:
+    ({ address, chainId }) =>
+    ({ get }) =>
+      isValidContractAddress(
+        address,
+        getChainForChainId(chainId).bech32_prefix
+      ) &&
+      get(
+        isContractSelector({
+          contractAddress: address,
+          chainId,
+          name: 'valence-account',
+        })
+      ),
+})

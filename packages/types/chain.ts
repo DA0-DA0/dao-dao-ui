@@ -105,6 +105,17 @@ export type SupportedChainConfig = BaseChainConfig & {
   // particular version of a contract.
   historicalCodeIds?: Partial<Record<ContractVersion, Partial<CodeIdConfig>>>
   polytone?: PolytoneConfig
+  valence?: {
+    // Address of services manager contract.
+    servicesManager: string
+    rebalancer: {
+      // Address of rebalancer contract.
+      address: string
+      tokenAllowlist: string[]
+      // First denom is the default.
+      baseTokenAllowlist: string[]
+    }
+  }
 }
 
 export type SupportedChain = SupportedChainConfig & {
