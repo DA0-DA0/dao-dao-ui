@@ -711,5 +711,17 @@ export const CONFIGURED_CHAINS: BaseChainConfig[] = [
       wallet: 'https://ping.pub/cosmos/account/REPLACE',
     },
   },
+  {
+    chainId: ChainId.CosmosHubTestnet,
+    name: 'cosmos',
+    mainnet: false,
+    accentColor: '#5064fb',
+    explorerUrlTemplates: {
+      tx: 'https://testnet.ping.pub/cosmos/tx/REPLACE',
+      gov: 'https://testnet.ping.pub/cosmos/gov',
+      govProp: 'https://testnet.ping.pub/cosmos/gov/REPLACE',
+      wallet: 'https://testnet.ping.pub/cosmos/account/REPLACE',
+    },
+  },
   ...SUPPORTED_CHAINS,
 ]
