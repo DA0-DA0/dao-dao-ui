@@ -74,7 +74,7 @@ const InnerAppsTab = ({
   // On first iframe mount, go to url if valid already.
   useEffect(() => {
     try {
-      if (iframe && url && new URL(url).href) {
+      if (iframe && url && new URL(decodeURIComponent(url)).href) {
         iframe.src = url
       }
     } catch {
