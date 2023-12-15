@@ -1,4 +1,5 @@
 import { DarkMode, LightMode } from '@mui/icons-material'
+import clsx from 'clsx'
 import { forwardRef } from 'react'
 
 import { IconButtonProps } from '@dao-dao/types'
@@ -27,7 +28,7 @@ export const ThemeToggle = forwardRef<HTMLButtonElement, ThemeToggleProps>(
       <IconButton
         Icon={theme === Theme.Light ? DarkMode : LightMode}
         circular
-        className={compact ? '!h-8 !w-8' : '!h-10 !w-10'}
+        className={clsx('shrink-0', compact ? '!h-8 !w-8' : '!h-10 !w-10')}
         iconClassName={compact ? '!h-5 !w-5' : '!h-6 !w-6'}
         onClick={() =>
           updateTheme(theme === Theme.Dark ? Theme.Light : Theme.Dark)
