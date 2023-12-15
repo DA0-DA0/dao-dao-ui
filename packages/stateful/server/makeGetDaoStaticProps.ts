@@ -247,6 +247,9 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
             type: AccountType.Polytone,
           })
         ),
+        // The above accounts are the ones we already have. The rest of the
+        // accounts are loaded once the page loads (in `DaoPageWrapper`) since
+        // they are more complex and will probably expand over time.
       ]
 
       // Must be called after server side translations has been awaited, because
