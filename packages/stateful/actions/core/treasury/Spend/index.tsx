@@ -432,11 +432,15 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
             )
           }
 
+          const skipTransferMsgValue = JSON.parse(_skipIbcTransferMsg.data.msg)
           msg = makeStargateMessage({
             stargate: {
               typeUrl: MsgTransfer.typeUrl,
               value: MsgTransfer.fromAmino({
-                ...JSON.parse(_skipIbcTransferMsg.data.msg),
+                ...skipTransferMsgValue,
+                // If no memo, use empty string. This will be undefined if PFM
+                // is not used and it's only a single hop.
+                memo: skipTransferMsgValue.memo || '',
                 // Timeout after 1 year. Needs to survive voting period and
                 // execution delay.
                 timeout_timestamp: timeoutTimestamp,
