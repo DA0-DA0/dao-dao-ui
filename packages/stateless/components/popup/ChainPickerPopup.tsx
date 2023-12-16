@@ -69,6 +69,7 @@ export const ChainPickerPopup = ({
           getFallbackImage(chainId)
       ),
       iconClassName: '!h-8 !w-8',
+      className: '!py-2',
       contentContainerClassName: '!gap-3',
     })
   )
@@ -76,6 +77,10 @@ export const ChainPickerPopup = ({
   const selectedChain = selectedChainId
     ? chainOptions.find(({ key }) => key === selectedChainId)
     : undefined
+
+  if (selectedChain) {
+    selectedChain.selected = true
+  }
 
   return (
     <FilterableItemPopup
