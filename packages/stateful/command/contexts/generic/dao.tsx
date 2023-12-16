@@ -36,9 +36,7 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
     const { t } = useTranslation()
     const { getDaoPath, getDaoProposalPath, router } = useDaoNavHelpers()
     const { accounts, supportedFeatures } = useDaoInfoContext()
-    const loadingTabs = useDaoTabs({
-      suspendWhileLoadingOverride: false,
-    })
+    const loadingTabs = useDaoTabs()
 
     const { isFollowing, setFollowing, setUnfollowing, updatingFollowing } =
       useFollowingDaos(chainId)

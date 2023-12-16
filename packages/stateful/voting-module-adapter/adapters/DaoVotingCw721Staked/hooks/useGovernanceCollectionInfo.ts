@@ -103,7 +103,7 @@ export const useGovernanceCollectionInfo = ({
       ? undefined
       : {
           loading: false,
-          data: Number(loadingWalletBalance.data?.length),
+          data: Number(loadingWalletBalance.data.length),
         },
     // Treasury balance
     loadingTreasuryBalance: loadingTreasuryBalance.loading

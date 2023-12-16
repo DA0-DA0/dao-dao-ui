@@ -1,5 +1,6 @@
 export * from './tabs'
 
+export * from './tabs/HomeTab'
 export * from './CreateDaoForm'
 export * from './CreateDaoProposal'
 export * from './CreateSubDao'
@@ -16,4 +17,3 @@ export * from './DiscordNotifierConfigureModal'
 export * from './DaoWidgets'
 export * from './DaoProviders'
 export * from './LazyDaoCard'
-export * from './SdaDaoHome'
