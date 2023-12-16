@@ -87,6 +87,7 @@ Default.args = {
         imageUrl: '/daodao.png',
         source: {
           chainId: CHAIN_ID,
+          type: TokenType.Cw20,
           denomOrAddress: 'dao',
         },
       },

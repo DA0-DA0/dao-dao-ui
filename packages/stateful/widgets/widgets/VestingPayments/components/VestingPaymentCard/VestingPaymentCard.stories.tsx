@@ -49,6 +49,7 @@ Default.args = {
     imageUrl: undefined,
     source: {
       chainId: CHAIN_ID,
+      type: TokenType.Native,
       denomOrAddress: 'ujuno',
     },
   },

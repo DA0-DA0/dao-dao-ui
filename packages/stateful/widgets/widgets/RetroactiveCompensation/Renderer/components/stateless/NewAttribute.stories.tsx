@@ -38,6 +38,7 @@ export const makeTokenProps = (): Pick<
         'https://raw.githubusercontent.com/CosmosContracts/junoswap-asset-list/main/images/atom.png',
       source: {
         chainId: CHAIN_ID,
+        type: TokenType.Native,
         denomOrAddress: 'uatom',
       },
     },
@@ -50,6 +51,7 @@ export const makeTokenProps = (): Pick<
       imageUrl: '/daodao.png',
       source: {
         chainId: CHAIN_ID,
+        type: TokenType.Cw20,
         denomOrAddress: 'junoCw20DaoAddress',
       },
     },
@@ -62,6 +64,7 @@ export const makeTokenProps = (): Pick<
       imageUrl: getFallbackImage(),
       source: {
         chainId: CHAIN_ID,
+        type: TokenType.Cw20,
         denomOrAddress: 'junoAnotherCw20',
       },
     },

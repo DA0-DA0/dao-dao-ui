@@ -47,6 +47,7 @@ Default.args = {
           imageUrl: '/daodao.png',
           source: {
             chainId: CHAIN_ID,
+            type: TokenType.Native,
             denomOrAddress: 'ujuno',
           },
         },
@@ -62,6 +63,7 @@ Default.args = {
           imageUrl: '/daodao.png',
           source: {
             chainId: CHAIN_ID,
+            type: TokenType.Cw20,
             denomOrAddress: 'junoCw20Dao',
           },
         },

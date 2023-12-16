@@ -38,6 +38,7 @@ Default.args = {
       imageUrl: '',
       source: {
         chainId: CHAIN_ID,
+        type: TokenType.Native,
         denomOrAddress: 'factory/wallet/subdenom',
       },
     },

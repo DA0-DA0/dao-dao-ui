@@ -63,6 +63,7 @@ Default.args = {
           imageUrl: '',
           source: {
             chainId: CHAIN_ID,
+            type: TokenType.Native,
             denomOrAddress: 'ujuno',
           },
         },
@@ -78,6 +79,7 @@ Default.args = {
           imageUrl: '',
           source: {
             chainId: CHAIN_ID,
+            type: TokenType.Cw20,
             denomOrAddress: 'cw20_1',
           },
         },
@@ -93,6 +95,7 @@ Default.args = {
           imageUrl: '',
           source: {
             chainId: CHAIN_ID,
+            type: TokenType.Cw20,
             denomOrAddress: 'cw20_2',
           },
         },
@@ -112,6 +115,7 @@ Default.args = {
             imageUrl: '',
             source: {
               chainId: CHAIN_ID,
+              type: TokenType.Native,
               denomOrAddress: 'ujuno',
             },
           },
@@ -127,6 +131,7 @@ Default.args = {
             imageUrl: '',
             source: {
               chainId: CHAIN_ID,
+              type: TokenType.Cw20,
               denomOrAddress: 'cw20_1',
             },
           },
@@ -142,6 +147,7 @@ Default.args = {
             imageUrl: '',
             source: {
               chainId: CHAIN_ID,
+              type: TokenType.Cw20,
               denomOrAddress: 'cw20_2',
             },
           },

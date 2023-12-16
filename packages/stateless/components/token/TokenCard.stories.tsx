@@ -36,6 +36,7 @@ export const token: GenericToken = {
   imageUrl: '/daodao.png',
   source: {
     chainId: CHAIN_ID,
+    type: TokenType.Native,
     denomOrAddress: 'ujuno',
   },
 }
