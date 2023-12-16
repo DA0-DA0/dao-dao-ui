@@ -72,6 +72,7 @@ const Component: ActionComponent = (props) => {
         <DaoSupportedChainPickerInput
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
         />
       )}
 

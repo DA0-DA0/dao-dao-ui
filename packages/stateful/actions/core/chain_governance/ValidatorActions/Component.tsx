@@ -104,6 +104,7 @@ export const ValidatorActionsComponent: ActionComponent = ({
           onChange={(chainId) =>
             updateChainValues(chainId, validatorActionTypeUrl)
           }
+          onlyDaoChainIds
         />
       )}
 

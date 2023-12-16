@@ -133,6 +133,7 @@ const Component: ActionComponent<undefined, GovernanceVoteData> = (props) => {
             // Clear proposal on chain change.
             setValue((fieldNamePrefix + 'proposalId') as 'proposalId', '')
           }
+          onlyDaoChainIds
         />
       )}
 

@@ -119,6 +119,7 @@ const Component: ActionComponent = (props) => {
           className="mb-4"
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
         />
       )}
 

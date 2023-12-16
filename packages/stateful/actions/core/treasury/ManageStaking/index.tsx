@@ -376,6 +376,7 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
               ''
             )
           }}
+          onlyDaoChainIds
         />
       )}
 

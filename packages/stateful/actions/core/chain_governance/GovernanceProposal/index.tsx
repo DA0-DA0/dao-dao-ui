@@ -33,6 +33,7 @@ import {
   cwMsgToProtobuf,
   decodeGovProposalV1Messages,
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
   makeStargateMessage,
@@ -71,6 +72,7 @@ const Component: ActionComponent<undefined, GovernanceProposalActionData> = (
         <DaoSupportedChainPickerInput
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
         />
       )}
 
@@ -214,7 +216,13 @@ const defaultCustom = JSON.stringify(
 
 export const makeGovernanceProposalAction: ActionMaker<
   GovernanceProposalActionData
-> = ({ t, address, chain: { chain_id: currentChainId } }) => {
+> = (options) => {
+  const {
+    t,
+    address,
+    chain: { chain_id: currentChainId },
+  } = options
+
   const useDefaults: UseDefaults<GovernanceProposalActionData> = () => {
     const govParams = useCachedLoadingWithError(
       govParamsSelector({
@@ -306,7 +314,7 @@ export const makeGovernanceProposalAction: ActionMaker<
                 amount: BigInt(amount).toString(),
                 denom,
               })),
-              proposer: address,
+              proposer: getChainAddressForActionOptions(options, chainId),
             } as MsgSubmitProposalV1Beta1,
           },
         })
@@ -322,7 +330,7 @@ export const makeGovernanceProposalAction: ActionMaker<
                 amount: BigInt(amount).toString(),
                 denom,
               })),
-              proposer: address,
+              proposer: getChainAddressForActionOptions(options, chainId),
               metadata: `ipfs://${metadataCid}`,
               title,
               summary: description,
@@ -356,8 +364,7 @@ export const makeGovernanceProposalAction: ActionMaker<
       !isDecodedStargateMsg(msg) ||
       !objectMatchesStructure(msg.stargate.value, {
         proposer: {},
-      }) ||
-      msg.stargate.value.proposer !== address
+      })
     ) {
       return {
         match: false,

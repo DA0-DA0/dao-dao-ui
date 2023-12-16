@@ -40,6 +40,7 @@ const Component: ActionComponent = (props) => {
           disabled={!props.isCreating}
           excludeChainIds={[ChainId.StargazeMainnet, ChainId.StargazeTestnet]}
           fieldName={props.fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
         />
       )}
 
