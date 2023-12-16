@@ -63,7 +63,7 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
           <IbcDestinationChainPicker
             buttonClassName="self-start"
             includeSourceChain={false}
-            onChainSelected={(chainId) =>
+            onSelect={(chainId) =>
               setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
             }
             selectedChainId={destinationChainId}

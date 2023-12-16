@@ -247,7 +247,6 @@ const Component: ActionComponent = (props) => {
     <>
       {context.type === ActionContextType.Dao && (
         <DaoSupportedChainPickerInput
-          className="mb-4"
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
           onChange={() => {

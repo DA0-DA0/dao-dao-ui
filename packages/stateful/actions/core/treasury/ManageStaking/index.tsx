@@ -366,7 +366,6 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
     <>
       {context.type === ActionContextType.Dao && props.isCreating && (
         <DaoSupportedChainPickerInput
-          className="mb-4"
           fieldName={props.fieldNamePrefix + 'chainId'}
           labelMode="token"
           onChange={() => {

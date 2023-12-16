@@ -178,6 +178,7 @@ export const PressEditor = ({
               [ChainId.StargazeMainnet, ChainId.StargazeTestnet]
             }
             fieldName={fieldNamePrefix + 'chainId'}
+            hideFormLabel
             onlyDaoChainIds
           />
 

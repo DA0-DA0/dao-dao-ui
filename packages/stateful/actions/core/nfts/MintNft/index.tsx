@@ -72,7 +72,6 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
     <>
       {options.context.type === ActionContextType.Dao && props.isCreating && (
         <DaoSupportedChainPickerInput
-          className="mb-4"
           fieldName={props.fieldNamePrefix + 'chainId'}
           onChange={(chainId) => {
             // Update recipient to correct address.

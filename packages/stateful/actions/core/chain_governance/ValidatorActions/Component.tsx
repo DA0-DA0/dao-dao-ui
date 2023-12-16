@@ -99,7 +99,6 @@ export const ValidatorActionsComponent: ActionComponent = ({
     <>
       {options.context.type === ActionContextType.Dao && (
         <DaoSupportedChainPickerInput
-          className="mb-4"
           disabled={!isCreating}
           fieldName={fieldNamePrefix + 'chainId'}
           onChange={(chainId) =>

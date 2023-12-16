@@ -60,7 +60,6 @@ export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
     <>
       {isCreating && (
         <DaoSupportedChainPickerInput
-          className="mb-4"
           disabled={!isCreating}
           fieldName={fieldNamePrefix + 'chainId'}
           onlyDaoChainIds

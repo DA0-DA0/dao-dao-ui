@@ -143,7 +143,7 @@ const Component: ActionComponent = (props) => {
           buttonClassName="self-start"
           disabled={!props.isCreating}
           includeSourceChain={false}
-          onChainSelected={(chainId) =>
+          onSelect={(chainId) =>
             setValue((props.fieldNamePrefix + 'chainId') as 'chainId', chainId)
           }
           selectedChainId={destChainId}

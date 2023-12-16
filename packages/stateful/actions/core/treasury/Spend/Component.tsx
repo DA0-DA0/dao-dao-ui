@@ -383,7 +383,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                 buttonClassName={toWrapped ? 'grow' : undefined}
                 disabled={selectedToken?.token.type === TokenType.Cw20}
                 includeSourceChain
-                onChainSelected={(chainId) =>
+                onSelect={(chainId) =>
                   setValue(
                     (fieldNamePrefix + 'toChainId') as 'toChainId',
                     chainId

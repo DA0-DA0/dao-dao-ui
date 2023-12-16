@@ -71,7 +71,7 @@ export const ManageIcasComponent: ActionComponent<ManageIcasOptions> = ({
               buttonClassName="self-start"
               disabled={!isCreating}
               includeSourceChain={false}
-              onChainSelected={(chainId) =>
+              onSelect={(chainId) =>
                 setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
               }
               selectedChainId={chainId}
