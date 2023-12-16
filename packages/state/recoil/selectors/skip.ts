@@ -1,10 +1,13 @@
 import {
   AssetRecommendation,
   MultiChainMsg,
+  Asset as SkipAsset,
   Chain as SkipChain,
   RouteResponse as SkipRoute,
 } from '@skip-router/core'
 import { selector, selectorFamily, waitForAll } from 'recoil'
+
+import { GenericToken, TokenType, WithChainId } from '@dao-dao/types'
 
 import { skipClient } from '../../skip'
 
@@ -13,12 +16,49 @@ export const skipChainsSelector = selector<SkipChain[]>({
   get: async () => await skipClient.chains(),
 })
 
+/**
+ * Get the assets on a specific chain.
+ */
+export const skipChainAssetsSelector = selectorFamily<
+  SkipAsset[],
+  WithChainId<{}>
+>({
+  key: 'skipChainAssets',
+  get:
+    ({ chainId }) =>
+    async () =>
+      (
+        await skipClient.assets({
+          chainID: chainId,
+          includeCW20Assets: true,
+        })
+      )[chainId] || [],
+})
+
 export const skipChainSelector = selectorFamily<SkipChain | undefined, string>({
   key: 'skipChain',
   get:
     (chainId) =>
     ({ get }) =>
       get(skipChainsSelector).find((chain) => chain.chainID === chainId),
+})
+
+/**
+ * Get the info for an asset on a specific chain.
+ */
+export const skipAssetSelector = selectorFamily<
+  SkipAsset | undefined,
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
+>({
+  key: 'skipAsset',
+  get:
+    ({ chainId, type, denomOrAddress }) =>
+    ({ get }) =>
+      get(skipChainAssetsSelector({ chainId })).find((asset) =>
+        type === TokenType.Cw20
+          ? asset.isCW20 && asset.tokenContract === denomOrAddress
+          : asset.denom === denomOrAddress
+      ),
 })
 
 export const skipChainPfmEnabledSelector = selectorFamily<boolean, string>({

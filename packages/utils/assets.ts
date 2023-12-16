@@ -50,6 +50,7 @@ export const getChainAssets = (chainId: string) => {
             // This will be wrong when this is an IBC asset.
             source: {
               chainId,
+              type: TokenType.Native,
               denomOrAddress: base,
             },
           })

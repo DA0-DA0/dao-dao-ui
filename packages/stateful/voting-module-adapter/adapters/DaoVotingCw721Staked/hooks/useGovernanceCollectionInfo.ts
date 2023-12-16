@@ -91,6 +91,7 @@ export const useGovernanceCollectionInfo = ({
       imageUrl: undefined,
       source: {
         chainId,
+        type: TokenType.Cw721,
         denomOrAddress: collectionAddress,
       },
     },

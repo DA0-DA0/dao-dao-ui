@@ -50,6 +50,7 @@ Default.args = {
       imageUrl: undefined,
       source: {
         chainId: CHAIN_ID,
+        type: TokenType.Cw20,
         denomOrAddress: 'gov',
       },
     },

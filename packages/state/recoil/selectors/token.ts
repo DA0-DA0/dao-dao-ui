@@ -35,16 +35,48 @@ import {
   osmosisDenomForTokenSelector,
   osmosisUsdPriceSelector,
 } from './osmosis'
+import { skipAssetSelector } from './skip'
 import { walletCw20BalancesSelector } from './wallet'
 
 export const genericTokenSelector = selectorFamily<
   GenericToken,
-  WithChainId<Pick<GenericToken, 'type' | 'denomOrAddress'>>
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
   key: 'genericToken',
   get:
     ({ type, denomOrAddress, chainId }) =>
     ({ get }) => {
+      const source = get(
+        sourceChainAndDenomSelector({
+          type,
+          chainId,
+          denomOrAddress,
+        })
+      )
+
+      // Check if Skip API has the info.
+      const skipAsset = get(
+        skipAssetSelector({
+          chainId,
+          type,
+          denomOrAddress,
+        })
+      )
+
+      if (skipAsset) {
+        return {
+          chainId: skipAsset.chainID,
+          type: skipAsset.isCW20 ? TokenType.Cw20 : TokenType.Native,
+          denomOrAddress:
+            (skipAsset.isCW20 && skipAsset.tokenContract) || skipAsset.denom,
+          symbol:
+            skipAsset.recommendedSymbol || skipAsset.symbol || skipAsset.denom,
+          decimals: skipAsset.decimals || 0,
+          imageUrl: skipAsset.logoURI || getFallbackImage(denomOrAddress),
+          source,
+        }
+      }
+
       let tokenInfo =
         type === TokenType.Cw20
           ? get(
@@ -68,13 +100,6 @@ export const genericTokenSelector = selectorFamily<
             )
           : // Native token or invalid type.
             undefined
-
-      const source = get(
-        sourceChainAndDenomSelector({
-          chainId,
-          denomOrAddress,
-        })
-      )
 
       // If native non-factory token, try to get the token from the asset list.
       if (!tokenInfo) {
@@ -427,19 +452,43 @@ export const nativeDenomMetadataInfoSelector = selectorFamily<
 // asset, tries to reverse engineer IBC denom. Otherwise returns the arguments.
 export const sourceChainAndDenomSelector = selectorFamily<
   GenericTokenSource,
-  Pick<GenericToken, 'chainId' | 'denomOrAddress'>
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
   key: 'sourceChainAndDenom',
   get:
-    ({ denomOrAddress, chainId }) =>
+    ({ chainId, type, denomOrAddress }) =>
     async ({ get }) => {
-      const ibc = get(ibcRpcClientForChainSelector(chainId))
+      // Check if Skip API has the info.
+      const skipAsset = get(
+        skipAssetSelector({
+          chainId,
+          type,
+          denomOrAddress,
+        })
+      )
+
+      if (skipAsset) {
+        const sourceType = skipAsset.originDenom.startsWith('cw20:')
+          ? TokenType.Cw20
+          : TokenType.Native
+        return {
+          chainId: skipAsset.originChainID,
+          type: sourceType,
+          denomOrAddress:
+            sourceType === TokenType.Cw20
+              ? skipAsset.originDenom.replace(/^cw20:/, '')
+              : skipAsset.originDenom,
+        }
+      }
 
       let sourceChainId = chainId
-      let baseDenom = denomOrAddress
+      let sourceDenom =
+        (type === TokenType.Cw20 ? 'cw20:' : '') + denomOrAddress
 
       // Try to reverse engineer IBC denom.
       if (denomOrAddress.startsWith('ibc/')) {
+        const ibc = get(ibcRpcClientForChainSelector(chainId))
+
         try {
           const { denomTrace } = await ibc.applications.transfer.v1.denomTrace({
             hash: denomOrAddress,
@@ -463,7 +512,7 @@ export const sourceChainAndDenomSelector = selectorFamily<
                 chainId
               )
 
-              baseDenom = denomTrace.baseDenom
+              sourceDenom = denomTrace.baseDenom
             }
           }
         } catch (err) {
@@ -472,26 +521,17 @@ export const sourceChainAndDenomSelector = selectorFamily<
         }
       }
 
+      const sourceType = sourceDenom.startsWith('cw20:')
+        ? TokenType.Cw20
+        : TokenType.Native
+
       return {
         chainId: sourceChainId,
-        denomOrAddress: baseDenom,
+        type: sourceType,
+        denomOrAddress:
+          sourceType === TokenType.Cw20
+            ? sourceDenom.replace(/^cw20:/, '')
+            : sourceDenom,
       }
-    },
-})
-
-// Resolves a unique token identifier that represents the same denom across all
-// chains. It is composed of the native chain and its denom.
-export const uniqueTokenIdentifierSelector = selectorFamily<
-  string,
-  Pick<GenericToken, 'chainId' | 'denomOrAddress'>
->({
-  key: 'uniqueTokenIdentifier',
-  get:
-    (params) =>
-    ({ get }) => {
-      const { chainId, denomOrAddress } = get(
-        sourceChainAndDenomSelector(params)
-      )
-      return `${chainId}:${denomOrAddress}`
     },
 })

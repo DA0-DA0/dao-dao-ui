@@ -71,6 +71,7 @@ const ProposalDepositInput = ({
             imageUrl: tokenBasedCreatorData.newInfo.imageUrl,
             source: {
               chainId,
+              type: TokenType.Cw20,
               denomOrAddress: 'NEW_CW20',
             },
           })
@@ -171,6 +172,7 @@ const ProposalDepositInput = ({
       imageUrl: (type === TokenType.Cw20 && tokenLoaded?.imageUrl) || undefined,
       source: {
         chainId,
+        type: TokenType.Cw20,
         denomOrAddress: 'other_cw20',
       },
     },

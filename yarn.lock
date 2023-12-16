@@ -8514,6 +8514,28 @@
     keccak256 "^1.0.6"
     viem "^1.12.2"
 
+"@skip-router/core@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@skip-router/core/-/core-1.1.1.tgz#29e48905a8d75df15fe73f751fb9c91fb96731ae"
+  integrity sha512-b5TL08cKJkxSyJFLRHlCiDbTITzsq+48x+X3dkRpb3RXhpLOv0r0inq9j0aM/1HoaYs/awm/na7+VrImMeY4Hw==
+  dependencies:
+    "@axelar-network/axelarjs-sdk" "^0.13.6"
+    "@cosmjs/amino" "^0.31.1"
+    "@cosmjs/cosmwasm-stargate" "^0.31.1"
+    "@cosmjs/encoding" "^0.31.1"
+    "@cosmjs/math" "^0.31.1"
+    "@cosmjs/proto-signing" "^0.31.1"
+    "@cosmjs/stargate" "^0.31.1"
+    "@cosmjs/tendermint-rpc" "^0.31.1"
+    "@injectivelabs/core-proto-ts" "^0.0.18"
+    "@injectivelabs/sdk-ts" "^1.12.1"
+    axios "^1.4.0"
+    chain-registry "^1.19.0"
+    cosmjs-types "^0.8.0"
+    faker "^6.6.6"
+    keccak256 "^1.0.6"
+    viem "^1.12.2"
+
 "@smithy/protocol-http@^1.0.1":
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/@smithy/protocol-http/-/protocol-http-1.1.0.tgz#caf22e01cb825d7490a4915e03d6fa64954ff535"

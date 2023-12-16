@@ -4,6 +4,7 @@ import {
   AmountWithTimestamp,
   AmountWithTimestampAndDenom,
   ChainId,
+  TokenType,
   WithChainId,
 } from '@dao-dao/types'
 import {
@@ -78,6 +79,7 @@ export const osmosisDenomForTokenSelector = selectorFamily<
       const { chainId: sourceChainId, denomOrAddress: baseDenom } = get(
         sourceChainAndDenomSelector({
           chainId,
+          type: TokenType.Native,
           denomOrAddress: denom,
         })
       )

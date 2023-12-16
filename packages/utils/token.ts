@@ -21,13 +21,15 @@ export const tokensEqual = (
 export const serializeTokenSource = (
   tokenOrSource: GenericToken | GenericTokenSource
 ): string => {
-  const source = 'type' in tokenOrSource ? tokenOrSource.source : tokenOrSource
-  return `${source.chainId}:${source.denomOrAddress}`
+  const source =
+    'source' in tokenOrSource ? tokenOrSource.source : tokenOrSource
+  return [source.chainId, source.type, source.denomOrAddress].join(':')
 }
 export const deserializeTokenSource = (source: string): GenericTokenSource => {
-  const [chainId, denomOrAddress] = source.split(':')
+  const [chainId, type, denomOrAddress] = source.split(':')
   return {
     chainId,
+    type: type as GenericTokenSource['type'],
     denomOrAddress,
   }
 }

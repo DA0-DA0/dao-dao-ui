@@ -107,6 +107,7 @@ export const UpdatePreProposeConfigComponent: ActionComponent<
         undefined,
       source: {
         chainId,
+        type: TokenType.Cw20,
         denomOrAddress: 'other_cw20',
       },
     },

@@ -36,6 +36,7 @@ export const useCommonGovernanceTokenInfo = (): GenericToken => {
     imageUrl: undefined,
     source: {
       chainId,
+      type: TokenType.Cw721,
       denomOrAddress: collectionAddress,
     },
   }

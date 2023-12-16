@@ -104,6 +104,7 @@ export const useGovernanceTokenInfo = ({
       imageUrl: governanceTokenLogoUrl,
       source: {
         chainId,
+        type: TokenType.Cw20,
         denomOrAddress: governanceTokenAddress,
       },
     },

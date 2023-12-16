@@ -18,10 +18,10 @@ export enum TokenType {
   Cw721 = 'cw721',
 }
 
-export type GenericTokenSource = {
-  chainId: string
-  denomOrAddress: string
-}
+export type GenericTokenSource = Pick<
+  GenericToken,
+  'chainId' | 'type' | 'denomOrAddress'
+>
 
 // A native or CW20 token.
 export type GenericToken = {
