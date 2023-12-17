@@ -9,26 +9,21 @@ import { IconButton } from './IconButton'
 
 export type ThemeToggleProps = Omit<
   IconButtonProps,
-  | 'Icon'
-  | 'circular'
-  | 'className'
-  | 'iconClassName'
-  | 'onClick'
-  | 'size'
-  | 'variant'
+  'Icon' | 'circular' | 'iconClassName' | 'onClick' | 'size' | 'variant'
 > & {
   compact?: boolean
 }
 
 export const ThemeToggle = forwardRef<HTMLButtonElement, ThemeToggleProps>(
-  function ThemeToggle({ compact = false, ...props }, ref) {
+  function ThemeToggle({ compact = false, className, ...props }, ref) {
     const { theme, updateTheme } = useThemeContext()
 
     return (
       <IconButton
+        {...props}
         Icon={theme === Theme.Light ? DarkMode : LightMode}
         circular
-        className={clsx('shrink-0', compact ? '!h-8 !w-8' : '!h-10 !w-10')}
+        className={clsx(compact ? '!h-8 !w-8' : '!h-10 !w-10', className)}
         iconClassName={compact ? '!h-5 !w-5' : '!h-6 !w-6'}
         onClick={() =>
           updateTheme(theme === Theme.Dark ? Theme.Light : Theme.Dark)
@@ -36,7 +31,6 @@ export const ThemeToggle = forwardRef<HTMLButtonElement, ThemeToggleProps>(
         ref={ref}
         size="custom"
         variant="secondary"
-        {...props}
       />
     )
   }
