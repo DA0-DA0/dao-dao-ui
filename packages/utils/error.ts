@@ -25,7 +25,12 @@ export const processError = (
 ): string => {
   // Convert to error type.
   if (!(error instanceof Error)) {
-    error = new Error(`${error}`)
+    error = new Error(
+      `${
+        // Some errors are not Error classes but have a message property.
+        typeof error === 'object' && 'message' in error ? error.message : error
+      }`
+    )
   }
 
   const { message } = error as Error
