@@ -4,8 +4,14 @@ import { useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
-import { ProfileWalletProps, TokenCardInfo } from '@dao-dao/types'
 import {
+  AccountType,
+  ProfileWalletProps,
+  TokenCardInfo,
+  ValenceAccount,
+} from '@dao-dao/types'
+import {
+  areAccountsEqual,
   concatAddressStartEnd,
   getDisplayNameForChainId,
   getImageUrlForChainId,
@@ -19,15 +25,32 @@ import { LineLoaders } from '../LineLoader'
 import { NoContent } from '../NoContent'
 import { FilterableItemPopup } from '../popup'
 import { TokenLineHeader } from '../token/TokenLineHeader'
+import { ValenceAccountDisplay } from '../ValenceAccountDisplay'
 
 export const ProfileWallet = <T extends TokenCardInfo>({
+  readOnly,
   accounts,
   tokens,
   hiddenTokens,
   TokenLine,
   ProfileAddChains,
+  ...valenceAccountTreasuryProps
 }: ProfileWalletProps<T>) => {
   const { t } = useTranslation()
+
+  const valenceAccounts =
+    accounts.loading || accounts.errored
+      ? []
+      : accounts.data.filter(
+          (account): account is ValenceAccount =>
+            account.type === AccountType.Valence
+        )
+  // Separate valence from non-valence account tokens and display valence
+  // separately.
+  const nonValenceTokens =
+    tokens.loading || tokens.errored
+      ? []
+      : tokens.data.filter(({ owner }) => owner.type !== AccountType.Valence)
 
   const visibleBalances =
     tokens.loading ||
@@ -35,7 +58,7 @@ export const ProfileWallet = <T extends TokenCardInfo>({
     hiddenTokens.loading ||
     hiddenTokens.errored
       ? []
-      : tokens.data
+      : nonValenceTokens
           .filter(
             ({ token }) => !hiddenTokens.data.includes(token.denomOrAddress)
           )
@@ -46,7 +69,7 @@ export const ProfileWallet = <T extends TokenCardInfo>({
     hiddenTokens.loading ||
     hiddenTokens.errored
       ? []
-      : tokens.data
+      : nonValenceTokens
           .filter(({ token }) =>
             hiddenTokens.data.includes(token.denomOrAddress)
           )
@@ -114,7 +137,7 @@ export const ProfileWallet = <T extends TokenCardInfo>({
       <div>
         {tokens.loading ||
         hiddenTokens.loading ||
-        (!tokens.errored && tokens.data.length > 0) ? (
+        (!tokens.errored && nonValenceTokens.length > 0) ? (
           <div>
             <TokenLineHeader />
 
@@ -142,7 +165,7 @@ export const ProfileWallet = <T extends TokenCardInfo>({
           <NoContent Icon={WarningRounded} body={t('info.nothingFound')} />
         )}
 
-        {hiddenBalances.length > 0 && (
+        {hiddenBalances.length > 0 && !readOnly && (
           <div className="mt-6 space-y-6">
             <div className="link-text ml-2 flex flex-row items-center gap-3 text-text-secondary">
               <DropdownIconButton
@@ -177,11 +200,36 @@ export const ProfileWallet = <T extends TokenCardInfo>({
         )}
       </div>
 
-      <ProfileAddChains
-        className="self-end"
-        prompt={t('button.addChains')}
-        promptTooltip={t('info.chainTokensNotShowingUpPrompt')}
-      />
+      {!readOnly && (
+        <ProfileAddChains
+          className="self-end"
+          prompt={t('button.addChains')}
+          promptTooltip={t('info.chainTokensNotShowingUpPrompt')}
+        />
+      )}
+
+      {/* Valence Accounts */}
+      {valenceAccounts.map((account) => (
+        <ValenceAccountDisplay<T>
+          {...valenceAccountTreasuryProps}
+          key={account.address}
+          TokenLine={TokenLine}
+          account={account}
+          className="mt-6"
+          tokens={
+            tokens.loading || tokens.errored
+              ? tokens
+              : {
+                  loading: false,
+                  errored: false,
+                  updating: tokens.updating,
+                  data: tokens.data.filter(({ owner }) =>
+                    areAccountsEqual(owner, account)
+                  ),
+                }
+          }
+        />
+      ))}
     </div>
   )
 }

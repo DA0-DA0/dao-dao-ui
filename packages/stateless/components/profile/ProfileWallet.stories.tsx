@@ -3,6 +3,8 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { ProfileAddChains, WalletTokenLine } from '@dao-dao/stateful'
 import { TokenCardProps } from '@dao-dao/types'
 
+import { ButtonLink } from '../buttons'
+import { IconButtonLink } from '../icon_buttons'
 import { makeProps as makeTokenCardProps } from '../token/TokenCard.stories'
 import { ProfileWallet } from './ProfileWallet'
 
@@ -34,6 +36,8 @@ Default.args = {
   },
   TokenLine: WalletTokenLine,
   ProfileAddChains,
+  ButtonLink,
+  IconButtonLink,
 }
 
 export const Loading = Template.bind({})
@@ -52,4 +56,6 @@ Loading.args = {
   },
   TokenLine: WalletTokenLine,
   ProfileAddChains,
+  ButtonLink,
+  IconButtonLink,
 }
