@@ -3,8 +3,8 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   InputErrorMessage,
   InputLabel,
   RadioInputNoForm,
@@ -53,9 +53,9 @@ export const ManageVetoableDaosComponent: ActionComponent<
   return (
     <>
       {isCreating && (
-        <ChainPickerInput
-          className="mb-4"
+        <DaoSupportedChainPickerInput
           fieldName={fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
         />
       )}
 

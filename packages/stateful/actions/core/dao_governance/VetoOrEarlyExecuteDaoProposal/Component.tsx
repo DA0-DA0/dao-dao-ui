@@ -4,8 +4,8 @@ import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   FilterableItemPopup,
   InputErrorMessage,
   InputLabel,
@@ -130,10 +130,10 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
 
       {!isCreating || (isCreating && daoVetoableProposals.errored) ? (
         <>
-          <ChainPickerInput
-            className="mb-4"
+          <DaoSupportedChainPickerInput
             disabled={!isCreating}
             fieldName={fieldNamePrefix + 'chainId'}
+            onlyDaoChainIds
           />
 
           <div className="flex flex-col gap-1">
