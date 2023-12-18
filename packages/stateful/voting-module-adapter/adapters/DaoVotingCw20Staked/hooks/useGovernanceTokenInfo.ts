@@ -1,4 +1,4 @@
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import {
   Cw20BaseSelectors,
@@ -24,33 +24,33 @@ export const useGovernanceTokenInfo = ({
   const { chainId, coreAddress, votingModuleAddress } =
     useVotingModuleAdapterOptions()
 
-  const stakingContractAddress = useRecoilValue(
-    DaoVotingCw20StakedSelectors.stakingContractSelector({
-      chainId,
-      contractAddress: votingModuleAddress,
-      params: [],
-    })
+  const [stakingContractAddress, governanceTokenAddress] = useRecoilValue(
+    waitForAll([
+      DaoVotingCw20StakedSelectors.stakingContractSelector({
+        chainId,
+        contractAddress: votingModuleAddress,
+        params: [],
+      }),
+      DaoVotingCw20StakedSelectors.tokenContractSelector({
+        chainId,
+        contractAddress: votingModuleAddress,
+        params: [],
+      }),
+    ])
   )
 
-  const governanceTokenAddress = useRecoilValue(
-    DaoVotingCw20StakedSelectors.tokenContractSelector({
-      chainId,
-      contractAddress: votingModuleAddress,
-      params: [],
-    })
-  )
-  const governanceTokenInfo = useRecoilValue(
-    Cw20BaseSelectors.tokenInfoSelector({
-      chainId,
-      contractAddress: governanceTokenAddress,
-      params: [],
-    })
-  )
-  const governanceTokenLogoUrl = useRecoilValue(
-    Cw20BaseSelectors.logoUrlSelector({
-      chainId,
-      contractAddress: governanceTokenAddress,
-    })
+  const [governanceTokenInfo, governanceTokenLogoUrl] = useRecoilValue(
+    waitForAll([
+      Cw20BaseSelectors.tokenInfoSelector({
+        chainId,
+        contractAddress: governanceTokenAddress,
+        params: [],
+      }),
+      Cw20BaseSelectors.logoUrlSelector({
+        chainId,
+        contractAddress: governanceTokenAddress,
+      }),
+    ])
   )
 
   /// Optional
@@ -102,6 +102,11 @@ export const useGovernanceTokenInfo = ({
       symbol: governanceTokenInfo.symbol,
       decimals: governanceTokenInfo.decimals,
       imageUrl: governanceTokenLogoUrl,
+      source: {
+        chainId,
+        type: TokenType.Cw20,
+        denomOrAddress: governanceTokenAddress,
+      },
     },
     /// Optional
     // Wallet balance

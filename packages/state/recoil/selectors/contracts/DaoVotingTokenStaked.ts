@@ -25,7 +25,7 @@ import {
   signingCosmWasmClientAtom,
 } from '../../atoms'
 import { cosmWasmClientForChainSelector } from '../chain'
-import { contractInfoSelector } from '../contract'
+import { contractInfoSelector, isContractSelector } from '../contract'
 import { queryContractIndexerSelector } from '../indexer'
 
 type QueryClientParams = WithChainId<{
@@ -334,3 +334,49 @@ export const daoSelector = selectorFamily<
     },
 })
 export const infoSelector = contractInfoSelector
+
+/**
+ * Returns the cw-tokenfactory-issuer contract address if this voting module
+ * uses a token factory denom and uses a cw-tokenfactory-issuer contract.
+ */
+export const validatedTokenfactoryIssuerContractSelector = selectorFamily<
+  string | undefined,
+  QueryClientParams
+>({
+  key: 'daoVotingTokenStakedValidatedTokenfactoryIssuerContract',
+  get:
+    (queryClientParams) =>
+    ({ get }) => {
+      const { denom } = get(
+        denomSelector({
+          ...queryClientParams,
+          params: [],
+        })
+      )
+
+      if (!denom.startsWith('factory/')) {
+        return
+      }
+
+      const tokenContract = get(
+        tokenContractSelector({
+          ...queryClientParams,
+          params: [],
+        })
+      )
+
+      if (!tokenContract) {
+        return
+      }
+
+      const isTfIssuer = get(
+        isContractSelector({
+          chainId: queryClientParams.chainId,
+          contractAddress: tokenContract,
+          name: 'cw-tokenfactory-issuer',
+        })
+      )
+
+      return isTfIssuer ? tokenContract : undefined
+    },
+})

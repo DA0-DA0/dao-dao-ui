@@ -5,12 +5,12 @@ import { createPortal } from 'react-dom'
 import {
   RightSidebarContentProps,
   RightSidebarProps,
-} from '@dao-dao/types/stateless/RightSidebar'
+} from '@dao-dao/types/components/RightSidebar'
 
 import { IconButton } from '../icon_buttons'
 import { useAppContext } from './AppContext'
 
-export * from '@dao-dao/types/stateless/RightSidebar'
+export * from '@dao-dao/types/components/RightSidebar'
 
 export const RightSidebar = ({ wallet }: RightSidebarProps) => {
   const {

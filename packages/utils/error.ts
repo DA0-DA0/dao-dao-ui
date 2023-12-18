@@ -106,6 +106,7 @@ export enum CommonError {
   IbcClientExpired = 'IBC client expired. Reach out to us for help.',
   IndexerDisabled = 'Indexer disabled.',
   DaoInactive = 'This DAO is inactive, which means insufficient voting power has been staked. You cannot create a proposal at this time.',
+  ReconnectWallet = 'Please disconnect and reconnect your wallet.',
 }
 
 // List of error substrings to match to determine the common error. Elements in
@@ -177,6 +178,7 @@ const commonErrorPatterns: Record<CommonError, (string | string[])[]> = {
   [CommonError.DaoInactive]: [
     'the DAO is currently inactive, you cannot create proposals',
   ],
+  [CommonError.ReconnectWallet]: [['Session', 'not established yet']],
 }
 const commonErrorPatternsEntries = Object.entries(commonErrorPatterns) as [
   CommonError,

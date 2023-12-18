@@ -1,8 +1,7 @@
 import { useCallback } from 'react'
-import { useRecoilValue } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
-import { InfoEmoji } from '@dao-dao/stateless'
+import { InfoEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import { ActionContextType, ActionMaker } from '@dao-dao/types'
 import {
   ActionKey,
@@ -26,14 +25,21 @@ export const makeUpdateInfoAction: ActionMaker<UpdateInfoData> = ({
   }
 
   const useDefaults: UseDefaults<UpdateInfoData> = () => {
-    const config = useRecoilValue(
+    const config = useCachedLoadingWithError(
       DaoCoreV2Selectors.configSelector({
         chainId,
         contractAddress: address,
         params: [],
       })
     )
-    return { ...config }
+
+    return config.loading
+      ? undefined
+      : config.errored
+      ? config.error
+      : {
+          ...config.data,
+        }
   }
 
   const useTransformToCosmos: UseTransformToCosmos<UpdateInfoData> = () =>

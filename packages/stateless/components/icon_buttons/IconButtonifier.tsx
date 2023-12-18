@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { IconButtonifierProps } from '@dao-dao/types/stateless/IconButtonifier'
+import { IconButtonifierProps } from '@dao-dao/types/components/IconButtonifier'
 
 // Get props that should pass through the IconButtonifier, such as native props.
 // Disable button if disabled or loading.

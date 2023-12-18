@@ -42,12 +42,14 @@ import {
 } from '@dao-dao/state/recoil'
 import {
   Button,
+  ErrorPage,
   FilterableItem,
   FilterableItemPopup,
   IconButton,
   InputErrorMessage,
   Loader,
   NumberInput,
+  PageLoader,
   ProposalContentDisplay,
   TextAreaInput,
   TextInput,
@@ -56,6 +58,7 @@ import {
   useConfiguredChainContext,
 } from '@dao-dao/stateless'
 import {
+  Action,
   ActionChainContextType,
   ActionContextType,
   GovProposalVersion,
@@ -98,6 +101,50 @@ enum ProposeSubmitValue {
 }
 
 export const NewGovProposal = () => {
+  const { t } = useTranslation()
+  const chainContext = useConfiguredChainContext()
+
+  const { walletAddress = '' } = useWalletInfo()
+
+  const governanceProposalAction = makeGovernanceProposalAction({
+    t,
+    chain: chainContext.chain,
+    chainContext: {
+      type: ActionChainContextType.Configured,
+      ...chainContext,
+    },
+    address: walletAddress,
+    context: {
+      type: ActionContextType.Wallet,
+    },
+  })!
+  const defaults = governanceProposalAction.useDefaults()
+
+  return !defaults ? (
+    <PageLoader />
+  ) : defaults instanceof Error ? (
+    <ErrorPage title={t('error.unexpectedError')}>
+      <pre className="whitespace-pre-wrap text-xs text-text-interactive-error">
+        {defaults.message}
+      </pre>
+    </ErrorPage>
+  ) : (
+    <InnerNewGovProposal
+      action={governanceProposalAction}
+      defaults={defaults}
+    />
+  )
+}
+
+type InnerNewGovProposalProps = {
+  defaults: GovernanceProposalActionData
+  action: Action<GovernanceProposalActionData>
+}
+
+const InnerNewGovProposal = ({
+  defaults,
+  action,
+}: InnerNewGovProposalProps) => {
   const { t } = useTranslation()
   const router = useRouter()
   const chainContext = useConfiguredChainContext()
@@ -144,7 +191,7 @@ export const NewGovProposal = () => {
     walletAddress
       ? genericTokenBalanceSelector({
           chainId: chainContext.chainId,
-          walletAddress,
+          address: walletAddress,
           type: TokenType.Native,
           denomOrAddress: depositToken.denom,
         })
@@ -152,22 +199,8 @@ export const NewGovProposal = () => {
     undefined
   )
 
-  const governanceProposalAction = makeGovernanceProposalAction({
-    t,
-    chain: chainContext.chain,
-    chainContext: {
-      type: ActionChainContextType.Base,
-      ...chainContext,
-      ...chainContext.config,
-    },
-    address: walletAddress,
-    context: {
-      type: ActionContextType.Wallet,
-    },
-  })!
   const transformGovernanceProposalActionDataToCosmos =
-    governanceProposalAction.useTransformToCosmos()
-  const defaults = governanceProposalAction.useDefaults()
+    action.useTransformToCosmos()
   const formMethods = useForm<GovernanceProposalActionData>({
     mode: 'onChange',
     defaultValues: {
@@ -619,7 +652,7 @@ export const NewGovProposal = () => {
         <div className="flex flex-col gap-4">
           <SuspenseLoader fallback={<Loader size={36} />}>
             <GovActionsProvider>
-              <governanceProposalAction.Component
+              <action.Component
                 addAction={() => {}}
                 allActionsWithData={[]}
                 data={proposalData}

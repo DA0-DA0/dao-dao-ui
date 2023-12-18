@@ -57,6 +57,7 @@ export interface NativeDelegationInfo {
 
 export enum ChainId {
   CosmosHubMainnet = 'cosmoshub-4',
+  CosmosHubTestnet = 'theta-testnet-001',
   JunoMainnet = 'juno-1',
   JunoTestnet = 'uni-6',
   OsmosisMainnet = 'osmosis-1',
@@ -64,6 +65,8 @@ export enum ChainId {
   StargazeMainnet = 'stargaze-1',
   StargazeTestnet = 'elgafar-1',
   NeutronMainnet = 'neutron-1',
+  TerraMainnet = 'phoenix-1',
+  MigalooMainnet = 'migaloo-1',
 }
 
 export type BaseChainConfig = {
@@ -76,12 +79,6 @@ export type BaseChainConfig = {
   // Set to true if the chain does not support CosmWasm. If undefined, assumed
   // to be false.
   noCosmWasm?: boolean
-  gov: {
-    // Supports new v1 gov proposals introduced in cosmos-sdk v47. Some chains
-    // that fork the SDK, like Osmosis, don't support v1 gov proposals even
-    // though they use cosmos-sdk v47 or higher, so we need a hardcoded flag.
-    supportsV1GovProposals: boolean
-  }
   explorerUrlTemplates: {
     tx: string
     gov: string

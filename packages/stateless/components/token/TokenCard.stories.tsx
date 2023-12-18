@@ -3,6 +3,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 import { EntityDisplay } from '@dao-dao/stateful'
 import { CHAIN_ID } from '@dao-dao/storybook'
 import {
+  AccountType,
   GenericToken,
   TokenCardProps,
   TokenStake,
@@ -33,6 +34,11 @@ export const token: GenericToken = {
   symbol: 'JUNO',
   decimals: 6,
   imageUrl: '/daodao.png',
+  source: {
+    chainId: CHAIN_ID,
+    type: TokenType.Native,
+    denomOrAddress: 'ujuno',
+  },
 }
 
 export const makeProps = (isGovernanceToken = false): TokenCardProps => {
@@ -117,7 +123,11 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
     ) ?? 0
 
   return {
-    owner: 'owner',
+    owner: {
+      type: AccountType.Native,
+      address: 'owner',
+      chainId: CHAIN_ID,
+    },
     token: {
       ...token,
       imageUrl: `/placeholders/${Math.floor(Math.random() * 5) + 1}.svg`,

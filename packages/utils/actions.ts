@@ -7,6 +7,7 @@ import {
 } from '@dao-dao/types'
 
 import { transformBech32Address } from './conversion'
+import { getAccountAddress } from './dao'
 
 // Convert action data to a Cosmos message given all loaded actions.
 export const convertActionsToMessages = (
@@ -37,7 +38,18 @@ export const convertActionsToMessages = (
       }
 
       try {
-        return loadedActions[actionKey]?.transform(data)
+        const loadedAction = loadedActions[actionKey]
+        if (!loadedAction) {
+          return
+        }
+        // If action not loaded or errored, throw error.
+        if (!loadedAction.defaults) {
+          throw new Error(`Action not loaded: ${loadedAction.action.label}.`)
+        } else if (loadedAction.defaults instanceof Error) {
+          throw loadedAction.defaults
+        }
+
+        return loadedAction.transform(data)
       } catch (err) {
         if (throwErrors) {
           throw err
@@ -50,18 +62,21 @@ export const convertActionsToMessages = (
     .filter(Boolean) as CosmosMsgForEmpty[]
 
 // Get the address for the given action options for the given chain. If a DAO,
-// this is the address of the polytone proxy on that chain. For a wallet, this
-// is the transformed bech32 address.
+// this is the address of the native address on the same chain or the polytone
+// proxy on that chain. For a wallet, this is the transformed bech32 address.
 export const getChainAddressForActionOptions = (
   { context, chain, address }: ActionOptions,
   chainId: string
-) =>
+): string | undefined =>
   // If on same chain, return address.
   chain.chain_id === chainId
     ? address
     : // If on different chain, return DAO's polytone proxy address.
     context.type === ActionContextType.Dao
-    ? context.info.polytoneProxies[chainId] || ''
+    ? getAccountAddress({
+        accounts: context.info.accounts,
+        chainId,
+      })
     : // If on different chain, return wallet's transformed bech32 address.
     context.type === ActionContextType.Wallet
     ? transformBech32Address(address, chainId)

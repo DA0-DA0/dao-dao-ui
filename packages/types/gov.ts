@@ -17,8 +17,8 @@ import {
 } from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 
 import { NestedActionsEditorFormData } from './actions'
+import { LoadingData } from './components'
 import { Coin, CosmosMsgFor_Empty } from './contracts'
-import { LoadingData } from './stateless'
 import { ProcessedTQ } from './utils'
 
 export { ProposalV1Beta1, ProposalV1 }
@@ -155,6 +155,8 @@ export const GOVERNANCE_PROPOSAL_TYPE_CUSTOM = 'CUSTOM'
 
 export type GovernanceProposalActionData = {
   chainId: string
+  // The address of the chain's gov module. Loaded in the background.
+  govModuleAddress?: string
   // If true, will hide title, description, and deposit.
   _onlyShowActions?: boolean
   version: GovProposalVersion

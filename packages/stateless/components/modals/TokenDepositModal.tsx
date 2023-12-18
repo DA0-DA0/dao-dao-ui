@@ -1,5 +1,5 @@
 import { WarningRounded } from '@mui/icons-material'
-import { ComponentType, Dispatch, SetStateAction } from 'react'
+import { ComponentType, Dispatch, ReactNode, SetStateAction } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -27,8 +27,9 @@ export type TokenDepositModalProps = Pick<ModalProps, 'visible' | 'onClose'> & {
   setAmount: Dispatch<SetStateAction<number>>
   connected: boolean
   ConnectWallet?: ComponentType
-  subtitle?: string
+  subtitle?: string | ReactNode
   warning?: string
+  disabled?: boolean
 }
 
 export const TokenDepositModal = ({
@@ -42,6 +43,7 @@ export const TokenDepositModal = ({
   ConnectWallet,
   subtitle,
   warning,
+  disabled,
   ...modalProps
 }: TokenDepositModalProps) => {
   const { t } = useTranslation()
@@ -64,7 +66,8 @@ export const TokenDepositModal = ({
             disabled={
               !connected ||
               loadingBalance.loading ||
-              loadingBalance.data.amount === 0
+              loadingBalance.data.amount === 0 ||
+              disabled
             }
             loading={loading}
             onClick={() => amount > 0 && onDeposit(amount)}
@@ -76,7 +79,10 @@ export const TokenDepositModal = ({
       header={{
         title: t('title.depositToken', { tokenSymbol }),
       }}
-      headerContent={subtitle && <p>{subtitle}</p>}
+      headerContent={
+        !!subtitle &&
+        (typeof subtitle === 'string' ? <p>{subtitle}</p> : subtitle)
+      }
     >
       {warning && (
         <div className="flex flex-row items-center gap-4 rounded-md bg-background-secondary p-4">

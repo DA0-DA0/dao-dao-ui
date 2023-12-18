@@ -5,6 +5,7 @@ import removeMarkdown from 'remove-markdown'
 
 import { serverSideTranslationsWithServerT } from '@dao-dao/i18n/serverSideTranslations'
 import {
+  AccountType,
   ContractVersion,
   Feature,
   GovProposalVersion,
@@ -137,6 +138,13 @@ export const makeGetGovStaticProps: GetGovStaticPropsMaker =
         activeThreshold: null,
         items: {},
         polytoneProxies: {},
+        accounts: [
+          {
+            type: AccountType.Native,
+            chainId: chain.chain_id,
+            address: chainConfig.name,
+          },
+        ],
         parentDao: null,
         admin: '',
       },
@@ -190,7 +198,7 @@ export const makeGetGovProposalStaticProps = ({
             await client.base.tendermint.v1beta1.getNodeInfo()
           ).applicationVersion?.cosmosSdkVersion.slice(1) || '0.0.0'
 
-        if (cosmosSdkVersionIs47OrHigher(cosmosSdkVersion)) {
+        if (cosmosSdkVersionIs47OrHigher(chain.chain_id, cosmosSdkVersion)) {
           try {
             const proposalV1 = (
               await client.gov.v1.proposal({

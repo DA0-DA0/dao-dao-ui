@@ -16,12 +16,18 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, ButtonPopupSection, TokenCardInfo } from '@dao-dao/types'
+import {
+  AccountType,
+  ActionKey,
+  ButtonPopupSection,
+  DaoTokenCardProps,
+} from '@dao-dao/types'
 import {
   StakingActionType,
   getDaoProposalSinglePrefill,
   getDisplayNameForChainId,
   getNativeTokenForChainId,
+  tokensEqual,
 } from '@dao-dao/utils'
 
 import { tokenCardLazyInfoSelector } from '../../recoil'
@@ -30,7 +36,12 @@ import { ButtonLink } from '../ButtonLink'
 import { EntityDisplay } from '../EntityDisplay'
 import { DaoTokenDepositModal } from './DaoTokenDepositModal'
 
-export const DaoTokenCard = (props: TokenCardInfo) => {
+export const DaoTokenCard = ({
+  noExtraActions = false,
+  ...props
+}: DaoTokenCardProps) => {
+  const { token, owner, unstakedBalance } = props
+
   const { t } = useTranslation()
   const router = useRouter()
   const { coreAddress } = useDaoInfoContext()
@@ -38,14 +49,14 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
 
   const lazyInfo = useCachedLoading(
     tokenCardLazyInfoSelector({
-      owner: props.owner,
-      token: props.token,
-      unstakedBalance: props.unstakedBalance,
+      owner: owner.address,
+      token,
+      unstakedBalance,
     }),
     {
       usdUnitPrice: undefined,
       stakingInfo: undefined,
-      totalBalance: props.unstakedBalance,
+      totalBalance: unstakedBalance,
     }
   )
 
@@ -53,16 +64,15 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     hooks: { useCommonGovernanceTokenInfo },
     components: { StakingModal },
   } = useVotingModuleAdapter()
-  const governanceInfo = useCommonGovernanceTokenInfo?.()
-  // If this token is the CW20 governance token for the DAO, hide deposit and
-  // show staking modal.
-  const isCw20GovernanceToken =
-    props.token.type === 'cw20' &&
-    props.token.denomOrAddress === governanceInfo?.denomOrAddress
+  const governanceTokenInfo = useCommonGovernanceTokenInfo?.()
+  // If this token is the governance token for the DAO, hide deposit and show
+  // staking modal.
+  const isGovernanceToken =
+    !!governanceTokenInfo && tokensEqual(token, governanceTokenInfo)
 
   // Refresh staking info.
   const setRefreshNativeTokenStakingInfo = useSetRecoilState(
-    refreshNativeTokenStakingInfoAtom(props.owner)
+    refreshNativeTokenStakingInfoAtom(owner.address)
   )
   const refreshNativeTokenStakingInfo = useCallback(
     () => setRefreshNativeTokenStakingInfo((id) => id + 1),
@@ -74,25 +84,25 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
     : lazyInfo.data.stakingInfo?.stakes ?? []
   const stakesWithRewards = lazyStakes.filter(({ rewards }) => rewards > 0)
 
-  const nativeToken = getNativeTokenForChainId(props.token.chainId)
+  const nativeToken = getNativeTokenForChainId(token.chainId)
 
   // Prefill URLs valid...
   const proposeClaimHref =
     // ...there is something to claim
     stakesWithRewards.length > 0 &&
     // ...and this is the native token
-    props.token.denomOrAddress === nativeToken.denomOrAddress
+    token.denomOrAddress === nativeToken.denomOrAddress
       ? getDaoProposalPath(coreAddress, 'create', {
           prefill: getDaoProposalSinglePrefill({
             actions: stakesWithRewards.map(({ validator: { address } }) => ({
               actionKey: ActionKey.ManageStaking,
               data: {
-                chainId: props.token.chainId,
+                chainId: token.chainId,
                 stakeType: StakingActionType.WithdrawDelegatorReward,
                 validator: address,
                 // Default values, not needed for displaying this type of message.
                 amount: 1,
-                denom: props.token.denomOrAddress,
+                denom: token.denomOrAddress,
               },
             })),
           }),
@@ -102,23 +112,23 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
   // Prefill URL is valid if...
   const proposeStakeUnstakeHref =
     // ...there is something to stake or unstake
-    (props.unstakedBalance > 0 || lazyStakes.length > 0) &&
+    (unstakedBalance > 0 || lazyStakes.length > 0) &&
     // ...and this is the native token
-    props.token.denomOrAddress === nativeToken.denomOrAddress
+    token.denomOrAddress === nativeToken.denomOrAddress
       ? getDaoProposalPath(coreAddress, 'create', {
           prefill: getDaoProposalSinglePrefill({
             // If has unstaked, show stake action by default.
             actions:
-              props.unstakedBalance > 0
+              unstakedBalance > 0
                 ? [
                     {
                       actionKey: ActionKey.ManageStaking,
                       data: {
-                        chainId: props.token.chainId,
+                        chainId: token.chainId,
                         stakeType: StakingActionType.Delegate,
                         validator: '',
-                        amount: props.unstakedBalance,
-                        denom: props.token.denomOrAddress,
+                        amount: unstakedBalance,
+                        denom: token.denomOrAddress,
                       },
                     },
                   ]
@@ -126,11 +136,11 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
                   lazyStakes.map(({ validator, amount }) => ({
                     actionKey: ActionKey.ManageStaking,
                     data: {
-                      chainId: props.token.chainId,
+                      chainId: token.chainId,
                       stakeType: StakingActionType.Undelegate,
                       validator,
                       amount,
-                      denom: props.token.denomOrAddress,
+                      denom: token.denomOrAddress,
                     },
                   })),
           }),
@@ -144,10 +154,14 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
   const [depositVisible, setDepositVisible] = useState(false)
   const showDeposit = useCallback(() => setDepositVisible(true), [])
 
-  const [showCw20StakingModal, setShowCw20StakingModal] = useState(false)
+  const [showGovernanceStakingModal, setShowGovernanceStakingModal] =
+    useState(false)
 
   const extraActionSections: ButtonPopupSection[] =
-    proposeStakeUnstakeHref || proposeClaimHref
+    !noExtraActions &&
+    // Don't show stake actions for ICA accounts.
+    owner.type !== AccountType.Ica &&
+    (proposeStakeUnstakeHref || proposeClaimHref)
       ? [
           {
             label: t('title.newProposalTo'),
@@ -178,52 +192,57 @@ export const DaoTokenCard = (props: TokenCardInfo) => {
       : []
 
   return (
-    <ChainProvider chainId={props.token.chainId}>
+    <ChainProvider chainId={token.chainId}>
       <StatelessTokenCard
         {...props}
         ButtonLink={ButtonLink}
         EntityDisplay={EntityDisplay}
         actions={{
-          token: isCw20GovernanceToken
+          token: isGovernanceToken
             ? [
-                // If this is the governance token and a CW20, show manage
-                // staking button.
+                // If this is the governance token, show manage staking button.
                 {
                   Icon: AccountBalance,
                   label: t('button.manageStake', {
-                    tokenSymbol: props.token.symbol,
+                    tokenSymbol: token.symbol,
                   }),
                   closeOnClick: true,
-                  onClick: () => setShowCw20StakingModal(true),
+                  onClick: () => setShowGovernanceStakingModal(true),
                 },
               ]
-            : // Only show deposit button if not governance cw20 token. People
-              // accidentally deposit governance tokens into the DAO when
-              // they're trying to stake them.
-              [
+            : // Only show deposit button if not governance token. People
+            // accidentally deposit governance tokens into the DAO when they're
+            // trying to stake them.
+            //
+            // Also hide for ICA accounts since they may or may not allow
+            // spending.
+            owner.type !== AccountType.Ica
+            ? [
                 {
                   Icon: AccountBalance,
                   label: t('button.deposit'),
                   closeOnClick: true,
                   onClick: showDeposit,
                 },
-              ],
+              ]
+            : [],
           extraSections: extraActionSections,
         }}
         lazyInfo={lazyInfo}
         onClaim={onClaim}
         refreshUnstakingTasks={refreshNativeTokenStakingInfo}
-        subtitle={getDisplayNameForChainId(props.token.chainId)}
+        subtitle={getDisplayNameForChainId(token.chainId)}
       />
 
-      {isCw20GovernanceToken && showCw20StakingModal && StakingModal && (
-        <StakingModal onClose={() => setShowCw20StakingModal(false)} />
+      {isGovernanceToken && showGovernanceStakingModal && StakingModal && (
+        <StakingModal onClose={() => setShowGovernanceStakingModal(false)} />
       )}
 
-      {!isCw20GovernanceToken && (
+      {!isGovernanceToken && (
         <DaoTokenDepositModal
           onClose={() => setDepositVisible(false)}
-          token={props.token}
+          owner={owner}
+          token={token}
           visible={depositVisible}
         />
       )}

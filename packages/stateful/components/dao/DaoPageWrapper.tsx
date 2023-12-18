@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { PropsWithChildren, useEffect } from 'react'
 import { useRecoilState } from 'recoil'
 
-import { walletChainIdAtom } from '@dao-dao/state/recoil'
+import { accountsSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
   DaoNotFound,
   ErrorPage500,
@@ -81,8 +81,23 @@ export const DaoPageWrapper = ({
     setAccentColor(accentColor ?? undefined)
   }, [accentColor, setAccentColor, isReady, isFallback, theme])
 
+  // Load all accounts since the static props only loads some. This should load
+  // faster than the DAO info selector below that will eventually replace this.
+  const accounts = useCachedLoadingWithError(
+    serializedInfo
+      ? accountsSelector({
+          chainId: serializedInfo.chainId,
+          address: serializedInfo.coreAddress,
+        })
+      : undefined
+  )
+
   const info: DaoInfo | undefined = serializedInfo && {
     ...serializedInfo,
+    accounts:
+      accounts.loading || accounts.errored
+        ? serializedInfo.accounts
+        : accounts.data,
     created: serializedInfo.created
       ? new Date(serializedInfo.created)
       : undefined,

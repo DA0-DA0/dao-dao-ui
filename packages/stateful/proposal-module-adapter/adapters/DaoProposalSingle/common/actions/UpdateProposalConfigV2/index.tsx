@@ -1,8 +1,11 @@
 import { useCallback } from 'react'
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector } from 'recoil'
 
 import { isContractSelector } from '@dao-dao/state/recoil'
-import { BallotDepositEmoji } from '@dao-dao/stateless'
+import {
+  BallotDepositEmoji,
+  useCachedLoadingWithError,
+} from '@dao-dao/stateless'
 import {
   ActionContextType,
   ActionKey,
@@ -135,35 +138,41 @@ export const makeUpdateProposalConfigV2ActionMaker =
     }
 
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
-      const proposalModuleConfig = useRecoilValue(
+      const proposalModuleConfig = useCachedLoadingWithError(
         configSelector({
           chainId,
           contractAddress: proposalModuleAddress,
         })
       )
 
-      const onlyMembersExecute = proposalModuleConfig.only_members_execute
+      if (proposalModuleConfig.loading) {
+        return
+      } else if (proposalModuleConfig.errored) {
+        return proposalModuleConfig.error
+      }
+
+      const onlyMembersExecute = proposalModuleConfig.data.only_members_execute
       const proposalDuration =
-        'time' in proposalModuleConfig.max_voting_period
-          ? proposalModuleConfig.max_voting_period.time
+        'time' in proposalModuleConfig.data.max_voting_period
+          ? proposalModuleConfig.data.max_voting_period.time
           : 604800
       const proposalDurationUnits = 'seconds'
 
-      const allowRevoting = proposalModuleConfig.allow_revoting
+      const allowRevoting = proposalModuleConfig.data.allow_revoting
 
       return {
         onlyMembersExecute,
         proposalDuration,
         proposalDurationUnits,
         allowRevoting,
-        ...thresholdToTQData(proposalModuleConfig.threshold),
+        ...thresholdToTQData(proposalModuleConfig.data.threshold),
       }
     }
 
     const useTransformToCosmos: UseTransformToCosmos<
       UpdateProposalConfigData
     > = () => {
-      const proposalModuleConfig = useRecoilValue(
+      const proposalModuleConfig = useCachedLoadingWithError(
         configSelector({
           chainId,
           contractAddress: proposalModuleAddress,
@@ -172,6 +181,12 @@ export const makeUpdateProposalConfigV2ActionMaker =
 
       return useCallback(
         (data: UpdateProposalConfigData) => {
+          if (proposalModuleConfig.loading) {
+            return
+          } else if (proposalModuleConfig.errored) {
+            throw proposalModuleConfig.error
+          }
+
           const updateConfigMessage: ExecuteMsg = {
             update_config: {
               threshold: data.quorumEnabled
@@ -202,10 +217,10 @@ export const makeUpdateProposalConfigV2ActionMaker =
               only_members_execute: data.onlyMembersExecute,
               allow_revoting: data.allowRevoting,
               // Pass through because we don't support changing them yet.
-              dao: proposalModuleConfig.dao,
+              dao: proposalModuleConfig.data.dao,
               close_proposal_on_execution_failure:
-                proposalModuleConfig.close_proposal_on_execution_failure,
-              min_voting_period: proposalModuleConfig.min_voting_period,
+                proposalModuleConfig.data.close_proposal_on_execution_failure,
+              min_voting_period: proposalModuleConfig.data.min_voting_period,
             },
           }
 
@@ -219,11 +234,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
             },
           })
         },
-        [
-          proposalModuleConfig.dao,
-          proposalModuleConfig.close_proposal_on_execution_failure,
-          proposalModuleConfig.min_voting_period,
-        ]
+        [proposalModuleConfig]
       )
     }
 
@@ -250,7 +261,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
         },
       })
 
-      const isContract = useRecoilValue(
+      const isContract = useCachedLoadingWithError(
         isUpdateConfig
           ? isContractSelector({
               contractAddress: msg.wasm.execute.contract_addr,
@@ -260,7 +271,12 @@ export const makeUpdateProposalConfigV2ActionMaker =
           : constSelector(false)
       )
 
-      if (!isUpdateConfig || !isContract) {
+      if (
+        !isUpdateConfig ||
+        isContract.loading ||
+        isContract.errored ||
+        !isContract.data
+      ) {
         return { match: false }
       }
 

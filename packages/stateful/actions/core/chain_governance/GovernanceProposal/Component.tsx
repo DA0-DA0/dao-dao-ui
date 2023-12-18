@@ -20,7 +20,7 @@ import {
   TextAreaInput,
   TextInput,
   TokenInput,
-  useConfiguredChainContext,
+  useChainContext,
 } from '@dao-dao/stateless'
 import {
   AddressInputProps,
@@ -60,6 +60,7 @@ import { CommunityPoolTransferData } from '../../treasury/CommunityPoolTransfer/
 
 export type GovernanceProposalOptions = {
   govModuleAddress: string
+  supportsV1GovProposals: boolean
   minDeposits: LoadingData<GenericTokenBalance[]>
   TokenAmountDisplay: ComponentType<StatefulTokenAmountDisplayProps>
   AddressInput: ComponentType<AddressInputProps<GovernanceProposalActionData>>
@@ -76,6 +77,7 @@ export const GovernanceProposalComponent: ActionComponent<
     isCreating,
     options: {
       govModuleAddress,
+      supportsV1GovProposals,
       minDeposits,
       GovProposalActionDisplay,
       TokenAmountDisplay,
@@ -91,11 +93,8 @@ export const GovernanceProposalComponent: ActionComponent<
   const {
     chainId,
     chain: { bech32_prefix: bech32Prefix },
-    config: {
-      gov: { supportsV1GovProposals },
-    },
     nativeToken,
-  } = useConfiguredChainContext()
+  } = useChainContext()
 
   const selectedMinDepositToken = minDeposits.loading
     ? undefined
@@ -416,19 +415,23 @@ export const GovernanceProposalComponent: ActionComponent<
               <div className="space-y-1">
                 <InputLabel name={t('form.initialDeposit')} />
                 <TokenInput
-                  amountError={errors?.deposit?.[0]?.amount}
-                  amountFieldName={
-                    (fieldNamePrefix + 'deposit.0.amount') as 'deposit.0.amount'
-                  }
-                  amountMin={convertMicroDenomToDenomWithDecimals(
-                    1,
-                    selectedMinDepositToken?.token.decimals ?? 0
-                  )}
-                  amountStep={convertMicroDenomToDenomWithDecimals(
-                    1,
-                    selectedMinDepositToken?.token.decimals ?? 0
-                  )}
-                  convertMicroDenom
+                  amount={{
+                    watch,
+                    setValue,
+                    register,
+                    fieldName: (fieldNamePrefix +
+                      'deposit.0.amount') as 'deposit.0.amount',
+                    error: errors?.deposit?.[0]?.amount,
+                    min: convertMicroDenomToDenomWithDecimals(
+                      1,
+                      selectedMinDepositToken?.token.decimals ?? 0
+                    ),
+                    step: convertMicroDenomToDenomWithDecimals(
+                      1,
+                      selectedMinDepositToken?.token.decimals ?? 0
+                    ),
+                    convertMicroDenom: true,
+                  }}
                   onSelectToken={({ denomOrAddress }) =>
                     setValue(
                       (fieldNamePrefix +
@@ -437,9 +440,7 @@ export const GovernanceProposalComponent: ActionComponent<
                     )
                   }
                   readOnly={!isCreating}
-                  register={register}
                   selectedToken={selectedMinDepositToken?.token}
-                  setValue={setValue}
                   tokens={
                     minDeposits.loading
                       ? { loading: true }
@@ -448,7 +449,6 @@ export const GovernanceProposalComponent: ActionComponent<
                           data: minDeposits.data.map(({ token }) => token),
                         }
                   }
-                  watch={watch}
                 />
               </div>
             </>
@@ -541,22 +541,24 @@ export const GovernanceProposalComponent: ActionComponent<
                                 className="flex flex-row items-center gap-2"
                               >
                                 <TokenInput
-                                  amountError={
-                                    errors?.legacy?.spends?.[index]?.amount
-                                  }
-                                  amountFieldName={
-                                    (fieldNamePrefix +
-                                      `legacy.spends.${index}.amount`) as `legacy.spends.${number}.amount`
-                                  }
-                                  amountMin={convertMicroDenomToDenomWithDecimals(
-                                    1,
-                                    selectedToken.decimals
-                                  )}
-                                  amountStep={convertMicroDenomToDenomWithDecimals(
-                                    1,
-                                    selectedToken.decimals
-                                  )}
-                                  convertMicroDenom
+                                  amount={{
+                                    watch,
+                                    setValue,
+                                    register,
+                                    fieldName: (fieldNamePrefix +
+                                      `legacy.spends.${index}.amount`) as `legacy.spends.${number}.amount`,
+                                    error:
+                                      errors?.legacy?.spends?.[index]?.amount,
+                                    min: convertMicroDenomToDenomWithDecimals(
+                                      1,
+                                      selectedToken.decimals
+                                    ),
+                                    step: convertMicroDenomToDenomWithDecimals(
+                                      1,
+                                      selectedToken.decimals
+                                    ),
+                                    convertMicroDenom: true,
+                                  }}
                                   onSelectToken={({ denomOrAddress }) =>
                                     setValue(
                                       (fieldNamePrefix +
@@ -564,14 +566,11 @@ export const GovernanceProposalComponent: ActionComponent<
                                       denomOrAddress
                                     )
                                   }
-                                  register={register}
                                   selectedToken={selectedToken}
-                                  setValue={setValue}
                                   tokens={{
                                     loading: false,
                                     data: availableTokens,
                                   }}
-                                  watch={watch}
                                 />
 
                                 <IconButton

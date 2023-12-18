@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { SdaLayoutProps } from '@dao-dao/types/stateless/SdaLayout'
+import { SdaLayoutProps } from '@dao-dao/types/components/SdaLayout'
 
 import { ErrorBoundary } from '../error/ErrorBoundary'
 import { IconButton } from '../icon_buttons'

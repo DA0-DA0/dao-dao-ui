@@ -27,7 +27,10 @@ import { PAGINATION_MIN_PAGE, Pagination } from '../Pagination'
 import { FilterableItemPopup } from '../popup/FilterableItemPopup'
 import { Tooltip } from '../tooltip'
 import { ActionCard } from './ActionCard'
-import { ActionCategoryActionPickerCard } from './ActionCategoryActionPickerCard'
+import {
+  ActionCategoryActionPickerCard,
+  ActionCategoryActionPickerCardProps,
+} from './ActionCategoryActionPickerCard'
 import { ACTION_CATEGORY_SELECTOR_FILTERABLE_KEYS } from './ActionCategorySelector'
 import { ACTIONS_PER_PAGE } from './ActionsRenderer'
 
@@ -150,6 +153,22 @@ export const ActionsEditor = ({
     [] as GroupedActionData[]
   )
 
+  const loadedActionValues = Object.values(loadedActions)
+  const loadingActionKeys = loadedActionValues.flatMap(
+    ({ action: { key }, defaults }) => (!defaults ? key : [])
+  )
+  const erroredActionKeys = loadedActionValues.reduce(
+    (acc, { action: { key }, defaults }) => ({
+      ...acc,
+      ...(defaults && defaults instanceof Error
+        ? {
+            [key]: defaults,
+          }
+        : {}),
+    }),
+    {} as Partial<Record<ActionKey, Error>>
+  )
+
   return groupedActionData.length > 0 ? (
     <div className={clsx('flex flex-col gap-2', className)}>
       {groupedActionData.map((group, index) => (
@@ -167,7 +186,9 @@ export const ActionsEditor = ({
             actionDataErrors={actionDataErrors}
             actionDataFieldName={actionDataFieldName}
             categories={categories}
+            erroredActionKeys={erroredActionKeys}
             loadedActions={loadedActions}
+            loadingActionKeys={loadingActionKeys}
           />
         </div>
       ))}
@@ -185,7 +206,10 @@ export type ActionEditorProps = GroupedActionData & {
     | undefined
 
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
-}
+} & Pick<
+    ActionCategoryActionPickerCardProps,
+    'loadingActionKeys' | 'erroredActionKeys'
+  >
 
 // Renders a group of data that belong to the same action, or a category action
 // picker if no action is selected.
@@ -194,6 +218,8 @@ export const ActionEditor = ({
   loadedActions,
   actionDataFieldName: _actionDataFieldName,
   actionDataErrors,
+  loadingActionKeys,
+  erroredActionKeys,
 
   category,
   action,
@@ -273,6 +299,8 @@ export const ActionEditor = ({
       <>
         <ActionCategoryActionPickerCard
           category={category}
+          erroredActionKeys={erroredActionKeys}
+          loadingActionKeys={loadingActionKeys}
           onChangeCategory={() => setChangeCategoryOpen(true)}
           onRemove={onRemove}
           onSelectAction={({ key }, event) => {

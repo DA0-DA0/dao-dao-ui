@@ -47,6 +47,11 @@ Default.args = {
     symbol: 'JUNO',
     decimals: 6,
     imageUrl: undefined,
+    source: {
+      chainId: CHAIN_ID,
+      type: TokenType.Native,
+      denomOrAddress: 'ujuno',
+    },
   },
   onWithdraw: () => alert('withdraw'),
   withdrawing: false,

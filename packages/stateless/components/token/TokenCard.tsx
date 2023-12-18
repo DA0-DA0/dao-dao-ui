@@ -30,6 +30,7 @@ import { UnstakingModal } from './UnstakingModal'
 
 export const TokenCard = ({
   token,
+  color,
   isGovernanceToken,
   subtitle,
   unstakedBalance,
@@ -86,40 +87,35 @@ export const TokenCard = ({
 
   // Setup actions for popup. Prefill with cw20 related actions.
   const buttonPopupSections: ButtonPopupSection[] = [
-    ...(token.type === TokenType.Cw20 || !!actions?.token?.length
-      ? [
-          {
-            label: t('title.token'),
-            buttons: [
-              ...(token.type === TokenType.Cw20
-                ? [
-                    {
-                      Icon: copied ? Check : CopyAll,
-                      label: t('button.copyAddressToClipboard'),
-                      closeOnClick: false,
-                      onClick: () => {
-                        navigator.clipboard.writeText(token.denomOrAddress)
-                        toast.success(t('info.copiedToClipboard'))
-                        setCopied(true)
-                      },
-                    },
-                  ]
-                : []),
-              ...(addCw20Token
-                ? [
-                    {
-                      Icon: Add,
-                      label: t('button.addToKeplr'),
-                      closeOnClick: false,
-                      onClick: addCw20Token,
-                    },
-                  ]
-                : []),
-              ...(actions?.token ?? []),
-            ],
+    {
+      label: t('title.token'),
+      buttons: [
+        {
+          Icon: copied ? Check : CopyAll,
+          label:
+            token.type === TokenType.Cw20
+              ? t('button.copyAddressToClipboard')
+              : t('button.copyIdToClipboard'),
+          closeOnClick: false,
+          onClick: () => {
+            navigator.clipboard.writeText(token.denomOrAddress)
+            toast.success(t('info.copiedToClipboard'))
+            setCopied(true)
           },
-        ]
-      : []),
+        },
+        ...(addCw20Token
+          ? [
+              {
+                Icon: Add,
+                label: t('button.addToKeplr'),
+                closeOnClick: false,
+                onClick: addCw20Token,
+              },
+            ]
+          : []),
+        ...(actions?.token ?? []),
+      ],
+    },
     ...(actions?.extraSections ?? []),
   ]
 
@@ -160,19 +156,30 @@ export const TokenCard = ({
 
             {/* Titles */}
             <div className="flex flex-col gap-1">
-              {/* We're dealing with an IBC token we don't know about. Instead of showing a long hash, allow the user to copy it. */}
-              {isIbc ? (
-                <CopyToClipboard
-                  className="title-text"
-                  takeStartEnd={{
-                    start: 7,
-                    end: 3,
-                  }}
-                  value={originalTokenSymbol}
-                />
-              ) : (
-                <p className="title-text">${tokenSymbol}</p>
-              )}
+              <div className="flex flex-row items-center gap-2">
+                {/* We're dealing with an IBC token we don't know about. Instead of showing a long hash, allow the user to copy it. */}
+                {isIbc ? (
+                  <CopyToClipboard
+                    className="title-text"
+                    takeStartEnd={{
+                      start: 7,
+                      end: 3,
+                    }}
+                    value={originalTokenSymbol}
+                  />
+                ) : (
+                  <p className="title-text">${tokenSymbol}</p>
+                )}
+
+                {color && (
+                  <div
+                    className="h-2 w-2 shrink-0 animate-fade-in rounded-full"
+                    style={{
+                      backgroundColor: color,
+                    }}
+                  ></div>
+                )}
+              </div>
 
               {!!subtitle && <p className="caption-text">{subtitle}</p>}
             </div>

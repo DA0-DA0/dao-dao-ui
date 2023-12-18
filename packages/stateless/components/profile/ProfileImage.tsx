@@ -13,6 +13,7 @@ export interface ProfileImageProps {
   onClick?: () => void
   onEdit?: () => void
   rounded?: boolean
+  disabled?: boolean
 }
 
 export const ProfileImage = forwardRef<HTMLDivElement, ProfileImageProps>(

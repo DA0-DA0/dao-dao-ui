@@ -1,4 +1,4 @@
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector, useRecoilValue, waitForAll } from 'recoil'
 
 import {
   CommonNftSelectors,
@@ -32,20 +32,20 @@ export const useGovernanceCollectionInfo = ({
     })
   )
 
-  const contractInfo = useRecoilValue(
-    CommonNftSelectors.contractInfoSelector({
-      chainId,
-      contractAddress: collectionAddress,
-      params: [],
-    })
-  )
+  const [contractInfo, tokenSupplyInfo] = useRecoilValue(
+    waitForAll([
+      CommonNftSelectors.contractInfoSelector({
+        chainId,
+        contractAddress: collectionAddress,
+        params: [],
+      }),
 
-  const tokenSupplyInfo = useRecoilValue(
-    CommonNftSelectors.numTokensSelector({
-      chainId,
-      contractAddress: collectionAddress,
-      params: [],
-    })
+      CommonNftSelectors.numTokensSelector({
+        chainId,
+        contractAddress: collectionAddress,
+        params: [],
+      }),
+    ])
   )
 
   /// Optional
@@ -89,6 +89,11 @@ export const useGovernanceCollectionInfo = ({
       symbol: contractInfo.symbol,
       decimals: 0,
       imageUrl: undefined,
+      source: {
+        chainId,
+        type: TokenType.Cw721,
+        denomOrAddress: collectionAddress,
+      },
     },
     /// Optional
     // Wallet balance
@@ -98,7 +103,7 @@ export const useGovernanceCollectionInfo = ({
       ? undefined
       : {
           loading: false,
-          data: Number(loadingWalletBalance.data?.length),
+          data: Number(loadingWalletBalance.data.length),
         },
     // Treasury balance
     loadingTreasuryBalance: loadingTreasuryBalance.loading

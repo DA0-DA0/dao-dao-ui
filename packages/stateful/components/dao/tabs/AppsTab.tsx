@@ -36,6 +36,8 @@ import {
   aminoTypes,
   decodeMessages,
   decodedStargateMsgToCw,
+  getAccountAddress,
+  getAccountChainId,
   getFallbackImage,
   maybeMakePolytoneExecuteMessage,
   protobufToCwMsg,
@@ -62,6 +64,7 @@ export const AppsTab = () => {
     coreAddress,
     polytoneProxies,
     proposalModules,
+    accounts,
   } = useDaoInfoContext()
 
   // Ensure we have a single choice proposal module to use for proposals.
@@ -75,13 +78,15 @@ export const AppsTab = () => {
   const [fullScreen, setFullScreen] = useState(false)
 
   const addressForChainId = (chainId: string) =>
-    (chainId === currentChainId ? coreAddress : polytoneProxies[chainId]) || ''
+    getAccountAddress({
+      accounts,
+      chainId,
+    }) || ''
   const chainIdForAddress = (address: string) =>
-    address === coreAddress
-      ? currentChainId
-      : Object.entries(polytoneProxies).find(
-          ([, chainAddress]) => chainAddress === address
-        )?.[0]
+    getAccountChainId({
+      accounts,
+      address,
+    })
 
   const decodeDirect = (sender: string, signDocBodyBytes: Uint8Array) => {
     const chainId = chainIdForAddress(sender)

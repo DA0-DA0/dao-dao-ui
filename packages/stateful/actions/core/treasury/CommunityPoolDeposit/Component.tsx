@@ -132,25 +132,28 @@ export const CommunityPoolDepositComponent: ActionComponent<
     <>
       <div className="flex min-w-0 flex-row flex-wrap items-stretch justify-between gap-x-3 gap-y-1">
         <TokenInput
-          amountError={errors?.amount}
-          amountFieldName={(fieldNamePrefix + 'amount') as 'amount'}
-          amountMax={balance}
-          amountMin={convertMicroDenomToDenomWithDecimals(
-            1,
-            selectedToken?.token.decimals ?? 0
-          )}
-          amountStep={convertMicroDenomToDenomWithDecimals(
-            1,
-            selectedToken?.token.decimals ?? 0
-          )}
+          amount={{
+            watch,
+            setValue,
+            register,
+            fieldName: (fieldNamePrefix + 'amount') as 'amount',
+            error: errors?.amount,
+            min: convertMicroDenomToDenomWithDecimals(
+              1,
+              selectedToken?.token.decimals ?? 0
+            ),
+            max: balance,
+            step: convertMicroDenomToDenomWithDecimals(
+              1,
+              selectedToken?.token.decimals ?? 0
+            ),
+          }}
           onSelectToken={({ chainId, denomOrAddress }) => {
             setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
             setValue((fieldNamePrefix + 'denom') as 'denom', denomOrAddress)
           }}
           readOnly={!isCreating}
-          register={register}
           selectedToken={selectedToken?.token}
-          setValue={setValue}
           tokens={
             tokens.loading
               ? { loading: true }
@@ -170,7 +173,6 @@ export const CommunityPoolDepositComponent: ActionComponent<
                   })),
                 }
           }
-          watch={watch}
         />
       </div>
 

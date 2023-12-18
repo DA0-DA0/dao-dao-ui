@@ -3,13 +3,13 @@ import JSON5 from 'json5'
 import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValue } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   SwordsEmoji,
+  useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import { CosmosMsgForEmpty, TokenType } from '@dao-dao/types'
 import {
@@ -57,9 +57,7 @@ const useDefaults: UseDefaults<ExecuteData> = () => {
 const useTransformToCosmos: UseTransformToCosmos<ExecuteData> = () => {
   const { t } = useTranslation()
   const currentChainId = useActionOptions().chain.chain_id
-  const tokenBalances = useTokenBalances({
-    allChains: true,
-  })
+  const tokenBalances = useTokenBalances()
 
   return useCallback(
     ({ chainId, address, message, funds, cw20 }: ExecuteData) => {
@@ -169,18 +167,18 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
     },
   })
 
-  const cw20Token = useRecoilValue(
+  const cw20Token = useCachedLoadingWithError(
     isCw20
       ? genericTokenSelector({
           chainId,
           type: TokenType.Cw20,
           denomOrAddress: msg.wasm.execute.contract_addr,
         })
-      : constSelector(undefined)
+      : undefined
   )
 
   // Can't match until we have the CW20 token info.
-  if (isCw20 && !cw20Token) {
+  if (isCw20 && (cw20Token.loading || cw20Token.errored)) {
     return { match: false }
   }
 
@@ -205,7 +203,9 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ExecuteData> = (
                   denom: msg.wasm.execute.contract_addr,
                   amount: convertMicroDenomToDenomWithDecimals(
                     msg.wasm.execute.msg.send.amount,
-                    cw20Token?.decimals ?? 0
+                    !cw20Token.loading && !cw20Token.errored
+                      ? cw20Token.data.decimals
+                      : 0
                   ),
                 },
               ]
@@ -241,14 +241,12 @@ const Component: ActionComponent = (props) => {
           type: cw20 ? TokenType.Cw20 : TokenType.Native,
           denomOrAddress: denom,
         })),
-    allChains: true,
   })
 
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
-          className="mb-4"
+        <DaoSupportedChainPickerInput
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
           onChange={() => {

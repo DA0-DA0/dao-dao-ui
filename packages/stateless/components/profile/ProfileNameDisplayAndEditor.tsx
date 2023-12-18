@@ -17,7 +17,7 @@ import { Tooltip } from '../tooltip'
 export type ProfileNameDisplayAndEditorProps = {
   walletProfileData: WalletProfileData
   compact?: boolean
-  updateProfileName: (name: string | null) => Promise<void>
+  updateProfileName?: (name: string | null) => Promise<void>
   className?: string
   nameClassName?: string
   // The height of this should match the line-height of the name.
@@ -35,7 +35,7 @@ export const ProfileNameDisplayAndEditor = ({
 }: ProfileNameDisplayAndEditorProps) => {
   const { t } = useTranslation()
 
-  const canEdit = walletProfileData.profile.nonce >= 0
+  const canEdit = !!updateProfileName && walletProfileData.profile.nonce >= 0
 
   // If set, will show edit input.
   const [editingName, setEditingName] = useState<string | undefined>()

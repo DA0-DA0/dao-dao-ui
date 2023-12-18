@@ -30,7 +30,7 @@ import {
   ProposalStatus,
 } from '@dao-dao/types'
 import {
-  decodeMessages,
+  decodeMessage,
   decodePolytoneExecuteMsg,
   makeWasmMessage,
 } from '@dao-dao/utils'
@@ -86,11 +86,7 @@ export const useProposalPolytoneState = ({
     () =>
       msgs
         .map((msg) =>
-          decodePolytoneExecuteMsg(
-            srcChainId,
-            decodeMessages([msg])[0],
-            'oneOrZero'
-          )
+          decodePolytoneExecuteMsg(srcChainId, decodeMessage(msg), 'oneOrZero')
         )
         .flatMap((decoded) => (decoded.match ? [decoded] : [])),
     [srcChainId, msgs]
@@ -195,18 +191,18 @@ export const useProposalPolytoneState = ({
     return () => clearInterval(interval)
   }, [anyUnrelayed, refreshUnreceivedIbcData])
 
-  const executedOverTwoMinutesAgo =
+  const executedOverFiveMinutesAgo =
     status === ProposalStatus.Executed &&
     executedAt !== undefined &&
-    // If executed over 2 minutes ago...
-    Date.now() - executedAt.getTime() > 2 * 60 * 1000
+    // If executed over 5 minutes ago...
+    Date.now() - executedAt.getTime() > 5 * 60 * 1000
   const polytoneMessagesNeedingSelfRelay = polytoneResults.loading
     ? undefined
     : polytoneMessages.filter(
         ({ polytoneConnection: { needsSelfRelay } }, index) =>
           // Needs self-relay or does not need self-relay but was executed a few
           // minutes ago and still has not been relayed.
-          (!!needsSelfRelay || executedOverTwoMinutesAgo) &&
+          (!!needsSelfRelay || executedOverFiveMinutesAgo) &&
           // Not yet relayed.
           polytoneResults.data[index].state === 'hasError' &&
           polytoneResults.data[index].errorOrThrow() instanceof Error &&

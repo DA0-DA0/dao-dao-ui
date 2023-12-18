@@ -4,6 +4,8 @@ import { useTranslation } from 'react-i18next'
 import {
   AddressInput,
   Button,
+  ChainProvider,
+  DaoSupportedChainPickerInput,
   FormattedJsonDisplay,
   FormattedJsonDisplayProps,
   InputErrorMessage,
@@ -12,12 +14,17 @@ import {
 } from '@dao-dao/stateless'
 import { ActionComponent } from '@dao-dao/types/actions'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
+import { getChainForChainId } from '@dao-dao/utils'
 import {
   makeValidateContractAddress,
   validateRequired,
 } from '@dao-dao/utils/validation'
 
-import { useActionOptions } from '../../../react'
+export type ManageCw20Data = {
+  chainId: string
+  adding: boolean
+  address: string
+}
 
 interface Token {
   address: string
@@ -41,16 +48,24 @@ export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
   },
 }) => {
   const { t } = useTranslation()
-  const {
-    chain: { bech32_prefix: bech32Prefix },
-  } = useActionOptions()
-  const { register, setValue, watch } = useFormContext()
+  const { register, setValue, watch } = useFormContext<ManageCw20Data>()
 
-  const addingNew = watch(fieldNamePrefix + 'adding')
-  const tokenAddress = watch(fieldNamePrefix + 'address')
+  const chainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
+  const chain = getChainForChainId(chainId)
+
+  const addingNew = watch((fieldNamePrefix + 'adding') as 'adding')
+  const tokenAddress = watch((fieldNamePrefix + 'address') as 'address')
 
   return (
     <>
+      {isCreating && (
+        <DaoSupportedChainPickerInput
+          disabled={!isCreating}
+          fieldName={fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
+        />
+      )}
+
       <div className="flex flex-col gap-1">
         <SegmentedControlsTitle
           className="mb-4"
@@ -77,7 +92,12 @@ export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
                   key={address}
                   center
                   disabled={!isCreating}
-                  onClick={() => setValue(fieldNamePrefix + 'address', address)}
+                  onClick={() =>
+                    setValue(
+                      (fieldNamePrefix + 'address') as 'address',
+                      address
+                    )
+                  }
                   pressed={address === tokenAddress}
                   size="sm"
                   type="button"
@@ -98,19 +118,21 @@ export const ManageCw20Component: ActionComponent<ManageCw20Options> = ({
               : t('info.removeCw20FromTreasuryActionDescription')
           }
         />
-        <AddressInput
-          disabled={!isCreating}
-          error={errors?.address}
-          fieldName={fieldNamePrefix + 'address'}
-          register={register}
-          type="contract"
-          validation={[
-            validateRequired,
-            makeValidateContractAddress(bech32Prefix),
-            // Invalidate field if additional error is present.
-            () => additionalAddressError || true,
-          ]}
-        />
+        <ChainProvider chainId={chainId}>
+          <AddressInput
+            disabled={!isCreating}
+            error={errors?.address}
+            fieldName={(fieldNamePrefix + 'address') as 'address'}
+            register={register}
+            type="contract"
+            validation={[
+              validateRequired,
+              makeValidateContractAddress(chain.bech32_prefix),
+              // Invalidate field if additional error is present.
+              () => additionalAddressError || true,
+            ]}
+          />
+        </ChainProvider>
         <InputErrorMessage
           error={
             errors?.address ||

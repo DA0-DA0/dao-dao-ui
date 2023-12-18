@@ -1,6 +1,6 @@
 import { waitForAll } from 'recoil'
 
-import { genericTokenBalanceSelector } from '@dao-dao/state/recoil'
+import { genericTokenSelector } from '@dao-dao/state/recoil'
 import {
   Loader,
   PayEntityDisplay as StatelessPayEntityDisplay,
@@ -17,27 +17,26 @@ export const PayEntityDisplay = ({
 }: StatefulPayEntityDisplayProps) => {
   const { chain_id: chainId } = useChain()
 
-  const tokenBalances = useCachedLoading(
+  const tokens = useCachedLoading(
     waitForAll(
       coins.map(({ denom }) =>
-        genericTokenBalanceSelector({
+        genericTokenSelector({
+          chainId,
           type: TokenType.Native,
           denomOrAddress: denom,
-          walletAddress: props.recipient,
-          chainId,
         })
       )
     ),
     []
   )
 
-  return tokenBalances.loading ? (
+  return tokens.loading ? (
     <Loader size={32} />
   ) : (
     <StatelessPayEntityDisplay
       {...props}
       EntityDisplay={EntityDisplay}
-      tokens={tokenBalances.data.map(({ token }, index) => ({
+      tokens={tokens.data.map((token, index) => ({
         token,
         balance: coins[index].amount,
       }))}

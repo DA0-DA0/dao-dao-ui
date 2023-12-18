@@ -110,10 +110,15 @@ export const InstantiateTokenSwap: ActionComponent<
 
         {/* Allow to enter value for counterparty greater than what they currently have in the treasury, since they could accept it at a future time when they do have the amount. In other words, don't set a max. */}
         <TokenInput
-          amountError={errors?.counterparty?.amount}
-          amountFieldName={fieldNamePrefix + 'counterparty.amount'}
-          amountMin={counterpartyMin}
-          amountStep={counterpartyMin}
+          amount={{
+            watch,
+            setValue,
+            register,
+            fieldName: fieldNamePrefix + 'counterparty.amount',
+            error: errors?.counterparty?.amount,
+            min: counterpartyMin,
+            step: counterpartyMin,
+          }}
           disabled={!counterpartyAddressValid}
           onSelectToken={({ type, denomOrAddress, decimals }) => {
             // Update type, denomOrAddress, and decimals.
@@ -124,9 +129,7 @@ export const InstantiateTokenSwap: ActionComponent<
             )
             setValue(fieldNamePrefix + 'counterparty.decimals', decimals)
           }}
-          register={register}
           selectedToken={counterpartyToken?.token}
-          setValue={setValue}
           tokens={
             // Don't load when counterparty address is not yet valid, because
             // these will be perpetually loading until the address is entered.
@@ -141,7 +144,6 @@ export const InstantiateTokenSwap: ActionComponent<
                   ),
                 }
           }
-          watch={watch}
         />
 
         {/* Warn if counterparty does not have the requested amount. */}
@@ -170,21 +172,26 @@ export const InstantiateTokenSwap: ActionComponent<
         </InputLabel>
 
         <TokenInput
-          amountError={errors?.selfParty?.amount}
-          amountFieldName={fieldNamePrefix + 'selfParty.amount'}
-          amountMax={selfMax}
-          amountMin={selfMin}
-          amountStep={selfMin}
-          amountValidations={[
-            (value) =>
-              value <= selfMax ||
-              t('error.treasuryInsufficient', {
-                amount: selfMax.toLocaleString(undefined, {
-                  maximumFractionDigits: selfDecimals,
+          amount={{
+            watch,
+            setValue,
+            register,
+            fieldName: fieldNamePrefix + 'selfParty.amount',
+            error: errors?.selfParty?.amount,
+            min: selfMin,
+            step: selfMin,
+            max: selfMax,
+            validations: [
+              (value) =>
+                value <= selfMax ||
+                t('error.treasuryInsufficient', {
+                  amount: selfMax.toLocaleString(undefined, {
+                    maximumFractionDigits: selfDecimals,
+                  }),
+                  tokenSymbol: selfSymbol,
                 }),
-                tokenSymbol: selfSymbol,
-              }),
-          ]}
+            ],
+          }}
           onSelectToken={({ type, denomOrAddress, decimals }) => {
             // Update type, denomOrAddress, and decimals.
             setValue(fieldNamePrefix + 'selfParty.type', type)
@@ -194,14 +201,11 @@ export const InstantiateTokenSwap: ActionComponent<
             )
             setValue(fieldNamePrefix + 'selfParty.decimals', decimals)
           }}
-          register={register}
           selectedToken={selfToken?.token}
-          setValue={setValue}
           tokens={{
             loading: false,
             data: selfPartyTokenBalances.map(({ token }) => token),
           }}
-          watch={watch}
         />
 
         <InputErrorMessage error={errors?.selfParty?.amount} />

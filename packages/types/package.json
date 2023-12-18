@@ -8,7 +8,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@chain-registry/types": "^0.16.0",
+    "@chain-registry/types": "^0.17.0",
     "@cosmjs/cosmwasm-stargate": "^0.31.0",
     "@cosmos-kit/web3auth": "^2.4.2",
     "@dao-dao/config": "2.2.0",
@@ -18,7 +18,7 @@
     "react-hook-form": "7.20.4",
     "react-i18next": "^11.0.0",
     "recoil": "^0.7.2",
-    "typescript": "^4.8.3"
+    "typescript": "5.3.3"
   },
   "peerDependencies": {
     "next": "^12 || ^13",

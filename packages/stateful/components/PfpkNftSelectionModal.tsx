@@ -241,7 +241,11 @@ export const InnerPfpkNftSelectionModal = ({
         }}
         nfts={
           isWalletError && walletErrorMessage
-            ? { loading: false, errored: true, error: walletErrorMessage }
+            ? {
+                loading: false,
+                errored: true,
+                error: new Error(walletErrorMessage),
+              }
             : nfts
         }
         noneDisplay={

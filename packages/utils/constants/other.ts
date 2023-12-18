@@ -3,7 +3,7 @@
 export const SITE_IMAGE = '/social.jpg'
 
 // 3 days
-export const POLYTONE_TIMEOUT_SECONDS = 3 * 24 * 60 * 60
+export const IBC_TIMEOUT_SECONDS = 3 * 24 * 60 * 60
 
 // DAO name min/max and description max defined in core.
 export const MIN_DAO_NAME_LENGTH = 3
@@ -45,15 +45,22 @@ export const DAO_WIDGET_ITEM_NAMESPACE = 'widget:'
 // contract info response.
 export const CW721_WORKAROUND_ITEM_KEY_PREFIX = 'cw721:'
 // The namespace (prefix) of cw721 contracts for polytone accounts stored in a
-// DAO's core items list. Polytone proxies cannot register cw721 like the DAO
+// DAO's core items list. Polytone proxies cannot register cw721s like the DAO
 // core contract can, so we need to store this separately.
 export const POLYTONE_CW721_ITEM_KEY_PREFIX = 'polytone_cw721:'
+// The namespace (prefix) of cw20 contracts for polytone accounts stored in a
+// DAO's core items list. Polytone proxies cannot register cw20s like the DAO
+// core contract can, so we need to store this separately.
+export const POLYTONE_CW20_ITEM_KEY_PREFIX = 'polytone_cw20:'
 
 // Osmosis API
 export const OSMOSIS_API_BASE = 'https://api-osmosis.imperator.co'
 
 // KVPK prefix for saved Me page transactions.
 export const ME_SAVED_TX_PREFIX = 'savedTx:'
+
+// KVPK prefix for registered ICA chains.
+export const ICA_CHAINS_TX_PREFIX = 'ica:'
 
 export const CHAIN_GAS_MULTIPLIER = 2
 
@@ -65,3 +72,44 @@ export const NEUTRON_GOVERNANCE_DAO =
 
 // DAOs with these names will be excluded from search.
 export const INACTIVE_DAO_NAMES = ['[archived]', '[deleted]']
+
+// 1-10 linear from purple to orange/yellow. Intersperse colors so similar
+// colors are not adjacent.
+export const DISTRIBUTION_COLORS = [
+  '#5B58E2', // 1
+  '#954FE7', // 4
+  '#FC81A4', // 7
+  '#F1B671', // 10
+  '#4744AC', // 2
+  '#BA73DD', // 5
+  '#EE7969', // 8
+  '#6642CE', // 3
+  '#DE73C0', // 6
+  '#F4925A', // 9
+]
+
+export const DISTRIBUTION_COLORS_ORDERED = [
+  '#5B58E2', // 1
+  '#4744AC', // 2
+  '#6642CE', // 3
+  '#954FE7', // 4
+  '#BA73DD', // 5
+  '#DE73C0', // 6
+  '#FC81A4', // 7
+  '#EE7969', // 8
+  '#F4925A', // 9
+  '#F1B671', // 10
+]
+
+export const DISTRIBUTION_COLORS_EVERY_OTHER = [
+  '#4744AC', // 2
+  '#954FE7', // 4
+  '#DE73C0', // 6
+  '#EE7969', // 8
+  '#F1B671', // 10
+  '#5B58E2', // 1
+  '#6642CE', // 3
+  '#BA73DD', // 5
+  '#FC81A4', // 7
+  '#F4925A', // 9
+]

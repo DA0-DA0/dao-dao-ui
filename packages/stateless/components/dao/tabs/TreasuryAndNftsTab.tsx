@@ -2,37 +2,38 @@ import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
-  DaoChainTreasury,
+  AccountType,
+  DaoAccountTreasury,
   DaoFiatDepositModalProps,
-  LoadingData,
   LoadingNfts,
+  LoadingTokens,
   TokenCardInfo,
   TokenType,
+  TreasuryHistoryGraphProps,
 } from '@dao-dao/types'
-import { getNativeTokenForChainId } from '@dao-dao/utils'
+import { areAccountsEqual, getNativeTokenForChainId } from '@dao-dao/utils'
 
 import { useDaoInfoContext, useSupportedChainContext } from '../../../hooks'
 import { Loader } from '../../logo/Loader'
+import { TooltipInfoIcon } from '../../tooltip'
 import {
-  DaoChainTreasuryAndNfts,
-  DaoChainTreasuryAndNftsProps,
-} from '../DaoChainTreasuryAndNfts'
+  DaoAccountTreasuryAndNfts,
+  DaoAccountTreasuryAndNftsProps,
+} from '../DaoAccountTreasuryAndNfts'
 
 export type TreasuryAndNftsTabProps<
   T extends TokenCardInfo,
   N extends object
 > = {
   connected: boolean
-  tokens: LoadingData<{
-    infos: T[]
-    // Map chain ID to loading state.
-    loading: Record<string, boolean>
-  }>
+  tokens: LoadingTokens<T>
   nfts: LoadingNfts<N & { key: string }>
+  createCrossChainAccountPrefillHref: string
   FiatDepositModal: ComponentType<DaoFiatDepositModalProps>
+  TreasuryHistoryGraph: ComponentType<TreasuryHistoryGraphProps>
 } & Omit<
-  DaoChainTreasuryAndNftsProps<T, N>,
-  'treasury' | 'setDepositFiatChainId'
+  DaoAccountTreasuryAndNftsProps<T, N>,
+  'treasury' | 'setDepositFiatChainId' | 'tokenSourceColorMap'
 >
 
 export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
@@ -40,70 +41,70 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
   tokens,
   nfts,
   FiatDepositModal,
-  createCrossChainAccountPrefillHref,
+  TreasuryHistoryGraph,
   ...props
 }: TreasuryAndNftsTabProps<T, N>) => {
   const { t } = useTranslation()
   const {
     chain: { chain_id: currentChainId },
-    config: { polytone = {} },
   } = useSupportedChainContext()
-  const { coreAddress, polytoneProxies } = useDaoInfoContext()
+  const { chainId: daoChainId, coreAddress, accounts } = useDaoInfoContext()
 
   // Tokens and NFTs on the various Polytone-supported chains.
-  const treasuries = [
-    [currentChainId, coreAddress],
-    ...Object.keys(polytone).map((chainId): [string, string | undefined] => [
-      chainId,
-      polytoneProxies[chainId],
-    ]),
-  ].map(([chainId, address]): DaoChainTreasury<T, N> => {
-    const chainNfts = nfts[chainId]
+  const treasuries = accounts.map((account): DaoAccountTreasury<T, N> => {
+    const chainTokens = tokens[account.chainId]
+    // NFTs are only loaded for main account on a chain.
+    const chainNfts =
+      account.type === AccountType.Native ||
+      account.type === AccountType.Polytone
+        ? nfts[account.chainId]
+        : undefined
 
     return {
-      chainId,
-      address,
-      tokens:
-        tokens.loading || tokens.data.loading[chainId]
-          ? { loading: true }
-          : {
-              loading: false,
-              updating: tokens.updating,
-              data: tokens.data.infos
-                .filter(({ token }) => token.chainId === chainId)
-                // Sort governance token first, then native currency, then by
-                // balance.
-                .sort((a, b) => {
-                  const aValue = a.isGovernanceToken
-                    ? -2
-                    : a.token.type === TokenType.Native &&
-                      a.token.denomOrAddress ===
-                        getNativeTokenForChainId(chainId).denomOrAddress
-                    ? -1
-                    : a.lazyInfo.loading
-                    ? a.unstakedBalance
-                    : a.lazyInfo.data.totalBalance
-                  const bValue = b.isGovernanceToken
-                    ? -2
-                    : b.token.type === TokenType.Native &&
-                      b.token.denomOrAddress ===
-                        getNativeTokenForChainId(chainId).denomOrAddress
-                    ? -1
-                    : b.lazyInfo.loading
-                    ? b.unstakedBalance
-                    : b.lazyInfo.data.totalBalance
+      account,
+      tokens: !chainTokens
+        ? { loading: false, errored: false, data: [] }
+        : chainTokens.loading || chainTokens.errored
+        ? chainTokens
+        : {
+            loading: false,
+            errored: false,
+            updating: chainTokens.updating,
+            data: chainTokens.data
+              .filter(({ owner }) => areAccountsEqual(owner, account))
+              // Sort governance token first, then native currency, then by
+              // balance.
+              .sort((a, b) => {
+                const aValue = a.isGovernanceToken
+                  ? -2
+                  : a.token.type === TokenType.Native &&
+                    a.token.denomOrAddress ===
+                      getNativeTokenForChainId(account.chainId).denomOrAddress
+                  ? -1
+                  : a.lazyInfo.loading
+                  ? a.unstakedBalance
+                  : a.lazyInfo.data.totalBalance
+                const bValue = b.isGovernanceToken
+                  ? -2
+                  : b.token.type === TokenType.Native &&
+                    b.token.denomOrAddress ===
+                      getNativeTokenForChainId(account.chainId).denomOrAddress
+                  ? -1
+                  : b.lazyInfo.loading
+                  ? b.unstakedBalance
+                  : b.lazyInfo.data.totalBalance
 
-                  // Put smaller value first if either is negative (prioritized
-                  // token), otherwise sort balances descending.
-                  return aValue < 0 || bValue < 0
-                    ? aValue - bValue
-                    : bValue - aValue
-                }),
-            },
+                // Put smaller value first if either is negative (prioritized
+                // token), otherwise sort balances descending.
+                return aValue < 0 || bValue < 0
+                  ? aValue - bValue
+                  : bValue - aValue
+              }),
+          },
       nfts: !chainNfts
-        ? { loading: false, data: [] }
+        ? { loading: false, errored: false, data: [] }
         : chainNfts.loading || chainNfts.errored
-        ? { loading: true }
+        ? chainNfts
         : chainNfts,
     }
   })
@@ -112,34 +113,59 @@ export const TreasuryAndNftsTab = <T extends TokenCardInfo, N extends object>({
     string | undefined
   >()
 
+  // Maps serialized token source to color.
+  const [tokenSourceColorMap, setTokenSourceColorMap] = useState<
+    Record<string, string>
+  >({})
+
   return (
     <>
-      <div className="mb-9">
-        {tokens.loading || !tokens.data ? (
-          <Loader className="mt-6" fill={false} />
-        ) : tokens.data.infos.length ? (
-          <div className="flex flex-col gap-8">
-            {treasuries.map((treasury) => (
-              <DaoChainTreasuryAndNfts
-                key={treasury.chainId}
-                connected={connected}
-                setDepositFiatChainId={setDepositFiatChainId}
-                treasury={treasury}
-                {...props}
-                createCrossChainAccountPrefillHref={createCrossChainAccountPrefillHref.replace(
-                  'CHAIN_ID',
-                  treasury.chainId
-                )}
-              />
-            ))}
+      <TreasuryHistoryGraph
+        address={coreAddress}
+        chainId={daoChainId}
+        className="mb-8 mt-4 rounded-md bg-background-tertiary p-6"
+        graphClassName="max-h-[20rem]"
+        header={
+          <div className="flex flex-row items-center justify-center gap-1">
+            <p className="title-text">{t('title.treasuryValue')}</p>
+
+            <TooltipInfoIcon size="sm" title={t('info.treasuryValueTooltip')} />
           </div>
-        ) : (
-          <p className="secondary-text">{t('info.nothingFound')}</p>
-        )}
+        }
+        registerTokenColors={setTokenSourceColorMap}
+      />
+
+      <div className="mb-9 mt-6">
+        {
+          // If there is nothing loaded, `every` returns true and shows loading.
+          Object.values(tokens).every(
+            (chainTokens) => chainTokens?.loading || chainTokens?.errored
+          ) ? (
+            <Loader className="mt-6" fill={false} />
+          ) : (
+            <div className="flex flex-col gap-8">
+              {treasuries.map((treasury) => (
+                <DaoAccountTreasuryAndNfts
+                  key={treasury.account.address}
+                  connected={connected}
+                  setDepositFiatChainId={setDepositFiatChainId}
+                  tokenSourceColorMap={tokenSourceColorMap}
+                  treasury={treasury}
+                  {...props}
+                />
+              ))}
+            </div>
+          )
+        }
       </div>
 
       {connected && !!depositFiatChainId && (
         <FiatDepositModal
+          accountType={
+            depositFiatChainId === currentChainId
+              ? AccountType.Native
+              : AccountType.Polytone
+          }
           chainId={depositFiatChainId}
           onClose={() => setDepositFiatChainId(undefined)}
           visible

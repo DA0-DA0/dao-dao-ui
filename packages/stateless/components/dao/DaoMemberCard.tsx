@@ -2,7 +2,7 @@ import clsx from 'clsx'
 import { useTranslation } from 'react-i18next'
 
 import { ChainId } from '@dao-dao/types'
-import { DaoMemberCardProps } from '@dao-dao/types/stateless/DaoMemberCard'
+import { DaoMemberCardProps } from '@dao-dao/types/components/DaoMemberCard'
 import { formatPercentOf100 } from '@dao-dao/utils'
 
 import { ChainLogo } from '../ChainLogo'

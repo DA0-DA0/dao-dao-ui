@@ -4,12 +4,13 @@ import { useTranslation } from 'react-i18next'
 
 import {
   CameraWithFlashEmoji,
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   InputErrorMessage,
   SegmentedControls,
 } from '@dao-dao/stateless'
 import {
+  ActionChainContextType,
   ActionComponent,
   ActionContextType,
   ActionKey,
@@ -46,7 +47,12 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
     (props.fieldNamePrefix + 'mintMsg.token_uri') as 'mintMsg.token_uri'
   )
 
-  const [creatingNew, setCreatingNew] = useState(false)
+  const [_creatingNew, setCreatingNew] = useState(false)
+  // Can only create new NFT collections on supported chains, since we need the
+  // code ID to instantiate a contract.
+  const supportsCreatingNewCollection =
+    options.chainContext.type === ActionChainContextType.Supported
+  const creatingNew = supportsCreatingNewCollection ? _creatingNew : false
 
   // Manually validate to ensure contract has been chosen and token URI has
   // been set.
@@ -65,8 +71,7 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
   return (
     <>
       {options.context.type === ActionContextType.Dao && props.isCreating && (
-        <ChainPickerInput
-          className="mb-4"
+        <DaoSupportedChainPickerInput
           fieldName={props.fieldNamePrefix + 'chainId'}
           onChange={(chainId) => {
             // Update recipient to correct address.
@@ -111,6 +116,7 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
         ) : (
           <>
             <SegmentedControls<boolean>
+              disabled={!supportsCreatingNewCollection}
               onSelect={setCreatingNew}
               selected={creatingNew}
               tabs={[
@@ -118,10 +124,14 @@ const Component: ActionComponent<undefined, MintNftData> = (props) => {
                   label: t('form.useExistingCollection'),
                   value: false,
                 },
-                {
-                  label: t('form.createNewCollection'),
-                  value: true,
-                },
+                ...(supportsCreatingNewCollection
+                  ? [
+                      {
+                        label: t('form.createNewCollection'),
+                        value: true,
+                      },
+                    ]
+                  : []),
               ]}
             />
 

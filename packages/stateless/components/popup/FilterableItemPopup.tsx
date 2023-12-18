@@ -31,6 +31,7 @@ export interface FilterableItem {
   description?: ReactNode
   rightNode?: ReactNode
   selected?: boolean
+  className?: string
   contentContainerClassName?: string
 }
 
@@ -231,7 +232,10 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                 className={clsx(
                   'w-full',
                   selectedIndex === index &&
-                    'bg-background-interactive-selected'
+                    'bg-background-interactive-selected',
+                  item.selected &&
+                    'ring-1 ring-inset ring-border-interactive-selected',
+                  item.className
                 )}
                 contentContainerClassName={clsx(
                   'gap-3',
@@ -258,7 +262,7 @@ export const FilterableItemPopup = <T extends FilterableItem>({
 
                 <div className="min-w-0 text-left">
                   <div className="flex flex-row items-center gap-2">
-                    {item.selected && (
+                    {item.selected && !!item.rightNode && (
                       <Check className="!h-4 !w-4 shrink-0 text-icon-brand" />
                     )}
 
@@ -266,7 +270,9 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                       className={clsx(
                         'link-text min-w-0 grow truncate',
                         labelClassName,
-                        item.selected ? 'text-text-brand' : 'text-text-body'
+                        item.selected && !!item.rightNode
+                          ? 'text-text-brand'
+                          : 'text-text-body'
                       )}
                     >
                       {item.label}
@@ -280,10 +286,16 @@ export const FilterableItemPopup = <T extends FilterableItem>({
                   )}
                 </div>
 
-                {item.rightNode && (
+                {item.rightNode ? (
                   <div className="flex grow flex-row items-center justify-end">
                     {item.rightNode}
                   </div>
+                ) : (
+                  item.selected && (
+                    <div className="flex grow flex-row items-center justify-end">
+                      <Check className="!h-6 !w-6 shrink-0 text-icon-secondary" />
+                    </div>
+                  )
                 )}
               </Button>
             ))

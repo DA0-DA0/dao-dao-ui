@@ -1,8 +1,7 @@
 import { useCallback } from 'react'
-import { useRecoilValue } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
-import { WrenchEmoji } from '@dao-dao/stateless'
+import { WrenchEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import { Feature } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -35,7 +34,7 @@ const Component: ActionComponent<undefined, ManageStorageItemsData> = (
     chain: { chain_id: chainId },
   } = useActionOptions()
 
-  const existingItems = useRecoilValue(
+  const existingItems = useCachedLoadingWithError(
     DaoCoreV2Selectors.listAllItemsSelector({
       contractAddress: address,
       chainId,
@@ -46,7 +45,10 @@ const Component: ActionComponent<undefined, ManageStorageItemsData> = (
     <StatelessManageStorageItemsComponent
       {...props}
       options={{
-        existingItems,
+        existingItems:
+          existingItems.loading || existingItems.errored
+            ? []
+            : existingItems.data,
       }}
     />
   )

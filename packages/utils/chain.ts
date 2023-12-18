@@ -6,9 +6,11 @@ import { fromBech32, fromHex, toBech32 } from '@cosmjs/encoding'
 import { GasPrice } from '@cosmjs/stargate'
 import { assets, chains, ibc } from 'chain-registry'
 import RIPEMD160 from 'ripemd160'
+import semverGte from 'semver/functions/gte'
 
 import {
   BaseChainConfig,
+  ChainId,
   ConfiguredChain,
   GenericToken,
   SupportedChain,
@@ -32,24 +34,38 @@ import {
   bondStatusToJSON,
 } from './protobuf/codegen/cosmos/staking/v1beta1/staking'
 
-export const getRpcForChainId = (chainId: string): string => {
+export const getRpcForChainId = (
+  chainId: string,
+  // Offset will try a different RPC from the list of available RPCs.
+  offset = 0
+): string => {
   let rpc = (
     (chainId in CHAIN_ENDPOINTS &&
       CHAIN_ENDPOINTS[chainId as keyof typeof CHAIN_ENDPOINTS]) ||
     {}
   )?.rpc
-  if (rpc) {
+  if (rpc && offset === 0) {
     return rpc
+  }
+
+  // If RPC was found but not used, offset > 0, and subtract 1 from offset so we
+  // try the first RPC in the chain registry list.
+  if (rpc) {
+    offset -= 1
   }
 
   // Fallback to chain registry.
   const chain = maybeGetChainForChainId(chainId)
-  rpc = chain?.apis?.rpc?.[0].address
-  if (!rpc) {
+  if (!chain) {
     throw new Error(`Unknown chain ID "${chainId}"`)
   }
 
-  return rpc
+  const rpcs = chain?.apis?.rpc ?? []
+  if (rpcs.length === 0) {
+    throw new Error(`No RPCs found for chain ID "${chainId}"`)
+  }
+
+  return rpcs[offset % rpcs.length].address
 }
 
 export const cosmosValidatorToValidator = ({
@@ -198,7 +214,11 @@ export const getNativeTokenForChainId = (chainId: string): GenericToken => {
         asset.logo_URIs?.svg ??
         // Fallback.
         getFallbackImage(feeDenom),
-    })
+      source: {
+        chainId,
+        denomOrAddress: feeDenom,
+      },
+    } as GenericToken)
   }
 
   return cachedNativeTokens[chainId]!
@@ -253,7 +273,11 @@ export const getTokenForChainIdAndDenom = (
         symbol: denom,
         decimals: 0,
         imageUrl: getFallbackImage(denom),
-      })
+        source: {
+          chainId,
+          denomOrAddress: denom,
+        },
+      } as GenericToken)
     } else {
       throw err
     }
@@ -264,6 +288,8 @@ export const getIbcTransferInfoBetweenChains = (
   srcChainId: string,
   destChainId: string
 ): {
+  sourceChain: IBCInfo['chain_1']
+  destinationChain: IBCInfo['chain_1']
   sourceChannel: string
   info: IBCInfo
 } => {
@@ -290,12 +316,12 @@ export const getIbcTransferInfoBetweenChains = (
   }
 
   const srcChainNumber = info.chain_1.chain_name === srcChainName ? 1 : 2
+  const destChainNumber = info.chain_1.chain_name === destChainName ? 1 : 2
   const channel = info.channels.find(
     ({
       [`chain_${srcChainNumber}` as `chain_${typeof srcChainNumber}`]: srcChain,
-      [`chain_${
-        srcChainNumber === 1 ? 2 : 1
-      }` as `chain_${typeof srcChainNumber}`]: destChain,
+      [`chain_${destChainNumber}` as `chain_${typeof srcChainNumber}`]:
+        destChain,
       version,
     }) =>
       version === 'ics20-1' &&
@@ -309,22 +335,22 @@ export const getIbcTransferInfoBetweenChains = (
   }
 
   return {
-    sourceChannel:
-      channel[`chain_${srcChainNumber}` as `chain_${typeof srcChainNumber}`]
-        .channel_id,
+    sourceChain: info[`chain_${srcChainNumber}`],
+    sourceChannel: channel[`chain_${srcChainNumber}`].channel_id,
+    destinationChain: info[`chain_${destChainNumber}`],
     info,
   }
 }
 
-export const getIbcTransferInfoFromChainSource = (
-  chainId: string,
+export const getIbcTransferInfoFromChannel = (
+  sourceChainId: string,
   sourceChannel: string
 ): {
   destinationChain: IBCInfo['chain_1']
   channel: IBCInfo['channels'][number]
   info: IBCInfo
 } => {
-  const { chain_name } = getChainForChainId(chainId)
+  const { chain_name } = getChainForChainId(sourceChainId)
 
   const info = ibc.find(
     ({ chain_1, chain_2, channels }) =>
@@ -347,7 +373,7 @@ export const getIbcTransferInfoFromChainSource = (
   )
   if (!info) {
     throw new Error(
-      `Failed to find IBC channel for chain ${chainId} and source channel ${sourceChannel}.`
+      `Failed to find IBC channel for chain ${sourceChainId} and source channel ${sourceChannel}.`
     )
   }
 
@@ -367,7 +393,7 @@ export const getIbcTransferInfoFromChainSource = (
   )
   if (!channel) {
     throw new Error(
-      `Failed to find IBC channel for chain ${chainId} and source channel ${sourceChannel}.`
+      `Failed to find IBC channel for chain ${sourceChainId} and source channel ${sourceChannel}.`
     )
   }
 
@@ -395,10 +421,58 @@ export const getConfiguredChains = ({
     ...config,
   }))
 
+export const getIbcTransferInfoFromConnection = (
+  sourceChainId: string,
+  sourceConnectionId: string
+): {
+  info: IBCInfo
+  destinationChain: IBCInfo['chain_1']
+} => {
+  const { chain_name } = getChainForChainId(sourceChainId)
+
+  const info = ibc.find(
+    ({ chain_1, chain_2, channels }) =>
+      ((chain_1.chain_name === chain_name &&
+        chain_1.connection_id === sourceConnectionId) ||
+        (chain_2.chain_name === chain_name &&
+          chain_2.connection_id === sourceConnectionId)) &&
+      channels.some(
+        ({ chain_1, chain_2, version }) =>
+          version === 'ics20-1' &&
+          chain_1.port_id === 'transfer' &&
+          chain_2.port_id === 'transfer'
+      )
+  )
+  if (!info) {
+    throw new Error(
+      `Failed to find IBC info for source chain ${sourceChainId} and connection ${sourceConnectionId}.`
+    )
+  }
+
+  const thisChainNumber = info.chain_1.chain_name === chain_name ? 1 : 2
+  const destinationChain = info[`chain_${thisChainNumber === 1 ? 2 : 1}`]
+
+  return {
+    info,
+    destinationChain,
+  }
+}
+
 export const getSupportedChainConfig = (
   chainId: string
 ): SupportedChainConfig | undefined =>
   SUPPORTED_CHAINS.find((config) => config.chainId === chainId)
+
+export const mustGetSupportedChainConfig = (
+  chainId: string
+): SupportedChainConfig => {
+  const config = getSupportedChainConfig(chainId)
+  if (!config) {
+    throw new Error(`Unsupported chain: ${chainId}`)
+  }
+
+  return config
+}
 
 export const getSupportedChains = ({
   mainnet = MAINNET,
@@ -432,13 +506,19 @@ export const getChainIdForAddress = (address: string): string => {
   return chainForAddress.chain.chain_id
 }
 
-export const cosmosSdkVersionIs47OrHigher = (version: string) => {
-  const [major, minor, patch] = version.replace(/^v/, '').split('.')
-  return (
-    (Number(major) >= 0 && Number(minor) >= 47 && Number(patch) >= 0) ||
-    (Number(major) >= 1 && Number(minor) >= 0 && Number(patch) >= 0)
-  )
-}
+/**
+ * Returns true if the cosmos sdk version is 0.47 or higher, except if the chain
+ * is Osmosis, in which case it returns false. Osmosis's fork does not support
+ * all v0.47 features.
+ *
+ * @param chainId the chain ID
+ * @param version the cosmos SDK version string
+ * @returns true if the cosmos sdk version is 0.47 or higher
+ */
+export const cosmosSdkVersionIs47OrHigher = (
+  chainId: string,
+  version: string
+) => chainId !== ChainId.OsmosisMainnet && semverGte(version, '0.47.0')
 
 export const getSignerOptions = ({ chain_id, fees }: Chain) => {
   let gasPrice

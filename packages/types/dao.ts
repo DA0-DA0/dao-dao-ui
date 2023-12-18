@@ -12,7 +12,13 @@ import {
   UseFormSetValue,
 } from 'react-hook-form'
 
+import { Account } from './account'
 import { SupportedChainConfig } from './chain'
+import {
+  DaoCardProps,
+  LoadingDataWithError,
+  SuspenseLoaderProps,
+} from './components'
 import {
   ActiveThreshold,
   DepositRefundPolicy,
@@ -25,7 +31,6 @@ import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
 } from './proposal-module-adapter'
-import { DaoCardProps, LoadingData, SuspenseLoaderProps } from './stateless'
 import { GenericToken, TokenCardInfo } from './token'
 import { DurationWithUnits } from './units'
 
@@ -47,6 +52,7 @@ export type DaoInfo = {
   items: Record<string, string>
   // Map chain ID to polytone proxy address.
   polytoneProxies: PolytoneProxies
+  accounts: Account[]
 
   parentDao: DaoParentInfo | null
   admin: string
@@ -312,11 +318,10 @@ export type DaoWebSocketChannelInfo = {
   coreAddress: string
 }
 
-export type DaoChainTreasury<T extends TokenCardInfo, N extends object> = {
-  chainId: string
-  address: string | undefined
-  tokens: LoadingData<T[]>
-  nfts: LoadingData<(N & { key: string })[]>
+export type DaoAccountTreasury<T extends TokenCardInfo, N extends object> = {
+  account: Account
+  tokens: LoadingDataWithError<T[]>
+  nfts: LoadingDataWithError<(N & { key: string })[]>
 }
 
 export type DaoApp = {

@@ -19,7 +19,6 @@ import {
   NumberInput,
   SegmentedControls,
   TextInput,
-  VOTING_POWER_DISTRIBUTION_COLORS,
   VotingPowerDistribution,
   VotingPowerDistributionEntry,
   useCachedLoading,
@@ -32,6 +31,7 @@ import {
 } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
 import {
+  DISTRIBUTION_COLORS,
   NEW_DAO_TOKEN_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   formatPercentOf100,
@@ -273,20 +273,14 @@ export const GovernanceConfigurationInput = ({
           // Governance token-based DAO tier weights are split amongst members.
           votingPowerPercent:
             data.tiers[0].weight / data.tiers[0].members.length,
-          color:
-            VOTING_POWER_DISTRIBUTION_COLORS[
-              memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-            ],
+          color: DISTRIBUTION_COLORS[memberIndex % DISTRIBUTION_COLORS.length],
         }))
       : // Displaying entire tier as one pie wedge.
         data.tiers.map(({ name, weight }, tierIndex) => ({
           label: name.trim() || t('title.tierNum', { tier: tierIndex + 1 }),
           // Governance token-based DAO tier weights are split amongst members.
           votingPowerPercent: weight,
-          color:
-            VOTING_POWER_DISTRIBUTION_COLORS[
-              tierIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-            ],
+          color: DISTRIBUTION_COLORS[tierIndex % DISTRIBUTION_COLORS.length],
         }))),
     {
       label: t('title.treasury'),

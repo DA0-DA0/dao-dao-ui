@@ -1,8 +1,6 @@
 import { ComponentType, ReactNode } from 'react'
 import { TFunction } from 'react-i18next'
 
-import { PolytoneProxies } from './dao'
-
 export type StatefulCommandModalProps = {
   visible: boolean
   setVisible: (visible: boolean) => void
@@ -78,5 +76,4 @@ export type CommandModalDaoInfo = {
   coreAddress: string
   name: string
   imageUrl: string
-  polytoneProxies: PolytoneProxies
 }

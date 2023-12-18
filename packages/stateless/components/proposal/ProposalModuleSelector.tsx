@@ -11,7 +11,10 @@ import { useDaoInfoContext } from '../../hooks'
 import { SegmentedControls } from '../inputs/SegmentedControls'
 
 export type ProposalModuleSelectorProps = {
-  selected: ProposalModule
+  /**
+   * Address of the selected proposal module.
+   */
+  selected: string
   setSelected: (proposalModule: ProposalModule) => void
   matchAdapter: (
     contractNameToMatch: string
@@ -19,7 +22,7 @@ export type ProposalModuleSelectorProps = {
 }
 
 export const ProposalModuleSelector = ({
-  selected,
+  selected: _selected,
   setSelected,
   matchAdapter,
 }: ProposalModuleSelectorProps) => {
@@ -44,6 +47,8 @@ export const ProposalModuleSelector = ({
         .filter((item): item is TypedOption<ProposalModule> => !!item),
     [matchAdapter, proposalModules, t]
   )
+
+  const selected = proposalModules.find((m) => m.address === _selected)
 
   return (
     <div className="flex flex-row flex-wrap items-center gap-x-8 gap-y-4">
