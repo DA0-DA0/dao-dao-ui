@@ -20,7 +20,7 @@
     "continue": "continnue",
     "copy": "copee",
     "copyAddressToClipboard": "copee addres 2 clipboar",
-    "copyDaoChainAddress": "copee {{chain}} addres",
+    "copyChainAddress": "copee {{chain}} addres",
     "copyToClipboard": "copee 2 clipboar",
     "create": "cre8",
     "createAProposal": "cre8 a puppozal",

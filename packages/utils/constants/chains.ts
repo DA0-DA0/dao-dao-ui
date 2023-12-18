@@ -668,6 +668,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw4: 574,
       DaoVotingCw721Staked: 576,
       DaoVotingTokenStaked: 577,
+
+      ValenceAccount: 750,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
@@ -797,6 +799,24 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         localChannel: 'channel-4498',
         // injective
         remoteChannel: 'channel-304',
+      },
+    },
+    valence: {
+      servicesManager:
+        'neutron1gantvpnat0la8kkkzrnj48d5d8wxdjllh5r2w4r2hcrpwy00s69quypupa',
+      rebalancer: {
+        address:
+          'neutron1qs6mzpmcw3dvg5l8nyywetcj326scszdj7v4pfk55xwshd4prqnqfwc0z2',
+        tokenAllowlist: [
+          'untrn',
+          // ATOM
+          'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9',
+        ],
+        baseTokenAllowlist: [
+          'untrn',
+          // ATOM
+          'ibc/C4CFF46FD6DE35CA4CF4CE031E643C8FDC9BA4B99AE598E9B0ED98FE3A2319F9',
+        ],
       },
     },
   },
@@ -2316,3 +2336,7 @@ chains.forEach((chain) => {
     explorerUrlTemplates,
   })
 })
+
+export const VALENCE_SUPPORTED_CHAINS = Object.entries(SUPPORTED_CHAINS)
+  .filter(([, { valence }]) => valence)
+  .map(([chainId]) => chainId as ChainId)

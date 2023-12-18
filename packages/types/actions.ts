@@ -83,6 +83,14 @@ export enum ActionKey {
   UpdateProposalConfig = 'updateProposalConfig',
   MigrateMigalooV4TokenFactory = 'migrateMigalooV4TokenFactory',
   CreateDao = 'createDao',
+  CreateValenceAccount = 'createValenceAccount',
+  ConfigureRebalancer = 'configureRebalancer',
+  // DaoProposalSingle
+  UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
+  UpdateProposalSingleConfig = 'updateProposalSingleConfig',
+  // DaoProposalMultiple
+  UpdatePreProposeMultipleConfig = 'updatePreProposeMultipleConfig',
+  UpdateProposalMultipleConfig = 'updateProposalMultipleConfig',
   // Press
   CreatePost = 'createPost',
   UpdatePost = 'updatePost',

@@ -190,6 +190,17 @@ export type SupportedChainConfig = BaseChainConfig & {
    * Polytone connections to other chains from this chain.
    */
   polytone?: PolytoneConfig
+  valence?: {
+    // Address of services manager contract.
+    servicesManager: string
+    rebalancer: {
+      // Address of rebalancer contract.
+      address: string
+      tokenAllowlist: string[]
+      // First denom is the default.
+      baseTokenAllowlist: string[]
+    }
+  }
 }
 
 export type SupportedChain = SupportedChainConfig & {
@@ -227,6 +238,9 @@ export type CodeIdConfig = {
   Cw20Base?: number
   Cw20Stake?: number
   DaoVotingCw20Staked?: number
+
+  // Valence
+  ValenceAccount?: number
 }
 
 export type PolytoneConnection = {

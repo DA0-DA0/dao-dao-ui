@@ -13,7 +13,7 @@ import useDeepCompareEffect from 'use-deep-compare-effect'
 
 import { navigatingToHrefAtom } from '@dao-dao/state'
 import { useDaoInfoContext, useDaoNavHelpers } from '@dao-dao/stateless'
-import { ContractVersion, Feature } from '@dao-dao/types'
+import { AccountType, ContractVersion, Feature } from '@dao-dao/types'
 import {
   CommandModalContextMaker,
   CommandModalContextSection,
@@ -150,14 +150,18 @@ export const makeGenericDaoContext: CommandModalContextMaker<{
             }),
           loading: updatingFollowing,
         },
-        ...accounts.map(({ chainId, address }) => ({
+        ...accounts.map(({ chainId, address, type }) => ({
           name:
             copied === chainId
               ? t('info.copiedChainAddress', {
-                  chain: getDisplayNameForChainId(chainId),
+                  chain:
+                    getDisplayNameForChainId(chainId) +
+                    (type === AccountType.Valence ? ' (Valence)' : ''),
                 })
-              : t('button.copyDaoChainAddress', {
-                  chain: getDisplayNameForChainId(chainId),
+              : t('button.copyChainAddress', {
+                  chain:
+                    getDisplayNameForChainId(chainId) +
+                    (type === AccountType.Valence ? ' (Valence)' : ''),
                 }),
           Icon: copied === chainId ? Check : CopyAll,
           onChoose: () => {
