@@ -247,16 +247,16 @@ const tokenSortOptions: TypedOption<
         ? // If loading, show at top.
           Infinity
         : // If no price, show at bottom.
-        !a.lazyInfo.data.usdUnitPrice
+        !a.lazyInfo.data.usdUnitPrice?.usdPrice
         ? -Infinity
-        : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.amount
+        : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
       const bPrice = b.lazyInfo.loading
         ? // If loading, show at top.
           Infinity
         : // If no price, show at bottom.
-        !b.lazyInfo.data.usdUnitPrice
+        !b.lazyInfo.data.usdUnitPrice?.usdPrice
         ? -Infinity
-        : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.amount
+        : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
 
       // If prices are equal, sort alphabetically by symbol.
       return aPrice === bPrice
@@ -272,17 +272,17 @@ const tokenSortOptions: TypedOption<
       const aPrice = a.lazyInfo.loading
         ? // If loading, show at top.
           -Infinity
-        : !a.lazyInfo.data.usdUnitPrice
+        : !a.lazyInfo.data.usdUnitPrice?.usdPrice
         ? // If no price, show at bottom.
           Infinity
-        : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.amount
+        : a.lazyInfo.data.totalBalance * a.lazyInfo.data.usdUnitPrice.usdPrice
       const bPrice = b.lazyInfo.loading
         ? // If loading, show at top.
           -Infinity
-        : !b.lazyInfo.data.usdUnitPrice
+        : !b.lazyInfo.data.usdUnitPrice?.usdPrice
         ? // If no price, show at bottom.
           Infinity
-        : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.amount
+        : b.lazyInfo.data.totalBalance * b.lazyInfo.data.usdUnitPrice.usdPrice
 
       // If prices are equal, sort alphabetically by symbol.
       return aPrice === bPrice

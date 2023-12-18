@@ -24,10 +24,6 @@ export interface AmountWithTimestamp {
   timestamp: Date
 }
 
-export interface AmountWithTimestampAndDenom extends AmountWithTimestamp {
-  denom: string
-}
-
 export interface TokenInfoResponseWithAddressAndLogo extends TokenInfoResponse {
   address: string
   logoUrl?: string

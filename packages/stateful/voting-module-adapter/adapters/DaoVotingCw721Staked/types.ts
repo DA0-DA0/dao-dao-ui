@@ -55,5 +55,5 @@ export interface UseGovernanceCollectionInfoResponse {
   // Treasury balance
   loadingTreasuryBalance?: LoadingData<number>
   // Price
-  // loadingPrice?: LoadingData<AmountWithTimestampAndDenom>
+  // loadingPrice?: LoadingData<GenericTokenWithUsdPrice>
 }

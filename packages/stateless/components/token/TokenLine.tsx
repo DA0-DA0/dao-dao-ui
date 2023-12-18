@@ -87,20 +87,20 @@ export const TokenLine = <T extends TokenCardInfo>(
         />
 
         {/* Only show on larger screen. */}
-        {lazyInfo.loading || lazyInfo.data.usdUnitPrice ? (
+        {lazyInfo.loading || lazyInfo.data.usdUnitPrice?.usdPrice ? (
           <div className="hidden flex-row items-center justify-end sm:flex">
             <TokenAmountDisplay
               amount={
-                lazyInfo.loading || !lazyInfo.data.usdUnitPrice
+                lazyInfo.loading || !lazyInfo.data.usdUnitPrice?.usdPrice
                   ? { loading: true }
                   : lazyInfo.data.totalBalance *
-                    lazyInfo.data.usdUnitPrice.amount
+                    lazyInfo.data.usdUnitPrice.usdPrice
               }
               className="caption-text font-mono"
               dateFetched={
-                lazyInfo.loading
+                lazyInfo.loading || !lazyInfo.data.usdUnitPrice
                   ? undefined
-                  : lazyInfo.data.usdUnitPrice!.timestamp
+                  : lazyInfo.data.usdUnitPrice.timestamp
               }
               estimatedUsdValue
               hideSymbol

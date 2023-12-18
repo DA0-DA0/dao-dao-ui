@@ -25,7 +25,7 @@ import {
   useCachedLoadingWithError,
   useNamedThemeColor,
 } from '@dao-dao/stateless'
-import { TreasuryHistoryGraphProps } from '@dao-dao/types'
+import { TokenType, TreasuryHistoryGraphProps } from '@dao-dao/types'
 import {
   DISTRIBUTION_COLORS,
   formatDateTimeTz,
@@ -34,6 +34,7 @@ import {
 } from '@dao-dao/utils'
 
 import { treasuryValueHistorySelector } from '../recoil'
+import { useVotingModuleAdapterContextIfAvailable } from '../voting-module-adapter/react/context'
 
 import 'chartjs-adapter-date-fns'
 
@@ -68,6 +69,11 @@ export const TreasuryHistoryGraph = ({
   const [precision, setPrecision] =
     useState<OsmosisHistoricalPriceChartPrecision>('hour')
 
+  // If in a DAO, this should load the DAO's governance token info. Undefined if
+  // not in a DAO or fails to load for some reason.
+  const governanceTokenInfo =
+    useVotingModuleAdapterContextIfAvailable()?.adapter.hooks.useCommonGovernanceTokenInfo?.()
+
   const treasuryValueHistory = useCachedLoadingWithError(
     treasuryValueHistorySelector({
       chainId,
@@ -80,6 +86,15 @@ export const TreasuryHistoryGraph = ({
           address: account.address,
         },
       },
+      // Provide governance tokens if in a DAO, to ensure they are loaded.
+      nativeGovernanceTokenDenom:
+        governanceTokenInfo?.type === TokenType.Native
+          ? governanceTokenInfo.denomOrAddress
+          : undefined,
+      cw20GovernanceTokenAddress:
+        governanceTokenInfo?.type === TokenType.Cw20
+          ? governanceTokenInfo.denomOrAddress
+          : undefined,
     })
   )
 
@@ -166,15 +181,18 @@ export const TreasuryHistoryGraph = ({
   const tooltipFirstDataPoint = tooltipData?.dataPoints[0]
 
   return (
-    <div className={clsx('flex flex-col gap-4', className)}>
+    <div
+      className={clsx(
+        'flex flex-col gap-4',
+        (treasuryValueHistory.loading || treasuryValueHistory.updating) &&
+          'animate-pulse',
+        className
+      )}
+    >
       {header}
 
       <div className={clsx('relative flex flex-col gap-4', graphClassName)}>
         <Line
-          className={clsx(
-            (treasuryValueHistory.loading || treasuryValueHistory.updating) &&
-              'animate-pulse'
-          )}
           data={{
             labels:
               treasuryValueHistory.loading || treasuryValueHistory.errored

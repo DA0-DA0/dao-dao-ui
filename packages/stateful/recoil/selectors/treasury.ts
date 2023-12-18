@@ -6,8 +6,8 @@ import {
   accountsSelector,
   allBalancesSelector,
   genericTokenBalancesSelector,
-  historicalNativeBalancesByDenomSelector,
-  historicalNativeBalancesSelector,
+  historicalBalancesByTokenSelector,
+  historicalBalancesSelector,
   historicalUsdPriceSelector,
   nativeDelegatedBalanceSelector,
   osmosisPrecisionToMinutes,
@@ -212,11 +212,24 @@ export const treasuryValueHistorySelector = selectorFamily<
       // If defined, only show these tokens.
       tokens?: GenericTokenSource[]
     }
+    // If account is a DAO, set this to the denom of its native governance
+    // token.
+    nativeGovernanceTokenDenom?: string
+    // If account is a DAO, set this to the address of its cw20 governance
+    // token.
+    cw20GovernanceTokenAddress?: string
   }>
 >({
   key: 'treasuryValueHistory',
   get:
-    ({ chainId: nativeChainId, address, precision, filter }) =>
+    ({
+      chainId: nativeChainId,
+      address,
+      precision,
+      filter,
+      nativeGovernanceTokenDenom,
+      cw20GovernanceTokenAddress,
+    }) =>
     ({ get }) => {
       let allAccounts = get(
         accountsSelector({
@@ -261,7 +274,7 @@ export const treasuryValueHistorySelector = selectorFamily<
       const historicalBalancesByTimestamp = get(
         waitForAll(
           allAccounts.map(({ chainId, address }) =>
-            historicalNativeBalancesSelector({
+            historicalBalancesSelector({
               chainId,
               address,
               startTimeUnixMs,
@@ -269,24 +282,27 @@ export const treasuryValueHistorySelector = selectorFamily<
             })
           )
         )
-      ).flat()
+      )
       // Get all unique timestamps.
-      let timestamps = [
-        ...new Set(
-          historicalBalancesByTimestamp.flatMap(({ timestamp }) =>
-            timestamp.getTime()
-          )
-        ),
-      ]
+      let timestamps = uniq(
+        historicalBalancesByTimestamp.flatMap((balancesByTimestamp) =>
+          balancesByTimestamp
+            .map(({ timestamp }) => timestamp.getTime())
+            // Remove last timestamp since we replace it with current balance.
+            // Remove from each one individually like this (instead of after
+            // the sort below) since the last timestamp will be different for
+            // each account depending on when the query finished. Each is
+            // already sorted internally, so no need to sort before slicing.
+            .slice(0, -1)
+        )
+      )
         .map((timestamp) => new Date(timestamp))
         .sort((a, b) => a.getTime() - b.getTime())
-        // Remove last timestamp since we replace it with current balance.
-        .slice(0, -1)
 
       const historicalBalancesByToken = get(
         waitForAll(
           allAccounts.map(({ chainId, address }) =>
-            historicalNativeBalancesByDenomSelector({
+            historicalBalancesByTokenSelector({
               chainId,
               address,
               startTimeUnixMs,
@@ -296,12 +312,13 @@ export const treasuryValueHistorySelector = selectorFamily<
         )
       ).flat()
 
-      // Current native balances.
+      // Current balances.
       const currentBalances = get(
         allBalancesSelector({
           chainId: nativeChainId,
           address: address,
-          filter: TokenType.Native,
+          nativeGovernanceTokenDenom,
+          cw20GovernanceTokenAddress,
           // Don't include staked in current value since we don't have staked
           // history, which makes the graph spike at the end.
           ignoreStaked: true,
@@ -332,10 +349,11 @@ export const treasuryValueHistorySelector = selectorFamily<
       // Get historical token prices for unique tokens.
       const allHistoricalUsdPrices = get(
         waitForAll(
-          tokenSources.map(({ chainId, denomOrAddress: denom }) =>
+          tokenSources.map(({ chainId, type, denomOrAddress }) =>
             historicalUsdPriceSelector({
               chainId,
-              denom,
+              type,
+              denomOrAddress,
               precision,
             })
           )
@@ -344,10 +362,10 @@ export const treasuryValueHistorySelector = selectorFamily<
       // Get current token prices for unique tokens.
       const allCurrentUsdPrices = get(
         waitForAll(
-          tokenSources.map(({ chainId, denomOrAddress }) =>
+          tokenSources.map(({ chainId, type, denomOrAddress }) =>
             usdPriceSelector({
               chainId,
-              type: TokenType.Native,
+              type,
               denomOrAddress,
             })
           )
@@ -364,7 +382,7 @@ export const treasuryValueHistorySelector = selectorFamily<
               token.decimals
           )
           const historicalUsdPrices = allHistoricalUsdPrices[index]
-          const currentUsdPrice = allCurrentUsdPrices[index]
+          const currentUsdPrice = allCurrentUsdPrices[index]?.usdPrice
           // If no token, decimals, nor prices, skip.
           if (!token?.decimals || !historicalUsdPrices || !currentUsdPrice) {
             return acc
@@ -462,7 +480,7 @@ export const treasuryValueHistorySelector = selectorFamily<
             )
             .reduce((acc, { balance }) => acc + BigInt(balance), 0n)
           const currentValue =
-            currentUsdPrice.amount *
+            currentUsdPrice *
             convertMicroDenomToDenomWithDecimals(
               currentBalance.toString(),
               token.decimals
