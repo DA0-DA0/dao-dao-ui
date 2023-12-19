@@ -8,7 +8,10 @@ const defaultVariant = 'primary'
 const defaultSize = 'md'
 
 // Pulse for these variants instead of displaying loader.
-const PULSE_LOADING_VARIANTS = 'underline' || 'none'
+const PULSE_LOADING_VARIANTS: ButtonifierProps['variant'][] = [
+  'underline',
+  'none',
+]
 
 // Get props that should pass through the Buttonifier, such as native button
 // props. Disable button if disabled or loading.
@@ -23,6 +26,7 @@ export const getPassthroughProps = <P extends ButtonifierProps>({
   children: _children,
   center: _center,
   circular: _circular,
+  noRounding: _noRounding,
   focused: _focused,
   disabled,
   loading,
@@ -39,8 +43,10 @@ export const getButtonifiedClassNames = ({
   pressed,
   disabled,
   loading,
+  loadingVariant,
   allowClickWhileLoading,
   circular,
+  noRounding,
   focused,
   className,
 }: ButtonifierProps) => {
@@ -55,10 +61,16 @@ export const getButtonifiedClassNames = ({
     focused && 'ring-2 ring-inset ring-border-interactive-focus',
 
     // Rounded if circular.
-    circular ? 'aspect-square rounded-full' : 'rounded-md',
+    {
+      'aspect-square rounded-full': circular,
+      'rounded-md': !circular && !noRounding,
+    },
 
     // Pulse if loading for a variant that we don't display the loader.
-    loading && variant === PULSE_LOADING_VARIANTS && 'animate-pulse',
+    loading &&
+      ((PULSE_LOADING_VARIANTS.includes(variant) && !loadingVariant) ||
+        loadingVariant === 'pulse') &&
+      'animate-pulse',
 
     // Let variants take color precedence over the text classes used here since
     // the variants are more specific, so just use the font text styling here.
@@ -141,43 +153,55 @@ export const ButtonifiedChildren = ({
   showBadge,
   children,
   center,
-}: ButtonifierProps) => (
-  <>
-    <div
-      className={clsx(
-        'absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center',
-        {
-          // Match padding of container (by inheriting it) so the logo is the
-          // same height as the text.
-          'p-[inherit]': size !== 'lg',
-          // The container padding makes the logo a bit small on lg size, so
-          // manually override.
-          'p-2': size === 'lg',
-        }
-      )}
-    >
-      {loading && variant !== PULSE_LOADING_VARIANTS && (
-        <Loader invert={variant === 'primary'} size={size === 'sm' ? 18 : 24} />
-      )}
-    </div>
-    <div
-      className={clsx(
-        // Add `relative` to allow children to be clickable. The absolute
-        // container of the loading element above takes over touches if this is
-        // not relative; adding relative puts them in the same stacking context.
-        'relative flex h-full flex-row items-center gap-2',
-        center && 'justify-center',
-        {
-          invisible: loading && variant !== PULSE_LOADING_VARIANTS,
-        },
-        contentContainerClassName
-      )}
-    >
-      {children}
-    </div>
+  loadingVariant,
+}: ButtonifierProps) => {
+  const loadingLoader =
+    loading &&
+    ((!PULSE_LOADING_VARIANTS.includes(variant) && !loadingVariant) ||
+      loadingVariant === 'loader')
 
-    {showBadge && (
-      <div className="absolute top-[3px] right-[3px] box-content h-[6px] w-[6px] rounded-full border-[3px] border-background-base bg-icon-interactive-active"></div>
-    )}
-  </>
-)
+  return (
+    <>
+      <div
+        className={clsx(
+          'absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center',
+          {
+            // Match padding of container (by inheriting it) so the logo is the
+            // same height as the text.
+            'p-[inherit]': size !== 'lg',
+            // The container padding makes the logo a bit small on lg size, so
+            // manually override.
+            'p-2': size === 'lg',
+          }
+        )}
+      >
+        {loadingLoader && (
+          <Loader
+            invert={variant === 'primary'}
+            size={size === 'sm' ? 18 : 24}
+          />
+        )}
+      </div>
+      <div
+        className={clsx(
+          // Add `relative` to allow children to be clickable. The absolute
+          // container of the loading element above takes over touches if this
+          // is not relative; adding relative puts them in the same stacking
+          // context.
+          'relative flex h-full flex-row items-center gap-2',
+          center && 'justify-center',
+          {
+            invisible: loadingLoader,
+          },
+          contentContainerClassName
+        )}
+      >
+        {children}
+      </div>
+
+      {showBadge && (
+        <div className="absolute top-[3px] right-[3px] box-content h-[6px] w-[6px] rounded-full border-[3px] border-background-base bg-icon-interactive-active"></div>
+      )}
+    </>
+  )
+}

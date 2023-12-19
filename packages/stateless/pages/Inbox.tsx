@@ -1,7 +1,20 @@
-import { DoneAll, Refresh, Settings } from '@mui/icons-material'
+import {
+  ClearAll,
+  Delete,
+  DoneAll,
+  Refresh,
+  Settings,
+} from '@mui/icons-material'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
-import { ComponentType, ReactNode, useEffect, useState } from 'react'
+import {
+  ComponentType,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -10,13 +23,14 @@ import {
   InboxPageSlug,
   InboxState,
 } from '@dao-dao/types'
+import { processError } from '@dao-dao/utils'
 
 import {
   IconButton,
   InboxSettingsModal,
-  Loader,
   NoContent,
   PageHeaderContent,
+  PageLoader,
   RightSidebarContent,
   Tooltip,
 } from '../components'
@@ -66,79 +80,156 @@ export const Inbox = ({
     return () => clearTimeout(timeout)
   }, [])
 
+  const [checked, setChecked] = useState({} as Record<string, boolean>)
+  const onCheck = useCallback(
+    (id: string) =>
+      setChecked((prev) => ({
+        ...prev,
+        [id]: !prev[id],
+      })),
+    []
+  )
+  const countChecked = Object.values(checked).filter(Boolean).length
+  const [checking, setChecking] = useState(false)
+  const clearChecked = useCallback(async () => {
+    setChecking(true)
+    try {
+      // If none checked, clear all.
+      const toClear = !countChecked
+        ? items.map(({ id }) => id)
+        : Object.entries(checked).flatMap(([id, checked]) =>
+            checked ? [id] : []
+          )
+
+      if (toClear.length && (await api.clear(toClear))) {
+        setChecked({})
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+    } finally {
+      setChecking(false)
+    }
+  }, [api, checked, countChecked, items])
+
   return (
     <>
       <RightSidebarContent>{rightSidebarContent}</RightSidebarContent>
       <PageHeaderContent
         className="mx-auto max-w-5xl"
+        expandBorderToEdge
         rightNode={
-          <div className="flex flex-row items-center gap-2 transition-opacity">
-            <IconButton
-              Icon={Settings}
-              circular
-              disabled={!api.ready}
-              loading={settingsModalVisible && api.updating}
-              onClick={() =>
-                push('/inbox/settings', undefined, { shallow: true })
-              }
-              variant="ghost"
-            />
+          <div className="flex grow flex-row items-center">
+            <Tooltip title={t('button.settings')}>
+              <div className="shrink-0 self-stretch border-l border-border-secondary">
+                <IconButton
+                  Icon={Settings}
+                  className="!h-full !w-10"
+                  disabled={!api.ready}
+                  iconClassName="!h-5 !w-5"
+                  loading={settingsModalVisible && api.updating}
+                  noRounding
+                  onClick={() =>
+                    push('/inbox/settings', undefined, { shallow: true })
+                  }
+                  size="custom"
+                  variant="ghost"
+                />
+              </div>
+            </Tooltip>
 
-            <IconButton
-              Icon={Refresh}
-              circular
-              className={clsx(refreshSpinning && 'animate-spin-medium')}
-              // If spinning but no longer refreshing, stop after iteration.
-              onAnimationIteration={
-                refreshSpinning && !refreshing
-                  ? () => setRefreshSpinning(false)
-                  : undefined
+            <Tooltip title={t('button.refresh')}>
+              <div className="shrink-0 self-stretch border-l border-border-secondary">
+                <IconButton
+                  Icon={Refresh}
+                  className="!h-full !w-10"
+                  iconClassName={clsx(
+                    '!h-5 !w-5',
+                    refreshSpinning && 'animate-spin-medium'
+                  )}
+                  noRounding
+                  // If spinning but no longer refreshing, stop after iteration.
+                  onAnimationIteration={
+                    refreshSpinning && !refreshing
+                      ? () => setRefreshSpinning(false)
+                      : undefined
+                  }
+                  onClick={() => {
+                    // Perform one spin even if refresh completes immediately.
+                    // It will stop after 1 iteration if `refreshing` does not
+                    // become true.
+                    setRefreshSpinning(true)
+                    refresh()
+                  }}
+                  size="custom"
+                  variant="ghost"
+                />
+              </div>
+            </Tooltip>
+
+            {/* Matches clear button in InboxMainItemRenderer */}
+            <Tooltip
+              title={
+                countChecked
+                  ? t('button.clearSelected', {
+                      count: countChecked,
+                    })
+                  : t('button.clearAll')
               }
-              onClick={() => {
-                // Perform one spin even if refresh completes immediately. It
-                // will stop after 1 iteration if `refreshing` does not become
-                // true.
-                setRefreshSpinning(true)
-                refresh()
-              }}
-              variant="ghost"
-            />
+            >
+              <div className="shrink-0 self-stretch border-l border-border-secondary">
+                <IconButton
+                  Icon={countChecked ? Delete : ClearAll}
+                  className="!h-full !w-10"
+                  disabled={!api.ready || api.updating}
+                  iconClassName="!h-5 !w-5"
+                  loading={checking}
+                  noRounding
+                  onClick={clearChecked}
+                  size="custom"
+                  variant={countChecked ? 'secondary' : 'ghost'}
+                />
+              </div>
+            </Tooltip>
           </div>
         }
         title={t('title.inbox')}
       />
 
-      <div className="mx-auto flex max-w-5xl flex-col items-stretch">
-        {loading ? (
-          <Loader fill={false} />
-        ) : items.length === 0 ? (
-          <NoContent Icon={DoneAll} body={t('info.emptyInboxCaughtUp')} />
-        ) : (
-          <>
-            <div className="flex flex-row items-center justify-between">
-              <p className="title-text">
-                {t('title.numNotifications', { count: items.length })}
-              </p>
-
-              <Tooltip title={t('button.clearAll')}>
-                <IconButton
-                  Icon={DoneAll}
-                  circular
-                  disabled={!api.ready}
-                  loading={api.updating}
-                  onClick={() => api.clear(items.map(({ id }) => id))}
-                  variant="ghost"
-                />
-              </Tooltip>
-            </div>
-
-            <div className="mt-6 flex grow flex-col gap-1">
-              {items.map((item) => (
-                <InboxMainItemRenderer key={item.id} item={item} />
-              ))}
-            </div>
-          </>
-        )}
+      <div className="-mx-7 -mt-10 min-h-full">
+        <div className="relative mx-auto flex min-h-full max-w-5xl flex-col items-stretch">
+          {loading ? (
+            <PageLoader className="mt-10" />
+          ) : items.length === 0 ? (
+            <NoContent
+              Icon={DoneAll}
+              body={t('info.emptyInboxCaughtUp')}
+              noBorder
+            />
+          ) : (
+            <>
+              <div className="flex grow flex-col">
+                {items.map((item, index) => (
+                  <div
+                    key={item.id}
+                    className={clsx(
+                      'animate-fade-in',
+                      index < items.length - 1 &&
+                        'border-b border-border-secondary'
+                    )}
+                  >
+                    <InboxMainItemRenderer
+                      key={item.id}
+                      checked={!!checked[item.id]}
+                      item={item}
+                      onCheck={onCheck}
+                    />
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <InboxSettingsModal

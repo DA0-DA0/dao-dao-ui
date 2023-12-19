@@ -13,6 +13,7 @@ export interface ButtonifierProps {
     | 'none'
   size?: 'sm' | 'lg' | 'md' | 'none'
   loading?: boolean
+  loadingVariant?: 'pulse' | 'loader'
   contentContainerClassName?: string
   pressed?: boolean
   hovering?: boolean
@@ -22,6 +23,7 @@ export interface ButtonifierProps {
   children?: ReactNode | ReactNode[]
   center?: boolean
   circular?: boolean
+  noRounding?: boolean
   focused?: boolean
   allowClickWhileLoading?: boolean
 }

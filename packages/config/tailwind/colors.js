@@ -16,6 +16,7 @@ const colors = [
   'text-body',
   'text-secondary',
   'text-tertiary',
+  'text-quaternary',
   'text-brand',
   'text-interactive-disabled',
   'text-interactive-active',
