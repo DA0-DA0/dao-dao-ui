@@ -45,6 +45,11 @@ Default.args = {
           symbol: 'JUNO',
           decimals: 6,
           imageUrl: '/daodao.png',
+          source: {
+            chainId: CHAIN_ID,
+            type: TokenType.Native,
+            denomOrAddress: 'ujuno',
+          },
         },
         balance: '1248281239056',
       },
@@ -56,6 +61,11 @@ Default.args = {
           symbol: 'DAO',
           decimals: 6,
           imageUrl: '/daodao.png',
+          source: {
+            chainId: CHAIN_ID,
+            type: TokenType.Cw20,
+            denomOrAddress: 'junoCw20Dao',
+          },
         },
         balance: '19023827587124',
       },

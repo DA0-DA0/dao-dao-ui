@@ -1,7 +1,7 @@
 import { forwardRef } from 'react'
 
 import { IconButtonLink as StatelessIconButtonLink } from '@dao-dao/stateless'
-import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
+import { IconButtonLinkProps } from '@dao-dao/types/components/IconButtonLink'
 
 import { useUpdateNavigatingHref } from '../hooks/useUpdateNavigatingHref'
 

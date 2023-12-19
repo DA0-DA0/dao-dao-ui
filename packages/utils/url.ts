@@ -64,6 +64,18 @@ export const getGovProposalPath = (
   return base + query
 }
 
+// Create a path to an account's page.
+export const getAccountPath = (
+  address: string,
+  path?: string,
+  params?: Record<string, unknown>
+) => {
+  const base = `/account/${address}` + (path ? `/${path}` : '')
+  const query = params ? `?${queryString.stringify(params)}` : ''
+
+  return base + query
+}
+
 // Create a path for the Me page transaction builder with a pre-filled
 // transaction form.
 export const getMeTxPrefillPath = (

@@ -8,7 +8,7 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { IconButtonLinkProps } from '@dao-dao/types/stateless/IconButtonLink'
+import { IconButtonLinkProps } from '@dao-dao/types/components/IconButtonLink'
 import { formatDate } from '@dao-dao/utils'
 
 import { CompletedSurveyListing } from '../../types'

@@ -45,10 +45,11 @@
     "@keplr-wallet/stores": "^0.11.49",
     "@mui/icons-material": "^5.10.3",
     "@mui/material": "^5.10.3",
+    "@skip-router/core": "^1.0.5",
     "@walletconnect/browser-utils": "^1.8.0",
     "axios": "^0.26.1",
     "buffer": "^6.0.3",
-    "chain-registry": "^1.19.0",
+    "chain-registry": "^1.21.0",
     "clsx": "^1.1.1",
     "file-saver": "^2.0.5",
     "fuse.js": "^6.6.2",
@@ -71,7 +72,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@chain-registry/types": "^0.16.0",
+    "@chain-registry/types": "^0.17.0",
     "@cosmjs/amino": "^0.31.0",
     "@dao-dao/config": "2.2.0",
     "@dao-dao/types": "2.2.0",
@@ -88,7 +89,7 @@
     "next": "^13.3.0",
     "next-i18next": "^11.0.0",
     "react": "^18.2.0",
-    "typescript": "^4.8.3"
+    "typescript": "5.3.3"
   },
   "peerDependencies": {
     "@dao-dao/storybook": "2.2.0",

@@ -1,6 +1,6 @@
 import clsx from 'clsx'
 
-import { LoaderProps } from '@dao-dao/types/stateless/Loader'
+import { LoaderProps } from '@dao-dao/types/components/Loader'
 
 import { Logo } from './Logo'
 

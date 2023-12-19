@@ -76,7 +76,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
         <>
           {isCreating ? (
             <>
-              <p className="title-text -mb-1 mt-1">{t('title.actions')}</p>
+              <p className="title-text -mb-1 mt-3">{t('title.actions')}</p>
 
               <NestedActionsEditor {...props} />
             </>
@@ -87,7 +87,7 @@ export const AuthzExecComponent: ActionComponent<AuthzExecOptions> = (
                 address={msgsPerSender[msgPerSenderIndex!].sender}
               />
 
-              <p className="title-text -mb-1 mt-1">{t('title.actions')}</p>
+              <p className="title-text -mb-1 mt-4">{t('title.actions')}</p>
               <NestedActionsRenderer
                 {...options}
                 msgsFieldName={

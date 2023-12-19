@@ -1,14 +1,14 @@
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
 
-import { DaoDropdownProps } from '@dao-dao/types/stateless/DaoDropdown'
+import { DaoDropdownProps } from '@dao-dao/types/components/DaoDropdown'
 import { toAccessibleImageUrl } from '@dao-dao/utils'
 
 import { useDaoNavHelpers } from '../../hooks'
 import { Collapsible } from '../Collapsible'
 import { Tooltip } from '../tooltip/Tooltip'
 
-export * from '@dao-dao/types/stateless/DaoDropdown'
+export * from '@dao-dao/types/components/DaoDropdown'
 
 export const DaoDropdown = ({
   dao: { coreAddress, imageUrl, name, subdaos, content },

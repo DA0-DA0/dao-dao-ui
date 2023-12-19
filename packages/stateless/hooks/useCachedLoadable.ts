@@ -56,8 +56,8 @@ export const useCachedLoadable = <T extends unknown>(
       setUpdating(true)
       // Reset state if recoilValue becomes undefined. This may happen if a
       // query depends on form input state, like an address, that may toggle
-      // between valid and invalid. This ensures that old data is not shown
-      // for a moment while waiting for a new query.
+      // between valid and invalid. This ensures that old data is not shown for
+      // a moment while waiting for a new query.
       if (!recoilValue) {
         setInitialLoading(true)
         setContents(undefined)
@@ -92,7 +92,11 @@ export const useCachedLoadable = <T extends unknown>(
         : loadable.state === 'hasError'
         ? {
             state: 'hasError',
-            contents: loadable.contents,
+            contents: !loadable.contents
+              ? new Error('Unknown error')
+              : loadable.contents instanceof Error
+              ? loadable.contents
+              : new Error(`${loadable.contents}`),
           }
         : {
             state: 'hasValue',
@@ -113,10 +117,10 @@ export const useCachedLoadable = <T extends unknown>(
   return cachedLoadable
 }
 
-// The following hooks are convenience hooks that use the above hook to
-// cache loaded data and then convert the loadable to our convenience loading
-// types, which are more useful in UI components. Read why they are useful
-// in the comment above the LoadingData types.
+// The following hooks are convenience hooks that use the above hook to cache
+// loaded data and then convert the loadable to our convenience loading types,
+// which are more useful in UI components. Read why they are useful in the
+// comment above the LoadingData types.
 
 // Convert to LoadingDataWithError for convenience, memoized.
 export const useCachedLoadingWithError = <T extends unknown>(

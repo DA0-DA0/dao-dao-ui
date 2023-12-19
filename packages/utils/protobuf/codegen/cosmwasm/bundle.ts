@@ -5,12 +5,12 @@ import * as _61 from "./wasm/v1/proposal";
 import * as _62 from "./wasm/v1/query";
 import * as _63 from "./wasm/v1/tx";
 import * as _64 from "./wasm/v1/types";
-import * as _232 from "./wasm/v1/tx.amino";
-import * as _233 from "./wasm/v1/tx.registry";
-import * as _234 from "./wasm/v1/query.rpc.Query";
-import * as _235 from "./wasm/v1/tx.rpc.msg";
-import * as _319 from "./rpc.query";
-import * as _320 from "./rpc.tx";
+import * as _241 from "./wasm/v1/tx.amino";
+import * as _242 from "./wasm/v1/tx.registry";
+import * as _243 from "./wasm/v1/query.rpc.Query";
+import * as _244 from "./wasm/v1/tx.rpc.msg";
+import * as _336 from "./rpc.query";
+import * as _337 from "./rpc.tx";
 export namespace cosmwasm {
   export namespace wasm {
     export const v1 = {
@@ -21,14 +21,14 @@ export namespace cosmwasm {
       ..._62,
       ..._63,
       ..._64,
-      ..._232,
-      ..._233,
-      ..._234,
-      ..._235
+      ..._241,
+      ..._242,
+      ..._243,
+      ..._244
     };
   }
   export const ClientFactory = {
-    ..._319,
-    ..._320
+    ..._336,
+    ..._337
   };
 }

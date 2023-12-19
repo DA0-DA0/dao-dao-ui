@@ -11,6 +11,8 @@ import {
   queryIndexer,
 } from '@dao-dao/state'
 import {
+  Account,
+  AccountType,
   ActiveThreshold,
   CommonProposalInfo,
   ContractVersion,
@@ -230,6 +232,26 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
         {} as Record<string, string>
       )
 
+      const accounts: Account[] = [
+        // Current chain.
+        {
+          chainId,
+          address: coreAddress,
+          type: AccountType.Native,
+        },
+        // Polytone.
+        ...Object.entries(polytoneProxies).map(
+          ([chainId, address]): Account => ({
+            chainId,
+            address,
+            type: AccountType.Polytone,
+          })
+        ),
+        // The above accounts are the ones we already have. The rest of the
+        // accounts are loaded once the page loads (in `DaoPageWrapper`) since
+        // they are more complex and will probably expand over time.
+      ]
+
       // Must be called after server side translations has been awaited, because
       // props may use the `t` function, and it won't be available until after.
       const {
@@ -277,6 +299,7 @@ export const makeGetDaoStaticProps: GetDaoStaticPropsMaker =
           activeThreshold,
           items,
           polytoneProxies,
+          accounts,
           parentDao,
           admin: admin ?? null,
         },

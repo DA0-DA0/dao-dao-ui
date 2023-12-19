@@ -11,7 +11,6 @@ import {
   makePerformTokenSwapAction,
   makeWithdrawTokenSwapAction,
 } from './token_swap'
-import { makeWyndSwapAction } from './WyndSwap'
 
 export const makeTreasuryActionCategory: ActionCategoryMaker = ({
   t,
@@ -27,7 +26,6 @@ export const makeTreasuryActionCategory: ActionCategoryMaker = ({
   actionMakers: [
     makeSpendAction,
     makeManageStakingAction,
-    makeWyndSwapAction,
     makeManageCw20Action,
     makePerformTokenSwapAction,
     makeWithdrawTokenSwapAction,

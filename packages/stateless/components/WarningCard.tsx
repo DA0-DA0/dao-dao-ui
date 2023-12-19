@@ -1,8 +1,9 @@
 import { WarningRounded } from '@mui/icons-material'
 import clsx from 'clsx'
+import { ReactNode } from 'react'
 
 export type WarningCardProps = {
-  content: string
+  content: ReactNode
   className?: string
   iconClassName?: string
   textClassName?: string
@@ -31,14 +32,18 @@ export const WarningCard = ({
       )}
     />
 
-    <p
-      className={clsx(
-        'primary-text text-text-interactive-warning-body',
-        size === 'sm' && 'text-xs',
-        textClassName
-      )}
-    >
-      {content}
-    </p>
+    {typeof content === 'string' ? (
+      <p
+        className={clsx(
+          'primary-text text-text-interactive-warning-body',
+          size === 'sm' && 'text-xs',
+          textClassName
+        )}
+      >
+        {content}
+      </p>
+    ) : (
+      content
+    )}
   </div>
 )

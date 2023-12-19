@@ -19,7 +19,7 @@ export const walletChainIdAtom = atom<string>({
   effects: [
     localStorageEffect(JSON.stringify, (jsonValue: string) => {
       const value = JSON.parse(jsonValue)
-      // If no supported chain matches, set to default.
+      // If no configured chain matches, set to default.
       return getConfiguredChains().some(({ chain }) => chain.chain_id === value)
         ? value
         : DEFAULT_CHAIN_ID

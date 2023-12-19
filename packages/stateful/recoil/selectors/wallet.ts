@@ -7,6 +7,7 @@ import {
 } from 'recoil'
 
 import {
+  accountsSelector,
   genericTokenSelector,
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
@@ -16,6 +17,7 @@ import {
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
+  AccountType,
   LazyDaoCardProps,
   LazyNftCardInfo,
   MeTransactionSave,
@@ -30,9 +32,11 @@ import {
   KVPK_API_BASE,
   ME_SAVED_TX_PREFIX,
   convertMicroDenomToDenomWithDecimals,
+  getChainForChainId,
   getConfiguredChains,
   getFallbackImage,
   getNativeTokenForChainId,
+  getSupportedChains,
   transformBech32Address,
 } from '@dao-dao/utils'
 
@@ -186,11 +190,22 @@ export const walletTokenCardInfosSelector = selectorFamily<
     ({ get }) => {
       const id = get(refreshWalletBalancesIdAtom(walletAddress))
 
-      const nativeBalances = get(
-        nativeBalancesSelector({
-          address: walletAddress,
+      const allAccounts = get(
+        accountsSelector({
           chainId,
+          address: walletAddress,
         })
+      )
+
+      const nativeBalances = get(
+        waitForAll(
+          allAccounts.map(({ chainId, address }) =>
+            nativeBalancesSelector({
+              address,
+              chainId,
+            })
+          )
+        )
       )
       const cw20ContractsLoadable: Loadable<ContractWithBalance[] | undefined> =
         get(
@@ -221,38 +236,40 @@ export const walletTokenCardInfosSelector = selectorFamily<
       )
 
       const infos: TokenCardInfo[] = [
-        ...nativeBalances.map(({ token, balance }) => {
-          const unstakedBalance = convertMicroDenomToDenomWithDecimals(
-            balance,
-            token.decimals
-          )
+        ...nativeBalances.flatMap((accountBalances, accountIndex) =>
+          accountBalances.map(({ token, balance }) => {
+            const unstakedBalance = convertMicroDenomToDenomWithDecimals(
+              balance,
+              token.decimals
+            )
 
-          // Staking info only exists for native token.
-          const hasStakingInfo =
-            token.denomOrAddress ===
-              getNativeTokenForChainId(chainId).denomOrAddress &&
-            // Check if anything staked.
-            Number(
-              get(
-                nativeDelegatedBalanceSelector({
-                  address: walletAddress,
-                  chainId,
-                })
-              ).amount
-            ) > 0
+            // Staking info only exists for native token.
+            const hasStakingInfo =
+              token.denomOrAddress ===
+                getNativeTokenForChainId(chainId).denomOrAddress &&
+              // Check if anything staked.
+              Number(
+                get(
+                  nativeDelegatedBalanceSelector({
+                    address: walletAddress,
+                    chainId,
+                  })
+                ).amount
+              ) > 0
 
-          const info: TokenCardInfo = {
-            owner: walletAddress,
-            token,
-            isGovernanceToken: false,
-            unstakedBalance,
-            hasStakingInfo,
+            const info: TokenCardInfo = {
+              owner: allAccounts[accountIndex],
+              token,
+              isGovernanceToken: false,
+              unstakedBalance,
+              hasStakingInfo,
 
-            lazyInfo: { loading: true },
-          }
+              lazyInfo: { loading: true },
+            }
 
-          return info
-        }),
+            return info
+          })
+        ),
         ...cw20s.map((token, index) => {
           const unstakedBalance = convertMicroDenomToDenomWithDecimals(
             cw20Contracts[index].balance || '0',
@@ -260,7 +277,11 @@ export const walletTokenCardInfosSelector = selectorFamily<
           )
 
           const info: TokenCardInfo = {
-            owner: walletAddress,
+            owner: {
+              type: AccountType.Native,
+              chainId,
+              address: walletAddress,
+            },
             token,
             isGovernanceToken: false,
             unstakedBalance,
@@ -282,23 +303,28 @@ export const walletTokenCardInfosSelector = selectorFamily<
 export const allWalletNftsSelector = selectorFamily<
   LazyNftCardInfo[],
   // Can be any wallet address.
-  { walletAddress: string }
+  {
+    walletAddress: string
+    // Only retrieve NFTs for this chain if defined.
+    chainId?: string
+  }
 >({
   key: 'allWalletNfts',
   get:
-    ({ walletAddress }) =>
+    ({ walletAddress, chainId }) =>
     ({ get }) => {
-      const chains = getConfiguredChains().filter((c) => !c.noCosmWasm)
+      const chains = chainId
+        ? [getChainForChainId(chainId)]
+        : getConfiguredChains()
+            .filter(({ noCosmWasm }) => !noCosmWasm)
+            .map(({ chain }) => chain)
 
       const nativeNfts = get(
         waitForAll(
-          chains.map(({ chain }) =>
+          chains.map(({ chain_id: chainId }) =>
             walletLazyNftCardInfosSelector({
-              chainId: chain.chain_id,
-              walletAddress: transformBech32Address(
-                walletAddress,
-                chain.chain_id
-              ),
+              chainId,
+              walletAddress: transformBech32Address(walletAddress, chainId),
             })
           )
         )
@@ -314,13 +340,10 @@ export const allWalletNftsSelector = selectorFamily<
 
       const nativeStakedNfts = get(
         waitForAll(
-          chains.map(({ chain }) =>
+          chains.map(({ chain_id: chainId }) =>
             walletStakedLazyNftCardInfosSelector({
-              chainId: chain.chain_id,
-              walletAddress: transformBech32Address(
-                walletAddress,
-                chain.chain_id
-              ),
+              chainId,
+              walletAddress: transformBech32Address(walletAddress, chainId),
             })
           )
         )
@@ -383,11 +406,9 @@ export const allWalletDaosSelector = selectorFamily<
   get:
     ({ walletAddress }) =>
     ({ get }) => {
-      const chains = getConfiguredChains()
-
       const allLazyDaoCards = get(
         waitForAll(
-          chains.map(({ chain }) =>
+          getSupportedChains().map(({ chain }) =>
             walletDaosSelector({
               chainId: chain.chain_id,
               walletAddress: transformBech32Address(

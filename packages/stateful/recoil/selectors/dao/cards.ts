@@ -7,7 +7,7 @@ import {
   contractInstantiateTimeSelector,
   contractVersionSelector,
   daoTvlSelector,
-  isContractSelector,
+  isDaoSelector,
 } from '@dao-dao/state'
 import {
   ContractVersion,
@@ -130,16 +130,9 @@ export const daoCardInfoSelector = selectorFamily<
             }
           } else if (
             get(
-              isContractSelector({
-                contractAddress: admin,
+              isDaoSelector({
+                address: admin,
                 chainId,
-                names: [
-                  // V1
-                  'cw-core',
-                  // V2
-                  'cwd-core',
-                  'dao-core',
-                ],
               })
             )
           ) {

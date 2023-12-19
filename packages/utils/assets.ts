@@ -47,6 +47,12 @@ export const getChainAssets = (chainId: string) => {
               0,
             imageUrl: svg || png || jpeg || getFallbackImage(base),
             description: symbol === name ? undefined : name,
+            // This will be wrong when this is an IBC asset.
+            source: {
+              chainId,
+              type: TokenType.Native,
+              denomOrAddress: base,
+            },
           })
         )
         .sort((a, b) => a.symbol.localeCompare(b.symbol)) ?? []

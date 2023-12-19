@@ -10,8 +10,8 @@ import {
   validatorsSelector,
 } from '@dao-dao/state'
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   DepositEmoji,
   Loader,
   useCachedLoading,
@@ -196,7 +196,6 @@ const InnerComponent: ActionComponent = (props) => {
 
   const balances = useTokenBalances({
     filter: TokenType.Native,
-    allChains: true,
   })
   const loadingNativeBalance: LoadingData<Coin> = balances.loading
     ? { loading: true }
@@ -366,8 +365,7 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && props.isCreating && (
-        <ChainPickerInput
-          className="mb-4"
+        <DaoSupportedChainPickerInput
           fieldName={props.fieldNamePrefix + 'chainId'}
           labelMode="token"
           onChange={() => {
@@ -378,6 +376,7 @@ const Component: ActionComponent<undefined, ManageStakingData> = (props) => {
               ''
             )
           }}
+          onlyDaoChainIds
         />
       )}
 

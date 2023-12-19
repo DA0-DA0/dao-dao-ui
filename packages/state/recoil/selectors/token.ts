@@ -1,10 +1,10 @@
 import { selectorFamily, waitForAllSettled } from 'recoil'
 
 import {
-  AmountWithTimestampAndDenom,
-  ChainId,
+  Account,
   GenericToken,
   GenericTokenBalance,
+  GenericTokenSource,
   GenericTokenWithUsdPrice,
   TokenType,
   WithChainId,
@@ -14,10 +14,8 @@ import {
   getChainForChainId,
   getChainForChainName,
   getFallbackImage,
-  getIbcTransferInfoBetweenChains,
-  getIbcTransferInfoFromChainSource,
+  getIbcTransferInfoFromChannel,
   getTokenForChainIdAndDenom,
-  isValidContractAddress,
   isValidTokenFactoryDenom,
   isValidWalletAddress,
 } from '@dao-dao/utils'
@@ -29,20 +27,51 @@ import {
   nativeBalancesSelector,
   nativeDelegatedBalanceSelector,
 } from './chain'
-import { isContractSelector } from './contract'
+import { isDaoSelector } from './contract'
 import { Cw20BaseSelectors, DaoCoreV2Selectors } from './contracts'
 import { osmosisUsdPriceSelector } from './osmosis'
+import { skipAssetSelector } from './skip'
 import { walletCw20BalancesSelector } from './wallet'
-import { wyndUsdPriceSelector } from './wynd'
 
 export const genericTokenSelector = selectorFamily<
   GenericToken,
-  WithChainId<Pick<GenericToken, 'type' | 'denomOrAddress'>>
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
   key: 'genericToken',
   get:
     ({ type, denomOrAddress, chainId }) =>
     ({ get }) => {
+      const source = get(
+        sourceChainAndDenomSelector({
+          type,
+          chainId,
+          denomOrAddress,
+        })
+      )
+
+      // Check if Skip API has the info.
+      const skipAsset = get(
+        skipAssetSelector({
+          chainId,
+          type,
+          denomOrAddress,
+        })
+      )
+
+      if (skipAsset) {
+        return {
+          chainId: skipAsset.chainID,
+          type: skipAsset.isCW20 ? TokenType.Cw20 : TokenType.Native,
+          denomOrAddress:
+            (skipAsset.isCW20 && skipAsset.tokenContract) || skipAsset.denom,
+          symbol:
+            skipAsset.recommendedSymbol || skipAsset.symbol || skipAsset.denom,
+          decimals: skipAsset.decimals || 0,
+          imageUrl: skipAsset.logoURI || getFallbackImage(denomOrAddress),
+          source,
+        }
+      }
+
       let tokenInfo =
         type === TokenType.Cw20
           ? get(
@@ -70,7 +99,10 @@ export const genericTokenSelector = selectorFamily<
       // If native non-factory token, try to get the token from the asset list.
       if (!tokenInfo) {
         try {
-          return getTokenForChainIdAndDenom(chainId, denomOrAddress, false)
+          return {
+            ...getTokenForChainIdAndDenom(chainId, denomOrAddress, false),
+            source,
+          }
         } catch {
           // If that fails, try to fetch from chain if not IBC asset.
           try {
@@ -92,7 +124,10 @@ export const genericTokenSelector = selectorFamily<
 
           // If that fails, return placeholder token.
           if (!tokenInfo) {
-            return getTokenForChainIdAndDenom(chainId, denomOrAddress)
+            return {
+              ...getTokenForChainIdAndDenom(chainId, denomOrAddress),
+              source,
+            }
           }
         }
       }
@@ -114,104 +149,30 @@ export const genericTokenSelector = selectorFamily<
         symbol: tokenInfo.symbol,
         decimals: tokenInfo.decimals,
         imageUrl,
+        source,
       }
     },
 })
 
 export const usdPriceSelector = selectorFamily<
-  AmountWithTimestampAndDenom | undefined,
+  GenericTokenWithUsdPrice | undefined,
   Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
   key: 'usdPrice',
   get:
-    ({ type, denomOrAddress, chainId }) =>
-    async ({ get }) => {
+    (params) =>
+    ({ get }) => {
       if (!MAINNET) {
-        return undefined
+        return
       }
 
-      // Try to reverse engineer denom and get the osmosis price.
-      try {
-        if (type === TokenType.Native) {
-          const ibc = get(ibcRpcClientForChainSelector(chainId))
-          const trace = denomOrAddress.startsWith('ibc/')
-            ? (
-                await ibc.applications.transfer.v1.denomTrace({
-                  hash: denomOrAddress,
-                })
-              ).denomTrace
-            : undefined
-
-          let sourceChainId = chainId
-          let baseDenom = denomOrAddress
-
-          // If trace exists, resolve IBC denom and then get its Osmosis IBC
-          // denom to find its price.
-          if (trace) {
-            let channels = trace.path.split('transfer/').slice(1)
-            // Trim trailing slash from all but last channel.
-            channels = channels.map((channel, index) =>
-              index === channels.length - 1 ? channel : channel.slice(0, -1)
-            )
-            if (channels.length) {
-              // Retrace channel paths to find source chain of denom.
-              sourceChainId = channels.reduce(
-                (currentChainId, channel) =>
-                  getChainForChainName(
-                    getIbcTransferInfoFromChainSource(currentChainId, channel)
-                      .destinationChain.chain_name
-                  ).chain_id,
-                chainId
-              )
-              baseDenom = trace.baseDenom
-            }
-          }
-
-          // If source chain is Osmosis, the denom is the base denom.
-          if (sourceChainId === ChainId.OsmosisMainnet) {
-            chainId = ChainId.OsmosisMainnet
-            denomOrAddress = baseDenom
-          } else {
-            // Otherwise get the Osmosis IBC denom.
-            const osmosisIbc = get(
-              ibcRpcClientForChainSelector(ChainId.OsmosisMainnet)
-            )
-            const { sourceChannel } = getIbcTransferInfoBetweenChains(
-              ChainId.OsmosisMainnet,
-              sourceChainId
-            )
-            const { hash: osmosisDenomIbcHash } =
-              await osmosisIbc.applications.transfer.v1.denomHash({
-                trace: `transfer/${sourceChannel}/${baseDenom}`,
-              })
-
-            chainId = ChainId.OsmosisMainnet
-            denomOrAddress = 'ibc/' + osmosisDenomIbcHash
-          }
-        }
-      } catch (err) {
-        // If not error, rethrow. This may be a promise, which is how
-        // recoil waits for the `get` to resolve.
-        if (!(err instanceof Error)) {
-          throw err
-        }
-
-        // On failure, do nothing.
-      }
-
-      switch (chainId) {
-        case ChainId.OsmosisMainnet:
-          return get(osmosisUsdPriceSelector(denomOrAddress))
-        // On Juno, use WYND DEX as backup. Likely for CW20s.
-        case ChainId.JunoMainnet:
-          return get(wyndUsdPriceSelector(denomOrAddress))
-      }
+      return get(osmosisUsdPriceSelector(params))
     },
 })
 
 export const genericTokenWithUsdPriceSelector = selectorFamily<
   GenericTokenWithUsdPrice,
-  WithChainId<Pick<GenericToken, 'type' | 'denomOrAddress'>>
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
   key: 'genericTokenWithUsdPrice',
   get:
@@ -220,7 +181,7 @@ export const genericTokenWithUsdPriceSelector = selectorFamily<
       const token = get(genericTokenSelector(params))
 
       // Don't calculate price if could not load token decimals correctly.
-      const { amount: usdPrice, timestamp } =
+      const { usdPrice, timestamp } =
         (token.decimals > 0 && get(usdPriceSelector(params))) || {}
 
       return {
@@ -231,21 +192,38 @@ export const genericTokenWithUsdPriceSelector = selectorFamily<
     },
 })
 
+// Return all native and cw20 tokens for a given address. If this is a DAO, pass
+// the core address and native chain ID and use the `account` filter to ensure
+// cw20s are loaded.
 export const genericTokenBalancesSelector = selectorFamily<
   GenericTokenBalance[],
   WithChainId<{
     address: string
+    nativeGovernanceTokenDenom?: string
     cw20GovernanceTokenAddress?: string
-    // Only get balances for this token type.
-    filter?: TokenType
+    filter?: {
+      // Only get balances for this token type.
+      tokenType?: TokenType
+      // Choose which account to get balances for.
+      account?: Pick<Account, 'chainId' | 'address'>
+    }
   }>
 >({
   key: 'genericTokenBalances',
   get:
-    ({ address, cw20GovernanceTokenAddress, chainId, filter }) =>
+    ({
+      chainId: mainChainId,
+      address: mainAddress,
+      nativeGovernanceTokenDenom,
+      cw20GovernanceTokenAddress,
+      filter,
+    }) =>
     async ({ get }) => {
+      const chainId = filter?.account?.chainId || mainChainId
+      const address = filter?.account?.address || mainAddress
+
       const nativeTokenBalances =
-        !filter || filter === TokenType.Native
+        !filter?.tokenType || filter.tokenType === TokenType.Native
           ? get(
               nativeBalancesSelector({
                 address,
@@ -254,38 +232,42 @@ export const genericTokenBalancesSelector = selectorFamily<
             )
           : []
 
-      // TODO: Get polytone cw20s from some item prefix in the DAO.
       const cw20TokenBalances = (
-        !filter || filter === TokenType.Cw20
+        !filter?.tokenType || filter.tokenType === TokenType.Cw20
           ? get(
               // Neutron's modified DAOs do not support cw20s, so this may
               // error. Ignore if so.
               waitForAllSettled(
-                isValidContractAddress(
-                  address,
-                  getChainForChainId(chainId).bech32_prefix
-                ) &&
-                  // If is a DAO contract.
-                  get(
-                    isContractSelector({
-                      contractAddress: address,
-                      chainId,
-                      names: [
-                        // V1
-                        'cw-core',
-                        // V2
-                        'cwd-core',
-                        'dao-core',
-                      ],
-                    })
-                  )
-                  ? [
-                      DaoCoreV2Selectors.allCw20TokensWithBalancesSelector({
-                        contractAddress: address,
-                        governanceTokenAddress: cw20GovernanceTokenAddress,
-                        chainId,
-                      }),
-                    ]
+                // If is a DAO contract.
+                get(
+                  isDaoSelector({
+                    address: mainAddress,
+                    chainId: mainChainId,
+                  })
+                )
+                  ? // Get native cw20s.
+                    chainId === mainChainId && address === mainAddress
+                    ? [
+                        DaoCoreV2Selectors.nativeCw20TokensWithBalancesSelector(
+                          {
+                            chainId: mainChainId,
+                            contractAddress: mainAddress,
+                            governanceTokenAddress: cw20GovernanceTokenAddress,
+                          }
+                        ),
+                      ]
+                    : // Get polytone cw20s if they exist.
+                    chainId !== mainChainId
+                    ? [
+                        DaoCoreV2Selectors.polytoneCw20TokensWithBalancesSelector(
+                          {
+                            chainId: mainChainId,
+                            contractAddress: mainAddress,
+                            polytoneChainId: chainId,
+                          }
+                        ),
+                      ]
+                    : []
                   : isValidWalletAddress(
                       address,
                       getChainForChainId(chainId).bech32_prefix
@@ -303,7 +285,11 @@ export const genericTokenBalancesSelector = selectorFamily<
       )[0]
 
       return [
-        ...nativeTokenBalances,
+        ...nativeTokenBalances.map((native) => ({
+          ...native,
+          isGovernanceToken:
+            nativeGovernanceTokenDenom === native.token.denomOrAddress,
+        })),
         ...(cw20TokenBalances?.state === 'hasValue'
           ? cw20TokenBalances.contents
           : []),
@@ -314,12 +300,12 @@ export const genericTokenBalancesSelector = selectorFamily<
 export const genericTokenBalanceSelector = selectorFamily<
   GenericTokenBalance,
   Parameters<typeof genericTokenSelector>[0] & {
-    walletAddress: string
+    address: string
   }
 >({
   key: 'genericTokenBalance',
   get:
-    ({ walletAddress, ...params }) =>
+    ({ address, ...params }) =>
     async ({ get }) => {
       const token = get(genericTokenSelector(params))
 
@@ -327,7 +313,7 @@ export const genericTokenBalanceSelector = selectorFamily<
       if (token.type === TokenType.Native) {
         balance = get(
           nativeBalanceSelector({
-            address: walletAddress,
+            address,
             chainId: params.chainId,
           })
         ).amount
@@ -338,7 +324,7 @@ export const genericTokenBalanceSelector = selectorFamily<
             chainId: params.chainId,
             params: [
               {
-                address: walletAddress,
+                address,
               },
             ],
           })
@@ -420,6 +406,94 @@ export const nativeDenomMetadataInfoSelector = selectorFamily<
       return {
         symbol: displayDenom.denom,
         decimals: displayDenom.exponent,
+      }
+    },
+})
+
+// Resolve a denom on a chain to its source chain and base denom. If an IBC
+// asset, tries to reverse engineer IBC denom. Otherwise returns the arguments.
+export const sourceChainAndDenomSelector = selectorFamily<
+  GenericTokenSource,
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
+>({
+  key: 'sourceChainAndDenom',
+  get:
+    ({ chainId, type, denomOrAddress }) =>
+    async ({ get }) => {
+      // Check if Skip API has the info.
+      const skipAsset = get(
+        skipAssetSelector({
+          chainId,
+          type,
+          denomOrAddress,
+        })
+      )
+
+      if (skipAsset) {
+        const sourceType = skipAsset.originDenom.startsWith('cw20:')
+          ? TokenType.Cw20
+          : TokenType.Native
+        return {
+          chainId: skipAsset.originChainID,
+          type: sourceType,
+          denomOrAddress:
+            sourceType === TokenType.Cw20
+              ? skipAsset.originDenom.replace(/^cw20:/, '')
+              : skipAsset.originDenom,
+        }
+      }
+
+      let sourceChainId = chainId
+      let sourceDenom =
+        (type === TokenType.Cw20 ? 'cw20:' : '') + denomOrAddress
+
+      // Try to reverse engineer IBC denom.
+      if (denomOrAddress.startsWith('ibc/')) {
+        const ibc = get(ibcRpcClientForChainSelector(chainId))
+
+        try {
+          const { denomTrace } = await ibc.applications.transfer.v1.denomTrace({
+            hash: denomOrAddress,
+          })
+
+          // If trace exists, resolve IBC denom.
+          if (denomTrace) {
+            let channels = denomTrace.path.split('transfer/').slice(1)
+            // Trim trailing slash from all but last channel.
+            channels = channels.map((channel, index) =>
+              index === channels.length - 1 ? channel : channel.slice(0, -1)
+            )
+            if (channels.length) {
+              // Retrace channel paths to find source chain of denom.
+              sourceChainId = channels.reduce(
+                (currentChainId, channel) =>
+                  getChainForChainName(
+                    getIbcTransferInfoFromChannel(currentChainId, channel)
+                      .destinationChain.chain_name
+                  ).chain_id,
+                chainId
+              )
+
+              sourceDenom = denomTrace.baseDenom
+            }
+          }
+        } catch (err) {
+          console.error(err)
+          // Ignore resolution error.
+        }
+      }
+
+      const sourceType = sourceDenom.startsWith('cw20:')
+        ? TokenType.Cw20
+        : TokenType.Native
+
+      return {
+        chainId: sourceChainId,
+        type: sourceType,
+        denomOrAddress:
+          sourceType === TokenType.Cw20
+            ? sourceDenom.replace(/^cw20:/, '')
+            : sourceDenom,
       }
     },
 })

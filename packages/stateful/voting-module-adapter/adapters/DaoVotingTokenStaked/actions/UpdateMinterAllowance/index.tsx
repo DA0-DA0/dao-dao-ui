@@ -1,6 +1,7 @@
 import { useCallback } from 'react'
 
-import { PrinterEmoji } from '@dao-dao/stateless'
+import { DaoVotingTokenStakedSelectors } from '@dao-dao/state/recoil'
+import { PrinterEmoji, useCachedLoadable } from '@dao-dao/stateless'
 import {
   ActionComponent,
   ActionKey,
@@ -18,6 +19,7 @@ import {
 } from '@dao-dao/utils'
 
 import { AddressInput } from '../../../../../components/AddressInput'
+import { useVotingModuleAdapterOptions } from '../../../../react/context'
 import { useGovernanceTokenInfo } from '../../hooks'
 import {
   UpdateMinterAllowanceComponent,
@@ -107,8 +109,16 @@ const Component: ActionComponent = (props) => {
 
 // Only show in picker if using cw-tokenfactory-issuer contract.
 const useHideFromPicker: UseHideFromPicker = () => {
-  const { tokenFactoryIssuerAddress } = useGovernanceTokenInfo()
-  return !tokenFactoryIssuerAddress
+  const { chainId, votingModuleAddress } = useVotingModuleAdapterOptions()
+
+  const tfIssuer = useCachedLoadable(
+    DaoVotingTokenStakedSelectors.validatedTokenfactoryIssuerContractSelector({
+      contractAddress: votingModuleAddress,
+      chainId,
+    })
+  )
+
+  return tfIssuer.state !== 'hasValue' || !tfIssuer.contents
 }
 
 export const makeUpdateMinterAllowanceAction: ActionMaker<

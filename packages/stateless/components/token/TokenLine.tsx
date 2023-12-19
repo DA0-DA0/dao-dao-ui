@@ -20,7 +20,7 @@ import {
 export const TokenLine = <T extends TokenCardInfo>(
   props: TokenLineProps<T>
 ) => {
-  const { TokenCard, token, transparentBackground, lazyInfo } = props
+  const { TokenCard, token, transparentBackground, lazyInfo, color } = props
   const { t } = useTranslation()
 
   const { tokenSymbol } = transformIbcSymbol(token.symbol)
@@ -42,6 +42,15 @@ export const TokenLine = <T extends TokenCardInfo>(
         onClick={() => setCardVisible(true)}
       >
         <div className="flex flex-row items-center gap-2">
+          {color && (
+            <div
+              className="h-2 w-2 shrink-0 rounded-full"
+              style={{
+                backgroundColor: color,
+              }}
+            ></div>
+          )}
+
           <Tooltip
             title={t('info.tokenOnChain', {
               token: tokenSymbol,
@@ -78,20 +87,20 @@ export const TokenLine = <T extends TokenCardInfo>(
         />
 
         {/* Only show on larger screen. */}
-        {lazyInfo.loading || lazyInfo.data.usdUnitPrice ? (
+        {lazyInfo.loading || lazyInfo.data.usdUnitPrice?.usdPrice ? (
           <div className="hidden flex-row items-center justify-end sm:flex">
             <TokenAmountDisplay
               amount={
-                lazyInfo.loading || !lazyInfo.data.usdUnitPrice
+                lazyInfo.loading || !lazyInfo.data.usdUnitPrice?.usdPrice
                   ? { loading: true }
                   : lazyInfo.data.totalBalance *
-                    lazyInfo.data.usdUnitPrice.amount
+                    lazyInfo.data.usdUnitPrice.usdPrice
               }
               className="caption-text font-mono"
               dateFetched={
-                lazyInfo.loading
+                lazyInfo.loading || !lazyInfo.data.usdUnitPrice
                   ? undefined
-                  : lazyInfo.data.usdUnitPrice!.timestamp
+                  : lazyInfo.data.usdUnitPrice.timestamp
               }
               estimatedUsdValue
               hideSymbol

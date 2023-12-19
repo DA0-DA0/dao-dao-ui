@@ -105,10 +105,9 @@ export const NewProposal = <
 }: NewProposalProps<FormData, ProposalData>) => {
   const { t } = useTranslation()
 
-  const { handleSubmit } = useFormContext<FormData>()
+  const { getValues, handleSubmit } = useFormContext<FormData>()
 
   const [showPreview, setShowPreview] = useState(false)
-  const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
   const [holdingAltForSimulation, setHoldingAltForSimulation] = useState(false)
@@ -145,13 +144,11 @@ export const NewProposal = <
   }, [])
 
   const onSubmitForm: SubmitHandler<FormData> = (formData, event) => {
-    setShowSubmitErrorNote(false)
     setSubmitError('')
 
     const nativeEvent = event?.nativeEvent as SubmitEvent
     const submitterValue = (nativeEvent?.submitter as HTMLInputElement)?.value
 
-    // Preview toggled in onClick handler.
     if (submitterValue === ProposeSubmitValue.Preview) {
       return
     }
@@ -177,8 +174,31 @@ export const NewProposal = <
   }
 
   const onSubmitError: SubmitErrorHandler<FormData> = () => {
-    setShowSubmitErrorNote(true)
-    setSubmitError('')
+    // Even on error, try to simulate proposal.
+    if (holdingAltForSimulation) {
+      let data: ProposalData
+      try {
+        data = getProposalDataFromFormData(getValues())
+      } catch (err) {
+        console.error(err)
+        setSubmitError(
+          processError(err, {
+            forceCapture: false,
+          })
+        )
+        return
+      }
+
+      if (holdingAltForSimulation) {
+        simulateProposal(data)
+      } else {
+        createProposal(data)
+      }
+
+      // If not simulating, just show error to check above.
+    } else {
+      setSubmitError(t('error.correctErrorsAbove'))
+    }
   }
 
   return (
@@ -315,12 +335,6 @@ export const NewProposal = <
         {simulationBypassExpiration && (
           <p className="secondary-text max-w-prose self-end text-right text-text-interactive-warning-body">
             {t('info.bypassSimulationExplanation')}
-          </p>
-        )}
-
-        {showSubmitErrorNote && (
-          <p className="secondary-text self-end text-right text-text-interactive-error">
-            {t('error.correctErrorsAbove')}
           </p>
         )}
 

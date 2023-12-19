@@ -1,9 +1,9 @@
 import { ComponentType } from 'react'
 
 import { ActionCategoryMaker } from './actions'
+import { DaoInfoBarItem, StakingMode } from './components'
+import { ProfileNewProposalCardAddress } from './components/ProfileNewProposalCard'
 import { DaoTabWithComponent } from './dao'
-import { DaoInfoBarItem, StakingMode } from './stateless'
-import { ProfileNewProposalCardAddress } from './stateless/ProfileNewProposalCard'
 import { GenericToken } from './token'
 
 export interface BaseProfileCardMemberInfoProps {

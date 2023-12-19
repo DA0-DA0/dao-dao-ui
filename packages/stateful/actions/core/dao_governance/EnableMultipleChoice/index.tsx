@@ -1,8 +1,8 @@
 import { useCallback } from 'react'
-import { constSelector, useRecoilValue } from 'recoil'
+import { constSelector } from 'recoil'
 
 import { genericTokenSelector } from '@dao-dao/state/recoil'
-import { NumbersEmoji } from '@dao-dao/stateless'
+import { NumbersEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   DepositRefundPolicy,
   DurationUnits,
@@ -108,14 +108,13 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
       throw new Error('No single choice proposal module found')
     }
 
-    const config = useRecoilValue(
+    const config = useCachedLoadingWithError(
       configSelector({
         contractAddress: singleChoiceProposal.address,
         chainId,
       })
     )
-
-    const depositInfo = useRecoilValue(
+    const depositInfo = useCachedLoadingWithError(
       makeDepositInfoSelector({
         chainId,
         proposalModuleAddress: singleChoiceProposal.address,
@@ -123,102 +122,119 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
         preProposeAddress: singleChoiceProposal.preProposeAddress,
       })
     )
-    const depositInfoToken = useRecoilValue(
-      depositInfo
-        ? genericTokenSelector({
+    const depositInfoToken = useCachedLoadingWithError(
+      depositInfo.loading
+        ? undefined
+        : depositInfo.errored || !depositInfo.data
+        ? constSelector(undefined)
+        : genericTokenSelector({
             chainId,
             type:
-              'cw20' in depositInfo.denom ? TokenType.Cw20 : TokenType.Native,
+              'cw20' in depositInfo.data.denom
+                ? TokenType.Cw20
+                : TokenType.Native,
             denomOrAddress:
-              'cw20' in depositInfo.denom
-                ? depositInfo.denom.cw20
-                : depositInfo.denom.native,
+              'cw20' in depositInfo.data.denom
+                ? depositInfo.data.denom.cw20
+                : depositInfo.data.denom.native,
           })
-        : constSelector(undefined)
     )
-
-    const anyoneCanPropose = useRecoilValue(
+    const anyoneCanPropose = useCachedLoadingWithError(
       anyoneCanProposeSelector({
         chainId,
         preProposeAddress: singleChoiceProposal.preProposeAddress,
       })
     )
 
-    const quorum: PercentageThreshold =
-      'threshold_quorum' in config.threshold
-        ? config.threshold.threshold_quorum.quorum
-        : {
-            percent: '0.2',
-          }
+    return useCallback(() => {
+      if (
+        config.loading ||
+        config.errored ||
+        depositInfo.loading ||
+        depositInfo.errored ||
+        depositInfoToken.loading ||
+        depositInfoToken.errored ||
+        anyoneCanPropose.loading ||
+        anyoneCanPropose.errored
+      ) {
+        return
+      }
 
-    const info = DaoProposalMultipleAdapter.daoCreation.getInstantiateInfo(
-      chainContext.config,
-      {
-        ...makeDefaultNewDao(chainId),
-        // Only the name is used in this function to pick the contract label.
-        name: context.info.name,
-      },
-      {
-        enableMultipleChoice: true,
-        moduleInstantiateFundsUnsupported:
-          !context.info.supportedFeatures[Feature.ModuleInstantiateFunds],
-        quorum: {
-          majority: 'majority' in quorum,
-          value: 'majority' in quorum ? 50 : Number(quorum.percent) * 100,
-        },
-        votingDuration:
-          'time' in config.max_voting_period
-            ? {
-                value: config.max_voting_period.time,
-                units: DurationUnits.Seconds,
-              }
-            : {
-                value: 1,
-                units: DurationUnits.Weeks,
-              },
-        proposalDeposit: {
-          enabled: !!depositInfo && !!depositInfoToken,
-          amount:
-            depositInfo && depositInfoToken
-              ? convertMicroDenomToDenomWithDecimals(
-                  depositInfo.amount,
-                  depositInfoToken.decimals
-                )
-              : 10,
-          type: depositInfo && 'cw20' in depositInfo.denom ? 'cw20' : 'native',
-          denomOrAddress: depositInfo
-            ? 'cw20' in depositInfo.denom
-              ? depositInfo.denom.cw20
-              : depositInfo.denom.native
-            : getNativeTokenForChainId(chainId).denomOrAddress,
-          token: depositInfoToken,
-          refundPolicy:
-            depositInfo?.refund_policy ?? DepositRefundPolicy.OnlyPassed,
-        },
-        anyoneCanPropose,
-        allowRevoting: config.allow_revoting,
-      },
-      t
-    )
+      const quorum: PercentageThreshold =
+        'threshold_quorum' in config.data.threshold
+          ? config.data.threshold.threshold_quorum.quorum
+          : {
+              percent: '0.2',
+            }
 
-    return useCallback(
-      () =>
-        makeWasmMessage({
-          wasm: {
-            execute: {
-              contract_addr: address,
-              funds: [],
-              msg: {
-                update_proposal_modules: {
-                  to_add: [info],
-                  to_disable: [],
+      const info = DaoProposalMultipleAdapter.daoCreation.getInstantiateInfo(
+        chainContext.config,
+        {
+          ...makeDefaultNewDao(chainId),
+          // Only the name is used in this function to pick the contract label.
+          name: context.info.name,
+        },
+        {
+          enableMultipleChoice: true,
+          moduleInstantiateFundsUnsupported:
+            !context.info.supportedFeatures[Feature.ModuleInstantiateFunds],
+          quorum: {
+            majority: 'majority' in quorum,
+            value: 'majority' in quorum ? 50 : Number(quorum.percent) * 100,
+          },
+          votingDuration:
+            'time' in config.data.max_voting_period
+              ? {
+                  value: config.data.max_voting_period.time,
+                  units: DurationUnits.Seconds,
+                }
+              : {
+                  value: 1,
+                  units: DurationUnits.Weeks,
                 },
+          proposalDeposit: {
+            enabled: !!depositInfo.data && !!depositInfoToken.data,
+            amount:
+              depositInfo.data && depositInfoToken.data
+                ? convertMicroDenomToDenomWithDecimals(
+                    depositInfo.data.amount,
+                    depositInfoToken.data.decimals
+                  )
+                : 10,
+            type:
+              depositInfo.data && 'cw20' in depositInfo.data.denom
+                ? 'cw20'
+                : 'native',
+            denomOrAddress: depositInfo.data
+              ? 'cw20' in depositInfo.data.denom
+                ? depositInfo.data.denom.cw20
+                : depositInfo.data.denom.native
+              : getNativeTokenForChainId(chainId).denomOrAddress,
+            token: depositInfoToken.data,
+            refundPolicy:
+              depositInfo.data?.refund_policy ?? DepositRefundPolicy.OnlyPassed,
+          },
+          anyoneCanPropose: anyoneCanPropose.data,
+          allowRevoting: config.data.allow_revoting,
+        },
+        t
+      )
+
+      return makeWasmMessage({
+        wasm: {
+          execute: {
+            contract_addr: address,
+            funds: [],
+            msg: {
+              update_proposal_modules: {
+                to_add: [info],
+                to_disable: [],
               },
             },
           },
-        }),
-      [info]
-    )
+        },
+      })
+    }, [anyoneCanPropose, config, depositInfo, depositInfoToken])
   }
 
   return {

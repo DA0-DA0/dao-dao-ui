@@ -82,14 +82,6 @@ export const SINGLE_DAO_MODE =
 // Kado API (https://docs.kado.money)
 export const KADO_API_KEY = process.env.NEXT_PUBLIC_KADO_API_KEY as string
 
-// WYND
-export const WYND_MULTI_HOP_CONTRACT = process.env
-  .NEXT_PUBLIC_WYND_MULTI_HOP_CONTRACT as string
-export const WYND_API_BASE = process.env.NEXT_PUBLIC_WYND_API_BASE as string
-export const WYND_REFERRAL_COMMISSION = Number(
-  process.env.NEXT_PUBLIC_WYND_REFERRAL_COMMISSION || '0.01'
-)
-
 // WebSockets API
 export const WEB_SOCKET_PUSHER_APP_KEY = process.env
   .NEXT_PUBLIC_WEB_SOCKET_PUSHER_APP_KEY as string

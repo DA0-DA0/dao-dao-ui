@@ -1,10 +1,13 @@
 import { ReactNode, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue, waitForAll } from 'recoil'
+import { waitForAll } from 'recoil'
 
 import { govParamsSelector, moduleAddressSelector } from '@dao-dao/state/recoil'
 import {
   Loader,
+  PageLoader,
+  WarningCard,
+  useCachedLoadingWithError,
   useChain,
   useChainContext,
   useDaoInfoContext,
@@ -54,7 +57,6 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     chainContext: {
       type: ActionChainContextType.Supported,
       ...chainContext,
-      ...chainContext.config,
     },
     address: info.coreAddress,
     context: {
@@ -144,22 +146,23 @@ export const BaseActionsProvider = ({
   const { t } = useTranslation()
 
   const chainContext = useChainContext()
-  const actionChainContext: ActionChainContext | undefined = chainContext.base
-    ? {
-        type: ActionChainContextType.Base,
-        ...chainContext,
-        config: chainContext.base,
-      }
-    : chainContext.config
+  const actionChainContext: ActionChainContext = chainContext.config
     ? {
         type: ActionChainContextType.Supported,
         ...chainContext,
+        // Type-check.
         config: chainContext.config,
       }
-    : undefined
-  if (!actionChainContext) {
-    throw new Error('Invalid chain context')
-  }
+    : chainContext.base
+    ? {
+        type: ActionChainContextType.Configured,
+        ...chainContext,
+        config: chainContext.base,
+      }
+    : {
+        type: ActionChainContextType.Any,
+        ...chainContext,
+      }
 
   const options: ActionOptions = {
     t,
@@ -211,8 +214,9 @@ export const WalletActionsProvider = ({
 }
 
 export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
+  const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const [govAddress, params] = useRecoilValue(
+  const govDataLoading = useCachedLoadingWithError(
     waitForAll([
       moduleAddressSelector({
         name: 'gov',
@@ -224,12 +228,16 @@ export const GovActionsProvider = ({ children }: GovActionsProviderProps) => {
     ])
   )
 
-  return (
+  return govDataLoading.loading ? (
+    <PageLoader />
+  ) : govDataLoading.errored ? (
+    <WarningCard content={t('error.governanceProposalsUnsupported')} />
+  ) : (
     <BaseActionsProvider
-      address={govAddress}
+      address={govDataLoading.data[0]}
       context={{
         type: ActionContextType.Gov,
-        params,
+        params: govDataLoading.data[1],
       }}
     >
       {children}

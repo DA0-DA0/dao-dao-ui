@@ -2,7 +2,11 @@ import { coins } from '@cosmjs/stargate'
 import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValue, useSetRecoilState } from 'recoil'
+import {
+  constSelector,
+  useRecoilValueLoadable,
+  useSetRecoilState,
+} from 'recoil'
 
 import {
   Cw20BaseSelectors,
@@ -57,24 +61,29 @@ export const makeUsePublishProposal =
       coreAddress,
     })
 
-    const anyoneCanPropose = useRecoilValue(
+    const anyoneCanPropose = useRecoilValueLoadable(
       anyoneCanProposeSelector({
         chainId: chainId,
         preProposeAddress: proposalModule.preProposeAddress,
       })
     )
 
-    const depositInfo = useRecoilValue(depositInfoSelector)
+    const depositInfo = useRecoilValueLoadable(depositInfoSelector)
     const depositInfoCw20TokenAddress =
-      depositInfo?.denom && 'cw20' in depositInfo.denom
-        ? depositInfo.denom.cw20
+      depositInfo.state === 'hasValue' &&
+      depositInfo.contents?.denom &&
+      'cw20' in depositInfo.contents.denom
+        ? depositInfo.contents.denom.cw20
         : undefined
     const depositInfoNativeTokenDenom =
-      depositInfo?.denom && 'native' in depositInfo.denom
-        ? depositInfo.denom.native
+      depositInfo.state === 'hasValue' &&
+      depositInfo.contents?.denom &&
+      'native' in depositInfo.contents.denom
+        ? depositInfo.contents.denom.native
         : undefined
-
-    const requiredProposalDeposit = Number(depositInfo?.amount ?? '0')
+    const requiredProposalDeposit = Number(
+      depositInfo.valueMaybe()?.amount ?? '0'
+    )
 
     // For checking allowance and increasing if necessary.
     const cw20DepositTokenAllowanceResponseLoadable = useCachedLoadable(
@@ -211,7 +220,11 @@ export const makeUsePublishProposal =
         if (!isWalletConnected) {
           throw new Error(t('error.logInToContinue'))
         }
-        if (!anyoneCanPropose && !isMember) {
+        if (
+          anyoneCanPropose.state === 'hasValue' &&
+          !anyoneCanPropose.contents &&
+          !isMember
+        ) {
           throw new Error(t('error.mustBeMemberToCreateProposal'))
         }
         if (depositUnsatisfied) {
@@ -383,7 +396,10 @@ export const makeUsePublishProposal =
     return {
       simulateProposal,
       publishProposal,
-      anyoneCanPropose,
+      // Default to true while loading. This is safe because the contract will
+      // reject anyone who is unauthorized. Defaulting to true here results in
+      // hiding the error until the real value is ready.
+      anyoneCanPropose: anyoneCanPropose.valueMaybe() ?? true,
       depositUnsatisfied,
       simulationBypassExpiration,
     }

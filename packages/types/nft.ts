@@ -1,15 +1,15 @@
 import { ComponentType, ReactNode, RefAttributes } from 'react'
 
 import { ChainId } from './chain'
-import { ContractInfoResponse } from './contracts/Cw721Base'
-import { WithChainId } from './state'
 import {
   ButtonLinkProps,
   ButtonPopupSection,
   LoadingDataWithError,
   ModalProps,
   StatefulEntityDisplayProps,
-} from './stateless'
+} from './components'
+import { ContractInfoResponse } from './contracts/Cw721Base'
+import { WithChainId } from './state'
 
 // Shape of type returned from Stargaze GraphQL indexer queries in
 // @dao-dao/state

@@ -4,7 +4,11 @@ import { ComponentType } from 'react'
 import { FieldErrors } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
-import { ConfiguredChainContext, SupportedChainContext } from './chain'
+import {
+  ConfiguredChainContext,
+  IChainContext,
+  SupportedChainContext,
+} from './chain'
 import { CosmosMsgFor_Empty } from './contracts/common'
 import { DaoInfo } from './dao'
 import { AllGovParams } from './gov'
@@ -14,11 +18,11 @@ export enum ActionCategoryKey {
   ChainGovernance = 'chainGovernance',
   DaoAppearance = 'daoAppearance',
   DaoGovernance = 'daoGovernance',
-  Custom = 'custom',
   SmartContracting = 'smartContracting',
   Treasury = 'treasury',
   Nfts = 'nfts',
   Press = 'press',
+  Advanced = 'advanced',
 }
 
 // TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
@@ -54,7 +58,6 @@ export enum ActionKey {
   UpgradeV1ToV2 = 'upgradeV1ToV2',
   EnableVestingPayments = 'enableVestingPayments',
   EnableRetroactiveCompensation = 'enableRetroactiveCompensation',
-  WyndSwap = 'wyndSwap',
   DaoAdminExec = 'daoAdminExec',
   EnableMultipleChoice = 'enableMultipleChoice',
   ManageWidgets = 'manageWidgets',
@@ -66,6 +69,9 @@ export enum ActionKey {
   CreateCrossChainAccount = 'createCrossChainAccount',
   CrossChainExecute = 'crossChainExecute',
   UpdateStakingConfig = 'updateStakingConfig',
+  CreateIca = 'createIca',
+  IcaExecute = 'icaExecute',
+  ManageIcas = 'manageIcas',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',
@@ -143,7 +149,13 @@ export type ActionComponent<O = undefined, D = any> = ComponentType<
   ActionComponentProps<O, D>
 >
 
-export type UseDefaults<D extends {} = any> = () => D
+/**
+ * A hook that returns the default values for an action. If it returns an error,
+ * the action should not be added because some critical data failed to load. If
+ * it returns undefined, the action is loading and should not allowed to be
+ * added until the default values are loaded.
+ */
+export type UseDefaults<D extends {} = any> = () => D | Error | undefined
 
 export type UseTransformToCosmos<D extends {} = any> = () => (
   data: D
@@ -242,13 +254,26 @@ export type ActionContext =
     }
 
 export enum ActionChainContextType {
-  Base = 'base',
+  /**
+   * Any chain, not configured.
+   */
+  Any = 'any',
+  /**
+   * Configured chain, no DAO DAO deployment.
+   */
+  Configured = 'configured',
+  /**
+   * Supported chain with a DAO DAO deployment.
+   */
   Supported = 'supported',
 }
 
 export type ActionChainContext =
   | ({
-      type: ActionChainContextType.Base
+      type: ActionChainContextType.Any
+    } & IChainContext)
+  | ({
+      type: ActionChainContextType.Configured
     } & ConfiguredChainContext)
   | ({
       type: ActionChainContextType.Supported

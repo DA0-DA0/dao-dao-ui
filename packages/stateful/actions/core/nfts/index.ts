@@ -1,4 +1,8 @@
-import { ActionCategoryKey, ActionCategoryMaker } from '@dao-dao/types'
+import {
+  ActionCategoryKey,
+  ActionCategoryMaker,
+  ActionChainContextType,
+} from '@dao-dao/types'
 
 import { makeBurnNftAction } from './BurnNft'
 import { makeCreateNftCollectionAction } from './CreateNftCollection'
@@ -9,12 +13,11 @@ import { makeTransferNftAction } from './TransferNft'
 export const makeManageNftsActionCategory: ActionCategoryMaker = ({
   t,
   context,
-  chainContext: {
-    config: { noCosmWasm },
-  },
+  chainContext,
 }) =>
   // Chains without CosmWasm cannot use NFTs.
-  !noCosmWasm
+  chainContext.type !== ActionChainContextType.Any &&
+  !chainContext.config.noCosmWasm
     ? {
         key: ActionCategoryKey.Nfts,
         label: t('actionCategory.nftsLabel'),

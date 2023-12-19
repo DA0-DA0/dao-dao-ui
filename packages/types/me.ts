@@ -6,11 +6,12 @@ import {
   LoadedActions,
   PartialCategorizedActionKeyAndData,
 } from './actions'
+import {
+  LoadingData,
+  SuspenseLoaderProps,
+  WalletProfileHeaderProps,
+} from './components'
 import { CosmosMsgFor_Empty } from './contracts'
-import { LazyNftCardInfo } from './nft'
-import { WalletProfileData } from './profile'
-import { LoadingData, SuspenseLoaderProps } from './stateless'
-import { TokenCardInfo } from './token'
 
 export type MeTransactionForm = {
   actions: PartialCategorizedActionKeyAndData[]
@@ -39,10 +40,8 @@ export type MeProps = {
   MeBalances: ComponentType
   MeTransactionBuilder: ComponentType
   MeDaos: ComponentType
-  profileData: WalletProfileData
-  updateProfileName: (name: string | null) => Promise<void>
   ChainSwitcher: ComponentType<any>
-}
+} & Omit<WalletProfileHeaderProps, 'editable' | 'className'>
 
 export type MeTransactionBuilderProps = {
   categories: ActionCategoryWithLabel[]
@@ -57,16 +56,4 @@ export type MeTransactionBuilderProps = {
   save: (save: MeTransactionSave) => Promise<boolean>
   deleteSave: (save: MeTransactionSave) => Promise<boolean>
   saving: boolean
-}
-
-export type MeBalancesProps<
-  T extends TokenCardInfo,
-  N extends LazyNftCardInfo
-> = {
-  tokens: LoadingData<T[]>
-  // List of token denomOrAddress fields that should be hidden.
-  hiddenTokens: LoadingData<string[]>
-  TokenLine: ComponentType<T>
-  nfts: LoadingData<N[]>
-  NftCard: ComponentType<N>
 }

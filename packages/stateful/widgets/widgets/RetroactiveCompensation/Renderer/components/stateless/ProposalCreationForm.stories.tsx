@@ -150,6 +150,11 @@ Default.args = {
         symbol: 'DAO',
         decimals: 6,
         imageUrl: '/daodao.png',
+        source: {
+          chainId: CHAIN_ID,
+          type: TokenType.Cw20,
+          denomOrAddress: 'dao',
+        },
       },
       usdPrice: 1,
       timestamp: new Date(),

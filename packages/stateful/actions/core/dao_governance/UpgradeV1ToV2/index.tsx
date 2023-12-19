@@ -4,7 +4,7 @@ import { useRecoilValueLoadable, waitForAll, waitForAllSettled } from 'recoil'
 import {
   DaoCoreV2Selectors,
   contractVersionSelector,
-  isContractSelector,
+  isDaoSelector,
 } from '@dao-dao/state/recoil'
 import {
   Loader,
@@ -57,16 +57,9 @@ const useV1SubDaos = () => {
     potentialSubDaos.state === 'hasValue'
       ? waitForAll(
           potentialSubDaos.contents.map((contractAddress) =>
-            isContractSelector({
-              contractAddress,
+            isDaoSelector({
+              address: contractAddress,
               chainId,
-              names: [
-                // V1
-                'cw-core',
-                // V2
-                'cwd-core',
-                'dao-core',
-              ],
             })
           )
         )

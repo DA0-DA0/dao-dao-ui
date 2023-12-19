@@ -2,10 +2,9 @@ import {
   ChartDataEntry,
   DaoCreateVotingPowerDistributionReviewCard,
   TierDataEntry,
-  VOTING_POWER_DISTRIBUTION_COLORS,
 } from '@dao-dao/stateless'
 import { DaoCreationGovernanceConfigReviewProps } from '@dao-dao/types'
-import { formatPercentOf100 } from '@dao-dao/utils'
+import { DISTRIBUTION_COLORS, formatPercentOf100 } from '@dao-dao/utils'
 
 import { EntityDisplay } from '../../components/EntityDisplay'
 import { CreatorData } from './types'
@@ -27,20 +26,14 @@ export const GovernanceConfigurationReview = ({
         name: address,
         // Membership-based DAO tier weights are for each member.
         value: (tiers[0].weight / totalWeight) * 100,
-        color:
-          VOTING_POWER_DISTRIBUTION_COLORS[
-            memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-          ],
+        color: DISTRIBUTION_COLORS[memberIndex % DISTRIBUTION_COLORS.length],
       }))
     : // Displaying entire tier as one pie wedge.
       tiers.map(({ name, weight, members }, tierIndex) => ({
         name,
         // Membership-based DAO tier weights are for each member.
         value: ((weight * members.length) / totalWeight) * 100,
-        color:
-          VOTING_POWER_DISTRIBUTION_COLORS[
-            tierIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-          ],
+        color: DISTRIBUTION_COLORS[tierIndex % DISTRIBUTION_COLORS.length],
       }))
 
   const tierData: TierDataEntry[] = tiers.map(
@@ -48,15 +41,11 @@ export const GovernanceConfigurationReview = ({
       name,
       color: onlyOneTier
         ? undefined
-        : VOTING_POWER_DISTRIBUTION_COLORS[
-            tierIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-          ],
+        : DISTRIBUTION_COLORS[tierIndex % DISTRIBUTION_COLORS.length],
       members: members.map(({ address }, memberIndex) => ({
         address,
         color: onlyOneTier
-          ? VOTING_POWER_DISTRIBUTION_COLORS[
-              memberIndex % VOTING_POWER_DISTRIBUTION_COLORS.length
-            ]
+          ? DISTRIBUTION_COLORS[memberIndex % DISTRIBUTION_COLORS.length]
           : undefined,
         readableValue: formatPercentOf100(
           // Membership-based DAO tier weights are for each member.

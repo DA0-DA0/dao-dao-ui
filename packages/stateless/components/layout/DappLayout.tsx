@@ -3,7 +3,7 @@ import clsx from 'clsx'
 import { useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { DappLayoutProps } from '@dao-dao/types/stateless/DappLayout'
+import { DappLayoutProps } from '@dao-dao/types/components/DappLayout'
 
 import { useDaoNavHelpers } from '../../hooks/useDaoNavHelpers'
 import { ErrorBoundary } from '../error/ErrorBoundary'
@@ -14,7 +14,7 @@ import { useAppContext } from './AppContext'
 import { DappNavigation } from './DappNavigation'
 import { RightSidebar } from './RightSidebar'
 
-export * from '@dao-dao/types/stateless/DappLayout'
+export * from '@dao-dao/types/components/DappLayout'
 
 export const DappLayout = ({
   navigationProps,

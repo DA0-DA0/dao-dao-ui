@@ -4,8 +4,8 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   KeyEmoji,
   Loader,
 } from '@dao-dao/stateless'
@@ -23,6 +23,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   getTokenForChainIdAndDenom,
   isDecodedStargateMsg,
   makeStargateMessage,
@@ -59,9 +60,7 @@ import {
 } from './types'
 
 const Component: ActionComponent = (props) => {
-  const balances = useTokenBalances({
-    allChains: true,
-  })
+  const balances = useTokenBalances()
 
   const { context } = useActionOptions()
   const { watch } = useFormContext<AuthzGrantRevokeData>()
@@ -70,10 +69,10 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
-          className="mb-4"
+        <DaoSupportedChainPickerInput
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
         />
       )}
 
@@ -98,12 +97,14 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
-  t,
-  address: mainAddress,
-  chain: { chain_id: currentChainId },
-  context,
-}) => {
+export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = (
+  options
+) => {
+  const {
+    t,
+    chain: { chain_id: currentChainId },
+  } = options
+
   const useDefaults: UseDefaults<AuthzGrantRevokeData> = () => ({
     chainId: currentChainId,
     mode: 'grant',
@@ -130,7 +131,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
       msg = decodedPolytone.msg
     }
 
-    const defaults = useDefaults()
+    const defaults = useDefaults() as AuthzGrantRevokeData
 
     if (
       !isDecodedStargateMsg(msg) ||
@@ -402,11 +403,7 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = ({
                       msgTypeUrl,
                     }),
                 grantee,
-                granter:
-                  chainId === currentChainId ||
-                  context.type !== ActionContextType.Dao
-                    ? mainAddress
-                    : context.info.polytoneProxies[chainId],
+                granter: getChainAddressForActionOptions(options, chainId),
               },
             },
           })

@@ -10,8 +10,8 @@ import { v4 as uuidv4 } from 'uuid'
 import { codeDetailsSelector } from '@dao-dao/state/recoil'
 import {
   BabyAngelEmoji,
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
 } from '@dao-dao/stateless'
 import { Feature, TokenType } from '@dao-dao/types'
 import {
@@ -27,6 +27,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
+  getAccountAddress,
   getNativeTokenForChainId,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
@@ -51,7 +52,7 @@ const Component: ActionComponent = (props) => {
   const {
     context,
     address,
-    chain: { chain_id: currentChainId, bech32_prefix: bech32Prefix },
+    chain: { bech32_prefix: bech32Prefix },
   } = useActionOptions()
 
   const { watch, setValue } = useFormContext<Instantiate2Data>()
@@ -82,7 +83,6 @@ const Component: ActionComponent = (props) => {
           type: TokenType.Native,
           denomOrAddress: denom,
         })),
-    allChains: true,
   })
 
   const instantiatedAddress =
@@ -98,8 +98,7 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
-          className="mb-4"
+        <DaoSupportedChainPickerInput
           disabled={!props.isCreating}
           fieldName={props.fieldNamePrefix + 'chainId'}
           onChange={(chainId) => {
@@ -107,9 +106,10 @@ const Component: ActionComponent = (props) => {
             setValue((props.fieldNamePrefix + 'funds') as 'funds', [])
             setValue(
               (props.fieldNamePrefix + 'admin') as 'admin',
-              chainId === currentChainId
-                ? address
-                : context.info.polytoneProxies[chainId] ?? ''
+              getAccountAddress({
+                accounts: context.info.accounts,
+                chainId,
+              }) || ''
             )
           }}
         />

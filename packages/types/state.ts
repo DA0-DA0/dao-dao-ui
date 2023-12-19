@@ -12,7 +12,7 @@ export type CachedLoadable<T> =
     }
   | {
       state: 'hasError'
-      contents: any
+      contents: Error
     }
 
 export type WithChainId<T> = T & {
@@ -22,10 +22,6 @@ export type WithChainId<T> = T & {
 export interface AmountWithTimestamp {
   amount: number
   timestamp: Date
-}
-
-export interface AmountWithTimestampAndDenom extends AmountWithTimestamp {
-  denom: string
 }
 
 export interface TokenInfoResponseWithAddressAndLogo extends TokenInfoResponse {

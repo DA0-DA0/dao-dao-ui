@@ -3,9 +3,7 @@ import { uniq } from 'lodash'
 import { ComponentType, Fragment } from 'react'
 
 import { LoadingData, StatefulEntityDisplayProps } from '@dao-dao/types'
-import { formatPercentOf100 } from '@dao-dao/utils'
-
-import { VOTING_POWER_DISTRIBUTION_COLORS_ORDERED } from './dao/create/DaoCreateVotingPowerDistribution'
+import { DISTRIBUTION_COLORS_ORDERED, formatPercentOf100 } from '@dao-dao/utils'
 
 const NUM_VERTICAL_BARS = 10
 
@@ -66,8 +64,8 @@ export const VotingPowerDistribution = ({
                 <Bar
                   color={
                     color ||
-                    VOTING_POWER_DISTRIBUTION_COLORS_ORDERED[
-                      index % VOTING_POWER_DISTRIBUTION_COLORS_ORDERED.length
+                    DISTRIBUTION_COLORS_ORDERED[
+                      index % DISTRIBUTION_COLORS_ORDERED.length
                     ]
                   }
                   percent={percent}

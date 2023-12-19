@@ -84,6 +84,8 @@ const RELAYER_FUNDS_NEEDED: Partial<Record<ChainId | string, number>> = {
   [ChainId.OsmosisMainnet]: 100000,
   [ChainId.StargazeMainnet]: 2000000,
   [ChainId.NeutronMainnet]: 100000,
+  [ChainId.TerraMainnet]: 100000,
+  [ChainId.MigalooMainnet]: 2000000,
 }
 
 type Relayer = {
@@ -724,10 +726,10 @@ export const SelfRelayExecuteModal = ({
               setTimeout(
                 resolve,
                 // If redundant packets detected, a relayer already relayed
-                // these acks. In that case, wait a bit longer to let it
-                // finish. The ack relayer above tries to check which acks
-                // have not yet been received, so if a relayer takes care of
-                // the acks, we will safely continue.
+                // these acks. In that case, wait a bit longer to let it finish.
+                // The ack relayer above tries to check which acks have not yet
+                // been received, so if a relayer takes care of the acks, we
+                // will safely continue.
                 err instanceof Error && err.message.includes('redundant')
                   ? 10 * 1000
                   : 5 * 1000

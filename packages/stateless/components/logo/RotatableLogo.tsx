@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-import { LogoProps } from '@dao-dao/types/stateless/Logo'
+import { LogoProps } from '@dao-dao/types/components/Logo'
 
 import { Logo } from './Logo'
 

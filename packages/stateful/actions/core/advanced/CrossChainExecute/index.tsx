@@ -2,8 +2,8 @@ import { useCallback } from 'react'
 import { useFormContext } from 'react-hook-form'
 
 import {
-  ChainPickerInput,
   ChainProvider,
+  DaoSupportedChainPickerInput,
   TelescopeEmoji,
   useChain,
 } from '@dao-dao/stateless'
@@ -18,6 +18,7 @@ import {
 } from '@dao-dao/types'
 import {
   decodePolytoneExecuteMsg,
+  getChainAddressForActionOptions,
   maybeMakePolytoneExecuteMessage,
 } from '@dao-dao/utils'
 
@@ -66,16 +67,9 @@ const InnerComponent: ActionComponent = (props) => {
 
 const InnerComponentWrapper: ActionComponent = (props) => {
   const { chain_id: chainId } = useChain()
-  const { context } = useActionOptions()
 
-  if (context.type !== ActionContextType.Dao) {
-    return null
-  }
-
-  const address =
-    chainId === context.info.chainId
-      ? context.info.coreAddress
-      : context.info.polytoneProxies[chainId] || ''
+  const options = useActionOptions()
+  const address = getChainAddressForActionOptions(options, chainId)
 
   return address ? (
     <WalletActionsProvider address={address}>
@@ -98,11 +92,11 @@ const Component: ActionComponent = (props) => {
   return (
     <>
       {context.type === ActionContextType.Dao && (
-        <ChainPickerInput
-          className="mb-4"
+        <DaoSupportedChainPickerInput
           disabled={!props.isCreating}
           excludeChainIds={[currentChainId]}
           fieldName={props.fieldNamePrefix + 'chainId'}
+          onlyDaoChainIds
         />
       )}
 
@@ -167,5 +161,7 @@ export const makeCrossChainExecuteAction: ActionMaker<
     useDefaults,
     useTransformToCosmos,
     useDecodedCosmosMsg,
+    // Disallow creation if no accounts created.
+    hideFromPicker: Object.values(context.info.polytoneProxies).length === 0,
   }
 }

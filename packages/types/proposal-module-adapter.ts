@@ -4,6 +4,11 @@ import { FieldPath, FieldValues } from 'react-hook-form'
 import { RecoilValueReadOnly } from 'recoil'
 
 import { ActionCategoryMaker, CategorizedAction } from './actions'
+import {
+  LinkWrapperProps,
+  LoadingData,
+  SelfRelayExecuteModalProps,
+} from './components'
 import { Expiration } from './contracts'
 import { CheckedDepositInfo } from './contracts/common'
 import {
@@ -14,11 +19,6 @@ import {
 } from './dao'
 import { ContractVersion } from './features'
 import { ProposalCreatedCardProps } from './proposal'
-import {
-  LinkWrapperProps,
-  LoadingData,
-  SelfRelayExecuteModalProps,
-} from './stateless'
 
 export interface IProposalModuleAdapterCommon<
   FormData extends FieldValues = any
