@@ -140,7 +140,8 @@ export const makeProps = (isGovernanceToken = false): TokenCardProps => {
       loading: false,
       data: {
         usdUnitPrice: {
-          amount: 5.38,
+          token,
+          usdPrice: 5.38,
           timestamp: new Date(),
         },
         stakingInfo: {

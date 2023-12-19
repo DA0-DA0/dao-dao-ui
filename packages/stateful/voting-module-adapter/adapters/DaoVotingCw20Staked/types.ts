@@ -1,7 +1,7 @@
 import {
-  AmountWithTimestampAndDenom,
   Duration,
   GenericToken,
+  GenericTokenWithUsdPrice,
   LoadingData,
 } from '@dao-dao/types'
 import { TokenInfoResponse } from '@dao-dao/types/contracts/Cw20Base'
@@ -49,5 +49,5 @@ export interface UseGovernanceTokenInfoResponse {
   // Treasury balance
   loadingTreasuryBalance?: LoadingData<number>
   // Price
-  loadingPrice?: LoadingData<AmountWithTimestampAndDenom>
+  loadingPrice?: LoadingData<GenericTokenWithUsdPrice>
 }

@@ -84,6 +84,7 @@ const colors = [
   'component-modal',
   'component-dropdown',
   'component-tooltip',
+  'component-tooltip-glass',
   'component-toast',
   'component-widget',
   'component-pill',

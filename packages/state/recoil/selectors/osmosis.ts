@@ -2,51 +2,30 @@ import { selectorFamily } from 'recoil'
 
 import {
   AmountWithTimestamp,
-  AmountWithTimestampAndDenom,
   ChainId,
+  GenericToken,
+  GenericTokenWithUsdPrice,
   TokenType,
-  WithChainId,
 } from '@dao-dao/types'
-import {
-  MAINNET,
-  OSMOSIS_API_BASE,
-  getIbcTransferInfoBetweenChains,
-} from '@dao-dao/utils'
+import { MAINNET, OSMOSIS_API_BASE } from '@dao-dao/utils'
 
-import { ibcRpcClientForChainSelector } from './chain'
-import { sourceChainAndDenomSelector } from './token'
-
-export const osmosisSymbolForDenomSelector = selectorFamily<
-  string | undefined,
-  // denom
-  string
->({
-  key: 'osmosisSymbolForDenom',
-  get: (denom) => async () => {
-    try {
-      const { symbol } = await (
-        await fetch(OSMOSIS_API_BASE + '/search/v1/symbol?denom=' + denom)
-      ).json()
-      return symbol
-    } catch {
-      return undefined
-    }
-  },
-})
+import { skipRecommendedAssetSelector } from './skip'
+import { genericTokenSelector } from './token'
 
 export const osmosisUsdPriceSelector = selectorFamily<
-  AmountWithTimestampAndDenom | undefined,
-  // denom
-  string
+  GenericTokenWithUsdPrice | undefined,
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
   key: 'osmosisUsdPrice',
   get:
-    (denom) =>
+    (params) =>
     async ({ get }) => {
-      const symbol = get(osmosisSymbolForDenomSelector(denom))
+      const symbol = get(osmosisSymbolForTokenSelector(params))
       if (!symbol) {
         return
       }
+
+      const token = get(genericTokenSelector(params))
 
       try {
         const { price } = await (
@@ -54,70 +33,58 @@ export const osmosisUsdPriceSelector = selectorFamily<
         ).json()
 
         return {
-          denom,
-          amount: price,
+          token,
+          usdPrice: price,
           timestamp: new Date(),
         }
       } catch {
-        return undefined
+        return
       }
     },
 })
 
-export const osmosisDenomForTokenSelector = selectorFamily<
+export const osmosisSymbolForTokenSelector = selectorFamily<
   string | undefined,
-  WithChainId<{ denom: string }>
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
-  key: 'osmosisDenomForToken',
+  key: 'osmosisSymbolForToken',
   get:
-    ({ denom, chainId }) =>
+    ({ chainId, type, denomOrAddress }) =>
     async ({ get }) => {
       if (!MAINNET) {
-        return undefined
+        return
       }
 
-      const { chainId: sourceChainId, denomOrAddress: baseDenom } = get(
-        sourceChainAndDenomSelector({
-          chainId,
-          type: TokenType.Native,
-          denomOrAddress: denom,
-        })
-      )
-
-      // If source chain is Osmosis, the denom is the base denom.
-      if (sourceChainId === ChainId.OsmosisMainnet) {
-        return baseDenom
-      } else {
-        // Otherwise get the Osmosis IBC denom.
-        const osmosisIbc = get(
-          ibcRpcClientForChainSelector(ChainId.OsmosisMainnet)
-        )
-        const { sourceChannel } = getIbcTransferInfoBetweenChains(
-          ChainId.OsmosisMainnet,
-          sourceChainId
+      try {
+        const skipRecommendedAsset = get(
+          skipRecommendedAssetSelector({
+            fromChainId: chainId,
+            denom: (type === TokenType.Cw20 ? 'cw20:' : '') + denomOrAddress,
+            toChainId: ChainId.OsmosisMainnet,
+          })
         )
 
-        let osmosisDenomIbcHash
-        try {
-          osmosisDenomIbcHash = (
-            await osmosisIbc.applications.transfer.v1.denomHash({
-              trace: `transfer/${sourceChannel}/${baseDenom}`,
-            })
-          ).hash
-        } catch (err) {
-          // If trace not found, return undefined.
-          if (
-            err instanceof Error &&
-            err.message.includes('denomination trace not found')
-          ) {
-            return
-          }
-
-          throw err
+        if (!skipRecommendedAsset) {
+          return
         }
 
-        // Construct Osmosis IBC denom.
-        return 'ibc/' + osmosisDenomIbcHash
+        return (
+          skipRecommendedAsset.asset.recommendedSymbol ||
+          skipRecommendedAsset.asset.symbol
+        )
+      } catch (err) {
+        if (
+          err instanceof Error &&
+          err.message.includes('base token') &&
+          err.message.includes('not found')
+        ) {
+          return
+        }
+
+        // Throw other errors. This is also necessary to throw the promise
+        // returned by the `get` function when the data is still loading (recoil
+        // internal process).
+        throw err
       }
     },
 })
@@ -186,31 +153,27 @@ export const osmosisHistoricalPriceChartSelector = selectorFamily<
 })
 
 // Returns price every 24 hours for as far back as Osmosis allows. Resolves
-// native denom from any chain into Osmosis denom if possible.
+// denom from any chain into Osmosis denom if possible.
 export const historicalUsdPriceSelector = selectorFamily<
   AmountWithTimestamp[] | undefined,
-  WithChainId<{
-    denom: string
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'> & {
     precision: OsmosisHistoricalPriceChartPrecision
-  }>
+  }
 >({
   key: 'historicalUsdPrice',
   get:
-    ({ chainId, denom, precision }) =>
+    ({ chainId, type, denomOrAddress, precision }) =>
     async ({ get }) => {
       if (!MAINNET) {
         return undefined
       }
 
       // Try to resolve Osmosis denom.
-      const osmosisDenom = get(osmosisDenomForTokenSelector({ chainId, denom }))
+      const symbol = get(
+        osmosisSymbolForTokenSelector({ chainId, type, denomOrAddress })
+      )
 
-      // If found a denom, resolved Osmosis denom correctly.
-      if (!osmosisDenom) {
-        return
-      }
-
-      const symbol = get(osmosisSymbolForDenomSelector(osmosisDenom))
+      // If found a symbol, resolved Osmosis denom correctly.
       if (!symbol) {
         return
       }

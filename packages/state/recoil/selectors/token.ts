@@ -2,8 +2,6 @@ import { selectorFamily, waitForAllSettled } from 'recoil'
 
 import {
   Account,
-  AmountWithTimestampAndDenom,
-  ChainId,
   GenericToken,
   GenericTokenBalance,
   GenericTokenSource,
@@ -31,10 +29,7 @@ import {
 } from './chain'
 import { isDaoSelector } from './contract'
 import { Cw20BaseSelectors, DaoCoreV2Selectors } from './contracts'
-import {
-  osmosisDenomForTokenSelector,
-  osmosisUsdPriceSelector,
-} from './osmosis'
+import { osmosisUsdPriceSelector } from './osmosis'
 import { skipAssetSelector } from './skip'
 import { walletCw20BalancesSelector } from './wallet'
 
@@ -160,57 +155,24 @@ export const genericTokenSelector = selectorFamily<
 })
 
 export const usdPriceSelector = selectorFamily<
-  AmountWithTimestampAndDenom | undefined,
+  GenericTokenWithUsdPrice | undefined,
   Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
   key: 'usdPrice',
   get:
-    ({ type, denomOrAddress, chainId }) =>
+    (params) =>
     ({ get }) => {
       if (!MAINNET) {
-        return undefined
+        return
       }
 
-      const initialDenomOrAddress = denomOrAddress
-
-      if (type === TokenType.Native) {
-        // Try to resolve Osmosis denom.
-        const osmosisDenom = get(
-          osmosisDenomForTokenSelector({
-            chainId,
-            denom: denomOrAddress,
-          })
-        )
-
-        // If found a denom, resolved Osmosis denom correctly.
-        if (osmosisDenom) {
-          chainId = ChainId.OsmosisMainnet
-          denomOrAddress = osmosisDenom
-        }
-      }
-
-      switch (chainId) {
-        case ChainId.OsmosisMainnet: {
-          let price = get(osmosisUsdPriceSelector(denomOrAddress))
-
-          // If started as different denom and was resolved to an Osmosis denom,
-          // return original denom.
-          if (price && price.denom !== initialDenomOrAddress) {
-            price = {
-              ...price,
-              denom: initialDenomOrAddress,
-            }
-          }
-
-          return price
-        }
-      }
+      return get(osmosisUsdPriceSelector(params))
     },
 })
 
 export const genericTokenWithUsdPriceSelector = selectorFamily<
   GenericTokenWithUsdPrice,
-  WithChainId<Pick<GenericToken, 'type' | 'denomOrAddress'>>
+  Pick<GenericToken, 'chainId' | 'type' | 'denomOrAddress'>
 >({
   key: 'genericTokenWithUsdPrice',
   get:
@@ -219,7 +181,7 @@ export const genericTokenWithUsdPriceSelector = selectorFamily<
       const token = get(genericTokenSelector(params))
 
       // Don't calculate price if could not load token decimals correctly.
-      const { amount: usdPrice, timestamp } =
+      const { usdPrice, timestamp } =
         (token.decimals > 0 && get(usdPriceSelector(params))) || {}
 
       return {

@@ -10,7 +10,6 @@ import {
   LoadingDataWithError,
   StatefulEntityDisplayProps,
 } from './components'
-import { AmountWithTimestamp } from './state'
 
 export enum TokenType {
   Native = 'native',
@@ -86,7 +85,7 @@ export type TokenStake = {
 }
 
 export type TokenCardLazyInfo = {
-  usdUnitPrice: AmountWithTimestamp | undefined
+  usdUnitPrice: GenericTokenWithUsdPrice | undefined
   stakingInfo:
     | {
         unstakingTasks: UnstakingTask[]

@@ -416,19 +416,21 @@ export const VestingPaymentCard = ({
                 />
 
                 {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                  (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
+                  (lazyInfo.loading ||
+                    lazyInfo.data.usdUnitPrice?.usdPrice) && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
                         amount={
-                          lazyInfo.loading
+                          lazyInfo.loading ||
+                          !lazyInfo.data.usdUnitPrice?.usdPrice
                             ? { loading: true }
                             : distributableAmount *
-                              lazyInfo.data.usdUnitPrice!.amount
+                              lazyInfo.data.usdUnitPrice.usdPrice
                         }
                         dateFetched={
-                          lazyInfo.loading
+                          lazyInfo.loading || !lazyInfo.data.usdUnitPrice
                             ? undefined
-                            : lazyInfo.data.usdUnitPrice!.timestamp
+                            : lazyInfo.data.usdUnitPrice.timestamp
                         }
                         estimatedUsdValue
                       />
@@ -458,19 +460,21 @@ export const VestingPaymentCard = ({
                 />
 
                 {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                  (lazyInfo.loading || lazyInfo.data.usdUnitPrice) && (
+                  (lazyInfo.loading ||
+                    lazyInfo.data.usdUnitPrice?.usdPrice) && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
                         amount={
-                          lazyInfo.loading
+                          lazyInfo.loading ||
+                          !lazyInfo.data.usdUnitPrice?.usdPrice
                             ? { loading: true }
                             : remainingBalanceVesting *
-                              lazyInfo.data.usdUnitPrice!.amount
+                              lazyInfo.data.usdUnitPrice.usdPrice
                         }
                         dateFetched={
-                          lazyInfo.loading
+                          lazyInfo.loading || !lazyInfo.data.usdUnitPrice
                             ? undefined
-                            : lazyInfo.data.usdUnitPrice!.timestamp
+                            : lazyInfo.data.usdUnitPrice.timestamp
                         }
                         estimatedUsdValue
                       />

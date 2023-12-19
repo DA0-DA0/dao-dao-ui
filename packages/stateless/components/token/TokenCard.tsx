@@ -225,7 +225,7 @@ export const TokenCard = ({
                 />
 
                 {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                  lazyInfo.data.usdUnitPrice &&
+                  lazyInfo.data.usdUnitPrice?.usdPrice &&
                   // Don't calculate price if could not load token decimals
                   // correctly.
                   token.decimals > 0 && (
@@ -233,9 +233,9 @@ export const TokenCard = ({
                       <TokenAmountDisplay
                         amount={
                           lazyInfo.data.totalBalance *
-                          lazyInfo.data.usdUnitPrice.amount
+                          lazyInfo.data.usdUnitPrice.usdPrice
                         }
-                        dateFetched={lazyInfo.data.usdUnitPrice!.timestamp}
+                        dateFetched={lazyInfo.data.usdUnitPrice.timestamp}
                         estimatedUsdValue
                       />
 
@@ -264,22 +264,23 @@ export const TokenCard = ({
                 />
 
                 {!isNativeIbcUsdc(token.chainId, token.denomOrAddress) &&
-                  (lazyInfo.loading || lazyInfo.data.usdUnitPrice) &&
+                  (lazyInfo.loading || lazyInfo.data.usdUnitPrice?.usdPrice) &&
                   // Don't calculate price if could not load token decimals
                   // correctly.
                   token.decimals > 0 && (
                     <div className="flex flex-row items-center gap-1">
                       <TokenAmountDisplay
                         amount={
-                          lazyInfo.loading
+                          lazyInfo.loading ||
+                          !lazyInfo.data.usdUnitPrice?.usdPrice
                             ? { loading: true }
                             : unstakedBalance *
-                              lazyInfo.data.usdUnitPrice!.amount
+                              lazyInfo.data.usdUnitPrice.usdPrice
                         }
                         dateFetched={
-                          lazyInfo.loading
+                          lazyInfo.loading || !lazyInfo.data.usdUnitPrice
                             ? undefined
-                            : lazyInfo.data.usdUnitPrice!.timestamp
+                            : lazyInfo.data.usdUnitPrice.timestamp
                         }
                         estimatedUsdValue
                       />
