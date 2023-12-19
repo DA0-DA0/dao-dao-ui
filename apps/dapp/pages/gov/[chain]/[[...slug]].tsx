@@ -78,7 +78,14 @@ const InnerGovHome = () => {
   }, [name, router, tabs])
 
   const slug = (router.query.slug || []) as string[]
+  const checkedSlug = useRef(false)
   useEffect(() => {
+    // Only check one time, in case they load the page with no slug.
+    if (checkedSlug.current) {
+      return
+    }
+    checkedSlug.current = true
+
     // If no slug, redirect to first tab.
     if (slug.length === 0) {
       router.push(getGovPath(name, firstTabId), undefined, {

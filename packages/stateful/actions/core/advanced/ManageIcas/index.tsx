@@ -1,7 +1,6 @@
 import { useCallback } from 'react'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
-import { ChainEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
+import { ChainEmoji } from '@dao-dao/stateless'
 import { Feature } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -14,6 +13,7 @@ import {
 } from '@dao-dao/types/actions'
 import {
   ICA_CHAINS_TX_PREFIX,
+  getFilteredDaoItemsByPrefix,
   makeWasmMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
@@ -30,29 +30,22 @@ const useDefaults: UseDefaults<ManageIcasData> = () => ({
 })
 
 const Component: ActionComponent = (props) => {
-  const {
-    address,
-    chain: { chain_id: chainId },
-  } = useActionOptions()
+  const { context } = useActionOptions()
 
-  const currentlyEnabledLoading = useCachedLoadingWithError(
-    DaoCoreV2Selectors.listAllItemsWithPrefixSelector({
-      contractAddress: address,
-      chainId,
-      prefix: ICA_CHAINS_TX_PREFIX,
-    })
-  )
+  if (context.type !== ActionContextType.Dao) {
+    return null
+  }
+
+  const currentlyEnabled = getFilteredDaoItemsByPrefix(
+    context.info.items,
+    ICA_CHAINS_TX_PREFIX
+  ).map(([key]) => key)
 
   return (
     <StatelessManageIcasComponent
       {...props}
       options={{
-        currentlyEnabled:
-          currentlyEnabledLoading.loading || currentlyEnabledLoading.errored
-            ? []
-            : currentlyEnabledLoading.data.map(([key]) =>
-                key.replace(ICA_CHAINS_TX_PREFIX, '')
-              ),
+        currentlyEnabled,
       }}
     />
   )

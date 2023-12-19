@@ -598,7 +598,7 @@ export const allPolytoneCw20TokensSelector = selectorFamily<
 
       const tokensByChain = polytoneCw20Keys.reduce(
         (acc, [key]) => {
-          const [, chainId, token] = key.split(':')
+          const [chainId, token] = key.split(':')
           // If no polytone proxy for this chain, skip it. This should only
           // happen if a key is manually set for a chain that does not have a
           // polytone proxy.
@@ -867,7 +867,7 @@ export const allNativeCw721TokenListSelector = selectorFamily<
           ...queryClientParams,
           prefix: CW721_WORKAROUND_ITEM_KEY_PREFIX,
         })
-      ).map(([key]) => key.substring(CW721_WORKAROUND_ITEM_KEY_PREFIX.length))
+      ).map(([key]) => key)
 
       let list = get(
         queryContractIndexerSelector({
@@ -952,7 +952,7 @@ export const allPolytoneCw721CollectionsSelector = selectorFamily<
 
       const collectionsByChain = polytoneCw721Keys.reduce(
         (acc, [key]) => {
-          const [, chainId, collectionAddress] = key.split(':')
+          const [chainId, collectionAddress] = key.split(':')
           // If no polytone proxy for this chain, skip it. This should only
           // happen if a key is manually set for a chain that does not have a
           // polytone proxy.
@@ -1259,6 +1259,9 @@ export const listAllItemsSelector = selectorFamily<
     },
 })
 
+/**
+ * List all items with a certain prefix, removing the prefix from the key.
+ */
 export const listAllItemsWithPrefixSelector = selectorFamily<
   ListItemsResponse,
   QueryClientParams & { prefix: string }
@@ -1268,7 +1271,9 @@ export const listAllItemsWithPrefixSelector = selectorFamily<
     ({ prefix, ...queryClientParams }) =>
     async ({ get }) => {
       const items = get(listAllItemsSelector(queryClientParams))
-      return items.filter(([key]) => key.startsWith(prefix))
+      return items.flatMap(([key, value]) =>
+        key.startsWith(prefix) ? [[key.substring(prefix.length), value]] : []
+      )
     },
 })
 

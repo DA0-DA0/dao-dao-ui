@@ -75,8 +75,9 @@ export const osmosisSymbolForTokenSelector = selectorFamily<
       } catch (err) {
         if (
           err instanceof Error &&
-          err.message.includes('base token') &&
-          err.message.includes('not found')
+          ((err.message.includes('base token') &&
+            err.message.includes('not found')) ||
+            err.message.includes('no recommendation found'))
         ) {
           return
         }

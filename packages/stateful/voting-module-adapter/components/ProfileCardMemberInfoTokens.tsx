@@ -84,9 +84,10 @@ export const ProfileCardMemberInfoTokens = ({
           // If cannot vote on proposal, this means they did not have voting
           // power at the time of proposal creation. Show proposal-specific
           // message when in a proposal.
-          cantVoteOnProposal && (
-            <p>
-              {t('info.tokenDaoNotMemberInfoProposal', {
+          (cantVoteOnProposal || !isMember) && (
+            <p className="secondary-text mb-4 text-text-body">
+              {t('info.tokenDaoNotMemberInfo', {
+                context: cantVoteOnProposal ? 'proposal' : 'dao',
                 tokenSymbol,
                 daoName,
               })}

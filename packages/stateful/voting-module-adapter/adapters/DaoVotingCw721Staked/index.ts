@@ -1,5 +1,6 @@
 import { ImageRounded, PeopleAltOutlined } from '@mui/icons-material'
 
+import { DaoInfoBarTokenLoader } from '@dao-dao/stateless'
 import {
   ActionCategoryKey,
   DaoTabId,
@@ -52,6 +53,8 @@ export const DaoVotingCw721StakedAdapter: VotingModuleAdapter = {
           Icon: ImageRounded,
         },
       ],
+
+      DaoInfoBarLoader: DaoInfoBarTokenLoader,
       ProfileCardMemberInfo,
     },
 

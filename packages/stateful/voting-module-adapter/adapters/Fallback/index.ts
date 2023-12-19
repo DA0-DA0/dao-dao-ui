@@ -1,3 +1,4 @@
+import { Loader } from '@dao-dao/stateless'
 import { VotingModuleAdapter } from '@dao-dao/types'
 
 import { Placeholder } from './Placeholder'
@@ -18,6 +19,7 @@ export const FallbackAdapter: VotingModuleAdapter = {
     // Components
     components: {
       ProfileCardMemberInfo: Placeholder,
+      DaoInfoBarLoader: Loader,
     },
 
     // Functions

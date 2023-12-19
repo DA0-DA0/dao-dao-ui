@@ -3,10 +3,11 @@
 
 import type { GetStaticPaths, NextPage } from 'next'
 import { useRouter } from 'next/router'
-import React, { useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 
 import {
   ProfileDaoHomeCard,
+  ProfileDisconnectedCard,
   SuspenseLoader,
   useDaoTabs,
 } from '@dao-dao/stateful'
@@ -39,7 +40,16 @@ const DaoHomePage: NextPage = () => {
   }, [coreAddress, getDaoPath, router, tabs])
 
   const slug = (router.query.slug || []) as string[]
+  const checkedSlug = useRef(false)
   useEffect(() => {
+    // Only check one time, in case they load the page with no slug. This
+    // prevents a bug where sometimes this would reset the page to the current
+    // DAO when clicking on a SubDAO before the SubDAO loads.
+    if (checkedSlug.current) {
+      return
+    }
+    checkedSlug.current = true
+
     // If no slug, redirect to first tab.
     if (slug.length === 0) {
       router.push(getDaoPath(coreAddress, firstTabId), undefined, {
@@ -58,7 +68,13 @@ const DaoHomePage: NextPage = () => {
     <DaoSdaWrappedTab
       SuspenseLoader={SuspenseLoader}
       allTabs={tabs || []}
-      rightSidebarContent={<ProfileDaoHomeCard />}
+      rightSidebarContent={
+        <SuspenseLoader
+          fallback={<ProfileDisconnectedCard className="animate-pulse" />}
+        >
+          <ProfileDaoHomeCard />
+        </SuspenseLoader>
+      }
       tabId={selectedTabId}
     />
   )

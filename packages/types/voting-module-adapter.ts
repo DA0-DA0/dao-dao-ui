@@ -32,6 +32,7 @@ export interface IVotingModuleAdapter {
       labelI18nKey: string
     })[]
     ProfileCardMemberInfo: ComponentType<BaseProfileCardMemberInfoProps>
+    DaoInfoBarLoader: ComponentType<any>
     StakingModal?: ComponentType<BaseStakingModalProps>
   }
 

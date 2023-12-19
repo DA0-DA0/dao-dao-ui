@@ -390,7 +390,7 @@
     "tierMemberGovTokenAllocationTooltip": "dis membber wil recive {{tokens}} ${{tokenSymbol}} wen da da0 iz cre8ed",
     "today": "todae",
     "token": "tokken",
-    "tokenDaoNotMemberInfoProposal": "u wer not a membov {{daoName}} when dis puppozal waz created, so u cant voat on it. u wil be able 2 voat on futur puppozalz as long as u hav ${{tokenSymbol}} steakd at teh tie thoze puppozalz iz created",
+    "tokenDaoNotMemberInfo_proposal": "u wer not a membov {{daoName}} when dis puppozal waz created, so u cant voat on it. u wil be able 2 voat on futur puppozalz as long as u hav ${{tokenSymbol}} steakd at teh tie thoze puppozalz iz created",
     "tokens": "tokkenz",
     "tos": "DA0 DA0 TOOLIN IZ PROVIDED \"AS IZ\", AT YER OWN RISK, N WIFOUT WARRANTIEZ OV ENIE KIND. no developor or enitee involvd in creating da DA0 DA0 UI or smart contractz will b liable 4 enie claimz or damagzez whatsoever associeted wif yer use, inablitee 2 use, or yer interactshon wif oder uzers ov DA0 DA0 toolin, including enie direct, indirect, incidental, special, exemplayrie, punitiv or consequentiel damagzez, or loz ov profitz, cryptocurrenciez, tokenz, or eniefing elze ov value",
     "totalHoldings": "tottol holdinz",

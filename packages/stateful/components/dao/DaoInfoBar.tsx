@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 
 import { daoTvlSelector } from '@dao-dao/state'
 import {
-  DaoInfoBarLoader,
   DaoInfoBar as StatelessDaoInfoBar,
   TokenAmountDisplay,
   useCachedLoading,
@@ -21,11 +20,17 @@ import {
 } from '../../voting-module-adapter'
 import { SuspenseLoader } from '../SuspenseLoader'
 
-export const DaoInfoBar = () => (
-  <SuspenseLoader fallback={<DaoInfoBarLoader />}>
-    <InnerDaoInfoBar />
-  </SuspenseLoader>
-)
+export const DaoInfoBar = () => {
+  const {
+    components: { DaoInfoBarLoader },
+  } = useVotingModuleAdapter()
+
+  return (
+    <SuspenseLoader fallback={<DaoInfoBarLoader />}>
+      <InnerDaoInfoBar />
+    </SuspenseLoader>
+  )
+}
 
 const InnerDaoInfoBar = () => {
   const { t } = useTranslation()

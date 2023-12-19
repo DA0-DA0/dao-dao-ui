@@ -2,14 +2,8 @@
 
 import { ComponentType, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { constSelector, useRecoilValue } from 'recoil'
 
-import { DaoCoreV2Selectors } from '@dao-dao/state/recoil'
-import {
-  useCachedLoadable,
-  useChain,
-  useDaoInfoContext,
-} from '@dao-dao/stateless'
+import { useChain, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoWidget,
   LoadingData,
@@ -17,15 +11,15 @@ import {
   WidgetLocation,
   WidgetVisibilityContext,
 } from '@dao-dao/types'
-import { DAO_WIDGET_ITEM_NAMESPACE } from '@dao-dao/utils'
+import {
+  DAO_WIDGET_ITEM_NAMESPACE,
+  getFilteredDaoItemsByPrefix,
+} from '@dao-dao/utils'
 
 import { useMembership } from '../../hooks'
 import { getWidgetById } from '../core'
 
 type UseWidgetsOptions = {
-  // If true, will suspend while loading. Otherwise, will start off as loading
-  // but not suspend the UI.
-  suspendWhileLoading?: boolean
   // If passed, will only return the widgets in this location.
   location?: WidgetLocation
 }
@@ -39,45 +33,26 @@ type LoadedWidget = {
 
 type UseWidgetsResult = LoadingData<LoadedWidget[]>
 
-// Get widgets for the DAO. If nothing configured or no system found, returns
-// undefined.
+// Get widgets for the DAO.
 export const useWidgets = ({
-  suspendWhileLoading = false,
   location,
 }: UseWidgetsOptions = {}): UseWidgetsResult => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
-  const { coreAddress } = useDaoInfoContext()
+  const { coreAddress, items } = useDaoInfoContext()
   const { isMember = false } = useMembership({
     coreAddress,
   })
 
-  const widgetItemsSelector = DaoCoreV2Selectors.listAllItemsWithPrefixSelector(
-    {
-      chainId,
-      contractAddress: coreAddress,
-      prefix: DAO_WIDGET_ITEM_NAMESPACE,
-    }
-  )
-
-  // If suspend while loading, load the items here. Otherwise, don't block by
-  // loading a constant value immediately.
-  useRecoilValue(
-    suspendWhileLoading ? widgetItemsSelector : constSelector(undefined)
-  )
-
-  const widgetItemsLoadable = useCachedLoadable(widgetItemsSelector)
-
   const loadingWidgets = useMemo((): LoadingData<LoadedWidget[]> => {
-    if (widgetItemsLoadable.state !== 'hasValue') {
-      return { loading: true }
-    }
-
-    const parsedWidgets = widgetItemsLoadable.contents
-      .map(([key, widgetJson]): DaoWidget | undefined => {
+    const parsedWidgets = getFilteredDaoItemsByPrefix(
+      items,
+      DAO_WIDGET_ITEM_NAMESPACE
+    )
+      .map(([id, widgetJson]): DaoWidget | undefined => {
         try {
           return {
-            id: key.replace(new RegExp(`^${DAO_WIDGET_ITEM_NAMESPACE}`), ''),
+            id,
             values: (widgetJson && JSON.parse(widgetJson)) || {},
           }
         } catch (err) {
@@ -128,7 +103,7 @@ export const useWidgets = ({
         // Filter out any undefined widgets.
         .filter((widget): widget is LoadedWidget => !!widget),
     }
-  }, [widgetItemsLoadable, isMember, t, location, chainId])
+  }, [items, isMember, t, location, chainId])
 
   return loadingWidgets
 }
