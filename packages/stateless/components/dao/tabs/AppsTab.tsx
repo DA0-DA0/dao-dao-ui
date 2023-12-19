@@ -75,13 +75,12 @@ const InnerAppsTab = ({
   useEffect(() => {
     try {
       if (iframe && url && new URL(url).href) {
-        iframe.src = url
+        go(url)
       }
     } catch {
       // Ignore.
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [iframe, url])
+  }, [iframe, url, go])
 
   // If no app URL matching, choose the last one (custom) with empty URL.
   const selectedAppIndex = DAO_APPS.findIndex(
