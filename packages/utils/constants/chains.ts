@@ -30,12 +30,13 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
+      Cw1Whitelist: 3914,
       Cw4Group: 1992, // v0.16
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 1994, // v0.16
 
       // ContractVersion.V230
-      CwPayrollFactory: 3822,
+      CwPayrollFactory: 3915,
       CwTokenSwap: 3823,
       CwTokenfactoryIssuer: 3824,
       CwVesting: 3825,
@@ -174,12 +175,15 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
+      // TODO(vesting)
+      Cw1Whitelist: -1,
       Cw4Group: 123, // v0.16
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 124, // v0.16
 
       // ContractVersion.V230
-      CwPayrollFactory: 241,
+      // TODO(vesting): update
+      CwPayrollFactory: -1,
       CwTokenSwap: 242,
       CwTokenfactoryIssuer: 243,
       CwVesting: 244,
@@ -309,12 +313,16 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
+      // TODO(vesting)
+      Cw1Whitelist: -1,
       Cw4Group: 218, // v0.16
+      // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 232,
 
       // TODO(neutron-2.3.0): upgrade to v2.3.0 once CW 1.1 is supported
       // ContractVersion.V210
-      CwPayrollFactory: 220,
+      // TODO(vesting): update
+      CwPayrollFactory: -1,
       CwTokenSwap: 221,
       CwTokenfactoryIssuer: -1,
       CwVesting: 222,
@@ -424,10 +432,13 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
+      // TODO(vesting)
+      Cw1Whitelist: -1,
       Cw4Group: 83, // v0.16
 
       // ContractVersion.V230
-      CwPayrollFactory: 124,
+      // TODO(vesting): update
+      CwPayrollFactory: -1,
       CwTokenSwap: 125,
       CwVesting: 126,
       DaoCore: 127,
@@ -555,12 +566,15 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
+      // TODO(vesting)
+      Cw1Whitelist: -1,
       Cw4Group: 178,
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 179,
 
       // ContractVersion.V230
-      CwPayrollFactory: 3797,
+      // TODO(vesting): update
+      CwPayrollFactory: -1,
       CwTokenSwap: 3798,
       CwTokenfactoryIssuer: 3799,
       CwVesting: 3800,
@@ -606,13 +620,16 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
+      // TODO(vesting)
+      Cw1Whitelist: -1,
       Cw4Group: 1327, // v0.16
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 1326, // v0.16
 
       // ContractVersion.V210
       // https://github.com/DA0-DA0/dao-contracts/releases/tag/v2.1.0
-      CwPayrollFactory: 4893,
+      // TODO(vesting): update
+      CwPayrollFactory: -1,
       CwTokenSwap: 4894,
       CwTokenfactoryIssuer: 4895,
       CwVesting: 4896,
@@ -653,10 +670,13 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
+      // TODO(vesting)
+      Cw1Whitelist: -1,
       Cw4Group: 2887, // v0.16
 
       // ContractVersion.V230
-      CwPayrollFactory: 3225,
+      // TODO(vesting): update
+      CwPayrollFactory: -1,
       CwTokenSwap: 3226,
       CwTokenfactoryIssuer: 3227,
       CwVesting: 3228,

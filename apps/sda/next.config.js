@@ -26,6 +26,8 @@ const config = {
     '@dao-dao/i18n',
     '@dao-dao/types',
     '@cosmos-kit/web3auth',
+    'chartjs-adapter-date-fns',
+    'chartjs-plugin-annotation',
   ],
   // Because @cosmos-kit/web3auth uses a Worker ESM import.
   experimental: {

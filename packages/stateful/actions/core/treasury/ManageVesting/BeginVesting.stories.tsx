@@ -7,8 +7,9 @@ import {
   makeDaoProvidersDecorator,
   makeReactHookFormDecorator,
 } from '@dao-dao/storybook'
-import { TokenType } from '@dao-dao/types'
+import { TokenType, VestingPaymentsWidgetVersion } from '@dao-dao/types'
 
+import { EntityDisplay } from '../../../../components'
 import { BeginVesting } from './BeginVesting'
 
 export default {
@@ -36,6 +37,10 @@ Default.args = {
   isCreating: true,
   errors: {},
   options: {
+    widgetData: {
+      factory: 'factory',
+      version: VestingPaymentsWidgetVersion.V1,
+    },
     tokens: [
       {
         token: {
@@ -72,5 +77,8 @@ Default.args = {
     ],
     vestingFactoryOwner: { loading: false, data: undefined },
     AddressInput,
+    EntityDisplay,
+    createCw1WhitelistOwners: () => alert('createCw1WhitelistOwners'),
+    creatingCw1WhitelistOwners: false,
   },
 }

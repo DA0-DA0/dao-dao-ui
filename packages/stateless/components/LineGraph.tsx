@@ -4,19 +4,34 @@ import {
   LineElement,
   LinearScale,
   PointElement,
+  TimeScale,
   Title,
 } from 'chart.js'
+import annotationPlugin from 'chartjs-plugin-annotation'
+import { enUS } from 'date-fns/locale'
 import { Line } from 'react-chartjs-2'
+import { useTranslation } from 'react-i18next'
 
 import { useNamedThemeColor, useThemeContext } from '../theme'
 
-ChartJS.register(LinearScale, LineElement, CategoryScale, PointElement, Title)
+import 'chartjs-adapter-date-fns'
+ChartJS.register(
+  LinearScale,
+  TimeScale,
+  LineElement,
+  CategoryScale,
+  PointElement,
+  Title,
+  annotationPlugin
+)
 
 export interface LineGraphProps {
   title: string
   yTitle: string
   yValues: number[]
-  labels?: string[]
+  labels?: (string | number)[]
+  time?: boolean
+  verticalLineAtX?: number
   className?: string
 }
 
@@ -25,11 +40,15 @@ export const LineGraph = ({
   yTitle,
   yValues,
   labels,
+  time,
+  verticalLineAtX,
   className,
 }: LineGraphProps) => {
+  const { t } = useTranslation()
   const { accentColor } = useThemeContext()
   const textColor = useNamedThemeColor('text-tertiary')
   const borderColor = useNamedThemeColor('border-primary')
+  const verticalLineColor = useNamedThemeColor('component-badge-valid')
 
   return (
     <Line
@@ -63,9 +82,38 @@ export const LineGraph = ({
               weight: 'normal',
             },
           },
+          annotation: verticalLineAtX
+            ? {
+                annotations: {
+                  verticalLine: {
+                    type: 'line',
+                    borderColor: verticalLineColor,
+                    borderWidth: 2,
+                    scaleID: 'x',
+                    value: verticalLineAtX,
+                    label: {
+                      display: true,
+                      content: t('title.now'),
+                      position: 'start',
+                    },
+                  },
+                },
+              }
+            : undefined,
         },
         scales: {
           x: {
+            type: time ? 'time' : undefined,
+            adapters: {
+              date: {
+                locale: enUS,
+              },
+            },
+            time: {
+              displayFormats: {
+                hour: 'dd MMM HH:mm',
+              },
+            },
             display: !!labels,
             ticks: {
               color: textColor,

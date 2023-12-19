@@ -8,14 +8,12 @@ import {
   Tooltip,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
-import { StatefulEntityDisplayProps } from '@dao-dao/types'
+import { StatefulEntityDisplayProps, VestingInfo } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatDate,
   formatDateTimeTz,
 } from '@dao-dao/utils'
-
-import { VestingInfo } from '../types'
 
 export type VestingPaymentLineProps = VestingInfo & {
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>

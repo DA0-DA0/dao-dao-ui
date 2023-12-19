@@ -8,12 +8,13 @@ import {
   refreshWalletBalancesIdAtom,
 } from '@dao-dao/state/recoil'
 import {
+  VestingPaymentCard as StatelessVestingPaymentCard,
   useAddToken,
   useCachedLoadable,
   useChain,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { ActionKey, EntityType } from '@dao-dao/types'
+import { ActionKey, EntityType, VestingInfo } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   getDaoProposalSinglePrefill,
@@ -22,21 +23,20 @@ import {
   processError,
 } from '@dao-dao/utils'
 
-import { ButtonLink, EntityDisplay } from '../../../../../components'
 import {
   useAwaitNextBlock,
   useEntity,
   useWallet,
   useWalletInfo,
-} from '../../../../../hooks'
+} from '../../hooks'
 import {
   useDistribute,
   useWithdrawDelegatorRewards,
-} from '../../../../../hooks/contracts/CwVesting'
-import { tokenCardLazyInfoSelector } from '../../../../../recoil'
-import { VestingInfo } from '../../types'
-import { NativeStakingModal } from '../NativeStakingModal'
-import { VestingPaymentCard as StatelessVestingPaymentCard } from './VestingPaymentCard'
+} from '../../hooks/contracts/CwVesting'
+import { tokenCardLazyInfoSelector } from '../../recoil'
+import { ButtonLink } from '../ButtonLink'
+import { EntityDisplay } from '../EntityDisplay'
+import { VestingStakingModal } from './VestingStakingModal'
 
 export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
   const { t } = useTranslation()
@@ -53,6 +53,7 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
     distributable,
     startDate,
     endDate,
+    steps,
   } = vestingInfo
 
   const recipientEntity = useEntity(vest.recipient)
@@ -218,6 +219,10 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
           !lazyInfoLoading.loading &&
           !!lazyInfoLoading.data.stakingInfo?.totalPendingRewards
         }
+        canceled={
+          // Canceled vests have their curves set to constant.
+          'constant' in vest.vested
+        }
         claimedAmount={convertMicroDenomToDenomWithDecimals(
           vest.claimed,
           token.decimals
@@ -245,13 +250,14 @@ export const VestingPaymentCard = (vestingInfo: VestingInfo) => {
           token.decimals
         )}
         startDate={startDate}
+        steps={steps}
         title={vest.title}
         token={token}
         withdrawing={withdrawing}
       />
 
       {canManageStaking && (
-        <NativeStakingModal
+        <VestingStakingModal
           onClose={() => setShowStakingModal(false)}
           recipientIsDao={recipientIsDao}
           stakes={

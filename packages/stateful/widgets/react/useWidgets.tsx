@@ -1,13 +1,13 @@
 // External API
 
-import { ComponentType, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { useChain, useDaoInfoContext } from '@dao-dao/stateless'
 import {
   DaoWidget,
+  LoadedWidget,
   LoadingData,
-  Widget,
   WidgetLocation,
   WidgetVisibilityContext,
 } from '@dao-dao/types'
@@ -22,13 +22,6 @@ import { getWidgetById } from '../core'
 type UseWidgetsOptions = {
   // If passed, will only return the widgets in this location.
   location?: WidgetLocation
-}
-
-type LoadedWidget = {
-  title: string
-  widget: Widget
-  daoWidget: DaoWidget
-  WidgetComponent: ComponentType
 }
 
 type UseWidgetsResult = LoadingData<LoadedWidget[]>

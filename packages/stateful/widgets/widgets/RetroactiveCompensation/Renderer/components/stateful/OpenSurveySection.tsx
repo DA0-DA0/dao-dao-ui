@@ -7,7 +7,7 @@ import {
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { CosmosMsgFor_Empty } from '@dao-dao/types'
+import { CosmosMsgFor_Empty, WidgetId } from '@dao-dao/types'
 import {
   makeBankMessage,
   makeWasmMessage,
@@ -15,7 +15,6 @@ import {
 } from '@dao-dao/utils'
 
 import { useMembership, useWallet } from '../../../../../../hooks'
-import { RETROACTIVE_COMPENSATION_WIDGET_ID } from '../../../constants'
 import { usePostRequest } from '../../hooks/usePostRequest'
 import {
   CompleteRatings,
@@ -46,7 +45,7 @@ export const OpenSurveySection = ({
   // Show contribution form if `submit` subpath is present and the currently
   // open survey is inactive or accepting contributions.
   const showContributionForm =
-    daoSubpathComponents[0] === RETROACTIVE_COMPENSATION_WIDGET_ID &&
+    daoSubpathComponents[0] === WidgetId.RetroactiveCompensation &&
     daoSubpathComponents[1] === 'submit' &&
     (status.survey.status === SurveyStatus.Inactive ||
       status.survey.status === SurveyStatus.AcceptingContributions)
@@ -54,7 +53,7 @@ export const OpenSurveySection = ({
     (show: boolean) =>
       goToDao(
         coreAddress,
-        RETROACTIVE_COMPENSATION_WIDGET_ID + (show ? `/submit` : ''),
+        WidgetId.RetroactiveCompensation + (show ? `/submit` : ''),
         undefined,
         {
           shallow: true,

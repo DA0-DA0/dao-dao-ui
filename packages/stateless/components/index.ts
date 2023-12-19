@@ -16,6 +16,7 @@ export * from './proposal'
 export * from './toasts'
 export * from './token'
 export * from './tooltip'
+export * from './vesting'
 export * from './wallet'
 
 export * from './AudioPlayer'

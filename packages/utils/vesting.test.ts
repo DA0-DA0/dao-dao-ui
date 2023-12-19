@@ -3,9 +3,12 @@ import {
   CwVestingSlashRegistration,
   CwVestingStakeEvent,
 } from '@dao-dao/state/recoil/selectors/contracts/CwVesting'
+import { VestingValidatorSlash } from '@dao-dao/types'
 
-import { VestingValidatorSlash } from '../types'
-import { getSlashedStakedUnstaking, getVestingValidatorSlashes } from './utils'
+import {
+  getSlashedStakedUnstaking,
+  getVestingValidatorSlashes,
+} from './vesting'
 
 const UNBONDING_DURATION_SECONDS = 1000
 const VALIDATOR1 = 'validator1'

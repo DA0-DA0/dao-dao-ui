@@ -2,17 +2,80 @@ import uniq from 'lodash.uniq'
 import { selectorFamily, waitForAll } from 'recoil'
 
 import {
+  Cw1WhitelistSelectors,
   CwPayrollFactorySelectors,
   CwVestingSelectors,
   genericTokenSelector,
+  isContractSelector,
   nativeDelegationInfoSelector,
+  queryWalletIndexerSelector,
   refreshVestingAtom,
   validatorSlashesSelector,
 } from '@dao-dao/state/recoil'
-import { TokenType, WithChainId } from '@dao-dao/types'
+import {
+  OldVestingPaymentFactory,
+  TokenType,
+  VestingInfo,
+  VestingStep,
+  WithChainId,
+} from '@dao-dao/types'
+import {
+  convertMicroDenomToDenomWithDecimals,
+  getChainForChainId,
+  getVestingValidatorSlashes,
+  isValidContractAddress,
+} from '@dao-dao/utils'
 
-import { VestingInfo } from '../types'
-import { getVestingValidatorSlashes } from './utils'
+export const vestingPaymentsOwnedBySelector = selectorFamily<
+  string[],
+  WithChainId<{ address: string }>
+>({
+  key: 'vestingPaymentsOwnedBy',
+  get:
+    ({ chainId, address }) =>
+    ({ get }) => {
+      const vestingPayments: string[] = get(
+        queryWalletIndexerSelector({
+          chainId,
+          walletAddress: address,
+          formula: 'vesting/ownerOf',
+          required: true,
+        })
+      )
+
+      return vestingPayments && Array.isArray(vestingPayments)
+        ? vestingPayments
+        : []
+    },
+})
+
+export const vestingInfosOwnedBySelector = selectorFamily<
+  VestingInfo[],
+  WithChainId<{ address: string }>
+>({
+  key: 'vestingInfosOwnedBy',
+  get:
+    ({ chainId, address }) =>
+    ({ get }) => {
+      const vestingPaymentContracts = get(
+        vestingPaymentsOwnedBySelector({
+          chainId,
+          address,
+        })
+      )
+
+      return get(
+        waitForAll(
+          vestingPaymentContracts.map((vestingContractAddress) =>
+            vestingInfoSelector({
+              vestingContractAddress,
+              chainId,
+            })
+          )
+        )
+      )
+    },
+})
 
 export const vestingFactoryOwnerSelector = selectorFamily<
   string | undefined,
@@ -34,20 +97,28 @@ export const vestingFactoryOwnerSelector = selectorFamily<
     },
 })
 
-export const vestingInfosSelector = selectorFamily<
+export const vestingInfosForFactorySelector = selectorFamily<
   VestingInfo[],
-  WithChainId<{ factory: string }>
+  WithChainId<{ factory: string; oldFactories?: OldVestingPaymentFactory[] }>
 >({
-  key: 'vestingInfo',
+  key: 'vestingInfosForFactory',
   get:
-    ({ chainId, factory }) =>
+    ({ chainId, factory, oldFactories }) =>
     ({ get }) => {
       const vestingPaymentContracts = get(
-        CwPayrollFactorySelectors.allVestingContractsSelector({
-          contractAddress: factory,
-          chainId,
-        })
-      )
+        waitForAll([
+          CwPayrollFactorySelectors.allVestingContractsSelector({
+            contractAddress: factory,
+            chainId,
+          }),
+          ...(oldFactories?.map(({ address }) =>
+            CwPayrollFactorySelectors.allVestingContractsSelector({
+              contractAddress: address,
+              chainId,
+            })
+          ) ?? []),
+        ])
+      ).flat()
 
       return get(
         waitForAll(
@@ -78,7 +149,6 @@ export const vestingInfoSelector = selectorFamily<
         vested,
         total,
         distributable,
-        durationSeconds,
         { owner },
         stakeHistory,
         unbondingDurationSeconds,
@@ -105,11 +175,6 @@ export const vestingInfoSelector = selectorFamily<
             chainId,
             params: [{}],
           }),
-          CwVestingSelectors.vestDurationSelector({
-            contractAddress: vestingContractAddress,
-            chainId,
-            params: [],
-          }),
           CwVestingSelectors.ownershipSelector({
             contractAddress: vestingContractAddress,
             chainId,
@@ -129,6 +194,28 @@ export const vestingInfoSelector = selectorFamily<
           }),
         ])
       )
+
+      const ownerIsCw1Whitelist =
+        owner &&
+        isValidContractAddress(owner, getChainForChainId(chainId).bech32_prefix)
+          ? get(
+              isContractSelector({
+                chainId,
+                contractAddress: owner,
+                name: 'cw1-whitelist',
+              })
+            )
+          : false
+      const cw1WhitelistAdmins =
+        owner && ownerIsCw1Whitelist
+          ? get(
+              Cw1WhitelistSelectors.adminListSelector({
+                contractAddress: owner,
+                chainId,
+                params: [],
+              })
+            ).admins
+          : undefined
 
       const token = get(
         genericTokenSelector({
@@ -205,18 +292,92 @@ export const vestingInfoSelector = selectorFamily<
               actualSlashed
             ).toString()
 
-      const completed = vest.status === 'funded' && vest.claimed === total
+      const completed =
+        (vest.status === 'funded' ||
+          (typeof vest.status === 'object' && 'canceled' in vest.status)) &&
+        vest.claimed === total
 
-      const startTimeNanos = Number(vest.start_time)
-      const startDate = new Date(startTimeNanos / 1e6)
-      const endTimeNanos = startTimeNanos + Number(durationSeconds) * 1e9
-      const endDate = new Date(endTimeNanos / 1e6)
+      const startTimeMs = Number(vest.start_time) / 1e6
+      const startDate = new Date(startTimeMs)
+
+      const steps: VestingStep[] =
+        // Constant is used when a vest is canceled.
+        'constant' in vest.vested
+          ? [
+              {
+                timestamp: startTimeMs,
+                amount: convertMicroDenomToDenomWithDecimals(
+                  vest.vested.constant.y,
+                  token.decimals
+                ),
+              },
+              {
+                timestamp: startTimeMs,
+                amount: convertMicroDenomToDenomWithDecimals(
+                  vest.vested.constant.y,
+                  token.decimals
+                ),
+              },
+            ]
+          : 'saturating_linear' in vest.vested
+          ? [
+              {
+                timestamp:
+                  startTimeMs + vest.vested.saturating_linear.min_x * 1000,
+                amount: convertMicroDenomToDenomWithDecimals(
+                  vest.vested.saturating_linear.min_y,
+                  token.decimals
+                ),
+              },
+              {
+                timestamp:
+                  startTimeMs + vest.vested.saturating_linear.max_x * 1000,
+                amount: convertMicroDenomToDenomWithDecimals(
+                  vest.vested.saturating_linear.max_y,
+                  token.decimals
+                ),
+              },
+            ]
+          : vest.vested.piecewise_linear.steps.reduce(
+              (acc, [seconds, amount], index): VestingStep[] => {
+                // Ignore first step if hardcoded 0 amount at 1 second.
+                if (index === 0 && seconds === 1 && amount === '0') {
+                  return acc
+                }
+
+                return [
+                  ...acc,
+                  {
+                    timestamp: startTimeMs + seconds * 1000,
+                    amount: convertMicroDenomToDenomWithDecimals(
+                      amount,
+                      token.decimals
+                    ),
+                  },
+                ]
+              },
+              [] as VestingStep[]
+            )
+
+      const endDate = new Date(steps[steps.length - 1].timestamp)
 
       return {
         vestingContractAddress,
         vest,
         token,
-        owner: owner || undefined,
+        owner: owner
+          ? {
+              address: owner,
+              ...(ownerIsCw1Whitelist && cw1WhitelistAdmins
+                ? {
+                    isCw1Whitelist: true,
+                    cw1WhitelistAdmins,
+                  }
+                : {
+                    isCw1Whitelist: false,
+                  }),
+            }
+          : undefined,
         vested,
         distributable,
         total,
@@ -226,6 +387,7 @@ export const vestingInfoSelector = selectorFamily<
         completed,
         startDate,
         endDate,
+        steps,
       }
     },
 })

@@ -12,15 +12,14 @@ import {
   ActionComponent,
   LoadingData,
   StatefulEntityDisplayProps,
+  VestingInfo,
 } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatDateTimeTz,
 } from '@dao-dao/utils'
 
-import { useActionOptions } from '../../../../../actions/react/context'
-import { VestingPaymentCard } from '../../components/VestingPaymentCard'
-import { VestingInfo } from '../../types'
+import { useActionOptions } from '../../../react/context'
 
 export type CancelVestingData = {
   address: string
@@ -30,13 +29,19 @@ export type CancelVestingOptions = {
   vestingInfos: LoadingData<VestingInfo[]>
   cancelledVestingContract: LoadingData<VestingInfo | undefined>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
+  VestingPaymentCard: ComponentType<VestingInfo>
 }
 
 export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { vestingInfos, cancelledVestingContract, EntityDisplay },
+  options: {
+    vestingInfos,
+    cancelledVestingContract,
+    EntityDisplay,
+    VestingPaymentCard,
+  },
 }) => {
   const { t } = useTranslation()
   const { address } = useActionOptions()
@@ -44,14 +49,19 @@ export const CancelVesting: ActionComponent<CancelVestingOptions> = ({
   const { watch, setValue } = useFormContext()
   const watchAddress = watch(fieldNamePrefix + 'address')
 
-  // Only vesting contracts with a non-zero balance remaining and whose owner is
-  // the current address are cancellable.
+  // The only vesting contracts that can be cancelled:
+  //   - have not finished vesting
+  //   - have not been cancelled
+  //   - are cancellable by the current address
   const cancellableVestingContracts = vestingInfos.loading
     ? undefined
     : vestingInfos.data.filter(
-        ({ owner, vested, vest: { status } }) =>
-          owner === address &&
-          vested !== '0' &&
+        ({ owner, vested, total, vest: { status } }) =>
+          owner &&
+          (owner.address === address ||
+            (owner.isCw1Whitelist &&
+              owner.cw1WhitelistAdmins.includes(address))) &&
+          vested !== total &&
           !(typeof status === 'object' && 'canceled' in status)
       )
 
