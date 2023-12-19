@@ -13,7 +13,7 @@ import {
 import annotationPlugin from 'chartjs-plugin-annotation'
 import clsx from 'clsx'
 import { enUS } from 'date-fns/locale'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Line } from 'react-chartjs-2'
 import { useTranslation } from 'react-i18next'
 import useDeepCompareEffect from 'use-deep-compare-effect'
@@ -65,6 +65,7 @@ export const TreasuryHistoryGraph = ({
   const textColor = useNamedThemeColor('text-tertiary')
   const borderColor = useNamedThemeColor('border-primary')
   const brandColor = useNamedThemeColor('text-brand')
+  const verticalLineColor = useNamedThemeColor('component-badge-valid')
 
   const [precision, setPrecision] =
     useState<OsmosisHistoricalPriceChartPrecision>('hour')
@@ -180,6 +181,9 @@ export const TreasuryHistoryGraph = ({
   // (`.dataIndex`).
   const tooltipFirstDataPoint = tooltipData?.dataPoints[0]
 
+  const containerRef = useRef<HTMLDivElement>(null)
+  const tooltipRef = useRef<HTMLDivElement>(null)
+
   return (
     <div
       className={clsx(
@@ -191,7 +195,10 @@ export const TreasuryHistoryGraph = ({
     >
       {header}
 
-      <div className={clsx('relative flex flex-col gap-4', graphClassName)}>
+      <div
+        className={clsx('relative flex flex-col gap-4', graphClassName)}
+        ref={containerRef}
+      >
         <Line
           data={{
             labels:
@@ -223,10 +230,29 @@ export const TreasuryHistoryGraph = ({
                 // Show all x-axis values in one tooltip.
                 mode: 'index',
                 enabled: false,
-                external: ({ tooltip }) =>
-                  setTooltipData(
-                    tooltip.opacity === 0 ? undefined : ({ ...tooltip } as any)
-                  ),
+                // Show when hover on any part of the graph, not just a point.
+                intersect: false,
+                external: ({ tooltip }) => {
+                  const shouldHide =
+                    !tooltip.opacity || tooltip.dataPoints.length === 0
+                  // Only update if we need to hide or the data point .
+                  if (
+                    // Needs to hide.
+                    (shouldHide && !!tooltipData) ||
+                    // Needs to show.
+                    (!shouldHide &&
+                      // Either nothing set or the data point is different.
+                      (!tooltipFirstDataPoint ||
+                        tooltip.dataPoints[0].dataIndex !==
+                          tooltipFirstDataPoint.dataIndex))
+                  ) {
+                    setTooltipData(
+                      tooltip.opacity === 0 || !tooltip.dataPoints[0]
+                        ? undefined
+                        : ({ ...tooltip } as any)
+                    )
+                  }
+                },
                 callbacks: {
                   label: (item) =>
                     `${item.dataset.label}: $${Number(item.raw).toLocaleString(
@@ -236,6 +262,19 @@ export const TreasuryHistoryGraph = ({
                         maximumFractionDigits: 2,
                       }
                     )}`,
+                },
+              },
+              // Show vertical line when hovering over a timestamp and showing
+              // the tooltip.
+              annotation: tooltipFirstDataPoint && {
+                annotations: {
+                  verticalLine: {
+                    type: 'line',
+                    borderColor: verticalLineColor,
+                    borderWidth: 2,
+                    scaleID: 'x',
+                    value: tooltipFirstDataPoint.parsed.x,
+                  },
                 },
               },
             },
@@ -299,9 +338,18 @@ export const TreasuryHistoryGraph = ({
 
         {tooltipData && tooltipFirstDataPoint !== undefined && (
           <div
-            className="pointer-events-none absolute z-10 flex animate-fade-in flex-col gap-2 rounded-md border border-border-component-primary bg-component-tooltip py-2 px-3 text-text-component-primary"
+            className="pointer-events-none absolute z-10 flex w-max animate-fade-in flex-col gap-4 rounded-md border border-border-secondary bg-component-tooltip-glass p-4 text-text-component-primary backdrop-blur-sm sm:gap-2"
+            ref={tooltipRef}
             style={{
-              left: tooltipData.x,
+              // Bias the x coordinate towards the center of the screen.
+              left:
+                !containerRef.current || !tooltipRef.current
+                  ? tooltipData.x
+                  : containerRef.current.clientWidth / 2 -
+                    tooltipRef.current.clientWidth *
+                      (1 -
+                        tooltipFirstDataPoint.dataIndex /
+                          tooltipFirstDataPoint.dataset.data.length),
               top: tooltipData.y,
             }}
           >
@@ -336,11 +384,11 @@ export const TreasuryHistoryGraph = ({
                   <div
                     key={index}
                     className={clsx(
-                      'flex flex-row items-start justify-between gap-6',
-                      index === 0 && 'mb-4'
+                      'flex flex-col items-start justify-between gap-x-6 gap-y-1 sm:flex-row',
+                      index === 0 && 'mb-2 sm:mb-4'
                     )}
                   >
-                    <div className="flex flex-row items-center gap-2">
+                    <div className="flex shrink-0 flex-row items-center gap-2">
                       <div
                         className="h-4 w-10"
                         style={{
@@ -352,7 +400,7 @@ export const TreasuryHistoryGraph = ({
                       <p className="secondary-text">{label}:</p>
                     </div>
 
-                    <div className="flex flex-col items-end gap-1 text-right font-mono">
+                    <div className="flex shrink-0 flex-col items-end gap-1 text-right font-mono">
                       <p className="primary-text leading-4">
                         $
                         {value.toLocaleString(undefined, {

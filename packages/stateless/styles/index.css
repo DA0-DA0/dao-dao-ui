@@ -168,6 +168,7 @@ input[type='number']::-webkit-outer-spin-button {
     --component-modal: rgba(var(--white), 1);
     --component-dropdown: rgba(var(--white), 1);
     --component-tooltip: rgba(15, 15, 16, 1);
+    --component-tooltip-glass: rgba(15, 15, 16, 0.5);
     --component-toast: rgba(12, 12, 13, 1);
     --component-widget: rgba(var(--light), 0.2);
     --component-pill: rgba(var(--brand), 0.8);

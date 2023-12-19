@@ -68,7 +68,10 @@ export const osmosisSymbolForTokenSelector = selectorFamily<
           return
         }
 
-        return skipRecommendedAsset.asset.symbol
+        return (
+          skipRecommendedAsset.asset.recommendedSymbol ||
+          skipRecommendedAsset.asset.symbol
+        )
       } catch (err) {
         if (
           err instanceof Error &&
