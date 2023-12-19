@@ -18,7 +18,7 @@ export const ProfileCardMemberInfo = ({
   const { t } = useTranslation()
 
   return votingPower.loading || votingPower.data > 0 ? (
-    <div className="secondary-text flex flex-row items-center justify-between pb-3">
+    <div className="secondary-text flex flex-row items-center justify-between">
       <p>{t('title.votingPower')}</p>
       <p
         className={clsx(
