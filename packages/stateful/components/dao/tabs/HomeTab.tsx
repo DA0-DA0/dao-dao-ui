@@ -80,7 +80,7 @@ export const HomeTab = () => {
       <div
         className={clsx(
           'mt-4 w-full rounded-md bg-background-secondary p-6',
-          isWalletConnected ? 'max-w-lg' : 'max-w-xs'
+          isWalletConnected ? 'max-w-md' : 'max-w-xs'
         )}
       >
         <p className="title-text mb-4">{t('title.yourMembership')}</p>
