@@ -53,6 +53,7 @@ telescope({
           'cosmos.staking.v1beta1',
           'cosmos.tx.v1beta1',
           'cosmos.upgrade.v1beta1',
+          'cosmwasm.tokenfactory.v1beta1',
           'cosmwasm.wasm.v1',
           'google.protobuf',
           'ibc.applications.transfer.v1',
