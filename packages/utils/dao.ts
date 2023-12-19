@@ -98,3 +98,18 @@ export const getAccountChainId = ({
   accounts.find(
     (account) => types.includes(account.type) && account.address === address
   )?.chainId
+
+/**
+ * Filter DAO items by prefix and remove the prefix from the key.
+ *
+ * @param items A DAO items object.
+ * @param prefix The prefix to filter by.
+ * @returns An array of filtered items in the form of [key, value].
+ */
+export const getFilteredDaoItemsByPrefix = (
+  items: Record<string, string>,
+  prefix: string
+): [string, string][] =>
+  Object.entries(items).flatMap(([key, value]) =>
+    key.startsWith(prefix) ? [[key.substring(prefix.length), value]] : []
+  )

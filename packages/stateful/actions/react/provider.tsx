@@ -94,9 +94,7 @@ export const DaoActionsProvider = ({ children }: ActionsProviderProps) => {
     [chainContext.chain, info.coreAddress, info.proposalModules]
   )
 
-  const loadingWidgets = useWidgets({
-    suspendWhileLoading: true,
-  })
+  const loadingWidgets = useWidgets()
   const loadedWidgets = loadingWidgets.loading ? undefined : loadingWidgets.data
   // Memoize this so we don't reconstruct the action makers on every render. The
   // React components often need to access data from the widget values object so
