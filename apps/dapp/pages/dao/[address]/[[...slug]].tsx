@@ -14,6 +14,7 @@ import {
   DaoPageWrapperProps,
   LinkWrapper,
   ProfileDaoHomeCard,
+  ProfileDisconnectedCard,
   SuspenseLoader,
   useDaoTabs,
   useFollowingDaos,
@@ -208,7 +209,13 @@ const InnerDaoHome = () => {
         updatingFollowing,
       }}
       onSelectTabId={onSelectTabId}
-      rightSidebarContent={<ProfileDaoHomeCard />}
+      rightSidebarContent={
+        <SuspenseLoader
+          fallback={<ProfileDisconnectedCard className="animate-pulse" />}
+        >
+          <ProfileDaoHomeCard />
+        </SuspenseLoader>
+      }
       selectedTabId={tabId}
       tabs={tabs || []}
     />

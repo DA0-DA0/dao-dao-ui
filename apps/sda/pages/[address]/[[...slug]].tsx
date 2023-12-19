@@ -7,6 +7,7 @@ import React, { useEffect, useRef } from 'react'
 
 import {
   ProfileDaoHomeCard,
+  ProfileDisconnectedCard,
   SuspenseLoader,
   useDaoTabs,
 } from '@dao-dao/stateful'
@@ -67,7 +68,13 @@ const DaoHomePage: NextPage = () => {
     <DaoSdaWrappedTab
       SuspenseLoader={SuspenseLoader}
       allTabs={tabs || []}
-      rightSidebarContent={<ProfileDaoHomeCard />}
+      rightSidebarContent={
+        <SuspenseLoader
+          fallback={<ProfileDisconnectedCard className="animate-pulse" />}
+        >
+          <ProfileDaoHomeCard />
+        </SuspenseLoader>
+      }
       tabId={selectedTabId}
     />
   )
