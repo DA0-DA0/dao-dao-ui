@@ -1,5 +1,6 @@
 import { PeopleAltOutlined } from '@mui/icons-material'
 
+import { DaoInfoBarTokenLoader } from '@dao-dao/stateless'
 import {
   ActionCategoryKey,
   DaoTabId,
@@ -35,6 +36,7 @@ export const DaoVotingCw20StakedAdapter: VotingModuleAdapter = {
 
     // Components
     components: {
+      DaoInfoBarLoader: DaoInfoBarTokenLoader,
       ProfileCardMemberInfo,
       StakingModal,
 

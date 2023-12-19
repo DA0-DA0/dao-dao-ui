@@ -2,7 +2,6 @@ import clsx from 'clsx'
 
 import { DaoInfoBarProps } from '@dao-dao/types/components/DaoInfoBar'
 
-import { Loader } from '../logo/Loader'
 import { TooltipInfoIcon } from '../tooltip'
 
 export * from '@dao-dao/types/components/DaoInfoBar'
@@ -38,5 +37,3 @@ export const DaoInfoBar = ({ items, className }: DaoInfoBarProps) => (
     ))}
   </div>
 )
-
-export const DaoInfoBarLoader = () => <Loader className="h-32" />
