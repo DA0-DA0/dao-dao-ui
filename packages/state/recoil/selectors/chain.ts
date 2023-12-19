@@ -33,7 +33,7 @@ import {
   retry,
   stargateClientRouter,
 } from '@dao-dao/utils'
-import { cosmos, ibc, juno, osmosis } from '@dao-dao/utils/protobuf'
+import { cosmos, cosmwasm, ibc, juno, osmosis } from '@dao-dao/utils/protobuf'
 import { ModuleAccount } from '@dao-dao/utils/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { Metadata } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/bank'
 import {
@@ -116,6 +116,17 @@ export const ibcRpcClientForChainSelector = selectorFamily({
           })
         ).ibc
     ),
+  dangerouslyAllowMutability: true,
+})
+
+export const cosmwasmRpcClientForChainSelector = selectorFamily({
+  key: 'cosmwasmRpcClientForChain',
+  get: (chainId: string) => async () =>
+    (
+      await cosmwasm.ClientFactory.createRPCQueryClient({
+        rpcEndpoint: getRpcForChainId(chainId),
+      })
+    ).cosmwasm,
   dangerouslyAllowMutability: true,
 })
 
@@ -331,9 +342,23 @@ export const tokenFactoryDenomCreationFeeSelector = selectorFamily<
   get:
     (chainId) =>
     async ({ get }) => {
-      const client = get(osmosisRpcClientForChainSelector(chainId))
-      return (await client.tokenfactory.v1beta1.params()).params
-        ?.denomCreationFee
+      const osmosisClient = get(osmosisRpcClientForChainSelector(chainId))
+      try {
+        return (await osmosisClient.tokenfactory.v1beta1.params()).params
+          ?.denomCreationFee
+      } catch (err) {
+        // If Osmosis query failed, try CosmWasm tokenfactory.
+        if (
+          err instanceof Error &&
+          err.message.includes('unknown query path')
+        ) {
+          const cosmwasmClient = get(cosmwasmRpcClientForChainSelector(chainId))
+          return (await cosmwasmClient.tokenfactory.v1beta1.params()).params
+            ?.denomCreationFee
+        }
+
+        throw err
+      }
     },
 })
 

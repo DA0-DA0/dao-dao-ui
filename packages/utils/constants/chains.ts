@@ -497,6 +497,46 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
   },
   {
+    chainId: ChainId.MigalooMainnet,
+    name: 'migaloo',
+    mainnet: true,
+    accentColor: '#3ccd64',
+    factoryContractAddress:
+      'migaloo19q77nmuaq3mnwecnxu7cfj6y6nd4jzw9x20v6xm66lmhqlvxwrkscaefz8',
+    indexes: {
+      search: 'migaloo_daos',
+      featured: 'migaloo_featured_daos',
+    },
+    explorerUrlTemplates: {
+      tx: 'https://ping.pub/migaloo/tx/REPLACE',
+      gov: 'https://ping.pub/migaloo/gov',
+      govProp: 'https://ping.pub/migaloo/gov/REPLACE',
+      wallet: 'https://ping.pub/migaloo/account/REPLACE',
+    },
+    codeIds: {
+      // https://github.com/CosmWasm/cw-plus
+      Cw4Group: 302, // v0.16
+      Cw721Base: 303,
+
+      // ContractVersion.V240
+      CwPayrollFactory: 286,
+      CwTokenSwap: 287,
+      CwTokenfactoryIssuer: 288,
+      CwVesting: 290,
+      DaoCore: 291,
+      DaoMigrator: -1,
+      DaoPreProposeMultiple: 295,
+      DaoPreProposeSingle: 296,
+      DaoProposalMultiple: 297,
+      DaoProposalSingle: 298,
+      DaoVotingCw4: 299,
+      DaoVotingCw721Staked: 300,
+      DaoVotingTokenStaked: 301,
+    },
+    // TODO
+    polytone: {},
+  },
+  {
     chainId: ChainId.JunoTestnet,
     name: 'juno',
     mainnet: false,
