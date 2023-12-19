@@ -14,7 +14,7 @@ export const DaoInfoBar = ({ items, className }: DaoInfoBarProps) => (
       className
     )}
   >
-    {items.map(({ Icon, label, tooltip, value }, index) => (
+    {items.map(({ Icon, label, tooltip, loading, value }, index) => (
       <div
         key={index}
         className="flex grow basis-0 flex-col items-center gap-1 text-center"
@@ -26,8 +26,13 @@ export const DaoInfoBar = ({ items, className }: DaoInfoBarProps) => (
           {tooltip && <TooltipInfoIcon size="xs" title={tooltip} />}
         </div>
 
-        <div className="symbol-small-body-text flex flex-row gap-1 font-mono">
-          {value}
+        <div
+          className={clsx(
+            'symbol-small-body-text flex flex-row gap-1 font-mono',
+            loading && 'animate-pulse'
+          )}
+        >
+          {value || (loading && '...')}
         </div>
       </div>
     ))}

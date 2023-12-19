@@ -4,6 +4,7 @@ export interface DaoInfoBarItem {
   Icon: ComponentType<{ className: string }>
   label: string
   tooltip?: string
+  loading?: boolean
   value: ReactNode
 }
 
