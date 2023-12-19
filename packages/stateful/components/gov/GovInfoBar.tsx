@@ -3,22 +3,13 @@ import { useTranslation } from 'react-i18next'
 
 import { communityPoolTvlSelector } from '@dao-dao/state'
 import {
-  DaoInfoBarLoader,
-  DaoInfoBar as StatelessDaoInfoBar,
+  DaoInfoBar,
   TokenAmountDisplay,
   useCachedLoading,
   useChain,
 } from '@dao-dao/stateless'
 
-import { SuspenseLoader } from '../SuspenseLoader'
-
-export const GovInfoBar = () => (
-  <SuspenseLoader fallback={<DaoInfoBarLoader />}>
-    <InnerGovInfoBar />
-  </SuspenseLoader>
-)
-
-const InnerGovInfoBar = () => {
+export const GovInfoBar = () => {
   const { t } = useTranslation()
   const { chain_id: chainId } = useChain()
 
@@ -33,9 +24,8 @@ const InnerGovInfoBar = () => {
   )
 
   return (
-    <StatelessDaoInfoBar
+    <DaoInfoBar
       items={[
-        // Common items.
         {
           Icon: AccountBalanceOutlined,
           label: t('title.treasury'),

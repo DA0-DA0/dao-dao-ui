@@ -14,6 +14,7 @@ import {
   DaoPageWrapperProps,
   LinkWrapper,
   ProfileDaoHomeCard,
+  ProfileDisconnectedCard,
   SuspenseLoader,
   useDaoTabs,
   useFollowingDaos,
@@ -165,8 +166,17 @@ const InnerDaoHome = () => {
   }, [daoInfo.coreAddress, getDaoPath, router, tabs])
 
   const slug = (router.query.slug || []) as string[]
+  const checkedSlug = useRef(false)
   useEffect(() => {
-    // If no slug, redirect to first tab.
+    // Only check one time, in case they load the page with no slug. This
+    // prevents a bug where sometimes this would reset the page to the current
+    // DAO when clicking on a SubDAO before the SubDAO loads.
+    if (checkedSlug.current) {
+      return
+    }
+    checkedSlug.current = true
+
+    // If no slug and on current DAO, redirect to first tab.
     if (slug.length === 0) {
       router.push(getDaoPath(daoInfo.coreAddress, firstTabId), undefined, {
         shallow: true,
@@ -199,7 +209,13 @@ const InnerDaoHome = () => {
         updatingFollowing,
       }}
       onSelectTabId={onSelectTabId}
-      rightSidebarContent={<ProfileDaoHomeCard />}
+      rightSidebarContent={
+        <SuspenseLoader
+          fallback={<ProfileDisconnectedCard className="animate-pulse" />}
+        >
+          <ProfileDaoHomeCard />
+        </SuspenseLoader>
+      }
       selectedTabId={tabId}
       tabs={tabs || []}
     />

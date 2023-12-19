@@ -92,9 +92,7 @@ export const accountsSelector = selectorFamily<
       const icaChains =
         mainAccount.type === AccountType.Native
           ? [
-              ...(registeredIcas || []).map(([key]) =>
-                key.replace(ICA_CHAINS_TX_PREFIX, '')
-              ),
+              ...(registeredIcas || []).map(([key]) => key),
               ...(includeIcaChains || []),
             ]
           : []

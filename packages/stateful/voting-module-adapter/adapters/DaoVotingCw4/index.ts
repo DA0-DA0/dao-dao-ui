@@ -8,7 +8,11 @@ import {
 import { DaoVotingCw4AdapterId } from '@dao-dao/utils'
 
 import { makeManageMembersAction } from './actions'
-import { MembersTab, ProfileCardMemberInfo } from './components'
+import {
+  DaoInfoBarLoader,
+  MembersTab,
+  ProfileCardMemberInfo,
+} from './components'
 import { useDaoInfoBarItems, useProfileNewProposalCardAddresses } from './hooks'
 
 export const DaoVotingCw4Adapter: VotingModuleAdapter = {
@@ -38,6 +42,8 @@ export const DaoVotingCw4Adapter: VotingModuleAdapter = {
           Icon: PeopleAltOutlined,
         },
       ],
+
+      DaoInfoBarLoader,
       ProfileCardMemberInfo,
     },
 

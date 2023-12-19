@@ -1,5 +1,4 @@
-import { useCallback, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useCallback } from 'react'
 
 import { PeopleEmoji } from '@dao-dao/stateless'
 import {
@@ -14,7 +13,7 @@ import { makeWasmMessage } from '@dao-dao/utils'
 
 import { useActionOptions } from '../../../../../actions'
 import { AddressInput } from '../../../../../components'
-import { useVotingModule as useCw4VotingModule } from '../../hooks/useVotingModule'
+import { useLoadingVotingModule } from '../../hooks/useLoadingVotingModule'
 import {
   ManageMembersData,
   ManageMembersComponent as StatelessManageMembersComponent,
@@ -26,21 +25,22 @@ const useDefaults: UseDefaults<ManageMembersData> = (): ManageMembersData => ({
 })
 
 const Component: ActionComponent = (props) => {
-  const { t } = useTranslation()
   const { address } = useActionOptions()
 
-  const { members } = useCw4VotingModule(address, {
+  const votingModule = useLoadingVotingModule(address, {
     fetchMembers: true,
   })
-  if (!members) {
-    throw new Error(t('error.loadingData'))
-  }
 
   return (
     <StatelessManageMembersComponent
       {...props}
       options={{
-        currentMembers: members.map(({ addr }) => addr),
+        currentMembers:
+          votingModule.loading ||
+          votingModule.errored ||
+          !votingModule.data.members
+            ? []
+            : votingModule.data.members.map(({ addr }) => addr),
         AddressInput,
       }}
     />
@@ -52,11 +52,19 @@ export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
   address,
 }) => {
   const useTransformToCosmos: UseTransformToCosmos<ManageMembersData> = () => {
-    const { cw4GroupAddress } = useCw4VotingModule(address)
+    const votingModule = useLoadingVotingModule(address)
+    const cw4GroupAddress =
+      votingModule.loading || votingModule.errored
+        ? undefined
+        : votingModule.data.cw4GroupAddress
 
     return useCallback(
-      ({ toAdd, toRemove }) =>
-        makeWasmMessage({
+      ({ toAdd, toRemove }) => {
+        if (!cw4GroupAddress) {
+          throw new Error(t('error.loadingData'))
+        }
+
+        return makeWasmMessage({
           wasm: {
             execute: {
               contract_addr: cw4GroupAddress,
@@ -69,7 +77,8 @@ export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
               },
             },
           },
-        }),
+        })
+      },
       [cw4GroupAddress]
     )
   }
@@ -77,33 +86,38 @@ export const makeManageMembersAction: ActionMaker<ManageMembersData> = ({
   const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageMembersData> = (
     msg: Record<string, any>
   ) => {
-    const { cw4GroupAddress } = useCw4VotingModule(address)
+    const votingModule = useLoadingVotingModule(address)
+    const cw4GroupAddress =
+      votingModule.loading || votingModule.errored
+        ? undefined
+        : votingModule.data.cw4GroupAddress
 
-    return useMemo(() => {
-      if (
-        'wasm' in msg &&
-        'execute' in msg.wasm &&
-        'contract_addr' in msg.wasm.execute &&
-        msg.wasm.execute.contract_addr === cw4GroupAddress &&
-        'update_members' in msg.wasm.execute.msg &&
-        'add' in msg.wasm.execute.msg.update_members &&
-        'remove' in msg.wasm.execute.msg.update_members
-      ) {
-        return {
-          match: true,
-          data: {
-            toAdd: msg.wasm.execute.msg.update_members.add,
-            toRemove: msg.wasm.execute.msg.update_members.remove.map(
-              (addr: string) => ({
-                addr,
-              })
-            ),
-          },
-        }
+    if (
+      cw4GroupAddress &&
+      'wasm' in msg &&
+      'execute' in msg.wasm &&
+      'contract_addr' in msg.wasm.execute &&
+      msg.wasm.execute.contract_addr === cw4GroupAddress &&
+      'update_members' in msg.wasm.execute.msg &&
+      'add' in msg.wasm.execute.msg.update_members &&
+      'remove' in msg.wasm.execute.msg.update_members
+    ) {
+      return {
+        match: true,
+        data: {
+          toAdd: msg.wasm.execute.msg.update_members.add,
+          toRemove: msg.wasm.execute.msg.update_members.remove.map(
+            (addr: string) => ({
+              addr,
+            })
+          ),
+        },
       }
+    }
 
-      return { match: false }
-    }, [cw4GroupAddress, msg])
+    return {
+      match: false,
+    }
   }
 
   return {
