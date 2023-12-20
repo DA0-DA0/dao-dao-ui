@@ -194,22 +194,26 @@ export const makeVetoOrEarlyExecuteDaoProposalAction: ActionMaker<
 
     // Get DAO that this proposal module is attached to.
     const daoLoading = useCachedLoadingWithError(
-      DaoProposalCommonSelectors.daoSelector({
-        chainId,
-        contractAddress: msg.wasm.execute.contract_addr,
-      })
+      isWasmExecuteMessage
+        ? DaoProposalCommonSelectors.daoSelector({
+            chainId,
+            contractAddress: msg.wasm.execute.contract_addr,
+          })
+        : undefined
     )
 
     const proposalLoading = useCachedLoadingWithError(
-      DaoProposalCommonSelectors.proposalSelector({
-        chainId,
-        contractAddress: msg.wasm.execute.contract_addr,
-        params: [
-          {
-            proposalId,
-          },
-        ],
-      })
+      isWasmExecuteMessage
+        ? DaoProposalCommonSelectors.proposalSelector({
+            chainId,
+            contractAddress: msg.wasm.execute.contract_addr,
+            params: [
+              {
+                proposalId,
+              },
+            ],
+          })
+        : undefined
     )
 
     if (
