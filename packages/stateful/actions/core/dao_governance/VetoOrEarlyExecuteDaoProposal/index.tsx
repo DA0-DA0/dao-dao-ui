@@ -60,8 +60,38 @@ const Component: ActionComponent<
     daosWithVetoableProposalsSelector({
       chainId: daoChainId,
       coreAddress: address,
+      // Include even those not registered in the DAO's list.
+      includeAll: true,
     })
   )
+  // If no DAO selected, autoselect first one.
+  useEffect(() => {
+    if (
+      !isCreating ||
+      (chainId && coreAddress) ||
+      daoVetoableProposals.loading ||
+      daoVetoableProposals.errored ||
+      daoVetoableProposals.data.length === 0
+    ) {
+      return
+    }
+
+    setValue(
+      (fieldNamePrefix + 'chainId') as 'chainId',
+      daoVetoableProposals.data[0].chainId
+    )
+    setValue(
+      (fieldNamePrefix + 'coreAddress') as 'coreAddress',
+      daoVetoableProposals.data[0].dao
+    )
+  }, [
+    chainId,
+    coreAddress,
+    daoVetoableProposals,
+    fieldNamePrefix,
+    isCreating,
+    setValue,
+  ])
 
   const selectedDaoInfo = useCachedLoadingWithError(
     chainId && coreAddress

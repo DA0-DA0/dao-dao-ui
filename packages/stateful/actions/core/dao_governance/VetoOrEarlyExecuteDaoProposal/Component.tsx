@@ -105,6 +105,15 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
           )
           ?.proposals.find(({ id }) => id === proposalId)
 
+  const showingSelectedProposal =
+    !!chainId &&
+    !!coreAddress &&
+    !selectedDaoInfo.loading &&
+    !selectedDaoInfo.errored &&
+    !selectedDaoInfo.updating &&
+    !!selectedProposalModule &&
+    !!selectedProposal
+
   const [manualProposalId, setManualProposalId] = useState('')
 
   return (
@@ -196,107 +205,161 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
         <Loader />
       ) : daoVetoableProposals.data.length > 0 ? (
         <>
-          <InputLabel className="-mb-2" name={t('title.proposal')} />
+          <div className="flex flex-col gap-1">
+            <InputLabel name={t('title.dao')} />
 
-          <FilterableItemPopup
-            filterableItemKeys={FILTERABLE_KEYS}
-            items={daoVetoableProposals.data.flatMap(
-              ({ chainId, dao, proposalsWithModule }) =>
-                proposalsWithModule.flatMap(
-                  ({
-                    proposalModule: { prefix, address: proposalModuleAddress },
-                    proposals,
-                  }) =>
-                    proposals.map(({ id, proposal }) => {
-                      const key = getKey(
-                        chainId,
-                        dao,
-                        proposalModuleAddress,
-                        id
-                      )
-
-                      return {
-                        key,
-                        selected: selectedKey === key,
-                        label: `${prefix}${id}: ${proposal.title}`,
-                        rightNode: (
-                          <ChainProvider chainId={chainId}>
-                            <EntityDisplay address={dao} />
-                          </ChainProvider>
-                        ),
-                        value: {
-                          chainId,
-                          coreAddress: dao,
-                          proposalModuleAddress,
-                          proposalId: id,
-                        },
-                      }
-                    })
+            <FilterableItemPopup
+              filterableItemKeys={FILTERABLE_KEYS}
+              items={daoVetoableProposals.data.map((vetoableDao) => ({
+                key: getKey(vetoableDao.chainId, vetoableDao.dao, '', -1),
+                selected:
+                  chainId === vetoableDao.chainId &&
+                  coreAddress === vetoableDao.dao,
+                label: (
+                  <ChainProvider chainId={vetoableDao.chainId}>
+                    <EntityDisplay address={vetoableDao.dao} noCopy noLink />
+                  </ChainProvider>
+                ),
+                name: vetoableDao.name,
+                value: {
+                  chainId,
+                  coreAddress: vetoableDao.dao,
+                },
+                className: '!ring-0',
+              }))}
+              onSelect={({ value: { chainId, coreAddress } }) => {
+                setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
+                setValue(
+                  (fieldNamePrefix + 'coreAddress') as 'coreAddress',
+                  coreAddress
                 )
-            )}
-            onSelect={({
-              value: {
-                chainId,
-                coreAddress,
-                proposalModuleAddress,
-                proposalId,
-              },
-            }) => {
-              setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
-              setValue(
-                (fieldNamePrefix + 'coreAddress') as 'coreAddress',
-                coreAddress
-              )
-              setValue(
-                (fieldNamePrefix +
-                  'proposalModuleAddress') as 'proposalModuleAddress',
-                proposalModuleAddress
-              )
-              setValue(
-                (fieldNamePrefix + 'proposalId') as 'proposalId',
-                proposalId
-              )
-            }}
-            trigger={{
-              type: 'button',
-              props: {
-                className: !selectedProposal ? 'self-start' : undefined,
-                variant: 'ghost_outline',
-                size: 'lg',
-                loading:
-                  !!chainId &&
-                  !!coreAddress &&
-                  (selectedDaoInfo.loading ||
-                    selectedDaoInfo.errored ||
-                    !!selectedDaoInfo.updating),
-                children:
-                  chainId &&
-                  coreAddress &&
-                  !selectedDaoInfo.loading &&
-                  !selectedDaoInfo.errored &&
-                  !selectedDaoInfo.updating &&
-                  selectedProposalModule &&
-                  selectedProposal ? (
-                    <div className="flex w-full flex-col gap-3">
+                setValue(
+                  (fieldNamePrefix +
+                    'proposalModuleAddress') as 'proposalModuleAddress',
+                  ''
+                )
+                setValue((fieldNamePrefix + 'proposalId') as 'proposalId', -1)
+              }}
+              trigger={{
+                type: 'button',
+                props: {
+                  className: 'self-start',
+                  variant:
+                    !chainId || !coreAddress ? 'primary' : 'ghost_outline',
+                  size: 'lg',
+                  children:
+                    chainId && coreAddress ? (
                       <ChainProvider chainId={chainId}>
-                        <EntityDisplay address={coreAddress} />
+                        <EntityDisplay address={coreAddress} noCopy noLink />
                       </ChainProvider>
+                    ) : (
+                      t('button.chooseDao')
+                    ),
+                },
+              }}
+            />
 
-                      <ProposalLine
-                        chainId={chainId}
-                        coreAddress={coreAddress}
-                        isPreProposeProposal={false}
-                        proposalId={`${selectedProposalModule.prefix}${selectedProposal.id}`}
-                        proposalModules={selectedDaoInfo.data.proposalModules}
-                        proposalViewUrl=""
-                      />
-                    </div>
-                  ) : (
-                    t('button.chooseProposal')
-                  ),
-              },
-            }}
-          />
+            <InputErrorMessage error={errors?.coreAddress} />
+          </div>
+
+          <div className="flex flex-col items-start gap-2">
+            <InputLabel name={t('title.proposal')} />
+
+            {showingSelectedProposal && (
+              <div className="self-stretch">
+                <ProposalLine
+                  chainId={chainId}
+                  coreAddress={coreAddress}
+                  isPreProposeProposal={false}
+                  proposalId={`${selectedProposalModule.prefix}${selectedProposal.id}`}
+                  proposalModules={selectedDaoInfo.data.proposalModules}
+                  proposalViewUrl=""
+                />
+              </div>
+            )}
+
+            <FilterableItemPopup
+              filterableItemKeys={FILTERABLE_KEYS}
+              items={daoVetoableProposals.data
+                .filter(
+                  (vetoableDao) =>
+                    vetoableDao.chainId === chainId &&
+                    vetoableDao.dao === coreAddress
+                )
+                .flatMap(({ chainId, dao, proposalsWithModule }) =>
+                  proposalsWithModule.flatMap(
+                    ({
+                      proposalModule: {
+                        prefix,
+                        address: proposalModuleAddress,
+                      },
+                      proposals,
+                    }) =>
+                      proposals.map(({ id, proposal }) => {
+                        const key = getKey(
+                          chainId,
+                          dao,
+                          proposalModuleAddress,
+                          id
+                        )
+
+                        return {
+                          key,
+                          selected: selectedKey === key,
+                          label: `${prefix}${id}: ${proposal.title}`,
+                          value: {
+                            chainId,
+                            coreAddress: dao,
+                            proposalModuleAddress,
+                            proposalId: id,
+                          },
+                          className: '!ring-0',
+                        }
+                      })
+                  )
+                )}
+              onSelect={({
+                value: {
+                  chainId,
+                  coreAddress,
+                  proposalModuleAddress,
+                  proposalId,
+                },
+              }) => {
+                setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
+                setValue(
+                  (fieldNamePrefix + 'coreAddress') as 'coreAddress',
+                  coreAddress
+                )
+                setValue(
+                  (fieldNamePrefix +
+                    'proposalModuleAddress') as 'proposalModuleAddress',
+                  proposalModuleAddress
+                )
+                setValue(
+                  (fieldNamePrefix + 'proposalId') as 'proposalId',
+                  proposalId
+                )
+              }}
+              trigger={{
+                type: 'button',
+                props: {
+                  variant: showingSelectedProposal ? 'secondary' : 'primary',
+                  size: 'lg',
+                  disabled: !chainId || !coreAddress,
+                  loading:
+                    !!chainId &&
+                    !!coreAddress &&
+                    (selectedDaoInfo.loading ||
+                      selectedDaoInfo.errored ||
+                      !!selectedDaoInfo.updating),
+                  children: showingSelectedProposal
+                    ? t('button.changeProposal')
+                    : t('button.chooseProposal'),
+                },
+              }}
+            />
+          </div>
         </>
       ) : (
         <NoContent
@@ -309,7 +372,7 @@ export const VetoOrEarlyExecuteDaoProposalComponent: ActionComponent<
   )
 }
 
-const FILTERABLE_KEYS = ['key', 'label']
+const FILTERABLE_KEYS = ['key', 'label', 'name']
 
 const getKey = (
   chainId: string,

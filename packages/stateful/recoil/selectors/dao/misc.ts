@@ -452,11 +452,18 @@ export const daoVetoableDaosSelector = selectorFamily<
  */
 export const daosWithVetoableProposalsSelector = selectorFamily<
   DaoWithVetoableProposals[],
-  WithChainId<{ coreAddress: string }>
+  WithChainId<{
+    coreAddress: string
+    /**
+     * Include even DAOs not added to the vetoable DAOs list. By default, this
+     * will filter out DAOs not explicitly registered in the list.
+     */
+    includeAll?: boolean
+  }>
 >({
   key: 'daosWithVetoableProposals',
   get:
-    ({ chainId, coreAddress }) =>
+    ({ chainId, coreAddress, includeAll = false }) =>
     ({ get }) => {
       // Refresh this when all proposals refresh.
       const id = get(refreshProposalsIdAtom)
@@ -497,11 +504,13 @@ export const daosWithVetoableProposalsSelector = selectorFamily<
             ...d,
           }))
         )
-        .filter(({ chainId, dao }) =>
-          vetoableDaos.some(
-            (vetoable) =>
-              vetoable.chainId === chainId && vetoable.coreAddress === dao
-          )
+        .filter(
+          ({ chainId, dao }) =>
+            includeAll ||
+            vetoableDaos.some(
+              (vetoable) =>
+                vetoable.chainId === chainId && vetoable.coreAddress === dao
+            )
         )
 
       const uniqueChainsAndDaos = uniq(
@@ -510,25 +519,34 @@ export const daosWithVetoableProposalsSelector = selectorFamily<
         )
       )
 
-      const daoProposalModules = get(
+      const daoConfigAndProposalModules = get(
         waitForAllSettled(
-          uniqueChainsAndDaos.map((chainAndDao) =>
-            daoCoreProposalModulesSelector({
-              chainId: chainAndDao.split(':')[0],
-              coreAddress: chainAndDao.split(':')[1],
-            })
-          )
+          uniqueChainsAndDaos.map((chainAndDao) => {
+            const [chainId, coreAddress] = chainAndDao.split(':')
+            return waitForAll([
+              DaoCoreV2Selectors.configSelector({
+                chainId,
+                contractAddress: coreAddress,
+                params: [],
+              }),
+              daoCoreProposalModulesSelector({
+                chainId,
+                coreAddress,
+              }),
+            ])
+          })
         )
       )
 
       return uniqueChainsAndDaos.flatMap((chainAndDao, index) => {
-        const proposalModules = daoProposalModules[index]
+        const daoData = daoConfigAndProposalModules[index]
 
-        return proposalModules.state === 'hasValue'
+        return daoData.state === 'hasValue'
           ? {
               chainId: chainAndDao.split(':')[0],
               dao: chainAndDao.split(':')[1],
-              proposalModules: proposalModules.contents,
+              name: daoData.contents[0].name,
+              proposalModules: daoData.contents[1],
               proposalsWithModule: daoVetoableProposalsPerChain.find(
                 (vetoable) =>
                   `${vetoable.chainId}:${vetoable.dao}` === chainAndDao
