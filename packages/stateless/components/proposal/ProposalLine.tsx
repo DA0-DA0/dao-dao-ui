@@ -58,10 +58,11 @@ export const ProposalLine = ({
         <Status />
       </div>
 
-      <div className="flex grow flex-row items-center gap-2">
+      <div className="flex min-w-0 grow flex-row items-center gap-2">
         {approvalContext && (
           <ApprovalBadge context={approvalContext} size="sm" tooltip />
         )}
+
         <p className="body-text grow truncate">{title}</p>
       </div>
 
