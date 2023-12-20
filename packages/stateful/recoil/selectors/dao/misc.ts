@@ -17,6 +17,7 @@ import {
   contractVersionSelector,
   isDaoSelector,
   queryContractIndexerSelector,
+  queryWalletIndexerSelector,
   refreshProposalsIdAtom,
 } from '@dao-dao/state'
 import {
@@ -477,29 +478,38 @@ export const daosWithVetoableProposalsSelector = selectorFamily<
 
       // Load DAOs this DAO has enabled vetoable proposal listing for.
       const vetoableDaos = get(
-        daoVetoableDaosSelector({
+        isDaoSelector({
           chainId,
-          coreAddress,
+          address: coreAddress,
         })
       )
+        ? get(
+            waitForAllSettled([
+              daoVetoableDaosSelector({
+                chainId,
+                coreAddress,
+              }),
+            ])
+          )[0].valueMaybe() || []
+        : []
 
       const daoVetoableProposalsPerChain = (
         get(
           waitForAll(
             accounts.map(({ chainId, address }) =>
-              queryContractIndexerSelector({
+              queryWalletIndexerSelector({
                 chainId,
-                contractAddress: address,
-                formula: 'daoCore/vetoableProposals',
+                walletAddress: address,
+                formula: 'veto/vetoableProposals',
                 required: true,
                 id,
               })
             )
           )
-        ) as IndexerDaoWithVetoableProposals[][]
+        ) as (IndexerDaoWithVetoableProposals[] | undefined)[]
       )
         .flatMap((data, index) =>
-          data.map((d) => ({
+          (data || []).map((d) => ({
             chainId: accounts[index].chainId,
             ...d,
           }))

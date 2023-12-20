@@ -64,6 +64,7 @@ const Component: ActionComponent<
       includeAll: true,
     })
   )
+
   // If no DAO selected, autoselect first one.
   useEffect(() => {
     if (
