@@ -35,9 +35,8 @@ import {
   NEW_DAO_TOKEN_DECIMALS,
   convertDenomToMicroDenomWithDecimals,
   formatPercentOf100,
-  isValidTokenFactoryDenom,
-  makeValidateNativeOrFactoryTokenDenom,
-  nativeTokenExists,
+  isValidNativeTokenDenom,
+  validateNativeTokenDenom,
   validatePercent,
   validatePositive,
   validateRequired,
@@ -195,10 +194,8 @@ export const GovernanceConfigurationInput = ({
 
   //! Validate existing governance token.
   const governanceTokenIsValid =
-    // Native token.
-    nativeTokenExists(chainId, data.existingTokenDenom) ||
-    // Factory token.
-    isValidTokenFactoryDenom(data.existingTokenDenom, bech32Prefix)
+    !!data.existingTokenDenom &&
+    isValidNativeTokenDenom(data.existingTokenDenom)
   const existingGovernanceTokenLoadable = useRecoilValueLoadable(
     governanceTokenIsValid
       ? genericTokenSelector({
@@ -211,7 +208,8 @@ export const GovernanceConfigurationInput = ({
   const existingGovernanceTokenSupply = useRecoilValueLoadable<
     TokenInfoResponse | number | undefined
   >(
-    governanceTokenIsValid
+    existingGovernanceTokenLoadable.state === 'hasValue' &&
+      existingGovernanceTokenLoadable.contents
       ? nativeSupplySelector({
           chainId,
           denom: data.existingTokenDenom,
@@ -526,12 +524,9 @@ export const GovernanceConfigurationInput = ({
                 error={errors.creator?.data?.existingTokenDenom}
                 fieldName="creator.data.existingTokenDenom"
                 ghost
-                placeholder={`"denom" OR "factory/${bech32Prefix}.../denom"`}
+                placeholder={`"denom" OR "ibc/HASH" OR "factory/${bech32Prefix}.../denom"`}
                 register={register}
-                validation={[
-                  validateRequired,
-                  makeValidateNativeOrFactoryTokenDenom(chainId),
-                ]}
+                validation={[validateRequired, validateNativeTokenDenom]}
               />
               <InputErrorMessage
                 error={
