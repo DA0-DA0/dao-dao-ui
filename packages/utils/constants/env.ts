@@ -1,7 +1,5 @@
 // Constants derived from environment variables.
 
-import { ChainId } from '@dao-dao/types'
-
 export const VERCEL_ENV = process.env.NEXT_PUBLIC_VERCEL_ENV
 
 export const SITE_URL =
@@ -16,9 +14,6 @@ export const LEGACY_URL_PREFIX = process.env
 
 // True if on mainnet, false if on testnet.
 export const MAINNET = process.env.NEXT_PUBLIC_MAINNET === 'true'
-export const DEFAULT_CHAIN_ID = MAINNET
-  ? ChainId.JunoMainnet
-  : ChainId.JunoTestnet
 
 export const DAO_DAO_DAO_ADDRESS = process.env
   .NEXT_PUBLIC_DAO_DAO_DAO_ADDRESS as string

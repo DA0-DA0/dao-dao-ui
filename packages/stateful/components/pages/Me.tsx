@@ -3,7 +3,7 @@ import { NextSeo } from 'next-seo'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useSetRecoilState } from 'recoil'
 
 import {
   averageColorSelector,
@@ -14,14 +14,21 @@ import {
   ChainProvider,
   Loader,
   LogInRequiredPage,
+  PageLoader,
   Me as StatelessMe,
   useCachedLoadable,
   useThemeContext,
 } from '@dao-dao/stateless'
 import { Theme } from '@dao-dao/types'
-import { SITE_URL, transformBech32Address } from '@dao-dao/utils'
+import {
+  SITE_URL,
+  getConfiguredChainConfig,
+  getConfiguredChains,
+  transformBech32Address,
+} from '@dao-dao/utils'
 
 import { WalletActionsProvider } from '../../actions/react/provider'
+import { useQuerySyncedRecoilState } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { ConnectWallet } from '../ConnectWallet'
@@ -43,7 +50,18 @@ export const Me: NextPage = () => {
   } = useWallet()
   const { walletProfileData: profileData, updateProfileName } = useWalletInfo()
 
-  const chainId = useRecoilValue(walletChainIdAtom)
+  // Sync chain ID in query param.
+  const [chainId, setWalletChainId] = useQuerySyncedRecoilState({
+    param: 'chain',
+    atom: walletChainIdAtom,
+  })
+  // Switch to a valid chain if not configured.
+  const configuredChainConfig = getConfiguredChainConfig(chainId)
+  useEffect(() => {
+    if (!configuredChainConfig) {
+      setWalletChainId(getConfiguredChains()[0].chainId)
+    }
+  }, [configuredChainConfig, setWalletChainId])
 
   const { setAccentColor, theme } = useThemeContext()
   // Get average color of image URL.
@@ -102,7 +120,9 @@ export const Me: NextPage = () => {
         title={t('title.me')}
       />
 
-      {isWalletConnected ? (
+      {!configuredChainConfig ? (
+        <PageLoader />
+      ) : isWalletConnected ? (
         // Refresh all children when chain changes since state varies by chain.
         <ChainProvider key={chainId} chainId={chainId}>
           <WalletActionsProvider

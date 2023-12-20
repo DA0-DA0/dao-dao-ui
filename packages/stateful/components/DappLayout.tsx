@@ -30,7 +30,7 @@ import {
   useCachedLoading,
   usePlatform,
 } from '@dao-dao/stateless'
-import { DEFAULT_CHAIN_ID, getSupportedChains } from '@dao-dao/utils'
+import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
 
 import { CommandModal } from '../command'
 import { useWallet, useWalletInfo } from '../hooks'
@@ -54,7 +54,13 @@ export const DappLayout = ({ children }: { children: ReactNode }) => {
   const walletChainId = useRecoilValue(walletChainIdAtom)
   // Prevent hydration mismatch error by loading chain ID from local storage
   // after mounting.
-  const chainId = mountedInBrowser ? walletChainId : DEFAULT_CHAIN_ID
+  let chainId = mountedInBrowser
+    ? walletChainId
+    : getSupportedChains()[0].chainId
+  // Fallback to default if chain ID invalid.
+  if (!maybeGetChainForChainId(chainId)) {
+    chainId = getSupportedChains()[0].chainId
+  }
 
   const [betaWarningAccepted, setBetaWarningAccepted] = useRecoilState(
     betaWarningAcceptedAtom

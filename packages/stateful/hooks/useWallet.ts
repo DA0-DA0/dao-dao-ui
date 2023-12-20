@@ -14,7 +14,7 @@ import {
   useChainContextIfAvailable,
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
-import { getChainForChainId } from '@dao-dao/utils'
+import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
 
 export type UseWalletOptions = {
   chainId?: string
@@ -37,10 +37,13 @@ export const useWallet = ({
   const { chain: currentChain } = useChainContextIfAvailable() ?? {}
 
   // If chainId passed, use that. Otherwise, use current chain context. If not
-  // in a chain context, fallback to global wallet chain setting.
-  const chain = chainId
-    ? getChainForChainId(chainId)
-    : currentChain || getChainForChainId(walletChainId)
+  // in a chain context, fallback to global wallet chain setting. If chain
+  // invalid, fallback to default.
+  const chain =
+    (chainId
+      ? maybeGetChainForChainId(chainId)
+      : currentChain || maybeGetChainForChainId(walletChainId)) ||
+    getSupportedChains()[0].chain
 
   const _walletChain = useChain(chain.chain_name)
 

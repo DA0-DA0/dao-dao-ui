@@ -5,12 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import {
-  constSelector,
-  useRecoilState,
-  useRecoilValue,
-  useSetRecoilState,
-} from 'recoil'
+import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
 
 import { averageColorSelector, walletChainIdAtom } from '@dao-dao/state/recoil'
 import {
@@ -67,6 +62,7 @@ import {
   CwAdminFactoryHooks,
   useAwaitNextBlock,
   useFollowingDaos,
+  useQuerySyncedRecoilState,
   useWallet,
   useWalletInfo,
 } from '../../hooks'
@@ -100,10 +96,16 @@ export interface CreateDaoFormProps {
 }
 
 export const CreateDaoForm = (props: CreateDaoFormProps) => {
-  const setWalletChainId = useSetRecoilState(walletChainIdAtom)
+  // Sync chain ID in query param.
+  const [, setWalletChainId] = useQuerySyncedRecoilState({
+    // If parent DAO exists, we use the parent DAO's chain, so no need to sync
+    // this in state as it won't be used.
+    param: props.parentDao ? undefined : 'chain',
+    atom: walletChainIdAtom,
+  })
+
+  // If parent DAO exists, we're making a SubDAO, so use the parent DAO's chain.
   const chainId = useRecoilValue(
-    // If parent DAO exists, we're making a SubDAO, so use the parent DAO's
-    // chain ID.
     props.parentDao ? constSelector(props.parentDao.chainId) : walletChainIdAtom
   )
 
