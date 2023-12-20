@@ -105,7 +105,7 @@ export const CreateDaoStart = ({
               selected={watch('creator.id') === id}
               supplies={t(suppliesI18nKey)}
               underDevelopment={
-                // TODO(neutron-2.4.0): upgrade to v2.3.0 once CW 1.1 is supported
+                // TODO(neutron-2.4.0): upgrade once CW 1.1 is supported
                 // Neutron cannot upgrade to v2.3.0 until it updates to CosmWasm
                 // 1.1+, so it only supports Membership-based DAOs until then.
                 chainId === ChainId.NeutronMainnet &&
