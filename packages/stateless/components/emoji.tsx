@@ -264,3 +264,7 @@ export const ControlKnobsEmoji = () => (
 export const ThumbDownEmoji = () => (
   <EmojiWrapper emoji="👎" labelI18nKey="emoji.thumbDown" />
 )
+
+export const ComputerDiskEmoji = () => (
+  <EmojiWrapper emoji="💽" labelI18nKey="emoji.computerDisk" />
+)
