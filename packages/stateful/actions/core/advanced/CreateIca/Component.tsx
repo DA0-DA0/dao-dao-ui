@@ -63,9 +63,14 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
           <IbcDestinationChainPicker
             buttonClassName="self-start"
             includeSourceChain={false}
-            onSelect={(chainId) =>
+            onSelect={(chainId) => {
+              // Type-check. None option is disabled so should not be possible.
+              if (!chainId) {
+                return
+              }
+
               setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
-            }
+            }}
             selectedChainId={destinationChainId}
             sourceChainId={sourceChainId}
           />

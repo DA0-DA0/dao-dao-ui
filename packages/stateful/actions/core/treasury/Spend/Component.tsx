@@ -383,12 +383,18 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                 buttonClassName={toWrapped ? 'grow' : undefined}
                 disabled={selectedToken?.token.type === TokenType.Cw20}
                 includeSourceChain
-                onSelect={(chainId) =>
+                onSelect={(chainId) => {
+                  // Type-check. None option is disabled so should not be
+                  // possible.
+                  if (!chainId) {
+                    return
+                  }
+
                   setValue(
                     (fieldNamePrefix + 'toChainId') as 'toChainId',
                     chainId
                   )
-                }
+                }}
                 selectedChainId={toChainId}
                 sourceChainId={spendChainId}
               />

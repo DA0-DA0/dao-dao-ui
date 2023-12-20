@@ -76,11 +76,11 @@ import {
   makeDefaultNewDao,
   newDaoAtom,
 } from '../../recoil/atoms/newDao'
-import { ChainSwitcher } from '../ChainSwitcher'
 import { LinkWrapper } from '../LinkWrapper'
 import { SuspenseLoader } from '../SuspenseLoader'
 import { TokenAmountDisplay } from '../TokenAmountDisplay'
 import { Trans } from '../Trans'
+import { WalletChainSwitcher } from '../wallet'
 import { loadCommonVotingConfigItems } from './commonVotingConfig'
 
 // i18n keys
@@ -648,7 +648,13 @@ export const InnerCreateDaoForm = ({
         }}
         className="mx-auto max-w-4xl"
         gradient
-        rightNode={!makingSubDao && <ChainSwitcher />}
+        rightNode={
+          !makingSubDao && (
+            <div className="hidden sm:block">
+              <WalletChainSwitcher />
+            </div>
+          )
+        }
       />
 
       {/* No container padding because we want the gradient to expand. Apply px-6 to children instead. */}
@@ -658,9 +664,14 @@ export const InnerCreateDaoForm = ({
       >
         {/* Show image selector or DAO header depending on page. */}
         {pageIndex === 0 ? (
-          <div className="flex flex-col items-center py-10">
+          <div className="flex flex-col items-center pb-10">
+            <div className="sm:hidden">
+              <WalletChainSwitcher />
+            </div>
+
             <ImageSelector
               Trans={Trans}
+              className="mt-10"
               error={form.formState.errors.imageUrl}
               fieldName="imageUrl"
               register={form.register}

@@ -9,9 +9,10 @@ import { useQuerySyncedState, useSearchFilter } from '../../hooks'
 import { Collapsible } from '../Collapsible'
 import { ErrorPage } from '../error'
 import { GridCardContainer } from '../GridCardContainer'
-import { ChainSwitcher, SearchBar } from '../inputs'
+import { SearchBar } from '../inputs'
 import { Loader } from '../logo'
 import { NoContent } from '../NoContent'
+import { ChainPickerPopup } from '../popup'
 
 export type WalletDaosProps = {
   daos: LoadingDataWithError<LazyDaoCardProps[]>
@@ -60,13 +61,14 @@ export const WalletDaos = ({ daos, LazyDaoCard }: WalletDaosProps) => {
           {...searchBarProps}
         />
 
-        <ChainSwitcher
+        <ChainPickerPopup
+          chains={{ type: 'supported' }}
           noneIcon={BlurOn}
           noneLabel={t('info.allChains')}
-          onSelect={(chain) => setChainId(chain?.chain_id)}
-          selected={chainId}
+          onSelect={setChainId}
+          selectedChainId={chainId}
           showNone
-          wrapperClassName="flex flex-row items-stretch"
+          // wrapperClassName="flex flex-row items-stretch"
         />
       </div>
 

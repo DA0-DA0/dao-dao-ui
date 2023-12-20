@@ -71,9 +71,15 @@ export const ManageIcasComponent: ActionComponent<ManageIcasOptions> = ({
               buttonClassName="self-start"
               disabled={!isCreating}
               includeSourceChain={false}
-              onSelect={(chainId) =>
+              onSelect={(chainId) => {
+                // Type-check. None option is disabled so should not be
+                // possible.
+                if (!chainId) {
+                  return
+                }
+
                 setValue((fieldNamePrefix + 'chainId') as 'chainId', chainId)
-              }
+              }}
               selectedChainId={chainId}
               sourceChainId={sourceChainId}
             />
