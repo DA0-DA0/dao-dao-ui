@@ -1,13 +1,16 @@
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
-import { useRecoilValue } from 'recoil'
 
 import {
   DaoCoreV2Selectors,
   DaoPreProposeApprovalSingleSelectors,
   DaoProposalSingleCommonSelectors,
 } from '@dao-dao/state/recoil'
-import { PersonRaisingHandEmoji, useCachedLoading } from '@dao-dao/stateless'
+import {
+  PersonRaisingHandEmoji,
+  useCachedLoading,
+  useCachedLoadingWithError,
+} from '@dao-dao/stateless'
 import { ChainId, Feature, ModuleInstantiateInfo } from '@dao-dao/types'
 import {
   ActionChainContextType,
@@ -19,6 +22,7 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
+import { InstantiateMsg as DaoPreProposeApproverInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeApprover'
 import { InstantiateMsg as DaoProposalSingleInstantiateMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   DaoProposalSingleAdapterId,
@@ -193,7 +197,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
       throw new Error('No single choice proposal module found')
     }
 
-    const config = useRecoilValue(
+    const configLoading = useCachedLoadingWithError(
       DaoProposalSingleCommonSelectors.configSelector({
         contractAddress: singleChoiceProposal.address,
         chainId,
@@ -202,6 +206,14 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
 
     return useCallback(
       ({ address: preProposeApprovalContract }) => {
+        if (configLoading.loading) {
+          return
+        }
+        if (configLoading.errored) {
+          throw configLoading.error
+        }
+        const config = configLoading.data
+
         const info: ModuleInstantiateInfo = {
           admin: { core_module: {} },
           code_id: chainContext.config.codeIds.DaoProposalSingle,
@@ -209,9 +221,17 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
           msg: encodeMessageAsBase64({
             threshold: config.threshold,
             allow_revoting: config.allow_revoting,
-            close_proposal_on_execution_failure: true,
+            close_proposal_on_execution_failure:
+              'close_proposal_on_execution_failure' in config
+                ? config.close_proposal_on_execution_failure
+                : true,
+            min_voting_period:
+              'min_voting_period' in config
+                ? config.min_voting_period
+                : undefined,
             max_voting_period: config.max_voting_period,
             only_members_execute: config.only_members_execute,
+            veto: 'veto' in config ? config.veto : undefined,
             pre_propose_info: {
               module_may_propose: {
                 info: {
@@ -220,7 +240,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
                   label: `DAO_${context.info.name.trim()}_pre-propose${DaoProposalSingleAdapterId}_approver`,
                   msg: encodeMessageAsBase64({
                     pre_propose_approval_contract: preProposeApprovalContract,
-                  }),
+                  } as DaoPreProposeApproverInstantiateMsg),
                   // TODO(neutron-2.3.0): add back in here and in instantiate schema.
                   ...(chainId !== ChainId.NeutronMainnet && {
                     funds: [],
@@ -250,7 +270,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
           },
         })
       },
-      [config]
+      [configLoading]
     )
   }
 

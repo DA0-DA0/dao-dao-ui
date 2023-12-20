@@ -37,6 +37,7 @@ export const SetUpApproverComponent: ActionComponent<SetUpApproverOptions> = ({
     <>
       <p className="body-text max-w-prose">
         {t('info.approverExplanation', {
+          context: isCreating ? 'choosing' : 'chose',
           daoName,
         })}
       </p>
