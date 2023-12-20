@@ -9,6 +9,7 @@ import {
   RotateRightOutlined,
   Send,
   Tag,
+  ThumbDownOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
 import { useRouter } from 'next/router'
@@ -145,95 +146,6 @@ const InnerProposalStatusAndInfo = ({
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
 
   const statusKey = getProposalStatusKey(proposal.status)
-
-  const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
-    {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
-      label: t('title.dao'),
-      Value: (props) => <EntityDisplay {...props} address={coreAddress} />,
-    },
-    {
-      Icon: AccountCircleOutlined,
-      label: t('title.creator'),
-      Value: (props) => (
-        <EntityDisplay {...props} address={proposal.proposer} />
-      ),
-    },
-    {
-      Icon: RotateRightOutlined,
-      label: t('title.status'),
-      Value: (props) => (
-        <p {...props}>{t(`proposalStatusTitle.${statusKey}`)}</p>
-      ),
-    },
-    ...(proposal.allow_revoting
-      ? ([
-          {
-            Icon: Redo,
-            label: t('title.revoting'),
-            Value: (props) => <p {...props}>{t('info.enabled')}</p>,
-          },
-        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
-      : []),
-    ...(timestampInfo?.display
-      ? ([
-          {
-            Icon: HourglassTopRounded,
-            label: timestampInfo.display.label,
-            Value: (props) => (
-              <p {...props}>{timestampInfo.display!.content}</p>
-            ),
-          },
-        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
-      : []),
-    ...(loadingExecutionTxHash.loading || loadingExecutionTxHash.data
-      ? ([
-          {
-            Icon: Tag,
-            label: t('info.txAbbr'),
-            Value: (props) =>
-              loadingExecutionTxHash.loading ? (
-                <p className={clsx('animate-pulse', props.className)}>...</p>
-              ) : loadingExecutionTxHash.data ? (
-                <div className="flex flex-row items-center gap-1">
-                  <CopyToClipboardUnderline
-                    // Will truncate automatically.
-                    takeAll
-                    value={loadingExecutionTxHash.data}
-                    {...props}
-                  />
-
-                  <IconButtonLink
-                    Icon={ArrowOutward}
-                    href={explorerUrlTemplates.tx.replace(
-                      'REPLACE',
-                      loadingExecutionTxHash.data
-                    )}
-                    variant="ghost"
-                  />
-                </div>
-              ) : null,
-          },
-        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
-      : []),
-    ...(winningChoice &&
-    (statusKey === ProposalStatusEnum.Passed ||
-      statusKey === ProposalStatusEnum.Executed ||
-      statusKey === ProposalStatusEnum.ExecutionFailed ||
-      statusKey === 'veto_timelock')
-      ? ([
-          {
-            Icon: PollOutlined,
-            label: t('title.winningChoice'),
-            Value: (props) => (
-              <TooltipTruncatedText {...props} text={winningChoice.title} />
-            ),
-          },
-        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
-      : []),
-  ]
 
   const voteOptions = useLoadingVoteOptions()
   const { castVote, castingVote } = useCastVote(onVoteSuccess)
@@ -491,6 +403,109 @@ const InnerProposalStatusAndInfo = ({
     coreAddress,
     proposalModule.address,
   ])
+
+  const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
+    {
+      Icon: ({ className }) => (
+        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
+      ),
+      label: t('title.dao'),
+      Value: (props) => <EntityDisplay {...props} address={coreAddress} />,
+    },
+    {
+      Icon: AccountCircleOutlined,
+      label: t('title.creator'),
+      Value: (props) => (
+        <EntityDisplay {...props} address={proposal.proposer} />
+      ),
+    },
+    // Show vetoer if can be vetoed or was vetoed. If was not vetoed but could
+    // have been, don't show because it might confuse the user and make them
+    // think it was vetoed.
+    ...(vetoConfig && (canBeVetoed || statusKey === ProposalStatusEnum.Vetoed)
+      ? ([
+          {
+            Icon: ThumbDownOutlined,
+            label: t('title.vetoer'),
+            Value: (props) => (
+              <EntityDisplay {...props} address={vetoConfig.vetoer} />
+            ),
+          },
+        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
+      : []),
+    {
+      Icon: RotateRightOutlined,
+      label: t('title.status'),
+      Value: (props) => (
+        <p {...props}>{t(`proposalStatusTitle.${statusKey}`)}</p>
+      ),
+    },
+    ...(proposal.allow_revoting
+      ? ([
+          {
+            Icon: Redo,
+            label: t('title.revoting'),
+            Value: (props) => <p {...props}>{t('info.enabled')}</p>,
+          },
+        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
+      : []),
+    ...(timestampInfo?.display
+      ? ([
+          {
+            Icon: HourglassTopRounded,
+            label: timestampInfo.display.label,
+            Value: (props) => (
+              <p {...props}>{timestampInfo.display!.content}</p>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
+      : []),
+    ...(loadingExecutionTxHash.loading || loadingExecutionTxHash.data
+      ? ([
+          {
+            Icon: Tag,
+            label: t('info.txAbbr'),
+            Value: (props) =>
+              loadingExecutionTxHash.loading ? (
+                <p className={clsx('animate-pulse', props.className)}>...</p>
+              ) : loadingExecutionTxHash.data ? (
+                <div className="flex flex-row items-center gap-1">
+                  <CopyToClipboardUnderline
+                    // Will truncate automatically.
+                    takeAll
+                    value={loadingExecutionTxHash.data}
+                    {...props}
+                  />
+
+                  <IconButtonLink
+                    Icon={ArrowOutward}
+                    href={explorerUrlTemplates.tx.replace(
+                      'REPLACE',
+                      loadingExecutionTxHash.data
+                    )}
+                    variant="ghost"
+                  />
+                </div>
+              ) : null,
+          },
+        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
+      : []),
+    ...(winningChoice &&
+    (statusKey === ProposalStatusEnum.Passed ||
+      statusKey === ProposalStatusEnum.Executed ||
+      statusKey === ProposalStatusEnum.ExecutionFailed ||
+      statusKey === 'veto_timelock')
+      ? ([
+          {
+            Icon: PollOutlined,
+            label: t('title.winningChoice'),
+            Value: (props) => (
+              <TooltipTruncatedText {...props} text={winningChoice.title} />
+            ),
+          },
+        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
+      : []),
+  ]
 
   let status: string
   if (statusKey === ProposalStatusEnum.Open) {
