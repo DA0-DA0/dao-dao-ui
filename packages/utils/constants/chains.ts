@@ -537,7 +537,10 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
+      // TODO(vesting)
+      Cw1Whitelist: -1,
       Cw4Group: 302, // v0.16
+      // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 303,
 
       // ContractVersion.V240

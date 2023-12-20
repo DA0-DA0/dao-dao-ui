@@ -54,7 +54,9 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
           denom:
             proposalDeposit.type === 'voting_module_token'
               ? {
-                  voting_module_token: {},
+                  voting_module_token: {
+                    token_type: 'native',
+                  },
                 }
               : {
                   token: {

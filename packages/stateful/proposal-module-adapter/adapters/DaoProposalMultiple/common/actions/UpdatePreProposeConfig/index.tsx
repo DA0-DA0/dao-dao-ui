@@ -229,6 +229,14 @@ export const makeUpdatePreProposeConfigActionMaker =
           depositInfo,
           anyoneCanPropose,
         }: UpdatePreProposeConfigData) => {
+          const votingModuleTokenType =
+            depositRequired && depositInfo.type === 'voting_module_token'
+              ? depositInfo.token?.type
+              : false
+          if (votingModuleTokenType === undefined) {
+            throw new Error(t('error.loadingData'))
+          }
+
           const updateConfigMessage: ExecuteMsg = {
             update_config: {
               deposit_info: depositRequired
@@ -240,7 +248,15 @@ export const makeUpdatePreProposeConfigActionMaker =
                     denom:
                       depositInfo.type === 'voting_module_token'
                         ? {
-                            voting_module_token: {},
+                            voting_module_token: {
+                              token_type:
+                                votingModuleTokenType === TokenType.Native
+                                  ? 'native'
+                                  : votingModuleTokenType === TokenType.Cw20
+                                  ? 'cw20'
+                                  : // Cause a chain error. Should never happen.
+                                    ('invalid' as never),
+                            },
                           }
                         : {
                             token: {

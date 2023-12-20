@@ -333,7 +333,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                       label: t('form.moreThanOneAccount'),
                       value: 'many',
                     },
-                  ] as RadioInputOption<BeginVestingData, 'ownerMode'>[]
+                  ] as RadioInputOption<BeginVestingData['ownerMode']>[]
                 )
                   // Only show the selected option once created.
                   .filter(({ value }) => isCreating || value === ownerMode)}
