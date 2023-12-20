@@ -472,6 +472,9 @@ export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   ...ibcProtoRegistry,
   ...stargazeProtoRegistry,
   ...gaiaProtoRegistry,
+  // Not a query or TX so it isn't included in any of the registries. But we
+  // want to decode this because it appears in gov props. We need to find a
+  // better way to collect all generated types in a single registry...
   [
     '/cosmos.params.v1beta1.ParameterChangeProposal',
     ParameterChangeProposal as GeneratedType,
