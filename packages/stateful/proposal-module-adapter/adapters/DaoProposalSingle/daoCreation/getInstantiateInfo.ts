@@ -112,7 +112,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
             approver.enabled ? '-approval' : ''
           }_${DaoProposalSingleAdapterId}`,
           msg: encodeMessageAsBase64(preProposeInstantiateMsg),
-          // TODO(neutron-2.3.0): add back in here and in instantiate schema.
+          // TODO(neutron-2.4.0): add back in here and in instantiate schema.
           ...(chainId !== ChainId.NeutronMainnet && {
             funds: [],
           }),
@@ -146,7 +146,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     code_id: codeIds.DaoProposalSingle,
     label: `DAO_${name.trim()}_${DaoProposalSingleAdapterId}`,
     msg: encodeMessageAsBase64(msg),
-    // TODO(neutron-2.3.0): add back in here and in instantiate schema.
+    // TODO(neutron-2.4.0): add back in here and in instantiate schema.
     ...(chainId !== ChainId.NeutronMainnet && {
       funds: [],
     }),

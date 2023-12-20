@@ -241,7 +241,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
                   msg: encodeMessageAsBase64({
                     pre_propose_approval_contract: preProposeApprovalContract,
                   } as DaoPreProposeApproverInstantiateMsg),
-                  // TODO(neutron-2.3.0): add back in here and in instantiate schema.
+                  // TODO(neutron-2.4.0): add back in here and in instantiate schema.
                   ...(chainId !== ChainId.NeutronMainnet && {
                     funds: [],
                   }),
@@ -249,7 +249,7 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
               },
             },
           } as DaoProposalSingleInstantiateMsg),
-          // TODO(neutron-2.3.0): add back in here and in instantiate schema.
+          // TODO(neutron-2.4.0): add back in here and in instantiate schema.
           ...(chainId !== ChainId.NeutronMainnet && {
             funds: [],
           }),

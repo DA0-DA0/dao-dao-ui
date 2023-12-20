@@ -35,27 +35,26 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 1994, // v0.16
 
-      // ContractVersion.V230
-      CwPayrollFactory: 3915,
-      CwTokenSwap: 3823,
-      CwTokenfactoryIssuer: 3824,
-      CwVesting: 3825,
-      DaoCore: 3826,
-      DaoMigrator: 3827,
-      DaoPreProposeApprovalSingle: 3921,
-      DaoPreProposeApprover: 3927,
-      DaoPreProposeMultiple: 3828,
-      DaoPreProposeSingle: 3829,
-      DaoProposalMultiple: 3830,
-      DaoProposalSingle: 3831,
-      DaoVotingCw4: 3832,
-      DaoVotingCw721Staked: 3833,
-      DaoVotingTokenStaked: 3834,
+      // ContractVersion.V240
+      CwPayrollFactory: 4042,
+      CwTokenSwap: 4043,
+      CwTokenfactoryIssuer: 4045,
+      CwVesting: 4046,
+      DaoCore: 4047,
+      DaoMigrator: 4048,
+      DaoPreProposeApprovalSingle: 4049,
+      DaoPreProposeApprover: 4050,
+      DaoPreProposeMultiple: 4051,
+      DaoPreProposeSingle: 4052,
+      DaoProposalMultiple: 4053,
+      DaoProposalSingle: 4054,
+      DaoVotingCw4: 4055,
+      DaoVotingCw721Staked: 4056,
+      DaoVotingTokenStaked: 4057,
 
-      // v2.1.0 and below, for migrating v1 to v2 DAOs
-      // ContractVersion.V210
-      Cw20Stake: 2444,
-      DaoVotingCw20Staked: 2463,
+      // For migrating v1 DAOs to the latest v2. Not used by new DAOs.
+      Cw20Stake: 4058,
+      DaoVotingCw20Staked: 4059,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
@@ -177,30 +176,27 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
-      // TODO(vesting)
-      Cw1Whitelist: -1,
+      Cw1Whitelist: 351,
       Cw4Group: 123, // v0.16
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 124, // v0.16
 
-      // ContractVersion.V230
-      // TODO(vesting): update
-      CwPayrollFactory: -1,
-      CwTokenSwap: 242,
-      CwTokenfactoryIssuer: 243,
-      CwVesting: 244,
-      DaoCore: 245,
-      DaoMigrator: -1, // not needed since only v2 DAOs exist but it's 246
-      // TODO(approver)
-      DaoPreProposeApprovalSingle: -1,
-      DaoPreProposeApprover: -1,
-      DaoPreProposeMultiple: 247,
-      DaoPreProposeSingle: 248,
-      DaoProposalMultiple: 249,
-      DaoProposalSingle: 250,
-      DaoVotingCw4: 251,
-      DaoVotingCw721Staked: 253,
-      DaoVotingTokenStaked: 252,
+      // ContractVersion.V240
+      CwPayrollFactory: 353,
+      CwTokenSwap: 354,
+      CwTokenfactoryIssuer: 364,
+      CwVesting: 355,
+      DaoCore: 365,
+      DaoMigrator: -1, // not needed since only v2 DAOs exist
+      DaoPreProposeApprovalSingle: 357,
+      DaoPreProposeApprover: 358,
+      DaoPreProposeMultiple: 359,
+      DaoPreProposeSingle: 360,
+      DaoProposalMultiple: 366,
+      DaoProposalSingle: 361,
+      DaoVotingCw4: 362,
+      DaoVotingCw721Staked: 363,
+      DaoVotingTokenStaked: 367,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
@@ -318,22 +314,20 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
-      // TODO(vesting)
-      Cw1Whitelist: -1,
+      Cw1Whitelist: 552,
       Cw4Group: 218, // v0.16
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 232,
 
-      // TODO(neutron-2.3.0): upgrade to v2.3.0 once CW 1.1 is supported
+      // ContractVersion.V240
+      CwPayrollFactory: 553,
+      // TODO(neutron-2.4.0): upgrade once CW 1.1 is supported
       // ContractVersion.V210
-      // TODO(vesting): update
-      CwPayrollFactory: -1,
       CwTokenSwap: 221,
       CwTokenfactoryIssuer: -1,
       CwVesting: 222,
       DaoCore: 223,
       DaoMigrator: -1,
-      // TODO(approver)
       DaoPreProposeApprovalSingle: -1,
       DaoPreProposeApprover: -1,
       DaoPreProposeMultiple: 224,
@@ -438,6 +432,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/stargaze/gov/REPLACE',
       wallet: 'https://ping.pub/stargaze/account/REPLACE',
     },
+    // TODO(stargaze-2.4.0): update once multisig broadcasted
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       // TODO(vesting)
@@ -470,7 +465,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       },
     },
     // There is no IBC connection with:
-    // - Stargaze
+    // - Migaloo
     polytone: {
       [ChainId.OsmosisMainnet]: {
         // stargaze
@@ -537,8 +532,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
-      // TODO(vesting)
-      Cw1Whitelist: -1,
+      Cw1Whitelist: 304,
       Cw4Group: 302, // v0.16
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 303,
@@ -560,8 +554,55 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingCw721Staked: 300,
       DaoVotingTokenStaked: 301,
     },
-    // TODO
-    polytone: {},
+    // There are no IBC connections with:
+    // - Stargaze
+    // - Neutron
+    polytone: {
+      [ChainId.JunoMainnet]: {
+        // migaloo
+        note: 'migaloo1v4y8lytcu7q5tmvcqs06km7qra5wlwtt96snmlf4pljn25z0u79smel9hc',
+        // migaloo
+        listener:
+          'migaloo1wtc95908aajnw7rqfjdcmnppzlp70jv32jajp0a6nyk3z4svggsqmrz9ja',
+        // juno
+        voice:
+          'juno1j4uvv0r8t4mc2x0s6nrua9um2tkue0efwx8553wxja9ecxj73z4qjqjwm0',
+        // migaloo
+        localConnection: 'connection-1',
+        // juno
+        remoteConnection: 'connection-282',
+        // migaloo
+        localChannel: 'channel-66',
+        // juno
+        remoteChannel: 'channel-458',
+        // migaloo
+        // localClient: '07-tendermint-1',
+        // juno
+        // remoteClient: '07-tendermint-310',
+      },
+      [ChainId.OsmosisMainnet]: {
+        // migaloo
+        note: 'migaloo1zmwmf0l06lnlty5a0xwxnz5yjxf5qm4pw2upznj4mdhfrdx5vjrqv2hz6p',
+        // migaloo
+        listener:
+          'migaloo1tx4nc7jhf2zt87v9zy4a54nsw4lqthfkp8fed3ftm7mx8tz0mzwqnuf2s9',
+        // osmosis
+        voice:
+          'osmo1rwaaf55us67nhl8atksgsrlz7pmkgcule3tcex9l44gu3a2dc86s4dk459',
+        // migaloo
+        localConnection: 'connection-11',
+        // osmosis
+        remoteConnection: 'connection-2171',
+        // migaloo
+        localChannel: 'channel-68',
+        // osmosis
+        remoteChannel: 'channel-12859',
+        // migaloo
+        // localClient: '07-tendermint-3',
+        // osmosis
+        // remoteClient: '07-tendermint-2669',
+      },
+    },
   },
   {
     chainId: ChainId.JunoTestnet,
@@ -580,37 +621,34 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://testnet.ping.pub/juno/gov/REPLACE',
       wallet: 'https://testnet.ping.pub/juno/account/REPLACE',
     },
+    // TODO(testnet-2.4.0)
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
-      // TODO(vesting)
-      Cw1Whitelist: -1,
+      Cw1Whitelist: 4060,
       Cw4Group: 178,
       // https://github.com/CosmWasm/cw-nfts
       Cw721Base: 179,
 
-      // ContractVersion.V230
-      // TODO(vesting): update
-      CwPayrollFactory: -1,
-      CwTokenSwap: 3798,
-      CwTokenfactoryIssuer: 3799,
-      CwVesting: 3800,
-      DaoCore: 3801,
-      DaoMigrator: 3802,
-      // TODO(approver)
-      DaoPreProposeApprovalSingle: -1,
-      DaoPreProposeApprover: -1,
-      DaoPreProposeMultiple: 3803,
-      DaoPreProposeSingle: 3804,
-      DaoProposalMultiple: 3960,
-      DaoProposalSingle: 3961,
-      DaoVotingCw4: 3807,
-      DaoVotingCw721Staked: 3808,
-      DaoVotingTokenStaked: 3809,
+      // ContractVersion.V240
+      CwPayrollFactory: 4062,
+      CwTokenSwap: 4063,
+      CwTokenfactoryIssuer: 4065,
+      CwVesting: 4066,
+      DaoCore: 4067,
+      DaoMigrator: 4068,
+      DaoPreProposeApprovalSingle: 4069,
+      DaoPreProposeApprover: 4070,
+      DaoPreProposeMultiple: 4071,
+      DaoPreProposeSingle: 4072,
+      DaoProposalMultiple: 4073,
+      DaoProposalSingle: 4074,
+      DaoVotingCw4: 4075,
+      DaoVotingCw721Staked: 4076,
+      DaoVotingTokenStaked: 4077,
 
-      // v2.1.0 and below, for migrating v1 to v2 DAOs
-      // ContractVersion.V210
-      Cw20Stake: 1247,
-      DaoVotingCw20Staked: 1263,
+      // For migrating v1 DAOs to the latest v2. Not used by new DAOs.
+      Cw20Stake: 4058,
+      DaoVotingCw20Staked: 4059,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
@@ -637,6 +675,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://testnet.ping.pub/osmosis/gov/REPLACE',
       wallet: 'https://testnet.ping.pub/osmosis/account/REPLACE',
     },
+    // TODO(testnet-2.4.0)
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       // TODO(vesting)
@@ -690,6 +729,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://testnet.ping.pub/stargaze/gov/REPLACE',
       wallet: 'https://testnet.ping.pub/stargaze/account/REPLACE',
     },
+    // TODO(testnet-2.4.0)
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
       // TODO(vesting)

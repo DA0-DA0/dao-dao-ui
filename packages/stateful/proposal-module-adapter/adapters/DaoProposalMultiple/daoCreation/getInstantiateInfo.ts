@@ -104,7 +104,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
           code_id: codeIdsToUse.DaoPreProposeMultiple,
           label: `DAO_${name.trim()}_pre-propose-${DaoProposalMultipleAdapterId}`,
           msg: encodeMessageAsBase64(preProposeMultipleInstantiateMsg),
-          // TODO(neutron-2.3.0): add back in here and in instantiate schema.
+          // TODO(neutron-2.4.0): add back in here and in instantiate schema.
           ...(chainId !== ChainId.NeutronMainnet &&
             !moduleInstantiateFundsUnsupported && {
               funds: [],
@@ -137,7 +137,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     code_id: codeIdsToUse.DaoProposalMultiple,
     label: `DAO_${name.trim()}_${DaoProposalMultipleAdapterId}`,
     msg: encodeMessageAsBase64(msg),
-    // TODO(neutron-2.3.0): add back in here and in instantiate schema.
+    // TODO(neutron-2.4.0): add back in here and in instantiate schema.
     ...(chainId !== ChainId.NeutronMainnet &&
       !moduleInstantiateFundsUnsupported && {
         funds: [],

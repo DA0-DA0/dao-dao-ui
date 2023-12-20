@@ -27,7 +27,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
   }
 
   const votingModuleAdapterInstantiateMsg: InstantiateMsg =
-    // TODO(neutron-2.3.0): remove this once upgraded.
+    // TODO(neutron-2.4.0): remove this once upgraded.
     chainId === ChainId.NeutronMainnet
       ? (newData as any)
       : {
@@ -38,7 +38,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
 
   // Validate and throw error if invalid according to JSON schema.
   makeValidateMsg<InstantiateMsg>(
-    // TODO(neutron-2.3.0): remove this once upgraded.
+    // TODO(neutron-2.4.0): remove this once upgraded.
     chainId === ChainId.NeutronMainnet
       ? instantiateSchema21
       : instantiateSchema,
@@ -50,7 +50,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     code_id: codeIds.DaoVotingCw4,
     label: `DAO_${name.trim()}_${MembershipBasedCreatorId}`,
     msg: encodeMessageAsBase64(votingModuleAdapterInstantiateMsg),
-    // TODO(neutron-2.3.0): add back in here and in dao-core instantiate schema.
+    // TODO(neutron-2.4.0): add back in here and in dao-core instantiate schema.
     ...(chainId !== ChainId.NeutronMainnet && {
       funds: [],
     }),
