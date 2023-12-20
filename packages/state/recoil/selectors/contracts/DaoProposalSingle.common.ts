@@ -24,14 +24,14 @@ import {
   listVotesSelector as listVotesV1Selector,
   proposalSelector as proposalV1Selector,
   reverseProposalsSelector as reverseProposalsV1Selector,
-} from './CwProposalSingle.v1.recoil'
+} from './CwProposalSingle.v1'
 import {
   configSelector as configV2Selector,
   getVoteSelector as getVoteV2Selector,
   listVotesSelector as listVotesV2Selector,
   proposalSelector as proposalV2Selector,
   reverseProposalsSelector as reverseProposalsV2Selector,
-} from './DaoProposalSingle.v2.recoil'
+} from './DaoProposalSingle.v2'
 
 type QueryClientParams = WithChainId<{
   contractAddress: string

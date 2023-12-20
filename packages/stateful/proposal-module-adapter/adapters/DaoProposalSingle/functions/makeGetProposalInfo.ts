@@ -1,6 +1,10 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
-import { DaoPreProposeApprovalSingleQueryClient } from '@dao-dao/state/contracts'
+import {
+  CwProposalSingleV1QueryClient,
+  DaoPreProposeApprovalSingleQueryClient,
+  DaoProposalSingleV2QueryClient,
+} from '@dao-dao/state/contracts'
 import { queryIndexer } from '@dao-dao/state/indexer'
 import {
   CommonProposalInfo,
@@ -17,9 +21,6 @@ import {
   getRpcForChainId,
   parseContractVersion,
 } from '@dao-dao/utils'
-
-import { CwProposalSingleV1QueryClient as CwProposalSingleV1QueryClient } from '../contracts/CwProposalSingle.v1.client'
-import { DaoProposalSingleV2QueryClient as DaoProposalSingleV2QueryClient } from '../contracts/DaoProposalSingle.v2.client'
 
 export const makeGetProposalInfo =
   ({

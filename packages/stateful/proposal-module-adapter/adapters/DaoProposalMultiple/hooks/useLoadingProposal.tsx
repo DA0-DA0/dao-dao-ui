@@ -2,17 +2,20 @@ import { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import TimeAgo from 'react-timeago'
 
-import { blockHeightSelector, blocksPerYearSelector } from '@dao-dao/state'
+import {
+  DaoProposalMultipleSelectors,
+  blockHeightSelector,
+  blocksPerYearSelector,
+} from '@dao-dao/state'
 import {
   useCachedLoadable,
   useCachedLoading,
   useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
-import { LoadingData, ProposalStatus } from '@dao-dao/types'
+import { LoadingData, ProposalStatusEnum } from '@dao-dao/types'
 import { convertExpirationToDate, formatDate } from '@dao-dao/utils'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { proposalSelector } from '../contracts/DaoProposalMultiple.recoil'
 import { ProposalWithMetadata } from '../types'
 
 // Returns a proposal wrapped in a LoadingData object to allow the UI to respond
@@ -26,7 +29,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   } = useProposalModuleAdapterOptions()
 
   const loadingProposalResponse = useCachedLoading(
-    proposalSelector({
+    DaoProposalMultipleSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       chainId,
       params: [
@@ -75,6 +78,15 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     blockHeightLoadable.contents
   )
 
+  const vetoTimelockExpiration =
+    typeof proposal.status === 'object' && 'veto_timelock' in proposal.status
+      ? convertExpirationToDate(
+          blocksPerYearLoadable.contents,
+          proposal.status.veto_timelock.expiration,
+          blockHeightLoadable.contents
+        )
+      : undefined
+
   // Votes can be cast up to the expiration date, even if the decision has
   // finalized due to sufficient votes cast.
   const votingOpen =
@@ -82,7 +94,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     // the contract does not allow, so this is just a typecheck.
     expirationDate
       ? expirationDate.getTime() > Date.now()
-      : proposal.status === ProposalStatus.Open
+      : proposal.status === ProposalStatusEnum.Open
 
   const completionDate =
     typeof completedAt === 'string' && new Date(completedAt)
@@ -93,7 +105,9 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     votingOpen
       ? expirationDate && expirationDate.getTime() > Date.now()
         ? {
-            label: t('title.timeLeft'),
+            label: vetoTimelockExpiration
+              ? t('title.votingTimeLeft')
+              : t('title.timeLeft'),
             content: (
               <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
             ),
@@ -140,6 +154,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
       votingOpen,
       executedAt:
         typeof executedAt === 'string' ? new Date(executedAt) : undefined,
+      vetoTimelockExpiration,
     },
   }
 }

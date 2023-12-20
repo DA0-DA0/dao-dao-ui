@@ -7,7 +7,6 @@ import {
   ProposalModule,
   ProposalModuleAdapter,
 } from '@dao-dao/types'
-import { normalizeContractName } from '@dao-dao/utils'
 
 import {
   DaoProposalMultipleAdapter,
@@ -32,8 +31,8 @@ export const getAdapterById = (id: string) =>
 
 export const matchAdapter = (contractNameToMatch: string) =>
   getAdapters().find((adapter) =>
-    adapter.contractNames.some((contractName) =>
-      normalizeContractName(contractNameToMatch).includes(contractName)
+    adapter.contractNames.some(
+      (contractName) => contractNameToMatch === contractName
     )
   )
 

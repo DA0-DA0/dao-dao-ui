@@ -7,7 +7,7 @@ import {
   BaseProposalInnerContentDisplayProps,
   CategorizedActionAndData,
   CategorizedActionKeyAndData,
-  ProposalStatus,
+  ProposalStatusEnum,
   ProposalVoteOption,
 } from '@dao-dao/types'
 import {
@@ -15,7 +15,7 @@ import {
   MultipleChoiceProposal,
   MultipleChoiceVote,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { decodeMessages } from '@dao-dao/utils'
+import { decodeMessages, getProposalStatusKey } from '@dao-dao/utils'
 
 import { SuspenseLoader } from '../../../../components'
 import {
@@ -176,6 +176,8 @@ export const InnerProposalInnerContentDisplay = ({
     setSeenAllActionPages,
   ])
 
+  const statusKey = getProposalStatusKey(proposal.status)
+
   return (
     <div>
       <p className="title-text mb-2">{t('title.voteOptions')}</p>
@@ -198,9 +200,10 @@ export const InnerProposalInnerContentDisplay = ({
             )
           }
           winner={
-            (proposal.status === ProposalStatus.Passed ||
-              proposal.status === ProposalStatus.Executed ||
-              proposal.status === ProposalStatus.ExecutionFailed) &&
+            (statusKey === ProposalStatusEnum.Passed ||
+              statusKey === ProposalStatusEnum.Executed ||
+              statusKey === ProposalStatusEnum.ExecutionFailed ||
+              statusKey === 'veto_timelock') &&
             !!winningChoice
               ? winningChoice.index === data.choice.index
               : undefined

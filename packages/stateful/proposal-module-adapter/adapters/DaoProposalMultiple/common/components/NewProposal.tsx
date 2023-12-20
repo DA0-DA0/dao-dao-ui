@@ -5,7 +5,11 @@ import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { useRecoilCallback, useRecoilValueLoadable } from 'recoil'
 
-import { DaoCoreV2Selectors, blocksPerYearSelector } from '@dao-dao/state'
+import {
+  DaoCoreV2Selectors,
+  DaoProposalMultipleSelectors,
+  blocksPerYearSelector,
+} from '@dao-dao/state'
 import {
   NewProposalTitleDescriptionHeader,
   NewProposal as StatelessNewProposal,
@@ -28,7 +32,6 @@ import {
 
 import { useLoadedActionsAndCategories } from '../../../../../actions'
 import { useMembership, useWallet } from '../../../../../hooks'
-import { proposalSelector } from '../../contracts/DaoProposalMultiple.recoil'
 import { makeGetProposalInfo } from '../../functions'
 import {
   NewProposalData,
@@ -157,7 +160,7 @@ export const NewProposal = ({
 
           const proposal = (
             await snapshot.getPromise(
-              proposalSelector({
+              DaoProposalMultipleSelectors.proposalSelector({
                 chainId,
                 contractAddress: options.proposalModule.address,
                 params: [

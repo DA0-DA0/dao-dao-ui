@@ -1,6 +1,6 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
-import { queryIndexer } from '@dao-dao/state/indexer'
+import { DaoProposalMultipleQueryClient, queryIndexer } from '@dao-dao/state'
 import {
   CommonProposalInfo,
   ContractVersionInfo,
@@ -9,8 +9,6 @@ import {
 } from '@dao-dao/types'
 import { ProposalResponse } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { cosmWasmClientRouter, getRpcForChainId } from '@dao-dao/utils'
-
-import { DaoProposalMultipleQueryClient } from '../contracts/DaoProposalMultiple.client'
 
 export const makeGetProposalInfo =
   ({

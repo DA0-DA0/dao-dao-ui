@@ -19,7 +19,7 @@ import {
 } from '@dao-dao/types/contracts/DaoPreProposeSingle'
 import { CHAIN_GAS_MULTIPLIER } from '@dao-dao/utils'
 
-export interface CwPreProposeSingleReadOnlyInterface {
+export interface DaoPreProposeSingleReadOnlyInterface {
   contractAddress: string
   proposalModule: () => Promise<ProposalModuleResponse>
   dao: () => Promise<DaoResponse>
@@ -31,8 +31,8 @@ export interface CwPreProposeSingleReadOnlyInterface {
   }) => Promise<DepositInfoResponse>
   queryExtension: ({ msg }: { msg: Empty }) => Promise<ExtensionResponse>
 }
-export class CwPreProposeSingleQueryClient
-  implements CwPreProposeSingleReadOnlyInterface
+export class DaoPreProposeSingleQueryClient
+  implements DaoPreProposeSingleReadOnlyInterface
 {
   client: CosmWasmClient
   contractAddress: string
@@ -85,8 +85,8 @@ export class CwPreProposeSingleQueryClient
     })
   }
 }
-export interface CwPreProposeSingleInterface
-  extends CwPreProposeSingleReadOnlyInterface {
+export interface DaoPreProposeSingleInterface
+  extends DaoPreProposeSingleReadOnlyInterface {
   contractAddress: string
   sender: string
   propose: (
@@ -156,9 +156,9 @@ export interface CwPreProposeSingleInterface
     funds?: Coin[]
   ) => Promise<ExecuteResult>
 }
-export class CwPreProposeSingleClient
-  extends CwPreProposeSingleQueryClient
-  implements CwPreProposeSingleInterface
+export class DaoPreProposeSingleClient
+  extends DaoPreProposeSingleQueryClient
+  implements DaoPreProposeSingleInterface
 {
   client: SigningCosmWasmClient
   sender: string

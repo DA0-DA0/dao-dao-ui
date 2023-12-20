@@ -25,13 +25,13 @@ import {
 
 import {
   Cw20BaseHooks,
+  DaoPreProposeMultipleHooks,
+  DaoProposalMultipleHooks,
   useAwaitNextBlock,
   useMembership,
   useSimulateCosmosMsgs,
   useWallet,
 } from '../../../../../hooks'
-import { usePropose as useProposePrePropose } from '../../contracts/DaoPreProposeMultiple.hooks'
-import { usePropose } from '../../contracts/DaoProposalMultiple.hooks'
 import {
   MakeUsePublishProposalOptions,
   NewProposalData,
@@ -165,11 +165,11 @@ export const makeUsePublishProposal =
       sender: walletAddress ?? '',
     })
 
-    const doPropose = usePropose({
+    const doPropose = DaoProposalMultipleHooks.usePropose({
       contractAddress: proposalModule.address,
       sender: walletAddress ?? '',
     })
-    const doProposePrePropose = useProposePrePropose({
+    const doProposePrePropose = DaoPreProposeMultipleHooks.usePropose({
       contractAddress: proposalModule.prePropose?.address ?? '',
       sender: walletAddress ?? '',
     })

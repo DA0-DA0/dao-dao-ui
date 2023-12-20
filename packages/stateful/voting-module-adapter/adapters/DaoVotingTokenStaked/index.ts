@@ -6,7 +6,10 @@ import {
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
-import { DaoVotingTokenStakedAdapterId } from '@dao-dao/utils'
+import {
+  DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
+  DaoVotingTokenStakedAdapterId,
+} from '@dao-dao/utils'
 
 import {
   makeMintAction,
@@ -18,10 +21,7 @@ import { useCommonGovernanceTokenInfo, useDaoInfoBarItems } from './hooks'
 
 export const DaoVotingTokenStakedAdapter: VotingModuleAdapter = {
   id: DaoVotingTokenStakedAdapterId,
-  contractNames: [
-    // V2.3.0
-    'dao-voting-token-staked',
-  ],
+  contractNames: DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES,
 
   load: () => ({
     // Hooks

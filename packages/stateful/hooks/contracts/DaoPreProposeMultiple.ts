@@ -4,15 +4,15 @@ import { ExecuteResult } from '@cosmjs/cosmwasm-stargate'
 import { useCallback } from 'react'
 import { useRecoilValueLoadable } from 'recoil'
 
-import { useChain } from '@dao-dao/stateless'
-import { FunctionKeyOf } from '@dao-dao/types'
-
-import { useSyncWalletSigner } from '../../../../hooks'
-import { DaoProposalMultipleClient as ExecuteClient } from './DaoProposalMultiple.client'
+import { DaoPreProposeMultipleClient as ExecuteClient } from '@dao-dao/state/contracts/DaoPreProposeMultiple'
 import {
   ExecuteClientParams,
   executeClient,
-} from './DaoProposalMultiple.recoil'
+} from '@dao-dao/state/recoil/selectors/contracts/DaoPreProposeMultiple'
+import { useChain } from '@dao-dao/stateless'
+import { FunctionKeyOf } from '@dao-dao/types'
+
+import { useSyncWalletSigner } from '../useSyncWalletSigner'
 
 // This hook wrapper lets us easily make hooks out of all execution functions on
 // the contract clients, without having to fetch the `executeClient` selector as
@@ -48,11 +48,5 @@ const wrapExecuteHook =
   }
 
 export const usePropose = wrapExecuteHook('propose')
-export const useVote = wrapExecuteHook('vote')
-export const useExecute = wrapExecuteHook('execute')
-export const useClose = wrapExecuteHook('close')
 export const useUpdateConfig = wrapExecuteHook('updateConfig')
-export const useAddProposalHook = wrapExecuteHook('addProposalHook')
-export const useRemoveProposalHook = wrapExecuteHook('removeProposalHook')
-export const useAddVoteHook = wrapExecuteHook('addVoteHook')
-export const useRemoveVoteHook = wrapExecuteHook('removeVoteHook')
+export const useWithdraw = wrapExecuteHook('withdraw')

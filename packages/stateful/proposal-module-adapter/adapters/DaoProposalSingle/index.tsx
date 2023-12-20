@@ -1,6 +1,9 @@
 import { ProposalModuleAdapter } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { DaoProposalSingleAdapterId } from '@dao-dao/utils'
+import {
+  DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
+  DaoProposalSingleAdapterId,
+} from '@dao-dao/utils'
 
 import {
   NewProposal,
@@ -23,9 +26,12 @@ import {
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
-import { CONTRACT_NAMES } from './constants'
 import { ThresholdVotingConfigItem, getInstantiateInfo } from './daoCreation'
-import { fetchPrePropose, makeGetProposalInfo } from './functions'
+import {
+  fetchPrePropose,
+  fetchVetoConfig,
+  makeGetProposalInfo,
+} from './functions'
 import {
   useCastVote,
   useLoadingPreProposeApprovalProposal,
@@ -43,7 +49,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
   NewProposalForm
 > = {
   id: DaoProposalSingleAdapterId,
-  contractNames: CONTRACT_NAMES,
+  contractNames: DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
 
   loadCommon: (options) => {
     // Make here so we can pass into common hooks and components that need it.
@@ -169,6 +175,7 @@ export const DaoProposalSingleAdapter: ProposalModuleAdapter<
 
   functions: {
     fetchPrePropose,
+    fetchVetoConfig,
   },
 
   daoCreation: {

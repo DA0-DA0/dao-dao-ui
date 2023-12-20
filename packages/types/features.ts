@@ -78,9 +78,13 @@ export enum Feature {
    */
   VotingModuleTokenTypeFix,
   /**
-   * Approval flow was added.
+   * Approval was added.
    */
   Approval,
+  /**
+   * Veto was added.
+   */
+  Veto,
 }
 
 /**

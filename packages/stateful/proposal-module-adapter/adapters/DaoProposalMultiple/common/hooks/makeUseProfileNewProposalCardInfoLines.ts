@@ -8,7 +8,11 @@ import {
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValue } from 'recoil'
 
-import { blocksPerYearSelector, genericTokenSelector } from '@dao-dao/state'
+import {
+  DaoProposalMultipleSelectors,
+  blocksPerYearSelector,
+  genericTokenSelector,
+} from '@dao-dao/state'
 import {
   DepositInfoSelector,
   DepositRefundPolicy,
@@ -22,7 +26,6 @@ import {
   secondsToWdhms,
 } from '@dao-dao/utils'
 
-import { configSelector } from '../../contracts/DaoProposalMultiple.recoil'
 import { anyoneCanProposeSelector } from '../selectors'
 import { useProcessQ } from './useProcessQ'
 
@@ -38,7 +41,7 @@ export const makeUseProfileNewProposalCardInfoLines =
     const { t } = useTranslation()
 
     const config = useRecoilValue(
-      configSelector({
+      DaoProposalMultipleSelectors.configSelector({
         chainId: options.chain.chain_id,
         contractAddress: options.proposalModule.address,
       })

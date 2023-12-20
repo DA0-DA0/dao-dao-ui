@@ -3,7 +3,6 @@ import {
   IVotingModuleAdapterOptions,
   VotingModuleAdapter,
 } from '@dao-dao/types'
-import { normalizeContractName } from '@dao-dao/utils'
 
 import {
   DaoVotingCw20StakedAdapter,
@@ -37,8 +36,8 @@ export const getAdapterById = (id: string) =>
 
 export const matchAdapter = (contractNameToMatch: string) =>
   getAdapters().find((adapter) =>
-    adapter.contractNames.some((contractName) =>
-      normalizeContractName(contractNameToMatch).includes(contractName)
+    adapter.contractNames.some(
+      (contractName) => contractNameToMatch === contractName
     )
   )
 

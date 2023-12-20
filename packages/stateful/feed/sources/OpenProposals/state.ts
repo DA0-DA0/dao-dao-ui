@@ -10,11 +10,11 @@ import {
   DaoPageMode,
   FeedSourceDaoWithItems,
   FeedSourceItem,
+  StatefulProposalLineProps,
   WithChainId,
 } from '@dao-dao/types'
 import { convertExpirationToDate, getDaoProposalPath } from '@dao-dao/utils'
 
-import { ProposalLineProps } from '../../../components/ProposalLine'
 import { followingDaosWithProposalModulesSelector } from '../../../recoil'
 
 export const feedOpenProposalsSelector = selectorFamily<
@@ -96,7 +96,7 @@ export const feedOpenProposalsSelector = selectorFamily<
         (
           { coreAddress, proposalModules },
           index
-        ): FeedSourceDaoWithItems<ProposalLineProps> => {
+        ): FeedSourceDaoWithItems<StatefulProposalLineProps> => {
           const proposalModulesWithOpenProposals = openProposalsPerDao[index]
 
           return {
@@ -114,7 +114,7 @@ export const feedOpenProposalsSelector = selectorFamily<
                       id,
                       proposal: { expiration, start_height },
                       voted,
-                    }): FeedSourceItem<ProposalLineProps> => ({
+                    }): FeedSourceItem<StatefulProposalLineProps> => ({
                       props: {
                         chainId,
                         coreAddress,

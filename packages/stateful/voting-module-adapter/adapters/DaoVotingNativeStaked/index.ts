@@ -6,7 +6,10 @@ import {
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
-import { DaoVotingNativeStakedAdapterId } from '@dao-dao/utils'
+import {
+  DAO_VOTING_NATIVE_STAKED_CONTRACT_NAMES,
+  DaoVotingNativeStakedAdapterId,
+} from '@dao-dao/utils'
 
 import { makeMintAction } from './actions'
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
@@ -14,13 +17,7 @@ import { useCommonGovernanceTokenInfo, useDaoInfoBarItems } from './hooks'
 
 export const DaoVotingNativeStakedAdapter: VotingModuleAdapter = {
   id: DaoVotingNativeStakedAdapterId,
-  contractNames: [
-    // V1
-    'cw-native-staked-balance-voting',
-    // V2
-    'cwd-voting-native-staked',
-    'dao-voting-native-staked',
-  ],
+  contractNames: DAO_VOTING_NATIVE_STAKED_CONTRACT_NAMES,
 
   load: () => ({
     // Hooks

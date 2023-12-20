@@ -5,7 +5,10 @@ import {
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
-import { DaoVotingCw4AdapterId } from '@dao-dao/utils'
+import {
+  DAO_VOTING_CW4_CONTRACT_NAMES,
+  DaoVotingCw4AdapterId,
+} from '@dao-dao/utils'
 
 import { makeManageMembersAction } from './actions'
 import {
@@ -17,13 +20,7 @@ import { useDaoInfoBarItems, useProfileNewProposalCardAddresses } from './hooks'
 
 export const DaoVotingCw4Adapter: VotingModuleAdapter = {
   id: DaoVotingCw4AdapterId,
-  contractNames: [
-    // V1
-    'cw4-voting',
-    // V2
-    'cwd-voting-cw4',
-    'dao-voting-cw4',
-  ],
+  contractNames: DAO_VOTING_CW4_CONTRACT_NAMES,
 
   load: () => ({
     // Hooks

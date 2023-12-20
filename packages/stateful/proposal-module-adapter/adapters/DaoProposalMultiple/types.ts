@@ -111,6 +111,9 @@ export type ProposalWithMetadata = MultipleChoiceProposal & {
   timestampInfo: TimestampInfo | undefined
   votingOpen: boolean
   executedAt?: Date
+  // If this proposal is in its veto timelock period, this is the date that the
+  // timelock period expires.
+  vetoTimelockExpiration?: Date
 }
 
 export type MultipleChoiceOptionData = {

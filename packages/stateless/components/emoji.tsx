@@ -256,3 +256,11 @@ export const AtomEmoji = () => (
 export const PersonRaisingHandEmoji = () => (
   <EmojiWrapper emoji="🙋" labelI18nKey="emoji.personRaisingHand" />
 )
+
+export const ControlKnobsEmoji = () => (
+  <EmojiWrapper emoji="🎛️" labelI18nKey="emoji.controlKnobs" />
+)
+
+export const ThumbDownEmoji = () => (
+  <EmojiWrapper emoji="👎" labelI18nKey="emoji.thumbDown" />
+)

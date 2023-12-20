@@ -1,7 +1,10 @@
 import { useCallback } from 'react'
 import { constSelector } from 'recoil'
 
-import { genericTokenSelector } from '@dao-dao/state/recoil'
+import {
+  DaoProposalSingleCommonSelectors,
+  genericTokenSelector,
+} from '@dao-dao/state/recoil'
 import { NumbersEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   DepositRefundPolicy,
@@ -36,7 +39,6 @@ import {
   anyoneCanProposeSelector,
   makeDepositInfoSelector,
 } from '../../../../proposal-module-adapter/adapters/DaoProposalSingle/common'
-import { configSelector } from '../../../../proposal-module-adapter/adapters/DaoProposalSingle/contracts/DaoProposalSingle.common.recoil'
 import { makeDefaultNewDao } from '../../../../recoil'
 import { EnableMultipleChoiceComponent as Component } from './Component'
 
@@ -115,7 +117,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
     }
 
     const config = useCachedLoadingWithError(
-      configSelector({
+      DaoProposalSingleCommonSelectors.configSelector({
         contractAddress: singleChoiceProposal.address,
         chainId,
       })
@@ -181,6 +183,7 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
           name: context.info.name,
         },
         {
+          ...makeDefaultNewDao(chainId).votingConfig,
           enableMultipleChoice: true,
           moduleInstantiateFundsUnsupported:
             !context.info.supportedFeatures[Feature.ModuleInstantiateFunds],

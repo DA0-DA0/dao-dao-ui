@@ -8,11 +8,11 @@ export interface DaoDropdownInfo {
   imageUrl: string
   name: string
   subdaos?: DaoDropdownInfo[]
-  content?: ReactNode
 }
 
 export interface DaoDropdownProps {
   dao: DaoDropdownInfo
+  children?: ReactNode
   showSubdaos?: boolean
   indent?: number
   compact?: boolean

@@ -15,11 +15,11 @@ import {
 import {
   CommonProposalInfo,
   PreProposeModuleType,
-  ProposalStatus,
+  ProposalStatusEnum,
   SelfRelayExecuteModalProps,
 } from '@dao-dao/types'
 
-import { useOnDaoWebSocketMessage, useWallet } from '../../hooks'
+import { useOnCurrentDaoWebSocketMessage, useWallet } from '../../hooks'
 import { ProfileDisconnectedCard, ProfileProposalCard } from '../profile'
 import { SelfRelayExecuteModal } from '../SelfRelayExecuteModal'
 import { SuspenseLoader } from '../SuspenseLoader'
@@ -59,7 +59,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
   // Vote listener. Show alerts and refresh accordingly.
   const { listening: listeningForVote, fallback: onVoteSuccess } =
-    useOnDaoWebSocketMessage(
+    useOnCurrentDaoWebSocketMessage(
       'vote',
       ({ proposalId, voter }) => {
         // If vote made on current proposal...
@@ -83,7 +83,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const {
     listening: listeningForProposal,
     fallback: onProposalUpdateFallback,
-  } = useOnDaoWebSocketMessage(
+  } = useOnCurrentDaoWebSocketMessage(
     'proposal',
     async ({ status, proposalId }, fallback) => {
       // If using self-relay execute, don't show toast or reload page until
@@ -98,7 +98,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         refreshProposalAndAll()
 
         // On execute, revalidate and refresh page.
-        if (status === ProposalStatus.Executed) {
+        if (status === ProposalStatusEnum.Executed) {
           // Manually revalidate DAO static props.
           await fetch(`/api/revalidate?d=${coreAddress}&p=${proposalInfo.id}`)
 
@@ -109,8 +109,12 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
           window.location.reload()
         }
         // On close, show success toast.
-        else if (status === ProposalStatus.Closed) {
+        else if (status === ProposalStatusEnum.Closed) {
           toast.success(t('success.proposalClosed'))
+        }
+        // On veto, show success toast.
+        else if (status === ProposalStatusEnum.Vetoed) {
+          toast.success(t('success.proposalVetoed'))
         }
       }
     }
@@ -120,7 +124,17 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const onExecuteSuccess = useCallback(
     () =>
       onProposalUpdateFallback({
-        status: ProposalStatus.Executed,
+        status: ProposalStatusEnum.Executed,
+        proposalId: proposalInfo.id,
+      }),
+    [onProposalUpdateFallback, proposalInfo.id]
+  )
+
+  // Fallback if the listener above is not listening.
+  const onVetoSuccess = useCallback(
+    () =>
+      onProposalUpdateFallback({
+        status: ProposalStatusEnum.Vetoed,
         proposalId: proposalInfo.id,
       }),
     [onProposalUpdateFallback, proposalInfo.id]
@@ -130,7 +144,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
   const onCloseSuccess = useCallback(
     () =>
       onProposalUpdateFallback({
-        status: ProposalStatus.Closed,
+        status: ProposalStatusEnum.Closed,
         proposalId: proposalInfo.id,
       }),
     [onProposalUpdateFallback, proposalInfo.id]
@@ -171,6 +185,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         {...props}
         onCloseSuccess={onCloseSuccess}
         onExecuteSuccess={onExecuteSuccess}
+        onVetoSuccess={onVetoSuccess}
         onVoteSuccess={onVoteSuccess}
         openSelfRelayExecute={setSelfRelayExecuteProps}
         seenAllActionPages={seenAllActionPages}
@@ -180,6 +195,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
       ProposalStatusAndInfo,
       onCloseSuccess,
       onExecuteSuccess,
+      onVetoSuccess,
       onVoteSuccess,
       seenAllActionPages,
     ]
@@ -242,7 +258,7 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
         onSuccess={() =>
           onProposalUpdateFallback(
             {
-              status: ProposalStatus.Executed,
+              status: ProposalStatusEnum.Executed,
               proposalId: proposalInfo.id,
             },
             // Force call the fallback, and don't wait for a block to pass.

@@ -8,6 +8,7 @@ import { LinkWrapperProps, SelfRelayExecuteModalProps } from './components'
 import { Expiration } from './contracts'
 import { CheckedDepositInfo, ProposalStatus } from './contracts/common'
 import { Proposal as DaoPreProposeApprovalProposal } from './contracts/DaoPreProposeApprovalSingle'
+import { VetoConfig } from './contracts/DaoProposalSingle.v2'
 import {
   DaoCreationGetInstantiateInfo,
   DaoCreationVotingConfigItem,
@@ -113,6 +114,7 @@ export type ProposalModuleAdapter<
 
   functions: {
     fetchPrePropose?: FetchPreProposeFunction
+    fetchVetoConfig?: FetchVetoConfig
   }
 
   daoCreation: {
@@ -174,6 +176,12 @@ export type FetchPreProposeFunction = (
   version: ContractVersion | null
 ) => Promise<PreProposeModule | null>
 
+export type FetchVetoConfig = (
+  chainId: string,
+  proposalModuleAddress: string,
+  version: ContractVersion | null
+) => Promise<VetoConfig | null>
+
 export type ReverseProposalInfosSelector = (data: {
   startBefore: number | undefined
   limit: number | undefined
@@ -225,6 +233,7 @@ export type BaseProposalStatusAndInfoProps = {
   onVoteSuccess: () => void | Promise<void>
   onExecuteSuccess: () => void | Promise<void>
   onCloseSuccess: () => void | Promise<void>
+  onVetoSuccess: () => void | Promise<void>
   // Whether or not the user has viewed all action pages. If they haven't, they
   // can't vote.
   seenAllActionPages: boolean

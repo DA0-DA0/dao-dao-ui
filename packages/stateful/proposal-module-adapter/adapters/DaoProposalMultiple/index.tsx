@@ -1,6 +1,9 @@
 import { ProposalModuleAdapter } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { DaoProposalMultipleAdapterId } from '@dao-dao/utils'
+import {
+  DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
+  DaoProposalMultipleAdapterId,
+} from '@dao-dao/utils'
 
 import {
   NewProposal,
@@ -18,9 +21,12 @@ import {
   ProposalVotes,
   ProposalWalletVote,
 } from './components'
-import { CONTRACT_NAMES } from './constants'
 import { getInstantiateInfo } from './daoCreation'
-import { fetchPrePropose, makeGetProposalInfo } from './functions'
+import {
+  fetchPrePropose,
+  fetchVetoConfig,
+  makeGetProposalInfo,
+} from './functions'
 import {
   useCastVote,
   useLoadingProposalExecutionTxHash,
@@ -37,7 +43,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
   NewProposalForm
 > = {
   id: DaoProposalMultipleAdapterId,
-  contractNames: CONTRACT_NAMES,
+  contractNames: DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
 
   loadCommon: (options) => {
     // Make here so we can pass into common hooks and components that need it.
@@ -143,6 +149,7 @@ export const DaoProposalMultipleAdapter: ProposalModuleAdapter<
 
   functions: {
     fetchPrePropose,
+    fetchVetoConfig,
   },
 
   daoCreation: {

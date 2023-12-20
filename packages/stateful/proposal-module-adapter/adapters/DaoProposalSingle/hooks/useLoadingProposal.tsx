@@ -4,6 +4,7 @@ import TimeAgo from 'react-timeago'
 import {
   DaoPreProposeApprovalSingleSelectors,
   DaoPreProposeApproverSelectors,
+  DaoProposalSingleCommonSelectors,
   blockHeightSelector,
   blocksPerYearSelector,
 } from '@dao-dao/state'
@@ -16,7 +17,7 @@ import {
   Feature,
   LoadingData,
   PreProposeModuleType,
-  ProposalStatus,
+  ProposalStatusEnum,
   ProposalTimestampInfo,
 } from '@dao-dao/types'
 import { Proposal as DaoPreProposeApprovalSingleProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
@@ -29,7 +30,6 @@ import {
 
 import { daoCoreProposalModulesSelector } from '../../../../recoil'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { proposalSelector } from '../contracts/DaoProposalSingle.common.recoil'
 import { ProposalWithMetadata } from '../types'
 
 // Returns a proposal wrapped in a LoadingData object to allow the UI to respond
@@ -43,7 +43,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   } = useProposalModuleAdapterOptions()
 
   const loadingProposalResponse = useCachedLoading(
-    proposalSelector({
+    DaoProposalSingleCommonSelectors.proposalSelector({
       contractAddress: proposalModuleAddress,
       chainId,
       params: [
@@ -150,7 +150,8 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const approvedAnotherProposal =
     prePropose?.type === PreProposeModuleType.Approver &&
     !loadingProposalResponse.loading &&
-    loadingProposalResponse.data?.proposal.status === ProposalStatus.Executed
+    loadingProposalResponse.data?.proposal.status ===
+      ProposalStatusEnum.Executed
   const approvalDaoProposalModules = useCachedLoading(
     approvedAnotherProposal
       ? daoCoreProposalModulesSelector({
@@ -242,8 +243,17 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
     blockHeightLoadable.contents
   )
 
+  const vetoTimelockExpiration =
+    typeof proposal.status === 'object' && 'veto_timelock' in proposal.status
+      ? convertExpirationToDate(
+          blocksPerYearLoadable.contents,
+          proposal.status.veto_timelock.expiration,
+          blockHeightLoadable.contents
+        )
+      : undefined
+
   const votingOpen =
-    proposal.status === ProposalStatus.Open ||
+    proposal.status === ProposalStatusEnum.Open ||
     (!!version &&
       // Voting up until expiration on finished proposals may be supported.
       isFeatureSupportedByVersion(Feature.VoteUntilExpiration, version) &&
@@ -260,7 +270,9 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
   const dateDisplay: ProposalTimestampInfo['display'] | undefined = votingOpen
     ? expirationDate && expirationDate.getTime() > Date.now()
       ? {
-          label: t('title.timeLeft'),
+          label: vetoTimelockExpiration
+            ? t('title.votingTimeLeft')
+            : t('title.timeLeft'),
           tooltip: formatDateTimeTz(expirationDate),
           content: (
             <TimeAgo date={expirationDate} formatter={timeAgoFormatter} />
@@ -315,6 +327,7 @@ export const useLoadingProposal = (): LoadingData<ProposalWithMetadata> => {
         typeof executedAt === 'string' ? new Date(executedAt) : undefined,
       approverProposalId,
       approvedProposalId,
+      vetoTimelockExpiration,
     },
   }
 }

@@ -1,11 +1,11 @@
 import { constSelector } from 'recoil'
 
+import { DaoPreProposeMultipleSelectors } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { CheckedDepositInfo, LoadingData } from '@dao-dao/types'
 import { DepositInfoResponse as DepositInfoPreProposeResponse } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
-import { depositInfoSelector } from '../contracts/DaoPreProposeMultiple.recoil'
 
 // Multiple choice proposal module adapter begins from v2.
 export const useLoadingDepositInfo = (): LoadingData<
@@ -21,7 +21,7 @@ export const useLoadingDepositInfo = (): LoadingData<
     DepositInfoPreProposeResponse | undefined
   >(
     prePropose
-      ? depositInfoSelector({
+      ? DaoPreProposeMultipleSelectors.depositInfoSelector({
           chainId,
           contractAddress: prePropose.address,
           params: [

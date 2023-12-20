@@ -1,4 +1,4 @@
-type Structure = {
+export type Structure = {
   // Nest to match more keys or use an empty object ({}) to check existence.
   [key: string]: Structure | { [key: string | number | symbol]: never }
 }

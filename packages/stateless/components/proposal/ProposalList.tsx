@@ -3,14 +3,24 @@ import clsx from 'clsx'
 import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import {
+  DaoWithDropdownVetoableProposalList,
+  LinkWrapperProps,
+} from '@dao-dao/types'
+
+import { useDaoInfoContext } from '../../hooks'
 import { Button } from '../buttons'
+import { DaoDropdown } from '../dao'
 import { DropdownIconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
+import { TooltipInfoIcon } from '../tooltip'
 
 export interface ProposalListProps<T extends { proposalId: string }> {
   ProposalLine: ComponentType<T>
   openProposals: T[]
+  // DAOs with proposals that can be vetoed.
+  daosWithVetoableProposals: DaoWithDropdownVetoableProposalList<T>[]
   historyProposals: T[]
   // Override array length as count.
   historyCount?: number
@@ -20,11 +30,13 @@ export interface ProposalListProps<T extends { proposalId: string }> {
   loadingMore: boolean
   isMember: boolean
   DiscordNotifierConfigureModal: ComponentType | undefined
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
 export const ProposalList = <T extends { proposalId: string }>({
   ProposalLine,
   openProposals,
+  daosWithVetoableProposals,
   historyProposals,
   historyCount,
   createNewProposalHref,
@@ -33,9 +45,12 @@ export const ProposalList = <T extends { proposalId: string }>({
   loadingMore,
   isMember,
   DiscordNotifierConfigureModal,
+  LinkWrapper,
 }: ProposalListProps<T>) => {
   const { t } = useTranslation()
+  const { name: daoName } = useDaoInfoContext()
 
+  const [vetoableExpanded, setVetoableExpanded] = useState(true)
   const [historyExpanded, setHistoryExpanded] = useState(true)
 
   return openProposals.length > 0 || historyProposals.length > 0 ? (
@@ -46,11 +61,58 @@ export const ProposalList = <T extends { proposalId: string }>({
         {DiscordNotifierConfigureModal && <DiscordNotifierConfigureModal />}
       </div>
 
-      {!!openProposals.length && (
+      {openProposals.length > 0 && (
         <div className="mb-9 space-y-1">
           {openProposals.map((props) => (
             <ProposalLine {...props} key={props.proposalId} />
           ))}
+        </div>
+      )}
+
+      {daosWithVetoableProposals.length > 0 && (
+        <div className="mt-3 mb-6 flex animate-fade-in flex-col gap-4">
+          <div className="link-text ml-2 flex flex-row items-center gap-3 text-text-secondary">
+            <DropdownIconButton
+              className="text-icon-primary"
+              open={vetoableExpanded}
+              toggle={() => setVetoableExpanded((e) => !e)}
+            />
+
+            <p>{t('title.vetoable')}</p>
+
+            <TooltipInfoIcon
+              className="-ml-1.5"
+              size="sm"
+              title={t('info.vetoableProposalsTooltip', {
+                daoName,
+              })}
+            />
+          </div>
+
+          <div
+            className={clsx(
+              'animate-fade-in space-y-4 pl-8',
+              vetoableExpanded ? 'mb-3' : 'hidden'
+            )}
+          >
+            {daosWithVetoableProposals.map(({ dao, proposals }) => (
+              <DaoDropdown
+                key={dao.chainId + dao.coreAddress}
+                LinkWrapper={LinkWrapper}
+                dao={dao}
+                showSubdaos={false}
+              >
+                <div className="mt-2 space-y-1 pl-6">
+                  {proposals.map((props) => (
+                    <ProposalLine
+                      {...props}
+                      key={dao.chainId + dao.coreAddress + props.proposalId}
+                    />
+                  ))}
+                </div>
+              </DaoDropdown>
+            ))}
+          </div>
         </div>
       )}
 
@@ -70,7 +132,7 @@ export const ProposalList = <T extends { proposalId: string }>({
         </p>
       </div>
 
-      <div className={clsx(!historyExpanded && 'hidden')}>
+      <div className={clsx('animate-fade-in', !historyExpanded && 'hidden')}>
         <div className="mt-6 space-y-1">
           {historyProposals.map((props) => (
             <ProposalLine {...props} key={props.proposalId} />

@@ -4,16 +4,31 @@ import { useRecoilCallback, useSetRecoilState } from 'recoil'
 import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
   ProposalList as StatelessProposalList,
+  useAppContext,
+  useCachedLoadingWithError,
   useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
-import { CommonProposalListInfo } from '@dao-dao/types'
+import {
+  CommonProposalListInfo,
+  StatefulProposalLineProps,
+} from '@dao-dao/types'
+import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
-import { useMembership, useOnDaoWebSocketMessage } from '../hooks'
+import {
+  useMembership,
+  useOnCurrentDaoWebSocketMessage,
+  useOnWebSocketMessage,
+} from '../hooks'
 import { matchAndLoadCommon } from '../proposal-module-adapter'
+import {
+  daoVetoableDaosSelector,
+  daosWithDropdownVetoableProposalListSelector,
+} from '../recoil'
 import { DiscordNotifierConfigureModal } from './dao/DiscordNotifierConfigureModal'
-import { ProposalLine, ProposalLineProps } from './ProposalLine'
+import { LinkWrapper } from './LinkWrapper'
+import { ProposalLine } from './ProposalLine'
 
 // Contracts enforce a max of 30, though this is on the edge, so use 20.
 const PROP_PAGINATE_LIMIT = 20
@@ -35,14 +50,17 @@ export const ProposalList = () => {
   const chain = useChain()
   const { coreAddress, proposalModules } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
+  const { mode } = useAppContext()
   const { isMember = false } = useMembership({
     coreAddress,
   })
 
-  const [openProposals, setOpenProposals] = useState<ProposalLineProps[]>([])
-  const [historyProposals, setHistoryProposals] = useState<ProposalLineProps[]>(
-    []
-  )
+  const [openProposals, setOpenProposals] = useState<
+    StatefulProposalLineProps[]
+  >([])
+  const [historyProposals, setHistoryProposals] = useState<
+    StatefulProposalLineProps[]
+  >([])
 
   // Get selectors for all proposal modules so we can list proposals.
   const commonSelectors = useMemo(
@@ -61,6 +79,20 @@ export const ProposalList = () => {
   const [startBefores, setStartBefores] = useState<
     Record<string, Record<ProposalType, number | undefined> | undefined>
   >({})
+
+  const vetoableDaosLoading = useCachedLoadingWithError(
+    daoVetoableDaosSelector({
+      chainId: chain.chain_id,
+      coreAddress,
+    })
+  )
+  const daosWithVetoableProposals = useCachedLoadingWithError(
+    daosWithDropdownVetoableProposalListSelector({
+      chainId: chain.chain_id,
+      coreAddress,
+      daoPageMode: mode,
+    })
+  )
 
   const [loading, setLoading] = useState(true)
   const [canLoadMore, setCanLoadMore] = useState(true)
@@ -217,7 +249,7 @@ export const ProposalList = () => {
             const transformIntoProps = ({
               id,
               type,
-            }: typeof newProposalInfos[number]): ProposalLineProps => ({
+            }: typeof newProposalInfos[number]): StatefulProposalLineProps => ({
               chainId: chain.chain_id,
               coreAddress,
               proposalModules,
@@ -283,18 +315,35 @@ export const ProposalList = () => {
 
   // Refresh all proposals on proposal WebSocket messages.
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
-  useOnDaoWebSocketMessage('proposal', () => {
+  useOnCurrentDaoWebSocketMessage('proposal', () => {
     setRefreshProposalsId((id) => id + 1)
     // Refresh all proposals.
     loadMore(true)
   })
 
+  // Refresh all proposals on vetoable DAO proposal WebSocket messages.
+  useOnWebSocketMessage(
+    vetoableDaosLoading.loading || vetoableDaosLoading.errored
+      ? []
+      : vetoableDaosLoading.data.map((vetoable) =>
+          webSocketChannelNameForDao(vetoable)
+        ),
+    'proposal',
+    () => setRefreshProposalsId((id) => id + 1)
+  )
+
   return (
     <StatelessProposalList
       DiscordNotifierConfigureModal={DiscordNotifierConfigureModal}
+      LinkWrapper={LinkWrapper}
       ProposalLine={ProposalLine}
       canLoadMore={canLoadMore}
       createNewProposalHref={getDaoProposalPath(coreAddress, 'create')}
+      daosWithVetoableProposals={
+        daosWithVetoableProposals.loading || daosWithVetoableProposals.errored
+          ? []
+          : daosWithVetoableProposals.data
+      }
       historyProposals={historyProposals}
       isMember={isMember}
       loadMore={

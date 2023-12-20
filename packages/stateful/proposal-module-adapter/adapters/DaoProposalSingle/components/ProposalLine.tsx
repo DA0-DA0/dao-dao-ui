@@ -1,7 +1,10 @@
+import TimeAgo from 'react-timeago'
+
 import {
   ProposalLineLoader,
   ProposalStatus,
   ProposalLine as StatelessProposalLine,
+  useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
   ApprovalProposalContextType,
@@ -48,6 +51,8 @@ const InnerProposalLine = ({
   })
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
+
   return (
     <StatelessProposalLine
       Status={({ dimmed }) => (
@@ -63,7 +68,20 @@ const InnerProposalLine = ({
       }
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
-      timestampDisplay={proposal.timestampInfo?.display}
+      timestampDisplay={
+        proposal.vetoTimelockExpiration
+          ? {
+              // Not used.
+              label: '',
+              content: (
+                <TimeAgo
+                  date={proposal.vetoTimelockExpiration}
+                  formatter={timeAgoFormatter}
+                />
+              ),
+            }
+          : proposal.timestampInfo?.display
+      }
       title={proposal.title}
       vote={
         // If no wallet connected, show nothing. If loading, also show nothing
