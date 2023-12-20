@@ -32,6 +32,7 @@ export interface LineGraphProps {
   labels?: (string | number)[]
   time?: boolean
   verticalLineAtX?: number
+  datasetLabel?: string
   className?: string
 }
 
@@ -42,6 +43,7 @@ export const LineGraph = ({
   labels,
   time,
   verticalLineAtX,
+  datasetLabel,
   className,
 }: LineGraphProps) => {
   const { t } = useTranslation()
@@ -57,6 +59,7 @@ export const LineGraph = ({
         labels: labels || yValues.map(() => ''),
         datasets: [
           {
+            label: datasetLabel,
             data: yValues,
             borderColor: accentColor,
           },
@@ -81,6 +84,9 @@ export const LineGraph = ({
             font: {
               weight: 'normal',
             },
+          },
+          legend: {
+            display: !!datasetLabel,
           },
           annotation: verticalLineAtX
             ? {
