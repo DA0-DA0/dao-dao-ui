@@ -438,9 +438,7 @@ export const daoVetoableDaosSelector = selectorFamily<
           prefix: VETOABLE_DAOS_ITEM_KEY_PREFIX,
         })
       ).map(([key]) => {
-        const [chainId, coreAdress] = key
-          .substring(VETOABLE_DAOS_ITEM_KEY_PREFIX.length)
-          .split(':')
+        const [chainId, coreAdress] = key.split(':')
 
         return {
           chainId,
@@ -463,18 +461,12 @@ export const daosWithVetoableProposalsSelector = selectorFamily<
       // Refresh this when all proposals refresh.
       const id = get(refreshProposalsIdAtom)
 
-      // TODO: use accounts once refactor is complete
-      const accounts = [
-        [chainId, coreAddress],
-        ...Object.entries(
-          get(
-            DaoCoreV2Selectors.polytoneProxiesSelector({
-              chainId,
-              contractAddress: coreAddress,
-            })
-          )
-        ),
-      ]
+      const accounts = get(
+        accountsSelector({
+          chainId,
+          address: coreAddress,
+        })
+      )
 
       // Load DAOs this DAO has enabled vetoable proposal listing for.
       const vetoableDaos = get(
@@ -487,10 +479,10 @@ export const daosWithVetoableProposalsSelector = selectorFamily<
       const daoVetoableProposalsPerChain = (
         get(
           waitForAll(
-            accounts.map(([chainId, contractAddress]) =>
+            accounts.map(({ chainId, address }) =>
               queryContractIndexerSelector({
                 chainId,
-                contractAddress,
+                contractAddress: address,
                 formula: 'daoCore/vetoableProposals',
                 required: true,
                 id,
@@ -501,7 +493,7 @@ export const daosWithVetoableProposalsSelector = selectorFamily<
       )
         .flatMap((data, index) =>
           data.map((d) => ({
-            chainId: accounts[index][0],
+            chainId: accounts[index].chainId,
             ...d,
           }))
         )
