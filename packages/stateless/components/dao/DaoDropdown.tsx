@@ -11,7 +11,8 @@ import { Tooltip } from '../tooltip/Tooltip'
 export * from '@dao-dao/types/components/DaoDropdown'
 
 export const DaoDropdown = ({
-  dao: { coreAddress, imageUrl, name, subdaos, content },
+  dao: { coreAddress, imageUrl, name, subdaos },
+  children,
   showSubdaos = true,
   indent = 0,
   compact = false,
@@ -58,9 +59,9 @@ export const DaoDropdown = ({
       }}
       noContentIndent
     >
-      {!!((showSubdaos && subdaos?.length) || content) && (
+      {!!((showSubdaos && subdaos?.length) || children) && (
         <>
-          {content}
+          {children}
 
           {showSubdaos &&
             subdaos?.map((dao, index) => (

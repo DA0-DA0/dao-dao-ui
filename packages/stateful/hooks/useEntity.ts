@@ -10,10 +10,12 @@ export const useEntity = (address: string): LoadingData<Entity> => {
   const { chain_id: chainId } = useChain()
 
   return useCachedLoading(
-    entitySelector({
-      chainId,
-      address,
-    }),
+    address
+      ? entitySelector({
+          chainId,
+          address,
+        })
+      : undefined,
     // Should never error as it uses loadables internally.
     {
       type: EntityType.Wallet,

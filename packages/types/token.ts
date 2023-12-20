@@ -6,10 +6,10 @@ import {
   ButtonLinkProps,
   ButtonPopupSection,
   ButtonPopupSectionButton,
-  LoadingData,
-  LoadingDataWithError,
   StatefulEntityDisplayProps,
 } from './components'
+import { TokenInfoResponse } from './contracts/Cw20Base'
+import { LoadingData, LoadingDataWithError } from './misc'
 
 export enum TokenType {
   Native = 'native',
@@ -166,4 +166,14 @@ export type PfmMemo = {
     // string or an object).
     next?: PfmMemo
   }
+}
+
+export type TokenInfoResponseWithAddressAndLogo = TokenInfoResponse & {
+  address: string
+  logoUrl?: string
+}
+
+export type AmountWithTimestamp = {
+  amount: number
+  timestamp: Date
 }

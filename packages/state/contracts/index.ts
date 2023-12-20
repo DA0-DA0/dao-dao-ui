@@ -10,12 +10,40 @@ export {
   CwPayrollFactoryQueryClient,
 } from './CwPayrollFactory'
 export {
+  CwProposalSingleV1Client,
+  CwProposalSingleV1QueryClient,
+} from './CwProposalSingle.v1'
+export {
   CwTokenfactoryIssuerClient,
   CwTokenfactoryIssuerQueryClient,
 } from './CwTokenfactoryIssuer'
 export { CwTokenSwapClient, CwTokenSwapQueryClient } from './CwTokenSwap'
 export { CwVestingClient, CwVestingQueryClient } from './CwVesting'
 export { DaoCoreV2Client, DaoCoreV2QueryClient } from './DaoCore.v2'
+export {
+  DaoPreProposeApprovalSingleClient,
+  DaoPreProposeApprovalSingleQueryClient,
+} from './DaoPreProposeApprovalSingle'
+export {
+  DaoPreProposeApproverClient,
+  DaoPreProposeApproverQueryClient,
+} from './DaoPreProposeApprover'
+export {
+  DaoPreProposeMultipleClient,
+  DaoPreProposeMultipleQueryClient,
+} from './DaoPreProposeMultiple'
+export {
+  DaoPreProposeSingleClient,
+  DaoPreProposeSingleQueryClient,
+} from './DaoPreProposeSingle'
+export {
+  DaoProposalMultipleClient,
+  DaoProposalMultipleQueryClient,
+} from './DaoProposalMultiple'
+export {
+  DaoProposalSingleV2Client,
+  DaoProposalSingleV2QueryClient,
+} from './DaoProposalSingle.v2'
 export { DaoVotingCw4QueryClient } from './DaoVotingCw4'
 export {
   DaoVotingCw20StakedClient,

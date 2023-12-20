@@ -435,9 +435,7 @@ export const ProposalCreationForm = ({
                 createdAt={new Date()}
                 creator={{
                   address: walletAddress,
-                  name: entity.loading
-                    ? entity
-                    : { loading: false, data: entity.data.name },
+                  entity,
                 }}
                 description={proposalDescription}
                 innerContentDisplay={

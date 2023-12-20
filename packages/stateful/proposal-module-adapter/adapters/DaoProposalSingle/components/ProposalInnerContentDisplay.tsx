@@ -110,7 +110,7 @@ const InnerProposalInnerContentDisplay = ({
     })
   )
   useDeepCompareEffect(() => {
-    setDuplicateFormData({
+    setDuplicateFormData?.({
       title: proposal.title,
       description: proposal.description,
       actionData: actionKeyAndData,
@@ -140,5 +140,7 @@ const InnerProposalInnerContentDisplay = ({
 
       {showRaw && <CosmosMessageDisplay value={rawDecodedMessages} />}
     </div>
-  ) : null
+  ) : (
+    <p className="caption-text italic">{t('info.noProposalActions')}</p>
+  )
 }

@@ -47,7 +47,9 @@ export enum Feature {
    * SubDAOs were added.
    */
   SubDaos,
-  /** Pre-propose was added. */
+  /**
+   * Pre-propose was added.
+   */
   PrePropose,
   /**
    * Proposal modules were changed to have statically-assigned prefixes, as
@@ -75,6 +77,14 @@ export enum Feature {
    * support both native and cw20 tokens.
    */
   VotingModuleTokenTypeFix,
+  /**
+   * Approval was added.
+   */
+  Approval,
+  /**
+   * Veto was added.
+   */
+  Veto,
 }
 
 /**

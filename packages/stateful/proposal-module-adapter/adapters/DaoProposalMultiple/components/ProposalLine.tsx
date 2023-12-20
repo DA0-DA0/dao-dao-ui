@@ -1,7 +1,10 @@
+import TimeAgo from 'react-timeago'
+
 import {
   ProposalLineLoader,
   ProposalStatus,
   ProposalLine as StatelessProposalLine,
+  useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import { BaseProposalLineProps } from '@dao-dao/types'
 
@@ -44,6 +47,8 @@ const InnerProposalLine = ({
   })
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
 
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
+
   return (
     <StatelessProposalLine
       Status={({ dimmed }) => (
@@ -51,20 +56,33 @@ const InnerProposalLine = ({
       )}
       proposalNumber={proposalNumber}
       proposalPrefix={proposalPrefix}
-      timestampDisplay={proposal.timestampInfo?.display}
+      timestampDisplay={
+        proposal.vetoTimelockExpiration
+          ? {
+              // Not used.
+              label: '',
+              content: (
+                <TimeAgo
+                  date={proposal.vetoTimelockExpiration}
+                  formatter={timeAgoFormatter}
+                />
+              ),
+            }
+          : proposal.timestampInfo?.display
+      }
       title={proposal.title}
       vote={
         // If no wallet connected, show nothing. If loading, also show nothing
         // until loaded.
         !loadingWalletVoteInfo || loadingWalletVoteInfo.loading
           ? undefined
-          : // Show vote if they are a member of the DAO or if they could vote on
-            // this proposal. This ensures that someone who is part of the DAO sees
-            // their votes on every proposal (for visual consistency and
-            // reassurance), even 'None' for proposals they were unable to vote on
-            // due to previously not being part of the DAO. This also ensures that
-            // someone who is no longer part of the DAO can still see their past
-            // votes.
+          : // Show vote if they are a member of the DAO or if they could vote
+            // on this proposal. This ensures that someone who is part of the
+            // DAO sees their votes on every proposal (for visual consistency
+            // and reassurance), even 'None' for proposals they were unable to
+            // vote on due to previously not being part of the DAO. This also
+            // ensures that someone who is no longer part of the DAO can still
+            // see their past votes.
             (isMember || loadingWalletVoteInfo.data.couldVote) && (
               <ProposalWalletVote
                 fallback={

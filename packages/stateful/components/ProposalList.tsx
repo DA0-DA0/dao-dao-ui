@@ -4,42 +4,72 @@ import { useRecoilCallback, useSetRecoilState } from 'recoil'
 import { refreshProposalsIdAtom } from '@dao-dao/state/recoil'
 import {
   ProposalList as StatelessProposalList,
+  useAppContext,
+  useCachedLoadingWithError,
   useChain,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
+import {
+  CommonProposalListInfo,
+  StatefulProposalLineProps,
+} from '@dao-dao/types'
+import { webSocketChannelNameForDao } from '@dao-dao/utils'
 
-import { useMembership, useOnDaoWebSocketMessage } from '../hooks'
+import {
+  useMembership,
+  useOnCurrentDaoWebSocketMessage,
+  useOnWebSocketMessage,
+} from '../hooks'
 import { matchAndLoadCommon } from '../proposal-module-adapter'
+import {
+  daoVetoableDaosSelector,
+  daosWithDropdownVetoableProposalListSelector,
+} from '../recoil'
 import { DiscordNotifierConfigureModal } from './dao/DiscordNotifierConfigureModal'
-import { ProposalLine, ProposalLineProps } from './ProposalLine'
+import { LinkWrapper } from './LinkWrapper'
+import { ProposalLine } from './ProposalLine'
 
 // Contracts enforce a max of 30, though this is on the edge, so use 20.
 const PROP_PAGINATE_LIMIT = 20
 // Load proposals until at least this many are loaded.
 const MIN_LOAD_PROPS = 100
 
+enum ProposalType {
+  Normal = 'normal',
+  PreProposePending = 'preProposePending',
+  PreProposeCompleted = 'preProposeCompleted',
+}
+const PROPOSAL_TYPES = Object.values(ProposalType)
+
+type CommonProposalListInfoWithType = CommonProposalListInfo & {
+  type: ProposalType
+}
+
 export const ProposalList = () => {
   const chain = useChain()
   const { coreAddress, proposalModules } = useDaoInfoContext()
   const { getDaoProposalPath } = useDaoNavHelpers()
+  const { mode } = useAppContext()
   const { isMember = false } = useMembership({
     coreAddress,
   })
 
-  const [openProposals, setOpenProposals] = useState<ProposalLineProps[]>([])
-  const [historyProposals, setHistoryProposals] = useState<ProposalLineProps[]>(
-    []
-  )
+  const [openProposals, setOpenProposals] = useState<
+    StatefulProposalLineProps[]
+  >([])
+  const [historyProposals, setHistoryProposals] = useState<
+    StatefulProposalLineProps[]
+  >([])
 
-  // Get selectors for all proposal modules to list proposals.
-  const reverseProposalInfosSelectors = useMemo(
+  // Get selectors for all proposal modules so we can list proposals.
+  const commonSelectors = useMemo(
     () =>
       proposalModules.map((proposalModule) => ({
-        reverseProposalInfos: matchAndLoadCommon(proposalModule, {
+        selectors: matchAndLoadCommon(proposalModule, {
           chain,
           coreAddress,
-        }).selectors.reverseProposalInfos,
+        }).selectors,
         proposalModule,
       })),
     [chain, coreAddress, proposalModules]
@@ -47,16 +77,30 @@ export const ProposalList = () => {
 
   // Cursor values for each proposal module for incremental queries.
   const [startBefores, setStartBefores] = useState<
-    Record<string, number | undefined>
+    Record<string, Record<ProposalType, number | undefined> | undefined>
   >({})
+
+  const vetoableDaosLoading = useCachedLoadingWithError(
+    daoVetoableDaosSelector({
+      chainId: chain.chain_id,
+      coreAddress,
+    })
+  )
+  const daosWithVetoableProposals = useCachedLoadingWithError(
+    daosWithDropdownVetoableProposalListSelector({
+      chainId: chain.chain_id,
+      coreAddress,
+      daoPageMode: mode,
+    })
+  )
 
   const [loading, setLoading] = useState(true)
   const [canLoadMore, setCanLoadMore] = useState(true)
   const loadMore = useRecoilCallback(
     ({ snapshot }) =>
       // If `refreshAll` is true, we will load all proposals from the start,
-      // ignoring the startBefore cursor values, until we have loaded all
-      // the already loaded proposals.
+      // ignoring the startBefore cursor values, until we have loaded all the
+      // already loaded proposals.
       async (refreshAll = false) => {
         setLoading(true)
 
@@ -76,28 +120,65 @@ export const ProposalList = () => {
           do {
             // Load the most recent PROP_LOAD_LIMIT proposals from each module.
             const proposalListInfos = await Promise.all(
-              reverseProposalInfosSelectors.map(
-                async ({ proposalModule, reverseProposalInfos }) => {
-                  const startBefore = newStartBefores[proposalModule.address]
+              commonSelectors.flatMap(async ({ proposalModule, selectors }) => {
+                const startBefore = newStartBefores[proposalModule.address]
 
-                  const proposalInfos = await snapshot.getPromise(
-                    reverseProposalInfos({
-                      startBefore,
-                      limit: PROP_PAGINATE_LIMIT,
+                const proposalInfos = await snapshot.getPromise(
+                  selectors.reverseProposalInfos({
+                    startBefore: startBefore?.normal,
+                    limit: PROP_PAGINATE_LIMIT,
+                  })
+                )
+
+                const preProposePendingProposalInfos =
+                  selectors.reversePreProposePendingProposalInfos
+                    ? await snapshot.getPromise(
+                        selectors.reversePreProposePendingProposalInfos({
+                          startBefore: startBefore?.preProposePending,
+                          limit: PROP_PAGINATE_LIMIT,
+                        })
+                      )
+                    : undefined
+
+                const preProposeCompletedProposalInfos =
+                  selectors.reversePreProposeCompletedProposalInfos
+                    ? await snapshot.getPromise(
+                        selectors.reversePreProposeCompletedProposalInfos({
+                          startBefore: startBefore?.preProposeCompleted,
+                          limit: PROP_PAGINATE_LIMIT,
+                        })
+                      )
+                    : undefined
+
+                return [
+                  ...proposalInfos.map(
+                    (info): CommonProposalListInfoWithType => ({
+                      type: ProposalType.Normal,
+                      ...info,
                     })
-                  )
-
-                  return proposalInfos.map((info) => ({
-                    ...info,
-                    proposalModule,
-                  }))
-                }
-              )
+                  ),
+                  ...(preProposePendingProposalInfos?.map(
+                    (info): CommonProposalListInfoWithType => ({
+                      type: ProposalType.PreProposePending,
+                      ...info,
+                    })
+                  ) ?? []),
+                  ...(preProposeCompletedProposalInfos?.map(
+                    (info): CommonProposalListInfoWithType => ({
+                      type: ProposalType.PreProposeCompleted,
+                      ...info,
+                    })
+                  ) ?? []),
+                ].map((info) => ({
+                  ...info,
+                  proposalModule,
+                }))
+              })
             )
 
             // Sort descending by timestamp, putting undefined timestamps at the
             // bottom.
-            const newProposalInfos = proposalListInfos
+            let newProposalInfos = proposalListInfos
               .flat()
               .sort((a, b) =>
                 b.timestamp && a.timestamp
@@ -130,34 +211,53 @@ export const ProposalList = () => {
 
             // Store startBefore cursor values for next query based on last
             // proposal ID in list from each proposal module.
-            newStartBefores = proposalModules.reduce(
-              (acc, proposalModule) => ({
+            newStartBefores = proposalModules.reduce((acc, proposalModule) => {
+              const thisModulesProposalInfos = newProposalInfos.filter(
+                (info) => info.proposalModule === proposalModule
+              )
+
+              return {
                 ...acc,
-                [proposalModule.address]:
-                  newProposalInfos
-                    .filter((info) => info.proposalModule === proposalModule)
-                    .slice(-1)[0]?.proposalNumber ??
-                  // If no proposal from this proposal module shows up in the
-                  // proposals we are listing here, use the startBefore from
-                  // before.
-                  newStartBefores[proposalModule.address],
-              }),
-              {} as Record<string, number | undefined>
-            )
+                [proposalModule.address]: PROPOSAL_TYPES.reduce(
+                  (acc, type) => ({
+                    ...acc,
+                    [type]:
+                      thisModulesProposalInfos
+                        .filter((info) => info.type === type)
+                        .slice(-1)[0]?.proposalNumber ??
+                      // If no proposal from this proposal module with this type
+                      // shows up in the proposals we are listing here, use the
+                      // startBefore from before.
+                      newStartBefores[proposalModule.address]?.[type],
+                  }),
+                  {} as Record<ProposalType, number | undefined>
+                ),
+              }
+            }, {} as typeof newStartBefores)
 
             // If we loaded the max we asked for, there may be more in another
             // query.
             const canLoadMore = newProposalInfos.length === PROP_PAGINATE_LIMIT
             setCanLoadMore(canLoadMore)
 
+            // Remove proposals that should be hidden from the list after the
+            // start befores are calculated above to preserve the pagination.
+            newProposalInfos = newProposalInfos.filter(
+              (info) => !info.hideFromList
+            )
+
             const transformIntoProps = ({
               id,
-            }: typeof newProposalInfos[number]): ProposalLineProps => ({
+              type,
+            }: typeof newProposalInfos[number]): StatefulProposalLineProps => ({
               chainId: chain.chain_id,
               coreAddress,
               proposalModules,
               proposalId: id,
               proposalViewUrl: getDaoProposalPath(coreAddress, id),
+              isPreProposeProposal:
+                type === ProposalType.PreProposePending ||
+                type === ProposalType.PreProposeCompleted,
             })
 
             newOpenProposals = [
@@ -201,7 +301,7 @@ export const ProposalList = () => {
       openProposals,
       historyProposals,
       startBefores,
-      reverseProposalInfosSelectors,
+      commonSelectors,
       proposalModules,
       coreAddress,
       getDaoProposalPath,
@@ -215,18 +315,35 @@ export const ProposalList = () => {
 
   // Refresh all proposals on proposal WebSocket messages.
   const setRefreshProposalsId = useSetRecoilState(refreshProposalsIdAtom)
-  useOnDaoWebSocketMessage('proposal', () => {
+  useOnCurrentDaoWebSocketMessage('proposal', () => {
     setRefreshProposalsId((id) => id + 1)
     // Refresh all proposals.
     loadMore(true)
   })
 
+  // Refresh all proposals on vetoable DAO proposal WebSocket messages.
+  useOnWebSocketMessage(
+    vetoableDaosLoading.loading || vetoableDaosLoading.errored
+      ? []
+      : vetoableDaosLoading.data.map((vetoable) =>
+          webSocketChannelNameForDao(vetoable)
+        ),
+    'proposal',
+    () => setRefreshProposalsId((id) => id + 1)
+  )
+
   return (
     <StatelessProposalList
       DiscordNotifierConfigureModal={DiscordNotifierConfigureModal}
+      LinkWrapper={LinkWrapper}
       ProposalLine={ProposalLine}
       canLoadMore={canLoadMore}
       createNewProposalHref={getDaoProposalPath(coreAddress, 'create')}
+      daosWithVetoableProposals={
+        daosWithVetoableProposals.loading || daosWithVetoableProposals.errored
+          ? []
+          : daosWithVetoableProposals.data
+      }
       historyProposals={historyProposals}
       isMember={isMember}
       loadMore={

@@ -1,20 +1,19 @@
-import { Buffer } from 'buffer'
-
 import {
   ChainId,
   ContractVersion,
   DaoCreationGetInstantiateInfo,
   PercentOrMajorityValue,
 } from '@dao-dao/types'
-import { InstantiateMsg as CwPreProposeMultipleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
+import { InstantiateMsg as DaoPreProposeMultipleInstantiateMsg } from '@dao-dao/types/contracts/DaoPreProposeMultiple'
 import {
-  InstantiateMsg as CwProposalMultipleInstantiateMsg,
+  InstantiateMsg as DaoProposalMultipleInstantiateMsg,
   PercentageThreshold,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   DaoProposalMultipleAdapterId,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
+  encodeMessageAsBase64,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
@@ -35,6 +34,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       proposalDeposit,
       anyoneCanPropose,
       allowRevoting,
+      veto,
     },
   },
   { moduleInstantiateFundsUnsupported },
@@ -42,40 +42,43 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 ) => {
   const decimals = proposalDeposit.token?.decimals ?? 0
 
-  const preProposeMultipleInstantiateMsg: CwPreProposeMultipleInstantiateMsg = {
-    deposit_info: proposalDeposit.enabled
-      ? {
-          amount: convertDenomToMicroDenomWithDecimals(
-            proposalDeposit.amount,
-            decimals
-          ).toString(),
-          denom:
-            proposalDeposit.type === 'voting_module_token'
-              ? {
-                  voting_module_token: {},
-                }
-              : {
-                  token: {
-                    denom:
-                      proposalDeposit.type === 'native'
-                        ? {
-                            native: proposalDeposit.denomOrAddress,
-                          }
-                        : // proposalDeposit.type === 'cw20'
-                          {
-                            cw20: proposalDeposit.denomOrAddress,
-                          },
+  const preProposeMultipleInstantiateMsg: DaoPreProposeMultipleInstantiateMsg =
+    {
+      deposit_info: proposalDeposit.enabled
+        ? {
+            amount: convertDenomToMicroDenomWithDecimals(
+              proposalDeposit.amount,
+              decimals
+            ).toString(),
+            denom:
+              proposalDeposit.type === 'voting_module_token'
+                ? {
+                    voting_module_token: {
+                      token_type: 'native',
+                    },
+                  }
+                : {
+                    token: {
+                      denom:
+                        proposalDeposit.type === 'native'
+                          ? {
+                              native: proposalDeposit.denomOrAddress,
+                            }
+                          : // proposalDeposit.type === 'cw20'
+                            {
+                              cw20: proposalDeposit.denomOrAddress,
+                            },
+                    },
                   },
-                },
-          refund_policy: proposalDeposit.refundPolicy,
-        }
-      : null,
-    extension: {},
-    open_proposal_submission: anyoneCanPropose,
-  }
+            refund_policy: proposalDeposit.refundPolicy,
+          }
+        : null,
+      extension: {},
+      open_proposal_submission: anyoneCanPropose,
+    }
 
   // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<CwPreProposeMultipleInstantiateMsg>(
+  makeValidateMsg<DaoPreProposeMultipleInstantiateMsg>(
     preProposeInstantiateSchema,
     t
   )(preProposeMultipleInstantiateMsg)
@@ -88,7 +91,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
       historicalCodeIds?.[ContractVersion.V210]),
   }
 
-  const msg: CwProposalMultipleInstantiateMsg = {
+  const msg: DaoProposalMultipleInstantiateMsg = {
     allow_revoting: allowRevoting,
     close_proposal_on_execution_failure: true,
     max_voting_period: convertDurationWithUnitsToDuration(votingDuration),
@@ -100,11 +103,8 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
           admin: { core_module: {} },
           code_id: codeIdsToUse.DaoPreProposeMultiple,
           label: `DAO_${name.trim()}_pre-propose-${DaoProposalMultipleAdapterId}`,
-          msg: Buffer.from(
-            JSON.stringify(preProposeMultipleInstantiateMsg),
-            'utf8'
-          ).toString('base64'),
-          // TODO(neutron-2.3.0): add back in here
+          msg: encodeMessageAsBase64(preProposeMultipleInstantiateMsg),
+          // TODO(neutron-2.3.0): add back in here and in instantiate schema.
           ...(chainId !== ChainId.NeutronMainnet &&
             !moduleInstantiateFundsUnsupported && {
               funds: [],
@@ -117,17 +117,27 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         quorum: convertPercentOrMajorityValueToPercentageThreshold(quorum),
       },
     },
+    veto: veto.enabled
+      ? {
+          vetoer: veto.address,
+          timelock_duration: convertDurationWithUnitsToDuration(
+            veto.timelockDuration
+          ),
+          early_execute: veto.earlyExecute,
+          veto_before_passed: veto.vetoBeforePassed,
+        }
+      : null,
   }
 
   // Validate and throw error if invalid according to JSON schema.
-  makeValidateMsg<CwProposalMultipleInstantiateMsg>(instantiateSchema, t)(msg)
+  makeValidateMsg<DaoProposalMultipleInstantiateMsg>(instantiateSchema, t)(msg)
 
   return {
     admin: { core_module: {} },
     code_id: codeIdsToUse.DaoProposalMultiple,
     label: `DAO_${name.trim()}_${DaoProposalMultipleAdapterId}`,
-    msg: Buffer.from(JSON.stringify(msg), 'utf8').toString('base64'),
-    // TODO(neutron-2.3.0): add back in here
+    msg: encodeMessageAsBase64(msg),
+    // TODO(neutron-2.3.0): add back in here and in instantiate schema.
     ...(chainId !== ChainId.NeutronMainnet &&
       !moduleInstantiateFundsUnsupported && {
         funds: [],

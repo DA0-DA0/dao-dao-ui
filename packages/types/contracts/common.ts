@@ -300,15 +300,41 @@ export interface MintMsg {
   }
 }
 
-// Used by both DaoProposalSingle and DaoProposalMultiple.
-export enum ProposalStatus {
+/**
+ * The proposal status enum variants that can be represented as strings. This
+ * excludes enums containing values since they are objects.
+ */
+export enum ProposalStatusEnum {
   Open = 'open',
   Rejected = 'rejected',
   Passed = 'passed',
   Executed = 'executed',
   ExecutionFailed = 'execution_failed',
   Closed = 'closed',
+  Vetoed = 'vetoed',
 }
+/**
+ * The `VetoTimelock` proposal status enum variant that is represented as an
+ * object since it contains values.
+ */
+export type ProposalStatusVetoTimelock = {
+  veto_timelock: {
+    expiration: Expiration
+  }
+}
+/**
+ * The full proposal status type with all enum variants.
+ *
+ * Used by both DaoProposalSingle and DaoProposalMultiple.
+ */
+export type ProposalStatus = ProposalStatusEnum | ProposalStatusVetoTimelock
+/**
+ * The flattened set of proposal status keys that can be represented as strings.
+ * This uses the strings as-is and the key of the object enum variants.
+ */
+export type ProposalStatusKey =
+  | ProposalStatusEnum
+  | keyof ProposalStatusVetoTimelock
 
 export type ActiveThreshold =
   | {

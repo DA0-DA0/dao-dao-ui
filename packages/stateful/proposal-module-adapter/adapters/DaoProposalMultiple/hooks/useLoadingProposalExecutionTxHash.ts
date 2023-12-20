@@ -2,7 +2,7 @@ import { constSelector } from 'recoil'
 
 import { proposalExecutionTXHashSelector } from '@dao-dao/state'
 import { useCachedLoading } from '@dao-dao/stateless'
-import { ProposalStatus } from '@dao-dao/types'
+import { ProposalStatusEnum } from '@dao-dao/types'
 
 import { useProposalModuleAdapterOptions } from '../../../react'
 import { useLoadingProposal } from './useLoadingProposal'
@@ -20,8 +20,8 @@ export const useLoadingProposalExecutionTxHash = () => {
     loadingProposal.loading
       ? // Returns loading when undefined passed to indicate we are still loading.
         undefined
-      : loadingProposal.data.status === ProposalStatus.Executed ||
-        loadingProposal.data.status === ProposalStatus.ExecutionFailed
+      : loadingProposal.data.status === ProposalStatusEnum.Executed ||
+        loadingProposal.data.status === ProposalStatusEnum.ExecutionFailed
       ? // If in an execute state, load the execution TX hash.
         proposalExecutionTXHashSelector({
           chainId,

@@ -8,6 +8,8 @@ import {
   AccountType,
   DaoInfo,
   DaoInfoSerializable,
+  PreProposeModuleType,
+  ProposalModuleType,
 } from '@dao-dao/types'
 import { getSupportedFeatures } from '@dao-dao/utils'
 
@@ -20,11 +22,20 @@ export const makeDaoInfo = (): DaoInfo => ({
   votingModuleContractName: 'crates.io:dao-voting-cw20-staked',
   proposalModules: [
     {
+      type: ProposalModuleType.Single,
       contractName: 'crates.io:dao-proposal-single',
       version: ContractVersion.V2Alpha,
       address: 'proposalModuleAddress',
       prefix: 'A',
-      preProposeAddress: 'preProposeModuleAddress',
+      prePropose: {
+        contractName: 'crates.io:dao-pre-propose-single',
+        version: ContractVersion.V2Alpha,
+        address: 'preProposeModuleAddress',
+        type: PreProposeModuleType.Other,
+      },
+      config: {
+        veto: null,
+      },
     },
   ],
   name: 'A Very Real DAO',

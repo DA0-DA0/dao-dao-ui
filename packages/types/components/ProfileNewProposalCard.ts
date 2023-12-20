@@ -1,5 +1,5 @@
+import { LoadingData } from '../misc'
 import { ProfileNewProposalCardInfoLine } from '../proposal-module-adapter'
-import { LoadingData } from './common'
 import { ProfileCardWrapperProps } from './ProfileCardWrapper'
 
 export interface ProfileNewProposalCardAddress {

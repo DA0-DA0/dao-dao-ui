@@ -25,13 +25,13 @@ import {
 
 import {
   Cw20BaseHooks,
+  DaoPreProposeMultipleHooks,
+  DaoProposalMultipleHooks,
   useAwaitNextBlock,
   useMembership,
   useSimulateCosmosMsgs,
   useWallet,
 } from '../../../../../hooks'
-import { usePropose as useProposePrePropose } from '../../contracts/DaoPreProposeMultiple.hooks'
-import { usePropose } from '../../contracts/DaoProposalMultiple.hooks'
 import {
   MakeUsePublishProposalOptions,
   NewProposalData,
@@ -65,8 +65,8 @@ export const makeUsePublishProposal =
 
     const anyoneCanPropose = useRecoilValueLoadable(
       anyoneCanProposeSelector({
-        chainId: chainId,
-        preProposeAddress: proposalModule.preProposeAddress,
+        chainId,
+        preProposeAddress: proposalModule.prePropose?.address ?? null,
       })
     )
 
@@ -99,7 +99,7 @@ export const makeUsePublishProposal =
                 // If pre-propose address set, give that one deposit allowance
                 // instead of proposal module.
                 spender:
-                  proposalModule.preProposeAddress || proposalModule.address,
+                  proposalModule.prePropose?.address || proposalModule.address,
               },
             ],
           })
@@ -165,12 +165,12 @@ export const makeUsePublishProposal =
       sender: walletAddress ?? '',
     })
 
-    const doPropose = usePropose({
+    const doPropose = DaoProposalMultipleHooks.usePropose({
       contractAddress: proposalModule.address,
       sender: walletAddress ?? '',
     })
-    const doProposePrePropose = useProposePrePropose({
-      contractAddress: proposalModule.preProposeAddress ?? '',
+    const doProposePrePropose = DaoPreProposeMultipleHooks.usePropose({
+      contractAddress: proposalModule.prePropose?.address ?? '',
       sender: walletAddress ?? '',
     })
 
@@ -313,7 +313,7 @@ export const makeUsePublishProposal =
                 spender:
                   // If pre-propose address set, give that one deposit allowance
                   // instead of proposal module.
-                  proposalModule.preProposeAddress || proposalModule.address,
+                  proposalModule.prePropose?.address || proposalModule.address,
               })
 
               // Allowances will not update until the next block has been added.
@@ -347,7 +347,7 @@ export const makeUsePublishProposal =
           choices,
         }
 
-        let response: ExecuteResult = proposalModule.preProposeAddress
+        let response: ExecuteResult = proposalModule.prePropose
           ? await doProposePrePropose(
               {
                 msg: {

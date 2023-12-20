@@ -37,7 +37,10 @@ export const useGovernanceTokenInfo = ({
     })
   )
 
-  const [token, supply] = useRecoilValue(
+  // Token factory issuer
+  const isFactory = denom.startsWith('factory/')
+
+  const [token, supply, tokenFactoryIssuerAddress] = useRecoilValue(
     waitForAll([
       genericTokenSelector({
         chainId,
@@ -48,6 +51,12 @@ export const useGovernanceTokenInfo = ({
         chainId,
         denom,
       }),
+      DaoVotingTokenStakedSelectors.validatedTokenfactoryIssuerContractSelector(
+        {
+          contractAddress: votingModuleAddress,
+          chainId,
+        }
+      ),
     ])
   )
   const governanceTokenInfo: TokenInfoResponse = {
@@ -56,15 +65,6 @@ export const useGovernanceTokenInfo = ({
     symbol: token.symbol,
     total_supply: supply.toString(),
   }
-
-  // Token factory issuer
-  const isFactory = denom.startsWith('factory/')
-  const tokenFactoryIssuerAddress = useRecoilValue(
-    DaoVotingTokenStakedSelectors.validatedTokenfactoryIssuerContractSelector({
-      contractAddress: votingModuleAddress,
-      chainId,
-    })
-  )
 
   /// Optional
 

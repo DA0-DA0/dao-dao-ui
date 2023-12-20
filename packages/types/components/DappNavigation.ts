@@ -1,6 +1,6 @@
 import { ComponentType } from 'react'
 
-import { LoadingData } from './common'
+import { LoadingData } from '../misc'
 import { DaoDropdownInfo } from './DaoDropdown'
 import { LinkWrapperProps } from './LinkWrapper'
 

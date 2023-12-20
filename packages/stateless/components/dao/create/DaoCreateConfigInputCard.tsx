@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import { ComponentType, ReactNode } from 'react'
 import { FieldError } from 'react-hook-form'
 
@@ -16,6 +17,7 @@ export interface DaoCreateConfigInputCardProps {
   input: ReactNode
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
   error?: FieldError
+  className?: string
 }
 
 export const DaoCreateConfigInputCard = ({
@@ -26,8 +28,14 @@ export const DaoCreateConfigInputCard = ({
   input,
   SuspenseLoader,
   error,
+  className,
 }: DaoCreateConfigInputCardProps) => (
-  <div className="relative flex flex-col rounded-lg bg-background-tertiary">
+  <div
+    className={clsx(
+      'relative flex flex-col rounded-lg bg-background-tertiary',
+      className
+    )}
+  >
     {tooltip && (
       <TooltipInfoIcon className="absolute top-3 right-3" title={tooltip} />
     )}

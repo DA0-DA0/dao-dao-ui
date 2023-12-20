@@ -1,3 +1,4 @@
+import uniq from 'lodash.uniq'
 import {
   RecoilValueReadOnly,
   selectorFamily,
@@ -16,19 +17,28 @@ import {
   contractVersionSelector,
   isDaoSelector,
   queryContractIndexerSelector,
+  refreshProposalsIdAtom,
 } from '@dao-dao/state'
 import {
   ContractVersion,
   ContractVersionInfo,
   DaoInfo,
+  DaoPageMode,
+  DaoWithDropdownVetoableProposalList,
+  DaoWithVetoableProposals,
   Feature,
+  IndexerDaoWithVetoableProposals,
   ProposalModule,
+  StatefulProposalLineProps,
   WithChainId,
 } from '@dao-dao/types'
 import {
+  DAO_CORE_CONTRACT_NAMES,
   DaoVotingCw20StakedAdapterId,
   POLYTONE_CONFIG_PER_CHAIN,
+  VETOABLE_DAOS_ITEM_KEY_PREFIX,
   getChainForChainId,
+  getDaoProposalPath,
   getDisplayNameForChainId,
   getImageUrlForChainId,
   getSupportedChainConfig,
@@ -38,6 +48,7 @@ import {
 
 import { fetchProposalModules } from '../../../utils/fetchProposalModules'
 import { matchAdapter as matchVotingModuleAdapter } from '../../../voting-module-adapter'
+import { daoDropdownInfoSelector } from './cards'
 
 export const daoCoreProposalModulesSelector = selectorFamily<
   ProposalModule[],
@@ -140,13 +151,7 @@ export const daoPotentialSubDaosSelector = selectorFamily<
         .filter(
           ({ contractAddress, info }) =>
             contractAddress !== coreAddress &&
-            [
-              // V1
-              'cw-core',
-              // V2
-              'cwd-core',
-              'dao-core',
-            ].some((name) => info.contract.includes(name))
+            DAO_CORE_CONTRACT_NAMES.some((name) => info.contract.includes(name))
         )
         .map(({ contractAddress }) => contractAddress)
     },
@@ -412,5 +417,198 @@ export const daoInfoFromPolytoneProxySelector = selectorFamily<
         coreAddress,
         info,
       }
+    },
+})
+
+/**
+ * DAOs this DAO has enabled vetoable proposal listing for.
+ */
+export const daoVetoableDaosSelector = selectorFamily<
+  { chainId: string; coreAddress: string }[],
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'daoVetoableDaos',
+  get:
+    ({ chainId, coreAddress }) =>
+    ({ get }) =>
+      get(
+        DaoCoreV2Selectors.listAllItemsWithPrefixSelector({
+          chainId,
+          contractAddress: coreAddress,
+          prefix: VETOABLE_DAOS_ITEM_KEY_PREFIX,
+        })
+      ).map(([key]) => {
+        const [chainId, coreAdress] = key.split(':')
+
+        return {
+          chainId,
+          coreAddress: coreAdress,
+        }
+      }),
+})
+
+/**
+ * Proposals which this DAO can currently veto.
+ */
+export const daosWithVetoableProposalsSelector = selectorFamily<
+  DaoWithVetoableProposals[],
+  WithChainId<{ coreAddress: string }>
+>({
+  key: 'daosWithVetoableProposals',
+  get:
+    ({ chainId, coreAddress }) =>
+    ({ get }) => {
+      // Refresh this when all proposals refresh.
+      const id = get(refreshProposalsIdAtom)
+
+      const accounts = get(
+        accountsSelector({
+          chainId,
+          address: coreAddress,
+        })
+      )
+
+      // Load DAOs this DAO has enabled vetoable proposal listing for.
+      const vetoableDaos = get(
+        daoVetoableDaosSelector({
+          chainId,
+          coreAddress,
+        })
+      )
+
+      const daoVetoableProposalsPerChain = (
+        get(
+          waitForAll(
+            accounts.map(({ chainId, address }) =>
+              queryContractIndexerSelector({
+                chainId,
+                contractAddress: address,
+                formula: 'daoCore/vetoableProposals',
+                required: true,
+                id,
+              })
+            )
+          )
+        ) as IndexerDaoWithVetoableProposals[][]
+      )
+        .flatMap((data, index) =>
+          data.map((d) => ({
+            chainId: accounts[index].chainId,
+            ...d,
+          }))
+        )
+        .filter(({ chainId, dao }) =>
+          vetoableDaos.some(
+            (vetoable) =>
+              vetoable.chainId === chainId && vetoable.coreAddress === dao
+          )
+        )
+
+      const uniqueChainsAndDaos = uniq(
+        daoVetoableProposalsPerChain.map(
+          ({ chainId, dao }) => `${chainId}:${dao}`
+        )
+      )
+
+      const daoProposalModules = get(
+        waitForAllSettled(
+          uniqueChainsAndDaos.map((chainAndDao) =>
+            daoCoreProposalModulesSelector({
+              chainId: chainAndDao.split(':')[0],
+              coreAddress: chainAndDao.split(':')[1],
+            })
+          )
+        )
+      )
+
+      return uniqueChainsAndDaos.flatMap((chainAndDao, index) => {
+        const proposalModules = daoProposalModules[index]
+
+        return proposalModules.state === 'hasValue'
+          ? {
+              chainId: chainAndDao.split(':')[0],
+              dao: chainAndDao.split(':')[1],
+              proposalModules: proposalModules.contents,
+              proposalsWithModule: daoVetoableProposalsPerChain.find(
+                (vetoable) =>
+                  `${vetoable.chainId}:${vetoable.dao}` === chainAndDao
+              )!.proposalsWithModule,
+            }
+          : []
+      })
+    },
+})
+
+/**
+ * Proposals which this DAO can currently veto grouped by DAO with dropdown
+ * info.
+ */
+export const daosWithDropdownVetoableProposalListSelector = selectorFamily<
+  DaoWithDropdownVetoableProposalList<StatefulProposalLineProps>[],
+  WithChainId<{ coreAddress: string; daoPageMode: DaoPageMode }>
+>({
+  key: 'daosWithDropdownVetoableProposalList',
+  get:
+    ({ daoPageMode, ...params }) =>
+    ({ get }) => {
+      const daosWithVetoableProposals = get(
+        daosWithVetoableProposalsSelector(params)
+      )
+
+      const daoDropdownInfos = get(
+        waitForAllSettled(
+          daosWithVetoableProposals.map(({ chainId, dao }) =>
+            daoDropdownInfoSelector({
+              chainId,
+              coreAddress: dao,
+            })
+          )
+        )
+      )
+
+      return daosWithVetoableProposals.flatMap(
+        ({
+          chainId,
+          dao,
+          proposalModules,
+          proposalsWithModule,
+        }):
+          | DaoWithDropdownVetoableProposalList<StatefulProposalLineProps>
+          | [] => {
+          const dropdownInfo = daoDropdownInfos
+            .find(
+              (info) =>
+                info.state === 'hasValue' &&
+                info.contents.chainId === chainId &&
+                info.contents.coreAddress === dao
+            )
+            ?.valueMaybe()
+
+          if (!dropdownInfo) {
+            return []
+          }
+
+          return {
+            dao: dropdownInfo,
+            proposals: proposalsWithModule.flatMap(
+              ({ proposalModule: { prefix }, proposals }) =>
+                proposals.map(
+                  ({ id }): StatefulProposalLineProps => ({
+                    chainId,
+                    coreAddress: dao,
+                    proposalModules,
+                    proposalId: `${prefix}${id}`,
+                    proposalViewUrl: getDaoProposalPath(
+                      daoPageMode,
+                      dao,
+                      `${prefix}${id}`
+                    ),
+                    isPreProposeProposal: false,
+                  })
+                )
+            ),
+          }
+        }
+      )
     },
 })

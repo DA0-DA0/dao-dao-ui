@@ -168,7 +168,7 @@ export const ButtonifiedChildren = ({
         'relative flex h-full flex-row items-center gap-2',
         center && 'justify-center',
         {
-          invisible: loading,
+          invisible: loading && variant !== PULSE_LOADING_VARIANTS,
         },
         contentContainerClassName
       )}

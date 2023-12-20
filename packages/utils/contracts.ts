@@ -29,10 +29,6 @@ export const indexToProposalModulePrefix = (index: number) => {
   return prefix
 }
 
-// Normalize for comparisons.
-export const normalizeContractName = (contractName: string) =>
-  contractName.replace('crates.io:', '').trim()
-
 // Use our custom instantiate encoder since CosmJS is unreliable due to the SDK
 // version (47+) change that improperly handles the optional admin field as an
 // empty string. The normal signing client `instantiate` function is thus no

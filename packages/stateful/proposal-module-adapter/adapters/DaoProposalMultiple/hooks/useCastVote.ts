@@ -4,16 +4,16 @@ import toast from 'react-hot-toast'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import { processError } from '@dao-dao/utils'
 
+import { DaoProposalMultipleHooks } from '../../../../hooks'
 import { useWallet } from '../../../../hooks/useWallet'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { useVote } from '../contracts/DaoProposalMultiple.hooks'
 import { useLoadingWalletVoteInfo } from './useLoadingWalletVoteInfo'
 
 export const useCastVote = (onSuccess?: () => void | Promise<void>) => {
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { isWalletConnected, address: walletAddress = '' } = useWallet()
 
-  const _castVote = useVote({
+  const _castVote = DaoProposalMultipleHooks.useVote({
     contractAddress: proposalModule.address,
     sender: walletAddress ?? '',
   })
