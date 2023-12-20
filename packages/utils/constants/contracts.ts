@@ -14,6 +14,7 @@ export const DAO_CORE_CONTRACT_NAMES = [
   // V2+
   'crates.io:cwd-core',
   'crates.io:dao-core',
+  'crates.io:dao-dao-core',
 ]
 
 export const LEGACY_DAO_CONTRACT_NAMES = [
