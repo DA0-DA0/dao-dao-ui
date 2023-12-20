@@ -547,6 +547,8 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       CwVesting: 290,
       DaoCore: 291,
       DaoMigrator: -1,
+      DaoPreProposeApprovalSingle: 293,
+      DaoPreProposeApprover: 294,
       DaoPreProposeMultiple: 295,
       DaoPreProposeSingle: 296,
       DaoProposalMultiple: 297,
