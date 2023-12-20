@@ -87,7 +87,7 @@ export const CreateDaoReview = ({
         {t('title.votingConfiguration')}
       </p>
 
-      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 2xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {creator.votingConfig.items
           .concat(creator.votingConfig.advancedItems ?? [])
           .map(
