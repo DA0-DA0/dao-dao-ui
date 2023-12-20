@@ -432,31 +432,27 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       govProp: 'https://ping.pub/stargaze/gov/REPLACE',
       wallet: 'https://ping.pub/stargaze/account/REPLACE',
     },
-    // TODO(stargaze-2.4.0): update once multisig broadcasted
     codeIds: {
       // https://github.com/CosmWasm/cw-plus
-      // TODO(vesting)
-      Cw1Whitelist: -1,
+      Cw1Whitelist: 152,
       Cw4Group: 83, // v0.16
 
-      // ContractVersion.V230
-      // TODO(vesting): update
-      CwPayrollFactory: -1,
-      CwTokenSwap: 125,
-      CwVesting: 126,
-      DaoCore: 127,
-      DaoMigrator: -1, // not needed since only v2 DAOs exist but it's 128
-      // TODO(approver)
-      DaoPreProposeApprovalSingle: -1,
-      DaoPreProposeApprover: -1,
-      DaoPreProposeMultiple: 129,
-      DaoPreProposeSingle: 130,
-      DaoProposalMultiple: 131,
-      DaoProposalSingle: 132,
-      DaoVotingCw4: 133,
-      DaoVotingCw721Staked: 120,
-      DaoVotingTokenStaked: 121,
-      CwTokenfactoryIssuer: 122,
+      // ContractVersion.V240
+      CwPayrollFactory: 148,
+      CwTokenSwap: 149,
+      CwTokenfactoryIssuer: 150,
+      CwVesting: 151,
+      DaoCore: 153,
+      DaoMigrator: -1, // not needed since only v2 DAOs exist
+      DaoPreProposeApprovalSingle: 154,
+      DaoPreProposeApprover: 155,
+      DaoPreProposeMultiple: 156,
+      DaoPreProposeSingle: 157,
+      DaoProposalMultiple: 158,
+      DaoProposalSingle: 159,
+      DaoVotingCw4: 160,
+      DaoVotingCw721Staked: 161,
+      DaoVotingTokenStaked: 162,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
