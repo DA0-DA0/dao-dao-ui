@@ -7,8 +7,7 @@ import {
   isValidTokenFactoryDenom,
   isValidValidatorAddress,
 } from '../address'
-import { nativeTokenExists } from '../assets'
-import { getChainForChainId } from '../chain'
+import { isValidNativeTokenDenom } from '../assets'
 import cosmosMsgSchema from '../cosmos_msg.json'
 import { isValidUrl } from '../isValidUrl'
 import { makeValidateMsg } from './makeValidateMsg'
@@ -65,13 +64,6 @@ export const makeValidateDate =
     (v && !isNaN(Date.parse(v))) ||
     t(time ? 'error.invalidDateTime' : 'error.invalidDate')
 
-export const makeValidateNativeDenom =
-  (chainId: string) =>
-  (v: any, required = true) =>
-    (!required && !v) ||
-    (v && typeof v === 'string' && nativeTokenExists(chainId, v)) ||
-    'Invalid native denom. Ensure it is lower–cased.'
-
 export const makeValidateTokenFactoryDenom =
   (bech32Prefix: string, required = true) =>
   (v: any) =>
@@ -79,18 +71,9 @@ export const makeValidateTokenFactoryDenom =
     (v && typeof v === 'string' && isValidTokenFactoryDenom(v, bech32Prefix)) ||
     'Invalid token factory denom. Ensure it is lower–cased.'
 
-export const makeValidateNativeOrFactoryTokenDenom =
-  (chainId: string, required = true) =>
-  (v: any) =>
-    (!required && !v) ||
-    (v &&
-      typeof v === 'string' &&
-      (nativeTokenExists(chainId, v) ||
-        isValidTokenFactoryDenom(
-          v,
-          getChainForChainId(chainId).bech32_prefix
-        ))) ||
-    'Invalid native token denom. Ensure it is lower–cased.'
+export const validateNativeTokenDenom = (v: any) =>
+  (v && typeof v === 'string' && isValidNativeTokenDenom(v)) ||
+  'Invalid native token denom.'
 
 export const validateJSON = (v: string) => {
   try {
