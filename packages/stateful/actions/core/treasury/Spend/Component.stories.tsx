@@ -98,6 +98,7 @@ Default.args = {
     ibcPath: { loading: true, errored: false },
     betterNonPfmIbcPath: { loading: true },
     missingAccountChainIds: [],
+    nobleTariff: { loading: false, errored: false, data: undefined },
     AddressInput,
   },
   isCreating: true,

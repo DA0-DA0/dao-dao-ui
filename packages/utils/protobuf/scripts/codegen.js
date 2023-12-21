@@ -84,6 +84,7 @@ telescope({
           'publicawesome.stargaze.globalfee.v1',
           'publicawesome.stargaze.mint.v1beta1',
           'gaia.globalfee.v1beta1',
+          'noble.tariff',
         ],
       },
       // excluded: {

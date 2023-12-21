@@ -1,10 +1,12 @@
 import { coin } from '@cosmjs/amino'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
+import { constSelector } from 'recoil'
 
 import {
   accountsSelector,
   genericTokenSelector,
+  nobleTariffTransferFeeSelector,
   skipAllChainsPfmEnabledSelector,
   skipRouteMessageSelector,
   skipRouteSelector,
@@ -12,6 +14,7 @@ import {
 import { MoneyEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
 import {
   AccountType,
+  ChainId,
   CosmosMsgForEmpty,
   Entity,
   LoadingDataWithError,
@@ -27,6 +30,7 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  MAINNET,
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodeIcaExecuteMsg,
@@ -284,6 +288,21 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         errored: false,
       }
 
+  // Compute Noble tariffs.
+  const nobleTariff = useCachedLoadingWithError(
+    ibcPath.loading || ibcPath.errored
+      ? undefined
+      : MAINNET &&
+        // If selected token is from Noble.
+        selectedToken &&
+        selectedToken.token.source.chainId === ChainId.NobleMainnet &&
+        // If Noble is one of the non-destination chains, meaning it will be
+        // transferred out of Noble at some point.
+        ibcPath.data.slice(0, -1).includes(ChainId.NobleMainnet)
+      ? nobleTariffTransferFeeSelector
+      : constSelector(undefined)
+  )
+
   // Store skip route message once loaded successfully during creation.
   useEffect(() => {
     if (!props.isCreating) {
@@ -336,8 +355,6 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
         tokens: loadingTokens,
         currentEntity,
         ibcPath,
-        missingAccountChainIds,
-        AddressInput,
         betterNonPfmIbcPath:
           skipRoute.loading || skipRoute.errored
             ? { loading: true }
@@ -348,6 +365,9 @@ const Component: ActionComponent<undefined, SpendData> = (props) => {
                     ? undefined
                     : skipRoute.data.chainIDs,
               },
+        missingAccountChainIds,
+        nobleTariff,
+        AddressInput,
       }}
     />
   )

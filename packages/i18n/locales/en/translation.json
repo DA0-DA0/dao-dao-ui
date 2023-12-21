@@ -1001,6 +1001,7 @@
     "noVetoableProposalsFound": "No vetoable proposals found.",
     "noVote": "No",
     "noWithVeto": "No with Veto",
+    "nobleTariffApplied": "Noble applies a {{feePercent}} fee on {{tokenSymbol}} IBC transfers out of the chain, up to {{maxFee}} ${{tokenSymbol}}. This spend will cost {{fee}} ${{tokenSymbol}}, and the recipient will receive {{output}} ${{tokenSymbol}}.",
     "nominateContributorDescription": "If you know of a contributor who deserves to be compensated but who did not submit a contribution this cycle, you can nominate them below. Doing so will allow them to be rated by the DAO members along with the rest of the contributors.",
     "none": "None",
     "notAdmin": "Your DAO is not the admin of this contract. The proposal will not be executable while this is the case.",
