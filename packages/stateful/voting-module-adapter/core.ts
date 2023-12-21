@@ -28,7 +28,6 @@ export const getAdapters = (): readonly VotingModuleAdapter[] => [
   DaoVotingCw721StakedAdapter,
   DaoVotingNativeStakedAdapter,
   DaoVotingTokenStakedAdapter,
-  FallbackAdapter,
 ]
 
 export const getAdapterById = (id: string) =>
@@ -39,7 +38,7 @@ export const matchAdapter = (contractNameToMatch: string) =>
     adapter.contractNames.some(
       (contractName) => contractNameToMatch === contractName
     )
-  )
+  ) || FallbackAdapter
 
 export const matchAndLoadAdapter = (
   contractName: string,
