@@ -60,9 +60,14 @@ export const ProposalContentDisplay = ({
 
   return (
     <>
-      <div className="mb-16 flex flex-row items-start justify-between gap-x-10 gap-y-2">
-        <div className="flex grow flex-col gap-4">
-          <div className="flex flex-row flex-wrap items-start gap-x-2 gap-y-1">
+      <div className="mb-8 flex flex-row items-start justify-between gap-6 sm:mb-12 sm:gap-10">
+        <div className="flex min-w-0 grow flex-col gap-4">
+          <div
+            className={clsx(
+              'flex flex-row flex-wrap gap-x-2 gap-y-1',
+              approvalContext ? 'items-start' : 'items-center'
+            )}
+          >
             {approvalContext && (
               <ApprovalBadge
                 className="h-8"
@@ -71,7 +76,7 @@ export const ProposalContentDisplay = ({
               />
             )}
 
-            <TextWithTooltipWhenTruncated className="hero-text">
+            <TextWithTooltipWhenTruncated className="header-text sm:hero-text">
               {title}
             </TextWithTooltipWhenTruncated>
           </div>
@@ -134,7 +139,7 @@ export const ProposalContentDisplay = ({
             'rounded-md border-2 border-dashed border-border-primary p-4'
         )}
       >
-        <div className="caption-text mb-4 flex flex-row items-center gap-1 font-mono">
+        <div className="caption-text mb-2 flex flex-row items-center gap-1 font-mono">
           {!!creator?.address && (
             <CopyToClipboardUnderline
               className={clsx(
@@ -175,7 +180,7 @@ export const ProposalContentDisplay = ({
         />
 
         {innerContentDisplay && (
-          <div className="mt-9">{innerContentDisplay}</div>
+          <div className="mt-6">{innerContentDisplay}</div>
         )}
       </div>
     </>
