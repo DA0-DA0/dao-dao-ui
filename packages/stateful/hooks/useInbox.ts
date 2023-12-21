@@ -21,7 +21,7 @@ export const useInbox = (): InboxState => {
   const refresh = useCallback(() => setRefresh((id) => id + 1), [setRefresh])
 
   // Refresh when any inbox items are added.
-  useOnWebSocketMessage([`inbox_${bech32Hex}`], 'add', refresh)
+  useOnWebSocketMessage(bech32Hex ? [`inbox_${bech32Hex}`] : [], 'add', refresh)
 
   // Refresh every minute.
   useEffect(() => {
