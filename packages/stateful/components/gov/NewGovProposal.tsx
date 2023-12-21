@@ -553,16 +553,14 @@ const InnerNewGovProposal = ({
         onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
       >
         <div className="rounded-lg bg-background-tertiary">
-          <div className="flex flex-row items-center justify-between gap-6 py-4 px-6">
-            <p className="primary-text text-text-body">
-              {t('form.proposalsName')}
-            </p>
+          <div className="flex flex-col gap-2 py-4 px-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+            <p className="primary-text text-text-body">{t('form.title')}</p>
 
             <div className="flex grow flex-col">
               <TextInput
                 error={errors.title}
                 fieldName="title"
-                placeholder={t('form.proposalsNamePlaceholder')}
+                placeholder={t('form.proposalsTitlePlaceholder')}
                 register={register}
                 validation={[validateRequired]}
               />
@@ -570,14 +568,9 @@ const InnerNewGovProposal = ({
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 border-y border-border-secondary p-6 pt-5">
+          <div className="flex flex-col gap-2 border-y border-border-secondary p-6 pt-5 sm:gap-4">
             <p className="primary-text text-text-body">
               {t('form.description')}
-              <span className="text-text-tertiary">
-                {/* eslint-disable-next-line i18next/no-literal-string */}
-                {' – '}
-                {t('info.supportsMarkdownFormat')}
-              </span>
             </p>
 
             <div className="flex flex-col">
