@@ -10,7 +10,6 @@ import semverGte from 'semver/functions/gte'
 
 import {
   BaseChainConfig,
-  ChainId,
   ConfiguredChain,
   GenericToken,
   SupportedChain,
@@ -507,18 +506,13 @@ export const getChainIdForAddress = (address: string): string => {
 }
 
 /**
- * Returns true if the cosmos sdk version is 0.47 or higher, except if the chain
- * is Osmosis, in which case it returns false. Osmosis's fork does not support
- * all v0.47 features.
+ * Returns true if the cosmos SDK version is 0.47 or higher.
  *
- * @param chainId the chain ID
  * @param version the cosmos SDK version string
  * @returns true if the cosmos sdk version is 0.47 or higher
  */
-export const cosmosSdkVersionIs47OrHigher = (
-  chainId: string,
-  version: string
-) => chainId !== ChainId.OsmosisMainnet && semverGte(version, '0.47.0')
+export const cosmosSdkVersionIs47OrHigher = (version: string) =>
+  semverGte(version, '0.47.0')
 
 export const getSignerOptions = ({ chain_id, fees }: Chain) => {
   let gasPrice

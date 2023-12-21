@@ -259,7 +259,7 @@ export const chainSupportsV1GovModuleSelector = selectorFamily<
       const client = get(cosmosRpcClientForChainSelector(params.chainId))
       const version = get(cosmosSdkVersionSelector(params))
 
-      if (!cosmosSdkVersionIs47OrHigher(params.chainId, version)) {
+      if (!cosmosSdkVersionIs47OrHigher(version)) {
         return false
       }
 
