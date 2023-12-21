@@ -17,7 +17,6 @@ import { ApprovalBadge } from '../ApprovalBadge'
 import { CopyToClipboardUnderline } from '../CopyToClipboard'
 import { IconButton } from '../icon_buttons'
 import { MarkdownRenderer } from '../MarkdownRenderer'
-import { TextWithTooltipWhenTruncated } from '../tooltip'
 
 export interface ProposalContentDisplayProps {
   title: string
@@ -76,9 +75,7 @@ export const ProposalContentDisplay = ({
               />
             )}
 
-            <TextWithTooltipWhenTruncated className="header-text sm:hero-text">
-              {title}
-            </TextWithTooltipWhenTruncated>
+            <p className="header-text sm:hero-text break-words">{title}</p>
           </div>
 
           {approvalContext &&
