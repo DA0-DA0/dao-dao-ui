@@ -99,11 +99,11 @@ const InnerDaoProposal = ({ proposalInfo }: InnerDaoProposalProps) => {
 
         // On execute, revalidate and refresh page.
         if (status === ProposalStatusEnum.Executed) {
-          // Manually revalidate DAO static props.
-          await fetch(`/api/revalidate?d=${coreAddress}&p=${proposalInfo.id}`)
-
           // Show loading since page will reload shortly.
           toast.loading(t('success.proposalExecuted'))
+
+          // Manually revalidate DAO static props.
+          await fetch(`/api/revalidate?d=${coreAddress}&p=${proposalInfo.id}`)
 
           // Refresh entire app since any DAO config may have changed.
           window.location.reload()

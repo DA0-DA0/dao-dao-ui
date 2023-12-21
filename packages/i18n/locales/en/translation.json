@@ -1288,7 +1288,7 @@
     "nominationSubmitted": "Contributor nominated for this compensation cycle.",
     "proposalClosed": "Proposal closed.",
     "proposalCreatedCompleteCompensationCycle": "Proposal published. Complete the compensation cycle by saving the proposal ID.",
-    "proposalExecuted": "Executed. Refreshing page...",
+    "proposalExecuted": "Executed. Updating data and refreshing page...",
     "proposalSimulation": "Proposal simulated successfully. If executed right now, it would not fail.",
     "proposalVetoed": "Proposal vetoed.",
     "ratingsSubmitted": "Ratings submitted.",
