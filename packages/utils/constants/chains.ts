@@ -366,6 +366,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     // There is no IBC connection with:
     // - Juno
+    // - Migaloo
     polytone: {
       [ChainId.OsmosisMainnet]: {
         // neutron
