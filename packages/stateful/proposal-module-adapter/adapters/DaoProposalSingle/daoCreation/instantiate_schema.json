@@ -158,7 +158,7 @@
     "ModuleInstantiateInfo": {
       "description": "Information needed to instantiate a module.",
       "type": "object",
-      "required": ["code_id", "label", "msg"],
+      "required": ["code_id", "funds", "label", "msg"],
       "properties": {
         "admin": {
           "description": "CosmWasm level admin of the instantiated contract. See: <https://docs.cosmwasm.com/docs/1.0/smart-contracts/migration>",

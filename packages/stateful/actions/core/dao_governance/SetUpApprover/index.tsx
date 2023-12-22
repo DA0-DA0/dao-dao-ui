@@ -11,7 +11,7 @@ import {
   useCachedLoading,
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
-import { ChainId, Feature, ModuleInstantiateInfo } from '@dao-dao/types'
+import { Feature, ModuleInstantiateInfo } from '@dao-dao/types'
 import {
   ActionChainContextType,
   ActionComponent,
@@ -241,18 +241,12 @@ export const makeSetUpApproverAction: ActionMaker<SetUpApproverData> = ({
                   msg: encodeMessageAsBase64({
                     pre_propose_approval_contract: preProposeApprovalContract,
                   } as DaoPreProposeApproverInstantiateMsg),
-                  // TODO(neutron-2.4.0): add back in here and in instantiate schema.
-                  ...(chainId !== ChainId.NeutronMainnet && {
-                    funds: [],
-                  }),
+                  funds: [],
                 },
               },
             },
           } as DaoProposalSingleInstantiateMsg),
-          // TODO(neutron-2.4.0): add back in here and in instantiate schema.
-          ...(chainId !== ChainId.NeutronMainnet && {
-            funds: [],
-          }),
+          funds: [],
         }
 
         return makeWasmMessage({

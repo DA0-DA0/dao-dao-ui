@@ -293,6 +293,28 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // migaloo
         // remoteClient: '07-tendermint-3',
       },
+      [ChainId.NeutronMainnet]: {
+        // osmosis
+        note: 'osmo10j4qku3lzsqayyq6uhta4pzkv4fc97w3em9mjaxtvmv84y0fcats96lv89',
+        // osmosis
+        listener:
+          'osmo14ww9jlat46msq8j8n9muhhc035aqv0w9rnft98th2a84zx06du3snhpl69',
+        // neutron
+        voice:
+          'neutron14wfsdrpp9fhdfeh3wnfedz0jeeguxgz2jh5kk335zc9ghjac7mzs88tfau',
+        // osmosis
+        localConnection: 'connection-2338',
+        // neutron
+        remoteConnection: 'connection-18',
+        // osmosis
+        localChannel: 'channel-13106',
+        // neutron
+        remoteChannel: 'channel-58',
+        // osmosis
+        // localClient: '07-tendermint-2823',
+        // neutron
+        // remoteClient: '07-tendermint-19',
+      },
     },
   },
   {
@@ -321,22 +343,20 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
 
       // ContractVersion.V240
       CwPayrollFactory: 553,
-      // TODO(neutron-2.4.0): upgrade once CW 1.1 is supported
-      // ContractVersion.V210
-      CwTokenSwap: 221,
-      CwTokenfactoryIssuer: -1,
-      CwVesting: 222,
-      DaoCore: 223,
-      DaoMigrator: -1,
-      DaoPreProposeApprovalSingle: -1,
-      DaoPreProposeApprover: -1,
-      DaoPreProposeMultiple: 224,
-      DaoPreProposeSingle: 225,
-      DaoProposalMultiple: 226,
-      DaoProposalSingle: 227,
-      DaoVotingCw4: 228,
-      DaoVotingCw721Staked: -1,
-      DaoVotingTokenStaked: -1,
+      CwTokenSwap: 564,
+      CwTokenfactoryIssuer: 565,
+      CwVesting: 566,
+      DaoCore: 567,
+      DaoMigrator: -1, // not needed since only v2 DAOs exist
+      DaoPreProposeApprovalSingle: 569,
+      DaoPreProposeApprover: 570,
+      DaoPreProposeMultiple: 575,
+      DaoPreProposeSingle: 571,
+      DaoProposalMultiple: 572,
+      DaoProposalSingle: 573,
+      DaoVotingCw4: 574,
+      DaoVotingCw721Staked: 576,
+      DaoVotingTokenStaked: 577,
     },
     historicalCodeIds: {
       [ContractVersion.V210]: {
@@ -506,6 +526,28 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // localClient: '07-tendermint-13',
         // juno
         // remoteClient: '07-tendermint-44',
+      },
+      [ChainId.NeutronMainnet]: {
+        // stargaze
+        note: 'stars14azfhpfxhkshxehex5x7xuq3a9wjqryc2x0kwg4stp6a59zmnpqqzfjl3c',
+        // stargaze
+        listener:
+          'stars148gj3tqmu3ngrcyf55tms6tf5yyfepr0ru49ag8apkfptcr08z7sdzl76u',
+        // neutron
+        voice:
+          'neutron1ageequk45wdfcjufqa5zj5ce2c9qxrssrn8ndgft7kfa7wk2arxscp9chd',
+        // stargaze
+        localConnection: 'connection-211',
+        // neutron
+        remoteConnection: 'connection-23',
+        // stargaze
+        localChannel: 'channel-267',
+        // neutron
+        remoteChannel: 'channel-59',
+        // stargaze
+        // localClient: '07-tendermint-283',
+        // neutron
+        // remoteClient: '07-tendermint-31',
       },
     },
   },

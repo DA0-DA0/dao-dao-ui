@@ -255,14 +255,12 @@ export type Admin =
     }
 
 // Added in V2
-export interface ModuleInstantiateInfo {
+export type ModuleInstantiateInfo = {
   admin?: Admin | null
   code_id: number
   label: string
   msg: Binary
-  // Added in V2.3
-  // TODO(neutron-2.4.0): make not optional once upgraded and add back into
-  // instantiate schemas.
+  // Added in V2.3. Make optional for backwards compatibility.
   funds?: Coin[]
 }
 

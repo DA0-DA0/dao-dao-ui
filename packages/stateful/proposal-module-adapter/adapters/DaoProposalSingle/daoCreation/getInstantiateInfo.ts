@@ -1,5 +1,4 @@
 import {
-  ChainId,
   DaoCreationGetInstantiateInfo,
   PercentOrMajorityValue,
 } from '@dao-dao/types'
@@ -25,7 +24,6 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
 > = (
   { codeIds },
   {
-    chainId,
     name,
     votingConfig: {
       quorum,
@@ -112,10 +110,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
             approver.enabled ? '-approval' : ''
           }_${DaoProposalSingleAdapterId}`,
           msg: encodeMessageAsBase64(preProposeInstantiateMsg),
-          // TODO(neutron-2.4.0): add back in here and in instantiate schema.
-          ...(chainId !== ChainId.NeutronMainnet && {
-            funds: [],
-          }),
+          funds: [],
         },
       },
     },
@@ -146,10 +141,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
     code_id: codeIds.DaoProposalSingle,
     label: `DAO_${name.trim()}_${DaoProposalSingleAdapterId}`,
     msg: encodeMessageAsBase64(msg),
-    // TODO(neutron-2.4.0): add back in here and in instantiate schema.
-    ...(chainId !== ChainId.NeutronMainnet && {
-      funds: [],
-    }),
+    funds: [],
   }
 }
 
