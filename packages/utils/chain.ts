@@ -107,9 +107,11 @@ export const getImageUrlForChainId = (chainId: string): string => {
   const { imageUrl: nativeTokenImageUrl } =
     maybeGetNativeTokenForChainId(chainId) || {}
 
-  // Osmosis's chain logo is not square, so use the coin instead.
+  // Some chain logos are not square, so use the coin instead.
   const image =
-    (chainId === ChainId.OsmosisMainnet || chainId === ChainId.OsmosisTestnet
+    (chainId === ChainId.OsmosisMainnet ||
+    chainId === ChainId.OsmosisTestnet ||
+    chainId === ChainId.NeutronMainnet
       ? nativeTokenImageUrl
       : chainImageUrl) ||
     nativeTokenImageUrl ||
