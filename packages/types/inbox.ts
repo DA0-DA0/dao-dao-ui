@@ -19,6 +19,8 @@ export enum InboxItemType {
   ProposalCreated = 'proposal_created',
   ProposalExecuted = 'proposal_executed',
   ProposalClosed = 'proposal_closed',
+  PendingProposalCreated = 'pending_proposal_created',
+  PendingProposalRejected = 'pending_proposal_rejected',
 }
 
 export type InboxItemTypeJoinedDaoData = {
@@ -35,6 +37,8 @@ export type InboxItemTypeProposalCreatedData = {
   imageUrl: string | undefined
   proposalId: string
   proposalTitle: string
+  // Whether or not this is an approver-created proposal.
+  fromApprover?: boolean
 }
 
 export type InboxItemTypeProposalExecutedData =
@@ -45,6 +49,12 @@ export type InboxItemTypeProposalExecutedData =
   }
 
 export type InboxItemTypeProposalClosedData = InboxItemTypeProposalCreatedData
+export type InboxItemTypePendingProposalCreatedData = Omit<
+  InboxItemTypeProposalCreatedData,
+  'fromApprover'
+>
+export type InboxItemTypePendingProposalRejectedData =
+  InboxItemTypePendingProposalCreatedData
 
 // Items from the inbox API.
 export type InboxLoadedItemWithData = Omit<InboxLoadedItem, 'data'> &
@@ -64,6 +74,14 @@ export type InboxLoadedItemWithData = Omit<InboxLoadedItem, 'data'> &
     | {
         type: InboxItemType.ProposalClosed
         data: InboxItemTypeProposalClosedData
+      }
+    | {
+        type: InboxItemType.PendingProposalCreated
+        data: InboxItemTypePendingProposalCreatedData
+      }
+    | {
+        type: InboxItemType.PendingProposalRejected
+        data: InboxItemTypePendingProposalRejectedData
       }
   )
 
