@@ -35,6 +35,9 @@ export const createRPCMsgClient = async ({
     }
   },
   cosmwasm: {
+    tokenfactory: {
+      v1beta1: new (await import("./tokenfactory/v1beta1/tx.rpc.msg")).MsgClientImpl(rpc)
+    },
     wasm: {
       v1: new (await import("./wasm/v1/tx.rpc.msg")).MsgClientImpl(rpc)
     }

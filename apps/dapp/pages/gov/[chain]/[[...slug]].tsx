@@ -13,7 +13,6 @@ import { useRecoilValueLoadable } from 'recoil'
 
 import { DaoCoreV2Selectors } from '@dao-dao/state'
 import {
-  ChainSwitcher,
   DaoCard,
   GovCommunityPoolTab,
   GovInfoBar,
@@ -29,6 +28,7 @@ import {
 } from '@dao-dao/stateful'
 import { makeGetGovStaticProps } from '@dao-dao/stateful/server'
 import {
+  ChainPickerPopup,
   DaoDappTabbedHome,
   GovernanceHome,
   useChain,
@@ -119,15 +119,22 @@ const InnerGovHome = () => {
       LinkWrapper={LinkWrapper}
       SuspenseLoader={SuspenseLoader}
       breadcrumbsOverride={
-        <ChainSwitcher
+        <ChainPickerPopup
+          chains={{ type: 'configured' }}
           loading={!!goingToChainId && goingToChainId !== chainId}
           onSelect={(chainId) => {
-            router.push(
-              getGovPath(getConfiguredChainConfig(chainId)?.name || name, tabId)
-            )
-            setGoingToChainId(chainId)
+            // Type-check. None option is not enabled so this shouldn't happen.
+            if (!chainId) {
+              return
+            }
+
+            const chainConfig = getConfiguredChainConfig(chainId)
+            if (chainConfig) {
+              router.push(getGovPath(chainConfig.name, tabId))
+              setGoingToChainId(chainId)
+            }
           }}
-          type="configured"
+          selectedChainId={chainId}
         />
       }
       daoInfo={daoInfo}
@@ -180,16 +187,22 @@ const NeutronGovHome: NextPage = () => {
     <GovernanceHome
       DaoCard={DaoCard}
       breadcrumbsOverride={
-        <ChainSwitcher
+        <ChainPickerPopup
+          chains={{ type: 'configured' }}
           loading={!!goingToChainId && goingToChainId !== chainId}
           onSelect={(chainId) => {
+            // Type-check. None option is not enabled so this shouldn't happen.
+            if (!chainId) {
+              return
+            }
+
             const chainConfig = getConfiguredChainConfig(chainId)
             if (chainConfig) {
               router.push(getGovPath(chainConfig.name))
               setGoingToChainId(chainId)
             }
           }}
-          type="configured"
+          selectedChainId={chainId}
         />
       }
       daos={daosLoading}

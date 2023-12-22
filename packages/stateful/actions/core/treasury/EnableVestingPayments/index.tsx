@@ -2,6 +2,11 @@ import { useCallback } from 'react'
 
 import { SuitAndTieEmoji } from '@dao-dao/stateless'
 import {
+  LATEST_VESTING_PAYMENTS_WIDGET_VERSION,
+  VestingPaymentsWidgetData,
+  WidgetId,
+} from '@dao-dao/types'
+import {
   ActionContextType,
   ActionKey,
   ActionMaker,
@@ -11,17 +16,16 @@ import {
 } from '@dao-dao/types/actions'
 import { DAO_WIDGET_ITEM_NAMESPACE } from '@dao-dao/utils'
 
-import { VestingPaymentsWidget } from '../../../../widgets/widgets/VestingPayments'
-import { VestingPaymentsData } from '../../../../widgets/widgets/VestingPayments/types'
 import { makeManageWidgetsAction } from '../../dao_appearance/ManageWidgets'
 import { EnableVestingPaymentsComponent as Component } from './Component'
 
-const useDefaults: UseDefaults<VestingPaymentsData> = () => ({
+const useDefaults: UseDefaults<VestingPaymentsWidgetData> = () => ({
   factory: '',
+  version: LATEST_VESTING_PAYMENTS_WIDGET_VERSION,
 })
 
 export const makeEnableVestingPaymentsAction: ActionMaker<
-  VestingPaymentsData
+  VestingPaymentsWidgetData
 > = (options) => {
   const { t, context } = options
 
@@ -30,18 +34,18 @@ export const makeEnableVestingPaymentsAction: ActionMaker<
     return null
   }
 
-  const useDecodedCosmosMsg: UseDecodedCosmosMsg<VestingPaymentsData> = (
+  const useDecodedCosmosMsg: UseDecodedCosmosMsg<VestingPaymentsWidgetData> = (
     msg: Record<string, any>
   ) => {
     const decoded = manageWidgetsAction.useDecodedCosmosMsg(msg)
 
     return decoded.match &&
       decoded.data.mode === 'set' &&
-      decoded.data.id === VestingPaymentsWidget.id &&
+      decoded.data.id === WidgetId.VestingPayments &&
       typeof decoded.data.values.factory === 'string'
       ? {
           match: true,
-          data: decoded.data.values as VestingPaymentsData,
+          data: decoded.data.values as VestingPaymentsWidgetData,
         }
       : {
           match: false,
@@ -49,7 +53,7 @@ export const makeEnableVestingPaymentsAction: ActionMaker<
   }
 
   const useTransformToCosmos: UseTransformToCosmos<
-    VestingPaymentsData
+    VestingPaymentsWidgetData
   > = () => {
     const transform = manageWidgetsAction.useTransformToCosmos()
 
@@ -57,7 +61,7 @@ export const makeEnableVestingPaymentsAction: ActionMaker<
       (data) =>
         transform({
           mode: 'set',
-          id: VestingPaymentsWidget.id,
+          id: WidgetId.VestingPayments,
           values: data,
         }),
       [transform]
@@ -79,7 +83,7 @@ export const makeEnableVestingPaymentsAction: ActionMaker<
     // enabled.
     hideFromPicker:
       !!context.info.items[
-        DAO_WIDGET_ITEM_NAMESPACE + VestingPaymentsWidget.id
+        DAO_WIDGET_ITEM_NAMESPACE + WidgetId.VestingPayments
       ],
   }
 }

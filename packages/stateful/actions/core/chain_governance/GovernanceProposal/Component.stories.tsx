@@ -67,6 +67,7 @@ Default.args = {
     legacyContent: Any.fromPartial({}),
     msgs: [],
     metadataCid: '',
+    expedited: false,
   },
   isCreating: true,
   errors: {},

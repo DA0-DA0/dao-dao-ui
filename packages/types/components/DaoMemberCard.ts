@@ -1,5 +1,5 @@
+import { LoadingData } from '../misc'
 import { WalletProfileData } from '../profile'
-import { LoadingData } from './common'
 
 export type DaoMemberCardProps = {
   address: string

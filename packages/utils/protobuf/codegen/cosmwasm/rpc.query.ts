@@ -50,6 +50,9 @@ export const createRPCQueryClient = async ({
       }
     },
     cosmwasm: {
+      tokenfactory: {
+        v1beta1: (await import("./tokenfactory/v1beta1/query.rpc.Query")).createRpcQueryExtension(client)
+      },
       wasm: {
         v1: (await import("./wasm/v1/query.rpc.Query")).createRpcQueryExtension(client)
       }

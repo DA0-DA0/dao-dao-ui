@@ -1,13 +1,13 @@
 import { useTranslation } from 'react-i18next'
 
+import { VestingPaymentsWidgetData } from '@dao-dao/types'
 import { ActionComponent } from '@dao-dao/types/actions'
 
-import { VestingPaymentsData } from '../../../../widgets/widgets/VestingPayments/types'
 import { VestingPaymentsEditor } from '../../../../widgets/widgets/VestingPayments/VestingPaymentsEditor'
 
 export const EnableVestingPaymentsComponent: ActionComponent<
   undefined,
-  VestingPaymentsData
+  VestingPaymentsWidgetData
 > = (props) => {
   const { t } = useTranslation()
 

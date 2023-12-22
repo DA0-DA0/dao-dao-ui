@@ -3,22 +3,19 @@ import { useSetRecoilState, waitForAll } from 'recoil'
 
 import { refreshOpenProposalsAtom } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { FeedSource } from '@dao-dao/types'
+import { FeedSource, StatefulProposalLineProps } from '@dao-dao/types'
 import {
   getSupportedChains,
   transformBech32Address,
   webSocketChannelNameForDao,
 } from '@dao-dao/utils'
 
-import {
-  ProposalLine,
-  ProposalLineProps,
-} from '../../../components/ProposalLine'
+import { ProposalLine } from '../../../components/ProposalLine'
 import { useOnWebSocketMessage, useWallet } from '../../../hooks'
 import { followingDaosSelector } from '../../../recoil'
 import { feedOpenProposalsSelector } from './state'
 
-export const OpenProposals: FeedSource<ProposalLineProps> = {
+export const OpenProposals: FeedSource<StatefulProposalLineProps> = {
   id: 'open_proposals',
   Renderer: ProposalLine,
   useData: (filter) => {

@@ -2,6 +2,7 @@ import { ComponentType } from 'react'
 import { FieldValues } from 'react-hook-form'
 import { TFunction } from 'react-i18next'
 
+import { CodeIdConfig } from './chain'
 import { InstantiateMsg } from './contracts/DaoCore.v2'
 import {
   DaoCreationGovernanceConfigInputProps,
@@ -9,7 +10,6 @@ import {
   DaoCreationVotingConfigItem,
   NewDao,
 } from './dao'
-import { CodeIdConfig } from './utils'
 
 export type DaoCreatorMutate<Data extends FieldValues = any> = (
   msg: InstantiateMsg,

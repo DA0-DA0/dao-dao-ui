@@ -68,6 +68,10 @@ export type PublishProposal = (
 ) => Promise<{
   proposalNumber: number
   proposalId: string
+  // Whether or not a pre-propose-approval proposal was created. If this is
+  // true, the proposal ID should contain an asterisk (*) between the proposal
+  // module prefix and proposal number.
+  isPreProposeApprovalProposal: boolean
 }>
 
 export interface MakeUsePublishProposalOptions {
@@ -87,6 +91,16 @@ export type ProposalWithMetadata = (Proposal | SingleChoiceProposal) & {
   timestampInfo: ProposalTimestampInfo | undefined
   votingOpen: boolean
   executedAt?: Date
+  // If this proposal was approved by a pre-propose-approver in another DAO,
+  // this is the approver proposal ID.
+  approverProposalId?: string
+  // If this proposal is a pre-propose-approver proposal that approved a
+  // pre-propose-approval proposal in another DAO, this is the created proposal
+  // ID.
+  approvedProposalId?: string
+  // If this proposal is in its veto timelock period, this is the date that the
+  // timelock period expires.
+  vetoTimelockExpiration?: Date
 }
 
 export type MessagesWithActionData = {

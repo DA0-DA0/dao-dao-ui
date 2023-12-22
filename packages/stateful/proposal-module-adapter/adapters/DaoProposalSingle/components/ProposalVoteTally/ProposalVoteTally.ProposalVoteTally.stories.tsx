@@ -44,6 +44,7 @@ Default.args = {
     quorumReached: false,
   },
   open: true,
+  isPreProposeApproverProposal: false,
 }
 Default.parameters = {
   design: {

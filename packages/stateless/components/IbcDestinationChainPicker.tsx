@@ -18,7 +18,7 @@ export type IbcDestinationChainPickerProps = {
    * Whether or not to include the source chain in the list.
    */
   includeSourceChain: boolean
-} & Omit<ChainPickerPopupProps, 'chainIds' | 'labelMode'>
+} & Omit<ChainPickerPopupProps, 'chains' | 'labelMode'>
 
 // This component shows a picker for all destination chains that a source chain
 // has an established IBC transfer channel with.
@@ -66,6 +66,13 @@ export const IbcDestinationChainPicker = ({
   }, [includeSourceChain, sourceChainId])
 
   return (
-    <ChainPickerPopup chainIds={chainIds} labelMode="chain" {...pickerProps} />
+    <ChainPickerPopup
+      chains={{
+        type: 'custom',
+        chainIds,
+      }}
+      labelMode="chain"
+      {...pickerProps}
+    />
   )
 }

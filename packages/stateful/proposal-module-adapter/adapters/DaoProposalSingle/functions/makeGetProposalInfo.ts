@@ -1,5 +1,10 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 
+import {
+  CwProposalSingleV1QueryClient,
+  DaoPreProposeApprovalSingleQueryClient,
+  DaoProposalSingleV2QueryClient,
+} from '@dao-dao/state/contracts'
 import { queryIndexer } from '@dao-dao/state/indexer'
 import {
   CommonProposalInfo,
@@ -9,6 +14,7 @@ import {
   InfoResponse,
 } from '@dao-dao/types'
 import { ProposalResponse as ProposalV1Response } from '@dao-dao/types/contracts/CwProposalSingle.v1'
+import { Proposal as DaoPreProposeApprovalSingleProposal } from '@dao-dao/types/contracts/DaoPreProposeApprovalSingle'
 import { ProposalResponse as ProposalV2Response } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   cosmWasmClientRouter,
@@ -16,13 +22,11 @@ import {
   parseContractVersion,
 } from '@dao-dao/utils'
 
-import { CwProposalSingleV1QueryClient as CwProposalSingleV1QueryClient } from '../contracts/CwProposalSingle.v1.client'
-import { DaoProposalSingleV2QueryClient as DaoProposalSingleV2QueryClient } from '../contracts/DaoProposalSingle.v2.client'
-
 export const makeGetProposalInfo =
   ({
     proposalModule,
     proposalNumber,
+    isPreProposeApprovalProposal,
     chain: { chain_id: chainId },
   }: IProposalModuleAdapterOptions) =>
   async (): Promise<CommonProposalInfo | undefined> => {
@@ -35,6 +39,58 @@ export const makeGetProposalInfo =
         )
       }
       return _cosmWasmClient
+    }
+
+    // Get pre-propose approval proposal from pre propose module.
+    if (isPreProposeApprovalProposal && proposalModule.prePropose) {
+      let proposal: DaoPreProposeApprovalSingleProposal | undefined
+      // Try indexer first.
+      try {
+        proposal = await queryIndexer({
+          type: 'contract',
+          address: proposalModule.prePropose.address,
+          formula: 'daoPreProposeApprovalSingle/proposal',
+          args: {
+            id: proposalNumber,
+          },
+          chainId,
+          required: true,
+        })
+      } catch (err) {
+        // Ignore error.
+        console.error(err)
+      }
+      // If indexer fails, fallback to querying chain.
+      if (!proposal) {
+        const cosmWasmClient = await getCosmWasmClient()
+        const queryClient = new DaoPreProposeApprovalSingleQueryClient(
+          cosmWasmClient,
+          proposalModule.prePropose.address
+        )
+
+        proposal = await queryClient.queryExtension({
+          msg: {
+            proposal: {
+              id: proposalNumber,
+            },
+          },
+        })
+      }
+
+      if (!proposal) {
+        return
+      }
+
+      return {
+        id: `${proposalModule.prefix}*${proposal.approval_id}`,
+        title: proposal.msg.title,
+        description: proposal.msg.description,
+        expiration: null,
+        createdAtEpoch: proposal.createdAt
+          ? new Date(proposal.createdAt).getTime()
+          : null,
+        createdByAddress: proposal.proposer,
+      }
     }
 
     let proposalResponse: ProposalV1Response | ProposalV2Response | undefined

@@ -9,6 +9,7 @@ export interface ProposalVoteButtonProps<Vote extends unknown> {
   onClick?: () => void
   pressed?: boolean
   disabled?: boolean
+  loading?: boolean
   className?: string
 }
 
@@ -17,6 +18,7 @@ export const ProposalVoteButton = <Vote extends unknown>({
   onClick,
   pressed = false,
   disabled = false,
+  loading = false,
   className,
 }: ProposalVoteButtonProps<Vote>) => (
   <Button
@@ -31,6 +33,7 @@ export const ProposalVoteButton = <Vote extends unknown>({
       'primary-text': !pressed,
     })}
     disabled={disabled}
+    loading={loading}
     onClick={onClick}
     pressed={pressed}
     size="lg"

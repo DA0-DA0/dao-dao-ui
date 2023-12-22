@@ -13,6 +13,7 @@ import {
   TotalPowerAtHeightResponse,
   VotingPowerAtHeightResponse,
 } from '@dao-dao/types/contracts/DaoVotingTokenStaked'
+import { ContractName } from '@dao-dao/utils'
 
 import {
   DaoVotingTokenStakedClient,
@@ -373,7 +374,7 @@ export const validatedTokenfactoryIssuerContractSelector = selectorFamily<
         isContractSelector({
           chainId: queryClientParams.chainId,
           contractAddress: tokenContract,
-          name: 'cw-tokenfactory-issuer',
+          name: ContractName.CwTokenfactoryIssuer,
         })
       )
 

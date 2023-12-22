@@ -33,7 +33,14 @@ import {
   retry,
   stargateClientRouter,
 } from '@dao-dao/utils'
-import { cosmos, ibc, juno, osmosis } from '@dao-dao/utils/protobuf'
+import {
+  cosmos,
+  cosmwasm,
+  ibc,
+  juno,
+  noble,
+  osmosis,
+} from '@dao-dao/utils/protobuf'
 import { ModuleAccount } from '@dao-dao/utils/protobuf/codegen/cosmos/auth/v1beta1/auth'
 import { Metadata } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/bank'
 import {
@@ -46,6 +53,7 @@ import {
   Pool,
   Validator as RpcValidator,
 } from '@dao-dao/utils/protobuf/codegen/cosmos/staking/v1beta1/staking'
+import { Params as NobleTariffParams } from '@dao-dao/utils/protobuf/codegen/tariff/params'
 
 import {
   refreshBlockHeightAtom,
@@ -119,14 +127,48 @@ export const ibcRpcClientForChainSelector = selectorFamily({
   dangerouslyAllowMutability: true,
 })
 
+export const cosmwasmRpcClientForChainSelector = selectorFamily({
+  key: 'cosmwasmRpcClientForChain',
+  get: (chainId: string) => async () =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await cosmwasm.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).cosmwasm
+    ),
+  dangerouslyAllowMutability: true,
+})
+
 export const osmosisRpcClientForChainSelector = selectorFamily({
   key: 'osmosisRpcClientForChain',
   get: (chainId: string) => async () =>
-    (
-      await osmosis.ClientFactory.createRPCQueryClient({
-        rpcEndpoint: getRpcForChainId(chainId),
-      })
-    ).osmosis,
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await osmosis.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(chainId, attempt - 1),
+          })
+        ).osmosis
+    ),
+  dangerouslyAllowMutability: true,
+})
+
+export const nobleRpcClientSelector = selector({
+  key: 'nobleRpcClient',
+  get: async () =>
+    retry(
+      10,
+      async (attempt) =>
+        (
+          await noble.ClientFactory.createRPCQueryClient({
+            rpcEndpoint: getRpcForChainId(ChainId.NobleMainnet, attempt - 1),
+          })
+        ).noble
+    ),
   dangerouslyAllowMutability: true,
 })
 
@@ -217,7 +259,7 @@ export const chainSupportsV1GovModuleSelector = selectorFamily<
       const client = get(cosmosRpcClientForChainSelector(params.chainId))
       const version = get(cosmosSdkVersionSelector(params))
 
-      if (!cosmosSdkVersionIs47OrHigher(params.chainId, version)) {
+      if (!cosmosSdkVersionIs47OrHigher(version)) {
         return false
       }
 
@@ -331,10 +373,39 @@ export const tokenFactoryDenomCreationFeeSelector = selectorFamily<
   get:
     (chainId) =>
     async ({ get }) => {
-      const client = get(osmosisRpcClientForChainSelector(chainId))
-      return (await client.tokenfactory.v1beta1.params()).params
-        ?.denomCreationFee
+      const osmosisClient = get(osmosisRpcClientForChainSelector(chainId))
+      try {
+        return (await osmosisClient.tokenfactory.v1beta1.params()).params
+          ?.denomCreationFee
+      } catch (err) {
+        // If Osmosis query failed, try CosmWasm tokenfactory.
+        if (
+          err instanceof Error &&
+          err.message.includes('unknown query path')
+        ) {
+          const cosmwasmClient = get(cosmwasmRpcClientForChainSelector(chainId))
+          return (await cosmwasmClient.tokenfactory.v1beta1.params()).params
+            ?.denomCreationFee
+        }
+
+        throw err
+      }
     },
+})
+
+export const nobleTariffTransferFeeSelector = selector<
+  NobleTariffParams | undefined
+>({
+  key: 'nobleTariffTransferFee',
+  get: async ({ get }) => {
+    const nobleClient = get(nobleRpcClientSelector)
+    try {
+      const { params } = await nobleClient.tariff.params()
+      return params
+    } catch (err) {
+      console.error(err)
+    }
+  },
 })
 
 export const nativeDenomBalanceSelector = selectorFamily<

@@ -5,21 +5,37 @@ import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
+  DaoCreationVotingConfigWithApprover,
   DaoCreationVotingConfigWithEnableMultipleChoice,
 } from '@dao-dao/types'
 
 const MultipleChoiceInput = ({
-  data: { enableMultipleChoice },
+  data: { enableMultipleChoice, approver },
   setValue,
-}: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithEnableMultipleChoice>) => (
-  <FormSwitchCard
-    containerClassName="self-start"
-    fieldName="enableMultipleChoice"
-    setValue={setValue}
-    sizing="sm"
-    value={enableMultipleChoice}
-  />
-)
+}: DaoCreationVotingConfigItemInputProps<
+  DaoCreationVotingConfigWithEnableMultipleChoice &
+    DaoCreationVotingConfigWithApprover
+>) => {
+  const { t } = useTranslation()
+
+  return (
+    <FormSwitchCard
+      containerClassName="self-start"
+      fieldName="enableMultipleChoice"
+      readOnly={
+        // Multiple choice does not work with an approver right now.
+        approver.enabled
+      }
+      setValue={setValue}
+      sizing="sm"
+      tooltip={
+        // Multiple choice does not work with an approver right now.
+        approver.enabled ? t('info.approverEnabledNoMultipleChoice') : undefined
+      }
+      value={enableMultipleChoice}
+    />
+  )
+}
 
 const MultipleChoiceReview = ({
   data: { enableMultipleChoice },
@@ -29,7 +45,10 @@ const MultipleChoiceReview = ({
 }
 
 export const makeMultipleChoiceVotingConfigItem =
-  (): DaoCreationVotingConfigItem<DaoCreationVotingConfigWithEnableMultipleChoice> => ({
+  (): DaoCreationVotingConfigItem<
+    DaoCreationVotingConfigWithEnableMultipleChoice &
+      DaoCreationVotingConfigWithApprover
+  > => ({
     Icon: NumbersEmoji,
     nameI18nKey: 'form.multipleChoiceTitle',
     descriptionI18nKey: 'form.multipleChoiceDescription',

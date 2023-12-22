@@ -26,6 +26,7 @@ import {
   AddressInputProps,
   Entity,
   EntityType,
+  GenericToken,
   GenericTokenBalanceWithOwner,
   LoadingData,
   LoadingDataWithError,
@@ -39,6 +40,7 @@ import {
 import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
+  formatPercentOf100,
   getAccountAddress,
   getChainForChainId,
   getDisplayNameForChainId,
@@ -48,6 +50,7 @@ import {
   transformBech32Address,
   validateRequired,
 } from '@dao-dao/utils'
+import { Params as NobleTariffParams } from '@dao-dao/utils/protobuf/codegen/tariff/params'
 
 import { useActionOptions } from '../../../react'
 
@@ -90,6 +93,9 @@ export interface SpendOptions {
   betterNonPfmIbcPath: LoadingData<string[] | undefined>
   // If this is an IBC transfer, these are the chains with missing accounts.
   missingAccountChainIds?: string[]
+  // If this spend is Noble USDC and leaves Noble at some point, these are the
+  // fee settings.
+  nobleTariff: LoadingDataWithError<NobleTariffParams | undefined>
   // Used to render pfpk or DAO profiles when selecting addresses.
   AddressInput: ComponentType<
     AddressInputProps<SpendData> & RefAttributes<HTMLDivElement>
@@ -106,6 +112,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     ibcPath,
     betterNonPfmIbcPath,
     missingAccountChainIds,
+    nobleTariff,
     AddressInput,
   },
   addAction,
@@ -383,12 +390,18 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
                 buttonClassName={toWrapped ? 'grow' : undefined}
                 disabled={selectedToken?.token.type === TokenType.Cw20}
                 includeSourceChain
-                onSelect={(chainId) =>
+                onSelect={(chainId) => {
+                  // Type-check. None option is disabled so should not be
+                  // possible.
+                  if (!chainId) {
+                    return
+                  }
+
                   setValue(
                     (fieldNamePrefix + 'toChainId') as 'toChainId',
                     chainId
                   )
-                }
+                }}
                 selectedChainId={toChainId}
                 sourceChainId={spendChainId}
               />
@@ -484,7 +497,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               })}
             </p>
           ) : (
-            <div>
+            <div className="flex flex-col gap-4">
               <div className="flex flex-row items-center gap-3">
                 {ibcPath.data.map((chainId, index) => (
                   <>
@@ -504,10 +517,24 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
               </div>
 
               {isCreating &&
+                selectedToken &&
+                !nobleTariff.loading &&
+                !nobleTariff.errored &&
+                nobleTariff.data &&
+                nobleTariff.data.transferFeeDenom ===
+                  selectedToken.token.source.denomOrAddress && (
+                  <NobleTariff
+                    amount={spendAmount}
+                    params={nobleTariff.data}
+                    token={selectedToken.token}
+                  />
+                )}
+
+              {isCreating &&
                 !betterNonPfmIbcPath.loading &&
                 betterNonPfmIbcPath.data && (
                   <WarningCard
-                    className="mt-4 max-w-xl"
+                    className="max-w-xl"
                     content={
                       <div className="flex flex-col gap-3">
                         <p className="primary-text text-text-interactive-warning-body">
@@ -539,7 +566,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
 
               {isCreating && !!missingAccountChainIds?.length && (
                 <WarningCard
-                  className="mt-4 max-w-xl"
+                  className="max-w-xl"
                   content={
                     <div className="flex flex-col items-start gap-3">
                       <p className="primary-text text-text-interactive-warning-body">
@@ -600,5 +627,44 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         </div>
       )}
     </>
+  )
+}
+
+type NobleTariffProps = {
+  token: GenericToken
+  amount: number
+  params: NobleTariffParams
+}
+
+const NobleTariff = ({
+  token: { symbol, decimals },
+  amount,
+  params: { transferFeeBps, transferFeeMax },
+}: NobleTariffProps) => {
+  const { t } = useTranslation()
+
+  const feeDecimal = Number(transferFeeBps) / 1e4
+  const maxFee = convertMicroDenomToDenomWithDecimals(transferFeeMax, decimals)
+  const fee =
+    amount && !isNaN(amount)
+      ? Math.min(Number((amount * feeDecimal).toFixed(decimals)), maxFee)
+      : 0
+
+  return (
+    <p className="secondary-text max-w-prose text-text-interactive-warning-body">
+      {t('info.nobleTariffApplied', {
+        feePercent: formatPercentOf100(feeDecimal * 100),
+        tokenSymbol: symbol,
+        maxFee: maxFee.toLocaleString(undefined, {
+          maximumFractionDigits: decimals,
+        }),
+        fee: fee.toLocaleString(undefined, {
+          maximumFractionDigits: decimals,
+        }),
+        output: (amount - fee).toLocaleString(undefined, {
+          maximumFractionDigits: decimals,
+        }),
+      })}
+    </p>
   )
 }

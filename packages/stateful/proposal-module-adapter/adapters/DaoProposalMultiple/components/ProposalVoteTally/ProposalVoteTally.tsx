@@ -7,8 +7,12 @@ import {
   TooltipInfoIcon,
   TooltipTruncatedText,
 } from '@dao-dao/stateless'
-import { ProcessedTQType, ProposalStatus } from '@dao-dao/types'
-import { formatPercentOf100 } from '@dao-dao/utils'
+import {
+  ProcessedTQType,
+  ProposalStatus,
+  ProposalStatusEnum,
+} from '@dao-dao/types'
+import { formatPercentOf100, getProposalStatusKey } from '@dao-dao/utils'
 
 import { VotesInfo } from '../../types'
 
@@ -30,6 +34,8 @@ export const ProposalVoteTally = ({
   status,
 }: ProposalVoteTallyProps) => {
   const { t } = useTranslation()
+
+  const statusKey = getProposalStatusKey(status)
 
   return (
     <div className="rounded-lg border border-border-secondary bg-component-widget">
@@ -64,9 +70,11 @@ export const ProposalVoteTally = ({
           <div className="secondary-text flex flex-row items-center justify-between gap-2">
             <div className="flex flex-row items-center gap-1">
               <p className="text-text-tertiary">
-                {status === ProposalStatus.Open
+                {statusKey === ProposalStatusEnum.Open ||
+                statusKey === 'veto_timelock'
                   ? t('title.currentWinner')
-                  : status === ProposalStatus.Rejected
+                  : statusKey === ProposalStatusEnum.Rejected ||
+                    statusKey === ProposalStatusEnum.Vetoed
                   ? t('title.noWinner')
                   : t('title.winner')}
               </p>
@@ -79,7 +87,7 @@ export const ProposalVoteTally = ({
                 text={
                   isTie
                     ? t('title.tied')
-                    : status === ProposalStatus.Rejected
+                    : statusKey === ProposalStatusEnum.Rejected
                     ? t('proposalStatusTitle.rejected')
                     : // If not rejected nor tied, winningChoice should always be defined.
                       winningChoice?.title ?? t('info.unknown')

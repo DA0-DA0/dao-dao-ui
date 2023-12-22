@@ -398,7 +398,7 @@ export const GovernanceProposalComponent: ActionComponent<
                   <span className="text-text-tertiary">
                     {/* eslint-disable-next-line i18next/no-literal-string */}
                     {' – '}
-                    {t('info.supportsMarkdownFormat')}
+                    {t('info.supportsMarkdown')}
                   </span>
                 </InputLabel>
                 <TextAreaInput

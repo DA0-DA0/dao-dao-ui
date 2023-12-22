@@ -28,6 +28,7 @@ import {
   LoadingData,
   ProposalPolytoneState,
   ProposalStatus,
+  ProposalStatusEnum,
 } from '@dao-dao/types'
 import {
   decodeMessage,
@@ -192,7 +193,7 @@ export const useProposalPolytoneState = ({
   }, [anyUnrelayed, refreshUnreceivedIbcData])
 
   const executedOverFiveMinutesAgo =
-    status === ProposalStatus.Executed &&
+    status === ProposalStatusEnum.Executed &&
     executedAt !== undefined &&
     // If executed over 5 minutes ago...
     Date.now() - executedAt.getTime() > 5 * 60 * 1000
@@ -259,7 +260,7 @@ export const useProposalPolytoneState = ({
           anyUnrelayed,
           needsSelfRelay: hasPolytoneMessagesNeedingSelfRelay,
           openPolytoneRelay: () =>
-            status === ProposalStatus.Executed && !loadingTxHash.loading
+            status === ProposalStatusEnum.Executed && !loadingTxHash.loading
               ? openPolytoneRelay(loadingTxHash.data)
               : openPolytoneRelay(),
         },

@@ -3,14 +3,23 @@ import clsx from 'clsx'
 import { ComponentType, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
+import {
+  DaoWithDropdownVetoableProposalList,
+  LinkWrapperProps,
+} from '@dao-dao/types'
+
+import { useDaoInfoContext } from '../../hooks'
 import { Button } from '../buttons'
 import { DropdownIconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
+import { VetoableProposals } from './VetoableProposals'
 
 export interface ProposalListProps<T extends { proposalId: string }> {
   ProposalLine: ComponentType<T>
   openProposals: T[]
+  // DAOs with proposals that can be vetoed.
+  daosWithVetoableProposals: DaoWithDropdownVetoableProposalList<T>[]
   historyProposals: T[]
   // Override array length as count.
   historyCount?: number
@@ -20,11 +29,13 @@ export interface ProposalListProps<T extends { proposalId: string }> {
   loadingMore: boolean
   isMember: boolean
   DiscordNotifierConfigureModal: ComponentType | undefined
+  LinkWrapper: ComponentType<LinkWrapperProps>
 }
 
 export const ProposalList = <T extends { proposalId: string }>({
   ProposalLine,
   openProposals,
+  daosWithVetoableProposals,
   historyProposals,
   historyCount,
   createNewProposalHref,
@@ -33,8 +44,10 @@ export const ProposalList = <T extends { proposalId: string }>({
   loadingMore,
   isMember,
   DiscordNotifierConfigureModal,
+  LinkWrapper,
 }: ProposalListProps<T>) => {
   const { t } = useTranslation()
+  const { name: daoName } = useDaoInfoContext()
 
   const [historyExpanded, setHistoryExpanded] = useState(true)
 
@@ -46,12 +59,22 @@ export const ProposalList = <T extends { proposalId: string }>({
         {DiscordNotifierConfigureModal && <DiscordNotifierConfigureModal />}
       </div>
 
-      {!!openProposals.length && (
+      {openProposals.length > 0 && (
         <div className="mb-9 space-y-1">
           {openProposals.map((props) => (
             <ProposalLine {...props} key={props.proposalId} />
           ))}
         </div>
+      )}
+
+      {daosWithVetoableProposals.length > 0 && (
+        <VetoableProposals
+          LinkWrapper={LinkWrapper}
+          ProposalLine={ProposalLine}
+          className="mt-3 mb-6 animate-fade-in"
+          daoName={daoName}
+          daosWithVetoableProposals={daosWithVetoableProposals}
+        />
       )}
 
       <div className="link-text mt-3 ml-2 flex flex-row items-center gap-3 text-text-secondary">
@@ -70,7 +93,7 @@ export const ProposalList = <T extends { proposalId: string }>({
         </p>
       </div>
 
-      <div className={clsx(!historyExpanded && 'hidden')}>
+      <div className={clsx('animate-fade-in', !historyExpanded && 'hidden')}>
         <div className="mt-6 space-y-1">
           {historyProposals.map((props) => (
             <ProposalLine {...props} key={props.proposalId} />

@@ -1,7 +1,7 @@
 import { ComponentType } from 'react'
 
 import { DaoParentInfo, PolytoneProxies } from '../dao'
-import { LoadingData } from './common'
+import { LoadingData } from '../misc'
 import { IconButtonLinkProps } from './IconButtonLink'
 import { LinkWrapperProps } from './LinkWrapper'
 

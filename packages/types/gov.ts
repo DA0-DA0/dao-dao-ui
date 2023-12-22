@@ -17,9 +17,9 @@ import {
 } from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 
 import { NestedActionsEditorFormData } from './actions'
-import { LoadingData } from './components'
 import { Coin, CosmosMsgFor_Empty } from './contracts'
-import { ProcessedTQ } from './utils'
+import { LoadingData } from './misc'
+import { ProcessedTQ } from './proposal'
 
 export { ProposalV1Beta1, ProposalV1 }
 
@@ -141,7 +141,7 @@ export type AllGovParams = Pick<
   threshold: number
   vetoThreshold: number
   minInitialDepositRatio: number
-}
+} & Partial<Pick<GovParamsV1, 'expeditedMinDeposit'>>
 
 export const GOVERNANCE_PROPOSAL_TYPES = [
   TextProposal,
@@ -188,4 +188,6 @@ export type GovernanceProposalActionData = {
   legacyContent: any
   // V1 proposals require a metadata.json file to be uploaded to IPFS.
   metadataCid: string
+  // V1 proposals have an expedited flag.
+  expedited: boolean
 } & NestedActionsEditorFormData

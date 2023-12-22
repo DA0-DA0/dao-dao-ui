@@ -300,6 +300,6 @@ export interface VotingPowerAtHeightResponse {
   power: Uint128
 }
 
-export interface ProposalModuleWithInfo extends ProposalModule {
-  info: ContractVersionInfo
+export type ProposalModuleWithInfo = ProposalModule & {
+  info?: ContractVersionInfo
 }

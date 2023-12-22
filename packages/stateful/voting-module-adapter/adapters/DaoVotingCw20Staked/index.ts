@@ -6,7 +6,10 @@ import {
   DaoTabId,
   VotingModuleAdapter,
 } from '@dao-dao/types'
-import { DaoVotingCw20StakedAdapterId } from '@dao-dao/utils'
+import {
+  DAO_VOTING_CW20_STAKED_CONTRACT_NAMES,
+  DaoVotingCw20StakedAdapterId,
+} from '@dao-dao/utils'
 
 import { makeMintAction } from './actions'
 import { MembersTab, ProfileCardMemberInfo, StakingModal } from './components'
@@ -18,13 +21,7 @@ import {
 
 export const DaoVotingCw20StakedAdapter: VotingModuleAdapter = {
   id: DaoVotingCw20StakedAdapterId,
-  contractNames: [
-    // V1
-    'cw20-staked-balance-voting',
-    // V2
-    'cwd-voting-cw20-staked',
-    'dao-voting-cw20-staked',
-  ],
+  contractNames: DAO_VOTING_CW20_STAKED_CONTRACT_NAMES,
 
   load: () => ({
     // Hooks

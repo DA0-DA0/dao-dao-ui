@@ -6,12 +6,9 @@ import {
   LoadedActions,
   PartialCategorizedActionKeyAndData,
 } from './actions'
-import {
-  LoadingData,
-  SuspenseLoaderProps,
-  WalletProfileHeaderProps,
-} from './components'
+import { SuspenseLoaderProps, WalletProfileHeaderProps } from './components'
 import { CosmosMsgFor_Empty } from './contracts'
+import { LoadingData } from './misc'
 
 export type MeTransactionForm = {
   actions: PartialCategorizedActionKeyAndData[]

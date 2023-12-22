@@ -1,11 +1,13 @@
-import { DaoCoreV2Selectors } from '@dao-dao/state'
+import {
+  DaoCoreV2Selectors,
+  DaoProposalMultipleSelectors,
+} from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import { LoadingData, WalletVoteInfo } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
 import { useWallet } from '../../../../hooks/useWallet'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import { getVoteSelector } from '../contracts/DaoProposalMultiple.recoil'
 import { useLoadingProposal } from './useLoadingProposal'
 
 export const useLoadingWalletVoteInfo = ():
@@ -23,7 +25,7 @@ export const useLoadingWalletVoteInfo = ():
 
   const walletVoteLoadable = useCachedLoadable(
     walletAddress
-      ? getVoteSelector({
+      ? DaoProposalMultipleSelectors.getVoteSelector({
           chainId,
           contractAddress: proposalModule.address,
           params: [{ proposalId: proposalNumber, voter: walletAddress }],

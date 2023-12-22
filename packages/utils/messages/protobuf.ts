@@ -46,6 +46,7 @@ import {
 import { MsgExecLegacyContent } from '../protobuf/codegen/cosmos/gov/v1/tx'
 import { TextProposal } from '../protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { MsgVote } from '../protobuf/codegen/cosmos/gov/v1beta1/tx'
+import { ParameterChangeProposal } from '../protobuf/codegen/cosmos/params/v1beta1/params'
 import {
   MsgBeginRedelegate,
   MsgDelegate,
@@ -471,6 +472,13 @@ export const PROTOBUF_TYPES: ReadonlyArray<[string, GeneratedType]> = [
   ...ibcProtoRegistry,
   ...stargazeProtoRegistry,
   ...gaiaProtoRegistry,
+  // Not a query or TX so it isn't included in any of the registries. But we
+  // want to decode this because it appears in gov props. We need to find a
+  // better way to collect all generated types in a single registry...
+  [
+    '/cosmos.params.v1beta1.ParameterChangeProposal',
+    ParameterChangeProposal as GeneratedType,
+  ],
 ]
 export const typesRegistry = new Registry(PROTOBUF_TYPES)
 

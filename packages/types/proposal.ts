@@ -1,6 +1,7 @@
+import { PolytoneConnection } from './chain'
 import { ProposalCardProps } from './components/ProposalCard'
-import { CosmosMsgFor_Empty } from './contracts'
-import { PolytoneConnection } from './utils'
+import { CosmosMsgFor_Empty, ProposalStatus } from './contracts'
+import { ProposalStatusKey as PreProposeApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
 
 export type ProposalCreatedCardProps = Omit<
   ProposalCardProps,
@@ -78,3 +79,38 @@ export type DecodedIcaMsgNoMatch = {
 }
 
 export type DecodedIcaMsg = DecodedIcaMsgNoMatch | DecodedIcaMsgMatch
+
+export enum ProcessedTQType {
+  Majority,
+  Absolute,
+  Percent,
+}
+
+export type ProcessedTQ = { display: string } & (
+  | { type: ProcessedTQType.Majority }
+  | { type: ProcessedTQType.Absolute | ProcessedTQType.Percent; value: number }
+)
+
+export type ProcessedThresholdQuorum = {
+  threshold: ProcessedTQ
+  quorum?: ProcessedTQ
+}
+
+export type ProcessedQuorum = {
+  quorum: ProcessedTQ
+}
+
+export enum ApprovalProposalContextType {
+  Approval = 'approval',
+  Approver = 'approver',
+}
+
+export type ApprovalProposalContext =
+  | {
+      type: ApprovalProposalContextType.Approval
+      status: PreProposeApprovalProposalStatus
+    }
+  | {
+      type: ApprovalProposalContextType.Approver
+      status: ProposalStatus
+    }

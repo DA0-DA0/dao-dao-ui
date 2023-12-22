@@ -143,9 +143,14 @@ const Component: ActionComponent = (props) => {
           buttonClassName="self-start"
           disabled={!props.isCreating}
           includeSourceChain={false}
-          onSelect={(chainId) =>
+          onSelect={(chainId) => {
+            // Type-check. None option is disabled so should not be possible.
+            if (!chainId) {
+              return
+            }
+
             setValue((props.fieldNamePrefix + 'chainId') as 'chainId', chainId)
-          }
+          }}
           selectedChainId={destChainId}
           sourceChainId={srcChainId}
         />

@@ -9,6 +9,7 @@ import {
   Modal,
   NoContent,
   Tooltip,
+  VestingPaymentLine,
   useDaoInfoContext,
   useDaoNavHelpers,
 } from '@dao-dao/stateless'
@@ -17,11 +18,9 @@ import {
   LoadingDataWithError,
   StatefulEntityDisplayProps,
   TransProps,
+  VestingInfo,
+  WidgetId,
 } from '@dao-dao/types'
-
-import { VestingPaymentLine } from '../../components/VestingPaymentLine'
-import { VESTING_PAYMENTS_WIDGET_ID } from '../../constants'
-import { VestingInfo } from '../../types'
 
 export interface TabRendererProps {
   vestingPaymentsLoading: LoadingDataWithError<VestingInfo[]>
@@ -49,14 +48,14 @@ export const TabRenderer = ({
   const { daoSubpathComponents, goToDao } = useDaoNavHelpers()
 
   const openVestingContract =
-    daoSubpathComponents[0] === VESTING_PAYMENTS_WIDGET_ID
+    daoSubpathComponents[0] === WidgetId.VestingPayments
       ? daoSubpathComponents[1]
       : undefined
   const setOpenVestingContract = useCallback(
     (contract?: string) =>
       goToDao(
         coreAddress,
-        VESTING_PAYMENTS_WIDGET_ID + (contract ? `/${contract}` : ''),
+        WidgetId.VestingPayments + (contract ? `/${contract}` : ''),
         undefined,
         {
           shallow: true,
@@ -78,7 +77,7 @@ export const TabRenderer = ({
     vestingPaymentsLoading.loading || vestingPaymentsLoading.errored
       ? []
       : vestingPaymentsLoading.data.filter(({ completed }) => !completed)
-  // Vesting payments that have been funded and fully claimed.
+  // Vesting payments that have been funded or canceled and fully claimed.
   const completedVestingPayments =
     vestingPaymentsLoading.loading || vestingPaymentsLoading.errored
       ? []

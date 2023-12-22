@@ -1,12 +1,12 @@
 import {
   IProposalModuleAdapterCommon,
+  IProposalModuleAdapterCommonInitialOptions,
   IProposalModuleAdapterInitialOptions,
   IProposalModuleAdapterOptions,
   IProposalModuleContext,
   ProposalModule,
   ProposalModuleAdapter,
 } from '@dao-dao/types'
-import { normalizeContractName } from '@dao-dao/utils'
 
 import {
   DaoProposalMultipleAdapter,
@@ -31,14 +31,14 @@ export const getAdapterById = (id: string) =>
 
 export const matchAdapter = (contractNameToMatch: string) =>
   getAdapters().find((adapter) =>
-    adapter.contractNames.some((contractName) =>
-      normalizeContractName(contractNameToMatch).includes(contractName)
+    adapter.contractNames.some(
+      (contractName) => contractNameToMatch === contractName
     )
   )
 
 export const matchAndLoadCommon = (
   proposalModule: ProposalModule,
-  initialOptions: IProposalModuleAdapterInitialOptions
+  initialOptions: IProposalModuleAdapterCommonInitialOptions
 ): IProposalModuleAdapterCommon & { id: string } => {
   const adapter = matchAdapter(proposalModule.contractName)
 
@@ -66,16 +66,20 @@ export const matchAndLoadAdapter = (
   proposalId: string,
   initialOptions: IProposalModuleAdapterInitialOptions
 ): IProposalModuleContext => {
-  // Last character of prefix is non-numeric, followed by numeric prop number.
-  const proposalIdParts = proposalId.match(/^(.*\D)?(\d+)$/)
-  if (proposalIdParts?.length !== 3) {
+  // Prefix is alphabetical, followed by numeric prop number. If there is an
+  // asterisk between the prefix and the prop number, this is a pre-propose
+  // proposal. Allow the prefix to be empty for backwards compatibility. Default
+  // to first proposal module if no alphabetical prefix.
+  const proposalIdParts = proposalId.match(/^([A-Z]*)(\*)?(\d+)$/)
+  if (proposalIdParts?.length !== 4) {
     throw new ProposalModuleAdapterError('Failed to parse proposal ID.')
   }
 
   // Undefined if matching group doesn't exist, i.e. no prefix exists.
   const proposalPrefix = proposalIdParts[1] ?? ''
+  const isPreProposeApprovalProposal = proposalIdParts[2] === '*'
+  const proposalNumber = Number(proposalIdParts[3])
 
-  const proposalNumber = Number(proposalIdParts[2])
   if (isNaN(proposalNumber)) {
     throw new ProposalModuleAdapterError(
       `Invalid proposal number "${proposalNumber}".`
@@ -114,6 +118,7 @@ export const matchAndLoadAdapter = (
     proposalModule,
     proposalId,
     proposalNumber,
+    isPreProposeApprovalProposal,
   }
 
   return {

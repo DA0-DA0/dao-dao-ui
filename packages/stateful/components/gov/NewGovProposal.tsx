@@ -27,7 +27,6 @@ import {
   useRecoilState,
   useRecoilValue,
   useSetRecoilState,
-  waitForAll,
 } from 'recoil'
 
 import {
@@ -45,6 +44,7 @@ import {
   ErrorPage,
   FilterableItem,
   FilterableItemPopup,
+  FormSwitch,
   IconButton,
   InputErrorMessage,
   Loader,
@@ -89,6 +89,7 @@ import { Any } from '@dao-dao/utils/protobuf/codegen/google/protobuf/any'
 
 import { GovActionsProvider } from '../../actions'
 import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'
+import { useEntity } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
 import { useWalletInfo } from '../../hooks/useWalletInfo'
 import { EntityDisplay } from '../EntityDisplay'
@@ -157,7 +158,8 @@ const InnerNewGovProposal = ({
   const [showSubmitErrorNote, setShowSubmitErrorNote] = useState(false)
   const [submitError, setSubmitError] = useState('')
 
-  const { walletAddress = '', walletProfileData } = useWalletInfo()
+  const { walletAddress = '' } = useWalletInfo()
+  const entity = useEntity(walletAddress)
 
   const [govProposalCreatedCardProps, setGovProposalCreatedCardProps] =
     useRecoilState(govProposalCreatedCardPropsAtom)
@@ -165,38 +167,6 @@ const InnerNewGovProposal = ({
   const localStorageKey = `gov_${chainContext.chainId}`
   const [latestProposalSave, setLatestProposalSave] = useRecoilState(
     latestProposalSaveAtom(localStorageKey)
-  )
-
-  const govParams = useRecoilValue(
-    govParamsSelector({
-      chainId: chainContext.chainId,
-    })
-  )
-  const depositTokenInfos = useRecoilValue(
-    waitForAll(
-      govParams.minDeposit.map(({ denom }) =>
-        genericTokenSelector({
-          chainId: chainContext.chainId,
-          type: TokenType.Native,
-          denomOrAddress: denom,
-        })
-      )
-    )
-  )
-  // Selected deposit token.
-  const depositToken = govParams.minDeposit[0]
-  const depositTokenInfo = depositTokenInfos[0]
-  // Wallet balance of selected deposit token.
-  const walletDepositBalance = useCachedLoading(
-    walletAddress
-      ? genericTokenBalanceSelector({
-          chainId: chainContext.chainId,
-          address: walletAddress,
-          type: TokenType.Native,
-          denomOrAddress: depositToken.denom,
-        })
-      : undefined,
-    undefined
   )
 
   const transformGovernanceProposalActionDataToCosmos =
@@ -217,6 +187,39 @@ const InnerNewGovProposal = ({
     reset,
     setValue,
   } = formMethods
+
+  const version = watch('version')
+  const expedited = watch('expedited')
+
+  const govParams = useRecoilValue(
+    govParamsSelector({
+      chainId: chainContext.chainId,
+    })
+  )
+  // Selected deposit token.
+  const depositToken =
+    expedited && govParams.expeditedMinDeposit?.length
+      ? govParams.expeditedMinDeposit[0]
+      : govParams.minDeposit[0]
+  const depositTokenInfo = useRecoilValue(
+    genericTokenSelector({
+      chainId: chainContext.chainId,
+      type: TokenType.Native,
+      denomOrAddress: depositToken.denom,
+    })
+  )
+  // Wallet balance of selected deposit token.
+  const walletDepositBalance = useCachedLoading(
+    walletAddress
+      ? genericTokenBalanceSelector({
+          chainId: chainContext.chainId,
+          address: walletAddress,
+          type: TokenType.Native,
+          denomOrAddress: depositToken.denom,
+        })
+      : undefined,
+    undefined
+  )
 
   const depositAmount = watch('deposit.0.amount')
   const depositUnsatisfied =
@@ -551,16 +554,14 @@ const InnerNewGovProposal = ({
         onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
       >
         <div className="rounded-lg bg-background-tertiary">
-          <div className="flex flex-row items-center justify-between gap-6 py-4 px-6">
-            <p className="primary-text text-text-body">
-              {t('form.proposalsName')}
-            </p>
+          <div className="flex flex-col gap-2 py-4 px-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+            <p className="primary-text text-text-body">{t('form.title')}</p>
 
             <div className="flex grow flex-col">
               <TextInput
                 error={errors.title}
                 fieldName="title"
-                placeholder={t('form.proposalsNamePlaceholder')}
+                placeholder={t('form.proposalsTitlePlaceholder')}
                 register={register}
                 validation={[validateRequired]}
               />
@@ -568,14 +569,9 @@ const InnerNewGovProposal = ({
             </div>
           </div>
 
-          <div className="flex flex-col gap-4 border-y border-border-secondary p-6 pt-5">
+          <div className="flex flex-col gap-2 border-y border-border-secondary p-6 pt-5 sm:gap-4">
             <p className="primary-text text-text-body">
               {t('form.description')}
-              <span className="text-text-tertiary">
-                {/* eslint-disable-next-line i18next/no-literal-string */}
-                {' – '}
-                {t('info.supportsMarkdownFormat')}
-              </span>
             </p>
 
             <div className="flex flex-col">
@@ -590,6 +586,28 @@ const InnerNewGovProposal = ({
               <InputErrorMessage error={errors.description} />
             </div>
           </div>
+
+          {version === GovProposalVersion.V1 && (
+            <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-5 px-6">
+              <div className="flex flex-col gap-1">
+                <p className="primary-text text-text-body">
+                  {t('form.expedited')}
+                </p>
+                <p className="caption-text max-w-sm">
+                  {t('form.expeditedDescription')}
+                </p>
+              </div>
+
+              <div className="flex grow flex-col items-end">
+                <FormSwitch
+                  fieldName="expedited"
+                  setValue={setValue}
+                  sizing="md"
+                  value={expedited}
+                />
+              </div>
+            </div>
+          )}
 
           <div className="flex flex-row items-center justify-between gap-6 py-5 px-6">
             <div className="flex flex-col gap-1">
@@ -734,9 +752,7 @@ const InnerNewGovProposal = ({
                 createdAt={new Date()}
                 creator={{
                   address: walletAddress,
-                  name: walletProfileData.loading
-                    ? { loading: true }
-                    : { loading: false, data: walletProfileData.profile.name },
+                  entity,
                 }}
                 description={proposalData.description}
                 innerContentDisplay={

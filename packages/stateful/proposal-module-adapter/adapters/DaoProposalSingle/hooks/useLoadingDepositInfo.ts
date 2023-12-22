@@ -1,24 +1,27 @@
 import { constSelector } from 'recoil'
 
+import {
+  CwProposalSingleV1Selectors,
+  DaoPreProposeSingleSelectors,
+} from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
 import {
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
   LoadingData,
+  PreProposeModuleType,
 } from '@dao-dao/types'
 import { ProposalResponse as ProposalV1Response } from '@dao-dao/types/contracts/CwProposalSingle.v1'
 import { DepositInfoResponse as DepositInfoPreProposeResponse } from '@dao-dao/types/contracts/DaoPreProposeSingle'
 
 import { useProposalModuleAdapterOptions } from '../../../react/context'
-import { proposalSelector as proposalV1Selector } from '../contracts/CwProposalSingle.v1.recoil'
-import { depositInfoSelector as depositInfoV2Selector } from '../contracts/DaoPreProposeSingle.recoil'
 
 export const useLoadingDepositInfo = (): LoadingData<
   CheckedDepositInfo | undefined
 > => {
   const {
-    proposalModule: { address, version, preProposeAddress },
+    proposalModule: { address, version, prePropose },
     proposalNumber,
     chain: { chain_id: chainId },
   } = useProposalModuleAdapterOptions()
@@ -28,7 +31,7 @@ export const useLoadingDepositInfo = (): LoadingData<
   >(
     // V1 does not support pre-propose.
     version === ContractVersion.V1
-      ? proposalV1Selector({
+      ? CwProposalSingleV1Selectors.proposalSelector({
           chainId,
           contractAddress: address,
           params: [
@@ -38,10 +41,12 @@ export const useLoadingDepositInfo = (): LoadingData<
           ],
         })
       : // Every other version supports pre-propose.
-      preProposeAddress
-      ? depositInfoV2Selector({
+      prePropose &&
+        // Approver does not have deposit info.
+        prePropose.type !== PreProposeModuleType.Approver
+      ? DaoPreProposeSingleSelectors.depositInfoSelector({
           chainId,
-          contractAddress: preProposeAddress,
+          contractAddress: prePropose.address,
           params: [
             {
               proposalId: proposalNumber,
@@ -77,7 +82,7 @@ export const useLoadingDepositInfo = (): LoadingData<
             : DepositRefundPolicy.OnlyPassed,
         }
       : // If has pre-propose, check deposit info response.
-      preProposeAddress
+      prePropose
       ? depositInfoResponse?.deposit_info ?? undefined
       : undefined
 

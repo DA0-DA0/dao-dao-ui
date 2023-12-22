@@ -7,7 +7,7 @@ import { IconButton } from '../icon_buttons/IconButton'
 import { Tooltip, TooltipProps } from './Tooltip'
 
 export type TooltipInfoIconProps = Omit<TooltipProps, 'children'> &
-  Pick<IconButtonProps, 'size' | 'className' | 'iconClassName'> & {
+  Pick<IconButtonProps, 'size' | 'className' | 'circular' | 'iconClassName'> & {
     warning?: boolean
   }
 
@@ -16,6 +16,7 @@ export const TooltipInfoIcon = ({
   className,
   iconClassName,
   warning,
+  circular,
   ...props
 }: TooltipInfoIconProps) => (
   <Tooltip {...props}>
@@ -23,6 +24,7 @@ export const TooltipInfoIcon = ({
       Icon={warning ? WarningAmberRounded : InfoOutlined}
       // Only change background on hover, and don't outline. Don't make this
       // feel like a clickable button.
+      circular={circular}
       className={clsx(
         'cursor-help !bg-transparent !p-1.5 !outline-none hover:!bg-background-interactive-hover',
         className

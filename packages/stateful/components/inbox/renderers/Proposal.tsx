@@ -21,7 +21,8 @@ export const ProposalRenderer = ({
   const timestamp = item.timestamp && new Date(item.timestamp)
 
   const status =
-    item.type === InboxItemType.ProposalCreated
+    item.type === InboxItemType.ProposalCreated ||
+    item.type === InboxItemType.PendingProposalCreated
       ? t('title.created')
       : item.type === InboxItemType.ProposalExecuted
       ? item.data.failed
@@ -29,6 +30,8 @@ export const ProposalRenderer = ({
         : t('proposalStatusTitle.executed')
       : item.type === InboxItemType.ProposalClosed
       ? t('proposalStatusTitle.closed')
+      : item.type === InboxItemType.PendingProposalRejected
+      ? t('proposalStatusTitle.rejected')
       : undefined
 
   return (
