@@ -19,7 +19,7 @@
     "@types/remove-markdown": "^0.3.1",
     "@walletconnect/browser-utils": "^1.8.0",
     "a11y-react-emoji": "^1.2.0",
-    "chain-registry": "^1.21.0",
+    "chain-registry": "^1.25.0",
     "chart.js": "^4.4.0",
     "chartjs-adapter-date-fns": "^3.0.0",
     "chartjs-plugin-annotation": "^3.0.1",
@@ -44,7 +44,7 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
-    "@chain-registry/types": "^0.17.0",
+    "@chain-registry/types": "^0.17.1",
     "@cosmos-kit/core": "^2.6.4",
     "@dao-dao/config": "2.2.0",
     "@storybook/react": "^6.5.10",
