@@ -53,6 +53,7 @@ telescope({
           'cosmos.staking.v1beta1',
           'cosmos.tx.v1beta1',
           'cosmos.upgrade.v1beta1',
+          'cosmwasm.tokenfactory.v1beta1',
           'cosmwasm.wasm.v1',
           'google.protobuf',
           'ibc.applications.transfer.v1',
@@ -83,6 +84,7 @@ telescope({
           'publicawesome.stargaze.globalfee.v1',
           'publicawesome.stargaze.mint.v1beta1',
           'gaia.globalfee.v1beta1',
+          'noble.tariff',
         ],
       },
       // excluded: {

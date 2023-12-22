@@ -8,13 +8,21 @@ import {
   RotateRightOutlined,
   Send,
   Tag,
+  ThumbDownOutlined,
+  ThumbUpOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
+import { useCallback, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
+import TimeAgo from 'react-timeago'
 import { useRecoilValue } from 'recoil'
 
+import {
+  DaoCoreV2Selectors,
+  DaoProposalSingleCommonSelectors,
+} from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
   IconButtonLink,
@@ -23,39 +31,44 @@ import {
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   Tooltip,
+  useCachedLoading,
   useConfiguredChainContext,
   useDaoInfoContext,
   useDaoNavHelpers,
+  useTranslatedTimeDeltaFormatter,
 } from '@dao-dao/stateless'
 import {
+  ActionKey,
   BaseProposalStatusAndInfoProps,
   CheckedDepositInfo,
   ContractVersion,
   DepositRefundPolicy,
-  ProposalStatus,
+  EntityType,
+  PreProposeModuleType,
+  ProposalStatusEnum,
 } from '@dao-dao/types'
 import { Vote } from '@dao-dao/types/contracts/DaoProposalSingle.common'
-import { formatPercentOf100, processError } from '@dao-dao/utils'
+import {
+  formatDateTimeTz,
+  formatPercentOf100,
+  getDaoProposalSinglePrefill,
+  getProposalStatusKey,
+  processError,
+} from '@dao-dao/utils'
 
-import { SuspenseLoader } from '../../../../components'
-import { ButtonLink } from '../../../../components/ButtonLink'
+import { ButtonLink, SuspenseLoader } from '../../../../components'
 import { EntityDisplay } from '../../../../components/EntityDisplay'
 import {
+  CwProposalSingleV1Hooks,
+  DaoProposalSingleV2Hooks,
   useAwaitNextBlock,
+  useEntity,
   useMembership,
   useProposalPolytoneState,
   useWallet,
 } from '../../../../hooks'
+import { useVeto } from '../../../../hooks/contracts/DaoProposalSingle.v2'
 import { useProposalModuleAdapterOptions } from '../../../react'
-import {
-  useClose as useCloseV1,
-  useExecute as useExecuteV1,
-} from '../contracts/CwProposalSingle.v1.hooks'
-import { configSelector } from '../contracts/DaoProposalSingle.common.recoil'
-import {
-  useClose as useCloseV2,
-  useExecute as useExecuteV2,
-} from '../contracts/DaoProposalSingle.v2.hooks'
 import {
   useCastVote,
   useLoadingDepositInfo,
@@ -67,6 +80,7 @@ import {
   useProposalRefreshers,
 } from '../hooks'
 import { ProposalWithMetadata, VotesInfo } from '../types'
+import { ProposalStatusAndInfoLoader } from './ProposalStatusAndInfoLoader'
 
 export const ProposalStatusAndInfo = (
   props: BaseProposalStatusAndInfoProps
@@ -77,7 +91,7 @@ export const ProposalStatusAndInfo = (
 
   return (
     <SuspenseLoader
-      fallback={<InnerProposalStatusAndInfoLoader {...props} />}
+      fallback={<ProposalStatusAndInfoLoader {...props} />}
       forceFallback={
         loadingProposal.loading ||
         loadingVotesInfo.loading ||
@@ -99,7 +113,7 @@ export const ProposalStatusAndInfo = (
 }
 
 const InnerProposalStatusAndInfo = ({
-  proposal: { timestampInfo, votingOpen, ...proposal },
+  proposal: { timestampInfo, votingOpen, vetoTimelockExpiration, ...proposal },
   votesInfo: {
     quorum,
     thresholdReached,
@@ -110,6 +124,7 @@ const InnerProposalStatusAndInfo = ({
   depositInfo,
   onVoteSuccess,
   onExecuteSuccess,
+  onVetoSuccess,
   onCloseSuccess,
   openSelfRelayExecute,
   ...props
@@ -119,12 +134,13 @@ const InnerProposalStatusAndInfo = ({
   depositInfo: CheckedDepositInfo | undefined
 }) => {
   const { t } = useTranslation()
+  const router = useRouter()
   const {
     chain: { chain_id: chainId },
     config: { explorerUrlTemplates },
   } = useConfiguredChainContext()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { getDaoPath } = useDaoNavHelpers()
+  const { coreAddress } = useDaoInfoContext()
+  const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
   const { isWalletConnected, address: walletAddress = '' } = useWallet()
   const { isMember = false } = useMembership({
@@ -132,134 +148,63 @@ const InnerProposalStatusAndInfo = ({
   })
 
   const config = useRecoilValue(
-    configSelector({
+    DaoProposalSingleCommonSelectors.configSelector({
       chainId,
       contractAddress: proposalModule.address,
     })
   )
 
+  const creatorAddress =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approver
+      ? proposalModule.prePropose.config.approvalDao
+      : proposal.proposer
+
   const loadingWalletVoteInfo = useLoadingWalletVoteInfo()
   const loadingExecutionTxHash = useLoadingProposalExecutionTxHash()
   const { refreshProposal, refreshProposalAndAll } = useProposalRefreshers()
 
-  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
-    {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
-      label: t('title.dao'),
-      Value: (props) => (
-        <ButtonLink
-          href={getDaoPath(coreAddress)}
-          variant="underline"
-          {...props}
-        >
-          {daoName}
-        </ButtonLink>
-      ),
-    },
-    {
-      Icon: AccountCircleOutlined,
-      label: t('title.creator'),
-      Value: (props) => (
-        <EntityDisplay {...props} address={proposal.proposer} />
-      ),
-    },
-    {
-      Icon: RotateRightOutlined,
-      label: t('title.status'),
-      Value: (props) => (
-        <p {...props}>{t(`proposalStatusTitle.${proposal.status}`)}</p>
-      ),
-    },
-    ...(proposal.allow_revoting
-      ? ([
-          {
-            Icon: Redo,
-            label: t('title.revoting'),
-            Value: (props) => <p {...props}>{t('info.enabled')}</p>,
-          },
-        ] as ProposalStatusAndInfoProps<Vote>['info'])
-      : []),
-    ...(timestampInfo?.display
-      ? ([
-          {
-            Icon: HourglassTopRounded,
-            label: timestampInfo.display.label,
-            Value: (props) => (
-              <Tooltip title={timestampInfo.display!.tooltip}>
-                <p {...props}>{timestampInfo.display!.content}</p>
-              </Tooltip>
-            ),
-          },
-        ] as ProposalStatusAndInfoProps<Vote>['info'])
-      : []),
-    ...(loadingExecutionTxHash.loading || loadingExecutionTxHash.data
-      ? ([
-          {
-            Icon: Tag,
-            label: t('info.txAbbr'),
-            Value: (props) =>
-              loadingExecutionTxHash.loading ? (
-                <p className={clsx('animate-pulse', props.className)}>...</p>
-              ) : loadingExecutionTxHash.data ? (
-                <div className="flex flex-row items-center gap-1">
-                  <CopyToClipboardUnderline
-                    // Will truncate automatically.
-                    takeAll
-                    value={loadingExecutionTxHash.data}
-                    {...props}
-                  />
+  const approver =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approval
+      ? proposalModule.prePropose.config.approver
+      : undefined
+  const approverProposalPath =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approval &&
+    !!proposalModule.prePropose.config.preProposeApproverContract &&
+    proposal.approverProposalId
+      ? getDaoProposalPath(
+          proposalModule.prePropose.config.approver,
+          proposal.approverProposalId
+        )
+      : undefined
 
-                  <IconButtonLink
-                    Icon={ArrowOutwardRounded}
-                    href={explorerUrlTemplates.tx.replace(
-                      'REPLACE',
-                      loadingExecutionTxHash.data
-                    )}
-                    variant="ghost"
-                  />
-                </div>
-              ) : null,
-          },
-        ] as ProposalStatusAndInfoProps<Vote>['info'])
-      : []),
-  ]
+  const approvalDao =
+    proposalModule.prePropose?.type === PreProposeModuleType.Approver
+      ? proposalModule.prePropose.config.approvalDao
+      : undefined
+  const approvedProposalPath =
+    approvalDao && proposal.approvedProposalId
+      ? getDaoProposalPath(approvalDao, proposal.approvedProposalId)
+      : undefined
 
-  const status =
-    proposal.status === ProposalStatus.Open
-      ? thresholdReached && (!quorum || quorumReached)
-        ? t('info.proposalStatus.willPass')
-        : !thresholdReached && (!quorum || quorumReached)
-        ? t('info.proposalStatus.willFailBadThreshold')
-        : thresholdReached && quorum && !quorumReached
-        ? t('info.proposalStatus.willFailBadQuorum')
-        : t('info.proposalStatus.willFail')
-      : votingOpen
-      ? t('info.proposalStatus.completedAndOpen')
-      : t('info.proposalStatus.notOpen', {
-          turnoutPercent: formatPercentOf100(turnoutPercent),
-          turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
-          extra:
-            // Add sentence about closing to receive deposit back if it needs to
-            // be closed and will refund.
-            proposal.status === ProposalStatus.Rejected &&
-            depositInfo?.refund_policy === DepositRefundPolicy.Always
-              ? ` ${t('info.proposalDepositWillBeRefunded')}`
-              : '',
-        })
+  const statusKey = getProposalStatusKey(proposal.status)
+
+  const timeAgoFormatter = useTranslatedTimeDeltaFormatter({ words: false })
 
   const voteOptions = useLoadingVoteOptions()
   const { castVote, castingVote } = useCastVote(onVoteSuccess)
 
   const executeProposal = (
-    proposalModule.version === ContractVersion.V1 ? useExecuteV1 : useExecuteV2
+    proposalModule.version === ContractVersion.V1
+      ? CwProposalSingleV1Hooks.useExecute
+      : DaoProposalSingleV2Hooks.useExecute
   )({
     contractAddress: proposalModule.address,
     sender: walletAddress,
   })
   const closeProposal = (
-    proposalModule.version === ContractVersion.V1 ? useCloseV1 : useCloseV2
+    proposalModule.version === ContractVersion.V1
+      ? CwProposalSingleV1Hooks.useClose
+      : DaoProposalSingleV2Hooks.useClose
   )({
     contractAddress: proposalModule.address,
     sender: walletAddress,
@@ -289,7 +234,9 @@ const InnerProposalStatusAndInfo = ({
 
     setActionLoading(true)
     try {
-      await executeProposal({ proposalId: proposalNumber })
+      await executeProposal({
+        proposalId: proposalNumber,
+      })
 
       await onExecuteSuccess()
     } catch (err) {
@@ -331,7 +278,7 @@ const InnerProposalStatusAndInfo = ({
   // Refresh proposal and list of proposals (for list status) once voting ends.
   useEffect(() => {
     if (
-      proposal.status !== ProposalStatus.Open ||
+      statusKey !== ProposalStatusEnum.Open ||
       !timestampInfo?.expirationDate
     ) {
       return
@@ -354,17 +301,400 @@ const InnerProposalStatusAndInfo = ({
     return () => clearTimeout(timeout)
   }, [
     timestampInfo?.expirationDate,
-    proposal.status,
+    statusKey,
     refreshProposal,
     refreshProposalAndAll,
     awaitNextBlock,
   ])
 
+  const vetoConfig = 'veto' in config ? config.veto : undefined
+  const vetoEnabled = !!vetoConfig
+  const [vetoLoading, setVetoLoading] = useState<
+    'veto' | 'earlyExecute' | false
+  >(false)
+  const vetoerEntity = useEntity(vetoConfig?.vetoer || '')
+  // This is the voting power the current wallet has in the vetoer if the vetoer
+  // is a DAO.
+  const walletDaoVetoerMembership = useCachedLoading(
+    !vetoerEntity.loading &&
+      vetoerEntity.data.type === EntityType.Dao &&
+      walletAddress
+      ? DaoCoreV2Selectors.votingPowerAtHeightSelector({
+          contractAddress: coreAddress,
+          chainId,
+          params: [{ address: walletAddress }],
+        })
+      : undefined,
+    undefined
+  )
+  const canBeVetoed =
+    vetoEnabled &&
+    (statusKey === 'veto_timelock' ||
+      (statusKey === ProposalStatusEnum.Open && vetoConfig.veto_before_passed))
+  const walletCanVeto =
+    canBeVetoed &&
+    // Wallet can veto if they are a member of the vetoer DAO or if they are the
+    // vetoer themselves.
+    !vetoerEntity.loading &&
+    ((vetoerEntity.data.type === EntityType.Dao &&
+      !walletDaoVetoerMembership.loading &&
+      !!walletDaoVetoerMembership.data &&
+      walletDaoVetoerMembership.data.power !== '0') ||
+      (vetoerEntity.data.type === EntityType.Wallet &&
+        walletAddress === vetoerEntity.data.address))
+  const walletCanEarlyExecute =
+    walletCanVeto && statusKey === 'veto_timelock' && vetoConfig.early_execute
+  const onWalletVeto = useVeto({
+    contractAddress: proposalModule.address,
+    sender: walletAddress,
+  })
+  const onVeto = useCallback(async () => {
+    if (!walletCanVeto) {
+      return
+    }
+
+    setVetoLoading('veto')
+    try {
+      if (vetoerEntity.data.type === EntityType.Wallet) {
+        await onWalletVeto({
+          proposalId: proposalNumber,
+        })
+
+        await onVetoSuccess()
+      } else if (vetoerEntity.data.type === EntityType.Dao) {
+        router.push(
+          getDaoProposalPath(vetoerEntity.data.address, 'create', {
+            prefill: getDaoProposalSinglePrefill({
+              actions: [
+                {
+                  actionKey: ActionKey.VetoOrEarlyExecuteDaoProposal,
+                  data: {
+                    chainId,
+                    coreAddress,
+                    proposalModuleAddress: proposalModule.address,
+                    proposalId: proposalNumber,
+                    action: 'veto',
+                  },
+                },
+              ],
+            }),
+          })
+        )
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+
+      // Stop loading if errored.
+      setVetoLoading(false)
+    }
+
+    // Loading will stop on success when status refreshes.
+  }, [
+    walletCanVeto,
+    vetoerEntity,
+    onWalletVeto,
+    proposalNumber,
+    onVetoSuccess,
+    router,
+    getDaoProposalPath,
+    chainId,
+    coreAddress,
+    proposalModule.address,
+  ])
+  const onVetoEarlyExecute = useCallback(async () => {
+    if (!walletCanEarlyExecute) {
+      return
+    }
+
+    setVetoLoading('earlyExecute')
+    try {
+      if (vetoerEntity.data.type === EntityType.Wallet) {
+        await executeProposal({
+          proposalId: proposalNumber,
+        })
+
+        await onExecuteSuccess()
+      } else if (vetoerEntity.data.type === EntityType.Dao) {
+        router.push(
+          getDaoProposalPath(vetoerEntity.data.address, 'create', {
+            prefill: getDaoProposalSinglePrefill({
+              actions: [
+                {
+                  actionKey: ActionKey.VetoOrEarlyExecuteDaoProposal,
+                  data: {
+                    chainId,
+                    coreAddress,
+                    proposalModuleAddress: proposalModule.address,
+                    proposalId: proposalNumber,
+                    action: 'earlyExecute',
+                  },
+                },
+              ],
+            }),
+          })
+        )
+      }
+    } catch (err) {
+      console.error(err)
+      toast.error(processError(err))
+
+      // Stop loading if errored.
+      setVetoLoading(false)
+    }
+
+    // Loading will stop on success when status refreshes.
+  }, [
+    walletCanEarlyExecute,
+    vetoerEntity,
+    executeProposal,
+    proposalNumber,
+    onExecuteSuccess,
+    router,
+    getDaoProposalPath,
+    chainId,
+    coreAddress,
+    proposalModule.address,
+  ])
+
+  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
+    {
+      Icon: ({ className }) => (
+        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
+      ),
+      label: t('title.dao'),
+      Value: (props) => (
+        <EntityDisplay {...props} address={coreAddress} noCopy />
+      ),
+    },
+    {
+      Icon: AccountCircleOutlined,
+      label: t('title.creator'),
+      Value: (props) => (
+        <EntityDisplay {...props} address={creatorAddress} noCopy />
+      ),
+    },
+    ...(approverProposalPath
+      ? ([
+          {
+            Icon: ThumbUpOutlined,
+            label: t('title.approval'),
+            Value: (props) => (
+              <Tooltip
+                morePadding
+                title={approver && <EntityDisplay address={approver} noCopy />}
+              >
+                <ButtonLink
+                  href={approverProposalPath}
+                  variant="underline"
+                  {...props}
+                >
+                  {t('title.proposalId', {
+                    id: proposal.approverProposalId,
+                  })}
+                </ButtonLink>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : approver
+      ? ([
+          {
+            Icon: ThumbUpOutlined,
+            label: t('title.approver'),
+            Value: (props) => (
+              <EntityDisplay {...props} address={approver} noCopy />
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : []),
+    // Show vetoer if can be vetoed or was vetoed. If was not vetoed but could
+    // have been, don't show because it might confuse the user and make them
+    // think it was vetoed.
+    ...(vetoConfig && (canBeVetoed || statusKey === ProposalStatusEnum.Vetoed)
+      ? ([
+          {
+            Icon: ThumbDownOutlined,
+            label: t('title.vetoer'),
+            Value: (props) => (
+              <EntityDisplay {...props} address={vetoConfig.vetoer} noCopy />
+            ),
+          },
+        ] as ProposalStatusAndInfoProps<Vote>['info'])
+      : []),
+    {
+      Icon: RotateRightOutlined,
+      label: t('title.status'),
+      Value: (props) => (
+        <p {...props}>{t(`proposalStatusTitle.${statusKey}`)}</p>
+      ),
+    },
+    ...(proposal.allow_revoting
+      ? ([
+          {
+            Icon: Redo,
+            label: t('title.revoting'),
+            Value: (props) => <p {...props}>{t('info.enabled')}</p>,
+          },
+        ] as ProposalStatusAndInfoProps<Vote>['info'])
+      : []),
+    ...(timestampInfo?.display
+      ? ([
+          {
+            Icon: HourglassTopRounded,
+            label: timestampInfo.display.label,
+            Value: (props) => (
+              <Tooltip title={timestampInfo.display!.tooltip}>
+                <p {...props}>{timestampInfo.display!.content}</p>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps<Vote>['info'])
+      : []),
+    ...(vetoTimelockExpiration
+      ? ([
+          {
+            Icon: HourglassTopRounded,
+            label: t('title.vetoTimeLeft'),
+            Value: (props) => (
+              <Tooltip title={formatDateTimeTz(vetoTimelockExpiration)}>
+                <p {...props}>
+                  <TimeAgo
+                    date={vetoTimelockExpiration}
+                    formatter={timeAgoFormatter}
+                  />
+                </p>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps<Vote>['info'])
+      : []),
+    ...(loadingExecutionTxHash.loading || loadingExecutionTxHash.data
+      ? ([
+          {
+            Icon: Tag,
+            label: t('info.txAbbr'),
+            Value: (props) =>
+              loadingExecutionTxHash.loading ? (
+                <p className={clsx('animate-pulse', props.className)}>...</p>
+              ) : loadingExecutionTxHash.data ? (
+                <div className="flex flex-row items-center gap-1">
+                  <CopyToClipboardUnderline
+                    // Will truncate automatically.
+                    takeAll
+                    value={loadingExecutionTxHash.data}
+                    {...props}
+                  />
+
+                  <IconButtonLink
+                    Icon={ArrowOutwardRounded}
+                    href={explorerUrlTemplates.tx.replace(
+                      'REPLACE',
+                      loadingExecutionTxHash.data
+                    )}
+                    variant="ghost"
+                  />
+                </div>
+              ) : null,
+          },
+        ] as ProposalStatusAndInfoProps<Vote>['info'])
+      : []),
+    ...(approvedProposalPath
+      ? ([
+          {
+            Icon: ThumbUpOutlined,
+            label: t('title.approved'),
+            Value: (props) => (
+              <Tooltip
+                morePadding
+                title={
+                  approvalDao && <EntityDisplay address={approvalDao} noCopy />
+                }
+              >
+                <ButtonLink
+                  href={approvedProposalPath}
+                  variant="underline"
+                  {...props}
+                >
+                  {t('title.proposalId', {
+                    id: proposal.approvedProposalId,
+                  })}
+                </ButtonLink>
+              </Tooltip>
+            ),
+          },
+        ] as ProposalStatusAndInfoProps['info'])
+      : []),
+  ]
+
+  let status: string
+  if (statusKey === ProposalStatusEnum.Open) {
+    if (!quorum || quorumReached) {
+      if (thresholdReached) {
+        status = t('info.proposalStatus.willPass', {
+          context: vetoEnabled ? 'vetoEnabled' : undefined,
+        })
+      } else {
+        status = t('info.proposalStatus.willFailBadThreshold')
+      }
+
+      // quorum && !quorumReached
+    } else if (thresholdReached) {
+      status = t('info.proposalStatus.willFailBadQuorum')
+    } else {
+      status = t('info.proposalStatus.willFail')
+    }
+
+    // not open
+  } else {
+    if (votingOpen) {
+      // Proposal status is determined but voting is still open
+      status = t('info.proposalStatus.completedAndOpen', {
+        context: statusKey === ProposalStatusEnum.Vetoed ? 'vetoed' : undefined,
+      })
+    } else {
+      status = t('info.proposalStatus.notOpenSingleChoice', {
+        context:
+          statusKey === ProposalStatusEnum.Passed
+            ? 'passed'
+            : statusKey === ProposalStatusEnum.Executed
+            ? 'executed'
+            : statusKey === ProposalStatusEnum.ExecutionFailed
+            ? 'executionFailed'
+            : statusKey === ProposalStatusEnum.Rejected
+            ? 'rejected'
+            : statusKey === ProposalStatusEnum.Closed
+            ? 'closed'
+            : statusKey === ProposalStatusEnum.Vetoed
+            ? thresholdReached && (!quorum || quorumReached)
+              ? 'vetoedPassed'
+              : 'vetoedNotPassed'
+            : undefined,
+        turnoutPercent: formatPercentOf100(turnoutPercent),
+        turnoutYesPercent: formatPercentOf100(turnoutYesPercent),
+      })
+    }
+
+    // Add sentence about closing to receive deposit back if it needs to be
+    // closed and will refund.
+    if (
+      statusKey === ProposalStatusEnum.Rejected &&
+      depositInfo?.refund_policy === DepositRefundPolicy.Always
+    ) {
+      status += ' ' + t('info.proposalDepositWillBeRefunded')
+    }
+
+    // Add sentence about veto status.
+    if (canBeVetoed) {
+      status += ' ' + t('info.proposalStatus.canStillBeVetoed')
+    }
+  }
+
   return (
     <StatelessProposalStatusAndInfo
       {...props}
       action={
-        proposal.status === ProposalStatus.Passed &&
+        statusKey === ProposalStatusEnum.Passed &&
         // Show if anyone can execute OR if the wallet is a member, once
         // polytone messages that need relaying are done loading.
         (!config.only_members_execute || isMember) &&
@@ -377,7 +707,7 @@ const InnerProposalStatusAndInfo = ({
                 ? polytoneState.data.openPolytoneRelay
                 : onExecute,
             }
-          : proposal.status === ProposalStatus.Rejected
+          : statusKey === ProposalStatusEnum.Rejected
           ? {
               label: t('button.close'),
               Icon: CancelOutlined,
@@ -385,7 +715,7 @@ const InnerProposalStatusAndInfo = ({
               doAction: onClose,
             }
           : // If executed and has polytone messages that need relaying...
-          proposal.status === ProposalStatus.Executed &&
+          statusKey === ProposalStatusEnum.Executed &&
             !polytoneState.loading &&
             polytoneState.data.needsSelfRelay &&
             !loadingExecutionTxHash.loading &&
@@ -401,13 +731,25 @@ const InnerProposalStatusAndInfo = ({
       }
       footer={
         !polytoneState.loading &&
-        proposal.status === ProposalStatus.Executed &&
+        statusKey === ProposalStatusEnum.Executed &&
         polytoneState.data.hasPolytoneMessages && (
           <ProposalCrossChainRelayStatus state={polytoneState.data} />
         )
       }
       info={info}
       status={status}
+      vetoOrEarlyExecute={
+        vetoConfig && walletCanVeto
+          ? {
+              loading: vetoLoading,
+              onVeto,
+              onEarlyExecute: walletCanEarlyExecute
+                ? onVetoEarlyExecute
+                : undefined,
+              isVetoerDaoMember: vetoerEntity.data.type === EntityType.Dao,
+            }
+          : undefined
+      }
       vote={
         loadingWalletVoteInfo &&
         !loadingWalletVoteInfo.loading &&
@@ -418,62 +760,10 @@ const InnerProposalStatusAndInfo = ({
               currentVote: loadingWalletVoteInfo.data.vote,
               onCastVote: castVote,
               options: voteOptions.data,
-              proposalOpen: proposal.status === ProposalStatus.Open,
+              proposalOpen: statusKey === ProposalStatusEnum.Open,
             }
           : undefined
       }
-    />
-  )
-}
-
-const InnerProposalStatusAndInfoLoader = (
-  props: BaseProposalStatusAndInfoProps
-) => {
-  const { t } = useTranslation()
-  const { name: daoName, coreAddress } = useDaoInfoContext()
-  const { getDaoPath } = useDaoNavHelpers()
-
-  const LoaderP: ComponentType<{ className: string }> = ({ className }) => (
-    <p className={clsx('animate-pulse', className)}>...</p>
-  )
-  const info: ProposalStatusAndInfoProps<Vote>['info'] = [
-    {
-      Icon: ({ className }) => (
-        <Logo className={clsx('m-[0.125rem] !h-5 !w-5', className)} />
-      ),
-      label: t('title.dao'),
-      Value: (props) => (
-        <ButtonLink
-          href={getDaoPath(coreAddress)}
-          variant="underline"
-          {...props}
-        >
-          {daoName}
-        </ButtonLink>
-      ),
-    },
-    {
-      Icon: AccountCircleOutlined,
-      label: t('title.creator'),
-      Value: LoaderP,
-    },
-    {
-      Icon: RotateRightOutlined,
-      label: t('title.status'),
-      Value: LoaderP,
-    },
-    {
-      Icon: HourglassTopRounded,
-      label: t('title.date'),
-      Value: LoaderP,
-    },
-  ]
-
-  return (
-    <StatelessProposalStatusAndInfo
-      {...props}
-      info={info}
-      status={t('info.loading')}
     />
   )
 }

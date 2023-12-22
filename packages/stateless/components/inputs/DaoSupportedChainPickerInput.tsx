@@ -37,7 +37,7 @@ export type DaoSupportedChainPickerInputProps = {
    * Class name applied to container.
    */
   className?: string
-} & Omit<ChainPickerPopupProps, 'chainIds' | 'selectedChainId' | 'onSelect'>
+} & Omit<ChainPickerPopupProps, 'chains' | 'selectedChainId' | 'onSelect'>
 
 /**
  * A form picker that is intended to be used in DAO actions to choose a
@@ -104,9 +104,17 @@ export const DaoSupportedChainPickerInput = ({
 
       <ChainPickerPopup
         {...pickerProps}
-        chainIds={chainIds}
+        chains={{
+          type: 'custom',
+          chainIds,
+        }}
         labelMode={labelMode}
         onSelect={(chainId) => {
+          // Type-check. None option is disabled so should not be possible.
+          if (!chainId) {
+            return
+          }
+
           setValue(fieldName, chainId)
           onChange?.(chainId)
         }}

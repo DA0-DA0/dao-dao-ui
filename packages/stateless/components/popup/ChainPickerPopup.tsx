@@ -1,12 +1,15 @@
 import { ArrowDropDown } from '@mui/icons-material'
 import clsx from 'clsx'
+import { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import {
+  getConfiguredChains,
   getDisplayNameForChainId,
   getFallbackImage,
   getImageUrlForChainId,
   getNativeTokenForChainId,
+  getSupportedChains,
   toAccessibleImageUrl,
 } from '@dao-dao/utils'
 
@@ -14,22 +17,55 @@ import { FilterableItem, FilterableItemPopup } from '.'
 
 export type ChainPickerPopupProps = {
   /**
-   * The chain IDs to include in the picker.
+   * The chains to include in the picker.
    */
-  chainIds: string[]
+  chains:
+    | {
+        /**
+         * Supported chains have native DAO DAO deployments.
+         */
+        type: 'supported'
+        /**
+         * Chain IDs to exclude.
+         */
+        excludeChainIds?: string[]
+      }
+    | {
+        /**
+         * Configured chains include supported chains and others which show up
+         * in the UI in various places, such as the governance UI.
+         */
+        type: 'configured'
+        /**
+         * Chain IDs to exclude.
+         */
+        excludeChainIds?: string[]
+      }
+    | {
+        /**
+         * Set any chains explicitly
+         */
+        type: 'custom'
+        chainIds: string[]
+      }
   /**
-   * The selected chain ID.
+   * The selected chain ID. If undefined, will select the none option if exists.
    */
   selectedChainId?: string
   /**
-   * Handler for when a chain is selected.
+   * Handler for when a chain is selected. If the none option is selected, the
+   * handler will be called with `undefined`.
    */
-  onSelect: (chainId: string) => void | Promise<void>
+  onSelect: (chainId?: string) => void | Promise<void>
   /**
    * Whether to use the chain name or the native token symbol as the label.
    * Defaults to 'chain'.
    */
   labelMode?: 'chain' | 'token'
+  /**
+   * Whether or not to show a loading indicator.
+   */
+  loading?: boolean
   /**
    * Whether or not chain selection is disabled.
    */
@@ -38,6 +74,18 @@ export type ChainPickerPopupProps = {
    * Optional class name applied to the button.
    */
   buttonClassName?: string
+  /**
+   * If true, a button will be shown at the top that represents none.
+   */
+  showNone?: boolean
+  /**
+   * If defined, this will be the label of the none button.
+   */
+  noneLabel?: string
+  /**
+   * If defined, this will be the icon of the none button.
+   */
+  noneIcon?: ComponentType<{ className?: string }>
 }
 
 /**
@@ -46,14 +94,29 @@ export type ChainPickerPopupProps = {
  * chain and current or potential cross-chain (polytone) accounts.
  */
 export const ChainPickerPopup = ({
-  chainIds,
+  chains,
   selectedChainId,
   onSelect,
   labelMode = 'chain',
+  loading,
   disabled,
   buttonClassName,
+  showNone,
+  noneLabel,
+  noneIcon,
 }: ChainPickerPopupProps) => {
   const { t } = useTranslation()
+
+  const chainIds =
+    chains.type === 'supported'
+      ? getSupportedChains()
+          .map(({ chain: { chain_id } }) => chain_id)
+          .filter((chainId) => !chains.excludeChainIds?.includes(chainId))
+      : chains.type === 'configured'
+      ? getConfiguredChains()
+          .map(({ chain: { chain_id } }) => chain_id)
+          .filter((chainId) => !chains.excludeChainIds?.includes(chainId))
+      : chains.chainIds
 
   const chainOptions = chainIds.map(
     (chainId): FilterableItem => ({
@@ -68,11 +131,19 @@ export const ChainPickerPopup = ({
           : getNativeTokenForChainId(chainId).imageUrl) ||
           getFallbackImage(chainId)
       ),
-      iconClassName: '!h-8 !w-8',
-      className: '!py-2',
-      contentContainerClassName: '!gap-3',
+      ...commonOptionClassFields,
     })
   )
+
+  // Add none option to the top.
+  if (showNone) {
+    chainOptions.splice(0, 0, {
+      key: NONE_KEY,
+      label: noneLabel || t('info.none'),
+      Icon: noneIcon,
+      ...commonOptionClassFields,
+    })
+  }
 
   const selectedChain = selectedChainId
     ? chainOptions.find(({ key }) => key === selectedChainId)
@@ -86,13 +157,16 @@ export const ChainPickerPopup = ({
     <FilterableItemPopup
       filterableItemKeys={FILTERABLE_KEYS}
       items={chainOptions}
-      onSelect={({ key }) => onSelect(key as string)}
+      onSelect={({ key }) =>
+        onSelect(key === NONE_KEY ? undefined : (key as string))
+      }
       searchPlaceholder={t('info.searchForChain')}
       trigger={{
         type: 'button',
         props: {
           className: buttonClassName,
           contentContainerClassName: 'justify-between text-icon-primary !gap-4',
+          loading,
           disabled,
           size: 'lg',
           variant: 'ghost_outline',
@@ -125,4 +199,11 @@ export const ChainPickerPopup = ({
   )
 }
 
+const NONE_KEY = '_none_'
 const FILTERABLE_KEYS = ['key', 'label']
+
+const commonOptionClassFields = {
+  iconClassName: '!h-8 !w-8',
+  className: '!py-2',
+  contentContainerClassName: '!gap-3',
+}

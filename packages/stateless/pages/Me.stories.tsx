@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ChainSwitcher } from '@dao-dao/stateful'
+import { WalletChainSwitcher } from '@dao-dao/stateful'
 import { WALLET_PROFILE_DATA } from '@dao-dao/storybook'
 import {
   WalletActionsProviderDecorator,
@@ -55,5 +55,5 @@ Default.args = {
   ),
   MeDaos: () => <div />,
   profileData: WALLET_PROFILE_DATA,
-  ChainSwitcher,
+  ChainSwitcher: WalletChainSwitcher,
 }

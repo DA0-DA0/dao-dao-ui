@@ -1,7 +1,7 @@
 import { ComponentPropsWithoutRef } from 'react'
 
 import { Coin } from '../contracts'
-import { LoadingData } from './common'
+import { LoadingData } from '../misc'
 
 export type TokenAmountDisplayProps = Omit<
   ComponentPropsWithoutRef<'p'>,

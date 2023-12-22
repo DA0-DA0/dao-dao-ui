@@ -1,56 +1,26 @@
 import { ComponentType, ReactNode, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import {
-  DaoTabId,
-  IconButtonLinkProps,
-  LoadingData,
-  StatefulEntityDisplayProps,
-} from '@dao-dao/types'
+import { DaoTabId } from '@dao-dao/types'
 
-import {
-  PageHeaderContent,
-  ProposalContentDisplay,
-  RightSidebarContent,
-} from '../components'
+import { PageHeaderContent, RightSidebarContent } from '../components'
 
-export interface ProposalProps {
+export type ProposalProps = {
   id: string
-  title: string
-  description: string
-  createdAt?: Date
   voteTally: ReactNode
   votesCast: ReactNode
-  ProposalStatusAndInfo: ComponentType<{ inline: boolean }>
-  proposalInnerContentDisplay: ReactNode
-  creator?: {
-    address: string
-    name: LoadingData<string | null>
-  }
+  ProposalStatusAndInfo: ComponentType<{ inline?: boolean }>
+  contentDisplay: ReactNode
   rightSidebarContent: ReactNode
-  onRefresh: () => void
-  refreshing: boolean
-  duplicateUrl: string | undefined
-  IconButtonLink: ComponentType<IconButtonLinkProps>
-  EntityDisplay: ComponentType<StatefulEntityDisplayProps>
 }
 
 export const Proposal = ({
   id,
-  title,
-  description,
-  createdAt,
   voteTally,
   votesCast,
   ProposalStatusAndInfo,
-  proposalInnerContentDisplay,
-  creator,
+  contentDisplay,
   rightSidebarContent,
-  onRefresh,
-  refreshing,
-  duplicateUrl,
-  IconButtonLink,
-  EntityDisplay,
 }: ProposalProps) => {
   const { t } = useTranslation()
 
@@ -95,20 +65,7 @@ export const Proposal = ({
 
         {/* Make entire pane scrollable, even space around and under status and info card on the side. */}
         <div className="no-scrollbar absolute top-0 right-0 bottom-0 left-0 z-[1] h-full overflow-y-auto pt-10 pb-6 mdlg:pl-[21rem]">
-          <div className="mb-9">
-            <ProposalContentDisplay
-              EntityDisplay={EntityDisplay}
-              IconButtonLink={IconButtonLink}
-              createdAt={createdAt}
-              creator={creator}
-              description={description}
-              duplicateUrl={duplicateUrl}
-              innerContentDisplay={proposalInnerContentDisplay}
-              onRefresh={onRefresh}
-              refreshing={refreshing}
-              title={title}
-            />
-          </div>
+          <div className="mb-9">{contentDisplay}</div>
 
           <div className="mdlg:hidden">
             <ProposalStatusAndInfo inline />

@@ -1,7 +1,6 @@
 import { useCallback } from 'react'
-import { constSelector } from 'recoil'
 
-import { isContractSelector } from '@dao-dao/state/recoil'
+import { DaoProposalMultipleSelectors } from '@dao-dao/state/recoil'
 import {
   BallotDepositEmoji,
   useCachedLoadingWithError,
@@ -20,10 +19,12 @@ import {
   PercentageThreshold,
   VotingStrategy,
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import { makeWasmMessage, objectMatchesStructure } from '@dao-dao/utils'
+import {
+  DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
+  makeWasmMessage,
+} from '@dao-dao/utils'
 
-import { CONTRACT_NAMES } from '../../../constants'
-import { configSelector } from '../../../contracts/DaoProposalMultiple.recoil'
+import { useMsgExecutesContract } from '../../../../../../actions'
 import { UpdateProposalConfigComponent as Component } from './UpdateProposalConfigComponent'
 
 export interface UpdateProposalConfigData {
@@ -100,7 +101,7 @@ export const makeUpdateProposalConfigActionMaker =
   ({ t, context, chain: { chain_id: chainId } }) => {
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useCachedLoadingWithError(
-        configSelector({
+        DaoProposalMultipleSelectors.configSelector({
           chainId,
           contractAddress: proposalModuleAddress,
         })
@@ -135,7 +136,7 @@ export const makeUpdateProposalConfigActionMaker =
       UpdateProposalConfigData
     > = () => {
       const proposalModuleConfig = useCachedLoadingWithError(
-        configSelector({
+        DaoProposalMultipleSelectors.configSelector({
           chainId,
           contractAddress: proposalModuleAddress,
         })
@@ -190,48 +191,37 @@ export const makeUpdateProposalConfigActionMaker =
     const useDecodedCosmosMsg: UseDecodedCosmosMsg<UpdateProposalConfigData> = (
       msg: Record<string, any>
     ) => {
-      const isUpdateConfig = objectMatchesStructure(msg, {
-        wasm: {
-          execute: {
-            contract_addr: {},
-            funds: {},
-            msg: {
-              update_config: {
-                allow_revoting: {},
-                close_proposal_on_execution_failure: {},
-                dao: {},
-                max_voting_period: {
-                  time: {},
-                },
-                min_voting_period: {},
-                only_members_execute: {},
-                voting_strategy: {
-                  single_choice: {
-                    quorum: {},
+      const isUpdateConfig = useMsgExecutesContract(
+        msg,
+        DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
+        {
+          wasm: {
+            execute: {
+              contract_addr: {},
+              funds: {},
+              msg: {
+                update_config: {
+                  allow_revoting: {},
+                  close_proposal_on_execution_failure: {},
+                  dao: {},
+                  max_voting_period: {
+                    time: {},
+                  },
+                  min_voting_period: {},
+                  only_members_execute: {},
+                  voting_strategy: {
+                    single_choice: {
+                      quorum: {},
+                    },
                   },
                 },
               },
             },
           },
-        },
-      })
-
-      const isContract = useCachedLoadingWithError(
-        isUpdateConfig
-          ? isContractSelector({
-              contractAddress: msg.wasm.execute.contract_addr,
-              names: CONTRACT_NAMES,
-              chainId,
-            })
-          : constSelector(false)
+        }
       )
 
-      if (
-        !isUpdateConfig ||
-        isContract.loading ||
-        isContract.errored ||
-        !isContract.data
-      ) {
+      if (!isUpdateConfig) {
         return { match: false }
       }
 

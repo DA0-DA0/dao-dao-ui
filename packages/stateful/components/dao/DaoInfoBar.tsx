@@ -1,4 +1,10 @@
-import { AccountBalanceOutlined, LockOpenOutlined } from '@mui/icons-material'
+import {
+  AccountBalanceOutlined,
+  LockOpenOutlined,
+  ThumbDownOutlined,
+  ThumbsUpDownOutlined,
+} from '@mui/icons-material'
+import uniq from 'lodash.uniq'
 import { useTranslation } from 'react-i18next'
 
 import { daoTvlSelector } from '@dao-dao/state'
@@ -9,6 +15,7 @@ import {
   useChain,
   useDaoInfoContext,
 } from '@dao-dao/stateless'
+import { PreProposeModuleType } from '@dao-dao/types'
 import {
   convertMicroDenomToDenomWithDecimals,
   formatPercentOf100,
@@ -18,6 +25,7 @@ import {
   useCw20CommonGovernanceTokenInfoIfExists,
   useVotingModuleAdapter,
 } from '../../voting-module-adapter'
+import { EntityDisplay } from '../EntityDisplay'
 import { SuspenseLoader } from '../SuspenseLoader'
 
 export const DaoInfoBar = () => {
@@ -39,7 +47,7 @@ const InnerDaoInfoBar = () => {
     hooks: { useDaoInfoBarItems, useCommonGovernanceTokenInfo },
   } = useVotingModuleAdapter()
   const votingModuleItems = useDaoInfoBarItems()
-  const { coreAddress, activeThreshold } = useDaoInfoContext()
+  const { coreAddress, activeThreshold, proposalModules } = useDaoInfoContext()
 
   const { denomOrAddress: cw20GovernanceTokenAddress } =
     useCw20CommonGovernanceTokenInfoIfExists() ?? {}
@@ -55,6 +63,22 @@ const InnerDaoInfoBar = () => {
       amount: -1,
       timestamp: new Date(),
     }
+  )
+
+  // Get unique approvers from all proposal modules.
+  const allApprovers = uniq(
+    proposalModules.flatMap(({ prePropose }) =>
+      prePropose?.type === PreProposeModuleType.Approval
+        ? prePropose.config.approver
+        : []
+    )
+  )
+
+  // Get unique vetoers from all proposal modules.
+  const allVetoers = uniq(
+    proposalModules.flatMap(({ config }) =>
+      config?.veto ? [config.veto.vetoer] : []
+    )
   )
 
   return (
@@ -109,6 +133,18 @@ const InnerDaoInfoBar = () => {
               },
             ]
           : []),
+        ...allApprovers.map((approver) => ({
+          Icon: ThumbsUpDownOutlined,
+          label: t('title.approver'),
+          tooltip: t('info.daoApproverExplanation'),
+          value: <EntityDisplay address={approver} hideImage noCopy />,
+        })),
+        ...allVetoers.map((vetoer) => ({
+          Icon: ThumbDownOutlined,
+          label: t('title.vetoer'),
+          tooltip: t('info.daoVetoerExplanation'),
+          value: <EntityDisplay address={vetoer} hideImage noCopy />,
+        })),
         // Voting module-specific items.
         ...votingModuleItems,
       ]}

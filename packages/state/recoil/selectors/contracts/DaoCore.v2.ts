@@ -1353,3 +1353,24 @@ export const coreAddressForPolytoneProxySelector = selectorFamily<
         })
       ),
 })
+
+export const approvalDaosSelector = selectorFamily<
+  {
+    dao: string
+    preProposeAddress: string
+  }[],
+  QueryClientParams
+>({
+  key: 'daoCoreV2ApprovalDaos',
+  get:
+    ({ chainId, contractAddress }) =>
+    ({ get }) =>
+      get(
+        queryContractIndexerSelector({
+          chainId,
+          contractAddress,
+          formula: 'daoCore/approvalDaos',
+          required: true,
+        })
+      ),
+})

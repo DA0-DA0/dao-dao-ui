@@ -1,4 +1,3 @@
-import clsx from 'clsx'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -98,11 +97,8 @@ export const Me = ({
           {selectedTabId === MeTabId.TransactionBuilder && <ChainSwitcher />}
         </div>
 
-        {tabs.map(({ id, Component }) => (
-          <div key={id} className={clsx(selectedTabId !== id && 'hidden')}>
-            <Component />
-          </div>
-        ))}
+        {/* Don't render a tab unless it is visible. */}
+        {selectedTab && <selectedTab.Component />}
       </div>
     </>
   )

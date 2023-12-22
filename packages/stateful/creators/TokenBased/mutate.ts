@@ -1,5 +1,3 @@
-import { Buffer } from 'buffer'
-
 import { ActiveThreshold, DaoCreatorMutate } from '@dao-dao/types'
 import {
   InstantiateMsg as DaoVotingTokenStakedInstantiateMsg,
@@ -10,6 +8,7 @@ import {
   TokenBasedCreatorId,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
+  encodeMessageAsBase64,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
 
@@ -130,10 +129,7 @@ export const mutate: DaoCreatorMutate<CreatorData> = (
     admin: { core_module: {} },
     code_id: codeIds.DaoVotingTokenStaked,
     label: `DAO_${daoName.trim()}_${TokenBasedCreatorId}`,
-    msg: Buffer.from(
-      JSON.stringify(votingModuleAdapterInstantiateMsg),
-      'utf8'
-    ).toString('base64'),
+    msg: encodeMessageAsBase64(votingModuleAdapterInstantiateMsg),
     funds: tokenFactoryDenomCreationFee || [],
   }
 

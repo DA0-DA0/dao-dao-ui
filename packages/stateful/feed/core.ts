@@ -1,5 +1,8 @@
 import { FeedSource } from '@dao-dao/types'
 
-import { OpenProposals } from './sources'
+import { OpenProposals, VetoableProposals } from './sources'
 
-export const getSources = (): readonly FeedSource[] => [OpenProposals]
+export const getSources = (): readonly FeedSource[] => [
+  OpenProposals,
+  VetoableProposals,
+]

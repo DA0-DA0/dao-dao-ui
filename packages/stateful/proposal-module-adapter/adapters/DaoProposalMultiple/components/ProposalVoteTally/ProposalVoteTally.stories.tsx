@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
-import { ProcessedTQType, ProposalStatus } from '@dao-dao/types'
+import { ProcessedTQType, ProposalStatusEnum } from '@dao-dao/types'
 import { MultipleChoiceOptionType } from '@dao-dao/types/contracts/DaoProposalMultiple'
 
 import { ProposalVoteTally } from './ProposalVoteTally'
@@ -111,7 +111,7 @@ Default.args = {
     processedChoices: choices,
     winningChoice: choices[0],
   },
-  status: ProposalStatus.Open,
+  status: ProposalStatusEnum.Open,
 }
 
 Default.parameters = {

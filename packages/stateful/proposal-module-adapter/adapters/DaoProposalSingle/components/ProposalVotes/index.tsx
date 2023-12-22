@@ -1,3 +1,4 @@
+import { DaoProposalSingleCommonSelectors } from '@dao-dao/state'
 import {
   ProposalVote,
   ProposalVotes as StatelessProposalVotes,
@@ -6,7 +7,6 @@ import {
 
 import { EntityDisplay } from '../../../../../components/EntityDisplay'
 import { useProposalModuleAdapterOptions } from '../../../../react/context'
-import { listAllVotesSelector } from '../../contracts/DaoProposalSingle.common.recoil'
 import { useLoadingProposal } from '../../hooks'
 import { VoteDisplay } from './VoteDisplay'
 
@@ -23,7 +23,7 @@ export const ProposalVotes = () => {
     ? 0
     : Number(loadingProposal.data.total_power)
   const votesLoadable = useCachedLoadable(
-    listAllVotesSelector({
+    DaoProposalSingleCommonSelectors.listAllVotesSelector({
       chainId,
       contractAddress: proposalModuleAddress,
       proposalId: proposalNumber,

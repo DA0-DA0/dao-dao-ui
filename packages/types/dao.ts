@@ -13,10 +13,10 @@ import {
 } from 'react-hook-form'
 
 import { Account } from './account'
-import { SupportedChainConfig } from './chain'
+import { SupportedChainConfig, WithChainId } from './chain'
 import {
   DaoCardProps,
-  LoadingDataWithError,
+  DaoDropdownInfo,
   SuspenseLoaderProps,
 } from './components'
 import {
@@ -24,9 +24,18 @@ import {
   DepositRefundPolicy,
   ModuleInstantiateInfo,
 } from './contracts/common'
-import { InstantiateMsg as DaoCoreV2InstantiateMsg } from './contracts/DaoCore.v2'
+import {
+  InstantiateMsg as DaoCoreV2InstantiateMsg,
+  ProposalModuleWithInfo,
+} from './contracts/DaoCore.v2'
+import { ProposalResponse as MultipleChoiceProposalResponse } from './contracts/DaoProposalMultiple'
+import {
+  ProposalResponse as SingleChoiceProposalResponse,
+  VetoConfig,
+} from './contracts/DaoProposalSingle.v2'
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
+import { LoadingDataWithError } from './misc'
 import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
@@ -79,14 +88,79 @@ export interface DaoInfoSerializable extends Omit<DaoInfo, 'created'> {
   created: string | null
 }
 
-export interface ProposalModule {
+export enum PreProposeModuleType {
+  Approval = 'approval',
+  Approver = 'approver',
+  Other = 'other',
+}
+
+export type PreProposeModuleApprovalConfig = {
+  // If the approver is an approver contract, this is set to the DAO that the
+  // approver contract is attached to. Otherwise, it is the approver directly.
+  approver: string
+  // If the approver is an approver contract, this is set, and the approver
+  // above is set to the DAO address.
+  preProposeApproverContract: string | null
+}
+
+export type PreProposeModuleApproverConfig = {
+  approvalDao: string
+  preProposeApprovalContract: string
+}
+
+export type PreProposeModuleTypedConfig =
+  | {
+      type: PreProposeModuleType.Approval
+      config: PreProposeModuleApprovalConfig
+    }
+  | {
+      type: PreProposeModuleType.Approver
+      config: PreProposeModuleApproverConfig
+    }
+  | {
+      type: PreProposeModuleType.Other
+      config?: undefined
+    }
+
+export type PreProposeModule = {
+  contractName: string
+  version: ContractVersion
+  address: string
+} & PreProposeModuleTypedConfig
+
+export enum ProposalModuleType {
+  Single = 'single',
+  Multiple = 'multiple',
+  Other = 'other',
+}
+
+export type ProposalModuleSingleConfig = {
+  veto: VetoConfig | null
+}
+export type ProposalModuleMultipleConfig = ProposalModuleSingleConfig
+
+export type ProposalModuleTypedConfig =
+  | {
+      type: ProposalModuleType.Single
+      config: ProposalModuleSingleConfig
+    }
+  | {
+      type: ProposalModuleType.Multiple
+      config: ProposalModuleMultipleConfig
+    }
+  | {
+      type: ProposalModuleType.Other
+      config?: undefined
+    }
+
+export type ProposalModule = {
   contractName: string
   version: ContractVersion | null
   address: string
   prefix: string
   // If set, this uses a pre-propose module.
-  preProposeAddress: string | null
-}
+  prePropose: PreProposeModule | null
+} & ProposalModuleTypedConfig
 
 export interface ProposalPrefill<FormData> {
   // Proposal module adapter ID
@@ -118,7 +192,10 @@ export interface CreateDaoContext<CreatorData extends FieldValues = any> {
   SuspenseLoader: ComponentType<SuspenseLoaderProps>
 }
 
-export interface NewDao<CreatorData extends FieldValues = any> {
+export interface NewDao<
+  CreatorData extends FieldValues = any,
+  VotingConfig = any
+> {
   chainId: string
   name: string
   description: string
@@ -131,7 +208,7 @@ export interface NewDao<CreatorData extends FieldValues = any> {
     id: string
     data: any
   }[]
-  votingConfig: DaoCreationVotingConfig
+  votingConfig: DaoCreationVotingConfig & VotingConfig
   advancedVotingConfigEnabled: boolean
 }
 
@@ -161,7 +238,7 @@ export interface DaoCreationGovernanceConfigReviewProps<
 > {
   // Used within a voting module adapter, so it's safe to apply the data
   // generic.
-  newDao: NewDao<VotingModuleAdapterData>
+  newDao: NewDao<VotingModuleAdapterData, VotingModuleAdapterData>
   data: VotingModuleAdapterData
 }
 
@@ -170,7 +247,7 @@ export interface DaoCreationVotingConfigItemInputProps<
 > {
   // Used within voting and proposal module adapters, so the data generic passed
   // in may not necessarily be the voting module adapter data. Must use `any`.
-  newDao: NewDao<any>
+  newDao: NewDao<any, ModuleData>
   data: ModuleData
   register: UseFormRegister<ModuleData>
   setValue: UseFormSetValue<ModuleData>
@@ -186,7 +263,7 @@ export interface DaoCreationVotingConfigItemReviewProps<
 > {
   // Used within voting and proposal module adapters, so the data generic passed
   // in may not necessarily be the voting module adapter data. Must use `any`.
-  newDao: NewDao<any>
+  newDao: NewDao<any, ModuleData>
   data: ModuleData
 }
 
@@ -195,7 +272,7 @@ export interface DaoCreationVotingConfigItem<
 > {
   // Used within voting and proposal module adapters, so the data generic passed
   // in may not necessarily be the voting module adapter data. Must use `any`.
-  onlyDisplayCondition?: (newDao: NewDao<any>) => boolean
+  onlyDisplayCondition?: (newDao: NewDao<any, ModuleData>) => boolean
   Icon: ComponentType
   nameI18nKey: string
   descriptionI18nKey: string
@@ -217,7 +294,7 @@ export type DaoCreationGetInstantiateInfo<
   chainConfig: SupportedChainConfig,
   // Used within voting and proposal module adapters, so the data generic passed
   // in may not necessarily be the voting module adapter data. Must use `any`.
-  newDao: NewDao<any>,
+  newDao: NewDao<any, ModuleData>,
   data: DaoCreationVotingConfig & ModuleData,
   t: TFunction
 ) => ModuleInstantiateInfo
@@ -268,16 +345,37 @@ export type DaoCreationVotingConfigWithActiveThreshold = {
   }
 }
 
+export type DaoCreationVotingConfigWithApprover = {
+  approver: {
+    enabled: boolean
+    address: string
+  }
+}
+
+export type DaoCreationVotingConfigWithVeto = {
+  veto: {
+    enabled: boolean
+    address: string
+    timelockDuration: DurationWithUnits
+    earlyExecute: boolean
+    vetoBeforePassed: boolean
+  }
+}
+
 export type DaoCreationVotingConfig = DaoCreationVotingConfigWithAllowRevoting &
   DaoCreationVotingConfigWithProposalDeposit &
   DaoCreationVotingConfigWithProposalSubmissionPolicy &
   DaoCreationVotingConfigWithQuorum &
   DaoCreationVotingConfigWithVotingDuration &
-  DaoCreationVotingConfigWithEnableMultipleChoice
+  DaoCreationVotingConfigWithEnableMultipleChoice &
+  DaoCreationVotingConfigWithApprover &
+  DaoCreationVotingConfigWithVeto
 
 //! Other
 
-// Map chain ID to proxy address on that chain for this DAO.
+/**
+ * Map chain ID to proxy address on that chain for this DAO.
+ */
 export type PolytoneProxies = Record<string, string>
 
 export type DaoPayrollConfig = {
@@ -328,4 +426,24 @@ export type DaoApp = {
   name: string
   imageUrl: string
   url: string
+}
+
+export type IndexerDaoWithVetoableProposals = {
+  dao: string
+  proposalsWithModule: {
+    proposalModule: ProposalModuleWithInfo
+    proposals: (SingleChoiceProposalResponse | MultipleChoiceProposalResponse)[]
+  }[]
+}
+
+export type DaoWithVetoableProposals = WithChainId<
+  IndexerDaoWithVetoableProposals & {
+    name: string
+    proposalModules: ProposalModule[]
+  }
+>
+
+export type DaoWithDropdownVetoableProposalList<T> = {
+  dao: DaoDropdownInfo
+  proposals: T[]
 }

@@ -49,4 +49,6 @@ const ITEM_RENDERER_MAP: Partial<
   [InboxItemType.ProposalCreated]: ProposalRenderer,
   [InboxItemType.ProposalExecuted]: ProposalRenderer,
   [InboxItemType.ProposalClosed]: ProposalRenderer,
+  [InboxItemType.PendingProposalCreated]: ProposalRenderer,
+  [InboxItemType.PendingProposalRejected]: ProposalRenderer,
 }

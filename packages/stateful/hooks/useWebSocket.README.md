@@ -15,25 +15,26 @@ The `useOnWebSocketMessage` hook wraps the channel listener and provides a
 simple interface to subscribe to messages across one or many channels matching
 an expected type and calling a callback function when necessary.
 
-The `useOnDaoWebSocketMessage` hook is a shortcut for the above hook to connect
-to the current DAO's channel. This can only be used when on a DAO's page.
+The `useOnCurrentDaoWebSocketMessage` hook is a shortcut for the above hook to
+connect to the current DAO's channel. This can only be used when on a DAO's
+page.
 
 ### Which one should I use?
 
 You most likely want to use `useOnWebSocketMessage` or
-`useOnDaoWebSocketMessage` if you're adding WebSocket functionality. The web
-socket and channel hooks manage the connection and subscriptions, so you don't
-have to worry about those. `useOnWebSocketMessage` is useful for subscribing to
-multiple channels, such as the inbox that wants to be notified of new proposals
-for all followed DAOs. `useOnDaoWebSocketMessage` on the other hand is useful
-for subscribing to the current DAO's channel, such as the proposal page that
-wants to refresh when a vote is cast on the current DAO.
+`useOnCurrentDaoWebSocketMessage` if you're adding WebSocket functionality. The
+web socket and channel hooks manage the connection and subscriptions, so you
+don't have to worry about those. `useOnWebSocketMessage` is useful for
+subscribing to multiple channels, such as the inbox that wants to be notified of
+new proposals for all followed DAOs. `useOnCurrentDaoWebSocketMessage` on the
+other hand is useful for subscribing to the current DAO's channel, such as the
+proposal page that wants to refresh when a vote is cast on the current DAO.
 
 ## How to subscribe to WebSocket events for a DAO
 
-The `useOnDaoWebSocketMessage` hook assumes the WebSocket always sends messages
-under the `broadcast` event name with a payload that contains `type` (a string)
-and `data` (an object).
+The `useOnCurrentDaoWebSocketMessage` hook assumes the WebSocket always sends
+messages under the `broadcast` event name with a payload that contains `type` (a
+string) and `data` (an object).
 
 This hook accepts two required arguments and 1 optional argument:
 
@@ -87,7 +88,7 @@ re-renders.
 
 `useOnWebSocketMessage` is the same as the above hook, except it contains an
 extra argument at the beginning for a list of channel names to apply the handler
-to. Under the hood, `useOnDaoWebSocketMessage` simply uses
+to. Under the hood, `useOnCurrentDaoWebSocketMessage` simply uses
 `useOnWebSocketMessage` with one channel—the current DAO.
 
 ## Example

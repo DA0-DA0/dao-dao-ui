@@ -1,5 +1,3 @@
+export * from './Proposal'
 export * from './JoinedDao'
-export * from './ProposalClosed'
-export * from './ProposalCreated'
-export * from './ProposalExecuted'
 export * from './VerifyEmail'

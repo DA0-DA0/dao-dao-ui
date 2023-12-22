@@ -2,7 +2,7 @@ import { constSelector } from 'recoil'
 
 import { isContractSelector } from '@dao-dao/state/recoil'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { objectMatchesStructure } from '@dao-dao/utils'
+import { Structure, objectMatchesStructure } from '@dao-dao/utils'
 
 import { useActionOptions } from '../react/context'
 
@@ -11,7 +11,9 @@ import { useActionOptions } from '../react/context'
 // indexer's `info` formula, falling back to a contract `info` query.
 export const useMsgExecutesContract = (
   msg: Record<string, any>,
-  nameOrNames: string | string[]
+  nameOrNames: string | string[],
+  // If defined, validates the inner execute msg.
+  innerMsgStructure: Structure = {}
 ): boolean => {
   const {
     chain: { chain_id: chainId },
@@ -22,7 +24,7 @@ export const useMsgExecutesContract = (
       execute: {
         contract_addr: {},
         funds: {},
-        msg: {},
+        msg: innerMsgStructure,
       },
     },
   })

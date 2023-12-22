@@ -1,6 +1,6 @@
 import { GenericToken } from '..'
 import { Duration } from '../contracts/common'
-import { LoadingData } from './common'
+import { LoadingData } from '../misc'
 import { ValidatorPickerProps } from './ValidatorPicker'
 
 export enum StakingMode {

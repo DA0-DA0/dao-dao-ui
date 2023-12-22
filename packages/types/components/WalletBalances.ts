@@ -1,8 +1,8 @@
 import { ComponentType } from 'react'
 
+import { LoadingData } from '../misc'
 import { LazyNftCardInfo } from '../nft'
 import { TokenCardInfo } from '../token'
-import { LoadingData } from './common'
 
 export type WalletBalancesProps<
   T extends TokenCardInfo,

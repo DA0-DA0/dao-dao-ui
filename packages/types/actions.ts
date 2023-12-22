@@ -60,6 +60,7 @@ export enum ActionKey {
   EnableRetroactiveCompensation = 'enableRetroactiveCompensation',
   DaoAdminExec = 'daoAdminExec',
   EnableMultipleChoice = 'enableMultipleChoice',
+  SetUpApprover = 'setUpApprover',
   ManageWidgets = 'manageWidgets',
   FeeShare = 'feeShare',
   ManageMembers = 'manageMembers',
@@ -72,6 +73,8 @@ export enum ActionKey {
   CreateIca = 'createIca',
   IcaExecute = 'icaExecute',
   ManageIcas = 'manageIcas',
+  VetoOrEarlyExecuteDaoProposal = 'vetoOrEarlyExecuteDaoProposal',
+  ManageVetoableDaos = 'manageVetoableDaos',
   // DaoProposalSingle
   UpdatePreProposeSingleConfig = 'updatePreProposeSingleConfig',
   UpdateProposalSingleConfig = 'updateProposalSingleConfig',

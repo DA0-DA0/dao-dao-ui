@@ -2,13 +2,16 @@ import {
   Tooltip as MaterialTooltip,
   TooltipProps as MaterialTooltipProps,
 } from '@mui/material'
+import clsx from 'clsx'
 
 export interface TooltipProps extends Omit<MaterialTooltipProps, 'title'> {
   title: MaterialTooltipProps['title'] | undefined
+  morePadding?: boolean
 }
 
 export const Tooltip = ({
   title,
+  morePadding,
   arrow,
   children,
   classes,
@@ -22,9 +25,11 @@ export const Tooltip = ({
       classes={{
         ...classes,
         arrow: classes?.arrow ?? '!text-component-tooltip',
-        tooltip:
+        tooltip: clsx(
           classes?.tooltip ??
-          '!font-sans !text-xs !font-normal !text-text-component-primary !bg-component-tooltip !rounded-md !border !border-border-component-primary',
+            '!rounded-md !border !border-border-component-primary !bg-component-tooltip !font-sans !text-xs !font-normal !text-text-component-primary',
+          morePadding && '!p-3'
+        ),
       }}
       enterTouchDelay={
         // Makes it much easier to click on the tooltip on mobile.

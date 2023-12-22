@@ -1,5 +1,11 @@
-import { ChainProvider, ProposalLineLoader } from '@dao-dao/stateless'
-import { ProposalModule } from '@dao-dao/types'
+import { useTranslation } from 'react-i18next'
+
+import {
+  ChainProvider,
+  ProposalLineLoader,
+  WarningCard,
+} from '@dao-dao/stateless'
+import { StatefulProposalLineProps } from '@dao-dao/types'
 
 import {
   ProposalModuleAdapterProvider,
@@ -8,22 +14,13 @@ import {
 import { LinkWrapper } from './LinkWrapper'
 import { SuspenseLoader } from './SuspenseLoader'
 
-export interface ProposalLineProps {
-  // This may be shown in the inbox, outside of the context of a DAO or chain.
-  chainId: string
-  coreAddress: string
-  proposalModules: ProposalModule[]
-  proposalId: string
-  proposalViewUrl: string
-}
-
 export const ProposalLine = ({
   chainId,
   coreAddress,
   proposalModules,
   proposalId,
   ...props
-}: ProposalLineProps) => (
+}: StatefulProposalLineProps) => (
   <ChainProvider chainId={chainId}>
     <ProposalModuleAdapterProvider
       initialOptions={{
@@ -37,16 +34,30 @@ export const ProposalLine = ({
   </ChainProvider>
 )
 
-type InnerProposalLineProps = Pick<ProposalLineProps, 'proposalViewUrl'>
+type InnerProposalLineProps = Pick<
+  StatefulProposalLineProps,
+  'proposalViewUrl' | 'isPreProposeProposal'
+>
 
-const InnerProposalLine = ({ proposalViewUrl }: InnerProposalLineProps) => {
+const InnerProposalLine = ({
+  proposalViewUrl,
+  isPreProposeProposal,
+}: InnerProposalLineProps) => {
+  const { t } = useTranslation()
   const {
-    components: { ProposalLine },
+    components: { ProposalLine, PreProposeApprovalProposalLine },
   } = useProposalModuleAdapter()
+
+  const Component = isPreProposeProposal
+    ? PreProposeApprovalProposalLine
+    : ProposalLine
+  if (!Component) {
+    return <WarningCard content={t('error.unsupportedApprovalFailedRender')} />
+  }
 
   return (
     <SuspenseLoader fallback={<ProposalLineLoader />}>
-      <ProposalLine LinkWrapper={LinkWrapper} href={proposalViewUrl} />
+      <Component LinkWrapper={LinkWrapper} href={proposalViewUrl} />
     </SuspenseLoader>
   )
 }

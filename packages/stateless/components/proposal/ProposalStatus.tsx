@@ -1,9 +1,11 @@
 import {
+  AvTimer,
   Block,
   CheckCircle,
   CheckCircleOutline,
   RemoveCircle,
   StopCircleOutlined,
+  ThumbDownOutlined,
   Timelapse,
 } from '@mui/icons-material'
 import clsx from 'clsx'
@@ -11,7 +13,12 @@ import { ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 
 import { StatusDisplay } from '@dao-dao/stateless'
-import { ProposalStatus as Status } from '@dao-dao/types'
+import {
+  ProposalStatusEnum,
+  ProposalStatusKey,
+  ProposalStatus as Status,
+} from '@dao-dao/types'
+import { getProposalStatusKey } from '@dao-dao/utils'
 
 export interface ProposalStatusProps {
   status: Status
@@ -24,7 +31,9 @@ export const ProposalStatus = ({
   dimmed = false,
 }: ProposalStatusProps) => {
   const { t } = useTranslation()
-  const { Icon, iconClassName, textClassName } = ProposalStatusMap[status]
+
+  const key = getProposalStatusKey(status)
+  const { Icon, iconClassName, textClassName } = ProposalStatusMap[key]
 
   return (
     <StatusDisplay
@@ -43,7 +52,7 @@ export const ProposalStatus = ({
             dimmed ? 'text-text-tertiary' : textClassName
           )}
         >
-          {t(`proposalStatusTitleShort.${status}`)}
+          {t(`proposalStatusTitleShort.${key}`)}
         </p>
       }
     />
@@ -51,41 +60,51 @@ export const ProposalStatus = ({
 }
 
 export const ProposalStatusMap: Record<
-  Status,
+  ProposalStatusKey,
   {
     Icon: (props: { className: string }) => ReactElement
     iconClassName: string
     textClassName: string
   }
 > = {
-  [Status.Open]: {
+  [ProposalStatusEnum.Open]: {
     Icon: Timelapse,
     iconClassName: 'text-icon-primary',
     textClassName: 'text-text-body',
   },
-  [Status.Rejected]: {
+  [ProposalStatusEnum.Rejected]: {
     Icon: RemoveCircle,
     iconClassName: 'text-icon-interactive-error',
     textClassName: 'text-text-interactive-error',
   },
-  [Status.Passed]: {
+  [ProposalStatusEnum.Passed]: {
     Icon: CheckCircle,
     iconClassName: 'text-icon-interactive-valid',
     textClassName: 'text-text-interactive-valid',
   },
-  [Status.Executed]: {
+  [ProposalStatusEnum.Executed]: {
     Icon: CheckCircleOutline,
     iconClassName: 'text-icon-secondary',
     textClassName: 'text-text-secondary',
   },
-  [Status.ExecutionFailed]: {
+  [ProposalStatusEnum.ExecutionFailed]: {
     Icon: Block,
     iconClassName: '!text-icon-interactive-error',
     textClassName: '!text-text-interactive-error',
   },
-  [Status.Closed]: {
+  [ProposalStatusEnum.Closed]: {
     Icon: StopCircleOutlined,
     iconClassName: 'text-icon-tertiary',
     textClassName: 'text-text-tertiary',
+  },
+  [ProposalStatusEnum.Vetoed]: {
+    Icon: ThumbDownOutlined,
+    iconClassName: '!text-icon-interactive-error',
+    textClassName: '!text-text-interactive-error',
+  },
+  veto_timelock: {
+    Icon: AvTimer,
+    iconClassName: 'text-icon-primary',
+    textClassName: 'text-text-body',
   },
 }

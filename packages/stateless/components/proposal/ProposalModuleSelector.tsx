@@ -6,6 +6,7 @@ import {
   ProposalModuleAdapter,
   TypedOption,
 } from '@dao-dao/types'
+import { ContractName } from '@dao-dao/utils'
 
 import { useDaoInfoContext } from '../../hooks'
 import { SegmentedControls } from '../inputs/SegmentedControls'
@@ -44,7 +45,14 @@ export const ProposalModuleSelector = ({
             }
           )
         })
-        .filter((item): item is TypedOption<ProposalModule> => !!item),
+        .filter((item): item is TypedOption<ProposalModule> => !!item)
+        // Ignore proposals with an approver pre-propose since those are
+        // automatically managed by a pre-propose-approval contract in another
+        // DAO.
+        .filter(
+          ({ value: { prePropose } }) =>
+            prePropose?.contractName !== ContractName.PreProposeApprover
+        ),
     [matchAdapter, proposalModules, t]
   )
 
