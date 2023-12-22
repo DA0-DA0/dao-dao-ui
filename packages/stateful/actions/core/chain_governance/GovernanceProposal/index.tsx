@@ -279,6 +279,7 @@ export const makeGovernanceProposalAction: ActionMaker<
       legacyContent: Any.fromPartial({}) as any,
       msgs: [],
       metadataCid: '',
+      expedited: false,
     }
   }
 
@@ -296,6 +297,7 @@ export const makeGovernanceProposalAction: ActionMaker<
       legacyContent,
       msgs,
       metadataCid,
+      expedited,
     }) => {
       if (!govModuleAddress) {
         throw new Error(
@@ -334,7 +336,8 @@ export const makeGovernanceProposalAction: ActionMaker<
               metadata: `ipfs://${metadataCid}`,
               title,
               summary: description,
-              expedited: false,
+              // In case it's undefined, default to false.
+              expedited: expedited || false,
             } as MsgSubmitProposalV1,
           },
         })
@@ -454,6 +457,7 @@ export const makeGovernanceProposalAction: ActionMaker<
           })),
           msgs: decodedMessages,
           metadataCid: proposal.metadata.replace('ipfs://', ''),
+          expedited: proposal.expedited || false,
         },
       }
     }

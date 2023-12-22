@@ -141,7 +141,7 @@ export type AllGovParams = Pick<
   threshold: number
   vetoThreshold: number
   minInitialDepositRatio: number
-}
+} & Partial<Pick<GovParamsV1, 'expeditedMinDeposit'>>
 
 export const GOVERNANCE_PROPOSAL_TYPES = [
   TextProposal,
@@ -188,4 +188,6 @@ export type GovernanceProposalActionData = {
   legacyContent: any
   // V1 proposals require a metadata.json file to be uploaded to IPFS.
   metadataCid: string
+  // V1 proposals have an expedited flag.
+  expedited: boolean
 } & NestedActionsEditorFormData

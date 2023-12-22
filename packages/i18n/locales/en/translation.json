@@ -540,6 +540,8 @@
     "existingCollectionAddress": "Existing collection address",
     "existingTokenSwapContract": "Existing token swap contract",
     "existingTokens": "Existing Tokens",
+    "expedited": "Expedited",
+    "expeditedDescription": "Expedited proposals have a shorter voting duration and higher voting threshold.",
     "explicitContent": "Explicit content",
     "externalLink": "External link",
     "feeShareContractAddressDescription": "The address to claim fee share for. NOTE: you must be admin or the creator of this smart contract to claim fees for it.",
