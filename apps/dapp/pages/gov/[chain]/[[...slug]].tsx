@@ -134,6 +134,7 @@ const InnerGovHome = () => {
               setGoingToChainId(chainId)
             }
           }}
+          selectedChainId={chainId}
         />
       }
       daoInfo={daoInfo}
@@ -201,6 +202,7 @@ const NeutronGovHome: NextPage = () => {
               setGoingToChainId(chainId)
             }
           }}
+          selectedChainId={chainId}
         />
       }
       daos={daosLoading}
