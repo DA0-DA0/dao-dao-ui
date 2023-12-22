@@ -3220,13 +3220,13 @@
   resolved "https://registry.yarnpkg.com/@bcoe/v8-coverage/-/v8-coverage-0.2.3.tgz#75a2e8b51cb758a7553d6804a5932d7aace75c39"
   integrity sha512-0hYQ8SB4Db5zvZB4axdMHGwEaQjkZzFjQiN9LVYvIFB2nSUHW9tYpxWriPrWDASIxiaXax83REcLxuSdnGPZtw==
 
-"@chain-registry/assets@^1.22.0":
-  version "1.22.0"
-  resolved "https://registry.yarnpkg.com/@chain-registry/assets/-/assets-1.22.0.tgz#40909762c3e18c9983af5df4f1cd1e2cd5488f9c"
-  integrity sha512-DIh0bzyKF+rLueiks4XCVHwwXLSxdVfDFurxA4Pdy+aVaigt8sFNgQI4Ffb99g4Lm8EpyG2hDR646A2Nx8T2nA==
+"@chain-registry/assets@^1.26.0":
+  version "1.26.0"
+  resolved "https://registry.yarnpkg.com/@chain-registry/assets/-/assets-1.26.0.tgz#756a7c5a015ff4bf42552ab7cebcbb9b91a8ba18"
+  integrity sha512-cgaRdzf12e/DjKs6uLFseULQcvHihpGY6TBgErgkqZZ1qjqOYa5Wwv9Jx6I4s5S3xdqtZKDzrRuKCgSQ/Zql0w==
   dependencies:
     "@babel/runtime" "^7.21.0"
-    "@chain-registry/types" "^0.17.0"
+    "@chain-registry/types" "^0.17.1"
 
 "@chain-registry/cosmostation@1.23.0", "@chain-registry/cosmostation@^1.23.0":
   version "1.23.0"
@@ -3269,6 +3269,13 @@
   version "0.16.0"
   resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.16.0.tgz#f76409186899a976d33693d7f458c33d71a66730"
   integrity sha512-4j6vq2Vqn/nF+UBjvRPUVs6eM3+5rJ+dPmEWpd/OoNH3wTy1k6aoilcSTZRR//vGcI5EOVGsxhhJxUzo2qqweA==
+  dependencies:
+    "@babel/runtime" "^7.21.0"
+
+"@chain-registry/types@^0.17.1":
+  version "0.17.1"
+  resolved "https://registry.yarnpkg.com/@chain-registry/types/-/types-0.17.1.tgz#0ac7bda6178d3917834578627f232a247fe5def8"
+  integrity sha512-O0CgrtJgIlqXvZm1CqDZe/7jZz068O/uuCIoyDXCegFHK03rdHacKcDGwEIUuI0MNUf8YV3jdE4xHQMSAX+79w==
   dependencies:
     "@babel/runtime" "^7.21.0"
 
@@ -8492,32 +8499,10 @@
   dependencies:
     "@sinonjs/commons" "^2.0.0"
 
-"@skip-router/core@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@skip-router/core/-/core-1.0.5.tgz#9e346689e0ba52c08a72bd67802f0f96543d7e53"
-  integrity sha512-xESJuxUe2q+hzfEYAqMR3gCWapWM/RxDF/RPMU0RZHM+CHNuKsabcwMGBVdwKTcARXp2kFAbwxaFN2shvipj+Q==
-  dependencies:
-    "@axelar-network/axelarjs-sdk" "^0.13.6"
-    "@cosmjs/amino" "^0.31.1"
-    "@cosmjs/cosmwasm-stargate" "^0.31.1"
-    "@cosmjs/encoding" "^0.31.1"
-    "@cosmjs/math" "^0.31.1"
-    "@cosmjs/proto-signing" "^0.31.1"
-    "@cosmjs/stargate" "^0.31.1"
-    "@cosmjs/tendermint-rpc" "^0.31.1"
-    "@injectivelabs/core-proto-ts" "^0.0.18"
-    "@injectivelabs/sdk-ts" "^1.12.1"
-    axios "^1.4.0"
-    chain-registry "^1.19.0"
-    cosmjs-types "^0.8.0"
-    faker "^6.6.6"
-    keccak256 "^1.0.6"
-    viem "^1.12.2"
-
-"@skip-router/core@^1.1.1":
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/@skip-router/core/-/core-1.1.1.tgz#29e48905a8d75df15fe73f751fb9c91fb96731ae"
-  integrity sha512-b5TL08cKJkxSyJFLRHlCiDbTITzsq+48x+X3dkRpb3RXhpLOv0r0inq9j0aM/1HoaYs/awm/na7+VrImMeY4Hw==
+"@skip-router/core@^1.1.3":
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/@skip-router/core/-/core-1.1.3.tgz#70f6ebed56c9f0605fe99cb709681b1465ca154a"
+  integrity sha512-/u0dd3mk97nbzy7HjlFNZoGxL+I9FZdwbSuLRvLYgbxczM+b/KO5fHIrqs1KVTeF78ldL4QfAlV2ZlCbpwATdQ==
   dependencies:
     "@axelar-network/axelarjs-sdk" "^0.13.6"
     "@cosmjs/amino" "^0.31.1"
@@ -13857,13 +13842,13 @@ chain-registry@^1.19.0:
     "@babel/runtime" "^7.21.0"
     "@chain-registry/types" "^0.16.0"
 
-chain-registry@^1.21.0:
-  version "1.21.0"
-  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.21.0.tgz#4e781d464035d64996aa80e01fe80ddb8ba3f3fa"
-  integrity sha512-DkhulMvok8wRClECDHOPLylVfmE4yl/ilkVO+Ht6XLz34oq5bJbleblSRhvYc1pjFg8AJ7FmXGvxkrWA6LdTHg==
+chain-registry@^1.25.0:
+  version "1.25.0"
+  resolved "https://registry.yarnpkg.com/chain-registry/-/chain-registry-1.25.0.tgz#59df7fcfe5c05ac3e1291d801a58fa75b5c422ac"
+  integrity sha512-u+i64OW5hBRGc1HZtZRr7Givgnj0uvcRV1XnJjPMBcSkEP0zTuMWg032HX7wpuu8C47I6aosQ00CGFDLfKtzSQ==
   dependencies:
     "@babel/runtime" "^7.21.0"
-    "@chain-registry/types" "^0.17.0"
+    "@chain-registry/types" "^0.17.1"
 
 chalk@3.0.0:
   version "3.0.0"
