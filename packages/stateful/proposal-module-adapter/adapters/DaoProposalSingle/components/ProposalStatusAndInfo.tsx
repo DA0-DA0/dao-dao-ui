@@ -470,7 +470,9 @@ const InnerProposalStatusAndInfo = ({
     {
       Icon: AccountCircleOutlined,
       label: t('title.creator'),
-      Value: (props) => <EntityDisplay {...props} address={creatorAddress} />,
+      Value: (props) => (
+        <EntityDisplay {...props} address={creatorAddress} noCopy />
+      ),
     },
     ...(approverProposalPath
       ? ([
@@ -480,7 +482,7 @@ const InnerProposalStatusAndInfo = ({
             Value: (props) => (
               <Tooltip
                 morePadding
-                title={approver && <EntityDisplay address={approver} />}
+                title={approver && <EntityDisplay address={approver} noCopy />}
               >
                 <ButtonLink
                   href={approverProposalPath}
@@ -500,7 +502,9 @@ const InnerProposalStatusAndInfo = ({
           {
             Icon: ThumbUpOutlined,
             label: t('title.approver'),
-            Value: (props) => <EntityDisplay {...props} address={approver} />,
+            Value: (props) => (
+              <EntityDisplay {...props} address={approver} noCopy />
+            ),
           },
         ] as ProposalStatusAndInfoProps['info'])
       : []),
@@ -513,7 +517,7 @@ const InnerProposalStatusAndInfo = ({
             Icon: ThumbDownOutlined,
             label: t('title.vetoer'),
             Value: (props) => (
-              <EntityDisplay {...props} address={vetoConfig.vetoer} />
+              <EntityDisplay {...props} address={vetoConfig.vetoer} noCopy />
             ),
           },
         ] as ProposalStatusAndInfoProps<Vote>['info'])
@@ -603,7 +607,9 @@ const InnerProposalStatusAndInfo = ({
             Value: (props) => (
               <Tooltip
                 morePadding
-                title={approvalDao && <EntityDisplay address={approvalDao} />}
+                title={
+                  approvalDao && <EntityDisplay address={approvalDao} noCopy />
+                }
               >
                 <ButtonLink
                   href={approvedProposalPath}

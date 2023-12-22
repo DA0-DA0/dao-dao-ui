@@ -418,7 +418,7 @@ const InnerProposalStatusAndInfo = ({
       Icon: AccountCircleOutlined,
       label: t('title.creator'),
       Value: (props) => (
-        <EntityDisplay {...props} address={proposal.proposer} />
+        <EntityDisplay {...props} address={proposal.proposer} noCopy />
       ),
     },
     // Show vetoer if can be vetoed or was vetoed. If was not vetoed but could
@@ -430,7 +430,7 @@ const InnerProposalStatusAndInfo = ({
             Icon: ThumbDownOutlined,
             label: t('title.vetoer'),
             Value: (props) => (
-              <EntityDisplay {...props} address={vetoConfig.vetoer} />
+              <EntityDisplay {...props} address={vetoConfig.vetoer} noCopy />
             ),
           },
         ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
