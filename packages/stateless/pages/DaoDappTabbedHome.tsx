@@ -1,5 +1,4 @@
 import { ArrowOutwardRounded } from '@mui/icons-material'
-import clsx from 'clsx'
 import { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
 
@@ -51,6 +50,8 @@ export const DaoDappTabbedHome = ({
   )
 
   const tabContainerRef = useRef<HTMLDivElement>(null)
+
+  const selectedTab = tabs.find(({ id }) => id === selectedTabId)
 
   return (
     <>
@@ -151,13 +152,12 @@ export const DaoDappTabbedHome = ({
         </div>
 
         <div className="mt-2 border-t border-border-secondary py-6">
-          {tabs.map(({ id, Component }) => (
-            <div key={id} className={clsx(selectedTabId !== id && 'hidden')}>
-              <SuspenseLoader fallback={<Loader />}>
-                <Component />
-              </SuspenseLoader>
-            </div>
-          ))}
+          {/* Don't render a tab unless it is visible. */}
+          {selectedTab && (
+            <SuspenseLoader fallback={<Loader />}>
+              <selectedTab.Component />
+            </SuspenseLoader>
+          )}
         </div>
       </div>
     </>

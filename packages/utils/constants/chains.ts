@@ -366,6 +366,7 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
     },
     // There is no IBC connection with:
     // - Juno
+    // - Migaloo
     polytone: {
       [ChainId.OsmosisMainnet]: {
         // neutron
@@ -808,16 +809,16 @@ export const CHAIN_ENDPOINTS: Partial<
   >
 > = {
   [ChainId.JunoMainnet]: {
-    rpc: 'https://juno-rpc.reece.sh',
-    rest: 'https://juno-api.reece.sh',
+    rpc: 'https://juno-rpc.polkachu.com',
+    rest: 'https://juno-api.polkachu.com',
   },
   [ChainId.JunoTestnet]: {
-    rpc: 'https://uni-rpc.reece.sh',
-    rest: 'https://uni-api.reece.sh',
+    rpc: 'https://juno-testnet-rpc.polkachu.com',
+    rest: 'https://juno-testnet-api.polkachu.com',
   },
   [ChainId.OsmosisMainnet]: {
-    rpc: 'https://osmosis-rpc.polkachu.com',
-    rest: 'https://osmosis-api.polkachu.com',
+    rpc: 'https://osmosis-rpc.reece.sh',
+    rest: 'https://osmosis-api.reece.sh',
   },
   [ChainId.OsmosisTestnet]: {
     rpc: 'https://osmosis-testnet-rpc.polkachu.com',

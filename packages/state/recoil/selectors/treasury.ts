@@ -409,7 +409,7 @@ export const historicalBalancesSelector = selectorFamily<
             [] as [string, string][]
           ),
         }),
-        {} as Record<number, [string, string][]>
+        {} as Record<number, [string, string][] | undefined>
       )
       const cw20BalanceSnapshotsByTimestamp = cw20BalanceSnapshots.reduce(
         (acc, { at, blockTimeUnixMs, value }) => ({
@@ -421,7 +421,7 @@ export const historicalBalancesSelector = selectorFamily<
             ]
           ),
         }),
-        {} as Record<number, [string, string][]>
+        {} as Record<number, [string, string][] | undefined>
       )
 
       const timestamps = uniq([
@@ -435,8 +435,8 @@ export const historicalBalancesSelector = selectorFamily<
 
       return timestamps
         .map((timestamp) => {
-          const native = nativeBalanceSnapshotsByTimestamp[timestamp]
-          const cw20 = cw20BalanceSnapshotsByTimestamp[timestamp]
+          const native = nativeBalanceSnapshotsByTimestamp[timestamp] || []
+          const cw20 = cw20BalanceSnapshotsByTimestamp[timestamp] || []
 
           return {
             timestamp: new Date(timestamp),

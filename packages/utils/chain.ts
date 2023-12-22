@@ -10,6 +10,7 @@ import semverGte from 'semver/functions/gte'
 
 import {
   BaseChainConfig,
+  ChainId,
   ConfiguredChain,
   GenericToken,
   SupportedChain,
@@ -93,22 +94,30 @@ export const cosmosValidatorToValidator = ({
 })
 
 export const getImageUrlForChainId = (chainId: string): string => {
-  // Use native token image if available.
-  const { imageUrl } = maybeGetNativeTokenForChainId(chainId) || {}
-  if (imageUrl) {
-    return imageUrl
-  }
-
-  // Fallback to chain logo. Chain logo is sometimes larger and not square.
+  //Chain logo is sometimes larger and not square.
   const { logo_URIs, images } = getChainForChainId(chainId)
-  const image =
+  const chainImageUrl =
     logo_URIs?.png ??
     logo_URIs?.jpeg ??
     logo_URIs?.svg ??
     images?.[0]?.png ??
     images?.[0]?.svg
 
-  return image || getFallbackImage(chainId)
+  // Use native token image if available.
+  const { imageUrl: nativeTokenImageUrl } =
+    maybeGetNativeTokenForChainId(chainId) || {}
+
+  // Some chain logos are not square, so use the coin instead.
+  const image =
+    (chainId === ChainId.OsmosisMainnet ||
+    chainId === ChainId.OsmosisTestnet ||
+    chainId === ChainId.NeutronMainnet
+      ? nativeTokenImageUrl
+      : chainImageUrl) ||
+    nativeTokenImageUrl ||
+    getFallbackImage(chainId)
+
+  return image
 }
 
 // Convert public key in hex format to a bech32 address.

@@ -689,6 +689,7 @@
     "updateVotingConfigTitle": "Update Voting Config",
     "updateVotingConfigTitle_multipleChoice": "Update Multiple Choice Voting Config",
     "updateVotingConfigTitle_singleChoice": "Update Single Choice Voting Config",
+    "updateVotingConfigTitle_singleChoiceApproval": "Update Single Choice Approval Voting Config",
     "url": "URL",
     "useCw20": "Use CW20",
     "useCw20ExecuteTooltip": "Fund the smart contract execution with a CW20 token instead of a native token.",

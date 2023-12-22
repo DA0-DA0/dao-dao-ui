@@ -18,6 +18,7 @@ import {
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { ExecuteMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
+  ContractName,
   DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
   makeWasmMessage,
   versionGte,
@@ -129,6 +130,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
   ({
     version,
     address: proposalModuleAddress,
+    prePropose,
   }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
   ({ t, context, chain: { chain_id: chainId } }) => {
     if (!version || !versionGte(version, ContractVersion.V2Alpha)) {
@@ -284,9 +286,13 @@ export const makeUpdateProposalConfigV2ActionMaker =
       Icon: BallotDepositEmoji,
       label: t('form.updateVotingConfigTitle', {
         context:
-          // If more than one proposal module, specify which one this is.
-          context.type === ActionContextType.Dao &&
-          context.info.proposalModules.length > 1
+          // If this is an approver proposal module that approves proposals in
+          // another DAO, specify it.
+          prePropose?.contractName === ContractName.PreProposeApprover
+            ? 'singleChoiceApproval'
+            : // If more than one proposal module, specify which one this is.
+            context.type === ActionContextType.Dao &&
+              context.info.proposalModules.length > 1
             ? 'singleChoice'
             : undefined,
       }),
