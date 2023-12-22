@@ -11,7 +11,7 @@ import {
 import { EmailRenderer, EmailWrapper, styles } from '../common'
 
 const Template = () => (
-  <EmailWrapper preview="A proposal was passed and {{statusLowerCase}} in {{daoName}}.">
+  <EmailWrapper preview="{{preview}}">
     <Row>
       <Column align="center">
         <Text
@@ -20,7 +20,7 @@ const Template = () => (
             marginTop: 0,
           }}
         >
-          Proposal Passed and {'{{status}}'}
+          {'{{title}}'}
         </Text>
       </Column>
     </Row>
@@ -68,8 +68,8 @@ const Template = () => (
   </EmailWrapper>
 )
 
-export const ProposalExecuted: EmailRenderer = {
-  name: 'inbox-proposal_executed',
-  subject: 'Proposal {{proposalId}} Passed and {{status}}: {{proposalTitle}}',
+export const Proposal: EmailRenderer = {
+  name: 'inbox-proposal',
+  subject: '{{subject}}',
   Template,
 }
