@@ -10,11 +10,10 @@ import {
 
 import { useDaoInfoContext } from '../../hooks'
 import { Button } from '../buttons'
-import { DaoDropdown } from '../dao'
 import { DropdownIconButton } from '../icon_buttons'
 import { Loader } from '../logo/Loader'
 import { NoContent } from '../NoContent'
-import { TooltipInfoIcon } from '../tooltip'
+import { VetoableProposals } from './VetoableProposals'
 
 export interface ProposalListProps<T extends { proposalId: string }> {
   ProposalLine: ComponentType<T>
@@ -50,7 +49,6 @@ export const ProposalList = <T extends { proposalId: string }>({
   const { t } = useTranslation()
   const { name: daoName } = useDaoInfoContext()
 
-  const [vetoableExpanded, setVetoableExpanded] = useState(true)
   const [historyExpanded, setHistoryExpanded] = useState(true)
 
   return openProposals.length > 0 || historyProposals.length > 0 ? (
@@ -70,50 +68,13 @@ export const ProposalList = <T extends { proposalId: string }>({
       )}
 
       {daosWithVetoableProposals.length > 0 && (
-        <div className="mt-3 mb-6 flex animate-fade-in flex-col gap-4">
-          <div className="link-text ml-2 flex flex-row items-center gap-3 text-text-secondary">
-            <DropdownIconButton
-              className="text-icon-primary"
-              open={vetoableExpanded}
-              toggle={() => setVetoableExpanded((e) => !e)}
-            />
-
-            <p>{t('title.vetoable')}</p>
-
-            <TooltipInfoIcon
-              className="-ml-1.5"
-              size="sm"
-              title={t('info.vetoableProposalsTooltip', {
-                daoName,
-              })}
-            />
-          </div>
-
-          <div
-            className={clsx(
-              'animate-fade-in space-y-4 pl-8',
-              vetoableExpanded ? 'mb-3' : 'hidden'
-            )}
-          >
-            {daosWithVetoableProposals.map(({ dao, proposals }) => (
-              <DaoDropdown
-                key={dao.chainId + dao.coreAddress}
-                LinkWrapper={LinkWrapper}
-                dao={dao}
-                showSubdaos={false}
-              >
-                <div className="mt-2 space-y-1 pl-6">
-                  {proposals.map((props) => (
-                    <ProposalLine
-                      {...props}
-                      key={dao.chainId + dao.coreAddress + props.proposalId}
-                    />
-                  ))}
-                </div>
-              </DaoDropdown>
-            ))}
-          </div>
-        </div>
+        <VetoableProposals
+          LinkWrapper={LinkWrapper}
+          ProposalLine={ProposalLine}
+          className="mt-3 mb-6 animate-fade-in"
+          daoName={daoName}
+          daosWithVetoableProposals={daosWithVetoableProposals}
+        />
       )}
 
       <div className="link-text mt-3 ml-2 flex flex-row items-center gap-3 text-text-secondary">
