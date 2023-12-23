@@ -361,6 +361,16 @@ export const decodedStargateMsgToCw = ({
       }
       sender = value.delegatorAddress
       break
+    case MsgSetWithdrawAddress.typeUrl:
+      msg = {
+        distribution: {
+          set_withdraw_address: {
+            address: value.withdrawAddress,
+          },
+        },
+      }
+      sender = value.delegatorAddress
+      break
     case MsgExecuteContract.typeUrl:
       msg = {
         wasm: {

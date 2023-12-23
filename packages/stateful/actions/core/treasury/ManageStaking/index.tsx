@@ -199,15 +199,14 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
       }
     } else if (
       StakingActionType.SetWithdrawAddress in msg.distribution &&
-      'withdraw_address' in msg.distribution.set_withdraw_address
+      'address' in msg.distribution.set_withdraw_address
     ) {
       return {
         match: true,
         data: {
           chainId,
           type: StakingActionType.SetWithdrawAddress,
-          withdrawAddress:
-            msg.distribution.set_withdraw_address.withdraw_address,
+          withdrawAddress: msg.distribution.set_withdraw_address.address,
           validator: '',
           toValidator: '',
           amount: 1,
