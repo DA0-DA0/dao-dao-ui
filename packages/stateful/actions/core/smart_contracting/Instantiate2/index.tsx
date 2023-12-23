@@ -142,7 +142,7 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
     context,
   } = options
 
-  if (context.type === ActionContextType.Dao) {
+  if (context.type !== ActionContextType.Dao) {
     return null
   }
 
