@@ -20,7 +20,7 @@ import {
 } from '@dao-dao/stateless'
 import { ActionKey, TokenStake, VestingInfo } from '@dao-dao/types'
 import {
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   getDaoProposalSinglePrefill,
   getNativeTokenForChainId,
@@ -120,10 +120,10 @@ export const VestingStakingModal = ({
     try {
       if (mode === StakingMode.Stake) {
         const data = {
-          amount: convertDenomToMicroDenomWithDecimals(
+          amount: convertDenomToMicroDenomStringWithDecimals(
             amount,
             nativeToken.decimals
-          ).toString(),
+          ),
           validator,
         }
 
@@ -155,10 +155,10 @@ export const VestingStakingModal = ({
         }
       } else if (mode === StakingMode.Unstake) {
         const data = {
-          amount: convertDenomToMicroDenomWithDecimals(
+          amount: convertDenomToMicroDenomStringWithDecimals(
             amount,
             nativeToken.decimals
-          ).toString(),
+          ),
           validator,
         }
 
@@ -194,15 +194,10 @@ export const VestingStakingModal = ({
           return
         }
 
-        const data = {
-          amount: convertDenomToMicroDenomWithDecimals(
-            amount,
-            nativeToken.decimals
-          ).toString(),
-          dstValidator: validator,
-          srcValidator: fromValidator,
-        }
-
+        const convertedAmount = convertDenomToMicroDenomStringWithDecimals(
+          amount,
+          nativeToken.decimals
+        )
         if (recipientIsDao) {
           await goToDaoProposal(recipient, 'create', {
             prefill: getDaoProposalSinglePrefill({
@@ -214,7 +209,11 @@ export const VestingStakingModal = ({
                     address: vestingContractAddress,
                     message: JSON.stringify(
                       {
-                        redelegate: data,
+                        redelegate: {
+                          amount: convertedAmount,
+                          src_validator: fromValidator,
+                          dst_validator: validator,
+                        },
                       },
                       null,
                       2
@@ -227,7 +226,11 @@ export const VestingStakingModal = ({
             }),
           })
         } else {
-          await redelegate(data)
+          await redelegate({
+            amount: convertedAmount,
+            srcValidator: fromValidator,
+            dstValidator: validator,
+          })
         }
       }
 
