@@ -1,5 +1,5 @@
 import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
-import { fromHex, toUtf8 } from '@cosmjs/encoding'
+import { fromBase64, fromHex, fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { useCallback } from 'react'
@@ -35,6 +35,7 @@ import {
   makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
+  parseEncodedMessage,
 } from '@dao-dao/utils'
 import { MsgInstantiateContract2 } from '@dao-dao/utils/protobuf/codegen/cosmwasm/wasm/v1/tx'
 
@@ -215,7 +216,8 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
     }
 
     // Convert to CW msg format to use same matching logic below.
-    if (isDecodedStargateMsg(msg)) {
+    let fromStargate = isDecodedStargateMsg(msg)
+    if (fromStargate) {
       msg = decodedStargateMsgToCw(msg.stargate).msg
     }
 
@@ -235,12 +237,20 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
           match: true,
           data: {
             chainId,
-            admin: msg.wasm.instantiate.admin ?? '',
-            codeId: msg.wasm.instantiate.code_id,
-            label: msg.wasm.instantiate.label,
-            message: JSON.stringify(msg.wasm.instantiate.msg, undefined, 2),
-            salt: msg.wasm.instantiate.salt,
-            funds: (msg.wasm.instantiate.funds as Coin[]).map(
+            admin: msg.wasm.instantiate2.admin ?? '',
+            codeId: msg.wasm.instantiate2.code_id,
+            label: msg.wasm.instantiate2.label,
+            message: JSON.stringify(
+              fromStargate
+                ? parseEncodedMessage(msg.wasm.instantiate2.msg)
+                : msg.wasm.instantiate2.msg,
+              undefined,
+              2
+            ),
+            salt: fromStargate
+              ? fromUtf8(fromBase64(msg.wasm.instantiate2.salt))
+              : msg.wasm.instantiate2.salt,
+            funds: (msg.wasm.instantiate2.funds as Coin[]).map(
               ({ denom, amount }) => ({
                 denom,
                 amount: Number(

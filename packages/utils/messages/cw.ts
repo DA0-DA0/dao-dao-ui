@@ -39,6 +39,7 @@ import {
 type WasmMsgType =
   | 'execute'
   | 'instantiate'
+  | 'instantiate2'
   | 'migrate'
   | 'update_admin'
   | 'clear_admin'
@@ -54,6 +55,7 @@ const WASM_TYPES: WasmMsgType[] = [
 const BINARY_WASM_TYPES: { [key: string]: boolean } = {
   execute: true,
   instantiate: true,
+  instantiate2: true,
   migrate: true,
 }
 
