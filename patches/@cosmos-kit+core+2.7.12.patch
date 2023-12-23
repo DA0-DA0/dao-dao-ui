@@ -1,0 +1,52 @@
+diff --git a/node_modules/@cosmos-kit/core/cjs/bases/state.js b/node_modules/@cosmos-kit/core/cjs/bases/state.js
+index 9d36c90..d130d43 100644
+--- a/node_modules/@cosmos-kit/core/cjs/bases/state.js
++++ b/node_modules/@cosmos-kit/core/cjs/bases/state.js
+@@ -69,7 +69,7 @@ class StateBase {
+         return (0, utils_1.getWalletStatusFromState)(this.state, this.message);
+     }
+     get isWalletOnceConnect() {
+-        return (this.isWalletConnected || this.isWalletNotExist || this.isWalletError);
++        return (this.isWalletConnected || this.isWalletError);
+     }
+     get isWalletConnecting() {
+         return this.walletStatus === 'Connecting';
+diff --git a/node_modules/@cosmos-kit/core/cjs/repository.js b/node_modules/@cosmos-kit/core/cjs/repository.js
+index e85a6a1..5b2655f 100644
+--- a/node_modules/@cosmos-kit/core/cjs/repository.js
++++ b/node_modules/@cosmos-kit/core/cjs/repository.js
+@@ -70,7 +70,7 @@ class WalletRepo extends state_1.StateBase {
+             this.logger.warn('when `repelWallet` is set false, `current` is always undefined.');
+             return void 0;
+         }
+-        return this.wallets.find((w) => !w.isWalletDisconnected);
++        return this.wallets.find((w) => !w.isWalletNotExist && !w.isWalletDisconnected);
+     }
+     getWallet = (walletName) => {
+         return this.wallets.find((w) => w.walletName === walletName);
+diff --git a/node_modules/@cosmos-kit/core/esm/bases/state.js b/node_modules/@cosmos-kit/core/esm/bases/state.js
+index 5d13d35..f212291 100644
+--- a/node_modules/@cosmos-kit/core/esm/bases/state.js
++++ b/node_modules/@cosmos-kit/core/esm/bases/state.js
+@@ -66,7 +66,7 @@ export class StateBase {
+         return getWalletStatusFromState(this.state, this.message);
+     }
+     get isWalletOnceConnect() {
+-        return (this.isWalletConnected || this.isWalletNotExist || this.isWalletError);
++        return (this.isWalletConnected || this.isWalletError);
+     }
+     get isWalletConnecting() {
+         return this.walletStatus === 'Connecting';
+diff --git a/node_modules/@cosmos-kit/core/esm/repository.js b/node_modules/@cosmos-kit/core/esm/repository.js
+index e29d069..53e88e6 100644
+--- a/node_modules/@cosmos-kit/core/esm/repository.js
++++ b/node_modules/@cosmos-kit/core/esm/repository.js
+@@ -67,7 +67,7 @@ export class WalletRepo extends StateBase {
+             this.logger.warn('when `repelWallet` is set false, `current` is always undefined.');
+             return void 0;
+         }
+-        return this.wallets.find((w) => !w.isWalletDisconnected);
++        return this.wallets.find((w) => !w.isWalletNotExist && !w.isWalletDisconnected);
+     }
+     getWallet = (walletName) => {
+         return this.wallets.find((w) => w.walletName === walletName);

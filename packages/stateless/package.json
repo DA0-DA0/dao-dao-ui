@@ -45,7 +45,7 @@
   },
   "devDependencies": {
     "@chain-registry/types": "^0.17.1",
-    "@cosmos-kit/core": "^2.6.4",
+    "@cosmos-kit/core": "^2.7.12",
     "@dao-dao/config": "2.2.0",
     "@storybook/react": "^6.5.10",
     "@types/lodash.clonedeep": "^4.5.0",

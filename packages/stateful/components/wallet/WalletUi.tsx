@@ -120,14 +120,13 @@ export const WalletUi = (props: WalletModalProps) => {
               await Promise.allSettled(
                 configuredChains.map(
                   async (chainRecord) =>
-                    await walletRepo
-                      .getWallet(wallet.walletName)
-                      ?.mainWallet.client.addChain?.(chainRecord)
+                    await wallet?.mainWallet?.client
+                      ?.addChain?.(chainRecord)
                       .catch(console.error)
                 )
               )
 
-              await walletRepo.connect(wallet.walletName)
+              await wallet.connect()
             } catch (err) {
               console.error(err)
               toast.error(err instanceof Error ? err.message : `${err}`)
