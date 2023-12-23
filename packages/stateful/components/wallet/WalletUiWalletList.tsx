@@ -27,12 +27,7 @@ export const WalletUiWalletList = ({
     return null
   }
 
-  const { current, isMobile } = walletRepo
-
-  // Filter out non-mobile wallets on mobile (probably extensions).
-  const wallets = isMobile
-    ? walletRepo.platformEnabledWallets
-    : walletRepo.wallets
+  const { current, isMobile, platformEnabledWallets: wallets } = walletRepo
 
   const web3AuthWallets = wallets.filter((wallet) =>
     wallet.walletName.startsWith('web3auth_')
@@ -54,39 +49,20 @@ export const WalletUiWalletList = ({
   const isConnectingTo = (wallet: ChainWalletBase) =>
     isWalletConnecting && current && current.walletName === wallet.walletName
 
-  return (
-    <div className="flex flex-col gap-2">
-      {!isMobile && installedExtensionWallets.length > 0 && (
-        <>
-          <p className="primary-text truncate">{t('title.installedWallets')}</p>
+  const makeWalletOnClick = (wallet: ChainWalletBase) => async () => {
+    try {
+      await current?.disconnect()
+    } catch (error) {
+      console.error('Failed disconnecting from current wallet', error)
+    }
 
-          <div className="mb-4 grid grid-cols-3 gap-1">
-            {installedExtensionWallets.map((wallet) => (
-              <Button
-                key={wallet.walletName}
-                className={clsx(
-                  'grow !p-3 !pt-4',
-                  isConnectingTo(wallet) && 'animate-pulse'
-                )}
-                contentContainerClassName="flex-col !gap-3 justify-center items-center"
-                onClick={() =>
-                  isConnectingTo(wallet)
-                    ? walletRepo.disconnect()
-                    : connect(wallet)
-                }
-                variant="ghost"
-              >
-                <WalletLogo logo={wallet.walletInfo.logo} />
+    if (!isConnectingTo(wallet)) {
+      connect(wallet)
+    }
+  }
 
-                <p className="secondary-text text-center">
-                  {wallet.walletInfo.prettyName}
-                </p>
-              </Button>
-            ))}
-          </div>
-        </>
-      )}
-
+  const mobileWalletsRender = (
+    <div className="flex flex-col gap-2 border-b border-border-base py-6 px-8">
       <p className="primary-text truncate">{t('title.mobileWallets')}</p>
       <div className="grid grid-cols-3 gap-1">
         {mobileWallets.map((wallet) => (
@@ -97,9 +73,7 @@ export const WalletUiWalletList = ({
               isConnectingTo(wallet) && 'animate-pulse'
             )}
             contentContainerClassName="flex-col !gap-3 justify-center items-center"
-            onClick={() =>
-              isConnectingTo(wallet) ? walletRepo.disconnect() : connect(wallet)
-            }
+            onClick={makeWalletOnClick(wallet)}
             variant="ghost"
           >
             <WalletLogo logo={wallet.walletInfo.logo} />
@@ -110,52 +84,89 @@ export const WalletUiWalletList = ({
           </Button>
         ))}
       </div>
+    </div>
+  )
 
-      {notInstalledWallets.length > 0 && (
-        <>
-          <Collapsible
-            containerClassName="mt-2 !gap-1"
-            headerClassName="-ml-5"
-            label={t('title.notInstalled')}
-            noContentIndent
-            tooltip={t('info.notInstalledWalletsTooltip')}
-          >
-            <div className="grid grid-cols-3 gap-1">
-              {notInstalledWallets.map((wallet) => (
-                <Button
-                  key={wallet.walletName}
-                  className={clsx(
-                    'grow !p-3 !pt-4',
-                    isConnectingTo(wallet) && 'animate-pulse'
-                  )}
-                  contentContainerClassName="flex-col !gap-3 justify-center items-center"
-                  onClick={() =>
-                    isConnectingTo(wallet)
-                      ? walletRepo.disconnect()
-                      : connect(wallet)
-                  }
-                  variant="ghost"
-                >
-                  <WalletLogo logo={wallet.walletInfo.logo} />
+  return (
+    <div className="-m-6 flex flex-col">
+      {isMobile && mobileWalletsRender}
 
-                  <p className="secondary-text text-center">
-                    {wallet.walletInfo.prettyName}
-                  </p>
-                </Button>
-              ))}
-            </div>
-          </Collapsible>
-        </>
+      {installedExtensionWallets.length + notInstalledWallets.length > 0 && (
+        <div className="flex flex-col gap-3 border-b border-border-base py-6 px-8">
+          {installedExtensionWallets.length > 0 && (
+            <>
+              <p className="primary-text truncate">
+                {t('title.browserWallets')}
+              </p>
+
+              <div className="grid grid-cols-3 gap-1">
+                {installedExtensionWallets.map((wallet) => (
+                  <Button
+                    key={wallet.walletName}
+                    className={clsx(
+                      'grow !p-3 !pt-4',
+                      isConnectingTo(wallet) && 'animate-pulse'
+                    )}
+                    contentContainerClassName="flex-col !gap-3 justify-center items-center"
+                    onClick={makeWalletOnClick(wallet)}
+                    variant="ghost"
+                  >
+                    <WalletLogo logo={wallet.walletInfo.logo} />
+
+                    <p className="secondary-text text-center">
+                      {wallet.walletInfo.prettyName}
+                    </p>
+                  </Button>
+                ))}
+              </div>
+            </>
+          )}
+
+          {notInstalledWallets.length > 0 && (
+            <>
+              <Collapsible
+                containerClassName="!gap-1"
+                defaultCollapsed={
+                  // There are 3 wallets that always exist in a browser (two
+                  // metamask snaps and ledger, so collapse if any additional).
+                  installedExtensionWallets.length > 3
+                }
+                headerClassName="-ml-4"
+                label={t('title.notInstalled')}
+                noContentIndent
+                tooltip={t('info.notInstalledWalletsTooltip')}
+              >
+                <div className="grid grid-cols-3 gap-1">
+                  {notInstalledWallets.map((wallet) => (
+                    <Button
+                      key={wallet.walletName}
+                      className={clsx(
+                        'grow !p-3 !pt-4',
+                        isConnectingTo(wallet) && 'animate-pulse'
+                      )}
+                      contentContainerClassName="flex-col !gap-3 justify-center items-center"
+                      onClick={makeWalletOnClick(wallet)}
+                      variant="ghost"
+                    >
+                      <WalletLogo logo={wallet.walletInfo.logo} />
+
+                      <p className="secondary-text text-center">
+                        {wallet.walletInfo.prettyName}
+                      </p>
+                    </Button>
+                  ))}
+                </div>
+              </Collapsible>
+            </>
+          )}
+        </div>
       )}
 
+      {!isMobile && mobileWalletsRender}
+
       {web3AuthWallets.length > 0 && (
-        <>
-          <div
-            className={clsx(
-              'flex flex-row items-center gap-1',
-              otherWallets.length > 0 && 'mt-2'
-            )}
-          >
+        <div className="flex flex-col gap-3 py-6 px-8">
+          <div className="flex flex-row items-center gap-1">
             <p className="primary-text truncate">
               {t('info.socialLoginsPoweredByWeb3Auth')}
             </p>
@@ -181,11 +192,7 @@ export const WalletUiWalletList = ({
                     isConnectingTo(wallet) && 'animate-pulse'
                   )}
                   contentContainerClassName="flex justify-center items-center"
-                  onClick={() =>
-                    isConnectingTo(wallet)
-                      ? walletRepo.disconnect()
-                      : connect(wallet)
-                  }
+                  onClick={makeWalletOnClick(wallet)}
                   variant="ghost"
                 >
                   <WalletLogo logo={wallet.walletInfo.logo} />
@@ -193,7 +200,7 @@ export const WalletUiWalletList = ({
               </Tooltip>
             ))}
           </div>
-        </>
+        </div>
       )}
     </div>
   )
