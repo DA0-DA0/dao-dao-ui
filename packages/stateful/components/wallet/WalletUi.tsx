@@ -122,7 +122,7 @@ export const WalletUi = (props: WalletModalProps) => {
                   async (chainRecord) =>
                     await walletRepo
                       .getWallet(wallet.walletName)
-                      ?.mainWallet.client.addChain?.(chainRecord)
+                      ?.mainWallet?.client?.addChain?.(chainRecord)
                       .catch(console.error)
                 )
               )
