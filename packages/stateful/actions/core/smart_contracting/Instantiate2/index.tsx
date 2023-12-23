@@ -1,5 +1,5 @@
 import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
-import { fromHex, toUtf8 } from '@cosmjs/encoding'
+import { fromBase64, fromHex, fromUtf8, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { useCallback } from 'react'
@@ -13,7 +13,7 @@ import {
   ChainProvider,
   DaoSupportedChainPickerInput,
 } from '@dao-dao/stateless'
-import { Feature, TokenType } from '@dao-dao/types'
+import { TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -24,15 +24,20 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
+  decodedStargateMsgToCw,
   getAccountAddress,
+  getChainAddressForActionOptions,
   getNativeTokenForChainId,
-  makeWasmMessage,
+  isDecodedStargateMsg,
+  makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
+  parseEncodedMessage,
 } from '@dao-dao/utils'
+import { MsgInstantiateContract2 } from '@dao-dao/utils/protobuf/codegen/cosmwasm/wasm/v1/tx'
 
 import { useTokenBalances } from '../../../hooks'
 import { useActionOptions } from '../../../react'
@@ -128,16 +133,17 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
-  t,
-  address,
-  chain: { chain_id: currentChainId },
-  context,
-}) => {
-  if (
-    context.type === ActionContextType.Dao &&
-    !context.info.supportedFeatures[Feature.Instantiate2]
-  ) {
+export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
+  options
+) => {
+  const {
+    t,
+    address,
+    chain: { chain_id: currentChainId },
+    context,
+  } = options
+
+  if (context.type !== ActionContextType.Dao) {
     return null
   }
 
@@ -173,23 +179,25 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
         return maybeMakePolytoneExecuteMessage(
           currentChainId,
           chainId,
-          makeWasmMessage({
-            wasm: {
-              instantiate2: {
+          makeStargateMessage({
+            stargate: {
+              typeUrl: MsgInstantiateContract2.typeUrl,
+              value: {
+                sender: getChainAddressForActionOptions(options, chainId),
                 admin: admin || null,
-                code_id: codeId,
+                codeId: codeId ? BigInt(codeId) : 0n,
+                label,
+                msg: toUtf8(JSON.stringify(msg)),
                 funds: funds.map(({ denom, amount }) => ({
                   denom,
-                  amount: convertDenomToMicroDenomWithDecimals(
+                  amount: convertDenomToMicroDenomStringWithDecimals(
                     amount,
                     getNativeTokenForChainId(chainId).decimals
-                  ).toString(),
+                  ),
                 })),
-                label,
-                msg,
-                salt,
-                fix_msg: false,
-              },
+                salt: toUtf8(salt),
+                fixMsg: false,
+              } as MsgInstantiateContract2,
             },
           })
         )
@@ -205,6 +213,12 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
     if (decodedPolytone.match) {
       chainId = decodedPolytone.chainId
       msg = decodedPolytone.msg
+    }
+
+    // Convert to CW msg format to use same matching logic below.
+    let fromStargate = isDecodedStargateMsg(msg)
+    if (fromStargate) {
+      msg = decodedStargateMsgToCw(msg.stargate).msg
     }
 
     return objectMatchesStructure(msg, {
@@ -223,12 +237,20 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
           match: true,
           data: {
             chainId,
-            admin: msg.wasm.instantiate.admin ?? '',
-            codeId: msg.wasm.instantiate.code_id,
-            label: msg.wasm.instantiate.label,
-            message: JSON.stringify(msg.wasm.instantiate.msg, undefined, 2),
-            salt: msg.wasm.instantiate.salt,
-            funds: (msg.wasm.instantiate.funds as Coin[]).map(
+            admin: msg.wasm.instantiate2.admin ?? '',
+            codeId: msg.wasm.instantiate2.code_id,
+            label: msg.wasm.instantiate2.label,
+            message: JSON.stringify(
+              fromStargate
+                ? parseEncodedMessage(msg.wasm.instantiate2.msg)
+                : msg.wasm.instantiate2.msg,
+              undefined,
+              2
+            ),
+            salt: fromStargate
+              ? fromUtf8(fromBase64(msg.wasm.instantiate2.salt))
+              : msg.wasm.instantiate2.salt,
+            funds: (msg.wasm.instantiate2.funds as Coin[]).map(
               ({ denom, amount }) => ({
                 denom,
                 amount: Number(

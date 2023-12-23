@@ -39,6 +39,7 @@ import {
 type WasmMsgType =
   | 'execute'
   | 'instantiate'
+  | 'instantiate2'
   | 'migrate'
   | 'update_admin'
   | 'clear_admin'
@@ -54,6 +55,7 @@ const WASM_TYPES: WasmMsgType[] = [
 const BINARY_WASM_TYPES: { [key: string]: boolean } = {
   execute: true,
   instantiate: true,
+  instantiate2: true,
   migrate: true,
 }
 
@@ -140,24 +142,20 @@ export const makeWasmMessage = (message: {
   // We need to encode Wasm Execute, Instantiate, and Migrate messages.
   let msg = message
   if (message?.wasm?.execute) {
-    msg.wasm.execute.msg = toBase64(
-      toUtf8(JSON.stringify(message.wasm.execute.msg))
-    )
+    msg.wasm.execute.msg = encodeMessageAsBase64(message.wasm.execute.msg)
   } else if (message?.wasm?.instantiate) {
-    msg.wasm.instantiate.msg = toBase64(
-      toUtf8(JSON.stringify(message.wasm.instantiate.msg))
+    msg.wasm.instantiate.msg = encodeMessageAsBase64(
+      message.wasm.instantiate.msg
     )
   } else if (message?.wasm?.instantiate2) {
-    msg.wasm.instantiate2.msg = toBase64(
-      toUtf8(JSON.stringify(message.wasm.instantiate2.msg))
+    msg.wasm.instantiate2.msg = encodeMessageAsBase64(
+      message.wasm.instantiate2.msg
     )
     msg.wasm.instantiate2.salt = toBase64(
       toUtf8(message.wasm.instantiate2.salt)
     )
   } else if (message.wasm.migrate) {
-    msg.wasm.migrate.msg = toBase64(
-      toUtf8(JSON.stringify(message.wasm.migrate.msg))
-    )
+    msg.wasm.migrate.msg = encodeMessageAsBase64(message.wasm.migrate.msg)
   }
   // Messages such as update or clear admin pass through without modification.
   return msg
@@ -208,77 +206,6 @@ export enum StakingActionType {
   Redelegate = 'redelegate',
   WithdrawDelegatorReward = 'withdraw_delegator_reward',
   SetWithdrawAddress = 'set_withdraw_address',
-}
-
-export const makeStakingActionMessage = (
-  type: `${StakingActionType}`,
-  amount: string,
-  denom: string,
-  validator: string,
-  toValidator = '',
-  withdrawAddress = ''
-): CosmosMsgFor_Empty => {
-  const coin = {
-    amount,
-    denom,
-  }
-
-  let msg: CosmosMsgFor_Empty
-  switch (type) {
-    case StakingActionType.Delegate:
-      msg = {
-        staking: {
-          delegate: {
-            amount: coin,
-            validator,
-          },
-        },
-      }
-      break
-    case StakingActionType.Undelegate:
-      msg = {
-        staking: {
-          undelegate: {
-            amount: coin,
-            validator,
-          },
-        },
-      }
-      break
-    case StakingActionType.Redelegate:
-      msg = {
-        staking: {
-          redelegate: {
-            amount: coin,
-            src_validator: validator,
-            dst_validator: toValidator,
-          },
-        },
-      }
-      break
-    case StakingActionType.WithdrawDelegatorReward:
-      msg = {
-        distribution: {
-          withdraw_delegator_reward: {
-            validator,
-          },
-        },
-      }
-      break
-    case StakingActionType.SetWithdrawAddress:
-      msg = {
-        distribution: {
-          set_withdraw_address: {
-            address: withdrawAddress,
-          },
-        },
-      }
-      break
-    default:
-      throw new Error('Unexpected staking type')
-  }
-
-  return msg
 }
 
 // If the source and destination chains are different, this wraps the message in
