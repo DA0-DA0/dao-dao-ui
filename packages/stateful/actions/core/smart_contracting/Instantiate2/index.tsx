@@ -13,7 +13,7 @@ import {
   ChainProvider,
   DaoSupportedChainPickerInput,
 } from '@dao-dao/stateless'
-import { Feature, TokenType } from '@dao-dao/types'
+import { TokenType } from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -24,15 +24,19 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
-  convertDenomToMicroDenomWithDecimals,
+  convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
+  decodedStargateMsgToCw,
   getAccountAddress,
+  getChainAddressForActionOptions,
   getNativeTokenForChainId,
-  makeWasmMessage,
+  isDecodedStargateMsg,
+  makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
 } from '@dao-dao/utils'
+import { MsgInstantiateContract2 } from '@dao-dao/utils/protobuf/codegen/cosmwasm/wasm/v1/tx'
 
 import { useTokenBalances } from '../../../hooks'
 import { useActionOptions } from '../../../react'
@@ -128,16 +132,17 @@ const Component: ActionComponent = (props) => {
   )
 }
 
-export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
-  t,
-  address,
-  chain: { chain_id: currentChainId },
-  context,
-}) => {
-  if (
-    context.type === ActionContextType.Dao &&
-    !context.info.supportedFeatures[Feature.Instantiate2]
-  ) {
+export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
+  options
+) => {
+  const {
+    t,
+    address,
+    chain: { chain_id: currentChainId },
+    context,
+  } = options
+
+  if (context.type === ActionContextType.Dao) {
     return null
   }
 
@@ -173,23 +178,25 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
         return maybeMakePolytoneExecuteMessage(
           currentChainId,
           chainId,
-          makeWasmMessage({
-            wasm: {
-              instantiate2: {
+          makeStargateMessage({
+            stargate: {
+              typeUrl: MsgInstantiateContract2.typeUrl,
+              value: {
+                sender: getChainAddressForActionOptions(options, chainId),
                 admin: admin || null,
-                code_id: codeId,
+                codeId: codeId ? BigInt(codeId) : 0n,
+                label,
+                msg: toUtf8(JSON.stringify(msg)),
                 funds: funds.map(({ denom, amount }) => ({
                   denom,
-                  amount: convertDenomToMicroDenomWithDecimals(
+                  amount: convertDenomToMicroDenomStringWithDecimals(
                     amount,
                     getNativeTokenForChainId(chainId).decimals
-                  ).toString(),
+                  ),
                 })),
-                label,
-                msg,
-                salt,
-                fix_msg: false,
-              },
+                salt: toUtf8(salt),
+                fixMsg: false,
+              } as MsgInstantiateContract2,
             },
           })
         )
@@ -205,6 +212,11 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = ({
     if (decodedPolytone.match) {
       chainId = decodedPolytone.chainId
       msg = decodedPolytone.msg
+    }
+
+    // Convert to CW msg format to use same matching logic below.
+    if (isDecodedStargateMsg(msg)) {
+      msg = decodedStargateMsgToCw(msg.stargate).msg
     }
 
     return objectMatchesStructure(msg, {

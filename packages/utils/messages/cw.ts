@@ -140,24 +140,20 @@ export const makeWasmMessage = (message: {
   // We need to encode Wasm Execute, Instantiate, and Migrate messages.
   let msg = message
   if (message?.wasm?.execute) {
-    msg.wasm.execute.msg = toBase64(
-      toUtf8(JSON.stringify(message.wasm.execute.msg))
-    )
+    msg.wasm.execute.msg = encodeMessageAsBase64(message.wasm.execute.msg)
   } else if (message?.wasm?.instantiate) {
-    msg.wasm.instantiate.msg = toBase64(
-      toUtf8(JSON.stringify(message.wasm.instantiate.msg))
+    msg.wasm.instantiate.msg = encodeMessageAsBase64(
+      message.wasm.instantiate.msg
     )
   } else if (message?.wasm?.instantiate2) {
-    msg.wasm.instantiate2.msg = toBase64(
-      toUtf8(JSON.stringify(message.wasm.instantiate2.msg))
+    msg.wasm.instantiate2.msg = encodeMessageAsBase64(
+      message.wasm.instantiate2.msg
     )
     msg.wasm.instantiate2.salt = toBase64(
       toUtf8(message.wasm.instantiate2.salt)
     )
   } else if (message.wasm.migrate) {
-    msg.wasm.migrate.msg = toBase64(
-      toUtf8(JSON.stringify(message.wasm.migrate.msg))
-    )
+    msg.wasm.migrate.msg = encodeMessageAsBase64(message.wasm.migrate.msg)
   }
   // Messages such as update or clear admin pass through without modification.
   return msg

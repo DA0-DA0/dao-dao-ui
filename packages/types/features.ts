@@ -67,11 +67,6 @@ export enum Feature {
    */
   ModuleInstantiateFunds,
   /**
-   * The cosmwasm-std package was upgraded to v1.2.0 in the contracts which
-   * added support for Instantiate2 wasm messages.
-   */
-  Instantiate2,
-  /**
    * The VotingModuleToken type used during config and instantiation to specify
    * the proposal deposit denom should be the governance token was fixed to
    * support both native and cw20 tokens.
