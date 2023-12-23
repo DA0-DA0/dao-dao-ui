@@ -4,12 +4,12 @@ import { Endpoints, SignerOptions } from '@cosmos-kit/core'
 import { wallets as cosmosExtensionMetamaskWallets } from '@cosmos-kit/cosmos-extension-metamask'
 import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
 import { wallets as exodusWallets } from '@cosmos-kit/exodus'
-import { wallets as finWallets } from '@cosmos-kit/fin'
 import { wallets as frontierWallets } from '@cosmos-kit/frontier'
 import { wallets as keplrExtensionWallets } from '@cosmos-kit/keplr-extension'
 import { wallets as keplrMobileWallets } from '@cosmos-kit/keplr-mobile'
 import { wallets as leapWallets } from '@cosmos-kit/leap'
 import { wallets as leapMetamaskWallets } from '@cosmos-kit/leap-metamask-cosmos-snap'
+import { wallets as ledgerWallets } from '@cosmos-kit/ledger'
 import { wallets as okxWallets } from '@cosmos-kit/okxwallet'
 import { wallets as omniWallets } from '@cosmos-kit/omni'
 import { ChainProvider } from '@cosmos-kit/react-lite'
@@ -154,11 +154,11 @@ export const WalletProvider = ({
       ...shellWallets,
       ...xdefiWallets,
       ...okxWallets,
-      ...finWallets,
       ...compassWallets,
       ...frontierWallets,
       ...cosmosExtensionMetamaskWallets,
       ...exodusWallets,
+      ...ledgerWallets,
     ].sort((a, b) =>
       a.walletInfo.prettyName.localeCompare(b.walletInfo.prettyName)
     ),
