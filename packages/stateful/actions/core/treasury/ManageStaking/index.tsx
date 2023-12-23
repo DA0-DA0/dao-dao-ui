@@ -17,7 +17,13 @@ import {
   useCachedLoading,
   useChainContext,
 } from '@dao-dao/stateless'
-import { ChainId, Coin, LoadingData, TokenType } from '@dao-dao/types'
+import {
+  ChainId,
+  Coin,
+  CosmosMsgForEmpty,
+  LoadingData,
+  TokenType,
+} from '@dao-dao/types'
 import {
   ActionComponent,
   ActionContextType,
@@ -32,11 +38,22 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
+  decodedStargateMsgToCw,
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
-  makeStakingActionMessage,
+  isDecodedStargateMsg,
+  makeStargateMessage,
   maybeMakePolytoneExecuteMessage,
 } from '@dao-dao/utils'
+import {
+  MsgSetWithdrawAddress,
+  MsgWithdrawDelegatorReward,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
+import {
+  MsgBeginRedelegate,
+  MsgDelegate,
+  MsgUndelegate,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/staking/v1beta1/tx'
 
 import { AddressInput } from '../../../../components/AddressInput'
 import { SuspenseLoader } from '../../../../components/SuspenseLoader'
@@ -50,37 +67,98 @@ import {
 } from './Component'
 
 const useTransformToCosmos: UseTransformToCosmos<ManageStakingData> = () => {
-  const currentChainId = useActionOptions().chain.chain_id
+  const options = useActionOptions()
+  const {
+    chain: { chain_id: currentChainId },
+  } = options
 
   return useCallback(
     ({
       chainId,
       type: stakeType,
-      amount,
+      amount: macroAmount,
       validator,
       toValidator,
       withdrawAddress,
     }: ManageStakingData) => {
       const nativeToken = getNativeTokenForChainId(chainId)
       const microAmount = convertDenomToMicroDenomWithDecimals(
-        amount,
+        macroAmount,
         nativeToken.decimals
       )
 
-      return maybeMakePolytoneExecuteMessage(
-        currentChainId,
-        chainId,
-        makeStakingActionMessage(
-          stakeType,
-          microAmount.toString(),
-          nativeToken.denomOrAddress,
-          validator,
-          toValidator,
-          withdrawAddress
-        )
+      const delegatorAddress = getChainAddressForActionOptions(options, chainId)
+      const amount = coin(
+        BigInt(microAmount).toString(),
+        nativeToken.denomOrAddress
       )
+
+      let msg: CosmosMsgForEmpty
+      switch (stakeType) {
+        case StakingActionType.Delegate:
+          msg = makeStargateMessage({
+            stargate: {
+              typeUrl: MsgDelegate.typeUrl,
+              value: {
+                delegatorAddress,
+                validatorAddress: validator,
+                amount,
+              } as MsgDelegate,
+            },
+          })
+          break
+        case StakingActionType.Undelegate:
+          msg = makeStargateMessage({
+            stargate: {
+              typeUrl: MsgUndelegate.typeUrl,
+              value: {
+                delegatorAddress,
+                validatorAddress: validator,
+                amount,
+              } as MsgUndelegate,
+            },
+          })
+          break
+        case StakingActionType.Redelegate:
+          msg = makeStargateMessage({
+            stargate: {
+              typeUrl: MsgBeginRedelegate.typeUrl,
+              value: {
+                delegatorAddress,
+                validatorSrcAddress: validator,
+                validatorDstAddress: toValidator,
+                amount,
+              } as MsgBeginRedelegate,
+            },
+          })
+          break
+        case StakingActionType.WithdrawDelegatorReward:
+          msg = makeStargateMessage({
+            stargate: {
+              typeUrl: MsgWithdrawDelegatorReward.typeUrl,
+              value: {
+                delegatorAddress,
+                validatorAddress: validator,
+              } as MsgWithdrawDelegatorReward,
+            },
+          })
+          break
+        case StakingActionType.SetWithdrawAddress:
+          msg = makeStargateMessage({
+            stargate: {
+              typeUrl: MsgSetWithdrawAddress.typeUrl,
+              value: {
+                delegatorAddress,
+                withdrawAddress,
+              } as MsgSetWithdrawAddress,
+            },
+          })
+          break
+      }
+
+      return maybeMakePolytoneExecuteMessage(currentChainId, chainId, msg)
     },
-    [currentChainId]
+    [currentChainId, options]
   )
 }
 
@@ -92,6 +170,11 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
   if (decodedPolytone.match) {
     chainId = decodedPolytone.chainId
     msg = decodedPolytone.msg
+  }
+
+  // Convert to CW msg format to use same matching logic below.
+  if (isDecodedStargateMsg(msg)) {
+    msg = decodedStargateMsgToCw(msg.stargate).msg
   }
 
   const stakeActions = useStakeActions()
@@ -116,15 +199,14 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
       }
     } else if (
       StakingActionType.SetWithdrawAddress in msg.distribution &&
-      'withdraw_address' in msg.distribution.set_withdraw_address
+      'address' in msg.distribution.set_withdraw_address
     ) {
       return {
         match: true,
         data: {
           chainId,
           type: StakingActionType.SetWithdrawAddress,
-          withdrawAddress:
-            msg.distribution.set_withdraw_address.withdraw_address,
+          withdrawAddress: msg.distribution.set_withdraw_address.address,
           validator: '',
           toValidator: '',
           amount: 1,
