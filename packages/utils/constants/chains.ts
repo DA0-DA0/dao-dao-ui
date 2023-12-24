@@ -809,8 +809,8 @@ export const CHAIN_ENDPOINTS: Partial<
   >
 > = {
   [ChainId.JunoMainnet]: {
-    rpc: 'https://juno-rpc.polkachu.com',
-    rest: 'https://juno-api.polkachu.com',
+    rpc: 'https://juno-rpc.reece.sh',
+    rest: 'https://juno-api.reece.sh',
   },
   [ChainId.JunoTestnet]: {
     rpc: 'https://juno-testnet-rpc.polkachu.com',
