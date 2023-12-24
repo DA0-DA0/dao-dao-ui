@@ -1,8 +1,8 @@
+// These are all used elsewhere in the codebase.
 export enum ContractName {
   CwTokenSwap = 'crates.io:cw-token-swap',
   CwTokenfactoryIssuer = 'crates.io:cw-tokenfactory-issuer',
   PolytoneProxy = 'crates.io:polytone-proxy',
-  PreProposeMultiple = 'crates.io:dao-pre-propose-multiple',
   PreProposeSingle = 'crates.io:dao-pre-propose-single',
   PreProposeApprovalSingle = 'crates.io:dao-pre-propose-approval-single',
   PreProposeApprover = 'crates.io:dao-pre-propose-approver',
@@ -15,6 +15,8 @@ export const DAO_CORE_CONTRACT_NAMES = [
   'crates.io:cwd-core',
   'crates.io:dao-core',
   'crates.io:dao-dao-core',
+  // Neutron
+  'crates.io:cwd-subdao-core',
 ]
 
 export const LEGACY_DAO_CONTRACT_NAMES = [
@@ -50,6 +52,8 @@ export const DAO_VOTING_TOKEN_STAKED_CONTRACT_NAMES = [
 
 export const DAO_PRE_PROPOSE_SINGLE_CONTRACT_NAMES = [
   ContractName.PreProposeSingle,
+  // Neutron
+  'crates.io:cwd-subdao-pre-propose-single',
 ]
 
 export const DAO_PROPOSAL_SINGLE_CONTRACT_NAMES = [
@@ -59,10 +63,12 @@ export const DAO_PROPOSAL_SINGLE_CONTRACT_NAMES = [
   // V2+
   'crates.io:cwd-proposal-single',
   'crates.io:dao-proposal-single',
+  // Neutron
+  'crates.io:cwd-subdao-proposal-single',
 ]
 
 export const DAO_PRE_PROPOSE_MULTIPLE_CONTRACT_NAMES = [
-  ContractName.PreProposeMultiple,
+  'crates.io:dao-pre-propose-multiple',
 ]
 
 export const DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES = [
