@@ -98,22 +98,21 @@ export const Breadcrumbs = ({
           return (
             <div
               key={idx}
-              className="hidden shrink-0 flex-row items-center gap-2 sm:flex"
+              className="hidden min-w-0 shrink-0 flex-row items-center gap-2 sm:flex"
             >
               <Tooltip title={firstOrLast ? undefined : label}>
-                <div
-                  className={clsx(
-                    'overflow-hidden truncate',
-                    // When there are at least 3 crumbs, and this is the last
-                    // crumb, set max width so it doesn't take up too much
-                    // space.
-                    idx === crumbs.length - 1 &&
-                      crumbs.length > 2 &&
-                      'max-w-[8rem]'
-                  )}
-                >
+                <div className="flex min-w-0 flex-row overflow-hidden">
                   <LinkWrapper
                     className="transition-opacity hover:opacity-80"
+                    containerClassName={clsx(
+                      'min-w-0 truncate',
+                      // When there are at least 3 crumbs, and this is the last
+                      // crumb, set max width so it doesn't take up too much
+                      // space.
+                      idx === crumbs.length - 1 &&
+                        crumbs.length > 2 &&
+                        'max-w-[12rem]'
+                    )}
                     href={href}
                   >
                     {firstOrLast ? label : '...'}
@@ -121,7 +120,7 @@ export const Breadcrumbs = ({
                 </div>
               </Tooltip>
 
-              <ArrowForwardIos className="!h-5 !w-5 text-icon-tertiary" />
+              <ArrowForwardIos className="!h-5 !w-5 shrink-0 text-icon-tertiary" />
             </div>
           )
         })}
