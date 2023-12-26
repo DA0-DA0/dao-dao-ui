@@ -1,4 +1,4 @@
-import { useChains } from '@cosmos-kit/react-lite'
+import { useChain } from '@cosmos-kit/react-lite'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -20,24 +20,10 @@ export const ConnectWallet = (props: StatefulConnectWalletProps) => {
   const {
     chain: { chain_name: currentChainName } = { chain_name: undefined },
   } = useChainContextIfAvailable() ?? {}
-  const chainNames = getSupportedChains().map(({ chain }) => chain.chain_name)
+  const firstSupportedChainName = getSupportedChains()[0].chain.chain_name
 
-  // TODO: fix wallets not connecting across chains
-  const chainWallets = useChains(chainNames)
-  const { connect, disconnect, isWalletConnecting } =
-    chainWallets[
-      // Use current chain if available, or just use first chain. Should not
-      // matter because connect/disconnect will sync to all chains, but in case
-      // the user only approves some chains and not others, we want to make sure
-      // the current chain is priority.
-      currentChainName || chainNames[0]
-    ] ||
-    // In case current chain is not supported, fallback to first chain.
-    chainWallets[Object.keys(chainWallets)[0]]
-
-  // Single chain connection.
-  // const chainWallet = useChain(currentChainName || chainNames[0])
-  // const { connect, disconnect, isWalletConnecting } = chainWallet
+  const chainWallet = useChain(currentChainName || firstSupportedChainName)
+  const { connect, disconnect, isWalletConnecting } = chainWallet
 
   return (
     <Tooltip
