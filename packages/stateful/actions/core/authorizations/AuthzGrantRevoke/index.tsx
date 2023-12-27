@@ -162,6 +162,9 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = (
 
       switch (authorizationTypeUrl) {
         case GenericAuthorization.typeUrl: {
+          const msgTypeUrl = (
+            grantMsg.grant!.authorization as GenericAuthorization
+          ).msg
           return {
             match: true,
             data: {
@@ -169,10 +172,10 @@ export const makeAuthzGrantRevokeAction: ActionMaker<AuthzGrantRevokeData> = (
               chainId,
               mode: 'grant',
               authorizationTypeUrl,
-              customTypeUrl: false,
-              msgTypeUrl: (
-                grantMsg.grant!.authorization as GenericAuthorization
-              ).msg,
+              customTypeUrl: !ACTION_TYPES.some(
+                ({ type: { typeUrl } }) => typeUrl === msgTypeUrl
+              ),
+              msgTypeUrl,
               grantee: grantMsg.grantee,
             },
           }

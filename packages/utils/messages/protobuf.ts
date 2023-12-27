@@ -295,7 +295,11 @@ export const cwMsgToEncodeObject = (
   throw new Error('Unsupported cosmos message.')
 }
 
-// This should mirror the encoder function above.
+// This should mirror the encoder function above. Do not use this function to
+// convert messages that were decoded with `recursive = true`, like in the
+// `useDecodedCosmosMsg` hook in actions. That's because the default case with
+// `makeStargateMessage` needs a non-recursively encoded message due to
+// technicalities with nested protobufs.
 export const decodedStargateMsgToCw = ({
   typeUrl,
   value,
@@ -470,6 +474,60 @@ export const decodedStargateMsgToCw = ({
   return {
     msg,
     sender,
+  }
+}
+
+// Convert staking-related stargate msg to CosmWasm format. Returns undefined if
+// not a staking-related message.
+export const decodedStakingStargateMsgToCw = ({
+  typeUrl,
+  value,
+}: DecodedStargateMsg['stargate']): CosmosMsgFor_Empty | undefined => {
+  switch (typeUrl) {
+    case MsgDelegate.typeUrl:
+      return {
+        staking: {
+          delegate: {
+            amount: value.amount,
+            validator: value.validatorAddress,
+          },
+        },
+      }
+    case MsgUndelegate.typeUrl:
+      return {
+        staking: {
+          undelegate: {
+            amount: value.amount,
+            validator: value.validatorAddress,
+          },
+        },
+      }
+    case MsgBeginRedelegate.typeUrl:
+      return {
+        staking: {
+          redelegate: {
+            amount: value.amount,
+            src_validator: value.validatorSrcAddress,
+            dst_validator: value.validatorDstAddress,
+          },
+        },
+      }
+    case MsgWithdrawDelegatorReward.typeUrl:
+      return {
+        distribution: {
+          withdraw_delegator_reward: {
+            validator: value.validatorAddress,
+          },
+        },
+      }
+    case MsgSetWithdrawAddress.typeUrl:
+      return {
+        distribution: {
+          set_withdraw_address: {
+            address: value.withdrawAddress,
+          },
+        },
+      }
   }
 }
 

@@ -1,5 +1,5 @@
 import { instantiate2Address } from '@cosmjs/cosmwasm-stargate'
-import { fromBase64, fromHex, fromUtf8, toUtf8 } from '@cosmjs/encoding'
+import { fromHex, fromUtf8, toBase64, toUtf8 } from '@cosmjs/encoding'
 import { Coin } from '@cosmjs/stargate'
 import JSON5 from 'json5'
 import { useCallback } from 'react'
@@ -27,7 +27,6 @@ import {
   convertDenomToMicroDenomStringWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
-  decodedStargateMsgToCw,
   getAccountAddress,
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
@@ -216,9 +215,23 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
     }
 
     // Convert to CW msg format to use same matching logic below.
-    let fromStargate = isDecodedStargateMsg(msg)
-    if (fromStargate) {
-      msg = decodedStargateMsgToCw(msg.stargate).msg
+    if (
+      isDecodedStargateMsg(msg) &&
+      msg.stargate.typeUrl === MsgInstantiateContract2.typeUrl
+    ) {
+      msg = {
+        wasm: {
+          instantiate2: {
+            admin: msg.stargate.value.admin,
+            code_id: Number(msg.stargate.value.codeId),
+            label: msg.stargate.value.label,
+            msg: parseEncodedMessage(toBase64(msg.stargate.value.msg)),
+            funds: msg.stargate.value.funds,
+            fix_msg: msg.stargate.value.fixMsg,
+            salt: fromUtf8(msg.stargate.value.salt),
+          },
+        },
+      }
     }
 
     return objectMatchesStructure(msg, {
@@ -240,16 +253,8 @@ export const makeInstantiate2Action: ActionMaker<Instantiate2Data> = (
             admin: msg.wasm.instantiate2.admin ?? '',
             codeId: msg.wasm.instantiate2.code_id,
             label: msg.wasm.instantiate2.label,
-            message: JSON.stringify(
-              fromStargate
-                ? parseEncodedMessage(msg.wasm.instantiate2.msg)
-                : msg.wasm.instantiate2.msg,
-              undefined,
-              2
-            ),
-            salt: fromStargate
-              ? fromUtf8(fromBase64(msg.wasm.instantiate2.salt))
-              : msg.wasm.instantiate2.salt,
+            message: JSON.stringify(msg.wasm.instantiate2.msg, undefined, 2),
+            salt: msg.wasm.instantiate2.salt,
             funds: (msg.wasm.instantiate2.funds as Coin[]).map(
               ({ denom, amount }) => ({
                 denom,
