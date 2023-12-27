@@ -221,6 +221,9 @@ export const makeUpdateProposalConfigV2ActionMaker =
               close_proposal_on_execution_failure:
                 proposalModuleConfig.data.close_proposal_on_execution_failure,
               min_voting_period: proposalModuleConfig.data.min_voting_period,
+              ...('veto' in proposalModuleConfig.data && {
+                veto: proposalModuleConfig.data.veto,
+              }),
             },
           }
 
