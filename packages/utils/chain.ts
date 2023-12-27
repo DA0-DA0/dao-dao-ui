@@ -95,7 +95,7 @@ export const cosmosValidatorToValidator = ({
 
 export const getImageUrlForChainId = (chainId: string): string => {
   //Chain logo is sometimes larger and not square.
-  const { logo_URIs, images } = getChainForChainId(chainId)
+  const { logo_URIs, images } = maybeGetChainForChainId(chainId) ?? {}
   const chainImageUrl =
     logo_URIs?.png ??
     logo_URIs?.jpeg ??
