@@ -38,7 +38,7 @@ import {
   convertDenomToMicroDenomWithDecimals,
   convertMicroDenomToDenomWithDecimals,
   decodePolytoneExecuteMsg,
-  decodedStargateMsgToCw,
+  decodedStakingStargateMsgToCw,
   getChainAddressForActionOptions,
   getNativeTokenForChainId,
   isDecodedStargateMsg,
@@ -174,7 +174,10 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<ManageStakingData> = (
 
   // Convert to CW msg format to use same matching logic below.
   if (isDecodedStargateMsg(msg)) {
-    msg = decodedStargateMsgToCw(msg.stargate).msg
+    const cwMsg = decodedStakingStargateMsgToCw(msg.stargate)
+    if (cwMsg) {
+      msg = cwMsg
+    }
   }
 
   const stakeActions = useStakeActions()

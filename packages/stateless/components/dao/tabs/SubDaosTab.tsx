@@ -13,6 +13,7 @@ import { useDaoInfoContext, useDaoNavHelpers } from '../../../hooks'
 import { GridCardContainer } from '../../GridCardContainer'
 import { Loader } from '../../logo/Loader'
 import { NoContent } from '../../NoContent'
+import { Tooltip } from '../../tooltip'
 
 export interface SubDaosTabProps {
   DaoCard: ComponentType<DaoCardInfo>
@@ -48,14 +49,27 @@ export const SubDaosTab = ({
           <p className="secondary-text">{t('info.subDaoExplanation')}</p>
         </div>
 
-        <ButtonLink
-          className="shrink-0"
-          disabled={!isMember || !subDaosSupported}
-          href={getDaoPath(coreAddress, 'create')}
+        <Tooltip
+          title={
+            !subDaosSupported
+              ? t('error.daoFeatureUnsupported', {
+                  name,
+                  feature: t('title.subDaos'),
+                })
+              : !isMember
+              ? t('error.mustBeMemberToCreateSubDao')
+              : undefined
+          }
         >
-          <Add className="!h-4 !w-4" />
-          {t('button.newSubDao')}
-        </ButtonLink>
+          <ButtonLink
+            className="shrink-0"
+            disabled={!isMember || !subDaosSupported}
+            href={getDaoPath(coreAddress, 'create')}
+          >
+            <Add className="!h-4 !w-4" />
+            {t('button.newSubDao')}
+          </ButtonLink>
+        </Tooltip>
       </div>
 
       {!subDaosSupported ? (
