@@ -21,7 +21,7 @@ export const InputErrorMessage = ({
       ? (error as { message: string }).message
       : `${error}`)
 
-  return message ? (
+  return message && message !== '[object Object]' ? (
     <span
       className={clsx(
         'mt-1 ml-1 inline-block max-w-prose break-words text-xs text-text-interactive-error',
