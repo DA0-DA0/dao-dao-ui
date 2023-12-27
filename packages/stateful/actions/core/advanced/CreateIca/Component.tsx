@@ -41,10 +41,12 @@ export const CreateIcaComponent: ActionComponent<CreateIcaOptions> = ({
   const { chain_id: sourceChainId } = useChain()
 
   const destinationChainId = watch((fieldNamePrefix + 'chainId') as 'chainId')
-  const imageUrl = getImageUrlForChainId(destinationChainId)
+  const imageUrl =
+    destinationChainId && getImageUrlForChainId(destinationChainId)
 
   const registerActionExists =
     isCreating &&
+    !!destinationChainId &&
     allActionsWithData.some(
       ({ actionKey, data }) =>
         actionKey === ActionKey.ManageIcas &&
