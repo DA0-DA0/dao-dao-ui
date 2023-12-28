@@ -481,8 +481,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         DaoProposalMultiple: 91,
       },
     },
-    // There is no IBC connection with:
-    // - Migaloo
     polytone: {
       [ChainId.OsmosisMainnet]: {
         // stargaze
@@ -550,6 +548,28 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // neutron
         // remoteClient: '07-tendermint-31',
       },
+      [ChainId.MigalooMainnet]: {
+        // stargaze
+        note: 'stars1lyy3kkrw0vtgru49wezyhalxymhcs56xuyse835ld3v5hl0jrr3s926rml',
+        // stargaze
+        listener:
+          'stars19hlknnxdu9xwt9zmcw0f0n84tepvdm2aaek0rfqqfpcxsj6ctc4s8p90w3',
+        // migaloo
+        voice:
+          'migaloo1pddd7q33ht39y9uh3k34lk8nde33sp5apga5hpm6902as83pe72qqfsl7l',
+        // stargaze
+        localConnection: 'connection-287',
+        // migaloo
+        remoteConnection: 'connection-90',
+        // stargaze
+        localChannel: 'channel-272',
+        // migaloo
+        remoteChannel: 'channel-70',
+        // stargaze
+        // localClient: '07-tendermint-352',
+        // migaloo
+        // remoteClient: '07-tendermint-118',
+      },
     },
   },
   {
@@ -594,7 +614,6 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
       DaoVotingTokenStaked: 301,
     },
     // There are no IBC connections with:
-    // - Stargaze
     // - Neutron
     polytone: {
       [ChainId.JunoMainnet]: {
@@ -640,6 +659,28 @@ export const SUPPORTED_CHAINS: SupportedChainConfig[] = [
         // localClient: '07-tendermint-3',
         // osmosis
         // remoteClient: '07-tendermint-2669',
+      },
+      [ChainId.StargazeMainnet]: {
+        // migaloo
+        note: 'migaloo1cnuhn42mf3wy3x3rlkllc03h25eea8jjdt00dqy2mh4ukp7npsaqevswl4',
+        // migaloo
+        listener:
+          'migaloo1sa0l849s9z23cu26lxdmc5waz65stz5m8shgueqvl5yhxzzm79msrsjh70',
+        // stargaze
+        voice:
+          'stars1cj9a7p3y0zv3ccg90p9vhv6tr5cucujzf68yvlqwyrsl0pq82dzq5398jw',
+        // migaloo
+        localConnection: 'connection-90',
+        // stargaze
+        remoteConnection: 'connection-287',
+        // migaloo
+        localChannel: 'channel-71',
+        // stargaze
+        remoteChannel: 'channel-273',
+        // migaloo
+        // localClient: '07-tendermint-118',
+        // stargaze
+        // remoteClient: '07-tendermint-352',
       },
     },
   },
