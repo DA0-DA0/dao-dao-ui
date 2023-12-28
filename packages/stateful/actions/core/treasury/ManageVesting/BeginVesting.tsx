@@ -152,8 +152,9 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
   const stepPoints =
     startDate &&
     steps.reduce((acc, { percent, delay }, index): VestingStep[] => {
-      const delayMs =
-        delay.value && convertDurationWithUnitsToSeconds(delay) * 1000
+      const delayMs = delay.value
+        ? convertDurationWithUnitsToSeconds(delay) * 1000
+        : 0
 
       const lastMs =
         index === 0 ? startDate.getTime() : acc[acc.length - 1].timestamp

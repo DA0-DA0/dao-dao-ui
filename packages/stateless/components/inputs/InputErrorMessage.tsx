@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import { FieldError } from 'react-hook-form'
+import { useTranslation } from 'react-i18next'
 
 export interface InputErrorMessageProps {
   error?: FieldError | string | Error | unknown
@@ -10,6 +11,7 @@ export const InputErrorMessage = ({
   error,
   className,
 }: InputErrorMessageProps) => {
+  const { t } = useTranslation()
   const message =
     error &&
     (typeof error === 'string'
@@ -19,7 +21,7 @@ export const InputErrorMessage = ({
           'message' in error &&
           typeof (error as { message: string }).message === 'string')
       ? (error as { message: string }).message
-      : `${error}`)
+      : t('error.unknownError'))
 
   return message ? (
     <span

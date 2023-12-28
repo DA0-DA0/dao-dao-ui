@@ -454,6 +454,7 @@
     "txNotFound": "Transaction not found.",
     "unexpectedError": "An unexpected error occurred.",
     "unknownDenom": "Unknown denomination {{denom}}.",
+    "unknownError": "An unknown error occurred.",
     "unknownInboxType": "Unknown inbox item type.",
     "unsupportedApprovalFailedRender": "Failed to render approval proposal. Unsupported module."
   },
