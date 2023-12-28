@@ -1,5 +1,5 @@
 import { Image } from '@mui/icons-material'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -51,13 +51,37 @@ export const InnerPfpkNftSelectionModal = ({
     address: walletAddress,
     isWalletError,
     message: walletErrorMessage,
+    isWalletConnected,
     chain,
+    walletRepo,
+    wallet,
   } = useWallet({
     // This determines where uploaded NFTs are created. Explicitly use Juno
     // because wallets cannot create Stargaze NFTs directly, and Juno is
     // permissionless so it's a good place to create NFTs.
     chainId: MAINNET ? ChainId.JunoMainnet : ChainId.JunoTestnet,
   })
+
+  // If wallet is disconnected, attempt connection each time it becomes visible.
+  const attemptedConnection = useRef(false)
+  useEffect(() => {
+    if (
+      visible &&
+      !attemptedConnection.current &&
+      !isWalletConnected &&
+      wallet
+    ) {
+      attemptedConnection.current = true
+      walletRepo.connect(wallet.name).catch(console.error)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [visible, isWalletConnected])
+  // Reset so it checks next time it becomes visible.
+  useEffect(() => {
+    if (!visible) {
+      attemptedConnection.current = false
+    }
+  }, [visible])
 
   const nfts = useCachedLoadingWithError(
     // Don't load NFTs until visible.
