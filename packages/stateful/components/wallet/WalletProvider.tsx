@@ -222,19 +222,21 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   // Auto-connect to current chain if switched chains and no longer connected.
   const previousChain = usePrevious(chain.chain_name)
   const previousConnected = usePrevious(isWalletConnected)
+  const previousWalletName = usePrevious(wallet?.name)
   const walletRepoRef = useRef(walletRepo)
   walletRepoRef.current = walletRepo
   const reconnectingRef = useRef(false)
   useEffect(() => {
     if (
       previousConnected &&
+      previousWalletName &&
       !isWalletConnected &&
       previousChain !== chain.chain_name &&
       !reconnectingRef.current
     ) {
       reconnectingRef.current = true
       walletRepoRef.current
-        .connect(wallet?.name)
+        .connect(previousWalletName)
         .catch(console.error)
         .finally(() => {
           reconnectingRef.current = false
@@ -245,7 +247,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
     isWalletConnected,
     previousChain,
     chain.chain_name,
-    wallet?.name,
+    previousWalletName,
   ])
 
   // Refresh connection on wallet change.
