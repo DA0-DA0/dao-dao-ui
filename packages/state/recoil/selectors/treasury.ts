@@ -337,25 +337,31 @@ export const historicalBalancesSelector = selectorFamily<
             : constSelector([]),
         ])
       ) as [
-        {
-          at?: string
-          // Map of denom to balance.
-          value: Record<string, string | undefined>
-          blockHeight: number
-          blockTimeUnixMs: number
-        }[],
-        {
-          at?: string
-          // List of contract addresses and balances.
-          value: { contractAddress: string; balance: string }[]
-          blockHeight: number
-          blockTimeUnixMs: number
-        }[]
+        (
+          | {
+              at?: string
+              // Map of denom to balance.
+              value: Record<string, string | undefined>
+              blockHeight: number
+              blockTimeUnixMs: number
+            }[]
+          | null
+        ),
+        (
+          | {
+              at?: string
+              // List of contract addresses and balances.
+              value: { contractAddress: string; balance: string }[]
+              blockHeight: number
+              blockTimeUnixMs: number
+            }[]
+          | null
+        )
       ]
 
       // Get all unique token sources.
       const uniqueTokenSources = uniq([
-        ...nativeBalanceSnapshots.flatMap(({ value }) =>
+        ...(nativeBalanceSnapshots || []).flatMap(({ value }) =>
           Object.keys(value).map((denomOrAddress) =>
             serializeTokenSource({
               chainId,
@@ -364,7 +370,7 @@ export const historicalBalancesSelector = selectorFamily<
             })
           )
         ),
-        ...cw20BalanceSnapshots.flatMap(({ value }) =>
+        ...(cw20BalanceSnapshots || []).flatMap(({ value }) =>
           value.map(({ contractAddress }) =>
             serializeTokenSource({
               chainId,
@@ -398,7 +404,9 @@ export const historicalBalancesSelector = selectorFamily<
       )
 
       // Group snapshots by timestamp.
-      const nativeBalanceSnapshotsByTimestamp = nativeBalanceSnapshots.reduce(
+      const nativeBalanceSnapshotsByTimestamp = (
+        nativeBalanceSnapshots || []
+      ).reduce(
         (acc, { at, blockTimeUnixMs, value }) => ({
           ...acc,
           [Number(at || blockTimeUnixMs)]: Object.entries(value).reduce(
@@ -411,7 +419,9 @@ export const historicalBalancesSelector = selectorFamily<
         }),
         {} as Record<number, [string, string][] | undefined>
       )
-      const cw20BalanceSnapshotsByTimestamp = cw20BalanceSnapshots.reduce(
+      const cw20BalanceSnapshotsByTimestamp = (
+        cw20BalanceSnapshots || []
+      ).reduce(
         (acc, { at, blockTimeUnixMs, value }) => ({
           ...acc,
           [Number(at || blockTimeUnixMs)]: value.map(
