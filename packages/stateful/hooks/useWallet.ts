@@ -1,8 +1,8 @@
 import { Chain } from '@chain-registry/types'
 import { toHex } from '@cosmjs/encoding'
 import { ChainContext, WalletAccount } from '@cosmos-kit/core'
-import { useChain } from '@cosmos-kit/react-lite'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useChain, useManager } from '@cosmos-kit/react-lite'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 
 import {
@@ -15,8 +15,6 @@ import {
 } from '@dao-dao/stateless'
 import { LoadingData } from '@dao-dao/types'
 import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
-
-import { useAttemptWalletChainConnection } from './useAttemptWalletChainConnection'
 
 export type UseWalletOptions = {
   // If undefined, defaults to current chain context. If not in a chain context,
@@ -43,6 +41,7 @@ export const useWallet = ({
 }: UseWalletOptions = {}): UseWalletReturn => {
   const walletChainId = useRecoilValue(walletChainIdAtom)
   const { chain: currentChain } = useChainContextIfAvailable() ?? {}
+  const { getWalletRepo } = useManager()
 
   // If chainId passed, use that. Otherwise, use current chain context. If not
   // in a chain context, fallback to global wallet chain setting. If chain
@@ -53,17 +52,68 @@ export const useWallet = ({
       : currentChain || maybeGetChainForChainId(walletChainId)) ||
     getSupportedChains()[0].chain
 
-  useAttemptWalletChainConnection({
-    chainId: chain.chain_id,
-    disabled: !attemptConnection,
-  })
-
   const _walletChain = useChain(chain.chain_name)
-
   // Memoize wallet chain since it changes every render. The hook above forces
   // re-render when address changes, so this is safe.
   const walletChainRef = useRef(_walletChain)
   walletChainRef.current = _walletChain
+
+  // Chain of main wallet connection.
+  const mainWalletChainId = useRecoilValue(walletChainIdAtom)
+  // Get main wallet connection.
+  const mainWallet = getWalletRepo(
+    maybeGetChainForChainId(mainWalletChainId)?.chain_name || chain.chain_name
+  )?.current
+  const mainWalletConnected = !!mainWallet?.isWalletConnected
+  // Memoize wallet chain since it changes every render. The hook above forces
+  // re-render when address changes, so this is safe.
+  const mainWalletRef = useRef(mainWallet)
+  mainWalletRef.current = mainWallet
+
+  // Only attempt connection once per enable.
+  const attemptedConnection = useRef(false)
+  // Reset so that we re-attempt connection if this becomes enabled again.
+  useEffect(() => {
+    if (!attemptConnection) {
+      attemptedConnection.current = false
+    }
+  }, [attemptConnection])
+
+  const connect = useCallback(() => {
+    if (mainWalletConnected && mainWalletRef.current) {
+      return walletChainRef.current.walletRepo
+        .connect(mainWalletRef.current.walletName)
+        .catch(console.error)
+    } else {
+      return walletChainRef.current.connect()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    mainWalletConnected,
+    chain.chain_name,
+    walletChainRef.current.wallet?.name,
+    walletChainRef.current.status,
+  ])
+
+  // Attempt auto-connection if main wallet is connected, we are not, and we
+  // haven't attempted it before.
+  useEffect(() => {
+    if (
+      attemptConnection &&
+      !attemptedConnection.current &&
+      !_walletChain.isWalletConnected &&
+      mainWalletConnected &&
+      mainWalletRef.current
+    ) {
+      attemptedConnection.current = true
+      connect()
+    }
+  }, [
+    mainWalletConnected,
+    attemptConnection,
+    connect,
+    _walletChain.isWalletConnected,
+  ])
 
   const [account, setAccount] = useState<WalletAccount>()
   const [hexPublicKeyData, setHexPublicKeyData] = useState<string>()
@@ -78,6 +128,7 @@ export const useWallet = ({
     undefined
   )
 
+  // Load account and public key data when wallet is connected or it changes.
   useEffect(() => {
     if (!loadAccount) {
       return
@@ -112,6 +163,7 @@ export const useWallet = ({
   const response = useMemo(
     (): UseWalletReturn => ({
       ...walletChainRef.current,
+      connect,
       // Use chain from our version of the chain-registry.
       chain,
       account,
@@ -123,6 +175,7 @@ export const useWallet = ({
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [
+      connect,
       account,
       chain,
       hexPublicKeyData,

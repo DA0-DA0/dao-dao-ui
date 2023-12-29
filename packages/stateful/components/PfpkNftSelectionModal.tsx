@@ -1,5 +1,5 @@
 import { Image } from '@mui/icons-material'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
@@ -25,6 +25,7 @@ import {
 } from '@dao-dao/types/contracts/Cw721Base'
 import {
   MAINNET,
+  getDisplayNameForChainId,
   getNftKey,
   getSupportedChainConfig,
   processError,
@@ -51,39 +52,10 @@ export const InnerPfpkNftSelectionModal = ({
     address: walletAddress,
     isWalletError,
     message: walletErrorMessage,
-    isWalletConnected,
     chain,
-    walletRepo,
-    wallet,
   } = useWallet({
-    // This determines where uploaded NFTs are created. Explicitly use Juno
-    // because wallets cannot create Stargaze NFTs directly, and Juno is
-    // permissionless so it's a good place to create NFTs.
-    chainId: MAINNET ? ChainId.JunoMainnet : ChainId.JunoTestnet,
-    // Only attempt connection when the modal is visible.
     attemptConnection: visible,
   })
-
-  // If wallet is disconnected, attempt connection each time it becomes visible.
-  const attemptedConnection = useRef(false)
-  useEffect(() => {
-    if (
-      visible &&
-      !attemptedConnection.current &&
-      !isWalletConnected &&
-      wallet
-    ) {
-      attemptedConnection.current = true
-      walletRepo.connect(wallet.name).catch(console.error)
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [visible, isWalletConnected])
-  // Reset so it checks next time it becomes visible.
-  useEffect(() => {
-    if (!visible) {
-      attemptedConnection.current = false
-    }
-  }, [visible])
 
   const nfts = useCachedLoadingWithError(
     // Don't load NFTs until visible.
@@ -178,18 +150,38 @@ export const InnerPfpkNftSelectionModal = ({
   const image = watch('image')
 
   const [uploadingImage, setUploadingImage] = useState(false)
+
+  // Upload profile photos to Juno mainnet.
+  const junoWallet = useWallet({
+    chainId: ChainId.JunoMainnet,
+    // Attempt connection to Juno when image selector is visible.
+    attemptConnection: showImageSelector,
+  })
   const { ready: instantiateAndExecuteReady, instantiateAndExecute } =
     useInstantiateAndExecute(
-      chain.chain_id,
-      getSupportedChainConfig(chain.chain_id)?.codeIds.Cw721Base || -1
+      junoWallet.chain.chain_id,
+      getSupportedChainConfig(junoWallet.chain.chain_id)?.codeIds.Cw721Base ||
+        -1
     )
-  const uploadImage = useCallback(async () => {
-    if (!image) {
-      toast.error(t('error.noImageSelected'))
-    }
 
+  const uploadImage = useCallback(async () => {
     setUploadingImage(true)
     try {
+      if (!junoWallet.isWalletConnected) {
+        await junoWallet.connect()
+        return
+      }
+
+      if (!instantiateAndExecuteReady) {
+        toast.error(t('error.loadingData'))
+        return
+      }
+
+      if (!image) {
+        toast.error(t('error.noImageSelected'))
+        return
+      }
+
       const { cid, metadataUrl } = await uploadNft(
         'DAO DAO Profile Picture',
         '',
@@ -245,6 +237,8 @@ export const InnerPfpkNftSelectionModal = ({
     chain.chain_id,
     image,
     instantiateAndExecute,
+    instantiateAndExecuteReady,
+    junoWallet,
     refreshBalances,
     t,
     walletAddress,
@@ -293,7 +287,6 @@ export const InnerPfpkNftSelectionModal = ({
           // Only mainnet NFTs are supported in PFPK. No testnets.
           MAINNET
             ? {
-                loading: !instantiateAndExecuteReady,
                 label: t('button.uploadImage'),
                 onClick: () => setShowImageSelector(true),
               }
@@ -329,11 +322,19 @@ export const InnerPfpkNftSelectionModal = ({
       {MAINNET && (
         <ImageSelectorModal
           Trans={Trans}
-          buttonLabel={t('button.save')}
+          buttonLabel={
+            junoWallet.isWalletConnected
+              ? t('button.save')
+              : t('button.connectToChain', {
+                  chainName: getDisplayNameForChainId(
+                    junoWallet.chain.chain_id
+                  ),
+                })
+          }
           fieldName="image"
           imageClassName="!rounded-2xl"
           loading={uploadingImage}
-          onClose={(done) =>
+          onCloseOrDone={(done) =>
             done ? uploadImage() : setShowImageSelector(false)
           }
           register={register}

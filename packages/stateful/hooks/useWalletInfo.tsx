@@ -1,5 +1,4 @@
 import { Chain } from '@chain-registry/types'
-import { makeSignDoc } from '@cosmjs/amino'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
 
@@ -12,7 +11,7 @@ import {
   refreshWalletProfileAtom,
 } from '@dao-dao/state'
 import { useCachedLoadable } from '@dao-dao/stateless'
-import { ChainId, WalletProfileData, WalletProfileUpdate } from '@dao-dao/types'
+import { WalletProfileData, WalletProfileUpdate } from '@dao-dao/types'
 import {
   PFPK_API_BASE,
   convertMicroDenomToDenomWithDecimals,
@@ -20,6 +19,7 @@ import {
 } from '@dao-dao/utils'
 
 import { walletProfileDataSelector } from '../recoil'
+import { useCfWorkerAuthPostRequest } from './useCfWorkerAuthPostRequest'
 import { useWallet } from './useWallet'
 
 export type UseWalletInfoOptions = {
@@ -51,18 +51,12 @@ export const useWalletInfo = ({
   const {
     chain: walletChain,
     address,
-    isWalletConnected,
     hexPublicKey,
   } = useWallet({
     chainId,
     loadAccount: true,
   })
   chainId ||= walletChain.chain_id
-
-  // PFPK uses Juno signatures for signing.
-  const junoWallet = useWallet({
-    chainId: ChainId.JunoMainnet,
-  })
 
   const nativeToken = getNativeTokenForChainId(chainId)
 
@@ -176,17 +170,15 @@ export const useWalletInfo = ({
 
   const [updatingNonce, setUpdatingNonce] = useState<number>()
   const onUpdateRef = useRef<() => void>()
+  const { ready: pfpkApiReady, postRequest: postPfpkRequest } =
+    useCfWorkerAuthPostRequest(PFPK_API_BASE, 'PFPK Verification')
   const _updateProfile = useCallback(
     async (
-      profile: Omit<WalletProfileUpdate, 'nonce'>,
+      profileUpdates: Omit<WalletProfileUpdate, 'nonce'>,
       onUpdate?: () => void
     ): Promise<void> => {
-      // PFPK uses Juno signatures for signing.
-      const { address: signer, getOfflineSignerAmino } = junoWallet
       if (
-        !signer ||
-        !isWalletConnected ||
-        hexPublicKey.loading ||
+        !pfpkApiReady ||
         profileLoading ||
         // Disallow editing if we don't have correct nonce from server.
         walletProfile.nonce < 0
@@ -199,60 +191,16 @@ export const useWalletInfo = ({
       setUpdatingNonce(walletProfile.nonce)
 
       try {
-        const profileUpdate: WalletProfileUpdate = {
-          ...profile,
+        const profile: WalletProfileUpdate = {
+          ...profileUpdates,
           nonce: walletProfile.nonce,
         }
 
-        const signDocAmino = makeSignDoc(
-          [
-            {
-              type: 'PFPK Verification',
-              value: {
-                signer,
-                data: JSON.stringify(profileUpdate, undefined, 2),
-              },
-            },
-          ],
-          {
-            gas: '0',
-            amount: [
-              {
-                denom: 'ujuno',
-                amount: '0',
-              },
-            ],
-          },
-          ChainId.JunoMainnet,
-          '',
-          0,
-          0
-        )
-        const {
-          signature: { signature },
-        } = await (
-          await getOfflineSignerAmino()
-        ).signAmino(signer, signDocAmino)
-
-        const response = await fetch(PFPK_API_BASE + `/${hexPublicKey.data}`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            profile: profileUpdate,
-            signature,
-          }),
+        await postPfpkRequest('/', {
+          profile,
         })
 
         refreshWalletProfile()
-
-        if (!response.ok) {
-          const res = await response.json()
-          throw new Error(
-            `${res.error}${res.message ? `: ${res.message}` : ''}`
-          )
-        }
       } catch (err) {
         // If errored, clear updating state since we did not update.
         onUpdateRef.current = undefined
@@ -263,11 +211,10 @@ export const useWalletInfo = ({
       }
     },
     [
-      junoWallet,
-      isWalletConnected,
-      hexPublicKey,
+      pfpkApiReady,
       profileLoading,
       walletProfile.nonce,
+      postPfpkRequest,
       refreshWalletProfile,
     ]
   )

@@ -73,6 +73,7 @@
     "clickToView": "Click to view",
     "close": "Close",
     "connect": "Connect",
+    "connectToChain": "Connect to {{chainName}}",
     "continue": "Continue",
     "continueEditing": "Continue editing",
     "copy": "Copy",

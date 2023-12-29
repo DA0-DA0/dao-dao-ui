@@ -261,7 +261,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
       try {
         await walletRepo.connect(wallet.name)
       } catch {
-        await walletRepo.disconnect(wallet.name).catch(console.error)
+        await walletRepo.disconnect(wallet.name, true).catch(console.error)
       }
     }
 
