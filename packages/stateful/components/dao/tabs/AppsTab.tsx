@@ -38,9 +38,11 @@ import {
   decodedStargateMsgToCw,
   getAccountAddress,
   getAccountChainId,
+  getDisplayNameForChainId,
   getFallbackImage,
   maybeMakePolytoneExecuteMessage,
   protobufToCwMsg,
+  toAccessibleImageUrl,
 } from '@dao-dao/utils'
 import { TxBody } from '@dao-dao/utils/protobuf/codegen/cosmos/tx/v1beta1/tx'
 
@@ -129,13 +131,22 @@ export const AppsTab = () => {
         }
       : {
           type: 'error',
-          error: `Unsupported chains: ${[chainIds].flat().join(', ')}.`,
+          error: t('error.daoMissingAccountsOnChains', {
+            daoName: name,
+            chains: [chainIds]
+              .flat()
+              .map((chainId) => getDisplayNameForChainId(chainId))
+              .join(', '),
+            count: [chainIds].flat().length,
+          }),
         }
 
   const { wallet, iframeRef } = useIframe({
     walletInfo: {
       prettyName: name,
-      logo: imageUrl || SITE_URL + getFallbackImage(coreAddress),
+      logo: imageUrl
+        ? toAccessibleImageUrl(imageUrl)
+        : SITE_URL + getFallbackImage(coreAddress),
     },
     accountReplacement: async (chainId) => ({
       username: name,

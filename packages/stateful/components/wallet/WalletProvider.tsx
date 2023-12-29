@@ -27,8 +27,10 @@ import {
   SetStateAction,
   useEffect,
   useMemo,
+  useRef,
 } from 'react'
 import { useTranslation } from 'react-i18next'
+import { usePrevious } from 'react-use'
 import { useRecoilState, useRecoilValue } from 'recoil'
 
 import {
@@ -45,8 +47,8 @@ import {
   getSignerOptions,
 } from '@dao-dao/utils'
 
-import { WalletUi } from '.'
 import { useSyncWalletSigner, useWallet } from '../../hooks'
+import { WalletUi } from './WalletUi'
 
 // Set better name for MetaMask wallets.
 leapMetamaskWallets[0].walletInfo.prettyName = 'MetaMask (Leap Snap)'
@@ -214,8 +216,39 @@ export const WalletProvider = ({
 const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
   useSyncWalletSigner()
 
-  const { isWalletConnected, isWalletDisconnected, walletRepo, wallet } =
+  const { isWalletConnected, isWalletDisconnected, walletRepo, wallet, chain } =
     useWallet()
+
+  // Auto-connect to current chain if switched chains and no longer connected.
+  const previousChain = usePrevious(chain.chain_name)
+  const previousConnected = usePrevious(isWalletConnected)
+  const previousWalletName = usePrevious(wallet?.name)
+  const walletRepoRef = useRef(walletRepo)
+  walletRepoRef.current = walletRepo
+  const reconnectingRef = useRef(false)
+  useEffect(() => {
+    if (
+      previousConnected &&
+      previousWalletName &&
+      !isWalletConnected &&
+      previousChain !== chain.chain_name &&
+      !reconnectingRef.current
+    ) {
+      reconnectingRef.current = true
+      walletRepoRef.current
+        .connect(previousWalletName)
+        .catch(console.error)
+        .finally(() => {
+          reconnectingRef.current = false
+        })
+    }
+  }, [
+    previousConnected,
+    isWalletConnected,
+    previousChain,
+    chain.chain_name,
+    previousWalletName,
+  ])
 
   // Refresh connection on wallet change.
   useEffect(() => {
@@ -228,7 +261,7 @@ const InnerWalletProvider = ({ children }: PropsWithChildren<{}>) => {
       try {
         await walletRepo.connect(wallet.name)
       } catch {
-        await walletRepo.disconnect(wallet.name).catch(console.error)
+        await walletRepo.disconnect(wallet.name, true).catch(console.error)
       }
     }
 
