@@ -1,13 +1,15 @@
-import { useChains } from '@cosmos-kit/react-lite'
+import { useChain, useManager } from '@cosmos-kit/react-lite'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValue } from 'recoil'
 
+import { walletChainIdAtom } from '@dao-dao/state'
 import {
   ConnectWalletProps,
   ConnectWallet as StatelessConnectWallet,
   Tooltip,
   useChainContextIfAvailable,
 } from '@dao-dao/stateless'
-import { getSupportedChains } from '@dao-dao/utils'
+import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
 
 export type StatefulConnectWalletProps = Omit<
   ConnectWalletProps,
@@ -20,24 +22,24 @@ export const ConnectWallet = (props: StatefulConnectWalletProps) => {
   const {
     chain: { chain_name: currentChainName } = { chain_name: undefined },
   } = useChainContextIfAvailable() ?? {}
-  const chainNames = getSupportedChains().map(({ chain }) => chain.chain_name)
+  const firstSupportedChainName = getSupportedChains()[0].chain.chain_name
+  const chainName = currentChainName || firstSupportedChainName
 
-  // TODO: fix wallets not connecting across chains
-  const chainWallets = useChains(chainNames)
-  const { connect, disconnect, isWalletConnecting } =
-    chainWallets[
-      // Use current chain if available, or just use first chain. Should not
-      // matter because connect/disconnect will sync to all chains, but in case
-      // the user only approves some chains and not others, we want to make sure
-      // the current chain is priority.
-      currentChainName || chainNames[0]
-    ] ||
-    // In case current chain is not supported, fallback to first chain.
-    chainWallets[Object.keys(chainWallets)[0]]
+  const { getWalletRepo } = useManager()
 
-  // Single chain connection.
-  // const chainWallet = useChain(currentChainName || chainNames[0])
-  // const { connect, disconnect, isWalletConnecting } = chainWallet
+  // Chain of main wallet connection.
+  const mainWalletChainId = useRecoilValue(walletChainIdAtom)
+  // Get main wallet connection.
+  const mainWallet = getWalletRepo(
+    maybeGetChainForChainId(mainWalletChainId)?.chain_name || chainName
+  )?.current
+
+  const {
+    walletRepo,
+    disconnect,
+    isWalletConnecting,
+    chain: connectingToChain,
+  } = useChain(chainName)
 
   return (
     <Tooltip
@@ -46,7 +48,20 @@ export const ConnectWallet = (props: StatefulConnectWalletProps) => {
       <StatelessConnectWallet
         allowClickWhileLoading
         loading={isWalletConnecting}
-        onConnect={isWalletConnecting ? disconnect : connect}
+        onConnect={() =>
+          isWalletConnecting
+            ? disconnect()
+            : // If connecting to a chain other than the main wallet connection,
+              // auto-select the main wallet if it exists. Otherwise, allow
+              // wallet modal to show up by passing undefined to
+              // walletRepo.connect.
+              walletRepo.connect(
+                connectingToChain.chain_id !== mainWalletChainId &&
+                  mainWallet?.isWalletConnected
+                  ? mainWallet.walletName
+                  : undefined
+              )
+        }
         variant="primary"
         {...props}
       />

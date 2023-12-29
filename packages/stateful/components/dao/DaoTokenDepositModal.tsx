@@ -44,6 +44,8 @@ export const DaoTokenDepositModal = ({
   const { name: daoName } = useDaoInfoContext()
   const { isWalletConnected, address, getSigningCosmWasmClient } = useWallet({
     chainId: token.chainId,
+    // Only attempt connection when the modal is visible.
+    attemptConnection: props.visible,
   })
   const { refreshBalances: refreshWalletBalances } = useWalletInfo({
     chainId: token.chainId,

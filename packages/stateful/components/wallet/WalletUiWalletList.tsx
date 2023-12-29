@@ -10,8 +10,6 @@ import {
   WalletLogo,
 } from '@dao-dao/stateless'
 
-import { useWallet } from '../../hooks/useWallet'
-
 export type WalletUiWalletListProps = Pick<WalletModalProps, 'walletRepo'> & {
   connect: (wallet: ChainWalletBase) => void
 }
@@ -21,7 +19,6 @@ export const WalletUiWalletList = ({
   connect,
 }: WalletUiWalletListProps) => {
   const { t } = useTranslation()
-  const { isWalletConnecting } = useWallet()
 
   if (!walletRepo) {
     return null
@@ -47,11 +44,11 @@ export const WalletUiWalletList = ({
   )
 
   const isConnectingTo = (wallet: ChainWalletBase) =>
-    isWalletConnecting && current && current.walletName === wallet.walletName
+    current?.isWalletConnecting && current.walletName === wallet.walletName
 
   const makeWalletOnClick = (wallet: ChainWalletBase) => async () => {
     try {
-      await current?.disconnect()
+      await current?.disconnect(true)
     } catch (error) {
       console.error('Failed disconnecting from current wallet', error)
     }

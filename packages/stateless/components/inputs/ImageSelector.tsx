@@ -46,8 +46,9 @@ export interface ImageSelectorModalProps<
   watch: UseFormWatch<FV>
   setValue: UseFormSetValue<FV>
   error?: FieldError
-  onClose: (done: boolean) => void
+  onCloseOrDone: (done: boolean) => void
   loading?: boolean
+  disabled?: boolean
   Trans: ComponentType<TransProps>
   buttonLabel?: string
   imageClassName?: string
@@ -63,8 +64,9 @@ export const ImageSelectorModal = <
   error,
   setValue,
   watch,
-  onClose,
+  onCloseOrDone,
   loading,
+  disabled,
   Trans,
   buttonLabel,
   imageClassName,
@@ -78,7 +80,7 @@ export const ImageSelectorModal = <
   return (
     <Modal
       contentContainerClassName="gap-3 items-center"
-      onClose={() => onClose(false)}
+      onClose={() => onCloseOrDone(false)}
       visible={visible}
     >
       <div
@@ -111,7 +113,7 @@ export const ImageSelectorModal = <
             // Prevent submitting form on enter.
             if (e.key === 'Enter') {
               e.preventDefault()
-              onClose(true)
+              onCloseOrDone(true)
             }
           }}
           register={register}
@@ -138,8 +140,9 @@ export const ImageSelectorModal = <
 
       <Button
         className="self-end"
+        disabled={disabled}
         loading={loading}
-        onClick={() => onClose(true)}
+        onClick={() => onCloseOrDone(true)}
       >
         {buttonLabel || t('button.done')}
       </Button>
@@ -209,7 +212,7 @@ export const ImageSelector = <
         <ImageSelectorModal
           error={error}
           fieldName={fieldName}
-          onClose={() => setShowImageSelect(false)}
+          onCloseOrDone={() => setShowImageSelect(false)}
           watch={watch}
           {...props}
         />
