@@ -345,6 +345,8 @@
     "daoIsInactive_absolute_other": "This DAO is inactive. Proposals cannot be created until {{count}} tokens are staked.",
     "daoIsInactive_percent": "This DAO is inactive. Proposals cannot be created until {{percent}} of voting power is staked.",
     "daoIsPaused": "You cannot create a proposal when the DAO is paused.",
+    "daoMissingAccountsOnChains_one": "{{daoName}} is missing an account on {{chains}}.",
+    "daoMissingAccountsOnChains_other": "{{daoName}} is missing accounts on the following chains: {{chains}}.",
     "discordAuthFailed": "Discord authentication unexpectedly failed. Try again or reach out to us for assistance.",
     "emptyFile": "File is empty.",
     "enterAtLeastTwoAccounts": "Enter at least two accounts.",
