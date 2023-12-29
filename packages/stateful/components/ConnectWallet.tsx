@@ -1,4 +1,4 @@
-import { useChain } from '@cosmos-kit/react-lite'
+import { useChain, useManager } from '@cosmos-kit/react-lite'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -22,8 +22,15 @@ export const ConnectWallet = (props: StatefulConnectWalletProps) => {
   } = useChainContextIfAvailable() ?? {}
   const firstSupportedChainName = getSupportedChains()[0].chain.chain_name
 
-  const chainWallet = useChain(currentChainName || firstSupportedChainName)
-  const { connect, disconnect, isWalletConnecting } = chainWallet
+  const { walletRepos } = useManager()
+  const { walletRepo, disconnect, isWalletConnecting, wallet } = useChain(
+    currentChainName || firstSupportedChainName
+  )
+
+  // Get currently connected wallet and connect to it by default if it exists.
+  const connectedWallet = walletRepos.find(
+    (repo) => repo.current?.isWalletConnected
+  )?.current?.walletInfo
 
   return (
     <Tooltip
@@ -32,7 +39,11 @@ export const ConnectWallet = (props: StatefulConnectWalletProps) => {
       <StatelessConnectWallet
         allowClickWhileLoading
         loading={isWalletConnecting}
-        onConnect={isWalletConnecting ? disconnect : connect}
+        onConnect={() =>
+          isWalletConnecting
+            ? disconnect()
+            : walletRepo.connect((connectedWallet || wallet)?.name)
+        }
         variant="primary"
         {...props}
       />

@@ -1,5 +1,6 @@
 export * from './contracts'
 
+export * from './useAttemptWalletChainConnection'
 export * from './useAwaitNextBlock'
 export * from './useCfWorkerAuthPostRequest'
 export * from './useDaoProposalSinglePublishProposal'

@@ -60,6 +60,8 @@ export const InnerPfpkNftSelectionModal = ({
     // because wallets cannot create Stargaze NFTs directly, and Juno is
     // permissionless so it's a good place to create NFTs.
     chainId: MAINNET ? ChainId.JunoMainnet : ChainId.JunoTestnet,
+    // Only attempt connection when the modal is visible.
+    attemptConnection: visible,
   })
 
   // If wallet is disconnected, attempt connection each time it becomes visible.

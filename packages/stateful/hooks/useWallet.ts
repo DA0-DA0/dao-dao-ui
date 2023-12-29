@@ -16,10 +16,17 @@ import {
 import { LoadingData } from '@dao-dao/types'
 import { getSupportedChains, maybeGetChainForChainId } from '@dao-dao/utils'
 
+import { useAttemptWalletChainConnection } from './useAttemptWalletChainConnection'
+
 export type UseWalletOptions = {
+  // If undefined, defaults to current chain context. If not in a chain context,
+  // falls back to first supported chain.
   chainId?: string
   // If true, will return `account` and `hexPublicKey` in response.
   loadAccount?: boolean
+  // If true, attempt connection if wallet is connected to a different chain but
+  // not the current one.
+  attemptConnection?: boolean
 }
 
 export type UseWalletReturn = Omit<ChainContext, 'chain'> & {
@@ -32,18 +39,24 @@ export type UseWalletReturn = Omit<ChainContext, 'chain'> & {
 export const useWallet = ({
   chainId,
   loadAccount = false,
+  attemptConnection = false,
 }: UseWalletOptions = {}): UseWalletReturn => {
   const walletChainId = useRecoilValue(walletChainIdAtom)
   const { chain: currentChain } = useChainContextIfAvailable() ?? {}
 
   // If chainId passed, use that. Otherwise, use current chain context. If not
   // in a chain context, fallback to global wallet chain setting. If chain
-  // invalid, fallback to default.
+  // invalid, fallback to first supported.
   const chain =
     (chainId
       ? maybeGetChainForChainId(chainId)
       : currentChain || maybeGetChainForChainId(walletChainId)) ||
     getSupportedChains()[0].chain
+
+  useAttemptWalletChainConnection({
+    chainId: chain.chain_id,
+    disabled: !attemptConnection,
+  })
 
   const _walletChain = useChain(chain.chain_name)
 
