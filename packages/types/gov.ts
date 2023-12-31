@@ -157,8 +157,6 @@ export type GovernanceProposalActionData = {
   chainId: string
   // The address of the chain's gov module. Loaded in the background.
   govModuleAddress?: string
-  // If true, will hide title, description, and deposit.
-  _onlyShowActions?: boolean
   version: GovProposalVersion
   title: string
   description: string
@@ -186,8 +184,8 @@ export type GovernanceProposalActionData = {
   // without causing infinite loops.
   // GovProposalV1Beta1DecodedContent
   legacyContent: any
-  // V1 proposals require a metadata.json file to be uploaded to IPFS.
-  metadataCid: string
   // V1 proposals have an expedited flag.
   expedited: boolean
+  // V1 proposals support wrapping legacy content.
+  useV1LegacyContent: boolean
 } & NestedActionsEditorFormData
