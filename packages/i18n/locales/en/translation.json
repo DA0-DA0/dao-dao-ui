@@ -835,7 +835,7 @@
     "closesAtDate": "Closes at {{date}}",
     "communityPoolDepositDescription": "Deposit funds into the community pool.",
     "communityPoolTransferDescription": "Transfer funds from the community pool.",
-    "communityPoolTransferExplanation": "Funds spent in a governance proposal are transferred from the community pool to the governance module before being distributed.",
+    "communityPoolTransferExplanation": "Funds spent in a governance proposal created via DAO DAO are transferred from the community pool to the governance module before being distributed. This allows for more granular control over the distribution, such as enabling IBC transfers.",
     "compensationCycleClosedAwaitingCompletion": "Contributions and ratings have been submitted. Review the results and create a proposal to complete the cycle.",
     "completeRelayOrLoseFunds": "Make sure you have completed the relaying process, or you may lose the tokens you sent to the relayers to pay fees.",
     "completed": "Completed",
