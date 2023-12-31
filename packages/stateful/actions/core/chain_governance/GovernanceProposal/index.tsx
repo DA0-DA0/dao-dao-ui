@@ -364,7 +364,7 @@ export const makeGovernanceProposalAction: ActionMaker<
               summary: description,
               // In case it's undefined, default to false.
               expedited: expedited || false,
-              metadata: '',
+              metadata: title,
             } as MsgSubmitProposalV1,
           },
         })
