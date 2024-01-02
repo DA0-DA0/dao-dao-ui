@@ -130,6 +130,16 @@ const InnerComponent = ({
     })
   )
 
+  // Update version in data.
+  useEffect(() => {
+    setValue(
+      (props.fieldNamePrefix + 'version') as 'version',
+      supportsV1GovProposals
+        ? GovProposalVersion.V1
+        : GovProposalVersion.V1_BETA_1
+    )
+  }, [supportsV1GovProposals, setValue, props.fieldNamePrefix])
+
   // Update gov module address in data.
   useEffect(() => {
     setValue(
