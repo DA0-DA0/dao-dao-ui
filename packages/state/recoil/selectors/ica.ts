@@ -69,8 +69,13 @@ export const chainSupportsIcaHostSelector = selectorFamily<
 
         return (
           !!hostEnabled &&
-          !!allowMessages?.includes('/cosmos.bank.v1beta1.MsgSend') &&
-          !!allowMessages?.includes('/ibc.applications.transfer.v1.MsgTransfer')
+          // Wildcard allows all messages.
+          (!!allowMessages?.includes('*') ||
+            // If no wildcard, ensure both bank and IBC sends are enabled.
+            (!!allowMessages?.includes('/cosmos.bank.v1beta1.MsgSend') &&
+              !!allowMessages?.includes(
+                '/ibc.applications.transfer.v1.MsgTransfer'
+              )))
         )
       } catch {
         return false
