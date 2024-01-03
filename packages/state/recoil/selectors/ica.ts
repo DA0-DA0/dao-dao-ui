@@ -2,6 +2,8 @@ import { selectorFamily } from 'recoil'
 
 import { WithChainId } from '@dao-dao/types'
 import { getIbcTransferInfoBetweenChains } from '@dao-dao/utils'
+import { MsgSend } from '@dao-dao/utils/protobuf/codegen/cosmos/bank/v1beta1/tx'
+import { MsgTransfer } from '@dao-dao/utils/protobuf/codegen/ibc/applications/transfer/v1/tx'
 
 import { ibcRpcClientForChainSelector } from './chain'
 
@@ -69,8 +71,11 @@ export const chainSupportsIcaHostSelector = selectorFamily<
 
         return (
           !!hostEnabled &&
-          !!allowMessages?.includes('/cosmos.bank.v1beta1.MsgSend') &&
-          !!allowMessages?.includes('/ibc.applications.transfer.v1.MsgTransfer')
+          // Wildcard allows all messages.
+          (!!allowMessages?.includes('*') ||
+            // If no wildcard, ensure both bank and IBC sends are enabled.
+            (!!allowMessages?.includes(MsgSend.typeUrl) &&
+              !!allowMessages?.includes(MsgTransfer.typeUrl)))
         )
       } catch {
         return false

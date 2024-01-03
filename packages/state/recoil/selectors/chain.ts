@@ -1,7 +1,13 @@
 import { CosmWasmClient } from '@cosmjs/cosmwasm-stargate'
 import { fromBase64, toHex } from '@cosmjs/encoding'
 import { Coin, IndexedTx, StargateClient } from '@cosmjs/stargate'
-import { selector, selectorFamily, waitForAll, waitForAny } from 'recoil'
+import {
+  selector,
+  selectorFamily,
+  waitForAll,
+  waitForAllSettled,
+  waitForAny,
+} from 'recoil'
 
 import {
   AccountType,
@@ -1065,12 +1071,25 @@ export const communityPoolBalancesSelector = selectorFamily<
         )
       )
 
+      // In case any chain has a community pool but no gov module, handle
+      // gracefully by falling back to chain ID. I doubt this will ever happen,
+      // but why not be safe... Cosmos is crazy.
+      const owner =
+        get(
+          waitForAllSettled([
+            moduleAddressSelector({
+              name: 'gov',
+              chainId,
+            }),
+          ])
+        )[0].valueMaybe() || chainId
+
       const balances = tokens.map(
         (token, i): GenericTokenBalanceWithOwner => ({
           owner: {
             type: AccountType.Native,
             chainId,
-            address: chainId,
+            address: owner,
           },
           token,
           // Truncate.

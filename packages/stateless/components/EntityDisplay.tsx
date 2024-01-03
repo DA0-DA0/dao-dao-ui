@@ -71,7 +71,8 @@ export const EntityDisplay = ({
   // truncated.
   const textDisplay =
     !loadingEntity.loading && loadingEntity.data.name
-      ? loadingEntity.data.type === EntityType.Module
+      ? loadingEntity.data.type === EntityType.Module &&
+        TRANSLATED_CHAIN_MODULES.includes(loadingEntity.data.name)
         ? t('title.chainModule.' + loadingEntity.data.name)
         : loadingEntity.data.name
       : showFullAddress
@@ -145,3 +146,6 @@ export const EntityDisplay = ({
     </div>
   )
 }
+
+// Chain modules that have translations in `title.chainModule.*`.
+const TRANSLATED_CHAIN_MODULES = ['gov']

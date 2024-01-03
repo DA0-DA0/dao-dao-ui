@@ -5,7 +5,7 @@ import { useRecoilValue, waitForAll } from 'recoil'
 
 import {
   chainSupportsV1GovModuleSelector,
-  genericTokenSelector,
+  genericTokenBalanceSelector,
   govParamsSelector,
 } from '@dao-dao/state'
 import {
@@ -18,6 +18,7 @@ import {
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
+  ActionComponentProps,
   ActionContextType,
   ActionKey,
   ActionMaker,
@@ -41,7 +42,10 @@ import {
   objectMatchesStructure,
 } from '@dao-dao/utils'
 import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
-import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/tx'
+import {
+  MsgExecLegacyContent,
+  MsgSubmitProposal as MsgSubmitProposalV1,
+} from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/tx'
 import { TextProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import { ParameterChangeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/params/v1beta1/params'
@@ -85,7 +89,12 @@ const Component: ActionComponent<undefined, GovernanceProposalActionData> = (
           fallback={<Loader />}
         >
           <GovActionsProvider>
-            <InnerComponent {...props} />
+            <InnerComponent
+              {...props}
+              options={{
+                address: getChainAddressForActionOptions(options, chainId),
+              }}
+            />
           </GovActionsProvider>
         </SuspenseLoader>
       </ChainProvider>
@@ -93,11 +102,15 @@ const Component: ActionComponent<undefined, GovernanceProposalActionData> = (
   )
 }
 
-const InnerComponent: ActionComponent<
-  undefined,
+const InnerComponent = ({
+  options: { address },
+  ...props
+}: ActionComponentProps<
+  { address: string | undefined },
   GovernanceProposalActionData
-> = (props) => {
-  const { setValue } = useFormContext<GovernanceProposalActionData>()
+>) => {
+  const { watch, setValue } = useFormContext<GovernanceProposalActionData>()
+  const expedited = watch((props.fieldNamePrefix + 'expedited') as 'expedited')
 
   // `GovActionsProvier` wraps this, which sets these values.
   const {
@@ -117,6 +130,16 @@ const InnerComponent: ActionComponent<
     })
   )
 
+  // Update version in data.
+  useEffect(() => {
+    setValue(
+      (props.fieldNamePrefix + 'version') as 'version',
+      supportsV1GovProposals
+        ? GovProposalVersion.V1
+        : GovProposalVersion.V1_BETA_1
+    )
+  }, [supportsV1GovProposals, setValue, props.fieldNamePrefix])
+
   // Update gov module address in data.
   useEffect(() => {
     setValue(
@@ -125,26 +148,35 @@ const InnerComponent: ActionComponent<
     )
   }, [govModuleAddress, setValue, props.fieldNamePrefix])
 
-  // On chain change, reset deposit.
+  const minDepositParams =
+    expedited && context.params.expeditedMinDeposit?.length
+      ? context.params.expeditedMinDeposit
+      : context.params.minDeposit
+
+  // On chain or min deposit change, reset deposit.
   useEffect(() => {
     setValue((props.fieldNamePrefix + 'deposit') as 'deposit', [
       {
-        denom: context.params.minDeposit[0].denom,
-        amount: Number(context.params.minDeposit[0].amount),
+        denom: minDepositParams[0].denom,
+        amount: Number(minDepositParams[0].amount),
       },
     ])
-  }, [chainId, setValue, props.fieldNamePrefix, context.params.minDeposit])
+  }, [chainId, setValue, props.fieldNamePrefix, minDepositParams])
 
-  const minDeposits = useCachedLoading(
-    waitForAll(
-      context.params.minDeposit.map(({ denom }) =>
-        genericTokenSelector({
-          type: TokenType.Native,
-          denomOrAddress: denom,
-          chainId,
-        })
-      )
-    ),
+  // Get address balances for min deposit denoms.
+  const minDepositBalances = useCachedLoading(
+    address
+      ? waitForAll(
+          minDepositParams.map(({ denom }) =>
+            genericTokenBalanceSelector({
+              address,
+              type: TokenType.Native,
+              denomOrAddress: denom,
+              chainId,
+            })
+          )
+        )
+      : undefined,
     []
   )
 
@@ -158,13 +190,13 @@ const InnerComponent: ActionComponent<
       options={{
         govModuleAddress,
         supportsV1GovProposals,
-        minDeposits: minDeposits.loading
+        minDeposits: minDepositBalances.loading
           ? { loading: true }
           : {
               loading: false,
-              data: minDeposits.data.map((token, index) => ({
-                token,
-                balance: context.params.minDeposit[index].amount,
+              data: minDepositBalances.data.map((tokenBalance, index) => ({
+                ...tokenBalance,
+                min: minDepositParams[index].amount,
               })),
             },
         categories,
@@ -278,8 +310,8 @@ export const makeGovernanceProposalAction: ActionMaker<
       },
       legacyContent: Any.fromPartial({}) as any,
       msgs: [],
-      metadataCid: '',
       expedited: false,
+      useV1LegacyContent: false,
     }
   }
 
@@ -296,8 +328,8 @@ export const makeGovernanceProposalAction: ActionMaker<
       deposit,
       legacyContent,
       msgs,
-      metadataCid,
       expedited,
+      useV1LegacyContent,
     }) => {
       if (!govModuleAddress) {
         throw new Error(
@@ -325,19 +357,24 @@ export const makeGovernanceProposalAction: ActionMaker<
           stargate: {
             typeUrl: MsgSubmitProposalV1.typeUrl,
             value: {
-              messages: msgs.map((msg) =>
-                cwMsgToProtobuf(msg, govModuleAddress)
-              ),
+              messages: useV1LegacyContent
+                ? [
+                    MsgExecLegacyContent.toProtoMsg({
+                      authority: govModuleAddress,
+                      content: legacyContent,
+                    }),
+                  ]
+                : msgs.map((msg) => cwMsgToProtobuf(msg, govModuleAddress)),
               initialDeposit: deposit.map(({ amount, denom }) => ({
                 amount: BigInt(amount).toString(),
                 denom,
               })),
               proposer: getChainAddressForActionOptions(options, chainId),
-              metadata: `ipfs://${metadataCid}`,
               title,
               summary: description,
               // In case it's undefined, default to false.
               expedited: expedited || false,
+              metadata: title,
             } as MsgSubmitProposalV1,
           },
         })
@@ -456,7 +493,6 @@ export const makeGovernanceProposalAction: ActionMaker<
             amount: Number(amount),
           })),
           msgs: decodedMessages,
-          metadataCid: proposal.metadata.replace('ipfs://', ''),
           expedited: proposal.expedited || false,
         },
       }

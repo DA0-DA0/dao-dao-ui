@@ -506,14 +506,14 @@ export interface TallyParams {
    * Minimum percentage of total stake needed to vote for a result to be
    * considered valid.
    */
-  quorum: Uint8Array;
+  quorum: string;
   /** Minimum proportion of Yes votes for proposal to pass. Default value: 0.5. */
-  threshold: Uint8Array;
+  threshold: string;
   /**
    * Minimum value of Veto votes to Total votes ratio for proposal to be
    * vetoed. Default value: 1/3.
    */
-  vetoThreshold: Uint8Array;
+  vetoThreshold: string;
 }
 export interface TallyParamsProtoMsg {
   typeUrl: "/cosmos.gov.v1beta1.TallyParams";
@@ -525,14 +525,14 @@ export interface TallyParamsAmino {
    * Minimum percentage of total stake needed to vote for a result to be
    * considered valid.
    */
-  quorum: Uint8Array;
+  quorum: string;
   /** Minimum proportion of Yes votes for proposal to pass. Default value: 0.5. */
-  threshold: Uint8Array;
+  threshold: string;
   /**
    * Minimum value of Veto votes to Total votes ratio for proposal to be
    * vetoed. Default value: 1/3.
    */
-  veto_threshold: Uint8Array;
+  veto_threshold: string;
 }
 export interface TallyParamsAminoMsg {
   type: "cosmos-sdk/TallyParams";
@@ -540,9 +540,9 @@ export interface TallyParamsAminoMsg {
 }
 /** TallyParams defines the params for tallying votes on governance proposals. */
 export interface TallyParamsSDKType {
-  quorum: Uint8Array;
-  threshold: Uint8Array;
-  veto_threshold: Uint8Array;
+  quorum: string;
+  threshold: string;
+  veto_threshold: string;
 }
 function createBaseWeightedVoteOption(): WeightedVoteOption {
   return {
@@ -1289,22 +1289,22 @@ export const VotingParams = {
 };
 function createBaseTallyParams(): TallyParams {
   return {
-    quorum: new Uint8Array(),
-    threshold: new Uint8Array(),
-    vetoThreshold: new Uint8Array()
+    quorum: "",
+    threshold: "",
+    vetoThreshold: ""
   };
 }
 export const TallyParams = {
   typeUrl: "/cosmos.gov.v1beta1.TallyParams",
   encode(message: TallyParams, writer: BinaryWriter = BinaryWriter.create()): BinaryWriter {
-    if (message.quorum.length !== 0) {
-      writer.uint32(10).bytes(message.quorum);
+    if (message.quorum !== "") {
+      writer.uint32(10).string(Decimal.fromUserInput(message.quorum, 18).atomics);
     }
-    if (message.threshold.length !== 0) {
-      writer.uint32(18).bytes(message.threshold);
+    if (message.threshold !== "") {
+      writer.uint32(18).string(Decimal.fromUserInput(message.threshold, 18).atomics);
     }
-    if (message.vetoThreshold.length !== 0) {
-      writer.uint32(26).bytes(message.vetoThreshold);
+    if (message.vetoThreshold !== "") {
+      writer.uint32(26).string(Decimal.fromUserInput(message.vetoThreshold, 18).atomics);
     }
     return writer;
   },
@@ -1316,13 +1316,13 @@ export const TallyParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.quorum = reader.bytes();
+          message.quorum = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 2:
-          message.threshold = reader.bytes();
+          message.threshold = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 3:
-          message.vetoThreshold = reader.bytes();
+          message.vetoThreshold = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -1333,9 +1333,9 @@ export const TallyParams = {
   },
   fromPartial(object: Partial<TallyParams>): TallyParams {
     const message = createBaseTallyParams();
-    message.quorum = object.quorum ?? new Uint8Array();
-    message.threshold = object.threshold ?? new Uint8Array();
-    message.vetoThreshold = object.vetoThreshold ?? new Uint8Array();
+    message.quorum = object.quorum ?? "";
+    message.threshold = object.threshold ?? "";
+    message.vetoThreshold = object.vetoThreshold ?? "";
     return message;
   },
   fromAmino(object: TallyParamsAmino): TallyParams {
