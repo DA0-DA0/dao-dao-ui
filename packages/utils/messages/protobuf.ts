@@ -702,7 +702,9 @@ export const decodeGovProposal = (
   )
   const legacyContent = govProposal.proposal.messages
     .filter(({ typeUrl }) => typeUrl === MsgExecLegacyContent.typeUrl)
-    .map((msg) => MsgExecLegacyContent.decode(msg.value).content)
+    .map(
+      (msg) => MsgExecLegacyContent.decode(msg.value, undefined, true).content
+    )
 
   return {
     ...govProposal,
