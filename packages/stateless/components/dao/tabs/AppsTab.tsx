@@ -72,7 +72,7 @@ const InnerAppsTab = ({
   // On first iframe mount, go to url
   useEffect(() => {
     try {
-      if (iframe) {
+      if (iframe && (url === '' || (url && new URL(url).href))) {
         iframe.src = url
       }
     } catch {
@@ -80,9 +80,14 @@ const InnerAppsTab = ({
     }
   }, [iframe, url])
 
+  // Update the input field to match the URL if it changes in the parent
+  // component. This should handle the URL being updated from the query params.
   useEffect(() => {
-    if(url !== inputUrl)
-      setInputUrl(url);
+    if (url !== inputUrl) {
+      setInputUrl(url)
+    }
+    // Only change the input URL when the URL changes (i.e. ignore input change).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setInputUrl, url])
 
   // If no app URL matching, choose the last one (custom) with empty URL.
