@@ -28,12 +28,21 @@ export const govProposalToDecodedContent = (
         legacyContent: proposal.legacyContent,
       }
 
+/**
+ * Utility function to convert governance proposal action data to the decoded
+ * proposal content type, which gracefully handles both v1beta1 and v1 gov
+ * proposal types. This is used when rendering both existing governance
+ * proposals and previewing new proposals before submitting.
+ *
+ * @param data Data from the governance proposal action.
+ * @returns Decoded governance proposal content.
+ */
 export const govProposalActionDataToDecodedContent = (
   data: GovernanceProposalActionData
 ): GovProposalDecodedContent =>
-  data.version === GovProposalVersion.V1_BETA_1
+  data.version === GovProposalVersion.V1_BETA_1 || data.useV1LegacyContent
     ? {
-        version: data.version,
+        version: GovProposalVersion.V1_BETA_1,
         title: data.title,
         description: data.description,
         decodedContent:

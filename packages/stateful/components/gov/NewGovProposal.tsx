@@ -30,8 +30,6 @@ import {
 } from 'recoil'
 
 import {
-  genericTokenBalanceSelector,
-  genericTokenSelector,
   govParamsSelector,
   govProposalCreatedCardPropsAtom,
   govProposalSelector,
@@ -44,17 +42,11 @@ import {
   ErrorPage,
   FilterableItem,
   FilterableItemPopup,
-  FormSwitch,
   IconButton,
-  InputErrorMessage,
   Loader,
-  NumberInput,
   PageLoader,
   ProposalContentDisplay,
-  TextAreaInput,
-  TextInput,
   Tooltip,
-  useCachedLoading,
   useConfiguredChainContext,
 } from '@dao-dao/stateless'
 import {
@@ -64,11 +56,9 @@ import {
   GovProposalVersion,
   GovernanceProposalActionData,
   ProposalDraft,
-  TokenType,
 } from '@dao-dao/types'
 import {
   CHAIN_GAS_MULTIPLIER,
-  convertMicroDenomToDenomWithDecimals,
   dateToWdhms,
   formatDateTime,
   formatPercentOf100,
@@ -78,8 +68,6 @@ import {
   govProposalActionDataToDecodedContent,
   isCosmWasmStargateMsg,
   processError,
-  validatePositive,
-  validateRequired,
 } from '@dao-dao/utils'
 import { BinaryReader } from '@dao-dao/utils/protobuf'
 import { MsgSubmitProposal as MsgSubmitProposalV1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1/tx'
@@ -87,7 +75,7 @@ import { ProposalStatus } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1bet
 import { MsgSubmitProposal as MsgSubmitProposalV1Beta1 } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/tx'
 import { Any } from '@dao-dao/utils/protobuf/codegen/google/protobuf/any'
 
-import { GovActionsProvider } from '../../actions'
+import { WalletActionsProvider } from '../../actions'
 import { makeGovernanceProposalAction } from '../../actions/core/chain_governance/GovernanceProposal'
 import { useEntity } from '../../hooks'
 import { useWallet } from '../../hooks/useWallet'
@@ -176,57 +164,20 @@ const InnerNewGovProposal = ({
     defaultValues: {
       ...defaults,
       ...cloneDeep(latestProposalSave),
-      _onlyShowActions: true,
     },
   })
   const {
-    register,
     handleSubmit,
     watch,
     formState: { errors },
     reset,
-    setValue,
   } = formMethods
-
-  const version = watch('version')
-  const expedited = watch('expedited')
 
   const govParams = useRecoilValue(
     govParamsSelector({
       chainId: chainContext.chainId,
     })
   )
-  // Selected deposit token.
-  const depositToken =
-    expedited && govParams.expeditedMinDeposit?.length
-      ? govParams.expeditedMinDeposit[0]
-      : govParams.minDeposit[0]
-  const depositTokenInfo = useRecoilValue(
-    genericTokenSelector({
-      chainId: chainContext.chainId,
-      type: TokenType.Native,
-      denomOrAddress: depositToken.denom,
-    })
-  )
-  // Wallet balance of selected deposit token.
-  const walletDepositBalance = useCachedLoading(
-    walletAddress
-      ? genericTokenBalanceSelector({
-          chainId: chainContext.chainId,
-          address: walletAddress,
-          type: TokenType.Native,
-          denomOrAddress: depositToken.denom,
-        })
-      : undefined,
-    undefined
-  )
-
-  const depositAmount = watch('deposit.0.amount')
-  const depositUnsatisfied =
-    !walletDepositBalance.loading &&
-    !!walletDepositBalance.data &&
-    !!depositAmount &&
-    Number(walletDepositBalance.data.balance) < depositAmount
 
   const onSubmitError: SubmitErrorHandler<GovernanceProposalActionData> =
     useCallback(() => {
@@ -553,123 +504,9 @@ const InnerNewGovProposal = ({
         className="flex flex-col gap-6"
         onSubmit={handleSubmit(onSubmitForm, onSubmitError)}
       >
-        <div className="rounded-lg bg-background-tertiary">
-          <div className="flex flex-col gap-2 py-4 px-6 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-            <p className="primary-text text-text-body">{t('form.title')}</p>
-
-            <div className="flex grow flex-col">
-              <TextInput
-                error={errors.title}
-                fieldName="title"
-                placeholder={t('form.proposalsTitlePlaceholder')}
-                register={register}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.title} />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-2 border-y border-border-secondary p-6 pt-5 sm:gap-4">
-            <p className="primary-text text-text-body">
-              {t('form.description')}
-            </p>
-
-            <div className="flex flex-col">
-              <TextAreaInput
-                error={errors.description}
-                fieldName="description"
-                placeholder={t('form.proposalsDescriptionPlaceholder')}
-                register={register}
-                rows={5}
-                validation={[validateRequired]}
-              />
-              <InputErrorMessage error={errors.description} />
-            </div>
-          </div>
-
-          {version === GovProposalVersion.V1 && (
-            <div className="flex flex-row items-center justify-between gap-6 border-b border-border-secondary py-5 px-6">
-              <div className="flex flex-col gap-1">
-                <p className="primary-text text-text-body">
-                  {t('form.expedited')}
-                </p>
-                <p className="caption-text max-w-sm">
-                  {t('form.expeditedDescription')}
-                </p>
-              </div>
-
-              <div className="flex grow flex-col items-end">
-                <FormSwitch
-                  fieldName="expedited"
-                  setValue={setValue}
-                  sizing="md"
-                  value={expedited}
-                />
-              </div>
-            </div>
-          )}
-
-          <div className="flex flex-row items-center justify-between gap-6 py-5 px-6">
-            <div className="flex flex-col gap-1">
-              <p className="primary-text text-text-body">{t('form.deposit')}</p>
-              <p className="caption-text max-w-sm">
-                {t('info.govDepositDescription', {
-                  amount: convertMicroDenomToDenomWithDecimals(
-                    depositToken.amount,
-                    depositTokenInfo.decimals
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: depositTokenInfo.decimals,
-                  }),
-                  minAmount: (
-                    convertMicroDenomToDenomWithDecimals(
-                      depositToken.amount,
-                      depositTokenInfo.decimals
-                    ) * govParams.minInitialDepositRatio
-                  ).toLocaleString(undefined, {
-                    maximumFractionDigits: depositTokenInfo.decimals,
-                  }),
-                  symbol: depositTokenInfo.symbol,
-                })}
-              </p>
-            </div>
-
-            <div className="flex grow flex-col items-end">
-              <NumberInput
-                containerClassName="grow"
-                error={errors?.deposit?.[0]?.amount}
-                fieldName="deposit.0.amount"
-                ghost
-                hidePlusMinus
-                min={
-                  convertMicroDenomToDenomWithDecimals(
-                    depositToken.amount,
-                    depositTokenInfo.decimals
-                  ) * govParams.minInitialDepositRatio
-                }
-                register={register}
-                setValue={setValue}
-                step={convertMicroDenomToDenomWithDecimals(
-                  1,
-                  depositTokenInfo.decimals
-                )}
-                textClassName="text-lg font-mono"
-                transformDecimals={depositTokenInfo.decimals}
-                unit={'$' + depositTokenInfo.symbol}
-                validation={[validateRequired, validatePositive]}
-                watch={watch}
-              />
-              <InputErrorMessage error={errors.deposit?.[0]?.amount} />
-            </div>
-          </div>
-        </div>
-
-        <p className="title-text -mb-2 text-text-body">
-          {t('title.configuration')}
-        </p>
-
         <div className="flex flex-col gap-4">
           <SuspenseLoader fallback={<Loader size={36} />}>
-            <GovActionsProvider>
+            <WalletActionsProvider>
               <action.Component
                 addAction={() => {}}
                 allActionsWithData={[]}
@@ -680,7 +517,7 @@ const InnerNewGovProposal = ({
                 isCreating
                 remove={() => {}}
               />
-            </GovActionsProvider>
+            </WalletActionsProvider>
           </SuspenseLoader>
         </div>
 
@@ -713,15 +550,11 @@ const InnerNewGovProposal = ({
 
               <Tooltip
                 title={
-                  !isWalletConnected
-                    ? t('error.logInToContinue')
-                    : depositUnsatisfied
-                    ? t('error.notEnoughForDeposit')
-                    : undefined
+                  !isWalletConnected ? t('error.logInToContinue') : undefined
                 }
               >
                 <Button
-                  disabled={!isWalletConnected || depositUnsatisfied}
+                  disabled={!isWalletConnected}
                   loading={loading}
                   type="submit"
                   value={ProposeSubmitValue.Submit}

@@ -586,7 +586,7 @@ export const MsgSubmitProposal = {
   toAmino(message: MsgSubmitProposal, useInterfaces: boolean = false): MsgSubmitProposalAmino {
     const obj: any = {};
     if (message.messages) {
-      obj.messages = message.messages.map(e => e ? rawProtobufMsgToAmino(e) : undefined);
+      obj.messages = message.messages.map(e => e ? rawProtobufMsgToAmino(e, false) : undefined);
     } else {
       obj.messages = [];
     }
