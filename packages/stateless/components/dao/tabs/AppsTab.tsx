@@ -63,25 +63,32 @@ const InnerAppsTab = ({
 }: InnerAppsTabProps) => {
   const { t } = useTranslation()
   const [iframe, setIframe] = useState<HTMLIFrameElement | null>(null)
+  const [inputUrl, setInputUrl] = useState<string>(url)
 
-  const go = (destUrl = url) => {
-    setUrl(destUrl)
-    if (iframe) {
-      iframe.src = destUrl
-    }
+  const go = (url: string) => {
+    setUrl(url)
   }
 
-  // On first iframe mount, go to url if valid already.
+  // On first iframe mount, go to url
   useEffect(() => {
     try {
-      if (iframe && url && new URL(url).href) {
+      if (iframe && (url === '' || (url && new URL(url).href))) {
         iframe.src = url
       }
     } catch {
       // Ignore.
     }
+  }, [iframe, url])
+
+  // Update the input field to match the URL if it changes in the parent
+  // component. This should handle the URL being updated from the query params.
+  useEffect(() => {
+    if (url !== inputUrl) {
+      setInputUrl(url)
+    }
+    // Only change the input URL when the URL changes (i.e. ignore input change).
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [iframe])
+  }, [setInputUrl, url])
 
   // If no app URL matching, choose the last one (custom) with empty URL.
   const selectedAppIndex = DAO_APPS.findIndex(
@@ -143,20 +150,20 @@ const InnerAppsTab = ({
           <TextInput
             autoComplete="off"
             className="grow"
-            onChange={(event) => setUrl(event.target.value)}
+            onChange={(event) => setInputUrl(event.target.value)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                go()
+                go(inputUrl)
               }
             }}
             placeholder={t('form.url')}
             type="url"
-            value={url}
+            value={inputUrl}
           />
 
           <Button
             className="shrink-0"
-            onClick={() => go()}
+            onClick={() => go(inputUrl)}
             size="lg"
             variant="primary"
           >
