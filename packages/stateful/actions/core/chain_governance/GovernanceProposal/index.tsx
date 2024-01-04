@@ -188,7 +188,6 @@ const InnerComponent = ({
     <StatelessGovernanceProposalComponent
       {...props}
       options={{
-        govModuleAddress,
         supportsV1GovProposals,
         minDeposits: minDepositBalances.loading
           ? { loading: true }

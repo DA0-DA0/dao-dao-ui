@@ -72,7 +72,6 @@ Default.args = {
   isCreating: true,
   errors: {},
   options: {
-    govModuleAddress: '',
     supportsV1GovProposals: true,
     minDeposits: { loading: false, data: [] },
     TokenAmountDisplay,

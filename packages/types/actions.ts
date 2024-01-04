@@ -28,7 +28,7 @@ export enum ActionCategoryKey {
 // TODO: Refactor adapter action key system, since a DAO may have multiple proposal modules of the same type, which would lead to duplicate keys.
 export enum ActionKey {
   Spend = 'spend',
-  CommunityPoolTransfer = 'communityPoolTransfer',
+  CommunityPoolSpend = 'communityPoolSpend',
   CommunityPoolDeposit = 'communityPoolDeposit',
   ManageStaking = 'manageStaking',
   ManageCw20 = 'manageCw20',

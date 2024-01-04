@@ -136,7 +136,11 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     (fieldNamePrefix + 'useDirectIbcPath') as 'useDirectIbcPath'
   )
 
-  const toChainId = watch((fieldNamePrefix + 'toChainId') as 'toChainId')
+  // Cannot send to a different chain from the gov module.
+  const toChainId =
+    context.type === ActionContextType.Gov
+      ? spendChainId
+      : watch((fieldNamePrefix + 'toChainId') as 'toChainId')
   const toChain = getChainForChainId(toChainId)
 
   // IBC transfer if destination chain ID is different from source chain ID.
@@ -385,7 +389,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
             className="flex grow flex-row flex-wrap items-stretch gap-1"
             ref={toContainerRef}
           >
-            {isCreating && (
+            {/* Cannot send over IBC from the gov module. */}
+            {isCreating && context.type !== ActionContextType.Gov && (
               <IbcDestinationChainPicker
                 buttonClassName={toWrapped ? 'grow' : undefined}
                 disabled={selectedToken?.token.type === TokenType.Cw20}

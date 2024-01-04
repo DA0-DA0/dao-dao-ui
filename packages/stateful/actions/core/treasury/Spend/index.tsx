@@ -1,4 +1,4 @@
-import { coin } from '@cosmjs/amino'
+import { coin, coins } from '@cosmjs/amino'
 import { useCallback, useEffect, useState } from 'react'
 import { useFormContext } from 'react-hook-form'
 import { constSelector } from 'recoil'
@@ -56,6 +56,7 @@ import {
   parseValidPfmMemo,
   transformBech32Address,
 } from '@dao-dao/utils'
+import { MsgCommunityPoolSpend } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import { MsgTransfer } from '@dao-dao/utils/protobuf/codegen/ibc/applications/transfer/v1/tx'
 
 import { AddressInput } from '../../../../components'
@@ -408,6 +409,20 @@ const useTransformToCosmos: UseTransformToCosmos<SpendData> = () => {
         _amount,
         token.decimals
       )
+
+      // Gov module community pool spend.
+      if (options.context.type === ActionContextType.Gov) {
+        return makeStargateMessage({
+          stargate: {
+            typeUrl: MsgCommunityPoolSpend.typeUrl,
+            value: {
+              authority: options.address,
+              recipient: to,
+              amount: coins(amount, denom),
+            } as MsgCommunityPoolSpend,
+          },
+        })
+      }
 
       let msg: CosmosMsgForEmpty | undefined
       // IBC transfer.
