@@ -6,10 +6,12 @@ import {
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
+  ActionComponent,
   ActionContextType,
   ActionKey,
   ActionMaker,
   ContractVersion,
+  Feature,
   ProposalModule,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -20,15 +22,19 @@ import { ExecuteMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
   ContractName,
   DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
+  convertCosmosVetoConfigToVeto,
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
+  convertVetoConfigToCosmos,
+  isFeatureSupportedByVersion,
   makeWasmMessage,
   versionGte,
 } from '@dao-dao/utils'
 
 import { useMsgExecutesContract } from '../../../../../../actions'
+import { AddressInput, Trans } from '../../../../../../components'
 import {
-  UpdateProposalConfigComponent as Component,
+  UpdateProposalConfigComponent,
   UpdateProposalConfigData,
 } from './UpdateProposalConfigComponent'
 
@@ -98,13 +104,23 @@ const typePercentageToPercentageThreshold = (
   }
 }
 
-export const makeUpdateProposalConfigV2ActionMaker =
-  ({
-    version,
-    address: proposalModuleAddress,
-    prePropose,
-  }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
-  ({ t, context, chain: { chain_id: chainId } }) => {
+export const makeUpdateProposalConfigV2ActionMaker = ({
+  version,
+  address: proposalModuleAddress,
+  prePropose,
+}: ProposalModule): ActionMaker<UpdateProposalConfigData> => {
+  const Component: ActionComponent = (props) => (
+    <UpdateProposalConfigComponent
+      {...props}
+      options={{
+        version,
+        AddressInput,
+        Trans,
+      }}
+    />
+  )
+
+  return ({ t, context, chain: { chain_id: chainId } }) => {
     if (!version || !versionGte(version, ContractVersion.V2Alpha)) {
       return null
     }
@@ -133,6 +149,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
           proposalModuleConfig.data.max_voting_period
         ),
         allowRevoting,
+        veto: convertCosmosVetoConfigToVeto(proposalModuleConfig.data.veto),
         ...thresholdToTQData(proposalModuleConfig.data.threshold),
       }
     }
@@ -183,14 +200,16 @@ export const makeUpdateProposalConfigV2ActionMaker =
               ),
               only_members_execute: data.onlyMembersExecute,
               allow_revoting: data.allowRevoting,
+              // If veto is supported...
+              ...(version &&
+                isFeatureSupportedByVersion(Feature.Veto, version) && {
+                  veto: convertVetoConfigToCosmos(data.veto),
+                }),
               // Pass through because we don't support changing them yet.
               dao: proposalModuleConfig.data.dao,
               close_proposal_on_execution_failure:
                 proposalModuleConfig.data.close_proposal_on_execution_failure,
               min_voting_period: proposalModuleConfig.data.min_voting_period,
-              ...('veto' in proposalModuleConfig.data && {
-                veto: proposalModuleConfig.data.veto,
-              }),
             },
           }
 
@@ -242,6 +261,7 @@ export const makeUpdateProposalConfigV2ActionMaker =
             config.max_voting_period
           ),
           allowRevoting,
+          veto: convertCosmosVetoConfigToVeto(config.veto),
           ...thresholdToTQData(config.threshold),
         },
       }
@@ -270,3 +290,4 @@ export const makeUpdateProposalConfigV2ActionMaker =
       useDecodedCosmosMsg,
     }
   }
+}

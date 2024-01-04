@@ -36,6 +36,7 @@ import {
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
 import { LoadingDataWithError } from './misc'
+import { ProposalVetoConfig } from './proposal'
 import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
@@ -353,13 +354,7 @@ export type DaoCreationVotingConfigWithApprover = {
 }
 
 export type DaoCreationVotingConfigWithVeto = {
-  veto: {
-    enabled: boolean
-    address: string
-    timelockDuration: DurationWithUnits
-    earlyExecute: boolean
-    vetoBeforePassed: boolean
-  }
+  veto: ProposalVetoConfig
 }
 
 export type DaoCreationVotingConfig = DaoCreationVotingConfigWithAllowRevoting &

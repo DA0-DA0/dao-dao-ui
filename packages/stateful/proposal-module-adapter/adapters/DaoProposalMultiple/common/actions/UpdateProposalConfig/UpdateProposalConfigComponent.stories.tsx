@@ -2,6 +2,7 @@ import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { makeReactHookFormDecorator } from '@dao-dao/storybook'
 import { DurationUnits } from '@dao-dao/types'
+import { convertCosmosVetoConfigToVeto } from '@dao-dao/utils'
 
 import {
   UpdateProposalConfigComponent,
@@ -21,6 +22,8 @@ export default {
         units: DurationUnits.Days,
       },
       allowRevoting: true,
+      // Default.
+      veto: convertCosmosVetoConfigToVeto(null),
     }),
   ],
 } as ComponentMeta<typeof UpdateProposalConfigComponent>

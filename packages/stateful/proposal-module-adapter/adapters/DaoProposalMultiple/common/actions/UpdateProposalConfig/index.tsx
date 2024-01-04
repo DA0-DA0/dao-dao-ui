@@ -6,9 +6,11 @@ import {
   useCachedLoadingWithError,
 } from '@dao-dao/stateless'
 import {
+  ActionComponent,
   ActionContextType,
   ActionKey,
   ActionMaker,
+  Feature,
   ProposalModule,
   UseDecodedCosmosMsg,
   UseDefaults,
@@ -21,14 +23,18 @@ import {
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
+  convertCosmosVetoConfigToVeto,
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
+  convertVetoConfigToCosmos,
+  isFeatureSupportedByVersion,
   makeWasmMessage,
 } from '@dao-dao/utils'
 
 import { useMsgExecutesContract } from '../../../../../../actions'
+import { AddressInput, Trans } from '../../../../../../components'
 import {
-  UpdateProposalConfigComponent as Component,
+  UpdateProposalConfigComponent,
   UpdateProposalConfigData,
 } from './UpdateProposalConfigComponent'
 
@@ -70,11 +76,22 @@ const typePercentageToPercentageThreshold = (
   }
 }
 
-export const makeUpdateProposalConfigActionMaker =
-  ({
-    address: proposalModuleAddress,
-  }: ProposalModule): ActionMaker<UpdateProposalConfigData> =>
-  ({ t, context, chain: { chain_id: chainId } }) => {
+export const makeUpdateProposalConfigActionMaker = ({
+  version,
+  address: proposalModuleAddress,
+}: ProposalModule): ActionMaker<UpdateProposalConfigData> => {
+  const Component: ActionComponent = (props) => (
+    <UpdateProposalConfigComponent
+      {...props}
+      options={{
+        version,
+        AddressInput,
+        Trans,
+      }}
+    />
+  )
+
+  return ({ t, context, chain: { chain_id: chainId } }) => {
     const useDefaults: UseDefaults<UpdateProposalConfigData> = () => {
       const proposalModuleConfig = useCachedLoadingWithError(
         DaoProposalMultipleSelectors.configSelector({
@@ -100,6 +117,7 @@ export const makeUpdateProposalConfigActionMaker =
           proposalModuleConfig.data.max_voting_period
         ),
         allowRevoting,
+        veto: convertCosmosVetoConfigToVeto(proposalModuleConfig.data.veto),
         ...votingStrategyToProcessedQuorum(votingStrategy),
       }
     }
@@ -137,14 +155,16 @@ export const makeUpdateProposalConfigActionMaker =
               ),
               only_members_execute: data.onlyMembersExecute,
               allow_revoting: data.allowRevoting,
+              // If veto is supported...
+              ...(version &&
+                isFeatureSupportedByVersion(Feature.Veto, version) && {
+                  veto: convertVetoConfigToCosmos(data.veto),
+                }),
               // Pass through because we don't support changing them yet.
               dao: proposalModuleConfig.data.dao,
               close_proposal_on_execution_failure:
                 proposalModuleConfig.data.close_proposal_on_execution_failure,
               min_voting_period: proposalModuleConfig.data.min_voting_period,
-              ...('veto' in proposalModuleConfig.data && {
-                veto: proposalModuleConfig.data.veto,
-              }),
             },
           }
 
@@ -202,6 +222,7 @@ export const makeUpdateProposalConfigActionMaker =
         only_members_execute: onlyMembersExecute,
         max_voting_period,
         voting_strategy: votingStrategy,
+        veto,
       } = msg.wasm.execute.msg.update_config
 
       return {
@@ -211,6 +232,7 @@ export const makeUpdateProposalConfigActionMaker =
           onlyMembersExecute,
           votingDuration: convertDurationToDurationWithUnits(max_voting_period),
           proposalDurationUnits: 'seconds',
+          veto: convertCosmosVetoConfigToVeto(veto),
           ...votingStrategyToProcessedQuorum(votingStrategy),
         },
       }
@@ -235,3 +257,4 @@ export const makeUpdateProposalConfigActionMaker =
       useDecodedCosmosMsg,
     }
   }
+}

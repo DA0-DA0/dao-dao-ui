@@ -20,6 +20,7 @@ import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalMultipl
 import {
   ContractName,
   DaoProposalMultipleAdapterId,
+  convertCosmosVetoConfigToVeto,
   convertDurationToDurationWithUnits,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
@@ -218,6 +219,9 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
             enabled: false,
             address: '',
           },
+          veto: convertCosmosVetoConfigToVeto(
+            'veto' in config.data ? config.data.veto : null
+          ),
         },
         t
       )

@@ -142,7 +142,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
       </div>
 
       {depositRequired && commonGovernanceTokenInfo && (
-        <div className="flex flex-col gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+        <div className="flex flex-col gap-4 rounded-lg bg-background-secondary p-3">
           <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
             <h3 className="primary-text">
               <MoneyEmoji /> {t('form.proposalDepositTitle')}
@@ -187,7 +187,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         </div>
       )}
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg bg-background-secondary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <ChartEmoji /> {t('form.passingThresholdTitle')}
@@ -229,7 +229,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         </div>
       </div>
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg bg-background-secondary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <div className="flex flex-col items-stretch gap-2 xs:flex-row xs:items-start xs:justify-between">
             <h3 className="primary-text">
@@ -280,7 +280,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         )}
       </div>
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg bg-background-secondary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <ClockEmoji /> {t('form.votingDurationTitle')}
@@ -338,7 +338,7 @@ export const UpdateProposalConfigComponent: ActionComponent<
         </div>
       </div>
 
-      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg border border-border-primary bg-background-secondary p-3">
+      <div className="flex flex-row flex-wrap items-center justify-between gap-4 rounded-lg bg-background-secondary p-3">
         <div className="flex max-w-prose flex-col gap-2 lg:basis-1/2">
           <h3 className="primary-text">
             <RecycleEmoji /> {t('form.allowRevotingTitle')}
