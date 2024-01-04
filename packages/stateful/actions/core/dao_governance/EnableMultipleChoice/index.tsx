@@ -6,12 +6,7 @@ import {
   genericTokenSelector,
 } from '@dao-dao/state/recoil'
 import { NumbersEmoji, useCachedLoadingWithError } from '@dao-dao/stateless'
-import {
-  DepositRefundPolicy,
-  DurationUnits,
-  Feature,
-  TokenType,
-} from '@dao-dao/types'
+import { DepositRefundPolicy, Feature, TokenType } from '@dao-dao/types'
 import {
   ActionChainContextType,
   ActionContextType,
@@ -25,6 +20,7 @@ import { PercentageThreshold } from '@dao-dao/types/contracts/DaoProposalMultipl
 import {
   ContractName,
   DaoProposalMultipleAdapterId,
+  convertDurationToDurationWithUnits,
   convertMicroDenomToDenomWithDecimals,
   getNativeTokenForChainId,
   makeWasmMessage,
@@ -191,16 +187,9 @@ export const makeEnableMultipleChoiceAction: ActionMaker<
             majority: 'majority' in quorum,
             value: 'majority' in quorum ? 50 : Number(quorum.percent) * 100,
           },
-          votingDuration:
-            'time' in config.data.max_voting_period
-              ? {
-                  value: config.data.max_voting_period.time,
-                  units: DurationUnits.Seconds,
-                }
-              : {
-                  value: 1,
-                  units: DurationUnits.Weeks,
-                },
+          votingDuration: convertDurationToDurationWithUnits(
+            config.data.max_voting_period
+          ),
           proposalDeposit: {
             enabled: !!depositInfo.data && !!depositInfoToken.data,
             amount:

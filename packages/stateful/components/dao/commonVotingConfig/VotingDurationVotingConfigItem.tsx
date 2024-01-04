@@ -38,12 +38,12 @@ export const VotingDurationInput = ({
         validation={[
           validatePositive,
           validateRequired,
-          // Prevent < 60 second voting duration since DAOs will brick
-          // if the voting duration is shorter tahn 1 block.
+          // Prevent < 60 second voting duration since DAOs will brick if the
+          // voting duration is shorter than 1 block.
           (value) =>
             votingDuration?.units !== DurationUnits.Seconds ||
             value >= 60 ||
-            'Cannot be shorter than 60 seconds.',
+            t('error.mustBeAtLeastSixtySeconds'),
         ]}
         watch={watch}
       />

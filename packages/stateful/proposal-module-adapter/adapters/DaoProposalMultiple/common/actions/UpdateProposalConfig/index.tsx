@@ -21,23 +21,16 @@ import {
 } from '@dao-dao/types/contracts/DaoProposalMultiple'
 import {
   DAO_PROPOSAL_MULTIPLE_CONTRACT_NAMES,
+  convertDurationToDurationWithUnits,
+  convertDurationWithUnitsToDuration,
   makeWasmMessage,
 } from '@dao-dao/utils'
 
 import { useMsgExecutesContract } from '../../../../../../actions'
-import { UpdateProposalConfigComponent as Component } from './UpdateProposalConfigComponent'
-
-export interface UpdateProposalConfigData {
-  onlyMembersExecute: boolean
-
-  quorumType: '%' | 'majority'
-  quorumPercentage?: number
-
-  proposalDuration: number
-  proposalDurationUnits: 'weeks' | 'days' | 'hours' | 'minutes' | 'seconds'
-
-  allowRevoting: boolean
-}
+import {
+  UpdateProposalConfigComponent as Component,
+  UpdateProposalConfigData,
+} from './UpdateProposalConfigComponent'
 
 const votingStrategyToProcessedQuorum = (
   votingStrategy: VotingStrategy
@@ -77,23 +70,6 @@ const typePercentageToPercentageThreshold = (
   }
 }
 
-const maxVotingInfoToCosmos = (
-  t: 'weeks' | 'days' | 'hours' | 'minutes' | 'seconds',
-  v: number
-) => {
-  const converter = {
-    weeks: 604800,
-    days: 86400,
-    hours: 3600,
-    minutes: 60,
-    seconds: 1,
-  }
-
-  return {
-    time: converter[t] * v,
-  }
-}
-
 export const makeUpdateProposalConfigActionMaker =
   ({
     address: proposalModuleAddress,
@@ -114,19 +90,15 @@ export const makeUpdateProposalConfigActionMaker =
       }
 
       const onlyMembersExecute = proposalModuleConfig.data.only_members_execute
-      const proposalDuration =
-        'time' in proposalModuleConfig.data.max_voting_period
-          ? proposalModuleConfig.data.max_voting_period.time
-          : 604800
-      const proposalDurationUnits = 'seconds'
 
       const allowRevoting = proposalModuleConfig.data.allow_revoting
       const votingStrategy = proposalModuleConfig.data.voting_strategy
 
       return {
         onlyMembersExecute,
-        proposalDuration,
-        proposalDurationUnits,
+        votingDuration: convertDurationToDurationWithUnits(
+          proposalModuleConfig.data.max_voting_period
+        ),
         allowRevoting,
         ...votingStrategyToProcessedQuorum(votingStrategy),
       }
@@ -160,9 +132,8 @@ export const makeUpdateProposalConfigActionMaker =
                   ),
                 },
               },
-              max_voting_period: maxVotingInfoToCosmos(
-                data.proposalDurationUnits,
-                data.proposalDuration
+              max_voting_period: convertDurationWithUnitsToDuration(
+                data.votingDuration
               ),
               only_members_execute: data.onlyMembersExecute,
               allow_revoting: data.allowRevoting,
@@ -207,9 +178,7 @@ export const makeUpdateProposalConfigActionMaker =
                   allow_revoting: {},
                   close_proposal_on_execution_failure: {},
                   dao: {},
-                  max_voting_period: {
-                    time: {},
-                  },
+                  max_voting_period: {},
                   min_voting_period: {},
                   only_members_execute: {},
                   voting_strategy: {
@@ -231,7 +200,7 @@ export const makeUpdateProposalConfigActionMaker =
       const {
         allow_revoting: allowRevoting,
         only_members_execute: onlyMembersExecute,
-        max_voting_period: { time: proposalDuration },
+        max_voting_period,
         voting_strategy: votingStrategy,
       } = msg.wasm.execute.msg.update_config
 
@@ -240,7 +209,7 @@ export const makeUpdateProposalConfigActionMaker =
         data: {
           allowRevoting,
           onlyMembersExecute,
-          proposalDuration,
+          votingDuration: convertDurationToDurationWithUnits(max_voting_period),
           proposalDurationUnits: 'seconds',
           ...votingStrategyToProcessedQuorum(votingStrategy),
         },

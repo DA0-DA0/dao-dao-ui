@@ -31,7 +31,7 @@ import {
   ActionContextType,
   AddressInputProps,
   DurationUnits,
-  DurationUnitsValues,
+  DurationUnitsValuesTimeOnly,
   DurationWithUnits,
   GenericTokenBalance,
   LoadingData,
@@ -549,7 +549,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                       register={register}
                       validation={[validateRequired]}
                     >
-                      {DurationUnitsValues.map((type, idx) => (
+                      {DurationUnitsValuesTimeOnly.map((type, idx) => (
                         <option key={idx} value={type}>
                           {t(`unit.${type}`, {
                             count: steps[index].delay.value,
