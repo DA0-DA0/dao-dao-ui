@@ -1,18 +1,14 @@
 import {
   AccountCircleOutlined,
   ArrowOutward,
-  CancelOutlined,
   HourglassTopRounded,
-  Key,
   PollOutlined,
   Redo,
   RotateRightOutlined,
-  Send,
   Tag,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
+import { ComponentType, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
@@ -21,7 +17,6 @@ import {
   CopyToClipboardUnderline,
   IconButtonLink,
   Logo,
-  ProposalCrossChainRelayStatus,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   TooltipTruncatedText,
@@ -35,22 +30,18 @@ import {
   ProposalStatusEnum,
 } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import {
-  formatPercentOf100,
-  getProposalStatusKey,
-  processError,
-} from '@dao-dao/utils'
+import { formatPercentOf100, getProposalStatusKey } from '@dao-dao/utils'
 
 import { EntityDisplay, SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
 import {
   DaoProposalMultipleHooks,
   useAwaitNextBlock,
-  useMembership,
   useProposalPolytoneState,
   useProposalVetoState,
   useWallet,
 } from '../../../../hooks'
+import { useProposalActionState } from '../../../../hooks/useProposalActionState'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
   useCastVote,
@@ -116,10 +107,7 @@ const InnerProposalStatusAndInfo = ({
   } = useConfiguredChainContext()
   const { coreAddress } = useDaoInfoContext()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { isWalletConnected, address: walletAddress = '' } = useWallet()
-  const { isMember = false } = useMembership({
-    coreAddress,
-  })
+  const { address: walletAddress = '' } = useWallet()
 
   const config = useRecoilValue(
     DaoProposalMultipleSelectors.configSelector({
@@ -146,13 +134,6 @@ const InnerProposalStatusAndInfo = ({
     sender: walletAddress,
   })
 
-  const [actionLoading, setActionLoading] = useState(false)
-  // On proposal status update, stop loading. This ensures the action button
-  // doesn't stop loading too early, before the status has refreshed.
-  useEffect(() => {
-    setActionLoading(false)
-  }, [proposal.status])
-
   const polytoneState = useProposalPolytoneState({
     msgs: winningChoice?.msgs || [],
     status: proposal.status,
@@ -162,51 +143,15 @@ const InnerProposalStatusAndInfo = ({
     openSelfRelayExecute,
     loadingTxHash: loadingExecutionTxHash,
   })
-
-  const onExecute = useCallback(async () => {
-    if (!isWalletConnected) {
-      return
-    }
-
-    setActionLoading(true)
-    try {
-      await executeProposal({ proposalId: proposalNumber })
-
-      await onExecuteSuccess()
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-
-      // Stop loading if errored.
-      setActionLoading(false)
-    }
-
-    // Loading will stop on success when status refreshes.
-  }, [isWalletConnected, executeProposal, proposalNumber, onExecuteSuccess])
-
-  const onClose = useCallback(async () => {
-    if (!isWalletConnected) {
-      return
-    }
-
-    setActionLoading(true)
-
-    try {
-      await closeProposal({
-        proposalId: proposalNumber,
-      })
-
-      await onCloseSuccess()
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-
-      // Stop loading if errored.
-      setActionLoading(false)
-    }
-
-    // Loading will stop on success when status refreshes.
-  }, [isWalletConnected, closeProposal, proposalNumber, onCloseSuccess])
+  const { action, footer } = useProposalActionState({
+    statusKey,
+    polytoneState,
+    loadingExecutionTxHash,
+    executeProposal,
+    closeProposal,
+    onExecuteSuccess,
+    onCloseSuccess,
+  })
 
   const awaitNextBlock = useAwaitNextBlock()
   // Refresh proposal and list of proposals (for list status) once voting ends.
@@ -410,49 +355,8 @@ const InnerProposalStatusAndInfo = ({
   return (
     <StatelessProposalStatusAndInfo
       {...props}
-      action={
-        statusKey === ProposalStatusEnum.Passed &&
-        // Show if anyone can execute OR if the wallet is a member, once
-        // polytone messages that need relaying are done loading.
-        (!config.only_members_execute || isMember) &&
-        !polytoneState.loading
-          ? {
-              label: t('button.execute'),
-              Icon: Key,
-              loading: actionLoading,
-              doAction: polytoneState.data.needsSelfRelay
-                ? polytoneState.data.openPolytoneRelay
-                : onExecute,
-            }
-          : statusKey === ProposalStatusEnum.Rejected
-          ? {
-              label: t('button.close'),
-              Icon: CancelOutlined,
-              loading: actionLoading,
-              doAction: onClose,
-            }
-          : // If executed and has polytone messages that need relaying...
-          statusKey === ProposalStatusEnum.Executed &&
-            !polytoneState.loading &&
-            polytoneState.data.needsSelfRelay &&
-            !loadingExecutionTxHash.loading &&
-            loadingExecutionTxHash.data
-          ? {
-              label: t('button.relay'),
-              Icon: Send,
-              loading: actionLoading,
-              doAction: polytoneState.data.openPolytoneRelay,
-              description: t('error.polytoneExecutedNoRelay'),
-            }
-          : undefined
-      }
-      footer={
-        !polytoneState.loading &&
-        statusKey === ProposalStatusEnum.Executed &&
-        polytoneState.data.hasPolytoneMessages && (
-          <ProposalCrossChainRelayStatus state={polytoneState.data} />
-        )
-      }
+      action={action}
+      footer={footer}
       info={info}
       status={status}
       vetoOrEarlyExecute={vetoOrEarlyExecute}

@@ -48,6 +48,11 @@ export type UseProposalVetoStateReturn = {
   vetoInfoItems: ProposalStatusAndInfoProps<any>['info']
 }
 
+/**
+ * This hook is used in the proposal module adapters' ProposalStatusAndInfo
+ * components to load the veto configuration and handle when the current wallet
+ * has the power to veto/early-execute.
+ */
 export const useProposalVetoState = ({
   statusKey,
   vetoConfig,
