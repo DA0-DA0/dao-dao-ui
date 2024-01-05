@@ -78,7 +78,10 @@ Default.args = {
     vestingFactoryOwner: { loading: false, data: undefined },
     AddressInput,
     EntityDisplay,
-    createCw1WhitelistOwners: () => alert('createCw1WhitelistOwners'),
+    createCw1WhitelistOwners: async () => {
+      alert('createCw1WhitelistOwners')
+      return ''
+    },
     creatingCw1WhitelistOwners: false,
   },
 }

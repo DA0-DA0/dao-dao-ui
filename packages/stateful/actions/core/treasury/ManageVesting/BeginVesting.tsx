@@ -6,8 +6,9 @@ import {
   WarningRounded,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { ComponentType, useEffect } from 'react'
+import { ComponentType, useCallback, useEffect } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
+import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -30,6 +31,7 @@ import {
   ActionComponent,
   ActionContextType,
   AddressInputProps,
+  CreateCw1Whitelist,
   DurationUnits,
   DurationUnitsValuesTimeOnly,
   DurationWithUnits,
@@ -85,7 +87,7 @@ export type BeginVestingOptions = {
   vestingFactoryOwner: LoadingData<string | undefined>
   AddressInput: ComponentType<AddressInputProps<BeginVestingData>>
   EntityDisplay: ComponentType<StatefulEntityDisplayProps>
-  createCw1WhitelistOwners: () => void | Promise<void>
+  createCw1WhitelistOwners: CreateCw1Whitelist
   creatingCw1WhitelistOwners: boolean
 }
 
@@ -135,6 +137,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     (fieldNamePrefix +
       'manyOwnersCw1WhitelistContract') as 'manyOwnersCw1WhitelistContract'
   )
+  const manyOwners = watch((fieldNamePrefix + 'manyOwners') as 'manyOwners')
   const {
     fields: manyOwnerFields,
     append: appendManyOwner,
@@ -143,6 +146,24 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
     control,
     name: (fieldNamePrefix + 'manyOwners') as 'manyOwners',
   })
+
+  const onCreateCw1WhitelistOwners = useCallback(async () => {
+    const contractAddress = await createCw1WhitelistOwners(
+      manyOwners.map(({ address }) => address)
+    )
+
+    // Address is valid on success and undefined on error. Errors are handled
+    // automatically, so we can just do nothing here.
+    if (contractAddress) {
+      setValue(
+        (fieldNamePrefix +
+          'manyOwnersCw1WhitelistContract') as 'manyOwnersCw1WhitelistContract',
+        contractAddress
+      )
+
+      toast.success(t('success.saved'))
+    }
+  }, [createCw1WhitelistOwners, fieldNamePrefix, setValue, t, manyOwners])
 
   const startDate = !isNaN(parsedStartDate)
     ? new Date(parsedStartDate)
@@ -398,7 +419,7 @@ export const BeginVesting: ActionComponent<BeginVestingOptions> = ({
                       <Button
                         className="self-start"
                         loading={creatingCw1WhitelistOwners}
-                        onClick={createCw1WhitelistOwners}
+                        onClick={onCreateCw1WhitelistOwners}
                         variant="primary"
                       >
                         {t('button.save')}

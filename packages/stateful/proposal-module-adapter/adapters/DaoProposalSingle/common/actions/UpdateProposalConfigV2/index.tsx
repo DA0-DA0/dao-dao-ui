@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
@@ -25,7 +24,6 @@ import {
   UseDefaults,
   UseTransformToCosmos,
 } from '@dao-dao/types'
-import { InstantiateMsg as Cw1WhitelistInstantiateMsg } from '@dao-dao/types/contracts/Cw1Whitelist'
 import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import { ExecuteMsg } from '@dao-dao/types/contracts/DaoProposalSingle.v2'
 import {
@@ -35,11 +33,8 @@ import {
   convertDurationToDurationWithUnits,
   convertDurationWithUnitsToDuration,
   convertVetoConfigToCosmos,
-  instantiateSmartContract,
   isFeatureSupportedByVersion,
-  isValidBech32Address,
   makeWasmMessage,
-  processError,
   versionGte,
 } from '@dao-dao/utils'
 
@@ -48,7 +43,7 @@ import {
   useMsgExecutesContract,
 } from '../../../../../../actions'
 import { AddressInput, Trans } from '../../../../../../components'
-import { useWallet } from '../../../../../../hooks'
+import { useCreateCw1Whitelist } from '../../../../../../hooks'
 import {
   UpdateProposalConfigComponent,
   UpdateProposalConfigData,
@@ -127,8 +122,7 @@ export const makeUpdateProposalConfigV2ActionMaker = ({
 }: ProposalModule): ActionMaker<UpdateProposalConfigData> => {
   const Component: ActionComponent = (props) => {
     const { t } = useTranslation()
-    const { address: walletAddress, getSigningCosmWasmClient } = useWallet()
-    const { getValues, setValue, setError, clearErrors, watch, trigger } =
+    const { setError, clearErrors, watch, trigger } =
       useFormContext<UpdateProposalConfigData>()
 
     const vetoAddressesLength = watch(
@@ -144,70 +138,21 @@ export const makeUpdateProposalConfigV2ActionMaker = ({
       throw new Error('Unsupported chain context')
     }
 
-    const [creatingCw1WhitelistVetoers, setCreatingCw1WhitelistVetoers] =
-      useState(false)
-    const createCw1WhitelistVetoers = async () => {
-      if (!walletAddress) {
-        toast.error(t('error.logInToContinue'))
-        return
-      }
-
-      setCreatingCw1WhitelistVetoers(true)
-      try {
-        // Trigger veto address field validations.
+    const {
+      creatingCw1Whitelist: creatingCw1WhitelistVetoers,
+      createCw1Whitelist: createCw1WhitelistVetoers,
+    } = useCreateCw1Whitelist({
+      // Trigger veto address field validations.
+      validation: async () => {
         await trigger(
           (props.fieldNamePrefix + 'veto.addresses') as 'veto.addresses',
           {
             shouldFocus: true,
           }
         )
-
-        const veto = getValues((props.fieldNamePrefix + 'veto') as 'veto')
-        if (veto.cw1WhitelistAddress) {
-          throw new Error(t('error.accountListAlreadySaved'))
-        }
-        if (veto.addresses.length < 2) {
-          throw new Error(t('error.enterAtLeastTwoAccounts'))
-        }
-        const admins = veto.addresses.map(({ address }) => address)
-        if (
-          admins.some(
-            (admin) =>
-              !isValidBech32Address(admin, chainContext.chain.bech32_prefix)
-          )
-        ) {
-          throw new Error(t('error.invalidAccount'))
-        }
-
-        const contractAddress = await instantiateSmartContract(
-          await getSigningCosmWasmClient(),
-          walletAddress,
-          chainContext.config.codeIds.Cw1Whitelist,
-          'Cw1Whitelist',
-          {
-            admins,
-            mutable: false,
-          } as Cw1WhitelistInstantiateMsg
-        )
-
-        setValue(
-          (props.fieldNamePrefix +
-            'veto.cw1WhitelistAddress') as 'veto.cw1WhitelistAddress',
-          contractAddress
-        )
-
-        toast.success(t('success.saved'))
-      } catch (err) {
-        console.error(err)
-        toast.error(
-          processError(err, {
-            forceCapture: false,
-          })
-        )
-      } finally {
-        setCreatingCw1WhitelistVetoers(false)
-      }
-    }
+      },
+      contractLabel: 'Multi-Vetoer cw1-whitelist',
+    })
 
     // Prevent action from being submitted if the cw1-whitelist contract has not
     // yet been created and it needs to be.

@@ -20,6 +20,7 @@ import {
   ActionComponent,
   AddressInputProps,
   ContractVersion,
+  CreateCw1Whitelist,
   DurationUnits,
   DurationUnitsValues,
   DurationWithUnits,
@@ -53,7 +54,7 @@ export type UpdateProposalConfigData = {
 
 export type UpdateProposalConfigOptions = {
   version: ContractVersion | null
-  createCw1WhitelistVetoers: () => void | Promise<void>
+  createCw1WhitelistVetoers: CreateCw1Whitelist
   creatingCw1WhitelistVetoers: boolean
   AddressInput: ComponentType<AddressInputProps<ProposalVetoConfig>>
   Trans: ComponentType<TransProps>
