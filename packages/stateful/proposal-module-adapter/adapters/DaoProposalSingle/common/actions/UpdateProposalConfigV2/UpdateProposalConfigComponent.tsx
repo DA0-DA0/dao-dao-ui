@@ -1,24 +1,20 @@
-import { Add, Close, Edit } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType } from 'react'
-import { useFieldArray, useFormContext } from 'react-hook-form'
+import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
-  Button,
   ChartEmoji,
   ClockEmoji,
   FormSwitch,
   FormSwitchCard,
-  IconButton,
   InputErrorMessage,
-  InputLabel,
   NumberInput,
   PeopleEmoji,
+  ProposalVetoConfigurer,
   RecycleEmoji,
   SelectInput,
   ThumbDownEmoji,
-  useChain,
 } from '@dao-dao/stateless'
 import {
   ActionComponent,
@@ -33,8 +29,6 @@ import {
 } from '@dao-dao/types'
 import {
   isFeatureSupportedByVersion,
-  makeValidateAddress,
-  validateNonNegative,
   validatePercent,
   validatePositive,
   validateRequired,
@@ -61,7 +55,7 @@ export type UpdateProposalConfigOptions = {
   version: ContractVersion | null
   createCw1WhitelistVetoers: () => void | Promise<void>
   creatingCw1WhitelistVetoers: boolean
-  AddressInput: ComponentType<AddressInputProps<UpdateProposalConfigData>>
+  AddressInput: ComponentType<AddressInputProps<ProposalVetoConfig>>
   Trans: ComponentType<TransProps>
 }
 
@@ -80,9 +74,8 @@ export const UpdateProposalConfigComponent: ActionComponent<
   },
 }) => {
   const { t } = useTranslation()
-  const { control, register, setValue, watch } =
+  const { register, setValue, watch } =
     useFormContext<UpdateProposalConfigData>()
-  const { bech32_prefix: bech32Prefix } = useChain()
 
   const onlyMembersExecute = watch(
     (fieldNamePrefix + 'onlyMembersExecute') as 'onlyMembersExecute'
@@ -104,15 +97,6 @@ export const UpdateProposalConfigComponent: ActionComponent<
 
   const percentageThresholdSelected = thresholdType === '%'
   const percentageQuorumSelected = quorumType === '%'
-
-  const {
-    fields: vetoerFields,
-    append: appendVetoer,
-    remove: removeVetoer,
-  } = useFieldArray({
-    control,
-    name: (fieldNamePrefix + 'veto.addresses') as 'veto.addresses',
-  })
 
   return (
     <div className="flex flex-col gap-2">
@@ -333,167 +317,19 @@ export const UpdateProposalConfigComponent: ActionComponent<
           </div>
 
           {veto.enabled && (
-            <div
+            <ProposalVetoConfigurer
+              AddressInput={AddressInput}
               className={clsx(
                 'flex flex-col gap-2',
                 isCreating ? 'max-w-xl' : 'max-w-xs'
               )}
-            >
-              <div className="space-y-2">
-                <InputLabel name={t('form.whoCanVetoProposals')} />
-
-                <div className={clsx(!veto.cw1WhitelistAddress && 'space-y-2')}>
-                  {vetoerFields.map(({ id }, index) => (
-                    <div key={id} className="flex flex-row items-center gap-1">
-                      <AddressInput
-                        containerClassName="grow"
-                        disabled={!isCreating || !!veto.cw1WhitelistAddress}
-                        error={errors?.veto?.addresses?.[index]?.address}
-                        fieldName={
-                          (fieldNamePrefix +
-                            `veto.addresses.${index}.address`) as `veto.addresses.${number}.address`
-                        }
-                        register={register}
-                        validation={[
-                          validateRequired,
-                          makeValidateAddress(bech32Prefix),
-                        ]}
-                      />
-
-                      {isCreating && !veto.cw1WhitelistAddress && index > 0 && (
-                        <IconButton
-                          Icon={Close}
-                          disabled={creatingCw1WhitelistVetoers}
-                          onClick={() => removeVetoer(index)}
-                          size="sm"
-                          variant="ghost"
-                        />
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                <InputErrorMessage error={errors?.veto?.cw1WhitelistAddress} />
-
-                {isCreating && (
-                  <div className="flex flex-row justify-between">
-                    {veto.cw1WhitelistAddress ? (
-                      <Button
-                        className="self-start"
-                        onClick={() =>
-                          setValue(
-                            (fieldNamePrefix +
-                              'veto.cw1WhitelistAddress') as 'veto.cw1WhitelistAddress',
-                            undefined
-                          )
-                        }
-                        variant="secondary"
-                      >
-                        <Edit className="!h-4 !w-4" />
-                        {t('button.changeVetoer')}
-                      </Button>
-                    ) : (
-                      <Button
-                        className="self-start"
-                        disabled={creatingCw1WhitelistVetoers}
-                        onClick={() =>
-                          appendVetoer({
-                            address: '',
-                          })
-                        }
-                        variant="secondary"
-                      >
-                        <Add className="!h-4 !w-4" />
-                        {t('button.addVetoer')}
-                      </Button>
-                    )}
-
-                    {!veto.cw1WhitelistAddress && vetoerFields.length > 1 && (
-                      <Button
-                        className="self-start"
-                        loading={creatingCw1WhitelistVetoers}
-                        onClick={createCw1WhitelistVetoers}
-                        variant="primary"
-                      >
-                        {t('button.save')}
-                      </Button>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <InputLabel
-                  name={t('form.timelockDuration')}
-                  tooltip={t('form.timelockDurationTooltip')}
-                />
-
-                <div className="flex flex-row gap-2">
-                  <NumberInput
-                    containerClassName="grow"
-                    disabled={!isCreating}
-                    error={errors?.veto?.timelockDuration?.value}
-                    fieldName={
-                      (fieldNamePrefix +
-                        'veto.timelockDuration.value') as 'veto.timelockDuration.value'
-                    }
-                    min={0}
-                    register={register}
-                    setValue={setValue}
-                    sizing="sm"
-                    step={1}
-                    validation={[validateNonNegative, validateRequired]}
-                    watch={watch}
-                  />
-
-                  <SelectInput
-                    disabled={!isCreating}
-                    error={errors?.veto?.timelockDuration?.units}
-                    fieldName={
-                      (fieldNamePrefix +
-                        'veto.timelockDuration.units') as 'veto.timelockDuration.units'
-                    }
-                    register={register}
-                    validation={[validateRequired]}
-                  >
-                    {DurationUnitsValues.map((type, idx) => (
-                      <option key={idx} value={type}>
-                        {t(`unit.${type}`, {
-                          count: veto.timelockDuration?.value,
-                        }).toLocaleLowerCase()}
-                      </option>
-                    ))}
-                  </SelectInput>
-                </div>
-              </div>
-
-              <FormSwitchCard
-                containerClassName="self-start"
-                fieldName={
-                  (fieldNamePrefix + 'veto.earlyExecute') as 'veto.earlyExecute'
-                }
-                label={t('form.earlyExecute')}
-                readOnly={!isCreating}
-                setValue={setValue}
-                sizing="sm"
-                tooltip={t('form.earlyExecuteTooltip')}
-                value={veto.earlyExecute}
-              />
-
-              <FormSwitchCard
-                containerClassName="self-start"
-                fieldName={
-                  (fieldNamePrefix +
-                    'veto.vetoBeforePassed') as 'veto.vetoBeforePassed'
-                }
-                label={t('form.vetoBeforePassed')}
-                readOnly={!isCreating}
-                setValue={setValue}
-                sizing="sm"
-                tooltip={t('form.vetoBeforePassedTooltip')}
-                value={veto.vetoBeforePassed}
-              />
-            </div>
+              createCw1WhitelistVetoers={createCw1WhitelistVetoers}
+              creatingCw1WhitelistVetoers={creatingCw1WhitelistVetoers}
+              disabled={!isCreating}
+              errors={errors?.veto}
+              fieldNamePrefix={fieldNamePrefix + 'veto.'}
+              veto={veto}
+            />
           )}
         </div>
       )}
