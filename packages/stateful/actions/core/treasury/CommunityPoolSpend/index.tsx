@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 
-import { CurvedDownArrowEmoji } from '@dao-dao/stateless'
+import { MoneyEmoji } from '@dao-dao/stateless'
 import { UseDecodedCosmosMsg } from '@dao-dao/types'
 import {
   ActionComponent,
@@ -18,39 +18,31 @@ import {
 import { MsgCommunityPoolSpend } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 
 import { PayEntityDisplay } from '../../../../components/PayEntityDisplay'
-import { useEntity } from '../../../../hooks'
 import {
-  CommunityPoolTransferComponent,
-  CommunityPoolTransferData,
+  CommunityPoolSpendComponent,
+  CommunityPoolSpendData,
 } from './Component'
 
-const useDefaults: UseDefaults<CommunityPoolTransferData> = () => ({
+const useDefaults: UseDefaults<CommunityPoolSpendData> = () => ({
   authority: '',
   recipient: '',
   funds: [],
 })
 
-const Component: ActionComponent<undefined, CommunityPoolTransferData> = (
+const Component: ActionComponent<undefined, CommunityPoolSpendData> = (
   props
-) => {
-  const entity = useEntity(props.data.recipient)
+) => (
+  <CommunityPoolSpendComponent
+    {...props}
+    options={{
+      PayEntityDisplay,
+    }}
+  />
+)
 
-  return (
-    <CommunityPoolTransferComponent
-      {...props}
-      options={{
-        entity,
-        PayEntityDisplay,
-      }}
-    />
-  )
-}
-
-const useTransformToCosmos: UseTransformToCosmos<
-  CommunityPoolTransferData
-> = () =>
+const useTransformToCosmos: UseTransformToCosmos<CommunityPoolSpendData> = () =>
   useCallback(
-    ({ authority, recipient, funds }: CommunityPoolTransferData) =>
+    ({ authority, recipient, funds }: CommunityPoolSpendData) =>
       makeStargateMessage({
         stargate: {
           typeUrl: MsgCommunityPoolSpend.typeUrl,
@@ -64,19 +56,14 @@ const useTransformToCosmos: UseTransformToCosmos<
     []
   )
 
-const useDecodedCosmosMsg: UseDecodedCosmosMsg<CommunityPoolTransferData> = (
+const useDecodedCosmosMsg: UseDecodedCosmosMsg<CommunityPoolSpendData> = (
   msg: Record<string, any>
 ) =>
   isDecodedStargateMsg(msg) &&
-  objectMatchesStructure(msg, {
-    stargate: {
-      typeUrl: {},
-      value: {
-        authority: {},
-        recipient: {},
-        amount: {},
-      },
-    },
+  objectMatchesStructure(msg.stargate.value, {
+    authority: {},
+    recipient: {},
+    amount: {},
   }) &&
   msg.stargate.typeUrl === MsgCommunityPoolSpend.typeUrl
     ? {
@@ -91,23 +78,27 @@ const useDecodedCosmosMsg: UseDecodedCosmosMsg<CommunityPoolTransferData> = (
         match: false,
       }
 
-export const makeCommunityPoolTransferAction: ActionMaker<
-  CommunityPoolTransferData
+export const makeCommunityPoolSpendAction: ActionMaker<
+  CommunityPoolSpendData
 > = ({ t, context }) =>
   context.type === ActionContextType.Gov
     ? {
-        key: ActionKey.CommunityPoolTransfer,
-        Icon: CurvedDownArrowEmoji,
-        label: t('title.transfer'),
-        description: t('info.communityPoolTransferDescription', {
+        key: ActionKey.CommunityPoolSpend,
+        Icon: MoneyEmoji,
+        label: t('title.spend'),
+        description: t('info.spendActionDescription', {
           context: context.type,
         }),
         Component,
         useDefaults,
         useTransformToCosmos,
         useDecodedCosmosMsg,
-        // Only used to render community pool spends in gov props. Will be
-        // automatically added. Should not be used manually by user.
-        programmaticOnly: true,
+        // The normal Spend action will automatically create community pool
+        // spends when used inside a governance proposal context. This community
+        // pool spend action is just for display purposes, since the Spend
+        // action only allows selecting one token at a time, whereas community
+        // pool spends can contain multiple tokens. Thus, don't allow choosing
+        // this action when creating a proposal, but still render it.
+        hideFromPicker: true,
       }
     : null
