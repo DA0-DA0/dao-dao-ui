@@ -36,6 +36,9 @@ export type VetoOrEarlyExecuteDaoProposalData = {
   proposalModuleAddress: string
   proposalId: number
   action: 'veto' | 'earlyExecute'
+  // If defined, this is the vetoer address and it is a cw1-whitelist. This is
+  // needed in order to correctly format a cw1-whitelist message.
+  cw1WhitelistVetoer?: string
 }
 
 export type VetoOrEarlyExecuteDaoProposalOptions = {

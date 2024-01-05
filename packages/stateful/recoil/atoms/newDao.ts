@@ -11,6 +11,7 @@ import {
   DaoProposalMultipleAdapterId,
   DaoProposalSingleAdapterId,
   MembershipBasedCreatorId,
+  convertCosmosVetoConfigToVeto,
   getNativeTokenForChainId,
 } from '@dao-dao/utils'
 
@@ -68,16 +69,8 @@ export const makeDefaultNewDao = (chainId: string): NewDao => ({
       enabled: false,
       address: '',
     },
-    veto: {
-      enabled: false,
-      address: '',
-      timelockDuration: {
-        value: 1,
-        units: DurationUnits.Weeks,
-      },
-      earlyExecute: true,
-      vetoBeforePassed: false,
-    },
+    // Get default veto config by passing null.
+    veto: convertCosmosVetoConfigToVeto(null),
   },
   advancedVotingConfigEnabled: false,
 })

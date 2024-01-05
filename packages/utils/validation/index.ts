@@ -27,8 +27,8 @@ export const validatePositive = (v: string | number | undefined) =>
 export const validateNonNegative = (v: string | number) =>
   (!isNaN(Number(v)) && Number(v) >= 0) || 'Must be non-negative'
 
-export const validatePercent = (v: string | number) => {
-  const p = Number(v)
+export const validatePercent = (v: string | number | undefined) => {
+  const p = v ? Number(v) : NaN
   return (!isNaN(p) && p <= 100 && p >= 0) || 'Invalid percentage'
 }
 

@@ -6,8 +6,9 @@ import {
 } from '@mui/icons-material'
 import uniq from 'lodash.uniq'
 import { useTranslation } from 'react-i18next'
+import { useRecoilValueLoadable, waitForAll } from 'recoil'
 
-import { daoTvlSelector } from '@dao-dao/state'
+import { Cw1WhitelistSelectors, daoTvlSelector } from '@dao-dao/state'
 import {
   DaoInfoBar as StatelessDaoInfoBar,
   TokenAmountDisplay,
@@ -81,6 +82,30 @@ const InnerDaoInfoBar = () => {
     )
   )
 
+  // Attempt to load cw1-whitelist admins if the vetoer is set. Will only
+  // succeed if the vetoer is a cw1-whitelist contract. Otherwise it returns
+  // undefined.
+  const cw1WhitelistAdminsLoadable = useRecoilValueLoadable(
+    waitForAll(
+      allVetoers.map((vetoer) =>
+        Cw1WhitelistSelectors.adminsIfCw1Whitelist({
+          chainId,
+          contractAddress: vetoer,
+        })
+      )
+    )
+  )
+
+  // If a vetoer is a cw1-whitelist contract, replace it with its admins.
+  const flattenedVetoers = uniq(
+    allVetoers.flatMap((vetoer, index) =>
+      cw1WhitelistAdminsLoadable.state === 'hasValue' &&
+      cw1WhitelistAdminsLoadable.contents[index]?.length
+        ? (cw1WhitelistAdminsLoadable.contents[index] as string[])
+        : [vetoer]
+    )
+  )
+
   return (
     <StatelessDaoInfoBar
       items={[
@@ -139,7 +164,7 @@ const InnerDaoInfoBar = () => {
           tooltip: t('info.daoApproverExplanation'),
           value: <EntityDisplay address={approver} hideImage noCopy />,
         })),
-        ...allVetoers.map((vetoer) => ({
+        ...flattenedVetoers.map((vetoer) => ({
           Icon: ThumbDownOutlined,
           label: t('title.vetoer'),
           tooltip: t('info.daoVetoerExplanation'),

@@ -20,6 +20,7 @@ import {
   WithChainId,
 } from '@dao-dao/types'
 import {
+  ContractName,
   convertMicroDenomToDenomWithDecimals,
   getChainForChainId,
   getVestingValidatorSlashes,
@@ -202,7 +203,7 @@ export const vestingInfoSelector = selectorFamily<
               isContractSelector({
                 chainId,
                 contractAddress: owner,
-                name: 'cw1-whitelist',
+                name: ContractName.Cw1Whitelist,
               })
             )
           : false

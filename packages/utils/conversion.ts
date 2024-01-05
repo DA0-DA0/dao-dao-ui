@@ -100,15 +100,27 @@ export const convertDurationWithUnitsToSeconds = ({
     case DurationUnits.Years:
       return value * 60 * 60 * 24 * 365
     default:
-      throw new Error(`Unsupported duration unit: ${units}`)
+      throw new Error(`Unsupported time duration unit: ${units}`)
   }
 }
 
 export const convertDurationWithUnitsToDuration = (
   durationWithUnits: DurationWithUnits
-): { time: number } => ({
-  time: convertDurationWithUnitsToSeconds(durationWithUnits),
-})
+): Duration =>
+  durationWithUnits.units === DurationUnits.Blocks
+    ? {
+        height: durationWithUnits.value,
+      }
+    : {
+        time: convertDurationWithUnitsToSeconds(durationWithUnits),
+      }
+
+export const convertDurationToDurationWithUnits = (
+  duration: Duration
+): DurationWithUnits =>
+  'height' in duration
+    ? { units: DurationUnits.Blocks, value: duration.height }
+    : convertSecondsToDurationWithUnits(duration.time)
 
 // Use largest whole-number unit possible.
 export const convertSecondsToDurationWithUnits = (

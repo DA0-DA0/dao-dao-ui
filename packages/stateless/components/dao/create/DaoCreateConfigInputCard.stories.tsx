@@ -31,6 +31,7 @@ const Template: ComponentStory<typeof DaoCreateConfigInputCard> = (args) => {
         input={
           <VotingDurationInput
             data={newDao.proposalModuleAdapters[0].data}
+            fieldNamePrefix="proposalModuleAdapters.0.data."
             newDao={newDao}
             register={(fieldName, options) =>
               register(

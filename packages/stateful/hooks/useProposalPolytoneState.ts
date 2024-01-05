@@ -48,8 +48,11 @@ export type UseProposalPolytoneStateOptions = {
 
 export type UseProposalPolytoneStateReturn = LoadingData<ProposalPolytoneState>
 
-// This hook uses information about a proposal and produces all the necessary
-// state for the status of polytone message relays.
+/**
+ * This hook uses information about a proposal and produces all the necessary
+ * state for the status of polytone message relays. It is used in the
+ * `useProposalActionState` hook.
+ */
 export const useProposalPolytoneState = ({
   msgs,
   status,

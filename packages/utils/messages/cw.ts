@@ -420,8 +420,31 @@ export const decodeIcaExecuteMsg = (
   }
 }
 
-// Checks if the message is a cw1-whitelist execute message and extracts the
-// address and msg(s).
+/**
+ * Wrap the message in a cw1-whitelist execution message.
+ */
+export const makeCw1WhitelistExecuteMessage = (
+  cw1WhitelistContract: string,
+  msg: CosmosMsgFor_Empty | CosmosMsgFor_Empty[]
+): CosmosMsgFor_Empty =>
+  makeWasmMessage({
+    wasm: {
+      execute: {
+        contract_addr: cw1WhitelistContract,
+        funds: [],
+        msg: {
+          execute: {
+            msgs: [msg].flat(),
+          },
+        },
+      },
+    },
+  })
+
+/**
+ * Checks if the message is a cw1-whitelist execute message and extracts the
+ * address and msg(s).
+ */
 export const decodeCw1WhitelistExecuteMsg = (
   decodedMsg: Record<string, any>,
   // How many messages are expected.

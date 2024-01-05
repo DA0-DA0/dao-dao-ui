@@ -12,6 +12,7 @@ import {
   DaoProposalMultipleAdapterId,
   convertDenomToMicroDenomWithDecimals,
   convertDurationWithUnitsToDuration,
+  convertVetoConfigToCosmos,
   encodeMessageAsBase64,
 } from '@dao-dao/utils'
 import { makeValidateMsg } from '@dao-dao/utils/validation/makeValidateMsg'
@@ -116,16 +117,7 @@ export const getInstantiateInfo: DaoCreationGetInstantiateInfo<
         quorum: convertPercentOrMajorityValueToPercentageThreshold(quorum),
       },
     },
-    veto: veto.enabled
-      ? {
-          vetoer: veto.address,
-          timelock_duration: convertDurationWithUnitsToDuration(
-            veto.timelockDuration
-          ),
-          early_execute: veto.earlyExecute,
-          veto_before_passed: veto.vetoBeforePassed,
-        }
-      : null,
+    veto: convertVetoConfigToCosmos(veto),
   }
 
   // Validate and throw error if invalid according to JSON schema.

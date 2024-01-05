@@ -1,7 +1,7 @@
 import { useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
 
-import { DaoProposalCommonSelectors } from '@dao-dao/state'
+import { DaoProposalCommonSelectors, isContractSelector } from '@dao-dao/state'
 import {
   ControlKnobsEmoji,
   useCachedLoadingWithError,
@@ -15,7 +15,10 @@ import {
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
 import {
+  ContractName,
+  decodeCw1WhitelistExecuteMsg,
   decodePolytoneExecuteMsg,
+  makeCw1WhitelistExecuteMessage,
   makeWasmMessage,
   maybeMakePolytoneExecuteMessage,
   objectMatchesStructure,
@@ -51,6 +54,9 @@ const Component: ActionComponent<
   const chainId = watch((props.fieldNamePrefix + 'chainId') as 'chainId')
   const coreAddress = watch(
     (props.fieldNamePrefix + 'coreAddress') as 'coreAddress'
+  )
+  const proposalModuleAddress = watch(
+    (props.fieldNamePrefix + 'proposalModuleAddress') as 'proposalModuleAddress'
   )
   const proposalId = watch(
     (props.fieldNamePrefix + 'proposalId') as 'proposalId'
@@ -132,6 +138,48 @@ const Component: ActionComponent<
     }
   }, [isCreating, proposalId, setValue, fieldNamePrefix, daoVetoableProposals])
 
+  // Load cw1-whitelist vetoer for proposal.
+  const proposalLoading = useCachedLoadingWithError(
+    proposalModuleAddress && !isNaN(proposalId) && proposalId > -1
+      ? DaoProposalCommonSelectors.proposalSelector({
+          chainId,
+          contractAddress: proposalModuleAddress,
+          params: [
+            {
+              proposalId,
+            },
+          ],
+        })
+      : undefined
+  )
+  const isCw1WhitelistLoading = useCachedLoadingWithError(
+    !proposalLoading.loading &&
+      !proposalLoading.errored &&
+      proposalLoading.data.proposal.veto?.vetoer
+      ? isContractSelector({
+          chainId,
+          contractAddress: proposalLoading.data.proposal.veto.vetoer,
+          name: ContractName.Cw1Whitelist,
+        })
+      : undefined
+  )
+  useEffect(() => {
+    if (
+      !proposalLoading.loading &&
+      !proposalLoading.errored &&
+      !isCw1WhitelistLoading.loading &&
+      !isCw1WhitelistLoading.errored &&
+      isCw1WhitelistLoading.data
+    ) {
+      setValue(
+        (fieldNamePrefix + 'cw1WhitelistVetoer') as 'cw1WhitelistVetoer',
+        isCw1WhitelistLoading.data
+          ? proposalLoading.data.proposal.veto?.vetoer
+          : undefined
+      )
+    }
+  }, [fieldNamePrefix, isCw1WhitelistLoading, proposalLoading, setValue])
+
   return (
     <StatelessVetoOrEarlyExecuteDaoProposalComponent
       {...props}
@@ -155,30 +203,42 @@ export const makeVetoOrEarlyExecuteDaoProposalAction: ActionMaker<
     proposalModuleAddress: '',
     proposalId: -1,
     action: 'veto',
+    vetoerIsCw1Whitelist: false,
   })
 
   const useTransformToCosmos: UseTransformToCosmos<
     VetoOrEarlyExecuteDaoProposalData
   > = () =>
     useCallback(
-      ({ chainId, proposalModuleAddress, proposalId, action }) =>
-        maybeMakePolytoneExecuteMessage(
-          currentChainId,
-          chainId,
-          makeWasmMessage({
-            wasm: {
-              execute: {
-                contract_addr: proposalModuleAddress,
-                funds: [],
-                msg: {
-                  [action === 'veto' ? 'veto' : 'execute']: {
-                    proposal_id: proposalId,
-                  },
+      ({
+        chainId,
+        proposalModuleAddress,
+        proposalId,
+        action,
+        cw1WhitelistVetoer,
+      }) => {
+        const msg = makeWasmMessage({
+          wasm: {
+            execute: {
+              contract_addr: proposalModuleAddress,
+              funds: [],
+              msg: {
+                [action === 'veto' ? 'veto' : 'execute']: {
+                  proposal_id: proposalId,
                 },
               },
             },
-          })
-        ),
+          },
+        })
+
+        return maybeMakePolytoneExecuteMessage(
+          currentChainId,
+          chainId,
+          cw1WhitelistVetoer
+            ? makeCw1WhitelistExecuteMessage(cw1WhitelistVetoer, msg)
+            : msg
+        )
+      },
       []
     )
 
@@ -190,6 +250,12 @@ export const makeVetoOrEarlyExecuteDaoProposalAction: ActionMaker<
     if (decodedPolytone.match) {
       chainId = decodedPolytone.chainId
       msg = decodedPolytone.msg
+    }
+
+    // If this is a cw1-whitelist execute msg, check msg inside of it.
+    const decodedCw1Whitelist = decodeCw1WhitelistExecuteMsg(msg, 'one')
+    if (decodedCw1Whitelist) {
+      msg = decodedCw1Whitelist.msgs[0]
     }
 
     const isWasmExecuteMessage = objectMatchesStructure(msg, {
@@ -247,11 +313,25 @@ export const makeVetoOrEarlyExecuteDaoProposalAction: ActionMaker<
         : undefined
     )
 
+    const isCw1WhitelistLoading = useCachedLoadingWithError(
+      !proposalLoading.loading &&
+        !proposalLoading.errored &&
+        proposalLoading.data.proposal.veto?.vetoer
+        ? isContractSelector({
+            chainId,
+            contractAddress: proposalLoading.data.proposal.veto.vetoer,
+            name: ContractName.Cw1Whitelist,
+          })
+        : undefined
+    )
+
     if (
       daoLoading.loading ||
       daoLoading.errored ||
       proposalLoading.loading ||
       proposalLoading.errored ||
+      isCw1WhitelistLoading.loading ||
+      isCw1WhitelistLoading.errored ||
       (!isVeto &&
         (!isExecute ||
           // If executing, it's not an early-execute if we are not the vetoer.
@@ -270,6 +350,9 @@ export const makeVetoOrEarlyExecuteDaoProposalAction: ActionMaker<
         proposalModuleAddress: msg.wasm.execute.contract_addr,
         proposalId,
         action: isVeto ? 'veto' : 'earlyExecute',
+        cw1WhitelistVetoer: isCw1WhitelistLoading.data
+          ? proposalLoading.data.proposal.veto?.vetoer
+          : undefined,
       },
     }
   }
