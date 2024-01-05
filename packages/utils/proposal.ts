@@ -44,7 +44,14 @@ export const convertVetoConfigToCosmos = (
 ): VetoConfig | null =>
   veto.enabled
     ? {
-        vetoer: veto.address,
+        vetoer:
+          // If more than one address set, there should be a cw1-whitelist
+          // contract created. Otherwise, use the first address.
+          veto.addresses.length > 1
+            ? veto.cw1WhitelistAddress || ''
+            : veto.addresses.length === 1
+            ? veto.addresses[0].address
+            : '',
         timelock_duration: convertDurationWithUnitsToDuration(
           veto.timelockDuration
         ),
@@ -58,12 +65,22 @@ export const convertVetoConfigToCosmos = (
  * empty, returns default.
  */
 export const convertCosmosVetoConfigToVeto = (
-  veto: VetoConfig | null | undefined
+  veto: VetoConfig | null | undefined,
+  // If provided, `veto.vetoer` should be a cw1-whitelist contract address, and
+  // this should be its list of admins.
+  cw1WhitelistAdmins?: string[]
 ): ProposalVetoConfig =>
   veto
     ? {
         enabled: true,
-        address: veto.vetoer,
+        addresses: cw1WhitelistAdmins?.map((address) => ({
+          address,
+        })) || [
+          {
+            address: veto.vetoer,
+          },
+        ],
+        cw1WhitelistAddress: cw1WhitelistAdmins ? veto.vetoer : undefined,
         timelockDuration: convertDurationToDurationWithUnits(
           veto.timelock_duration
         ),
@@ -72,7 +89,12 @@ export const convertCosmosVetoConfigToVeto = (
       }
     : {
         enabled: false,
-        address: '',
+        addresses: [
+          {
+            address: '',
+          },
+        ],
+        cw1WhitelistAddress: undefined,
         timelockDuration: {
           value: 1,
           units: DurationUnits.Weeks,

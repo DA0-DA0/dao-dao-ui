@@ -14,6 +14,7 @@ export const CreateDaoVoting = ({
     register,
     watch,
     setValue,
+    control,
   },
   commonVotingConfig: {
     items: commonVotingConfigItems,
@@ -94,6 +95,7 @@ export const CreateDaoVoting = ({
                     <Input
                       data={creatorData}
                       errors={errors.creator?.data}
+                      fieldNamePrefix="creator.data."
                       newDao={newDao}
                       register={(fieldName, options) =>
                         register(
@@ -156,6 +158,7 @@ export const CreateDaoVoting = ({
                         <Input
                           data={proposalModuleAdapters[index].data}
                           errors={errors.proposalModuleAdapters?.[index]?.data}
+                          fieldNamePrefix={`proposalModuleAdapters.${index}.data.`}
                           newDao={newDao}
                           register={(fieldName, options) =>
                             register(
@@ -215,6 +218,7 @@ export const CreateDaoVoting = ({
                     <Input
                       data={votingConfig}
                       errors={errors.votingConfig}
+                      fieldNamePrefix="votingConfig."
                       newDao={newDao}
                       register={(fieldName, options) =>
                         register(('votingConfig.' + fieldName) as any, options)
@@ -320,6 +324,7 @@ export const CreateDaoVoting = ({
                       <Input
                         data={creatorData}
                         errors={errors.creator?.data}
+                        fieldNamePrefix="creator.data."
                         newDao={newDao}
                         register={(fieldName, options) =>
                           register(
@@ -384,6 +389,7 @@ export const CreateDaoVoting = ({
                             errors={
                               errors.proposalModuleAdapters?.[index]?.data
                             }
+                            fieldNamePrefix={`proposalModuleAdapters.${index}.data.`}
                             newDao={newDao}
                             register={(fieldName, options) =>
                               register(
@@ -443,6 +449,7 @@ export const CreateDaoVoting = ({
                       <Input
                         data={votingConfig}
                         errors={errors.votingConfig}
+                        fieldNamePrefix="votingConfig."
                         newDao={newDao}
                         register={(fieldName, options) =>
                           register(

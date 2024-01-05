@@ -6,9 +6,11 @@ export enum EntityType {
   Wallet = 'wallet',
   // native chain module
   Module = 'module',
+  // cw1-whitelist with multiple entities inside
+  Cw1Whitelist = 'cw1-whitelist',
 }
 
-// DAO or wallet representation.
+// Generalizable entity representation.
 export type Entity = {
   chainId: string
   address: string
@@ -29,6 +31,10 @@ export type Entity = {
         chainId: string
         address: string
       }
+    }
+  | {
+      type: EntityType.Cw1Whitelist
+      entities: Entity[]
     }
 )
 

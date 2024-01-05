@@ -118,7 +118,13 @@ export type ApprovalProposalContext =
 
 export type ProposalVetoConfig = {
   enabled: boolean
-  address: string
+  addresses: {
+    address: string
+  }[]
+  // If there are multiple addresses, this must be set to the cw1-whitelist
+  // contract from the list of addresses. If there is only one address, then
+  // this should be undefined.
+  cw1WhitelistAddress: string | undefined
   timelockDuration: DurationWithUnits
   earlyExecute: boolean
   vetoBeforePassed: boolean

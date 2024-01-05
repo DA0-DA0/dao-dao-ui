@@ -39,7 +39,7 @@ import {
   UseHideFromPicker,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { InstantiateMsg as Cw1WhietlistInstantiateMsg } from '@dao-dao/types/contracts/Cw1Whitelist'
+import { InstantiateMsg as Cw1WhitelistInstantiateMsg } from '@dao-dao/types/contracts/Cw1Whitelist'
 import {
   ExecuteMsg,
   InstantiateNativePayrollContractMsg,
@@ -117,8 +117,8 @@ const Component: ComponentType<
   } = useActionOptions()
   const { address: walletAddress, getSigningCosmWasmClient } = useWallet()
 
-  // Type-check to ensure we can access code IDs. Guaranteed by the DAO check
-  // in the maker function below.
+  // Type-check to ensure we can access code IDs. Guaranteed by the DAO check in
+  // the maker function below.
   if (chainContext.type !== ActionChainContextType.Supported) {
     throw new Error('Unsupported chain context')
   }
@@ -284,7 +284,7 @@ const Component: ComponentType<
         {
           admins,
           mutable: false,
-        } as Cw1WhietlistInstantiateMsg
+        } as Cw1WhitelistInstantiateMsg
       )
 
       setValue(
@@ -302,8 +302,8 @@ const Component: ComponentType<
     }
   }
 
-  // Prevent action from being submitted if the cw1-whitelist contract has
-  // not yet been created and it needs to be.
+  // Prevent action from being submitted if the cw1-whitelist contract has not
+  // yet been created and it needs to be.
   useEffect(() => {
     if (beginOwnerMode === 'many' && !beginManyOwnersCw1WhitelistContract) {
       setError(
@@ -871,8 +871,9 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
       }
     }
 
-    // Attempt to load cw1-whitelist admins if the owner is set. Will only succeed
-    // if the owner is a cw1-whitelist contract. Otherwise it returns undefined.
+    // Attempt to load cw1-whitelist admins if the owner is set. Will only
+    // succeed if the owner is a cw1-whitelist contract. Otherwise it returns
+    // undefined.
     const cw1WhitelistAdminsLoadable = useCachedLoadable(
       isBegin && instantiateMsg?.owner
         ? Cw1WhitelistSelectors.adminsIfCw1Whitelist({
@@ -951,9 +952,10 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
                         // Typecheck. Always false.
                         instantiateMsg!.schedule === 'saturating_linear'
                           ? // For first user-defined step, account for 1 second
-                            // delay since we ignore the first hardcoded step at 1
-                            // second. When we created the msg, we subtracted 1
-                            // second from the first user-defined step's delay.
+                            // delay since we ignore the first hardcoded step at
+                            // 1 second. When we created the msg, we subtracted
+                            // 1 second from the first user-defined step's
+                            // delay.
                             0
                           : instantiateMsg!.schedule.piecewise_linear[
                               index - 1

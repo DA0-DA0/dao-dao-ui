@@ -1,12 +1,15 @@
+import { Add, Close, Edit } from '@mui/icons-material'
 import clsx from 'clsx'
 import { ComponentType } from 'react'
-import { useFormContext } from 'react-hook-form'
+import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
+  Button,
   ClockEmoji,
   FormSwitch,
   FormSwitchCard,
+  IconButton,
   InputErrorMessage,
   InputLabel,
   NumberInput,
@@ -51,6 +54,8 @@ export type UpdateProposalConfigData = {
 
 export type UpdateProposalConfigOptions = {
   version: ContractVersion | null
+  createCw1WhitelistVetoers: () => void | Promise<void>
+  creatingCw1WhitelistVetoers: boolean
   AddressInput: ComponentType<AddressInputProps<UpdateProposalConfigData>>
   Trans: ComponentType<TransProps>
 }
@@ -61,10 +66,16 @@ export const UpdateProposalConfigComponent: ActionComponent<
   fieldNamePrefix,
   errors,
   isCreating,
-  options: { version, AddressInput, Trans },
+  options: {
+    version,
+    createCw1WhitelistVetoers,
+    creatingCw1WhitelistVetoers,
+    AddressInput,
+    Trans,
+  },
 }) => {
   const { t } = useTranslation()
-  const { register, setValue, watch } =
+  const { control, register, setValue, watch } =
     useFormContext<UpdateProposalConfigData>()
   const { bech32_prefix: bech32Prefix } = useChain()
 
@@ -81,6 +92,15 @@ export const UpdateProposalConfigComponent: ActionComponent<
   const veto = watch((fieldNamePrefix + 'veto') as 'veto')
 
   const percentageQuorumSelected = quorumType === '%'
+
+  const {
+    fields: vetoerFields,
+    append: appendVetoer,
+    remove: removeVetoer,
+  } = useFieldArray({
+    control,
+    name: (fieldNamePrefix + 'veto.addresses') as 'veto.addresses',
+  })
 
   return (
     <div className="flex flex-col gap-2">
@@ -256,23 +276,87 @@ export const UpdateProposalConfigComponent: ActionComponent<
                 isCreating ? 'max-w-xl' : 'max-w-xs'
               )}
             >
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <InputLabel name={t('form.whoCanVetoProposals')} />
 
-                <AddressInput
-                  disabled={!isCreating}
-                  error={errors?.veto?.address}
-                  fieldName={
-                    (fieldNamePrefix + 'veto.address') as 'veto.address'
-                  }
-                  register={register}
-                  setValue={setValue}
-                  type="contract"
-                  validation={[makeValidateAddress(bech32Prefix)]}
-                  watch={watch}
-                />
+                <div className={clsx(!veto.cw1WhitelistAddress && 'space-y-2')}>
+                  {vetoerFields.map(({ id }, index) => (
+                    <div key={id} className="flex flex-row items-center gap-1">
+                      <AddressInput
+                        containerClassName="grow"
+                        disabled={!isCreating || !!veto.cw1WhitelistAddress}
+                        error={errors?.veto?.addresses?.[index]?.address}
+                        fieldName={
+                          (fieldNamePrefix +
+                            `veto.addresses.${index}.address`) as `veto.addresses.${number}.address`
+                        }
+                        register={register}
+                        validation={[
+                          validateRequired,
+                          makeValidateAddress(bech32Prefix),
+                        ]}
+                      />
 
-                <InputErrorMessage error={errors?.veto?.address} />
+                      {isCreating && !veto.cw1WhitelistAddress && index > 0 && (
+                        <IconButton
+                          Icon={Close}
+                          disabled={creatingCw1WhitelistVetoers}
+                          onClick={() => removeVetoer(index)}
+                          size="sm"
+                          variant="ghost"
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <InputErrorMessage error={errors?.veto?.cw1WhitelistAddress} />
+
+                {isCreating && (
+                  <div className="flex flex-row justify-between">
+                    {veto.cw1WhitelistAddress ? (
+                      <Button
+                        className="self-start"
+                        onClick={() =>
+                          setValue(
+                            (fieldNamePrefix +
+                              'veto.cw1WhitelistAddress') as 'veto.cw1WhitelistAddress',
+                            undefined
+                          )
+                        }
+                        variant="secondary"
+                      >
+                        <Edit className="!h-4 !w-4" />
+                        {t('button.changeVetoer')}
+                      </Button>
+                    ) : (
+                      <Button
+                        className="self-start"
+                        disabled={creatingCw1WhitelistVetoers}
+                        onClick={() =>
+                          appendVetoer({
+                            address: '',
+                          })
+                        }
+                        variant="secondary"
+                      >
+                        <Add className="!h-4 !w-4" />
+                        {t('button.addVetoer')}
+                      </Button>
+                    )}
+
+                    {!veto.cw1WhitelistAddress && vetoerFields.length > 1 && (
+                      <Button
+                        className="self-start"
+                        loading={creatingCw1WhitelistVetoers}
+                        onClick={createCw1WhitelistVetoers}
+                        variant="primary"
+                      >
+                        {t('button.save')}
+                      </Button>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="space-y-1">

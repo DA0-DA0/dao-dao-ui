@@ -256,6 +256,9 @@ export interface DaoCreationVotingConfigItemInputProps<
     name: TFieldName,
     defaultValue?: FieldPathValue<ModuleData, TFieldName>
   ) => FieldPathValue<ModuleData, TFieldName>
+  // Field name prefix in case the voting config item needs more advanced access
+  // to the form.
+  fieldNamePrefix: string
   errors?: FormState<ModuleData>['errors']
 }
 

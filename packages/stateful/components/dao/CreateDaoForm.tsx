@@ -2,7 +2,12 @@ import { ArrowBack } from '@mui/icons-material'
 import cloneDeep from 'lodash.clonedeep'
 import merge from 'lodash.merge'
 import { useEffect, useMemo, useState } from 'react'
-import { SubmitErrorHandler, SubmitHandler, useForm } from 'react-hook-form'
+import {
+  FormProvider,
+  SubmitErrorHandler,
+  SubmitHandler,
+  useForm,
+} from 'react-hook-form'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilState, useRecoilValue } from 'recoil'
@@ -702,7 +707,9 @@ export const InnerCreateDaoForm = ({
         )}
 
         <div className="mb-14">
-          <Page {...createDaoContext} />
+          <FormProvider {...form}>
+            <Page {...createDaoContext} />
+          </FormProvider>
 
           {/* If funds are required, display on last page. */}
           {pageIndex === CreateDaoPages.length - 1 &&
