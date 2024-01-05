@@ -4,8 +4,6 @@ import JSON5 from 'json5'
 import { ComponentType, useEffect } from 'react'
 import { useFieldArray, useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import useDeepCompareEffect from 'use-deep-compare-effect'
-import { v4 as uuidv4 } from 'uuid'
 
 import {
   Button,
@@ -37,35 +35,24 @@ import {
   LoadingData,
   StatefulTokenAmountDisplayProps,
 } from '@dao-dao/types'
-import {
-  ActionCategoryKey,
-  ActionComponent,
-  ActionContextType,
-  ActionKey,
-  PartialCategorizedActionKeyAndData,
-} from '@dao-dao/types/actions'
+import { ActionComponent, ActionContextType } from '@dao-dao/types/actions'
 import {
   convertMicroDenomToDenomWithDecimals,
   getChainAssets,
-  getFundsUsedInCwMessage,
   govProposalActionDataToDecodedContent,
-  isCosmWasmStargateMsg,
   makeValidateAddress,
   processError,
   validateJSON,
   validateRequired,
 } from '@dao-dao/utils'
 import { CommunityPoolSpendProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/distribution'
-import { MsgCommunityPoolSpend } from '@dao-dao/utils/protobuf/codegen/cosmos/distribution/v1beta1/tx'
 import { Cosmos_govv1beta1Content_FromAmino } from '@dao-dao/utils/protobuf/codegen/cosmos/gov/v1beta1/gov'
 import { ParameterChangeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/params/v1beta1/params'
 import { SoftwareUpgradeProposal } from '@dao-dao/utils/protobuf/codegen/cosmos/upgrade/v1beta1/upgrade'
 
 import { useActionOptions } from '../../../react'
-import { CommunityPoolTransferData } from '../../treasury/CommunityPoolTransfer/Component'
 
 export type GovernanceProposalOptions = {
-  govModuleAddress: string
   supportsV1GovProposals: boolean
   minDeposits: LoadingData<
     (GenericTokenBalance & {
@@ -86,7 +73,6 @@ export const GovernanceProposalComponent: ActionComponent<
     errors,
     isCreating,
     options: {
-      govModuleAddress,
       supportsV1GovProposals,
       minDeposits,
       GovProposalActionDisplay,
@@ -151,126 +137,6 @@ export const GovernanceProposalComponent: ActionComponent<
         !nativeToken || denomOrAddress !== nativeToken.denomOrAddress
     ),
   ]
-
-  // Ensure community pool transfers are added before token usages in v1 props.
-  const {
-    insert: insertAction,
-    update: updateAction,
-    remove: removeAction,
-  } = useFieldArray({
-    name: (fieldNamePrefix + '_actionData') as '_actionData',
-    control,
-  })
-  const msgs = watch((fieldNamePrefix + 'msgs') as 'msgs')
-  const actionData = watch((fieldNamePrefix + '_actionData') as '_actionData')
-  useDeepCompareEffect(() => {
-    if (
-      !supportsV1GovProposals ||
-      useV1LegacyContent ||
-      !isCreating ||
-      !actionData ||
-      msgs.length !== actionData.length ||
-      !msgs.length
-    ) {
-      return
-    }
-
-    const updates: {
-      type: 'insert' | 'update' | 'delete'
-      data: PartialCategorizedActionKeyAndData
-      index: number
-    }[] = []
-
-    msgs.forEach((msg, index) => {
-      // For all messages that involve sending tokens, we need to debit the
-      // community pool and send funds to x/gov.
-      const amount = getFundsUsedInCwMessage(msg)
-
-      // If has any funds, make sure there exists a Community Pool transfer
-      // before it that matches. This will either insert a new transfer action
-      // before this one, or update the fields to match the amount.
-      if (amount.length > 0 && amount.some(({ amount }) => amount !== '0')) {
-        const prevAction = actionData[index - 1]
-        if (
-          !prevAction ||
-          prevAction.actionKey !== ActionKey.CommunityPoolTransfer ||
-          prevAction.data.authority !== govModuleAddress ||
-          prevAction.data.recipient !== govModuleAddress ||
-          !Array.isArray(prevAction.data.funds) ||
-          prevAction.data.funds.length !== amount.length ||
-          amount.some(
-            (a, i) =>
-              a.amount !== prevAction.data.funds[i].amount ||
-              a.denom !== prevAction.data.funds[i].denom
-          )
-        ) {
-          const inserting =
-            !prevAction ||
-            prevAction.actionKey !== ActionKey.CommunityPoolTransfer
-          updates.push({
-            type: inserting ? 'insert' : 'update',
-            index: inserting ? index : index - 1,
-            data: {
-              // See `CategorizedActionKeyAndData` comment in
-              // `packages/types/actions.ts` for an explanation of why we need
-              // to append with a unique ID.
-              _id: prevAction?._id || uuidv4(),
-              categoryKey: ActionCategoryKey.Treasury,
-              actionKey: ActionKey.CommunityPoolTransfer,
-              data: {
-                authority: govModuleAddress,
-                recipient: govModuleAddress,
-                funds: amount,
-              } as CommunityPoolTransferData,
-            },
-          })
-        }
-      }
-
-      // If transfer action precedes another action that does not have funds,
-      // remove the transfer action as the user probably deleted the action this
-      // transfer was for.
-      if (
-        isCosmWasmStargateMsg(msg) &&
-        msg.stargate.type_url === MsgCommunityPoolSpend.typeUrl
-      ) {
-        const nextMsg = msgs[index + 1]
-        const amount = nextMsg && getFundsUsedInCwMessage(nextMsg)
-        if (
-          !nextMsg ||
-          !amount.length ||
-          !amount.some(({ amount }) => amount !== '0')
-        ) {
-          updates.push({
-            type: 'delete',
-            index,
-            data: { _id: '' },
-          })
-        }
-      }
-    })
-
-    // Update transfer actions in reverse so the indices remain correct.
-    updates
-      .reverse()
-      .forEach(({ type, index, data }) =>
-        (type === 'insert'
-          ? insertAction
-          : type === 'update'
-          ? updateAction
-          : removeAction)(index, data)
-      )
-  }, [
-    actionData,
-    govModuleAddress,
-    insertAction,
-    isCreating,
-    msgs,
-    removeAction,
-    supportsV1GovProposals,
-    updateAction,
-    useV1LegacyContent,
-  ])
 
   // When any legacy fields change, encode and store it.
   const legacy = watch((fieldNamePrefix + 'legacy') as 'legacy')
