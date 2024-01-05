@@ -506,7 +506,14 @@ const InnerNewGovProposal = ({
       >
         <div className="flex flex-col gap-4">
           <SuspenseLoader fallback={<Loader size={36} />}>
-            <WalletActionsProvider>
+            <WalletActionsProvider
+              address={
+                // If no wallet address, use a space so that the page still
+                // loads even if there is no wallet connected. An empty string
+                // is falsy which triggers the loader, so use a space instead.
+                walletAddress || ' '
+              }
+            >
               <action.Component
                 addAction={() => {}}
                 allActionsWithData={[]}
