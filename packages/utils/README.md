@@ -31,3 +31,39 @@ output({
   ...
 })
 ```
+
+### Log Polytone Hermes Packet Filter
+
+To retrieve the Hermes packet filter entries for a given chain pair connected
+via Polytone:
+
+```js
+import { SUPPORTED_CHAINS } from '@dao-dao/utils/constants/chains'
+
+let output = (chainIdA: string, chainIdB: string) => {
+  const chainA = SUPPORTED_CHAINS.find((chain) => chain.chainId === chainIdA)
+    ?.polytone?.[chainIdB]
+  const chainB = SUPPORTED_CHAINS.find((chain) => chain.chainId === chainIdB)
+    ?.polytone?.[chainIdA]
+  if (!chainA || !chainB) {
+    throw new Error('Invalid chain pair')
+  }
+  console.log(`
+  ${chainIdA}:
+
+  # polytone to ${chainIdB} (note)
+  ["wasm.${chainA.note}", "${chainA.localChannel}"],
+  # polytone from ${chainIdB} (voice)
+  ["wasm.${chainB.voice}", "${chainB.remoteChannel}"],
+
+  ${chainIdB}:
+
+  # polytone to ${chainIdA} (note)
+  ["wasm.${chainB.note}", "${chainB.localChannel}"],
+  # polytone from ${chainIdA} (voice)
+  ["wasm.${chainA.voice}", "${chainA.remoteChannel}"],
+  `)
+}
+
+output('chain-id-A', 'chain-id-B')
+```
