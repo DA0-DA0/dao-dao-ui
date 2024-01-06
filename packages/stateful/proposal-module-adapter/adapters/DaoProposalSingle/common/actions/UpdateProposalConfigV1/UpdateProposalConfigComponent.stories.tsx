@@ -1,10 +1,12 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react'
 
 import { CHAIN_ID, makeReactHookFormDecorator } from '@dao-dao/storybook'
-import { TokenType } from '@dao-dao/types'
+import { DurationUnits, TokenType } from '@dao-dao/types'
 
-import { UpdateProposalConfigData } from '.'
-import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
+import {
+  UpdateProposalConfigComponent,
+  UpdateProposalConfigData,
+} from './UpdateProposalConfigComponent'
 
 export default {
   title:
@@ -22,8 +24,10 @@ export default {
       thresholdPercentage: 42,
       quorumEnabled: true,
       quorumType: 'majority',
-      proposalDuration: 456,
-      proposalDurationUnits: 'days',
+      votingDuration: {
+        value: 456,
+        units: DurationUnits.Days,
+      },
       allowRevoting: true,
     }),
   ],

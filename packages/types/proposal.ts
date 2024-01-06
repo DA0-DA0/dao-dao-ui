@@ -2,6 +2,7 @@ import { PolytoneConnection } from './chain'
 import { ProposalCardProps } from './components/ProposalCard'
 import { CosmosMsgFor_Empty, ProposalStatus } from './contracts'
 import { ProposalStatusKey as PreProposeApprovalProposalStatus } from './contracts/DaoPreProposeApprovalSingle'
+import { DurationWithUnits } from './units'
 
 export type ProposalCreatedCardProps = Omit<
   ProposalCardProps,
@@ -114,3 +115,17 @@ export type ApprovalProposalContext =
       type: ApprovalProposalContextType.Approver
       status: ProposalStatus
     }
+
+export type ProposalVetoConfig = {
+  enabled: boolean
+  addresses: {
+    address: string
+  }[]
+  // If there are multiple addresses, this must be set to the cw1-whitelist
+  // contract from the list of addresses. If there is only one address, then
+  // this should be undefined.
+  cw1WhitelistAddress: string | undefined
+  timelockDuration: DurationWithUnits
+  earlyExecute: boolean
+  vetoBeforePassed: boolean
+}

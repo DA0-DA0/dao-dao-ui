@@ -1,7 +1,6 @@
 import { coins } from '@cosmjs/amino'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
+import { ComponentType, useCallback, useEffect } from 'react'
 import { useFormContext } from 'react-hook-form'
-import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { constSelector, useRecoilValueLoadable } from 'recoil'
 
@@ -39,7 +38,6 @@ import {
   UseHideFromPicker,
   UseTransformToCosmos,
 } from '@dao-dao/types/actions'
-import { InstantiateMsg as Cw1WhietlistInstantiateMsg } from '@dao-dao/types/contracts/Cw1Whitelist'
 import {
   ExecuteMsg,
   InstantiateNativePayrollContractMsg,
@@ -53,14 +51,11 @@ import {
   decodeCw1WhitelistExecuteMsg,
   encodeMessageAsBase64,
   getNativeTokenForChainId,
-  instantiateSmartContract,
-  isValidBech32Address,
   isValidContractAddress,
   loadableToLoadingData,
   makeWasmMessage,
   objectMatchesStructure,
   parseEncodedMessage,
-  processError,
 } from '@dao-dao/utils'
 
 import {
@@ -70,7 +65,7 @@ import {
   Trans,
   VestingPaymentCard,
 } from '../../../../components'
-import { useWallet } from '../../../../hooks'
+import { useCreateCw1Whitelist } from '../../../../hooks'
 import {
   vestingFactoryOwnerSelector,
   vestingInfoSelector,
@@ -115,15 +110,14 @@ const Component: ComponentType<
     chain: { chain_id: chainId, bech32_prefix: bech32Prefix },
     chainContext,
   } = useActionOptions()
-  const { address: walletAddress, getSigningCosmWasmClient } = useWallet()
 
-  // Type-check to ensure we can access code IDs. Guaranteed by the DAO check
-  // in the maker function below.
+  // Type-check to ensure we can access code IDs. Guaranteed by the DAO check in
+  // the maker function below.
   if (chainContext.type !== ActionChainContextType.Supported) {
     throw new Error('Unsupported chain context')
   }
 
-  const { setValue, watch, setError, clearErrors, getValues } =
+  const { setValue, watch, setError, clearErrors, trigger } =
     useFormContext<ManageVestingData>()
   const mode = watch((props.fieldNamePrefix + 'mode') as 'mode')
   const selectedAddress =
@@ -251,59 +245,28 @@ const Component: ComponentType<
   ]
   const selectedTab = tabs.find((tab) => tab.value === mode)
 
-  const [creatingCw1WhitelistOwners, setCreatingCw1WhitelistOwners] =
-    useState(false)
-  const createCw1WhitelistOwners = async () => {
-    if (!walletAddress) {
-      toast.error(t('error.logInToContinue'))
-      return
-    }
-
-    setCreatingCw1WhitelistOwners(true)
-    try {
-      const beginData = getValues((props.fieldNamePrefix + 'begin') as 'begin')
-      if (beginData.ownerMode !== 'many') {
+  const {
+    creatingCw1Whitelist: creatingCw1WhitelistOwners,
+    createCw1Whitelist: createCw1WhitelistOwners,
+  } = useCreateCw1Whitelist({
+    // Trigger veto address field validations.
+    validation: async () => {
+      if (beginOwnerMode !== 'many') {
         throw new Error(t('error.unexpectedError'))
       }
-      if (beginData.manyOwnersCw1WhitelistContract) {
-        throw new Error(t('error.accountListAlreadySaved'))
-      }
-      if (beginData.manyOwners.length < 2) {
-        throw new Error(t('error.enterAtLeastTwoAccounts'))
-      }
-      const admins = beginData.manyOwners.map(({ address }) => address)
-      if (admins.some((admin) => !isValidBech32Address(admin, bech32Prefix))) {
-        throw new Error(t('error.invalidAccount'))
-      }
 
-      const contractAddress = await instantiateSmartContract(
-        await getSigningCosmWasmClient(),
-        walletAddress,
-        chainContext.config.codeIds.Cw1Whitelist,
-        'Cw1Whitelist',
+      await trigger(
+        (props.fieldNamePrefix + 'begin.manyOwners') as 'begin.manyOwners',
         {
-          admins,
-          mutable: false,
-        } as Cw1WhietlistInstantiateMsg
+          shouldFocus: true,
+        }
       )
+    },
+    contractLabel: 'Vesting Multi-Owner cw1-whitelist',
+  })
 
-      setValue(
-        (props.fieldNamePrefix +
-          'begin.manyOwnersCw1WhitelistContract') as 'begin.manyOwnersCw1WhitelistContract',
-        contractAddress
-      )
-
-      toast.success(t('success.saved'))
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-    } finally {
-      setCreatingCw1WhitelistOwners(false)
-    }
-  }
-
-  // Prevent action from being submitted if the cw1-whitelist contract has
-  // not yet been created and it needs to be.
+  // Prevent action from being submitted if the cw1-whitelist contract has not
+  // yet been created and it needs to be.
   useEffect(() => {
     if (beginOwnerMode === 'many' && !beginManyOwnersCw1WhitelistContract) {
       setError(
@@ -871,8 +834,9 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
       }
     }
 
-    // Attempt to load cw1-whitelist admins if the owner is set. Will only succeed
-    // if the owner is a cw1-whitelist contract. Otherwise it returns undefined.
+    // Attempt to load cw1-whitelist admins if the owner is set. Will only
+    // succeed if the owner is a cw1-whitelist contract. Otherwise it returns
+    // undefined.
     const cw1WhitelistAdminsLoadable = useCachedLoadable(
       isBegin && instantiateMsg?.owner
         ? Cw1WhitelistSelectors.adminsIfCw1Whitelist({
@@ -951,9 +915,10 @@ export const makeManageVestingAction: ActionMaker<ManageVestingData> = ({
                         // Typecheck. Always false.
                         instantiateMsg!.schedule === 'saturating_linear'
                           ? // For first user-defined step, account for 1 second
-                            // delay since we ignore the first hardcoded step at 1
-                            // second. When we created the msg, we subtracted 1
-                            // second from the first user-defined step's delay.
+                            // delay since we ignore the first hardcoded step at
+                            // 1 second. When we created the msg, we subtracted
+                            // 1 second from the first user-defined step's
+                            // delay.
                             0
                           : instantiateMsg!.schedule.piecewise_linear[
                               index - 1

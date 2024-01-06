@@ -1,67 +1,47 @@
 import {
   AccountCircleOutlined,
   ArrowOutward,
-  CancelOutlined,
   HourglassTopRounded,
-  Key,
   PollOutlined,
   Redo,
   RotateRightOutlined,
-  Send,
   Tag,
-  ThumbDownOutlined,
 } from '@mui/icons-material'
 import clsx from 'clsx'
-import { useRouter } from 'next/router'
-import { ComponentType, useCallback, useEffect, useState } from 'react'
-import toast from 'react-hot-toast'
+import { ComponentType, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useRecoilValue } from 'recoil'
 
-import {
-  DaoCoreV2Selectors,
-  DaoProposalMultipleSelectors,
-} from '@dao-dao/state'
+import { DaoProposalMultipleSelectors } from '@dao-dao/state'
 import {
   CopyToClipboardUnderline,
   IconButtonLink,
   Logo,
-  ProposalCrossChainRelayStatus,
   ProposalStatusAndInfoProps,
   ProposalStatusAndInfo as StatelessProposalStatusAndInfo,
   TooltipTruncatedText,
-  useCachedLoading,
   useConfiguredChainContext,
   useDaoInfoContext,
-  useDaoNavHelpers,
 } from '@dao-dao/stateless'
 import {
-  ActionKey,
   BaseProposalStatusAndInfoProps,
   CheckedDepositInfo,
   DepositRefundPolicy,
-  EntityType,
   ProposalStatusEnum,
 } from '@dao-dao/types'
 import { MultipleChoiceVote } from '@dao-dao/types/contracts/DaoProposalMultiple'
-import {
-  formatPercentOf100,
-  getDaoProposalSinglePrefill,
-  getProposalStatusKey,
-  processError,
-} from '@dao-dao/utils'
+import { formatPercentOf100, getProposalStatusKey } from '@dao-dao/utils'
 
 import { EntityDisplay, SuspenseLoader } from '../../../../components'
 import { ButtonLink } from '../../../../components/ButtonLink'
 import {
   DaoProposalMultipleHooks,
   useAwaitNextBlock,
-  useEntity,
-  useMembership,
   useProposalPolytoneState,
+  useProposalVetoState,
   useWallet,
 } from '../../../../hooks'
-import { useVeto } from '../../../../hooks/contracts/DaoProposalMultiple'
+import { useProposalActionState } from '../../../../hooks/useProposalActionState'
 import { useProposalModuleAdapterOptions } from '../../../react'
 import {
   useCastVote,
@@ -121,18 +101,13 @@ const InnerProposalStatusAndInfo = ({
   depositInfo: CheckedDepositInfo | undefined
 }) => {
   const { t } = useTranslation()
-  const router = useRouter()
   const {
     chain: { chain_id: chainId },
     config: { explorerUrlTemplates },
   } = useConfiguredChainContext()
   const { coreAddress } = useDaoInfoContext()
-  const { getDaoProposalPath } = useDaoNavHelpers()
   const { proposalModule, proposalNumber } = useProposalModuleAdapterOptions()
-  const { isWalletConnected, address: walletAddress = '' } = useWallet()
-  const { isMember = false } = useMembership({
-    coreAddress,
-  })
+  const { address: walletAddress = '' } = useWallet()
 
   const config = useRecoilValue(
     DaoProposalMultipleSelectors.configSelector({
@@ -159,13 +134,6 @@ const InnerProposalStatusAndInfo = ({
     sender: walletAddress,
   })
 
-  const [actionLoading, setActionLoading] = useState(false)
-  // On proposal status update, stop loading. This ensures the action button
-  // doesn't stop loading too early, before the status has refreshed.
-  useEffect(() => {
-    setActionLoading(false)
-  }, [proposal.status])
-
   const polytoneState = useProposalPolytoneState({
     msgs: winningChoice?.msgs || [],
     status: proposal.status,
@@ -175,51 +143,15 @@ const InnerProposalStatusAndInfo = ({
     openSelfRelayExecute,
     loadingTxHash: loadingExecutionTxHash,
   })
-
-  const onExecute = useCallback(async () => {
-    if (!isWalletConnected) {
-      return
-    }
-
-    setActionLoading(true)
-    try {
-      await executeProposal({ proposalId: proposalNumber })
-
-      await onExecuteSuccess()
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-
-      // Stop loading if errored.
-      setActionLoading(false)
-    }
-
-    // Loading will stop on success when status refreshes.
-  }, [isWalletConnected, executeProposal, proposalNumber, onExecuteSuccess])
-
-  const onClose = useCallback(async () => {
-    if (!isWalletConnected) {
-      return
-    }
-
-    setActionLoading(true)
-
-    try {
-      await closeProposal({
-        proposalId: proposalNumber,
-      })
-
-      await onCloseSuccess()
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-
-      // Stop loading if errored.
-      setActionLoading(false)
-    }
-
-    // Loading will stop on success when status refreshes.
-  }, [isWalletConnected, closeProposal, proposalNumber, onCloseSuccess])
+  const { action, footer } = useProposalActionState({
+    statusKey,
+    polytoneState,
+    loadingExecutionTxHash,
+    executeProposal,
+    closeProposal,
+    onExecuteSuccess,
+    onCloseSuccess,
+  })
 
   const awaitNextBlock = useAwaitNextBlock()
   // Refresh proposal and list of proposals (for list status) once voting ends.
@@ -254,155 +186,13 @@ const InnerProposalStatusAndInfo = ({
     awaitNextBlock,
   ])
 
-  const vetoConfig = 'veto' in config ? config.veto : undefined
-  const vetoEnabled = !!vetoConfig
-  const [vetoLoading, setVetoLoading] = useState<
-    'veto' | 'earlyExecute' | false
-  >(false)
-  const vetoerEntity = useEntity(vetoConfig?.vetoer || '')
-  // This is the voting power the current wallet has in the vetoer if the vetoer
-  // is a DAO.
-  const walletDaoVetoerMembership = useCachedLoading(
-    !vetoerEntity.loading &&
-      vetoerEntity.data.type === EntityType.Dao &&
-      walletAddress
-      ? DaoCoreV2Selectors.votingPowerAtHeightSelector({
-          contractAddress: coreAddress,
-          chainId,
-          params: [{ address: walletAddress }],
-        })
-      : undefined,
-    undefined
-  )
-  const canBeVetoed =
-    vetoEnabled &&
-    (statusKey === 'veto_timelock' ||
-      (statusKey === ProposalStatusEnum.Open && vetoConfig.veto_before_passed))
-  const walletCanVeto =
-    canBeVetoed &&
-    // Wallet can veto if they are a member of the vetoer DAO or if they are the
-    // vetoer themselves.
-    !vetoerEntity.loading &&
-    ((vetoerEntity.data.type === EntityType.Dao &&
-      !walletDaoVetoerMembership.loading &&
-      !!walletDaoVetoerMembership.data &&
-      walletDaoVetoerMembership.data.power !== '0') ||
-      (vetoerEntity.data.type === EntityType.Wallet &&
-        walletAddress === vetoerEntity.data.address))
-  const walletCanEarlyExecute =
-    walletCanVeto && statusKey === 'veto_timelock' && vetoConfig.early_execute
-  const onWalletVeto = useVeto({
-    contractAddress: proposalModule.address,
-    sender: walletAddress,
-  })
-  const onVeto = useCallback(async () => {
-    if (!walletCanVeto) {
-      return
-    }
-
-    setVetoLoading('veto')
-    try {
-      if (vetoerEntity.data.type === EntityType.Wallet) {
-        await onWalletVeto({
-          proposalId: proposalNumber,
-        })
-
-        await onVetoSuccess()
-      } else if (vetoerEntity.data.type === EntityType.Dao) {
-        router.push(
-          getDaoProposalPath(vetoerEntity.data.address, 'create', {
-            prefill: getDaoProposalSinglePrefill({
-              actions: [
-                {
-                  actionKey: ActionKey.VetoOrEarlyExecuteDaoProposal,
-                  data: {
-                    chainId,
-                    coreAddress,
-                    proposalModuleAddress: proposalModule.address,
-                    proposalId: proposalNumber,
-                    action: 'veto',
-                  },
-                },
-              ],
-            }),
-          })
-        )
-      }
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-
-      // Stop loading if errored.
-      setVetoLoading(false)
-    }
-
-    // Loading will stop on success when status refreshes.
-  }, [
-    walletCanVeto,
-    vetoerEntity,
-    onWalletVeto,
-    proposalNumber,
-    onVetoSuccess,
-    router,
-    getDaoProposalPath,
-    chainId,
-    coreAddress,
-    proposalModule.address,
-  ])
-  const onVetoEarlyExecute = useCallback(async () => {
-    if (!walletCanEarlyExecute) {
-      return
-    }
-
-    setVetoLoading('earlyExecute')
-    try {
-      if (vetoerEntity.data.type === EntityType.Wallet) {
-        await executeProposal({
-          proposalId: proposalNumber,
-        })
-
-        await onExecuteSuccess()
-      } else if (vetoerEntity.data.type === EntityType.Dao) {
-        router.push(
-          getDaoProposalPath(vetoerEntity.data.address, 'create', {
-            prefill: getDaoProposalSinglePrefill({
-              actions: [
-                {
-                  actionKey: ActionKey.VetoOrEarlyExecuteDaoProposal,
-                  data: {
-                    chainId,
-                    coreAddress,
-                    proposalModuleAddress: proposalModule.address,
-                    proposalId: proposalNumber,
-                    action: 'earlyExecute',
-                  },
-                },
-              ],
-            }),
-          })
-        )
-      }
-    } catch (err) {
-      console.error(err)
-      toast.error(processError(err))
-
-      // Stop loading if errored.
-      setVetoLoading(false)
-    }
-
-    // Loading will stop on success when status refreshes.
-  }, [
-    walletCanEarlyExecute,
-    vetoerEntity,
-    executeProposal,
-    proposalNumber,
-    onExecuteSuccess,
-    router,
-    getDaoProposalPath,
-    chainId,
-    coreAddress,
-    proposalModule.address,
-  ])
+  const { vetoEnabled, canBeVetoed, vetoOrEarlyExecute, vetoInfoItems } =
+    useProposalVetoState({
+      statusKey,
+      vetoConfig: 'veto' in config ? config.veto : undefined,
+      onVetoSuccess,
+      onExecuteSuccess,
+    })
 
   const info: ProposalStatusAndInfoProps<MultipleChoiceVote>['info'] = [
     {
@@ -421,20 +211,7 @@ const InnerProposalStatusAndInfo = ({
         <EntityDisplay {...props} address={proposal.proposer} noCopy />
       ),
     },
-    // Show vetoer if can be vetoed or was vetoed. If was not vetoed but could
-    // have been, don't show because it might confuse the user and make them
-    // think it was vetoed.
-    ...(vetoConfig && (canBeVetoed || statusKey === ProposalStatusEnum.Vetoed)
-      ? ([
-          {
-            Icon: ThumbDownOutlined,
-            label: t('title.vetoer'),
-            Value: (props) => (
-              <EntityDisplay {...props} address={vetoConfig.vetoer} noCopy />
-            ),
-          },
-        ] as ProposalStatusAndInfoProps<MultipleChoiceVote>['info'])
-      : []),
+    ...vetoInfoItems,
     {
       Icon: RotateRightOutlined,
       label: t('title.status'),
@@ -578,63 +355,11 @@ const InnerProposalStatusAndInfo = ({
   return (
     <StatelessProposalStatusAndInfo
       {...props}
-      action={
-        statusKey === ProposalStatusEnum.Passed &&
-        // Show if anyone can execute OR if the wallet is a member, once
-        // polytone messages that need relaying are done loading.
-        (!config.only_members_execute || isMember) &&
-        !polytoneState.loading
-          ? {
-              label: t('button.execute'),
-              Icon: Key,
-              loading: actionLoading,
-              doAction: polytoneState.data.needsSelfRelay
-                ? polytoneState.data.openPolytoneRelay
-                : onExecute,
-            }
-          : statusKey === ProposalStatusEnum.Rejected
-          ? {
-              label: t('button.close'),
-              Icon: CancelOutlined,
-              loading: actionLoading,
-              doAction: onClose,
-            }
-          : // If executed and has polytone messages that need relaying...
-          statusKey === ProposalStatusEnum.Executed &&
-            !polytoneState.loading &&
-            polytoneState.data.needsSelfRelay &&
-            !loadingExecutionTxHash.loading &&
-            loadingExecutionTxHash.data
-          ? {
-              label: t('button.relay'),
-              Icon: Send,
-              loading: actionLoading,
-              doAction: polytoneState.data.openPolytoneRelay,
-              description: t('error.polytoneExecutedNoRelay'),
-            }
-          : undefined
-      }
-      footer={
-        !polytoneState.loading &&
-        statusKey === ProposalStatusEnum.Executed &&
-        polytoneState.data.hasPolytoneMessages && (
-          <ProposalCrossChainRelayStatus state={polytoneState.data} />
-        )
-      }
+      action={action}
+      footer={footer}
       info={info}
       status={status}
-      vetoOrEarlyExecute={
-        vetoConfig && walletCanVeto
-          ? {
-              loading: vetoLoading,
-              onVeto,
-              onEarlyExecute: walletCanEarlyExecute
-                ? onVetoEarlyExecute
-                : undefined,
-              isVetoerDaoMember: vetoerEntity.data.type === EntityType.Dao,
-            }
-          : undefined
-      }
+      vetoOrEarlyExecute={vetoOrEarlyExecute}
       vote={
         loadingWalletVoteInfo &&
         !loadingWalletVoteInfo.loading &&

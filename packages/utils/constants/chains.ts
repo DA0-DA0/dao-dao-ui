@@ -858,8 +858,8 @@ export const CHAIN_ENDPOINTS: Partial<
     rest: 'https://juno-testnet-api.polkachu.com',
   },
   [ChainId.OsmosisMainnet]: {
-    rpc: 'https://numia.daodao.zone/osmosis-rpc',
-    rest: 'https://numia.daodao.zone/osmosis-lcd',
+    rpc: 'https://osmosis-mainnet-rpc.daodao.zone',
+    rest: 'https://osmosis-mainnet-api.daodao.zone',
   },
   [ChainId.OsmosisTestnet]: {
     rpc: 'https://osmosis-testnet-rpc.polkachu.com',

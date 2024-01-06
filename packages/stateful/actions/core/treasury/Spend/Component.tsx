@@ -156,8 +156,8 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       !recipient ||
       // Do nothing for module accounts as they only exist on the current chain.
       currentEntity.type === EntityType.Module ||
-      // Wallet on current chain
-      (currentEntity.type === EntityType.Wallet ||
+      // Non-DAO on current chain.
+      (currentEntity.type !== EntityType.Dao ||
       // DAO on native chain (core contract address).
       !currentEntity.polytoneProxy
         ? recipient !== currentEntity.address
@@ -167,7 +167,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
       return
     }
 
-    let newRecipient: string
+    let newRecipient: string | undefined
 
     // Convert wallet address to destination chain's format.
     if (currentEntity.type === EntityType.Wallet) {
@@ -178,7 +178,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
     }
     // Get DAO core address or its corresponding polytone proxy. Clear if no
     // account on the destination chain.
-    else {
+    else if (currentEntity.type === EntityType.Dao) {
       newRecipient =
         getAccountAddress({
           accounts: currentEntity.daoInfo.accounts,
@@ -186,7 +186,7 @@ export const SpendComponent: ActionComponent<SpendOptions> = ({
         }) || ''
     }
 
-    if (newRecipient !== recipient) {
+    if (newRecipient && newRecipient !== recipient) {
       setValue((fieldNamePrefix + 'to') as 'to', newRecipient)
     }
   }, [context, currentEntity, fieldNamePrefix, recipient, setValue, toChain])

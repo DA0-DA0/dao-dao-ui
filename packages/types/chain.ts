@@ -173,3 +173,12 @@ export type DecodedStargateMsg<Value = any> = {
     value: Value
   }
 }
+
+/**
+ * Function that creates a cw1-whitelist contract. Used in the
+ * `useCreateCw1Whitelist` hook.
+ */
+export type CreateCw1Whitelist = (
+  admins: string[],
+  mutable?: boolean
+) => Promise<string | undefined>

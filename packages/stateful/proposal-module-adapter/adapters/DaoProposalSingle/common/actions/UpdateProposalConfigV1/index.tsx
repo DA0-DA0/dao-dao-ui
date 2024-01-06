@@ -21,35 +21,18 @@ import { Threshold } from '@dao-dao/types/contracts/DaoProposalSingle.common'
 import {
   DAO_PROPOSAL_SINGLE_CONTRACT_NAMES,
   convertDenomToMicroDenomWithDecimals,
+  convertDurationToDurationWithUnits,
+  convertDurationWithUnitsToDuration,
   convertMicroDenomToDenomWithDecimals,
   makeWasmMessage,
 } from '@dao-dao/utils'
 
 import { useMsgExecutesContract } from '../../../../../../actions'
 import { useVotingModuleAdapter } from '../../../../../../voting-module-adapter'
-import { UpdateProposalConfigComponent } from './UpdateProposalConfigComponent'
-
-export interface UpdateProposalConfigData {
-  onlyMembersExecute: boolean
-
-  depositRequired: boolean
-  depositInfo?: {
-    deposit: number
-    refundFailedProposals: boolean
-  }
-
-  thresholdType: '%' | 'majority'
-  thresholdPercentage?: number
-
-  quorumEnabled: boolean
-  quorumType: '%' | 'majority'
-  quorumPercentage?: number
-
-  proposalDuration: number
-  proposalDurationUnits: 'weeks' | 'days' | 'hours' | 'minutes' | 'seconds'
-
-  allowRevoting: boolean
-}
+import {
+  UpdateProposalConfigComponent,
+  UpdateProposalConfigData,
+} from './UpdateProposalConfigComponent'
 
 const thresholdToTQData = (
   source: Threshold
@@ -114,23 +97,6 @@ const typePercentageToPercentageThreshold = (
     return {
       percent: (p / 100).toString(),
     }
-  }
-}
-
-const maxVotingInfoToCosmos = (
-  t: 'weeks' | 'days' | 'hours' | 'minutes' | 'seconds',
-  v: number
-) => {
-  const converter = {
-    weeks: 604800,
-    days: 86400,
-    hours: 3600,
-    minutes: 60,
-    seconds: 1,
-  }
-
-  return {
-    time: converter[t] * v,
   }
 }
 
@@ -205,11 +171,6 @@ export const makeUpdateProposalConfigV1ActionMaker =
             deposit: 0,
             refundFailedProposals: false,
           }
-      const proposalDuration =
-        'time' in proposalModuleConfig.data.max_voting_period
-          ? proposalModuleConfig.data.max_voting_period.time
-          : 604800
-      const proposalDurationUnits = 'seconds'
 
       const allowRevoting = proposalModuleConfig.data.allow_revoting
 
@@ -217,8 +178,9 @@ export const makeUpdateProposalConfigV1ActionMaker =
         onlyMembersExecute,
         depositRequired,
         depositInfo,
-        proposalDuration,
-        proposalDurationUnits,
+        votingDuration: convertDurationToDurationWithUnits(
+          proposalModuleConfig.data.max_voting_period
+        ),
         allowRevoting,
         ...thresholdToTQData(proposalModuleConfig.data.threshold),
       }
@@ -263,9 +225,8 @@ export const makeUpdateProposalConfigV1ActionMaker =
                             ),
                           },
                         },
-                    max_voting_period: maxVotingInfoToCosmos(
-                      data.proposalDurationUnits,
-                      data.proposalDuration
+                    max_voting_period: convertDurationWithUnitsToDuration(
+                      data.votingDuration
                     ),
                     only_members_execute: data.onlyMembersExecute,
                     allow_revoting: data.allowRevoting,
@@ -306,9 +267,7 @@ export const makeUpdateProposalConfigV1ActionMaker =
         {
           update_config: {
             threshold: {},
-            max_voting_period: {
-              time: {},
-            },
+            max_voting_period: {},
             only_members_execute: {},
             allow_revoting: {},
             dao: {},
@@ -333,9 +292,6 @@ export const makeUpdateProposalConfigV1ActionMaker =
           }
         : undefined
 
-      const proposalDuration = config.max_voting_period.time
-      const proposalDurationUnits = 'seconds'
-
       const allowRevoting = !!config.allow_revoting
 
       return {
@@ -344,8 +300,9 @@ export const makeUpdateProposalConfigV1ActionMaker =
           onlyMembersExecute,
           depositRequired,
           depositInfo,
-          proposalDuration,
-          proposalDurationUnits,
+          votingDuration: convertDurationToDurationWithUnits(
+            config.max_voting_period
+          ),
           allowRevoting,
           ...thresholdToTQData(config.threshold),
         },

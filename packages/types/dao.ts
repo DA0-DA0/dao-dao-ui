@@ -36,6 +36,7 @@ import {
 import { DaoCreator } from './creators'
 import { ContractVersion, SupportedFeatureMap } from './features'
 import { LoadingDataWithError } from './misc'
+import { ProposalVetoConfig } from './proposal'
 import {
   PercentOrMajorityValue,
   ProposalModuleAdapter,
@@ -255,6 +256,9 @@ export interface DaoCreationVotingConfigItemInputProps<
     name: TFieldName,
     defaultValue?: FieldPathValue<ModuleData, TFieldName>
   ) => FieldPathValue<ModuleData, TFieldName>
+  // Field name prefix in case the voting config item needs more advanced access
+  // to the form.
+  fieldNamePrefix: string
   errors?: FormState<ModuleData>['errors']
 }
 
@@ -353,13 +357,7 @@ export type DaoCreationVotingConfigWithApprover = {
 }
 
 export type DaoCreationVotingConfigWithVeto = {
-  veto: {
-    enabled: boolean
-    address: string
-    timelockDuration: DurationWithUnits
-    earlyExecute: boolean
-    vetoBeforePassed: boolean
-  }
+  veto: ProposalVetoConfig
 }
 
 export type DaoCreationVotingConfig = DaoCreationVotingConfigWithAllowRevoting &

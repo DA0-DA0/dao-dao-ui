@@ -1,127 +1,95 @@
+import { useEffect } from 'react'
+import { useFormContext } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 
 import {
   FormSwitchCard,
-  InputErrorMessage,
-  InputLabel,
-  NumberInput,
-  SelectInput,
+  ProposalVetoConfigurer,
   ThumbDownEmoji,
-  useChain,
 } from '@dao-dao/stateless'
 import {
   DaoCreationVotingConfigItem,
   DaoCreationVotingConfigItemInputProps,
   DaoCreationVotingConfigItemReviewProps,
   DaoCreationVotingConfigWithVeto,
-  DurationUnitsValues,
 } from '@dao-dao/types'
-import {
-  makeValidateAddress,
-  validateNonNegative,
-  validateRequired,
-} from '@dao-dao/utils'
 
+import { useCreateCw1Whitelist } from '../../../hooks'
 import { AddressInput } from '../../AddressInput'
-import { EntityDisplay } from '../../EntityDisplay'
 
 const VetoInput = ({
-  data: {
-    veto: { enabled, timelockDuration, earlyExecute, vetoBeforePassed },
-  },
-  register,
-  setValue,
-  watch,
+  data: { veto },
+  fieldNamePrefix,
   errors,
 }: DaoCreationVotingConfigItemInputProps<DaoCreationVotingConfigWithVeto>) => {
   const { t } = useTranslation()
-  const { bech32_prefix: bech32Prefix } = useChain()
+
+  const { setValue, setError, clearErrors, trigger } =
+    useFormContext<DaoCreationVotingConfigWithVeto>()
+
+  const {
+    creatingCw1Whitelist: creatingCw1WhitelistVetoers,
+    createCw1Whitelist: createCw1WhitelistVetoers,
+  } = useCreateCw1Whitelist({
+    // Trigger veto address field validations.
+    validation: async () => {
+      await trigger((fieldNamePrefix + 'veto.addresses') as 'veto.addresses', {
+        shouldFocus: true,
+      })
+    },
+    contractLabel: 'Multi-Vetoer cw1-whitelist',
+  })
+
+  const { enabled, addresses, cw1WhitelistAddress } = veto
+
+  // Prevent submission if the cw1-whitelist contract has not yet been created
+  // and it needs to be.
+  const vetoAddressesLength = addresses.length
+  useEffect(() => {
+    if (vetoAddressesLength > 1 && !cw1WhitelistAddress) {
+      setError(
+        (fieldNamePrefix +
+          'veto.cw1WhitelistAddress') as 'veto.cw1WhitelistAddress',
+        {
+          type: 'manual',
+          message: t('error.accountListNeedsSaving'),
+        }
+      )
+    } else {
+      clearErrors(
+        (fieldNamePrefix +
+          'veto.cw1WhitelistAddress') as 'veto.cw1WhitelistAddress'
+      )
+    }
+  }, [
+    setError,
+    clearErrors,
+    t,
+    vetoAddressesLength,
+    cw1WhitelistAddress,
+    fieldNamePrefix,
+  ])
 
   return (
     <div className="flex flex-col gap-3">
       <FormSwitchCard
         containerClassName="self-start"
-        fieldName="veto.enabled"
+        fieldName={(fieldNamePrefix + 'veto.enabled') as 'veto.enabled'}
         setValue={setValue}
         sizing="sm"
         value={enabled}
       />
 
       {enabled && (
-        <>
-          <div className="space-y-1">
-            <InputLabel name={t('form.whoCanVetoProposals')} />
-
-            <AddressInput
-              error={errors?.veto?.address}
-              fieldName="veto.address"
-              register={register}
-              setValue={setValue}
-              type="contract"
-              validation={[makeValidateAddress(bech32Prefix)]}
-              watch={watch as any}
-            />
-
-            <InputErrorMessage error={errors?.veto?.address} />
-          </div>
-
-          <div className="space-y-1">
-            <InputLabel
-              name={t('form.timelockDuration')}
-              tooltip={t('form.timelockDurationTooltip')}
-            />
-
-            <div className="flex flex-row gap-2">
-              <NumberInput
-                containerClassName="grow"
-                error={errors?.veto?.timelockDuration?.value}
-                fieldName="veto.timelockDuration.value"
-                min={0}
-                register={register}
-                setValue={setValue}
-                sizing="sm"
-                step={1}
-                validation={[validateNonNegative, validateRequired]}
-                watch={watch}
-              />
-
-              <SelectInput
-                error={errors?.veto?.timelockDuration?.units}
-                fieldName="veto.timelockDuration.units"
-                register={register}
-                validation={[validateRequired]}
-              >
-                {DurationUnitsValues.map((type, idx) => (
-                  <option key={idx} value={type}>
-                    {t(`unit.${type}`, {
-                      count: timelockDuration?.value,
-                    }).toLocaleLowerCase()}
-                  </option>
-                ))}
-              </SelectInput>
-            </div>
-          </div>
-
-          <FormSwitchCard
-            containerClassName="self-start"
-            fieldName="veto.earlyExecute"
-            label={t('form.earlyExecute')}
-            setValue={setValue}
-            sizing="sm"
-            tooltip={t('form.earlyExecuteTooltip')}
-            value={earlyExecute}
-          />
-
-          <FormSwitchCard
-            containerClassName="self-start"
-            fieldName="veto.vetoBeforePassed"
-            label={t('form.vetoBeforePassed')}
-            setValue={setValue}
-            sizing="sm"
-            tooltip={t('form.vetoBeforePassedTooltip')}
-            value={vetoBeforePassed}
-          />
-        </>
+        <ProposalVetoConfigurer
+          AddressInput={AddressInput}
+          className="flex flex-col gap-3"
+          createCw1WhitelistVetoers={createCw1WhitelistVetoers}
+          creatingCw1WhitelistVetoers={creatingCw1WhitelistVetoers}
+          errors={errors?.veto}
+          fieldNamePrefix="veto."
+          veto={veto}
+        />
       )}
     </div>
   )
@@ -129,11 +97,11 @@ const VetoInput = ({
 
 const VetoReview = ({
   data: {
-    veto: { enabled, address },
+    veto: { enabled },
   },
 }: DaoCreationVotingConfigItemReviewProps<DaoCreationVotingConfigWithVeto>) => {
   const { t } = useTranslation()
-  return enabled ? <EntityDisplay address={address} /> : <>{t('info.none')}</>
+  return <>{enabled ? t('info.enabled') : t('info.disabled')}</>
 }
 
 export const makeVetoVotingConfigItem =
@@ -143,10 +111,11 @@ export const makeVetoVotingConfigItem =
     descriptionI18nKey: 'info.vetoDescription',
     Input: VetoInput,
     getInputError: ({
-      veto: { address, timelockDuration } = {
-        address: undefined,
+      veto: { timelockDuration } = {
         timelockDuration: undefined,
       },
-    } = {}) => address || timelockDuration?.value || timelockDuration?.units,
+    } = {}) => timelockDuration?.value || timelockDuration?.units,
     Review: VetoReview,
+    getReviewClassName: ({ veto: { enabled } }) =>
+      enabled ? 'bg-component-badge-valid' : 'bg-component-badge-error',
   })
