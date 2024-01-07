@@ -22,12 +22,12 @@ export interface MsgCreateVestingAccountProtoMsg {
  * account.
  */
 export interface MsgCreateVestingAccountAmino {
-  from_address: string;
-  to_address: string;
-  amount: CoinAmino[];
-  start_time: string;
-  end_time: string;
-  delayed: boolean;
+  from_address?: string;
+  to_address?: string;
+  amount?: CoinAmino[];
+  start_time?: string;
+  end_time?: string;
+  delayed?: boolean;
 }
 export interface MsgCreateVestingAccountAminoMsg {
   type: "/publicawesome.stargaze.alloc.v1beta1.MsgCreateVestingAccount";
@@ -85,8 +85,8 @@ export interface MsgFundFairburnPoolProtoMsg {
  * fund the fee collector pool.
  */
 export interface MsgFundFairburnPoolAmino {
-  sender: string;
-  amount: CoinAmino[];
+  sender?: string;
+  amount?: CoinAmino[];
 }
 export interface MsgFundFairburnPoolAminoMsg {
   type: "/publicawesome.stargaze.alloc.v1beta1.MsgFundFairburnPool";
@@ -199,14 +199,24 @@ export const MsgCreateVestingAccount = {
     return message;
   },
   fromAmino(object: MsgCreateVestingAccountAmino): MsgCreateVestingAccount {
-    return {
-      fromAddress: object.from_address,
-      toAddress: object.to_address,
-      amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromAmino(e)) : [],
-      startTime: BigInt(object.start_time),
-      endTime: BigInt(object.end_time),
-      delayed: object.delayed
-    };
+    const message = createBaseMsgCreateVestingAccount();
+    if (object.from_address !== undefined && object.from_address !== null) {
+      message.fromAddress = object.from_address;
+    }
+    if (object.to_address !== undefined && object.to_address !== null) {
+      message.toAddress = object.to_address;
+    }
+    message.amount = object.amount?.map(e => Coin.fromAmino(e)) || [];
+    if (object.start_time !== undefined && object.start_time !== null) {
+      message.startTime = BigInt(object.start_time);
+    }
+    if (object.end_time !== undefined && object.end_time !== null) {
+      message.endTime = BigInt(object.end_time);
+    }
+    if (object.delayed !== undefined && object.delayed !== null) {
+      message.delayed = object.delayed;
+    }
+    return message;
   },
   toAmino(message: MsgCreateVestingAccount, useInterfaces: boolean = false): MsgCreateVestingAccountAmino {
     const obj: any = {};
@@ -265,7 +275,8 @@ export const MsgCreateVestingAccountResponse = {
     return message;
   },
   fromAmino(_: MsgCreateVestingAccountResponseAmino): MsgCreateVestingAccountResponse {
-    return {};
+    const message = createBaseMsgCreateVestingAccountResponse();
+    return message;
   },
   toAmino(_: MsgCreateVestingAccountResponse, useInterfaces: boolean = false): MsgCreateVestingAccountResponseAmino {
     const obj: any = {};
@@ -331,10 +342,12 @@ export const MsgFundFairburnPool = {
     return message;
   },
   fromAmino(object: MsgFundFairburnPoolAmino): MsgFundFairburnPool {
-    return {
-      sender: object.sender,
-      amount: Array.isArray(object?.amount) ? object.amount.map((e: any) => Coin.fromAmino(e)) : []
-    };
+    const message = createBaseMsgFundFairburnPool();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    message.amount = object.amount?.map(e => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: MsgFundFairburnPool, useInterfaces: boolean = false): MsgFundFairburnPoolAmino {
     const obj: any = {};
@@ -389,7 +402,8 @@ export const MsgFundFairburnPoolResponse = {
     return message;
   },
   fromAmino(_: MsgFundFairburnPoolResponseAmino): MsgFundFairburnPoolResponse {
-    return {};
+    const message = createBaseMsgFundFairburnPoolResponse();
+    return message;
   },
   toAmino(_: MsgFundFairburnPoolResponse, useInterfaces: boolean = false): MsgFundFairburnPoolResponseAmino {
     const obj: any = {};

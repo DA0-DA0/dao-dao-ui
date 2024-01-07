@@ -23,17 +23,17 @@ export interface MsgRegisterFeeShareProtoMsg {
 /** MsgRegisterFeeShare defines a message that registers a FeeShare */
 export interface MsgRegisterFeeShareAmino {
   /** contract_address in bech32 format */
-  contract_address: string;
+  contract_address?: string;
   /**
    * deployer_address is the bech32 address of message sender. It must be the
    * same the contract's admin address
    */
-  deployer_address: string;
+  deployer_address?: string;
   /**
    * withdrawer_address is the bech32 address of account receiving the
    * transaction fees
    */
-  withdrawer_address: string;
+  withdrawer_address?: string;
 }
 export interface MsgRegisterFeeShareAminoMsg {
   type: "/juno.feeshare.v1.MsgRegisterFeeShare";
@@ -87,17 +87,17 @@ export interface MsgUpdateFeeShareProtoMsg {
  */
 export interface MsgUpdateFeeShareAmino {
   /** contract_address in bech32 format */
-  contract_address: string;
+  contract_address?: string;
   /**
    * deployer_address is the bech32 address of message sender. It must be the
    * same the contract's admin address
    */
-  deployer_address: string;
+  deployer_address?: string;
   /**
    * withdrawer_address is the bech32 address of account receiving the
    * transaction fees
    */
-  withdrawer_address: string;
+  withdrawer_address?: string;
 }
 export interface MsgUpdateFeeShareAminoMsg {
   type: "/juno.feeshare.v1.MsgUpdateFeeShare";
@@ -143,12 +143,12 @@ export interface MsgCancelFeeShareProtoMsg {
 /** MsgCancelFeeShare defines a message that cancels a registered FeeShare */
 export interface MsgCancelFeeShareAmino {
   /** contract_address in bech32 format */
-  contract_address: string;
+  contract_address?: string;
   /**
    * deployer_address is the bech32 address of message sender. It must be the
    * same the contract's admin address
    */
-  deployer_address: string;
+  deployer_address?: string;
 }
 export interface MsgCancelFeeShareAminoMsg {
   type: "/juno.feeshare.v1.MsgCancelFeeShare";
@@ -199,7 +199,7 @@ export interface MsgUpdateParamsProtoMsg {
  */
 export interface MsgUpdateParamsAmino {
   /** authority is the address that controls the module (defaults to x/gov unless overwritten). */
-  authority: string;
+  authority?: string;
   /**
    * params defines the x/feeshare parameters to update.
    * 
@@ -301,11 +301,17 @@ export const MsgRegisterFeeShare = {
     return message;
   },
   fromAmino(object: MsgRegisterFeeShareAmino): MsgRegisterFeeShare {
-    return {
-      contractAddress: object.contract_address,
-      deployerAddress: object.deployer_address,
-      withdrawerAddress: object.withdrawer_address
-    };
+    const message = createBaseMsgRegisterFeeShare();
+    if (object.contract_address !== undefined && object.contract_address !== null) {
+      message.contractAddress = object.contract_address;
+    }
+    if (object.deployer_address !== undefined && object.deployer_address !== null) {
+      message.deployerAddress = object.deployer_address;
+    }
+    if (object.withdrawer_address !== undefined && object.withdrawer_address !== null) {
+      message.withdrawerAddress = object.withdrawer_address;
+    }
+    return message;
   },
   toAmino(message: MsgRegisterFeeShare, useInterfaces: boolean = false): MsgRegisterFeeShareAmino {
     const obj: any = {};
@@ -357,7 +363,8 @@ export const MsgRegisterFeeShareResponse = {
     return message;
   },
   fromAmino(_: MsgRegisterFeeShareResponseAmino): MsgRegisterFeeShareResponse {
-    return {};
+    const message = createBaseMsgRegisterFeeShareResponse();
+    return message;
   },
   toAmino(_: MsgRegisterFeeShareResponse, useInterfaces: boolean = false): MsgRegisterFeeShareResponseAmino {
     const obj: any = {};
@@ -431,11 +438,17 @@ export const MsgUpdateFeeShare = {
     return message;
   },
   fromAmino(object: MsgUpdateFeeShareAmino): MsgUpdateFeeShare {
-    return {
-      contractAddress: object.contract_address,
-      deployerAddress: object.deployer_address,
-      withdrawerAddress: object.withdrawer_address
-    };
+    const message = createBaseMsgUpdateFeeShare();
+    if (object.contract_address !== undefined && object.contract_address !== null) {
+      message.contractAddress = object.contract_address;
+    }
+    if (object.deployer_address !== undefined && object.deployer_address !== null) {
+      message.deployerAddress = object.deployer_address;
+    }
+    if (object.withdrawer_address !== undefined && object.withdrawer_address !== null) {
+      message.withdrawerAddress = object.withdrawer_address;
+    }
+    return message;
   },
   toAmino(message: MsgUpdateFeeShare, useInterfaces: boolean = false): MsgUpdateFeeShareAmino {
     const obj: any = {};
@@ -487,7 +500,8 @@ export const MsgUpdateFeeShareResponse = {
     return message;
   },
   fromAmino(_: MsgUpdateFeeShareResponseAmino): MsgUpdateFeeShareResponse {
-    return {};
+    const message = createBaseMsgUpdateFeeShareResponse();
+    return message;
   },
   toAmino(_: MsgUpdateFeeShareResponse, useInterfaces: boolean = false): MsgUpdateFeeShareResponseAmino {
     const obj: any = {};
@@ -553,10 +567,14 @@ export const MsgCancelFeeShare = {
     return message;
   },
   fromAmino(object: MsgCancelFeeShareAmino): MsgCancelFeeShare {
-    return {
-      contractAddress: object.contract_address,
-      deployerAddress: object.deployer_address
-    };
+    const message = createBaseMsgCancelFeeShare();
+    if (object.contract_address !== undefined && object.contract_address !== null) {
+      message.contractAddress = object.contract_address;
+    }
+    if (object.deployer_address !== undefined && object.deployer_address !== null) {
+      message.deployerAddress = object.deployer_address;
+    }
+    return message;
   },
   toAmino(message: MsgCancelFeeShare, useInterfaces: boolean = false): MsgCancelFeeShareAmino {
     const obj: any = {};
@@ -607,7 +625,8 @@ export const MsgCancelFeeShareResponse = {
     return message;
   },
   fromAmino(_: MsgCancelFeeShareResponseAmino): MsgCancelFeeShareResponse {
-    return {};
+    const message = createBaseMsgCancelFeeShareResponse();
+    return message;
   },
   toAmino(_: MsgCancelFeeShareResponse, useInterfaces: boolean = false): MsgCancelFeeShareResponseAmino {
     const obj: any = {};
@@ -673,10 +692,14 @@ export const MsgUpdateParams = {
     return message;
   },
   fromAmino(object: MsgUpdateParamsAmino): MsgUpdateParams {
-    return {
-      authority: object.authority,
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseMsgUpdateParams();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
@@ -727,7 +750,8 @@ export const MsgUpdateParamsResponse = {
     return message;
   },
   fromAmino(_: MsgUpdateParamsResponseAmino): MsgUpdateParamsResponse {
-    return {};
+    const message = createBaseMsgUpdateParamsResponse();
+    return message;
   },
   toAmino(_: MsgUpdateParamsResponse, useInterfaces: boolean = false): MsgUpdateParamsResponseAmino {
     const obj: any = {};

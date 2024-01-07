@@ -10,7 +10,7 @@ export interface MsgSetCodeAuthorizationProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSetCodeAuthorizationAmino {
-  sender: string;
+  sender?: string;
   code_authorization?: CodeAuthorizationAmino | undefined;
 }
 export interface MsgSetCodeAuthorizationAminoMsg {
@@ -41,8 +41,8 @@ export interface MsgRemoveCodeAuthorizationProtoMsg {
   value: Uint8Array;
 }
 export interface MsgRemoveCodeAuthorizationAmino {
-  sender: string;
-  code_id: string;
+  sender?: string;
+  code_id?: string;
 }
 export interface MsgRemoveCodeAuthorizationAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.MsgRemoveCodeAuthorization";
@@ -72,7 +72,7 @@ export interface MsgSetContractAuthorizationProtoMsg {
   value: Uint8Array;
 }
 export interface MsgSetContractAuthorizationAmino {
-  sender: string;
+  sender?: string;
   contract_authorization?: ContractAuthorizationAmino | undefined;
 }
 export interface MsgSetContractAuthorizationAminoMsg {
@@ -103,8 +103,8 @@ export interface MsgRemoveContractAuthorizationProtoMsg {
   value: Uint8Array;
 }
 export interface MsgRemoveContractAuthorizationAmino {
-  sender: string;
-  contract_address: string;
+  sender?: string;
+  contract_address?: string;
 }
 export interface MsgRemoveContractAuthorizationAminoMsg {
   type: "/publicawesome.stargaze.globalfee.v1.MsgRemoveContractAuthorization";
@@ -135,7 +135,7 @@ export interface MsgUpdateParamsProtoMsg {
   value: Uint8Array;
 }
 export interface MsgUpdateParamsAmino {
-  sender: string;
+  sender?: string;
   /** NOTE: All parameters must be supplied. */
   params?: ParamsAmino | undefined;
 }
@@ -202,10 +202,14 @@ export const MsgSetCodeAuthorization = {
     return message;
   },
   fromAmino(object: MsgSetCodeAuthorizationAmino): MsgSetCodeAuthorization {
-    return {
-      sender: object.sender,
-      codeAuthorization: object?.code_authorization ? CodeAuthorization.fromAmino(object.code_authorization) : undefined
-    };
+    const message = createBaseMsgSetCodeAuthorization();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.code_authorization !== undefined && object.code_authorization !== null) {
+      message.codeAuthorization = CodeAuthorization.fromAmino(object.code_authorization);
+    }
+    return message;
   },
   toAmino(message: MsgSetCodeAuthorization, useInterfaces: boolean = false): MsgSetCodeAuthorizationAmino {
     const obj: any = {};
@@ -256,7 +260,8 @@ export const MsgSetCodeAuthorizationResponse = {
     return message;
   },
   fromAmino(_: MsgSetCodeAuthorizationResponseAmino): MsgSetCodeAuthorizationResponse {
-    return {};
+    const message = createBaseMsgSetCodeAuthorizationResponse();
+    return message;
   },
   toAmino(_: MsgSetCodeAuthorizationResponse, useInterfaces: boolean = false): MsgSetCodeAuthorizationResponseAmino {
     const obj: any = {};
@@ -322,10 +327,14 @@ export const MsgRemoveCodeAuthorization = {
     return message;
   },
   fromAmino(object: MsgRemoveCodeAuthorizationAmino): MsgRemoveCodeAuthorization {
-    return {
-      sender: object.sender,
-      codeId: BigInt(object.code_id)
-    };
+    const message = createBaseMsgRemoveCodeAuthorization();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    return message;
   },
   toAmino(message: MsgRemoveCodeAuthorization, useInterfaces: boolean = false): MsgRemoveCodeAuthorizationAmino {
     const obj: any = {};
@@ -376,7 +385,8 @@ export const MsgRemoveCodeAuthorizationResponse = {
     return message;
   },
   fromAmino(_: MsgRemoveCodeAuthorizationResponseAmino): MsgRemoveCodeAuthorizationResponse {
-    return {};
+    const message = createBaseMsgRemoveCodeAuthorizationResponse();
+    return message;
   },
   toAmino(_: MsgRemoveCodeAuthorizationResponse, useInterfaces: boolean = false): MsgRemoveCodeAuthorizationResponseAmino {
     const obj: any = {};
@@ -442,10 +452,14 @@ export const MsgSetContractAuthorization = {
     return message;
   },
   fromAmino(object: MsgSetContractAuthorizationAmino): MsgSetContractAuthorization {
-    return {
-      sender: object.sender,
-      contractAuthorization: object?.contract_authorization ? ContractAuthorization.fromAmino(object.contract_authorization) : undefined
-    };
+    const message = createBaseMsgSetContractAuthorization();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.contract_authorization !== undefined && object.contract_authorization !== null) {
+      message.contractAuthorization = ContractAuthorization.fromAmino(object.contract_authorization);
+    }
+    return message;
   },
   toAmino(message: MsgSetContractAuthorization, useInterfaces: boolean = false): MsgSetContractAuthorizationAmino {
     const obj: any = {};
@@ -496,7 +510,8 @@ export const MsgSetContractAuthorizationResponse = {
     return message;
   },
   fromAmino(_: MsgSetContractAuthorizationResponseAmino): MsgSetContractAuthorizationResponse {
-    return {};
+    const message = createBaseMsgSetContractAuthorizationResponse();
+    return message;
   },
   toAmino(_: MsgSetContractAuthorizationResponse, useInterfaces: boolean = false): MsgSetContractAuthorizationResponseAmino {
     const obj: any = {};
@@ -562,10 +577,14 @@ export const MsgRemoveContractAuthorization = {
     return message;
   },
   fromAmino(object: MsgRemoveContractAuthorizationAmino): MsgRemoveContractAuthorization {
-    return {
-      sender: object.sender,
-      contractAddress: object.contract_address
-    };
+    const message = createBaseMsgRemoveContractAuthorization();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.contract_address !== undefined && object.contract_address !== null) {
+      message.contractAddress = object.contract_address;
+    }
+    return message;
   },
   toAmino(message: MsgRemoveContractAuthorization, useInterfaces: boolean = false): MsgRemoveContractAuthorizationAmino {
     const obj: any = {};
@@ -616,7 +635,8 @@ export const MsgRemoveContractAuthorizationResponse = {
     return message;
   },
   fromAmino(_: MsgRemoveContractAuthorizationResponseAmino): MsgRemoveContractAuthorizationResponse {
-    return {};
+    const message = createBaseMsgRemoveContractAuthorizationResponse();
+    return message;
   },
   toAmino(_: MsgRemoveContractAuthorizationResponse, useInterfaces: boolean = false): MsgRemoveContractAuthorizationResponseAmino {
     const obj: any = {};
@@ -682,10 +702,14 @@ export const MsgUpdateParams = {
     return message;
   },
   fromAmino(object: MsgUpdateParamsAmino): MsgUpdateParams {
-    return {
-      sender: object.sender,
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseMsgUpdateParams();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
@@ -736,7 +760,8 @@ export const MsgUpdateParamsResponse = {
     return message;
   },
   fromAmino(_: MsgUpdateParamsResponseAmino): MsgUpdateParamsResponse {
-    return {};
+    const message = createBaseMsgUpdateParamsResponse();
+    return message;
   },
   toAmino(_: MsgUpdateParamsResponse, useInterfaces: boolean = false): MsgUpdateParamsResponseAmino {
     const obj: any = {};

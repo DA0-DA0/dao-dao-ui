@@ -47,7 +47,7 @@ export interface ParamsAmino {
    * values allowed. For more information see
    * https://docs.cosmos.network/main/modules/auth#concepts
    */
-  minimum_gas_prices: DecCoinAmino[];
+  minimum_gas_prices?: DecCoinAmino[];
 }
 export interface ParamsAminoMsg {
   type: "/gaia.globalfee.v1beta1.Params";
@@ -93,9 +93,11 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseGenesisState();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
@@ -154,9 +156,9 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      minimumGasPrices: Array.isArray(object?.minimum_gas_prices) ? object.minimum_gas_prices.map((e: any) => DecCoin.fromAmino(e)) : []
-    };
+    const message = createBaseParams();
+    message.minimumGasPrices = object.minimum_gas_prices?.map(e => DecCoin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};

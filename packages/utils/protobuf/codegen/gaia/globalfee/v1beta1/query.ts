@@ -40,7 +40,7 @@ export interface QueryMinimumGasPricesResponseProtoMsg {
  * Query/MinimumGasPrices RPC method.
  */
 export interface QueryMinimumGasPricesResponseAmino {
-  minimum_gas_prices: DecCoinAmino[];
+  minimum_gas_prices?: DecCoinAmino[];
 }
 export interface QueryMinimumGasPricesResponseAminoMsg {
   type: "/gaia.globalfee.v1beta1.QueryMinimumGasPricesResponse";
@@ -80,7 +80,8 @@ export const QueryMinimumGasPricesRequest = {
     return message;
   },
   fromAmino(_: QueryMinimumGasPricesRequestAmino): QueryMinimumGasPricesRequest {
-    return {};
+    const message = createBaseQueryMinimumGasPricesRequest();
+    return message;
   },
   toAmino(_: QueryMinimumGasPricesRequest, useInterfaces: boolean = false): QueryMinimumGasPricesRequestAmino {
     const obj: any = {};
@@ -138,9 +139,9 @@ export const QueryMinimumGasPricesResponse = {
     return message;
   },
   fromAmino(object: QueryMinimumGasPricesResponseAmino): QueryMinimumGasPricesResponse {
-    return {
-      minimumGasPrices: Array.isArray(object?.minimum_gas_prices) ? object.minimum_gas_prices.map((e: any) => DecCoin.fromAmino(e)) : []
-    };
+    const message = createBaseQueryMinimumGasPricesResponse();
+    message.minimumGasPrices = object.minimum_gas_prices?.map(e => DecCoin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: QueryMinimumGasPricesResponse, useInterfaces: boolean = false): QueryMinimumGasPricesResponseAmino {
     const obj: any = {};

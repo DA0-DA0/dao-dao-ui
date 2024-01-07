@@ -18,7 +18,7 @@ export interface GenesisStateAmino {
   /** params are the feeshare module parameters */
   params?: ParamsAmino | undefined;
   /** FeeShare is a slice of active registered contracts for fee distribution */
-  fee_share: FeeShareAmino[];
+  fee_share?: FeeShareAmino[];
 }
 export interface GenesisStateAminoMsg {
   type: "/juno.feeshare.v1.GenesisState";
@@ -53,19 +53,19 @@ export interface ParamsProtoMsg {
 /** Params defines the feeshare module params */
 export interface ParamsAmino {
   /** enable_feeshare defines a parameter to enable the feeshare module */
-  enable_fee_share: boolean;
+  enable_fee_share?: boolean;
   /**
    * developer_shares defines the proportion of the transaction fees to be
    * distributed to the registered contract owner
    */
-  developer_shares: string;
+  developer_shares?: string;
   /**
    * allowed_denoms defines the list of denoms that are allowed to be paid to
    * the contract withdraw addresses. If said denom is not in the list, the fees
    * will ONLY be sent to the community pool.
    * If this list is empty, all denoms are allowed.
    */
-  allowed_denoms: string[];
+  allowed_denoms?: string[];
 }
 export interface ParamsAminoMsg {
   type: "/juno.feeshare.v1.Params";
@@ -121,10 +121,12 @@ export const GenesisState = {
     return message;
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
-    return {
-      params: object?.params ? Params.fromAmino(object.params) : undefined,
-      feeShare: Array.isArray(object?.fee_share) ? object.fee_share.map((e: any) => FeeShare.fromAmino(e)) : []
-    };
+    const message = createBaseGenesisState();
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    message.feeShare = object.fee_share?.map(e => FeeShare.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: GenesisState, useInterfaces: boolean = false): GenesisStateAmino {
     const obj: any = {};
@@ -204,11 +206,15 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      enableFeeShare: object.enable_fee_share,
-      developerShares: object.developer_shares,
-      allowedDenoms: Array.isArray(object?.allowed_denoms) ? object.allowed_denoms.map((e: any) => e) : []
-    };
+    const message = createBaseParams();
+    if (object.enable_fee_share !== undefined && object.enable_fee_share !== null) {
+      message.enableFeeShare = object.enable_fee_share;
+    }
+    if (object.developer_shares !== undefined && object.developer_shares !== null) {
+      message.developerShares = object.developer_shares;
+    }
+    message.allowedDenoms = object.allowed_denoms?.map(e => e) || [];
+    return message;
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};

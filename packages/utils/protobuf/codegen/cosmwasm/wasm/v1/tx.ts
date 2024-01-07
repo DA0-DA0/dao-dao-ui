@@ -3,7 +3,7 @@ import { AccessConfig, AccessConfigAmino, AccessConfigSDKType, Params, ParamsAmi
 import { Coin, CoinAmino, CoinSDKType } from "../../../cosmos/base/v1beta1/coin";
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import { fromBase64, toBase64, toUtf8, fromUtf8 } from "@cosmjs/encoding";
-import { base64FromBytes, bytesFromBase64 } from "../../../helpers";
+import { bytesFromBase64, base64FromBytes } from "../../../helpers";
 /** MsgStoreCode submit Wasm code to the system */
 export interface MsgStoreCode {
   /** Sender is the actor that signed the messages */
@@ -23,9 +23,9 @@ export interface MsgStoreCodeProtoMsg {
 /** MsgStoreCode submit Wasm code to the system */
 export interface MsgStoreCodeAmino {
   /** Sender is the actor that signed the messages */
-  sender: string;
+  sender?: string;
   /** WASMByteCode can be raw or gzip compressed */
-  wasm_byte_code: string;
+  wasm_byte_code?: string;
   /**
    * InstantiatePermission access control to apply on contract creation,
    * optional
@@ -56,9 +56,9 @@ export interface MsgStoreCodeResponseProtoMsg {
 /** MsgStoreCodeResponse returns store result data. */
 export interface MsgStoreCodeResponseAmino {
   /** CodeID is the reference to the stored WASM code */
-  code_id: string;
+  code_id?: string;
   /** Checksum is the sha256 hash of the stored code */
-  checksum: Uint8Array;
+  checksum?: string;
 }
 export interface MsgStoreCodeResponseAminoMsg {
   type: "wasm/MsgStoreCodeResponse";
@@ -97,15 +97,15 @@ export interface MsgInstantiateContractProtoMsg {
  */
 export interface MsgInstantiateContractAmino {
   /** Sender is the that actor that signed the messages */
-  sender: string;
+  sender?: string;
   /** Admin is an optional address that can execute migrations */
-  admin: string;
+  admin?: string;
   /** CodeID is the reference to the stored WASM code */
-  code_id: string;
+  code_id?: string;
   /** Label is optional metadata to be stored with a contract instance. */
-  label: string;
+  label?: string;
   /** Msg json encoded message to be passed to the contract on instantiation */
-  msg: Uint8Array;
+  msg?: any;
   /** Funds coins that are transferred to the contract on instantiation */
   funds: CoinAmino[];
 }
@@ -139,9 +139,9 @@ export interface MsgInstantiateContractResponseProtoMsg {
 /** MsgInstantiateContractResponse return instantiation result data */
 export interface MsgInstantiateContractResponseAmino {
   /** Address is the bech32 address of the new contract instance. */
-  address: string;
+  address?: string;
   /** Data contains bytes to returned from the contract */
-  data: Uint8Array;
+  data?: string;
 }
 export interface MsgInstantiateContractResponseAminoMsg {
   type: "wasm/MsgInstantiateContractResponse";
@@ -187,24 +187,24 @@ export interface MsgInstantiateContract2ProtoMsg {
  */
 export interface MsgInstantiateContract2Amino {
   /** Sender is the that actor that signed the messages */
-  sender: string;
+  sender?: string;
   /** Admin is an optional address that can execute migrations */
-  admin: string;
+  admin?: string;
   /** CodeID is the reference to the stored WASM code */
-  code_id: string;
+  code_id?: string;
   /** Label is optional metadata to be stored with a contract instance. */
-  label: string;
+  label?: string;
   /** Msg json encoded message to be passed to the contract on instantiation */
-  msg: Uint8Array;
+  msg?: any;
   /** Funds coins that are transferred to the contract on instantiation */
   funds: CoinAmino[];
   /** Salt is an arbitrary value provided by the sender. Size can be 1 to 64. */
-  salt: Uint8Array;
+  salt?: string;
   /**
    * FixMsg include the msg value into the hash for the predictable address.
    * Default is false
    */
-  fix_msg: boolean;
+  fix_msg?: boolean;
 }
 export interface MsgInstantiateContract2AminoMsg {
   type: "wasm/MsgInstantiateContract2";
@@ -238,9 +238,9 @@ export interface MsgInstantiateContract2ResponseProtoMsg {
 /** MsgInstantiateContract2Response return instantiation result data */
 export interface MsgInstantiateContract2ResponseAmino {
   /** Address is the bech32 address of the new contract instance. */
-  address: string;
+  address?: string;
   /** Data contains bytes to returned from the contract */
-  data: Uint8Array;
+  data?: string;
 }
 export interface MsgInstantiateContract2ResponseAminoMsg {
   type: "wasm/MsgInstantiateContract2Response";
@@ -269,11 +269,11 @@ export interface MsgExecuteContractProtoMsg {
 /** MsgExecuteContract submits the given message data to a smart contract */
 export interface MsgExecuteContractAmino {
   /** Sender is the that actor that signed the messages */
-  sender: string;
+  sender?: string;
   /** Contract is the address of the smart contract */
-  contract: string;
+  contract?: string;
   /** Msg json encoded message to be passed to the contract */
-  msg: Uint8Array;
+  msg?: any;
   /** Funds coins that are transferred to the contract on execution */
   funds: CoinAmino[];
 }
@@ -300,7 +300,7 @@ export interface MsgExecuteContractResponseProtoMsg {
 /** MsgExecuteContractResponse returns execution result data. */
 export interface MsgExecuteContractResponseAmino {
   /** Data contains bytes to returned from the contract */
-  data: Uint8Array;
+  data?: string;
 }
 export interface MsgExecuteContractResponseAminoMsg {
   type: "wasm/MsgExecuteContractResponse";
@@ -328,13 +328,13 @@ export interface MsgMigrateContractProtoMsg {
 /** MsgMigrateContract runs a code upgrade/ downgrade for a smart contract */
 export interface MsgMigrateContractAmino {
   /** Sender is the that actor that signed the messages */
-  sender: string;
+  sender?: string;
   /** Contract is the address of the smart contract */
-  contract: string;
+  contract?: string;
   /** CodeID references the new WASM code */
-  code_id: string;
+  code_id?: string;
   /** Msg json encoded message to be passed to the contract on migration */
-  msg: Uint8Array;
+  msg?: any;
 }
 export interface MsgMigrateContractAminoMsg {
   type: "wasm/MsgMigrateContract";
@@ -365,7 +365,7 @@ export interface MsgMigrateContractResponseAmino {
    * Data contains same raw bytes returned as data from the wasm contract.
    * (May be empty)
    */
-  data: Uint8Array;
+  data?: string;
 }
 export interface MsgMigrateContractResponseAminoMsg {
   type: "wasm/MsgMigrateContractResponse";
@@ -391,11 +391,11 @@ export interface MsgUpdateAdminProtoMsg {
 /** MsgUpdateAdmin sets a new admin for a smart contract */
 export interface MsgUpdateAdminAmino {
   /** Sender is the that actor that signed the messages */
-  sender: string;
+  sender?: string;
   /** NewAdmin address to be set */
-  new_admin: string;
+  new_admin?: string;
   /** Contract is the address of the smart contract */
-  contract: string;
+  contract?: string;
 }
 export interface MsgUpdateAdminAminoMsg {
   type: "wasm/MsgUpdateAdmin";
@@ -435,9 +435,9 @@ export interface MsgClearAdminProtoMsg {
 /** MsgClearAdmin removes any admin stored for a smart contract */
 export interface MsgClearAdminAmino {
   /** Sender is the actor that signed the messages */
-  sender: string;
+  sender?: string;
   /** Contract is the address of the smart contract */
-  contract: string;
+  contract?: string;
 }
 export interface MsgClearAdminAminoMsg {
   type: "wasm/MsgClearAdmin";
@@ -482,9 +482,9 @@ export interface AccessConfigUpdateProtoMsg {
  */
 export interface AccessConfigUpdateAmino {
   /** CodeID is the reference to the stored WASM code to be updated */
-  code_id: string;
+  code_id?: string;
   /** InstantiatePermission to apply to the set of code ids */
-  instantiate_permission?: AccessConfigAmino | undefined;
+  instantiate_permission: AccessConfigAmino | undefined;
 }
 export interface AccessConfigUpdateAminoMsg {
   type: "wasm/AccessConfigUpdate";
@@ -514,9 +514,9 @@ export interface MsgUpdateInstantiateConfigProtoMsg {
 /** MsgUpdateInstantiateConfig updates instantiate config for a smart contract */
 export interface MsgUpdateInstantiateConfigAmino {
   /** Sender is the that actor that signed the messages */
-  sender: string;
+  sender?: string;
   /** CodeID references the stored WASM code */
-  code_id: string;
+  code_id?: string;
   /** NewInstantiatePermission is the new access control */
   new_instantiate_permission?: AccessConfigAmino | undefined;
 }
@@ -570,13 +570,13 @@ export interface MsgUpdateParamsProtoMsg {
  */
 export interface MsgUpdateParamsAmino {
   /** Authority is the address of the governance account. */
-  authority: string;
+  authority?: string;
   /**
    * params defines the x/wasm parameters to update.
    * 
    * NOTE: All parameters must be supplied.
    */
-  params?: ParamsAmino | undefined;
+  params: ParamsAmino | undefined;
 }
 export interface MsgUpdateParamsAminoMsg {
   type: "wasm/MsgUpdateParams";
@@ -644,11 +644,11 @@ export interface MsgSudoContractProtoMsg {
  */
 export interface MsgSudoContractAmino {
   /** Authority is the address of the governance account. */
-  authority: string;
+  authority?: string;
   /** Contract is the address of the smart contract */
-  contract: string;
+  contract?: string;
   /** Msg json encoded message to be passed to the contract as sudo */
-  msg: Uint8Array;
+  msg?: any;
 }
 export interface MsgSudoContractAminoMsg {
   type: "wasm/MsgSudoContract";
@@ -686,7 +686,7 @@ export interface MsgSudoContractResponseProtoMsg {
  */
 export interface MsgSudoContractResponseAmino {
   /** Data contains bytes to returned from the contract */
-  data: Uint8Array;
+  data?: string;
 }
 export interface MsgSudoContractResponseAminoMsg {
   type: "wasm/MsgSudoContractResponse";
@@ -723,9 +723,9 @@ export interface MsgPinCodesProtoMsg {
  */
 export interface MsgPinCodesAmino {
   /** Authority is the address of the governance account. */
-  authority: string;
+  authority?: string;
   /** CodeIDs references the new WASM codes */
-  code_ids: string[];
+  code_ids?: string[];
 }
 export interface MsgPinCodesAminoMsg {
   type: "wasm/MsgPinCodes";
@@ -791,9 +791,9 @@ export interface MsgUnpinCodesProtoMsg {
  */
 export interface MsgUnpinCodesAmino {
   /** Authority is the address of the governance account. */
-  authority: string;
+  authority?: string;
   /** CodeIDs references the WASM codes */
-  code_ids: string[];
+  code_ids?: string[];
 }
 export interface MsgUnpinCodesAminoMsg {
   type: "wasm/MsgUnpinCodes";
@@ -891,39 +891,39 @@ export interface MsgStoreAndInstantiateContractProtoMsg {
  */
 export interface MsgStoreAndInstantiateContractAmino {
   /** Authority is the address of the governance account. */
-  authority: string;
+  authority?: string;
   /** WASMByteCode can be raw or gzip compressed */
-  wasm_byte_code: string;
+  wasm_byte_code?: string;
   /** InstantiatePermission to apply on contract creation, optional */
   instantiate_permission?: AccessConfigAmino | undefined;
   /**
    * UnpinCode code on upload, optional. As default the uploaded contract is
    * pinned to cache.
    */
-  unpin_code: boolean;
+  unpin_code?: boolean;
   /** Admin is an optional address that can execute migrations */
-  admin: string;
+  admin?: string;
   /** Label is optional metadata to be stored with a constract instance. */
-  label: string;
+  label?: string;
   /** Msg json encoded message to be passed to the contract on instantiation */
-  msg: Uint8Array;
+  msg?: any;
   /**
    * Funds coins that are transferred from the authority account to the contract
    * on instantiation
    */
   funds: CoinAmino[];
   /** Source is the URL where the code is hosted */
-  source: string;
+  source?: string;
   /**
    * Builder is the docker image used to build the code deterministically, used
    * for smart contract verification
    */
-  builder: string;
+  builder?: string;
   /**
    * CodeHash is the SHA256 sum of the code outputted by builder, used for smart
    * contract verification
    */
-  code_hash: Uint8Array;
+  code_hash?: string;
 }
 export interface MsgStoreAndInstantiateContractAminoMsg {
   type: "wasm/MsgStoreAndInstantiateContract";
@@ -972,9 +972,9 @@ export interface MsgStoreAndInstantiateContractResponseProtoMsg {
  */
 export interface MsgStoreAndInstantiateContractResponseAmino {
   /** Address is the bech32 address of the new contract instance. */
-  address: string;
+  address?: string;
   /** Data contains bytes to returned from the contract */
-  data: Uint8Array;
+  data?: string;
 }
 export interface MsgStoreAndInstantiateContractResponseAminoMsg {
   type: "wasm/MsgStoreAndInstantiateContractResponse";
@@ -1009,8 +1009,8 @@ export interface MsgAddCodeUploadParamsAddressesProtoMsg {
  */
 export interface MsgAddCodeUploadParamsAddressesAmino {
   /** Authority is the address of the governance account. */
-  authority: string;
-  addresses: string[];
+  authority?: string;
+  addresses?: string[];
 }
 export interface MsgAddCodeUploadParamsAddressesAminoMsg {
   type: "wasm/MsgAddCodeUploadParamsAddresses";
@@ -1066,8 +1066,8 @@ export interface MsgRemoveCodeUploadParamsAddressesProtoMsg {
  */
 export interface MsgRemoveCodeUploadParamsAddressesAmino {
   /** Authority is the address of the governance account. */
-  authority: string;
-  addresses: string[];
+  authority?: string;
+  addresses?: string[];
 }
 export interface MsgRemoveCodeUploadParamsAddressesAminoMsg {
   type: "wasm/MsgRemoveCodeUploadParamsAddresses";
@@ -1134,15 +1134,15 @@ export interface MsgStoreAndMigrateContractProtoMsg {
  */
 export interface MsgStoreAndMigrateContractAmino {
   /** Authority is the address of the governance account. */
-  authority: string;
+  authority?: string;
   /** WASMByteCode can be raw or gzip compressed */
-  wasm_byte_code: string;
+  wasm_byte_code?: string;
   /** InstantiatePermission to apply on contract creation, optional */
   instantiate_permission?: AccessConfigAmino | undefined;
   /** Contract is the address of the smart contract */
-  contract: string;
+  contract?: string;
   /** Msg json encoded message to be passed to the contract on migration */
-  msg: Uint8Array;
+  msg?: any;
 }
 export interface MsgStoreAndMigrateContractAminoMsg {
   type: "wasm/MsgStoreAndMigrateContract";
@@ -1187,11 +1187,11 @@ export interface MsgStoreAndMigrateContractResponseProtoMsg {
  */
 export interface MsgStoreAndMigrateContractResponseAmino {
   /** CodeID is the reference to the stored WASM code */
-  code_id: string;
+  code_id?: string;
   /** Checksum is the sha256 hash of the stored code */
-  checksum: Uint8Array;
+  checksum?: string;
   /** Data contains bytes to returned from the contract */
-  data: Uint8Array;
+  data?: string;
 }
 export interface MsgStoreAndMigrateContractResponseAminoMsg {
   type: "wasm/MsgStoreAndMigrateContractResponse";
@@ -1224,11 +1224,11 @@ export interface MsgUpdateContractLabelProtoMsg {
 /** MsgUpdateContractLabel sets a new label for a smart contract */
 export interface MsgUpdateContractLabelAmino {
   /** Sender is the that actor that signed the messages */
-  sender: string;
+  sender?: string;
   /** NewLabel string to be set */
-  new_label: string;
+  new_label?: string;
   /** Contract is the address of the smart contract */
-  contract: string;
+  contract?: string;
 }
 export interface MsgUpdateContractLabelAminoMsg {
   type: "wasm/MsgUpdateContractLabel";
@@ -1306,11 +1306,17 @@ export const MsgStoreCode = {
     return message;
   },
   fromAmino(object: MsgStoreCodeAmino): MsgStoreCode {
-    return {
-      sender: object.sender,
-      wasmByteCode: fromBase64(object.wasm_byte_code),
-      instantiatePermission: object?.instantiate_permission ? AccessConfig.fromAmino(object.instantiate_permission) : undefined
-    };
+    const message = createBaseMsgStoreCode();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.wasm_byte_code !== undefined && object.wasm_byte_code !== null) {
+      message.wasmByteCode = fromBase64(object.wasm_byte_code);
+    }
+    if (object.instantiate_permission !== undefined && object.instantiate_permission !== null) {
+      message.instantiatePermission = AccessConfig.fromAmino(object.instantiate_permission);
+    }
+    return message;
   },
   toAmino(message: MsgStoreCode, useInterfaces: boolean = false): MsgStoreCodeAmino {
     const obj: any = {};
@@ -1385,15 +1391,19 @@ export const MsgStoreCodeResponse = {
     return message;
   },
   fromAmino(object: MsgStoreCodeResponseAmino): MsgStoreCodeResponse {
-    return {
-      codeId: BigInt(object.code_id),
-      checksum: object.checksum
-    };
+    const message = createBaseMsgStoreCodeResponse();
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    if (object.checksum !== undefined && object.checksum !== null) {
+      message.checksum = bytesFromBase64(object.checksum);
+    }
+    return message;
   },
   toAmino(message: MsgStoreCodeResponse, useInterfaces: boolean = false): MsgStoreCodeResponseAmino {
     const obj: any = {};
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
-    obj.checksum = message.checksum;
+    obj.checksum = message.checksum ? base64FromBytes(message.checksum) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgStoreCodeResponseAminoMsg): MsgStoreCodeResponse {
@@ -1494,14 +1504,24 @@ export const MsgInstantiateContract = {
     return message;
   },
   fromAmino(object: MsgInstantiateContractAmino): MsgInstantiateContract {
-    return {
-      sender: object.sender,
-      admin: object.admin,
-      codeId: BigInt(object.code_id),
-      label: object.label,
-      msg: toUtf8(JSON.stringify(object.msg)),
-      funds: Array.isArray(object?.funds) ? object.funds.map((e: any) => Coin.fromAmino(e)) : []
-    };
+    const message = createBaseMsgInstantiateContract();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.admin !== undefined && object.admin !== null) {
+      message.admin = object.admin;
+    }
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    if (object.label !== undefined && object.label !== null) {
+      message.label = object.label;
+    }
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = toUtf8(JSON.stringify(object.msg));
+    }
+    message.funds = object.funds?.map(e => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: MsgInstantiateContract, useInterfaces: boolean = false): MsgInstantiateContractAmino {
     const obj: any = {};
@@ -1583,15 +1603,19 @@ export const MsgInstantiateContractResponse = {
     return message;
   },
   fromAmino(object: MsgInstantiateContractResponseAmino): MsgInstantiateContractResponse {
-    return {
-      address: object.address,
-      data: object.data
-    };
+    const message = createBaseMsgInstantiateContractResponse();
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = bytesFromBase64(object.data);
+    }
+    return message;
   },
   toAmino(message: MsgInstantiateContractResponse, useInterfaces: boolean = false): MsgInstantiateContractResponseAmino {
     const obj: any = {};
     obj.address = message.address;
-    obj.data = message.data;
+    obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgInstantiateContractResponseAminoMsg): MsgInstantiateContractResponse {
@@ -1708,16 +1732,30 @@ export const MsgInstantiateContract2 = {
     return message;
   },
   fromAmino(object: MsgInstantiateContract2Amino): MsgInstantiateContract2 {
-    return {
-      sender: object.sender,
-      admin: object.admin,
-      codeId: BigInt(object.code_id),
-      label: object.label,
-      msg: toUtf8(JSON.stringify(object.msg)),
-      funds: Array.isArray(object?.funds) ? object.funds.map((e: any) => Coin.fromAmino(e)) : [],
-      salt: bytesFromBase64(object.salt),
-      fixMsg: object.fix_msg ?? false
-    };
+    const message = createBaseMsgInstantiateContract2();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.admin !== undefined && object.admin !== null) {
+      message.admin = object.admin;
+    }
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    if (object.label !== undefined && object.label !== null) {
+      message.label = object.label;
+    }
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = toUtf8(JSON.stringify(object.msg));
+    }
+    message.funds = object.funds?.map(e => Coin.fromAmino(e)) || [];
+    if (object.salt !== undefined && object.salt !== null) {
+      message.salt = bytesFromBase64(object.salt);
+    }
+    if (object.fix_msg !== undefined && object.fix_msg !== null) {
+      message.fixMsg = object.fix_msg;
+    }
+    return message;
   },
   toAmino(message: MsgInstantiateContract2, useInterfaces: boolean = false): MsgInstantiateContract2Amino {
     const obj: any = {};
@@ -1731,7 +1769,8 @@ export const MsgInstantiateContract2 = {
     } else {
       obj.funds = [];
     }
-    obj.salt = base64FromBytes(message.salt);
+    obj.salt = message.salt ? base64FromBytes(message.salt) : undefined;
+    // TODO(protobuf): is this still necessary?
     if (message.fixMsg) {
       obj.fix_msg = message.fixMsg;
     }
@@ -1803,15 +1842,19 @@ export const MsgInstantiateContract2Response = {
     return message;
   },
   fromAmino(object: MsgInstantiateContract2ResponseAmino): MsgInstantiateContract2Response {
-    return {
-      address: object.address,
-      data: object.data
-    };
+    const message = createBaseMsgInstantiateContract2Response();
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = bytesFromBase64(object.data);
+    }
+    return message;
   },
   toAmino(message: MsgInstantiateContract2Response, useInterfaces: boolean = false): MsgInstantiateContract2ResponseAmino {
     const obj: any = {};
     obj.address = message.address;
-    obj.data = message.data;
+    obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgInstantiateContract2ResponseAminoMsg): MsgInstantiateContract2Response {
@@ -1896,12 +1939,18 @@ export const MsgExecuteContract = {
     return message;
   },
   fromAmino(object: MsgExecuteContractAmino): MsgExecuteContract {
-    return {
-      sender: object.sender,
-      contract: object.contract,
-      msg: toUtf8(JSON.stringify(object.msg)),
-      funds: Array.isArray(object?.funds) ? object.funds.map((e: any) => Coin.fromAmino(e)) : []
-    };
+    const message = createBaseMsgExecuteContract();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.contract !== undefined && object.contract !== null) {
+      message.contract = object.contract;
+    }
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = toUtf8(JSON.stringify(object.msg));
+    }
+    message.funds = object.funds?.map(e => Coin.fromAmino(e)) || [];
+    return message;
   },
   toAmino(message: MsgExecuteContract, useInterfaces: boolean = false): MsgExecuteContractAmino {
     const obj: any = {};
@@ -1973,13 +2022,15 @@ export const MsgExecuteContractResponse = {
     return message;
   },
   fromAmino(object: MsgExecuteContractResponseAmino): MsgExecuteContractResponse {
-    return {
-      data: object.data
-    };
+    const message = createBaseMsgExecuteContractResponse();
+    if (object.data !== undefined && object.data !== null) {
+      message.data = bytesFromBase64(object.data);
+    }
+    return message;
   },
   toAmino(message: MsgExecuteContractResponse, useInterfaces: boolean = false): MsgExecuteContractResponseAmino {
     const obj: any = {};
-    obj.data = message.data;
+    obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgExecuteContractResponseAminoMsg): MsgExecuteContractResponse {
@@ -2064,12 +2115,20 @@ export const MsgMigrateContract = {
     return message;
   },
   fromAmino(object: MsgMigrateContractAmino): MsgMigrateContract {
-    return {
-      sender: object.sender,
-      contract: object.contract,
-      codeId: BigInt(object.code_id),
-      msg: toUtf8(JSON.stringify(object.msg))
-    };
+    const message = createBaseMsgMigrateContract();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.contract !== undefined && object.contract !== null) {
+      message.contract = object.contract;
+    }
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = toUtf8(JSON.stringify(object.msg));
+    }
+    return message;
   },
   toAmino(message: MsgMigrateContract, useInterfaces: boolean = false): MsgMigrateContractAmino {
     const obj: any = {};
@@ -2137,13 +2196,15 @@ export const MsgMigrateContractResponse = {
     return message;
   },
   fromAmino(object: MsgMigrateContractResponseAmino): MsgMigrateContractResponse {
-    return {
-      data: object.data
-    };
+    const message = createBaseMsgMigrateContractResponse();
+    if (object.data !== undefined && object.data !== null) {
+      message.data = bytesFromBase64(object.data);
+    }
+    return message;
   },
   toAmino(message: MsgMigrateContractResponse, useInterfaces: boolean = false): MsgMigrateContractResponseAmino {
     const obj: any = {};
-    obj.data = message.data;
+    obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgMigrateContractResponseAminoMsg): MsgMigrateContractResponse {
@@ -2220,11 +2281,17 @@ export const MsgUpdateAdmin = {
     return message;
   },
   fromAmino(object: MsgUpdateAdminAmino): MsgUpdateAdmin {
-    return {
-      sender: object.sender,
-      newAdmin: object.new_admin,
-      contract: object.contract
-    };
+    const message = createBaseMsgUpdateAdmin();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.new_admin !== undefined && object.new_admin !== null) {
+      message.newAdmin = object.new_admin;
+    }
+    if (object.contract !== undefined && object.contract !== null) {
+      message.contract = object.contract;
+    }
+    return message;
   },
   toAmino(message: MsgUpdateAdmin, useInterfaces: boolean = false): MsgUpdateAdminAmino {
     const obj: any = {};
@@ -2282,7 +2349,8 @@ export const MsgUpdateAdminResponse = {
     return message;
   },
   fromAmino(_: MsgUpdateAdminResponseAmino): MsgUpdateAdminResponse {
-    return {};
+    const message = createBaseMsgUpdateAdminResponse();
+    return message;
   },
   toAmino(_: MsgUpdateAdminResponse, useInterfaces: boolean = false): MsgUpdateAdminResponseAmino {
     const obj: any = {};
@@ -2354,10 +2422,14 @@ export const MsgClearAdmin = {
     return message;
   },
   fromAmino(object: MsgClearAdminAmino): MsgClearAdmin {
-    return {
-      sender: object.sender,
-      contract: object.contract
-    };
+    const message = createBaseMsgClearAdmin();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.contract !== undefined && object.contract !== null) {
+      message.contract = object.contract;
+    }
+    return message;
   },
   toAmino(message: MsgClearAdmin, useInterfaces: boolean = false): MsgClearAdminAmino {
     const obj: any = {};
@@ -2414,7 +2486,8 @@ export const MsgClearAdminResponse = {
     return message;
   },
   fromAmino(_: MsgClearAdminResponseAmino): MsgClearAdminResponse {
-    return {};
+    const message = createBaseMsgClearAdminResponse();
+    return message;
   },
   toAmino(_: MsgClearAdminResponse, useInterfaces: boolean = false): MsgClearAdminResponseAmino {
     const obj: any = {};
@@ -2486,15 +2559,19 @@ export const AccessConfigUpdate = {
     return message;
   },
   fromAmino(object: AccessConfigUpdateAmino): AccessConfigUpdate {
-    return {
-      codeId: BigInt(object.code_id),
-      instantiatePermission: object?.instantiate_permission ? AccessConfig.fromAmino(object.instantiate_permission) : undefined
-    };
+    const message = createBaseAccessConfigUpdate();
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    if (object.instantiate_permission !== undefined && object.instantiate_permission !== null) {
+      message.instantiatePermission = AccessConfig.fromAmino(object.instantiate_permission);
+    }
+    return message;
   },
   toAmino(message: AccessConfigUpdate, useInterfaces: boolean = false): AccessConfigUpdateAmino {
     const obj: any = {};
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
-    obj.instantiate_permission = message.instantiatePermission ? AccessConfig.toAmino(message.instantiatePermission, useInterfaces) : undefined;
+    obj.instantiate_permission = message.instantiatePermission ? AccessConfig.toAmino(message.instantiatePermission, useInterfaces) : AccessConfig.fromPartial({});
     return obj;
   },
   fromAminoMsg(object: AccessConfigUpdateAminoMsg): AccessConfigUpdate {
@@ -2571,11 +2648,17 @@ export const MsgUpdateInstantiateConfig = {
     return message;
   },
   fromAmino(object: MsgUpdateInstantiateConfigAmino): MsgUpdateInstantiateConfig {
-    return {
-      sender: object.sender,
-      codeId: BigInt(object.code_id),
-      newInstantiatePermission: object?.new_instantiate_permission ? AccessConfig.fromAmino(object.new_instantiate_permission) : undefined
-    };
+    const message = createBaseMsgUpdateInstantiateConfig();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    if (object.new_instantiate_permission !== undefined && object.new_instantiate_permission !== null) {
+      message.newInstantiatePermission = AccessConfig.fromAmino(object.new_instantiate_permission);
+    }
+    return message;
   },
   toAmino(message: MsgUpdateInstantiateConfig, useInterfaces: boolean = false): MsgUpdateInstantiateConfigAmino {
     const obj: any = {};
@@ -2633,7 +2716,8 @@ export const MsgUpdateInstantiateConfigResponse = {
     return message;
   },
   fromAmino(_: MsgUpdateInstantiateConfigResponseAmino): MsgUpdateInstantiateConfigResponse {
-    return {};
+    const message = createBaseMsgUpdateInstantiateConfigResponse();
+    return message;
   },
   toAmino(_: MsgUpdateInstantiateConfigResponse, useInterfaces: boolean = false): MsgUpdateInstantiateConfigResponseAmino {
     const obj: any = {};
@@ -2705,15 +2789,19 @@ export const MsgUpdateParams = {
     return message;
   },
   fromAmino(object: MsgUpdateParamsAmino): MsgUpdateParams {
-    return {
-      authority: object.authority,
-      params: object?.params ? Params.fromAmino(object.params) : undefined
-    };
+    const message = createBaseMsgUpdateParams();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    if (object.params !== undefined && object.params !== null) {
+      message.params = Params.fromAmino(object.params);
+    }
+    return message;
   },
   toAmino(message: MsgUpdateParams, useInterfaces: boolean = false): MsgUpdateParamsAmino {
     const obj: any = {};
     obj.authority = message.authority;
-    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : undefined;
+    obj.params = message.params ? Params.toAmino(message.params, useInterfaces) : Params.fromPartial({});
     return obj;
   },
   fromAminoMsg(object: MsgUpdateParamsAminoMsg): MsgUpdateParams {
@@ -2765,7 +2853,8 @@ export const MsgUpdateParamsResponse = {
     return message;
   },
   fromAmino(_: MsgUpdateParamsResponseAmino): MsgUpdateParamsResponse {
-    return {};
+    const message = createBaseMsgUpdateParamsResponse();
+    return message;
   },
   toAmino(_: MsgUpdateParamsResponse, useInterfaces: boolean = false): MsgUpdateParamsResponseAmino {
     const obj: any = {};
@@ -2845,11 +2934,17 @@ export const MsgSudoContract = {
     return message;
   },
   fromAmino(object: MsgSudoContractAmino): MsgSudoContract {
-    return {
-      authority: object.authority,
-      contract: object.contract,
-      msg: toUtf8(JSON.stringify(object.msg))
-    };
+    const message = createBaseMsgSudoContract();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    if (object.contract !== undefined && object.contract !== null) {
+      message.contract = object.contract;
+    }
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = toUtf8(JSON.stringify(object.msg));
+    }
+    return message;
   },
   toAmino(message: MsgSudoContract, useInterfaces: boolean = false): MsgSudoContractAmino {
     const obj: any = {};
@@ -2916,13 +3011,15 @@ export const MsgSudoContractResponse = {
     return message;
   },
   fromAmino(object: MsgSudoContractResponseAmino): MsgSudoContractResponse {
-    return {
-      data: object.data
-    };
+    const message = createBaseMsgSudoContractResponse();
+    if (object.data !== undefined && object.data !== null) {
+      message.data = bytesFromBase64(object.data);
+    }
+    return message;
   },
   toAmino(message: MsgSudoContractResponse, useInterfaces: boolean = false): MsgSudoContractResponseAmino {
     const obj: any = {};
-    obj.data = message.data;
+    obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgSudoContractResponseAminoMsg): MsgSudoContractResponse {
@@ -3000,10 +3097,12 @@ export const MsgPinCodes = {
     return message;
   },
   fromAmino(object: MsgPinCodesAmino): MsgPinCodes {
-    return {
-      authority: object.authority,
-      codeIds: Array.isArray(object?.code_ids) ? object.code_ids.map((e: any) => BigInt(e)) : []
-    };
+    const message = createBaseMsgPinCodes();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    message.codeIds = object.code_ids?.map(e => BigInt(e)) || [];
+    return message;
   },
   toAmino(message: MsgPinCodes, useInterfaces: boolean = false): MsgPinCodesAmino {
     const obj: any = {};
@@ -3064,7 +3163,8 @@ export const MsgPinCodesResponse = {
     return message;
   },
   fromAmino(_: MsgPinCodesResponseAmino): MsgPinCodesResponse {
-    return {};
+    const message = createBaseMsgPinCodesResponse();
+    return message;
   },
   toAmino(_: MsgPinCodesResponse, useInterfaces: boolean = false): MsgPinCodesResponseAmino {
     const obj: any = {};
@@ -3145,10 +3245,12 @@ export const MsgUnpinCodes = {
     return message;
   },
   fromAmino(object: MsgUnpinCodesAmino): MsgUnpinCodes {
-    return {
-      authority: object.authority,
-      codeIds: Array.isArray(object?.code_ids) ? object.code_ids.map((e: any) => BigInt(e)) : []
-    };
+    const message = createBaseMsgUnpinCodes();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    message.codeIds = object.code_ids?.map(e => BigInt(e)) || [];
+    return message;
   },
   toAmino(message: MsgUnpinCodes, useInterfaces: boolean = false): MsgUnpinCodesAmino {
     const obj: any = {};
@@ -3209,7 +3311,8 @@ export const MsgUnpinCodesResponse = {
     return message;
   },
   fromAmino(_: MsgUnpinCodesResponseAmino): MsgUnpinCodesResponse {
-    return {};
+    const message = createBaseMsgUnpinCodesResponse();
+    return message;
   },
   toAmino(_: MsgUnpinCodesResponse, useInterfaces: boolean = false): MsgUnpinCodesResponseAmino {
     const obj: any = {};
@@ -3353,19 +3456,39 @@ export const MsgStoreAndInstantiateContract = {
     return message;
   },
   fromAmino(object: MsgStoreAndInstantiateContractAmino): MsgStoreAndInstantiateContract {
-    return {
-      authority: object.authority,
-      wasmByteCode: fromBase64(object.wasm_byte_code),
-      instantiatePermission: object?.instantiate_permission ? AccessConfig.fromAmino(object.instantiate_permission) : undefined,
-      unpinCode: object.unpin_code,
-      admin: object.admin,
-      label: object.label,
-      msg: toUtf8(JSON.stringify(object.msg)),
-      funds: Array.isArray(object?.funds) ? object.funds.map((e: any) => Coin.fromAmino(e)) : [],
-      source: object.source,
-      builder: object.builder,
-      codeHash: object.code_hash
-    };
+    const message = createBaseMsgStoreAndInstantiateContract();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    if (object.wasm_byte_code !== undefined && object.wasm_byte_code !== null) {
+      message.wasmByteCode = fromBase64(object.wasm_byte_code);
+    }
+    if (object.instantiate_permission !== undefined && object.instantiate_permission !== null) {
+      message.instantiatePermission = AccessConfig.fromAmino(object.instantiate_permission);
+    }
+    if (object.unpin_code !== undefined && object.unpin_code !== null) {
+      message.unpinCode = object.unpin_code;
+    }
+    if (object.admin !== undefined && object.admin !== null) {
+      message.admin = object.admin;
+    }
+    if (object.label !== undefined && object.label !== null) {
+      message.label = object.label;
+    }
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = toUtf8(JSON.stringify(object.msg));
+    }
+    message.funds = object.funds?.map(e => Coin.fromAmino(e)) || [];
+    if (object.source !== undefined && object.source !== null) {
+      message.source = object.source;
+    }
+    if (object.builder !== undefined && object.builder !== null) {
+      message.builder = object.builder;
+    }
+    if (object.code_hash !== undefined && object.code_hash !== null) {
+      message.codeHash = bytesFromBase64(object.code_hash);
+    }
+    return message;
   },
   toAmino(message: MsgStoreAndInstantiateContract, useInterfaces: boolean = false): MsgStoreAndInstantiateContractAmino {
     const obj: any = {};
@@ -3383,7 +3506,7 @@ export const MsgStoreAndInstantiateContract = {
     }
     obj.source = message.source;
     obj.builder = message.builder;
-    obj.code_hash = message.codeHash;
+    obj.code_hash = message.codeHash ? base64FromBytes(message.codeHash) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgStoreAndInstantiateContractAminoMsg): MsgStoreAndInstantiateContract {
@@ -3452,15 +3575,19 @@ export const MsgStoreAndInstantiateContractResponse = {
     return message;
   },
   fromAmino(object: MsgStoreAndInstantiateContractResponseAmino): MsgStoreAndInstantiateContractResponse {
-    return {
-      address: object.address,
-      data: object.data
-    };
+    const message = createBaseMsgStoreAndInstantiateContractResponse();
+    if (object.address !== undefined && object.address !== null) {
+      message.address = object.address;
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = bytesFromBase64(object.data);
+    }
+    return message;
   },
   toAmino(message: MsgStoreAndInstantiateContractResponse, useInterfaces: boolean = false): MsgStoreAndInstantiateContractResponseAmino {
     const obj: any = {};
     obj.address = message.address;
-    obj.data = message.data;
+    obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgStoreAndInstantiateContractResponseAminoMsg): MsgStoreAndInstantiateContractResponse {
@@ -3529,10 +3656,12 @@ export const MsgAddCodeUploadParamsAddresses = {
     return message;
   },
   fromAmino(object: MsgAddCodeUploadParamsAddressesAmino): MsgAddCodeUploadParamsAddresses {
-    return {
-      authority: object.authority,
-      addresses: Array.isArray(object?.addresses) ? object.addresses.map((e: any) => e) : []
-    };
+    const message = createBaseMsgAddCodeUploadParamsAddresses();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    message.addresses = object.addresses?.map(e => e) || [];
+    return message;
   },
   toAmino(message: MsgAddCodeUploadParamsAddresses, useInterfaces: boolean = false): MsgAddCodeUploadParamsAddressesAmino {
     const obj: any = {};
@@ -3593,7 +3722,8 @@ export const MsgAddCodeUploadParamsAddressesResponse = {
     return message;
   },
   fromAmino(_: MsgAddCodeUploadParamsAddressesResponseAmino): MsgAddCodeUploadParamsAddressesResponse {
-    return {};
+    const message = createBaseMsgAddCodeUploadParamsAddressesResponse();
+    return message;
   },
   toAmino(_: MsgAddCodeUploadParamsAddressesResponse, useInterfaces: boolean = false): MsgAddCodeUploadParamsAddressesResponseAmino {
     const obj: any = {};
@@ -3665,10 +3795,12 @@ export const MsgRemoveCodeUploadParamsAddresses = {
     return message;
   },
   fromAmino(object: MsgRemoveCodeUploadParamsAddressesAmino): MsgRemoveCodeUploadParamsAddresses {
-    return {
-      authority: object.authority,
-      addresses: Array.isArray(object?.addresses) ? object.addresses.map((e: any) => e) : []
-    };
+    const message = createBaseMsgRemoveCodeUploadParamsAddresses();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    message.addresses = object.addresses?.map(e => e) || [];
+    return message;
   },
   toAmino(message: MsgRemoveCodeUploadParamsAddresses, useInterfaces: boolean = false): MsgRemoveCodeUploadParamsAddressesAmino {
     const obj: any = {};
@@ -3729,7 +3861,8 @@ export const MsgRemoveCodeUploadParamsAddressesResponse = {
     return message;
   },
   fromAmino(_: MsgRemoveCodeUploadParamsAddressesResponseAmino): MsgRemoveCodeUploadParamsAddressesResponse {
-    return {};
+    const message = createBaseMsgRemoveCodeUploadParamsAddressesResponse();
+    return message;
   },
   toAmino(_: MsgRemoveCodeUploadParamsAddressesResponse, useInterfaces: boolean = false): MsgRemoveCodeUploadParamsAddressesResponseAmino {
     const obj: any = {};
@@ -3825,13 +3958,23 @@ export const MsgStoreAndMigrateContract = {
     return message;
   },
   fromAmino(object: MsgStoreAndMigrateContractAmino): MsgStoreAndMigrateContract {
-    return {
-      authority: object.authority,
-      wasmByteCode: fromBase64(object.wasm_byte_code),
-      instantiatePermission: object?.instantiate_permission ? AccessConfig.fromAmino(object.instantiate_permission) : undefined,
-      contract: object.contract,
-      msg: toUtf8(JSON.stringify(object.msg))
-    };
+    const message = createBaseMsgStoreAndMigrateContract();
+    if (object.authority !== undefined && object.authority !== null) {
+      message.authority = object.authority;
+    }
+    if (object.wasm_byte_code !== undefined && object.wasm_byte_code !== null) {
+      message.wasmByteCode = fromBase64(object.wasm_byte_code);
+    }
+    if (object.instantiate_permission !== undefined && object.instantiate_permission !== null) {
+      message.instantiatePermission = AccessConfig.fromAmino(object.instantiate_permission);
+    }
+    if (object.contract !== undefined && object.contract !== null) {
+      message.contract = object.contract;
+    }
+    if (object.msg !== undefined && object.msg !== null) {
+      message.msg = toUtf8(JSON.stringify(object.msg));
+    }
+    return message;
   },
   toAmino(message: MsgStoreAndMigrateContract, useInterfaces: boolean = false): MsgStoreAndMigrateContractAmino {
     const obj: any = {};
@@ -3916,17 +4059,23 @@ export const MsgStoreAndMigrateContractResponse = {
     return message;
   },
   fromAmino(object: MsgStoreAndMigrateContractResponseAmino): MsgStoreAndMigrateContractResponse {
-    return {
-      codeId: BigInt(object.code_id),
-      checksum: object.checksum,
-      data: object.data
-    };
+    const message = createBaseMsgStoreAndMigrateContractResponse();
+    if (object.code_id !== undefined && object.code_id !== null) {
+      message.codeId = BigInt(object.code_id);
+    }
+    if (object.checksum !== undefined && object.checksum !== null) {
+      message.checksum = bytesFromBase64(object.checksum);
+    }
+    if (object.data !== undefined && object.data !== null) {
+      message.data = bytesFromBase64(object.data);
+    }
+    return message;
   },
   toAmino(message: MsgStoreAndMigrateContractResponse, useInterfaces: boolean = false): MsgStoreAndMigrateContractResponseAmino {
     const obj: any = {};
     obj.code_id = message.codeId ? message.codeId.toString() : undefined;
-    obj.checksum = message.checksum;
-    obj.data = message.data;
+    obj.checksum = message.checksum ? base64FromBytes(message.checksum) : undefined;
+    obj.data = message.data ? base64FromBytes(message.data) : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgStoreAndMigrateContractResponseAminoMsg): MsgStoreAndMigrateContractResponse {
@@ -4003,11 +4152,17 @@ export const MsgUpdateContractLabel = {
     return message;
   },
   fromAmino(object: MsgUpdateContractLabelAmino): MsgUpdateContractLabel {
-    return {
-      sender: object.sender,
-      newLabel: object.new_label,
-      contract: object.contract
-    };
+    const message = createBaseMsgUpdateContractLabel();
+    if (object.sender !== undefined && object.sender !== null) {
+      message.sender = object.sender;
+    }
+    if (object.new_label !== undefined && object.new_label !== null) {
+      message.newLabel = object.new_label;
+    }
+    if (object.contract !== undefined && object.contract !== null) {
+      message.contract = object.contract;
+    }
+    return message;
   },
   toAmino(message: MsgUpdateContractLabel, useInterfaces: boolean = false): MsgUpdateContractLabelAmino {
     const obj: any = {};
@@ -4065,7 +4220,8 @@ export const MsgUpdateContractLabelResponse = {
     return message;
   },
   fromAmino(_: MsgUpdateContractLabelResponseAmino): MsgUpdateContractLabelResponse {
-    return {};
+    const message = createBaseMsgUpdateContractLabelResponse();
+    return message;
   },
   toAmino(_: MsgUpdateContractLabelResponse, useInterfaces: boolean = false): MsgUpdateContractLabelResponseAmino {
     const obj: any = {};

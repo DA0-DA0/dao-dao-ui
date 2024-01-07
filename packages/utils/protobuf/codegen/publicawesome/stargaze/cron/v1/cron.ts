@@ -17,7 +17,7 @@ export interface ParamsAmino {
    * Addresses which act as admins of the module. They can promote and demote
    * contracts without having to go via governance.
    */
-  admin_addresses: string[];
+  admin_addresses?: string[];
 }
 export interface ParamsAminoMsg {
   type: "/publicawesome.stargaze.cron.v1.Params";
@@ -63,9 +63,9 @@ export const Params = {
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
-    return {
-      adminAddresses: Array.isArray(object?.admin_addresses) ? object.admin_addresses.map((e: any) => e) : []
-    };
+    const message = createBaseParams();
+    message.adminAddresses = object.admin_addresses?.map(e => e) || [];
+    return message;
   },
   toAmino(message: Params, useInterfaces: boolean = false): ParamsAmino {
     const obj: any = {};
