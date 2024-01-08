@@ -754,11 +754,13 @@ export const govProposalSelector = selectorFamily<
       get(refreshGovProposalsAtom(chainId))
 
       // Try to load from indexer first.
-      const indexerProposal: {
-        id: string
-        version: string
-        data: string
-      } = get(
+      const indexerProposal:
+        | {
+            id: string
+            version: string
+            data: string
+          }
+        | undefined = get(
         queryGenericIndexerSelector({
           chainId,
           formula: 'gov/proposal',
