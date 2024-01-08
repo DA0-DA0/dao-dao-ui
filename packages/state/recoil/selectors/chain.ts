@@ -68,7 +68,10 @@ import {
   refreshUnreceivedIbcDataAtom,
   refreshWalletBalancesIdAtom,
 } from '../atoms/refresh'
-import { queryValidatorIndexerSelector } from './indexer'
+import {
+  queryGenericIndexerSelector,
+  queryValidatorIndexerSelector,
+} from './indexer'
 import { genericTokenSelector } from './token'
 
 export const stargateClientForChainSelector = selectorFamily<
@@ -581,8 +584,6 @@ export const govProposalsSelector = selectorFamily<
     status?: ProposalStatus
     offset?: number
     limit?: number
-    // If all, get all pages. If true, offset and limit are ignored.
-    all?: boolean
   }>
 >({
   key: 'govProposals',
@@ -591,23 +592,103 @@ export const govProposalsSelector = selectorFamily<
       status = ProposalStatus.PROPOSAL_STATUS_UNSPECIFIED,
       offset,
       limit,
-      all,
       chainId,
     }) =>
     async ({ get }) => {
       get(refreshGovProposalsAtom(chainId))
 
-      const client = get(cosmosRpcClientForChainSelector(chainId))
-      const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
-
       let v1Proposals: ProposalV1[] | undefined
       let v1Beta1Proposals: ProposalV1Beta1[] | undefined
       let total = 0
-      if (supportsV1Gov) {
-        try {
-          if (all) {
-            v1Proposals = await getAllRpcResponse(
-              client.gov.v1.proposals,
+
+      // Try to load from indexer first.
+      const indexerProposals: {
+        id: string
+        version: string
+        data: string
+      }[] =
+        get(
+          queryGenericIndexerSelector({
+            chainId,
+            formula: 'gov/reverseProposals',
+            args: {
+              limit,
+              offset,
+            },
+          })
+        ) ?? []
+
+      if (indexerProposals.length) {
+        v1Proposals = indexerProposals
+          .filter(({ version }) => version === GovProposalVersion.V1)
+          .flatMap(({ data }): ProposalV1 | [] => {
+            try {
+              return ProposalV1.decode(fromBase64(data))
+            } catch {
+              return []
+            }
+          })
+        v1Beta1Proposals = indexerProposals
+          .filter(({ version }) => version === GovProposalVersion.V1_BETA_1)
+          .flatMap(({ data }): ProposalV1Beta1 | [] => {
+            try {
+              return ProposalV1Beta1.decode(fromBase64(data))
+            } catch {
+              return []
+            }
+          })
+
+        // Fallback to querying chain if indexer failed.
+      } else {
+        const client = get(cosmosRpcClientForChainSelector(chainId))
+        const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
+        if (supportsV1Gov) {
+          try {
+            if (limit === undefined && offset === undefined) {
+              v1Proposals = await getAllRpcResponse(
+                client.gov.v1.proposals,
+                {
+                  proposalStatus: status,
+                  voter: '',
+                  depositor: '',
+                  pagination: undefined,
+                },
+                'proposals',
+                true
+              )
+              total = v1Proposals.length
+            } else {
+              const response = await client.gov.v1.proposals({
+                proposalStatus: status,
+                voter: '',
+                depositor: '',
+                pagination: {
+                  key: new Uint8Array(),
+                  offset: BigInt(offset || 0),
+                  limit: BigInt(limit || 0),
+                  countTotal: true,
+                  reverse: true,
+                },
+              })
+              v1Proposals = response.proposals
+              total = Number(response.pagination?.total || 0)
+            }
+          } catch (err) {
+            // Fallback to v1beta1 query if v1 not supported.
+            if (
+              !(err instanceof Error) ||
+              !err.message.includes('unknown query path')
+            ) {
+              // Rethrow other errors.
+              throw err
+            }
+          }
+        }
+
+        if (!v1Proposals) {
+          if (limit === undefined && offset === undefined) {
+            v1Beta1Proposals = await getAllRpcResponse(
+              client.gov.v1beta1.proposals,
               {
                 proposalStatus: status,
                 voter: '',
@@ -617,9 +698,9 @@ export const govProposalsSelector = selectorFamily<
               'proposals',
               true
             )
-            total = v1Proposals.length
+            total = v1Beta1Proposals.length
           } else {
-            const response = await client.gov.v1.proposals({
+            const response = await client.gov.v1beta1.proposals({
               proposalStatus: status,
               voter: '',
               depositor: '',
@@ -631,50 +712,9 @@ export const govProposalsSelector = selectorFamily<
                 reverse: true,
               },
             })
-            v1Proposals = response.proposals
+            v1Beta1Proposals = response.proposals
             total = Number(response.pagination?.total || 0)
           }
-        } catch (err) {
-          // Fallback to v1beta1 query if v1 not supported.
-          if (
-            !(err instanceof Error) ||
-            !err.message.includes('unknown query path')
-          ) {
-            // Rethrow other errors.
-            throw err
-          }
-        }
-      }
-
-      if (!v1Proposals) {
-        if (all) {
-          v1Beta1Proposals = await getAllRpcResponse(
-            client.gov.v1beta1.proposals,
-            {
-              proposalStatus: status,
-              voter: '',
-              depositor: '',
-              pagination: undefined,
-            },
-            'proposals',
-            true
-          )
-          total = v1Beta1Proposals.length
-        } else {
-          const response = await client.gov.v1beta1.proposals({
-            proposalStatus: status,
-            voter: '',
-            depositor: '',
-            pagination: {
-              key: new Uint8Array(),
-              offset: BigInt(offset || 0),
-              limit: BigInt(limit || 0),
-              countTotal: true,
-              reverse: true,
-            },
-          })
-          v1Beta1Proposals = response.proposals
-          total = Number(response.pagination?.total || 0)
         }
       }
 
@@ -713,6 +753,38 @@ export const govProposalSelector = selectorFamily<
     async ({ get }) => {
       get(refreshGovProposalsAtom(chainId))
 
+      // Try to load from indexer first.
+      const indexerProposal: {
+        id: string
+        version: string
+        data: string
+      } = get(
+        queryGenericIndexerSelector({
+          chainId,
+          formula: 'gov/proposal',
+          args: {
+            id: proposalId,
+          },
+        })
+      )
+
+      if (indexerProposal) {
+        if (indexerProposal.version === GovProposalVersion.V1) {
+          return decodeGovProposal({
+            version: GovProposalVersion.V1,
+            id: BigInt(proposalId),
+            proposal: ProposalV1.decode(fromBase64(indexerProposal.data)),
+          })
+        } else {
+          return decodeGovProposal({
+            version: GovProposalVersion.V1_BETA_1,
+            id: BigInt(proposalId),
+            proposal: ProposalV1Beta1.decode(fromBase64(indexerProposal.data)),
+          })
+        }
+      }
+
+      // Fallback to querying chain if indexer failed.
       const client = get(cosmosRpcClientForChainSelector(chainId))
       const supportsV1Gov = get(chainSupportsV1GovModuleSelector({ chainId }))
 
