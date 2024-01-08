@@ -599,7 +599,7 @@
     "minterContract": "Minter contract",
     "minterContractMessage": "Minter contract message",
     "moreThanOneAccount": "More than one account",
-    "multipleChoiceDescription": "This allows proposals to contain multiple choices instead of just `Yes` and `No`.\n\n**CAUTION:** Using more features increases the risk to a DAO because there are more things that can go wrong. You can always enable this later.",
+    "multipleChoiceDescription": "This allows proposals to contain multiple choices instead of just `Yes` and `No`.",
     "multipleChoiceOptionDescriptionPlaceholder": "Give your choice a description... (supports Markdown format)",
     "multipleChoiceOptionTitlePlaceholder": "Give your choice a title",
     "multipleChoiceTitle": "Multiple choice proposals",
